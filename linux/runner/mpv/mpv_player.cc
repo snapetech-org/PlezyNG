@@ -360,15 +360,13 @@ bool MpvPlayer::SubtitlePcmCaptureAvailable() const {
 
 int MpvPlayer::SetSubtitlePcmCaptureEnabled(bool enabled) {
   std::lock_guard<std::mutex> lock(native_mutex_);
-  if (audio_only_ || disposed_ || !mpv_ || !TapApi().capture_available())
-    return MPV_ERROR_UNSUPPORTED;
+  if (audio_only_ || disposed_ || !mpv_ || !TapApi().capture_available()) return MPV_ERROR_UNSUPPORTED;
   return TapApi().enable(mpv_, enabled ? 1 : 0);
 }
 
 int MpvPlayer::ReadSubtitlePcmCapture(mpv_plezy_audio_block* block) {
   std::lock_guard<std::mutex> lock(native_mutex_);
-  if (audio_only_ || disposed_ || !mpv_ || !TapApi().capture_available())
-    return MPV_ERROR_UNSUPPORTED;
+  if (audio_only_ || disposed_ || !mpv_ || !TapApi().capture_available()) return MPV_ERROR_UNSUPPORTED;
   return TapApi().read_next(mpv_, block, sizeof(*block));
 }
 

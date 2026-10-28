@@ -99,11 +99,15 @@ void main() {
 
   test('a signed broader pack cannot borrow the sample-fixture exception', () async {
     final changed = {...entry, 'id': 'broader-pack'};
-    await expectLater(VisualizerCatalogVerifier(trust).verify(await envelope(11, entries: [changed]), now),
-        throwsFormatException);
+    await expectLater(
+      VisualizerCatalogVerifier(trust).verify(await envelope(11, entries: [changed]), now),
+      throwsFormatException,
+    );
     final unassessed = {...entry}..remove('qualification');
-    await expectLater(VisualizerCatalogVerifier(trust).verify(await envelope(11, entries: [unassessed]), now),
-        throwsFormatException);
+    await expectLater(
+      VisualizerCatalogVerifier(trust).verify(await envelope(11, entries: [unassessed]), now),
+      throwsFormatException,
+    );
   });
 
   test('rejects mutable archives and uncleared pack declarations', () async {
@@ -159,11 +163,17 @@ void main() {
 
   test('network failure retains cached metadata and fresh authorization', () async {
     // Synthetic signed metadata exercises authorization, not GPU qualification.
-    final remoteEntry = {...entry, 'id': 'remote-sample', 'qualification': {
-      'status': 'qualified', 'targets': VisualizerPackQualification.requiredTargets.toList(),
-      'reportUrl': 'https://raw.githubusercontent.com/snapetech-org/MilkRust/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/content/qualification/reports/test-only.json',
-      'reportSha256': List.filled(64, 'b').join(),
-    }};
+    final remoteEntry = {
+      ...entry,
+      'id': 'remote-sample',
+      'qualification': {
+        'status': 'qualified',
+        'targets': VisualizerPackQualification.requiredTargets.toList(),
+        'reportUrl':
+            'https://raw.githubusercontent.com/snapetech-org/MilkRust/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/content/qualification/reports/test-only.json',
+        'reportSha256': List.filled(64, 'b').join(),
+      },
+    };
     var offline = false;
     final bytes = await envelope(2, entries: [remoteEntry]);
     final client = MockClient((_) async {

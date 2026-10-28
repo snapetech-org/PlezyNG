@@ -7,7 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../focus/focusable_text_field.dart';
 import '../i18n/strings.g.dart';
-import '../integrations/integration_contracts.dart';
+import '../integrations/integration_api.dart';
 import '../integrations/integration_preferences_store.dart';
 import '../profiles/active_profile_provider.dart';
 import '../services/book_identifiers.dart';

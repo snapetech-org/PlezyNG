@@ -1423,7 +1423,9 @@ class MpvPlayerCoreBase: NSObject {
   }
 
   private func handleEvent(_ event: mpv_event) {
-    if event.event_id == MPV_EVENT_START_FILE || event.event_id == MPV_EVENT_END_FILE || event.event_id == MPV_EVENT_SEEK {
+    if event.event_id == MPV_EVENT_START_FILE || event.event_id == MPV_EVENT_END_FILE
+      || event.event_id == MPV_EVENT_SEEK
+    {
       lifecycleLock.lock(); lifecycleState.visualizationPTS = .nan; lifecycleLock.unlock()
     }
     switch event.event_id {
@@ -1432,7 +1434,8 @@ class MpvPlayerCoreBase: NSObject {
       let property = data.assumingMemoryBound(to: mpv_event_property.self).pointee
       if event.reply_userdata == Self.internalVisualizationObserverId {
         lifecycleLock.lock()
-        lifecycleState.visualizationPTS = property.format == MPV_FORMAT_DOUBLE
+        lifecycleState.visualizationPTS =
+          property.format == MPV_FORMAT_DOUBLE
           ? (property.data?.assumingMemoryBound(to: Double.self).pointee ?? .nan) : .nan
         lifecycleLock.unlock()
         break

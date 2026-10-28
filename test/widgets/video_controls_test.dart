@@ -2460,6 +2460,9 @@ class _FakeSyncPlayer implements Player {
   PlayerState get state => PlayerState();
 
   @override
+  bool get supportsSubtitleStepSync => false;
+
+  @override
   Future<void> setProperty(String name, String value) {
     return onSetProperty?.call(name, value) ?? Future<void>.value();
   }

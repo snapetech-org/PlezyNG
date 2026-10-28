@@ -182,6 +182,21 @@ class _IdlePlayer implements Player {
   String get playerType => 'mpv';
 
   @override
+  bool get supportsSecondarySubtitles => false;
+
+  @override
+  Set<String> get supportedLocalSubtitleExtensions => const {};
+
+  @override
+  bool get supportsSubtitleStepSync => false;
+
+  @override
+  bool get supportsSubtitleStyleControls => false;
+
+  @override
+  bool get audioPassthroughActive => false;
+
+  @override
   Future<String?> getProperty(String name) async => null;
 
   @override

@@ -90,6 +90,12 @@ class ConnectorBrandMark extends StatelessWidget {
     'amazon-music': 'fontawesome_amazon.svg',
     'comixology': 'fontawesome_amazon.svg',
     'xbox-store': 'fontawesome_xbox.svg',
+    'hardcover': 'selfhst_hardcover.svg',
+    'real-debrid': 'selfhst_real_debrid.svg',
+    'premiumize': 'dashboard_premiumize.svg',
+    'hulu': 'dashboard_hulu.svg',
+    'peacock': 'dashboard_peacock.svg',
+    'torbox': 'torbox.svg',
   };
 
   String? get _resolvedIconName {

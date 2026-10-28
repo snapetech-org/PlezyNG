@@ -576,13 +576,20 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   String? get subtitlePcmAudioTrackId => state.track.audio?.id;
 
   @override
-  Future<bool> subtitlePcmCaptureAvailable() async => !disposed && !_usingMpvFallback && !_isLive;
+  Future<bool> subtitlePcmCaptureAvailable() async {
+    if (disposed || _isLive) return false;
+    try {
+      return await methodChannel.invokeMethod<bool>('subtitlePcmCaptureAvailable') ?? false;
+    } on Object {
+      return false;
+    }
+  }
 
   /// Starts or stops a bounded copy of decoded PCM for local subtitle ASR.
-  /// The ExoPlayer fallback path does not expose PCM and returns false.
+  /// MPV fallback capture is capability-gated by its session-leased JNI bridge.
   @override
   Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
-    if (disposed || _usingMpvFallback) return false;
+    if (disposed || _isLive) return false;
     return await methodChannel.invokeMethod<bool>(
           'setSubtitlePcmCaptureEnabled',
           {'enabled': enabled},
@@ -593,7 +600,7 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   /// Drains captured PCM packets. Each packet carries its media presentation timestamp.
   @override
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
-    if (disposed || _usingMpvFallback) return const [];
+    if (disposed || _isLive) return const [];
     final packets = await methodChannel.invokeMethod<List<dynamic>>('drainSubtitlePcmCapture');
     return packets
             ?.map((packet) => Map<String, Object?>.from(packet as Map))

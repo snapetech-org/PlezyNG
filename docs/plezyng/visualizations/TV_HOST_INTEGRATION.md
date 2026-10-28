@@ -113,6 +113,39 @@ identified in the integrated plugin during this inspection; that does not prove
 LG cannot provide a supported partner API. The platform texture/context bridge
 and lifecycle work still follow after a real PCM source is established.
 
+### Output-route feasibility
+
+The public NDL DirectMedia API is a feed API: an application declares a stream,
+then supplies encoded audio or PCM buffers with presentation timestamps. Its
+`NDL_DirectAudioPlay` call consumes app-provided buffers; it is not a callback
+from `NDL_Media` and cannot reveal samples decoded by the current LG player. The
+community sample's PCM path also relies on a DirectMedia v2 setup and a source
+format negotiation step; that is a separate playback pipeline, not a tap into
+the integrated player.
+
+The `com.webos.service.audiooutput` service is not an app-level workaround:
+LG's webOS OSE API reference explicitly says applications must not call it
+directly and reserves it for the system audio service. This plan therefore does
+not bind the app to that service or to process-wide loopback capture.
+
+The source implementation required for a replacement backend is consequently:
+
+1. A separately owned audio-only MPV core, built for the app's 32-bit ARM webOS
+   target and configured without the LG video player.
+2. A platform audio output for that core which owns the audible PCM route, with
+   bounded buffering, seek/reset, pause/resume and track/format changes.
+3. The existing patched MPV PCM tap attached to that same core, plus a native
+   GLES 3 / Flutter texture host using the shared worker and image decoder.
+4. A Dart audio-player adapter that uses the new core for `Player.audio()` and
+   binds the visualizer to its exact session. Ordinary video continues to use
+   the existing LG pipeline.
+
+The app's pinned LG NDK and a supported TV are not present in this source-only
+checkout, and the current NDK package has not been inspected for a supported
+audio sink declaration. I have not added a guessed `ao=ndl` implementation or
+reported an NDL feed API as a PCM tap. The backend, texture host integration,
+player adapter, NDK compilation and physical-TV qualification remain open.
+
 ## Qualification still required
 
 Both targets remain open in `all-native-hosts-v1`. After execution is authorized,

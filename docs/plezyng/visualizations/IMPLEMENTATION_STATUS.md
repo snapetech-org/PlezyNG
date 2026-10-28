@@ -50,7 +50,7 @@ Updated: 2026-10-28. The original plan and signed-catalog source were merged via
 
 ## Native boundaries that prevent a release claim
 
-The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS and Android/TV now have native MilkRust host source; none has been compiled or device-qualified in this session. Tizen has unbuilt same-player PCM/EGL/texture host source retained from closed PR #74 on this continuation branch. webOS still lacks a supported PCM source and renderer host. Storage/import availability and engine availability are separate.
+The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS and Android/TV now have native MilkRust host source; none has been compiled or device-qualified in this session. Tizen has unbuilt same-player PCM/EGL/texture host source retained from closed PR #74 on continuation [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78). webOS still lacks a supported PCM source and renderer host. Storage/import availability and engine availability are separate.
 
 The in-process renderer catches exceptions, but cannot contain a hung shader compiler or GPU driver. Teardown joins the worker and can therefore block in that case. Process isolation/watchdog behavior, resource budgets and driver recovery remain required work before claiming arbitrary community inputs are safely supported.
 
@@ -137,7 +137,7 @@ The implementation is uncompiled and unrun. Normal-speed S16LE stereo and
 PNG/JPEG/BMP/TGA are the current Tizen host limits. The callback teardown contract,
 SDK/firmware availability, driver hangs and physical TV behavior remain open.
 No platform or broader pack gained qualification; production trust is still
-empty. The previous checkpoint branch was also deleted remotely. This
-continuation branch is being prepared from current `main` with the retained
-Tizen source; see
+empty. The previous checkpoint branch was also deleted remotely. Tizen source
+is retained on current-main [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78);
+see
 [TV_HOST_INTEGRATION.md](TV_HOST_INTEGRATION.md) for the current source contract.

@@ -269,8 +269,9 @@ or device qualification were executed for these increments. See
 Closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) added the
 Samsung same-player PCM/EGL/texture path, source-generation protection, app
 capability routing and explicit artifact/source/notice packaging inputs. Its
-source is retained on the current continuation branch based on current `main`
-for re-review. This preserves the original plan; V1 remains open for
+source is retained on current-main
+[PR #78](https://github.com/snapetech-org/PlezyNG/pull/78) for re-review. This
+preserves the original plan; V1 remains open for
 SDK/device qualification, webOS and context-loss/hang handling. Tizen's current
 source limits are normal-speed S16LE stereo and PNG/JPEG/BMP/TGA texture
 decoding. Full HLSL, other `.milk2` patterns, qualified broader packs and

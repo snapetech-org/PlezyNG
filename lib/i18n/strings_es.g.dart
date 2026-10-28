@@ -2855,7 +2855,6 @@ class Translations$streaming$es extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Prepara enlaces de torrent compatibles para reproducirlos con tu cuenta de Real-Debrid.';
 	@override String get connectRealDebrid => 'Conectar con código QR';
-	@override String get disconnectRealDebrid => 'Desconectar Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'Conectado como ${username}';
 	@override String get realDebridInstructions => 'Escanea el código QR o abre el enlace e introduce este código de activación para conectar PlezyNG:';
 	@override String get realDebridActivate => 'Abrir Real-Debrid para activar';
@@ -2883,21 +2882,17 @@ class Translations$streaming$es extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => '¿Desconectar ${service}?';
 	@override String get disconnectBody => 'PlezyNG quitará la autorización de este dispositivo. Tus archivos y transferencias del proveedor no se verán afectados.';
 	@override String get streamsTitle => 'Elige una fuente para reproducir';
-	@override String get searchingStreams => 'Buscando en los complementos conectados…';
 	@override String get noStreams => 'No hay opciones de reproducción para este título.';
 	@override String get manageConnections => 'Gestionar servicios de streaming';
 	@override String subtitleTracks({required Object count}) => 'Pistas de subtítulos: ${count}';
 	@override String get chooseSubtitle => 'Elegir subtítulo';
 	@override String get chooseProvider => 'Elegir servicio Debrid';
 	@override String get subtitleOff => 'Sin subtítulos';
-	@override String get subtitleLoadFailed => 'No se pudo cargar ese subtítulo. Prueba otra pista.';
-	@override String get subtitleApplied => 'Subtítulo seleccionado para la reproducción';
 	@override String get streamLookupPartial => 'No se pudo acceder a algunos complementos.';
 	@override String get streamLookupFailed => 'No se pudieron consultar los complementos conectados.';
 	@override String get streamOpenExternal => 'Abrir enlace externo';
 	@override String get streamPrepare => 'Preparando la reproducción con tu servicio Debrid…';
 	@override String get streamPrepareFailed => 'No se pudo preparar esta fuente. Comprueba la cuenta conectada e inténtalo con otra fuente.';
-	@override String get streamNeedsRealDebrid => 'Conecta un servicio Debrid para reproducir este enlace de torrent.';
 	@override String get streamUnsupported => 'El reproductor integrado no admite este formato de video.';
 	@override String get remoteNeedsEpisode => 'Elige un episodio antes de buscar opciones de reproducción.';
 	@override String get remoteNeedsEpisodeNumber => 'A este episodio le falta el número de temporada o de episodio.';
@@ -7910,7 +7905,6 @@ extension on TranslationsEs {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Prepara enlaces de torrent compatibles para reproducirlos con tu cuenta de Real-Debrid.',
 			'streaming.connectRealDebrid' => 'Conectar con código QR',
-			'streaming.disconnectRealDebrid' => 'Desconectar Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Conectado como ${username}',
 			'streaming.realDebridInstructions' => 'Escanea el código QR o abre el enlace e introduce este código de activación para conectar PlezyNG:',
 			'streaming.realDebridActivate' => 'Abrir Real-Debrid para activar',
@@ -7938,21 +7932,17 @@ extension on TranslationsEs {
 			'streaming.disconnectConfirm' => ({required Object service}) => '¿Desconectar ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG quitará la autorización de este dispositivo. Tus archivos y transferencias del proveedor no se verán afectados.',
 			'streaming.streamsTitle' => 'Elige una fuente para reproducir',
-			'streaming.searchingStreams' => 'Buscando en los complementos conectados…',
 			'streaming.noStreams' => 'No hay opciones de reproducción para este título.',
 			'streaming.manageConnections' => 'Gestionar servicios de streaming',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Pistas de subtítulos: ${count}',
 			'streaming.chooseSubtitle' => 'Elegir subtítulo',
 			'streaming.chooseProvider' => 'Elegir servicio Debrid',
 			'streaming.subtitleOff' => 'Sin subtítulos',
-			'streaming.subtitleLoadFailed' => 'No se pudo cargar ese subtítulo. Prueba otra pista.',
-			'streaming.subtitleApplied' => 'Subtítulo seleccionado para la reproducción',
 			'streaming.streamLookupPartial' => 'No se pudo acceder a algunos complementos.',
 			'streaming.streamLookupFailed' => 'No se pudieron consultar los complementos conectados.',
 			'streaming.streamOpenExternal' => 'Abrir enlace externo',
 			'streaming.streamPrepare' => 'Preparando la reproducción con tu servicio Debrid…',
 			'streaming.streamPrepareFailed' => 'No se pudo preparar esta fuente. Comprueba la cuenta conectada e inténtalo con otra fuente.',
-			'streaming.streamNeedsRealDebrid' => 'Conecta un servicio Debrid para reproducir este enlace de torrent.',
 			'streaming.streamUnsupported' => 'El reproductor integrado no admite este formato de video.',
 			'streaming.remoteNeedsEpisode' => 'Elige un episodio antes de buscar opciones de reproducción.',
 			'streaming.remoteNeedsEpisodeNumber' => 'A este episodio le falta el número de temporada o de episodio.',
@@ -8207,13 +8197,13 @@ extension on TranslationsEs {
 			'universalMedia.playlistFormatsHelp' => 'Una lista de reproducción puede contener hasta 1.000 artículos y 2 MB. HLS se manifiesta abierto como corrientes para que el jugador pueda elegir una calidad.',
 			'universalMedia.saveQueuePlaylist' => 'Guardar la cola como lista de reproducción',
 			'universalMedia.queuePlaylistSaved' => 'La lista de reproducción se guardó junto a los archivos multimedia.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Esta cola no se puede guardar como una lista local reutilizable.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Elige una ubicación de guardado en la misma carpeta que los archivos de la cola.',
 			'universalMedia.noFavorites' => 'No se ha salvado el flujo de favoritos aún. los favoritos permanecen en este perfil.',
 			'universalMedia.removeFavorite' => 'Eliminar el flujo favorito',
 			'universalMedia.filesHelp' => 'Seleccione los archivos de audio, vídeo o ISO para una cueva temporal.Los archivos y las URL no se añaden a la historia de la biblioteca.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Elegir archivos',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, one: '1 Archivo seleccionado', many: '${count} archivos seleccionados', other: '${count} archivos seleccionados', ), 
 			'universalMedia.wifiTransfer' => 'Enviar archivos a través de Wi-Fi',
@@ -8721,13 +8711,13 @@ extension on TranslationsEs {
 			'sourceSetup.nfsEncryptionFailure' => 'Para NFS cifrado, comprueba que ambos servicios del NAS admiten RFC 9289 y TLS 1.3, el nombre del certificado y los UID/GID del recurso compartido. PlezyNG no reintentará esta conexión sin cifrado.',
 			'sourceSetup.sourceConnecting' => 'Conectando con la fuente',
 			'sourceSetup.metadataSearchPrivacy' => 'Esta búsqueda de títulos se envía a Trakt. Se envía el título que introduces, no el vídeo ni las credenciales de la fuente.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Elegir una coincidencia',
 			'sourceSetup.metadataMatchHelp' => 'Revisa el título y el año antes de elegir. Trakt recibe el título buscado; el vídeo permanece en su fuente.',
 			'sourceSetup.metadataNoMatches' => 'No se encontraron títulos coincidentes en línea. Prueba con otro título.',
 			'sourceSetup.metadataSearch' => 'Buscar metadatos en línea',
 			'sourceSetup.metadataLoading' => 'Buscando información de películas y series en línea…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadatos en línea de Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'No se encontró una coincidencia automática para el título. Busca el título para elegir una coincidencia.',
 			'sourceSetup.metadataFailed' => 'No se pudieron cargar los metadatos en línea. La reproducción y la información local siguen disponibles.',

@@ -4283,9 +4283,6 @@ class Translations$iptv$en {
 	/// en: 'This source could not load its catalogue. Check the provider credentials and retry.'
 	String get vodUnavailable => 'This source could not load its catalogue. Check the provider credentials and retry.';
 
-	/// en: 'VOD is not configured for this source.'
-	String get vodUnavailableShort => 'VOD is not configured for this source.';
-
 	/// en: 'Could not start this title. Check the provider connection and try again.'
 	String get vodPlaybackFailed => 'Could not start this title. Check the provider connection and try again.';
 
@@ -4303,12 +4300,6 @@ class Translations$iptv$en {
 
 	/// en: 'Local recordings'
 	String get localRecordings => 'Local recordings';
-
-	/// en: 'Recording saved to this device.'
-	String get recordingSavedLocal => 'Recording saved to this device.';
-
-	/// en: 'The recording could not be saved.'
-	String get recordingFailedLocal => 'The recording could not be saved.';
 
 	/// en: 'Recording'
 	String get recordingInProgressLocal => 'Recording';
@@ -4330,9 +4321,6 @@ class Translations$iptv$en {
 
 	/// en: 'The provider denied access to this stream.'
 	String get recordingProviderPermission => 'The provider denied access to this stream.';
-
-	/// en: 'This source is no longer available.'
-	String get sourceUnavailable => 'This source is no longer available.';
 
 	/// en: 'Delete recording'
 	String get deleteRecording => 'Delete recording';
@@ -7925,9 +7913,6 @@ class Translations$streaming$en {
 	/// en: 'Connect with QR code'
 	String get connectRealDebrid => 'Connect with QR code';
 
-	/// en: 'Disconnect Real-Debrid'
-	String get disconnectRealDebrid => 'Disconnect Real-Debrid';
-
 	/// en: 'Connected as ${username}'
 	String realDebridConnected({required Object username}) => 'Connected as ${username}';
 
@@ -8009,9 +7994,6 @@ class Translations$streaming$en {
 	/// en: 'Choose a stream'
 	String get streamsTitle => 'Choose a stream';
 
-	/// en: 'Checking connected add-ons…'
-	String get searchingStreams => 'Checking connected add-ons…';
-
 	/// en: 'No streams were found for this title.'
 	String get noStreams => 'No streams were found for this title.';
 
@@ -8030,12 +8012,6 @@ class Translations$streaming$en {
 	/// en: 'No subtitle'
 	String get subtitleOff => 'No subtitle';
 
-	/// en: 'Couldn't load that subtitle. Try another track.'
-	String get subtitleLoadFailed => 'Couldn\'t load that subtitle. Try another track.';
-
-	/// en: 'Subtitle selected for playback'
-	String get subtitleApplied => 'Subtitle selected for playback';
-
 	/// en: 'Some add-ons couldn't be reached.'
 	String get streamLookupPartial => 'Some add-ons couldn\'t be reached.';
 
@@ -8050,9 +8026,6 @@ class Translations$streaming$en {
 
 	/// en: 'This stream couldn't be prepared. Check the connected account and try another source.'
 	String get streamPrepareFailed => 'This stream couldn\'t be prepared. Check the connected account and try another source.';
-
-	/// en: 'Connect a debrid service to play this torrent stream.'
-	String get streamNeedsRealDebrid => 'Connect a debrid service to play this torrent stream.';
 
 	/// en: 'This stream format isn't supported by the in-app player.'
 	String get streamUnsupported => 'This stream format isn\'t supported by the in-app player.';
@@ -10957,9 +10930,6 @@ class Translations$games$en {
 
 	/// en: 'Steam account linked. Its library is private or unavailable, so no games were imported.'
 	String get steamLibraryPrivate => 'Steam account linked. Its library is private or unavailable, so no games were imported.';
-
-	/// en: 'Steam App ID'
-	String get steamAppId => 'Steam App ID';
 
 	/// en: 'Steam could not refresh the library. Showing the last available catalog.'
 	String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
@@ -15466,15 +15436,12 @@ extension on Translations {
 			'iptv.allCategories' => 'All categories',
 			'iptv.noVodItems' => 'No titles in this category.',
 			'iptv.vodUnavailable' => 'This source could not load its catalogue. Check the provider credentials and retry.',
-			'iptv.vodUnavailableShort' => 'VOD is not configured for this source.',
 			'iptv.vodPlaybackFailed' => 'Could not start this title. Check the provider connection and try again.',
 			'iptv.play' => 'Play',
 			'iptv.noEpisodes' => 'No episodes are available for this series.',
 			'iptv.season' => 'Season',
 			'iptv.specials' => 'Specials',
 			'iptv.localRecordings' => 'Local recordings',
-			'iptv.recordingSavedLocal' => 'Recording saved to this device.',
-			'iptv.recordingFailedLocal' => 'The recording could not be saved.',
 			'iptv.recordingInProgressLocal' => 'Recording',
 			'iptv.recordingInterrupted' => 'Interrupted',
 			'iptv.recordingMissed' => 'Missed',
@@ -15482,7 +15449,6 @@ extension on Translations {
 			'iptv.recordingEncryptedHls' => 'This provider uses an unsupported HLS encryption mode.',
 			'iptv.recordingProviderAuthentication' => 'The provider rejected the recording connection.',
 			'iptv.recordingProviderPermission' => 'The provider denied access to this stream.',
-			'iptv.sourceUnavailable' => 'This source is no longer available.',
 			'iptv.deleteRecording' => 'Delete recording',
 			'iptv.deleteRecordingConfirm' => 'Delete this recording and its file from this device?',
 			'iptv.deleteDispatcharrRecordingConfirm' => 'Delete this recording and its file from the Dispatcharr server?',
@@ -15585,12 +15551,12 @@ extension on Translations {
 			'accountPreferences.mediaReviewsOptions.criticsOnlyDescription' => 'Show critic ratings and reviews.',
 			'accountPreferences.mediaReviewsOptions.nobodyDescription' => 'Hide ratings and reviews.',
 			'accountPreferences.preferredAudioLanguageDescription' => 'Prefer audio tracks in this language when the server or player selects a track automatically.',
-			_ => null,
-		} ?? switch (path) {
 			'accountPreferences.preferredSubtitleLanguageDescription' => 'Prefer subtitle tracks in this language when subtitles are selected automatically.',
 			'accountPreferences.subtitleAccessibilityDescription' => 'Choose whether SDH captions are preferred or required during automatic subtitle selection.',
 			'accountPreferences.forcedSubtitleDescription' => 'Choose whether forced subtitle tracks are preferred or required during automatic selection.',
 			'accountPreferences.watchedIndicatorDescription' => 'Choose which media types receive a watched checkmark in the server interface.',
+			_ => null,
+		} ?? switch (path) {
 			'accountPreferences.mediaReviewsVisibilityDescription' => 'Choose which audience and critic ratings the server shows on media pages.',
 			'accountPreferences.subtitleModeDescription' => 'Choose when subtitles turn on automatically for this server account.',
 			'accountPreferences.hubDescription' => 'These preferences are stored on your media-server account and may apply on other clients too.',
@@ -16099,12 +16065,12 @@ extension on Translations {
 			'explore.detail.favoritedBy' => ({required Object who}) => 'Favorited by ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} not aired yet',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Recommended by ${percent} of viewers',
-			_ => null,
-		} ?? switch (path) {
 			'explore.detail.relatedTitles' => 'Related titles',
 			'explore.detail.background' => 'Background',
 			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} result', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} results', ), 
 			'liveTv.title' => 'Live TV',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.guide' => 'Guide',
 			'liveTv.noChannels' => 'No channels available',
 			'liveTv.noDvr' => 'No DVR configured on any server',
@@ -16613,12 +16579,12 @@ extension on Translations {
 			'companionRemote.session.usePhoneToControl' => 'Use your mobile device to control this app',
 			'companionRemote.session.startServer' => 'Start Server',
 			'companionRemote.session.stopServer' => 'Stop Server',
-			_ => null,
-		} ?? switch (path) {
 			'companionRemote.session.minimize' => 'Minimize',
 			'companionRemote.session.manualAddressHint' => 'Manual connection address:',
 			'companionRemote.pairing.discoveryDescription' => 'PlezyNG devices with the same Plex account appear here',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
+			_ => null,
+		} ?? switch (path) {
 			'companionRemote.pairing.connecting' => 'Connecting...',
 			'companionRemote.pairing.searchingForDevices' => 'Looking for devices...',
 			'companionRemote.pairing.noDevicesFound' => 'No devices found on your network',
@@ -17127,17 +17093,16 @@ extension on Translations {
 			'streaming.allowHttpDescription' => 'Use only for a trusted add-on on your private network.',
 			'streaming.installAddon' => 'Connect add-on',
 			'streaming.addonInstalled' => 'Add-on connected',
-			_ => null,
-		} ?? switch (path) {
 			'streaming.addonRemoved' => 'Add-on removed',
 			'streaming.addonToggle' => 'Enable add-on',
 			'streaming.addonEmpty' => 'No add-ons connected yet',
 			'streaming.addonError' => 'PlezyNG couldn\'t connect to that add-on. Check the manifest URL and try again.',
+			_ => null,
+		} ?? switch (path) {
 			'streaming.addonPrivacy' => 'Install only add-ons you trust. An add-on can receive the title you ask it to search and can return third-party stream links.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Resolve torrent-backed streams through your Real-Debrid account.',
 			'streaming.connectRealDebrid' => 'Connect with QR code',
-			'streaming.disconnectRealDebrid' => 'Disconnect Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Connected as ${username}',
 			'streaming.realDebridInstructions' => 'Scan the QR code or open the address, then enter this activation code to connect PlezyNG:',
 			'streaming.realDebridActivate' => 'Open Real-Debrid to activate',
@@ -17165,21 +17130,17 @@ extension on Translations {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Disconnect ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG will remove this device\'s authorization. Your provider files and transfers stay untouched.',
 			'streaming.streamsTitle' => 'Choose a stream',
-			'streaming.searchingStreams' => 'Checking connected add-ons…',
 			'streaming.noStreams' => 'No streams were found for this title.',
 			'streaming.manageConnections' => 'Manage streaming services',
 			'streaming.subtitleTracks' => ({required Object count}) => '${count} subtitle track(s)',
 			'streaming.chooseSubtitle' => 'Choose a subtitle',
 			'streaming.chooseProvider' => 'Choose a debrid service',
 			'streaming.subtitleOff' => 'No subtitle',
-			'streaming.subtitleLoadFailed' => 'Couldn\'t load that subtitle. Try another track.',
-			'streaming.subtitleApplied' => 'Subtitle selected for playback',
 			'streaming.streamLookupPartial' => 'Some add-ons couldn\'t be reached.',
 			'streaming.streamLookupFailed' => 'Couldn\'t check the connected add-ons.',
 			'streaming.streamOpenExternal' => 'Open external link',
 			'streaming.streamPrepare' => 'Preparing through your debrid service…',
 			'streaming.streamPrepareFailed' => 'This stream couldn\'t be prepared. Check the connected account and try another source.',
-			'streaming.streamNeedsRealDebrid' => 'Connect a debrid service to play this torrent stream.',
 			'streaming.streamUnsupported' => 'This stream format isn\'t supported by the in-app player.',
 			'streaming.remoteNeedsEpisode' => 'Choose an episode before searching for a stream.',
 			'streaming.remoteNeedsEpisodeNumber' => 'This episode is missing its season or episode number.',
@@ -17641,8 +17602,6 @@ extension on Translations {
 			'fileSources.removeSource' => 'Disconnect source',
 			'fileSources.disconnectMessage' => 'Disconnect this source? Downloaded files and your reading and listening history will stay on this device.',
 			'fileSources.localFolder' => 'Choose folder',
-			_ => null,
-		} ?? switch (path) {
 			'fileSources.empty' => 'Nothing here yet',
 			'fileSources.emptyHint' => 'Add a source or import a book, audiobook, music, or video.',
 			'fileSources.search' => 'Search this folder',
@@ -17652,6 +17611,8 @@ extension on Translations {
 			'fileSources.offline' => 'Available offline',
 			'fileSources.download' => 'Keep offline',
 			'fileSources.removeDownload' => 'Remove offline copy',
+			_ => null,
+		} ?? switch (path) {
 			'fileSources.continueReading' => 'Continue reading',
 			'fileSources.continueListening' => 'Continue listening',
 			'fileSources.continueWatching' => 'Continue watching',
@@ -18098,7 +18059,6 @@ extension on Translations {
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
-			'games.steamAppId' => 'Steam App ID',
 			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
 			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'games.connecting' => 'Connecting…',
@@ -18155,8 +18115,6 @@ extension on Translations {
 			'games.streamChroma' => 'Color sampling',
 			'games.streamHostFps' => 'Host frame rate target',
 			'games.streamHostBitrate' => 'Host bitrate target',
-			_ => null,
-		} ?? switch (path) {
 			'games.streamLimits' => 'Host-reported frame rate limits',
 			'games.streamLimitHost' => 'Host capture or encoder',
 			'games.streamLimitNetwork' => 'Network',
@@ -18167,6 +18125,8 @@ extension on Translations {
 			'games.streamCompletionTime' => 'Average receiver frame completion',
 			'games.streamDroppedFrames' => 'Receiver-dropped frames this session',
 			'games.streamVideoQueue' => 'Video queue',
+			_ => null,
+		} ?? switch (path) {
 			'games.streamAudioQueue' => 'Audio queue',
 			'games.streamAudioChannels' => 'Audio channels',
 			'games.streamInputBacklog' => 'Input packets queued + awaiting confirmation',

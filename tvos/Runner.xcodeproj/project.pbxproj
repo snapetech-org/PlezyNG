@@ -63,14 +63,14 @@
 		B1D51A6A2F00110000000020 /* ExternalPlayerPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D51A6A2F00110000000021 /* ExternalPlayerPlugin.swift */; };
 		A9C0FF1C2F00120000000011 /* AppIconPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C0FF1C2F00120000000012 /* AppIconPlugin.swift */; };
 		A9C0FF1C2F00120000000013 /* AlternateAppIcons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9C0FF1C2F00120000000014 /* AlternateAppIcons.xcassets */; };
-
-/* Begin GeneratedLocale PBXBuildFile */
-		6DF5C8F9E8E9F8517360291C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3BB2FEE77547C1F41A9DFF92 /* InfoPlist.strings */; };
-/* End GeneratedLocale PBXBuildFile */
 		255014FD2BA82FF4251C35FB /* PlezySteamPlugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = A9CE887AECB5C1DD0CA57F50 /* PlezySteamPlugin.mm */; };
 		437460616170D0496A8E4059 /* SteamAppleSink.mm in Sources */ = {isa = PBXBuildFile; fileRef = 239DD681EBDF93867D9E8C5F /* SteamAppleSink.mm */; };
 		8BD318526AFD06A98D3BED92 /* SteamAppleSinkTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B7E6BED3BA6EAF684C17E02A /* SteamAppleSinkTests.mm */; };
 		F7494BCD98AE3D3CBB2360C2 /* SteamMetalPyrowave.mm in Sources */ = {isa = PBXBuildFile; fileRef = 584E0287BFD6C62B99464118 /* SteamMetalPyrowave.mm */; };
+
+/* Begin GeneratedLocale PBXBuildFile */
+		6DF5C8F9E8E9F8517360291C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3BB2FEE77547C1F41A9DFF92 /* InfoPlist.strings */; };
+/* End GeneratedLocale PBXBuildFile */
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -179,6 +179,13 @@
 		B1D51A6A2F00110000000021 /* ExternalPlayerPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExternalPlayerPlugin.swift; sourceTree = "<group>"; };
 		A9C0FF1C2F00120000000012 /* AppIconPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppIconPlugin.swift; path = ../shared/apple/AppIcon/AppIconPlugin.swift; sourceTree = SOURCE_ROOT; };
 		A9C0FF1C2F00120000000014 /* AlternateAppIcons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AlternateAppIcons.xcassets; sourceTree = "<group>"; };
+		A9CE887AECB5C1DD0CA57F50 /* PlezySteamPlugin.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/PlezySteamPlugin.mm"; sourceTree = SOURCE_ROOT; };
+		239DD681EBDF93867D9E8C5F /* SteamAppleSink.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamAppleSink.mm"; sourceTree = SOURCE_ROOT; };
+		57F089874C4BACB918D43D40 /* PlezySteamPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/PlezySteamPlugin.h"; sourceTree = SOURCE_ROOT; };
+		11007BD81B1DC76FB25E2DBB /* SteamAppleSink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/SteamAppleSink.h"; sourceTree = SOURCE_ROOT; };
+		B7E6BED3BA6EAF684C17E02A /* SteamAppleSinkTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamAppleSinkTests.mm"; sourceTree = SOURCE_ROOT; };
+		584E0287BFD6C62B99464118 /* SteamMetalPyrowave.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamMetalPyrowave.mm"; sourceTree = SOURCE_ROOT; };
+		D90212727223A395F03A55CE /* SteamMetalPyrowave.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/SteamMetalPyrowave.h"; sourceTree = SOURCE_ROOT; };
 
 /* Begin GeneratedLocale PBXFileReference */
 		163BD67646EA61F9A943261F /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ar"; path = "Runner/ar.lproj/InfoPlist.strings"; sourceTree = SOURCE_ROOT; };
@@ -219,13 +226,6 @@
 		6739017E1FE07652432615DA /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh"; path = "Runner/zh.lproj/InfoPlist.strings"; sourceTree = SOURCE_ROOT; };
 		02878F8846430D75CBC001E7 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "Runner/zh-Hant.lproj/InfoPlist.strings"; sourceTree = SOURCE_ROOT; };
 /* End GeneratedLocale PBXFileReference */
-		A9CE887AECB5C1DD0CA57F50 /* PlezySteamPlugin.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/PlezySteamPlugin.mm"; sourceTree = SOURCE_ROOT; };
-		239DD681EBDF93867D9E8C5F /* SteamAppleSink.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamAppleSink.mm"; sourceTree = SOURCE_ROOT; };
-		57F089874C4BACB918D43D40 /* PlezySteamPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/PlezySteamPlugin.h"; sourceTree = SOURCE_ROOT; };
-		11007BD81B1DC76FB25E2DBB /* SteamAppleSink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/SteamAppleSink.h"; sourceTree = SOURCE_ROOT; };
-		B7E6BED3BA6EAF684C17E02A /* SteamAppleSinkTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamAppleSinkTests.mm"; sourceTree = SOURCE_ROOT; };
-		584E0287BFD6C62B99464118 /* SteamMetalPyrowave.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamMetalPyrowave.mm"; sourceTree = SOURCE_ROOT; };
-		D90212727223A395F03A55CE /* SteamMetalPyrowave.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/SteamMetalPyrowave.h"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -391,6 +391,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				3BB2FEE77547C1F41A9DFF92 /* InfoPlist.strings */,
 				B7E6BED3BA6EAF684C17E02A /* SteamAppleSinkTests.mm */,
 				A9CE887AECB5C1DD0CA57F50 /* PlezySteamPlugin.mm */,
 				239DD681EBDF93867D9E8C5F /* SteamAppleSink.mm */,
@@ -398,8 +399,6 @@
 				D90212727223A395F03A55CE /* SteamMetalPyrowave.h */,
 				57F089874C4BACB918D43D40 /* PlezySteamPlugin.h */,
 				11007BD81B1DC76FB25E2DBB /* SteamAppleSink.h */,
-
-				3BB2FEE77547C1F41A9DFF92 /* InfoPlist.strings */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				A9C0FF1C2F00120000000014 /* AlternateAppIcons.xcassets */,

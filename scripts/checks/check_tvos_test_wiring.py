@@ -11,6 +11,9 @@ from pathlib import Path
 PROJECT_PATH = Path("tvos/Runner.xcodeproj/project.pbxproj")
 RUNNER_TESTS_PATH = Path("tvos/RunnerTests")
 COMPILED_TEST_EXTENSIONS = {".swift", ".m", ".mm"}
+# These tests deliberately share one implementation across all Apple targets.
+# Keep the allowlist exact; an arbitrary source outside RunnerTests is not a test.
+SHARED_TEST_PATHS = (Path("native/games/apple/SteamAppleSinkTests.mm"),)
 
 _OBJECT = re.compile(
     r"^(?P<indent>[ \t]*)(?P<uuid>[0-9A-F]+) /\* (?P<comment>[^\n]+?) \*/ = \{\n"
@@ -113,6 +116,32 @@ def validate(root: Path) -> list[str]:
 
     source_names = [name.removesuffix(" in Sources") for _, name in source_entries]
     compiled_test_files = [name for name in test_files if Path(name).suffix in COMPILED_TEST_EXTENSIONS]
+    for relative in SHARED_TEST_PATHS:
+        name = relative.name
+        compiled_test_files.append(name)
+        if not (root / relative).is_file():
+            errors.append(f"shared RunnerTests source is missing: {relative}")
+        # The shared reference is SOURCE_ROOT-relative, not relative to the
+        # RunnerTests group. Check both its physical path and build-file link.
+        references = re.findall(
+            rf"(?m)^\s*([0-9A-F]+) /\* {re.escape(name)} \*/ = "
+            r"\{isa = PBXFileReference; (?P<body>[^\n]+)\};\s*$",
+            project,
+        )
+        expected_path = f'path = "../{relative.as_posix()}";'
+        if len(references) != 1 or expected_path not in references[0][1] or "sourceTree = SOURCE_ROOT;" not in references[0][1]:
+            errors.append(f"shared RunnerTests file reference is missing or invalid: {name}")
+            continue
+        for uuid, comment in source_entries:
+            if comment != f"{name} in Sources":
+                continue
+            file_ref = references[0][0]
+            if re.search(
+                rf"(?m)^\s*{uuid} /\* {re.escape(comment)} \*/ = "
+                rf"\{{isa = PBXBuildFile; fileRef = {file_ref} /\* {re.escape(name)} \*/; \}};\s*$",
+                project,
+            ) is None:
+                errors.append(f"shared RunnerTests build-file reference is missing or invalid: {name}")
     _describe_difference("RunnerTests Sources phase", source_names, compiled_test_files, errors)
     return errors
 

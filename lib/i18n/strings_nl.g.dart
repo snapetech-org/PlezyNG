@@ -2852,7 +2852,6 @@ class _Translations$streaming$nl extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Speel ondersteunde torrentstreams af via je Real-Debrid-account.';
 	@override String get connectRealDebrid => 'Koppelen met QR-code';
-	@override String get disconnectRealDebrid => 'Real-Debrid ontkoppelen';
 	@override String realDebridConnected({required Object username}) => 'Verbonden als ${username}';
 	@override String get realDebridInstructions => 'Scan de QR-code of open de link en voer deze activeringscode in om PlezyNG te koppelen:';
 	@override String get realDebridActivate => 'Real-Debrid openen om te activeren';
@@ -2880,21 +2879,17 @@ class _Translations$streaming$nl extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => '${service} ontkoppelen?';
 	@override String get disconnectBody => 'PlezyNG verwijdert de toegang van dit apparaat. Bestanden bij de provider en lopende overdrachten blijven ongewijzigd.';
 	@override String get streamsTitle => 'Stream kiezen';
-	@override String get searchingStreams => 'Verbonden add-ons controleren…';
 	@override String get noStreams => 'Geen streams gevonden voor deze titel.';
 	@override String get manageConnections => 'Streamingservices beheren';
 	@override String subtitleTracks({required Object count}) => 'Ondertitelsporen: ${count}';
 	@override String get chooseSubtitle => 'Ondertitel kiezen';
 	@override String get chooseProvider => 'Debrid-service kiezen';
 	@override String get subtitleOff => 'Ondertiteling uit';
-	@override String get subtitleLoadFailed => 'Deze ondertiteling kon niet worden geladen. Probeer een ander spoor.';
-	@override String get subtitleApplied => 'Ondertitel geselecteerd voor afspelen';
 	@override String get streamLookupPartial => 'Sommige add-ons zijn niet bereikbaar.';
 	@override String get streamLookupFailed => 'De verbonden add-ons konden niet worden gecontroleerd.';
 	@override String get streamOpenExternal => 'Externe link openen';
 	@override String get streamPrepare => 'Voorbereiden via je Debrid-service…';
 	@override String get streamPrepareFailed => 'Deze stream kon niet worden voorbereid. Controleer het gekoppelde account en probeer een andere bron.';
-	@override String get streamNeedsRealDebrid => 'Koppel een Debrid-service om deze torrentstream af te spelen.';
 	@override String get streamUnsupported => 'Dit streamformaat wordt niet ondersteund door de ingebouwde speler.';
 	@override String get remoteNeedsEpisode => 'Kies een aflevering voordat je naar een stream zoekt.';
 	@override String get remoteNeedsEpisodeNumber => 'Het seizoen- of afleveringsnummer ontbreekt bij deze aflevering.';
@@ -7903,7 +7898,6 @@ extension on TranslationsNl {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Speel ondersteunde torrentstreams af via je Real-Debrid-account.',
 			'streaming.connectRealDebrid' => 'Koppelen met QR-code',
-			'streaming.disconnectRealDebrid' => 'Real-Debrid ontkoppelen',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Verbonden als ${username}',
 			'streaming.realDebridInstructions' => 'Scan de QR-code of open de link en voer deze activeringscode in om PlezyNG te koppelen:',
 			'streaming.realDebridActivate' => 'Real-Debrid openen om te activeren',
@@ -7931,21 +7925,17 @@ extension on TranslationsNl {
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service} ontkoppelen?',
 			'streaming.disconnectBody' => 'PlezyNG verwijdert de toegang van dit apparaat. Bestanden bij de provider en lopende overdrachten blijven ongewijzigd.',
 			'streaming.streamsTitle' => 'Stream kiezen',
-			'streaming.searchingStreams' => 'Verbonden add-ons controleren…',
 			'streaming.noStreams' => 'Geen streams gevonden voor deze titel.',
 			'streaming.manageConnections' => 'Streamingservices beheren',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Ondertitelsporen: ${count}',
 			'streaming.chooseSubtitle' => 'Ondertitel kiezen',
 			'streaming.chooseProvider' => 'Debrid-service kiezen',
 			'streaming.subtitleOff' => 'Ondertiteling uit',
-			'streaming.subtitleLoadFailed' => 'Deze ondertiteling kon niet worden geladen. Probeer een ander spoor.',
-			'streaming.subtitleApplied' => 'Ondertitel geselecteerd voor afspelen',
 			'streaming.streamLookupPartial' => 'Sommige add-ons zijn niet bereikbaar.',
 			'streaming.streamLookupFailed' => 'De verbonden add-ons konden niet worden gecontroleerd.',
 			'streaming.streamOpenExternal' => 'Externe link openen',
 			'streaming.streamPrepare' => 'Voorbereiden via je Debrid-service…',
 			'streaming.streamPrepareFailed' => 'Deze stream kon niet worden voorbereid. Controleer het gekoppelde account en probeer een andere bron.',
-			'streaming.streamNeedsRealDebrid' => 'Koppel een Debrid-service om deze torrentstream af te spelen.',
 			'streaming.streamUnsupported' => 'Dit streamformaat wordt niet ondersteund door de ingebouwde speler.',
 			'streaming.remoteNeedsEpisode' => 'Kies een aflevering voordat je naar een stream zoekt.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Het seizoen- of afleveringsnummer ontbreekt bij deze aflevering.',
@@ -8200,13 +8190,13 @@ extension on TranslationsNl {
 			'universalMedia.playlistFormatsHelp' => 'Een playlist kan maximaal 1.000 items en 2 MB bevatten.HLS manifesteert open als stromen zodat de speler een kwaliteit kan kiezen.',
 			'universalMedia.saveQueuePlaylist' => 'Wachtrij opslaan als afspeellijst',
 			'universalMedia.queuePlaylistSaved' => 'De afspeellijst is naast de mediabestanden opgeslagen.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Deze wachtrij kan niet als herbruikbare lokale afspeellijst worden opgeslagen.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Kies een opslaglocatie in dezelfde map als de bestanden in de wachtrij.',
 			'universalMedia.noFavorites' => 'Er zijn nog geen favorieten opgeslagen.Favorites blijven in dit profiel.',
 			'universalMedia.removeFavorite' => 'Verwijder de favoriete stream',
 			'universalMedia.filesHelp' => 'Kies audio, video of ISO-bestanden voor een tijdelijke waaier. bestanden en URL\'s worden niet toegevoegd aan de bibliotheekgeschiedenis.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Kies bestanden',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: '1 geselecteerde bestanden', other: '${count} geselecteerde bestanden', ), 
 			'universalMedia.wifiTransfer' => 'Bestanden verzenden via Wi-Fi',
@@ -8714,13 +8704,13 @@ extension on TranslationsNl {
 			'sourceSetup.nfsEncryptionFailure' => 'Controleer voor versleutelde NFS de ondersteuning van RFC 9289 en TLS 1.3 bij beide NAS-services, de certificaatnaam en de UID/GID van de share. PlezyNG probeert deze verbinding niet opnieuw zonder versleuteling.',
 			'sourceSetup.sourceConnecting' => 'Verbinden met bron',
 			'sourceSetup.metadataSearchPrivacy' => 'Deze titelzoekopdracht gaat naar Trakt. De ingevoerde titel wordt verstuurd, niet de video of de toegangsgegevens van de bron.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Een overeenkomst kiezen',
 			'sourceSetup.metadataMatchHelp' => 'Controleer titel en jaar voordat je kiest. Trakt ontvangt de gezochte titel; de video blijft op de bron.',
 			'sourceSetup.metadataNoMatches' => 'Geen overeenkomende titels online gevonden. Probeer een andere titel.',
 			'sourceSetup.metadataSearch' => 'Online metadata zoeken',
 			'sourceSetup.metadataLoading' => 'Online informatie over films en series zoeken…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Online metadata van Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Geen automatische titelovereenkomst gevonden. Zoek naar de titel om een overeenkomst te kiezen.',
 			'sourceSetup.metadataFailed' => 'Online metadata konden niet worden geladen. Afspelen en lokale informatie blijven beschikbaar.',

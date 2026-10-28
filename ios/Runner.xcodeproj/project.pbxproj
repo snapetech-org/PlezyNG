@@ -32,14 +32,14 @@
 		1FB1E3FC084653353BC7A05F /* DeepLinkDeliveryCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236F8E4D18840737730E5EDD /* DeepLinkDeliveryCoordinator.swift */; };
 		48BFBE9EA6DCC36FD5AF161B /* DeepLinkPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81440C3D3F557FB52C1CFCD /* DeepLinkPlugin.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
-
-/* Begin GeneratedLocale PBXBuildFile */
-		989D0ABE60F8A08D2DEE908B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E6610D5A27F5C44FEA3668D1 /* InfoPlist.strings */; };
-/* End GeneratedLocale PBXBuildFile */
 		1021CB6E8E0685EA4AC63414 /* PlezySteamPlugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = 033708A3CBDB415B198D74A9 /* PlezySteamPlugin.mm */; };
 		68F6609B54431AA25E2FE1EF /* SteamAppleSink.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9C26C03DE0F5EA3AECC0A0BD /* SteamAppleSink.mm */; };
 		C61618A9A6964330675A85F9 /* SteamAppleSinkTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C3100BAD8B07A9BD33AD1EA /* SteamAppleSinkTests.mm */; };
 		EC1ACBD5E50F2B0424192ABE /* SteamMetalPyrowave.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5AFFB04FBF8AAEC7D71BD346 /* SteamMetalPyrowave.mm */; };
+
+/* Begin GeneratedLocale PBXBuildFile */
+		989D0ABE60F8A08D2DEE908B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E6610D5A27F5C44FEA3668D1 /* InfoPlist.strings */; };
+/* End GeneratedLocale PBXBuildFile */
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +104,13 @@
 		DE48FF2E074644167608B23D /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		F3553CDE70191F0FC81A782E /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
+		033708A3CBDB415B198D74A9 /* PlezySteamPlugin.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/PlezySteamPlugin.mm"; sourceTree = SOURCE_ROOT; };
+		9C26C03DE0F5EA3AECC0A0BD /* SteamAppleSink.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamAppleSink.mm"; sourceTree = SOURCE_ROOT; };
+		8CBB51169DAB7122DC7FFE2E /* PlezySteamPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/PlezySteamPlugin.h"; sourceTree = SOURCE_ROOT; };
+		8CB3F33283D904245748691E /* SteamAppleSink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/SteamAppleSink.h"; sourceTree = SOURCE_ROOT; };
+		8C3100BAD8B07A9BD33AD1EA /* SteamAppleSinkTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamAppleSinkTests.mm"; sourceTree = SOURCE_ROOT; };
+		5AFFB04FBF8AAEC7D71BD346 /* SteamMetalPyrowave.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamMetalPyrowave.mm"; sourceTree = SOURCE_ROOT; };
+		1460329AB3E70ABB55F4CFB2 /* SteamMetalPyrowave.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/SteamMetalPyrowave.h"; sourceTree = SOURCE_ROOT; };
 
 /* Begin GeneratedLocale PBXFileReference */
 		6F4F7056B6D93C1E42BF2210 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ar"; path = "Runner/ar.lproj/InfoPlist.strings"; sourceTree = SOURCE_ROOT; };
@@ -144,13 +151,6 @@
 		2F9C033B9E3FF7E7C3F538A3 /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh"; path = "Runner/zh.lproj/InfoPlist.strings"; sourceTree = SOURCE_ROOT; };
 		0294C67B8158E8C448A8A393 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "Runner/zh-Hant.lproj/InfoPlist.strings"; sourceTree = SOURCE_ROOT; };
 /* End GeneratedLocale PBXFileReference */
-		033708A3CBDB415B198D74A9 /* PlezySteamPlugin.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/PlezySteamPlugin.mm"; sourceTree = SOURCE_ROOT; };
-		9C26C03DE0F5EA3AECC0A0BD /* SteamAppleSink.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamAppleSink.mm"; sourceTree = SOURCE_ROOT; };
-		8CBB51169DAB7122DC7FFE2E /* PlezySteamPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/PlezySteamPlugin.h"; sourceTree = SOURCE_ROOT; };
-		8CB3F33283D904245748691E /* SteamAppleSink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/SteamAppleSink.h"; sourceTree = SOURCE_ROOT; };
-		8C3100BAD8B07A9BD33AD1EA /* SteamAppleSinkTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamAppleSinkTests.mm"; sourceTree = SOURCE_ROOT; };
-		5AFFB04FBF8AAEC7D71BD346 /* SteamMetalPyrowave.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamMetalPyrowave.mm"; sourceTree = SOURCE_ROOT; };
-		1460329AB3E70ABB55F4CFB2 /* SteamMetalPyrowave.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "../native/games/apple/SteamMetalPyrowave.h"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -258,6 +258,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				E6610D5A27F5C44FEA3668D1 /* InfoPlist.strings */,
 				8C3100BAD8B07A9BD33AD1EA /* SteamAppleSinkTests.mm */,
 				033708A3CBDB415B198D74A9 /* PlezySteamPlugin.mm */,
 				9C26C03DE0F5EA3AECC0A0BD /* SteamAppleSink.mm */,
@@ -265,8 +266,6 @@
 				1460329AB3E70ABB55F4CFB2 /* SteamMetalPyrowave.h */,
 				8CBB51169DAB7122DC7FFE2E /* PlezySteamPlugin.h */,
 				8CB3F33283D904245748691E /* SteamAppleSink.h */,
-
-				E6610D5A27F5C44FEA3668D1 /* InfoPlist.strings */,
 				6A8A46242EDB370C0057B88C /* MpvPlayer */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,

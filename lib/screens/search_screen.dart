@@ -1256,7 +1256,13 @@ class _SearchScreenState extends State<SearchScreen>
             key: Key('source:${entry.key}'),
             title: entry.displayTitle,
             subtitle: [
-              t.fileSources.title,
+              if (_sourceController?.sources.any(
+                    (source) => source.id == entry.sourceId && source.kind == FileSourceKind.remoteCloud,
+                  ) ==
+                  true)
+                t.streaming.cloudFiles
+              else
+                t.fileSources.title,
               for (final source in _sourceController?.sources ?? const <FileSource>[])
                 if (source.id == entry.sourceId) source.name,
               if (entry.author.isNotEmpty) entry.author,

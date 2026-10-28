@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.
+
 - Repair merged application compilation across visualizer archive extraction, IPTV, catalog search and player settings. Preserve bounded archive writes and explicitly track untranslated merged messages as English fallbacks.
 
 - Bound Steam startup and first-frame waits; retry unsupported HEVC with H.264, normalize Android/Linux codec framing, and wait for decoder shutdown before reconnecting. Serialize native source preparation and include transitive crypto archives in Apple builds.

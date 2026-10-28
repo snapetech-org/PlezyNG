@@ -2848,7 +2848,6 @@ class _Translations$streaming$ja extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Real-Debridアカウントで対応するトレントストリームを再生します。';
 	@override String get connectRealDebrid => 'QRコードで接続';
-	@override String get disconnectRealDebrid => 'Real-Debridを切断';
 	@override String realDebridConnected({required Object username}) => '${username}として接続中';
 	@override String get realDebridInstructions => 'QRコードをスキャンするかリンクを開き、このアクティベーションコードを入力してPlezyNGを接続してください：';
 	@override String get realDebridActivate => 'Real-Debridを開いて有効化';
@@ -2876,21 +2875,17 @@ class _Translations$streaming$ja extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => '${service}を切断しますか？';
 	@override String get disconnectBody => 'PlezyNGはこのデバイスの認証を解除します。プロバイダーのファイルや進行中の転送には影響しません。';
 	@override String get streamsTitle => 'ストリームを選択';
-	@override String get searchingStreams => '接続済みアドオンを確認中…';
 	@override String get noStreams => 'このタイトルのストリームは見つかりませんでした。';
 	@override String get manageConnections => 'ストリーミングサービスを管理';
 	@override String subtitleTracks({required Object count}) => '字幕トラック：${count}';
 	@override String get chooseSubtitle => '字幕を選択';
 	@override String get chooseProvider => 'Debridサービスを選択';
 	@override String get subtitleOff => '字幕なし';
-	@override String get subtitleLoadFailed => '字幕を読み込めませんでした。別のトラックをお試しください。';
-	@override String get subtitleApplied => '再生する字幕を選択しました';
 	@override String get streamLookupPartial => '一部のアドオンに接続できませんでした。';
 	@override String get streamLookupFailed => '接続済みアドオンを確認できませんでした。';
 	@override String get streamOpenExternal => '外部リンクを開く';
 	@override String get streamPrepare => 'Debridサービスで準備中…';
 	@override String get streamPrepareFailed => 'このストリームを準備できませんでした。接続済みアカウントを確認し、別のソースをお試しください。';
-	@override String get streamNeedsRealDebrid => 'このトレントストリームを再生するにはDebridサービスを接続してください。';
 	@override String get streamUnsupported => 'このストリーム形式はアプリ内プレーヤーに対応していません。';
 	@override String get remoteNeedsEpisode => 'ストリームを検索する前にエピソードを選択してください。';
 	@override String get remoteNeedsEpisodeNumber => 'このエピソードにはシーズン番号またはエピソード番号がありません。';
@@ -7898,7 +7893,6 @@ extension on TranslationsJa {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Real-Debridアカウントで対応するトレントストリームを再生します。',
 			'streaming.connectRealDebrid' => 'QRコードで接続',
-			'streaming.disconnectRealDebrid' => 'Real-Debridを切断',
 			'streaming.realDebridConnected' => ({required Object username}) => '${username}として接続中',
 			'streaming.realDebridInstructions' => 'QRコードをスキャンするかリンクを開き、このアクティベーションコードを入力してPlezyNGを接続してください：',
 			'streaming.realDebridActivate' => 'Real-Debridを開いて有効化',
@@ -7926,21 +7920,17 @@ extension on TranslationsJa {
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service}を切断しますか？',
 			'streaming.disconnectBody' => 'PlezyNGはこのデバイスの認証を解除します。プロバイダーのファイルや進行中の転送には影響しません。',
 			'streaming.streamsTitle' => 'ストリームを選択',
-			'streaming.searchingStreams' => '接続済みアドオンを確認中…',
 			'streaming.noStreams' => 'このタイトルのストリームは見つかりませんでした。',
 			'streaming.manageConnections' => 'ストリーミングサービスを管理',
 			'streaming.subtitleTracks' => ({required Object count}) => '字幕トラック：${count}',
 			'streaming.chooseSubtitle' => '字幕を選択',
 			'streaming.chooseProvider' => 'Debridサービスを選択',
 			'streaming.subtitleOff' => '字幕なし',
-			'streaming.subtitleLoadFailed' => '字幕を読み込めませんでした。別のトラックをお試しください。',
-			'streaming.subtitleApplied' => '再生する字幕を選択しました',
 			'streaming.streamLookupPartial' => '一部のアドオンに接続できませんでした。',
 			'streaming.streamLookupFailed' => '接続済みアドオンを確認できませんでした。',
 			'streaming.streamOpenExternal' => '外部リンクを開く',
 			'streaming.streamPrepare' => 'Debridサービスで準備中…',
 			'streaming.streamPrepareFailed' => 'このストリームを準備できませんでした。接続済みアカウントを確認し、別のソースをお試しください。',
-			'streaming.streamNeedsRealDebrid' => 'このトレントストリームを再生するにはDebridサービスを接続してください。',
 			'streaming.streamUnsupported' => 'このストリーム形式はアプリ内プレーヤーに対応していません。',
 			'streaming.remoteNeedsEpisode' => 'ストリームを検索する前にエピソードを選択してください。',
 			'streaming.remoteNeedsEpisodeNumber' => 'このエピソードにはシーズン番号またはエピソード番号がありません。',
@@ -8195,13 +8185,13 @@ extension on TranslationsJa {
 			'universalMedia.playlistFormatsHelp' => 'プレイリストには最大1000項目と2MBが含まれます HLSはストリームとして開きますので、プレイヤーは品質を選択できます。',
 			'universalMedia.saveQueuePlaylist' => 'キューをプレイリストとして保存',
 			'universalMedia.queuePlaylistSaved' => 'プレイリストをメディアファイルと同じ場所に保存しました。',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'このキューは再利用可能なローカルプレイリストとして保存できません。',
 			'universalMedia.queuePlaylistFolderRequired' => 'キュー内のファイルと同じフォルダーを保存先に選択してください。',
 			'universalMedia.noFavorites' => 'まだお気に入りのストリームを保存していません お気に入りはこのプロフィールに留まります。',
 			'universalMedia.removeFavorite' => 'お気に入りの流れを削除する',
 			'universalMedia.filesHelp' => 'オーディオ、ビデオ、またはISOファイルを選択して一時的なスイッチを選択します. ファイルやURLは図書館の歴史に追加されません。',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'ファイルを選択',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ), 
 			'universalMedia.wifiTransfer' => 'ファイルをWi-Fiで送信',
@@ -8709,13 +8699,13 @@ extension on TranslationsJa {
 			'sourceSetup.nfsEncryptionFailure' => '暗号化された NFS では、NAS の両サービスが RFC 9289 と TLS 1.3 に対応しているか、証明書の名前とエクスポートの UID/GID が正しいかを確認してください。PlezyNG が暗号化なしでこの接続を再試行することはありません。',
 			'sourceSetup.sourceConnecting' => 'ソースに接続中',
 			'sourceSetup.metadataSearchPrivacy' => 'このタイトル検索は Trakt に送信されます。入力したタイトルのみを送信し、動画やソースの認証情報は送信しません。',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => '一致する作品を選択',
 			'sourceSetup.metadataMatchHelp' => '選択する前にタイトルと年を確認してください。検索タイトルは Trakt に送信されますが、動画はソースに残ります。',
 			'sourceSetup.metadataNoMatches' => 'オンラインで一致するタイトルが見つかりませんでした。別のタイトルをお試しください。',
 			'sourceSetup.metadataSearch' => 'オンラインメタデータを検索',
 			'sourceSetup.metadataLoading' => '映画や番組の情報をオンラインで検索中…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt のオンラインメタデータ',
 			'sourceSetup.metadataNoAutomaticMatch' => 'タイトルの自動照合で一致が見つかりませんでした。タイトルを検索して、一致する作品を選択してください。',
 			'sourceSetup.metadataFailed' => 'オンラインメタデータを読み込めませんでした。再生とローカルの情報は引き続き利用できます。',

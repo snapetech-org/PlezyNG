@@ -7,6 +7,55 @@ Use [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) for the exact-commit build
 procedure, three-computer library cases, receiver recovery, security and
 accessibility checks, and evidence template.
 
+## Code handoff pass — 2026-10-28
+
+This pass incorporates main `f0f1e104` and the startup/build hardening in
+`60c8d0a4`. The PR records the final handoff commit; always check out that
+revision before building. Local evidence below is not private-JIT CI or
+platform/device qualification.
+
+- **287 Flutter tests passed** across Games, Multiview, gamepads, companion
+  provider/receiver/peer, visualization, recordings and search. They include
+  three archive-extraction regressions, failure cleanup, existing controller
+  ownership tests, and cloud-source search. The 42-test search/card rerun
+  overlaps this count and must not be added to it.
+- The repository's **standard analyzer check passed with zero diagnostics**.
+  This covers the combined application and tests, after repairing compilation,
+  async-context lifetime and fixture failures introduced by the merged sources.
+- **41 native Debug tests passed with Vulkan and GStreamer enabled**. A separate
+  **41-test ASan/UBSan run passed with Pyrowave disabled**, covering the portable
+  transport and GStreamer receiver. Local LeakSanitizer was disabled because
+  this environment cannot inspect the required process state; private CI keeps
+  leak detection enabled. Neither run establishes Vulkan GPU execution.
+- Real GStreamer H.264 red-pixel decoding now passes both Annex-B and
+  avcC/length-prefixed framing. Runtime tests cover bounded connection and
+  first-frame waits, cancellation wakeups and tracked presentation evidence.
+- Windows transport, Media Foundation/XAudio2 receiver and five test executables
+  cross-compile/link with MinGW-w64. Strict Windows and Linux Flutter adapter
+  syntax/type checks and the JNI check pass. This is not MSVC or Windows test
+  execution, nor a complete Linux app/package build.
+- All Android Steam Java sources compile against Google's real API 36 classes
+  with real AAPT2-generated resources. **15 Java JUnit tests pass**, including
+  decoder-worker joining/interruption. Nineteen compatibility deprecation
+  warnings remain. The repository's SDK pins were preserved; these checks do
+  not replace its API 37 Gradle/NDK and minified-release builds.
+- **458 workflow/script guard tests passed**, including eight tvOS wiring
+  regressions and nine Steam source/archive tests. The Apple archive tests
+  verify transactionality, architecture checks and transitive crypto inputs
+  using mocked build commands; they do not compile an Apple SDK target.
+- Translation normalization, placeholder/source-hash checks, native localization
+  and localized quantities pass for **37 locales / 4,200 messages**, with
+  **16,632 explicitly allowlisted English fallback entries**. Removed ten unused
+  keys and normalized missing keys to the existing empty-string fallback
+  convention. This does not constitute language review.
+
+Current-head private-JIT CI, Windows MSVC/execution, Apple SDK/Metal tests,
+Android Gradle/NDK/release builds and real-host qualification remain required.
+HDR presentation, Android/Linux direct GPU Pyrowave, automatic internet
+rendezvous/traversal/relay, and programmatic Cloud/Families mutations remain
+implementation gaps, as detailed in the handoff. Do not describe them as
+completed features awaiting only live testing.
+
 Historical evidence begins on 2026-10-26; PR #54 follow-up records appear below.
 The earlier platform/codec descriptions are snapshots, not the current support
 matrix. Use [ARCHITECTURE.md](ARCHITECTURE.md#platform-matrix) for current source

@@ -323,7 +323,10 @@ void main() {
 
     expect(sourceRepository.queries, ['arrival']);
     expect(findDisplayText('Arrival'), findsOneWidget);
-    expect(findDisplayText(t.streaming.cloudFiles), findsOneWidget);
+    expect(
+      tester.widget<SourceTile>(find.byType(SourceTile)).subtitle,
+      '${t.streaming.cloudFiles} · viewer@example.com',
+    );
     expect(findDisplayText(t.messages.noResultsFound), findsNothing);
     expect(FocusManager.instance.primaryFocus?.debugLabel, 'SearchFirstResult');
   });

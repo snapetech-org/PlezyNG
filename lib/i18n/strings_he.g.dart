@@ -2856,7 +2856,6 @@ class _Translations$streaming$he extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'הפעילו זרמי טורנט נתמכים דרך חשבון Real-Debrid שלכם.';
 	@override String get connectRealDebrid => 'חיבור באמצעות קוד QR';
-	@override String get disconnectRealDebrid => 'ניתוק Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'מחובר בתור ${username}';
 	@override String get realDebridInstructions => 'סרקו את קוד ה‑QR או פתחו את הקישור, ואז הזינו את קוד ההפעלה הזה כדי לחבר את PlezyNG:';
 	@override String get realDebridActivate => 'פתיחת Real-Debrid להפעלה';
@@ -2884,21 +2883,17 @@ class _Translations$streaming$he extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'לנתק את ${service}?';
 	@override String get disconnectBody => 'PlezyNG תסיר את הרשאת המכשיר. הקבצים אצל הספק וההעברות הפעילות לא ישתנו.';
 	@override String get streamsTitle => 'בחירת זרם';
-	@override String get searchingStreams => 'בדיקת התוספים המחוברים…';
 	@override String get noStreams => 'לא נמצאו זרמים עבור התוכן הזה.';
 	@override String get manageConnections => 'ניהול שירותי הזרמה';
 	@override String subtitleTracks({required Object count}) => 'רצועות כתוביות: ${count}';
 	@override String get chooseSubtitle => 'בחירת כתובית';
 	@override String get chooseProvider => 'בחירת שירות Debrid';
 	@override String get subtitleOff => 'כתוביות כבויות';
-	@override String get subtitleLoadFailed => 'לא ניתן לטעון את הכתובית. נסו רצועה אחרת.';
-	@override String get subtitleApplied => 'הכתובית נבחרה להפעלה';
 	@override String get streamLookupPartial => 'לא ניתן להגיע לחלק מהתוספים.';
 	@override String get streamLookupFailed => 'לא ניתן לבדוק את התוספים המחוברים.';
 	@override String get streamOpenExternal => 'פתיחת קישור חיצוני';
 	@override String get streamPrepare => 'מתכונן דרך שירות Debrid…';
 	@override String get streamPrepareFailed => 'לא ניתן להכין את הזרם הזה. בדקו את החשבון המחובר ונסו מקור אחר.';
-	@override String get streamNeedsRealDebrid => 'חברו שירות Debrid כדי להפעיל את זרם הטורנט הזה.';
 	@override String get streamUnsupported => 'נגן האפליקציה לא תומך בפורמט הזרם הזה.';
 	@override String get remoteNeedsEpisode => 'בחרו פרק לפני חיפוש זרם.';
 	@override String get remoteNeedsEpisodeNumber => 'חסר לפרק הזה מספר עונה או פרק.';
@@ -7911,7 +7906,6 @@ extension on TranslationsHe {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'הפעילו זרמי טורנט נתמכים דרך חשבון Real-Debrid שלכם.',
 			'streaming.connectRealDebrid' => 'חיבור באמצעות קוד QR',
-			'streaming.disconnectRealDebrid' => 'ניתוק Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'מחובר בתור ${username}',
 			'streaming.realDebridInstructions' => 'סרקו את קוד ה‑QR או פתחו את הקישור, ואז הזינו את קוד ההפעלה הזה כדי לחבר את PlezyNG:',
 			'streaming.realDebridActivate' => 'פתיחת Real-Debrid להפעלה',
@@ -7939,21 +7933,17 @@ extension on TranslationsHe {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'לנתק את ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG תסיר את הרשאת המכשיר. הקבצים אצל הספק וההעברות הפעילות לא ישתנו.',
 			'streaming.streamsTitle' => 'בחירת זרם',
-			'streaming.searchingStreams' => 'בדיקת התוספים המחוברים…',
 			'streaming.noStreams' => 'לא נמצאו זרמים עבור התוכן הזה.',
 			'streaming.manageConnections' => 'ניהול שירותי הזרמה',
 			'streaming.subtitleTracks' => ({required Object count}) => 'רצועות כתוביות: ${count}',
 			'streaming.chooseSubtitle' => 'בחירת כתובית',
 			'streaming.chooseProvider' => 'בחירת שירות Debrid',
 			'streaming.subtitleOff' => 'כתוביות כבויות',
-			'streaming.subtitleLoadFailed' => 'לא ניתן לטעון את הכתובית. נסו רצועה אחרת.',
-			'streaming.subtitleApplied' => 'הכתובית נבחרה להפעלה',
 			'streaming.streamLookupPartial' => 'לא ניתן להגיע לחלק מהתוספים.',
 			'streaming.streamLookupFailed' => 'לא ניתן לבדוק את התוספים המחוברים.',
 			'streaming.streamOpenExternal' => 'פתיחת קישור חיצוני',
 			'streaming.streamPrepare' => 'מתכונן דרך שירות Debrid…',
 			'streaming.streamPrepareFailed' => 'לא ניתן להכין את הזרם הזה. בדקו את החשבון המחובר ונסו מקור אחר.',
-			'streaming.streamNeedsRealDebrid' => 'חברו שירות Debrid כדי להפעיל את זרם הטורנט הזה.',
 			'streaming.streamUnsupported' => 'נגן האפליקציה לא תומך בפורמט הזרם הזה.',
 			'streaming.remoteNeedsEpisode' => 'בחרו פרק לפני חיפוש זרם.',
 			'streaming.remoteNeedsEpisodeNumber' => 'חסר לפרק הזה מספר עונה או פרק.',
@@ -8208,13 +8198,13 @@ extension on TranslationsHe {
 			'universalMedia.playlistFormatsHelp' => 'רשימת משחקים יכולה להכיל עד 1,000 פריטים ו 2 MB. HLS מופיע פתוח כמו זרמים כך שהשחקן יכול לבחור איכות.',
 			'universalMedia.saveQueuePlaylist' => 'שמירת התור כפלייליסט',
 			'universalMedia.queuePlaylistSaved' => 'הפלייליסט נשמר לצד קובצי המדיה.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'אי אפשר לשמור את התור הזה כפלייליסט מקומי לשימוש חוזר.',
 			'universalMedia.queuePlaylistFolderRequired' => 'יש לבחור מיקום שמירה באותה תיקייה שבה נמצאים הקבצים שבתור.',
 			'universalMedia.noFavorites' => 'עדיין לא נשמר זרימת הפופולרים.Favorites להישאר בפרופיל זה.',
 			'universalMedia.removeFavorite' => 'להסיר זרם אהוב',
 			'universalMedia.filesHelp' => 'בחר קבצים אודיו, וידאו או ISO עבור קובץ זמני.קבצים וכתובות URL אינם מופיעים בהיסטוריה של הספרייה.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'בחירת קבצים',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '1 קובץ שנבחר', two: '${count} קבצים שנבחרו', other: '${count} קבצים שנבחרו', ), 
 			'universalMedia.wifiTransfer' => 'שליחת קבצים דרך Wi-Fi',
@@ -8722,13 +8712,13 @@ extension on TranslationsHe {
 			'sourceSetup.nfsEncryptionFailure' => 'עבור NFS מוצפן, יש לבדוק תמיכה ב־RFC 9289 וב־TLS 1.3 בשני שירותי ה־NAS, את שם האישור ואת מזהי UID/GID של הייצוא. PlezyNG לא ינסה שוב את החיבור הזה ללא הצפנה.',
 			'sourceSetup.sourceConnecting' => 'מתבצע חיבור למקור',
 			'sourceSetup.metadataSearchPrivacy' => 'חיפוש השם הזה נשלח ל־Trakt. נשלח רק השם שהוזן, ולא הווידאו או פרטי הגישה למקור.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'בחירת תוצאה תואמת',
 			'sourceSetup.metadataMatchHelp' => 'לפני הבחירה, יש לבדוק את השם והשנה. Trakt מקבל את שם החיפוש; הווידאו נשאר במקור שלו.',
 			'sourceSetup.metadataNoMatches' => 'לא נמצאו שמות תואמים בחיפוש המקוון. כדאי לנסות שם אחר.',
 			'sourceSetup.metadataSearch' => 'חיפוש מטא־נתונים מקוונים',
 			'sourceSetup.metadataLoading' => 'מתבצע חיפוש מקוון של פרטי סרטים וסדרות…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'מטא־נתונים מקוונים מ־Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'לא נמצאה התאמה אוטומטית לשם. יש לחפש את השם כדי לבחור תוצאה תואמת.',
 			'sourceSetup.metadataFailed' => 'לא ניתן לטעון מטא־נתונים מקוונים. ההפעלה והפרטים המקומיים עדיין זמינים.',

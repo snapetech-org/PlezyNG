@@ -131,7 +131,6 @@ Audible: [affiliate program](https://www.audible.com/ep/affiliates), [Associates
 Watchmode: [API overview](https://api.watchmode.com/), [pricing](https://api.watchmode.com/pricing), [platform deep-link fields](https://api.watchmode.com/use-cases/app-deep-links), and [API terms](https://api.watchmode.com/tc). The API reports regional service availability and links; it does not provide video playback. The current pricing page lists Startup at USD $349/month with commercial use, 40,000 credits, 54 countries, and app/episode deep links; Developer is non-commercial and lacks usable app/TV links. Paid-plan links may still be null and do not guarantee playback. Paid non-image caching is allowed only while subscribed and data must be deleted on cancellation; images are not licensed by the API terms. Published facts were checked 2026-10-28; PlezyNG key/coverage remains unqualified.
 
 ## S32
-## S32
 
 Movie of the Night: [documentation](https://docs.movieofthenight.com/), [authentication](https://docs.movieofthenight.com/guide/authentication), [show queries](https://docs.movieofthenight.com/guide/shows), [official OpenAPI](https://github.com/movieofthenight/streaming-availability-api/blob/main/openapi.yaml), [terms](https://github.com/movieofthenight/streaming-availability-api/blob/main/TERMS.md). Country offers, prices/links and commercial attribution route. Docs/README country counts differ; do not hardcode them. High interface, unknown tested coverage.
 
@@ -143,7 +142,6 @@ Spotify: [developer policy](https://developer.spotify.com/policy), [Web Playback
 
 Apple: [MusicKit overview](https://developer.apple.com/documentation/musickit), [authorization requirements](https://developer.apple.com/documentation/musickit/musicauthorization/request()), [ApplicationMusicPlayer](https://developer.apple.com/documentation/musickit/applicationmusicplayer), and [MusicKit integration session](https://developer.apple.com/videos/play/wwdc2026/254/). Native MusicKit provides catalog search and playback, requires informed user authorization and `NSAppleMusicUsageDescription`, and gates catalog playback on the user's subscription capability. Current Swift MusicKit app-service setup ties the service to the app's bundle ID. PlezyNG's pilot is iOS-only and disabled by default; account/device qualification remains open. Checked 2026-10-28.
 
-## S35
 ## S35
 
 TIDAL: [developer guidelines](https://developer.tidal.com/documentation/guidelines/guidelines-developer-guidelines), [official iOS Player module](https://github.com/tidal-music/tidal-sdk-ios/blob/main/Sources/Player/README.md), [Android Player docs](https://tidal-music.github.io/tidal-sdk-android/player/index.html). Official Player requirement; public preview examples do not establish PlezyNG full-track/commercial approval. High requirement, moderate current access details because some SDK documentation is older.
@@ -236,7 +234,6 @@ Home Assistant: [REST API](https://developers.home-assistant.io/docs/api/rest/),
 
 HDHomeRun: [technical HTTP/lineup guidance](https://info.hdhomerun.com/info/tech), [device discovery API](https://www.silicondust.com/hdhomerun/hdhomerun_discover_api.pdf), and [DVR record-engine status](https://info.hdhomerun.com/info/dvr_api%3Arecord_engine_status). Local lineup/HTTP integration is feasible; the low-level discovery library has a separate commercial-license request. This release keeps existing Live TV/M3U paths and adds no tuner adapter because no device, lineup, DRM channel, EPG, or DVR behavior was selected and qualified. High docs; no adapter shipped.
 
-## S58
 ## S58
 
 Owncast: [official embedding guide](https://owncast.online/docs/embed/). Authorized instance embed route. High; no broad rights inference for third-party streams.

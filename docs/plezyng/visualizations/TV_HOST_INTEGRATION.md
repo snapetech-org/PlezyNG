@@ -1,6 +1,7 @@
 # Remaining TV host integration
 
-Status: source/API investigation, **no implemented TV MilkRust host**. The app's
+Status: Tizen same-player PCM source added; the texture host is being implemented.
+No TV runtime qualification has been performed. The app's
 ordinary LG/Samsung media playback is separate from the mpv audio core used by
 the Linux/Windows/Apple/Android visualizer hosts. Audio metadata and a texture
 registration API alone do not supply the decoded samples for this feature.
@@ -9,18 +10,18 @@ registration API alone do not supply the decoded samples for this feature.
 
 The vendored Samsung plugin owns `player_h` in
 `packages/tizen_plugins/video_player_videohole/tizen/src/media_player.cc`.
-`MediaPlayer::Create` currently sets a display for every player. PlezyNG's
-`PlayerTizen.audioOnly` flag currently controls the Dart video surface, not a
-native audio-only/PCM mode. The network controller forwards `playerOptions`,
-but the file-controller constructor/create route does not currently forward
-an equivalent option.
+`PlayerTizen.audioOnly` now reaches native network and file creation. The
+player hides its plane during creation and requests native audio-only mode
+after prepare (the setter requires READY, not IDLE). An optional decoded-PCM
+callback is installed before prepare. Dart binds the renderer control channel
+to the exact player ID; binding errors do not abort ordinary playback.
 
 Samsung documents `player_set_media_packet_audio_frame_decoded_cb` for decoded
 PCM, configured before prepare. The default extraction option synchronizes to
 the playback clock; callback packets must be destroyed promptly. Audio offload
-and codec/device capability can make extraction unavailable. The .NET wrapper's
-documented export path also requires no display. These are candidate APIs,
-not evidence that the TV SDK/firmware used by this app exposes the same contract.
+and codec/device capability can make extraction unavailable. The no-display restriction in the .NET wrapper applies to video export,
+not audio export; the earlier version of this document misattributed it.
+These API references are not proof of support on the target TV firmware.
 
 The [Flutter Tizen embedder at 85eec293](https://github.com/flutter-tizen/embedder/tree/85eec293413fdc25dd720f634a402f8da5c7b0f9)
 does expose pixel-buffer textures, release callbacks and asynchronous texture
@@ -75,3 +76,13 @@ device or render evidence was produced in this source-only increment. A broader
 pack cannot be promoted through the new publisher gate while those evidence
 cells remain missing. The source-only restriction must be lifted for approved
 private JIT/device execution; it does not itself resolve these code/API gaps.
+
+## Current PCM source checkpoint
+
+The native queue holds 16 blocks of at most 512 stereo frames, retains packet
+PTS, bounds packet size, validates negotiated S16LE/44.1 kHz/stereo format,
+and never retains vendor packets. Callback tokens are not object pointers.
+The teardown path unregisters and drains packet release before unprepare.
+Pause, seek, track/rate changes and suspend reset generations; source binding
+uses the exact Samsung ID. Non-normal playback rate and protected/unsupported
+output report unavailable. No build or callback execution has been performed.

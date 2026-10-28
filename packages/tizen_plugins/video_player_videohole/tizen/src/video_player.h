@@ -21,6 +21,7 @@
 #include "ffi_messages.h"
 
 namespace video_player_videohole_tizen {
+class VisualizerPcm;
 
 void RegisterDartPort(int64_t dart_port);
 void UnregisterDartPort();
@@ -62,6 +63,7 @@ class VideoPlayer {
   virtual bool Restore(const CreateMessage *restore_message,
                        int64_t resume_time) = 0;
   virtual bool SetDisplayRotate(int64_t rotation) = 0;
+  virtual std::shared_ptr<VisualizerPcm> VisualizationPcm() const { return {}; }
 
  protected:
   virtual void GetVideoSize(int32_t *width, int32_t *height) = 0;

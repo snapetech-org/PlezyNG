@@ -15,6 +15,7 @@
 #include "drm_manager.h"
 #include "ftpw_video_player_videohole.h"
 #include "video_player.h"
+#include "visualizer_pcm.h"
 
 namespace video_player_videohole_tizen {
 
@@ -47,6 +48,7 @@ class MediaPlayer : public VideoPlayer {
   bool Restore(const CreateMessage *restore_message,
                int64_t resume_time) override;
   bool SetDisplayRotate(int64_t rotation) override;
+  std::shared_ptr<VisualizerPcm> VisualizationPcm() const override { return pcm_; }
 
  private:
   std::pair<int64_t, int64_t> GetLiveDuration();
@@ -73,6 +75,8 @@ class MediaPlayer : public VideoPlayer {
                                  int data_length, void *user_data);
 
   player_h player_ = nullptr;
+  bool audio_only_ = false;
+  std::shared_ptr<VisualizerPcm> pcm_;
   std::unique_ptr<DrmManager> drm_manager_;
   bool is_buffering_ = false;
   SeekCompletedCallback on_seek_completed_;

@@ -86,6 +86,7 @@ int64_t MediaPlayer::Create(const std::string &uri,
 
   url_ = uri;
   create_message_ = create_message;
+  audio_only_ = flutter_common::GetValue(create_message.player_options(), "plezyAudioOnly", false);
 
   int ret = player_create(&player_);
   if (ret != PLAYER_ERROR_NONE) {
@@ -141,7 +142,7 @@ int64_t MediaPlayer::Create(const std::string &uri,
     return -1;
   }
 
-  ret = player_set_display_visible(player_, true);
+  ret = player_set_display_visible(player_, !audio_only_);
   if (ret != PLAYER_ERROR_NONE) {
     LOG_ERROR("[MediaPlayer] player_set_display_visible failed : %s.",
               get_error_message(ret));
@@ -183,6 +184,10 @@ int64_t MediaPlayer::Create(const std::string &uri,
     return -1;
   }
 
+  if (audio_only_) {
+    if (!pcm_) pcm_ = std::make_shared<VisualizerPcm>();
+    pcm_->Attach(player_, drm_type != 0);
+  }
   return player_id_;
 }
 
@@ -250,6 +255,7 @@ bool MediaPlayer::Play() {
     return false;
   }
   if (state == PLAYER_STATE_PLAYING) {
+    if (pcm_) pcm_->Playing(true);
     LOG_INFO("[MediaPlayer] Player already playing.");
     return true;
   }
@@ -261,6 +267,7 @@ bool MediaPlayer::Play() {
   }
 
   SendIsPlayingState(true);
+  if (pcm_) pcm_->Playing(true);
   return true;
 }
 
@@ -277,6 +284,7 @@ bool MediaPlayer::Pause() {
     return false;
   }
   if (state != PLAYER_STATE_PLAYING) {
+    if (pcm_) pcm_->Playing(false);
     LOG_INFO("[MediaPlayer] Player already not playing (state=%d).", state);
     return true;
   }
@@ -286,6 +294,7 @@ bool MediaPlayer::Pause() {
     return false;
   }
   SendIsPlayingState(false);
+  if (pcm_) pcm_->Playing(false);
   return true;
 }
 
@@ -322,6 +331,7 @@ bool MediaPlayer::SetPlaybackSpeed(double speed) {
               get_error_message(ret));
     return false;
   }
+  if (pcm_) pcm_->Rate(speed);
   return true;
 }
 
@@ -335,12 +345,14 @@ bool MediaPlayer::SeekTo(int64_t position, SeekCompletedCallback callback) {
 
   on_seek_completed_ = std::move(callback);
   is_seeking_ = true;
+  if (pcm_) pcm_->Seeking(true);
 
   int ret =
       player_set_play_position(player_, position, true, OnSeekCompleted, this);
   if (ret != PLAYER_ERROR_NONE) {
     on_seek_completed_ = nullptr;
     is_seeking_ = false;
+    if (pcm_) pcm_->Seeking(false);
     LOG_ERROR("[MediaPlayer] player_set_play_position failed: %s.",
               get_error_message(ret));
     return false;
@@ -674,6 +686,8 @@ bool MediaPlayer::SetTrackSelection(int32_t track_id, std::string track_type) {
     return false;
   }
 
+  if (pcm_ && track_type == "audio") pcm_->Discontinuity();
+
   return true;
 }
 
@@ -761,6 +775,8 @@ bool MediaPlayer::StopAndDestroy() {
       success = false;
     }
   }
+
+  if (pcm_) pcm_->Detach(player_);
 
   if (player_state != PLAYER_STATE_NONE && player_state != PLAYER_STATE_IDLE) {
     if (player_unprepare(player_) != PLAYER_ERROR_NONE) {
@@ -939,6 +955,13 @@ void MediaPlayer::OnPrepared(void *user_data) {
     return;
   }
 
+  // The documented audio-only setter requires READY/PLAYING/PAUSED, not
+  // IDLE. Hide the plane during creation, then disable video rendering here.
+  if (self->audio_only_) {
+    const int result = player_set_audio_only(self->player_, true);
+    if (result != PLAYER_ERROR_NONE) LOG_INFO("[MediaPlayer] Audio-only mode unavailable: %d", result);
+  }
+
   if (self->is_restored_) {
     self->ResetEventDispatchState();
     LOG_INFO("[MediaPlayer] Event dispatch state reset for restored player.");
@@ -960,9 +983,13 @@ void MediaPlayer::OnBuffering(int percent, void *user_data) {
   }
 
   if (percent == 100) {
+    player_state_e state = PLAYER_STATE_NONE;
+    if (self->pcm_ && player_get_state(self->player_, &state) == PLAYER_ERROR_NONE)
+      self->pcm_->Playing(state == PLAYER_STATE_PLAYING);
     self->SendBufferingEnd();
     self->is_buffering_ = false;
   } else if (!self->is_buffering_ && percent <= 5) {
+    if (self->pcm_) self->pcm_->Playing(false);
     self->SendBufferingStart();
     self->is_buffering_ = true;
   } else {
@@ -984,6 +1011,7 @@ void MediaPlayer::OnSeekCompleted(void *user_data) {
   auto on_seek_completed = std::move(self->on_seek_completed_);
   self->on_seek_completed_ = nullptr;
   self->is_seeking_ = false;
+  if (self->pcm_) self->pcm_->Seeking(false);
 
   if (on_seek_completed) {
     on_seek_completed();
@@ -1018,6 +1046,7 @@ void MediaPlayer::OnInterrupted(player_interrupted_code_e code,
   }
 
   self->SendIsPlayingState(false);
+  if (self->pcm_) self->pcm_->Playing(false);
   LOG_ERROR("[MediaPlayer] Interrupt code: %d.", code);
 }
 
@@ -1033,6 +1062,7 @@ void MediaPlayer::OnError(int error_code, void *user_data) {
   }
 
   self->SendError("Media Player error", get_error_message(error_code));
+  if (self->pcm_) self->pcm_->Playing(false);
 }
 
 void MediaPlayer::OnSubtitleUpdated(unsigned long duration, char *text,

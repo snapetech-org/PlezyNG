@@ -95,7 +95,6 @@ class ConnectorBrandMark extends StatelessWidget {
     'premiumize': 'dashboard_premiumize.svg',
     'hulu': 'dashboard_hulu.svg',
     'peacock': 'dashboard_peacock.svg',
-    'torbox': 'torbox.svg',
   };
 
   String? get _resolvedIconName {

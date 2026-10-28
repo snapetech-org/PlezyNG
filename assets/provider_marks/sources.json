@@ -68,11 +68,5 @@
     "url": "https://github.com/homarr-labs/dashboard-icons/blob/main/svg/premiumize.svg",
     "upstream_git_blob_sha": "805ff9c4686c2502de749151431f2bfab62f6496",
     "license": "Apache-2.0"
-  },
-  "torbox.svg": {
-    "official_asset_url": "https://torbox.app/assets/logo-bb7a9579.svg",
-    "copy_source": "https://github.com/NuvioMedia/NuvioMobile/blob/53869a0279c59abdef23da2962eb2a1c80e6caa5/composeApp/src/commonMain/kotlin/com/nuvio/app/features/cloud/CloudLibraryModels.kt",
-    "copy_source_git_blob_sha": "751c0608e5e74eb4a5d4e7e645e73e8e65e1ea95",
-    "license": "Provider trademark; confirm use under TorBox brand terms and written partner approval"
   }
 }

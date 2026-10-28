@@ -224,8 +224,17 @@ fun validateAndroidAnvilContextPack(root: File, qairtSdkRoot: File) {
   @Suppress("UNCHECKED_CAST")
   val manifest = groovy.json.JsonSlurper().parse(manifestFile) as? Map<*, *>
     ?: throw GradleException("Android ANVIL context manifest is not a JSON object")
-  if ((manifest["schema_version"] as? Number)?.toInt() != 2 || manifest["runtime"] != "Qualcomm QNN HTP") {
-    throw GradleException("Android ANVIL context manifest has an unsupported schema or runtime")
+  // Keep the artifact gate aligned with the model and source pins in the context generator.
+  if (
+    (manifest["schema_version"] as? Number)?.toInt() != 2 ||
+    manifest["runtime"] != "Qualcomm QNN HTP" ||
+    manifest["quantization"] != "W8A8" ||
+    manifest["anvil_source_revision"] != "f701fd9b01b9fbb20822637b5d82cac626079e5f" ||
+    manifest["anvil_model_revision"] != "fa97e30f6aabe897bd4f6f82d971ad607f5d61fa"
+  ) {
+    throw GradleException(
+      "Android ANVIL context manifest has unsupported schema, runtime, quantization, or model provenance",
+    )
   }
   @Suppress("UNCHECKED_CAST")
   val selection = manifest["selection"] as? Map<*, *>
@@ -290,6 +299,11 @@ fun validateAndroidAnvilContextPack(root: File, qairtSdkRoot: File) {
     }
     val inputShape = (entry["input_shape"] as? List<*>)?.map { (it as? Number)?.toInt() }
       ?: throw GradleException("Android ANVIL context entry has no input shape: $contextPath")
+    val onnxSha256 = entry["onnx_sha256"] as? String
+      ?: throw GradleException("Android ANVIL context entry has no ONNX SHA-256: $contextPath")
+    if (!Regex("^[0-9a-f]{64}$").matches(onnxSha256)) {
+      throw GradleException("Android ANVIL context entry has an invalid ONNX SHA-256: $contextPath")
+    }
     val expectedShape = if (targetSpec.resolution == "720p") listOf(1, 6, 720, 1280) else listOf(1, 6, 1080, 1920)
     if (inputShape != expectedShape) {
       throw GradleException("Android ANVIL context entry has the wrong input shape: $contextPath")

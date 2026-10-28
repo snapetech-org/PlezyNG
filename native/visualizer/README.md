@@ -95,6 +95,13 @@ The Linux CMake bundle accepts `PLEZY_VISUALIZER_PROJECTM_LIBRARY` pointing to
 the resulting shared library and installs it with the source lock and notices.
 The app also needs a libmpv artifact containing the PCM extension. Its existing
 binary lock is unchanged because no such artifact has been produced here.
+After the build-fork PR is merged and its private-JIT publication commits the
+new artifact manifest, promote that exact manifest commit through
+`scripts/set_native_revision.sh <full-sha> --repo https://github.com/snapetech-org/mpv-build`,
+then refresh Apple SwiftPM locks before app packaging. The script updates the
+Apple requirements, duplicate SwiftPM locks, Gradle checksum and
+`mpv-build.lock.json` together; never substitute a locally computed digest for
+the manifest digest.
 
 ## Linux host and app contract
 

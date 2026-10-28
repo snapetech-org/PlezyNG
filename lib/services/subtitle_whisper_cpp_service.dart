@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi' as ffi;
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -46,19 +47,33 @@ abstract final class SubtitleWhisperCppService {
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
   static const bool _tizenBuild = bool.fromEnvironment('PLEZY_TIZEN');
   static const bool _webOsBuild = bool.fromEnvironment('PLEZY_WEBOS');
+  static bool? _tizenWhisperRuntimeState;
 
-  static bool get supportedPlatform =>
-      !_tvOsBuild &&
-      !_tizenBuild &&
-      !_webOsBuild &&
-      (Platform.isAndroid ||
-          Platform.isIOS ||
-          Platform.isWindows ||
-          Platform.isMacOS ||
-          Platform.isLinux);
+  static bool get supportedPlatform {
+    if (_tizenBuild) return _tizenWhisperRuntimeAvailable;
+    return !_tvOsBuild &&
+        !_webOsBuild &&
+        (Platform.isAndroid ||
+            Platform.isIOS ||
+            Platform.isWindows ||
+            Platform.isMacOS ||
+            Platform.isLinux);
+  }
+
+  static bool get _tizenWhisperRuntimeAvailable => _tizenWhisperRuntimeState ??= _probeTizenWhisperRuntime();
+
+  static bool _probeTizenWhisperRuntime() {
+    try {
+      ffi.DynamicLibrary.open('libflutter_whisper_plugin.so')
+          .lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>('fw_version');
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 
   /// Loads the same verified multilingual model used by WAV transcription for
-  /// repeated, in-memory Android PCM windows. The caller owns and disposes it.
+  /// repeated, in-memory player PCM windows. The caller owns and disposes it.
   Future<whisper.FlutterWhisper> loadLiveCpuSession({
     void Function(String phase, int received, int total)? onProgress,
   }) async {

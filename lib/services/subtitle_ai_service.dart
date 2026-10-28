@@ -87,14 +87,16 @@ final class SubtitleAiService {
   static const bool _webOsBuild = bool.fromEnvironment('PLEZY_WEBOS');
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
 
-  static bool get supportedPlatform =>
-      !kIsWeb &&
-      !_tizenBuild &&
-      !_webOsBuild &&
-      !_tvOsBuild &&
-      (Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isMacOS || Platform.isLinux);
+  static bool get supportedPlatform {
+    if (_tizenBuild) return SubtitleWhisperCppService.supportedPlatform;
+    return !kIsWeb &&
+        !_webOsBuild &&
+        !_tvOsBuild &&
+        (Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isMacOS || Platform.isLinux);
+  }
 
   static List<SubtitleInferenceProvider> get availableProviderRequests {
+    if (_tizenBuild) return const [SubtitleInferenceProvider.cpu];
     if (Platform.isAndroid) {
       return const [SubtitleInferenceProvider.cpu, SubtitleInferenceProvider.qnn, SubtitleInferenceProvider.rknn];
     }

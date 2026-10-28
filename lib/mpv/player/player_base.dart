@@ -38,6 +38,12 @@ abstract interface class PlayerAudioFocusControl {
   Future<void> setAudioFocusEnabled(bool enabled);
 }
 
+/// A player whose exact music output can be bound to the native preset host.
+/// Renderer and codec availability are negotiated separately by that host.
+abstract interface class NativeVisualizationAudioSource {
+  bool get nativeVisualizationAudioReady;
+}
+
 extension PlayerAudioFocusOwnership on Player {
   Future<void> setWorkspaceAudioFocusEnabled(bool enabled) async {
     final current = this;

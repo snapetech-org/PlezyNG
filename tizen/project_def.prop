@@ -13,5 +13,5 @@ USER_CPP_INC_FILES =
 # Resolve registration symbols from the combined shared library before any
 # intermediate plugin archives that a cold SDK build may leave in its output.
 USER_LIB_DIRS = lib $(FLUTTER_BUILD_DIR)/tizen_plugins/lib
-USER_LIBS = flutter_plugins
+USER_LIBS = flutter_plugins dl
 USER_LFLAGS = -Wl,-E

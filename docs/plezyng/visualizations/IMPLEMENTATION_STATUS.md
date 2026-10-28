@@ -37,7 +37,7 @@ Updated: 2026-10-28. The original plan and signed-catalog source were merged via
 | Package | Current source state | Remaining exit evidence or work |
 | --- | --- | --- |
 | V0 Audit/harness | Identified false-positive and denominator paths repaired | Regenerate the full corpus ledger, account for every original omission, reference/negative-control runs |
-| V1 Native integration | Linux projectM/MilkRust and Windows, Apple, Android MilkRust host source | Compiler/device evidence on every host; webOS/Tizen PCM+texture hosts; context-loss recovery |
+| V1 Native integration | Linux projectM/MilkRust and Windows, Apple, Android MilkRust host source | Compiler/device evidence on every host; webOS PCM+texture host; Tizen SDK/device validation; context-loss recovery |
 | V2 Audio | Optional patched PCM ABI with Linux/Windows/Apple consumers and Android AAR admission bridge source | Patched artifacts on each platform; timing, seeks, gapless, layout/rate/speed, passthrough and overload qualification; qualify original-scene live statistics |
 | V3 Parser/VM | Targeted syntax/EEL fixes, input/depth/work limits and checked frame failures | Full state/reference/RNG/encoding conformance; bounded parser/evaluator coverage |
 | V4 MilkRust rendering | Native C ABI/GL renderer and experimental WebGL; real saved-pair parser and uniform Fade candidate path | Qualified native renderer, complete HLSL, stage/feedback/transition fidelity, all `.milk2` patterns and remaining formats |
@@ -50,7 +50,7 @@ Updated: 2026-10-28. The original plan and signed-catalog source were merged via
 
 ## Native boundaries that prevent a release claim
 
-The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS and Android/TV now have native MilkRust host source; none has been compiled or device-qualified in this session. webOS and Tizen still lack their required host paths. Storage/import availability and engine availability are separate.
+The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS and Android/TV now have native MilkRust host source; none has been compiled or device-qualified in this session. Tizen now has an unbuilt same-player PCM/EGL/texture host in PR #74; webOS still lacks its required host path. Storage/import availability and engine availability are separate.
 
 The in-process renderer catches exceptions, but cannot contain a hung shader compiler or GPU driver. Teardown joins the worker and can therefore block in that case. Process isolation/watchdog behavior, resource budgets and driver recovery remain required work before claiming arbitrary community inputs are safely supported.
 
@@ -122,3 +122,20 @@ PR #69 and its branch were closed/deleted externally during implementation.
 The follow-up is preserved on `codex/visualizer-catalog-checkpoint-20261028`
 without reopening the closed PR. Production trust remains empty and no
 broader pack or platform has been newly qualified.
+
+## Samsung native host increment
+
+[PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) preserves the earlier
+checkpoint and adds synchronized same-player PCM, exact player-ID binding,
+GLES 3 rendering, bounded image decoding, leased Flutter pixel buffers and
+optional runtime/source/notice packaging with an independently reviewed manifest
+digest. App readiness now admits a bound Samsung music player. Regression source
+covers binding cancellation, missing-host fallback and artifact tampering.
+
+The implementation is uncompiled and unrun. Normal-speed S16LE stereo and
+PNG/JPEG/BMP/TGA are the current Tizen host limits. The callback teardown contract,
+SDK/firmware availability, driver hangs and physical TV behavior remain open.
+No platform or broader pack gained qualification; production trust is still
+empty. The previous checkpoint branch was also deleted remotely, so current
+work lives on `codex/tizen-native-visualizer-20261028`. See
+[TV_HOST_INTEGRATION.md](TV_HOST_INTEGRATION.md) for the current source contract.

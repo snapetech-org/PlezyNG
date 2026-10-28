@@ -262,3 +262,15 @@ produced native artifacts, qualified broader downloadable packs, production
 catalog key custody/publication, or V9/V10. No builds, tests, CI jobs, GPU captures
 or device qualification were executed for these increments. See
 [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the evidence ledger.
+
+
+## Tizen source continuation, 2026-10-28
+
+[PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) adds the Samsung
+same-player PCM/EGL/texture path, source-generation protection, app capability
+routing and explicit artifact/source/notice packaging inputs. This preserves
+the original plan; V1 remains open for SDK/device qualification, webOS and
+context-loss/hang handling. Tizen's current source limits are normal-speed
+S16LE stereo and PNG/JPEG/BMP/TGA texture decoding. Full HLSL, other `.milk2`
+patterns, qualified broader packs and production key custody/publication remain
+open. No tests, builds, CI, captures or device qualification ran.

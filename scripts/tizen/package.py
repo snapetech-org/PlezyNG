@@ -25,6 +25,83 @@ PINS = json.loads((Path(__file__).with_name('toolchain.json')).read_text())
 APP_ID = 'org.snapetech.plezyng'
 NS = {'t': 'http://tizen.org/ns/packages'}
 ELF_TARGETS = {'arm': (1, 40), 'x64': (2, 62)}
+VISUALIZER_FILES = {
+    'libmilkrust_native.so': ('librarySha256', 256 * 1024 * 1024),
+    'milkrust-source.tar.gz': ('sourceArchiveSha256', 256 * 1024 * 1024),
+    'MILKRUST-NOTICES.txt': ('noticesSha256', 1024 * 1024),
+}
+
+
+def visualizer_metadata(raw, arch):
+    if not raw or len(raw) > 65536:
+        raise ValueError('Invalid MilkRust artifact manifest size')
+    data = json.loads(raw)
+    if (not isinstance(data, dict) or data.get('schemaVersion') != 1 or data.get('abi') != 1
+            or data.get('target') != f'tizen-{arch}'
+            or not re.fullmatch(r'[0-9a-f]{40}', str(data.get('sourceRevision', '')))
+            or data.get('runnerPolicy') != 'private-ephemeral-jit'
+            or not re.fullmatch(r'https://github\.com/snapetech-org/MilkRust/actions/runs/[1-9][0-9]*', str(data.get('buildRun', '')))):
+        raise ValueError('MilkRust artifact identity, ABI or build provenance is invalid')
+    for key, _ in VISUALIZER_FILES.values():
+        if not re.fullmatch(r'[0-9a-f]{64}', str(data.get(key, ''))):
+            raise ValueError('MilkRust artifact digest is missing')
+    return data
+
+
+def stage_visualizer(source, destination, bundle, manifest_digest, arch):
+    """Copy an explicitly reviewed artifact; do not build or qualify it here."""
+    if not re.fullmatch(r'[0-9a-f]{64}', str(manifest_digest or '')):
+        raise ValueError('An independently reviewed MilkRust manifest SHA-256 is required')
+    bundle = Path(bundle).resolve(strict=True)
+    manifest = bundle / 'milkrust-native.json'
+    if manifest.is_symlink() or manifest.stat().st_size > 65536 or sha256(manifest) != manifest_digest:
+        raise ValueError('MilkRust manifest does not match the reviewed digest')
+    data = visualizer_metadata(manifest.read_bytes(), arch)
+    pin = json.loads((source / 'native/visualizer/sources.lock.json').read_text())['milkrust']
+    if data['sourceRevision'] != pin['commit'] or data['abi'] != pin['abi']:
+        raise ValueError('MilkRust artifact differs from the app source pin')
+    # Validate the entire bundle before staging any part of it.
+    for name, (key, limit) in VISUALIZER_FILES.items():
+        path = bundle / name
+        if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size <= limit or sha256(path) != data[key]:
+            raise ValueError(f'MilkRust artifact mismatch: {name}')
+        if name.endswith('.so'):
+            with path.open('rb') as stream:
+                if elf_arch(stream.read(64)) != arch:
+                    raise ValueError('MilkRust library has the wrong TV architecture')
+    resource = destination / 'tizen/res/visualizer'
+    resource.mkdir(parents=True, exist_ok=True)
+    (destination / 'tizen/lib').mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(manifest, resource / manifest.name)
+    for name in VISUALIZER_FILES:
+        target = destination / 'tizen/lib' / name if name.endswith('.so') else resource / name
+        shutil.copyfile(bundle / name, target)
+    return data
+
+
+def inspect_visualizer(archive, names, arch):
+    manifest = 'res/visualizer/milkrust-native.json'
+    library = 'lib/libmilkrust_native.so'
+    runtimes = sorted(name for name in names if PurePosixPath(name).name == 'libmilkrust_native.so')
+    if runtimes and runtimes != [library]:
+        raise ValueError('Unexpected or duplicate MilkRust runtime location')
+    artifacts = {manifest, library, 'res/visualizer/milkrust-source.tar.gz', 'res/visualizer/MILKRUST-NOTICES.txt'}
+    if not artifacts.intersection(names):
+        return None
+    if not artifacts.issubset(names):
+        raise ValueError('Incomplete MilkRust runtime/source/notice bundle')
+    if archive.getinfo(manifest).file_size > 65536:
+        raise ValueError('MilkRust manifest exceeds its size limit')
+    data = visualizer_metadata(archive.read(manifest), arch)
+    for name, (key, limit) in VISUALIZER_FILES.items():
+        entry = library if name.endswith('.so') else f'res/visualizer/{name}'
+        if not 0 < archive.getinfo(entry).file_size <= limit:
+            raise ValueError('MilkRust package resource exceeds its size limit')
+        with archive.open(entry) as stream:
+            digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+        if digest != data[key]:
+            raise ValueError(f'MilkRust package digest mismatch: {name}')
+    return {**data, 'hardwareQualified': False, 'catalogueEligible': False}
 
 
 def run(*args, cwd=None):
@@ -102,9 +179,11 @@ def inspect_package(path, arch, *, signed=True):
             with archive.open(name) as stream:
                 if elf_arch(stream.read(64)) != arch:
                     raise ValueError(f'Wrong architecture: {name}')
+        visualizer = inspect_visualizer(archive, set(names), arch)
         return {'app_id': APP_ID, 'version': version, 'architecture': arch, 'sha256': sha256(path),
                 'size': path.stat().st_size, 'signature_files_present': {'author-signature.xml', 'signature1.xml'} <= set(names),
-                'minimum_api': minimum_api, 'hardware_qualified': False, 'native_libraries': libraries}
+                'minimum_api': minimum_api, 'hardware_qualified': False, 'native_libraries': libraries,
+                'visualizer': visualizer}
 
 
 def checkout(repo, revision, destination):
@@ -197,7 +276,7 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
     (out / 'native-build.json').write_text(json.dumps(report, indent=2) + '\n')
 
 
-def stage(source, destination, native_dir, arch):
+def stage(source, destination, native_dir, arch, *, visualizer_native=None, visualizer_manifest_sha256=None):
     # Copy only Git-tracked inputs, including local modifications, so tokens,
     # profiles and build caches cannot be swept into the package.
     tracked = subprocess.check_output(['git', '-C', str(source), 'ls-files', '-z']).decode().split('\0')
@@ -222,6 +301,12 @@ def stage(source, destination, native_dir, arch):
         dest = native_target / name if name in {'libplezy_sqlite3.so', 'libplezy_torrent.so'} else destination / 'build-inputs' / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, dest)
+    if bool(visualizer_native) != bool(visualizer_manifest_sha256):
+        raise ValueError('Specify both the MilkRust bundle and its reviewed manifest SHA-256')
+    if visualizer_native:
+        stage_visualizer(source, destination, visualizer_native, visualizer_manifest_sha256, arch)
+    elif (native_target / 'libmilkrust_native.so').exists():
+        raise ValueError('MilkRust must be supplied through the reviewed artifact input')
     icon = destination / 'tizen/shared/res/plezyng.png'
     icon.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(source / 'assets/plezy.png', icon)
@@ -286,7 +371,8 @@ def build(args):
     context = nullcontext(args.work_dir) if args.work_dir else tempfile.TemporaryDirectory(prefix='plezyng-tizen-')
     with context as temp:
         project = Path(temp)
-        stage(ROOT, project, args.native, args.arch)
+        stage(ROOT, project, args.native, args.arch, visualizer_native=args.visualizer_native,
+              visualizer_manifest_sha256=args.visualizer_manifest_sha256)
         run(flutter, 'pub', 'get', cwd=project)
         run(flutter, 'build', 'tpk', '--release', '--device-profile', 'tv', '--target-arch', args.arch,
             '--security-profile', args.security_profile, '--dart-define=PLEZY_TIZEN=true', cwd=project)
@@ -441,6 +527,8 @@ def main():
     b.add_argument('--security-profile', required=True, help='Existing Samsung Certificate Manager profile name')
     b.add_argument('--tester', action='store_true', help='Produce a development-signed handoff; tester must re-sign for their TV')
     b.add_argument('--work-dir', help='Optional empty directory to preserve the staged project and build diagnostics')
+    b.add_argument('--visualizer-native', help='Optional reviewed MilkRust artifact directory with runtime, source and notices')
+    b.add_argument('--visualizer-manifest-sha256', help='Independently reviewed SHA-256 of milkrust-native.json')
     i = sub.add_parser('inspect')
     i.add_argument('package')
     ins = sub.add_parser('install')

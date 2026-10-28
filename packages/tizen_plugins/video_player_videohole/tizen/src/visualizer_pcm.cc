@@ -141,7 +141,7 @@ void VisualizerPcm::Receive(media_packet_h packet) {
   // A renderer read/control change can never make the audio thread wait on
   // image decoding, shader compilation, GL, filesystem I/O or a Dart call.
   std::unique_lock<std::mutex> lock(mutex_, std::try_to_lock);
-  if (!lock.owns_lock() || !attached_ || !playing_ || seeking_ || !normal_rate_ || !generation_) return;
+  if (!lock.owns_lock() || !enabled_ || !attached_ || !playing_ || seeking_ || !normal_rate_ || !generation_) return;
   auto& api = AudioApi::Get();
   FormatOwner format;
   media_format_mimetype_e mime{};
@@ -193,7 +193,7 @@ void VisualizerPcm::Receive(media_packet_h packet) {
 int VisualizerPcm::Read(mpv_plezy_audio_block* output) {
   std::lock_guard<std::mutex> lock(mutex_);
   if (!reason_.empty() || !normal_rate_) return MPV_PLEZY_AUDIO_UNSUPPORTED;
-  if (!attached_ || !playing_ || seeking_) return 0;
+  if (!enabled_ || !attached_ || !playing_ || seeking_) return 0;
   while (count_) {
     auto& slot = queue_[head_];
     if (slot.at > Clock::now()) return 0;
@@ -207,6 +207,14 @@ std::string VisualizerPcm::Reason() const {
   std::lock_guard<std::mutex> lock(mutex_);
   if (!normal_rate_) return "Samsung visualization currently requires normal playback speed.";
   return reason_;
+}
+bool VisualizerPcm::AcceptsFrame(uint32_t generation) const {
+  std::lock_guard<std::mutex> lock(mutex_);
+  return enabled_ && attached_ && !seeking_ && normal_rate_ && reason_.empty() && generation && generation_ == generation;
+}
+void VisualizerPcm::Enabled(bool value) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (enabled_ != value) { ResetLocked(); enabled_ = value; }
 }
 void VisualizerPcm::Playing(bool value) {
   std::lock_guard<std::mutex> lock(mutex_);

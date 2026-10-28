@@ -11,6 +11,7 @@
 
 #include "ffi_messages.h"
 #include "log.h"
+#include "visualizer_host.h"
 
 namespace video_player_videohole_tizen {
 
@@ -30,6 +31,7 @@ class VideoPlayerTizenPlugin : public flutter::Plugin {
         flutter::PluginRegistrarManager::GetInstance()
             ->GetRegistrar<flutter::PluginRegistrar>(registrar_ref);
     ffi_set_plugin_registrar(registrar_ref, plugin_registrar);
+    visualizer_ = std::make_unique<VisualizerHost>(plugin_registrar);
 
     LOG_INFO("[VideoPlayerTizenPlugin] Registered with registrar");
   }
@@ -37,6 +39,7 @@ class VideoPlayerTizenPlugin : public flutter::Plugin {
   ~VideoPlayerTizenPlugin() override {
     LOG_INFO(
         "[VideoPlayerTizenPlugin] Destroying plugin, cleaning up resources");
+    visualizer_.reset();
     ffi_dispose_all_players();
   }
 
@@ -45,6 +48,7 @@ class VideoPlayerTizenPlugin : public flutter::Plugin {
 
  private:
   FlutterDesktopPluginRegistrarRef registrar_ref_;
+  std::unique_ptr<VisualizerHost> visualizer_;
 };
 
 extern "C" {

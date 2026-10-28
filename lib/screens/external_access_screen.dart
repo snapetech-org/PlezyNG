@@ -357,7 +357,11 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
           children: [
             for (final source in sources)
               FocusableListTile(
-                leading: ConnectorBrandMark(providerId: _watchmodeDestination(source)?.id ?? '', name: source.name),
+                leading: ConnectorBrandMark(
+                  providerId: _watchmodeDestination(source)?.id ?? '',
+                  name: source.name,
+                  logoDomain: _watchmodeDestination(source)?.host,
+                ),
                 title: Text(source.name),
                 subtitle: Text([source.typeLabel, source.region, ?source.price, ?source.format].join(' · ')),
                 trailing: _watchmodeDestination(source) == null ? null : const AppIcon(Symbols.open_in_new_rounded),
@@ -651,7 +655,11 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
                       children: [
                         for (final destination in destinationsByCategory[category]!)
                           FocusableListTile(
-                            leading: ConnectorBrandMark(providerId: destination.id, name: destination.name),
+                            leading: ConnectorBrandMark(
+                              providerId: destination.id,
+                              name: destination.name,
+                              logoDomain: destination.host,
+                            ),
                             title: Text(destination.name),
                             subtitle: Text(
                               [

@@ -9,7 +9,7 @@ accessibility checks, and evidence template.
 
 ## Main reconciliation for PR #71 — 2026-10-28
 
-The follow-up incorporates main `a90717f6`, including its subtitle, motion and
+The follow-up incorporates main `eb075932`, including its subtitle, motion and
 connector changes. PR #54 is already merged. Receiver implementation and
 security regressions are retained; Windows/JVM test registration and shared
 Apple test wiring remain part of private JIT CI.
@@ -21,14 +21,39 @@ translation references prevent cleanup from silently dropping runtime messages.
 New controls use the shared AppIcon/rounded Symbols styling, retaining provider
 marks and a distinct filled/unfilled favorite state.
 
+- **482 focused Flutter tests passed** on the final combined app: 413 in the
+  receiver/application run and 69 in the isolated music-player run. They cover Games,
+  Multiview, gamepads, companion provider/receiver/peer, visualization,
+  recordings, search, settings, subtitle timing/imports and source playback.
+  The retry regression now preserves the current session's progress revision
+  while still rejecting late writes after an explicit reset or profile change.
+- The repository's **standard analyzer passed with zero diagnostics**;
+  formatting passed for **2,040 authored Dart files**, and icon consistency
+  passed for **1,195 non-generated application files**.
+- **Isolated full code generation passed**: all generated outputs match the
+  committed files. The successful local run used a task-local Dart runtime
+  with a bounded heap; the shared SDK and repository checks were not changed.
 - **41 native Debug tests passed** with Vulkan and GStreamer enabled.
 - **458 workflow/script guard tests passed** across 41 suites.
 - **17 new subtitle regression tests passed**, covering ZIP/TAR/gzip-TAR,
   traversal, underdeclared expansion, octal validation, resource bounds,
-  fractional drift, invalid rates and unchanged source bytes.
+  fractional drift, invalid rates and unchanged source bytes. These are
+  included in the 482-test Flutter total, not additional tests.
 - Localization checks pass for **37 locales / 4,263 messages**, with **18,900
   explicitly allowlisted English fallback entries**; these are not reviewed
   translations. Existing translated copy and native permission messages remain.
+
+The standard unused-code check still reports eight existing declarations:
+`IptvChannels`, `IptvProgrammes`, `IptvChannelOverrides`,
+`IptvTranslationFallback`, `IntegrationConnectionRef`,
+`IntegrationAccessEvidence`, `AvailabilityLookupService` and
+`MotionProcessingModeSettings`. The unused-file check reports
+`lib/i18n/iptv_copy.dart` and `lib/integrations/integration_offers.dart`.
+These application-wide hygiene gates are unresolved; no exclusions or runner
+policy changes were introduced to conceal them. The full repository test suite
+is not qualified by the focused receiver/application checks. The final isolated
+`music_playback_service_test.dart` run passed all 69 tests; its earlier interrupted
+loading attempt contributes no passing tests to these totals.
 
 The PR description records the final combined application checks and exact
 published commit. Full SDK builds and live tests must use that revision. No new

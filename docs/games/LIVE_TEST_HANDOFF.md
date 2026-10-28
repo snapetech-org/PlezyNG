@@ -7,7 +7,7 @@ Branch: `codex/steam-live-test-handoff`
 ## What this handoff covers
 
 PR #54 has merged. This follow-up preserves its receiver implementation and
-regression coverage while reconciling the app with main `a90717f6`. Build the
+regression coverage while reconciling the app with main `eb075932`. Build the
 exact PR #71 head; the earlier PR and historical test results are not substitutes.
 
 Test the implemented receivers and connected library described below. The

@@ -177,7 +177,11 @@ void main() {
     native.emitError('stream failed');
     native.emitCompleted();
     await playback.pause();
-    expect(playback.canRetry, isTrue, reason: 'failure=${playback.failure}, opening=${playback.opening}, active=${playback.active}');
+    expect(
+      playback.canRetry,
+      isTrue,
+      reason: 'failure=${playback.failure}, opening=${playback.opening}, active=${playback.active}',
+    );
     expect(playback.currentFilePositionMs, 47000);
     expect(playback.progress!.filePositionMs, 47000);
     expect(playback.progress!.finished, isFalse);

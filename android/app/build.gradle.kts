@@ -189,6 +189,8 @@ val qairtSdkRoot = providers.environmentVariable("QAIRT_SDK_ROOT").orNull
 val androidAnvilContextsRoot = providers.environmentVariable("PLEZY_ANVIL_CONTEXT_ROOT").orNull
   ?.takeIf(String::isNotBlank)
   ?.let { File(it) }
+val allowPartialAndroidAnvilContextSet =
+  providers.environmentVariable("PLEZY_ANVIL_ALLOW_PARTIAL_CONTEXT_SET").orNull == "1"
 val androidLiteRtModelRoot = providers.environmentVariable("PLEZY_LITERT_MODEL_ROOT").orNull
   ?.takeIf(String::isNotBlank)
   ?.let { File(it) }
@@ -197,19 +199,133 @@ val androidLiteRtSamsungRuntimeRoot = providers.environmentVariable("PLEZY_LITER
   ?.takeIf(String::isNotBlank)
   ?.let { File(it) }
 val androidHtpVersions = listOf("V68", "V69", "V73", "V75", "V79", "V81")
+data class AndroidAnvilContextTargetSpec(val resolution: String, val socId: Int, val dspArch: String)
 val androidAnvilContextTargets = linkedMapOf(
-  "sm7325" to "720p",
-  "sm8350" to "720p",
-  "sm8350p" to "720p",
-  "sm7450" to "720p",
-  "sm7475" to "720p",
-  "sm8450" to "720p",
-  "sm8475" to "720p",
-  "sm8550" to "1080p",
-  "sm8650" to "1080p",
-  "sm8750" to "1080p",
-  "sm8850" to "1080p"
+  "sm7325" to AndroidAnvilContextTargetSpec("720p", 35, "v68"),
+  "sm8350" to AndroidAnvilContextTargetSpec("720p", 30, "v68"),
+  "sm8350p" to AndroidAnvilContextTargetSpec("720p", 30, "v68"),
+  "sm7450" to AndroidAnvilContextTargetSpec("720p", 41, "v69"),
+  "sm7475" to AndroidAnvilContextTargetSpec("720p", 41, "v69"),
+  "sm8450" to AndroidAnvilContextTargetSpec("720p", 36, "v69"),
+  "sm8475" to AndroidAnvilContextTargetSpec("720p", 42, "v69"),
+  "sm8550" to AndroidAnvilContextTargetSpec("1080p", 43, "v73"),
+  "sm8650" to AndroidAnvilContextTargetSpec("1080p", 57, "v75"),
+  "sm8750" to AndroidAnvilContextTargetSpec("1080p", 69, "v79"),
+  "sm8850" to AndroidAnvilContextTargetSpec("1080p", 87, "v81")
 )
+val androidAnvilContextModels = listOf("anvil-s", "anvil-m")
+
+fun validateAndroidAnvilContextPack(root: File, qairtSdkRoot: File) {
+  val canonicalRoot = root.canonicalFile
+  val manifestFile = canonicalRoot.resolve("manifest.json")
+  if (!manifestFile.isFile) {
+    throw GradleException("PLEZY_ANVIL_CONTEXT_ROOT is missing manifest.json")
+  }
+  @Suppress("UNCHECKED_CAST")
+  val manifest = groovy.json.JsonSlurper().parse(manifestFile) as? Map<*, *>
+    ?: throw GradleException("Android ANVIL context manifest is not a JSON object")
+  if ((manifest["schema_version"] as? Number)?.toInt() != 2 || manifest["runtime"] != "Qualcomm QNN HTP") {
+    throw GradleException("Android ANVIL context manifest has an unsupported schema or runtime")
+  }
+  @Suppress("UNCHECKED_CAST")
+  val selection = manifest["selection"] as? Map<*, *>
+    ?: throw GradleException("Android ANVIL context manifest has no selection")
+  fun stringList(value: Any?, label: String): List<String> {
+    val values = value as? List<*> ?: throw GradleException("Android ANVIL manifest has no $label list")
+    val strings = values.map { it as? String ?: throw GradleException("Android ANVIL manifest has an invalid $label entry") }
+    if (strings.isEmpty() || strings.distinct().size != strings.size) {
+      throw GradleException("Android ANVIL manifest has an empty or duplicate $label list")
+    }
+    return strings
+  }
+
+  val selectedTargets = stringList(selection["targets"], "target")
+  val selectedModels = stringList(selection["models"], "model")
+  if (selectedTargets.any { it !in androidAnvilContextTargets }) {
+    throw GradleException("Android ANVIL manifest selects an unsupported SoC target")
+  }
+  if (selectedModels.any { it !in androidAnvilContextModels }) {
+    throw GradleException("Android ANVIL manifest selects an unsupported model")
+  }
+
+  val qairtMetadata = manifest["qairt_sdk"] as? Map<*, *>
+    ?: throw GradleException("Android ANVIL context manifest has no QAIRT SDK provenance")
+  val sdkYamlSha256 = qairtMetadata["sdk_yaml_sha256"] as? String
+    ?: throw GradleException("Android ANVIL context manifest has no QAIRT sdk.yaml checksum")
+  val sdkYaml = qairtSdkRoot.resolve("sdk.yaml")
+  if (!sdkYaml.isFile) throw GradleException("QAIRT_SDK_ROOT is missing sdk.yaml")
+  verifySha256(sdkYaml, sdkYamlSha256, "QAIRT sdk.yaml used to compile ANVIL contexts")
+
+  val expectedPaths = selectedTargets.flatMap { target ->
+    val resolution = androidAnvilContextTargets.getValue(target).resolution
+    selectedModels.map { model -> "$target/$model-$resolution/context.serialized.bin" }
+  }.toSet()
+  val entries = manifest["contexts"] as? List<*>
+    ?: throw GradleException("Android ANVIL context manifest has no contexts list")
+  val manifestPaths = mutableSetOf<String>()
+  for (rawEntry in entries) {
+    val entry = rawEntry as? Map<*, *>
+      ?: throw GradleException("Android ANVIL context manifest contains an invalid context entry")
+    val target = entry["target"] as? String
+      ?: throw GradleException("Android ANVIL context entry has no target")
+    val model = entry["model"] as? String
+      ?: throw GradleException("Android ANVIL context entry has no model")
+    val resolution = entry["resolution"] as? String
+      ?: throw GradleException("Android ANVIL context entry has no resolution")
+    val contextPath = entry["context_path"] as? String
+      ?: throw GradleException("Android ANVIL context entry has no path")
+    val targetSpec = androidAnvilContextTargets[target]
+      ?: throw GradleException("Android ANVIL context entry selects an unsupported SoC target: $target")
+    val expectedPath = "$target/$model-${targetSpec.resolution}/context.serialized.bin"
+    val socId = (entry["soc_id"] as? Number)?.toInt()
+    if (
+      model !in androidAnvilContextModels ||
+      resolution != targetSpec.resolution ||
+      contextPath != expectedPath ||
+      entry["soc_model"] != target.uppercase() ||
+      socId != targetSpec.socId ||
+      entry["dsp_arch"] != targetSpec.dspArch
+    ) {
+      throw GradleException("Android ANVIL context entry does not match a supported target/model path: $contextPath")
+    }
+    val inputShape = (entry["input_shape"] as? List<*>)?.map { (it as? Number)?.toInt() }
+      ?: throw GradleException("Android ANVIL context entry has no input shape: $contextPath")
+    val expectedShape = if (targetSpec.resolution == "720p") listOf(1, 6, 720, 1280) else listOf(1, 6, 1080, 1920)
+    if (inputShape != expectedShape) {
+      throw GradleException("Android ANVIL context entry has the wrong input shape: $contextPath")
+    }
+    if (contextPath !in expectedPaths || !manifestPaths.add(contextPath)) {
+      throw GradleException("Android ANVIL context manifest contains an unselected or duplicate path: $contextPath")
+    }
+
+    val contextFile = canonicalRoot.resolve(contextPath).canonicalFile
+    if (!contextFile.path.startsWith(canonicalRoot.path + File.separator) || !contextFile.isFile) {
+      throw GradleException("Android ANVIL context is missing or escapes its context root: $contextPath")
+    }
+    val expectedBytes = (entry["context_bytes"] as? Number)?.toLong()
+      ?: throw GradleException("Android ANVIL context entry has no byte count: $contextPath")
+    if (expectedBytes <= 0L || contextFile.length() != expectedBytes) {
+      throw GradleException("Android ANVIL context has the wrong size: $contextPath")
+    }
+    val expectedSha256 = entry["context_sha256"] as? String
+      ?: throw GradleException("Android ANVIL context entry has no SHA-256: $contextPath")
+    if (!Regex("^[0-9a-f]{64}$").matches(expectedSha256)) {
+      throw GradleException("Android ANVIL context entry has an invalid SHA-256: $contextPath")
+    }
+    verifySha256(contextFile, expectedSha256, "Android ANVIL context $contextPath")
+  }
+  if (manifestPaths != expectedPaths) {
+    throw GradleException("Android ANVIL context manifest does not cover its selected target/model set")
+  }
+  val diskPaths = canonicalRoot.walkTopDown()
+    .filter { it.isFile && it.name == "context.serialized.bin" }
+    .map { it.relativeTo(canonicalRoot).path.replace(File.separatorChar, '/') }
+    .toSet()
+  if (diskPaths != manifestPaths) {
+    throw GradleException("Android ANVIL context directory contains files not described by manifest.json")
+  }
+}
+
 val androidAnvilRuntimeDir = layout.buildDirectory.dir("plezy-anvil-runtime").get().asFile
 val stageAndroidAnvilRuntime = tasks.register<Sync>("stageAndroidAnvilRuntime") {
   qairtSdkRoot?.let { sdk ->
@@ -257,14 +373,25 @@ val stageAndroidAnvilRuntime = tasks.register<Sync>("stageAndroidAnvilRuntime") 
       throw GradleException("QAIRT SDK is incomplete for the Android ANVIL V68/V69/V73/V75/V79/V81 runtimes: ${missing.joinToString()}")
     }
     androidAnvilContextsRoot?.let { root ->
-      val requiredContexts = androidAnvilContextTargets.flatMap { (soc, resolution) ->
-        listOf("anvil-s-$resolution", "anvil-m-$resolution").map { model ->
+      validateAndroidAnvilContextPack(root, sdk)
+      val requiredContexts = androidAnvilContextTargets.flatMap { (soc, target) ->
+        listOf("anvil-s-${target.resolution}", "anvil-m-${target.resolution}").map { model ->
           root.resolve("$soc/$model/context.serialized.bin")
         }
       }
       val missingContexts = requiredContexts.filterNot(File::isFile)
-      if (missingContexts.isNotEmpty()) {
+      val presentContexts = requiredContexts.size - missingContexts.size
+      if (presentContexts == 0) {
+        throw GradleException("Android ANVIL context set contains none of the supported target/model files")
+      }
+      if (missingContexts.isNotEmpty() && !allowPartialAndroidAnvilContextSet) {
         throw GradleException("Android ANVIL context set is incomplete: ${missingContexts.joinToString()}")
+      }
+      if (missingContexts.isNotEmpty()) {
+        logger.lifecycle(
+          "Packaging $presentContexts of ${requiredContexts.size} ANVIL contexts; " +
+            "devices without a matching context will fall back from QNN HTP"
+        )
       }
     }
   }

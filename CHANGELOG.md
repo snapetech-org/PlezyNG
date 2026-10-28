@@ -16,6 +16,7 @@
 - Serialize per-player motion-provider transitions, power and thermal fallbacks, and teardown so stale async work cannot override newer requests.
 - Fix the pinned Windows ML 2.4.89 package SHA-256 so Windows runtime downloads pass integrity verification.
 - Keep CPU-only motion providers out of real-time Neural readiness until playback timing is qualified.
+- Add an optional pinned OpenVINO Plugin EP runtime for Linux Intel GPUs/NPUs, and allow Qualcomm HTP context preparation to select SoC/model subsets, record QAIRT/calibration provenance, and package only checksum-verified contexts built with the matching QAIRT SDK; partial target sets remain an explicit opt-in.
 - Add experimental native MilkRust visualization hosts across Linux, Windows, Apple and Android, with same-player PCM routing, profile-scoped engine selection, and optional SHA-256-checked desktop runtime/source packaging with notices; compiled engines are not in current releases and platform behavior remains unqualified.
 
 - Add profile-scoped Real-Debrid, AllDebrid, Premiumize and TorBox connections, Stremio add-on imports, cloud/server canonical libraries, renewable shared playback, scheduled preparation, and optional native libtorrent streaming; live-provider and packaged-device qualification remains open.

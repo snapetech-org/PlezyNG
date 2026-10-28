@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Add an optional Brandfetch hotlink fallback for official connector logos, with curated provider domains and approval gates for AllDebrid and TorBox.
 - Add attributed Amazon and Xbox marks to their matching external destinations.
 - Show the Discord brand mark on its rich-presence integration switch.

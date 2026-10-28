@@ -621,7 +621,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }) async {
     final identity = _revisionIdentity;
     if (identity == null) {
-      if (mounted) setState(() => _revisionStatus = 'Revision history needs an active profile and server library item.');
+      if (mounted) setState(() => _revisionStatus = 'Revision history needs a stable profile and media item.');
       return;
     }
     try {
@@ -634,7 +634,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       );
       if (mounted) {
         setState(() => _revisionStatus =
-            'Saved revision ${revision.id} to this device for this profile and library item.');
+            'Saved revision ${revision.id} to this device for this profile and media item.');
       }
     } catch (error) {
       if (mounted) setState(() => _revisionStatus = 'Could not save this revision locally: $error');
@@ -745,7 +745,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   Future<void> _showRevisionHistory() async {
     final identity = _revisionIdentity;
     if (identity == null) {
-      setState(() => _revisionStatus = 'Revision history needs an active profile and server library item.');
+      setState(() => _revisionStatus = 'Revision history needs a stable profile and media item.');
       return;
     }
     try {

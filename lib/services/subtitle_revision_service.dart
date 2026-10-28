@@ -176,8 +176,9 @@ final class SubtitleRevision {
 /// Device-local, bounded history for reviewed results on library or source items.
 ///
 /// Records are stored in the app support directory, scoped by a one-way hash of
-/// profile/server-or-source/item/media identity. The history never synchronizes to a
-/// server and does not modify the source subtitle or playback track.
+/// the profile and server-or-source item/media identity. The history never
+/// synchronizes to a server and does not modify the source subtitle or playback
+/// track.
 abstract final class SubtitleRevisionService {
   static const int maximumRevisionsPerItem = 12;
   static const int maximumRevisionBytes = 8 * 1024 * 1024;

@@ -19,9 +19,10 @@
     "patchSha256": "f896f1ecd7c4c539ed464dfc4bb7ded65fd5919b63dcc20c4bf66ce55fe40105"
   },
   "appMpvBuild": {
-    "repository": "https://github.com/edde746/mpv-build",
-    "commit": "3b9f38affe3c4171f8e6bc47331feffd3d13be1d",
-    "integrationStatus": "linux-windows-apple-android-source-series-composed; ordered-subtitle-capture-bridges-wired; native-artifacts-unbuilt",
+    "repository": "https://github.com/snapetech-org/mpv-build",
+    "commit": "15686a2bcd0bbdfee0f6040d6164d12375d41201",
+    "integrationStatus": "all-platform-build-series-updated-android-bridge-integrated-export-gated; source-pull-request-pending-publication",
+    "orderedPcmPatch": "patches/mpv/pool/0210-plezy-ordered-audio-tap.patch",
     "androidBridgePatch": "patches/mpv-build-android-visualizer-bridge.patch",
     "androidBridgePatchSha256": "4c60f9b9ef0017bc2a89ef023932433f75c99d6604ebe99817ba8d36ea2bc28d"
   },

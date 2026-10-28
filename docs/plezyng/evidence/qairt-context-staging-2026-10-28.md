@@ -60,8 +60,10 @@ Dart errors outside the QAIRT path: missing `nativeVisualizationAudioReady`
 accessors in music visualization; missing `state`, `currentPosition`, and
 `subtitlePcmCaptureAvailable` members plus a player type mismatch in subtitle
 capture; and an unresolved `base64Decode` reference in the Tizen video-hole
-plugin. No APK was produced from this attempt. These source errors remain a
-separate build blocker.
+plugin. No APK was produced from this first attempt. It predates the fixes in
+the current main revision and is retained as a historical record. A subsequent
+full APK build passed after resolving those blockers and the Android toolchain
+issues; see the [full debug APK evidence](qairt-debug-apk-2026-10-28.md).
 
 ## Remaining qualification
 

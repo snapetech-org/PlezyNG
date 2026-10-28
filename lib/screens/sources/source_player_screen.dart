@@ -254,7 +254,9 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
     final player = playback.player;
     if (player == null) return;
     unawaited(
-      OverlaySheetController.of(context).push<void>(
+      OverlaySheetController.showAdaptive<void>(
+        context,
+        isScrollControlled: true,
         builder: (_) => SubtitleAiSheet(
           player: player,
           revisionIdentity: _sourceSubtitleRevisionIdentity(playback),

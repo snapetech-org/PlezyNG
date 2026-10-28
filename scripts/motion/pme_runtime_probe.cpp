@@ -21,7 +21,7 @@ uint32_t parse_count(const char* value, uint32_t fallback, uint32_t minimum) {
   char* end = nullptr;
   const unsigned long parsed = std::strtoul(value, &end, 10);
   if (!end || *end || parsed < minimum || parsed > std::numeric_limits<uint32_t>::max()) {
-    throw std::invalid_argument("warm-up and iteration counts must be valid integers");
+    throw std::invalid_argument("count must be a valid unsigned integer within range");
   }
   return static_cast<uint32_t>(parsed);
 }
@@ -51,9 +51,10 @@ std::string device_name(pme_device_kind kind) {
 }  // namespace
 
 int main(int argc, char** argv) {
-  if (argc < 4 || argc > 9) {
+  if (argc < 4) {
     std::cerr << "Usage: pme_runtime_probe <runtime-library> <provider-manifest|-> <model> "
-                 "[expected-provider] [warmups=3] [iterations=12] [--allow-cpu] [--cpu-only]\n"
+                 "[expected-provider] [warmups=3] [iterations=12] [--allow-cpu] [--cpu-only] "
+                 "[--intra-op-threads N]\n"
                  "Use --cpu-only to open the explicit CPU provider without trying accelerators.\n";
     return 2;
   }
@@ -62,6 +63,7 @@ int main(int argc, char** argv) {
   try {
     bool allow_cpu = false;
     bool cpu_only = false;
+    uint32_t intra_op_threads = 1;
     std::vector<const char*> positional{argv[1], argv[2], argv[3]};
     for (int i = 4; i < argc; ++i) {
       const std::string argument(argv[i]);
@@ -69,6 +71,16 @@ int main(int argc, char** argv) {
         allow_cpu = true;
       } else if (argument == "--cpu-only") {
         cpu_only = true;
+      } else if (argument == "--intra-op-threads") {
+        if (i + 1 >= argc) {
+          throw std::invalid_argument("--intra-op-threads requires a positive integer");
+        }
+        intra_op_threads = parse_count(argv[++i], 1, 1);
+      } else if (argument.rfind("--intra-op-threads=", 0) == 0) {
+        const std::string value = argument.substr(std::string("--intra-op-threads=").size());
+        intra_op_threads = parse_count(value.c_str(), 1, 1);
+      } else if (argument.rfind("--", 0) == 0) {
+        throw std::invalid_argument("unknown option: " + argument);
       } else {
         positional.push_back(argv[i]);
       }
@@ -92,7 +104,7 @@ int main(int argc, char** argv) {
     config.abi_version = PME_RUNTIME_ABI_VERSION;
     config.runtime_library_path = positional[0];
     config.model_path = positional[2];
-    config.intra_op_threads = 1;
+    config.intra_op_threads = intra_op_threads;
     config.allow_cpu_provider = allow_cpu || cpu_only;
 
     char error[2048] = {};
@@ -196,6 +208,7 @@ int main(int argc, char** argv) {
               << ",\"cpu_fallback\":"
               << (info.device_kind == PME_DEVICE_CPU && !cpu_only ? "true" : "false")
               << ",\"cpu_only\":" << (cpu_only ? "true" : "false")
+              << ",\"intra_op_threads\":" << intra_op_threads
               << ",\"input_elements\":" << info.input.element_count
               << ",\"output_elements\":" << info.output.element_count << ",\"warmups\":" << warmups
               << ",\"iterations\":" << iterations << ",\"session_open_ms\":" << session_open_ms

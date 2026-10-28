@@ -31,7 +31,7 @@ class ConnectorBrandMark extends StatelessWidget {
   /// Some providers explicitly reserve reproduction rights in their terms.
   /// Their domains require a separate build-time approval after an agreement.
   static const String _brandfetchApprovedDomains = String.fromEnvironment('BRANDFETCH_APPROVED_DOMAINS');
-  static const Set<String> _explicitApprovalDomains = {'alldebrid.com'};
+  static const Set<String> _explicitApprovalDomains = {'alldebrid.com', 'torbox.app'};
 
   /// Official domains for connection-only providers without a directory host.
   static const Map<String, String> _logoDomains = {
@@ -127,7 +127,6 @@ class ConnectorBrandMark extends StatelessWidget {
     'premiumize': 'dashboard_premiumize.svg',
     'hulu': 'dashboard_hulu.svg',
     'peacock': 'dashboard_peacock.svg',
-    'torbox': 'torbox.svg',
   };
 
   String? get _resolvedIconName {

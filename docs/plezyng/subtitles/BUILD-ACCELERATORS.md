@@ -48,7 +48,7 @@ flutter build windows --release
 FLUTTER_WHISPER_GPU_BACKEND=VULKAN flutter build linux --release
 ~~~
 
-CPU builds need no GPU SDK. Backend selection changes which native code is compiled; it cannot enable a GPU in a binary already built for CPU. Whisper device discovery and execution are still runtime-dependent. Failed GPU loading or inference restarts the WAV transcription on CPU.
+CPU builds need no GPU SDK. Backend selection changes which native code is compiled; it cannot enable a GPU in a binary already built for CPU. Whisper device discovery and execution are still runtime-dependent. The app distinguishes CPU selection, provider initialization, and whole-run CPU fallback. Installed Whisper and Sherpa bindings do not expose per-operation device placement, so a successful provider request is not an execution-placement qualification.
 
 ## Local desktop subtitle-text translation
 
@@ -68,6 +68,6 @@ Use PLEZY_ARGOS_PYTHON to point PlezyNG at a specific Python executable when pyt
 - iOS/macOS Whisper uses CPU/Accelerate. Metal is not enabled.
 - Browser Whisper uses WebAssembly CPU; PlezyNG's generated-subtitle attachment flow is not enabled in the browser.
 - Sherpa ONNX requests Core ML, QNN, and RKNN for its English Moonshine path on supported application targets. Provider initialization or inference failure retries on CPU; the app cannot verify per-node placement.
-- Live in-player capture currently taps decoded PCM only on Android ExoPlayer VOD. MPV fallback, desktop and Apple players do not expose PCM to this workflow. Those backends use matching WAV input for full-file transcription and sync.
+- Android ExoPlayer VOD supports the existing PCM tap. Linux, Windows, and Apple MPV now have capability-gated ordered-drain bridges using the optional `mpv_plezy_audio_tap_read_next` extension. The currently locked Linux, Windows, and Apple libmpv artifacts do not export that symbol, so these MPV paths remain unavailable in shipped builds until matching patched runtimes are built, hashed, packaged, and qualified. Android MPV fallback has the same gate in its `libplayer.so` AAR plus an optional JNI host build. Tizen, webOS, and browser players still use a matching WAV.
 
-This document describes build and runtime requests, not measured compatibility. No native GPU build, device enumeration, live capture, or physical-device benchmark was run for this PR.
+This document describes build and runtime requests, not measured compatibility. Per-operation placement is unverified by current Flutter inference bindings. No patched platform libmpv artifact or target-device subtitle benchmark has been produced for this change.

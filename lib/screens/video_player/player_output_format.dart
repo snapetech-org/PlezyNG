@@ -138,6 +138,6 @@ class PlayerOutputFormat {
 
   static double? _positive(String? raw) {
     final value = double.tryParse(raw ?? '');
-    return value != null && value > 0 ? value : null;
+    return value != null && value.isFinite && value > 0 ? value : null;
   }
 }

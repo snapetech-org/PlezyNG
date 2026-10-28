@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Preserve measured display-rate precision for motion-compensated frame generation, accept the 48×1000/1001 Hz fractional display cadence, and ignore non-finite reported rates during display matching.
+- Pass common 1000/1001 display cadences to FFmpeg as exact rational rates, preserve other measured precision, accept the fractional 48 Hz cadence, and ignore non-finite rates during display matching.
 - Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.
 - Repair combined application compilation across visualizer and subtitle archive extraction, IPTV, catalog search, motion and player settings. Preserve bounded archive writes, stale-operation guards and subtitle timing, use shared icon styling, and explicitly track untranslated messages as English fallbacks.

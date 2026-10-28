@@ -483,9 +483,7 @@ class MotionClarityService {
       );
     }
 
-    // Keep the measured display-rate precision; fixed three-decimal rounding
-    // can change the requested cadence for fractional refresh modes.
-    final rateText = targetFps.toString();
+    final rateText = _minterpolateRateText(targetFps);
     final filterSpec =
         '@$_mciFilterLabel:lavfi=[minterpolate=fps=$rateText:mi_mode=mci:${mciQuality.ffmpegOptions}:scd=fdiff:scd_threshold=10]';
     final needsReload =
@@ -824,6 +822,21 @@ class MotionClarityService {
   static double? _readFps(String? raw) {
     final fps = raw == null ? null : double.tryParse(raw.trim());
     return fps != null && fps.isFinite && fps > 0 ? fps : null;
+  }
+
+  static const _fractionalMinterpolateRates = <(double, String)>[
+    (24000 / 1001, '24000/1001'),
+    (30000 / 1001, '30000/1001'),
+    (48000 / 1001, '48000/1001'),
+    (60000 / 1001, '60000/1001'),
+    (120000 / 1001, '120000/1001'),
+  ];
+
+  static String _minterpolateRateText(double fps) {
+    for (final (rate, expression) in _fractionalMinterpolateRates) {
+      if ((fps - rate).abs() <= 0.005) return expression;
+    }
+    return fps.toString();
   }
 
   Future<String?> _readOutputDriver() async {

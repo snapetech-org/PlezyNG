@@ -6,6 +6,7 @@ import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
 
@@ -16,6 +17,7 @@ final class SubtitleWhisperResult {
     required this.detectedLanguage,
     required this.runtimeProvider,
     required this.fellBackToCpu,
+    this.placementEvidence = SubtitlePlacementEvidence.unverified,
     required this.translatedToEnglish,
     this.wordTimings = const <SubtitleWordTiming>[],
   });
@@ -26,6 +28,7 @@ final class SubtitleWhisperResult {
   final String detectedLanguage;
   final String runtimeProvider;
   final bool fellBackToCpu;
+  final SubtitlePlacementEvidence placementEvidence;
   final bool translatedToEnglish;
 }
 
@@ -209,6 +212,11 @@ abstract final class SubtitleWhisperCppService {
         detectedLanguage: result.language,
         runtimeProvider: runtimeProvider,
         fellBackToCpu: fellBackToCpu,
+        placementEvidence: fellBackToCpu
+            ? SubtitlePlacementEvidence.cpuFallbackAfterAcceleratorUnavailable
+            : (runtimeProvider == 'CPU'
+                ? SubtitlePlacementEvidence.cpuOnlyConfigured
+                : SubtitlePlacementEvidence.acceleratorRequestSucceededButUnverified),
         translatedToEnglish: translated,
         wordTimings: wordTimings,
       );

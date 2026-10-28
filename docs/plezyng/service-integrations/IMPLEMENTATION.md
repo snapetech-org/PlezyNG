@@ -101,7 +101,6 @@ W14 is closed with bounded no-go decisions for this release. Home Assistant REST
 Release only the exact provider/platform/channel cells with evidence. Preserve working noncommercial integrations if affiliate approval is delayed. Record policy/source freshness, accessible focus/labels, native package hashes, and a recovery route for revoked access or unavailable backend services. The Watchmode and Apple MusicKit setup documents contain their activation checklists; neither feature flag or environment approval variable is enabled by default.
 
 ## Owner and dependency ledger
-## Owner and dependency ledger
 
 | Decision | Owner | Safe work while pending | Blocks |
 | --- | --- | --- | --- |

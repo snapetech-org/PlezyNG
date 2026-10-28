@@ -1455,7 +1455,7 @@ open class ExoPlayerPlugin(
             "channels" to channels,
             "encoding" to "float32",
             "pcm" to pcm,
-            "droppedFrames" to Integer.toUnsignedLong(droppedFrames),
+            "droppedFrames" to droppedFrames.toLong().and(0xffff_ffffL),
           )
         )
       }

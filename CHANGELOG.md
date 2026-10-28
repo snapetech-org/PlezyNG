@@ -2,7 +2,16 @@
 
 ## [Unreleased]
 
+- Add an optional Brandfetch hotlink fallback for official connector logos, with curated provider domains and approval gates for AllDebrid and TorBox.
+- Add attributed Amazon and Xbox marks to their matching external destinations.
+- Show the Discord brand mark on its rich-presence integration switch.
+- Add attribution-backed marks to additional service and file-source connection flows.
+- Apply the CI native formatting toolchain to C/C++/Objective-C and Kotlin sources; no behavior change.
+- Resolve newly added Apple plugins into the iOS, macOS and tvOS CocoaPods locks so deployment-mode installs succeed in release builds.
+- Omit Watchmode availability rows whose links are all unsafe or invalid, so the Links screen never shows a provider it cannot open.
 - Add opt-in experimental motion processing across MPV, Apple VideoToolbox, Android LiteRT/QNN, and desktop PME, with capability reporting and platform qualification limits documented separately.
+- Retarget the active current-display motion-compensation filter when mpv reports a display-rate change.
+- Serialize motion-processing configuration and health-monitor fallback changes so stale MPV updates cannot overwrite newer settings.
 - Add experimental native MilkRust visualization hosts across Linux, Windows, Apple and Android, with same-player PCM routing, profile-scoped engine selection, and optional SHA-256-checked desktop runtime/source packaging with notices; compiled engines are not in current releases and platform behavior remains unqualified.
 
 - Add profile-scoped Real-Debrid, AllDebrid, Premiumize and TorBox connections, Stremio add-on imports, cloud/server canonical libraries, renewable shared playback, scheduled preparation, and optional native libtorrent streaming; live-provider and packaged-device qualification remains open.

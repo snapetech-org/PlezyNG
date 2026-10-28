@@ -36,6 +36,17 @@ struct MilkRustApi {
     library = dlopen(nullptr, RTLD_NOW | RTLD_LOCAL);
 #else
     library = dlopen("libmilkrust_native.so", RTLD_NOW | RTLD_LOCAL);
+    if (!library) {
+      // App-bundled plugin libraries are not guaranteed to be on the platform
+      // loader's global search path. Resolve the sibling runtime from this
+      // plugin's own installed directory (the webOS IPK stages both in app/lib).
+      Dl_info module{};
+      if (dladdr(this, &module) != 0 && module.dli_fname) {
+        const auto bundled = std::filesystem::path(module.dli_fname).parent_path() /
+            "libmilkrust_native.so";
+        library = dlopen(bundled.c_str(), RTLD_NOW | RTLD_LOCAL);
+      }
+    }
 #endif
     if (!library) {
       error = "Native MilkRust is not installed in this build.";

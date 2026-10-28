@@ -777,6 +777,24 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     return _videoPlayerPlatform.setTrackSelection(_playerId, track);
   }
 
+  /// Whether this player session can supply decoded PCM for local workflows.
+  Future<bool> subtitlePcmCaptureAvailable() async {
+    if (!value.isInitialized || _isDisposed) return false;
+    return _videoPlayerPlatform.subtitlePcmCaptureAvailable(_playerId);
+  }
+
+  /// Enables bounded, timestamped PCM capture for an explicit local workflow.
+  Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
+    if (!value.isInitialized || _isDisposed) return false;
+    return _videoPlayerPlatform.setSubtitlePcmCaptureEnabled(_playerId, enabled);
+  }
+
+  /// Drains and releases queued timestamped PCM packets.
+  Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
+    if (!value.isInitialized || _isDisposed) return const [];
+    return _videoPlayerPlatform.drainSubtitlePcmCapture(_playerId);
+  }
+
   /// Sets the audio volume of [this].
   ///
   /// [volume] indicates a value between 0.0 (silent) and 1.0 (full volume) on a

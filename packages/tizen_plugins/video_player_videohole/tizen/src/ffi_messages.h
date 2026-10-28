@@ -44,6 +44,12 @@ FLUTTER_PLUGIN_EXPORT const char* ffi_get_track_info(int64_t player_id,
 FLUTTER_PLUGIN_EXPORT int ffi_set_track_selection(int64_t player_id,
                                                   int64_t track_id,
                                                   const char* track_type);
+FLUTTER_PLUGIN_EXPORT int ffi_subtitle_pcm_capture_available(
+    int64_t player_id);
+FLUTTER_PLUGIN_EXPORT int ffi_set_subtitle_pcm_capture_enabled(
+    int64_t player_id, bool enabled);
+FLUTTER_PLUGIN_EXPORT const char* ffi_drain_subtitle_pcm_capture(
+    int64_t player_id);
 FLUTTER_PLUGIN_EXPORT int ffi_set_display_geometry(int64_t player_id, int32_t x,
                                                    int32_t y, int32_t width,
                                                    int32_t height);

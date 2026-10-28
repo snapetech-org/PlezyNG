@@ -2,8 +2,9 @@
 
 This is a **prebuilt experimental ARM TPK for Tizen 6–9**. You do not need
 Flutter or a compiler. It contains the application, Flutter runtime, media
-plugins, SQLite and SMB. It has been compiled and development-signed, but has
-not been installed or played media on a Samsung TV.
+plugins, SQLite, SMB, and a CPU Whisper bridge for local subtitle inference.
+The Whisper model downloads on demand. It has been compiled and
+development-signed, but has not been installed or played media on a Samsung TV.
 
 Check the TV's actual Tizen version, model and firmware. The original 2021–2025
 models span Tizen 6–9, but OS upgrades can change this. This build does not claim
@@ -18,7 +19,7 @@ requires a separate compatible build. x64 packages are for emulators, not TVs.
 | `.tpk.sha256` and `.tpk.json` | Download digest, source revision, ABI and qualification status. |
 | `package.py` and `toolchain.json` | Keep together; Python 3.11+ helper for inspection, re-signing and installation. |
 | `pubspec-tizen.lock` | Exact resolved Dart dependencies for this build. |
-| `*-native-sources.tar.gz` | Corresponding SQLite/SMB source and patches. |
+| `*-native-sources.tar.gz` | Corresponding SQLite/SMB/Whisper source and patches. |
 
 The development signature is not a Samsung TV authorization. No private key,
 Samsung login or device identity is included. Preserve your own Samsung author
@@ -93,6 +94,8 @@ Record pass/fail and the exact error for each step:
 | Browse library and start the test title; video aligns under controls | |
 | Pause/resume, seek forward/back, stop/reopen and end of playback | |
 | Audio/video sync; SRT/VTT subtitle on/off or server burn-in | |
+| Open AI subtitles, download the CPU model, transcribe a matching WAV, and attach the previewed SRT | |
+| On a supported unprotected VOD audio route, start/stop live captions and check PCM continuity and playback impact | |
 | 20-minute playback and a second title | |
 | Background/standby then resume; Wi-Fi interruption then recovery | |
 | Optional SMB read, music queue and stored library state | |

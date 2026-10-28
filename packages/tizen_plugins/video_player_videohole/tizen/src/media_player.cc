@@ -4,11 +4,14 @@
 
 #include "media_player.h"
 
+#include <media_format.h>
+#include <media_packet.h>
 #include <system_info.h>
 #include <unistd.h>
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <sstream>
 
 #include "log.h"
@@ -55,6 +58,26 @@ static bool IsTizenCorePlatform() {
     return major >= 11;
   }();
   return is_tizen_core;
+}
+
+static std::string Base64Encode(const std::vector<uint8_t> &bytes) {
+  static constexpr char kAlphabet[] =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  std::string encoded;
+  encoded.reserve(((bytes.size() + 2) / 3) * 4);
+  for (size_t offset = 0; offset < bytes.size(); offset += 3) {
+    const uint32_t first = bytes[offset];
+    const uint32_t second = offset + 1 < bytes.size() ? bytes[offset + 1] : 0;
+    const uint32_t third = offset + 2 < bytes.size() ? bytes[offset + 2] : 0;
+    const uint32_t value = (first << 16) | (second << 8) | third;
+    encoded.push_back(kAlphabet[(value >> 18) & 0x3f]);
+    encoded.push_back(kAlphabet[(value >> 12) & 0x3f]);
+    encoded.push_back(offset + 1 < bytes.size() ? kAlphabet[(value >> 6) & 0x3f]
+                                               : '=');
+    encoded.push_back(offset + 2 < bytes.size() ? kAlphabet[value & 0x3f]
+                                               : '=');
+  }
+  return encoded;
 }
 
 MediaPlayer::MediaPlayer(flutter::BinaryMessenger *messenger,
@@ -183,6 +206,11 @@ int64_t MediaPlayer::Create(const std::string &uri,
     return -1;
   }
 
+  // Register the decoded-PCM callback while the player is IDLE. The callback
+  // only copies samples into a bounded queue while the viewer has explicitly
+  // enabled subtitle capture; ordinary playback stays data-free.
+  ConfigureSubtitlePcmCapture();
+
   return player_id_;
 }
 
@@ -203,6 +231,147 @@ int MediaPlayer::Prepare() {
   }
 
   return 0;
+}
+
+bool MediaPlayer::ConfigureSubtitlePcmCapture() {
+  if (!player_ || drm_manager_) return false;
+
+  media_format_h format = nullptr;
+  int ret = media_format_create(&format);
+  if (ret != MEDIA_PACKET_ERROR_NONE || !format) {
+    LOG_WARN("[MediaPlayer] Could not allocate PCM capture format: %s.",
+             get_error_message(ret));
+    return false;
+  }
+
+  ret = media_format_set_audio_mime(format, MEDIA_FORMAT_PCM_S16LE);
+  if (ret == MEDIA_PACKET_ERROR_NONE) {
+    ret = media_format_set_audio_channel(format, 1);
+  }
+  if (ret == MEDIA_PACKET_ERROR_NONE) {
+    ret = media_format_set_audio_samplerate(format, kSubtitlePcmSampleRate);
+  }
+  if (ret == MEDIA_PACKET_ERROR_NONE) {
+    ret = player_set_media_packet_audio_frame_decoded_cb(
+        player_, format, PLAYER_AUDIO_EXTRACT_DEINTERLEAVE,
+        OnAudioPcmDecoded, this);
+  }
+  media_format_unref(format);
+
+  subtitle_pcm_callback_registered_ = ret == PLAYER_ERROR_NONE;
+  subtitle_pcm_capture_available_.store(subtitle_pcm_callback_registered_);
+  if (!subtitle_pcm_callback_registered_) {
+    LOG_INFO("[MediaPlayer] Decoded PCM capture unavailable: %s.",
+             get_error_message(ret));
+  }
+  return subtitle_pcm_callback_registered_;
+}
+
+bool MediaPlayer::SubtitlePcmCaptureAvailable() const {
+  return subtitle_pcm_capture_available_.load();
+}
+
+bool MediaPlayer::SetSubtitlePcmCaptureEnabled(bool enabled) {
+  if (!subtitle_pcm_capture_available_.load() || !player_) return false;
+  if (enabled) {
+    ClearSubtitlePcmCapture();
+    subtitle_pcm_capture_enabled_.store(true);
+  } else {
+    subtitle_pcm_capture_enabled_.store(false);
+  }
+  return true;
+}
+
+std::string MediaPlayer::DrainSubtitlePcmCaptureJson() {
+  std::deque<CapturedAudioPacket> packets;
+  {
+    std::lock_guard<std::mutex> lock(subtitle_pcm_mutex_);
+    packets.swap(subtitle_pcm_packets_);
+    subtitle_pcm_bytes_ = 0;
+  }
+
+  std::ostringstream json;
+  json << '[';
+  bool first = true;
+  for (const auto &packet : packets) {
+    if (packet.pcm.empty()) continue;
+    if (!first) json << ',';
+    first = false;
+    json << "{\"presentationTimeUs\":" << packet.presentation_time_us
+         << ",\"sampleRate\":" << kSubtitlePcmSampleRate
+         << ",\"channels\":1,\"encoding\":\"pcm16\",\"pcmBase64\":\""
+         << Base64Encode(packet.pcm) << "\"}";
+  }
+  json << ']';
+  return json.str();
+}
+
+void MediaPlayer::ClearSubtitlePcmCapture() {
+  std::lock_guard<std::mutex> lock(subtitle_pcm_mutex_);
+  subtitle_pcm_packets_.clear();
+  subtitle_pcm_bytes_ = 0;
+}
+
+void MediaPlayer::WaitForAudioCallbacks() {
+  std::unique_lock<std::mutex> lock(subtitle_pcm_mutex_);
+  subtitle_pcm_callbacks_idle_.wait(lock,
+                                   [this] { return audio_callbacks_active_ == 0; });
+}
+
+void MediaPlayer::OnAudioPcmDecoded(media_packet_h packet, void *user_data) {
+  MediaPlayer *self = static_cast<MediaPlayer *>(user_data);
+  if (!self) {
+    if (packet) media_packet_destroy(packet);
+    return;
+  }
+
+  {
+    std::lock_guard<std::mutex> lock(self->subtitle_pcm_mutex_);
+    ++self->audio_callbacks_active_;
+  }
+
+  if (packet && self->subtitle_pcm_capture_enabled_.load()) {
+    uint64_t presentation_time_ns = 0;
+    uint64_t buffer_size = 0;
+    void *buffer = nullptr;
+    const bool valid =
+        media_packet_get_pts(packet, &presentation_time_ns) ==
+            MEDIA_PACKET_ERROR_NONE &&
+        media_packet_get_buffer_size(packet, &buffer_size) ==
+            MEDIA_PACKET_ERROR_NONE &&
+        media_packet_get_buffer_data_ptr(packet, &buffer) ==
+            MEDIA_PACKET_ERROR_NONE &&
+        buffer && buffer_size > 0 &&
+        buffer_size <= kSubtitlePcmCaptureMaxBytes;
+    if (valid) {
+      CapturedAudioPacket captured;
+      captured.presentation_time_us = presentation_time_ns / 1000;
+      const auto *bytes = static_cast<const uint8_t *>(buffer);
+      captured.pcm.assign(bytes, bytes + buffer_size);
+      std::lock_guard<std::mutex> lock(self->subtitle_pcm_mutex_);
+      if (self->subtitle_pcm_capture_enabled_.load()) {
+        while (!self->subtitle_pcm_packets_.empty() &&
+               self->subtitle_pcm_bytes_ + captured.pcm.size() >
+                   kSubtitlePcmCaptureMaxBytes) {
+          self->subtitle_pcm_bytes_ -=
+              self->subtitle_pcm_packets_.front().pcm.size();
+          self->subtitle_pcm_packets_.pop_front();
+        }
+        if (captured.pcm.size() <= kSubtitlePcmCaptureMaxBytes) {
+          self->subtitle_pcm_bytes_ += captured.pcm.size();
+          self->subtitle_pcm_packets_.push_back(std::move(captured));
+        }
+      }
+    }
+  }
+
+  if (packet) media_packet_destroy(packet);
+  {
+    std::lock_guard<std::mutex> lock(self->subtitle_pcm_mutex_);
+    if (--self->audio_callbacks_active_ == 0) {
+      self->subtitle_pcm_callbacks_idle_.notify_all();
+    }
+  }
 }
 
 void MediaPlayer::Dispose() {
@@ -761,6 +930,20 @@ bool MediaPlayer::StopAndDestroy() {
       success = false;
     }
   }
+
+  subtitle_pcm_capture_enabled_.store(false);
+  if (subtitle_pcm_callback_registered_) {
+    const int unset_result =
+        player_unset_media_packet_audio_frame_decoded_cb(player_);
+    if (unset_result != PLAYER_ERROR_NONE) {
+      LOG_WARN("[MediaPlayer] Failed to unset decoded PCM callback: %s.",
+               get_error_message(unset_result));
+    }
+    subtitle_pcm_callback_registered_ = false;
+    subtitle_pcm_capture_available_.store(false);
+    WaitForAudioCallbacks();
+  }
+  ClearSubtitlePcmCapture();
 
   if (player_state != PLAYER_STATE_NONE && player_state != PLAYER_STATE_IDLE) {
     if (player_unprepare(player_) != PLAYER_ERROR_NONE) {

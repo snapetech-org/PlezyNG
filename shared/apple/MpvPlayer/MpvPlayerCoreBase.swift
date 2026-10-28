@@ -343,6 +343,54 @@ class MpvPlayerCoreBase: NSObject {
       PlezyVisualizationTapRead(UnsafeMutableRawPointer(player), lifecycleState.visualizationPTS, output, size)
     } ?? -1001
   }
+  func subtitlePcmCaptureAvailable() -> Bool {
+    isInitialized && PlezySubtitlePcmCaptureAvailable()
+  }
+  func setSubtitlePcmCaptureEnabled(_ enabled: Bool) -> Int32 {
+    withActiveMpv { PlezySubtitlePcmCaptureEnable(UnsafeMutableRawPointer($0), enabled) } ?? -1001
+  }
+  func drainSubtitlePcmCapture(maxPackets: Int = 32) -> (packets: [[String: Any]], error: Int32)? {
+    withActiveMpv { player in
+      let limit = max(0, min(maxPackets, 32))
+      let maximumFrames: UInt32 = 512
+      let maximumChannels: UInt32 = 8
+      var packets: [[String: Any]] = []
+      var error: Int32 = 0
+      for _ in 0..<limit {
+        var pts = 0.0
+        var frames: UInt32 = 0
+        var sampleRate: UInt32 = 0
+        var channels: UInt32 = 0
+        var droppedFrames: UInt32 = 0
+        var pcm = Data(count: Int(maximumFrames * maximumChannels) * MemoryLayout<Float>.size)
+        let readResult = pcm.withUnsafeMutableBytes { buffer -> Int32 in
+          guard let baseAddress = buffer.baseAddress else { return -1001 }
+          return PlezySubtitlePcmCaptureReadNext(
+            UnsafeMutableRawPointer(player), &pts, &frames, &sampleRate, &channels, &droppedFrames,
+            baseAddress, buffer.count)
+        }
+        if readResult == 0 { break }
+        if readResult < 0 { error = readResult; break }
+        guard frames > 0, frames <= maximumFrames, sampleRate > 0,
+          channels > 0, channels <= maximumChannels
+        else { continue }
+        let ptsUs = pts * 1_000_000
+        guard ptsUs.isFinite, ptsUs >= Double(Int64.min), ptsUs < Double(Int64.max) else { continue }
+        let sampleBytes = Int(frames) * Int(channels) * MemoryLayout<Float>.size
+        guard sampleBytes <= pcm.count else { continue }
+        pcm.removeSubrange(sampleBytes..<pcm.count)
+        packets.append([
+          "presentationTimeUs": Int64(ptsUs.rounded()),
+          "sampleRate": Int(sampleRate),
+          "channels": Int(channels),
+          "encoding": "float32",
+          "pcm": pcm,
+          "droppedFrames": Int(droppedFrames),
+        ])
+      }
+      return (packets, error)
+    }
+  }
 
   func updateEDRMode(sigPeak: Double) {}
 

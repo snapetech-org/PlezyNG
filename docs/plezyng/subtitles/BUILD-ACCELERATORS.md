@@ -48,7 +48,7 @@ flutter build windows --release
 FLUTTER_WHISPER_GPU_BACKEND=VULKAN flutter build linux --release
 ~~~
 
-CPU builds need no GPU SDK. Backend selection changes which native code is compiled; it cannot enable a GPU in a binary already built for CPU. Whisper device discovery and execution are still runtime-dependent. Failed GPU loading or inference restarts the WAV transcription on CPU.
+CPU builds need no GPU SDK. Backend selection changes which native code is compiled; it cannot enable a GPU in a binary already built for CPU. Whisper device discovery and execution are still runtime-dependent. The app distinguishes CPU selection, provider initialization, and whole-run CPU fallback. Installed Whisper and Sherpa bindings do not expose per-operation device placement, so a successful provider request is not an execution-placement qualification.
 
 ## Local desktop subtitle-text translation
 
@@ -67,7 +67,8 @@ Use PLEZY_ARGOS_PYTHON to point PlezyNG at a specific Python executable when pyt
 - Android Whisper uses CPU/NEON. Android Vulkan and WebGPU are not enabled by the packaged Flutter runtime.
 - iOS/macOS Whisper uses CPU/Accelerate. Metal is not enabled.
 - Browser Whisper uses WebAssembly CPU; PlezyNG's generated-subtitle attachment flow is not enabled in the browser.
+- Tizen builds a CPU-only Whisper bridge from the exact lockfile-verified `flutter_whisper_ggml` source and packages it with the app. The Tizen player requests 16 kHz mono PCM before prepare; live captions and WAV workflows are shown only when the bridge is present. No Tizen GPU/NPU backend is compiled or claimed.
 - Sherpa ONNX requests Core ML, QNN, and RKNN for its English Moonshine path on supported application targets. Provider initialization or inference failure retries on CPU; the app cannot verify per-node placement.
-- Live in-player capture currently taps decoded PCM only on Android ExoPlayer VOD. MPV fallback, desktop and Apple players do not expose PCM to this workflow. Those backends use matching WAV input for full-file transcription and sync.
+- Android ExoPlayer VOD supports the existing PCM tap. Android ExoPlayer-to-MPV fallback now routes through the same bounded packet contract when the session-leased JNI bridge is present. Linux, Windows, Apple, and Android MPV source builds now carry a common ordered PCM patch in the pinned PlezyNG mpv-build fork, and the build-fork publication workflow rejects artifacts that do not export `mpv_plezy_audio_tap_read_next`. That source integration is under review; the app still locks the previous checksummed MPV binaries until new artifacts are published and their digests are promoted. Tizen's vendored native `player_h` adapter registers `player_set_media_packet_audio_frame_decoded_cb` before prepare and exposes opt-in 16 kHz mono PCM in a bounded 24-second PTS queue when the codec/device permits it; the private Tizen package build also compiles the matching CPU Whisper FFI runtime from the locked source. DRM and unsupported native routes remain unavailable, and Tizen needs a rebuilt package and TV qualification. webOS uses NDL media playback without a decoded-PCM callback, and browser playback still has no `Player` implementation in this app; those paths require a matching WAV or a separately implemented playback backend.
 
-This document describes build and runtime requests, not measured compatibility. No native GPU build, device enumeration, live capture, or physical-device benchmark was run for this PR.
+This document describes build and runtime requests, not measured compatibility. Per-operation placement is unverified by current Flutter inference bindings. The Tizen Whisper source-build integration and Tizen PCM adapter have not yet been built or run on a TV. No patched platform libmpv artifact or target-device subtitle benchmark has been produced for this change.

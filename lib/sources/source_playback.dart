@@ -14,6 +14,7 @@ import '../services/media_control_router.dart';
 import '../services/media_controls_manager.dart';
 import '../services/playback_coordinator.dart';
 import '../services/settings_service.dart';
+import '../services/track_selection_service.dart';
 import '../services/music/music_hardware_transport.dart';
 import '../services/player_sync_offsets.dart';
 import '../services/scoped_player_prefs.dart';
@@ -422,7 +423,19 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     if (tracks.isEmpty || _fileIndex < 0 || _fileIndex >= files.length) return;
 
     SubtitleTrack? candidate;
+    for (final language in SettingsService.instance.read(SettingsService.subtitleLanguageOrder)) {
+      final preferredLanguage = language.trim();
+      if (preferredLanguage.isEmpty) continue;
+      for (final track in tracks) {
+        if (TrackSelectionService.matchesLanguageCodes(track.language, preferredLanguage)) {
+          candidate = track;
+          break;
+        }
+      }
+      if (candidate != null) break;
+    }
     for (final track in tracks) {
+      if (candidate != null) break;
       if (track.isDefault && !track.effectiveForced) {
         candidate = track;
         break;

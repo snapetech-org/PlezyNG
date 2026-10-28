@@ -434,6 +434,9 @@ class MpvPlayerCore private constructor(
   internal fun visualizationSessionId(): Long? = synchronized(nativeOwnershipLock) {
     if (audioOnly && isInitialized && !disposing) player?.session else null
   }
+  internal fun subtitlePcmCaptureSessionId(): Long? = synchronized(nativeOwnershipLock) {
+    if (!audioOnly && isInitialized && !disposing) player?.session else null
+  }
   private var scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
   private val endFileDiagnostics = MpvEndFileDiagnostics()
 

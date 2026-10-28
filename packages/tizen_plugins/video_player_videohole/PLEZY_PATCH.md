@@ -14,6 +14,10 @@ Local fixes:
 - Stop the geometry frame callback after unmount; keep the controller listener
   until disposal so deactivate/reactivate does not silently lose it.
 - Remove source and license URL logging from native code.
+- Register Tizen's native decoded-audio packet callback before prepare and
+  expose an opt-in, 24-second bounded, PTS-stamped PCM queue through the
+  controller FFI. DRM and device/codec combinations that reject the callback
+  remain unavailable; playback itself is not failed when capture is rejected.
 
 `test/mpv/player_tizen_test.dart` exercises failure/retry, repeated disposal,
 surface unmounting and playback lifecycle through the real Dart controller

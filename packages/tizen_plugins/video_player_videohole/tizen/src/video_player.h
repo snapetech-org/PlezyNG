@@ -63,6 +63,12 @@ class VideoPlayer {
                        int64_t resume_time) = 0;
   virtual bool SetDisplayRotate(int64_t rotation) = 0;
 
+  // Optional bounded decoded-audio tap used by local subtitle inference.
+  // Backends without a tap keep the default unsupported implementation.
+  virtual bool SubtitlePcmCaptureAvailable() const { return false; }
+  virtual bool SetSubtitlePcmCaptureEnabled(bool enabled) { return false; }
+  virtual std::string DrainSubtitlePcmCaptureJson() { return "[]"; }
+
  protected:
   virtual void GetVideoSize(int32_t *width, int32_t *height) = 0;
   void *GetWindowHandle();

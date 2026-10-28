@@ -5,6 +5,7 @@
 import 'dart:convert' show jsonDecode, jsonEncode, utf8;
 import 'dart:ffi' as ffi;
 import 'dart:isolate' show RawReceivePort, ReceivePort;
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart' show calloc;
 import 'package:flutter/services.dart';
@@ -199,6 +200,15 @@ typedef _FFISetTrackSelectionNative = ffi.Int32 Function(
     ffi.Int64, ffi.Int64, ffi.Pointer<ffi.Char>);
 typedef _FFISetTrackSelectionDart = int Function(int, int, ffi.Pointer<ffi.Char>);
 
+typedef _FFISubtitlePcmAvailableNative = ffi.Int32 Function(ffi.Int64);
+typedef _FFISubtitlePcmAvailableDart = int Function(int);
+
+typedef _FFISetSubtitlePcmEnabledNative = ffi.Int32 Function(ffi.Int64, ffi.Bool);
+typedef _FFISetSubtitlePcmEnabledDart = int Function(int, bool);
+
+typedef _FFIDrainSubtitlePcmNative = ffi.Pointer<ffi.Char> Function(ffi.Int64);
+typedef _FFIDrainSubtitlePcmDart = ffi.Pointer<ffi.Char> Function(int);
+
 typedef _FFISetDisplayGeometryNative = ffi.Int32 Function(
     ffi.Int64, ffi.Int32, ffi.Int32, ffi.Int32, ffi.Int32);
 typedef _FFISetDisplayGeometryDart = int Function(int, int, int, int, int);
@@ -263,6 +273,9 @@ class VideoPlayerFFIBindings {
   late int Function(int, bool) _ffiSetLooping;
   late ffi.Pointer<ffi.Char> Function(int, ffi.Pointer<ffi.Char>) _ffiGetTrackInfo;
   late int Function(int, int, ffi.Pointer<ffi.Char>) _ffiSetTrackSelection;
+  late int Function(int) _ffiSubtitlePcmCaptureAvailable;
+  late int Function(int, bool) _ffiSetSubtitlePcmCaptureEnabled;
+  late ffi.Pointer<ffi.Char> Function(int) _ffiDrainSubtitlePcmCapture;
   late int Function(int, int, int, int, int) _ffiSetDisplayGeometry;
   late int Function(int, int) _ffiSetDisplayRotate;
   late int Function(int) _ffiSuspend;
@@ -343,6 +356,24 @@ class VideoPlayerFFIBindings {
       _ffiSetTrackSelection = _lib!
           .lookup<ffi.NativeFunction<_FFISetTrackSelectionNative>>('ffi_set_track_selection')
           .asFunction<_FFISetTrackSelectionDart>();
+
+      _ffiSubtitlePcmCaptureAvailable = _lib!
+          .lookup<ffi.NativeFunction<_FFISubtitlePcmAvailableNative>>(
+            'ffi_subtitle_pcm_capture_available',
+          )
+          .asFunction<_FFISubtitlePcmAvailableDart>();
+
+      _ffiSetSubtitlePcmCaptureEnabled = _lib!
+          .lookup<ffi.NativeFunction<_FFISetSubtitlePcmEnabledNative>>(
+            'ffi_set_subtitle_pcm_capture_enabled',
+          )
+          .asFunction<_FFISetSubtitlePcmEnabledDart>();
+
+      _ffiDrainSubtitlePcmCapture = _lib!
+          .lookup<ffi.NativeFunction<_FFIDrainSubtitlePcmNative>>(
+            'ffi_drain_subtitle_pcm_capture',
+          )
+          .asFunction<_FFIDrainSubtitlePcmDart>();
 
       _ffiSetDisplayGeometry = _lib!
           .lookup<ffi.NativeFunction<_FFISetDisplayGeometryNative>>('ffi_set_display_geometry')
@@ -642,6 +673,41 @@ class VideoPlayerVideoholeFFIApi {
       return bindings._ffiSetTrackSelection(playerId, trackId, trackTypePtr);
     } finally {
       _freePointer(trackTypePtr);
+    }
+  }
+
+  bool subtitlePcmCaptureAvailable(int playerId) {
+    final bindings = VideoPlayerFFIBindings.instance;
+    if (!bindings.isLoaded) bindings.load();
+    return bindings._ffiSubtitlePcmCaptureAvailable(playerId) == 1;
+  }
+
+  bool setSubtitlePcmCaptureEnabled(int playerId, bool enabled) {
+    final bindings = VideoPlayerFFIBindings.instance;
+    if (!bindings.isLoaded) bindings.load();
+    return bindings._ffiSetSubtitlePcmCaptureEnabled(playerId, enabled) == 0;
+  }
+
+  List<Map<String, Object?>> drainSubtitlePcmCapture(int playerId) {
+    final bindings = VideoPlayerFFIBindings.instance;
+    if (!bindings.isLoaded) bindings.load();
+    final ptr = bindings._ffiDrainSubtitlePcmCapture(playerId);
+    if (ptr == ffi.nullptr) return const [];
+    try {
+      final bytes = ptr.cast<ffi.Uint8>();
+      var length = 0;
+      while (bytes[length] != 0) {
+        length++;
+      }
+      final decoded = jsonDecode(utf8.decode(bytes.asTypedList(length)));
+      if (decoded is! List) return const [];
+      return decoded.whereType<Map<String, dynamic>>().map((packet) {
+        final encoded = packet.remove('pcmBase64');
+        if (encoded is String) packet['pcm'] = Uint8List.fromList(base64Decode(encoded));
+        return packet.cast<String, Object?>();
+      }).toList(growable: false);
+    } finally {
+      bindings._ffiFreeString(ptr);
     }
   }
 

@@ -16,14 +16,15 @@
     "version": "0.41.0",
     "commit": "41f6a645068483470267271e1d09966ca3b9f413",
     "patch": "patches/mpv-0.41.0-pcm-tap.patch",
-    "patchSha256": "0f430ad4f5473c71124826327cb67723b2d4df3cd5f07495e932e62167ba0ce5"
+    "patchSha256": "f896f1ecd7c4c539ed464dfc4bb7ded65fd5919b63dcc20c4bf66ce55fe40105"
   },
   "appMpvBuild": {
-    "repository": "https://github.com/edde746/mpv-build",
-    "commit": "3b9f38affe3c4171f8e6bc47331feffd3d13be1d",
-    "integrationStatus": "linux-source-series-composed; windows/apple/android-source-unqualified; native-artifacts-unbuilt",
+    "repository": "https://github.com/snapetech-org/mpv-build",
+    "commit": "39626d5c455b2f1e7441d7b5c3d8a6cef8111b45",
+    "integrationStatus": "all-platform-build-series-updated-android-bridge-integrated-export-gated; source-pull-request-pending-publication",
+    "orderedPcmPatch": "patches/mpv/pool/0210-plezy-ordered-audio-tap.patch",
     "androidBridgePatch": "patches/mpv-build-android-visualizer-bridge.patch",
-    "androidBridgePatchSha256": "7b98d2f40f2c53fd28292f6a28aed92b4429b052da7a42054351612d1b9b545c"
+    "androidBridgePatchSha256": "4c60f9b9ef0017bc2a89ef023932433f75c99d6604ebe99817ba8d36ea2bc28d"
   },
   "milkrust": {
     "repository": "https://github.com/snapetech-org/MilkRust.git",

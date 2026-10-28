@@ -14,6 +14,7 @@ import shutil
 import struct
 import subprocess
 import sys
+import tarfile
 import tempfile
 import urllib.parse
 import urllib.request
@@ -25,6 +26,8 @@ PINS = json.loads((Path(__file__).with_name('toolchain.json')).read_text())
 APP_ID = 'org.snapetech.plezyng'
 NS = {'t': 'http://tizen.org/ns/packages'}
 ELF_TARGETS = {'arm': (1, 40), 'x64': (2, 62)}
+WHISPER_GGML_VERSION = '0.0.2'
+WHISPER_GGML_SHA256 = 'a37a1f51f6617d0beae9ce907a25c361f782cfe76d56e9c8001257a3091d2b57'
 
 
 def run(*args, cwd=None):
@@ -39,6 +42,62 @@ def sha256(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def fetch_locked_whisper_source(sources):
+    """Fetch and unpack the exact Whisper bridge archive from pubspec.lock."""
+    lock = (ROOT / 'pubspec.lock').read_text()
+    package = re.search(r'(?ms)^  flutter_whisper_ggml:\n(.*?)(?=^  [^ \n][^\n]*:\n|\Z)', lock)
+    if package is None:
+        raise ValueError('flutter_whisper_ggml is missing from pubspec.lock')
+    section = package.group(1)
+    version = re.search(r'^    version: "([^"]+)"$', section, re.M)
+    digest = re.search(r'^      sha256: ([0-9a-f]{64})$', section, re.M)
+    if version is None or version.group(1) != WHISPER_GGML_VERSION:
+        raise ValueError('Review the Tizen Whisper build for the locked flutter_whisper_ggml version')
+    if digest is None or digest.group(1) != WHISPER_GGML_SHA256:
+        raise ValueError('Review the Tizen Whisper build for the locked flutter_whisper_ggml digest')
+
+    archive_path = sources / f'flutter_whisper_ggml-{WHISPER_GGML_VERSION}.tar.gz'
+    url = f'https://pub.dev/api/archives/flutter_whisper_ggml-{WHISPER_GGML_VERSION}.tar.gz'
+    with urllib.request.urlopen(url, timeout=60) as response, archive_path.open('wb') as stream:
+        shutil.copyfileobj(response, stream)
+    if sha256(archive_path) != WHISPER_GGML_SHA256:
+        archive_path.unlink(missing_ok=True)
+        raise ValueError('flutter_whisper_ggml archive digest mismatch')
+
+    destination = sources / 'flutter_whisper_ggml' / 'package'
+    destination.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(archive_path, mode='r:gz') as archive:
+        members = archive.getmembers()
+        names = [PurePosixPath(member.name) for member in members]
+        strip_package_dir = bool(names) and all(path.parts and path.parts[0] == 'package' for path in names)
+        seen = set()
+        for member, path in zip(members, names):
+            parts = path.parts[1:] if strip_package_dir else path.parts
+            if strip_package_dir and not parts and member.isdir():
+                continue
+            if path.is_absolute() or '..' in parts or not parts:
+                raise ValueError('Unsafe path in flutter_whisper_ggml source archive')
+            if member.issym() or member.islnk() or not (member.isdir() or member.isfile()):
+                raise ValueError('Unexpected entry type in flutter_whisper_ggml source archive')
+            relative = PurePosixPath(*parts)
+            if relative in seen:
+                raise ValueError('Duplicate path in flutter_whisper_ggml source archive')
+            seen.add(relative)
+            target = destination.joinpath(*relative.parts)
+            if member.isdir():
+                target.mkdir(parents=True, exist_ok=True)
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            source = archive.extractfile(member)
+            if source is None:
+                raise ValueError('Could not read flutter_whisper_ggml source archive entry')
+            with source, target.open('wb') as output:
+                shutil.copyfileobj(source, output)
+    if not (destination / 'src/CMakeLists.txt').is_file() or not (destination / 'whisper/v1.9.2/include/whisper.h').is_file():
+        raise ValueError('flutter_whisper_ggml archive does not contain the pinned native sources')
+    return destination
+
+
 def elf_arch(data):
     if len(data) < 20 or data[:4] != b'\x7fELF' or data[5] != 1:
         raise ValueError('Expected a little-endian ELF library')
@@ -49,7 +108,7 @@ def elf_arch(data):
     raise ValueError(f'Unsupported ELF machine/class: {kind}')
 
 
-def inspect_package(path, arch, *, signed=True):
+def inspect_package(path, arch, *, signed=True, required_libraries=()):
     """Reject wrong identity/ABI, unsigned packages, secrets and unsafe ZIPs.
 
     Presence of XML signatures is structural validation; device installation
@@ -90,7 +149,7 @@ def inspect_package(path, arch, *, signed=True):
         libraries = [n for n in names if n.endswith('.so') or '.so.' in n]
         required = {'libapp.so', 'libplezy_sqlite3.so', 'libdart_smb2.so', 'libplezy_torrent.so',
                     'libflutter_engine.so', 'libflutter_tizen_tv.so', 'libflutter_plugins.so',
-                    'libftpw_video_player_videohole.so'}
+                    'libftpw_video_player_videohole.so', *required_libraries}
         if not required <= {PurePosixPath(n).name for n in libraries}:
             raise ValueError('Missing application, Flutter runtime or native plugin libraries')
         if not {'bin/plezyng', 'res/icudtl.dat', 'res/flutter_assets/AssetManifest.bin'} <= set(names):
@@ -118,7 +177,7 @@ def checkout(repo, revision, destination):
 
 
 def native(args):
-    """Cross-compile the storage libraries with an explicit Samsung toolchain."""
+    """Cross-compile app native libraries with an explicit Samsung toolchain."""
     out = Path(args.output).resolve()
     out.mkdir(parents=True, exist_ok=True)
     toolchain = Path(args.toolchain).resolve(strict=True)
@@ -188,8 +247,27 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
         f'-DFETCHCONTENT_BASE_DIR={sources / "torrent-dependencies"}')
     run('cmake', '--build', out / 'torrent-build', '--parallel', args.jobs)
     shutil.copyfile(out / 'torrent-build/libplezy_torrent.so', out / 'libplezy_torrent.so')
-    report = {'architecture': args.arch, 'pins': PINS, 'libraries': {}}
-    for name in ('libplezy_sqlite3.so', 'libdart_smb2.so', 'libplezy_torrent.so'):
+
+    whisper_source = fetch_locked_whisper_source(sources)
+    run('cmake', '-S', whisper_source / 'src', '-B', out / 'whisper-build',
+        f'-DCMAKE_TOOLCHAIN_FILE={toolchain}', '-DCMAKE_BUILD_TYPE=Release',
+        '-DGGML_NATIVE=OFF', '-DGGML_OPENMP=OFF', '-DGGML_CUDA=OFF', '-DGGML_VULKAN=OFF',
+        '-DGGML_METAL=OFF', '-DGGML_ACCELERATE=OFF', '-DWHISPER_BUILD_TESTS=OFF',
+        '-DWHISPER_BUILD_EXAMPLES=OFF', '-DWHISPER_BUILD_SERVER=OFF', '-DGGML_BACKEND_DL=OFF',
+        f'-DFLUTTER_WHISPER_CPP_DIR={whisper_source / "whisper/v1.9.2"}')
+    run('cmake', '--build', out / 'whisper-build', '--target', 'flutter_whisper_plugin', '--parallel', args.jobs)
+    whisper_libraries = list((out / 'whisper-build').rglob('libflutter_whisper_plugin.so'))
+    if len(whisper_libraries) != 1:
+        raise ValueError('Expected one Tizen Whisper bridge library')
+    shutil.copyfile(whisper_libraries[0], out / 'libflutter_whisper_plugin.so')
+
+    report = {
+        'architecture': args.arch,
+        'pins': PINS,
+        'whisper': {'version': WHISPER_GGML_VERSION, 'archive_sha256': WHISPER_GGML_SHA256},
+        'libraries': {},
+    }
+    for name in ('libplezy_sqlite3.so', 'libdart_smb2.so', 'libplezy_torrent.so', 'libflutter_whisper_plugin.so'):
         path = out / name
         if elf_arch(path.read_bytes()[:64]) != args.arch:
             raise ValueError('Toolchain produced the wrong architecture')
@@ -215,11 +293,14 @@ def stage(source, destination, native_dir, arch):
         raise ValueError('Native inputs do not match the pinned toolchain/architecture')
     native_target = destination / 'tizen/lib'
     native_target.mkdir(parents=True, exist_ok=True)
-    for name in ('libdart_smb2.so', 'libplezy_sqlite3.so', 'libplezy_torrent.so'):
+    native_library_names = ['libdart_smb2.so', 'libplezy_sqlite3.so', 'libplezy_torrent.so']
+    if 'libflutter_whisper_plugin.so' in report['libraries']:
+        native_library_names.append('libflutter_whisper_plugin.so')
+    for name in native_library_names:
         path = native_dir / name
         if sha256(path) != report['libraries'][name] or elf_arch(path.read_bytes()[:64]) != arch:
             raise ValueError(f'Native input mismatch: {name}')
-        dest = native_target / name if name in {'libplezy_sqlite3.so', 'libplezy_torrent.so'} else destination / 'build-inputs' / name
+        dest = destination / 'build-inputs' / name if name == 'libdart_smb2.so' else native_target / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, dest)
     icon = destination / 'tizen/shared/res/plezyng.png'
@@ -234,12 +315,29 @@ def stage(source, destination, native_dir, arch):
     override = destination / 'packages/dart_smb2_tizen'
     shutil.copytree(smb_root, override)
     shutil.copyfile(source / 'scripts/tizen/smb_build_hook.dart', override / 'hook/build.dart')
+    whisper_enabled = 'libflutter_whisper_plugin.so' in report['libraries']
+    if whisper_enabled:
+        whisper_source = native_dir / 'sources/flutter_whisper_ggml/package'
+        if not whisper_source.is_dir():
+            raise ValueError('The Tizen package requires the checksum-verified Whisper source')
+        whisper_override = destination / 'packages/flutter_whisper_ggml_tizen'
+        shutil.copytree(whisper_source, whisper_override)
+        whisper_runtime = whisper_override / 'lib/src/flutter_whisper_native.dart'
+        runtime_text = whisper_runtime.read_text()
+        source_case = "'linux' || 'android' => 'libflutter_whisper_plugin.so',"
+        if runtime_text.count(source_case) != 1:
+            raise ValueError('Review the Tizen Whisper runtime library mapping')
+        whisper_runtime.write_text(runtime_text.replace(
+            source_case, "'linux' || 'android' || 'tizen' => 'libflutter_whisper_plugin.so',", 1))
     # Preserve every existing root override. Never mutate the shared pub cache.
     pubspec = destination / 'pubspec.yaml'
     text = pubspec.read_text()
     if text.count('\ndependency_overrides:\n') != 1 or re.search(r'^hooks:', text, re.M):
         raise ValueError('Review the staged pubspec merge after root hook/override changes')
-    text = text.replace('\ndependency_overrides:\n', '\ndependency_overrides:\n  dart_smb2:\n    path: packages/dart_smb2_tizen\n', 1)
+    overrides = '\ndependency_overrides:\n  dart_smb2:\n    path: packages/dart_smb2_tizen\n'
+    if whisper_enabled:
+        overrides += '  flutter_whisper_ggml:\n    path: packages/flutter_whisper_ggml_tizen\n'
+    text = text.replace('\ndependency_overrides:\n', overrides, 1)
     text += '\nhooks: ' + json.dumps({'user_defines': {
             'sqlite3': {'source': 'system', 'name': 'plezy_sqlite3'},
             'dart_smb2': {'libsmb2': str(destination / 'build-inputs/libdart_smb2.so')},
@@ -293,7 +391,14 @@ def build(args):
         packages = list((project / 'build/tizen/tpk').glob('*.tpk'))
         if len(packages) != 1:
             raise ValueError('Expected exactly one newly built TPK')
-        report = inspect_package(packages[0], args.arch)
+        native_report = json.loads((Path(args.native) / 'native-build.json').read_text())
+        report = inspect_package(packages[0], args.arch, required_libraries={'libflutter_whisper_plugin.so'})
+        with zipfile.ZipFile(packages[0]) as archive:
+            whisper_members = [name for name in archive.namelist()
+                               if PurePosixPath(name).name == 'libflutter_whisper_plugin.so']
+            if (len(whisper_members) != 1 or hashlib.sha256(archive.read(whisper_members[0])).hexdigest() !=
+                    native_report['libraries']['libflutter_whisper_plugin.so']):
+                raise ValueError('The packaged Whisper runtime differs from the checksum-verified native build')
         suffix = '-tester' if args.tester else ''
         name = f'PlezyNG-tizen-{args.arch}{suffix}.tpk'
         shutil.copyfile(packages[0], output / name)
@@ -301,7 +406,7 @@ def build(args):
         report['source_commit'] = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
         report['source_dirty'] = subprocess.run(['git', '-C', str(ROOT), 'diff', '--quiet', 'HEAD']).returncode != 0
         report['toolchain'] = PINS
-        report['native_inputs'] = json.loads((Path(args.native) / 'native-build.json').read_text())
+        report['native_inputs'] = native_report
         report['target_scope'] = ('experimental Tizen 6-9; Tizen 10/GCC 14.2 is not qualified'
                                   if args.arch == 'arm' else 'experimental x64 emulator; not a TV build')
         report['signing'] = 'development-only-requires-tv-resigning' if args.tester else 'selected-profile-requires-device-verification'

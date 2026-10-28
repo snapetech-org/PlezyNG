@@ -24,6 +24,8 @@ import '../../multiview/workspace_models.dart';
 import '../../utils/formatters.dart';
 import '../../utils/app_logger.dart';
 import '../../services/open_subtitles_client.dart';
+import '../../services/subtitle_ai_service.dart';
+import '../../services/subtitle_revision_service.dart';
 import '../../services/player_sync_offsets.dart';
 import '../../services/subtitle_retimer.dart';
 import '../../sources/source_models.dart';
@@ -50,6 +52,7 @@ import 'standalone_subtitle_search_sheet.dart';
 import 'source_queue_sheet.dart';
 import 'source_widgets.dart';
 import '../../widgets/video_controls/sheets/picture_adjustments_sheet.dart';
+import '../../widgets/video_controls/sheets/subtitle_ai_sheet.dart';
 import '../../widgets/video_controls/widgets/sync_offset_control.dart';
 
 class SourcePlayerScreen extends StatefulWidget {
@@ -222,6 +225,45 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
       if (codec case final codec? when codec.isNotEmpty) codec.toUpperCase(),
     ].join(' · ');
     return isolateDisplayText(details.isEmpty ? t.videoSettings.videoTrackNumber(id: track.id) : details);
+  }
+
+  SubtitleRevisionIdentity? _sourceSubtitleRevisionIdentity(SourcePlayback playback) {
+    if (playback.isTransientInput) return null;
+    final profileId = playback.sources.profileId?.trim();
+    final entry = playback.entry;
+    final index = playback.fileIndex;
+    if (profileId == null ||
+        profileId.isEmpty ||
+        entry == null ||
+        entry.sourceId.trim().isEmpty ||
+        entry.id.trim().isEmpty ||
+        index < 0 ||
+        index >= playback.files.length) {
+      return null;
+    }
+    final fingerprint = playback.files[index].fingerprint.trim();
+    if (fingerprint.isEmpty) return null;
+    return SubtitleRevisionIdentity(
+      profileId: profileId,
+      serverId: 'source:${entry.sourceId}',
+      ratingKey: '${entry.id}:$fingerprint',
+      mediaIndex: index,
+    );
+  }
+
+  void _openSourceSubtitleAi(SourcePlayback playback) {
+    final player = playback.player;
+    if (player == null) return;
+    unawaited(
+      OverlaySheetController.showAdaptive<void>(
+        context,
+        isScrollControlled: true,
+        builder: (_) => SubtitleAiSheet(
+          player: player,
+          revisionIdentity: _sourceSubtitleRevisionIdentity(playback),
+        ),
+      ),
+    );
   }
 
   @override
@@ -1398,6 +1440,16 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
               tooltip: t.videoSettings.subtitleSync,
               onPressed: () => sourceAction(context, () => _openExternalSubtitleSync(s)),
               icon: const AppIcon(Symbols.sync_rounded),
+            ),
+          if (s.video &&
+              !s.isLiveInput &&
+              SubtitleAiService.supportedPlatform &&
+              s.player?.playerType == 'mpv' &&
+              s.player?.supportedLocalSubtitleExtensions.contains('srt') == true)
+            IconButton(
+              tooltip: 'Generate, sync, or translate subtitles',
+              onPressed: () => _openSourceSubtitleAi(s),
+              icon: const AppIcon(Symbols.auto_awesome_rounded),
             ),
           if (s.isTransientInput && s.player?.playerType == 'mpv')
             IconButton(

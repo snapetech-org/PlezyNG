@@ -12,6 +12,7 @@
 - Apply the CI native formatting toolchain to C/C++/Objective-C and Kotlin sources; no behavior change.
 - Resolve newly added Apple plugins into the iOS, macOS and tvOS CocoaPods locks so deployment-mode installs succeed in release builds.
 - Omit Watchmode availability rows whose links are all unsafe or invalid, so the Links screen never shows a provider it cannot open.
+- Add a player-neutral bounded PCM capture contract and capability-gated Linux, Windows, Apple, and Android MPV live-caption bridges alongside Android ExoPlayer; patched MPV runtimes and target-device qualification remain required, and accelerator placement remains explicitly unverified per operation.
 - Add opt-in experimental motion processing across MPV, Apple VideoToolbox, Android LiteRT/QNN, and desktop PME, with capability reporting and platform qualification limits documented separately.
 - Retarget the active current-display motion-compensation filter when mpv reports a display-rate change.
 - Serialize motion-processing configuration and health-monitor fallback changes so stale MPV updates cannot overwrite newer settings.

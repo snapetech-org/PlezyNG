@@ -11,11 +11,12 @@ import '../../../utils/serial_future_queue.dart';
 import '../../models.dart';
 import '../audio_rendering_mode.dart';
 import '../player_base.dart';
+import '../subtitle_pcm_capture_source.dart';
 import 'webos_media_proxy.dart';
 
 /// Samsung's native media plane. The existing app supplies browsing, focus,
 /// transport controls and watch progress; no browser-hosted UI is involved.
-class PlayerTizen extends PlayerBase {
+class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource {
   PlayerTizen({this.audioOnly = false}) : super(listenToNativeEvents: false);
 
   final bool audioOnly;
@@ -29,6 +30,7 @@ class PlayerTizen extends PlayerBase {
   List<SubtitleTrack> _externalSubtitles = const [];
   samsung.ClosedCaptionFile? _captions;
   int _generation = 0;
+  bool _isLivePlayback = false;
   int _subtitleGeneration = 0;
   int? _sourceId;
   static int _nextSourceId = 0;
@@ -50,11 +52,43 @@ class PlayerTizen extends PlayerBase {
   @override
   String get playerType => 'tizen';
   @override
+  int get mediaSessionGeneration => _generation;
+  @override
+  bool get isLivePlayback => _isLivePlayback;
+  @override
   bool get supportsSecondarySubtitles => false;
   @override
   Set<String> get supportedLocalSubtitleExtensions => audioOnly ? const <String>{} : const {'srt', 'vtt'};
   @override
   bool get needsDecoderRefreshAfterDisplaySwitch => false;
+
+  @override
+  String? get subtitlePcmAudioTrackId => state.track.audio?.id;
+
+  @override
+  Future<bool> subtitlePcmCaptureAvailable() async {
+    final controller = _controller;
+    if (audioOnly || isLivePlayback || controller == null || !_loaded || _failed) return false;
+    try {
+      return await controller.subtitlePcmCaptureAvailable();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
+    final controller = _controller;
+    if (audioOnly || isLivePlayback || controller == null || !_loaded || _failed) return false;
+    return controller.setSubtitlePcmCaptureEnabled(enabled);
+  }
+
+  @override
+  Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
+    final controller = _controller;
+    if (audioOnly || isLivePlayback || controller == null || !_loaded || _failed) return const [];
+    return controller.drainSubtitlePcmCapture();
+  }
 
   bool _current(int generation) => !disposed && !_closing && generation == _generation;
 
@@ -93,6 +127,7 @@ class PlayerTizen extends PlayerBase {
   }) {
     if (disposed || _closing) return Future.value();
     final generation = ++_generation;
+    _isLivePlayback = isLive;
     _nextMedia = null;
     return _sources.run(() async {
       if (!_current(generation)) return;
@@ -262,6 +297,7 @@ class PlayerTizen extends PlayerBase {
   Future<void> stop() {
     if (disposed || _closing) return Future.value();
     ++_generation;
+    _isLivePlayback = false;
     _nextMedia = null;
     return _sources.run(() async {
       await _releaseSource();

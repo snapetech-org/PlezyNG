@@ -463,6 +463,12 @@ def main() -> int:
     calibration_root = args.calibration_root.resolve()
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
+    manifest_path = output / "manifest.json"
+    if manifest_path.exists() or manifest_path.is_symlink():
+        raise ValueError(
+            "Output directory already contains manifest.json; use a fresh --output-dir "
+            "so an interrupted build cannot leave a stale package manifest"
+        )
     qairt_metadata = qairt_sdk_metadata(qairt)
     requested_targets = set(args.targets or TARGETS)
     requested_models = set(args.models or MODELS)
@@ -516,8 +522,9 @@ def main() -> int:
         "calibration": calibration_manifest(calibration_root, calibration_by_resolution),
         "contexts": prepared,
     }
-    manifest_path = output / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    manifest_temporary = output / f".manifest.json.{os.getpid()}.partial"
+    manifest_temporary.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    os.replace(manifest_temporary, manifest_path)
     print(f"\nPrepared {len(prepared)} ANVIL contexts. Manifest: {manifest_path}", flush=True)
     return 0
 

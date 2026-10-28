@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Refuse reused Qualcomm context output roots and atomically publish the manifest only after the full selected context set completes.
 - Prepare Qualcomm HTP contexts on hardened Linux hosts by preserving short temporary paths and clearing executable-stack requests only on generated host model libraries.
 - Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.

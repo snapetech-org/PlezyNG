@@ -5,7 +5,7 @@ This record is a run protocol, not a claim that a device passed. The current exe
 ## Status
 
 - Android ExoPlayer VOD PCM capture: implemented; device qualification remains separate from source inspection.
-- Linux, Windows, and Apple MPV PCM capture: player bridges use the ordered `mpv_plezy_audio_tap_read_next` ABI. The current locked runtime artifacts do not export that symbol, so these paths remain unavailable in shipped builds until matching patched libmpv artifacts are built and packaged.
+- Linux, Windows, Apple, and Android MPV PCM capture: the pinned PlezyNG mpv-build source PR carries the ordered `mpv_plezy_audio_tap_read_next` ABI, the Android session bridge, and release-time symbol gates. The PlezyNG app lock still points to the previous checksummed runtime artifacts; shipped capture remains unavailable until the private-JIT publication completes and the resulting artifact digests are promoted into the app lock.
 - Android ExoPlayer VOD capture is implemented. Android MPV fallback now routes through the session-leased JNI bridge from the ExoPlayer adapter, but the packaged `libplayer.so` and matching native host still need the ordered-read extension before capture is available. Tizen, webOS, and browser players still require a matching WAV.
 - Whisper CUDA/Vulkan and Sherpa Core ML/QNN/RKNN: provider request and whole-run CPU fallback are reported. Current Flutter bindings do not expose per-operation device placement.
 - Target hardware runs: pending. Prior RX 7900 XT motion-processing results do not qualify subtitle inference, Whisper, Sherpa, or playback capture.

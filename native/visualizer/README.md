@@ -40,7 +40,10 @@ and drops analysis on overflow. It never calls application code, allocates or
 waits for the renderer. Frames include media PTS, actual sample rate, speed-
 adjusted media duration, generation and dropped-frame counts. The native
 consumer supplies playback PTS; future blocks stay queued and old blocks are
-discarded. No PCM is sent over a Dart platform channel.
+discarded. The visualizer consumes these blocks entirely in native code. The
+transcription bridge uses the additive `read_next` API to drain media-ordered
+blocks without presentation-clock dropping; only an explicit live-caption
+session returns bounded float PCM packets over the method channel.
 
 Seek/stream resets and format changes advance the generation. Consumers must
 reset their resampling/equation/feedback state on generation changes. Enable,
@@ -48,7 +51,9 @@ disable and handle destruction synchronize with the playback core; reads are
 serialized per handle. Exactly one client may own a tap per core.
 
 The public extension header is mirrored in `shared/visualization/` for runtime
-symbol negotiation. ABI 1 is required; stock libmpv remains usable for music.
+symbol negotiation. ABI 1 remains compatible; `read_next` is an additive symbol.
+Stock libmpv remains usable for music and reports live subtitle capture
+unavailable. The shipped libmpv lock does not include this extension.
 
 ## Source preparation and promotion
 

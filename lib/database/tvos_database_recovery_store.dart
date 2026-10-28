@@ -110,7 +110,10 @@ final class TvosDatabaseRecoveryStore {
     if (recoveryRequired) {
       await _reloadManifestCacheIfNeeded();
       final snapshot = _readCommittedSnapshot();
-      if (snapshot == null) return TvosDatabaseRecoveryOutcome.recoveryRequired;
+      if (snapshot == null) {
+        appLogger.w('tvOS database recovery marker exists without a valid committed snapshot');
+        return TvosDatabaseRecoveryOutcome.recoveryRequired;
+      }
       try {
         return await _restoreCommittedSnapshot(
           snapshot: snapshot,
@@ -118,7 +121,8 @@ final class TvosDatabaseRecoveryStore {
           readIdentity: readIdentity,
           readPending: readPending,
         );
-      } catch (_) {
+      } catch (error, stackTrace) {
+        appLogger.w('tvOS database recovery restore failed', error: error, stackTrace: stackTrace);
         return TvosDatabaseRecoveryOutcome.recoveryRequired;
       }
     }
@@ -161,7 +165,10 @@ final class TvosDatabaseRecoveryStore {
     }
 
     final snapshot = _readCommittedSnapshot();
-    if (snapshot == null) return _markRecoveryRequired();
+    if (snapshot == null) {
+      appLogger.w('tvOS database recovery image is missing or invalid');
+      return _markRecoveryRequired();
+    }
 
     try {
       return await _restoreCommittedSnapshot(
@@ -170,7 +177,8 @@ final class TvosDatabaseRecoveryStore {
         readIdentity: readIdentity,
         readPending: readPending,
       );
-    } catch (_) {
+    } catch (error, stackTrace) {
+      appLogger.w('tvOS database recovery restore failed', error: error, stackTrace: stackTrace);
       return _markRecoveryRequired();
     }
   }
@@ -378,7 +386,11 @@ final class TvosDatabaseRecoveryStore {
         return null;
       }
 
-      final identity = _decodePayload(identityRaw, _identityRowKeys, compatibleKeys: [_legacyIdentityRowKeys]);
+      final identity = _decodePayload(
+        identityRaw,
+        _identityRowKeys,
+        compatibleKeys: [_previousIdentityRowKeys, _legacyIdentityRowKeys],
+      );
       final pending = _decodePayload(pendingRaw, _pendingRowKeys);
       if (identity == null || pending == null) return null;
       return TvosDatabaseRecoverySnapshot(identity: identity, pending: pending);
@@ -500,6 +512,17 @@ final class TvosDatabaseRecoveryStore {
   }
 
   static const Set<String> _identityRowKeys = {
+    'connections',
+    'profiles',
+    'profileConnections',
+    'iptvSources',
+    'iptvChannelOverrides',
+    'iptvGroupLocks',
+    'iptvVodProgress',
+    'iptvRecordingSchedules',
+    'iptvRecordings',
+  };
+  static const Set<String> _previousIdentityRowKeys = {
     'connections',
     'profiles',
     'profileConnections',

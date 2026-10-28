@@ -258,10 +258,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
       OverlaySheetController.showAdaptive<void>(
         context,
         isScrollControlled: true,
-        builder: (_) => SubtitleAiSheet(
-          player: player,
-          revisionIdentity: _sourceSubtitleRevisionIdentity(playback),
-        ),
+        builder: (_) => SubtitleAiSheet(player: player, revisionIdentity: _sourceSubtitleRevisionIdentity(playback)),
       ),
     );
   }

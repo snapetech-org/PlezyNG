@@ -13,8 +13,7 @@ enum SubtitlePlacementEvidence {
 extension SubtitlePlacementEvidenceLabel on SubtitlePlacementEvidence {
   String get displayLabel => switch (this) {
     SubtitlePlacementEvidence.unverified => 'execution placement could not be established',
-    SubtitlePlacementEvidence.cpuOnlyConfigured =>
-      'CPU path configured; operation-level profiling is unavailable',
+    SubtitlePlacementEvidence.cpuOnlyConfigured => 'CPU path configured; operation-level profiling is unavailable',
     SubtitlePlacementEvidence.acceleratorRequestSucceededButUnverified =>
       'provider request initialized and inference succeeded; per-operation placement is unverified',
     SubtitlePlacementEvidence.cpuFallbackAfterAcceleratorUnavailable =>

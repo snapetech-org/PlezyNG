@@ -301,8 +301,8 @@ final class SubtitleAiService {
       placementEvidence: result['fellBackToCpu'] as bool
           ? SubtitlePlacementEvidence.cpuFallbackAfterAcceleratorUnavailable
           : (requested == SubtitleInferenceProvider.cpu
-              ? SubtitlePlacementEvidence.cpuOnlyConfigured
-              : SubtitlePlacementEvidence.acceleratorRequestSucceededButUnverified),
+                ? SubtitlePlacementEvidence.cpuOnlyConfigured
+                : SubtitlePlacementEvidence.acceleratorRequestSucceededButUnverified),
       detectedLanguage: 'en',
       translatedToEnglish: false,
     );

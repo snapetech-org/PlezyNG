@@ -505,6 +505,18 @@ class _LiveMediaSessionPlayer implements Player {
   final List<Duration> seekTargets = [];
 
   @override
+  String get playerType => 'mpv';
+
+  @override
+  bool get supportsSecondarySubtitles => false;
+
+  @override
+  bool get audioPassthroughActive => false;
+
+  @override
+  Future<void> clearVideoFrameRate() async {}
+
+  @override
   PlayerState get state => _state;
 
   @override
@@ -527,6 +539,9 @@ class _LiveMediaSessionPlayer implements Player {
 
   @override
   Future<void> setProperty(String name, String value) async {}
+
+  @override
+  Future<void> setBoxFitMode(int mode) async {}
 
   @override
   Future<void> dispose({bool preserveDisplayMode = false}) async {}

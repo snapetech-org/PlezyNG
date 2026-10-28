@@ -20,12 +20,26 @@ class VisualizerCatalogTrust {
   final int minimumSequence;
 
   static VisualizerCatalogTrust release() {
+    final sourceRevision = visualizerReleaseTrustRevision;
+    final sourceSha256 = visualizerReleaseTrustSha256;
+    final sourceIsUnpinned = sourceRevision.isEmpty && sourceSha256.isEmpty;
+    final sourcePinIsValid =
+        RegExp(r'^[a-f0-9]{40}$').hasMatch(sourceRevision) && RegExp(r'^[a-f0-9]{64}$').hasMatch(sourceSha256);
+    // The generator verifies the digest against the reviewed source bytes;
+    // reject a partially committed or malformed provenance pin at runtime.
+    if (!sourceIsUnpinned && !sourcePinIsValid) {
+      throw const FormatException('Invalid release catalog trust provenance');
+    }
     final root = jsonDecode(visualizerReleaseTrustJson) as Map<String, dynamic>;
     final data = root['keys'];
     final threshold = root['threshold'];
     final minimumSequence = root['minimumSequence'];
-    if (data is! Map<String, dynamic> || data.length > 16 || threshold is! int ||
-        minimumSequence is! int || minimumSequence < 1 || minimumSequence > 9007199254740991) {
+    if (data is! Map<String, dynamic> ||
+        data.length > 16 ||
+        threshold is! int ||
+        minimumSequence is! int ||
+        minimumSequence < 1 ||
+        minimumSequence > 9007199254740991) {
       throw const FormatException('Invalid release catalog trust root');
     }
     if (data.isEmpty) return const VisualizerCatalogTrust(keys: {});
@@ -80,7 +94,8 @@ class VisualizerCatalogVerifier {
         trust.keys.length > 16 ||
         trust.threshold < 1 ||
         trust.threshold > trust.keys.length ||
-        trust.minimumSequence < 1 || trust.minimumSequence > 9007199254740991 ||
+        trust.minimumSequence < 1 ||
+        trust.minimumSequence > 9007199254740991 ||
         trust.keys.values.any((key) => key.length != 32) ||
         trust.keys.values.map(base64Encode).toSet().length != trust.keys.length) {
       throw const FormatException('This build has no catalog signing trust root');
@@ -152,8 +167,8 @@ class VisualizerCatalogVerifier {
       if (entry.qualification.status == 'unassessed' ||
           (entry.qualification.status == 'sample-fixture-only' &&
               (entry.id != VisualizerPackCatalogEntry.sampleFixtureId ||
-               entry.version != VisualizerPackCatalogEntry.sampleFixtureVersion ||
-               entry.sha256 != VisualizerPackCatalogEntry.sampleFixtureSha256))) {
+                  entry.version != VisualizerPackCatalogEntry.sampleFixtureVersion ||
+                  entry.sha256 != VisualizerPackCatalogEntry.sampleFixtureSha256))) {
         throw const FormatException('Catalog pack lacks reviewed rendering qualification');
       }
       if (entry.license == 'NOASSERTION' || !identities.add(entry.identity) || !ids.add(entry.id)) {

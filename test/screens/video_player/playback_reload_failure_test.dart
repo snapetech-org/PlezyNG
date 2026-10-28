@@ -50,6 +50,7 @@ import '../../test_helpers/prefs.dart';
 import '../../test_helpers/playback_report_fakes.dart';
 import '../../test_helpers/pump.dart';
 import '../../test_helpers/watch_together_fakes.dart';
+import '../../test_helpers/media_server_client_test_defaults.dart';
 
 /// Exercises source reloads through the screen while the room remains live.
 /// Music-session arbitration holds native creation so a deterministic player
@@ -1197,7 +1198,7 @@ class _ReloadPlayer extends FakeSyncPlayer {
   Future<void> selectSubtitleTrack(SubtitleTrack track) async {}
 }
 
-class _ReloadClient with PlaybackReportRecorder implements MediaServerClient {
+class _ReloadClient with PlaybackReportRecorder, TestMediaServerClientDefaults implements MediaServerClient {
   final reports = <PlaybackReportCall>[];
   Completer<void>? stopGate;
   Completer<void>? startGate;

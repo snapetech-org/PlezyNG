@@ -22,13 +22,13 @@ void main() {
           expect(request.headers['Accept-Encoding'], 'identity');
           final links = [
             {
-              'rel': 'http://opds-spec.org/acquisition',
+              'rel': 'http://opds-spec.org/acquisition/open-access',
               'type': 'application/epub+zip',
               'href':
                   'https://files.example/book?id=42&Expires=$generation&Signature=private-$generation&Key-Pair-Id=private-key',
             },
             {
-              'rel': 'http://opds-spec.org/acquisition',
+              'rel': 'http://opds-spec.org/acquisition/open-access',
               'type': 'application/pdf',
               'href': 'https://files.example/book.pdf?sig=private-$generation&se=$generation',
             },

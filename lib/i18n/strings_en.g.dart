@@ -4914,6 +4914,9 @@ class Translations$libraries$en {
 	/// en: 'No collections in this library'
 	String get noCollections => 'No collections in this library';
 
+	/// en: 'No genres in this library'
+	String get noGenres => 'No genres in this library';
+
 	/// en: 'No folders found'
 	String get noFoldersFound => 'No folders found';
 
@@ -12704,6 +12707,9 @@ class Translations$libraries$tabs$en {
 	/// en: 'Collections'
 	String get collections => 'Collections';
 
+	/// en: 'Genres'
+	String get genres => 'Genres';
+
 	/// en: 'Playlists'
 	String get playlists => 'Playlists';
 }
@@ -16014,11 +16020,13 @@ extension on Translations {
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filters (${count})',
 			'libraries.noRecommendations' => 'No recommendations available',
 			'libraries.noCollections' => 'No collections in this library',
+			'libraries.noGenres' => 'No genres in this library',
 			'libraries.noFoldersFound' => 'No folders found',
 			'libraries.folders' => 'folders',
 			'libraries.tabs.recommended' => 'Recommended',
 			'libraries.tabs.browse' => 'Browse',
 			'libraries.tabs.collections' => 'Collections',
+			'libraries.tabs.genres' => 'Genres',
 			'libraries.tabs.playlists' => 'Playlists',
 			'libraries.groupings.title' => 'Grouping',
 			'libraries.groupings.all' => 'All',
@@ -16283,10 +16291,10 @@ extension on Translations {
 			'explore.relation.parentStory' => 'Parent story',
 			'explore.relation.adaptation' => 'Adaptation',
 			'explore.relation.other' => 'Related',
-			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
-			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
 			_ => null,
 		} ?? switch (path) {
+			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
+			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
 			'explore.detail.originalTitle' => 'Original title',
 			'explore.detail.alsoKnownAs' => 'Also known as',
 			'explore.detail.studios' => 'Studios',
@@ -16797,10 +16805,10 @@ extension on Translations {
 			'downloads.reasonDeviceStorageFull' => 'this device is out of storage',
 			'downloads.notificationDownloading' => 'Downloading...',
 			'downloads.notificationComplete' => 'Download complete',
-			'downloads.notificationPaused' => 'Download paused',
-			'shaders.title' => 'Shaders',
 			_ => null,
 		} ?? switch (path) {
+			'downloads.notificationPaused' => 'Download paused',
+			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',
 			'shaders.lanczosUpscaling' => 'Lanczos upscaling',
@@ -17311,10 +17319,10 @@ extension on Translations {
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Open ${service} to activate',
 			'services.deviceCode.copyCode' => 'Copy activation code',
 			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
-			'services.deviceCode.codeCopied' => 'Code copied',
-			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
 			_ => null,
 		} ?? switch (path) {
+			'services.deviceCode.codeCopied' => 'Code copied',
+			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
 			'services.oauthProxy.body' => 'Scan this QR code or open the URL on any device.',
 			'services.oauthProxy.openToSignIn' => ({required Object service}) => 'Open ${service} to sign in',
 			'services.pendingAuth.copyUrl' => 'Copy sign-in URL',
@@ -17825,10 +17833,10 @@ extension on Translations {
 			'universalMedia.shareQrHelp' => 'Scan with a compatible player connected to the same private network.',
 			'universalMedia.shareHttpHint' => 'This stream uses unencrypted HTTP. In PlezyNG, allow HTTP before opening it.',
 			'universalMedia.shareCopyUrl' => 'Copy stream address',
-			'universalMedia.shareExpiresLabel' => 'Link expires at',
-			'universalMedia.shareStarting' => 'Preparing the stream…',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.shareExpiresLabel' => 'Link expires at',
+			'universalMedia.shareStarting' => 'Preparing the stream…',
 			'universalMedia.shareStart' => 'Start sharing',
 			'universalMedia.shareStop' => 'Stop sharing',
 			'universalMedia.extensionsMode' => 'Extensions and CLI',
@@ -18339,10 +18347,10 @@ extension on Translations {
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamBetaTitle' => 'Pyrowave · experimental',
 			'games.steamBetaDescription' => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, PlezyNG reconnects using a compatible codec.',
-			'games.steamLibrary' => 'Steam library',
-			'games.linkSteamAccount' => 'Link Steam account',
 			_ => null,
 		} ?? switch (path) {
+			'games.steamLibrary' => 'Steam library',
+			'games.linkSteamAccount' => 'Link Steam account',
 			'games.refreshSteamAccount' => 'Refresh Steam account',
 			'games.unlinkSteamAccount' => 'Unlink Steam account',
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',

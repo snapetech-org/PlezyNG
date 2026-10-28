@@ -19,6 +19,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../../media/library_first_character.dart';
+import '../../../media/library_genre.dart';
 import '../../../media/library_query.dart';
 import '../../../media/media_item.dart';
 import '../../../media/media_kind.dart';
@@ -57,6 +58,7 @@ import '../../../widgets/overlay_sheet.dart';
 import '../../../mixins/library_tab_focus_mixin.dart';
 import '../folder_tree_view.dart';
 import '../filters_bottom_sheet.dart';
+import '../filters/filter_summary.dart';
 import '../sort_bottom_sheet.dart';
 import '../../../widgets/app_icon.dart';
 import '../../../widgets/focusable_list_tile.dart';
@@ -109,6 +111,34 @@ class LibraryBrowseTab extends BaseLibraryTab<MediaItem> {
 
   @override
   State<LibraryBrowseTab> createState() => _LibraryBrowseTabState();
+}
+
+/// Persist [genre] as this library's Browse selection so the Genres tab can
+/// hand off to a filtered Browse page, whether that page is already built or
+/// is created after the selection is stored.
+Future<void> saveGenreBrowseSelection(
+  MediaLibrary library,
+  LibraryGenre genre, {
+  required bool canGroupByFolders,
+}) async {
+  final serverId = library.serverId;
+  if (serverId != null) {
+    FilterValueNames.remember(
+      serverId: serverId,
+      libraryKey: library.globalKey,
+      field: MediaFilterField.genre,
+      value: genre.filterValue,
+      title: genre.title,
+    );
+  }
+  final storage = await StorageService.getInstance();
+  await storage.saveLibraryFilters([
+    LibraryFilter(field: MediaFilterField.genre, values: [genre.filterValue]),
+  ], sectionId: library.globalKey);
+  await storage.saveLibraryGrouping(
+    library.globalKey,
+    defaultLibraryBrowseGrouping(library, canGroupByFolders: canGroupByFolders),
+  );
 }
 
 class _LibraryBrowseTabState extends BaseLibraryTabState<MediaItem, LibraryBrowseTab>

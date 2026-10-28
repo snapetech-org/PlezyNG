@@ -8,7 +8,10 @@ import MusicKit
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var deviceAdjustmentChannel: FlutterMethodChannel?
-  private var originalBrightness: CGFloat?
+  /// The screen whose brightness the player changed, and the level to restore
+  /// on it. Track the display because foldable iPhones can move the app between
+  /// screens while playback is active.
+  private var brightnessOverride: (screen: UIScreen, original: CGFloat)?
   private var volumeView: MPVolumeView?
   private weak var volumeSlider: UISlider?
 
@@ -96,18 +99,26 @@ import MusicKit
   private func handleDeviceAdjustmentCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "getBrightness":
-      result(Double(UIScreen.main.brightness))
+      result(activeScreen.map { Double($0.brightness) })
     case "setBrightness":
       guard let value = normalizedArgument(call.arguments, result: result) else { return }
-      if originalBrightness == nil {
-        originalBrightness = UIScreen.main.brightness
+      guard let screen = activeScreen else {
+        result(FlutterError(code: "DEVICE_ADJUSTMENT_UNAVAILABLE", message: "No active screen", details: nil))
+        return
       }
-      UIScreen.main.brightness = CGFloat(value)
+      if let override = brightnessOverride, override.screen !== screen {
+        override.screen.brightness = override.original
+        brightnessOverride = nil
+      }
+      if brightnessOverride == nil {
+        brightnessOverride = (screen, screen.brightness)
+      }
+      screen.brightness = CGFloat(value)
       result(nil)
     case "restoreBrightness":
-      if let originalBrightness = originalBrightness {
-        UIScreen.main.brightness = originalBrightness
-        self.originalBrightness = nil
+      if let override = brightnessOverride {
+        override.screen.brightness = override.original
+        brightnessOverride = nil
       }
       result(nil)
     case "getMediaVolume":
@@ -173,6 +184,12 @@ import MusicKit
       if let slider = findVolumeSlider(in: subview) { return slider }
     }
     return nil
+  }
+
+  /// The display showing the app. `UIScreen.main` may still refer to the
+  /// outer display while a foldable iPhone shows the app on its inner display.
+  private var activeScreen: UIScreen? {
+    activeWindow?.windowScene?.screen
   }
 
   private var activeWindow: UIWindow? {

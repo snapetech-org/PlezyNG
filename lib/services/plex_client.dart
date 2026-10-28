@@ -15,6 +15,7 @@ import '../media/dolby_vision_compatibility.dart';
 import '../media/episode_collection.dart';
 import '../media/library_filter_result.dart';
 import '../media/library_first_character.dart';
+import '../media/library_genre.dart';
 import '../media/library_query.dart';
 import '../media/live_tv_support.dart';
 import '../media/live_tv_timeline.dart';
@@ -433,6 +434,7 @@ class PlexClient
         _PlexMetadataEditMethods
     implements
         MediaServerClient,
+        LibraryGenreProvider,
         ScopedMediaServerClient,
         GracefullyCloseable,
         ConvertedDownloadClient,
@@ -4486,6 +4488,35 @@ class PlexClient
     }
     final legacy = await getLibraryFilters(libraryId);
     return LibraryFilterResult(filters: legacy, cachedValues: const {});
+  }
+
+  /// Plex Web's Categories tab: each row is keyed by the genre filter value.
+  @override
+  Future<List<LibraryGenre>> fetchLibraryGenres(String libraryId, {required MediaKind libraryKind}) async {
+    final response = await _getWithFailover('/library/sections/$libraryId/categories');
+    final directories = _getMediaContainer(response)?['Directory'];
+    if (directories is! List) return const [];
+    final genres = <LibraryGenre>[];
+    for (final entry in directories.whereType<Map<String, dynamic>>()) {
+      final title = entry['title'];
+      final key = entry['key'];
+      if (title is! String || title.isEmpty || key is! String) continue;
+      final value = Uri.tryParse(key)?.queryParameters[MediaFilterField.genre];
+      if (value == null || value.isEmpty) continue;
+      final thumb = entry['thumb'];
+      final query = thumb is String ? Uri.tryParse(thumb)?.queryParameters : null;
+      final art = query?['url'];
+      final blend = query?['blendColor'];
+      genres.add(
+        LibraryGenre(
+          title: title,
+          filterValue: value,
+          artPath: art != null && art.isNotEmpty ? art : (thumb is String && thumb.isNotEmpty ? thumb : null),
+          accentRgb: blend == null ? null : int.tryParse(blend, radix: 16),
+        ),
+      );
+    }
+    return genres;
   }
 
   /// Parse `Meta.Type[].Field[]` (the filterable fields for the browsed type)

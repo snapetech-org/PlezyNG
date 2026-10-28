@@ -108,6 +108,16 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
       audioOnly = true,
       _hardwareDecoding = true;
 
+  @override
+  Set<String> get supportedLocalSubtitleExtensions =>
+      audioOnly ? const <String>{} : const <String>{'srt', 'ass', 'ssa', 'vtt', 'sub', 'idx', 'sup'};
+
+  @override
+  bool get supportsSubtitleStyleControls => !audioOnly;
+
+  @override
+  bool get supportsSubtitleStepSync => !audioOnly;
+
   /// Whether this session intends to hardware-decode; carried on
   /// `initialize` for the Android core's vo decision.
   final bool _hardwareDecoding;
@@ -697,7 +707,7 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
     // Let mpv open the armed entry while the current track still plays
     // (prefetch starts once the current demuxer is fully read) so the
     // network open never sits on the gapless boundary: with a boundary
-    // open, any server whose connect+probe outlasts the AO's buffered
+    // open, any server whose connect probe outlasts the AO's buffered
     // tail (~0.5s) produces an audible gap on every transition (#1869).
     // A failed or superseded prefetch is discarded by mpv and the entry
     // reopens normally at the boundary, so this can only remove latency.
@@ -1264,12 +1274,12 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
 
   Future<void> _enqueueAudioStateReconciliation(int fields) {
     final requested = _requestedAudioState;
-    if (fields & _passthroughAudioField != 0) ++_passthroughGeneration;
-    if (fields & _normalizationAudioField != 0) ++_normalizationGeneration;
-    if (fields & _downmixAudioField != 0) ++_downmixGeneration;
-    if (fields & _equalizerAudioField != 0) ++_equalizerGeneration;
-    if (fields & _effectsAudioField != 0) ++_effectsGeneration;
-    if (fields & _rateAudioField != 0) ++_rateGeneration;
+    if (fields & _passthroughAudioField != 0) _passthroughGeneration++;
+    if (fields & _normalizationAudioField != 0) _normalizationGeneration++;
+    if (fields & _downmixAudioField != 0) _downmixGeneration++;
+    if (fields & _equalizerAudioField != 0) _equalizerGeneration++;
+    if (fields & _effectsAudioField != 0) _effectsGeneration++;
+    if (fields & _rateAudioField != 0) _rateGeneration++;
     final generations = (
       passthrough: _passthroughGeneration,
       normalization: _normalizationGeneration,
@@ -1537,6 +1547,47 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
   Future<void> clearVideoFrameRate() async {
     if (_nativeCoreUnavailable || !Platform.isAndroid || !initialized) return;
     await invoke('clearVideoFrameRate');
+  }
+
+  /// Describes the runtime libraries and accelerator generation packaged for
+  /// the Android MPV process. The report is device/runtime-specific and does
+  /// not claim that inference has executed; the filter reports its provider
+  /// after a successful HTP graph call.
+  Future<Map<Object?, Object?>?> getAndroidMotionRuntimeCapabilities() async {
+    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) return null;
+    final value = await invoke<Object?>('getAndroidMotionRuntimeCapabilities');
+    return value is Map ? Map<Object?, Object?>.from(value) : null;
+  }
+
+  /// Current OS thermal-pressure tier, when Android or Apple reports one.
+  /// Unknown or unsupported devices remain eligible for normal policy.
+  Future<String?> getMotionProcessingThermalStatus() async {
+    if (_nativeCoreUnavailable || audioOnly) return null;
+    if (Platform.isAndroid) return invoke<String>('getAndroidThermalStatus');
+    if (Platform.isIOS || Platform.isMacOS) return invoke<String>('getAppleThermalStatus');
+    return null;
+  }
+
+  /// Copies the licensed, SDK-built HTP skeleton from APK assets next to the
+  /// verified ANVIL context file and returns the directory used by QNN.
+  Future<String?> prepareAndroidAnvilRuntime({String? contextPath, required String modelId}) async {
+    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) return null;
+    return invoke<String>('prepareAndroidAnvilRuntime', {'contextPath': ?contextPath, 'modelId': modelId});
+  }
+
+  /// Installs the verified LiteRT model variants used by Android's ANVIL
+  /// filter and returns paths for the runtime to try in NPU-then-GPU order.
+  Future<Map<Object?, Object?>?> prepareAndroidLiteRtMotionRuntime({required String modelId}) async {
+    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) return null;
+    final value = await invoke<Object?>('prepareAndroidLiteRtMotionRuntime', {'modelId': modelId});
+    return value is Map ? Map<Object?, Object?>.from(value) : null;
+  }
+
+  /// Routes the Android MPV core through its output policy so motion
+  /// processing receives the right GL renderer and owned surfaces.
+  Future<bool> setAndroidMotionProcessingRenderer(String? renderer) async {
+    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) return false;
+    return await invoke<bool>('setAndroidMotionProcessingRenderer', {'renderer': renderer}) ?? false;
   }
 
   @override

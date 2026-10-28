@@ -1,9 +1,14 @@
 # Steam receiver testing handoff
 
-PR: [#54](https://github.com/snapetech-org/PlezyNG/pull/54)  
-Branch: `codex/steam-receivers-and-controls`
+PR: [#71](https://github.com/snapetech-org/PlezyNG/pull/71)
+
+Branch: `codex/steam-live-test-handoff`
 
 ## What this handoff covers
+
+PR #54 has merged. This follow-up preserves its receiver implementation and
+regression coverage while reconciling the app with main `a90717f6`. Build the
+exact PR #71 head; the earlier PR and historical test results are not substitutes.
 
 Test the implemented receivers and connected library described below. The
 expanded request is **not fully code complete**. Do not convert the missing
@@ -43,10 +48,10 @@ maintainer session:
 
 ```sh
 gh workflow run ci.yml --repo snapetech-org/PlezyNG \
-  --ref codex/steam-receivers-and-controls \
+  --ref codex/steam-live-test-handoff \
   -f action=ci -f runner_pool=private -f build_linux_packages=true
 gh workflow run games-native.yml --repo snapetech-org/PlezyNG \
-  --ref codex/steam-receivers-and-controls \
+  --ref codex/steam-live-test-handoff \
   -f action=games -f runner_pool=private
 ```
 

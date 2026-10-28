@@ -56,6 +56,8 @@
         <!-- Driver-distraction state on Android Automotive OS. Optional: the platform library is
              absent on every other form factor, and CarRestrictionsMonitor falls back silently. -->
         <uses-library android:name="android.car" android:required="false" />
+        <!-- Qualcomm DSP RPC is a vendor library used by the optional QNN HTP runtime. -->
+        <uses-native-library android:name="libcdsprpc.so" android:required="false" />
         <!-- The activity itself has no launcher entry: the launcher components are the aliases
              below, so the app icon can be switched by enabling one alias and disabling the rest.
              Deep links stay here so they resolve whichever alias is enabled.
@@ -124,7 +126,30 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="plezy" android:host="profile"/>
             </intent-filter>
-        </activity>
+                    <!-- Accept subtitle files shared from file managers and download tools. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/x-subrip" />
+                <data android:mimeType="text/vtt" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-tar" />
+                <data android:mimeType="application/gzip" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/x-subrip" />
+                <data android:mimeType="text/vtt" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-tar" />
+                <data android:mimeType="application/gzip" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+</activity>
         <!-- The default icon. Keep this component name forever: it was the launcher activity before
              app icons became switchable, so every existing home-screen shortcut, TV favourite and
              recent task points at it. The meta-data repeats the activity's because FlutterActivity

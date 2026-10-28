@@ -177,7 +177,7 @@ void main() {
     native.emitError('stream failed');
     native.emitCompleted();
     await playback.pause();
-    expect(playback.canRetry, isTrue);
+    expect(playback.canRetry, isTrue, reason: 'failure=${playback.failure}, opening=${playback.opening}, active=${playback.active}');
     expect(playback.currentFilePositionMs, 47000);
     expect(playback.progress!.filePositionMs, 47000);
     expect(playback.progress!.finished, isFalse);
@@ -265,6 +265,8 @@ void main() {
     expect(playback.isRecordingStream, isFalse);
     expect(partial.existsSync(), isFalse);
     expect(player.propertyWrites, [
+      ('sub-speed', '1.000000'),
+      ('sub-delay', '0.0'),
       ('file-local-options/stream-record', partial.path),
       ('file-local-options/stream-record', ''),
     ]);
@@ -525,6 +527,8 @@ void main() {
     expect(capturePlayer.propertyWrites, [
       ('file-local-options/demuxer-lavf-format', 'x11grab'),
       ('file-local-options/demuxer-lavf-o', 'framerate=30,draw_mouse=1'),
+      ('sub-speed', '1.000000'),
+      ('sub-delay', '0.0'),
     ]);
     expect(native.openedUris, ['av://x11grab::0.0+0,0']);
     expect(controls.canSeek, isFalse);

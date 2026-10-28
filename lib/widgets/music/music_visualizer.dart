@@ -749,7 +749,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                 ),
                 PopupMenuButton<String>(
                   tooltip: 'Visualization options',
-                  icon: const Icon(Icons.more_vert, size: 20),
+                  icon: const AppIcon(Symbols.more_vert_rounded, size: 20),
                   onSelected: _option,
                   itemBuilder: (_) => [
                     if (_native.active) const PopupMenuItem(value: 'original', child: Text('Original scenes')),
@@ -909,7 +909,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                                         IconButton(
                                           tooltip: 'Exit fullscreen',
                                           onPressed: () => Navigator.pop(dialogContext),
-                                          icon: const Icon(Icons.fullscreen_exit),
+                                          icon: const AppIcon(Symbols.fullscreen_exit_rounded),
                                         ),
                                       ],
                                     ),

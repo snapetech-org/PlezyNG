@@ -464,7 +464,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                         onChanged: (value) => setState(() => _searchQuery = value.trim().toLowerCase()),
                         decoration: const InputDecoration(
                           isDense: true,
-                          prefixIcon: Icon(Icons.search_rounded),
+                          prefixIcon: AppIcon(Symbols.search_rounded),
                           hintText: 'Search packs, presets, authors, or licenses',
                           border: OutlineInputBorder(),
                         ),
@@ -482,7 +482,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
               if (_failure != null)
                 MaterialBanner(
                   content: Text(_failure!),
-                  leading: Icon(Symbols.error_rounded, color: Theme.of(context).colorScheme.error),
+                  leading: AppIcon(Symbols.error_rounded, color: Theme.of(context).colorScheme.error),
                   actions: [TextButton(onPressed: () => setState(() => _failure = null), child: Text(t.common.close))],
                 ),
               Expanded(
@@ -493,7 +493,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                         children: [
                           FilledButton.icon(
                             onPressed: _busy ? null : () => _browse(),
-                            icon: const Icon(Icons.grid_view_rounded),
+                            icon: const AppIcon(Symbols.grid_view_rounded),
                             label: const Text('Browse installed presets'),
                           ),
                           Padding(
@@ -544,7 +544,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                             alignment: Alignment.centerLeft,
                             child: TextButton.icon(
                               onPressed: _busy || !_store.catalogConfigured ? null : _checkPackUpdates,
-                              icon: const Icon(Icons.refresh_rounded),
+                              icon: const AppIcon(Symbols.refresh_rounded),
                               label: const Text('Check for pack updates'),
                             ),
                           ),
@@ -619,7 +619,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                                         )
                                                         .path,
                                                   ),
-                                            icon: const Icon(Icons.grid_view_rounded, size: 18),
+                                            icon: const AppIcon(Symbols.grid_view_rounded, size: 18),
                                             label: const Text('Browse presets'),
                                           ),
                                         if (installedIds.contains(entry.id) || olderIds.contains(entry.id))
@@ -653,10 +653,10 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                               ? 'Remove from favorites'
                                               : 'Add to favorites',
                                           onPressed: () => _toggleFavorite(_packFavoriteKey(entry.id, entry.version)),
-                                          icon: Icon(
+                                          icon: AppIcon(
                                             _favorites.contains(_packFavoriteKey(entry.id, entry.version))
-                                                ? Icons.favorite_rounded
-                                                : Icons.favorite_border_rounded,
+                                                ? Symbols.favorite_rounded
+                                                : Symbols.favorite_border_rounded,
                                           ),
                                         ),
                                         TextButton.icon(
@@ -696,7 +696,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                           if (_busy && _installCancellation != null && _workingPackId == null)
                             TextButton.icon(
                               onPressed: _installCancellation!.cancel,
-                              icon: const Icon(Icons.close),
+                              icon: const AppIcon(Symbols.close_rounded),
                               label: const Text('Cancel folder import'),
                             ),
                           OutlinedButton.icon(
@@ -738,10 +738,10 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                             ? 'Remove from favorites'
                                             : 'Add to favorites',
                                         onPressed: () => _toggleFavorite(_packFavoriteKey(pack.id, pack.version)),
-                                        icon: Icon(
+                                        icon: AppIcon(
                                           _favorites.contains(_packFavoriteKey(pack.id, pack.version))
-                                              ? Icons.favorite_rounded
-                                              : Icons.favorite_border_rounded,
+                                              ? Symbols.favorite_rounded
+                                              : Symbols.favorite_border_rounded,
                                         ),
                                       ),
                                       IconButton(
@@ -783,10 +783,10 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                           ? 'Remove from favorites'
                                           : 'Add to favorites',
                                       onPressed: () => _toggleFavorite(_presetFavoriteKey(name)),
-                                      icon: Icon(
+                                      icon: AppIcon(
                                         _favorites.contains(_presetFavoriteKey(name))
-                                            ? Icons.favorite_rounded
-                                            : Icons.favorite_border_rounded,
+                                            ? Symbols.favorite_rounded
+                                            : Symbols.favorite_border_rounded,
                                       ),
                                     ),
                                     IconButton(

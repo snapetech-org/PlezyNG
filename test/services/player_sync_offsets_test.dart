@@ -60,6 +60,21 @@ void main() {
 }
 
 class _RecordingPlayer implements Player {
+  @override
+  bool get supportsSecondarySubtitles => false;
+
+  @override
+  bool get supportsSubtitleStepSync => false;
+
+  @override
+  bool get supportsSubtitleStyleControls => false;
+
+  @override
+  Set<String> get supportedLocalSubtitleExtensions => const {};
+
+  @override
+  bool get audioPassthroughActive => false;
+
   final List<(String, String)> writes = [];
 
   @override

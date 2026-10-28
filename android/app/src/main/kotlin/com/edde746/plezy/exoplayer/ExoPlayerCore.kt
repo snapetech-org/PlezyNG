@@ -60,6 +60,7 @@ import androidx.media3.exoplayer.source.FilteringMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.effect.LanczosResample
 import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.extractor.mkv.MatroskaExtractor
 import androidx.media3.extractor.mp4.FragmentedMp4Extractor
@@ -200,6 +201,11 @@ class ExoPlayerCore(private val activity: Activity) :
   private var overlayLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
   private var lastVideoSize: VideoSize? = null
   private var exoPlayer: ExoPlayer? = null
+  private var videoUpscalingRequested: Boolean = false
+  private var videoUpscalingRequiresEffect: Boolean = false
+  private var videoUpscalingConfigured: Boolean = false
+  private var videoUpscalingStatus: String = "off"
+  private var videoUpscalingOutputSize: Pair<Int, Int>? = null
   private var renderersFactory: PlezyRenderersFactory? = null
   private val subtitleDelayUs = AtomicLong(0L)
 
@@ -238,13 +244,14 @@ class ExoPlayerCore(private val activity: Activity) :
   private var tunnelingDisabledForVideoCodec: Boolean = false
   private var tunnelingDisabledForDecodedPcm: Boolean = false
   private var tunnelingDisabledForAudioRecovery: Boolean = false
+  private var tunnelingDisabledForSubtitleCapture: Boolean = false
 
   // Tunneled playback never fires the VideoFrameMetadataListener (media3 releases
   // frames inside the codec), which is the libass pipeline's only render trigger —
   // ASS subs would freeze. Correctness over tunneling while an ASS track is active.
   private var tunnelingDisabledForAssSubtitles: Boolean = false
   private val tunnelingDisabledForCodec: Boolean
-    get() = tunnelingDisabledForAudioCodec || tunnelingDisabledForVideoCodec || tunnelingDisabledForDecodedPcm || tunnelingDisabledForAudioRecovery
+    get() = tunnelingDisabledForAudioCodec || tunnelingDisabledForVideoCodec || tunnelingDisabledForDecodedPcm || tunnelingDisabledForAudioRecovery || tunnelingDisabledForSubtitleCapture
   private var currentTunneledPlayback: Boolean = false
 
   // Loudness normalization (#1289): audiofx effects only process non-tunneled
@@ -256,6 +263,7 @@ class ExoPlayerCore(private val activity: Activity) :
   // Stereo downmix: runs as a ChannelMixingAudioProcessor inside the sink's
   // decoded-PCM pipeline, so encoded audio is force-decoded while enabled.
   private var audioDownmixEnabled: Boolean = false
+  private var subtitlePcmCaptureEnabled: Boolean = false
   private var audioDownmixCenterBoostDb: Int = 0
   private var audioDownmixNormalize: Boolean = true
   private val audioNormalization = AudioNormalizationEffect(::emitLog)
@@ -624,6 +632,11 @@ class ExoPlayerCore(private val activity: Activity) :
 
       // Create FrameLayout container for video (clips overflow for ZOOM crop mode).
       surfaceContainer = PlayerSurfaceHost.createContainer(activity, clipChildren = true)
+      surfaceContainer?.addOnLayoutChangeListener { _, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+        if (right - left != oldRight - oldLeft || bottom - top != oldBottom - oldTop) {
+          updateVideoUpscaling()
+        }
+      }
 
       // AspectRatioFrameLayout drives FIT/ZOOM/FILL via Media3's resizeMode.
       // Centered inside the container; in ZOOM mode it measures larger than
@@ -680,6 +693,7 @@ class ExoPlayerCore(private val activity: Activity) :
             updateSurfaceViewSize(vs.width, vs.height, vs.pixelWidthHeightRatio)
           }
         }
+        updateVideoUpscaling()
       }
       contentView.viewTreeObserver.addOnGlobalLayoutListener(overlayLayoutListener)
 
@@ -856,6 +870,10 @@ class ExoPlayerCore(private val activity: Activity) :
         // without ending (#1673) — see EndOfStreamPolicy.STALL_TIMEOUT_MS.
         .setStuckPlayingNotEndingTimeoutMs(EndOfStreamPolicy.STALL_TIMEOUT_MS)
         .build()
+      // Media3 requires the frame-effects pipeline to be configured before
+      // prepare(). The default is an empty chain; the user can opt into the
+      // Lanczos GL resampler later without changing the decoder path.
+      exoPlayer!!.setVideoEffects(emptyList())
 
       // Add ASS overlay view to the full-screen surfaceContainer (NOT the zoom-scaled
       // videoAspectContainer): the libass frame = screen, and mpv-style ass_set_margins
@@ -1269,6 +1287,7 @@ class ExoPlayerCore(private val activity: Activity) :
       logDolbyVisionPlaybackPathIfNeeded()
     } else {
       currentVideoFormat = null
+      lastVideoSize = null
     }
     if (audioGroup != null) {
       val af = audioGroup.mediaTrackGroup.getFormat(0)
@@ -1297,6 +1316,7 @@ class ExoPlayerCore(private val activity: Activity) :
     evaluateAudioCodecForTunneling()
     evaluateVideoCodecForTunneling()
     evaluateAssSubtitlesForTunneling(tracks)
+    updateVideoUpscaling()
     updateTunnelingState("tracks changed")
     emitTrackList()
   }
@@ -1799,6 +1819,9 @@ class ExoPlayerCore(private val activity: Activity) :
     delegate?.onEvent("file-loaded", null)
     delegate?.onPropertyChange("eof-reached", false)
     emitCurrentSeekable(force = true)
+    lastVideoSize = null
+    clearVideoUpscaling(if (videoUpscalingRequested) "awaiting-video-size" else "off")
+    videoUpscalingRequiresEffect = false
     // Re-calibrate the subtitle/video layer offset each play: tear down the converged calibrator
     // so the metadata listener lazily spins up a fresh one. The seeded (persisted) value stays
     // applied meanwhile, so subtitles are right from the first frame.
@@ -1811,6 +1834,144 @@ class ExoPlayerCore(private val activity: Activity) :
     Log.d(TAG, "Video size changed: ${videoSize.width}x${videoSize.height}, ratio: ${videoSize.pixelWidthHeightRatio}")
     lastVideoSize = videoSize
     updateSurfaceViewSize(videoSize.width, videoSize.height, videoSize.pixelWidthHeightRatio)
+    updateVideoUpscaling()
+  }
+
+  /**
+   * Request high-quality spatial resampling on ExoPlayer's GL frame processor.
+   * This does not synthesize temporal frames or claim neural processing. The
+   * effect is configured only when the rendered video needs enlargement. DRM
+   * content stays on its original path; tunneling is disabled only while an
+   * eligible stream actually needs the frame-effects pipeline.
+   */
+  fun setVideoUpscaling(enabled: Boolean): Map<String, Any?> {
+    videoUpscalingRequested = enabled
+    updateVideoUpscaling()
+    return videoUpscalingStats()
+  }
+
+  private fun videoUpscalingStats(): Map<String, Any?> = mapOf(
+    "videoUpscalingRequested" to videoUpscalingRequested,
+    "videoUpscalingConfigured" to videoUpscalingConfigured,
+    "videoUpscalingStatus" to videoUpscalingStatus,
+    "videoUpscalingOutputWidth" to videoUpscalingOutputSize?.first,
+    "videoUpscalingOutputHeight" to videoUpscalingOutputSize?.second,
+    "videoUpscalingProvider" to if (videoUpscalingConfigured) "Media3 GL · Lanczos" else null,
+  )
+
+  private fun updateVideoUpscaling() {
+    if (Looper.myLooper() != Looper.getMainLooper()) {
+      activity.runOnUiThread { updateVideoUpscaling() }
+      return
+    }
+    val player = exoPlayer ?: return
+    val targetSize = resolveVideoUpscalingTargetSize()
+    if (targetSize == null) {
+      val status = videoUpscalingStatus
+      clearVideoUpscaling(status)
+      if (videoUpscalingRequiresEffect) {
+        videoUpscalingRequiresEffect = false
+        updateTunnelingState("video-upscaling")
+      }
+      return
+    }
+
+    videoUpscalingRequiresEffect = true
+    // Effects require Media3's frame-processing path. If the user asks for
+    // Lanczos while tunneled playback is active, first reselect tracks without
+    // tunneling, then attach the effect to the regular video renderer.
+    updateTunnelingState("video-upscaling")
+    if (currentTunneledPlayback) {
+      clearVideoUpscaling("tunneled-playback")
+      return
+    }
+
+    val (targetWidth, targetHeight) = targetSize
+    val resolvedSize = targetWidth to targetHeight
+    if (videoUpscalingConfigured && videoUpscalingOutputSize == resolvedSize) {
+      videoUpscalingStatus = "configured"
+      return
+    }
+
+    try {
+      player.setVideoEffects(listOf(LanczosResample.scaleToFit(targetWidth, targetHeight)))
+      videoUpscalingConfigured = true
+      videoUpscalingOutputSize = resolvedSize
+      videoUpscalingStatus = "configured"
+      emitLog("info", "upscaling", "Lanczos GL resampling configured for ${targetWidth}x${targetHeight}")
+    } catch (error: Exception) {
+      try {
+        player.setVideoEffects(emptyList())
+      } catch (_: Exception) {
+        // Best-effort removal of a previously configured effect.
+      }
+      videoUpscalingConfigured = false
+      videoUpscalingOutputSize = null
+      videoUpscalingStatus = "effect-pipeline-unavailable"
+      videoUpscalingRequiresEffect = false
+      updateTunnelingState("video-upscaling-unavailable")
+      emitLog("warn", "upscaling", "Could not configure Lanczos GL resampling: ${error.message}")
+    }
+  }
+
+  private fun resolveVideoUpscalingTargetSize(): Pair<Int, Int>? {
+    if (!videoUpscalingRequested) {
+      videoUpscalingStatus = "off"
+      return null
+    }
+    val player = exoPlayer ?: return null
+    val videoFormat = currentVideoFormat ?: player.videoFormat
+    if (videoFormat == null) {
+      videoUpscalingStatus = "no-video-track"
+      return null
+    }
+    if (videoFormat.drmInitData != null) {
+      videoUpscalingStatus = "drm-content"
+      return null
+    }
+
+    val size = lastVideoSize?.takeIf { it.width > 0 && it.height > 0 }
+      ?: player.videoSize.takeIf { it.width > 0 && it.height > 0 }
+    if (size == null) {
+      videoUpscalingStatus = "awaiting-video-size"
+      return null
+    }
+    val outputWidth = surfaceView?.width?.takeIf { it > 0 }
+      ?: surfaceContainer?.width?.takeIf { it > 0 }
+    val outputHeight = surfaceView?.height?.takeIf { it > 0 }
+      ?: surfaceContainer?.height?.takeIf { it > 0 }
+    if (outputWidth == null || outputHeight == null) {
+      videoUpscalingStatus = "awaiting-output-size"
+      return null
+    }
+
+    val rotated = size.unappliedRotationDegrees % 180 != 0
+    val sourceWidth = if (rotated) size.height.toDouble() else size.width * size.pixelWidthHeightRatio.toDouble()
+    val sourceHeight = if (rotated) size.width * size.pixelWidthHeightRatio.toDouble() else size.height.toDouble()
+    val scale = minOf(outputWidth / sourceWidth, outputHeight / sourceHeight)
+    if (!scale.isFinite() || scale <= 1.01) {
+      videoUpscalingStatus = "no-upscale-needed"
+      return null
+    }
+
+    val targetWidth = (sourceWidth * scale).toInt().coerceIn(1, outputWidth)
+    val targetHeight = (sourceHeight * scale).toInt().coerceIn(1, outputHeight)
+    videoUpscalingStatus = "ready"
+    return targetWidth to targetHeight
+  }
+
+  private fun clearVideoUpscaling(status: String) {
+    val player = exoPlayer
+    if (videoUpscalingConfigured && player != null) {
+      try {
+        player.setVideoEffects(emptyList())
+      } catch (error: Exception) {
+        emitLog("warn", "upscaling", "Could not clear Lanczos GL resampling: ${error.message}")
+      }
+    }
+    videoUpscalingConfigured = false
+    videoUpscalingOutputSize = null
+    videoUpscalingStatus = status
   }
 
   private fun updateSurfaceViewSize(videoWidth: Int, videoHeight: Int, pixelRatio: Float) {
@@ -2341,6 +2502,7 @@ class ExoPlayerCore(private val activity: Activity) :
 
   private fun shouldBlockDirectAudioOutput(format: Format, reason: String): Boolean {
     val mimeType = format.sampleMimeType ?: return false
+    if (subtitlePcmCaptureEnabled && isEncodedAudioMimeType(mimeType)) return true
     // Loudness normalization needs decoded PCM for the audiofx chain to act on.
     if (audioNormalizationEnabled && isEncodedAudioMimeType(mimeType)) return true
     // Stereo downmix runs in the sink's PCM pipeline; bitstream output would
@@ -2751,7 +2913,8 @@ class ExoPlayerCore(private val activity: Activity) :
       !tunnelingDisabledForCodec &&
       !tunnelingDisabledForAssSubtitles &&
       !audioDelayActive &&
-      !audioNormalizationEnabled
+      !audioNormalizationEnabled &&
+      !videoUpscalingRequiresEffect
   }
 
   private fun updateCurrentTunnelingState(reason: String, shouldTunnel: Boolean): Boolean {
@@ -3641,6 +3804,27 @@ class ExoPlayerCore(private val activity: Activity) :
     }
   }
 
+  /**
+   * Enables an opt-in PCM copy for local transcription. Encoded passthrough is
+   * temporarily decoded while capture is active; the user's setting is retained.
+   */
+  fun setSubtitlePcmCaptureEnabled(enabled: Boolean): Boolean {
+    val factory = renderersFactory ?: return false
+    if (subtitlePcmCaptureEnabled == enabled) return true
+    subtitlePcmCaptureEnabled = enabled
+    tunnelingDisabledForSubtitleCapture = enabled
+    factory.subtitlePcmCaptureBuffer.setEnabled(enabled)
+    val selectedMime = selectedAudioFormat()?.sampleMimeType
+    val encodedTrack = selectedMime != null && isEncodedAudioMimeType(selectedMime)
+    if (exoPlayer != null && (encodedTrack || currentTunneledPlayback)) {
+      startAudioRendererBounce("subtitle-pcm-capture")
+    }
+    return true
+  }
+
+  fun drainSubtitlePcmCapture(): List<Map<String, Any>> =
+    renderersFactory?.subtitlePcmCaptureBuffer?.drain() ?: emptyList()
+
   fun setAudioPassthrough(enabled: Boolean) {
     if (audioPassthroughEnabled == enabled) return
     audioPassthroughEnabled = enabled
@@ -4253,6 +4437,18 @@ class ExoPlayerCore(private val activity: Activity) :
     val videoDecoderInfo = getVideoDecoderInfo(videoFormat)
     val videoDecoderName = decoderInitName ?: videoDecoderInfo
     val dvPlaybackInfo = buildDvPlaybackInfo(videoFormat, videoDecoderName) ?: lastDvPlaybackInfo
+    val sourceIsHdr = videoFormat?.colorInfo?.let { colorInfo ->
+      val transfer = colorInfo.colorTransfer
+      when {
+        transfer == C.COLOR_TRANSFER_ST2084 ||
+          transfer == C.COLOR_TRANSFER_HLG ||
+          colorInfo.hdrStaticInfo != null -> true
+        transfer == C.COLOR_TRANSFER_SDR ||
+          transfer == C.COLOR_TRANSFER_SRGB ||
+          transfer == C.COLOR_TRANSFER_GAMMA_2_2 -> false
+        else -> null
+      }
+    }
 
     return mapOf(
       // Video metrics
@@ -4261,11 +4457,18 @@ class ExoPlayerCore(private val activity: Activity) :
       "videoWidth" to videoFormat?.width,
       "videoHeight" to videoFormat?.height,
       "videoFps" to (videoFormat?.frameRate?.takeIf { it > 0 } ?: detectedFrameRate.takeIf { it > 0 }),
+      "sourceIsHdr" to sourceIsHdr,
       "videoBitrate" to videoFormat?.bitrate,
       "videoDecoderName" to videoDecoderName,
       "videoDroppedFrames" to player.videoDecoderCounters?.droppedBufferCount,
       "videoRenderedFrames" to player.videoDecoderCounters?.renderedOutputBufferCount,
       "videoResumeStallRecoveries" to resumeStallRecoveryCount,
+      "videoUpscalingRequested" to videoUpscalingRequested,
+      "videoUpscalingConfigured" to videoUpscalingConfigured,
+      "videoUpscalingStatus" to videoUpscalingStatus,
+      "videoUpscalingOutputWidth" to videoUpscalingOutputSize?.first,
+      "videoUpscalingOutputHeight" to videoUpscalingOutputSize?.second,
+      "videoUpscalingProvider" to if (videoUpscalingConfigured) "Media3 GL · Lanczos" else null,
       // ASS overlay swap timing (vsync-pinned; late = past the swap-time budget)
       "subSwapCount" to assSubtitleView?.swapCount,
       "subLateSwaps" to assSubtitleView?.lateSwapCount,
@@ -4460,6 +4663,11 @@ class ExoPlayerCore(private val activity: Activity) :
     tunnelingDisabledForAudioRecovery = false
     tunnelingDisabledForAssSubtitles = false
     currentTunneledPlayback = false
+    videoUpscalingRequested = false
+    videoUpscalingRequiresEffect = false
+    videoUpscalingConfigured = false
+    videoUpscalingOutputSize = null
+    videoUpscalingStatus = "off"
     pendingStartPositionMs = 0L
     pendingPlayWhenReady = null
     currentMediaIsLive = false

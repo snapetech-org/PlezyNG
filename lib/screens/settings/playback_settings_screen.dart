@@ -14,6 +14,7 @@ import '../../media/media_kind.dart';
 import '../../media/media_library.dart';
 import '../../models/audio_channel_limit.dart';
 import '../../models/audio_quality_preset.dart';
+import '../../models/motion_processing_mode.dart';
 import '../../models/transcode_quality_preset.dart';
 import '../../models/player_setting_scope.dart';
 import '../../models/motion_clarity.dart';
@@ -39,6 +40,7 @@ import 'external_player_screen.dart';
 import 'mpv_config_screen.dart';
 import 'settings_utils.dart';
 import 'subtitle_styling_screen.dart';
+import 'subtitle_language_order_screen.dart';
 
 class PlaybackSettingsScreen extends StatefulWidget {
   const PlaybackSettingsScreen({super.key});
@@ -264,10 +266,22 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
                   subtitle: t.settings.alwaysShowSubtitlesOnDeviceDescription,
                 ),
                 SettingSwitchTile(
+                  pref: SettingsService.subtitleOnMute,
+                  icon: Symbols.subtitles_rounded,
+                  title: t.settings.subtitleOnMute,
+                  subtitle: t.settings.subtitleOnMuteDescription,
+                ),
+                SettingSwitchTile(
                   pref: SettingsService.autoDownloadPreferredSubtitle,
                   icon: Symbols.download_rounded,
                   title: t.settings.autoDownloadPreferredSubtitle,
                   subtitle: t.settings.autoDownloadPreferredSubtitleDescription,
+                ),
+                SettingNavigationTile(
+                  icon: Symbols.subtitles_rounded,
+                  title: 'Preferred subtitle languages',
+                  subtitle: 'Order device-local fallback languages; the server profile language takes priority.',
+                  destinationBuilder: (_) => const SubtitleLanguageOrderScreen(),
                 ),
                 if (!PlatformDetector.isTizenBuild())
                   SettingNavigationTile(
@@ -279,6 +293,7 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
               ],
             ),
 
+            _motionProcessingGroup(),
             _seekAndTimingGroup(),
             _autoPlayAndSkipGroup(),
             if (!PlatformDetector.isTizenBuild()) _musicPlaybackGroup(),
@@ -292,6 +307,79 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
       },
     );
   }
+
+  Widget _motionProcessingGroup() => SettingsGroup(
+    title: t.settings.motionProcessing,
+    children: [
+      SettingSelectionTile<MotionProcessingMode>(
+        pref: SettingsService.motionProcessingMode,
+        icon: Symbols.slow_motion_video_rounded,
+        title: t.settings.motionSmoothing,
+        subtitleBuilder: _motionProcessingModeSummary,
+        options: [
+          DialogOption(
+            value: MotionProcessingMode.off,
+            title: t.settings.motionSmoothingOff,
+            subtitle: t.settings.motionSmoothingOffDescription,
+          ),
+          DialogOption(
+            value: MotionProcessingMode.mpv,
+            title: t.settings.motionSmoothingMpv,
+            subtitle: t.settings.motionSmoothingMpvDescription,
+          ),
+          DialogOption(
+            value: MotionProcessingMode.neural,
+            title: t.settings.neuralInterpolation,
+            subtitle: t.settings.neuralInterpolationUnavailableDescription,
+          ),
+        ],
+      ),
+      ValueListenableBuilder<MotionProcessingMode>(
+        valueListenable: SettingsService.instance.listenable(SettingsService.motionProcessingMode),
+        builder: (context, mode, _) => mode == MotionProcessingMode.neural
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SettingSelectionTile<NeuralInterpolationPreset>(
+                    pref: SettingsService.neuralInterpolationPreset,
+                    icon: Symbols.tune_rounded,
+                    title: t.settings.neuralInterpolationPresets,
+                    subtitleBuilder: _neuralInterpolationPresetLabel,
+                    options: NeuralInterpolationPreset.values
+                        .map((preset) => DialogOption(value: preset, title: _neuralInterpolationPresetLabel(preset)))
+                        .toList(growable: false),
+                  ),
+                  SettingSwitchTile(
+                    pref: SettingsService.neuralOnlyWhenPluggedIn,
+                    icon: Symbols.power_settings_new_rounded,
+                    title: t.settings.neuralOnlyWhenPluggedIn,
+                    subtitle: t.settings.neuralOnlyWhenPluggedInDescription,
+                  ),
+                ],
+              )
+            : const SizedBox.shrink(),
+      ),
+    ],
+  );
+
+  String _motionProcessingModeLabel(MotionProcessingMode mode) => switch (mode) {
+    MotionProcessingMode.off => t.settings.motionSmoothingOff,
+    MotionProcessingMode.mpv => t.settings.motionSmoothingMpv,
+    MotionProcessingMode.neural => t.settings.neuralInterpolation,
+  };
+
+  String _motionProcessingModeSummary(MotionProcessingMode mode) => switch (mode) {
+    MotionProcessingMode.off => '${_motionProcessingModeLabel(mode)} · ${t.settings.motionSmoothingOffDescription}',
+    MotionProcessingMode.mpv => '${_motionProcessingModeLabel(mode)} · ${t.settings.motionSmoothingDescription}',
+    MotionProcessingMode.neural =>
+      '${_motionProcessingModeLabel(mode)} · ${t.settings.neuralInterpolationUnavailableDescription}',
+  };
+
+  String _neuralInterpolationPresetLabel(NeuralInterpolationPreset preset) => switch (preset) {
+    NeuralInterpolationPreset.performance => t.settings.neuralInterpolationPresetPerformance,
+    NeuralInterpolationPreset.balanced => t.settings.neuralInterpolationPresetBalanced,
+    NeuralInterpolationPreset.quality => t.settings.neuralInterpolationPresetQuality,
+  };
 
   Widget _seekAndTimingGroup() => SettingsGroup(
     title: t.settings.seekAndTiming,

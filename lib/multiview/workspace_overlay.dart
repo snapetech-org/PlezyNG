@@ -1,3 +1,4 @@
+import '../widgets/app_icon.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -780,7 +781,7 @@ class _WorkspaceSessionTray extends StatelessWidget {
                     dense: false,
                     visualDensity: VisualDensity.standard,
                     selected: controller.focusedSessionId == id,
-                    leading: Icon(
+                    leading: AppIcon(
                       parked
                           ? Symbols.visibility_off_rounded
                           : fullscreen
@@ -860,7 +861,7 @@ Widget _workspaceIconButton({
       visualDensity: VisualDensity.standard,
       iconSize: iconSize,
       onPressed: onPressed,
-      icon: Icon(icon),
+      icon: AppIcon(icon),
     ),
   ),
 );
@@ -915,7 +916,7 @@ class _ResizeHandle extends StatelessWidget {
                   ),
                   child: Transform.rotate(
                     angle: math.pi / 4,
-                    child: Icon(Symbols.drag_handle_rounded, size: 20, color: tk.textMuted),
+                    child: AppIcon(Symbols.drag_handle_rounded, size: 20, color: tk.textMuted),
                   ),
                 ),
               ),

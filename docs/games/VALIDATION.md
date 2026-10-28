@@ -1,13 +1,41 @@
 # Games validation and release gates
 
-For current follow-up PR #54 completion status, see
+For current follow-up PR #71 completion status, see
 [CONNECTED_EXPERIENCE.md](CONNECTED_EXPERIENCE.md#scope-and-acceptance).
 Historical builds below do not validate the current branch.
 Use [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) for the exact-commit build
 procedure, three-computer library cases, receiver recovery, security and
 accessibility checks, and evidence template.
 
-## Code handoff pass — 2026-10-28
+## Main reconciliation for PR #71 — 2026-10-28
+
+The follow-up incorporates main `a90717f6`, including its subtitle, motion and
+connector changes. PR #54 is already merged. Receiver implementation and
+security regressions are retained; Windows/JVM test registration and shared
+Apple test wiring remain part of private JIT CI.
+
+This pass repairs source/API integration errors in the combined app, restores
+bounded TAR parsing, keeps stale settings writes from winning, and preserves
+subtitle operation serialization and widget lifetime checks. Typed subtitle
+translation references prevent cleanup from silently dropping runtime messages.
+New controls use the shared AppIcon/rounded Symbols styling, retaining provider
+marks and a distinct filled/unfilled favorite state.
+
+- **41 native Debug tests passed** with Vulkan and GStreamer enabled.
+- **458 workflow/script guard tests passed** across 41 suites.
+- **17 new subtitle regression tests passed**, covering ZIP/TAR/gzip-TAR,
+  traversal, underdeclared expansion, octal validation, resource bounds,
+  fractional drift, invalid rates and unchanged source bytes.
+- Localization checks pass for **37 locales / 4,263 messages**, with **18,900
+  explicitly allowlisted English fallback entries**; these are not reviewed
+  translations. Existing translated copy and native permission messages remain.
+
+The PR description records the final combined application checks and exact
+published commit. Full SDK builds and live tests must use that revision. No new
+HDR, Android/Linux direct GPU output, internet rendezvous/traversal/relay or
+programmatic Cloud/Families implementation is claimed by this reconciliation.
+
+## Earlier code handoff pass — 2026-10-28 (`f1e14bcc`)
 
 This pass incorporates main `f0f1e104` and the startup/build hardening in
 `60c8d0a4`. The PR records the final handoff commit; always check out that

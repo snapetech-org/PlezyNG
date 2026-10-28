@@ -192,14 +192,14 @@ abstract final class MotionProcessingService {
     // Neural mode changes the decoder and filter graph, so it is staged for
     // the next media open on these routes. Apple's native provider can change
     // its interpolation mode within the current VideoToolbox session.
-    if (mode == MotionProcessingMode.neural && (Platform.isAndroid || _isDesktopPmePlatform)) return false;
-    if (_isApplePlatform && mode == MotionProcessingMode.neural && _appleNeuralEligible[player] != true) {
+    if (mode.usesNeuralInterpolation && (Platform.isAndroid || _isDesktopPmePlatform)) return false;
+    if (_isApplePlatform && mode.usesNeuralInterpolation && _appleNeuralEligible[player] != true) {
       return false;
     }
     // Moving Android away from the direct MediaCodec surface must happen
     // before the next file opens so the renderer can size its frame queue.
     if (Platform.isAndroid &&
-        mode == MotionProcessingMode.mpv &&
+        mode.usesMpvInterpolation &&
         (_androidMpvOutputActive[player] != true || _androidAnvilActive[player] == true)) {
       return false;
     }
@@ -254,10 +254,10 @@ abstract final class MotionProcessingService {
     // A power-source event can arrive while provider setup is awaiting a model
     // or runtime. Recheck the latch after setup so a late initialization never
     // re-enables inference on battery.
-    if (mode == MotionProcessingMode.neural && _powerLimited[player] == true) {
+    if (mode.usesNeuralInterpolation && _powerLimited[player] == true) {
       if (!await _suspendNeuralForPower(player)) _powerLimited[player] = false;
     }
-    if (mode == MotionProcessingMode.neural && !powerLimited && !thermalLimited) {
+    if (mode.usesNeuralInterpolation && !powerLimited && !thermalLimited) {
       final androidNeuralActive = Platform.isAndroid && _androidAnvilActive[player] == true;
       final appleNeuralEligible = _isApplePlatform && _appleNeuralEligible[player] == true;
       if (androidNeuralActive || appleNeuralEligible) _watchPlatformThermalStatus(player);
@@ -279,12 +279,12 @@ abstract final class MotionProcessingService {
       final sourceEligible =
           avfoundationOutput && !isLive && selectedVersion != null && _supportsMotionSource(selectedVersion);
       _appleNeuralEligible[player] = sourceEligible;
-      await _applyAppleInterpolation(player, sourceEligible && mode == MotionProcessingMode.neural, neuralPreset);
+      await _applyAppleInterpolation(player, sourceEligible && mode.usesNeuralInterpolation, neuralPreset);
       _interpolationBufferReady[player] = avfoundationOutput;
       return;
     }
 
-    if (Platform.isAndroid && mode == MotionProcessingMode.mpv) {
+    if (Platform.isAndroid && mode.usesMpvInterpolation) {
       final canKeepConfiguredRenderer =
           _androidMpvOutputActive[player] == true &&
           _androidAnvilActive[player] != true &&
@@ -317,7 +317,7 @@ abstract final class MotionProcessingService {
       return;
     }
 
-    if (Platform.isAndroid && mode == MotionProcessingMode.neural) {
+    if (Platform.isAndroid && mode.usesNeuralInterpolation) {
       _interpolationBufferReady[player] = false;
       final originalMpv = _originals[player];
       if (originalMpv != null) await _restoreOriginalProperties(player, originalMpv);
@@ -369,7 +369,7 @@ abstract final class MotionProcessingService {
     }
     if (Platform.isAndroid) await _restoreAndroidMotionPath(player);
 
-    if (_isDesktopPmePlatform && mode == MotionProcessingMode.neural) {
+    if (_isDesktopPmePlatform && mode.usesNeuralInterpolation) {
       _interpolationBufferReady[player] = false;
       final configured = await _configureDesktopPme(
         player,
@@ -463,7 +463,7 @@ abstract final class MotionProcessingService {
   }) async {
     if (!supportsPlayer(player)) throw UnsupportedError('MPV motion interpolation is unavailable on this player.');
 
-    if (mode == MotionProcessingMode.neural) {
+    if (mode.usesNeuralInterpolation) {
       if (await _preparePowerPolicy(player, mode)) {
         if (!await _suspendNeuralForPower(player)) _powerLimited[player] = false;
         return;
@@ -491,7 +491,7 @@ abstract final class MotionProcessingService {
       final avfoundationOutput = output == null || output == 'avfoundation';
       await _applyAppleInterpolation(
         player,
-        avfoundationOutput && _appleNeuralEligible[player] == true && mode == MotionProcessingMode.neural,
+        avfoundationOutput && _appleNeuralEligible[player] == true && mode.usesNeuralInterpolation,
         neuralPreset,
       );
       _interpolationBufferReady[player] = avfoundationOutput;
@@ -499,7 +499,7 @@ abstract final class MotionProcessingService {
     }
 
     if (_isDesktopPmePlatform) {
-      if (mode == MotionProcessingMode.neural) {
+      if (mode.usesNeuralInterpolation) {
         if (_desktopPmeActive[player] != true) {
           appLogger.i('MotionProcessingService: desktop Neural mode takes effect on the next media open.');
         }
@@ -509,7 +509,7 @@ abstract final class MotionProcessingService {
     }
 
     if (Platform.isAndroid) {
-      if (mode == MotionProcessingMode.neural) {
+      if (mode.usesNeuralInterpolation) {
         // Neural changes require the model and the software decode/render path
         // to be prepared before loadfile. They are applied on the next media
         // open, where the selected version metadata is available.
@@ -518,7 +518,7 @@ abstract final class MotionProcessingService {
         }
         return;
       }
-      if (mode == MotionProcessingMode.mpv) {
+      if (mode.usesMpvInterpolation) {
         if (_androidMpvOutputActive[player] != true || _androidAnvilActive[player] == true) {
           appLogger.i('MotionProcessingService: Android MPV smoothing will take effect on the next media open.');
           return;

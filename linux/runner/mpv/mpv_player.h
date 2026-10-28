@@ -94,6 +94,12 @@ class MpvPlayer {
   int SetVisualizationTap(bool enabled);
   int ReadVisualizationAudio(mpv_plezy_audio_block* block);
 
+  // Optional patched libmpv capture API. Unlike the visualizer reader, this
+  // drains decoded blocks in media order and does not discard behind-clock PCM.
+  bool SubtitlePcmCaptureAvailable() const;
+  int SetSubtitlePcmCaptureEnabled(bool enabled);
+  int ReadSubtitlePcmCapture(mpv_plezy_audio_block* block);
+
   // Set before initialization, on the platform thread. Never mutates a live renderer.
   void ConfigureDolbyVisionExperiment(bool enabled, bool allow_fallback) {
     std::lock_guard<std::mutex> lock(native_mutex_);

@@ -615,6 +615,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         }
       },
       pyrowave: SettingsService.instance.read(SettingsService.gamePyrowaveForProfile(c.profileId)),
+      allowHdr: SettingsService.instance.read(SettingsService.enableHDR),
       quality: SettingsService.instance.read(SettingsService.steamQualityForProfile(c.profileId)),
       codec: SettingsService.instance.read(SettingsService.steamCodecForProfile(c.profileId)),
       controllerCount: SettingsService.instance.read(SettingsService.steamControllerCountForProfile(c.profileId)),

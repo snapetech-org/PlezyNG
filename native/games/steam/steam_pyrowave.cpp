@@ -27,7 +27,8 @@ uint8_t clamp8(int value) { return static_cast<uint8_t>(std::clamp(value, 0, 255
 }  // namespace
 
 bool parsePyrowaveFrame(
-    const uint8_t* bytes, size_t length, uint32_t width, uint32_t height, PyrowaveFrameInfo& info, bool allow444) {
+    const uint8_t* bytes, size_t length, uint32_t width, uint32_t height, PyrowaveFrameInfo& info, bool allow444,
+    bool allowHdr10) {
   if (!bytes || length < 8 || length > kMaxFrameBytes || width == 0 || height == 0 || width > kMaxWidth ||
       height > kMaxHeight || (width & 1) != 0 || (height & 1) != 0) {
     return false;
@@ -55,10 +56,13 @@ bool parsePyrowaveFrame(
       sequenceHeader = first;
       sequenceFlags = second;
 
-      // Current surfaces are SDR BT.709. The legacy Android converter accepts
-      // 4:2:0 only; the Metal path explicitly opts into full-resolution chroma.
-      if (code != 0 || (chroma != 0 && !allow444) || primaries != 0 || transfer != 0 || transform != 0 ||
-          packetWidth != width || packetHeight != height) {
+      // Legacy callers stay SDR. A receiver must opt in only after qualifying
+      // both a deep output surface and its color-management contract. Mixed
+      // primaries/transfer/matrix combinations are not supported by this codec.
+      const bool hdr10 = primaries == 1 && transfer == 1 && transform == 1;
+      const bool sdr = primaries == 0 && transfer == 0 && transform == 0;
+      if (code != 0 || (chroma != 0 && !allow444) || (!sdr && !(allowHdr10 && hdr10)) || packetWidth != width ||
+          packetHeight != height) {
         return false;
       }
       const bool left = (second >> 31) != 0;
@@ -70,6 +74,7 @@ bool parsePyrowaveFrame(
       result.fullRange = range == 0;
       result.chroma444 = chroma != 0;
       result.chromaLeft = left;
+      result.hdr10 = hdr10;
       foundSequence = true;
       offset += 8;
       continue;
@@ -88,8 +93,9 @@ bool parsePyrowaveFrame(
 void convertPyrowave420ToArgb(
     const uint8_t* y, size_t yStride, const uint8_t* cb, size_t cbStride, const uint8_t* cr, size_t crStride,
     const PyrowaveFrameInfo& info, std::vector<uint8_t>& argb) {
-  if (!y || !cb || !cr || info.chroma444 || info.width == 0 || info.height == 0 || info.width > kMaxWidth ||
-      info.height > kMaxHeight || yStride < info.width || cbStride < info.width / 2 || crStride < info.width / 2) {
+  if (!y || !cb || !cr || info.chroma444 || info.hdr10 || info.width == 0 || info.height == 0 ||
+      info.width > kMaxWidth || info.height > kMaxHeight || yStride < info.width || cbStride < info.width / 2 ||
+      crStride < info.width / 2) {
     throw std::invalid_argument("invalid Pyrowave output planes");
   }
   const size_t pixels = size_t(info.width) * info.height;

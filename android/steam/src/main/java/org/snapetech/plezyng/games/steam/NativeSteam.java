@@ -20,6 +20,16 @@ final class NativeSteam {
       long handle, String address, int port, long hostId, long deviceId, long userId, byte[] key, long game,
       boolean hevc, boolean pyrowave, int width, int height, int fps, int bitrateKbps, int controllerCount,
       int audioChannels, SteamDecoder decoder);
+  static native void runWithVideo(
+      long handle, String address, int port, long hostId, long deviceId, long userId, byte[] key, long game,
+      boolean hevc, boolean pyrowave, int width, int height, int fps, int bitrateKbps, int controllerCount,
+      int audioChannels, boolean hdr10, SteamDecoder decoder);
+  static native long gpuCreate(android.view.Surface surface, boolean allowHdr);
+  static native boolean gpuHdrSupported(long gpu);
+  static native boolean gpuConfigure(long gpu, int width, int height, byte[] initial);
+  static native int gpuPresent(long gpu, byte[] frame);
+  static native boolean gpuHdrActive(long gpu);
+  static native void gpuDestroy(long gpu);
   static native boolean pyrowaveStart(long handle, int width, int height, byte[] initial);
   static native byte[] pyrowaveDecode(long handle, byte[] bytes);
   static native void pyrowaveStop(long handle);

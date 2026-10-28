@@ -6,7 +6,7 @@ import java.util.Map;
 /** Bounded optional arguments; older Flutter/Activity callers retain defaults. */
 final class SteamStreamOptions {
   final int width, height, fps, bitrateKbps, controllerCount, audioChannels;
-  final boolean allowHevc;
+  final boolean allowHevc, allowHdr;
 
   private SteamStreamOptions(Map<?, ?> args) {
     width = integer(args, "streamWidth", 1920, 640, 1920);
@@ -21,6 +21,9 @@ final class SteamStreamOptions {
     Object hevc = args.get("allowHevc");
     if (hevc != null && !(hevc instanceof Boolean)) throw new IllegalArgumentException("Invalid codec option");
     allowHevc = !Boolean.FALSE.equals(hevc);
+    Object hdr = args.get("allowHdr");
+    if (hdr != null && !(hdr instanceof Boolean)) throw new IllegalArgumentException("Invalid HDR option");
+    allowHdr = Boolean.TRUE.equals(hdr);
   }
 
   static SteamStreamOptions from(Map<?, ?> args) { return new SteamStreamOptions(args); }

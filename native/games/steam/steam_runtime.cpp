@@ -139,6 +139,7 @@ int Runtime::run(
   request.gameId = game;
   request.gamepadCount = options.controllerCount;
   request.streamDesktop = false;
+  request.displayHdr10 = pyrowave && options.hdr10;
   int result = IHS_ClientStreamingRequest(client, &target, &request) ? wait(std::chrono::seconds(30)) : -1;
   if (result == 0 && !cancelled_)
     IHS_ClientStreamingEstablished(client);
@@ -165,6 +166,7 @@ int Runtime::run(
         c->audioChannels = state->options.audioChannels;
         c->enableHevc = state->hevc;
         c->enablePyrowave = state->pyrowave;
+        c->enableHdr10 = state->pyrowave && state->options.hdr10;
         c->maxBitrateKbps = state->options.bitrateKbps;
         c->quality = IHS_StreamQualityBalanced;
         c->maxWidth = state->options.width;

@@ -1,5 +1,10 @@
 # Games: embedded streaming implementation and rollout
 
+Current receiver source update: [Vulkan native video](VULKAN_RECEIVER.md) adds
+Android/Wayland direct GPU Pyrowave and gated HDR10 negotiation/presentation.
+The sections below retain earlier platform milestones; they are not evidence of
+hardware HDR qualification. See that document for current limits and test gates.
+
 Status: implementation in progress, 2026-10-28; follow-up PR #54. **No stream launches another app.**
 
 ## What this change implements

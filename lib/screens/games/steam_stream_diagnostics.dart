@@ -92,12 +92,13 @@ class _SteamStreamDiagnosticsState extends State<SteamStreamDiagnostics> {
             _row(t.games.streamMeasurements, t.games.streamMeasurementsUnavailable)
           else ...[
             if (m.codec != null && m.width > 0 && m.height > 0)
-              _row(t.games.streamVideo, '${m.codec} · ${m.width} × ${m.height}'),
+              _row(t.games.streamVideo, '${m.codec} · ${m.width} × ${m.height}${m.hdr10 ? ' · HDR10' : ''}'),
             _row(t.games.streamDecoder, switch (m.decoderKind) {
               1 => t.games.streamHardwareDecoder,
               2 => t.games.streamSoftwareDecoder,
               3 => t.games.streamReadbackDecoder,
               4 => t.games.streamMetalDecoder,
+              5 => '${t.games.streamHardwareDecoder} · Vulkan',
               _ => t.games.streamMeasurementsUnavailable,
             }),
             if (m.chromaFormat != 0) _row(t.games.streamChroma, m.chromaFormat == 2 ? '4:4:4' : '4:2:0'),

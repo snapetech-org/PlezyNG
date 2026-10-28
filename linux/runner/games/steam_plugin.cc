@@ -7,12 +7,15 @@
 #include <cerrno>
 #include <cstring>
 #include <functional>
+#include <future>
 #include <map>
 #include <stdexcept>
 #include <thread>
 
+#include "../mpv/wayland_video_surface.h"
 #include "steam_gstreamer.h"
 #include "steam_input.h"
+#include "steam_vulkan_sink.h"
 
 using namespace plezy::steam;
 namespace {
@@ -246,6 +249,9 @@ struct Session : std::enable_shared_from_this<Session> {
   uint64_t game;
   StreamOptions options;
   bool hevc, audible = false;
+  bool usePyrowave = false, nativeActive = false;
+  std::unique_ptr<mpv::WaylandVideoSurface> plane;
+  std::shared_ptr<VulkanSink> gpuSink;
   InputState input;
   FlBinaryMessenger* messenger;
   FlTextureRegistrar* registrar;
@@ -347,6 +353,85 @@ struct Session : std::enable_shared_from_this<Session> {
     }
     return true;
   }
+  VulkanSink::Target prepareGpu(std::weak_ptr<Runtime> source, const PyrowaveFrameInfo& info) {
+    struct Ticket {
+      std::mutex mutex;
+      bool cancelled = false;
+      std::promise<VulkanSink::Target> value;
+    };
+    auto ticket = std::make_shared<Ticket>();
+    auto future = ticket->value.get_future();
+    onMain([weak = weak_from_this(), source, ticket, info] {
+      std::lock_guard<std::mutex> guard(ticket->mutex);
+      if (ticket->cancelled) return;
+      VulkanSink::Target result;
+      if (auto self = weak.lock(); self && !self->closing && self->nativeActive && self->plane) {
+        {
+          std::lock_guard<std::mutex> guard(self->mutex);
+          if (self->runtime != source.lock()) {
+            ticket->value.set_value(result);
+            return;
+          }
+        }
+        auto& p = *self->plane;
+        mpv::HdrMetadata metadata;
+        if (info.hdr10) {
+          metadata.transfer = mpv::SourceTransfer::kPq;
+          metadata.primaries = mpv::SourcePrimaries::kBt2020;
+        }
+        if (info.hdr10 && (!p.output_is_hdr() || !p.CanDescribeSource(metadata))) {
+          result.valid = false;
+        } else if (p.PreparePresent()) {
+          result.width = p.width();
+          result.height = p.height();
+          result.permitted = true;
+        }
+      }
+      ticket->value.set_value(result);
+    });
+    if (future.wait_for(std::chrono::milliseconds(500)) != std::future_status::ready) {
+      std::lock_guard<std::mutex> guard(ticket->mutex);
+      ticket->cancelled = true;
+      if (future.wait_for(std::chrono::milliseconds(0)) != std::future_status::ready) return {};
+    }
+    return future.get();
+  }
+  void setNative(bool selected) {
+    nativeActive = selected && plane && !closing;
+    if (plane) plane->SetVisible(nativeActive);
+    g_autoptr(FlValue) value = fl_value_new_bool(nativeActive);
+    fl_method_channel_invoke_method(channel, "nativePresentation", value, nullptr, nullptr, nullptr);
+  }
+  void completeGpu(std::weak_ptr<Runtime> source, uint32_t frame, int width, int height, bool shown, bool prepared) {
+    onMain([weak = weak_from_this(), source, frame, width, height, shown, prepared] {
+      auto self = weak.lock();
+      auto r = source.lock();
+      if (!r) return;
+      bool current = false;
+      if (self) {
+        std::lock_guard<std::mutex> guard(self->mutex);
+        current = self->runtime == r;
+      }
+      bool displayed = false;
+      if (current && prepared && self->plane) displayed = self->plane->CompletePresent(shown);
+      r->frameComplete(frame, displayed);
+      if (!self || !displayed || !self->active || self->closing) return;
+      {
+        std::lock_guard<std::mutex> guard(self->mutex);
+        if (self->runtime != r) return;
+      }
+      const auto epoch = r->metrics().epoch;
+      const auto size = (uint64_t(width) << 32) | uint32_t(height);
+      const bool first = self->renderedEpoch.exchange(epoch) != epoch;
+      if (self->renderedSize.exchange(size) != size || first) {
+        g_autoptr(FlValue) dimensions = fl_value_new_map();
+        put(dimensions, "width", width);
+        put(dimensions, "height", height);
+        fl_method_channel_invoke_method(self->channel, "videoSize", dimensions, nullptr, nullptr, nullptr);
+        self->setState("playing");
+      }
+    });
+  }
   void start();
   void close(FlMethodCall* reply = nullptr);
   void method(FlMethodCall* call);
@@ -387,7 +472,8 @@ void Session::start() {
       auto target = resolve(host, cancellable);
       int channels = options.audioChannels;
       bool allowHevc = hevc;
-      for (int attempt = 0; attempt < 3 && !closing; ++attempt) {
+      bool allowPyrowave = usePyrowave;
+      for (int attempt = 0; attempt < 4 && !closing; ++attempt) {
         active = false;
         auto current = std::make_shared<Runtime>();
         std::atomic<bool> audioFailed{false}, videoFailed{false};
@@ -406,8 +492,40 @@ void Session::start() {
                 videoFailed = true;
               if (auto r = source.lock()) r->cancel();
             });
+        std::shared_ptr<VulkanSink> gpu;
+        if (allowPyrowave && plane) {
+          gpu = std::make_shared<VulkanSink>(
+              decoder, GpuWindow{GpuWindow::Kind::wayland, plane->native_display(), plane->native_surface()},
+              options.hdr10,
+              [weak, source = std::weak_ptr<Runtime>(current)](const PyrowaveFrameInfo& info) {
+                auto self = weak.lock();
+                return self ? self->prepareGpu(source, info) : VulkanSink::Target{};
+              },
+              [weak, source = std::weak_ptr<Runtime>(current)](
+                  uint32_t frame, int w, int h, bool shown, bool prepared) {
+                if (auto self = weak.lock()) self->completeGpu(source, frame, w, h, shown, prepared);
+              },
+              [weak, source = std::weak_ptr<Runtime>(current)](bool selected) {
+                onMain([weak, source, selected] {
+                  if (auto self = weak.lock()) {
+                    std::lock_guard<std::mutex> guard(self->mutex);
+                    if (self->runtime == source.lock()) self->setNative(selected);
+                  }
+                });
+              },
+              [source = std::weak_ptr<Runtime>(current), &videoFailed] {
+                videoFailed = true;
+                if (auto r = source.lock()) r->cancel();
+              });
+          if (!gpu->ready()) {
+            gpu->close();
+            gpu.reset();
+            allowPyrowave = false;
+          }
+        }
         {
           std::lock_guard<std::mutex> lock(mutex);
+          gpuSink = gpu;
           runtime = current;
           sink = decoder;
           active = true;
@@ -417,18 +535,27 @@ void Session::start() {
         }
         auto request = options;
         request.audioChannels = channels;
-        int result = current->run(target, credentials, game, allowHevc, false, decoder, request);
+        request.hdr10 = gpu && gpu->supportsHdr10();
+        std::shared_ptr<Sink> receiver = gpu ? std::static_pointer_cast<Sink>(gpu) : decoder;
+        int result = current->run(target, credentials, game, allowHevc, allowPyrowave, receiver, request);
         active = false;
+        if (gpu) gpu->close();
+        onMain([weak] {
+          if (auto self = weak.lock()) self->setNative(false);
+        });
         decoder->close();
         // No callback may retain references to these attempt-local flags.
         {
           std::lock_guard<std::mutex> lock(mutex);
           sink.reset();
+          gpuSink.reset();
         }
         if (closing) break;
         const bool dropSurround = audioFailed && channels > 2;
         const bool dropHevc = (videoFailed || result == -4) && allowHevc && current->metrics().codec == 5;
-        if (dropSurround || dropHevc) {
+        const bool dropPyrowave = allowPyrowave && (videoFailed || result == -4) && current->metrics().codec == 9;
+        if (dropSurround || dropHevc || dropPyrowave) {
+          if (dropPyrowave) allowPyrowave = false;
           if (dropSurround) channels = 2;
           if (dropHevc) allowHevc = false;
           notifyState("reconnecting");
@@ -446,6 +573,7 @@ void Session::close(FlMethodCall* reply) {
   if (reply) stopReplies.push_back(FL_METHOD_CALL(g_object_ref(reply)));
   if (closing.exchange(true)) return;
   active = false;
+  setNative(false);
   g_cancellable_cancel(cancellable);
   {
     std::lock_guard<std::mutex> lock(mutex);
@@ -459,6 +587,7 @@ void Session::close(FlMethodCall* reply) {
     if (self->worker.joinable()) self->worker.join();
     onMain([self] {
       // Acknowledgement follows transport AND decoder termination.
+      self->plane.reset();
       fl_texture_registrar_unregister_texture(self->registrar, FL_TEXTURE(self->texture));
       fl_binary_messenger_set_message_handler_on_channel(
           self->messenger, self->channelName.c_str(), nullptr, nullptr, nullptr);
@@ -481,6 +610,18 @@ void Session::method(FlMethodCall* call) {
   if (method == "getSessionState") {
     g_autoptr(FlValue) value = fl_value_new_string(state.c_str());
     ok(call, value);
+    return;
+  }
+  if (method == "getNativePresentation") {
+    g_autoptr(FlValue) value = fl_value_new_bool(nativeActive);
+    ok(call, value);
+    return;
+  }
+  if (method == "setNativeRect" && plane) {
+    plane->SetRect(
+        number(args, "x", 0, -32768, 32768), number(args, "y", 0, -32768, 32768), number(args, "width", 0, 0, 16384),
+        number(args, "height", 0, 0, 16384), number(args, "scale", 1, 1, 8));
+    ok(call);
     return;
   }
   if (closing) {
@@ -575,7 +716,8 @@ void Session::method(FlMethodCall* call) {
     put(v, "maxAckLatencyMs", m.reliability.reliableMaxAckLatencyMs);
     put(v, "hidPending", m.reliability.hidPending);
     put(v, "hidInFlight", m.reliability.hidInFlight);
-    put(v, "decoderKind", 2);
+    put(v, "decoderKind", nativeActive ? 5 : 2);
+    put(v, "hdr10", gpuSink && gpuSink->hdr10Active() ? 1 : 0);
     ok(call, v);
     return;
   } else {
@@ -629,6 +771,18 @@ void Manager::method(FlMethodCall* call, bool receiver) {
     auto session = std::make_shared<Session>(
         next++, host, game, options, boolean(args, "allowHevc", true) && GStreamerSink::supported(true), registrar);
     session->owner = shared_from_this();
+    if (boolean(args, "pyrowave")) {
+      auto* view = fl_plugin_registrar_get_view(registrar);
+      if (view && mpv::WaylandVideoSurface::IsSupported(gtk_widget_get_display(GTK_WIDGET(view)))) {
+        auto plane = std::make_unique<mpv::WaylandVideoSurface>();
+        std::string failure;
+        if (plane->Create(GTK_WIDGET(view), &failure, true)) {
+          session->options.hdr10 = boolean(args, "allowHdr") && plane->supports_hdr() && plane->output_is_hdr();
+          session->plane = std::move(plane);
+          session->usePyrowave = true;
+        }
+      }
+    }
     if (!fl_texture_registrar_register_texture(session->registrar, FL_TEXTURE(session->texture))) {
       fl_binary_messenger_set_message_handler_on_channel(
           session->messenger, session->channelName.c_str(), nullptr, nullptr, nullptr);
@@ -653,6 +807,7 @@ void Manager::method(FlMethodCall* call, bool receiver) {
     g_autoptr(FlValue) result = fl_value_new_map();
     put(result, "id", session->id);
     put(result, "textureId", fl_texture_get_id(FL_TEXTURE(session->texture)));
+    fl_value_set_string_take(result, "nativePlane", fl_value_new_bool(session->plane != nullptr));
     session->start();
     ok(call, result);
     return;

@@ -9,6 +9,7 @@ import 'package:universal_gamepad/universal_gamepad.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../games/game_models.dart';
+import '../games/steam_native_plane.dart';
 import '../games/steam_stream_preferences.dart';
 import '../games/steam_stream_metrics.dart';
 import '../services/gamepad_service.dart';
@@ -30,6 +31,7 @@ class SteamGameWorkspaceSession {
     required this.game,
     required this.touchControls,
     this.pyrowave = false,
+    this.allowHdr = false,
     this.quality = SteamStreamQuality.balanced,
     this.codec = SteamStreamCodec.automatic,
     this.controllerCount = 1,
@@ -52,6 +54,7 @@ class SteamGameWorkspaceSession {
   final StreamGame game;
   final bool touchControls;
   final bool pyrowave;
+  final bool allowHdr;
   final SteamStreamQuality quality;
   final SteamStreamCodec codec;
   final int controllerCount;
@@ -63,6 +66,7 @@ class SteamGameWorkspaceSession {
   int _stateRevision = 0;
   final ValueNotifier<int> surfaceGeneration = ValueNotifier(0);
   final ValueNotifier<double> streamAspectRatio = ValueNotifier(16 / 9);
+  final ValueNotifier<bool> nativePresentation = ValueNotifier(false);
   final ValueNotifier<String> sessionState = ValueNotifier('connecting');
   final ValueNotifier<bool> inputAvailable = ValueNotifier(false);
   final ValueNotifier<int> inputResets = ValueNotifier(0);
@@ -87,6 +91,7 @@ class SteamGameWorkspaceSession {
     'appName': game.name,
     'touchControls': touchControls,
     'pyrowave': pyrowave,
+    'allowHdr': allowHdr,
     ...quality.nativeArguments,
     'allowHevc': codec == SteamStreamCodec.automatic,
     'controllerCount': controllerCount,
@@ -262,6 +267,10 @@ class SteamGameWorkspaceSession {
     final replayRevision = _stateRevision;
     channel.setMethodCallHandler((call) async {
       if (_disposed || _channel != channel || _restarting) return null;
+      if (call.method == 'nativePresentation' && call.arguments is bool) {
+        nativePresentation.value = call.arguments as bool;
+        return null;
+      }
       if (call.method == 'videoSize') {
         final args = call.arguments;
         if (args is Map && args['width'] is int && args['height'] is int) {
@@ -287,6 +296,14 @@ class SteamGameWorkspaceSession {
             if (!_disposed && !_restarting && _channel == channel && _stateRevision == replayRevision) {
               _stateChanged(state);
             }
+          })
+          .catchError((Object _) {}),
+    );
+    unawaited(
+      channel
+          .invokeMethod<bool>('getNativePresentation')
+          .then((value) {
+            if (!_disposed && !_restarting && _channel == channel && value != null) nativePresentation.value = value;
           })
           .catchError((Object _) {}),
     );
@@ -319,6 +336,7 @@ class SteamGameWorkspaceSession {
     inputAvailable.value = false;
     _inputBinding.setEnabled(false);
     resetInput();
+    nativePresentation.value = false;
     sessionState.value = 'reconnecting';
     try {
       final channel = _channel;
@@ -377,6 +395,7 @@ class SteamGameWorkspaceSession {
     _disposed = true;
     _inputBinding.dispose();
     detach();
+    nativePresentation.dispose();
     sessionState.dispose();
     surfaceGeneration.dispose();
     streamAspectRatio.dispose();
@@ -397,6 +416,8 @@ class _SteamTextureSurface extends StatefulWidget {
 class _SteamTextureSurfaceState extends State<_SteamTextureSurface> {
   static const receiver = MethodChannel('com.plezy/games/steam_receiver');
   int? _id, _texture;
+  bool _nativePlane = false;
+  Map<String, int>? _sentNativeRect;
   Timer? _deadline;
   bool _expired = false;
   int _buttons = 0;
@@ -478,12 +499,27 @@ class _SteamTextureSurfaceState extends State<_SteamTextureSurface> {
         return;
       }
       _id = id;
+      _nativePlane = result?['nativePlane'] == true;
       widget.session.attachPlatformView(id);
       setState(() => _texture = texture);
     } catch (_) {
       _deadline?.cancel();
       if (mounted && !widget.session._disposed) widget.session._stateChanged('failed');
     }
+  }
+
+  void _nativeRect(Map<String, int> rect) {
+    if (_id == null || (_sentNativeRect != null && rect.entries.every((e) => _sentNativeRect![e.key] == e.value))) {
+      return;
+    }
+    _sentNativeRect = rect;
+    unawaited(
+      MethodChannel(
+        SteamGameWorkspaceSession.channelNameForViewId(_id!),
+      ).invokeMethod<void>('setNativeRect', rect).catchError((Object _) {
+        if (identical(_sentNativeRect, rect)) _sentNativeRect = null;
+      }),
+    );
   }
 
   @override
@@ -524,7 +560,18 @@ class _SteamTextureSurfaceState extends State<_SteamTextureSurface> {
                         });
                       }
                     },
-                    child: Texture(textureId: _texture!),
+                    child: !_nativePlane
+                        ? Texture(textureId: _texture!)
+                        : ValueListenableBuilder<bool>(
+                            valueListenable: widget.session.nativePresentation,
+                            builder: (_, native, _) => Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                if (!native) Texture(textureId: _texture!),
+                                SteamNativePlane(enabled: native, onRect: _nativeRect),
+                              ],
+                            ),
+                          ),
                   ),
                 ),
               ),

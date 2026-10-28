@@ -91,12 +91,17 @@ class WaylandVideoSurface {
   // window config, then half-float (NVIDIA offers no 10-bit unorm configs on
   // Wayland), falling back to 8. Returns false and fills `error` on any
   // failure — the caller reports it; there is no other video path.
-  bool Create(GtkWidget* view, std::string* error);
+  bool Create(GtkWidget* view, std::string* error, bool vulkan = false);
+
+  // Alternative producer for a Steam Vulkan swapchain. No EGL producer is
+  // attached in this mode; the caller must destroy WSI before Destroy().
+  wl_display* native_display() const { return wl_display_; }
+  wl_surface* native_surface() const { return surface_; }
 
   // Releases the EGL surface, subsurface and Wayland objects. Idempotent.
   void Destroy();
 
-  bool valid() const { return egl_surface_ != EGL_NO_SURFACE; }
+  bool valid() const { return vulkan_ ? surface_ != nullptr : egl_surface_ != EGL_NO_SURFACE; }
   EGLDisplay egl_display() const { return egl_display_; }
   EGLConfig egl_config() const { return egl_config_; }
   EGLSurface egl_surface() const { return egl_surface_; }
@@ -276,6 +281,7 @@ class WaylandVideoSurface {
   static constexpr int kBootstrapRoundtrips = 4;
 
  private:
+  bool vulkan_ = false;
   bool BindGlobals(GdkDisplay* display, std::string* error);
   void BuildImageDescription();
   bool InitEgl(std::string* error);

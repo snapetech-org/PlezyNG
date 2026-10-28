@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+#include <android/native_window_jni.h>
 #include <jni.h>
 
 #include <algorithm>
@@ -7,12 +8,27 @@
 #include <unordered_map>
 
 #include "steam_runtime.h"
+#include "steam_vulkan_presenter.h"
 using namespace plezy::steam;
 namespace {
 JavaVM* vm = nullptr;
 std::mutex registryMutex;
 std::unordered_map<jlong, std::shared_ptr<Runtime>> registry;
 jlong nextHandle = 1;
+struct GpuOutput {
+  ANativeWindow* window = nullptr;
+  std::unique_ptr<VulkanPresenter> presenter = std::make_unique<VulkanPresenter>();
+  ~GpuOutput() {
+    presenter.reset();
+    if (window) ANativeWindow_release(window);
+  }
+};
+std::unordered_map<jlong, std::shared_ptr<GpuOutput>> gpuRegistry;
+std::shared_ptr<GpuOutput> gpuOutput(jlong id) {
+  std::lock_guard<std::mutex> lock(registryMutex);
+  auto it = gpuRegistry.find(id);
+  return it == gpuRegistry.end() ? nullptr : it->second;
+}
 struct Env {
   JNIEnv* value = nullptr;
   bool attached = false;
@@ -201,7 +217,7 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI(pair)(
 static void runSession(
     JNIEnv* env, jlong id, jstring address, jint port, jlong hostId, jlong deviceId, jlong userId, jbyteArray key,
     jlong game, jboolean hevc, jboolean pyrowave, jint width, jint height, jint fps, jint bitrateKbps,
-    jint controllerCount, jint audioChannels, jobject target) {
+    jint controllerCount, jint audioChannels, jobject target, bool hdr10 = false) {
   auto runtime = get(id);
   Credentials c{};
   if (!runtime || !target || port < 1 || port > 65535 || !credentials(env, deviceId, userId, key, c)) {
@@ -213,7 +229,7 @@ static void runSession(
   int result = runtime->run(
       {string(env, address), static_cast<uint16_t>(port), static_cast<uint64_t>(hostId)}, c,
       static_cast<uint64_t>(game), hevc, pyrowave, sink,
-      {width, height, fps, bitrateKbps, controllerCount, audioChannels});
+      {width, height, fps, bitrateKbps, controllerCount, audioChannels, hdr10});
   std::fill(c.key.begin(), c.key.end(), 0);
   if (result != 0 && result != -2) fail(env, result);
 }
@@ -241,6 +257,74 @@ extern "C" JNIEXPORT void JNICALL JNI(runWithAudio)(
   runSession(
       env, id, address, port, hostId, deviceId, userId, key, game, hevc, pyrowave, width, height, fps, bitrateKbps,
       controllerCount, audioChannels, target);
+}
+extern "C" JNIEXPORT void JNICALL JNI(runWithVideo)(
+    JNIEnv* env, jclass, jlong id, jstring address, jint port, jlong hostId, jlong deviceId, jlong userId,
+    jbyteArray key, jlong game, jboolean hevc, jboolean pyrowave, jint width, jint height, jint fps, jint bitrateKbps,
+    jint controllerCount, jint audioChannels, jboolean hdr10, jobject target) {
+  runSession(
+      env, id, address, port, hostId, deviceId, userId, key, game, hevc, pyrowave, width, height, fps, bitrateKbps,
+      controllerCount, audioChannels, target, hdr10);
+}
+extern "C" JNIEXPORT jlong JNICALL JNI(gpuCreate)(JNIEnv* env, jclass, jobject surface, jboolean hdr) {
+  if (!surface) return 0;
+  try {
+    auto output = std::make_shared<GpuOutput>();
+    output->window = ANativeWindow_fromSurface(env, surface);
+    if (!output->window || !output->presenter->open({GpuWindow::Kind::android, nullptr, output->window}, hdr)) return 0;
+    std::lock_guard<std::mutex> lock(registryMutex);
+    if (gpuRegistry.size() >= 8) return 0;
+    const auto id = nextHandle++;
+    gpuRegistry.emplace(id, output);
+    return id;
+  } catch (...) {
+    return 0;
+  }
+}
+extern "C" JNIEXPORT jboolean JNICALL JNI(gpuHdrSupported)(JNIEnv*, jclass, jlong id) {
+  auto output = gpuOutput(id);
+  return output && output->presenter->supportsHdr10();
+}
+extern "C" JNIEXPORT jboolean JNICALL JNI(gpuHdrActive)(JNIEnv*, jclass, jlong id) {
+  auto output = gpuOutput(id);
+  return output && output->presenter->hdr10Active();
+}
+extern "C" JNIEXPORT jboolean JNICALL
+JNI(gpuConfigure)(JNIEnv* env, jclass, jlong id, jint width, jint height, jbyteArray data) {
+  auto output = gpuOutput(id);
+  if (!output || !data || env->GetArrayLength(data) > 65536) return false;
+  try {
+    std::vector<uint8_t> bytes(env->GetArrayLength(data));
+    env->GetByteArrayRegion(data, 0, bytes.size(), reinterpret_cast<jbyte*>(bytes.data()));
+    return !env->ExceptionCheck() && output->presenter->configure(width, height, bytes.data(), bytes.size());
+  } catch (...) {
+    return false;
+  }
+}
+extern "C" JNIEXPORT jint JNICALL JNI(gpuPresent)(JNIEnv* env, jclass, jlong id, jbyteArray data) {
+  auto output = gpuOutput(id);
+  if (!output || !data || env->GetArrayLength(data) > 2 * 1024 * 1024) return -1;
+  try {
+    std::vector<uint8_t> bytes(env->GetArrayLength(data));
+    env->GetByteArrayRegion(data, 0, bytes.size(), reinterpret_cast<jbyte*>(bytes.data()));
+    if (env->ExceptionCheck()) return -1;
+    const auto status = output->presenter->present(
+        bytes.data(), bytes.size(), ANativeWindow_getWidth(output->window), ANativeWindow_getHeight(output->window));
+    return status == PyrowaveDecodeStatus::frame ? 1 : status == PyrowaveDecodeStatus::pending ? 0 : -1;
+  } catch (...) {
+    return -1;
+  }
+}
+extern "C" JNIEXPORT void JNICALL JNI(gpuDestroy)(JNIEnv*, jclass, jlong id) {
+  std::shared_ptr<GpuOutput> retired;
+  {
+    std::lock_guard<std::mutex> lock(registryMutex);
+    auto it = gpuRegistry.find(id);
+    if (it == gpuRegistry.end()) return;
+    retired = std::move(it->second);
+    gpuRegistry.erase(it);
+  }
+  // GPU teardown must not hold the registry lock needed by input/cancellation.
 }
 extern "C" JNIEXPORT jobjectArray JNICALL
 JNI(h26xStart)(JNIEnv* env, jclass, jlong id, jint codec, jbyteArray initial) {

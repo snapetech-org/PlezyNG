@@ -1,5 +1,10 @@
 # Games validation and release gates
 
+Current receiver source update: [Vulkan native video](VULKAN_RECEIVER.md) adds
+Android/Wayland direct GPU Pyrowave and gated HDR10 negotiation/presentation.
+The sections below retain earlier platform milestones; they are not evidence of
+hardware HDR qualification. See that document for current limits and test gates.
+
 For current follow-up PR #71 completion status, see
 [CONNECTED_EXPERIENCE.md](CONNECTED_EXPERIENCE.md#scope-and-acceptance).
 Historical builds below do not validate the current branch.
@@ -421,3 +426,18 @@ does not validate these sources. No hosted fallback is authorized.
   native checks, preserving x64/ARM64 private JIT routing and manual dispatch.
   Current-head CI, Apple SDK builds, Windows N startup, Windows audio devices,
   actual host playback and GPU/HDR qualification remain open.
+
+### Android/Wayland Vulkan receiver source checkpoint
+
+- 42 native tests pass; the additional hardware Vulkan/Wayland test skips in
+  this container (no qualifying hardware device). The actual software decode
+  attempt failed inside Mesa/LLVM; see [VULKAN_RECEIVER.md](VULKAN_RECEIVER.md).
+- 25 focused Flutter tests pass, including the native-plane/texture switch and
+  retirement channel contract, aperture transparency and narrow RTL diagnostics.
+- Linux plugin/Wayland sources pass strict syntax checks against Flutter/GTK
+  headers. Android Java compiles against API 36; no Android NDK build is claimed.
+- Shader regeneration matches the committed SPIR-V. Nine source/build guard
+  tests and 225 check-script tests pass (the two Dart-dependent checks were
+  rerun with the required toolchain PATH after an initial environment error).
+- Apple SDK, MSVC, full Linux/Android packages and physical HDR output remain
+  unqualified. These checks do not establish a successful real Steam session.

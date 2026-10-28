@@ -7,6 +7,7 @@ import android.hardware.input.InputManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
+import android.view.Display;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -48,6 +49,7 @@ public final class SteamStreamView
   private volatile boolean stopping;
   private boolean started, shown, failed, inputEnabled;
   private volatile boolean requestedAudio;
+  private boolean displayHdr10;
 
   public SteamStreamView(Context context, Map<?, ?> args) {
     super(context);
@@ -276,6 +278,13 @@ public final class SteamStreamView
     if (started || stopping)
       return;
     started = true;
+    Display display = getDisplay();
+    displayHdr10 = false;
+    if (display != null) {
+      for (int type : display.getHdrCapabilities().getSupportedHdrTypes()) {
+        if (type == Display.HdrCapabilities.HDR_TYPE_HDR10) displayHdr10 = true;
+      }
+    }
     long created = NativeSteam.create();
     if (created == 0) {
       failOnMain();
@@ -309,7 +318,8 @@ public final class SteamStreamView
       // Each fallback removes a capability; at most four attempts, never a
       // reconnect loop. The prior transport has returned before replacement.
       for (int attempt = 0; attempt < 4 && !stopping; attempt++) {
-        SteamDecoder sink = new SteamDecoder(session, holder, decoderEvents(session));
+        SteamDecoder sink = new SteamDecoder(session, holder, decoderEvents(session), pyrowave,
+            options.allowHdr && displayHdr10);
         decoder = sink;
         sink.setVolume(requestedAudio ? 1.0f : 0.0f);
         if (stopping) {
@@ -325,9 +335,10 @@ public final class SteamStreamView
         }, 75000);
         Exception failure = null;
         try {
-          NativeSteam.runWithAudio(
+          boolean hdr10 = sink.awaitHdrCapability();
+          NativeSteam.runWithVideo(
               session, address, port(), hostId(), trust.device(), user, key, gameId(), hevc, pyrowave, options.width,
-              options.height, options.fps, options.bitrateKbps, options.controllerCount, audioChannels, sink);
+              options.height, options.fps, options.bitrateKbps, options.controllerCount, audioChannels, hdr10, sink);
         } catch (Exception error) {
           failure = error;
         }

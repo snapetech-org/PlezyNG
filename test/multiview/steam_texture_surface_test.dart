@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/games/game_models.dart';
+import 'package:plezy/games/steam_native_plane.dart';
 import 'package:plezy/multiview/steam_game_workspace_surface.dart';
 
 void main() {
@@ -57,6 +58,37 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump();
     expect(calls.any((c) => c.method == 'disconnect'), isTrue);
+    stream.dispose();
+  }, skip: !Platform.isLinux);
+
+  testWidgets('native plane replay, codec fallback and retirement share the retained view', (tester) async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(receiver, (_) async => {'id': 99, 'textureId': 7, 'nativePlane': true});
+    messenger.setMockMethodCallHandler(streamChannel, (call) async {
+      calls.add(call);
+      if (call.method == 'getSessionState') return 'playing';
+      if (call.method == 'getNativePresentation') return true;
+      return null;
+    });
+    final stream = session();
+    await tester.pumpWidget(MaterialApp(home: Scaffold(body: stream.workspaceSurface())));
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(Texture), findsNothing);
+    expect(tester.widget<SteamNativePlane>(find.byType(SteamNativePlane)).enabled, isTrue);
+    expect(calls.any((call) => call.method == 'setNativeRect' && call.arguments['width'] > 0), isTrue);
+    await messenger.handlePlatformMessage(
+      streamChannel.name,
+      const StandardMethodCodec().encodeMethodCall(const MethodCall('nativePresentation', false)),
+      (_) {},
+    );
+    await tester.pump();
+    expect(find.byType(Texture), findsOneWidget);
+    expect(tester.widget<SteamNativePlane>(find.byType(SteamNativePlane)).enabled, isFalse);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump();
+    expect(calls.any((call) => call.method == 'setNativeRect' && call.arguments['width'] == 0), isTrue);
+    expect(calls.any((call) => call.method == 'disconnect'), isTrue);
     stream.dispose();
   }, skip: !Platform.isLinux);
 

@@ -1,5 +1,10 @@
 # Connected games implementation ledger
 
+Current receiver source update: [Vulkan native video](VULKAN_RECEIVER.md) adds
+Android/Wayland direct GPU Pyrowave and gated HDR10 negotiation/presentation.
+The sections below retain earlier platform milestones; they are not evidence of
+hardware HDR qualification. See that document for current limits and test gates.
+
 This is the review ledger for the connected Steam / GameStream experience.
 The product remains PlezyNG: existing poster geometry, theme tokens, focus,
 adaptive menus, profile boundaries and Multiview ownership apply to games.

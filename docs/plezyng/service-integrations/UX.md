@@ -2,7 +2,6 @@
 
 Status: the existing detail and source routes own the integration. Comic storefront actions are inline beside Read. Video availability rows and the optional iOS Apple Music search/play pilot are presented inside the existing title Links flow, opened from the current detail actions. The change adds no top-level storefront, framed commerce shell, or separate playback owner. User-owned copies and native Play/Read remain primary.
 
-##
 ## Screen mapping
 
 | Existing surface | Proposed addition | Preserve |

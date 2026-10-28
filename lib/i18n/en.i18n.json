@@ -4561,7 +4561,18 @@
     "touchRightTrigger": "Right trigger",
     "touchViewButton": "View button",
     "touchMenuButton": "Menu button",
-    "touchStickHint": "Drag to move. Double-tap to press the stick."
+    "touchStickHint": "Drag to move. Double-tap to press the stick.",
+    "cloudAccessHelp": "Connect to view and download this game’s Steam Cloud files. Access in PlezyNG is temporary and ends when you close this view.",
+    "cloudEnableChanges": "Allow Cloud changes",
+    "cloudChangeHelp": "Close the game on all computers and let Steam finish syncing. Replacing or deleting Cloud files can affect saves on every computer. Download a backup first. If a change fails, refresh and check the files before trying again.",
+    "cloudReplace": "Replace from file…",
+    "cloudDownload": "Download file",
+    "cloudEmpty": "No Steam Cloud files for this game.",
+    "cloudReviewReplace": "Replace ${name} with the selected file? This overwrites the Cloud copy, which Steam may sync to your computers.",
+    "cloudReviewDelete": "Permanently delete ${name} from Steam Cloud? This cannot be undone here. Steam may sync the deletion to your computers.",
+    "cloudRefreshRequired": "The file may have changed or the result is uncertain. Refresh and check the Cloud files before trying again.",
+    "cloudLimit": "Cloud file transfers are limited to ${size}.",
+    "cloudChanged": "Cloud change completed."
   },
   "deepLinks": {
     "invalid": "This Plezy link isn't valid.",

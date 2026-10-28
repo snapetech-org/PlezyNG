@@ -54,6 +54,7 @@ type oauthServiceConfig struct {
 }
 
 type oauthTokenResult struct {
+	SteamCloudToken       string           `json:"steamCloudToken,omitempty"`
 	SteamCatalogToken     string           `json:"steamCatalogToken,omitempty"`
 	AccessToken           string           `json:"accessToken,omitempty"`
 	RefreshToken          string           `json:"refreshToken,omitempty"`
@@ -68,6 +69,7 @@ type oauthTokenResult struct {
 // oauthSession links browser state to a device-only poll capability. Only the
 // poll secret digest is retained; acquire oauthProxy.mu before s.mu.
 type oauthSession struct {
+	steamCloud   *steamCloudBinding
 	browserState string
 	pollDigest   [sha256.Size]byte
 	service      string
@@ -120,6 +122,7 @@ func (s *oauthSession) pkceVerifier() string {
 }
 
 type oauthProxy struct {
+	steamCloud         *steamCloudState
 	steamCatalogGrants map[[32]byte]*steamCatalogGrant
 	steamContextActive int
 	baseURL            string
@@ -191,6 +194,7 @@ func oauthConfigFromEnv(clientIPs clientIPResolver) (*oauthProxy, bool) {
 	services["steam"] = oauthServiceConfig{}
 	proxy := newOAuthProxy(base, services, clientIPs)
 	proxy.steamWebAPIKey = strings.TrimSpace(os.Getenv("STEAM_WEB_API_KEY"))
+	proxy.configureSteamCloud()
 	return proxy, true
 }
 
@@ -204,6 +208,9 @@ func registerOAuthRoutes(mux *http.ServeMux, p *oauthProxy) {
 	}
 	mux.HandleFunc("/auth/steam/library", p.handleSteamCatalog)
 	mux.HandleFunc("/auth/steam/game", p.handleSteamGameContext)
+	mux.HandleFunc("/auth/steam/cloud/capabilities", p.handleSteamCloudCapabilities)
+	mux.HandleFunc("/auth/steam/cloud/start", p.handleSteamCloudStart)
+	mux.HandleFunc("/auth/steam/cloud/files", p.handleSteamCloudFiles)
 	mux.HandleFunc("/auth/start", p.handleStart)
 	mux.HandleFunc("/auth/result", p.handleResult)
 	mux.HandleFunc("/auth/done", p.handleDone)
@@ -255,7 +262,7 @@ func (p *oauthProxy) handleStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cfg, ok := p.services[body.Service]
-	if !ok {
+	if !ok || body.Service == "steam-cloud" {
 		http.Error(w, "Unknown service", http.StatusBadRequest)
 		return
 	}
@@ -318,6 +325,10 @@ func (p *oauthProxy) handleAuthorize(w http.ResponseWriter, r *http.Request, ser
 		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from PlezyNG.")
 		return
 	}
+	if service == "steam-cloud" {
+		p.handleSteamCloudAuthorize(w, r, sess)
+		return
+	}
 	if service == "steam" {
 		p.handleSteamAuthorize(w, r, sess)
 		return
@@ -378,6 +389,10 @@ func validatedOAuthAuthorizeURL(service, configured string) (string, error) {
 
 // GET /auth/:service/callback exchanges the code and renders a result page.
 func (p *oauthProxy) handleCallback(w http.ResponseWriter, r *http.Request, service string) {
+	if service == "steam-cloud" {
+		p.handleSteamCloudCallback(w, r)
+		return
+	}
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -608,6 +623,7 @@ func (p *oauthProxy) claimResult(digest [sha256.Size]byte, sess *oauthSession) (
 func (p *oauthProxy) cleanup() {
 	now := time.Now()
 	p.mu.Lock()
+	p.cleanupSteamCloudLocked(now)
 	for _, sess := range p.browserStates {
 		if now.Sub(sess.createdAt) > oauthSessionTTL {
 			p.removeSessionLocked(sess)

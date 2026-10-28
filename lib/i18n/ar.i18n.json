@@ -4661,7 +4661,18 @@
     "touchRightTrigger": "",
     "touchViewButton": "",
     "touchMenuButton": "",
-    "touchStickHint": ""
+    "touchStickHint": "",
+    "cloudAccessHelp": "",
+    "cloudEnableChanges": "",
+    "cloudChangeHelp": "",
+    "cloudReplace": "",
+    "cloudDownload": "",
+    "cloudEmpty": "",
+    "cloudReviewReplace": "",
+    "cloudReviewDelete": "",
+    "cloudRefreshRequired": "",
+    "cloudLimit": "",
+    "cloudChanged": ""
   },
   "deepLinks": {
     "invalid": "هذا الرابط Plezy غير صالح.",

@@ -95,6 +95,7 @@ func (p *oauthProxy) handleSteamCatalog(w http.ResponseWriter, r *http.Request) 
 	grant := p.steamCatalogGrants[digest]
 	if r.Method == http.MethodDelete {
 		delete(p.steamCatalogGrants, digest)
+		p.cleanupSteamCloudLocked(now)
 		p.mu.Unlock()
 		w.WriteHeader(http.StatusNoContent)
 		return

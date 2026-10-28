@@ -4556,7 +4556,18 @@
     "touchRightTrigger": "",
     "touchViewButton": "",
     "touchMenuButton": "",
-    "touchStickHint": ""
+    "touchStickHint": "",
+    "cloudAccessHelp": "",
+    "cloudEnableChanges": "",
+    "cloudChangeHelp": "",
+    "cloudReplace": "",
+    "cloudDownload": "",
+    "cloudEmpty": "",
+    "cloudReviewReplace": "",
+    "cloudReviewDelete": "",
+    "cloudRefreshRequired": "",
+    "cloudLimit": "",
+    "cloudChanged": ""
   },
   "deepLinks": {
     "invalid": "이 Plezy 링크는 유효하지 않습니다.",

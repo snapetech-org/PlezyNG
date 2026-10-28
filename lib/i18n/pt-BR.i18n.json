@@ -665,6 +665,17 @@
     "remoteSessionsDenied": "",
     "remoteSessionsHelp": "",
     "remoteSessionsRefresh": "",
-    "remoteSessionsUnavailable": ""
+    "remoteSessionsUnavailable": "",
+    "cloudAccessHelp": "",
+    "cloudEnableChanges": "",
+    "cloudChangeHelp": "",
+    "cloudReplace": "",
+    "cloudDownload": "",
+    "cloudEmpty": "",
+    "cloudReviewReplace": "",
+    "cloudReviewDelete": "",
+    "cloudRefreshRequired": "",
+    "cloudLimit": "",
+    "cloudChanged": ""
   }
 }

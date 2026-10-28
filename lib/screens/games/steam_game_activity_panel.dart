@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../focus/focusable_button.dart';
 import '../../games/steam_game_activity.dart';
+import '../../games/steam_cloud_client.dart';
+import 'steam_cloud_dialog.dart';
 import '../../i18n/presentation_formats.dart';
 import '../../i18n/strings.g.dart';
 import '../../services/credential_vault.dart';
@@ -35,6 +39,9 @@ class SteamGameActivityPanel extends StatefulWidget {
 
 class _SteamGameActivityPanelState extends State<SteamGameActivityPanel> {
   final _proxy = OAuthProxyClient();
+  final _retired = Completer<void>();
+  SteamCloudClient? _cloudClient;
+  bool _cloudLoading = false;
   SteamGameActivity? _activity;
   bool _loading = false, _failed = false, _relink = false, _friends = false;
   int _visible = 20;
@@ -42,6 +49,8 @@ class _SteamGameActivityPanelState extends State<SteamGameActivityPanel> {
   @override
   void dispose() {
     _proxy.dispose();
+    if (!_retired.isCompleted) _retired.complete();
+    unawaited(_cloudClient?.retire());
     super.dispose();
   }
 
@@ -74,6 +83,52 @@ class _SteamGameActivityPanelState extends State<SteamGameActivityPanel> {
       if (current) setState(() => _failed = true);
     } finally {
       if (current) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _cloud() async {
+    if (!current || _cloudLoading) return;
+    final encrypted = widget.protectedCredential, steamId = widget.steamId;
+    if (encrypted == null || steamId == null) {
+      widget.onLink();
+      return;
+    }
+    setState(() => _cloudLoading = true);
+    final client = SteamCloudClient();
+    _cloudClient = client;
+    try {
+      final catalog = await CredentialVault.reveal(encrypted);
+      if (!current) return;
+      if (catalog == null) {
+        widget.onLink();
+        return;
+      }
+      final capabilities = await client.capabilities(catalog, widget.appId);
+      if (!current) return;
+      if (!capabilities.read) {
+        await _open(SteamDestination.cloudFiles);
+        return;
+      }
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => SteamCloudDialog(
+          client: client,
+          capabilities: capabilities,
+          catalog: catalog,
+          appId: widget.appId,
+          steamId: steamId,
+          isCurrent: () => current,
+          retired: _retired.future,
+        ),
+      );
+    } catch (_) {
+      if (mounted && current) showErrorSnackBar(context, t.games.unavailable);
+    } finally {
+      await client.retire();
+      if (identical(_cloudClient, client)) _cloudClient = null;
+      if (current) setState(() => _cloudLoading = false);
     }
   }
 
@@ -187,6 +242,8 @@ class _SteamGameActivityPanelState extends State<SteamGameActivityPanel> {
           ],
           if (data.truncated) Text(t.games.activityTruncated),
         ],
+        if (widget.steamId != null && widget.protectedCredential != null)
+          _button(t.games.steamCloudFiles, _cloudLoading ? null : _cloud),
         AppMenuButton<SteamDestination>(
           tooltip: t.games.openInSteam,
           adaptiveSheet: true,

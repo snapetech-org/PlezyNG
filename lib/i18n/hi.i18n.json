@@ -4561,7 +4561,18 @@
     "touchRightTrigger": "",
     "touchViewButton": "",
     "touchMenuButton": "",
-    "touchStickHint": ""
+    "touchStickHint": "",
+    "cloudAccessHelp": "",
+    "cloudEnableChanges": "",
+    "cloudChangeHelp": "",
+    "cloudReplace": "",
+    "cloudDownload": "",
+    "cloudEmpty": "",
+    "cloudReviewReplace": "",
+    "cloudReviewDelete": "",
+    "cloudRefreshRequired": "",
+    "cloudLimit": "",
+    "cloudChanged": ""
   },
   "deepLinks": {
     "invalid": "यह Plezy लिंक वैध नहीं है।",

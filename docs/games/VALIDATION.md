@@ -441,3 +441,19 @@ does not validate these sources. No hosted fallback is authorized.
   rerun with the required toolchain PATH after an initial environment error).
 - Apple SDK, MSVC, full Linux/Android packages and physical HDR output remain
   unqualified. These checks do not establish a successful real Steam session.
+
+### Scoped Steam Cloud checkpoint (2026-10-28, PR #81)
+
+- `go test -race ./...` passed, including new Cloud OAuth identity/origin/replay,
+  grant expiry/revocation, permission/configuration, bounded transfer deadline,
+  SHA conflict, storage/integrity and mandatory finalization failure tests.
+- 18 focused Flutter tests passed: Cloud client/dialog, existing activity
+  panel/client and OAuth polling/dialog. The Cloud flow uses a 360-pixel RTL
+  viewport at 1.7× text, separate write authorization, a reviewed deletion and an
+  ambiguous-response refresh requirement. No analyzer issues in the six changed
+  Dart source/test files. Locale generation and normalization checks passed.
+- Live Valve OAuth approval/scopes, actual storage endpoints/response schemas,
+  platform pickers and real save changes remain unqualified. See
+  [STEAM_CLOUD.md](STEAM_CLOUD.md) for configuration and a disposable-save handoff.
+  Confidence: high in the recorded local checks; unknown in live Valve/device
+  behavior. Families membership mutation is not implemented.

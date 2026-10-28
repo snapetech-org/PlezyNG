@@ -11560,6 +11560,39 @@ class Translations$games$en {
 
 	/// en: 'Drag to move. Double-tap to press the stick.'
 	String get touchStickHint => 'Drag to move. Double-tap to press the stick.';
+
+	/// en: 'Connect to view and download this game’s Steam Cloud files. Access in PlezyNG is temporary and ends when you close this view.'
+	String get cloudAccessHelp => 'Connect to view and download this game’s Steam Cloud files. Access in PlezyNG is temporary and ends when you close this view.';
+
+	/// en: 'Allow Cloud changes'
+	String get cloudEnableChanges => 'Allow Cloud changes';
+
+	/// en: 'Close the game on all computers and let Steam finish syncing. Replacing or deleting Cloud files can affect saves on every computer. Download a backup first. If a change fails, refresh and check the files before trying again.'
+	String get cloudChangeHelp => 'Close the game on all computers and let Steam finish syncing. Replacing or deleting Cloud files can affect saves on every computer. Download a backup first. If a change fails, refresh and check the files before trying again.';
+
+	/// en: 'Replace from file…'
+	String get cloudReplace => 'Replace from file…';
+
+	/// en: 'Download file'
+	String get cloudDownload => 'Download file';
+
+	/// en: 'No Steam Cloud files for this game.'
+	String get cloudEmpty => 'No Steam Cloud files for this game.';
+
+	/// en: 'Replace ${name} with the selected file? This overwrites the Cloud copy, which Steam may sync to your computers.'
+	String cloudReviewReplace({required Object name}) => 'Replace ${name} with the selected file? This overwrites the Cloud copy, which Steam may sync to your computers.';
+
+	/// en: 'Permanently delete ${name} from Steam Cloud? This cannot be undone here. Steam may sync the deletion to your computers.'
+	String cloudReviewDelete({required Object name}) => 'Permanently delete ${name} from Steam Cloud? This cannot be undone here. Steam may sync the deletion to your computers.';
+
+	/// en: 'The file may have changed or the result is uncertain. Refresh and check the Cloud files before trying again.'
+	String get cloudRefreshRequired => 'The file may have changed or the result is uncertain. Refresh and check the Cloud files before trying again.';
+
+	/// en: 'Cloud file transfers are limited to ${size}.'
+	String cloudLimit({required Object size}) => 'Cloud file transfers are limited to ${size}.';
+
+	/// en: 'Cloud change completed.'
+	String get cloudChanged => 'Cloud change completed.';
 }
 
 // Path: deepLinks
@@ -18468,6 +18501,17 @@ extension on Translations {
 			'games.touchViewButton' => 'View button',
 			'games.touchMenuButton' => 'Menu button',
 			'games.touchStickHint' => 'Drag to move. Double-tap to press the stick.',
+			'games.cloudAccessHelp' => 'Connect to view and download this game’s Steam Cloud files. Access in PlezyNG is temporary and ends when you close this view.',
+			'games.cloudEnableChanges' => 'Allow Cloud changes',
+			'games.cloudChangeHelp' => 'Close the game on all computers and let Steam finish syncing. Replacing or deleting Cloud files can affect saves on every computer. Download a backup first. If a change fails, refresh and check the files before trying again.',
+			'games.cloudReplace' => 'Replace from file…',
+			'games.cloudDownload' => 'Download file',
+			'games.cloudEmpty' => 'No Steam Cloud files for this game.',
+			'games.cloudReviewReplace' => ({required Object name}) => 'Replace ${name} with the selected file? This overwrites the Cloud copy, which Steam may sync to your computers.',
+			'games.cloudReviewDelete' => ({required Object name}) => 'Permanently delete ${name} from Steam Cloud? This cannot be undone here. Steam may sync the deletion to your computers.',
+			'games.cloudRefreshRequired' => 'The file may have changed or the result is uncertain. Refresh and check the Cloud files before trying again.',
+			'games.cloudLimit' => ({required Object size}) => 'Cloud file transfers are limited to ${size}.',
+			'games.cloudChanged' => 'Cloud change completed.',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

@@ -574,3 +574,12 @@ Cross-compilation is evidence of source/link portability only; an actual
 Windows SDK build, real decoder fixture execution, audio/output tests and
 Steam-host qualification remain required. Confidence: high in the recorded
 cross-compilation and portable tests; unknown for Windows device playback.
+
+### Scoped Cloud file actions — PR #81
+
+[Steam Cloud files](STEAM_CLOUD.md) now adds a separate temporary authorization,
+read-only listing/download and explicitly reviewed replacement/deletion. Catalog
+and streaming credentials cannot authorize file mutations. Activation requires a
+Valve-approved client, per-AppID read/write scopes and operator-reviewed storage
+origins. Unconfigured games retain the confirmed browser destination. This does
+not implement global Cloud-sync settings or Steam Families membership changes.

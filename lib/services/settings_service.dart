@@ -1420,6 +1420,39 @@ class SettingsService extends BaseSharedPreferencesService {
     );
   }
 
+  /// Bounded saved glossary history, stored as serialized revision records by
+  /// profile/series and normalized language pair.
+  static JsonPref<Map<String, List<String>>> subtitleTranslationGlossaryHistoryForProfile(String profileId) {
+    if (profileId.trim().isEmpty) {
+      throw ArgumentError.value(profileId, 'profileId', 'Must not be empty');
+    }
+    return JsonPref<Map<String, List<String>>>(
+      profileScopedPrefsKey(profileId, 'subtitle_translation_glossary_history_v1'),
+      defaultValue: const {},
+      encode: json.encode,
+      decode: (raw) {
+        if (raw is! Map) return const {};
+        final history = <String, List<String>>{};
+        var totalBytes = 0;
+        for (final entry in raw.entries) {
+          if (entry.key is! String || entry.value is! List) continue;
+          final key = entry.key as String;
+          if (key.isEmpty || key.length > 1500 || history.length >= 128) continue;
+          final revisions = <String>[];
+          for (final value in entry.value as List) {
+            if (value is! String || value.length > 256 * 1024 || revisions.length >= 10) continue;
+            final bytes = utf8.encode(key).length + utf8.encode(value).length;
+            if (bytes > 1024 * 1024 - totalBytes) break;
+            revisions.add(value);
+            totalBytes += bytes;
+          }
+          if (revisions.isNotEmpty) history[key] = List.unmodifiable(revisions);
+        }
+        return Map.unmodifiable(history);
+      },
+    );
+  }
+
   static final companionRemoteLastHostAddress = NullableStringPref(
     'companion_remote_last_host_address',
     transform: _trimEmptyAsNull,

@@ -1355,6 +1355,55 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     }
   }
 
+  Future<void> _showGlossaryHistory() async {
+    final profileId = _activeProfileId;
+    if (profileId == null) {
+      if (mounted) setState(() => _status = 'An active profile is required to load glossary history.');
+      return;
+    }
+    final revisions = SubtitleTranslationService.loadGlossaryHistoryForProfile(
+      profileId: profileId,
+      sourceLanguage: _sourceLanguage,
+      targetLanguage: _targetLanguage,
+      seriesId: _useSeriesGlossary ? widget.seriesKey : null,
+    );
+    if (revisions.isEmpty) {
+      if (mounted) setState(() => _status = 'No previous glossary versions are saved for this scope and language pair.');
+      return;
+    }
+    final selected = await showDialog<SubtitleGlossaryRevision>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Saved glossary history'),
+        content: SizedBox(
+          width: 520,
+          height: 360,
+          child: ListView.builder(
+            itemCount: revisions.length,
+            itemBuilder: (context, index) {
+              final revision = revisions[index];
+              return ListTile(
+                title: Text(_formatRevisionDate(revision.createdAt)),
+                subtitle: Text('${revision.glossary.length} terms · ${_useSeriesGlossary ? 'series' : 'profile'} scope'),
+                onTap: () => Navigator.of(dialogContext).pop(revision),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(t.common.cancel)),
+        ],
+      ),
+    );
+    if (selected == null || !mounted) return;
+    final restoredDraft = JsonEncoder.withIndent('  ').convert(selected.glossary);
+    setState(() {
+      _glossaryController.text = restoredDraft;
+      _glossaryDrafts[_currentGlossaryDraftKey()] = restoredDraft;
+      _status = 'Loaded glossary version from ${_formatRevisionDate(selected.createdAt)}. Save it to replace the current glossary.';
+    });
+  }
+
   Future<void> _prepareTranslationModels() => _run(() async {
     await SubtitleTranslationService.prepareMobileModels(
       sourceLanguage: _sourceLanguage,
@@ -2522,10 +2571,21 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: _busy ? null : () => unawaited(_run(_saveGlossary)),
-                icon: const AppIcon(Symbols.save_rounded),
-                label: const Text('Save glossary'),
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: _busy ? null : () => unawaited(_showGlossaryHistory()),
+                    icon: const AppIcon(Symbols.history_rounded),
+                    label: const Text('History'),
+                  ),
+                  TextButton.icon(
+                    onPressed: _busy ? null : () => unawaited(_run(_saveGlossary)),
+                    icon: const AppIcon(Symbols.save_rounded),
+                    label: const Text('Save glossary'),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 8),

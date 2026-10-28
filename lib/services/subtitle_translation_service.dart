@@ -25,6 +25,14 @@ final class SubtitleTranslationResult {
   final List<String> qualityWarnings;
 }
 
+/// A previously saved profile or series glossary revision.
+final class SubtitleGlossaryRevision {
+  const SubtitleGlossaryRevision({required this.createdAt, required this.glossary});
+
+  final DateTime createdAt;
+  final Map<String, String> glossary;
+}
+
 abstract final class SubtitleTranslationService {
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
 
@@ -99,6 +107,16 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
 
   static String _normalizedLanguageCode(TranslateLanguage language) => language.bcpCode.toLowerCase().split('-').first;
 
+  static String _glossaryHistoryScopeKey(
+    TranslateLanguage sourceLanguage,
+    TranslateLanguage targetLanguage, {
+    String? seriesId,
+  }) {
+    final pair = _glossaryPairKey(sourceLanguage, targetLanguage);
+    if (seriesId == null || seriesId.trim().isEmpty) return 'profile|$pair';
+    return 'series|${_seriesGlossaryEntryKey(seriesId, sourceLanguage, targetLanguage)}';
+  }
+
   /// Read this profile's local terminology for the selected language pair.
   static String _seriesGlossaryEntryKey(
     String seriesId,
@@ -146,6 +164,46 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     return Map.unmodifiable(saved[_glossaryPairKey(sourceLanguage, targetLanguage)] ?? const {});
   }
 
+  /// Load saved revisions for the exact profile or series glossary scope.
+  static List<SubtitleGlossaryRevision> loadGlossaryHistoryForProfile({
+    required String profileId,
+    required TranslateLanguage sourceLanguage,
+    required TranslateLanguage targetLanguage,
+    String? seriesId,
+  }) {
+    final scope = _glossaryHistoryScopeKey(sourceLanguage, targetLanguage, seriesId: seriesId);
+    final records = SettingsService.instance.read(
+      SettingsService.subtitleTranslationGlossaryHistoryForProfile(profileId),
+    )[scope];
+    if (records == null || records.isEmpty) return const <SubtitleGlossaryRevision>[];
+    final revisions = <SubtitleGlossaryRevision>[];
+    for (final record in records) {
+      try {
+        final decoded = jsonDecode(record);
+        if (decoded is! Map<String, dynamic> || decoded['schema'] != 'plezyng.subtitle-glossary-revision.v1') {
+          continue;
+        }
+        final createdAt = DateTime.tryParse(decoded['createdAt'] as String? ?? '')?.toUtc();
+        final rawGlossary = decoded['glossary'];
+        if (createdAt == null || rawGlossary is! Map) continue;
+        final glossary = <String, String>{};
+        for (final entry in rawGlossary.entries) {
+          if (entry.key is String && entry.value is String) glossary[entry.key as String] = entry.value as String;
+        }
+        revisions.add(
+          SubtitleGlossaryRevision(
+            createdAt: createdAt,
+            glossary: Map.unmodifiable(_validateGlossary(glossary)),
+          ),
+        );
+      } catch (_) {
+        // One damaged revision should not hide the rest of the history.
+      }
+    }
+    revisions.sort((left, right) => right.createdAt.compareTo(left.createdAt));
+    return List<SubtitleGlossaryRevision>.unmodifiable(revisions);
+  }
+
   /// Save the validated profile glossary or an independent per-series override.
   static Future<void> saveGlossaryForProfile({
     required String profileId,
@@ -159,6 +217,15 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       final pref = SettingsService.subtitleTranslationGlossariesForProfile(profileId);
       final pairs = Map<String, Map<String, String>>.from(SettingsService.instance.read(pref));
       final key = _glossaryPairKey(sourceLanguage, targetLanguage);
+      final previous = pairs[key] ?? const <String, String>{};
+      if (previous.isNotEmpty && !_sameGlossary(previous, normalized)) {
+        await _archiveGlossaryRevision(
+          profileId: profileId,
+          sourceLanguage: sourceLanguage,
+          targetLanguage: targetLanguage,
+          glossary: previous,
+        );
+      }
       pairs.remove(key);
       if (normalized.isNotEmpty) pairs[key] = normalized;
       while (pairs.length > 16) {
@@ -171,6 +238,16 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     final entryKey = _seriesGlossaryEntryKey(seriesId, sourceLanguage, targetLanguage);
     final pref = SettingsService.subtitleTranslationSeriesGlossariesForProfile(profileId);
     final entries = Map<String, String>.from(SettingsService.instance.read(pref));
+    final previous = _decodeGlossaryJson(entries[entryKey]);
+    if (previous.isNotEmpty && !_sameGlossary(previous, normalized)) {
+      await _archiveGlossaryRevision(
+        profileId: profileId,
+        sourceLanguage: sourceLanguage,
+        targetLanguage: targetLanguage,
+        seriesId: seriesId,
+        glossary: previous,
+      );
+    }
     entries.remove(entryKey);
     if (normalized.isNotEmpty) entries[entryKey] = jsonEncode(normalized);
     final seriesPrefix = entryKey.substring(0, entryKey.lastIndexOf('|') + 1);
@@ -200,6 +277,108 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       entries.remove(oldest);
     }
     await SettingsService.instance.write(pref, Map.unmodifiable(entries));
+  }
+
+  static bool _sameGlossary(Map<String, String> left, Map<String, String> right) {
+    if (left.length != right.length) return false;
+    for (final entry in left.entries) {
+      if (right[entry.key] != entry.value) return false;
+    }
+    return true;
+  }
+
+  static Map<String, String> _decodeGlossaryJson(String? encoded) {
+    if (encoded == null || encoded.isEmpty) return const <String, String>{};
+    try {
+      final decoded = jsonDecode(encoded);
+      if (decoded is! Map) return const <String, String>{};
+      final glossary = <String, String>{};
+      for (final entry in decoded.entries) {
+        if (entry.key is String && entry.value is String) glossary[entry.key as String] = entry.value as String;
+      }
+      return _validateGlossary(glossary);
+    } catch (_) {
+      return const <String, String>{};
+    }
+  }
+
+  static Future<void> _archiveGlossaryRevision({
+    required String profileId,
+    required TranslateLanguage sourceLanguage,
+    required TranslateLanguage targetLanguage,
+    required Map<String, String> glossary,
+    String? seriesId,
+  }) async {
+    if (glossary.isEmpty) return;
+    final scope = _glossaryHistoryScopeKey(sourceLanguage, targetLanguage, seriesId: seriesId);
+    final preference = SettingsService.subtitleTranslationGlossaryHistoryForProfile(profileId);
+    final history = Map<String, List<String>>.from(SettingsService.instance.read(preference));
+    final revisions = List<String>.from(history[scope] ?? const <String>[]);
+    if (revisions.isNotEmpty && _sameGlossary(_decodeGlossaryRevision(revisions.first), glossary)) return;
+    revisions.insert(
+      0,
+      jsonEncode({
+        'schema': 'plezyng.subtitle-glossary-revision.v1',
+        'createdAt': DateTime.now().toUtc().toIso8601String(),
+        'glossary': glossary,
+      }),
+    );
+    if (revisions.length > 10) revisions.removeRange(10, revisions.length);
+    history[scope] = revisions;
+    while (history.length > 128) {
+      final oldestScope = history.keys.reduce((left, right) {
+        final leftDate = _glossaryRevisionDate(history[left]?.first);
+        final rightDate = _glossaryRevisionDate(history[right]?.first);
+        return leftDate.isBefore(rightDate) ? left : right;
+      });
+      history.remove(oldestScope);
+    }
+    int serializedBytes() => utf8.encode(jsonEncode(history)).length;
+    while (serializedBytes() > 1024 * 1024) {
+      String? oldestScope;
+      DateTime? oldestDate;
+      for (final entry in history.entries) {
+        if (entry.value.isEmpty) continue;
+        final date = _glossaryRevisionDate(entry.value.last);
+        if (oldestDate == null || date.isBefore(oldestDate)) {
+          oldestScope = entry.key;
+          oldestDate = date;
+        }
+      }
+      if (oldestScope == null) {
+        throw const FormatException('Glossary revision history exceeds the 1 MiB profile bound.');
+      }
+      final oldest = history[oldestScope]!;
+      oldest.removeLast();
+      if (oldest.isEmpty) history.remove(oldestScope);
+    }
+    await SettingsService.instance.write(preference, Map.unmodifiable(history));
+  }
+
+  static Map<String, String> _decodeGlossaryRevision(String encoded) {
+    try {
+      final decoded = jsonDecode(encoded);
+      if (decoded is Map<String, dynamic> && decoded['glossary'] is Map) {
+        final glossary = <String, String>{};
+        for (final entry in (decoded['glossary'] as Map).entries) {
+          if (entry.key is String && entry.value is String) glossary[entry.key as String] = entry.value as String;
+        }
+        return _validateGlossary(glossary);
+      }
+    } catch (_) {}
+    return const <String, String>{};
+  }
+
+  static DateTime _glossaryRevisionDate(String? encoded) {
+    if (encoded == null) return DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+    try {
+      final decoded = jsonDecode(encoded);
+      if (decoded is Map<String, dynamic>) {
+        return DateTime.tryParse(decoded['createdAt'] as String? ?? '')?.toUtc() ??
+            DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+      }
+    } catch (_) {}
+    return DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
   }
 
   static Future<bool> isSupportedOnCurrentDevice() async {

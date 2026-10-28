@@ -4,9 +4,10 @@ These patches remove the two source API gaps identified in the native probe.
 They are source work, unbuilt and unqualified. Existing app binary pins are
 unchanged. Do not claim that shipping libmpv already includes this extension.
 
-`sources.lock.json` pins released projectM 4.1.8 and mpv 0.41.0, their full
-commits, the projectM evaluator gitlink and each local patch digest. The mpv
-revision matches the app's currently locked mpv-build source manifest.
+`sources.lock.json` pins projectM 4.1.8 and mpv 0.41.0, their full commits, the
+projectM evaluator gitlink and each local patch digest. It also pins the
+PlezyNG mpv-build source revision that carries the ordered PCM patch in its
+common MPV series and the Android session bridge in the AAR source.
 
 ## projectM output target
 
@@ -63,13 +64,16 @@ On an authorized private JIT runner, prepare clean dependency sources with:
 python3 native/visualizer/prepare_sources.py --platform linux --destination /path/to/visualizer-sources
 ```
 
-This command prepares source only. It checks out the pinned mpv-build tree,
-checks its mpv source revision, applies `series.common` and the requested
-platform series, then adds the PCM patch. Use a separate clean destination for
-each platform. The Linux source composition was performed with all 23 existing
-patches; no compiler or test was invoked. Other platforms now have host source but still need source composition, compiler
-validation and artifact qualification. Do not replace
-`mpv-build.lock.json` with invented checksums or unproduced artifact URLs.
+This command prepares source only. It checks out the pinned PlezyNG mpv-build
+tree, checks its mpv source revision, applies `series.common` and the requested
+platform series, and verifies that the common series contains the exact
+byte-identical ordered PCM patch. It verifies the Android bridge source instead
+of applying the patch twice. Use a separate clean destination for each
+platform. No compiler or test is invoked by this preparation step. The
+mpv-build PR adds private-JIT publication gates that reject any platform
+artifact missing `mpv_plezy_audio_tap_read_next`; the source PR has not produced
+or published those artifacts. Do not replace `mpv-build.lock.json` with
+invented checksums or unproduced artifact URLs.
 
 Build projectM as a shared library with GLES 3 for the Linux offscreen host:
 
@@ -123,10 +127,12 @@ driver or compiler hang is **not contained** by this in-process worker: joining
 it can block teardown. Process isolation/watchdog behavior remains a release gate
 for arbitrary community inputs. Exceptions are not a substitute for that gate.
 
-Promotion still requires other-platform patch composition, all-platform artifact
-builds, native rendering with actual playback audio, seek/pause/gapless/format
-changes, overload tests, passthrough preservation, and device/performance
-qualification. No such results are claimed by these patches.
+Promotion still requires the private-JIT build and publication, updated app
+artifact checksums, native playback with actual audio, seek/pause/gapless/format
+changes, overload coverage, passthrough preservation, and device/performance
+qualification. The required build workflow is manual and only publishes from
+the reviewed main branch. No artifact build, hardware run, or qualification is
+claimed by these source changes.
 
 ## Native MilkRust and platform hosts
 
@@ -154,13 +160,14 @@ and Tizen still lack a decoded-PCM/native-texture path. No host claims to play
 all shaders or all `.milk2` patterns. Native MilkRust currently uses immediate
 preset cuts, not qualified cross-preset transitions.
 
-Android additionally needs `mpv-build-android-visualizer-bridge.patch` applied to
-the exact pinned mpv-build tree. Source preparation checks its digest and applies
-it when `--platform android` is selected. The bridge exports a versioned C API
-from `libplayer.so`, uses the existing session registry and admission lock, and
-caches presentation PTS on the event thread. It never exports a raw player
-pointer, queries the decoder from the render worker, or delivers PCM through
-Kotlin/Dart. Stock AARs fail this capability gate and keep normal playback.
+Android's exact pinned mpv-build tree contains the session-leased native bridge
+from `mpv-build-android-visualizer-bridge.patch`; source preparation verifies
+the patch digest and the integrated source symbols. The bridge exports a
+versioned C API from `libplayer.so`, uses the existing session registry and
+admission lock, and caches presentation PTS on the event thread. It never
+exports a raw player pointer, queries the decoder from the render worker, or
+delivers PCM through Kotlin/Dart. Stock AARs fail this capability gate and keep
+normal playback.
 
 ### Artifact wiring after private JIT qualification
 

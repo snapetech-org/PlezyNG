@@ -146,10 +146,11 @@ class VisualizerCatalogVerifier {
         throw const FormatException('Catalog contains an uncleared pack');
       }
       final entry = VisualizerPackCatalogEntry.fromJson(item);
-      final fixture = VisualizerPackCatalogEntry.available.single;
       if (entry.qualification.status == 'unassessed' ||
           (entry.qualification.status == 'sample-fixture-only' &&
-              (entry.identity != fixture.identity || entry.sha256 != fixture.sha256))) {
+              (entry.id != VisualizerPackCatalogEntry.sampleFixtureId ||
+               entry.version != VisualizerPackCatalogEntry.sampleFixtureVersion ||
+               entry.sha256 != VisualizerPackCatalogEntry.sampleFixtureSha256))) {
         throw const FormatException('Catalog pack lacks reviewed rendering qualification');
       }
       if (entry.license == 'NOASSERTION' || !identities.add(entry.identity) || !ids.add(entry.id)) {

@@ -111,3 +111,13 @@ Empty production keys, absent qualification evidence and the source-only
 execution restriction still prevent a production delivery claim. Full HLSL,
 non-Fade `.milk2` patterns and webOS/Tizen PCM/texture hosts remain implementation
 work; none is completed by adding publication gates.
+
+The following source pin corrects HLSL function-token handling, sampler discovery,
+case-preserving conditional returns, comment boundaries and negative `fmod`
+semantics. It remains a restricted translator, with regression source unrun.
+The qualification matrix now matches the actual 32-bit ARM webOS/Tizen package
+targets and also covers Android armv7. The [TV integration investigation](TV_HOST_INTEGRATION.md)
+records the concrete same-player PCM and native texture work still required.
+PR #69 was closed externally during implementation; follow-up commits remain
+on its branch without reopening it. Production trust remains empty and no
+broader pack or platform has been newly qualified.

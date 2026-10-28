@@ -65,6 +65,15 @@ Keep community assets canonical in MilkRust; PlezyNG pins the catalog and downlo
 
 # Completion contract
 
+2026-10-28 continuation: signed delivery now has a committed public-root
+configuration path and a publisher gate requiring immutable per-preset/device
+qualification evidence. These are source mechanisms, not passed release gates.
+See [catalog release configuration](CATALOG_RELEASE.md) and
+[remaining TV integration](TV_HOST_INTEGRATION.md) for the concrete outstanding
+work. Full HLSL and non-Fade `.milk2` rendering remain incomplete. The earlier
+no-tests/builds/CI/captures/benchmarks/device-qualification restriction remains
+active; all subsequent source checkpoints use `[skip ci]`.
+
 “All community presets” is an engineering target, not an unbounded claim about every future file. Establish a versioned corpus that includes every current imported file plus representative MilkDrop 1, MilkDrop 2, MilkDrop 3 double presets, texture dependencies, fragments and converted formats. Preserve arbitrary local import so users are not limited to curated packs.
 
 Every discovered file must receive a result: discovered, readable, parsed, compiled, rendered, visually reviewed, failed, or excluded with a reason. Report counts per format, engine, platform and corpus hash. A parse success, nonempty frame, fallback drawing, or static shader translation must never be called faithful rendering.

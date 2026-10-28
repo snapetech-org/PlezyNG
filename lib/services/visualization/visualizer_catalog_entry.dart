@@ -2,6 +2,9 @@ import 'dart:convert';
 
 /// An immutable pack authorized by an app pin or a verified signed catalog.
 class VisualizerPackCatalogEntry {
+  static const sampleFixtureId = 'milkrust-sample-pack';
+  static const sampleFixtureVersion = '0.1.0';
+  static const sampleFixtureSha256 = '175a042deb4edb224055a6334f67a1c492f32e447dc3c90a54f22849c43a27df';
   const VisualizerPackCatalogEntry({
     required this.id,
     required this.name,
@@ -110,15 +113,15 @@ class VisualizerPackCatalogEntry {
 
   static const available = <VisualizerPackCatalogEntry>[
     VisualizerPackCatalogEntry(
-      id: 'milkrust-sample-pack',
+      id: sampleFixtureId,
       name: 'MilkRust Sample Pack',
-      version: '0.1.0',
+      version: sampleFixtureVersion,
       license: 'CC0-1.0',
       description: 'Two MilkRust-authored sample presets. No third-party assets.',
       contentNotice: 'MilkRust-authored sample content dedicated under CC0-1.0. No third-party presets or textures are included.',
       archiveUrl:
           'https://raw.githubusercontent.com/snapetech-org/MilkRust/de41e50c9d04c0b7c2de03f472c71720e1e9fda0/content/downloads/milkrust-sample-pack-0.1.0.rmpack',
-      sha256: '175a042deb4edb224055a6334f67a1c492f32e447dc3c90a54f22849c43a27df',
+      sha256: sampleFixtureSha256,
       archiveBytes: 2927,
       expandedBytes: 5467,
       presetCount: 2,
@@ -144,7 +147,7 @@ class VisualizerPackQualification {
   static const requiredTargets = <String>{
     'linux-x64', 'linux-arm64', 'windows-x64', 'windows-arm64',
     'macos-x64', 'macos-arm64', 'ios-arm64', 'tvos-arm64',
-    'android-arm64', 'android-armv7', 'android-x64', 'webos-arm64', 'tizen-arm',
+    'android-arm64', 'android-armv7', 'android-x64', 'webos-arm', 'tizen-arm',
   };
 
   String get label => switch (status) {

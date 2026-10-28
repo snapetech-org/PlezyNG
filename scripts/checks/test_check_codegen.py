@@ -112,6 +112,8 @@ esac
             ],
             check=True,
         )
+        subprocess.run(["git", "config", "user.email", "fixture@example.invalid"], cwd=self.root, check=True)
+        subprocess.run(["git", "config", "user.name", "Fixture"], cwd=self.root, check=True)
         self.env = os.environ | {
             "PATH": f"{self.bin}:{os.environ['PATH']}",
             "REAL_PYTHON": sys.executable,

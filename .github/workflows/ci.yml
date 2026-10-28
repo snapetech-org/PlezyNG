@@ -398,7 +398,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             clang cmake ninja-build pkg-config libgtk-3-dev libsecret-1-dev liblzma-dev \
             libstdc++-12-dev libmpv-dev libepoxy-dev libcurl4-openssl-dev libevdev-dev \
-            libwayland-dev libegl-dev libvulkan-dev mesa-vulkan-drivers
+            libwayland-dev libegl-dev libvulkan-dev mesa-vulkan-drivers \
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
       - name: Prepare Flutter Linux configuration
         run: |

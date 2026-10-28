@@ -6,10 +6,11 @@ import '../../../services/device_performance.dart';
 import '../../../services/settings_service.dart';
 import '../../models.dart';
 import '../player_base.dart';
+import '../subtitle_pcm_capture_source.dart';
 import '../video_rect_support.dart';
 
 /// Android implementation using ExoPlayer with ASS subtitle support via libass-android.
-class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioFocusControl {
+class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioFocusControl, SubtitlePcmCaptureSource {
   static const _channelBase = 'com.plezy/exo_player';
 
   PlayerAndroid({bool companionSession = false, super.listenToNativeEvents = true})
@@ -52,9 +53,11 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   bool get usingMpvFallback => _usingMpvFallback;
 
   /// Whether the current ExoPlayer item is a live stream.
+  @override
   bool get isLivePlayback => _isLive;
 
   /// Changes whenever a new item replaces the current media session.
+  @override
   int get mediaSessionGeneration => _mediaSessionGeneration;
 
   /// Subtitles are hidden through the player's visibility toggle. Sticky
@@ -569,8 +572,15 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
 
   /// Handles the shared local-subtitle import command on ExoPlayer and its
   /// mpv fallback. Other mpv-specific commands remain unsupported here.
+  @override
+  String? get subtitlePcmAudioTrackId => state.track.audio?.id;
+
+  @override
+  Future<bool> subtitlePcmCaptureAvailable() async => !disposed && !_usingMpvFallback && !_isLive;
+
   /// Starts or stops a bounded copy of decoded PCM for local subtitle ASR.
   /// The ExoPlayer fallback path does not expose PCM and returns false.
+  @override
   Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
     if (disposed || _usingMpvFallback) return false;
     return await methodChannel.invokeMethod<bool>(
@@ -581,6 +591,7 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   }
 
   /// Drains captured PCM packets. Each packet carries its media presentation timestamp.
+  @override
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
     if (disposed || _usingMpvFallback) return const [];
     final packets = await methodChannel.invokeMethod<List<dynamic>>('drainSubtitlePcmCapture');

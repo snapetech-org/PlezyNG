@@ -118,6 +118,7 @@ semantics. It remains a restricted translator, with regression source unrun.
 The qualification matrix now matches the actual 32-bit ARM webOS/Tizen package
 targets and also covers Android armv7. The [TV integration investigation](TV_HOST_INTEGRATION.md)
 records the concrete same-player PCM and native texture work still required.
-PR #69 was closed externally during implementation; follow-up commits remain
-on its branch without reopening it. Production trust remains empty and no
+PR #69 and its branch were closed/deleted externally during implementation.
+The follow-up is preserved on `codex/visualizer-catalog-checkpoint-20261028`
+without reopening the closed PR. Production trust remains empty and no
 broader pack or platform has been newly qualified.

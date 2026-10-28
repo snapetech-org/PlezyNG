@@ -674,6 +674,10 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
               serverId: state.serverId,
               ratingKey: state.ratingKey.isEmpty ? null : state.ratingKey,
               mediaIndex: state.selectedMediaIndex,
+              mediaTitle: state.mediaTitle,
+              sourceLabel: state.serverId == null
+                  ? 'Media library'
+                  : SubtitleRevisionService.privacySafeSourceLabel('Server', state.serverId!),
               seriesKey:
                   state.metadata?.seriesGlobalKey ??
                   (state.metadata?.kind == MediaKind.show ? state.metadata?.globalKey : null),

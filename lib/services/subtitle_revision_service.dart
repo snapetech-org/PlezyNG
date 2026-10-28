@@ -16,16 +16,58 @@ final class SubtitleRevisionIdentity {
     required this.serverId,
     required this.ratingKey,
     required this.mediaIndex,
+    this.mediaTitle,
+    this.sourceLabel,
   });
 
   final String profileId;
   final String serverId;
   final String ratingKey;
   final int mediaIndex;
+  final String? mediaTitle;
+  final String? sourceLabel;
 
   String get storageKey => sha256
       .convert(utf8.encode([profileId.trim(), serverId.trim(), ratingKey.trim(), mediaIndex.toString()].join('\u0000')))
       .toString();
+}
+
+/// A transcript from the local library, which may belong to another provider
+/// or source item in the same active profile.
+final class SavedSubtitleTranscript {
+  const SavedSubtitleTranscript({
+    required this.storageKey,
+    required this.mediaTitle,
+    required this.sourceLabel,
+    required this.transcriptId,
+    required this.createdAt,
+    required this.cueCount,
+    required this.languageCode,
+    this.revision,
+  });
+
+  final String storageKey;
+  final String mediaTitle;
+  final String sourceLabel;
+  final String transcriptId;
+  final DateTime createdAt;
+  final int cueCount;
+  final String? languageCode;
+  final SubtitleRevision? revision;
+
+  SubtitleRevision get loadedRevision =>
+      revision ?? (throw StateError('Saved transcript cues have not been loaded yet.'));
+
+  SavedSubtitleTranscript withRevision(SubtitleRevision value) => SavedSubtitleTranscript(
+    storageKey: storageKey,
+    mediaTitle: mediaTitle,
+    sourceLabel: sourceLabel,
+    transcriptId: transcriptId,
+    createdAt: createdAt,
+    cueCount: cueCount,
+    languageCode: languageCode,
+    revision: value,
+  );
 }
 
 /// An immutable reviewed subtitle result that can be re-attached or exported.
@@ -179,6 +221,20 @@ abstract final class SubtitleRevisionService {
   static const int maximumHistoryBytesPerItem = 24 * 1024 * 1024;
   static const int maximumTotalRevisionFiles = 1000;
   static const int maximumTotalRevisionBytes = 256 * 1024 * 1024;
+  static const int maximumTranscriptLibraryItems = 100;
+  static const int maximumTranscriptLibraryScanItems = 2000;
+
+  static const String _itemMetadataName = 'item.json';
+  static const String _itemMetadataSchema = 'plezyng.subtitle-revision-item.v1';
+
+  /// Produces a stable, non-reversible provider label for the local index.
+  static String privacySafeSourceLabel(String kind, String identifier) {
+    final normalizedKind = _label(kind, fallback: 'Source', maximumLength: 24);
+    final normalizedIdentifier = identifier.trim();
+    if (normalizedIdentifier.isEmpty) return normalizedKind;
+    final digest = sha256.convert(utf8.encode(normalizedIdentifier)).toString();
+    return '$normalizedKind ${digest.substring(0, 8)}';
+  }
 
   static Future<void> _writeTail = Future<void>.value();
 
@@ -278,6 +334,11 @@ abstract final class SubtitleRevisionService {
       try {
         await temporary.writeAsBytes(bytes, flush: true);
         await temporary.rename(target.path);
+        await _writeItemMetadata(
+          directory,
+          identity,
+          transcript: operation.trim() == 'Captured playback transcript' && cues.length >= 3 ? revision : null,
+        );
       } finally {
         if (await temporary.exists()) await temporary.delete();
       }
@@ -315,6 +376,160 @@ abstract final class SubtitleRevisionService {
     return List<SubtitleRevision>.unmodifiable(output);
   }
 
+  /// Lists recent saved playback transcripts in [profileId].
+  /// The lightweight index contains only display labels and a hash of the
+  /// profile ID; provider and media identifiers remain only in the directory
+  /// hash and are never written to the index.
+  static Future<List<SavedSubtitleTranscript>> loadSavedTranscripts({
+    required String profileId,
+    SubtitleRevisionIdentity? currentIdentity,
+    int limit = maximumTranscriptLibraryItems,
+  }) async {
+    await _writeTail;
+    final normalizedProfileId = profileId.trim();
+    if (normalizedProfileId.isEmpty) return const <SavedSubtitleTranscript>[];
+    final boundedLimit = limit.clamp(1, maximumTranscriptLibraryItems).toInt();
+    final expectedProfileHash = sha256.convert(utf8.encode(normalizedProfileId)).toString();
+    final root = await _rootDirectory();
+    if (currentIdentity != null && currentIdentity.profileId.trim() == normalizedProfileId) {
+      final currentDirectory = Directory(p.join(root.path, currentIdentity.storageKey));
+      final currentMetadata = File(p.join(currentDirectory.path, _itemMetadataName));
+      var metadataValid = false;
+      try {
+        if (await currentMetadata.length() <= 4096) {
+          final decoded = jsonDecode(await currentMetadata.readAsString());
+          metadataValid = decoded is Map<String, dynamic> &&
+              decoded['schema'] == _itemMetadataSchema &&
+              decoded['profileHash'] == expectedProfileHash;
+        }
+      } catch (_) {}
+      if (await currentDirectory.exists() && !metadataValid) {
+        await _exclusive(() async {
+          await _writeItemMetadata(currentDirectory, currentIdentity);
+        });
+      }
+    }
+    final items = <_TranscriptLibraryItem>[];
+    var scanned = 0;
+    await for (final entity in root.list(followLinks: false)) {
+      if (entity is! Directory || !RegExp(r'^[0-9a-f]{64}$').hasMatch(p.basename(entity.path))) continue;
+      scanned++;
+      if (scanned > maximumTranscriptLibraryScanItems) break;
+      final metadataFile = File(p.join(entity.path, _itemMetadataName));
+      try {
+        final metadataLength = await metadataFile.length();
+        if (metadataLength <= 0 || metadataLength > 4096) continue;
+        final decoded = jsonDecode(await metadataFile.readAsString());
+        if (decoded is! Map<String, dynamic> ||
+            decoded['schema'] != _itemMetadataSchema ||
+            decoded['profileHash'] != expectedProfileHash) {
+          continue;
+        }
+        final mediaTitle = decoded['mediaTitle'];
+        final sourceLabel = decoded['sourceLabel'];
+        if (mediaTitle is! String || sourceLabel is! String) continue;
+        var pointers = _readTranscriptPointers(decoded);
+        if (pointers == null) {
+          // Migrate prior item metadata and revision-only history once. Cue
+          // payloads are discarded here; selection loads only one full record.
+          final discovered = await _findTranscriptPointers(entity);
+          await _exclusive(() async {
+            await _writeTranscriptPointers(metadataFile, decoded, pointers: discovered);
+          });
+          pointers = discovered;
+        }
+        final currentPointers = pointers ?? const <_TranscriptPointer>[];
+        final validPointers = <_TranscriptPointer>[];
+        for (final pointer in currentPointers) {
+          final transcriptFile = File(p.join(entity.path, '${pointer.id}.json'));
+          if (!await transcriptFile.exists()) continue;
+          final transcriptLength = await transcriptFile.length();
+          if (transcriptLength <= 0 || transcriptLength > maximumRevisionBytes) continue;
+          validPointers.add(pointer);
+          items.add(
+            _TranscriptLibraryItem(
+              storageKey: p.basename(entity.path),
+              mediaTitle: mediaTitle,
+              sourceLabel: sourceLabel,
+              transcriptId: pointer.id,
+              createdAt: pointer.createdAt,
+              cueCount: pointer.cueCount,
+              languageCode: pointer.languageCode,
+            ),
+          );
+        }
+        if (validPointers.length != currentPointers.length) {
+          if (validPointers.isEmpty) {
+            final recovered = await _findTranscriptPointers(entity);
+            validPointers
+              ..clear()
+              ..addAll(recovered);
+            // The recovery scan may discover an older transcript after global
+            // pruning removed every item in the saved index.
+            for (final pointer in validPointers) {
+              items.add(
+                _TranscriptLibraryItem(
+                  storageKey: p.basename(entity.path),
+                  mediaTitle: mediaTitle,
+                  sourceLabel: sourceLabel,
+                  transcriptId: pointer.id,
+                  createdAt: pointer.createdAt,
+                  cueCount: pointer.cueCount,
+                  languageCode: pointer.languageCode,
+                ),
+              );
+            }
+          }
+          await _exclusive(() async {
+            await _writeTranscriptPointers(metadataFile, decoded, pointers: validPointers);
+          });
+        }
+        items.sort((left, right) => right.createdAt.compareTo(left.createdAt));
+        if (items.length > boundedLimit) items.removeRange(boundedLimit, items.length);
+      } catch (_) {
+        // A damaged or old index entry is ignored; it must not block others.
+      }
+    }
+    return List<SavedSubtitleTranscript>.unmodifiable(
+      items.take(boundedLimit).map(
+        (item) => SavedSubtitleTranscript(
+          storageKey: item.storageKey,
+          mediaTitle: item.mediaTitle,
+          sourceLabel: item.sourceLabel,
+          transcriptId: item.transcriptId,
+          createdAt: item.createdAt,
+          cueCount: item.cueCount,
+          languageCode: item.languageCode,
+        ),
+      ),
+    );
+  }
+
+  /// Loads a selected transcript after the user chooses it from the library.
+  /// The item hash and revision identifier are validated before a file is read.
+  static Future<SavedSubtitleTranscript?> loadSavedTranscript(SavedSubtitleTranscript transcript) async {
+    await _writeTail;
+    if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(transcript.storageKey) ||
+        !RegExp(r'^\d+_[0-9a-f]+$').hasMatch(transcript.transcriptId)) {
+      throw const FormatException('Saved transcript identity is invalid.');
+    }
+    final directory = Directory(p.join((await _rootDirectory()).path, transcript.storageKey));
+    final file = File(p.join(directory.path, '${transcript.transcriptId}.json'));
+    final length = await file.length();
+    if (length <= 0 || length > maximumRevisionBytes) return null;
+    try {
+      final revision = SubtitleRevision.fromJson(jsonDecode(await file.readAsString()));
+      if (revision.id != transcript.transcriptId ||
+          revision.operation != 'Captured playback transcript' ||
+          revision.cues.length < 3) {
+        return null;
+      }
+      return transcript.withRevision(revision);
+    } on FormatException {
+      return null;
+    }
+  }
+
   static Future<void> deleteRevision(SubtitleRevisionIdentity identity, String id) async {
     if (!RegExp(r'^\d+_[0-9a-f]+$').hasMatch(id)) {
       throw const FormatException('Subtitle revision identifier is invalid.');
@@ -328,7 +543,114 @@ abstract final class SubtitleRevisionService {
 
   static Future<List<File>> _revisionFiles(Directory directory) async {
     final entities = await directory.list(followLinks: false).toList();
-    return entities.whereType<File>().where((file) => p.extension(file.path) == '.json').toList();
+    return entities
+        .whereType<File>()
+        .where((file) => RegExp(r'^\d+_[0-9a-f]+\.json$').hasMatch(p.basename(file.path)))
+        .toList();
+  }
+
+  static Future<List<_TranscriptPointer>> _findTranscriptPointers(Directory directory) async {
+    final files = await _revisionFiles(directory);
+    await _sortNewestFirst(files);
+    final pointers = <_TranscriptPointer>[];
+    for (final file in files) {
+      final length = await file.length();
+      if (length <= 0 || length > maximumRevisionBytes) continue;
+      try {
+        final revision = SubtitleRevision.fromJson(jsonDecode(await file.readAsString()));
+        if (revision.id != p.basenameWithoutExtension(file.path)) {
+          throw const FormatException('Revision filename does not match its record.');
+        }
+        if (revision.operation == 'Captured playback transcript' && revision.cues.length >= 3) {
+          pointers.add(_TranscriptPointer.fromRevision(revision));
+          if (pointers.length >= maximumRevisionsPerItem) break;
+        }
+      } catch (_) {
+        // The ordinary item history loader also removes malformed revisions.
+      }
+    }
+    return pointers;
+  }
+
+  static Future<void> _writeItemMetadata(
+    Directory directory,
+    SubtitleRevisionIdentity identity, {
+    SubtitleRevision? transcript,
+  }) async {
+    final target = File(p.join(directory.path, _itemMetadataName));
+    Map<String, dynamic>? existing;
+    try {
+      if (await target.exists() && await target.length() <= 4096) {
+        final value = jsonDecode(await target.readAsString());
+        if (value is Map<String, dynamic>) existing = value;
+      }
+    } catch (_) {}
+    var pointers =
+        (existing == null ? null : _readTranscriptPointers(existing)) ?? await _findTranscriptPointers(directory);
+    if (transcript != null) {
+      pointers.removeWhere((pointer) => pointer.id == transcript.id);
+      pointers.add(_TranscriptPointer.fromRevision(transcript));
+    }
+    pointers.sort((left, right) => right.createdAt.compareTo(left.createdAt));
+    if (pointers.length > maximumRevisionsPerItem) {
+      pointers = pointers.take(maximumRevisionsPerItem).toList(growable: true);
+    }
+    final metadata = <String, Object?>{
+      'schema': _itemMetadataSchema,
+      'profileHash': sha256.convert(utf8.encode(identity.profileId.trim())).toString(),
+      'mediaTitle': _label(identity.mediaTitle, fallback: 'Saved media item', maximumLength: 200),
+      'sourceLabel': _label(identity.sourceLabel, fallback: 'Media library', maximumLength: 120),
+      'savedTranscripts': pointers.map((pointer) => pointer.toJson()).toList(growable: false),
+      if (pointers.isNotEmpty) ...pointers.first.toLatestJson(),
+    };
+    await _writeMetadataAtomically(target, metadata);
+  }
+
+  static List<_TranscriptPointer>? _readTranscriptPointers(Map<String, dynamic> metadata) {
+    final rows = metadata['savedTranscripts'];
+    if (rows is! List) return null;
+    final pointersById = <String, _TranscriptPointer>{};
+    for (final row in rows) {
+      final pointer = _TranscriptPointer.tryParse(row);
+      if (pointer != null) pointersById[pointer.id] = pointer;
+    }
+    final pointers = pointersById.values.toList(growable: true)
+      ..sort((left, right) => right.createdAt.compareTo(left.createdAt));
+    if (pointers.length > maximumRevisionsPerItem) {
+      pointers.removeRange(maximumRevisionsPerItem, pointers.length);
+    }
+    return pointers;
+  }
+
+  static Future<void> _writeTranscriptPointers(
+    File target,
+    Map<String, dynamic> existing, {
+    required List<_TranscriptPointer> pointers,
+  }) async {
+    final metadata = Map<String, Object?>.from(existing)
+      ..remove('latestTranscriptId')
+      ..remove('latestTranscriptCreatedAt')
+      ..remove('latestTranscriptCueCount')
+      ..remove('latestTranscriptLanguageCode')
+      ..['savedTranscripts'] = pointers.map((pointer) => pointer.toJson()).toList(growable: false);
+    if (pointers.isNotEmpty) metadata.addAll(pointers.first.toLatestJson());
+    await _writeMetadataAtomically(target, metadata);
+  }
+
+  static Future<void> _writeMetadataAtomically(File target, Map<String, Object?> metadata) async {
+    final temporary = File('${target.path}.tmp');
+    try {
+      await temporary.writeAsString(jsonEncode(metadata), flush: true);
+      await temporary.rename(target.path);
+    } finally {
+      if (await temporary.exists()) await temporary.delete();
+    }
+  }
+
+  static String _label(String? value, {required String fallback, required int maximumLength}) {
+    final cleaned = (value ?? '').replaceAll(RegExp(r'[\x00-\x1f\x7f]'), ' ').trim();
+    if (cleaned.isEmpty) return fallback;
+    return cleaned.length <= maximumLength ? cleaned : cleaned.substring(0, maximumLength);
   }
 
   static Future<void> _sortNewestFirst(List<File> files) async {
@@ -361,7 +683,7 @@ abstract final class SubtitleRevisionService {
   static Future<void> _pruneGlobal(Directory root) async {
     final files = <File>[];
     await for (final entity in root.list(recursive: true, followLinks: false)) {
-      if (entity is File && p.extension(entity.path) == '.json') files.add(entity);
+      if (entity is File && RegExp(r'^\d+_[0-9a-f]+\.json$').hasMatch(p.basename(entity.path))) files.add(entity);
     }
     await _sortNewestFirst(files);
     final sizes = <int>[];
@@ -377,5 +699,94 @@ abstract final class SubtitleRevisionService {
       total -= sizes[keep];
       await files[keep].delete();
     }
+    await for (final entity in root.list(followLinks: false)) {
+      if (entity is! Directory || !RegExp(r'^[0-9a-f]{64}$').hasMatch(p.basename(entity.path))) continue;
+      if ((await _revisionFiles(entity)).isNotEmpty) continue;
+      final children = await entity.list(followLinks: false).toList();
+      if (children.every((child) => child is File && p.basename(child.path) == _itemMetadataName)) {
+        for (final child in children.whereType<File>()) {
+          await child.delete();
+        }
+        await entity.delete();
+      }
+    }
   }
+}
+
+final class _TranscriptPointer {
+  const _TranscriptPointer({
+    required this.id,
+    required this.createdAt,
+    required this.cueCount,
+    required this.languageCode,
+  });
+
+  final String id;
+  final DateTime createdAt;
+  final int cueCount;
+  final String? languageCode;
+
+  static _TranscriptPointer? tryParse(Object? value) {
+    if (value is! Map<String, dynamic>) return null;
+    final id = value['id'];
+    final createdAtText = value['createdAt'];
+    final cueCount = value['cueCount'];
+    final languageCode = value['languageCode'];
+    final createdAt = DateTime.tryParse(createdAtText is String ? createdAtText : '')?.toUtc();
+    if (id is! String ||
+        !RegExp(r'^\d+_[0-9a-f]+$').hasMatch(id) ||
+        createdAt == null ||
+        cueCount is! int ||
+        cueCount < 3 ||
+        (languageCode != null && languageCode is! String)) {
+      return null;
+    }
+    return _TranscriptPointer(
+      id: id,
+      createdAt: createdAt,
+      cueCount: cueCount,
+      languageCode: languageCode as String?,
+    );
+  }
+
+  factory _TranscriptPointer.fromRevision(SubtitleRevision revision) => _TranscriptPointer(
+    id: revision.id,
+    createdAt: revision.createdAt.toUtc(),
+    cueCount: revision.cues.length,
+    languageCode: revision.languageCode,
+  );
+
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'createdAt': createdAt.toUtc().toIso8601String(),
+    'cueCount': cueCount,
+    'languageCode': languageCode,
+  };
+
+  Map<String, Object?> toLatestJson() => {
+    'latestTranscriptId': id,
+    'latestTranscriptCreatedAt': createdAt.toUtc().toIso8601String(),
+    'latestTranscriptCueCount': cueCount,
+    'latestTranscriptLanguageCode': languageCode,
+  };
+}
+
+final class _TranscriptLibraryItem {
+  const _TranscriptLibraryItem({
+    required this.storageKey,
+    required this.mediaTitle,
+    required this.sourceLabel,
+    required this.transcriptId,
+    required this.createdAt,
+    required this.cueCount,
+    required this.languageCode,
+  });
+
+  final String storageKey;
+  final String mediaTitle;
+  final String sourceLabel;
+  final String transcriptId;
+  final DateTime createdAt;
+  final int cueCount;
+  final String? languageCode;
 }

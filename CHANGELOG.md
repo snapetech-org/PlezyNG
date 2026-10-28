@@ -2,8 +2,8 @@
 
 ## [Unreleased]
 
+- Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.
-
 - Repair combined application compilation across visualizer and subtitle archive extraction, IPTV, catalog search, motion and player settings. Preserve bounded archive writes, stale-operation guards and subtitle timing, use shared icon styling, and explicitly track untranslated messages as English fallbacks.
 - Add an optional Brandfetch hotlink fallback for official connector logos, with curated provider domains and approval gates for AllDebrid and TorBox.
 - Add attributed Amazon and Xbox marks to their matching external destinations.
@@ -43,10 +43,6 @@
 - Add capability-negotiated Steam Input and game-properties actions on paired computers, plus confirmed Cloud files and Families destinations in the existing adaptive Steam menu.
 
 - Add an embedded Linux Steam receiver with OS-keyring pairing, dedicated H.264/HEVC and PCM decoding, retained Flutter textures, controller seats, connection details and acknowledged reconnect; bundle its fixed GStreamer plugins with Linux releases.
-
-
-
-
 
 - Export Whisper token timestamps as cue-linked word/token timing records in reviewed subtitle JSON; unsupported accelerators clearly return cue timing without word records.
 
@@ -181,6 +177,9 @@
 - Retain previous server results when a new search is cancelled, while preserving indexed Files and Seerr results.
 - Route Windows x64 native CI through the private Packer JIT workflow allowlist.
 - Lock iOS, macOS and tvOS CocoaPods dependencies for CI, and retain root dependency overrides when resolving tvOS packages.
+- Fix clean tvOS CocoaPods setup, Android 17 preview SDK provisioning, and short-path Apple native-asset builds on private JIT runners.
+- Fix the macOS native reliability target to import the `PlezyNG` app module.
+- Require Android host native-test tools to be provisioned on the private runner before CI starts.
 - Include the Steam audio labels in the explicit English fallback manifest used by strict localization checks.
 - Set ThreadSanitizer ASLR entropy through the disposable runner's authorized sysctl.
 - Prepare an ephemeral default keychain for the optional Xcode cloud-signing path for iOS App Store builds.
@@ -221,6 +220,7 @@ This release gathers PlezyNG’s feature work since the fork, platform expansion
 
 - Add one-command native dependency refresh and all-platform private-JIT release orchestration.
 - Reuse complete, checksum-verified native platform groups after another platform fails, while requiring the full artifact set before updating app dependencies.
+- Bind release builds and configured publication workflows to the exact main commit, and resolve pinned Apple packages before native CI tests.
 - Validate all platform assets before publishing and dispatch configured release channels through the private-JIT orchestrator.
 - Include ARM webOS and Tizen tester builds in versioned releases, with pinned SDK and host-tool setup for Android, webOS and Tizen.
 - Provision pinned Android SDK packages and install hash-verified Python/Ninja plus host prerequisites for Android, webOS and Tizen private JIT builds.

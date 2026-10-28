@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Add an optional Brandfetch hotlink fallback for official connector logos, with curated provider domains and approval gates for AllDebrid and TorBox.
 - Add attributed Amazon and Xbox marks to their matching external destinations.
 - Show the Discord brand mark on its rich-presence integration switch.
@@ -13,6 +14,8 @@
 - Retarget the active current-display motion-compensation filter when mpv reports a display-rate change.
 - Serialize motion-processing configuration and health-monitor fallback changes so stale MPV updates cannot overwrite newer settings.
 - Serialize per-player motion-provider transitions, power and thermal fallbacks, and teardown so stale async work cannot override newer requests.
+- Fix the pinned Windows ML 2.4.89 package SHA-256 so Windows runtime downloads pass integrity verification.
+- Keep CPU-only motion providers out of real-time Neural readiness until playback timing is qualified.
 - Add experimental native MilkRust visualization hosts across Linux, Windows, Apple and Android, with same-player PCM routing, profile-scoped engine selection, and optional SHA-256-checked desktop runtime/source packaging with notices; compiled engines are not in current releases and platform behavior remains unqualified.
 
 - Add profile-scoped Real-Debrid, AllDebrid, Premiumize and TorBox connections, Stremio add-on imports, cloud/server canonical libraries, renewable shared playback, scheduled preparation, and optional native libtorrent streaming; live-provider and packaged-device qualification remains open.

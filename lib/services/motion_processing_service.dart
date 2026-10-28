@@ -58,6 +58,23 @@ abstract final class MotionProcessingService {
 
   static bool supportsPlayer(Player player) => isMpvPlatformSupported && player.playerType == 'mpv';
 
+  /// CPU-only inference is diagnostic-only until a target proves it can meet
+  /// the playback deadline. A loaded or productive CPU session alone does not
+  /// make it eligible for the real-time Neural playback mode.
+  static bool isCpuOnlyNeuralProviderStatus(String? providerStatus) {
+    final normalized = providerStatus?.trim().toLowerCase();
+    if (normalized == null || normalized.isEmpty) return false;
+    final provider = normalized.endsWith('-ready')
+        ? normalized.substring(0, normalized.length - '-ready'.length)
+        : normalized;
+    return provider == 'cpu' ||
+        provider == 'cpu-fallback' ||
+        provider == 'cpuexecutionprovider' ||
+        provider.endsWith('-cpu') ||
+        provider.endsWith(':cpu') ||
+        provider.endsWith(':cpuexecutionprovider');
+  }
+
   /// Resolves a request to a provider available on this player's output path.
   /// Apple Neural mode is available only while the AVFoundation VideoToolbox
   /// processor reports initialization, readiness, or actual frame output.
@@ -77,12 +94,15 @@ abstract final class MotionProcessingService {
         !appleOutput &&
         (currentVideoOutput == null ? capabilityReport == null : _supportsVideoOutput(currentVideoOutput)) &&
         (capabilityReport == null || capabilityReport.rendererInterpolationActive == true);
+    final providerStatus = capabilityReport?.neuralProvider ?? neuralProviderStatus;
+    final normalizedProviderStatus = neuralProviderStatus?.trim().toLowerCase();
     final providerReady =
-        capabilityReport?.neuralProviderReady ??
-        (neuralProviderStatus != null &&
-            RegExp(
-              r'^(qnn-htp(-v\d+)?|qnn-(npu|gpu)|litert-(npu|gpu)|openvino(-npu|-gpu|-cpu)?|cuda-gpu|directml-gpu|vitisai-npu|nvtensorrtrtx-gpu|migraphx-gpu|winml(-npu|-gpu|-cpu)?)(-ready)?$|^pme:(openvino|qnn|cuda|directml|cpu)(:(npu|gpu|cpu))?(-ready)?$',
-            ).hasMatch(neuralProviderStatus));
+        !isCpuOnlyNeuralProviderStatus(providerStatus) &&
+        (capabilityReport?.neuralProviderReady ??
+            (normalizedProviderStatus != null &&
+                RegExp(
+                  r'^(qnn-htp(-v\d+)?|qnn-(npu|gpu)|litert-(npu|gpu)|openvino(-npu|-gpu)?|cuda-gpu|directml-gpu|vitisai-npu|nvtensorrtrtx-gpu|migraphx-gpu|winml(-npu|-gpu)?)(-ready)?$|^pme:(openvino|qnn|cuda|directml)(:(npu|gpu))?(-ready)?$',
+                ).hasMatch(normalizedProviderStatus)));
     final nativeProviderReady =
         (appleOutput && const {'initializing', 'ready', 'active'}.contains(nativeInterpolationStatus)) ||
         (rendererAvailable &&

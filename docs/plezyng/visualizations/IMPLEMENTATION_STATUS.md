@@ -112,9 +112,20 @@ execution restriction still prevent a production delivery claim. Full HLSL,
 non-Fade `.milk2` patterns and webOS/Tizen PCM/texture hosts remain implementation
 work; none is completed by adding publication gates.
 
-The following source pin corrects HLSL function-token handling, sampler discovery,
-case-preserving conditional returns, comment boundaries and negative `fmod`
-semantics. It remains a restricted translator, with regression source unrun.
+The current MilkRust source pin is `c622b0f6614c62bf55abacf334b464487bb97256`.
+It adds bounded native/WebGL lowering for legacy `tex2D`/`tex`, `tex2Dlod`,
+`tex2Dbias`, `tex2Dproj` and `tex2Dgrad` calls, including nested sampling and
+known sampler bindings. Full HLSL/runtime/resource compatibility remains open;
+unsupported resource models, control flow, matrices, functions and runtime
+semantics are not covered, and no GPU fidelity comparison has run. The saved
+non-Fade `.milk2` patterns remain blocked. The qualification matrix matches the
+actual 32-bit ARM webOS/Tizen package targets and also covers Android armv7.
+The [TV integration investigation](TV_HOST_INTEGRATION.md) records the concrete
+same-player PCM and native texture work still required. PR #69 and its branch
+were closed/deleted externally during implementation. The follow-up is
+preserved on `codex/visualizer-catalog-checkpoint-20261028` without reopening
+the closed PR. Production trust remains empty and no broader pack or platform
+has been newly qualified.
 The qualification matrix now matches the actual 32-bit ARM webOS/Tizen package
 targets and also covers Android armv7. The [TV integration investigation](TV_HOST_INTEGRATION.md)
 records the concrete same-player PCM and native texture work still required.

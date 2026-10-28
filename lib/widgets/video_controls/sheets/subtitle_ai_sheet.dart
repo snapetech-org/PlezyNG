@@ -662,7 +662,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       return true;
     } catch (error) {
       if (mounted) {
-        setState(() => _revisionStatus = 'Could not save the undo checkpoint; the cue edit was not applied: $error');
+        setState(() => _revisionStatus = 'Could not save an undo checkpoint; the accepted revision remains available: $error');
       }
       return false;
     }

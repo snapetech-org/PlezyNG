@@ -46,6 +46,21 @@ class FakeSyncPlayer implements Player {
   @override
   bool audioPassthroughActive = false;
 
+  @override
+  bool get supportsSecondarySubtitles => false;
+
+  @override
+  Set<String> get supportedLocalSubtitleExtensions => const {};
+
+  @override
+  bool get supportsSubtitleStepSync => false;
+
+  @override
+  bool get supportsSubtitleStyleControls => false;
+
+  @override
+  Future<void> clearVideoFrameRate() async {}
+
   final commandLog = <String>[];
 
   final _playingController = StreamController<bool>.broadcast();

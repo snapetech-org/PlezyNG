@@ -176,17 +176,31 @@ class VisualizerPackCatalogEntry {
 /// Describes a reviewed report for these archive bytes, not every future engine
 /// or device. Old installed receipts may lack it and remain unassessed.
 class VisualizerPackQualification {
-  const VisualizerPackQualification({this.status = 'unassessed', this.targets = const [],
-    this.reportUrl, this.reportSha256});
+  const VisualizerPackQualification({
+    this.status = 'unassessed',
+    this.targets = const [],
+    this.reportUrl,
+    this.reportSha256,
+  });
   final String status;
   final List<String> targets;
   final String? reportUrl;
   final String? reportSha256;
 
   static const requiredTargets = <String>{
-    'linux-x64', 'linux-arm64', 'windows-x64', 'windows-arm64',
-    'macos-x64', 'macos-arm64', 'ios-arm64', 'tvos-arm64',
-    'android-arm64', 'android-armv7', 'android-x64', 'webos-arm', 'tizen-arm',
+    'linux-x64',
+    'linux-arm64',
+    'windows-x64',
+    'windows-arm64',
+    'macos-x64',
+    'macos-arm64',
+    'ios-arm64',
+    'tvos-arm64',
+    'android-arm64',
+    'android-armv7',
+    'android-x64',
+    'webos-arm',
+    'tizen-arm',
   };
 
   String get label => switch (status) {
@@ -196,9 +210,10 @@ class VisualizerPackQualification {
   };
 
   Map<String, Object> toJson() => {
-    'status': status, 'targets': targets,
-    if (reportUrl != null) 'reportUrl': reportUrl!,
-    if (reportSha256 != null) 'reportSha256': reportSha256!,
+    'status': status,
+    'targets': targets,
+    'reportUrl': ?reportUrl,
+    'reportSha256': ?reportSha256,
   };
 
   factory VisualizerPackQualification.fromJson(Object? value) {
@@ -213,16 +228,23 @@ class VisualizerPackQualification {
       }
       return VisualizerPackQualification(status: status);
     }
-    if (status != 'qualified' || raw.length != requiredTargets.length ||
+    if (status != 'qualified' ||
+        raw.length != requiredTargets.length ||
         raw.any((t) => t is! String || !requiredTargets.contains(t)) ||
-        raw.toSet().length != requiredTargets.length || value['reportUrl'] is! String ||
+        raw.toSet().length != requiredTargets.length ||
+        value['reportUrl'] is! String ||
         value['reportSha256'] is! String ||
-        !RegExp(r'^https://raw\.githubusercontent\.com/snapetech-org/MilkRust/[a-f0-9]{40}/content/qualification/reports/[A-Za-z0-9_-]+\.json$')
-            .hasMatch(value['reportUrl'] as String) ||
+        !RegExp(
+          r'^https://raw\.githubusercontent\.com/snapetech-org/MilkRust/[a-f0-9]{40}/content/qualification/reports/[A-Za-z0-9_-]+\.json$',
+        ).hasMatch(value['reportUrl'] as String) ||
         !RegExp(r'^[a-f0-9]{64}$').hasMatch(value['reportSha256'] as String)) {
       throw const FormatException('Incomplete pack qualification report');
     }
-    return VisualizerPackQualification(status: status, targets: List.unmodifiable(raw.cast<String>()),
-      reportUrl: value['reportUrl'] as String, reportSha256: value['reportSha256'] as String);
+    return VisualizerPackQualification(
+      status: status,
+      targets: List.unmodifiable(raw.cast<String>()),
+      reportUrl: value['reportUrl'] as String,
+      reportSha256: value['reportSha256'] as String,
+    );
   }
 }

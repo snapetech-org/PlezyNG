@@ -248,8 +248,8 @@ void MpvPlayerPlugin::HandleMethodCall(
   const auto& method = method_call.method_name();
 
   if (method == "subtitlePcmCaptureAvailable") {
-    const bool available = !audio_only_ && player_ && player_->IsInitialized() &&
-                           MpvPlayer::SubtitlePcmCaptureAvailable();
+    const bool available =
+        !audio_only_ && player_ && player_->IsInitialized() && MpvPlayer::SubtitlePcmCaptureAvailable();
     result->Success(flutter::EncodableValue(available));
     return;
   }
@@ -260,7 +260,8 @@ void MpvPlayerPlugin::HandleMethodCall(
     }
     using V = flutter::EncodableValue;
     if (method == "setSubtitlePcmCaptureEnabled") {
-      const auto* args = method_call.arguments() ? std::get_if<flutter::EncodableMap>(method_call.arguments()) : nullptr;
+      const auto* args =
+          method_call.arguments() ? std::get_if<flutter::EncodableMap>(method_call.arguments()) : nullptr;
       const bool* enabled = nullptr;
       if (args) {
         const auto it = args->find(V("enabled"));
@@ -284,14 +285,12 @@ void MpvPlayerPlugin::HandleMethodCall(
         result->Error("SUBTITLE_PCM_READ", "The native PCM capture tap failed.");
         return;
       }
-      if (!std::isfinite(block.pts) || block.frames == 0 ||
-          block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES || block.sample_rate == 0 ||
-          block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS) {
+      if (!std::isfinite(block.pts) || block.frames == 0 || block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES ||
+          block.sample_rate == 0 || block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS) {
         continue;
       }
       const double pts_us = block.pts * 1000000.0;
-      if (!std::isfinite(pts_us) ||
-          pts_us >= static_cast<double>(std::numeric_limits<int64_t>::max()) ||
+      if (!std::isfinite(pts_us) || pts_us >= static_cast<double>(std::numeric_limits<int64_t>::max()) ||
           pts_us < static_cast<double>(std::numeric_limits<int64_t>::min())) {
         continue;
       }

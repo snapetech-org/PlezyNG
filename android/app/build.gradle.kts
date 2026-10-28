@@ -233,7 +233,7 @@ fun validateAndroidAnvilContextPack(root: File, qairtSdkRoot: File) {
     manifest["anvil_model_revision"] != "fa97e30f6aabe897bd4f6f82d971ad607f5d61fa"
   ) {
     throw GradleException(
-      "Android ANVIL context manifest has unsupported schema, runtime, quantization, or model provenance",
+      "Android ANVIL context manifest has unsupported schema, runtime, quantization, or model provenance"
     )
   }
   @Suppress("UNCHECKED_CAST")

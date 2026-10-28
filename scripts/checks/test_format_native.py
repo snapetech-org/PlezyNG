@@ -246,6 +246,19 @@ exit {status}
             self.assertFalse((self.root / marker).exists())
         self.assertFalse(self.cache.parent.exists())
 
+    def test_vendored_stb_header_is_excluded_from_formatting(self) -> None:
+        executable(
+            self.bin / "git",
+            "#!/bin/bash\nprintf 'shared/visualization/third_party/stb/stb_image.h\\0'\n",
+        )
+
+        result = self.run_script("--check")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("No C/C++/Obj-C files found.", result.stdout)
+        for marker in ("curl.marker", "hash.marker", "java.marker", "ktlint.marker"):
+            self.assertFalse((self.root / marker).exists())
+
 
 if __name__ == "__main__":
     unittest.main()

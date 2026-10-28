@@ -35,7 +35,9 @@ extension MpvPluginShared {
 
   func handleSubtitlePcmCapture(call: FlutterMethodCall, result: @escaping FlutterResult) {
     guard let core = coreBase else {
-      result(FlutterError(code: "SUBTITLE_PCM_UNAVAILABLE", message: "The video MPV session is not available.", details: nil))
+      result(
+        FlutterError(code: "SUBTITLE_PCM_UNAVAILABLE", message: "The video MPV session is not available.", details: nil)
+      )
       return
     }
     switch call.method {
@@ -49,11 +51,14 @@ extension MpvPluginShared {
       result(core.setSubtitlePcmCaptureEnabled(enabled) >= 0)
     case "drainSubtitlePcmCapture":
       guard let batch = core.drainSubtitlePcmCapture() else {
-        result(FlutterError(code: "SUBTITLE_PCM_UNAVAILABLE", message: "The video MPV session has ended.", details: nil))
+        result(
+          FlutterError(code: "SUBTITLE_PCM_UNAVAILABLE", message: "The video MPV session has ended.", details: nil))
         return
       }
       if batch.error < 0 {
-        result(FlutterError(code: "SUBTITLE_PCM_READ", message: "The native PCM capture tap failed (\(batch.error)).", details: nil))
+        result(
+          FlutterError(
+            code: "SUBTITLE_PCM_READ", message: "The native PCM capture tap failed (\(batch.error)).", details: nil))
         return
       }
       let packets = batch.packets.map { packet -> [String: Any] in

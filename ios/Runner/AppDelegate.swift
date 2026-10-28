@@ -81,7 +81,8 @@ import MusicKit
     }
 
     if #available(iOS 15.0, *),
-       let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AppleMusicKitPlugin") {
+      let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AppleMusicKitPlugin")
+    {
       AppleMusicKitPlugin.register(with: registrar)
     }
   }
@@ -211,7 +212,6 @@ import MusicKit
   }
 }
 
-
 /// Narrow iOS MusicKit pilot. Apple remains the catalog and playback owner;
 /// PlezyNG receives catalog metadata and never receives protected media bytes.
 @available(iOS 15.0, *)
@@ -238,25 +238,30 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
       result(status == .authorized ? "authorized" : "denied")
     case "search":
       guard MusicAuthorization.currentStatus == .authorized,
-            let arguments = call.arguments as? [String: Any],
-            let query = arguments["query"] as? String,
-            !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-            query.count <= 160 else {
-        result(FlutterError(code: "INVALID_OR_UNAUTHORIZED", message: "A granted MusicKit session and search query are required.", details: nil))
+        let arguments = call.arguments as? [String: Any],
+        let query = arguments["query"] as? String,
+        !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+        query.count <= 160
+      else {
+        result(
+          FlutterError(
+            code: "INVALID_OR_UNAUTHORIZED", message: "A granted MusicKit session and search query are required.",
+            details: nil))
         return
       }
       do {
         var request = MusicCatalogSearchRequest(term: query, types: [Song.self])
         request.limit = 20
         let response = try await request.response()
-        result(response.songs.map { song in
-          [
-            "id": song.id.rawValue,
-            "title": song.title,
-            "artist": song.artistName,
-            "album": song.albumTitle ?? ""
-          ] as [String: Any]
-        })
+        result(
+          response.songs.map { song in
+            [
+              "id": song.id.rawValue,
+              "title": song.title,
+              "artist": song.artistName,
+              "album": song.albumTitle ?? "",
+            ] as [String: Any]
+          })
       } catch {
         result(FlutterError(code: "CATALOG_UNAVAILABLE", message: "Apple Music catalog search failed.", details: nil))
       }
@@ -269,21 +274,30 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
         let subscription = try await MusicSubscription.current
         result(subscription.canPlayCatalogContent)
       } catch {
-        result(FlutterError(code: "SUBSCRIPTION_UNAVAILABLE", message: "Apple Music subscription status is unavailable.", details: nil))
+        result(
+          FlutterError(
+            code: "SUBSCRIPTION_UNAVAILABLE", message: "Apple Music subscription status is unavailable.", details: nil))
       }
     case "play":
       guard MusicAuthorization.currentStatus == .authorized,
-            let arguments = call.arguments as? [String: Any],
-            let songID = arguments["id"] as? String,
-            !songID.isEmpty,
-            songID.count <= 128 else {
-        result(FlutterError(code: "INVALID_OR_UNAUTHORIZED", message: "A granted MusicKit session and song id are required.", details: nil))
+        let arguments = call.arguments as? [String: Any],
+        let songID = arguments["id"] as? String,
+        !songID.isEmpty,
+        songID.count <= 128
+      else {
+        result(
+          FlutterError(
+            code: "INVALID_OR_UNAUTHORIZED", message: "A granted MusicKit session and song id are required.",
+            details: nil))
         return
       }
       do {
         let subscription = try await MusicSubscription.current
         guard subscription.canPlayCatalogContent else {
-          result(FlutterError(code: "SUBSCRIPTION_REQUIRED", message: "An Apple Music subscription is required for catalog playback.", details: nil))
+          result(
+            FlutterError(
+              code: "SUBSCRIPTION_REQUIRED", message: "An Apple Music subscription is required for catalog playback.",
+              details: nil))
           return
         }
         let request = MusicCatalogResourceRequest<Song>(
@@ -292,7 +306,9 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
         )
         let response = try await request.response()
         guard let song = response.items.first else {
-          result(FlutterError(code: "SONG_NOT_FOUND", message: "The selected Apple Music item is no longer available.", details: nil))
+          result(
+            FlutterError(
+              code: "SONG_NOT_FOUND", message: "The selected Apple Music item is no longer available.", details: nil))
           return
         }
         let player = ApplicationMusicPlayer.shared
@@ -300,7 +316,8 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
         try await player.play()
         result(nil)
       } catch {
-        result(FlutterError(code: "PLAYBACK_UNAVAILABLE", message: "Apple Music could not start playback.", details: nil))
+        result(
+          FlutterError(code: "PLAYBACK_UNAVAILABLE", message: "Apple Music could not start playback.", details: nil))
       }
     case "stop":
       ApplicationMusicPlayer.shared.stop()

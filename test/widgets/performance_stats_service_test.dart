@@ -43,6 +43,9 @@ class _PropertyPlayer implements Player {
   bool get providesNativeStats => false;
 
   @override
+  String get playerType => 'mpv';
+
+  @override
   Future<String?> getProperty(String name) async => properties[name];
 
   @override
@@ -60,6 +63,9 @@ class _NativeStatsPlayer extends _PropertyPlayer {
 
   @override
   bool get providesNativeStats => true;
+
+  @override
+  String get playerType => 'exoplayer';
 
   @override
   Future<Map<String, dynamic>> getStats() async => stats;

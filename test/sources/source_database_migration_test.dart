@@ -44,19 +44,12 @@ class _Version8Database extends SourceDatabase {
   );
 }
 
-class _Version9Database extends SourceDatabase {
-  _Version9Database(super.executor);
-
-  @override
-  int get schemaVersion => 9;
-}
-
 void main() {
   test('schema 9 upgrade indexes identified titles without changing entries or progress', () async {
     final directory = await Directory.systemTemp.createTemp('plezy-schema9-');
     addTearDown(() => directory.delete(recursive: true));
     final file = File('${directory.path}/publications.sqlite');
-    final old = _Version9Database(NativeDatabase(file));
+    final old = SourceDatabase(NativeDatabase(file));
     final oldRepository = SourceRepository(old);
     const movie = SourceEntry(
       sourceId: 'nas',
@@ -77,6 +70,18 @@ void main() {
         positionMs: 42000,
       ),
     );
+    for (final table in [
+      'canonical_cards',
+      'canonical_aliases',
+      'canonical_copies',
+      'canonical_redirects',
+      'remote_stream_state',
+      'remote_preparation_claims',
+      'remote_deleted_profiles',
+    ]) {
+      await old.customStatement('DROP TABLE $table');
+    }
+    await old.customStatement('PRAGMA user_version=9');
     await old.close();
     final database = SourceDatabase(NativeDatabase(file));
     addTearDown(database.close);

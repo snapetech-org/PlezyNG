@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fix Apple native configuration to use Boost headers from CMake's extracted source root.
+- Install GStreamer development packages for Linux native CI and set Git identity in codegen test clones.
 - Fix Tizen subtitle PCM capture compilation by importing the base64 decoder.
 - Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.

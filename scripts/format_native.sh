@@ -186,6 +186,7 @@ append_native_files() {
       ios/Flutter/*|macos/Flutter/*|tvos/Flutter/*) continue ;;
       linux/flutter/*|windows/flutter/*) continue ;;
       tvos/Runner/Plugins/*) continue ;;
+      shared/visualization/third_party/*) continue ;;
       */GeneratedPluginRegistrant.*|*/generated_plugin_registrant.*) continue ;;
     esac
 

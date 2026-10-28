@@ -358,7 +358,7 @@ class PerformanceStats {
           if (synthesisRatio != null) '${synthesisRatio.toStringAsFixed(2)} synth/source',
           if (latencyLabel != null && latency! > 0) '$latencyLabel ms',
           if (neuralGpuProvider != null && neuralGpuProvider!.isNotEmpty) 'Compute $neuralGpuProvider',
-          if (neuralPowerMode != null) neuralPowerMode,
+          ?neuralPowerMode,
           if (sceneCutBypasses != null && sceneCutBypasses > 0)
             '$sceneCutBypasses ${t.performanceOverlay.sceneCutBypasses}',
           if (deadlineMisses != null && deadlineMisses > 0) '$deadlineMisses ${t.performanceOverlay.deadlineMisses}',

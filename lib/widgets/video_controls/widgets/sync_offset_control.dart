@@ -6,7 +6,7 @@ import 'package:plezy/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../focus/focusable_slider.dart';
-import '../../../i18n/strings.g.dart';
+import '../../../i18n/presentation_formats.dart';
 import '../../../focus/focusable_wrapper.dart';
 import '../../../mpv/mpv.dart';
 import '../../../services/player_sync_offsets.dart';
@@ -100,16 +100,14 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
         widget.propertyName != oldWidget.propertyName ||
         widget.contentIdentity != oldWidget.contentIdentity;
     final valuesChanged =
-        widget.initialOffset != oldWidget.initialOffset ||
-        widget.initialSubtitleRate != oldWidget.initialSubtitleRate;
+        widget.initialOffset != oldWidget.initialOffset || widget.initialSubtitleRate != oldWidget.initialSubtitleRate;
     if (bindingChanged || valuesChanged) {
       final offsetMatchesCurrentIntent = widget.initialOffset == _currentOffset.round();
       final offsetIsUnchanged = widget.initialOffset == oldWidget.initialOffset;
       final rateMatchesCurrentIntent = (widget.initialSubtitleRate - _currentSubtitleRate).abs() <= 0.001;
       final rateIsUnchanged = widget.initialSubtitleRate == oldWidget.initialSubtitleRate;
       final valuesMatchCurrentIntent =
-          (offsetMatchesCurrentIntent || offsetIsUnchanged) &&
-          (rateMatchesCurrentIntent || rateIsUnchanged);
+          (offsetMatchesCurrentIntent || offsetIsUnchanged) && (rateMatchesCurrentIntent || rateIsUnchanged);
       ++_writeGeneration;
       ++_bindingGeneration;
       _currentOffset = widget.initialOffset.toDouble();
@@ -234,7 +232,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
             }
             final offsetMs = (seconds * 1000).round();
             if (offsetMs < _absoluteMin || offsetMs > _absoluteMax) {
-              throw RangeError.range(offsetMs, _absoluteMin, _absoluteMax, 'subtitleOffsetMs');
+              throw RangeError.range(offsetMs, _absoluteMin.toInt(), _absoluteMax.toInt(), 'subtitleOffsetMs');
             }
 
             PlayerSyncOffsets.of(targetPlayer).recordApplied(propertyName, offsetMs);
@@ -280,9 +278,6 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
     }());
   }
 
-
-  String _subtitleDriftText(String key) => t['videoSettings.$key'] as String;
-
   bool get _canUseSubtitleDriftCorrection =>
       widget.player.supportsSubtitleStepSync &&
       widget.propertyName == PlayerSyncOffsets.subtitleProperty &&
@@ -323,15 +318,15 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
       await _rollbackSubtitlePreview();
     }
 
-    TextFormField numberField(TextEditingController controller, String labelKey, void Function(void Function()) update) {
+    TextFormField numberField(TextEditingController controller, String label, void Function(void Function()) update) {
       return TextFormField(
         controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         textInputAction: TextInputAction.next,
-        decoration: InputDecoration(labelText: _subtitleDriftText(labelKey), suffixText: 's'),
+        decoration: InputDecoration(labelText: label, suffixText: 's'),
         validator: (value) {
           final parsed = double.tryParse(value?.trim() ?? '');
-          if (parsed == null || !parsed.isFinite || parsed < 0) return t.validationErrorEnterNumber;
+          if (parsed == null || !parsed.isFinite || parsed < 0) return t.settings.validationErrorEnterNumber;
           return null;
         },
         onChanged: (_) {
@@ -355,7 +350,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
           playbackTime2Seconds: double.parse(playbackTime2.text.trim()),
         );
       } catch (_) {
-        update(() => failureMessage = _subtitleDriftText('subtitleDriftInvalidAnchors'));
+        update(() => failureMessage = t.videoSettings.subtitleDriftInvalidAnchors);
         return null;
       }
     }
@@ -380,7 +375,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
             updateDialog(() {
               previewing = false;
               if (!succeeded) {
-                failureMessage = _subtitleDriftText('subtitleDriftPreviewFailed');
+                failureMessage = t.videoSettings.subtitleDriftPreviewFailed;
               }
             });
           }
@@ -391,7 +386,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
           }
 
           return AlertDialog(
-            title: Text(_subtitleDriftText('subtitleDriftCalibration')),
+            title: Text(t.videoSettings.subtitleDriftCalibration),
             content: SingleChildScrollView(
               child: Form(
                 key: formKey,
@@ -399,39 +394,36 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(_subtitleDriftText('subtitleDriftCalibrationHelp')),
+                    Text(t.videoSettings.subtitleDriftCalibrationHelp),
                     const SizedBox(height: 12),
-                    numberField(subtitleTime1, 'subtitleCueTimeAnchor1', updateDialog),
-                    numberField(playbackTime1, 'subtitlePlaybackTimeAnchor1', updateDialog),
+                    numberField(subtitleTime1, t.videoSettings.subtitleCueTimeAnchor1, updateDialog),
+                    numberField(playbackTime1, t.videoSettings.subtitlePlaybackTimeAnchor1, updateDialog),
                     Align(
                       alignment: AlignmentDirectional.centerEnd,
                       child: TextButton.icon(
                         onPressed: previewing ? null : () => capturePlaybackTime(playbackTime1),
-                        icon: const Icon(Symbols.my_location_rounded),
-                        label: Text(_subtitleDriftText('subtitleUsePlaybackTime')),
+                        icon: const AppIcon(Symbols.my_location_rounded),
+                        label: Text(t.videoSettings.subtitleUsePlaybackTime),
                       ),
                     ),
                     const Divider(),
-                    numberField(subtitleTime2, 'subtitleCueTimeAnchor2', updateDialog),
-                    numberField(playbackTime2, 'subtitlePlaybackTimeAnchor2', updateDialog),
+                    numberField(subtitleTime2, t.videoSettings.subtitleCueTimeAnchor2, updateDialog),
+                    numberField(playbackTime2, t.videoSettings.subtitlePlaybackTimeAnchor2, updateDialog),
                     Align(
                       alignment: AlignmentDirectional.centerEnd,
                       child: TextButton.icon(
                         onPressed: previewing ? null : () => capturePlaybackTime(playbackTime2),
-                        icon: const Icon(Symbols.my_location_rounded),
-                        label: Text(_subtitleDriftText('subtitleUsePlaybackTime')),
+                        icon: const AppIcon(Symbols.my_location_rounded),
+                        label: Text(t.videoSettings.subtitleUsePlaybackTime),
                       ),
                     ),
                     if (previewApplied) ...[
                       const SizedBox(height: 8),
-                      Text(_subtitleDriftText('subtitleDriftPreviewActive')),
+                      Text(t.videoSettings.subtitleDriftPreviewActive),
                     ],
                     if (failureMessage != null) ...[
                       const SizedBox(height: 8),
-                      Text(
-                        failureMessage!,
-                        style: TextStyle(color: Theme.of(context).colorScheme.error),
-                      ),
+                      Text(failureMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
                     ],
                   ],
                 ),
@@ -442,14 +434,8 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
                 onPressed: previewing ? null : () => Navigator.of(dialogContext).pop(),
                 child: Text(t.common.cancel),
               ),
-              TextButton(
-                onPressed: previewing ? null : preview,
-                child: Text(_subtitleDriftText('subtitleDriftPreview')),
-              ),
-              TextButton(
-                onPressed: previewing ? null : submit,
-                child: Text(t.common.save),
-              ),
+              TextButton(onPressed: previewing ? null : preview, child: Text(t.videoSettings.subtitleDriftPreview)),
+              TextButton(onPressed: previewing ? null : submit, child: Text(t.common.save)),
             ],
           );
         },
@@ -545,10 +531,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
           offsets.recordApplied(propertyName, (appliedDelay * 1000).round());
         } catch (_) {
           try {
-            await targetPlayer.setProperty(
-              PlayerSyncOffsets.subtitleRateProperty,
-              rollbackRate.toStringAsFixed(6),
-            );
+            await targetPlayer.setProperty(PlayerSyncOffsets.subtitleRateProperty, rollbackRate.toStringAsFixed(6));
             await targetPlayer.setProperty(propertyName, (rollbackOffset / 1000.0).toString());
             offsets.recordSubtitleRate(rollbackRate);
             offsets.recordApplied(propertyName, rollbackOffset);
@@ -676,10 +659,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
           _confirmedSubtitleRate = appliedRate;
         } catch (_) {
           try {
-            await targetPlayer.setProperty(
-              PlayerSyncOffsets.subtitleRateProperty,
-              rollbackRate.toStringAsFixed(6),
-            );
+            await targetPlayer.setProperty(PlayerSyncOffsets.subtitleRateProperty, rollbackRate.toStringAsFixed(6));
             await targetPlayer.setProperty(propertyName, (rollbackOffset / 1000.0).toString());
             offsets.recordSubtitleRate(rollbackRate);
             offsets.recordApplied(propertyName, rollbackOffset);
@@ -733,7 +713,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
   }
 
   Widget _buildSubtitleDriftButton() {
-    final label = _subtitleDriftText('subtitleDriftCalibration');
+    final label = t.videoSettings.subtitleDriftCalibration;
     final value = formatPercent(_currentSubtitleRate);
     return FocusableWrapper(
       onSelect: _openSubtitleDriftCalibration,
@@ -765,7 +745,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
   }
 
   Widget _buildUndoSubtitleDriftButton() {
-    final label = _subtitleDriftText('subtitleDriftUndo');
+    final label = t.videoSettings.subtitleDriftUndo;
     return FocusableWrapper(
       onSelect: _undoLastSubtitleCalibration,
       borderRadius: 8,
@@ -795,7 +775,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
   }
 
   Widget _buildSubtitleStepButton({required bool previous}) {
-    final label = previous ? t.shortcuts.subtitleDelayIncrease : t.shortcuts.subtitleDelayDecrease;
+    final label = previous ? t.videoSettings.subtitlePreviousCue : t.videoSettings.subtitleNextCue;
     return FocusableWrapper(
       onSelect: () => _stepSubtitleToNow(previous: previous),
       borderRadius: 18,
@@ -928,7 +908,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
               decoration: InputDecoration(
                 labelText: _syncTitle,
                 hintText: formatSyncOffset(_currentOffset),
-                helperText: t.validationErrorDuration(
+                helperText: t.settings.validationErrorDuration(
                   min: ScopedPlayerPrefs.minimumSyncOffsetMs,
                   max: ScopedPlayerPrefs.maximumSyncOffsetMs,
                   unit: 'ms',
@@ -937,10 +917,9 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
               ),
               validator: (value) {
                 final parsed = int.tryParse(value?.trim() ?? '');
-                if (parsed == null) return t.validationErrorEnterNumber;
-                if (parsed < ScopedPlayerPrefs.minimumSyncOffsetMs ||
-                    parsed > ScopedPlayerPrefs.maximumSyncOffsetMs) {
-                  return t.validationErrorDuration(
+                if (parsed == null) return t.settings.validationErrorEnterNumber;
+                if (parsed < ScopedPlayerPrefs.minimumSyncOffsetMs || parsed > ScopedPlayerPrefs.maximumSyncOffsetMs) {
+                  return t.settings.validationErrorDuration(
                     min: ScopedPlayerPrefs.minimumSyncOffsetMs,
                     max: ScopedPlayerPrefs.maximumSyncOffsetMs,
                     unit: 'ms',
@@ -952,10 +931,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
             ),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(t.common.cancel),
-            ),
+            TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(t.common.cancel)),
             TextButton(onPressed: submit, child: Text(t.common.save)),
           ],
         );
@@ -985,11 +961,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
             alignment: Alignment.center,
             child: Text(
               formatSyncOffset(_currentOffset),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: .bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: .bold, color: Theme.of(context).colorScheme.primary),
               textAlign: TextAlign.center,
             ),
           ),

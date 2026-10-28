@@ -18,7 +18,9 @@ enum MotionClarityPreset {
   bool get interpolationEnabled => this != MotionClarityPreset.original;
 
   MotionTemporalKernel get defaultKernel => switch (this) {
-    MotionClarityPreset.original || MotionClarityPreset.cinema || MotionClarityPreset.oled => MotionTemporalKernel.oversample,
+    MotionClarityPreset.original ||
+    MotionClarityPreset.cinema ||
+    MotionClarityPreset.oled => MotionTemporalKernel.oversample,
     MotionClarityPreset.balanced => MotionTemporalKernel.linear,
     MotionClarityPreset.smooth || MotionClarityPreset.sports => MotionTemporalKernel.gaussian,
     MotionClarityPreset.animation => MotionTemporalKernel.mitchell,

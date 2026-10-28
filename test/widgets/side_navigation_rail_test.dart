@@ -824,7 +824,8 @@ void main() {
     sideNavKey.currentState!.focusActiveItem();
     await tester.pumpAndSettle();
 
-    // Home -> Libraries -> Search -> Settings. Downloads is hidden on Apple TV.
+    // Home -> Libraries -> Files -> Search -> Settings. Downloads is hidden on Apple TV.
+    await _press(tester, LogicalKeyboardKey.arrowDown);
     await _press(tester, LogicalKeyboardKey.arrowDown);
     await _press(tester, LogicalKeyboardKey.arrowDown);
     await _press(tester, LogicalKeyboardKey.arrowDown);
@@ -900,8 +901,8 @@ void main() {
     sideNavKey.currentState!.focusActiveItem();
     await tester.pumpAndSettle();
 
-    // Home -> Libraries -> Server A header -> visible A -> Server B header -> visible B -> Hidden Libraries.
-    for (var i = 0; i < 6; i++) {
+    // Home -> Libraries -> Server A header -> visible A -> Server B header -> visible B -> Files -> Hidden Libraries.
+    for (var i = 0; i < 7; i++) {
       await _press(tester, LogicalKeyboardKey.arrowDown);
     }
     await _press(tester, LogicalKeyboardKey.enter);

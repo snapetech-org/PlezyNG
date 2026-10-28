@@ -9,13 +9,12 @@ import '../models/livetv_capture_buffer.dart';
 class IptvLiveTvPlaybackSession implements LiveTvPlaybackSession, LiveTvTimeshiftSession {
   IptvLiveTvPlaybackSession({
     required String initialUrl,
-    required Future<String?> Function() refreshUrl,
+    required this._refreshUrl,
     this.streamHeaders = const {},
     this.localTimeShiftEnabled = true,
     this.isCatchup = false,
     this.programInfo = LiveProgramInfo.none,
-  }) : _url = initialUrl,
-       _refreshUrl = refreshUrl;
+  }) : _url = initialUrl;
 
   String? _url;
   final Future<String?> Function() _refreshUrl;
@@ -66,7 +65,9 @@ class IptvLiveTvPlaybackSession implements LiveTvPlaybackSession, LiveTvTimeshif
     final epoch = targetEpoch == null ? window?.endEpoch : window?.target(targetEpoch);
     if (epoch == null || window == null) return null;
     final positionSeconds = epoch - buffer.startedAt;
-    if (!positionSeconds.isFinite || positionSeconds < buffer.seekStartSeconds || positionSeconds > buffer.seekEndSeconds) {
+    if (!positionSeconds.isFinite ||
+        positionSeconds < buffer.seekStartSeconds ||
+        positionSeconds > buffer.seekEndSeconds) {
       return null;
     }
     return LiveTvSeekRequest(

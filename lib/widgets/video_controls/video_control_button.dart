@@ -102,7 +102,7 @@ class VideoControlButton extends StatelessWidget {
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
-                        label!,
+                        label,
                         maxLines: 1,
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
@@ -126,7 +126,9 @@ class VideoControlButton extends StatelessWidget {
             child: SizedBox(
               width: 40,
               height: 40,
-              child: Center(child: AppIcon(icon, fill: 1, color: iconColor, size: iconSize)),
+              child: Center(
+                child: AppIcon(icon, fill: 1, color: iconColor, size: iconSize),
+              ),
             ),
           ),
         );

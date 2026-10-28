@@ -11,14 +11,20 @@ import '../../../utils/serial_future_queue.dart';
 import '../../models.dart';
 import '../audio_rendering_mode.dart';
 import '../player_base.dart';
+import '../subtitle_pcm_capture_source.dart';
 import 'webos_media_proxy.dart';
 
 /// Samsung's native media plane. The existing app supplies browsing, focus,
 /// transport controls and watch progress; no browser-hosted UI is involved.
-class PlayerTizen extends PlayerBase {
+class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, NativeVisualizationAudioSource {
   PlayerTizen({this.audioOnly = false}) : super(listenToNativeEvents: false);
+  static const _visualizer = MethodChannel('com.plezy/mpv_audio_player');
 
   final bool audioOnly;
+  bool _visualizerBound = false;
+  @override
+  bool get nativeVisualizationAudioReady =>
+      audioOnly && _visualizerBound && !disposed && !_closing && (_controller?.value.isInitialized ?? false);
   final ValueNotifier<int> surfaceRevision = ValueNotifier(0);
   final ValueNotifier<String> caption = ValueNotifier('');
   final SerialFutureQueue _sources = SerialFutureQueue();
@@ -29,6 +35,7 @@ class PlayerTizen extends PlayerBase {
   List<SubtitleTrack> _externalSubtitles = const [];
   samsung.ClosedCaptionFile? _captions;
   int _generation = 0;
+  bool _isLivePlayback = false;
   int _subtitleGeneration = 0;
   int? _sourceId;
   static int _nextSourceId = 0;
@@ -50,11 +57,43 @@ class PlayerTizen extends PlayerBase {
   @override
   String get playerType => 'tizen';
   @override
+  int get mediaSessionGeneration => _generation;
+  @override
+  bool get isLivePlayback => _isLivePlayback;
+  @override
   bool get supportsSecondarySubtitles => false;
   @override
   Set<String> get supportedLocalSubtitleExtensions => audioOnly ? const <String>{} : const {'srt', 'vtt'};
   @override
   bool get needsDecoderRefreshAfterDisplaySwitch => false;
+
+  @override
+  String? get subtitlePcmAudioTrackId => state.track.audio?.id;
+
+  @override
+  Future<bool> subtitlePcmCaptureAvailable() async {
+    final controller = _controller;
+    if (audioOnly || isLivePlayback || controller == null || !_loaded || _failed) return false;
+    try {
+      return await controller.subtitlePcmCaptureAvailable();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
+    final controller = _controller;
+    if (audioOnly || isLivePlayback || controller == null || !_loaded || _failed) return false;
+    return controller.setSubtitlePcmCaptureEnabled(enabled);
+  }
+
+  @override
+  Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
+    final controller = _controller;
+    if (audioOnly || isLivePlayback || controller == null || !_loaded || _failed) return const [];
+    return controller.drainSubtitlePcmCapture();
+  }
 
   bool _current(int generation) => !disposed && !_closing && generation == _generation;
 
@@ -93,6 +132,7 @@ class PlayerTizen extends PlayerBase {
   }) {
     if (disposed || _closing) return Future.value();
     final generation = ++_generation;
+    _isLivePlayback = isLive;
     _nextMedia = null;
     return _sources.run(() async {
       if (!_current(generation)) return;
@@ -120,9 +160,15 @@ class PlayerTizen extends PlayerBase {
           // Samsung only forwards Cookie/User-Agent. The loopback bridge
           // forwards authenticated byte ranges and same-origin HLS children.
           final local = proxy.register(uri, headers: media.headers);
-          controller = samsung.VideoPlayerController.network(local.toString());
+          controller = samsung.VideoPlayerController.network(
+            local.toString(),
+            playerOptions: {'plezyAudioOnly': audioOnly},
+          );
         } else if (uri.scheme == 'file' || (uri.scheme.isEmpty && media.uri.startsWith('/'))) {
-          controller = samsung.VideoPlayerController.file(uri.scheme == 'file' ? File.fromUri(uri) : File(media.uri));
+          controller = samsung.VideoPlayerController.file(
+            uri.scheme == 'file' ? File.fromUri(uri) : File(media.uri),
+            playerOptions: {'plezyAudioOnly': audioOnly},
+          );
         } else {
           throw const FormatException('Tizen playback requires HTTP(S) or an app-local file');
         }
@@ -130,6 +176,8 @@ class PlayerTizen extends PlayerBase {
         controller.addListener(() => _onValue(controller, generation, sourceId, isLive));
         surfaceRevision.value++;
         await controller.initialize().timeout(const Duration(seconds: 45));
+        if (!_current(generation)) return;
+        if (audioOnly) await _bindVisualization(controller.playerId, true);
         if (!_current(generation)) return;
         await _loadTracks(controller, generation);
         if (!_current(generation)) return;
@@ -233,6 +281,7 @@ class PlayerTizen extends PlayerBase {
     final controller = _controller;
     final proxy = _proxy;
     _controller = null;
+    _visualizerBound = false;
     _proxy = null;
     _subtitleGeneration++;
     _captions = null;
@@ -240,9 +289,24 @@ class PlayerTizen extends PlayerBase {
     caption.value = '';
     surfaceRevision.value++;
     try {
+      if (audioOnly && controller != null) await _bindVisualization(controller.playerId, false);
       await controller?.dispose();
     } finally {
       await proxy?.close();
+    }
+  }
+
+  Future<void> _bindVisualization(int playerId, bool bind) async {
+    if (playerId < 0) return;
+    try {
+      await _visualizer.invokeMethod<void>(bind ? 'visualizerBindPlayer' : 'visualizerUnbindPlayer', {
+        'playerId': playerId,
+      });
+      if (bind) _visualizerBound = true;
+    } on MissingPluginException {
+      // Optional renderer support cannot prevent ordinary music playback.
+    } on PlatformException {
+      // The visualizer's capability/status channel exposes native failures.
     }
   }
 
@@ -262,6 +326,7 @@ class PlayerTizen extends PlayerBase {
   Future<void> stop() {
     if (disposed || _closing) return Future.value();
     ++_generation;
+    _isLivePlayback = false;
     _nextMedia = null;
     return _sources.run(() async {
       await _releaseSource();
@@ -480,6 +545,7 @@ class PlayerTizen extends PlayerBase {
 
     if (args.length < 3 || args[2] == 'select') await selectSubtitleTrack(track);
   }
+
   @override
   Future<void> configureSubtitleFonts() async {}
   @override

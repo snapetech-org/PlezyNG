@@ -9,11 +9,12 @@
 #include <future>
 #include <thread>
 
+#include "steam_input.h"
 #include "steam_runtime.h"
 extern "C" {
+#include "hid/provider.h"
 #include "protobuf/discovery.pb-c.h"
 #include "session/frame_tracker.h"
-#include "hid/provider.h"
 }
 using namespace plezy::steam;
 namespace plezy::steam {
@@ -36,6 +37,23 @@ struct RuntimeTest {
     return taken;
   }
   static void clear(Runtime& runtime) { runtime.clearFrames(); }
+  static int awaitSession(Runtime& runtime, int timeoutMs) {
+    return runtime.awaitSession(std::chrono::milliseconds(timeoutMs), std::chrono::milliseconds(timeoutMs));
+  }
+  static void connected(Runtime& runtime) {
+    {
+      std::lock_guard<std::mutex> lock(runtime.mutex_);
+      runtime.connected_ = true;
+    }
+    runtime.condition_.notify_all();
+  }
+  static void disconnected(Runtime& runtime) {
+    {
+      std::lock_guard<std::mutex> lock(runtime.mutex_);
+      runtime.disconnected_ = true;
+    }
+    runtime.condition_.notify_all();
+  }
 };
 }  // namespace plezy::steam
 struct NullSink : Sink {
@@ -85,7 +103,7 @@ void frameOwnership() {
   assert(metrics.epoch != 0 && metrics.sampledAtUs != 0);
   assert(metrics.receivedFrames == 3 && metrics.presentedFrames == 2);
   assert(metrics.completedFrames == 2 && metrics.resetFrames == 1 && metrics.droppedFrames == 0);
-  assert(metrics.videoBytes == 12); // Duplicate completions must not inflate feedback.
+  assert(metrics.videoBytes == 12);  // Duplicate completions must not inflate feedback.
   RuntimeTest::target(runtime, 30000, 1001, 0xffffffff, 12000000);
   auto target = runtime.metrics();
   assert(target.fpsNumerator == 30000 && target.fpsDenominator == 1001 && target.fpsReasons == 0x5f);
@@ -97,17 +115,57 @@ void frameOwnership() {
   Runtime second;
   assert(second.metrics().epoch != metrics.epoch);
 }
+void sessionStartup() {
+  Runtime missingConnection;
+  assert(RuntimeTest::awaitSession(missingConnection, 1) == -3);
+  Runtime missingVideo;
+  RuntimeTest::connected(missingVideo);
+  missingVideo.frameComplete(1, true);  // An unknown ticket is not first-frame evidence.
+  assert(RuntimeTest::awaitSession(missingVideo, 1) == -4);
+  Runtime rejected;
+  RuntimeTest::disconnected(rejected);
+  assert(RuntimeTest::awaitSession(rejected, 1) == -1);
+  // Cancellation must wake a waiter even if it races entry into either wait.
+  for (int i = 0; i < 32; ++i) {
+    Runtime cancelled;
+    if (i & 1) RuntimeTest::connected(cancelled);
+    auto waiter = std::async(std::launch::async, [&] { return RuntimeTest::awaitSession(cancelled, 1000); });
+    cancelled.cancel();
+    assert(waiter.wait_for(std::chrono::milliseconds(250)) == std::future_status::ready);
+    assert(waiter.get() == -2);
+  }
+  Runtime stream;
+  auto sink = std::make_shared<CompletingSink>();
+  sink->runtime = &stream;
+  sink->immediate = true;
+  RuntimeTest::renderer(stream, sink);
+  auto* tracker = IHS_FrameTrackerCreate(321);
+  assert(tracker && IHS_FrameTrackerOpenEpoch(tracker, 1));
+  IHS_FrameReceive receive{};
+  IHS_FrameTicket* ticket = nullptr;
+  assert(IHS_FrameTrackerBegin(tracker, 1, 1, &receive, &ticket) == IHS_FrameBeginOK);
+  assert(RuntimeTest::submit(stream, ticket));
+  IHS_FrameTicketRelease(ticket);
+  RuntimeTest::connected(stream);
+  auto waiter = std::async(std::launch::async, [&] { return RuntimeTest::awaitSession(stream, 1); });
+  assert(waiter.wait_for(std::chrono::milliseconds(20)) == std::future_status::timeout);
+  RuntimeTest::disconnected(stream);
+  assert(waiter.wait_for(std::chrono::milliseconds(250)) == std::future_status::ready);
+  assert(waiter.get() == 0);
+  IHS_FrameTrackerClose(tracker);
+}
 uint32_t le(const uint8_t* p) {
   return uint32_t(p[0]) | uint32_t(p[1]) << 8 | uint32_t(p[2]) << 16 | uint32_t(p[3]) << 24;
 }
 int main() {
   frameOwnership();
+  sessionStartup();
   {
     Runtime controllers;
     std::array<int16_t, 6> axes{12000, -4000, 0, 0, 32767, 0};
     controllers.pad(axes, 0xffffffff);
     controllers.padSeat(3, {}, 4);
-    controllers.padSeat(4, axes, 8); // Rejected without writing outside the array.
+    controllers.padSeat(4, axes, 8);  // Rejected without writing outside the array.
     assert(RuntimeTest::pad(controllers, 0)->axes == axes);
     assert(RuntimeTest::pad(controllers, 0)->buttons == 0x7fff);
     assert(RuntimeTest::pad(controllers, 1)->buttons == 0);
@@ -130,17 +188,61 @@ int main() {
     }
     assert(makeController(RuntimeTest::pad(controllers, 0), 4) == nullptr);
   }
+  {
+    Runtime r;
+    InputState input(2);
+    input.button(r, 1, "a", true);  // No lease, no input.
+    assert(RuntimeTest::pad(r, 0)->buttons == 0);
+    input.enabled(r, true);
+    input.button(r, 10, "a", true);
+    input.axis(r, 20, "leftStickX", 0.5);
+    input.button(r, 30, "b", true);  // Third device cannot steal a seat.
+    assert(RuntimeTest::pad(r, 0)->buttons == 1 && RuntimeTest::pad(r, 1)->axes[0] == 16383);
+    input.disconnect(r, 10);
+    assert(RuntimeTest::pad(r, 1)->axes[0] == 16383);
+    input.button(r, 30, "b", true);
+    assert(RuntimeTest::pad(r, 0)->buttons == 2);
+    input.enabled(r, false);
+    input.axis(r, 20, "leftStickX", 1);
+    assert(RuntimeTest::pad(r, 0)->buttons == 0 && RuntimeTest::pad(r, 1)->axes[0] == 0);
+  }
   Credentials c{};
+  {
+    Runtime r;
+    InputState input(2);
+    input.enabled(r, true);
+    input.button(r, 10, "b", true);
+    input.button(r, 20, "y", true);
+    input.button(r, 0, "a", true, true);  // Touch shares seat one, never reserves seat three.
+    input.axis(r, 10, "leftStickX", 0.75);
+    input.axis(r, 0, "leftStickX", 0.5, true);
+    assert(RuntimeTest::pad(r, 0)->buttons == 3 && RuntimeTest::pad(r, 1)->buttons == 8);
+    assert(RuntimeTest::pad(r, 0)->axes[0] == 24575);
+    input.releaseAssistance(r);
+    assert(RuntimeTest::pad(r, 0)->buttons == 2 && RuntimeTest::pad(r, 0)->axes[0] == 24575);
+    input.button(r, 0, "a", true, true);
+    input.disconnect(r, 10);
+    assert(RuntimeTest::pad(r, 0)->buttons == 1 && RuntimeTest::pad(r, 1)->buttons == 8);
+    input.button(r, 30, "x", true);
+    assert(RuntimeTest::pad(r, 0)->buttons == 5);
+    input.enabled(r, false);
+    input.button(r, 0, "a", true, true);
+    input.enabled(r, true);
+    assert(RuntimeTest::pad(r, 0)->buttons == 0 && RuntimeTest::pad(r, 1)->buttons == 0);
+  }
   c.device = 123;
   c.user = 456;
   c.key.fill(42);
   Runtime invalid;
-  for (const auto& options : {StreamOptions{0, 1080, 60, 30000}, {1920, 1081, 60, 30000},
-                              {1920, 1080, 120, 30000}, {1920, 1080, 60, 50001},
-                              {1920, 1080, 60, 30000, 0}, {1920, 1080, 60, 30000, 5},
-                              {1920, 1080, 60, 30000, 1, 3}}) {
-    assert(invalid.run({"127.0.0.1", 27036, 1}, c, 620, false, false,
-                       std::make_shared<NullSink>(), options) == -1);
+  for (const auto& options :
+       {StreamOptions{0, 1080, 60, 30000},
+        {1920, 1081, 60, 30000},
+        {1920, 1080, 120, 30000},
+        {1920, 1080, 60, 50001},
+        {1920, 1080, 60, 30000, 0},
+        {1920, 1080, 60, 30000, 5},
+        {1920, 1080, 60, 30000, 1, 3}}) {
+    assert(invalid.run({"127.0.0.1", 27036, 1}, c, 620, false, false, std::make_shared<NullSink>(), options) == -1);
   }
   assert(invalid.pair({"127.0.0.1", 0, 1}, c, "1234") == -1);
   assert(invalid.pair({"127.0.0.1", 27036, 1}, c, "xx12") == -1);
@@ -163,8 +265,9 @@ int main() {
   setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
   Runtime stream;
   auto run = std::async(std::launch::async, [&] {
-    return stream.run({"127.0.0.1", ntohs(addr.sin_port), 9}, c, 620, false, false,
-                      std::make_shared<NullSink>(), {1280, 720, 30, 12000, 4, 6});
+    return stream.run(
+        {"127.0.0.1", ntohs(addr.sin_port), 9}, c, 620, false, false, std::make_shared<NullSink>(),
+        {1280, 720, 30, 12000, 4, 6});
   });
   uint8_t bytes[4096];
   ssize_t length = recv(fd, bytes, sizeof(bytes), 0);

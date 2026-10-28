@@ -97,10 +97,7 @@ class TrackSelectionHelper {
     if (secondaryAction != null) {
       trailing = trailing == null
           ? secondaryAction
-          : Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [trailing!, secondaryAction],
-            );
+          : Row(mainAxisSize: MainAxisSize.min, children: [trailing, secondaryAction]);
     }
 
     Widget tile = FocusableListTile(

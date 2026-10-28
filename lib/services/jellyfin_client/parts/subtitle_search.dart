@@ -131,9 +131,7 @@ mixin _JellyfinSubtitleSearchMethods on _JellyfinClientInternals {
   }) async {
     const allowedFormats = {'srt', 'vtt', 'ass', 'ssa'};
     final normalizedFormat = format.trim().toLowerCase().replaceFirst('.', '');
-    if (bytes.isEmpty ||
-        bytes.length > 20 * 1024 * 1024 ||
-        !allowedFormats.contains(normalizedFormat)) {
+    if (bytes.isEmpty || bytes.length > 20 * 1024 * 1024 || !allowedFormats.contains(normalizedFormat)) {
       throw ArgumentError('Subtitle upload must be a non-empty SRT, VTT, ASS, or SSA file under 20 MiB.');
     }
 

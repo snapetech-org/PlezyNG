@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -27,11 +28,9 @@ final class SubtitleTranslationResult {
 abstract final class SubtitleTranslationService {
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
 
-  static bool get mobilePlatformSupported =>
-      !kIsWeb && !_tvOsBuild && (Platform.isAndroid || Platform.isIOS);
+  static bool get mobilePlatformSupported => !kIsWeb && !_tvOsBuild && (Platform.isAndroid || Platform.isIOS);
 
-  static bool get desktopPlatformSupported =>
-      !kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
+  static bool get desktopPlatformSupported => !kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
 
   static bool get platformSupported => mobilePlatformSupported || desktopPlatformSupported;
 
@@ -65,7 +64,10 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
 
   static String languageLabel(TranslateLanguage language) {
     final name = language.name.replaceAll('_', ' ');
-    return name.split(' ').map((word) => word.isEmpty ? word : '${word[0].toUpperCase()}${word.substring(1)}').join(' ');
+    return name
+        .split(' ')
+        .map((word) => word.isEmpty ? word : '${word[0].toUpperCase()}${word.substring(1)}')
+        .join(' ');
   }
 
   /// Download the two selected mobile translation models ahead of a job so the
@@ -95,8 +97,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
   static String _glossaryPairKey(TranslateLanguage source, TranslateLanguage target) =>
       '${_normalizedLanguageCode(source)}>${_normalizedLanguageCode(target)}';
 
-  static String _normalizedLanguageCode(TranslateLanguage language) =>
-      language.bcpCode.toLowerCase().split('-').first;
+  static String _normalizedLanguageCode(TranslateLanguage language) => language.bcpCode.toLowerCase().split('-').first;
 
   /// Read this profile's local terminology for the selected language pair.
   static String _seriesGlossaryEntryKey(
@@ -141,9 +142,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
         // A malformed override falls back to the safe profile glossary.
       }
     }
-    final saved = SettingsService.instance.read(
-      SettingsService.subtitleTranslationGlossariesForProfile(profileId),
-    );
+    final saved = SettingsService.instance.read(SettingsService.subtitleTranslationGlossariesForProfile(profileId));
     return Map.unmodifiable(saved[_glossaryPairKey(sourceLanguage, targetLanguage)] ?? const {});
   }
 
@@ -208,7 +207,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     if (!mobilePlatformSupported) return false;
     if (Platform.isAndroid) {
       final detector = await TvDetectionService.getInstance();
-      if (detector.isTVDevice || detector.isAutomotive || detector.isAppleTV) return false;
+      if (detector.isTV || detector.isAutomotive || detector.isAppleTV) return false;
     }
     // ML Kit's translation path is limited here to phones/tablets; Android TV,
     // automotive and tvOS are gated off.
@@ -277,7 +276,9 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
         final protected = _protectGlossaryMarkupAware(source.text, normalizedGlossary, source.index);
         protectedInputBytes += utf8.encode(protected.text).length;
         if (protectedInputBytes > SubtitleRetimer.maximumInputBytes) {
-          throw const FormatException('Glossary placeholders expand subtitle input beyond the 5 MiB translation bound.');
+          throw const FormatException(
+            'Glossary placeholders expand subtitle input beyond the 5 MiB translation bound.',
+          );
         }
         final machineText = await _translateMarkupAware(translator, protected.text);
         final translatedText = _restoreGlossary(machineText, protected.markers);
@@ -293,12 +294,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
         if (translatedBytes > SubtitleRetimer.maximumInputBytes) {
           throw const FormatException('Translated subtitles exceed the 5 MiB output bound.');
         }
-        translated.add(SubtitleCue(
-          index: index + 1,
-          startMs: source.startMs,
-          endMs: source.endMs,
-          text: outputText,
-        ));
+        translated.add(SubtitleCue(index: index + 1, startMs: source.startMs, endMs: source.endMs, text: outputText));
         if ((index + 1) % 5 == 0 || index + 1 == cues.length) onProgress?.call(index + 1, cues.length);
       }
     } finally {
@@ -314,11 +310,10 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
 
   static Future<bool> _isArgosRuntimeAvailable() async {
     try {
-      final result = await Process.run(
-        _pythonExecutable,
-        const ['-c', 'import argostranslate.translate'],
-        runInShell: false,
-      ).timeout(const Duration(seconds: 8));
+      final result = await Process.run(_pythonExecutable, const [
+        '-c',
+        'import argostranslate.translate',
+      ], runInShell: false).timeout(const Duration(seconds: 8));
       return result.exitCode == 0;
     } catch (_) {
       return false;
@@ -452,17 +447,22 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     try {
       process.stdin.add(utf8.encode(jsonEncode(text)));
       await process.stdin.close();
-      final exitCode = await process.exitCode.timeout(const Duration(minutes: 30), onTimeout: () {
-        process.kill();
-        throw TimeoutException('Local subtitle translation exceeded 30 minutes.');
-      });
+      final exitCode = await process.exitCode.timeout(
+        const Duration(minutes: 30),
+        onTimeout: () {
+          process.kill();
+          throw TimeoutException('Local subtitle translation exceeded 30 minutes.');
+        },
+      );
       processFinished = true;
       final output = await stdoutFuture;
       final error = await stderrFuture;
       if (exitCode != 0) {
         final lines = error.trim().split('\n').where((line) => line.trim().isNotEmpty).toList();
         final lastLine = lines.isEmpty ? null : lines.last;
-        throw StateError(lastLine == null ? 'Argos Translate exited with code $exitCode.' : 'Argos Translate: $lastLine');
+        throw StateError(
+          lastLine == null ? 'Argos Translate exited with code $exitCode.' : 'Argos Translate: $lastLine',
+        );
       }
       if (output.length > 12 * 1024 * 1024) {
         throw const FormatException('Local translation output exceeds the 12 MiB processing bound.');
@@ -477,17 +477,16 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     }
   }
 
-  static List<_GlossaryTermCheck> _buildGlossaryChecks(Map<String, String> glossary) =>
-      List.unmodifiable(glossary.entries.map((entry) {
-        RegExp pattern(String value) => RegExp(
-              r'(?<![\p{L}\p{N}\p{M}\p{Pc}])' +
-                  RegExp.escape(value) +
-                  r'(?![\p{L}\p{N}\p{M}\p{Pc}])',
-              caseSensitive: false,
-              unicode: true,
-            );
-        return _GlossaryTermCheck(entry.key, entry.value, pattern(entry.key), pattern(entry.value));
-      }));
+  static List<_GlossaryTermCheck> _buildGlossaryChecks(Map<String, String> glossary) => List.unmodifiable(
+    glossary.entries.map((entry) {
+      RegExp pattern(String value) => RegExp(
+        r'(?<![\p{L}\p{N}\p{M}\p{Pc}])' + RegExp.escape(value) + r'(?![\p{L}\p{N}\p{M}\p{Pc}])',
+        caseSensitive: false,
+        unicode: true,
+      );
+      return _GlossaryTermCheck(entry.key, entry.value, pattern(entry.key), pattern(entry.value));
+    }),
+  );
 
   static void _collectGlossaryWarnings(
     SubtitleCue source,
@@ -499,7 +498,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       if (warnings.length >= 100) return;
       if (check.sourcePattern.hasMatch(source.text) && !check.targetPattern.hasMatch(translatedText)) {
         warnings.add(
-          'Cue ' + source.index.toString() + ': “' + check.source + '” may be missing its glossary translation “' + check.target + '”.',
+          'Cue ${source.index}: “${check.source}” may be missing its glossary translation “${check.target}”.',
         );
       }
     }
@@ -526,7 +525,9 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
           source.contains('>') ||
           target.contains('<') ||
           target.contains('>')) {
-        throw const FormatException('Glossary terms and translations must be single-line plain text of at most 128 characters.');
+        throw const FormatException(
+          'Glossary terms and translations must be single-line plain text of at most 128 characters.',
+        );
       }
       if (!normalizedTerms.add(source.toLowerCase())) {
         throw const FormatException('Glossary source terms must be unique without regard to case.');
@@ -536,11 +537,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     return Map.unmodifiable(output);
   }
 
-  static _ProtectedGlossary _protectGlossaryMarkupAware(
-    String source,
-    Map<String, String> glossary,
-    int cueIndex,
-  ) {
+  static _ProtectedGlossary _protectGlossaryMarkupAware(String source, Map<String, String> glossary, int cueIndex) {
     if (glossary.isEmpty) return _ProtectedGlossary(source, const {});
     final entries = glossary.entries.toList()
       ..sort((left, right) => right.key.runes.length.compareTo(left.key.runes.length));
@@ -582,7 +579,9 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
   static String _restoreGlossary(String text, Map<String, String> markers) {
     for (final marker in markers.entries) {
       if (marker.key.allMatches(text).length != 1) {
-        throw const FormatException('Translation changed a protected glossary term; the source subtitle was left intact.');
+        throw const FormatException(
+          'Translation changed a protected glossary term; the source subtitle was left intact.',
+        );
       }
       text = text.replaceFirst(marker.key, marker.value);
     }
@@ -614,7 +613,6 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     return output.toString();
   }
 }
-
 
 final class _GlossaryTermCheck {
   const _GlossaryTermCheck(this.source, this.target, this.sourcePattern, this.targetPattern);

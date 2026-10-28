@@ -472,7 +472,9 @@ class PerformanceStatsService {
         hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/deadline-governor') : Future.value(null), // 27
         hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/power-mode') : Future.value(null), // 28
         hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/deadline-backoffs') : Future.value(null), // 29
-        hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/deadline-bypass-frames') : Future.value(null), // 30
+        hasPmeMetadata
+            ? _optionalPlayerProperty('vf-metadata/plezy-pme/deadline-bypass-frames')
+            : Future.value(null), // 30
         hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/source-frames') : Future.value(null), // 31
       ]);
     }
@@ -529,12 +531,7 @@ class PerformanceStatsService {
       sourceHeight: sourceHeight,
       sourceIsHdr: _isHdrTransfer(
         videoResults?[5],
-        hasHdrMetadata: _hasMpvHdrMetadata(
-          videoResults?[6],
-          videoResults?[7],
-          videoResults?[8],
-          videoResults?[9],
-        ),
+        hasHdrMetadata: _hasMpvHdrMetadata(videoResults?[6], videoResults?[7], videoResults?[8], videoResults?[9]),
       ),
       dolbyVisionProfile: dolbyVisionProfile,
       sourceFps: _parseDouble(results[3]),
@@ -672,16 +669,13 @@ class PerformanceStatsService {
     return null;
   }
 
-  bool _hasMpvHdrMetadata(Object? minLuma, Object? maxLuma, Object? maxCll, Object? maxFall) => [
-    minLuma,
-    maxLuma,
-    maxCll,
-    maxFall,
-  ].any((value) => _parseDouble(value?.toString()) != null);
+  bool _hasMpvHdrMetadata(Object? minLuma, Object? maxLuma, Object? maxCll, Object? maxFall) =>
+      [minLuma, maxLuma, maxCll, maxFall].any((value) => _parseDouble(value?.toString()) != null);
 
   bool _isNeuralProviderReady(String? provider, {required bool outputObserved}) {
     final normalized = provider?.trim().toLowerCase();
     if (normalized == null || normalized.isEmpty) return false;
+    if (MotionProcessingService.isCpuOnlyNeuralProviderStatus(normalized)) return false;
     if (const {'ready', 'active'}.contains(normalized) || normalized.endsWith('-ready')) return true;
     if (RegExp(r'^qnn-htp-v\d+(-ready)?$').hasMatch(normalized)) {
       // ANVIL reports `qnn-htp-vN-ready` after asynchronous context setup and
@@ -727,6 +721,8 @@ class PerformanceStatsService {
       token = 'directml-gpu';
     } else if (name.contains('winml')) {
       token = 'winml$deviceSuffix';
+    } else if (name == 'cpu' || name == 'cpuexecutionprovider') {
+      token = 'cpu';
     } else {
       token = name;
     }

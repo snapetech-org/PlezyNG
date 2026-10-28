@@ -148,6 +148,21 @@ void main() {
 /// to react to; rebuilds in these tests can then only come from the offsets.
 class _IdlePlayer implements Player {
   @override
+  bool get supportsSecondarySubtitles => false;
+
+  @override
+  bool get supportsSubtitleStepSync => false;
+
+  @override
+  bool get supportsSubtitleStyleControls => false;
+
+  @override
+  Set<String> get supportedLocalSubtitleExtensions => const {};
+
+  @override
+  bool get audioPassthroughActive => false;
+
+  @override
   Future<void> setProperty(String name, String value) async {}
 
   @override

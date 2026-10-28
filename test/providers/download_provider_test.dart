@@ -32,10 +32,11 @@ import 'package:plezy/utils/active_client_scope.dart';
 import '../test_helpers/download_fixtures.dart';
 import '../test_helpers/media_items.dart';
 import '../test_helpers/saf_fakes.dart';
+import '../test_helpers/media_server_client_test_defaults.dart';
 
 /// Implements only [fetchPlayableDescendants], the surface [collectEpisodes]
 /// uses. Every other call reaches [noSuchMethod] and throws.
-class _ThrowingClient implements MediaServerClient {
+class _ThrowingClient with TestMediaServerClientDefaults implements MediaServerClient {
   @override
   ServerId get serverId => ServerId('srv');
 
@@ -53,7 +54,7 @@ class _ThrowingClient implements MediaServerClient {
 
 /// Returns canned tracks from [fetchPlayableDescendants] (album/artist
 /// expansion) and records the requested parent ids.
-class _MusicExpansionClient implements MediaServerClient {
+class _MusicExpansionClient with TestMediaServerClientDefaults implements MediaServerClient {
   _MusicExpansionClient(this.tracks, {this.gate, this.started});
 
   final List<MediaItem> tracks;
@@ -81,7 +82,7 @@ class _MusicExpansionClient implements MediaServerClient {
 
 /// Stamps a fixed library identity via [stampLibrary] and records calls.
 /// Every other call reaches [noSuchMethod] and throws.
-class _LibraryStampingClient implements MediaServerClient {
+class _LibraryStampingClient with TestMediaServerClientDefaults implements MediaServerClient {
   _LibraryStampingClient({required this.libraryId, required this.libraryTitle});
 
   final String libraryId;
@@ -110,7 +111,7 @@ class _LibraryStampingClient implements MediaServerClient {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class _ScopedTestClient implements MediaServerClient, ScopedMediaServerClient {
+class _ScopedTestClient with TestMediaServerClientDefaults implements MediaServerClient, ScopedMediaServerClient {
   _ScopedTestClient({
     required this.serverId,
     required this.scopedServerId,

@@ -50,15 +50,17 @@ class StalkerPortalClient {
       final rows = _rows(result);
       if (rows.isNotEmpty) return _playlistEntries(rows, genreNames);
     } on SourceException catch (error) {
-      if (error.status != 404 && error.reason != SourceFailure.unsupported && error.reason != SourceFailure.invalidData) {
+      if (error.status != 404 &&
+          error.reason != SourceFailure.unsupported &&
+          error.reason != SourceFailure.invalidData) {
         rethrow;
       }
     }
 
-    final genreIds = <String>['*', for (final genre in genres) _firstString(genre, const ['id', 'genre_id'])]
-        .where((id) => id.isNotEmpty)
-        .toSet()
-        .toList(growable: false);
+    final genreIds = <String>[
+      '*',
+      for (final genre in genres) _firstString(genre, const ['id', 'genre_id']),
+    ].where((id) => id.isNotEmpty).toSet().toList(growable: false);
     final allRows = <Map<String, dynamic>>[];
     final seen = <String>{};
     for (final genreId in genreIds) {
@@ -79,17 +81,20 @@ class StalkerPortalClient {
   }
 
   Future<String> createLink(String command) async {
-    final response = await _api('itv', 'create_link', parameters: {
-      'cmd': command,
-      'series': '0',
-      'forced_storage': 'undefined',
-      'disable_ad': '0',
-      'download': '0',
-    });
+    final response = await _api(
+      'itv',
+      'create_link',
+      parameters: {'cmd': command, 'series': '0', 'forced_storage': 'undefined', 'disable_ad': '0', 'download': '0'},
+    );
     final value = _findLink(response);
     if (value == null) throw const SourceException(SourceFailure.invalidData);
     final commandResult = value.replaceFirst(RegExp(r'^(?:ffmpeg|ffrt|auto)\s+', caseSensitive: false), '').trim();
-    final uri = UniversalMediaAddress.parse(commandResult, allowHttp: config.allowHttp, allowMpvProtocols: true, base: loadUri);
+    final uri = UniversalMediaAddress.parse(
+      commandResult,
+      allowHttp: config.allowHttp,
+      allowMpvProtocols: true,
+      base: loadUri,
+    );
     return uri.toString();
   }
 
@@ -106,20 +111,22 @@ class StalkerPortalClient {
       final tvgId = _firstString(row, const ['xmltv_id', 'tvg_id', 'epg_channel_id', 'epg_id']);
       final number = _firstString(row, const ['number', 'channel_number', 'vcn']);
       final isRadio = _boolValue(row['is_radio']) || _boolValue(row['radio']);
-      entries.add(IptvPlaylistEntry(
-        id: id,
-        title: _cleanText(name, 240),
-        // The real URL is short-lived and must be created with an active
-        // portal token. This opaque payload is encrypted in the catalogue.
-        streamUrl: 'stalker:${jsonEncode({'cmd': command})}',
-        tvgId: tvgId.isEmpty ? id : tvgId,
-        number: number.isEmpty ? null : number,
-        groupTitle: genreId.isEmpty
-            ? _firstString(row, const ['tv_genre_name', 'genre'])
-            : genreNames[genreId] ?? genreId,
-        logoUrl: logo.isEmpty ? null : _safePortalArtwork(logo),
-        radio: isRadio,
-      ));
+      entries.add(
+        IptvPlaylistEntry(
+          id: id,
+          title: _cleanText(name, 240),
+          // The real URL is short-lived and must be created with an active
+          // portal token. This opaque payload is encrypted in the catalogue.
+          streamUrl: 'stalker:${jsonEncode({'cmd': command})}',
+          tvgId: tvgId.isEmpty ? id : tvgId,
+          number: number.isEmpty ? null : number,
+          groupTitle: genreId.isEmpty
+              ? _firstString(row, const ['tv_genre_name', 'genre'])
+              : genreNames[genreId] ?? genreId,
+          logoUrl: logo.isEmpty ? null : _safePortalArtwork(logo),
+          radio: isRadio,
+        ),
+      );
       if (entries.length > IptvPlaylistParser.maxEntries) throw const SourceException(SourceFailure.invalidData);
     }
     if (entries.isEmpty) throw const SourceException(SourceFailure.invalidData);
@@ -157,23 +164,31 @@ class StalkerPortalClient {
     Map<String, String> parameters = const {},
     bool allowMissingToken = false,
   }) async {
-    final uri = loadUri.replace(queryParameters: {
-      ...loadUri.queryParameters,
-      'type': type,
-      'action': action,
-      'JsHttpRequest': '1-xml',
-      if (!allowMissingToken && _token != null) 'token': _token!,
-      ...parameters,
-    });
-    final portalPath = loadUri.path.replaceFirst(RegExp(r'/server/(?:load|api)\.php$'), '/c/').replaceFirst('/portal.php', '/c/');
-    final response = await _transport.text('GET', uri, headers: {
-      'Accept': 'application/json, text/javascript, */*; q=0.01',
-      'User-Agent': _userAgent,
-      'X-User-Agent': 'Model: MAG254; Link: WiFi',
-      'Referer': loadUri.replace(path: portalPath, query: null).toString(),
-      'Cookie': 'mac=${config.macAddress}; stb_lang=en; timezone=${DateTime.now().timeZoneName}',
-      if (!allowMissingToken && _token != null) 'Authorization': 'Bearer $_token',
-    });
+    final uri = loadUri.replace(
+      queryParameters: {
+        ...loadUri.queryParameters,
+        'type': type,
+        'action': action,
+        'JsHttpRequest': '1-xml',
+        if (!allowMissingToken && _token != null) 'token': _token!,
+        ...parameters,
+      },
+    );
+    final portalPath = loadUri.path
+        .replaceFirst(RegExp(r'/server/(?:load|api)\.php$'), '/c/')
+        .replaceFirst('/portal.php', '/c/');
+    final response = await _transport.text(
+      'GET',
+      uri,
+      headers: {
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'User-Agent': _userAgent,
+        'X-User-Agent': 'Model: MAG254; Link: WiFi',
+        'Referer': loadUri.replace(path: portalPath, query: null).toString(),
+        'Cookie': 'mac=${config.macAddress}; stb_lang=en; timezone=${DateTime.now().timeZoneName}',
+        if (!allowMissingToken && _token != null) 'Authorization': 'Bearer $_token',
+      },
+    );
     Object? decoded;
     try {
       decoded = jsonDecode(response);
@@ -206,7 +221,10 @@ class StalkerPortalClient {
       }
     }
     if (current is! List) return const [];
-    return [for (final item in current) if (item is Map) sourceMap(item)];
+    return [
+      for (final item in current)
+        if (item is Map) sourceMap(item),
+    ];
   }
 
   static Map<String, dynamic>? _map(Object? value) => value is Map ? sourceMap(value) : null;
@@ -263,7 +281,9 @@ class StalkerPortalClient {
   String? _safePortalArtwork(String value) {
     try {
       final uri = UniversalMediaAddress.parse(value, allowHttp: config.allowHttp, base: loadUri);
-      if (uri.queryParameters.keys.any((key) => RegExp(r'(token|password|auth|secret|key)', caseSensitive: false).hasMatch(key))) {
+      if (uri.queryParameters.keys.any(
+        (key) => RegExp(r'(token|password|auth|secret|key)', caseSensitive: false).hasMatch(key),
+      )) {
         return null;
       }
       return uri.toString();

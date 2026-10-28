@@ -2890,7 +2890,6 @@ class _Translations$streaming$pl extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Odtwarzaj obsługiwane strumienie torrentowe przez konto Real-Debrid.';
 	@override String get connectRealDebrid => 'Połącz za pomocą kodu QR';
-	@override String get disconnectRealDebrid => 'Odłącz Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'Połączono jako ${username}';
 	@override String get realDebridInstructions => 'Zeskanuj kod QR lub otwórz link, a następnie wpisz ten kod aktywacyjny, aby połączyć PlezyNG:';
 	@override String get realDebridActivate => 'Otwórz Real-Debrid, aby aktywować';
@@ -2918,21 +2917,17 @@ class _Translations$streaming$pl extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'Odłączyć ${service}?';
 	@override String get disconnectBody => 'PlezyNG usunie autoryzację tego urządzenia. Pliki u dostawcy i trwające transfery pozostaną bez zmian.';
 	@override String get streamsTitle => 'Wybierz strumień';
-	@override String get searchingStreams => 'Sprawdzanie połączonych dodatków…';
 	@override String get noStreams => 'Nie znaleziono strumieni dla tego tytułu.';
 	@override String get manageConnections => 'Zarządzaj usługami streamingu';
 	@override String subtitleTracks({required Object count}) => 'Ścieżki napisów: ${count}';
 	@override String get chooseSubtitle => 'Wybierz napisy';
 	@override String get chooseProvider => 'Wybierz usługę Debrid';
 	@override String get subtitleOff => 'Napisy wyłączone';
-	@override String get subtitleLoadFailed => 'Nie udało się załadować napisów. Spróbuj wybrać inną ścieżkę.';
-	@override String get subtitleApplied => 'Napisy wybrane do odtwarzania';
 	@override String get streamLookupPartial => 'Niektóre dodatki są niedostępne.';
 	@override String get streamLookupFailed => 'Nie udało się sprawdzić połączonych dodatków.';
 	@override String get streamOpenExternal => 'Otwórz zewnętrzny link';
 	@override String get streamPrepare => 'Przygotowywanie przez usługę Debrid…';
 	@override String get streamPrepareFailed => 'Nie udało się przygotować strumienia. Sprawdź połączone konto i spróbuj z innym źródłem.';
-	@override String get streamNeedsRealDebrid => 'Połącz usługę Debrid, aby odtworzyć ten strumień torrentowy.';
 	@override String get streamUnsupported => 'Ten format strumienia nie jest obsługiwany przez wbudowany odtwarzacz.';
 	@override String get remoteNeedsEpisode => 'Wybierz odcinek przed wyszukiwaniem strumienia.';
 	@override String get remoteNeedsEpisodeNumber => 'W tym odcinku brakuje numeru sezonu lub odcinka.';
@@ -7953,7 +7948,6 @@ extension on TranslationsPl {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Odtwarzaj obsługiwane strumienie torrentowe przez konto Real-Debrid.',
 			'streaming.connectRealDebrid' => 'Połącz za pomocą kodu QR',
-			'streaming.disconnectRealDebrid' => 'Odłącz Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Połączono jako ${username}',
 			'streaming.realDebridInstructions' => 'Zeskanuj kod QR lub otwórz link, a następnie wpisz ten kod aktywacyjny, aby połączyć PlezyNG:',
 			'streaming.realDebridActivate' => 'Otwórz Real-Debrid, aby aktywować',
@@ -7981,21 +7975,17 @@ extension on TranslationsPl {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Odłączyć ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG usunie autoryzację tego urządzenia. Pliki u dostawcy i trwające transfery pozostaną bez zmian.',
 			'streaming.streamsTitle' => 'Wybierz strumień',
-			'streaming.searchingStreams' => 'Sprawdzanie połączonych dodatków…',
 			'streaming.noStreams' => 'Nie znaleziono strumieni dla tego tytułu.',
 			'streaming.manageConnections' => 'Zarządzaj usługami streamingu',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Ścieżki napisów: ${count}',
 			'streaming.chooseSubtitle' => 'Wybierz napisy',
 			'streaming.chooseProvider' => 'Wybierz usługę Debrid',
 			'streaming.subtitleOff' => 'Napisy wyłączone',
-			'streaming.subtitleLoadFailed' => 'Nie udało się załadować napisów. Spróbuj wybrać inną ścieżkę.',
-			'streaming.subtitleApplied' => 'Napisy wybrane do odtwarzania',
 			'streaming.streamLookupPartial' => 'Niektóre dodatki są niedostępne.',
 			'streaming.streamLookupFailed' => 'Nie udało się sprawdzić połączonych dodatków.',
 			'streaming.streamOpenExternal' => 'Otwórz zewnętrzny link',
 			'streaming.streamPrepare' => 'Przygotowywanie przez usługę Debrid…',
 			'streaming.streamPrepareFailed' => 'Nie udało się przygotować strumienia. Sprawdź połączone konto i spróbuj z innym źródłem.',
-			'streaming.streamNeedsRealDebrid' => 'Połącz usługę Debrid, aby odtworzyć ten strumień torrentowy.',
 			'streaming.streamUnsupported' => 'Ten format strumienia nie jest obsługiwany przez wbudowany odtwarzacz.',
 			'streaming.remoteNeedsEpisode' => 'Wybierz odcinek przed wyszukiwaniem strumienia.',
 			'streaming.remoteNeedsEpisodeNumber' => 'W tym odcinku brakuje numeru sezonu lub odcinka.',
@@ -8250,13 +8240,13 @@ extension on TranslationsPl {
 			'universalMedia.playlistFormatsHelp' => 'Lista odtwarzania może zawierać maksymalnie 1000 elementów i 2 MB. HLS otwiera się jako strumienia, dzięki czemu gracz może wybrać jakość.',
 			'universalMedia.saveQueuePlaylist' => 'Zapisz kolejkę jako playlistę',
 			'universalMedia.queuePlaylistSaved' => 'Playlista została zapisana obok plików multimedialnych.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Tej kolejki nie można zapisać jako wielokrotnego użytku lokalnej playlisty.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Wybierz miejsce zapisu w tym samym folderze co pliki z kolejki.',
 			'universalMedia.noFavorites' => 'Nie przechowywano jeszcze ulubionych strumieni. ulubione pozostają w tym profilu.',
 			'universalMedia.removeFavorite' => 'Usuń ulubiony strumień',
 			'universalMedia.filesHelp' => 'Wybierz pliki audio, wideo lub ISO dla tymczasowego odcinka. pliki i adresy URL nie są dodawane do historii biblioteki.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Wybierz pliki',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pl'))(n, one: '1 wybrane pliki', few: '${count} wybrane pliki', many: '${count} wybrane pliki', other: '${count} wybrane pliki', ), 
 			'universalMedia.wifiTransfer' => 'Wyślij pliki za pośrednictwem Wi-Fi',
@@ -8764,13 +8754,13 @@ extension on TranslationsPl {
 			'sourceSetup.nfsEncryptionFailure' => 'Dla szyfrowanego NFS sprawdź obsługę RFC 9289 i TLS 1.3 przez obie usługi NAS, nazwę w certyfikacie i UID/GID eksportu. PlezyNG nie ponowi tego połączenia bez szyfrowania.',
 			'sourceSetup.sourceConnecting' => 'Łączenie ze źródłem',
 			'sourceSetup.metadataSearchPrivacy' => 'To wyszukiwanie tytułu trafia do Trakt. Wysyłany jest wpisany tytuł, a nie wideo ani dane uwierzytelniające źródła.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Wybierz dopasowanie',
 			'sourceSetup.metadataMatchHelp' => 'Przed wyborem sprawdź tytuł i rok. Trakt otrzymuje wyszukiwany tytuł; wideo pozostaje w swoim źródle.',
 			'sourceSetup.metadataNoMatches' => 'Nie znaleziono pasujących tytułów w internecie. Spróbuj innego tytułu.',
 			'sourceSetup.metadataSearch' => 'Szukaj metadanych w internecie',
 			'sourceSetup.metadataLoading' => 'Wyszukiwanie informacji o filmach i serialach w internecie…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadane z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nie znaleziono automatycznego dopasowania tytułu. Wyszukaj tytuł, aby wybrać dopasowanie.',
 			'sourceSetup.metadataFailed' => 'Nie udało się wczytać metadanych z internetu. Odtwarzanie i informacje lokalne nadal są dostępne.',

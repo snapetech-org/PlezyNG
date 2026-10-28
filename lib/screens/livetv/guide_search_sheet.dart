@@ -117,6 +117,7 @@ class _GuideSearchSheetState extends State<GuideSearchSheet> with ControllerDisp
     // IPTV guide data is imported locally and has no MediaServerClient. Add
     // the same schedule window here so programme search covers the channels
     // shown in the shared guide, not only Plex/Jellyfin/Emby lineups.
+    if (!mounted) return;
     final profileId = context.read<ActiveProfileProvider>().activeId;
     if (profileId != null && widget.channels.any((channel) => channel.iptvSourceId != null)) {
       try {

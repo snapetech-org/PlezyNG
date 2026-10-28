@@ -3,7 +3,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/strings.g.dart';
-import '../../i18n/iptv_copy.dart';
 import '../../iptv/iptv_models.dart';
 import '../../iptv/iptv_source_repository.dart';
 import '../../profiles/active_profile_provider.dart';
@@ -106,14 +105,6 @@ class _AddIptvSourceScreenState extends State<AddIptvSourceScreen> {
     _dispatcharrApiKey.dispose();
     super.dispose();
   }
-
-  String get _typeName => switch (_kind) {
-    IptvInputKind.m3u => t.iptv.m3u,
-    IptvInputKind.xtream => t.iptv.xtream,
-    IptvInputKind.tunerr => t.iptv.tunerr,
-    IptvInputKind.dispatcharr => t.iptv.dispatcharr,
-    IptvInputKind.stalker => t.iptv.stalker,
-  };
 
   String get _typeHelp => switch (_kind) {
     IptvInputKind.m3u => t.iptv.m3uHelp,
@@ -246,165 +237,168 @@ class _AddIptvSourceScreenState extends State<AddIptvSourceScreen> {
             child: AbsorbPointer(
               absorbing: _saved || _loading,
               child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (profileId == null) _InfoCard(icon: Symbols.person_rounded, text: t.iptv.noActiveProfile),
-                  if (_error case final error?) ...[
-                    _InfoCard(icon: Symbols.info_rounded, text: error, isError: !_saved),
-                    const SizedBox(height: 12),
-                  ],
-                  TextFormField(
-                    controller: _name,
-                    decoration: InputDecoration(labelText: t.iptv.sourceName),
-                    textInputAction: TextInputAction.next,
-                    validator: (value) => (value?.trim().isEmpty ?? true) ? t.iptv.required : null,
-                  ),
-                  const SizedBox(height: 14),
-                  DropdownButtonFormField<IptvInputKind>(
-                    initialValue: _kind,
-                    decoration: InputDecoration(labelText: t.iptv.provider),
-                    items: [
-                      for (final value in IptvInputKind.values)
-                        DropdownMenuItem(value: value, child: Text(_labelFor(value))),
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (profileId == null) _InfoCard(icon: Symbols.person_rounded, text: t.iptv.noActiveProfile),
+                    if (_error case final error?) ...[
+                      _InfoCard(icon: Symbols.info_rounded, text: error, isError: !_saved),
+                      const SizedBox(height: 12),
                     ],
-                    onChanged: _busy || _saved
-                        ? null
-                        : (value) => setState(() {
-                            _kind = value ?? _kind;
-                            if (_kind != IptvInputKind.dispatcharr) {
-                              _dispatcharrApiEndpoint.clear();
-                              _dispatcharrApiKey.clear();
-                            }
-                            if (_kind != IptvInputKind.xtream && _kind != IptvInputKind.dispatcharr) {
-                              _username.clear();
-                              _password.clear();
-                            }
-                            if (_kind != IptvInputKind.stalker) _macAddress.clear();
-                          }),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(_typeHelp, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: tokens(context).textMuted)),
-                  if (_kind != IptvInputKind.stalker) ...[
-                    const SizedBox(height: 4),
+                    TextFormField(
+                      controller: _name,
+                      decoration: InputDecoration(labelText: t.iptv.sourceName),
+                      textInputAction: TextInputAction.next,
+                      validator: (value) => (value?.trim().isEmpty ?? true) ? t.iptv.required : null,
+                    ),
+                    const SizedBox(height: 14),
+                    DropdownButtonFormField<IptvInputKind>(
+                      initialValue: _kind,
+                      decoration: InputDecoration(labelText: t.iptv.provider),
+                      items: [
+                        for (final value in IptvInputKind.values)
+                          DropdownMenuItem(value: value, child: Text(_labelFor(value))),
+                      ],
+                      onChanged: _busy || _saved
+                          ? null
+                          : (value) => setState(() {
+                              _kind = value ?? _kind;
+                              if (_kind != IptvInputKind.dispatcharr) {
+                                _dispatcharrApiEndpoint.clear();
+                                _dispatcharrApiKey.clear();
+                              }
+                              if (_kind != IptvInputKind.xtream && _kind != IptvInputKind.dispatcharr) {
+                                _username.clear();
+                                _password.clear();
+                              }
+                              if (_kind != IptvInputKind.stalker) _macAddress.clear();
+                            }),
+                    ),
+                    const SizedBox(height: 8),
                     Text(
-                      t.iptv.playlistHeadersHelp,
+                      _typeHelp,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: tokens(context).textMuted),
                     ),
-                  ],
-                  const SizedBox(height: 14),
-                  TextFormField(
-                    controller: _endpoint,
-                    keyboardType: TextInputType.url,
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: _kind == IptvInputKind.xtream ? t.iptv.xtreamEndpoint : t.iptv.endpoint,
-                      hintText: _kind == IptvInputKind.xtream ? 'https://provider.example' : 'https://…',
-                      prefixIcon: const AppIcon(Symbols.link_rounded),
-                    ),
-                    validator: (value) => (value?.trim().isEmpty ?? true) ? t.iptv.required : null,
-                  ),
-                  if (_kind == IptvInputKind.xtream || _kind == IptvInputKind.dispatcharr) ...[
-                    const SizedBox(height: 14),
-                    TextFormField(
-                      controller: _username,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(labelText: t.iptv.username),
-                      validator: (value) => (value?.isEmpty ?? true) ? t.iptv.required : null,
-                    ),
-                    const SizedBox(height: 14),
-                    TextFormField(
-                      controller: _password,
-                      obscureText: true,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(labelText: t.iptv.password),
-                      validator: (value) => _kind == IptvInputKind.xtream && (value?.isEmpty ?? true)
-                          ? t.iptv.required
-                          : null,
-                    ),
-                  ],
-                  if (_kind == IptvInputKind.stalker) ...[
-                    const SizedBox(height: 14),
-                    TextFormField(
-                      controller: _macAddress,
-                      textCapitalization: TextCapitalization.characters,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: t.iptv.macAddress,
-                        hintText: '00:1A:79:00:00:00',
-                        prefixIcon: const AppIcon(Symbols.devices_rounded),
+                    if (_kind != IptvInputKind.stalker) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        t.iptv.playlistHeadersHelp,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: tokens(context).textMuted),
                       ),
-                      validator: (value) => _kind == IptvInputKind.stalker &&
-                              !RegExp(r'^(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$').hasMatch(value?.trim() ?? '')
-                          ? t.iptv.macAddressInvalid
-                          : null,
-                    ),
-                  ],
-                  if (_kind == IptvInputKind.dispatcharr) ...[
-                    const SizedBox(height: 18),
-                    Text(t.iptv.dispatcharrDvr, style: Theme.of(context).textTheme.titleSmall),
-                    const SizedBox(height: 4),
-                    Text(t.iptv.dispatcharrDvrHelp, style: Theme.of(context).textTheme.bodySmall),
-                    const SizedBox(height: 12),
+                    ],
+                    const SizedBox(height: 14),
                     TextFormField(
-                      controller: _dispatcharrApiEndpoint,
+                      controller: _endpoint,
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(labelText: t.iptv.dispatcharrApiEndpoint),
+                      decoration: InputDecoration(
+                        labelText: _kind == IptvInputKind.xtream ? t.iptv.xtreamEndpoint : t.iptv.endpoint,
+                        hintText: _kind == IptvInputKind.xtream ? 'https://provider.example' : 'https://…',
+                        prefixIcon: const AppIcon(Symbols.link_rounded),
+                      ),
+                      validator: (value) => (value?.trim().isEmpty ?? true) ? t.iptv.required : null,
+                    ),
+                    if (_kind == IptvInputKind.xtream || _kind == IptvInputKind.dispatcharr) ...[
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: _username,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(labelText: t.iptv.username),
+                        validator: (value) => (value?.isEmpty ?? true) ? t.iptv.required : null,
+                      ),
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: _password,
+                        obscureText: true,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(labelText: t.iptv.password),
+                        validator: (value) =>
+                            _kind == IptvInputKind.xtream && (value?.isEmpty ?? true) ? t.iptv.required : null,
+                      ),
+                    ],
+                    if (_kind == IptvInputKind.stalker) ...[
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: _macAddress,
+                        textCapitalization: TextCapitalization.characters,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          labelText: t.iptv.macAddress,
+                          hintText: '00:1A:79:00:00:00',
+                          prefixIcon: const AppIcon(Symbols.devices_rounded),
+                        ),
+                        validator: (value) =>
+                            _kind == IptvInputKind.stalker &&
+                                !RegExp(r'^(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$').hasMatch(value?.trim() ?? '')
+                            ? t.iptv.macAddressInvalid
+                            : null,
+                      ),
+                    ],
+                    if (_kind == IptvInputKind.dispatcharr) ...[
+                      const SizedBox(height: 18),
+                      Text(t.iptv.dispatcharrDvr, style: Theme.of(context).textTheme.titleSmall),
+                      const SizedBox(height: 4),
+                      Text(t.iptv.dispatcharrDvrHelp, style: Theme.of(context).textTheme.bodySmall),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _dispatcharrApiEndpoint,
+                        keyboardType: TextInputType.url,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(labelText: t.iptv.dispatcharrApiEndpoint),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _dispatcharrApiKey,
+                        obscureText: true,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(labelText: t.iptv.dispatcharrApiKey),
+                      ),
+                    ],
+                    SwitchListTile.adaptive(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(t.iptv.localTimeShift),
+                      subtitle: Text(t.iptv.localTimeShiftHelp),
+                      value: _localTimeShiftEnabled,
+                      onChanged: _busy || _saved ? null : (value) => setState(() => _localTimeShiftEnabled = value),
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: _guide,
+                      keyboardType: TextInputType.url,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: t.iptv.guideEndpoint,
+                        prefixIcon: const AppIcon(Symbols.event_note_rounded),
+                        helperText: t.iptv.guideEndpointHelp,
+                      ),
                     ),
                     const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _dispatcharrApiKey,
-                      obscureText: true,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(labelText: t.iptv.dispatcharrApiKey),
+                    TextField(
+                      controller: _additionalGuides,
+                      keyboardType: TextInputType.multiline,
+                      minLines: 2,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        labelText: t.iptv.additionalGuideEndpoints,
+                        prefixIcon: const Padding(
+                          padding: EdgeInsets.only(bottom: 42),
+                          child: AppIcon(Symbols.library_add_check_rounded),
+                        ),
+                        helperText: t.iptv.additionalGuideEndpointsHelp,
+                        alignLabelWithHint: true,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SwitchListTile.adaptive(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(t.iptv.allowHttp),
+                      subtitle: Text(t.iptv.allowHttpDescription),
+                      value: _allowHttp,
+                      onChanged: _busy || _saved ? null : (value) => setState(() => _allowHttp = value),
                     ),
                   ],
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(t.iptv.localTimeShift),
-                    subtitle: Text(t.iptv.localTimeShiftHelp),
-                    value: _localTimeShiftEnabled,
-                    onChanged: _busy || _saved ? null : (value) => setState(() => _localTimeShiftEnabled = value),
-                  ),
-                  const SizedBox(height: 14),
-                  TextFormField(
-                    controller: _guide,
-                    keyboardType: TextInputType.url,
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: t.iptv.guideEndpoint,
-                      prefixIcon: const AppIcon(Symbols.event_note_rounded),
-                      helperText: t.iptv.guideEndpointHelp,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _additionalGuides,
-                    keyboardType: TextInputType.multiline,
-                    minLines: 2,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      labelText: t.iptv.additionalGuideEndpoints,
-                      prefixIcon: const Padding(
-                        padding: EdgeInsets.only(bottom: 42),
-                        child: AppIcon(Symbols.library_add_check_rounded),
-                      ),
-                      helperText: t.iptv.additionalGuideEndpointsHelp,
-                      alignLabelWithHint: true,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(t.iptv.allowHttp),
-                    subtitle: Text(t.iptv.allowHttpDescription),
-                    value: _allowHttp,
-                    onChanged: _busy || _saved ? null : (value) => setState(() => _allowHttp = value),
-                  ),
-                ],
-              ),
+                ),
               ),
             ),
           ),
@@ -445,9 +439,12 @@ class _InfoCard extends StatelessWidget {
           AppIcon(icon, color: isError ? colors.onErrorContainer : colors.onSurfaceVariant),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(text, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: isError ? colors.onErrorContainer : colors.onSurfaceVariant,
-            )),
+            child: Text(
+              text,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: isError ? colors.onErrorContainer : colors.onSurfaceVariant),
+            ),
           ),
         ],
       ),

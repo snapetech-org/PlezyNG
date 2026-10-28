@@ -18,12 +18,16 @@ MPV_EXPORT int mpv_plezy_audio_tap_version(void);
  * Normal mpv handle destruction also detaches the tap.
  */
 MPV_EXPORT int mpv_plezy_audio_tap_enable(mpv_handle* ctx, int enabled);
-/* Native consumer supplies the current playback PTS, not decoder PTS. Return
- * 1 for a block due for presentation, 0 while waiting, MPV_PLEZY_AUDIO_UNSUPPORTED for an unsupported
- * output format/layout, or a negative mpv error. Never waits for the producer.
- * Reads are serialized per handle. No samples cross the Dart channel.
+/* Native visualization consumer supplies playback PTS. Return 1 for a block
+ * due for presentation, 0 while waiting, MPV_PLEZY_AUDIO_UNSUPPORTED for an
+ * unsupported output format/layout, or a negative mpv error. Future blocks
+ * stay queued and old blocks may be discarded. This function never calls Dart.
  */
 MPV_EXPORT int mpv_plezy_audio_tap_read(mpv_handle* ctx, double playback_pts, mpv_plezy_audio_block* out, size_t size);
+/* Transcription consumer drains the oldest valid block in media order without
+ * presentation-clock filtering. The caller must bound each drain.
+ */
+MPV_EXPORT int mpv_plezy_audio_tap_read_next(mpv_handle* ctx, mpv_plezy_audio_block* out, size_t size);
 #ifdef __cplusplus
 }
 #endif

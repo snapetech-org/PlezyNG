@@ -3,7 +3,7 @@ import 'dart:io' show Directory, File;
 
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform, ValueListenableBuilder;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -21,7 +21,7 @@ import '../../../services/subtitle_archive_importer.dart';
 import '../../../services/subtitle_ai_service.dart';
 import '../../../services/track_selection_service.dart';
 import '../../../i18n/strings.g.dart';
-import '../../../utils/formatters.dart';
+import '../../../i18n/presentation_formats.dart';
 import '../../../utils/language_codes.dart';
 import '../../../utils/provider_extensions.dart';
 import '../../../utils/track_label_builder.dart';
@@ -153,10 +153,15 @@ class TrackSheet extends StatelessWidget {
         );
       },
     );
-    if (const {TargetPlatform.android, TargetPlatform.linux, TargetPlatform.macOS, TargetPlatform.windows}
-        .contains(defaultTargetPlatform)) {
+    if (const {
+      TargetPlatform.android,
+      TargetPlatform.linux,
+      TargetPlatform.macOS,
+      TargetPlatform.windows,
+    }.contains(defaultTargetPlatform)) {
       return DropTarget(
-        onDragDone: (details) => unawaited(_stageDroppedSubtitleFiles(context, player, details.files)),
+        onDragDone: (details) =>
+            unawaited(_stageDroppedSubtitleFiles(context, player, details.files.whereType<DropItemFile>().toList())),
         child: sheet,
       );
     }
@@ -450,7 +455,7 @@ class _SubtitleColumn extends StatelessWidget {
                             trackControlsState.onSecondarySubtitleTrackChanged?.call(SubtitleTrack.off);
                           }
                         : null,
-                    icon: const Icon(Icons.subtitles_off_outlined, size: 20),
+                    icon: const AppIcon(Symbols.subtitles_off_rounded, size: 20),
                   )
                 : null,
           );
@@ -539,7 +544,7 @@ class _SubtitleColumn extends StatelessWidget {
                           player.selectSecondarySubtitleTrack(next);
                           trackControlsState.onSecondarySubtitleTrackChanged?.call(next);
                         },
-                  icon: Icon(isSecondary ? Icons.subtitles_off_outlined : Icons.subtitles_outlined, size: 20),
+                  icon: AppIcon(isSecondary ? Symbols.subtitles_off_rounded : Symbols.subtitles_rounded, size: 20),
                 )
               : null,
         );
@@ -604,7 +609,9 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
       FocusableListTile(
         leading: const AppIcon(Symbols.timer_rounded),
         title: const Text('Subtitle replay lead-in'),
-        subtitle: Text('${SettingsService.instance.read(SettingsService.subtitleReplayPrerollMs).clamp(0, 2500).toInt()} ms before the cue'),
+        subtitle: Text(
+          '${SettingsService.instance.read(SettingsService.subtitleReplayPrerollMs).clamp(0, 2500).toInt()} ms before the cue',
+        ),
         onTap: () => unawaited(_configureSubtitleReplayPreroll(context)),
       ),
     );
@@ -667,7 +674,8 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
               serverId: state.serverId,
               ratingKey: state.ratingKey.isEmpty ? null : state.ratingKey,
               mediaIndex: state.selectedMediaIndex,
-              seriesKey: state.metadata?.seriesGlobalKey ??
+              seriesKey:
+                  state.metadata?.seriesGlobalKey ??
                   (state.metadata?.kind == MediaKind.show ? state.metadata?.globalKey : null),
               selectedSubtitleBurnedIn: state.burnsSelectedSubtitle,
             ),
@@ -680,7 +688,9 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
           dense: true,
           leading: const AppIcon(Symbols.info_rounded),
           title: const Text('AI subtitle attachment unavailable'),
-          subtitle: const Text('The active player cannot receive local SRT files. Switch to a player with SRT support to use this workflow.'),
+          subtitle: const Text(
+            'The active player cannot receive local SRT files. Switch to a player with SRT support to use this workflow.',
+          ),
         ),
       );
     }
@@ -701,7 +711,8 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
       FocusableListTile(
         leading: const AppIcon(Symbols.format_size_rounded),
         title: Text(t.screens.subtitleStyling),
-        onTap: () => OverlaySheetController.of(context).push(builder: (_) => InPlayerSubtitleStyleSheet(player: player)),
+        onTap: () =>
+            OverlaySheetController.of(context).push(builder: (_) => InPlayerSubtitleStyleSheet(player: player)),
       ),
     );
   }
@@ -714,12 +725,20 @@ Future<void> _loadSubtitleFile(BuildContext context, Player player) async {
   final supportedExtensions = player.supportedLocalSubtitleExtensions.toList()..sort();
   final result = await FilePickerService.instance.pickFiles(
     type: FileType.custom,
-    allowedExtensions: {...supportedExtensions, if (!kIsWeb) ...{'zip', 'tar', 'tgz', 'gz'}}.toList()..sort(),
+    allowedExtensions: {
+      ...supportedExtensions,
+      if (!kIsWeb) ...{'zip', 'tar', 'tgz', 'gz'},
+    }.toList()..sort(),
   );
   if (result == null || result.files.isEmpty || !context.mounted) return;
   final pickedFile = result.files.first;
 
   try {
+    final isArchive = SubtitleArchiveImporter.isSupportedArchiveName(pickedFile.name);
+    if (!isArchive && p.extension(pickedFile.name).toLowerCase() == '.idx') {
+      await _validateDirectIdxSubtitlePair(pickedFile);
+    }
+    if (!context.mounted) return;
     final selectedPath = SubtitleArchiveImporter.isSupportedArchiveName(pickedFile.name)
         ? await _selectArchivedSubtitle(context, pickedFile, supportedExtensions)
         : pickedFile.path;
@@ -729,6 +748,41 @@ Future<void> _loadSubtitleFile(BuildContext context, Player player) async {
   } catch (error, stackTrace) {
     appLogger.w('Could not load local subtitle file', error: error, stackTrace: stackTrace);
     if (context.mounted) showErrorSnackBar(context, t.videoControls.subtitleLoadFailed);
+  }
+}
+
+/// MPV opens a bitmap IDX subtitle through its neighboring SUB file. Reject
+/// incomplete or oversized pairs before asking the native player to load them.
+Future<void> _validateDirectIdxSubtitlePair(PlatformFile indexFile) async {
+  final indexPath = indexFile.path;
+  if (indexPath == null) {
+    throw const FormatException('IDX subtitles require a local path and a matching SUB file.');
+  }
+  final index = File(indexPath);
+  final indexBytes = await index.length();
+  if (indexBytes <= 0 ||
+      indexBytes > SubtitleArchiveImporter.maximumMemberBytes ||
+      (indexFile.size > 0 && indexBytes != indexFile.size)) {
+    throw const FormatException('The IDX subtitle is empty, too large, or changed while it was selected.');
+  }
+
+  final stem = p.withoutExtension(indexPath);
+  File? sub;
+  for (final extension in const ['.sub', '.SUB']) {
+    final candidate = File('$stem$extension');
+    if (await candidate.exists()) {
+      sub = candidate;
+      break;
+    }
+  }
+  if (sub == null) {
+    throw const FormatException('The selected IDX subtitle needs a matching SUB file in the same folder.');
+  }
+  final subBytes = await sub.length();
+  if (subBytes <= 0 ||
+      subBytes > SubtitleArchiveImporter.maximumMemberBytes ||
+      indexBytes + subBytes > SubtitleArchiveImporter.maximumCandidateBytes) {
+    throw const FormatException('The paired IDX/SUB subtitle is empty or exceeds the import size limit.');
   }
 }
 
@@ -747,6 +801,7 @@ Future<void> _attachSubtitleFile(BuildContext context, TrackControlsState state)
 
   try {
     final bytes = await SubtitleArchiveImporter.readPickedArchive(file);
+    if (!context.mounted) return;
     if (bytes.isEmpty || bytes.lengthInBytes > 20 * 1024 * 1024) {
       showErrorSnackBar(context, 'Subtitle files must be smaller than 20 MiB.');
       return;
@@ -754,9 +809,8 @@ Future<void> _attachSubtitleFile(BuildContext context, TrackControlsState state)
 
     final settings = SettingsService.instanceOrNull;
     final systemCode = WidgetsBinding.instance.platformDispatcher.locale.languageCode;
-    final defaultLanguage = LanguageCodes.getIso6391Code(
-      settings?.read(SettingsService.subtitleSearchLanguage) ?? systemCode,
-    ) ?? 'en';
+    final defaultLanguage =
+        LanguageCodes.getIso6391Code(settings?.read(SettingsService.subtitleSearchLanguage) ?? systemCode) ?? 'en';
     final languageController = TextEditingController(text: defaultLanguage);
     var forced = RegExp(r'(^|[._ -])forced([._ -]|$)', caseSensitive: false).hasMatch(file.name);
     var hearingImpaired = RegExp(r'(^|[._ -])(sdh|cc)([._ -]|$)', caseSensitive: false).hasMatch(file.name);
@@ -796,10 +850,7 @@ Future<void> _attachSubtitleFile(BuildContext context, TrackControlsState state)
             ),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(t.common.cancel),
-            ),
+            TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(t.common.cancel)),
             FilledButton(
               onPressed: () {
                 final language = LanguageCodes.getIso6391Code(languageController.text.trim());
@@ -807,11 +858,7 @@ Future<void> _attachSubtitleFile(BuildContext context, TrackControlsState state)
                   setDialogState(() => languageError = 'Enter a valid ISO 639-1 language code.');
                   return;
                 }
-                Navigator.of(dialogContext).pop((
-                  language: language,
-                  forced: forced,
-                  hearingImpaired: hearingImpaired,
-                ));
+                Navigator.of(dialogContext).pop((language: language, forced: forced, hearingImpaired: hearingImpaired));
               },
               child: const Text('Upload'),
             ),
@@ -866,11 +913,7 @@ Future<void> _attachSubtitleFile(BuildContext context, TrackControlsState state)
   }
 }
 
-Future<void> _replayCurrentSubtitle(
-  BuildContext context,
-  Player player, {
-  bool secondary = false,
-}) async {
+Future<void> _replayCurrentSubtitle(BuildContext context, Player player, {bool secondary = false}) async {
   try {
     final prefix = secondary ? 'secondary-sub' : 'sub';
     final text = (await player.getProperty('$prefix-text'))?.trim() ?? '';
@@ -893,16 +936,14 @@ Future<void> _replayCurrentSubtitle(
   }
 }
 
-Future<void> _stageDroppedSubtitleFiles(
-  BuildContext context,
-  Player player,
-  List<DropItemFile> files,
-) async {
+Future<void> _stageDroppedSubtitleFiles(BuildContext context, Player player, List<DropItemFile> files) async {
   final supported = player.supportedLocalSubtitleExtensions;
-  final candidates = files.where((file) {
-    final extension = p.extension(file.name).toLowerCase().replaceFirst('.', '');
-    return SubtitleArchiveImporter.isSupportedArchiveName(file.name) || supported.contains(extension);
-  }).take(12);
+  final candidates = files
+      .where((file) {
+        final extension = p.extension(file.name).toLowerCase().replaceFirst('.', '');
+        return SubtitleArchiveImporter.isSupportedArchiveName(file.name) || supported.contains(extension);
+      })
+      .take(12);
   if (candidates.isEmpty) return;
 
   final staged = <String>[];
@@ -911,7 +952,6 @@ Future<void> _stageDroppedSubtitleFiles(
   final targetDirectory = Directory(p.join(directory.path, 'plezyng_subtitle_drop'));
   await targetDirectory.create(recursive: true);
   for (final file in candidates) {
-    final extension = p.extension(file.name).toLowerCase();
     final maximumBytes = SubtitleArchiveImporter.isLargeArchiveName(file.name) ? 50 * 1024 * 1024 : 32 * 1024 * 1024;
     final bookmark = file.extraAppleBookmark;
     var accessed = false;
@@ -923,10 +963,7 @@ Future<void> _stageDroppedSubtitleFiles(
       final length = await file.length();
       if (length <= 0 || length > maximumBytes) continue;
       final name = p.basename(file.name).replaceAll(RegExp(r'[^A-Za-z0-9._ -]'), '_');
-      final destination = p.join(
-        targetDirectory.path,
-        '${batchPrefix}_$name',
-      );
+      final destination = p.join(targetDirectory.path, '${batchPrefix}_$name');
       await file.saveTo(destination);
       staged.add(destination);
     } catch (error, stackTrace) {
@@ -937,11 +974,13 @@ Future<void> _stageDroppedSubtitleFiles(
       }
     }
   }
+  if (!context.mounted) return;
   await _importSubtitlePaths(context, player, staged);
 }
 
 Future<void> _importSharedSubtitleFiles(BuildContext context, Player player) async {
   final paths = await IncomingSubtitleShareService.instance.takeAll();
+  if (!context.mounted) return;
   await _importSubtitlePaths(context, player, paths);
 }
 
@@ -955,6 +994,7 @@ Future<void> _importSubtitlePaths(BuildContext context, Player player, List<Stri
     if (SubtitleArchiveImporter.isSupportedArchiveName(name)) {
       final file = File(path);
       final size = await file.length();
+      if (!context.mounted) return;
       final extracted = await _selectArchivedSubtitle(
         context,
         PlatformFile(name: name, path: path, size: size),
@@ -1004,12 +1044,7 @@ Future<void> _importSubtitlePaths(BuildContext context, Player player, List<Stri
                 ],
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: Text(t.common.cancel),
-              ),
-            ],
+            actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(t.common.cancel))],
           ),
         );
   if (chosen == null || !context.mounted) return;
@@ -1059,12 +1094,7 @@ Future<String?> _selectArchivedSubtitle(
                 },
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: Text(t.common.cancel),
-              ),
-            ],
+            actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(t.common.cancel))],
           ),
         );
   if (selected == null || !context.mounted) return null;

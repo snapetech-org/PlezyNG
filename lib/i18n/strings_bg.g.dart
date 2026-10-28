@@ -2852,7 +2852,6 @@ class _Translations$streaming$bg extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Възпроизвеждайте поддържани торент потоци чрез акаунта си в Real-Debrid.';
 	@override String get connectRealDebrid => 'Свързване с QR код';
-	@override String get disconnectRealDebrid => 'Прекъсване на връзката с Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'Свързано като ${username}';
 	@override String get realDebridInstructions => 'Сканирайте QR кода или отворете връзката, след което въведете този код за активиране, за да свържете PlezyNG:';
 	@override String get realDebridActivate => 'Отваряне на Real-Debrid за активиране';
@@ -2880,21 +2879,17 @@ class _Translations$streaming$bg extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'Прекъсване на връзката с ${service}?';
 	@override String get disconnectBody => 'PlezyNG ще премахне разрешението за това устройство. Файловете при доставчика и текущите трансфери няма да бъдат засегнати.';
 	@override String get streamsTitle => 'Избор на поток';
-	@override String get searchingStreams => 'Проверка на свързаните добавки…';
 	@override String get noStreams => 'Не са намерени потоци за това заглавие.';
 	@override String get manageConnections => 'Управление на услугите за стриймване';
 	@override String subtitleTracks({required Object count}) => 'Субтитри: ${count}';
 	@override String get chooseSubtitle => 'Избор на субтитри';
 	@override String get chooseProvider => 'Избор на Debrid услуга';
 	@override String get subtitleOff => 'Субтитрите са изключени';
-	@override String get subtitleLoadFailed => 'Тези субтитри не можаха да бъдат заредени. Опитайте друг запис.';
-	@override String get subtitleApplied => 'Избрани субтитри за възпроизвеждане';
 	@override String get streamLookupPartial => 'Някои добавки не са достъпни.';
 	@override String get streamLookupFailed => 'Свързаните добавки не можаха да бъдат проверени.';
 	@override String get streamOpenExternal => 'Отваряне на външна връзка';
 	@override String get streamPrepare => 'Подготовка чрез Debrid услугата ви…';
 	@override String get streamPrepareFailed => 'Потокът не можа да бъде подготвен. Проверете свързания акаунт и опитайте с друг източник.';
-	@override String get streamNeedsRealDebrid => 'Свържете Debrid услуга, за да възпроизведете този торент поток.';
 	@override String get streamUnsupported => 'Вграденият плейър не поддържа този формат на потока.';
 	@override String get remoteNeedsEpisode => 'Изберете епизод, преди да търсите поток.';
 	@override String get remoteNeedsEpisodeNumber => 'За този епизод липсва номер на сезон или епизод.';
@@ -7903,7 +7898,6 @@ extension on TranslationsBg {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Възпроизвеждайте поддържани торент потоци чрез акаунта си в Real-Debrid.',
 			'streaming.connectRealDebrid' => 'Свързване с QR код',
-			'streaming.disconnectRealDebrid' => 'Прекъсване на връзката с Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Свързано като ${username}',
 			'streaming.realDebridInstructions' => 'Сканирайте QR кода или отворете връзката, след което въведете този код за активиране, за да свържете PlezyNG:',
 			'streaming.realDebridActivate' => 'Отваряне на Real-Debrid за активиране',
@@ -7931,21 +7925,17 @@ extension on TranslationsBg {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Прекъсване на връзката с ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG ще премахне разрешението за това устройство. Файловете при доставчика и текущите трансфери няма да бъдат засегнати.',
 			'streaming.streamsTitle' => 'Избор на поток',
-			'streaming.searchingStreams' => 'Проверка на свързаните добавки…',
 			'streaming.noStreams' => 'Не са намерени потоци за това заглавие.',
 			'streaming.manageConnections' => 'Управление на услугите за стриймване',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Субтитри: ${count}',
 			'streaming.chooseSubtitle' => 'Избор на субтитри',
 			'streaming.chooseProvider' => 'Избор на Debrid услуга',
 			'streaming.subtitleOff' => 'Субтитрите са изключени',
-			'streaming.subtitleLoadFailed' => 'Тези субтитри не можаха да бъдат заредени. Опитайте друг запис.',
-			'streaming.subtitleApplied' => 'Избрани субтитри за възпроизвеждане',
 			'streaming.streamLookupPartial' => 'Някои добавки не са достъпни.',
 			'streaming.streamLookupFailed' => 'Свързаните добавки не можаха да бъдат проверени.',
 			'streaming.streamOpenExternal' => 'Отваряне на външна връзка',
 			'streaming.streamPrepare' => 'Подготовка чрез Debrid услугата ви…',
 			'streaming.streamPrepareFailed' => 'Потокът не можа да бъде подготвен. Проверете свързания акаунт и опитайте с друг източник.',
-			'streaming.streamNeedsRealDebrid' => 'Свържете Debrid услуга, за да възпроизведете този торент поток.',
 			'streaming.streamUnsupported' => 'Вграденият плейър не поддържа този формат на потока.',
 			'streaming.remoteNeedsEpisode' => 'Изберете епизод, преди да търсите поток.',
 			'streaming.remoteNeedsEpisodeNumber' => 'За този епизод липсва номер на сезон или епизод.',
@@ -8200,13 +8190,13 @@ extension on TranslationsBg {
 			'universalMedia.playlistFormatsHelp' => 'Възпроизвеждащият списък може да съдържа до 1000 елемента и 2 MB. HLS се отваря като потоци, така че играчът може да избере качество.',
 			'universalMedia.saveQueuePlaylist' => 'Запази опашката като плейлист',
 			'universalMedia.queuePlaylistSaved' => 'Плейлистът е запазен до медийните файлове.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Тази опашка не може да бъде запазена като преизползваем локален плейлист.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Изберете място за запис в същата папка като файловете в опашката.',
 			'universalMedia.noFavorites' => 'Все още не са спасени любимите потоци.Favorites остават в този профил.',
 			'universalMedia.removeFavorite' => 'Премахване на любимия поток',
 			'universalMedia.filesHelp' => 'Изберете аудио, видео или ISO файлове за временна лента.Файлове и URL адреси не се добавят към историята на библиотеката.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Изберете файлове',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '1 Избрани файлове', other: '${count} избрани файлове', ), 
 			'universalMedia.wifiTransfer' => 'Изпращане на файлове чрез Wi-Fi',
@@ -8714,13 +8704,13 @@ extension on TranslationsBg {
 			'sourceSetup.nfsEncryptionFailure' => 'За шифрован NFS проверете поддръжката на RFC 9289 и TLS 1.3 от двете NAS услуги, името в сертификата и UID/GID на експорта. PlezyNG няма да опита тази връзка отново без шифроване.',
 			'sourceSetup.sourceConnecting' => 'Свързване с източника',
 			'sourceSetup.metadataSearchPrivacy' => 'Това търсене на заглавие се изпраща до Trakt. Изпраща се въведеното заглавие, а не видеото или данните за вход в източника.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Избор на съвпадение',
 			'sourceSetup.metadataMatchHelp' => 'Проверете заглавието и годината, преди да изберете. Trakt получава търсеното заглавие; видеото остава в своя източник.',
 			'sourceSetup.metadataNoMatches' => 'Не са намерени съвпадащи заглавия онлайн. Опитайте друго заглавие.',
 			'sourceSetup.metadataSearch' => 'Търсене на онлайн метаданни',
 			'sourceSetup.metadataLoading' => 'Търсене на онлайн информация за филми и сериали…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Онлайн метаданни от Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Не е намерено автоматично съвпадение на заглавието. Потърсете заглавието, за да изберете съвпадение.',
 			'sourceSetup.metadataFailed' => 'Онлайн метаданните не можаха да се заредят. Възпроизвеждането и локалната информация остават достъпни.',

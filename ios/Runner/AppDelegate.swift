@@ -8,7 +8,10 @@ import MusicKit
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var deviceAdjustmentChannel: FlutterMethodChannel?
-  private var originalBrightness: CGFloat?
+  /// The screen whose brightness the player changed, and the level to restore
+  /// on it. Track the display because foldable iPhones can move the app between
+  /// screens while playback is active.
+  private var brightnessOverride: (screen: UIScreen, original: CGFloat)?
   private var volumeView: MPVolumeView?
   private weak var volumeSlider: UISlider?
 
@@ -78,7 +81,8 @@ import MusicKit
     }
 
     if #available(iOS 15.0, *),
-       let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AppleMusicKitPlugin") {
+      let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AppleMusicKitPlugin")
+    {
       AppleMusicKitPlugin.register(with: registrar)
     }
   }
@@ -96,18 +100,26 @@ import MusicKit
   private func handleDeviceAdjustmentCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "getBrightness":
-      result(Double(UIScreen.main.brightness))
+      result(activeScreen.map { Double($0.brightness) })
     case "setBrightness":
       guard let value = normalizedArgument(call.arguments, result: result) else { return }
-      if originalBrightness == nil {
-        originalBrightness = UIScreen.main.brightness
+      guard let screen = activeScreen else {
+        result(FlutterError(code: "DEVICE_ADJUSTMENT_UNAVAILABLE", message: "No active screen", details: nil))
+        return
       }
-      UIScreen.main.brightness = CGFloat(value)
+      if let override = brightnessOverride, override.screen !== screen {
+        override.screen.brightness = override.original
+        brightnessOverride = nil
+      }
+      if brightnessOverride == nil {
+        brightnessOverride = (screen, screen.brightness)
+      }
+      screen.brightness = CGFloat(value)
       result(nil)
     case "restoreBrightness":
-      if let originalBrightness = originalBrightness {
-        UIScreen.main.brightness = originalBrightness
-        self.originalBrightness = nil
+      if let override = brightnessOverride {
+        override.screen.brightness = override.original
+        brightnessOverride = nil
       }
       result(nil)
     case "getMediaVolume":
@@ -175,6 +187,12 @@ import MusicKit
     return nil
   }
 
+  /// The display showing the app. `UIScreen.main` may still refer to the
+  /// outer display while a foldable iPhone shows the app on its inner display.
+  private var activeScreen: UIScreen? {
+    activeWindow?.windowScene?.screen
+  }
+
   private var activeWindow: UIWindow? {
     if #available(iOS 13.0, *) {
       for scene in UIApplication.shared.connectedScenes {
@@ -193,7 +211,6 @@ import MusicKit
     return UIApplication.shared.windows.first(where: { $0.isKeyWindow }) ?? UIApplication.shared.windows.first
   }
 }
-
 
 /// Narrow iOS MusicKit pilot. Apple remains the catalog and playback owner;
 /// PlezyNG receives catalog metadata and never receives protected media bytes.
@@ -221,25 +238,30 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
       result(status == .authorized ? "authorized" : "denied")
     case "search":
       guard MusicAuthorization.currentStatus == .authorized,
-            let arguments = call.arguments as? [String: Any],
-            let query = arguments["query"] as? String,
-            !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-            query.count <= 160 else {
-        result(FlutterError(code: "INVALID_OR_UNAUTHORIZED", message: "A granted MusicKit session and search query are required.", details: nil))
+        let arguments = call.arguments as? [String: Any],
+        let query = arguments["query"] as? String,
+        !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+        query.count <= 160
+      else {
+        result(
+          FlutterError(
+            code: "INVALID_OR_UNAUTHORIZED", message: "A granted MusicKit session and search query are required.",
+            details: nil))
         return
       }
       do {
         var request = MusicCatalogSearchRequest(term: query, types: [Song.self])
         request.limit = 20
         let response = try await request.response()
-        result(response.songs.map { song in
-          [
-            "id": song.id.rawValue,
-            "title": song.title,
-            "artist": song.artistName,
-            "album": song.albumTitle ?? ""
-          ] as [String: Any]
-        })
+        result(
+          response.songs.map { song in
+            [
+              "id": song.id.rawValue,
+              "title": song.title,
+              "artist": song.artistName,
+              "album": song.albumTitle ?? "",
+            ] as [String: Any]
+          })
       } catch {
         result(FlutterError(code: "CATALOG_UNAVAILABLE", message: "Apple Music catalog search failed.", details: nil))
       }
@@ -252,21 +274,30 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
         let subscription = try await MusicSubscription.current
         result(subscription.canPlayCatalogContent)
       } catch {
-        result(FlutterError(code: "SUBSCRIPTION_UNAVAILABLE", message: "Apple Music subscription status is unavailable.", details: nil))
+        result(
+          FlutterError(
+            code: "SUBSCRIPTION_UNAVAILABLE", message: "Apple Music subscription status is unavailable.", details: nil))
       }
     case "play":
       guard MusicAuthorization.currentStatus == .authorized,
-            let arguments = call.arguments as? [String: Any],
-            let songID = arguments["id"] as? String,
-            !songID.isEmpty,
-            songID.count <= 128 else {
-        result(FlutterError(code: "INVALID_OR_UNAUTHORIZED", message: "A granted MusicKit session and song id are required.", details: nil))
+        let arguments = call.arguments as? [String: Any],
+        let songID = arguments["id"] as? String,
+        !songID.isEmpty,
+        songID.count <= 128
+      else {
+        result(
+          FlutterError(
+            code: "INVALID_OR_UNAUTHORIZED", message: "A granted MusicKit session and song id are required.",
+            details: nil))
         return
       }
       do {
         let subscription = try await MusicSubscription.current
         guard subscription.canPlayCatalogContent else {
-          result(FlutterError(code: "SUBSCRIPTION_REQUIRED", message: "An Apple Music subscription is required for catalog playback.", details: nil))
+          result(
+            FlutterError(
+              code: "SUBSCRIPTION_REQUIRED", message: "An Apple Music subscription is required for catalog playback.",
+              details: nil))
           return
         }
         let request = MusicCatalogResourceRequest<Song>(
@@ -275,7 +306,9 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
         )
         let response = try await request.response()
         guard let song = response.items.first else {
-          result(FlutterError(code: "SONG_NOT_FOUND", message: "The selected Apple Music item is no longer available.", details: nil))
+          result(
+            FlutterError(
+              code: "SONG_NOT_FOUND", message: "The selected Apple Music item is no longer available.", details: nil))
           return
         }
         let player = ApplicationMusicPlayer.shared
@@ -283,7 +316,8 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
         try await player.play()
         result(nil)
       } catch {
-        result(FlutterError(code: "PLAYBACK_UNAVAILABLE", message: "Apple Music could not start playback.", details: nil))
+        result(
+          FlutterError(code: "PLAYBACK_UNAVAILABLE", message: "Apple Music could not start playback.", details: nil))
       }
     case "stop":
       ApplicationMusicPlayer.shared.stop()

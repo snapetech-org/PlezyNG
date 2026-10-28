@@ -193,8 +193,7 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
-      errorDescription:
-          errorDescription != _defaultErrorDescription ? errorDescription : this.errorDescription,
+      errorDescription: errorDescription != _defaultErrorDescription ? errorDescription : this.errorDescription,
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }
@@ -285,13 +284,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     File file, {
     this.closedCaptionFile,
     this.videoPlayerOptions,
+    this.playerOptions,
   })  : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
         httpHeaders = const <String, String>{},
         drmConfigs = null,
-        playerOptions = const <String, dynamic>{},
         super(
           VideoPlayerValue(
             duration: DurationRange(Duration.zero, Duration.zero),
@@ -379,9 +378,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   static const int kUninitializedPlayerId = -1;
   int _playerId = kUninitializedPlayerId;
 
-  /// This is just exposed for testing. It shouldn't be used by anyone depending
-  /// on the plugin.
-  @visibleForTesting
+  /// The native player id used by Tizen integrations for player-scoped APIs.
   int get playerId => _playerId;
 
   final MethodChannel _channel = const MethodChannel(
@@ -418,6 +415,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.file,
           uri: dataSource,
+          playerOptions: playerOptions,
         );
       case DataSourceType.contentUri:
         dataSourceDescription = DataSource(
@@ -432,8 +430,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       if (videoPlayerOptions?.mixWithOthers != null) {
         await _videoPlayerPlatform.setMixWithOthers(videoPlayerOptions!.mixWithOthers);
       }
-      _playerId =
-          (await platform.create(dataSourceDescription)) ?? kUninitializedPlayerId;
+      _playerId = (await platform.create(dataSourceDescription)) ?? kUninitializedPlayerId;
       if (_playerId == kUninitializedPlayerId) {
         throw PlatformException(code: 'player-create', message: 'Native player creation failed');
       }
@@ -545,9 +542,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       _durationTimer?.cancel();
     };
 
-    _eventSubscription = _videoPlayerPlatform
-        .videoEventsFor(_playerId)
-        .listen(_eventListener, onError: _errorListener);
+    _eventSubscription = _videoPlayerPlatform.videoEventsFor(_playerId).listen(_eventListener, onError: _errorListener);
 
     await _videoPlayerPlatform.prepare(_playerId);
 
@@ -775,6 +770,24 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return false;
     }
     return _videoPlayerPlatform.setTrackSelection(_playerId, track);
+  }
+
+  /// Whether this player session can supply decoded PCM for local workflows.
+  Future<bool> subtitlePcmCaptureAvailable() async {
+    if (!value.isInitialized || _isDisposed) return false;
+    return _videoPlayerPlatform.subtitlePcmCaptureAvailable(_playerId);
+  }
+
+  /// Enables bounded, timestamped PCM capture for an explicit local workflow.
+  Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
+    if (!value.isInitialized || _isDisposed) return false;
+    return _videoPlayerPlatform.setSubtitlePcmCaptureEnabled(_playerId, enabled);
+  }
+
+  /// Drains and releases queued timestamped PCM packets.
+  Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
+    if (!value.isInitialized || _isDisposed) return const [];
+    return _videoPlayerPlatform.drainSubtitlePcmCapture(_playerId);
   }
 
   /// Sets the audio volume of [this].
@@ -1030,9 +1043,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
           (currentRect.left.isInfinite || currentRect.left.isNaN) ? 0 : currentRect.left.toInt(),
           (currentRect.top.isInfinite || currentRect.top.isNaN) ? 0 : currentRect.top.toInt(),
           (currentRect.width.isInfinite || currentRect.width.isNaN) ? 0 : currentRect.width.toInt(),
-          (currentRect.height.isInfinite || currentRect.height.isNaN)
-              ? 0
-              : currentRect.height.toInt(),
+          (currentRect.height.isInfinite || currentRect.height.isNaN) ? 0 : currentRect.height.toInt(),
         );
         _playerRect = currentRect;
       }
@@ -1070,8 +1081,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Future<void> _updatePlayerOrientation() async {
     final Orientation orientation = MediaQuery.orientationOf(context);
     int? rotate;
-    if (widget.controller.value.isInitialized &&
-        (_playerOrientation == null || _playerOrientation != orientation)) {
+    if (widget.controller.value.isInitialized && (_playerOrientation == null || _playerOrientation != orientation)) {
       rotate = await windowChannel.invokeMethod('getRotation');
       _playerOrientation = orientation;
     }

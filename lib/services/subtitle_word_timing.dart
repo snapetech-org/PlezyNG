@@ -26,13 +26,13 @@ final class SubtitleWordTiming {
   final int? cueIndex;
 
   SubtitleWordTiming withCueIndex(int? value) => SubtitleWordTiming(
-        startMs: startMs,
-        endMs: endMs,
-        text: text,
-        confidence: confidence,
-        unit: unit,
-        cueIndex: value,
-      );
+    startMs: startMs,
+    endMs: endMs,
+    text: text,
+    confidence: confidence,
+    unit: unit,
+    cueIndex: value,
+  );
 }
 
 /// Converts Whisper token timestamps into whitespace-delimited word timings
@@ -67,13 +67,15 @@ abstract final class SubtitleWordTimingBuilder {
         }
         final text = textBuffer.toString().trim();
         if (text.isNotEmpty) {
-          output.add(SubtitleWordTiming(
-            startMs: startMs!,
-            endMs: endMs!,
-            text: text,
-            confidence: probabilityCount == 0 ? 0 : (probabilityTotal / probabilityCount).clamp(0.0, 1.0).toDouble(),
-            unit: hasWordSeparators ? SubtitleWordTimingUnit.word : SubtitleWordTimingUnit.token,
-          ));
+          output.add(
+            SubtitleWordTiming(
+              startMs: startMs!,
+              endMs: endMs!,
+              text: text,
+              confidence: probabilityCount == 0 ? 0 : (probabilityTotal / probabilityCount).clamp(0.0, 1.0).toDouble(),
+              unit: hasWordSeparators ? SubtitleWordTimingUnit.word : SubtitleWordTimingUnit.token,
+            ),
+          );
         }
         textBuffer = null;
         startMs = null;
@@ -104,13 +106,15 @@ abstract final class SubtitleWordTimingBuilder {
         // has no internal per-word timestamps, so retain it as a token span.
         if (RegExp(r'\s').hasMatch(tokenText)) {
           flush();
-          output.add(SubtitleWordTiming(
-            startMs: start,
-            endMs: end,
-            text: tokenText,
-            confidence: token.probability.isFinite ? token.probability.clamp(0.0, 1.0).toDouble() : 0.0,
-            unit: SubtitleWordTimingUnit.token,
-          ));
+          output.add(
+            SubtitleWordTiming(
+              startMs: start,
+              endMs: end,
+              text: tokenText,
+              confidence: token.probability.isFinite ? token.probability.clamp(0.0, 1.0).toDouble() : 0.0,
+              unit: SubtitleWordTimingUnit.token,
+            ),
+          );
           continue;
         }
 
@@ -135,10 +139,7 @@ abstract final class SubtitleWordTimingBuilder {
     return List.unmodifiable(output);
   }
 
-  static List<SubtitleWordTiming> attachCueIndices(
-    List<SubtitleWordTiming> wordTimings,
-    List<SubtitleCue> cues,
-  ) {
+  static List<SubtitleWordTiming> attachCueIndices(List<SubtitleWordTiming> wordTimings, List<SubtitleCue> cues) {
     if (wordTimings.isEmpty || cues.isEmpty) return List.unmodifiable(wordTimings);
     final result = <SubtitleWordTiming>[];
     var firstPossibleCue = 0;
@@ -149,7 +150,8 @@ abstract final class SubtitleWordTimingBuilder {
       var bestIndex = -1;
       var bestOverlap = 0;
       for (var index = firstPossibleCue; index < cues.length && cues[index].startMs <= word.endMs; index++) {
-        final overlap = (cues[index].endMs < word.endMs ? cues[index].endMs : word.endMs) -
+        final overlap =
+            (cues[index].endMs < word.endMs ? cues[index].endMs : word.endMs) -
             (cues[index].startMs > word.startMs ? cues[index].startMs : word.startMs);
         if (overlap > bestOverlap) {
           bestOverlap = overlap;

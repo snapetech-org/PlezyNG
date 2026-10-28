@@ -1,20 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../focus/focusable_button.dart';
 import '../i18n/strings.g.dart';
-import '../integrations/integration_contracts.dart';
+import '../integrations/integration_api.dart';
 import '../integrations/integration_preferences_store.dart';
 import '../profiles/active_profile_provider.dart';
 import '../services/book_identifiers.dart';
 import '../services/comic_commerce_link_client.dart';
 import '../services/external_access_directory.dart';
 import '../utils/snackbar_helper.dart';
-import 'app_icon.dart';
 import 'connector_brand_mark.dart';
 
 /// Title-aware comic storefront actions embedded in the existing publication

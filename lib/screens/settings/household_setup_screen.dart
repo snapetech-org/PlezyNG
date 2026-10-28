@@ -135,10 +135,18 @@ class HouseholdSetupScreen extends StatelessWidget {
     int online,
     int expected,
   ) {
-    if (authErrors.length == 1) return t.connections.sessionExpiredOne(name: authErrors.single.displayName);
-    if (authErrors.length > 1) return t.connections.sessionExpiredMany(count: authErrors.length);
-    if (denied.length == 1) return t.connections.accessDeniedOne(name: denied.single.displayName);
-    if (denied.length > 1) return t.connections.accessDeniedMany(count: denied.length);
+    if (authErrors.length == 1) {
+      return t.connections.sessionExpiredOne(name: authErrors.single.displayName);
+    }
+    if (authErrors.length > 1) {
+      return t.connections.sessionExpiredMany(count: authErrors.length);
+    }
+    if (denied.length == 1) {
+      return t.connections.accessDeniedOne(name: denied.single.displayName);
+    }
+    if (denied.length > 1) {
+      return t.connections.accessDeniedMany(count: denied.length);
+    }
     if (expected > online) return t.common.reconnect;
     return null;
   }

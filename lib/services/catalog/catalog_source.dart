@@ -224,12 +224,7 @@ abstract interface class CatalogHubFiltersSource {
 
   Future<List<MediaFilterValue>> fetchHubFilterValues(String id, MediaFilter filter);
 
-  Future<CatalogPage> fetchFilteredHub(
-    String id, {
-    required List<LibraryFilter> filters,
-    int page = 1,
-    int limit = 25,
-  });
+  Future<CatalogPage> fetchFilteredHub(String id, {required List<LibraryFilter> filters, int page = 1, int limit = 25});
 }
 
 abstract interface class CatalogRowFilters {

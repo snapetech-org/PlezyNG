@@ -32,7 +32,6 @@ import '../../utils/platform_detector.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/dialog_action_button.dart';
 import '../../widgets/focusable_list_tile.dart';
-import '../../widgets/app_icon.dart';
 import '../../widgets/setting_tile.dart';
 import '../../widgets/settings_builder.dart';
 import '../../widgets/settings_page.dart';
@@ -77,7 +76,7 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
     // group children can use plain `if`s (a SizedBox.shrink() child would
     // corrupt the SettingsGroup corner shapes).
     return SettingsBuilder(
-      prefs: const [
+      prefs: [
         SettingsService.useExoPlayer,
         SettingsService.matchRefreshRate,
         SettingsService.matchDynamicRange,
@@ -185,7 +184,8 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
                   icon: Symbols.blur_on_rounded,
                   title: t.videoSettings.motionClarity,
                   description: t.videoSettings.motionClarityDescription,
-                  subtitleBuilder: (preset) => '${_motionClarityPresetTitle(preset)} · ${_motionClarityPresetDescription(preset)}',
+                  subtitleBuilder: (preset) =>
+                      '${_motionClarityPresetTitle(preset)} · ${_motionClarityPresetDescription(preset)}',
                   options: MotionClarityPreset.values
                       .map(
                         (preset) => DialogOption(
@@ -293,6 +293,7 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
               ],
             ),
 
+            _motionProcessingGroup(),
             _seekAndTimingGroup(),
             _autoPlayAndSkipGroup(),
             if (!PlatformDetector.isTizenBuild()) _musicPlaybackGroup(),

@@ -29,16 +29,24 @@ import 'package:plezy/utils/platform_detector.dart';
 import 'package:plezy/widgets/app_menu.dart';
 import 'package:plezy/widgets/provider_mark.dart';
 import 'fixtures/memory_sources.dart';
+import 'package:plezy/providers/multi_server_provider.dart';
+import 'package:plezy/services/multi_server_manager.dart';
+import '../test_helpers/multi_server_fixtures.dart';
+import 'package:plezy/providers/hidden_libraries_provider.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late SourceDatabase db;
   late MemorySources sources;
   late Directory directory;
+  late MultiServerManager multiServerManager;
+  late MultiServerProvider multiServerProvider;
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('plezy-source-ui-');
     db = SourceDatabase(NativeDatabase.memory());
     sources = MemorySources(SourceRepository(db), directory);
+    multiServerManager = MultiServerManager();
+    multiServerProvider = testMultiServerProvider(multiServerManager);
     sources.sources = [
       for (final kind in [FileSourceKind.googleDrive, FileSourceKind.oneDrive, FileSourceKind.dropbox])
         FileSource(
@@ -71,6 +79,8 @@ void main() {
     }
   });
   tearDown(() async {
+    multiServerProvider.dispose();
+    multiServerManager.dispose();
     sources.dispose();
     await db.close();
     await directory.delete(recursive: true);
@@ -85,6 +95,8 @@ void main() {
         providers: [
           ChangeNotifierProvider<SourceController>.value(value: sources),
           ChangeNotifierProvider<TrackersProvider>(create: (_) => TrackersProvider()),
+          ChangeNotifierProvider<MultiServerProvider>.value(value: multiServerProvider),
+          ChangeNotifierProvider<HiddenLibrariesProvider>(create: (_) => HiddenLibrariesProvider(profileId: 'alice')),
         ],
         child: RepaintBoundary(
           key: const ValueKey('capture'),

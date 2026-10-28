@@ -2849,7 +2849,6 @@ class _Translations$streaming$zh_Hant extends Translations$streaming$zh {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => '透過 Real-Debrid 帳戶播放支援的種子串流。';
 	@override String get connectRealDebrid => '使用 QR 碼連線';
-	@override String get disconnectRealDebrid => '中斷 Real-Debrid 連線';
 	@override String realDebridConnected({required Object username}) => '已連線：${username}';
 	@override String get realDebridInstructions => '掃描 QR 碼或開啟連結，接著輸入此啟用碼以連線 PlezyNG：';
 	@override String get realDebridActivate => '開啟 Real-Debrid 以啟用';
@@ -2877,21 +2876,17 @@ class _Translations$streaming$zh_Hant extends Translations$streaming$zh {
 	@override String disconnectConfirm({required Object service}) => '中斷 ${service} 連線？';
 	@override String get disconnectBody => 'PlezyNG 會移除此裝置的授權，不會變更服務供應商中的檔案或進行中的傳輸。';
 	@override String get streamsTitle => '選擇串流';
-	@override String get searchingStreams => '正在檢查已連線的外掛…';
 	@override String get noStreams => '找不到此標題的串流。';
 	@override String get manageConnections => '管理串流服務';
 	@override String subtitleTracks({required Object count}) => '字幕軌：${count}';
 	@override String get chooseSubtitle => '選擇字幕';
 	@override String get chooseProvider => '選擇 Debrid 服務';
 	@override String get subtitleOff => '關閉字幕';
-	@override String get subtitleLoadFailed => '無法載入此字幕。請嘗試其他軌道。';
-	@override String get subtitleApplied => '已選取播放字幕';
 	@override String get streamLookupPartial => '部分外掛無法連線。';
 	@override String get streamLookupFailed => '無法檢查已連線的外掛。';
 	@override String get streamOpenExternal => '開啟外部連結';
 	@override String get streamPrepare => '正在透過 Debrid 服務準備…';
 	@override String get streamPrepareFailed => '無法準備此串流。請檢查已連線的帳戶，並嘗試其他來源。';
-	@override String get streamNeedsRealDebrid => '連線 Debrid 服務以播放此種子串流。';
 	@override String get streamUnsupported => '應用程式內播放器不支援此串流格式。';
 	@override String get remoteNeedsEpisode => '請先選擇一集，再搜尋串流。';
 	@override String get remoteNeedsEpisodeNumber => '此集缺少季數或集數。';
@@ -7899,7 +7894,6 @@ extension on TranslationsZhHant {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => '透過 Real-Debrid 帳戶播放支援的種子串流。',
 			'streaming.connectRealDebrid' => '使用 QR 碼連線',
-			'streaming.disconnectRealDebrid' => '中斷 Real-Debrid 連線',
 			'streaming.realDebridConnected' => ({required Object username}) => '已連線：${username}',
 			'streaming.realDebridInstructions' => '掃描 QR 碼或開啟連結，接著輸入此啟用碼以連線 PlezyNG：',
 			'streaming.realDebridActivate' => '開啟 Real-Debrid 以啟用',
@@ -7927,21 +7921,17 @@ extension on TranslationsZhHant {
 			'streaming.disconnectConfirm' => ({required Object service}) => '中斷 ${service} 連線？',
 			'streaming.disconnectBody' => 'PlezyNG 會移除此裝置的授權，不會變更服務供應商中的檔案或進行中的傳輸。',
 			'streaming.streamsTitle' => '選擇串流',
-			'streaming.searchingStreams' => '正在檢查已連線的外掛…',
 			'streaming.noStreams' => '找不到此標題的串流。',
 			'streaming.manageConnections' => '管理串流服務',
 			'streaming.subtitleTracks' => ({required Object count}) => '字幕軌：${count}',
 			'streaming.chooseSubtitle' => '選擇字幕',
 			'streaming.chooseProvider' => '選擇 Debrid 服務',
 			'streaming.subtitleOff' => '關閉字幕',
-			'streaming.subtitleLoadFailed' => '無法載入此字幕。請嘗試其他軌道。',
-			'streaming.subtitleApplied' => '已選取播放字幕',
 			'streaming.streamLookupPartial' => '部分外掛無法連線。',
 			'streaming.streamLookupFailed' => '無法檢查已連線的外掛。',
 			'streaming.streamOpenExternal' => '開啟外部連結',
 			'streaming.streamPrepare' => '正在透過 Debrid 服務準備…',
 			'streaming.streamPrepareFailed' => '無法準備此串流。請檢查已連線的帳戶，並嘗試其他來源。',
-			'streaming.streamNeedsRealDebrid' => '連線 Debrid 服務以播放此種子串流。',
 			'streaming.streamUnsupported' => '應用程式內播放器不支援此串流格式。',
 			'streaming.remoteNeedsEpisode' => '請先選擇一集，再搜尋串流。',
 			'streaming.remoteNeedsEpisodeNumber' => '此集缺少季數或集數。',
@@ -8196,13 +8186,13 @@ extension on TranslationsZhHant {
 			'universalMedia.playlistFormatsHelp' => '一張播放列表可以包含最多1000個專案和2MB的HLS顯示為流,所以玩家可以選擇質量。',
 			'universalMedia.saveQueuePlaylist' => '將佇列另存為播放清單',
 			'universalMedia.queuePlaylistSaved' => '播放清單已儲存於媒體檔案旁。',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => '無法將此佇列另存為可重複使用的本機播放清單。',
 			'universalMedia.queuePlaylistFolderRequired' => '請選擇與佇列檔案相同資料夾中的儲存位置。',
 			'universalMedia.noFavorites' => '尚未儲存流喜愛. 喜愛留在此個人資料中。',
 			'universalMedia.removeFavorite' => '刪除流喜愛',
 			'universalMedia.filesHelp' => '選擇音訊、影片或ISO檔案,以便進行臨時記錄. 檔案和URL不新增到圖書館歷史。',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => '選擇檔案',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 選擇的檔案', other: '${count} 已選擇的檔案', ), 
 			'universalMedia.wifiTransfer' => '透過 Wi-Fi 傳送檔案',
@@ -8710,13 +8700,13 @@ extension on TranslationsZhHant {
 			'sourceSetup.nfsEncryptionFailure' => '使用加密 NFS 時，請確認 NAS 的兩項服務皆支援 RFC 9289 和 TLS 1.3，並核對憑證名稱及匯出 UID/GID。PlezyNG 不會在未加密的情況下重試此連線。',
 			'sourceSetup.sourceConnecting' => '正在連線至來源',
 			'sourceSetup.metadataSearchPrivacy' => '此標題搜尋由 Trakt 處理。只會傳送您輸入的標題，不會傳送影片或來源認證資料。',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => '選擇符合的結果',
 			'sourceSetup.metadataMatchHelp' => '選擇前請核對標題與年份。Trakt 會收到搜尋標題；影片檔案會保留在原來源中。',
 			'sourceSetup.metadataNoMatches' => '找不到符合的線上標題。請嘗試其他標題。',
 			'sourceSetup.metadataSearch' => '搜尋線上中繼資料',
 			'sourceSetup.metadataLoading' => '正在查詢線上電影與影集資訊…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => '來自 Trakt 的線上中繼資料',
 			'sourceSetup.metadataNoAutomaticMatch' => '找不到自動符合的標題。請搜尋標題並選擇符合的結果。',
 			'sourceSetup.metadataFailed' => '無法載入線上中繼資料。仍可播放媒體及查看本機資訊。',

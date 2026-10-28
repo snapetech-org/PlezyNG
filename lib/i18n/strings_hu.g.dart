@@ -2852,7 +2852,6 @@ class _Translations$streaming$hu extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Támogatott torrentstreamek lejátszása a Real-Debrid-fiókoddal.';
 	@override String get connectRealDebrid => 'Csatlakozás QR-kóddal';
-	@override String get disconnectRealDebrid => 'Real-Debrid leválasztása';
 	@override String realDebridConnected({required Object username}) => 'Csatlakoztatva: ${username}';
 	@override String get realDebridInstructions => 'Olvasd be a QR-kódot vagy nyisd meg a hivatkozást, majd add meg ezt az aktiválókódot a PlezyNG csatlakoztatásához:';
 	@override String get realDebridActivate => 'Real-Debrid megnyitása az aktiváláshoz';
@@ -2880,21 +2879,17 @@ class _Translations$streaming$hu extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'Leválasztod a ${service} szolgáltatást?';
 	@override String get disconnectBody => 'A PlezyNG eltávolítja az eszköz engedélyét. A szolgáltatónál tárolt fájlok és a folyamatban lévő átvitelek változatlanok maradnak.';
 	@override String get streamsTitle => 'Stream kiválasztása';
-	@override String get searchingStreams => 'Csatlakoztatott kiegészítők ellenőrzése…';
 	@override String get noStreams => 'Ehhez a címhez nem található stream.';
 	@override String get manageConnections => 'Streamingszolgáltatások kezelése';
 	@override String subtitleTracks({required Object count}) => 'Feliratsávok: ${count}';
 	@override String get chooseSubtitle => 'Felirat kiválasztása';
 	@override String get chooseProvider => 'Debrid-szolgáltatás kiválasztása';
 	@override String get subtitleOff => 'Feliratok kikapcsolva';
-	@override String get subtitleLoadFailed => 'Nem sikerült betölteni ezt a feliratot. Próbálj másik sávot.';
-	@override String get subtitleApplied => 'Felirat kiválasztva a lejátszáshoz';
 	@override String get streamLookupPartial => 'Néhány kiegészítő nem érhető el.';
 	@override String get streamLookupFailed => 'Nem sikerült ellenőrizni a csatlakoztatott kiegészítőket.';
 	@override String get streamOpenExternal => 'Külső hivatkozás megnyitása';
 	@override String get streamPrepare => 'Előkészítés a Debrid-szolgáltatással…';
 	@override String get streamPrepareFailed => 'Nem sikerült előkészíteni a streamet. Ellenőrizd a csatlakoztatott fiókot, és próbálkozz másik forrással.';
-	@override String get streamNeedsRealDebrid => 'A torrentstream lejátszásához csatlakoztass egy Debrid-szolgáltatást.';
 	@override String get streamUnsupported => 'Ezt a streamformátumot nem támogatja az alkalmazáslejátszó.';
 	@override String get remoteNeedsEpisode => 'Stream keresése előtt válassz epizódot.';
 	@override String get remoteNeedsEpisodeNumber => 'Ennél az epizódnál hiányzik az évad- vagy epizódszám.';
@@ -7903,7 +7898,6 @@ extension on TranslationsHu {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Támogatott torrentstreamek lejátszása a Real-Debrid-fiókoddal.',
 			'streaming.connectRealDebrid' => 'Csatlakozás QR-kóddal',
-			'streaming.disconnectRealDebrid' => 'Real-Debrid leválasztása',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Csatlakoztatva: ${username}',
 			'streaming.realDebridInstructions' => 'Olvasd be a QR-kódot vagy nyisd meg a hivatkozást, majd add meg ezt az aktiválókódot a PlezyNG csatlakoztatásához:',
 			'streaming.realDebridActivate' => 'Real-Debrid megnyitása az aktiváláshoz',
@@ -7931,21 +7925,17 @@ extension on TranslationsHu {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Leválasztod a ${service} szolgáltatást?',
 			'streaming.disconnectBody' => 'A PlezyNG eltávolítja az eszköz engedélyét. A szolgáltatónál tárolt fájlok és a folyamatban lévő átvitelek változatlanok maradnak.',
 			'streaming.streamsTitle' => 'Stream kiválasztása',
-			'streaming.searchingStreams' => 'Csatlakoztatott kiegészítők ellenőrzése…',
 			'streaming.noStreams' => 'Ehhez a címhez nem található stream.',
 			'streaming.manageConnections' => 'Streamingszolgáltatások kezelése',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Feliratsávok: ${count}',
 			'streaming.chooseSubtitle' => 'Felirat kiválasztása',
 			'streaming.chooseProvider' => 'Debrid-szolgáltatás kiválasztása',
 			'streaming.subtitleOff' => 'Feliratok kikapcsolva',
-			'streaming.subtitleLoadFailed' => 'Nem sikerült betölteni ezt a feliratot. Próbálj másik sávot.',
-			'streaming.subtitleApplied' => 'Felirat kiválasztva a lejátszáshoz',
 			'streaming.streamLookupPartial' => 'Néhány kiegészítő nem érhető el.',
 			'streaming.streamLookupFailed' => 'Nem sikerült ellenőrizni a csatlakoztatott kiegészítőket.',
 			'streaming.streamOpenExternal' => 'Külső hivatkozás megnyitása',
 			'streaming.streamPrepare' => 'Előkészítés a Debrid-szolgáltatással…',
 			'streaming.streamPrepareFailed' => 'Nem sikerült előkészíteni a streamet. Ellenőrizd a csatlakoztatott fiókot, és próbálkozz másik forrással.',
-			'streaming.streamNeedsRealDebrid' => 'A torrentstream lejátszásához csatlakoztass egy Debrid-szolgáltatást.',
 			'streaming.streamUnsupported' => 'Ezt a streamformátumot nem támogatja az alkalmazáslejátszó.',
 			'streaming.remoteNeedsEpisode' => 'Stream keresése előtt válassz epizódot.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Ennél az epizódnál hiányzik az évad- vagy epizódszám.',
@@ -8200,13 +8190,13 @@ extension on TranslationsHu {
 			'universalMedia.playlistFormatsHelp' => 'A lejátszó listája legfeljebb 1000 elemet és 2 MB-ot tartalmazhat. a HLS nyílt áramlatként jelenik meg, így a játékos kiválaszthatja a minőséget.',
 			'universalMedia.saveQueuePlaylist' => 'Sor mentése lejátszási listaként',
 			'universalMedia.queuePlaylistSaved' => 'A lejátszási lista a médiafájlok mellé lett mentve.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Ez a sor nem menthető újra felhasználható helyi lejátszási listaként.',
 			'universalMedia.queuePlaylistFolderRequired' => 'A sor fájljaival azonos mappát válassz mentési helyként.',
 			'universalMedia.noFavorites' => 'Nincs mentett stream kedvencek még. Favoritek maradnak ebben a profilban.',
 			'universalMedia.removeFavorite' => 'Távolítsa el a kedvenc stream',
 			'universalMedia.filesHelp' => 'Válassza ki az audio, a videó vagy az ISO fájlokat egy ideiglenes tartományhoz. A fájlok és URL-ek nem kerülnek hozzáadásra a könyvtár történetéhez.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Válasszon fájlokat',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '1 kiválasztott fájl', other: '${count} kiválasztott fájlok', ), 
 			'universalMedia.wifiTransfer' => 'Fájlok küldése Wi-Fi',
@@ -8714,13 +8704,13 @@ extension on TranslationsHu {
 			'sourceSetup.nfsEncryptionFailure' => 'Titkosított NFS esetén ellenőrizd az RFC 9289 és a TLS 1.3 támogatását mindkét NAS-szolgáltatásnál, a tanúsítvány nevét és a megosztás UID/GID értékeit. A PlezyNG nem próbálja újra ezt a kapcsolatot titkosítás nélkül.',
 			'sourceSetup.sourceConnecting' => 'Kapcsolódás a forráshoz',
 			'sourceSetup.metadataSearchPrivacy' => 'Ez a címkeresés a Trakthoz kerül. A megadott címet küldi el, nem a videót vagy a forrás hitelesítő adatait.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Találat kiválasztása',
 			'sourceSetup.metadataMatchHelp' => 'Választás előtt ellenőrizd a címet és az évet. A Trakt a keresett címet kapja meg; a videó a forrásán marad.',
 			'sourceSetup.metadataNoMatches' => 'Nem található egyező cím online. Próbálj másik címet.',
 			'sourceSetup.metadataSearch' => 'Online metaadatok keresése',
 			'sourceSetup.metadataLoading' => 'Filmek és sorozatok adatainak keresése online…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Online metaadatok a Trakttól',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nem található automatikus címegyezés. Keress rá a címre a találat kiválasztásához.',
 			'sourceSetup.metadataFailed' => 'Az online metaadatok nem tölthetők be. A lejátszás és a helyi adatok továbbra is elérhetők.',

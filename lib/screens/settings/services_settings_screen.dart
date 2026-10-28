@@ -54,7 +54,7 @@ class ServicesSettingsScreen extends StatelessWidget {
                 FocusableListTile(
                   leading: const _MediaServerMarks(),
                   title: Text(t.addServer.addConnectionTitle),
-                  subtitle: Text(t.addServer.addConnectionSubtitleNoProfile),
+                  subtitle: Text(t.connections.addConnectionSubtitleNoProfile),
                   trailing: const AppIcon(Symbols.chevron_right_rounded, fill: 1),
                   onTap: () => Navigator.push<bool>(
                     context,
@@ -66,10 +66,8 @@ class ServicesSettingsScreen extends StatelessWidget {
                   title: Text(t.fileSources.title),
                   subtitle: Text(t.fileSources.subtitle),
                   trailing: const AppIcon(Symbols.chevron_right_rounded, fill: 1),
-                  onTap: () => Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute<bool>(builder: (_) => const AddSourceScreen()),
-                  ),
+                  onTap: () =>
+                      Navigator.push<bool>(context, MaterialPageRoute<bool>(builder: (_) => const AddSourceScreen())),
                 ),
               ],
             ),
@@ -308,7 +306,11 @@ class _ConnectorCategoryGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth.isFinite ? constraints.maxWidth : 480.0;
-        final columns = width >= 900 ? 3 : width >= 620 ? 2 : 1;
+        final columns = width >= 900
+            ? 3
+            : width >= 620
+            ? 2
+            : 1;
         const gap = 12.0;
         final cardWidth = (width - (gap * (columns - 1))) / columns;
         return Wrap(
@@ -332,11 +334,7 @@ class _ConnectorCategoryGrid extends StatelessWidget {
 }
 
 class _ConnectorCategoryCard extends StatelessWidget {
-  const _ConnectorCategoryCard({
-    required this.category,
-    required this.label,
-    required this.onTap,
-  });
+  const _ConnectorCategoryCard({required this.category, required this.label, required this.onTap});
 
   final ExternalAccessCategory category;
   final String label;
@@ -407,11 +405,7 @@ class _ConnectorCategoryCard extends StatelessWidget {
                         const SizedBox(width: 6),
                       ],
                       const Spacer(),
-                      Icon(
-                        Symbols.chevron_right_rounded,
-                        size: 20,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                      AppIcon(Symbols.chevron_right_rounded, size: 20, color: theme.colorScheme.onSurfaceVariant),
                     ],
                   ),
                 ],

@@ -64,12 +64,15 @@ struct VisualizationTapApi {
   int (*version)() = nullptr;
   int (*enable)(mpv_handle*, int) = nullptr;
   int (*read)(mpv_handle*, double, mpv_plezy_audio_block*, size_t) = nullptr;
+  int (*read_next)(mpv_handle*, mpv_plezy_audio_block*, size_t) = nullptr;
   VisualizationTapApi() {
     version = reinterpret_cast<decltype(version)>(dlsym(RTLD_DEFAULT, "mpv_plezy_audio_tap_version"));
     enable = reinterpret_cast<decltype(enable)>(dlsym(RTLD_DEFAULT, "mpv_plezy_audio_tap_enable"));
     read = reinterpret_cast<decltype(read)>(dlsym(RTLD_DEFAULT, "mpv_plezy_audio_tap_read"));
+    read_next = reinterpret_cast<decltype(read_next)>(dlsym(RTLD_DEFAULT, "mpv_plezy_audio_tap_read_next"));
   }
   bool available() const { return version && enable && read && version() == MPV_PLEZY_AUDIO_TAP_ABI; }
+  bool capture_available() const { return available() && read_next; }
 };
 VisualizationTapApi& TapApi() {
   static VisualizationTapApi api;
@@ -348,6 +351,23 @@ int MpvPlayer::ReadVisualizationAudio(mpv_plezy_audio_block* block) {
   const double pts = visualization_pts_.load();
   if (!std::isfinite(pts)) return 0;
   return TapApi().read(mpv_, pts, block, sizeof(*block));
+}
+
+bool MpvPlayer::SubtitlePcmCaptureAvailable() const {
+  std::lock_guard<std::mutex> lock(native_mutex_);
+  return !audio_only_ && !disposed_ && mpv_ && TapApi().capture_available();
+}
+
+int MpvPlayer::SetSubtitlePcmCaptureEnabled(bool enabled) {
+  std::lock_guard<std::mutex> lock(native_mutex_);
+  if (audio_only_ || disposed_ || !mpv_ || !TapApi().capture_available()) return MPV_ERROR_UNSUPPORTED;
+  return TapApi().enable(mpv_, enabled ? 1 : 0);
+}
+
+int MpvPlayer::ReadSubtitlePcmCapture(mpv_plezy_audio_block* block) {
+  std::lock_guard<std::mutex> lock(native_mutex_);
+  if (audio_only_ || disposed_ || !mpv_ || !TapApi().capture_available()) return MPV_ERROR_UNSUPPORTED;
+  return TapApi().read_next(mpv_, block, sizeof(*block));
 }
 
 MpvPlayer::~MpvPlayer() { Dispose(); }

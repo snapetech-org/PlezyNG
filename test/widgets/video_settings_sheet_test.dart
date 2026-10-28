@@ -767,6 +767,21 @@ Future<void> _pumpSheetViaOverlayRoute(WidgetTester tester, Player player) async
 }
 
 class _FakeSettingsPlayer implements Player, AudioEqualizerCapable, AudioEffectsCapable {
+  @override
+  bool get supportsSecondarySubtitles => false;
+
+  @override
+  bool get supportsSubtitleStepSync => false;
+
+  @override
+  bool get supportsSubtitleStyleControls => false;
+
+  @override
+  Set<String> get supportedLocalSubtitleExtensions => const {};
+
+  @override
+  bool get audioPassthroughActive => false;
+
   _FakeSettingsPlayer({
     this.playerType = 'exoplayer',
     this.onSetProperty,

@@ -90,6 +90,26 @@ void main() {
     expect((await verifier.verify(bytes, now, allowExpired: true)).sequence, 7);
   });
 
+  test('release sequence floor applies before any local checkpoint exists', () async {
+    final verifier = VisualizerCatalogVerifier(VisualizerCatalogTrust(keys: trust.keys, minimumSequence: 10));
+    await expectLater(verifier.verify(await envelope(9), now), throwsFormatException);
+    await expectLater(verifier.verify(await envelope(9), now, allowExpired: true), throwsFormatException);
+    expect((await verifier.verify(await envelope(10), now)).sequence, 10);
+  });
+
+  test('a signed broader pack cannot borrow the sample-fixture exception', () async {
+    final changed = {...entry, 'id': 'broader-pack'};
+    await expectLater(
+      VisualizerCatalogVerifier(trust).verify(await envelope(11, entries: [changed]), now),
+      throwsFormatException,
+    );
+    final unassessed = {...entry}..remove('qualification');
+    await expectLater(
+      VisualizerCatalogVerifier(trust).verify(await envelope(11, entries: [unassessed]), now),
+      throwsFormatException,
+    );
+  });
+
   test('rejects mutable archives and uncleared pack declarations', () async {
     final verifier = VisualizerCatalogVerifier(trust);
     await expectLater(
@@ -142,7 +162,18 @@ void main() {
   });
 
   test('network failure retains cached metadata and fresh authorization', () async {
-    final remoteEntry = {...entry, 'id': 'remote-sample'};
+    // Synthetic signed metadata exercises authorization, not GPU qualification.
+    final remoteEntry = {
+      ...entry,
+      'id': 'remote-sample',
+      'qualification': {
+        'status': 'qualified',
+        'targets': VisualizerPackQualification.requiredTargets.toList(),
+        'reportUrl':
+            'https://raw.githubusercontent.com/snapetech-org/MilkRust/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/content/qualification/reports/test-only.json',
+        'reportSha256': List.filled(64, 'b').join(),
+      },
+    };
     var offline = false;
     final bytes = await envelope(2, entries: [remoteEntry]);
     final client = MockClient((_) async {

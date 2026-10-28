@@ -896,10 +896,8 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                       Align(
                         alignment: AlignmentDirectional.centerStart,
                         child: TextButton.icon(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const TraktSettingsScreen()),
-                          ),
+                          onPressed: () =>
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const TraktSettingsScreen())),
                           icon: const AppIcon(Symbols.link_rounded),
                           label: Text('${t.common.connect} ${t.trakt.title}'),
                         ),

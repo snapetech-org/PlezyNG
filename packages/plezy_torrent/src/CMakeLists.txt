@@ -14,15 +14,15 @@ if(PLEZY_TORRENT_SYSTEM)
 else()
   # These hashes also pin the source archives included in release notices.
   FetchContent_Declare(plezy_boost
-    URL https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.bz2
-    URL_HASH SHA256=1bed88e40401b2cb7a1f76d4bab499e352fa4d0c5f31c0dbae64e24d34d7513b)
+    URL https://github.com/boostorg/boost/releases/download/boost-1.86.0/boost-1.86.0-b2-nodocs.tar.xz
+    URL_HASH SHA256=a4d99d032ab74c9c5e76eddcecc4489134282245fffa7e079c5804b92b45f51d)
   FetchContent_GetProperties(plezy_boost)
   if(NOT plezy_boost_POPULATED)
     FetchContent_Populate(plezy_boost)
   endif()
-  set(BOOST_ROOT "${plezy_boost_SOURCE_DIR}")
+  set(BOOST_ROOT "${plezy_boost_SOURCE_DIR}/boost-1.86.0")
   # Explicit headers bypass cross-toolchain sysroot rewriting in FindBoost.
-  set(Boost_INCLUDE_DIR "${plezy_boost_SOURCE_DIR}")
+  set(Boost_INCLUDE_DIR "${plezy_boost_SOURCE_DIR}/boost-1.86.0")
   set(Boost_NO_SYSTEM_PATHS ON)
   set(Boost_NO_BOOST_CMAKE ON)
   # Keep these scoped to this plugin; never change other Flutter plugins'
@@ -44,7 +44,7 @@ else()
   FetchContent_MakeAvailable(libtorrent)
   add_library(LibtorrentRasterbar::torrent-rasterbar ALIAS torrent-rasterbar)
   install(FILES "${libtorrent_SOURCE_DIR}/COPYING" DESTINATION share/plezy/licenses RENAME libtorrent.txt)
-  install(FILES "${plezy_boost_SOURCE_DIR}/LICENSE_1_0.txt" DESTINATION share/plezy/licenses RENAME boost.txt)
+  install(FILES "${plezy_boost_SOURCE_DIR}/boost-1.86.0/LICENSE_1_0.txt" DESTINATION share/plezy/licenses RENAME boost.txt)
 endif()
 add_library(plezy_torrent SHARED plezy_torrent.cpp)
 target_compile_features(plezy_torrent PRIVATE cxx_std_17)

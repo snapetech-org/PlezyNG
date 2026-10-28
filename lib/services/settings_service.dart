@@ -51,7 +51,7 @@ import '../theme/mono_theme.dart' show MonoPalette;
 import '../watch_together/services/watch_party_relays.dart';
 
 Map<String, List<MediaBookmark>> _decodeMediaBookmarks(dynamic raw) {
-  if (raw is! Map) return const <String, Map<String, String>>{};
+  if (raw is! Map) return const <String, List<MediaBookmark>>{};
   final decoded = <String, List<MediaBookmark>>{};
   for (final entry in raw.entries) {
     if (entry.key is! String || (entry.key as String).isEmpty || entry.value is! List) continue;
@@ -64,6 +64,8 @@ Map<String, List<MediaBookmark>> _decodeMediaBookmarks(dynamic raw) {
   }
   return decoded;
 }
+
+double _normalizeSubtitleSyncRate(double value) => value.isFinite && value >= 0.8 && value <= 1.25 ? value : 1.0;
 
 /// The app theme. Value names are the persisted ids. [system] follows the
 /// platform between [light] and [dark]; every other value is one fixed palette,
@@ -878,9 +880,10 @@ class SettingsService extends BaseSharedPreferencesService {
   static const subtitleSyncRate = DoublePref(
     'subtitle_sync_rate',
     defaultValue: 1.0,
-    transform: (value) => value.isFinite && value >= 0.8 && value <= 1.25 ? value : 1.0,
+    transform: _normalizeSubtitleSyncRate,
   );
   static const subtitleSearchLanguage = NullableStringPref('subtitle_search_language');
+
   /// Rejected server subtitle revisions, stored as content fingerprints → epoch ms.
   static final subtitleRejectedRevisions = JsonPref<Map<String, int>>(
     'subtitle_rejected_revisions_v1',
@@ -891,6 +894,7 @@ class SettingsService extends BaseSharedPreferencesService {
       return MapEntry(key, timestamp);
     }),
   );
+
   /// Ordered device-local subtitle language fallbacks; server profile language remains first.
   static const subtitleLanguageOrder = StringListPref('subtitle_language_order');
   static const volume = DoublePref('volume', defaultValue: 100.0);
@@ -2037,7 +2041,7 @@ class SettingsService extends BaseSharedPreferencesService {
 
     // Try extracting USB HID code from toString() output:
     // PhysicalKeyboardKey#ec9ed(usbHidUsage: "0x0007002c", debugName: "Space")
-    final usbHidMatch = RegExp(r'usbhidusage: "0x([0-9a-f] )"').firstMatch(normalized);
+    final usbHidMatch = RegExp(r'usbhidusage: "0x([0-9a-f]+)"').firstMatch(normalized);
     if (usbHidMatch != null) {
       final code = int.tryParse(usbHidMatch.group(1)!, radix: 16);
       if (code != null) return PhysicalKeyboardKey(code);

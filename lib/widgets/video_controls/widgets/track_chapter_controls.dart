@@ -139,17 +139,12 @@ class TrackChapterControls extends StatelessWidget {
     );
   }
 
-
   void _openMotionClaritySheet(BuildContext context) {
     final state = trackControlsState;
     state.onCancelAutoHide?.call();
     OverlaySheetController.of(context)
         .show(
-          builder: (_) => VideoSettingsSheet(
-            player: player,
-            trackControlsState: state,
-            openMotionClarity: true,
-          ),
+          builder: (_) => VideoSettingsSheet(player: player, trackControlsState: state, openMotionClarity: true),
         )
         .whenComplete(() => state.onStartAutoHide?.call());
   }
@@ -173,9 +168,9 @@ class TrackChapterControls extends StatelessWidget {
       if (currentPreset.interpolationEnabled && status.isComparisonBypass) {
         final result = await service.setComparisonBypass(false);
         if (context.mounted && result.isComparisonBypass) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(t.videoSettings.motionClarityCompareFailed)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(t.videoSettings.motionClarityCompareFailed)));
         }
         return;
       }
@@ -203,8 +198,8 @@ class TrackChapterControls extends StatelessWidget {
       final targetPreset = currentPreset.interpolationEnabled
           ? MotionClarityPreset.original
           : lastPreset.interpolationEnabled
-              ? lastPreset
-              : MotionClarityPreset.balanced;
+          ? lastPreset
+          : MotionClarityPreset.balanced;
       final keepManualControls =
           targetPreset == MotionClarityPreset.custom || targetPreset == MotionClarityPreset.original;
       final kernel = keepManualControls ? manualKernel : targetPreset.defaultKernel;
@@ -233,8 +228,7 @@ class TrackChapterControls extends StatelessWidget {
         }
         await ScopedPlayerPrefs.write(ScopedPlayerPrefs.motionClarityPreset, metadata, targetPreset);
       } catch (_) {
-        final restoreKernel =
-            currentPreset == MotionClarityPreset.custom ? manualKernel : currentPreset.defaultKernel;
+        final restoreKernel = currentPreset == MotionClarityPreset.custom ? manualKernel : currentPreset.defaultKernel;
         final restoreThreshold = currentPreset == MotionClarityPreset.custom
             ? manualThreshold
             : currentPreset.defaultThresholdPercent;
@@ -248,17 +242,16 @@ class TrackChapterControls extends StatelessWidget {
           mciQuality: quality,
         );
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(t.videoSettings.motionClaritySaveFailed)),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.videoSettings.motionClaritySaveFailed)));
         }
         return;
       }
 
-      if (result.requiresSourceReload && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(t.videoSettings.motionClarityRestartRequired)),
-        );
+      if (!context.mounted) return;
+      if (result.requiresSourceReload) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(t.videoSettings.motionClarityRestartRequired)));
       } else if (targetPreset.interpolationEnabled &&
           (targetPreset == MotionClarityPreset.oled || engine == MotionClarityEngine.motionCompensated) &&
           result.effectiveEngine != MotionClarityEngine.motionCompensated) {
@@ -266,9 +259,7 @@ class TrackChapterControls extends StatelessWidget {
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(t.videoSettings.motionClaritySaveFailed)),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.videoSettings.motionClaritySaveFailed)));
       }
     } finally {
       _motionToggleInFlight[player] = false;

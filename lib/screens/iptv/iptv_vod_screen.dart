@@ -6,10 +6,10 @@ import 'package:provider/provider.dart';
 
 import '../../focus/focusable_wrapper.dart';
 import '../../i18n/strings.g.dart';
-import '../../i18n/iptv_copy.dart';
 import '../../iptv/iptv_models.dart';
 import '../../iptv/iptv_source_repository.dart';
 import '../../iptv/iptv_vod_progress_sync_service.dart';
+import '../../profiles/active_profile_provider.dart';
 import '../../sources/source_models.dart';
 import '../../sources/source_playback.dart';
 import '../../theme/mono_tokens.dart';
@@ -110,12 +110,7 @@ class _IptvVodScreenState extends State<IptvVodScreen> {
         if (cachedCategories.isEmpty) rethrow;
       }
 
-      final cachedItems = await repository.cachedVodItems(
-        widget.profileId,
-        sourceId,
-        _kind,
-        categoryId: _categoryId,
-      );
+      final cachedItems = await repository.cachedVodItems(widget.profileId, sourceId, _kind, categoryId: _categoryId);
       if (!current()) return;
       setState(() => _items = cachedItems);
       await _loadVodProgress(sourceId, _kind);
@@ -189,7 +184,10 @@ class _IptvVodScreenState extends State<IptvVodScreen> {
                   DropdownButtonFormField<String>(
                     initialValue: _sourceId,
                     decoration: InputDecoration(labelText: t.iptv.vodSource),
-                    items: [for (final source in _sources) DropdownMenuItem(value: source.id, child: Text(source.displayName))],
+                    items: [
+                      for (final source in _sources)
+                        DropdownMenuItem(value: source.id, child: Text(source.displayName)),
+                    ],
                     onChanged: _loading
                         ? null
                         : (value) {
@@ -204,8 +202,16 @@ class _IptvVodScreenState extends State<IptvVodScreen> {
                 const SizedBox(height: 12),
                 SegmentedButton<IptvVodKind>(
                   segments: [
-                    ButtonSegment(value: IptvVodKind.movie, icon: const AppIcon(Symbols.movie_rounded), label: Text(t.iptv.movies)),
-                    ButtonSegment(value: IptvVodKind.series, icon: const AppIcon(Symbols.live_tv_rounded), label: Text(t.iptv.series)),
+                    ButtonSegment(
+                      value: IptvVodKind.movie,
+                      icon: const AppIcon(Symbols.movie_rounded),
+                      label: Text(t.iptv.movies),
+                    ),
+                    ButtonSegment(
+                      value: IptvVodKind.series,
+                      icon: const AppIcon(Symbols.live_tv_rounded),
+                      label: Text(t.iptv.series),
+                    ),
                   ],
                   selected: {_kind},
                   onSelectionChanged: _loading
@@ -249,7 +255,10 @@ class _IptvVodScreenState extends State<IptvVodScreen> {
                     items: [
                       DropdownMenuItem(value: null, child: Text(t.iptv.allCategories)),
                       for (final category in _categories)
-                        DropdownMenuItem(value: category.id, child: Text(category.name, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                        DropdownMenuItem(
+                          value: category.id,
+                          child: Text(category.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ),
                     ],
                     onChanged: _loading
                         ? null
@@ -268,7 +277,12 @@ class _IptvVodScreenState extends State<IptvVodScreen> {
         else if (_error != null)
           SliverFillRemaining(
             hasScrollBody: false,
-            child: Center(child: Padding(padding: const EdgeInsets.all(32), child: Text(_error!, textAlign: TextAlign.center))),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Text(_error!, textAlign: TextAlign.center),
+              ),
+            ),
           )
         else if (visibleItems.isEmpty)
           SliverFillRemaining(
@@ -334,7 +348,10 @@ class _VodPosterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = tokens(context).radiusMd;
     final theme = Theme.of(context);
-    final details = [if (item.year != null) '${item.year}', if (item.kind == IptvVodKind.series) t.iptv.series].join(' · ');
+    final details = [
+      if (item.year != null) '${item.year}',
+      if (item.kind == IptvVodKind.series) t.iptv.series,
+    ].join(' · ');
     return FocusableWrapper(
       borderRadius: radius,
       semanticLabel: item.title,
@@ -363,10 +380,20 @@ class _VodPosterCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                    Text(
+                      item.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                    ),
                     if (details.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      Text(details, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall?.copyWith(color: tokens(context).textMuted)),
+                      Text(
+                        details,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(color: tokens(context).textMuted),
+                      ),
                     ],
                   ],
                 ),
@@ -471,6 +498,7 @@ class _IptvVodDetailsScreenState extends State<IptvVodDetailsScreen> {
       );
       final durationMs = durationSeconds == null ? 0 : durationSeconds * 1000;
       final resumePositionMs = savedProgress == null || savedProgress.finished ? 0 : savedProgress.positionMs;
+      if (!mounted || context.read<ActiveProfileProvider>().activeId != widget.profileId) return;
       await context.read<SourcePlayback>().start(
         entry,
         [file],
@@ -538,13 +566,22 @@ class _IptvVodDetailsScreenState extends State<IptvVodDetailsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(item.title, style: theme.textTheme.headlineSmall, maxLines: 3, overflow: TextOverflow.ellipsis),
+                          Text(
+                            item.title,
+                            style: theme.textTheme.headlineSmall,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           const SizedBox(height: 8),
-                          Text([
-                            if (item.year != null) '${item.year}',
-                            if (item.rating != null) item.rating!.toStringAsFixed(1),
-                            if (item.durationSeconds != null && item.durationSeconds! > 0) _formatDuration(item.durationSeconds!),
-                          ].join(' · '), style: theme.textTheme.bodyMedium?.copyWith(color: tokens(context).textMuted)),
+                          Text(
+                            [
+                              if (item.year != null) '${item.year}',
+                              if (item.rating != null) item.rating!.toStringAsFixed(1),
+                              if (item.durationSeconds != null && item.durationSeconds! > 0)
+                                _formatDuration(item.durationSeconds!),
+                            ].join(' · '),
+                            style: theme.textTheme.bodyMedium?.copyWith(color: tokens(context).textMuted),
+                          ),
                           if (item.plot?.isNotEmpty == true) ...[
                             const SizedBox(height: 10),
                             Text(item.plot!, maxLines: 6, overflow: TextOverflow.ellipsis),
@@ -552,15 +589,21 @@ class _IptvVodDetailsScreenState extends State<IptvVodDetailsScreen> {
                           if (widget.item.kind == IptvVodKind.movie) ...[
                             const SizedBox(height: 14),
                             FilledButton.icon(
-                              onPressed: _playing ? null : () => _play(
-                                widget.item.id,
-                                widget.item.containerExtension,
-                                widget.item.title,
-                                widget.item.durationSeconds,
-                                series: false,
-                              ),
+                              onPressed: _playing
+                                  ? null
+                                  : () => _play(
+                                      widget.item.id,
+                                      widget.item.containerExtension,
+                                      widget.item.title,
+                                      widget.item.durationSeconds,
+                                      series: false,
+                                    ),
                               icon: _playing
-                                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    )
                                   : const AppIcon(Symbols.play_arrow_rounded),
                               label: Text(t.iptv.play),
                             ),
@@ -583,8 +626,12 @@ class _IptvVodDetailsScreenState extends State<IptvVodDetailsScreen> {
                       initialValue: _season,
                       decoration: InputDecoration(labelText: t.iptv.season),
                       items: [
-                        for (final season in _seriesDetails!.episodes.map((episode) => episode.season).toSet().toList()..sort())
-                          DropdownMenuItem(value: season, child: Text(season == 0 ? t.iptv.specials : '${t.iptv.season} $season')),
+                        for (final season
+                            in _seriesDetails!.episodes.map((episode) => episode.season).toSet().toList()..sort())
+                          DropdownMenuItem(
+                            value: season,
+                            child: Text(season == 0 ? t.iptv.specials : '${t.iptv.season} $season'),
+                          ),
                       ],
                       onChanged: (value) => setState(() => _season = value),
                     ),
@@ -600,26 +647,36 @@ class _IptvVodDetailsScreenState extends State<IptvVodDetailsScreen> {
                             child: OptimizedMediaImage.thumb(imagePath: episode.posterUrl, width: 96, height: 54),
                           ),
                         ),
-                        title: Text('E${episode.episode.toString().padLeft(2, '0')} · ${episode.title}', maxLines: 2, overflow: TextOverflow.ellipsis),
-                        subtitle: episode.durationSeconds == null ? null : Text(_formatDuration(episode.durationSeconds!)),
+                        title: Text(
+                          'E${episode.episode.toString().padLeft(2, '0')} · ${episode.title}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: episode.durationSeconds == null
+                            ? null
+                            : Text(_formatDuration(episode.durationSeconds!)),
                         trailing: IconButton(
                           tooltip: t.iptv.play,
-                          onPressed: _playing ? null : () => _play(
-                            episode.id,
-                            episode.containerExtension,
-                            '${item.title} S${episode.season}E${episode.episode} ${episode.title}',
-                            episode.durationSeconds,
-                            series: true,
-                          ),
+                          onPressed: _playing
+                              ? null
+                              : () => _play(
+                                  episode.id,
+                                  episode.containerExtension,
+                                  '${item.title} S${episode.season}E${episode.episode} ${episode.title}',
+                                  episode.durationSeconds,
+                                  series: true,
+                                ),
                           icon: const AppIcon(Symbols.play_arrow_rounded),
                         ),
-                        onTap: _playing ? null : () => _play(
-                          episode.id,
-                          episode.containerExtension,
-                          '${item.title} S${episode.season}E${episode.episode} ${episode.title}',
-                          episode.durationSeconds,
-                          series: true,
-                        ),
+                        onTap: _playing
+                            ? null
+                            : () => _play(
+                                episode.id,
+                                episode.containerExtension,
+                                '${item.title} S${episode.season}E${episode.episode} ${episode.title}',
+                                episode.durationSeconds,
+                                series: true,
+                              ),
                       ),
                   ],
                 ],

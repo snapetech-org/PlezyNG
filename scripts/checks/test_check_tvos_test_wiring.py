@@ -21,6 +21,9 @@ class TvosTestWiringCheckerTest(unittest.TestCase):
         self.compiled_files = ["ExampleTests.swift", "WidgetTests.mm"]
         for name in self.compiled_files:
             (self.tests_path / name).write_text("// fixture\n", encoding="utf-8")
+        self.shared_path = self.root / CHECKER.SHARED_TEST_PATHS[0]
+        self.shared_path.parent.mkdir(parents=True)
+        self.shared_path.write_text("// shared fixture\n", encoding="utf-8")
         self._write_project()
 
     def tearDown(self) -> None:
@@ -39,6 +42,7 @@ class TvosTestWiringCheckerTest(unittest.TestCase):
         *,
         group_names: list[str] | None = None,
         source_names: list[str] | None = None,
+        include_shared: bool = True,
     ) -> None:
         group_names = self.compiled_files if group_names is None else group_names
         source_names = self.compiled_files if source_names is None else source_names
@@ -50,6 +54,8 @@ class TvosTestWiringCheckerTest(unittest.TestCase):
                     "// !$*UTF8*$!",
                     "{",
                     "\tobjects = {",
+                    '\t\tDDDDDDDDDDDDDDDDDDDDDDDD /* SteamAppleSinkTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "../native/games/apple/SteamAppleSinkTests.mm"; sourceTree = SOURCE_ROOT; };',
+                    '\t\tEEEEEEEEEEEEEEEEEEEEEEEE /* SteamAppleSinkTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = DDDDDDDDDDDDDDDDDDDDDDDD /* SteamAppleSinkTests.mm */; };',
                     "\t\tAAAAAAAAAAAAAAAAAAAAAAAA /* RunnerTests */ = {",
                     "\t\t\tisa = PBXGroup;",
                     "\t\t\tchildren = (",
@@ -70,6 +76,7 @@ class TvosTestWiringCheckerTest(unittest.TestCase):
                     "\t\t\tisa = PBXSourcesBuildPhase;",
                     "\t\t\tfiles = (",
                     self._entries(source_names, in_sources=True),
+                    '\t\t\t\tEEEEEEEEEEEEEEEEEEEEEEEE /* SteamAppleSinkTests.mm in Sources */,' if include_shared else "",
                     "\t\t\t);",
                     "\t\t};",
                     "\t};",
@@ -110,6 +117,23 @@ class TvosTestWiringCheckerTest(unittest.TestCase):
         self._write_project(group_names=[*self.compiled_files, "TestSupport.h"])
 
         self.assertEqual([], CHECKER.validate(self.root))
+
+    def test_shared_test_must_exist_and_be_compiled(self) -> None:
+        self._write_project(include_shared=False)
+        self.assertTrue(any("Sources phase is missing: SteamAppleSinkTests.mm" in error for error in CHECKER.validate(self.root)))
+        self._write_project()
+        self.shared_path.unlink()
+        self.assertTrue(any("shared RunnerTests source is missing" in error for error in CHECKER.validate(self.root)))
+
+    def test_shared_reference_cannot_point_to_another_source(self) -> None:
+        project = self.root / CHECKER.PROJECT_PATH
+        project.write_text(project.read_text().replace('../native/games/apple/SteamAppleSinkTests.mm', '../unrelated.mm'))
+        self.assertTrue(any("shared RunnerTests file reference is missing or invalid" in error for error in CHECKER.validate(self.root)))
+
+    def test_shared_build_reference_cannot_point_to_another_file(self) -> None:
+        project = self.root / CHECKER.PROJECT_PATH
+        project.write_text(project.read_text().replace('fileRef = DDDDDDDDDDDDDDDDDDDDDDDD', 'fileRef = AAAAAAAAAAAAAAAAAAAAAAAA'))
+        self.assertTrue(any("shared RunnerTests build-file reference is missing or invalid" in error for error in CHECKER.validate(self.root)))
 
 
 if __name__ == "__main__":

@@ -134,7 +134,7 @@ class _DiscoveryShortlistVoteScreenState extends State<DiscoveryShortlistVoteScr
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Icon(Symbols.groups_rounded, size: 42, color: theme.colorScheme.primary),
+      AppIcon(Symbols.groups_rounded, size: 42, color: theme.colorScheme.primary),
       const SizedBox(height: 16),
       Text(t.discover.findNext.voteSetup, style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
       const SizedBox(height: 8),
@@ -226,7 +226,7 @@ class _DiscoveryShortlistVoteScreenState extends State<DiscoveryShortlistVoteScr
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Icon(Symbols.phonelink_lock_rounded, size: 42, color: theme.colorScheme.primary),
+      AppIcon(Symbols.phonelink_lock_rounded, size: 42, color: theme.colorScheme.primary),
       const SizedBox(height: 18),
       Text(t.discover.findNext.passDevice, style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
       const SizedBox(height: 8),
@@ -246,7 +246,7 @@ class _DiscoveryShortlistVoteScreenState extends State<DiscoveryShortlistVoteScr
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Icon(
+        AppIcon(
           winner == null ? Symbols.groups_rounded : Symbols.celebration_rounded,
           size: 42,
           color: theme.colorScheme.primary,

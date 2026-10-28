@@ -2852,7 +2852,6 @@ class _Translations$streaming$kk extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Real-Debrid есептік жазбасымен қолдау көрсетілетін торрент ағындарын ойнатыңыз.';
 	@override String get connectRealDebrid => 'QR кодымен қосу';
-	@override String get disconnectRealDebrid => 'Real-Debrid қызметін ажырату';
 	@override String realDebridConnected({required Object username}) => '${username} ретінде қосылды';
 	@override String get realDebridInstructions => 'QR кодын сканерлеңіз немесе сілтемені ашыңыз, содан кейін PlezyNG-ді қосу үшін осы белсендіру кодын енгізіңіз:';
 	@override String get realDebridActivate => 'Белсендіру үшін Real-Debrid ашу';
@@ -2880,21 +2879,17 @@ class _Translations$streaming$kk extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => '${service} қызметін ажырату керек пе?';
 	@override String get disconnectBody => 'PlezyNG осы құрылғының рұқсатын жояды. Провайдердегі файлдар мен орындалып жатқан тасымалдар өзгермейді.';
 	@override String get streamsTitle => 'Ағынды таңдау';
-	@override String get searchingStreams => 'Қосылған қосымшалар тексерілуде…';
 	@override String get noStreams => 'Бұл атауға арналған ағындар табылмады.';
 	@override String get manageConnections => 'Ағын қызметтерін басқару';
 	@override String subtitleTracks({required Object count}) => 'Субтитр жолдары: ${count}';
 	@override String get chooseSubtitle => 'Субтитрді таңдау';
 	@override String get chooseProvider => 'Debrid қызметін таңдау';
 	@override String get subtitleOff => 'Субтитрлер өшірулі';
-	@override String get subtitleLoadFailed => 'Бұл субтитрді жүктеу мүмкін болмады. Басқа жолды қолданып көріңіз.';
-	@override String get subtitleApplied => 'Ойнату үшін субтитр таңдалды';
 	@override String get streamLookupPartial => 'Кейбір қосымшаларға қол жеткізу мүмкін болмады.';
 	@override String get streamLookupFailed => 'Қосылған қосымшаларды тексеру мүмкін болмады.';
 	@override String get streamOpenExternal => 'Сыртқы сілтемені ашу';
 	@override String get streamPrepare => 'Debrid қызметі арқылы дайындалуда…';
 	@override String get streamPrepareFailed => 'Бұл ағынды дайындау мүмкін болмады. Қосылған есептік жазбаны тексеріп, басқа көзді қолданып көріңіз.';
-	@override String get streamNeedsRealDebrid => 'Осы торрент ағынын ойнату үшін Debrid қызметін қосыңыз.';
 	@override String get streamUnsupported => 'Қолданбадағы ойнатқыш бұл ағын пішімін қолдамайды.';
 	@override String get remoteNeedsEpisode => 'Ағын іздемес бұрын эпизодты таңдаңыз.';
 	@override String get remoteNeedsEpisodeNumber => 'Бұл эпизодта маусым не эпизод нөмірі жоқ.';
@@ -7903,7 +7898,6 @@ extension on TranslationsKk {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Real-Debrid есептік жазбасымен қолдау көрсетілетін торрент ағындарын ойнатыңыз.',
 			'streaming.connectRealDebrid' => 'QR кодымен қосу',
-			'streaming.disconnectRealDebrid' => 'Real-Debrid қызметін ажырату',
 			'streaming.realDebridConnected' => ({required Object username}) => '${username} ретінде қосылды',
 			'streaming.realDebridInstructions' => 'QR кодын сканерлеңіз немесе сілтемені ашыңыз, содан кейін PlezyNG-ді қосу үшін осы белсендіру кодын енгізіңіз:',
 			'streaming.realDebridActivate' => 'Белсендіру үшін Real-Debrid ашу',
@@ -7931,21 +7925,17 @@ extension on TranslationsKk {
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service} қызметін ажырату керек пе?',
 			'streaming.disconnectBody' => 'PlezyNG осы құрылғының рұқсатын жояды. Провайдердегі файлдар мен орындалып жатқан тасымалдар өзгермейді.',
 			'streaming.streamsTitle' => 'Ағынды таңдау',
-			'streaming.searchingStreams' => 'Қосылған қосымшалар тексерілуде…',
 			'streaming.noStreams' => 'Бұл атауға арналған ағындар табылмады.',
 			'streaming.manageConnections' => 'Ағын қызметтерін басқару',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Субтитр жолдары: ${count}',
 			'streaming.chooseSubtitle' => 'Субтитрді таңдау',
 			'streaming.chooseProvider' => 'Debrid қызметін таңдау',
 			'streaming.subtitleOff' => 'Субтитрлер өшірулі',
-			'streaming.subtitleLoadFailed' => 'Бұл субтитрді жүктеу мүмкін болмады. Басқа жолды қолданып көріңіз.',
-			'streaming.subtitleApplied' => 'Ойнату үшін субтитр таңдалды',
 			'streaming.streamLookupPartial' => 'Кейбір қосымшаларға қол жеткізу мүмкін болмады.',
 			'streaming.streamLookupFailed' => 'Қосылған қосымшаларды тексеру мүмкін болмады.',
 			'streaming.streamOpenExternal' => 'Сыртқы сілтемені ашу',
 			'streaming.streamPrepare' => 'Debrid қызметі арқылы дайындалуда…',
 			'streaming.streamPrepareFailed' => 'Бұл ағынды дайындау мүмкін болмады. Қосылған есептік жазбаны тексеріп, басқа көзді қолданып көріңіз.',
-			'streaming.streamNeedsRealDebrid' => 'Осы торрент ағынын ойнату үшін Debrid қызметін қосыңыз.',
 			'streaming.streamUnsupported' => 'Қолданбадағы ойнатқыш бұл ағын пішімін қолдамайды.',
 			'streaming.remoteNeedsEpisode' => 'Ағын іздемес бұрын эпизодты таңдаңыз.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Бұл эпизодта маусым не эпизод нөмірі жоқ.',
@@ -8200,13 +8190,13 @@ extension on TranslationsKk {
 			'universalMedia.playlistFormatsHelp' => 'Өмірінің соңына дейін 1 тыс. нәрсе бар және 2 Мб. HLS-дер көшірмеген, оның ішінде жүктеуге ұсынады.',
 			'universalMedia.saveQueuePlaylist' => 'Кезекті ойнату тізімі ретінде сақтау',
 			'universalMedia.queuePlaylistSaved' => 'Ойнату тізімі медиа файлдарының жанына сақталды.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Бұл кезекті қайта пайдалануға болатын жергілікті ойнату тізімі ретінде сақтау мүмкін емес.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Кезектегі файлдармен бір қалтадағы сақтау орнын таңдаңыз.',
 			'universalMedia.noFavorites' => 'Қазіргі таңда бүкіл әлемде өте көп айтылады.Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Өткен қабырғасы',
 			'universalMedia.filesHelp' => 'Аудио, видео, немесе ISO файлы бар. Файлы және URL-дер библиографияның аяқталуы мүмкін емес.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Серіктің файл',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '1 Жылдық артықшылығы', other: '${count} жабдықтау файлы', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi қосылу үшін дағдарысты',
@@ -8714,13 +8704,13 @@ extension on TranslationsKk {
 			'sourceSetup.nfsEncryptionFailure' => 'Шифрланған NFS үшін NAS-тың екі қызметінде де RFC 9289 және TLS 1.3 қолдауын, сертификат атауын және ортақ ресурстың UID/GID мәндерін тексеріңіз. PlezyNG бұл қосылымды шифрлаусыз қайта жасамайды.',
 			'sourceSetup.sourceConnecting' => 'Дереккөзге қосылуда',
 			'sourceSetup.metadataSearchPrivacy' => 'Бұл атау іздеуі Trakt қызметіне жіберіледі. Енгізген атауыңыз жіберіледі, бейне не дереккөздің кіру деректері жіберілмейді.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Сәйкес нәтижені таңдау',
 			'sourceSetup.metadataMatchHelp' => 'Таңдамас бұрын атауы мен жылын тексеріңіз. Trakt ізделген атауды алады; бейне өз дереккөзінде қалады.',
 			'sourceSetup.metadataNoMatches' => 'Онлайн сәйкес атаулар табылмады. Басқа атауды байқап көріңіз.',
 			'sourceSetup.metadataSearch' => 'Онлайн метадеректерді іздеу',
 			'sourceSetup.metadataLoading' => 'Онлайн фильмдер мен сериалдар туралы мәліметтер ізделуде…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt қызметінен онлайн метадеректер',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Атауға автоматты сәйкестік табылмады. Сәйкес нәтижені таңдау үшін атауды іздеңіз.',
 			'sourceSetup.metadataFailed' => 'Онлайн метадеректер жүктелмеді. Ойнату мен жергілікті мәліметтер әлі де қолжетімді.',

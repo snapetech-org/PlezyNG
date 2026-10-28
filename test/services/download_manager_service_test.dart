@@ -40,6 +40,7 @@ import '../test_helpers/download_fixtures.dart';
 import '../test_helpers/io_fakes.dart';
 import '../test_helpers/prefs.dart';
 import '../test_helpers/media_items.dart';
+import '../test_helpers/media_server_client_test_defaults.dart';
 
 void main() {
   group('downloadExtensionFromUrl', () {
@@ -3807,7 +3808,7 @@ class _ConvertingClient extends _SupplementaryClient implements ConvertedDownloa
   }
 }
 
-class _SupplementaryClient implements MediaServerClient {
+class _SupplementaryClient with TestMediaServerClientDefaults implements MediaServerClient {
   _SupplementaryClient({required this.metadata, required this.resolution});
 
   final MediaItem metadata;

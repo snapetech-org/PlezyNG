@@ -163,8 +163,7 @@ class ExploreProvider extends ChangeNotifier with DisposableChangeNotifierMixin 
               ),
             ),
       for (final providerHub in _providerHubs)
-        if (_rendersProviderHub(providerHub) &&
-            (providerHub.page.items.isNotEmpty || providerHub.requiresFilterInput))
+        if (_rendersProviderHub(providerHub) && (providerHub.page.items.isNotEmpty || providerHub.requiresFilterInput))
           ExploreRowHub.providerHub(
             providerHubId: providerHub.id,
             style: providerHub.style,
@@ -347,12 +346,7 @@ class ExploreProvider extends ChangeNotifier with DisposableChangeNotifierMixin 
     final filterSource = source as CatalogHubFiltersSource;
     return _loadAllPages(
       hubId,
-      (page) => filterSource.fetchFilteredHub(
-        hubId,
-        filters: filters,
-        page: page,
-        limit: viewAllPageLimit,
-      ),
+      (page) => filterSource.fetchFilteredHub(hubId, filters: filters, page: page, limit: viewAllPageLimit),
     );
   }
 

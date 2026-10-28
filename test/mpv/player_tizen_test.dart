@@ -13,13 +13,77 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late FakeSamsung backend;
   late PlayerTizen player;
+  const visualizer = MethodChannel('com.plezy/mpv_audio_player');
 
   setUp(() {
     backend = FakeSamsung();
     native.VideoPlayerPlatform.instance = backend;
     player = PlayerTizen();
   });
-  tearDown(() => player.dispose());
+  tearDown(() async {
+    await player.dispose();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(visualizer, null);
+  });
+
+  test('music binds the exact local/remote player and unbinds before native disposal', () async {
+    await player.dispose();
+    player = PlayerTizen(audioOnly: true);
+    final calls = <String>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(visualizer, (
+      call,
+    ) async {
+      final id = (call.arguments as Map)['playerId'] as int;
+      calls.add('${call.method}:$id');
+      if (call.method == 'visualizerUnbindPlayer') expect(backend.disposed, isNot(contains(id)));
+      return null;
+    });
+    expect(player.nativeVisualizationAudioReady, isFalse);
+    await player.open(Media('/first.mp3'));
+    expect(backend.sources.single.playerOptions?['plezyAudioOnly'], isTrue);
+    expect(player.nativeVisualizationAudioReady, isTrue);
+    await player.open(Media('https://server.test/second.mp3'));
+    expect(backend.sources.last.playerOptions?['plezyAudioOnly'], isTrue);
+    expect(calls, ['visualizerBindPlayer:1', 'visualizerUnbindPlayer:1', 'visualizerBindPlayer:2']);
+    await player.stop();
+    expect(calls.last, 'visualizerUnbindPlayer:2');
+    expect(player.nativeVisualizationAudioReady, isFalse);
+  });
+
+  test('an absent visualization host preserves ordinary music playback', () async {
+    await player.dispose();
+    player = PlayerTizen(audioOnly: true);
+    await player.open(Media('/first.mp3'));
+    expect(player.state.playing, isTrue);
+    expect(player.nativeVisualizationAudioReady, isFalse);
+    await player.stop();
+    expect(backend.disposed, [1]);
+  });
+
+  test('stop during visualization binding cannot start the stale music player', () async {
+    await player.dispose();
+    player = PlayerTizen(audioOnly: true);
+    final binding = Completer<void>(), release = Completer<void>();
+    final calls = <String>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(visualizer, (
+      call,
+    ) async {
+      calls.add(call.method);
+      if (call.method == 'visualizerBindPlayer') {
+        binding.complete();
+        await release.future;
+      }
+      return null;
+    });
+    final opening = player.open(Media('/first.mp3'));
+    await binding.future;
+    final stopping = player.stop();
+    release.complete();
+    await Future.wait([opening, stopping]);
+    expect(backend.played, isEmpty);
+    expect(backend.disposed, [1]);
+    expect(calls, ['visualizerBindPlayer', 'visualizerUnbindPlayer']);
+    expect(player.nativeVisualizationAudioReady, isFalse);
+  });
 
   test('authenticated remote URLs stay behind the local transport', () async {
     await player.open(Media('https://server.test/movie.mp4?token=secret', headers: {'Authorization': 'Bearer secret'}));

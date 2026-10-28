@@ -35,11 +35,47 @@ abstract final class SubtitleSyncService {
   static const int _maximumCandidateComparisons = 6000000;
   static const int _cutOffsetJumpMs = 1100;
   static const Set<String> _stopWords = {
-    'about', 'after', 'again', 'against', 'being', 'could', 'every', 'from',
-    'have', 'into', 'just', 'more', 'most', 'other', 'over', 'same', 'should',
-    'some', 'such', 'than', 'that', 'their', 'there', 'these', 'thing', 'this',
-    'those', 'through', 'under', 'very', 'want', 'were', 'what', 'when', 'where',
-    'which', 'while', 'will', 'with', 'would', 'your',
+    'about',
+    'after',
+    'again',
+    'against',
+    'being',
+    'could',
+    'every',
+    'from',
+    'have',
+    'into',
+    'just',
+    'more',
+    'most',
+    'other',
+    'over',
+    'same',
+    'should',
+    'some',
+    'such',
+    'than',
+    'that',
+    'their',
+    'there',
+    'these',
+    'thing',
+    'this',
+    'those',
+    'through',
+    'under',
+    'very',
+    'want',
+    'were',
+    'what',
+    'when',
+    'where',
+    'which',
+    'while',
+    'will',
+    'with',
+    'would',
+    'your',
   };
 
   /// Align a target subtitle against another already synchronized subtitle
@@ -51,13 +87,12 @@ abstract final class SubtitleSyncService {
     required List<SubtitleCue> referenceCues,
     required int mediaDurationMs,
     required bool repairCuts,
-  }) =>
-      synchronize(
-        subtitleCues: subtitleCues,
-        speechCues: referenceCues,
-        mediaDurationMs: mediaDurationMs,
-        repairCuts: repairCuts,
-      );
+  }) => synchronize(
+    subtitleCues: subtitleCues,
+    speechCues: referenceCues,
+    mediaDurationMs: mediaDurationMs,
+    repairCuts: repairCuts,
+  );
 
   static SubtitleSyncResult synchronize({
     required List<SubtitleCue> subtitleCues,
@@ -67,20 +102,28 @@ abstract final class SubtitleSyncService {
     bool preserveUnmatchedOutsideEvidence = false,
   }) {
     if (subtitleCues.length < _minimumMatches || speechCues.length < _minimumMatches) {
-      throw const FormatException('At least three cues are needed in both the target subtitle and its reference text for automatic alignment.');
+      throw const FormatException(
+        'At least three cues are needed in both the target subtitle and its reference text for automatic alignment.',
+      );
     }
-    if (subtitleCues.length > SubtitleRetimer.maximumCueCount ||
-        speechCues.length > SubtitleRetimer.maximumCueCount) {
+    if (subtitleCues.length > SubtitleRetimer.maximumCueCount || speechCues.length > SubtitleRetimer.maximumCueCount) {
       throw const FormatException('Subtitle alignment exceeded the cue processing bound.');
     }
     if (mediaDurationMs <= 0 || mediaDurationMs > SubtitleRetimer.maximumTimeMs) {
       throw const FormatException('Audio duration is outside the supported alignment range.');
     }
-    final textBytes = [...subtitleCues, ...speechCues]
-        .fold<int>(0, (total, cue) => total + utf8.encode(cue.text).length);
+    final textBytes = [
+      ...subtitleCues,
+      ...speechCues,
+    ].fold<int>(0, (total, cue) => total + utf8.encode(cue.text).length);
     if (textBytes > SubtitleRetimer.maximumInputBytes ||
-        [...subtitleCues, ...speechCues].any((cue) =>
-            cue.startMs < 0 || cue.endMs <= cue.startMs || cue.endMs > SubtitleRetimer.maximumTimeMs || cue.text.length > 4000)) {
+        [...subtitleCues, ...speechCues].any(
+          (cue) =>
+              cue.startMs < 0 ||
+              cue.endMs <= cue.startMs ||
+              cue.endMs > SubtitleRetimer.maximumTimeMs ||
+              cue.text.length > 4000,
+        )) {
       throw const FormatException('Subtitle alignment input exceeds a text or cue-time safety bound.');
     }
 
@@ -144,17 +187,12 @@ abstract final class SubtitleSyncService {
         if (comparisons > _maximumCandidateComparisons) {
           throw const FormatException('Subtitle alignment exceeded its bounded comparison budget.');
         }
-        final speech = orderedSpeech[speechIndex];
         final confidence = _similarity(terms, speechTerms[speechIndex]);
         if (confidence < 0.42) continue;
         final temporalPenalty = ((speechIndex - expectedIndex).abs() / orderedSpeech.length * 0.025).clamp(0.0, 0.025);
         final adjustedConfidence = confidence - temporalPenalty;
         if (best == null || adjustedConfidence > best.confidence) {
-          best = _SubtitleAnchor(
-            subtitleIndex: subIndex,
-            speechIndex: speechIndex,
-            confidence: adjustedConfidence,
-          );
+          best = _SubtitleAnchor(subtitleIndex: subIndex, speechIndex: speechIndex, confidence: adjustedConfidence);
         }
       }
 
@@ -182,8 +220,11 @@ abstract final class SubtitleSyncService {
     final rate = repairCuts ? 1.0 : _robustRate(anchors, orderedSubtitles, orderedSpeech);
     final globalOffset = _median(
       anchors
-          .map((anchor) => orderedSpeech[anchor.speechIndex].startMs -
-              (orderedSubtitles[anchor.subtitleIndex].startMs * rate).round())
+          .map(
+            (anchor) =>
+                orderedSpeech[anchor.speechIndex].startMs -
+                (orderedSubtitles[anchor.subtitleIndex].startMs * rate).round(),
+          )
           .toList(),
     );
     final discontinuities = repairCuts ? _countDiscontinuities(anchors, orderedSubtitles, orderedSpeech) : 0;
@@ -211,8 +252,7 @@ abstract final class SubtitleSyncService {
       final nextAnchor = anchors[upper];
       final previousTime = orderedSubtitles[previousAnchor.subtitleIndex].startMs;
       final nextTime = orderedSubtitles[nextAnchor.subtitleIndex].startMs;
-      final previousOffset =
-          orderedSpeech[previousAnchor.speechIndex].startMs - previousTime;
+      final previousOffset = orderedSpeech[previousAnchor.speechIndex].startMs - previousTime;
       final nextOffset = orderedSpeech[nextAnchor.speechIndex].startMs - nextTime;
       if (previousAnchor == nextAnchor || nextTime <= previousTime) return previousOffset;
 
@@ -229,16 +269,14 @@ abstract final class SubtitleSyncService {
     for (var index = 0; index < orderedSubtitles.length; index++) {
       final source = orderedSubtitles[index];
       final anchor = matchedBySubtitle[index];
-      if (preserveUnmatchedOutsideEvidence && !anchors.any((evidence) {
-        final speech = orderedSpeech[evidence.speechIndex];
-        return source.startMs <= speech.endMs + 15000 && source.endMs >= speech.startMs - 15000;
-      })) {
-        repaired.add(SubtitleCue(
-          index: repaired.length + 1,
-          startMs: source.startMs,
-          endMs: source.endMs,
-          text: source.text,
-        ));
+      if (preserveUnmatchedOutsideEvidence &&
+          !anchors.any((evidence) {
+            final speech = orderedSpeech[evidence.speechIndex];
+            return source.startMs <= speech.endMs + 15000 && source.endMs >= speech.startMs - 15000;
+          })) {
+        repaired.add(
+          SubtitleCue(index: repaired.length + 1, startMs: source.startMs, endMs: source.endMs, text: source.text),
+        );
         continue;
       }
       final correction = repairCuts && anchor != null
@@ -250,12 +288,9 @@ abstract final class SubtitleSyncService {
       final clippedStart = start.clamp(0, mediaDurationMs).toInt();
       final clippedEnd = end.clamp(clippedStart + 1, mediaDurationMs).toInt();
       if (clippedEnd <= clippedStart) continue;
-      repaired.add(SubtitleCue(
-        index: repaired.length + 1,
-        startMs: clippedStart,
-        endMs: clippedEnd,
-        text: source.text,
-      ));
+      repaired.add(
+        SubtitleCue(index: repaired.length + 1, startMs: clippedStart, endMs: clippedEnd, text: source.text),
+      );
     }
     if (repaired.isEmpty) throw const FormatException('Alignment moved every subtitle cue outside the audio duration.');
 
@@ -311,7 +346,8 @@ abstract final class SubtitleSyncService {
     var previousWasSpace = true;
     for (final rune in withoutMarkup.runes) {
       final isAsciiWord = (rune >= 48 && rune <= 57) || (rune >= 97 && rune <= 122);
-      final isUnicodeScript = rune >= 0x80 &&
+      final isUnicodeScript =
+          rune >= 0x80 &&
           !(rune >= 0x2000 && rune <= 0x206f) &&
           !(rune >= 0x3000 && rune <= 0x303f) &&
           !(rune >= 0xff00 && rune <= 0xff65);
@@ -370,11 +406,7 @@ abstract final class SubtitleSyncService {
     return output;
   }
 
-  static double _robustRate(
-    List<_SubtitleAnchor> anchors,
-    List<SubtitleCue> subtitles,
-    List<SubtitleCue> speech,
-  ) {
+  static double _robustRate(List<_SubtitleAnchor> anchors, List<SubtitleCue> subtitles, List<SubtitleCue> speech) {
     final slopes = <double>[];
     for (var left = 0; left < anchors.length; left++) {
       final leftSource = subtitles[anchors[left].subtitleIndex].startMs;
@@ -433,11 +465,7 @@ abstract final class SubtitleSyncService {
 }
 
 final class _SubtitleAnchor {
-  const _SubtitleAnchor({
-    required this.subtitleIndex,
-    required this.speechIndex,
-    required this.confidence,
-  });
+  const _SubtitleAnchor({required this.subtitleIndex, required this.speechIndex, required this.confidence});
 
   final int subtitleIndex;
   final int speechIndex;

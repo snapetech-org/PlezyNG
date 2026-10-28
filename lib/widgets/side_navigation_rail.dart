@@ -79,7 +79,6 @@ KeyEventResult _handleRailItemKey(
   return KeyEventResult.ignored;
 }
 
-
 class _ConnectorDrawerIcon extends StatelessWidget {
   const _ConnectorDrawerIcon();
 
@@ -1464,32 +1463,28 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
               crossAxisAlignment: .start,
               children: [
                 const SizedBox(height: 4),
-                if (isLoading)
-                  ...[
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: t.textMuted),
-                        ),
+                if (isLoading) ...[
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: t.textMuted),
                       ),
                     ),
-                    filesLibraryItem(),
-                  ]
-                else if (allEmpty)
-                  ...[
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        Translations.of(context).libraries.noLibrariesFound,
-                        style: TextStyle(fontSize: 12, color: t.textMuted),
-                      ),
+                  ),
+                  filesLibraryItem(),
+                ] else if (allEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      Translations.of(context).libraries.noLibrariesFound,
+                      style: TextStyle(fontSize: 12, color: t.textMuted),
                     ),
-                    filesLibraryItem(),
-                  ]
-                else ...[
+                  ),
+                  filesLibraryItem(),
+                ] else ...[
                   if (visibleRows.isNotEmpty) _buildLibraryGroupedColumn(visibleRows, t),
                   filesLibraryItem(),
                   for (final shelf in sourceShelves)

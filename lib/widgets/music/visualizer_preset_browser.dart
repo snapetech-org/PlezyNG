@@ -1,3 +1,5 @@
+import '../app_icon.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -45,11 +47,12 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
     try {
       final favorites = await widget.store.favoriteIds();
       final playlists = await widget.store.playlists();
-      if (mounted)
+      if (mounted) {
         setState(() {
           _favorites = favorites;
           _playlists = playlists;
         });
+      }
     } on Object catch (error) {
       if (mounted) setState(() => _error = error.toString());
     }
@@ -84,11 +87,12 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
         VisualizerPlaylist(name: name, entries: visible.map((preset) => preset.libraryPath).toList()),
       ];
       await widget.store.savePlaylists(next);
-      if (mounted)
+      if (mounted) {
         setState(() {
           _playlists = next;
           _playlist = name;
         });
+      }
     } on Object catch (error) {
       if (mounted) setState(() => _error = error.toString());
     }
@@ -98,11 +102,12 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
     final next = _playlists.where((item) => item.name != _playlist).toList();
     try {
       await widget.store.savePlaylists(next);
-      if (mounted)
+      if (mounted) {
         setState(() {
           _playlists = next;
           _playlist = null;
         });
+      }
     } on Object catch (error) {
       if (mounted) setState(() => _error = error.toString());
     }
@@ -162,8 +167,9 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
       ).openRead(0, 512 * 1024 + 1).fold<List<int>>([], (all, chunk) => all..addAll(chunk));
       if (bytes.length > 512 * 1024) throw const VisualizerPackException('Playlist file exceeds 512 KB.');
       final value = jsonDecode(utf8.decode(bytes));
-      if (value is! Map || value['kind'] != 'plezy-visualizer-playlists')
+      if (value is! Map || value['kind'] != 'plezy-visualizer-playlists') {
         throw const VisualizerPackException('Not a visualizer playlist export.');
+      }
       final imported = VisualizerPackStore.decodePlaylists(value);
       final names = _playlists.map((item) => item.name.toLowerCase()).toSet();
       if (imported.any((item) => names.contains(item.name.toLowerCase()))) {
@@ -241,7 +247,7 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
               trailing: IconButton(
                 tooltip: 'Close',
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close),
+                icon: const AppIcon(Symbols.close_rounded),
               ),
             ),
             Padding(
@@ -249,7 +255,7 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
               child: TextField(
                 autofocus: false,
                 decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: AppIcon(Symbols.search_rounded),
                   labelText: 'Title, author, pack or tag',
                 ),
                 onChanged: (value) => setState(() => _query = value.trim().toLowerCase()),
@@ -282,23 +288,23 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
                   IconButton(
                     tooltip: 'Save filtered list as playlist',
                     onPressed: visible.isEmpty ? null : () => _savePlaylist(visible),
-                    icon: const Icon(Icons.playlist_add),
+                    icon: const AppIcon(Symbols.playlist_add_rounded),
                   ),
                   if (_playlist != null)
                     IconButton(
                       tooltip: 'Delete playlist',
                       onPressed: _deletePlaylist,
-                      icon: const Icon(Icons.playlist_remove),
+                      icon: const AppIcon(Symbols.playlist_remove_rounded),
                     ),
                   IconButton(
                     tooltip: 'Import playlists',
                     onPressed: _importPlaylists,
-                    icon: const Icon(Icons.file_open_outlined),
+                    icon: const AppIcon(Symbols.file_open_rounded),
                   ),
                   IconButton(
                     tooltip: 'Export playlists (references only)',
                     onPressed: _playlists.isEmpty ? null : _exportPlaylists,
-                    icon: const Icon(Icons.ios_share),
+                    icon: const AppIcon(Symbols.ios_share_rounded),
                   ),
                 ],
               ),
@@ -326,7 +332,7 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
                         final preset = visible[index];
                         final canPlay = widget.capability.available && widget.capability.accepts(preset);
                         return ListTile(
-                          leading: Icon(canPlay ? Icons.play_circle_outline : Icons.info_outline),
+                          leading: AppIcon(canPlay ? Symbols.play_circle_rounded : Symbols.info_rounded),
                           title: Text(preset.title, maxLines: 2, overflow: TextOverflow.ellipsis),
                           subtitle: Text(
                             [
@@ -351,7 +357,7 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
                               if (selected != null)
                                 PopupMenuButton<int>(
                                   tooltip: 'Reorder in playlist',
-                                  icon: const Icon(Icons.swap_vert, size: 18),
+                                  icon: const AppIcon(Symbols.swap_vert_rounded, size: 18),
                                   onSelected: (offset) => _move(preset, offset),
                                   itemBuilder: (_) => [
                                     const PopupMenuItem(value: -1, child: Text('Move up')),
@@ -361,12 +367,12 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
                               IconButton(
                                 tooltip: _favorites.contains(preset.id) ? 'Remove favorite' : 'Add favorite',
                                 onPressed: () => _favorite(preset),
-                                icon: Icon(_favorites.contains(preset.id) ? Icons.favorite : Icons.favorite_border),
+                                icon: AppIcon(Symbols.favorite_rounded, fill: _favorites.contains(preset.id) ? 1 : 0),
                               ),
                               IconButton(
                                 tooltip: 'Preset details and notices',
                                 onPressed: () => _details(preset),
-                                icon: const Icon(Icons.info_outline),
+                                icon: const AppIcon(Symbols.info_rounded),
                               ),
                             ],
                           ),

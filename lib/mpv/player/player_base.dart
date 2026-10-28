@@ -38,6 +38,12 @@ abstract interface class PlayerAudioFocusControl {
   Future<void> setAudioFocusEnabled(bool enabled);
 }
 
+/// A player whose exact music output can be bound to the native preset host.
+/// Renderer and codec availability are negotiated separately by that host.
+abstract interface class NativeVisualizationAudioSource {
+  bool get nativeVisualizationAudioReady;
+}
+
 extension PlayerAudioFocusOwnership on Player {
   Future<void> setWorkspaceAudioFocusEnabled(bool enabled) async {
     final current = this;
@@ -165,7 +171,7 @@ abstract class PlayerBase
   /// destination cannot be read back, and then to [publishPlayheadRelocation]
   /// when there is a destination to report.
   @protected
-  int beginPlayheadRelocation() => _playheadOperations;
+  int beginPlayheadRelocation() => ++_playheadOperations;
 
   /// Record that a claimed relocation actually moved the playhead, even though
   /// its destination could not be read back.
@@ -235,7 +241,7 @@ abstract class PlayerBase
   /// and can be sent anyway instead of being skipped. Skipping is what used
   /// to leave a hung predecessor's release chained forever (the permanent
   /// "Playback could not be started" wedge).
-  static int _nativeInstanceCounter = 0;
+  static final int _nativeInstanceCounter = 0;
   final int nativeInstanceId = _nativeInstanceCounter;
 
   static const _maximumDurationMilliseconds = 9223372036854775;
@@ -1094,7 +1100,7 @@ abstract class PlayerBase
       _deferredRelocation = (token: token, position: position);
       return;
     }
-    final writer = token ?? _playheadOperations;
+    final writer = token ?? ++_playheadOperations;
     _takeOperationOwnership(writer);
     _lastPositionWriter = writer;
     _activeSeekGroup = null;
@@ -1190,13 +1196,14 @@ abstract class PlayerBase
   @protected
   void takeSourceOwnership() {
     if (_disposed) return;
+    final operation = ++_playheadOperations;
     // Recorded before anything below overwrites it: whoever finalises the
     // outgoing item needs where it got to, and every position reachable from
     // here on belongs to the new source.
     _outgoingSourcePosition = Duration(milliseconds: _frozenOutgoingPositionMs ?? _lastReportedPositionMs);
     _frozenOutgoingPositionMs = null;
     _lastReportedPositionMs = 0;
-    _takeOperationOwnership(_playheadOperations);
+    _takeOperationOwnership(operation);
     _activeSeekGroup = null;
     // A gapless advance starts the new source at its beginning, which is known
     // rather than guessed. Published unconditionally: the alternative is to
@@ -1204,7 +1211,7 @@ abstract class PlayerBase
     // is far more likely to be the outgoing track's last tick than an early
     // one from the incoming track. If an early new-source tick really did
     // arrive, its successor corrects this within one tick.
-    _lastPositionWriter = _playheadOperations;
+    _lastPositionWriter = operation;
     _setPlaybackPosition(Duration.zero);
     announcePlayheadJump(Duration.zero);
   }
@@ -1259,6 +1266,7 @@ abstract class PlayerBase
   /// [runSeek], so this is the second way it can move discontinuously.
   @protected
   void resetPlaybackProgress(Duration position) {
+    final operation = ++_playheadOperations;
     _positionMs = position.inMilliseconds;
     // A source is being installed at this position; nothing has been reported
     // about it yet, and its predecessor's position says nothing about it.
@@ -1274,8 +1282,8 @@ abstract class PlayerBase
       bufferRanges: const [],
       hasRenderedFrame: false,
     );
-    _takeOperationOwnership(_playheadOperations);
-    _lastPositionWriter = _playheadOperations;
+    _takeOperationOwnership(operation);
+    _lastPositionWriter = operation;
     _activeSeekGroup = null;
     completedController.add(false);
     positionController.add(position);
@@ -1306,6 +1314,7 @@ abstract class PlayerBase
   /// that pinned the abandoned resume target keeps building on it.
   @protected
   void restorePlaybackProgress(PlayerState snapshot, {Duration? position}) {
+    final operation = ++_playheadOperations;
     final restoredPosition = position ?? snapshot.position;
     _positionMs = restoredPosition.inMilliseconds;
     _state = _state.copyWith(
@@ -1316,8 +1325,8 @@ abstract class PlayerBase
       bufferRanges: snapshot.bufferRanges,
       hasRenderedFrame: snapshot.hasRenderedFrame,
     );
-    _takeOperationOwnership(_playheadOperations);
-    _lastPositionWriter = _playheadOperations;
+    _takeOperationOwnership(operation);
+    _lastPositionWriter = operation;
     _activeSeekGroup = null;
     completedController.add(snapshot.completed);
     positionController.add(restoredPosition);
@@ -1656,7 +1665,7 @@ abstract class PlayerBase
   Future<void> runSeek(Duration position, Future<void> Function() seekFn) async {
     if (_disposed) return;
 
-    final request = _playheadOperations;
+    final request = ++_playheadOperations;
     // Measures how much media time playback could legitimately have covered
     // while the command was in flight; a fixed media-time window cannot tell a
     // fast-rate advance from a stale pre-seek tick.

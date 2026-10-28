@@ -147,10 +147,7 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
     }
   }
 
-
-  ({List<SubtitleSearchResult> visible, int hidden}) _filterRejectedResults(
-    List<SubtitleSearchResult> results,
-  ) {
+  ({List<SubtitleSearchResult> visible, int hidden}) _filterRejectedResults(List<SubtitleSearchResult> results) {
     final settings = SettingsService.instanceOrNull;
     final visible = <SubtitleSearchResult>[];
     var hidden = 0;
@@ -161,7 +158,8 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
         mediaIndex: widget.mediaIndex,
         result: result,
       );
-      final rejected = _sessionRejectedRevisions.contains(key) ||
+      final rejected =
+          _sessionRejectedRevisions.contains(key) ||
           (settings != null &&
               SubtitleRejectionService.isRejected(
                 settings,
@@ -498,7 +496,8 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
                 mediaIndex: widget.mediaIndex,
                 result: result,
               );
-              final isRejected = _sessionRejectedRevisions.contains(revisionKey) ||
+              final isRejected =
+                  _sessionRejectedRevisions.contains(revisionKey) ||
                   (rejectionSettings != null &&
                       SubtitleRejectionService.isRejected(
                         rejectionSettings,
@@ -514,9 +513,12 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
                 languageCode: result.languageCode,
               );
               final detailParts = <String>[
-                if (languageDisplay != null) languageDisplay,
-                if (result.forced || titleSaysForced(result.title) || titleSaysForced(result.displayTitle)) t.fileInfo.flagForced,
-                if (result.hearingImpaired || titleSaysHearingImpaired(result.title) || titleSaysHearingImpaired(result.displayTitle))
+                ?languageDisplay,
+                if (result.forced || titleSaysForced(result.title) || titleSaysForced(result.displayTitle))
+                  t.fileInfo.flagForced,
+                if (result.hearingImpaired ||
+                    titleSaysHearingImpaired(result.title) ||
+                    titleSaysHearingImpaired(result.displayTitle))
                   t.fileInfo.flagHearingImpaired,
                 if (result.codec?.trim().isNotEmpty == true) 'Format ${result.codec!.toUpperCase()}',
                 if (result.providerTitle?.trim().isNotEmpty == true) 'Provider ${result.providerTitle!.trim()}',
@@ -550,10 +552,7 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                       onPressed: () => unawaited(_setRevisionRejected(result, rejected: !isRejected)),
-                      icon: Icon(
-                        isRejected ? Icons.undo_rounded : Icons.visibility_off_outlined,
-                        size: 18,
-                      ),
+                      icon: AppIcon(isRejected ? Symbols.undo_rounded : Symbols.visibility_off_rounded, size: 18),
                     ),
                   );
                 }

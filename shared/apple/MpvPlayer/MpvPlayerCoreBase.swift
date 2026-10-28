@@ -343,6 +343,54 @@ class MpvPlayerCoreBase: NSObject {
       PlezyVisualizationTapRead(UnsafeMutableRawPointer(player), lifecycleState.visualizationPTS, output, size)
     } ?? -1001
   }
+  func subtitlePcmCaptureAvailable() -> Bool {
+    isInitialized && PlezySubtitlePcmCaptureAvailable()
+  }
+  func setSubtitlePcmCaptureEnabled(_ enabled: Bool) -> Int32 {
+    withActiveMpv { PlezySubtitlePcmCaptureEnable(UnsafeMutableRawPointer($0), enabled) } ?? -1001
+  }
+  func drainSubtitlePcmCapture(maxPackets: Int = 32) -> (packets: [[String: Any]], error: Int32)? {
+    withActiveMpv { player in
+      let limit = max(0, min(maxPackets, 32))
+      let maximumFrames: UInt32 = 512
+      let maximumChannels: UInt32 = 8
+      var packets: [[String: Any]] = []
+      var error: Int32 = 0
+      for _ in 0..<limit {
+        var pts = 0.0
+        var frames: UInt32 = 0
+        var sampleRate: UInt32 = 0
+        var channels: UInt32 = 0
+        var droppedFrames: UInt32 = 0
+        var pcm = Data(count: Int(maximumFrames * maximumChannels) * MemoryLayout<Float>.size)
+        let readResult = pcm.withUnsafeMutableBytes { buffer -> Int32 in
+          guard let baseAddress = buffer.baseAddress else { return -1001 }
+          return PlezySubtitlePcmCaptureReadNext(
+            UnsafeMutableRawPointer(player), &pts, &frames, &sampleRate, &channels, &droppedFrames,
+            baseAddress, buffer.count)
+        }
+        if readResult == 0 { break }
+        if readResult < 0 { error = readResult; break }
+        guard frames > 0, frames <= maximumFrames, sampleRate > 0,
+          channels > 0, channels <= maximumChannels
+        else { continue }
+        let ptsUs = pts * 1_000_000
+        guard ptsUs.isFinite, ptsUs >= Double(Int64.min), ptsUs < Double(Int64.max) else { continue }
+        let sampleBytes = Int(frames) * Int(channels) * MemoryLayout<Float>.size
+        guard sampleBytes <= pcm.count else { continue }
+        pcm.removeSubrange(sampleBytes..<pcm.count)
+        packets.append([
+          "presentationTimeUs": Int64(ptsUs.rounded()),
+          "sampleRate": Int(sampleRate),
+          "channels": Int(channels),
+          "encoding": "float32",
+          "pcm": pcm,
+          "droppedFrames": Int(droppedFrames),
+        ])
+      }
+      return (packets, error)
+    }
+  }
 
   func updateEDRMode(sigPeak: Double) {}
 
@@ -1375,7 +1423,9 @@ class MpvPlayerCoreBase: NSObject {
   }
 
   private func handleEvent(_ event: mpv_event) {
-    if event.event_id == MPV_EVENT_START_FILE || event.event_id == MPV_EVENT_END_FILE || event.event_id == MPV_EVENT_SEEK {
+    if event.event_id == MPV_EVENT_START_FILE || event.event_id == MPV_EVENT_END_FILE
+      || event.event_id == MPV_EVENT_SEEK
+    {
       lifecycleLock.lock(); lifecycleState.visualizationPTS = .nan; lifecycleLock.unlock()
     }
     switch event.event_id {
@@ -1384,7 +1434,8 @@ class MpvPlayerCoreBase: NSObject {
       let property = data.assumingMemoryBound(to: mpv_event_property.self).pointee
       if event.reply_userdata == Self.internalVisualizationObserverId {
         lifecycleLock.lock()
-        lifecycleState.visualizationPTS = property.format == MPV_FORMAT_DOUBLE
+        lifecycleState.visualizationPTS =
+          property.format == MPV_FORMAT_DOUBLE
           ? (property.data?.assumingMemoryBound(to: Double.self).pointee ?? .nan) : .nan
         lifecycleLock.unlock()
         break

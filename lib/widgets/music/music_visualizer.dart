@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import '../../i18n/strings.g.dart';
 import '../../media/media_source_info.dart';
 import '../../mpv/player/audio_spectrum.dart';
-import '../../mpv/player/player_native.dart';
+import '../../mpv/player/player_base.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../profiles/active_profile_provider.dart';
 import '../../services/visualization/visualizer_pack_store.dart';
@@ -172,10 +172,11 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   @override
   void dispose() {
     final route = _fullscreenRoute;
-    if (route != null)
+    if (route != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (route.isActive) route.navigator?.removeRoute(route);
       });
+    }
     WidgetsBinding.instance.removeObserver(this);
     _playbackListenable.removeListener(_onSourceChanged);
     final reducedMotionSubscription = _reducedMotionPositionSubscription;
@@ -242,14 +243,16 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   bool get _nativeSourceReady {
     final service = widget.service;
     if (service != null) {
-      return service is MusicVisualizationAudioService && service.hasNativeVisualizationAudio;
+      return service is MusicVisualizationAudioService &&
+          (service as MusicVisualizationAudioService).hasNativeVisualizationAudio;
     }
     final player = widget.sourcePlayback?.player;
-    return player is PlayerNative && player.isAudioCoreReady;
+    return player is NativeVisualizationAudioSource &&
+        (player as NativeVisualizationAudioSource).nativeVisualizationAudioReady;
   }
 
   void _syncTicker() {
-    final visible = _fullscreen || TickerMode.of(context);
+    final visible = _fullscreen || TickerMode.valuesOf(context).enabled;
     _sceneVisible = visible;
     final shouldAnimate = !_reduceMotion && _appResumed && visible && !_native.hasFrame;
     if (shouldAnimate && !_ticker.isActive) {
@@ -349,10 +352,11 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
             'transition': _native.transitionSeconds,
           })
           .catchError((Object error) {
-            if (mounted)
+            if (mounted) {
               ScaffoldMessenger.maybeOf(
                 context,
               )?.showSnackBar(SnackBar(content: Text('Could not save visualization choices: $error')));
+            }
           }),
     );
   }
@@ -364,7 +368,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
         _playlist.length > 1 &&
         _appResumed &&
         !_reduceMotion &&
-        (_fullscreen || TickerMode.of(context)) &&
+        (_fullscreen || TickerMode.valuesOf(context).enabled) &&
         _isPlaying;
     if (!enabled) {
       _presetTimer?.cancel();
@@ -746,7 +750,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                 ),
                 PopupMenuButton<String>(
                   tooltip: 'Visualization options',
-                  icon: const Icon(Icons.more_vert, size: 20),
+                  icon: const AppIcon(Symbols.more_vert_rounded, size: 20),
                   onSelected: _option,
                   itemBuilder: (_) => [
                     if (_native.active) const PopupMenuItem(value: 'original', child: Text('Original scenes')),
@@ -906,7 +910,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                                         IconButton(
                                           tooltip: 'Exit fullscreen',
                                           onPressed: () => Navigator.pop(dialogContext),
-                                          icon: const Icon(Icons.fullscreen_exit),
+                                          icon: const AppIcon(Symbols.fullscreen_exit_rounded),
                                         ),
                                       ],
                                     ),

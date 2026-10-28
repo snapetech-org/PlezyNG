@@ -96,6 +96,7 @@ import '../services/scoped_player_prefs.dart';
 import '../sources/content_access.dart';
 import '../sources/source_controller.dart';
 import '../services/motion_clarity_service.dart';
+import '../services/motion_processing_service.dart';
 import '../services/settings_service.dart';
 import '../services/video_decode_capabilities.dart';
 import '../services/storage_service.dart';
@@ -162,7 +163,7 @@ import '../focus/dpad_navigator.dart';
 import '../focus/focus_navigation_intent.dart';
 import '../focus/transport_keys.dart';
 import '../i18n/strings.g.dart';
-import '../i18n/iptv_copy.dart';
+import '../models/motion_clarity.dart';
 import '../watch_together/providers/watch_together_provider.dart';
 import '../watch_together/models/watch_copy.dart';
 import '../watch_together/services/player_adapter.dart';
@@ -1547,20 +1548,16 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     } on Object {
       _externalSourceController = null;
     }
-    bindEffect<bool>(
-      SettingsService.subtitleOnMute,
-      (enabled) {
-        final volume = _volumeController?.value;
-        if (volume == null) return;
-        final generation = ++_subtitleMuteGeneration;
-        if (enabled && volume <= 0) {
-          unawaited(_selectSubtitleForMute(generation));
-        } else if (!enabled && _subtitleMuteRestore != null) {
-          unawaited(_restoreSubtitleAfterMute(generation));
-        }
-      },
-      fireImmediately: false,
-    );
+    bindEffect<bool>(SettingsService.subtitleOnMute, (enabled) {
+      final volume = _volumeController?.value;
+      if (volume == null) return;
+      final generation = ++_subtitleMuteGeneration;
+      if (enabled && volume <= 0) {
+        unawaited(_selectSubtitleForMute(generation));
+      } else if (!enabled && _subtitleMuteRestore != null) {
+        unawaited(_restoreSubtitleAfterMute(generation));
+      }
+    }, fireImmediately: false);
     PlaybackCoordinator.instance.registerVideoSession(
       shutdown: _shutdownVideo,
       stopAndExit: _stopVideoAndExit,
@@ -1894,8 +1891,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         title: title,
         codec: codec,
         forced: subtitle['forced'] == true,
-        hearingImpaired:
-            subtitle['hearingImpaired'] == true || titleSaysHearingImpaired(title),
+        hearingImpaired: subtitle['hearingImpaired'] == true || titleSaysHearingImpaired(title),
         isExternal: subtitle['external'] == true,
       ),
     );
@@ -3184,12 +3180,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       alwaysShowSubtitlesOnDevice: settings.read(SettingsService.alwaysShowSubtitlesOnDevice),
     );
     var candidate = resolver
-        .selectSubtitleTrack(
-          tracks,
-          manager.preferredSubtitleTrack,
-          state.track.audio,
-          waitForPendingSource: false,
-        )
+        .selectSubtitleTrack(tracks, manager.preferredSubtitleTrack, state.track.audio, waitForPendingSource: false)
         ?.track;
 
     if (candidate == null || candidate.id == SubtitleTrack.off.id || candidate.id == SubtitleTrack.auto.id) {
@@ -3204,7 +3195,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       final language = preferredLanguage?.isNotEmpty == true ? preferredLanguage : audioLanguage;
       if (language?.isNotEmpty == true) {
         for (final track in selectable) {
-          if (languageMatches(track.language, language)) {
+          if (resolver.languageMatches(track.language, language)) {
             candidate = track;
             break;
           }
@@ -3263,16 +3254,13 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }) async {
     _subtitleMuteSelectionPending = true;
     final previous = _subtitleMuteSelectionQueue;
-    final operation = previous
-        .catchError((Object _, StackTrace __) {})
-        .then((_) async {
-          if (!mounted || generation != _subtitleMuteGeneration || !identical(player, targetPlayer)) return;
-          if (expectedCurrentTrackId != null &&
-              targetPlayer.state.track.subtitle?.id != expectedCurrentTrackId) {
-            return;
-          }
-          await targetPlayer.selectSubtitleTrack(track);
-        });
+    final operation = previous.catchError((Object _, StackTrace _) {}).then((_) async {
+      if (!mounted || generation != _subtitleMuteGeneration || !identical(player, targetPlayer)) return;
+      if (expectedCurrentTrackId != null && targetPlayer.state.track.subtitle?.id != expectedCurrentTrackId) {
+        return;
+      }
+      await targetPlayer.selectSubtitleTrack(track);
+    });
     _subtitleMuteSelectionQueue = operation.catchError((Object error, StackTrace stackTrace) {
       appLogger.w('Temporary subtitle selection failed', error: error, stackTrace: stackTrace);
     });
@@ -3311,9 +3299,8 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _detachSubtitleMuteTrackCatalogListener([Player? expectedPlayer]) {
     if (expectedPlayer != null && !identical(_subtitleMuteTrackCatalogPlayer, expectedPlayer)) return;
     _subtitleMuteTrackCatalogPlayer = null;
-    final subscription = _subtitleMuteTrackCatalogSubscription;
+    unawaited(_subtitleMuteTrackCatalogSubscription?.cancel());
     _subtitleMuteTrackCatalogSubscription = null;
-    if (subscription != null) unawaited(subscription.cancel());
   }
 
   void _detachSubtitleMuteVolumeListener(VideoVolumeController controller) {
@@ -3625,14 +3612,22 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     // The tracker snapshots duration, tracks, identity and position before
     // yielding. Native stop may reset them. This also retains offline writes
     // and the tracker's terminal watched-state settlement.
-    final stoppedReport = _sendStoppedProgressOnce(positionOverride: currentPlayer?.state.position);
+    final stoppedReport = _sendStoppedProgressOnce(
+      positionOverride: currentPlayer?.state.position,
+      durationOverride: currentPlayer?.state.duration,
+    );
     unawaited(() async {
       try {
         await _finishIptvRecording(currentPlayer, notify: false);
-        await stoppedReport;
-        if (currentPlayer != null) {
-          await (pauseForRouteExit ? _pauseAndHidePlayerForRouteExit(currentPlayer) : currentPlayer.stop());
-        }
+        // Progress captured its terminal position and duration above, so it
+        // can settle alongside native stop/pause. Do not let a slow server
+        // report hold the decoder open or delay an accepted route exit.
+        final playerCleanup = currentPlayer == null
+            ? Future<void>.value()
+            : Future<void>.sync(
+                () => pauseForRouteExit ? _pauseAndHidePlayerForRouteExit(currentPlayer) : currentPlayer.stop(),
+              );
+        await Future.wait<void>([stoppedReport, playerCleanup]);
         await Future.wait<void>(cancellations);
         completer.complete();
       } catch (error, stackTrace) {
@@ -3642,7 +3637,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     return completer.future;
   }
 
-  Future<void> _sendStoppedProgressOnce({Duration? positionOverride}) {
+  Future<void> _sendStoppedProgressOnce({Duration? positionOverride, Duration? durationOverride}) {
     if (widget.isLive) {
       _stopLiveTimelineUpdates();
       return _sendLiveTimeline('stopped');
@@ -3651,9 +3646,11 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     final tracker = _progressTracker;
     if (tracker == null) return Future<void>.value();
 
-    return tracker.sendStoppedProgressOnce(positionOverride: positionOverride).catchError((Object e, StackTrace st) {
-      appLogger.d('Stopped progress flush failed', error: e, stackTrace: st);
-    });
+    return tracker
+        .sendStoppedProgressOnce(positionOverride: positionOverride, durationOverride: durationOverride)
+        .catchError((Object e, StackTrace st) {
+          appLogger.d('Stopped progress flush failed', error: e, stackTrace: st);
+        });
   }
 
   @override
@@ -3808,7 +3805,6 @@ String _getHwdecValue(bool enabled) {
     return 'auto'; // Windows, Linux
   }
 }
-
 
 final class _SubtitleMuteRestore {
   const _SubtitleMuteRestore({

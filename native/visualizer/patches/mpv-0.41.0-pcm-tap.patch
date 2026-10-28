@@ -1,9 +1,9 @@
 diff --git a/include/mpv/plezy_audio_tap.h b/include/mpv/plezy_audio_tap.h
 new file mode 100644
-index 0000000..0be930a
+index 0000000..8bcfdcb
 --- /dev/null
 +++ b/include/mpv/plezy_audio_tap.h
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,48 @@
 +/* SPDX-License-Identifier: LGPL-2.1-or-later
 + * PlezyNG optional visualization extension. This is not an upstream mpv API.
 + */
@@ -42,10 +42,12 @@ index 0000000..0be930a
 +/* Native consumer supplies the current playback PTS, not decoder PTS. Return
 + * 1 for a block due for presentation, 0 while waiting, MPV_PLEZY_AUDIO_UNSUPPORTED for an unsupported
 + * output format/layout, or a negative mpv error. Never waits for the producer.
-+ * Reads are serialized per handle. No samples cross the Dart channel.
++ * Reads are serialized per handle. This API does not call Dart.
 + */
 +MPV_EXPORT int mpv_plezy_audio_tap_read(mpv_handle *ctx, double playback_pts,
 +                                      mpv_plezy_audio_block *out, size_t size);
++MPV_EXPORT int mpv_plezy_audio_tap_read_next(mpv_handle *ctx,
++                                            mpv_plezy_audio_block *out, size_t size);
 +#ifdef __cplusplus
 +}
 +#endif
@@ -120,7 +122,7 @@ index e23b98b..96d9711 100644
  
      mp_mutex wakeup_lock;
      mp_cond wakeup;
-@@ -389,6 +391,43 @@ static void unlock_core(mpv_handle *ctx)
+@@ -389,6 +391,53 @@ static void unlock_core(mpv_handle *ctx)
      mp_dispatch_unlock(ctx->mpctx->dispatch);
  }
  
@@ -161,10 +163,20 @@ index e23b98b..96d9711 100644
 +    return result;
 +}
 +
++int mpv_plezy_audio_tap_read_next(mpv_handle *ctx,
++                                 mpv_plezy_audio_block *out, size_t size)
++{
++    if (!ctx || !out || size != sizeof(*out)) return MPV_ERROR_INVALID_PARAMETER;
++    mp_mutex_lock(&ctx->lock);
++    int result = mp_plezy_audio_tap_read_next(ctx->audio_tap, out);
++    mp_mutex_unlock(&ctx->lock);
++    return result;
++}
++
  void mpv_wait_async_requests(mpv_handle *ctx)
  {
      mp_mutex_lock(&ctx->lock);
-@@ -426,6 +465,8 @@ static void mp_destroy_client(mpv_handle *ctx, bool terminate)
+@@ -426,6 +475,8 @@ static void mp_destroy_client(mpv_handle *ctx, bool terminate)
      if (!ctx)
          return;
  
@@ -187,10 +199,10 @@ index eb7f508..079f0a6 100644
  
 diff --git a/player/plezy_audio_tap.c b/player/plezy_audio_tap.c
 new file mode 100644
-index 0000000..8d34c84
+index 0000000..2b94452
 --- /dev/null
 +++ b/player/plezy_audio_tap.c
-@@ -0,0 +1,149 @@
+@@ -0,0 +1,173 @@
 +/* SPDX-License-Identifier: LGPL-2.1-or-later
 + * Read-only, bounded SPSC analysis transport. The playback thread only copies
 + * samples; it never waits, allocates, invokes application code or calls Dart.
@@ -340,12 +352,36 @@ index 0000000..8d34c84
 +    }
 +    return 0;
 +}
++int mp_plezy_audio_tap_read_next(struct mp_plezy_audio_tap *tap,
++                                  mpv_plezy_audio_block *out)
++{
++    if (!tap) return 0;
++    int status = atomic_load_explicit(&tap->status, memory_order_acquire);
++    if (status <= 0) return status;
++    for (unsigned int n = 0; n < TAP_SLOTS; n++) {
++        unsigned int read = atomic_load_explicit(&tap->read_index, memory_order_relaxed);
++        unsigned int write = atomic_load_explicit(&tap->write_index, memory_order_acquire);
++        if (read == write) return 0;
++        const mpv_plezy_audio_block *block = &tap->slots[read % TAP_SLOTS];
++        unsigned int generation = atomic_load_explicit(&tap->generation, memory_order_acquire);
++        bool valid = block->generation == generation && isfinite(block->pts) &&
++                     block->pts != MP_NOPTS_VALUE && block->frames > 0 &&
++                     block->frames <= MPV_PLEZY_AUDIO_TAP_FRAMES &&
++                     block->channels > 0 && block->channels <= MPV_PLEZY_AUDIO_TAP_CHANNELS;
++        if (valid) memcpy(out, block, sizeof(*out));
++        atomic_store_explicit(&tap->read_index, read + 1, memory_order_release);
++        if (valid && generation == atomic_load_explicit(&tap->generation, memory_order_acquire))
++            return 1;
++    }
++    return 0;
++}
++
 diff --git a/player/plezy_audio_tap.h b/player/plezy_audio_tap.h
 new file mode 100644
-index 0000000..92b8cff
+index 0000000..9984a9c
 --- /dev/null
 +++ b/player/plezy_audio_tap.h
-@@ -0,0 +1,14 @@
+@@ -0,0 +1,16 @@
 +/* SPDX-License-Identifier: LGPL-2.1-or-later */
 +#ifndef MP_PLEZY_AUDIO_TAP_H
 +#define MP_PLEZY_AUDIO_TAP_H
@@ -359,4 +395,6 @@ index 0000000..92b8cff
 +                             struct mp_aframe *frame, double speed);
 +int mp_plezy_audio_tap_read(struct mp_plezy_audio_tap *tap, double pts,
 +                          mpv_plezy_audio_block *out);
++int mp_plezy_audio_tap_read_next(struct mp_plezy_audio_tap *tap,
++                                mpv_plezy_audio_block *out);
 +#endif

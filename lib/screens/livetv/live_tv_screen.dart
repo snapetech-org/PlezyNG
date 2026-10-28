@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import '../../exceptions/media_server_exceptions.dart';
 import '../../focus/focusable_action_bar.dart';
 import '../../i18n/strings.g.dart';
-import '../../i18n/iptv_copy.dart';
 import '../../media/live_tv_support.dart';
 import '../../media/media_server_client.dart';
 import '../../models/livetv_channel.dart';
@@ -626,6 +625,11 @@ class _LiveTvScreenState extends State<LiveTvScreen>
       },
     );
 
+    if (!mounted ||
+        loadGeneration != _favoritesLoadGeneration ||
+        context.read<ActiveProfileProvider>().activeId != profileId) {
+      return;
+    }
     if (profileId != null) {
       try {
         for (final favorite in await context.read<IptvSourceRepository>().favorites(profileId)) {
@@ -648,8 +652,11 @@ class _LiveTvScreenState extends State<LiveTvScreen>
       }
     }
 
-    if (!mounted || loadGeneration != _favoritesLoadGeneration ||
-        context.read<ActiveProfileProvider>().activeId != profileId) return;
+    if (!mounted ||
+        loadGeneration != _favoritesLoadGeneration ||
+        context.read<ActiveProfileProvider>().activeId != profileId) {
+      return;
+    }
     setState(() {
       _favoriteScopeByLiveServer
         ..clear()
@@ -659,7 +666,8 @@ class _LiveTvScreenState extends State<LiveTvScreen>
         ..addAll(storeBySource);
       _favoriteChannels = merged;
       _refreshFavoriteKeys();
-      _favoritesLoaded = (failedStores.isEmpty && !iptvFavoritesFailed) || successfulStores.isNotEmpty || merged.isNotEmpty;
+      _favoritesLoaded =
+          (failedStores.isEmpty && !iptvFavoritesFailed) || successfulStores.isNotEmpty || merged.isNotEmpty;
       _favoritesWritable = failedStores.isEmpty && !iptvFavoritesFailed;
     });
     appLogger.d(
@@ -909,9 +917,7 @@ class _LiveTvScreenState extends State<LiveTvScreen>
                   onPressed: () {
                     final profileId = context.read<ActiveProfileProvider>().activeId;
                     if (profileId == null) return;
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => IptvVodScreen(profileId: profileId)),
-                    );
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => IptvVodScreen(profileId: profileId)));
                   },
                 ),
               if (!isRecordings)

@@ -91,6 +91,7 @@ class VideoPlayerTizen extends VideoPlayerPlatform {
       case DataSourceType.file:
       case DataSourceType.contentUri:
         message.uri = dataSource.uri;
+        message.playerOptions = dataSource.playerOptions;
     }
 
     message.windowGeometry = await _getWindowGeometry();
@@ -357,6 +358,18 @@ class VideoPlayerTizen extends VideoPlayerPlatform {
   }
 
   @override
+  Future<bool> subtitlePcmCaptureAvailable(int playerId) async =>
+      _ffiApi.subtitlePcmCaptureAvailable(playerId);
+
+  @override
+  Future<bool> setSubtitlePcmCaptureEnabled(int playerId, bool enabled) async =>
+      _ffiApi.setSubtitlePcmCaptureEnabled(playerId, enabled);
+
+  @override
+  Future<List<Map<String, Object?>>> drainSubtitlePcmCapture(int playerId) async =>
+      _ffiApi.drainSubtitlePcmCapture(playerId);
+
+  @override
   Future<DurationRange> getDuration(int playerId) async {
     final DurationMessage message = _ffiApi.duration(playerId);
     return DurationRange(
@@ -516,6 +529,7 @@ class VideoPlayerTizen extends VideoPlayerPlatform {
         case DataSourceType.file:
         case DataSourceType.contentUri:
           message.uri = dataSource.uri;
+          message.playerOptions = dataSource.playerOptions;
       }
     }
     message?.windowGeometry = await _getWindowGeometry();

@@ -1,5 +1,9 @@
 #include "mpv_plugin.h"
 
+#include <cmath>
+#include <cstring>
+#include <limits>
+
 static flutter::EncodableMap DisplayModeToMap(const mpv::DisplayMode& mode) {
   flutter::EncodableMap m;
   m[flutter::EncodableValue("width")] = flutter::EncodableValue(static_cast<int32_t>(mode.width));
@@ -242,6 +246,69 @@ void MpvPlayerPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   const auto& method = method_call.method_name();
+
+  if (method == "subtitlePcmCaptureAvailable") {
+    const bool available =
+        !audio_only_ && player_ && player_->IsInitialized() && MpvPlayer::SubtitlePcmCaptureAvailable();
+    result->Success(flutter::EncodableValue(available));
+    return;
+  }
+  if (method == "setSubtitlePcmCaptureEnabled" || method == "drainSubtitlePcmCapture") {
+    if (audio_only_ || !player_ || !player_->IsInitialized()) {
+      result->Error("SUBTITLE_PCM_UNAVAILABLE", "The video MPV session is not available.");
+      return;
+    }
+    using V = flutter::EncodableValue;
+    if (method == "setSubtitlePcmCaptureEnabled") {
+      const auto* args =
+          method_call.arguments() ? std::get_if<flutter::EncodableMap>(method_call.arguments()) : nullptr;
+      const bool* enabled = nullptr;
+      if (args) {
+        const auto it = args->find(V("enabled"));
+        if (it != args->end()) enabled = std::get_if<bool>(&it->second);
+      }
+      if (!enabled) {
+        result->Error("INVALID_ARGS", "An enabled boolean is required.");
+        return;
+      }
+      result->Success(V(player_->SetSubtitlePcmCaptureEnabled(*enabled) >= 0));
+      return;
+    }
+
+    flutter::EncodableList packets;
+    constexpr int kMaximumBlocksPerDrain = 32;
+    for (int i = 0; i < kMaximumBlocksPerDrain; ++i) {
+      mpv_plezy_audio_block block{};
+      const int read_result = player_->ReadSubtitlePcmCapture(&block);
+      if (read_result == 0) break;
+      if (read_result < 0) {
+        result->Error("SUBTITLE_PCM_READ", "The native PCM capture tap failed.");
+        return;
+      }
+      if (!std::isfinite(block.pts) || block.frames == 0 || block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES ||
+          block.sample_rate == 0 || block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS) {
+        continue;
+      }
+      const double pts_us = block.pts * 1000000.0;
+      if (!std::isfinite(pts_us) || pts_us >= static_cast<double>(std::numeric_limits<int64_t>::max()) ||
+          pts_us < static_cast<double>(std::numeric_limits<int64_t>::min())) {
+        continue;
+      }
+      const size_t sample_count = static_cast<size_t>(block.frames) * block.channels;
+      std::vector<uint8_t> pcm(sample_count * sizeof(float));
+      std::memcpy(pcm.data(), block.samples, pcm.size());
+      flutter::EncodableMap packet;
+      packet[V("presentationTimeUs")] = V(static_cast<int64_t>(std::llround(pts_us)));
+      packet[V("sampleRate")] = V(static_cast<int32_t>(block.sample_rate));
+      packet[V("channels")] = V(static_cast<int32_t>(block.channels));
+      packet[V("encoding")] = V("float32");
+      packet[V("pcm")] = V(std::move(pcm));
+      packet[V("droppedFrames")] = V(static_cast<int64_t>(block.dropped_frames));
+      packets.emplace_back(std::move(packet));
+    }
+    result->Success(V(std::move(packets)));
+    return;
+  }
 
   if (method.rfind("visualizer", 0) == 0) {
     HandleVisualizerMethod(method_call, std::move(result));

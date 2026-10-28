@@ -155,10 +155,7 @@ class _FakeFilteredHubSource extends _FakeHubSource implements CatalogHubFilters
     int limit = 25,
   }) async {
     filteredRequests.add((page: page, filters: filters));
-    return CatalogPage(
-      items: [_hubItem('Filtered page $page')],
-      hasMore: page == 1,
-    );
+    return CatalogPage(items: [_hubItem('Filtered page $page')], hasMore: page == 1);
   }
 }
 
@@ -291,7 +288,9 @@ void main() {
       expect(row.hub.items, isEmpty);
       expect(row.hub.more, isTrue);
 
-      const filters = [LibraryFilter(field: 'genre', values: ['Drama'])];
+      const filters = [
+        LibraryFilter(field: 'genre', values: ['Drama']),
+      ];
       final items = await explore.loadAllForFilteredHub(row, filters);
 
       expect(items.map((item) => item.title), ['Filtered page 1', 'Filtered page 2']);

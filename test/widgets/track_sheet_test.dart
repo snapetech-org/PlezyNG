@@ -15,11 +15,16 @@ import 'package:plezy/widgets/video_controls/models/track_controls_state.dart';
 import 'package:plezy/widgets/video_controls/sheets/track_sheet.dart';
 
 import '../test_helpers/theme.dart';
+import 'package:plezy/services/settings_service.dart';
+import '../test_helpers/prefs.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  setUp(() {
+  setUp(() async {
+    resetSharedPreferencesForTest();
+    SettingsService.resetForTesting();
+    await SettingsService.getInstance();
     LocaleSettings.setLocaleSync(AppLocale.en);
   });
 
@@ -774,6 +779,15 @@ class _FakeTrackSheetPlayer implements Player {
 
   @override
   String get playerType => 'mpv';
+
+  @override
+  Set<String> get supportedLocalSubtitleExtensions => const {'srt', 'ass', 'ssa', 'vtt', 'sub', 'idx', 'sup'};
+
+  @override
+  bool get supportsSubtitleStyleControls => true;
+
+  @override
+  bool get supportsSubtitleStepSync => true;
 
   @override
   PlayerState get state => _state;

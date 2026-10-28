@@ -74,10 +74,7 @@ String? _derivedSubtitleOrigin(String? value) {
 bool titleSaysHearingImpaired(String? value) {
   final text = value?.trim();
   if (text == null || text.isEmpty) return false;
-  return RegExp(
-    r'\b(?:sdh|cc|hoh)\b|hearing[ _-]*impaired|closed[ _-]*caption',
-    caseSensitive: false,
-  ).hasMatch(text);
+  return RegExp(r'\b(?:sdh|cc|hoh)\b|hearing[ _-]*impaired|closed[ _-]*caption', caseSensitive: false).hasMatch(text);
 }
 
 String? cleanTrackMetadataValue(String? value) {
@@ -188,8 +185,10 @@ class TrackLabelBuilder {
     final origin = _derivedSubtitleOrigin(title) ?? _derivedSubtitleOrigin(displayTitle);
     final cleanedTitle = cleanSubtitleTitle(title, codec: codec);
     final cleanedDisplayTitle = cleanSubtitleTitle(displayTitle, codec: codec);
-    final hearingImpaired =
-        titleSaysHearingImpaired(cleanedTitle) || titleSaysHearingImpaired(cleanedDisplayTitle);
+    // Keep an SDH/CC marker in the title itself when it is already visible;
+    // append the accessibility label only when that marker comes from the
+    // secondary display-title metadata.
+    final hearingImpaired = titleSaysHearingImpaired(cleanedDisplayTitle) && !titleSaysHearingImpaired(cleanedTitle);
     return _compose(
       languageDisplay: resolveTrackLanguageDisplay(language: language, languageCode: languageCode),
       title: origin ?? cleanedTitle,

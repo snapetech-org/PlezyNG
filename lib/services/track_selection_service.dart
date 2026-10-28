@@ -808,7 +808,11 @@ class TrackSelectionService {
     final candidates = forcedOnly ? availableTracks.where((track) => track.effectiveForced).toList() : availableTracks;
     if (candidates.isEmpty) return null;
     for (final preferredLanguage in _subtitleLanguageOrder(profile)) {
-      final match = _findTrackByPreferredLanguage<SubtitleTrack>(candidates, preferredLanguage, (track) => track.language);
+      final match = _findTrackByPreferredLanguage<SubtitleTrack>(
+        candidates,
+        preferredLanguage,
+        (track) => track.language,
+      );
       if (match != null) return match;
     }
     return null;
@@ -975,7 +979,13 @@ class TrackSelectionService {
   ///
   /// Handles both 2-letter (ISO 639-1) and 3-letter (ISO 639-2) codes
   /// Also handles bibliographic variants and region codes (e.g., "en-US")
-  bool languageMatches(String? trackLanguage, String? preferredLanguage) {
+  bool languageMatches(String? trackLanguage, String? preferredLanguage) =>
+      matchesLanguageCodes(trackLanguage, preferredLanguage);
+
+  /// Compare language tags with the ISO variation and region handling used by
+  /// automatic track selection. Standalone players can reuse this without
+  /// constructing a metadata-backed resolver.
+  static bool matchesLanguageCodes(String? trackLanguage, String? preferredLanguage) {
     if (trackLanguage == null || preferredLanguage == null) {
       return false;
     }

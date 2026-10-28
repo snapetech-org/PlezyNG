@@ -200,7 +200,7 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
     throw const SourceException(SourceFailure.permission);
   }
 
-  var updatedDescriptor = Map<String, dynamic>.from(descriptor);
+  final updatedDescriptor = Map<String, dynamic>.from(descriptor);
   if (service == 'realDebrid') {
     final refreshToken = _renewalText(descriptor, 'refreshToken', maxLength: 8192);
     final clientId = _renewalText(descriptor, 'clientId', maxLength: 512);
@@ -246,8 +246,9 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
     final allFiles = (info['files'] as List).whereType<Map>().map((row) => Map<String, dynamic>.from(row)).toList();
     final selectedFiles = allFiles.where((row) => row['selected'] == 1).toList(growable: false);
     final fileIndex = selectedFiles.indexWhere((row) => '${row['id']}' == fileId);
-    if (fileIndex < 0 || fileIndex >= (info['links'] as List).length)
+    if (fileIndex < 0 || fileIndex >= (info['links'] as List).length) {
       throw const SourceException(SourceFailure.conflict);
+    }
     final selected = selectedFiles[fileIndex];
     final size = _renewalNumber(selected, 'bytes');
     final stableRevision = 'realDebrid:$providerId:$fileId:$size';
@@ -328,7 +329,7 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
       'www.premiumize.me',
       '/api/folder/list',
       token: accessToken,
-      query: {if (parentId != null) 'id': parentId},
+      query: {'id': ?parentId},
     );
     final content = list['content'];
     if (content is! List) throw const SourceException(SourceFailure.invalidData);
@@ -2185,7 +2186,7 @@ class SourceStreamGateway {
       if (!_nonDeduplicatedDirectIds.contains(id)) _directIdsByUri.putIfAbsent(key, () => id);
       return next;
     } finally {
-      if (identical(_directRenewals[id], pending)) _directRenewals.remove(id);
+      if (identical(_directRenewals[id], pending)) unawaited(_directRenewals.remove(id));
     }
   }
 

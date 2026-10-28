@@ -83,11 +83,7 @@ class _RemoteCloudFilesScreenState extends State<RemoteCloudFilesScreen> {
           (widget.expectedProfileId != null && widget.expectedProfileId != profileId)) {
         throw const SourceException(SourceFailure.cancelled);
       }
-      final page = await provider.browseCloud(
-        widget.service,
-        parentId: widget.parentId,
-        cursor: cursor,
-      );
+      final page = await provider.browseCloud(widget.service, parentId: widget.parentId, cursor: cursor);
       if (!mounted) return;
       if (provider.profileId != profileId || provider.accountFor(widget.service)?.id != accountId) {
         setState(() => _loading = false);
@@ -110,10 +106,7 @@ class _RemoteCloudFilesScreenState extends State<RemoteCloudFilesScreen> {
         _loadedAccountId = accountId;
         _loadedProfileId = profileId;
         final knownIds = _items.map((item) => item.id).toSet();
-        _items = List.unmodifiable([
-          if (more) ..._items,
-          ...visible.where((item) => knownIds.add(item.id)),
-        ]);
+        _items = List.unmodifiable([if (more) ..._items, ...visible.where((item) => knownIds.add(item.id))]);
         _nextCursor = page.nextCursor;
       });
     } on Object {
@@ -315,10 +308,7 @@ class _RemoteCloudFilesScreenState extends State<RemoteCloudFilesScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Semantics(
-                    liveRegion: true,
-                    child: Text(t.streaming.cloudLoadFailed, textAlign: TextAlign.center),
-                  ),
+                  Semantics(liveRegion: true, child: Text(t.streaming.cloudLoadFailed, textAlign: TextAlign.center)),
                   const SizedBox(height: 12),
                   TextButton.icon(
                     onPressed: ready ? _load : null,
@@ -404,10 +394,7 @@ class _RemoteCloudFilesScreenState extends State<RemoteCloudFilesScreen> {
                       ? Semantics(
                           label: t.streaming.streamPrepare,
                           liveRegion: true,
-                          child: const SizedBox.square(
-                            dimension: 22,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
+                          child: const SizedBox.square(dimension: 22, child: CircularProgressIndicator(strokeWidth: 2)),
                         )
                       : AppIcon(isFolder ? Symbols.chevron_right_rounded : Symbols.play_arrow_rounded),
                   onTap: busy ? null : () => _open(item),

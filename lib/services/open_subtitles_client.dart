@@ -76,8 +76,7 @@ class OpenSubtitlesClient {
     final trimmedQuery = query.trim();
     final boundedQuery = trimmedQuery.length > 120 ? trimmedQuery.substring(0, 120) : trimmedQuery;
     final normalizedMovieHash = movieHash?.trim().toLowerCase();
-    final validMovieHash =
-        normalizedMovieHash != null && RegExp(r'^[0-9a-f]{16}$').hasMatch(normalizedMovieHash)
+    final validMovieHash = normalizedMovieHash != null && RegExp(r'^[0-9a-f]{16}$').hasMatch(normalizedMovieHash)
         ? normalizedMovieHash
         : null;
     final params = <String, String>{
@@ -86,14 +85,12 @@ class OpenSubtitlesClient {
       'order_by': 'download_count',
       'order_direction': 'desc',
       'limit': '30',
-      if (validMovieHash != null) 'moviehash': validMovieHash,
+      'moviehash': ?validMovieHash,
       if (validMovieHash == null && imdb != null && imdb.isNotEmpty) 'imdb_id': imdb,
       if (validMovieHash == null && (tmdbId?.trim().isNotEmpty ?? false)) 'tmdb_id': tmdbId!.trim(),
       if (validMovieHash == null && year != null && year > 1800 && year < 2200) 'year': '$year',
     };
-    final sortedParams = Map.fromEntries(
-      params.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
-    );
+    final sortedParams = Map.fromEntries(params.entries.toList()..sort((a, b) => a.key.compareTo(b.key)));
     final uri = _api.resolve('/api/v1/subtitles').replace(queryParameters: sortedParams);
     final response = await _transport.json('GET', uri, headers: _headers);
     final rows = response['data'];

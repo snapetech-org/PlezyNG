@@ -51,8 +51,7 @@ class StremioCatalogSource implements CatalogSource, CatalogHubSource, CatalogHu
     return [
       for (final addon in _streaming.addons)
         if (addon.enabled)
-          for (final catalog in _client.catalogs(addon))
-            (addon: addon, catalog: catalog),
+          for (final catalog in _client.catalogs(addon)) (addon: addon, catalog: catalog),
     ];
   }
 
@@ -158,12 +157,7 @@ class StremioCatalogSource implements CatalogSource, CatalogHubSource, CatalogHu
     if (page < 1 || limit < 1 || limit > 100) throw ArgumentError('Invalid Stremio catalog page');
     final route = _routeForId(id);
     if (route == null) throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
-    return _fetchCatalogPage(
-      route,
-      page: page,
-      limit: limit,
-      extras: _extrasFromFilters(route.catalog, filters),
-    );
+    return _fetchCatalogPage(route, page: page, limit: limit, extras: _extrasFromFilters(route.catalog, filters));
   }
 
   Future<CatalogPage> _fetchCatalogPage(
@@ -188,10 +182,7 @@ class StremioCatalogSource implements CatalogSource, CatalogHubSource, CatalogHu
       if (item != null && seen.add(_dedupeKey(item))) items.add(item);
       if (items.length >= limit) break;
     }
-    return CatalogPage(
-      items: List.unmodifiable(items),
-      hasMore: route.catalog.supportsSkip && rows.length >= limit,
-    );
+    return CatalogPage(items: List.unmodifiable(items), hasMore: route.catalog.supportsSkip && rows.length >= limit);
   }
 
   static List<MediaFilter> _catalogFilters(StremioAddonCatalog catalog) => [
@@ -236,7 +227,8 @@ class StremioCatalogSource implements CatalogSource, CatalogHubSource, CatalogHu
         throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
       }
       final values = filter.values.where((value) => value.isNotEmpty).toList(growable: false);
-      if (values.isEmpty || values.length > extra.optionsLimit ||
+      if (values.isEmpty ||
+          values.length > extra.optionsLimit ||
           values.any((value) => value.length > 512 || value.runes.any((rune) => rune < 0x20 || rune == 0x7f))) {
         throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
       }
@@ -266,9 +258,7 @@ class StremioCatalogSource implements CatalogSource, CatalogHubSource, CatalogHu
     var succeeded = 0;
     for (var start = 0; start < routes.length; start += _requestBatchSize) {
       final batch = routes.skip(start).take(_requestBatchSize);
-      final answers = await Future.wait([
-        for (final route in batch) _searchRoute(route, trimmed, profile),
-      ]);
+      final answers = await Future.wait([for (final route in batch) _searchRoute(route, trimmed, profile)]);
       for (final answer in answers) {
         if (answer != null) {
           succeeded++;
@@ -278,10 +268,12 @@ class StremioCatalogSource implements CatalogSource, CatalogHubSource, CatalogHu
     }
     if (succeeded == 0) throw const StremioAddonException(StremioAddonFailure.unavailable);
     final seen = <String>{};
-    return List.unmodifiable([
-      for (final item in results)
-        if (seen.add(_dedupeKey(item))) item,
-    ].take(limit));
+    return List.unmodifiable(
+      [
+        for (final item in results)
+          if (seen.add(_dedupeKey(item))) item,
+      ].take(limit),
+    );
   }
 
   Future<List<CatalogItem>?> _searchRoute(_StremioCatalogRoute route, String query, String profile) async {
@@ -318,7 +310,11 @@ class StremioCatalogSource implements CatalogSource, CatalogHubSource, CatalogHu
       final rawCast = meta['cast'];
       if (rawCast is List) {
         for (final entry in rawCast) {
-          final name = entry is String ? entry : entry is Map ? entry['name'] : null;
+          final name = entry is String
+              ? entry
+              : entry is Map
+              ? entry['name']
+              : null;
           final clean = _displayText(name);
           if (clean != null) cast.add(CatalogCastMember(name: clean));
           if (cast.length >= castLimit) break;
@@ -347,7 +343,9 @@ class StremioCatalogSource implements CatalogSource, CatalogHubSource, CatalogHu
     final tvdbMatch = RegExp(r'^tvdb:(\d+)$').firstMatch(id);
     final year = _year(row['year']) ?? _year(row['releaseInfo']);
     final rating = _number(row['imdbRating'] ?? row['rating']);
-    final genres = row['genres'] is List ? (row['genres'] as List).whereType<String>().map(_cleanText).whereType<String>().take(20).toList() : null;
+    final genres = row['genres'] is List
+        ? (row['genres'] as List).whereType<String>().map(_cleanText).whereType<String>().take(20).toList()
+        : null;
     return CatalogItem(
       source: CatalogSourceId.stremio,
       sourceInstallationId: addon.id,
@@ -405,7 +403,11 @@ class StremioCatalogSource implements CatalogSource, CatalogHubSource, CatalogHu
   }
 
   static int? _episodeNumber(Object? raw) {
-    final value = raw is num ? raw.toInt() : raw is String ? int.tryParse(raw) : null;
+    final value = raw is num
+        ? raw.toInt()
+        : raw is String
+        ? int.tryParse(raw)
+        : null;
     return value != null && value >= 0 && value <= 10000 ? value : null;
   }
 
@@ -444,7 +446,11 @@ class StremioCatalogSource implements CatalogSource, CatalogHubSource, CatalogHu
     return match == null ? null : int.tryParse(match.group(1)!);
   }
 
-  static double? _number(Object? raw) => raw is num ? raw.toDouble() : raw is String ? double.tryParse(raw) : null;
+  static double? _number(Object? raw) => raw is num
+      ? raw.toDouble()
+      : raw is String
+      ? double.tryParse(raw)
+      : null;
 
   static int? _runtime(Object? raw) {
     if (raw is num) {

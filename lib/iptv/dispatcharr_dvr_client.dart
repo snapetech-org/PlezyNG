@@ -16,10 +16,7 @@ class DispatcharrDvrClient {
   String _authScheme = 'ApiKey';
 
   Future<List<IptvDispatcharrRecording>> recordings() async {
-    final response = await _requestWithFallback('GET', const [
-      '/api/channels/recordings/',
-      '/api/dvr/recordings/',
-    ]);
+    final response = await _requestWithFallback('GET', const ['/api/channels/recordings/', '/api/dvr/recordings/']);
     return [
       for (final row in _rows(response))
         IptvDispatcharrRecording.fromJson(sourceMap(row), config.id, config.displayName),
@@ -54,13 +51,11 @@ class DispatcharrDvrClient {
 
   Future<void> deleteRecording(String recordingId) async {
     final id = Uri.encodeComponent(recordingId);
-    await _requestWithFallback('DELETE', [
-      '/api/channels/recordings/$id/',
-      '/api/dvr/recordings/$id/',
-    ]);
+    await _requestWithFallback('DELETE', ['/api/channels/recordings/$id/', '/api/dvr/recordings/$id/']);
   }
 
-  Uri recordingFileUri(String recordingId) => _uri('/api/channels/recordings/${Uri.encodeComponent(recordingId)}/file/');
+  Uri recordingFileUri(String recordingId) =>
+      _uri('/api/channels/recordings/${Uri.encodeComponent(recordingId)}/file/');
 
   Future<void> deleteRule(IptvDispatcharrRule rule) async {
     final id = Uri.encodeComponent(rule.id);
@@ -70,18 +65,12 @@ class DispatcharrDvrClient {
     await _requestWithFallback('DELETE', paths);
   }
 
-  Future<IptvDispatcharrRecording> schedule({
-    required LiveTvChannel channel,
-    required LiveTvProgram program,
-  }) async {
+  Future<IptvDispatcharrRecording> schedule({required LiveTvChannel channel, required LiveTvProgram program}) async {
     final tvgId = channel.identifier?.trim();
     if (tvgId == null || tvgId.isEmpty || program.beginsAt == null || program.endsAt == null) {
       throw const SourceException(SourceFailure.unsupported);
     }
-    final channels = _rows(await _requestWithFallback('GET', const [
-      '/api/channels/channels/',
-      '/api/channels/',
-    ]));
+    final channels = _rows(await _requestWithFallback('GET', const ['/api/channels/channels/', '/api/channels/']));
     final matches = <Map<String, dynamic>>[];
     for (final value in channels) {
       final row = sourceMap(value);
@@ -107,10 +96,9 @@ class DispatcharrDvrClient {
       'end_time': end,
       'title': program.displayTitle,
     });
-    final created = sourceMap(await _requestWithFallback('POST', const [
-      '/api/channels/recordings/',
-      '/api/dvr/recordings/',
-    ], body: body));
+    final created = sourceMap(
+      await _requestWithFallback('POST', const ['/api/channels/recordings/', '/api/dvr/recordings/'], body: body),
+    );
     return IptvDispatcharrRecording.fromJson(created, config.id, config.displayName);
   }
 
@@ -168,7 +156,16 @@ class DispatcharrDvrClient {
     if (value is List) return value;
     if (value is Map) {
       final row = sourceMap(value);
-      for (final key in const ['results', 'data', 'items', 'recordings', 'channels', 'rules', 'series_rules', 'recurring_rules']) {
+      for (final key in const [
+        'results',
+        'data',
+        'items',
+        'recordings',
+        'channels',
+        'rules',
+        'series_rules',
+        'recurring_rules',
+      ]) {
         if (row[key] is List) return row[key] as List;
       }
       if (row.isEmpty) return const [];

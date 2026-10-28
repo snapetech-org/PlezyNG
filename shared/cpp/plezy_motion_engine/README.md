@@ -111,6 +111,25 @@ the visible GPU before it reports the selected provider.
 Linux runtime discovery checks `PLEZY_PME_RUNTIME_DIR` before the app bundle.
 That directory must contain `libplezy_motion_engine.so`, `libonnxruntime.so`,
 and `providers.linux.tsv`, plus any provider plug-ins named by the manifest.
+Intel systems can use the optional `openvino` CMake variant to stage the pinned
+OpenVINO Plugin EP 1.8.1 with the default ORT 1.27.1 runtime. It includes the
+OpenVINO 2026.4 runtime, TBB libraries, GPU kernel cache, plugin license, and
+Intel's third-party notices; the extracted package adds about 158 MB. Its Linux
+wheel requires glibc 2.28 or later and supports x86_64 only. Intel GPU/NPU use
+still depends on the host's driver, and GPU use requires `libOpenCL.so.1`. The
+CMake variant downloads the SHA-256-pinned wheel and needs Python 3 to extract
+it. The default `cpu` runtime remains smaller and does not include OpenVINO.
+
+```sh
+cmake -S shared/cpp/plezy_motion_engine -B build/pme-openvino \
+  -DCMAKE_INSTALL_PREFIX="$PWD/build/pme-openvino/stage" \
+  -DPLEZY_ORT_LINUX_VARIANT=openvino \
+  -DPME_BUILD_RUNTIME_PROBE=ON
+cmake --build build/pme-openvino --target plezy_motion_runtime_probe
+cmake --install build/pme-openvino --component Runtime
+cmake --install build/pme-openvino --component DevTools
+```
+
 For AMD's built-in MIGraphX provider, the Linux `amd-migraphx` CMake variant
 stages the matching ORT runtime and provider libraries from the verified ROCm
 7.2.1 wheel. The target system must provide ROCm 7.2.1 and MIGraphX runtime
@@ -128,10 +147,14 @@ packagers can select the reproducible x86_64 AMD bundle with
 `-DPLEZY_ORT_LINUX_VARIANT=amd-migraphx`. CMake keeps the v27 SDK headers,
 downloads and verifies AMD's ROCm 7.2.1 ORT 1.23.2 wheel, extracts only the ORT
 runtime, MIGraphX provider libraries, and notices, then installs a manifest
-that selects only built-in MIGraphX. This mode needs Python 3 at configure
-time for selective wheel extraction. The PME API-v23 compatibility path is
-restricted to that provider. The default `cpu` variant continues to bundle the
-official ORT 1.27.1 CPU runtime. CMake installs the runtime as
+that selects only built-in MIGraphX. The `openvino` variant keeps the default
+ORT 1.27.1 runtime and adds the pinned OpenVINO Plugin EP 1.8.1 wheel, which
+declares compatibility with ORT 1.23.0 and later. It stages the provider,
+OpenVINO/TBB libraries, GPU cache, plugin license, and third-party notices. Both
+accelerated variants need Python 3 at configure time for selective wheel
+extraction. The PME API-v23 compatibility path is restricted to MIGraphX. The
+default `cpu` variant continues to bundle only the official ORT 1.27.1 CPU
+runtime. CMake installs the runtime as
 `libonnxruntime.so` beside `libplezy_motion_engine.so` on Linux, preserves the
 versioned `libonnxruntime.so.*` targets behind its SONAME links, and stages
 `libonnxruntime_providers_shared.so` so the runtime and provider-loader symbols

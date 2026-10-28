@@ -16,6 +16,7 @@ import '../../../focus/focusable_slider.dart';
 import '../../../focus/focusable_wrapper.dart';
 import '../../../models/shader_preset.dart';
 import '../../../models/motion_clarity.dart';
+import '../../../models/motion_processing_mode.dart';
 import '../../../models/player_setting_scope.dart';
 import '../../../media/ids.dart';
 import '../../../media/media_file_info.dart';
@@ -28,6 +29,7 @@ import '../../../providers/shader_provider.dart';
 import '../../../screens/settings/settings_utils.dart' show DialogOption;
 import '../../../services/file_picker_service.dart';
 import '../../../services/scoped_player_prefs.dart';
+import '../../../services/player_sync_offsets.dart';
 import '../../../services/motion_clarity_service.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/motion_processing_service.dart';
@@ -214,21 +216,21 @@ class _SettingsToggleItemState extends State<_SettingsToggleItem> {
   void didUpdateWidget(covariant _SettingsToggleItem oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.pref != widget.pref) {
-      _writeGeneration;
+      ++_writeGeneration;
       _pendingValue = null;
     }
   }
 
   @override
   void dispose() {
-    _writeGeneration;
+    ++_writeGeneration;
     super.dispose();
   }
 
   void _write(bool next) {
     final pref = widget.pref;
     final callback = widget.onAfterWrite;
-    final generation = _writeGeneration;
+    final generation = ++_writeGeneration;
     final writeToken = _prefWrites.begin(pref.key);
     setState(() {
       _pendingValue = next;
@@ -396,6 +398,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
   StreamSubscription<void>? _hdrOutputChanged;
   late HdrToneMapping _hdrToneMapping;
   late AudioChannelLimit _audioChannelLimit;
+  late MotionProcessingMode _motionProcessingMode;
   late List<double> _audioEqualizerGains;
   late MotionClarityPreset _motionPreset;
   late MotionTemporalKernel _motionKernel;
@@ -642,7 +645,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
 
   void _setDebugDvConversionMode(String mode) {
     final targetPlayer = widget.player;
-    final generation = _dvConversionWriteGeneration;
+    final generation = ++_dvConversionWriteGeneration;
     unawaited(() async {
       try {
         await targetPlayer.setProperty('dv-conversion-mode', mode);
@@ -1725,7 +1728,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
                   children: [
                     if (outputDetail.isNotEmpty) Text(outputDetail),
                     if (showEngineReason)
-                      Text(status!.reason!, style: TextStyle(color: tokens(context).textMuted, fontSize: 11)),
+                      Text(status.reason!, style: TextStyle(color: tokens(context).textMuted, fontSize: 11)),
                     if (status?.isConfigured == true && status?.audioPassthroughActive == true)
                       Text(
                         t.videoSettings.motionClarityPassthroughWarning,
@@ -2037,7 +2040,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
       pitchSemitones: pitchSemitones ?? _audioEffects.pitchSemitones,
     );
     setState(() => _audioEffects = next);
-    final generation = _audioEffectsWriteGeneration;
+    final generation = ++_audioEffectsWriteGeneration;
     _audioEffectsWrite = _applyAudioEffects(next, generation);
   }
 

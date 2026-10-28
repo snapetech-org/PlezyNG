@@ -158,6 +158,12 @@ class _Playback extends ChangeNotifier implements SourcePlayback {
   @override
   bool get playing => true;
   @override
+  bool get muted => false;
+  @override
+  bool get canExportActiveExternalSubtitle => false;
+  @override
+  bool get hasSelectedPersistentExternalSubtitle => false;
+  @override
   bool fullPlayerVisible = false;
   @override
   int positionMs = 23000;
@@ -217,6 +223,9 @@ class _Playback extends ChangeNotifier implements SourcePlayback {
     positionMs = position;
     notifyListeners();
   }
+
+  @override
+  Future<void> setMuted(bool muted) async {}
 
   @override
   Future<void> previousChapter() async {}

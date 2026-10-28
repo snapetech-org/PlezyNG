@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi' as ffi;
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -6,6 +7,7 @@ import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
 
@@ -16,6 +18,7 @@ final class SubtitleWhisperResult {
     required this.detectedLanguage,
     required this.runtimeProvider,
     required this.fellBackToCpu,
+    this.placementEvidence = SubtitlePlacementEvidence.unverified,
     required this.translatedToEnglish,
     this.wordTimings = const <SubtitleWordTiming>[],
   });
@@ -26,13 +29,14 @@ final class SubtitleWhisperResult {
   final String detectedLanguage;
   final String runtimeProvider;
   final bool fellBackToCpu;
+  final SubtitlePlacementEvidence placementEvidence;
   final bool translatedToEnglish;
 }
 
 /// whisper.cpp provides the multilingual CPU baseline and optional compiled
 /// CUDA/Vulkan devices. GPU use is selected only from devices reported by the
 /// native runtime; a failed GPU load or inference is retried on CPU.
-abstract final class SubtitleWhisperCppService {
+final class SubtitleWhisperCppService {
   static final SubtitleWhisperCppService instance = SubtitleWhisperCppService._();
   SubtitleWhisperCppService._();
 
@@ -43,34 +47,44 @@ abstract final class SubtitleWhisperCppService {
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
   static const bool _tizenBuild = bool.fromEnvironment('PLEZY_TIZEN');
   static const bool _webOsBuild = bool.fromEnvironment('PLEZY_WEBOS');
+  static bool? _tizenWhisperRuntimeState;
 
-  static bool get supportedPlatform =>
-      !_tvOsBuild &&
-      !_tizenBuild &&
-      !_webOsBuild &&
-      (Platform.isAndroid ||
-          Platform.isIOS ||
-          Platform.isWindows ||
-          Platform.isMacOS ||
-          Platform.isLinux);
+  static bool get supportedPlatform {
+    if (_tizenBuild) return _tizenWhisperRuntimeAvailable;
+    return !_tvOsBuild &&
+        !_webOsBuild &&
+        (Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isMacOS || Platform.isLinux);
+  }
+
+  static bool get _tizenWhisperRuntimeAvailable => _tizenWhisperRuntimeState ??= _probeTizenWhisperRuntime();
+
+  static bool _probeTizenWhisperRuntime() {
+    try {
+      ffi.DynamicLibrary.open(
+        'libflutter_whisper_plugin.so',
+      ).lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>('fw_version');
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 
   /// Loads the same verified multilingual model used by WAV transcription for
-  /// repeated, in-memory Android PCM windows. The caller owns and disposes it.
+  /// repeated, in-memory player PCM windows. The caller owns and disposes it.
   Future<whisper.FlutterWhisper> loadLiveCpuSession({
     void Function(String phase, int received, int total)? onProgress,
   }) async {
     if (!supportedPlatform) {
       throw UnsupportedError('Local Whisper inference is unavailable on this platform.');
     }
-    final modelDirectory =
-        p.join((await getApplicationSupportDirectory()).path, 'subtitle_models', 'whisper_cpp');
+    final modelDirectory = p.join((await getApplicationSupportDirectory()).path, 'subtitle_models', 'whisper_cpp');
     final model = whisper.WhisperModels.baseQ5_1;
     return whisper.FlutterWhisper.loadModel(
       model: model,
       modelDirectory: modelDirectory,
       config: const whisper.WhisperModelConfig(useGpu: false),
       onDownloadProgress: (progress) {
-        onProgress?.call('Downloading multilingual ' + model.id, progress.receivedBytes, progress.totalBytes);
+        onProgress?.call('Downloading multilingual ${model.id}', progress.receivedBytes, progress.totalBytes);
       },
       onModelProgress: (progress) => onProgress?.call('Loading Whisper model', progress, 100),
     );
@@ -85,7 +99,9 @@ abstract final class SubtitleWhisperCppService {
   }) async {
     if (!supportedPlatform) throw UnsupportedError('Local Whisper inference is unavailable on this platform.');
     final normalizedLanguageCode = languageCode?.trim().toLowerCase().split(RegExp(r'[-_]')).first ?? '';
-    final selectedLanguage = normalizedLanguageCode.isEmpty || normalizedLanguageCode == 'auto' ? 'auto' : normalizedLanguageCode;
+    final selectedLanguage = normalizedLanguageCode.isEmpty || normalizedLanguageCode == 'auto'
+        ? 'auto'
+        : normalizedLanguageCode;
     if (selectedLanguage != 'auto' && !RegExp(r'^[a-z]{2,3}$').hasMatch(selectedLanguage)) {
       throw ArgumentError.value(languageCode, 'languageCode', 'Use a two or three letter language code or auto.');
     }
@@ -187,10 +203,7 @@ abstract final class SubtitleWhisperCppService {
         ),
         onProgress: (progress) => onProgress?.call('Whisper inference', progress, 100),
       );
-      final wordTimings = SubtitleWordTimingBuilder.fromWhisperSegments(
-        result.segments,
-        durationMs: durationMs,
-      );
+      final wordTimings = SubtitleWordTimingBuilder.fromWhisperSegments(result.segments, durationMs: durationMs);
       final cues = <SubtitleCue>[];
       for (final segment in result.segments) {
         final text = segment.text.trim().replaceAll(RegExp(r'\s+'), ' ');
@@ -209,6 +222,11 @@ abstract final class SubtitleWhisperCppService {
         detectedLanguage: result.language,
         runtimeProvider: runtimeProvider,
         fellBackToCpu: fellBackToCpu,
+        placementEvidence: fellBackToCpu
+            ? SubtitlePlacementEvidence.cpuFallbackAfterAcceleratorUnavailable
+            : (runtimeProvider == 'CPU'
+                  ? SubtitlePlacementEvidence.cpuOnlyConfigured
+                  : SubtitlePlacementEvidence.acceleratorRequestSucceededButUnverified),
         translatedToEnglish: translated,
         wordTimings: wordTimings,
       );
@@ -224,7 +242,7 @@ abstract final class _WavDurationReader {
     try {
       final length = await file.length();
       if (length < 44) throw const FormatException('WAV file is too short.');
-      if (length > _maximumWavBytes) {
+      if (length > SubtitleWhisperCppService._maximumWavBytes) {
         throw const FormatException('WAV file exceeds the 1 GiB Whisper processing limit.');
       }
       final header = await file.read(12);
@@ -259,9 +277,7 @@ abstract final class _WavDurationReader {
           final supportedPcmDepth = audioFormat == 1 && const {8, 16, 24, 32}.contains(bitsPerSample);
           final supportedFloatDepth = audioFormat == 3 && const {32, 64}.contains(bitsPerSample);
           final bytesPerSample = (bitsPerSample + 7) ~/ 8;
-          if ((!supportedPcmDepth && !supportedFloatDepth) ||
-              channels < 1 ||
-              blockAlign < channels * bytesPerSample) {
+          if ((!supportedPcmDepth && !supportedFloatDepth) || channels < 1 || blockAlign < channels * bytesPerSample) {
             throw const FormatException('Choose an uncompressed PCM or IEEE-float WAV file.');
           }
         } else if (name == 'data') {

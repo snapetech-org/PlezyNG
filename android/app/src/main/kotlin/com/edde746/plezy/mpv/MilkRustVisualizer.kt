@@ -21,6 +21,11 @@ internal object MilkRustNativeBridge {
   external fun resize(handle: Long, width: Int, height: Int)
   external fun pause(handle: Long, paused: Boolean)
   external fun status(handle: Long): Array<String>
+  external fun subtitlePcmCaptureAvailable(): Boolean
+  external fun subtitlePcmCaptureEnable(playerSession: Long, enabled: Boolean): Int
+
+  /** Returns one bounded packet: pts double, four uint32 fields, then float32 PCM. */
+  external fun subtitlePcmCaptureRead(playerSession: Long): ByteArray?
 
   // Called on the native consumer, never on the playback callback or UI thread.
   @JvmStatic fun decodeTexture(path: String): Bitmap {

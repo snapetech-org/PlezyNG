@@ -42,9 +42,7 @@ import 'package:plezy/services/seerr/seerr_client.dart';
 import 'package:plezy/services/seerr/seerr_constants.dart';
 import 'package:plezy/services/storage_service.dart';
 import 'package:plezy/services/settings_service.dart';
-import 'package:plezy/sources/source_controller.dart';
 import 'package:plezy/sources/source_database.dart';
-import 'package:plezy/sources/source_models.dart';
 import 'package:plezy/sources/publication_shelf.dart';
 import 'package:plezy/theme/mono_theme.dart';
 import 'package:plezy/utils/platform_detector.dart';
@@ -60,6 +58,7 @@ import '../test_helpers/prefs.dart';
 import '../test_helpers/media_items.dart';
 import '../test_helpers/multi_server_fixtures.dart';
 import '../sources/fixtures/memory_sources.dart';
+import '../test_helpers/media_server_client_test_defaults.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -303,7 +302,7 @@ void main() {
       ],
     );
     final sourceRepository = _SearchSourceRepository(database, [entry]);
-    final sourceController = MemorySources(sourceRepository, Directory('unused'))
+    final sourceController = _SearchIndexedSources(sourceRepository, Directory('unused'))
       ..sources = [
         const FileSource(
           id: 'remote-cloud:account-1',
@@ -325,7 +324,10 @@ void main() {
 
     expect(sourceRepository.queries, ['arrival']);
     expect(findDisplayText('Arrival'), findsOneWidget);
-    expect(findDisplayText(t.streaming.cloudFiles), findsOneWidget);
+    expect(
+      tester.widget<SourceTile>(find.byType(SourceTile)).subtitle,
+      '${t.streaming.cloudFiles} · viewer@example.com',
+    );
     expect(findDisplayText(t.messages.noResultsFound), findsNothing);
     expect(FocusManager.instance.primaryFocus?.debugLabel, 'SearchFirstResult');
   });
@@ -1268,6 +1270,16 @@ class _FakeCatalogSourcesProvider extends CatalogSourcesProvider {
   SeerrCatalogSource? get seerrSource => seerr;
 }
 
+class _SearchIndexedSources extends MemorySources {
+  _SearchIndexedSources(super.repository, super.directory);
+
+  @override
+  Future<List<SourceEntry>> searchIndex(String query, {int limit = 500}) async {
+    requireSession();
+    return (await repository.entriesPage(profileId!, query: query, limit: limit)).items;
+  }
+}
+
 class _SearchSourceRepository extends SourceRepository {
   _SearchSourceRepository(super.database, this.cachedEntries);
 
@@ -1289,7 +1301,7 @@ class _SearchSourceRepository extends SourceRepository {
     final matching = cachedEntries
         .where(
           (entry) =>
-              entry.sourceId == source &&
+              (source == null || entry.sourceId == source) &&
               (shelf == null || entry.kind == SourceItemKind.video) &&
               (query == null || entry.displayTitle.toLowerCase().contains(query.trim().toLowerCase())),
         )
@@ -1312,7 +1324,7 @@ void _resetGlobalTestState() {
   SettingsService.resetForTesting();
 }
 
-class _FakeMediaServerClient implements MediaServerClient {
+class _FakeMediaServerClient with TestMediaServerClientDefaults implements MediaServerClient {
   final String serverIdValue;
   final String serverNameValue;
   final List<MediaItem> items;

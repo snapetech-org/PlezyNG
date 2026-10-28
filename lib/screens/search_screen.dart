@@ -339,15 +339,15 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<({List<IptvVodItem> items, String? profileId, bool available})> _searchIptvVod(String query) async {
-    final profileId = context.read<ActiveProfileProvider>().activeId;
-    if (profileId == null) return (items: const [], profileId: null, available: false);
+    final profileId = context.read<ActiveProfileProvider?>()?.activeId;
+    if (profileId == null) return (items: const <IptvVodItem>[], profileId: null, available: false);
     try {
       final repository = context.read<IptvSourceRepository>();
       final sources = await repository.vodSources(profileId);
       final items = await repository.searchVod(profileId, query);
       return (items: items, profileId: profileId, available: sources.isNotEmpty);
     } on Object {
-      return (items: const [], profileId: profileId, available: false);
+      return (items: const <IptvVodItem>[], profileId: profileId, available: false);
     }
   }
 
@@ -1003,6 +1003,7 @@ class _SearchScreenState extends State<SearchScreen>
       CatalogSourceId.simkl => 'Simkl',
       CatalogSourceId.seerr => t.seerr.title,
       CatalogSourceId.mdblist => 'MDBList',
+      CatalogSourceId.stremio => 'Stremio',
     };
   }
 
@@ -1255,7 +1256,13 @@ class _SearchScreenState extends State<SearchScreen>
             key: Key('source:${entry.key}'),
             title: entry.displayTitle,
             subtitle: [
-              t.fileSources.title,
+              if (_sourceController?.sources.any(
+                    (source) => source.id == entry.sourceId && source.kind == FileSourceKind.remoteCloud,
+                  ) ==
+                  true)
+                t.streaming.cloudFiles
+              else
+                t.fileSources.title,
               for (final source in _sourceController?.sources ?? const <FileSource>[])
                 if (source.id == entry.sourceId) source.name,
               if (entry.author.isNotEmpty) entry.author,
@@ -1306,7 +1313,7 @@ class _SearchScreenState extends State<SearchScreen>
             final item = _iptvVodResults[index];
             final itemKind = item.kind == IptvVodKind.movie ? t.iptv.movies : t.iptv.series;
             final metadata = [itemKind, if (item.year != null) '${item.year}', 'IPTV'].join(' · ');
-            final onSelect = () => unawaited(
+            void onSelect() => unawaited(
               Navigator.of(context).push<void>(
                 MaterialPageRoute(
                   builder: (_) => IptvVodDetailsScreen(profileId: profileId, item: item),

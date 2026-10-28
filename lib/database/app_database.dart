@@ -61,6 +61,10 @@ final class AppDatabaseBootstrap {
     Profiles,
     ProfileConnections,
     MusicSessions,
+    IptvSources,
+    IptvChannels,
+    IptvProgrammes,
+    IptvChannelOverrides,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -426,21 +430,22 @@ class AppDatabase extends _$AppDatabase {
       'updatedAt',
       'finished',
     });
-    final iptvRecordingScheduleRows = _decodeIptvRecoveryRowsIfPresent(snapshot.identity, 'iptvRecordingSchedules', const {
-      'id',
-      'profileId',
-      'sourceId',
-      'channelId',
-      'title',
-      'programmeTitle',
-      'startsAt',
-      'endsAt',
-      'state',
-      'recordingId',
-      'errorCode',
-      'createdAt',
-      'updatedAt',
-    });
+    final iptvRecordingScheduleRows =
+        _decodeIptvRecoveryRowsIfPresent(snapshot.identity, 'iptvRecordingSchedules', const {
+          'id',
+          'profileId',
+          'sourceId',
+          'channelId',
+          'title',
+          'programmeTitle',
+          'startsAt',
+          'endsAt',
+          'state',
+          'recordingId',
+          'errorCode',
+          'createdAt',
+          'updatedAt',
+        });
     final iptvRecordingRows = _decodeIptvRecoveryRowsIfPresent(snapshot.identity, 'iptvRecordings', const {
       'id',
       'profileId',
@@ -558,41 +563,47 @@ class AppDatabase extends _$AppDatabase {
         );
       }
       for (final row in iptvVodProgressRows) {
-        await customStatement('''
+        await customStatement(
+          '''
           INSERT INTO iptv_vod_progress(source_id, kind, item_id, episode_id, position_ms, duration_ms, updated_at, finished)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', [
-          row['sourceId'],
-          row['kind'],
-          row['itemId'],
-          row['episodeId'],
-          row['positionMs'],
-          row['durationMs'],
-          row['updatedAt'],
-          row['finished'] == true ? 1 : 0,
-        ]);
+        ''',
+          [
+            row['sourceId'],
+            row['kind'],
+            row['itemId'],
+            row['episodeId'],
+            row['positionMs'],
+            row['durationMs'],
+            row['updatedAt'],
+            row['finished'] == true ? 1 : 0,
+          ],
+        );
       }
       for (final row in iptvRecordingScheduleRows) {
-        await customStatement('''
+        await customStatement(
+          '''
           INSERT INTO iptv_recording_schedules(
             id, profile_id, source_id, channel_id, title, programme_title, starts_at, ends_at,
             state, recording_id, error_code, created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', [
-          row['id'],
-          row['profileId'],
-          row['sourceId'],
-          row['channelId'],
-          row['title'],
-          row['programmeTitle'],
-          row['startsAt'],
-          row['endsAt'],
-          row['state'],
-          row['recordingId'],
-          row['errorCode'],
-          row['createdAt'],
-          row['updatedAt'],
-        ]);
+        ''',
+          [
+            row['id'],
+            row['profileId'],
+            row['sourceId'],
+            row['channelId'],
+            row['title'],
+            row['programmeTitle'],
+            row['startsAt'],
+            row['endsAt'],
+            row['state'],
+            row['recordingId'],
+            row['errorCode'],
+            row['createdAt'],
+            row['updatedAt'],
+          ],
+        );
       }
       for (final row in iptvRecordingRows) {
         await customStatement(
@@ -653,18 +664,8 @@ class AppDatabase extends _$AppDatabase {
     ];
   }
 
-  /// Rows added in later schema versions are absent from older committed
-  /// tvOS images. Treat that one shape as an empty new table while retaining
-  /// strict validation whenever the group exists.
-  static List<T> _decodeRecoveryRowsIfPresent<T extends DataClass>(
-    Map<String, Object?> group,
-    String key,
-    T Function(Map<String, dynamic> json) fromJson,
-  ) {
-    if (!group.containsKey(key)) return const [];
-    return _decodeRecoveryRows(group, key, fromJson);
-  }
-
+  /// IPTV rows are absent from older committed tvOS images. Validate every
+  /// present row, accepting only the explicitly supported legacy columns.
   static List<Map<String, dynamic>> _decodeIptvRecoveryRowsIfPresent(
     Map<String, Object?> group,
     String key,
@@ -680,9 +681,12 @@ class AppDatabase extends _$AppDatabase {
       }
       final rawColumns = raw.keys.toSet();
       final legacyOverrideColumns = columns.difference(const {'guideIdOverride', 'parentalLocked'});
-      final legacyIptvOverrides = key == 'iptvChannelOverrides' &&
-          (setEquals(rawColumns, columns.difference(const {'parentalLocked'})) || setEquals(rawColumns, legacyOverrideColumns));
-      if (rawColumns.difference(columns).isNotEmpty || (columns.difference(rawColumns).isNotEmpty && !legacyIptvOverrides)) {
+      final legacyIptvOverrides =
+          key == 'iptvChannelOverrides' &&
+          (setEquals(rawColumns, columns.difference(const {'parentalLocked'})) ||
+              setEquals(rawColumns, legacyOverrideColumns));
+      if (rawColumns.difference(columns).isNotEmpty ||
+          (columns.difference(rawColumns).isNotEmpty && !legacyIptvOverrides)) {
         throw _invalidRecoveryImage;
       }
       final normalized = Map<String, dynamic>.from(raw);
@@ -1266,7 +1270,9 @@ class AppDatabase extends _$AppDatabase {
         last_error_code TEXT
       )
     ''');
-    await customStatement('CREATE INDEX IF NOT EXISTS idx_iptv_sources_profile ON iptv_sources(profile_id, created_at)');
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_iptv_sources_profile ON iptv_sources(profile_id, created_at)',
+    );
     await customStatement('''
       CREATE TABLE IF NOT EXISTS iptv_channels (
         source_id TEXT NOT NULL REFERENCES iptv_sources(id) ON DELETE CASCADE,
@@ -1285,8 +1291,12 @@ class AppDatabase extends _$AppDatabase {
         PRIMARY KEY (source_id, channel_id)
       )
     ''');
-    await customStatement('CREATE INDEX IF NOT EXISTS idx_iptv_channels_source_number ON iptv_channels(source_id, number)');
-    await customStatement('CREATE INDEX IF NOT EXISTS idx_iptv_channels_source_tvg ON iptv_channels(source_id, tvg_id)');
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_iptv_channels_source_number ON iptv_channels(source_id, number)',
+    );
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_iptv_channels_source_tvg ON iptv_channels(source_id, tvg_id)',
+    );
     await customStatement('''
       CREATE TABLE IF NOT EXISTS iptv_programmes (
         source_id TEXT NOT NULL REFERENCES iptv_sources(id) ON DELETE CASCADE,
@@ -1355,7 +1365,9 @@ class AppDatabase extends _$AppDatabase {
         PRIMARY KEY (profile_id, source_id, group_key)
       )
     ''');
-    await customStatement('CREATE INDEX IF NOT EXISTS idx_iptv_group_locks_profile ON iptv_group_locks(profile_id, source_id)');
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_iptv_group_locks_profile ON iptv_group_locks(profile_id, source_id)',
+    );
   }
 
   Future<void> _createIptvRecordingSchedules() async {
@@ -1377,8 +1389,12 @@ class AppDatabase extends _$AppDatabase {
         UNIQUE(profile_id, source_id, channel_id, starts_at)
       )
     ''');
-    await customStatement('CREATE INDEX IF NOT EXISTS idx_iptv_recording_schedules_due ON iptv_recording_schedules(state, starts_at)');
-    await customStatement('CREATE INDEX IF NOT EXISTS idx_iptv_recording_schedules_profile ON iptv_recording_schedules(profile_id, starts_at)');
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_iptv_recording_schedules_due ON iptv_recording_schedules(state, starts_at)',
+    );
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_iptv_recording_schedules_profile ON iptv_recording_schedules(profile_id, starts_at)',
+    );
   }
 
   Future<void> _createIptvExtensionTables() async {
@@ -1392,7 +1408,9 @@ class AppDatabase extends _$AppDatabase {
         PRIMARY KEY (source_id, kind, category_id)
       )
     ''');
-    await customStatement('CREATE INDEX IF NOT EXISTS idx_iptv_vod_categories_source ON iptv_vod_categories(source_id, kind, name)');
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_iptv_vod_categories_source ON iptv_vod_categories(source_id, kind, name)',
+    );
     await customStatement('''
       CREATE TABLE IF NOT EXISTS iptv_vod_items (
         source_id TEXT NOT NULL REFERENCES iptv_sources(id) ON DELETE CASCADE,
@@ -1411,7 +1429,9 @@ class AppDatabase extends _$AppDatabase {
         PRIMARY KEY (source_id, kind, item_id)
       )
     ''');
-    await customStatement('CREATE INDEX IF NOT EXISTS idx_iptv_vod_items_category ON iptv_vod_items(source_id, kind, category_id, title)');
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_iptv_vod_items_category ON iptv_vod_items(source_id, kind, category_id, title)',
+    );
     await _createIptvVodProgressTable();
     await customStatement('''
       CREATE TABLE IF NOT EXISTS iptv_recordings (
@@ -1430,7 +1450,9 @@ class AppDatabase extends _$AppDatabase {
         error_code TEXT
       )
     ''');
-    await customStatement('CREATE INDEX IF NOT EXISTS idx_iptv_recordings_profile ON iptv_recordings(profile_id, started_at DESC)');
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_iptv_recordings_profile ON iptv_recordings(profile_id, started_at DESC)',
+    );
   }
 
   Future<void> _createIptvVodProgressTable() async {
@@ -1447,7 +1469,9 @@ class AppDatabase extends _$AppDatabase {
         PRIMARY KEY (source_id, kind, item_id, episode_id)
       )
     ''');
-    await customStatement('CREATE INDEX IF NOT EXISTS idx_iptv_vod_progress_source_kind ON iptv_vod_progress(source_id, kind, updated_at DESC)');
+    await customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_iptv_vod_progress_source_kind ON iptv_vod_progress(source_id, kind, updated_at DESC)',
+    );
   }
 
   Future<void> _ignoreAlreadyExists(String label, Future<void> Function() operation) async {

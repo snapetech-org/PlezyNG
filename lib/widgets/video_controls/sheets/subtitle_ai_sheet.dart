@@ -58,6 +58,7 @@ class SubtitleAiSheet extends StatefulWidget {
   final String? serverId;
   final String? ratingKey;
   final int mediaIndex;
+
   /// Optional device-local identity for standalone source media. Server
   /// attachment still requires [serverId] and [ratingKey].
   final SubtitleRevisionIdentity? revisionIdentity;
@@ -115,7 +116,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final captureSource = widget.player;
     if (captureSource is SubtitlePcmCaptureSource) {
       try {
-        playbackCaptureSupported = await captureSource.subtitlePcmCaptureAvailable();
+        playbackCaptureSupported = await (captureSource as SubtitlePcmCaptureSource).subtitlePcmCaptureAvailable();
       } catch (_) {
         playbackCaptureSupported = false;
       }
@@ -389,6 +390,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (player is! SubtitlePcmCaptureSource) {
       throw UnsupportedError('This player does not expose decoded PCM to live subtitles.');
     }
+    final captureSource = player as SubtitlePcmCaptureSource;
     final service = SubtitlePlaybackTranscriptionService.instance;
     if (service.isRunning || service.hasActiveSession) {
       await service.stop();
@@ -397,7 +399,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       return;
     }
     await service.start(
-      player,
+      captureSource,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       onProgress: (phase, received, total) {
         if (!mounted) return;
@@ -994,8 +996,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         wordTimings: wordTimings,
       );
       if (mounted) {
-        setState(() => _revisionStatus =
-            'Saved revision ${revision.id} to this device for this profile and media item.');
+        setState(
+          () => _revisionStatus = 'Saved revision ${revision.id} to this device for this profile and media item.',
+        );
       }
     } catch (error) {
       if (mounted) setState(() => _revisionStatus = 'Could not save this revision locally: $error');
@@ -1011,8 +1014,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final identity = _revisionIdentity;
     if (identity == null) {
       if (mounted) {
-        setState(() => _revisionStatus =
-            'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.');
+        setState(
+          () => _revisionStatus =
+              'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.',
+        );
       }
       return true;
     }
@@ -1029,7 +1034,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       return true;
     } catch (error) {
       if (mounted) {
-        setState(() => _revisionStatus = 'Could not save an undo checkpoint; the accepted revision remains available: $error');
+        setState(
+          () => _revisionStatus = 'Could not save an undo checkpoint; the accepted revision remains available: $error',
+        );
       }
       return false;
     }
@@ -1049,9 +1056,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     // Leave one item-history slot for the accepted final revision.
     final snapshot = List<SubtitleCue>.from(cues);
     var saved = 0;
-    for (var index = undoHistory.length - 1;
-        index >= 0 && saved < SubtitleRevisionService.maximumRevisionsPerItem - 1;
-        index--) {
+    for (
+      var index = undoHistory.length - 1;
+      index >= 0 && saved < SubtitleRevisionService.maximumRevisionsPerItem - 1;
+      index--
+    ) {
       final (cueIndex, previousCue) = undoHistory[index];
       if (cueIndex < 0 || cueIndex >= snapshot.length) continue;
       final currentCue = snapshot[cueIndex];

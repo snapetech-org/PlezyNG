@@ -21,8 +21,7 @@ bool titleSaysHearingImpaired(String? title) {
 
 extension MediaSubtitleTrackForcedSemantics on MediaSubtitleTrack {
   bool get effectiveForced => forced || titleSaysForced(title) || titleSaysForced(displayTitle);
-  bool get effectiveHearingImpaired =>
-      titleSaysHearingImpaired(title) || titleSaysHearingImpaired(displayTitle);
+  bool get effectiveHearingImpaired => titleSaysHearingImpaired(title) || titleSaysHearingImpaired(displayTitle);
 }
 
 extension SubtitleTrackForcedSemantics on SubtitleTrack {

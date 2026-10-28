@@ -1250,15 +1250,15 @@ static FlMethodResponse* subtitle_pcm_capture_method(MpvPlugin* self, const char
     return FL_METHOD_RESPONSE(fl_method_error_response_new(code, message, nullptr));
   };
   if (strcmp(method, "subtitlePcmCaptureAvailable") == 0) {
-    const bool available = self->player && self->initialized && !self->audio_only &&
-                           self->player->SubtitlePcmCaptureAvailable();
+    const bool available =
+        self->player && self->initialized && !self->audio_only && self->player->SubtitlePcmCaptureAvailable();
     return bool_success_response(available);
   }
   if (!self->player || !self->initialized || self->audio_only)
     return failure("SUBTITLE_PCM_UNAVAILABLE", "The video MPV session is not available.");
   if (strcmp(method, "setSubtitlePcmCaptureEnabled") == 0) {
-    FlValue* enabled = args && fl_value_get_type(args) == FL_VALUE_TYPE_MAP
-                           ? fl_value_lookup_string(args, "enabled") : nullptr;
+    FlValue* enabled =
+        args && fl_value_get_type(args) == FL_VALUE_TYPE_MAP ? fl_value_lookup_string(args, "enabled") : nullptr;
     if (!enabled || fl_value_get_type(enabled) != FL_VALUE_TYPE_BOOL)
       return failure("INVALID_ARGS", "An enabled boolean is required.");
     const int result = self->player->SetSubtitlePcmCaptureEnabled(fl_value_get_bool(enabled));
@@ -1272,27 +1272,25 @@ static FlMethodResponse* subtitle_pcm_capture_method(MpvPlugin* self, const char
       const int result = self->player->ReadSubtitlePcmCapture(&block);
       if (result == 0) break;
       if (result < 0) return failure("SUBTITLE_PCM_READ", "The native PCM capture tap failed.");
-      if (!std::isfinite(block.pts) || block.frames == 0 ||
-          block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES || block.sample_rate == 0 ||
-          block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS) {
+      if (!std::isfinite(block.pts) || block.frames == 0 || block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES ||
+          block.sample_rate == 0 || block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS) {
         continue;
       }
       const double pts_us = block.pts * 1000000.0;
-      if (!std::isfinite(pts_us) ||
-          pts_us >= static_cast<double>(std::numeric_limits<int64_t>::max()) ||
+      if (!std::isfinite(pts_us) || pts_us >= static_cast<double>(std::numeric_limits<int64_t>::max()) ||
           pts_us < static_cast<double>(std::numeric_limits<int64_t>::min())) {
         continue;
       }
       const size_t sample_count = static_cast<size_t>(block.frames) * block.channels;
       g_autoptr(FlValue) packet = fl_value_new_map();
-      fl_value_set_string_take(packet, "presentationTimeUs",
-                               fl_value_new_int(static_cast<int64_t>(std::llround(pts_us))));
+      fl_value_set_string_take(
+          packet, "presentationTimeUs", fl_value_new_int(static_cast<int64_t>(std::llround(pts_us))));
       fl_value_set_string_take(packet, "sampleRate", fl_value_new_int(block.sample_rate));
       fl_value_set_string_take(packet, "channels", fl_value_new_int(block.channels));
       fl_value_set_string_take(packet, "encoding", fl_value_new_string("float32"));
-      fl_value_set_string_take(packet, "pcm",
-                               fl_value_new_uint8_list(reinterpret_cast<const uint8_t*>(block.samples),
-                                                       sample_count * sizeof(float)));
+      fl_value_set_string_take(
+          packet, "pcm",
+          fl_value_new_uint8_list(reinterpret_cast<const uint8_t*>(block.samples), sample_count * sizeof(float)));
       fl_value_set_string_take(packet, "droppedFrames", fl_value_new_int(block.dropped_frames));
       fl_value_append_take(packets, g_steal_pointer(&packet));
     }

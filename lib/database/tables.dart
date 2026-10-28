@@ -325,6 +325,7 @@ class IptvChannels extends Table {
   TextColumn get catchupSourceCiphertext => text().nullable()();
   IntColumn get catchupDays => integer().nullable()();
   TextColumn get streamUrlCiphertext => text()();
+  TextColumn get streamHeadersCiphertext => text().nullable()();
   BoolColumn get isRadio => boolean().withDefault(const Constant(false))();
   IntColumn get updatedAt => integer()();
 

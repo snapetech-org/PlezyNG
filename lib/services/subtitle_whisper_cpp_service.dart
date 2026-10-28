@@ -53,19 +53,16 @@ final class SubtitleWhisperCppService {
     if (_tizenBuild) return _tizenWhisperRuntimeAvailable;
     return !_tvOsBuild &&
         !_webOsBuild &&
-        (Platform.isAndroid ||
-            Platform.isIOS ||
-            Platform.isWindows ||
-            Platform.isMacOS ||
-            Platform.isLinux);
+        (Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isMacOS || Platform.isLinux);
   }
 
   static bool get _tizenWhisperRuntimeAvailable => _tizenWhisperRuntimeState ??= _probeTizenWhisperRuntime();
 
   static bool _probeTizenWhisperRuntime() {
     try {
-      ffi.DynamicLibrary.open('libflutter_whisper_plugin.so')
-          .lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>('fw_version');
+      ffi.DynamicLibrary.open(
+        'libflutter_whisper_plugin.so',
+      ).lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>('fw_version');
       return true;
     } catch (_) {
       return false;
@@ -228,8 +225,8 @@ final class SubtitleWhisperCppService {
         placementEvidence: fellBackToCpu
             ? SubtitlePlacementEvidence.cpuFallbackAfterAcceleratorUnavailable
             : (runtimeProvider == 'CPU'
-                ? SubtitlePlacementEvidence.cpuOnlyConfigured
-                : SubtitlePlacementEvidence.acceleratorRequestSucceededButUnverified),
+                  ? SubtitlePlacementEvidence.cpuOnlyConfigured
+                  : SubtitlePlacementEvidence.acceleratorRequestSucceededButUnverified),
         translatedToEnglish: translated,
         wordTimings: wordTimings,
       );

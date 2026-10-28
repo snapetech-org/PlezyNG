@@ -247,7 +247,8 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
           (service as MusicVisualizationAudioService).hasNativeVisualizationAudio;
     }
     final player = widget.sourcePlayback?.player;
-    return player is NativeVisualizationAudioSource && player.nativeVisualizationAudioReady;
+    return player is NativeVisualizationAudioSource &&
+        (player as NativeVisualizationAudioSource).nativeVisualizationAudioReady;
   }
 
   void _syncTicker() {

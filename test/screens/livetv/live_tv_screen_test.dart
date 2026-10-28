@@ -27,6 +27,9 @@ import 'package:provider/provider.dart';
 
 import '../../test_helpers/multi_server_fixtures.dart';
 import '../../test_helpers/prefs.dart';
+import 'package:plezy/profiles/active_profile_provider.dart';
+import '../../test_helpers/profile_stack.dart';
+import 'package:plezy/iptv/iptv_source_repository.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +46,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
 
     expect(find.byIcon(Symbols.star_rounded), findsOneWidget);
@@ -68,7 +71,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
 
     harness.liveTv.favorites.complete([FavoriteChannel(id: 'channel-gone', source: 'server://server-a/provider-a')]);
@@ -83,7 +86,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester, channelKeys: const ['channel-a', 'channel-b']);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
 
     final favorite = FavoriteChannel(id: 'channel-a', source: 'server://server-a/provider-a');
@@ -109,7 +112,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester, channelKeys: const ['channel-a', 'channel-b']);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
 
     harness.liveTv.favorites.complete([FavoriteChannel(id: 'channel-a', source: 'server://server-a/provider-a')]);
@@ -136,7 +139,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
 
     expect(_guideChannels(tester).map((channel) => channel.key), ['channel-a']);
@@ -160,16 +163,22 @@ void main() {
       LiveTvServerInfo(serverId: 'server-a', dvrKey: 'dvr-a', lineup: 'provider-a'),
       LiveTvServerInfo(serverId: 'server-b', dvrKey: 'dvr-b', lineup: 'provider-b'),
     ]);
+    final profiles = await ProfileStack.create(withStorage: false);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
       provider.dispose();
       manager.dispose();
+      await profiles.dispose();
     });
     await tester.pumpWidget(
       TranslationProvider(
         child: InputModeTracker(
-          child: ChangeNotifierProvider<MultiServerProvider>.value(
-            value: provider,
+          child: MultiProvider(
+            providers: [
+              ChangeNotifierProvider<MultiServerProvider>.value(value: provider),
+              ChangeNotifierProvider<ActiveProfileProvider>.value(value: profiles.active),
+              Provider<IptvSourceRepository>.value(value: IptvSourceRepository(profiles.db)),
+            ],
             child: MaterialApp(theme: monoTheme(MonoPalette.dark), home: const LiveTvScreen()),
           ),
         ),
@@ -193,7 +202,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
     harness.liveTv.writeFailures.add(StateError('favorite write failed'));
     harness.liveTv.favorites.complete(const []);
@@ -225,7 +234,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
     harness.liveTv.favorites.complete(const []);
     await tester.pumpAndSettle();
@@ -238,7 +247,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester, channelKeys: const ['channel-a', 'channel-b']);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
     harness.liveTv.favorites.complete(const []);
     await tester.pumpAndSettle();
@@ -260,7 +269,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester, channelsFailure: StateError('offline'));
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
 
     expect(find.text(t.errors.unableToLoad(context: t.liveTv.title)), findsOneWidget);
@@ -272,7 +281,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester, dvr: dvr);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
     harness.liveTv.favorites.complete(const []);
     await tester.pumpAndSettle();
@@ -293,7 +302,7 @@ void main() {
     final harness = await _pumpLiveTvScreen(tester, dvr: dvr);
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox.shrink());
-      harness.dispose();
+      await harness.dispose();
     });
     harness.liveTv.favorites.complete(const []);
     await tester.pumpAndSettle();
@@ -322,13 +331,18 @@ Future<_LiveTvHarness> _pumpLiveTvScreen(
   provider.debugSetLiveTvServersForTesting([
     LiveTvServerInfo(serverId: client.serverId.value, dvrKey: 'dvr-a', lineup: 'provider-a'),
   ]);
-  final harness = _LiveTvHarness(manager: manager, provider: provider, liveTv: liveTv);
+  final profiles = await ProfileStack.create(withStorage: false);
+  final harness = _LiveTvHarness(manager: manager, provider: provider, liveTv: liveTv, profiles: profiles);
 
   await tester.pumpWidget(
     TranslationProvider(
       child: InputModeTracker(
-        child: ChangeNotifierProvider<MultiServerProvider>.value(
-          value: provider,
+        child: MultiProvider(
+          providers: [
+            ChangeNotifierProvider<MultiServerProvider>.value(value: provider),
+            ChangeNotifierProvider<ActiveProfileProvider>.value(value: profiles.active),
+            Provider<IptvSourceRepository>.value(value: IptvSourceRepository(profiles.db)),
+          ],
           child: MaterialApp(theme: monoTheme(MonoPalette.dark), home: const LiveTvScreen()),
         ),
       ),
@@ -339,15 +353,17 @@ Future<_LiveTvHarness> _pumpLiveTvScreen(
 }
 
 class _LiveTvHarness {
-  const _LiveTvHarness({required this.manager, required this.provider, required this.liveTv});
+  const _LiveTvHarness({required this.manager, required this.provider, required this.liveTv, required this.profiles});
 
   final MultiServerManager manager;
   final MultiServerProvider provider;
   final _FakeLiveTvSupport liveTv;
+  final ProfileStack profiles;
 
-  void dispose() {
+  Future<void> dispose() async {
     provider.dispose();
     manager.dispose();
+    await profiles.dispose();
   }
 }
 

@@ -36,6 +36,8 @@ import 'base_video_control_sheet.dart';
 /// SRT that viewers may export or attach as a separate external track.
 enum _SubtitleReviewChoice { discard, exportSrt, exportJson, player, serverAndPlayer }
 
+const _subtitleUndoCheckpointPrefix = 'Undo checkpoint: ';
+
 class SubtitleAiSheet extends StatefulWidget {
   const SubtitleAiSheet({
     super.key,
@@ -633,6 +635,76 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     }
   }
 
+  Future<bool> _storeUndoCheckpoint({
+    required List<SubtitleCue> cues,
+    required String operation,
+    String? languageCode,
+    required List<SubtitleWordTiming> wordTimings,
+  }) async {
+    final identity = _revisionIdentity;
+    if (identity == null) {
+      if (mounted) {
+        setState(() => _revisionStatus =
+            'Persistent undo checkpoints need an active profile and server library item; session undo is still available.');
+      }
+      return true;
+    }
+    try {
+      final checkpointOperation = '$_subtitleUndoCheckpointPrefix${operation.trim()}';
+      await SubtitleRevisionService.saveRevision(
+        identity: identity,
+        operation: checkpointOperation.length <= 120 ? checkpointOperation : checkpointOperation.substring(0, 120),
+        languageCode: languageCode,
+        cues: cues,
+        wordTimings: wordTimings,
+      );
+      if (mounted) setState(() => _revisionStatus = 'Saved an undo checkpoint to this device for this library item.');
+      return true;
+    } catch (error) {
+      if (mounted) {
+        setState(() => _revisionStatus = 'Could not save the undo checkpoint; the cue edit was not applied: $error');
+      }
+      return false;
+    }
+  }
+
+  Future<void> _storeUndoHistory({
+    required List<SubtitleCue> cues,
+    required List<(int, SubtitleCue)> undoHistory,
+    required String operation,
+    String? languageCode,
+    required List<SubtitleWordTiming> wordTimings,
+  }) async {
+    final identity = _revisionIdentity;
+    if (identity == null || undoHistory.isEmpty) return;
+
+    // The most recent pre-edit states are the most useful recovery points.
+    // Leave one item-history slot for the accepted final revision.
+    final snapshot = List<SubtitleCue>.from(cues);
+    var saved = 0;
+    for (var index = undoHistory.length - 1;
+        index >= 0 && saved < SubtitleRevisionService.maximumRevisionsPerItem - 1;
+        index--) {
+      final (cueIndex, previousCue) = undoHistory[index];
+      if (cueIndex < 0 || cueIndex >= snapshot.length) continue;
+      final currentCue = snapshot[cueIndex];
+      if (currentCue.startMs == previousCue.startMs &&
+          currentCue.endMs == previousCue.endMs &&
+          currentCue.text == previousCue.text) {
+        continue;
+      }
+      snapshot[cueIndex] = previousCue;
+      final persisted = await _storeUndoCheckpoint(
+        cues: List<SubtitleCue>.unmodifiable(snapshot),
+        operation: operation,
+        languageCode: languageCode,
+        wordTimings: wordTimings,
+      );
+      if (!persisted) return;
+      saved++;
+    }
+  }
+
   Future<void> _restoreSubtitleRevision(SubtitleRevision revision) async {
     final bytes = SubtitleSyncService.writeSrt(revision.cues);
     final directory = await getTemporaryDirectory();
@@ -714,8 +786,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                         Navigator.of(dialogContext).pop();
                                         unawaited(_run(() => _restoreSubtitleRevision(revision)));
                                       },
-                                      icon: const Icon(Icons.subtitles_outlined),
-                                      label: const Text('Attach'),
+                                      icon: Icon(revision.operation.startsWith(_subtitleUndoCheckpointPrefix)
+                                          ? Icons.undo
+                                          : Icons.subtitles_outlined),
+                                      label: Text(revision.operation.startsWith(_subtitleUndoCheckpointPrefix)
+                                          ? 'Restore checkpoint'
+                                          : 'Attach'),
                                     ),
                                     TextButton.icon(
                                       onPressed: () {
@@ -1417,6 +1493,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
       );
+      await _storeUndoHistory(
+        cues: reviewedCues,
+        undoHistory: undoHistory,
+        operation: operationLabel,
+        languageCode: operationLanguageCode,
+        wordTimings: reviewedWordTimings,
+      );
       if (mounted) setState(() => _status = 'Reviewed subtitle exported as SRT.');
       return false;
     }
@@ -1468,6 +1551,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
       );
+      await _storeUndoHistory(
+        cues: reviewedCues,
+        undoHistory: undoHistory,
+        operation: operationLabel,
+        languageCode: operationLanguageCode,
+        wordTimings: reviewedWordTimings,
+      );
       if (mounted) setState(() => _status = 'Reviewed subtitle exported as versioned cue JSON.');
       return false;
     }
@@ -1490,12 +1580,26 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           languageCode: operationLanguageCode,
           wordTimings: reviewedWordTimings,
         );
+        await _storeUndoHistory(
+          cues: reviewedCues,
+          undoHistory: undoHistory,
+          operation: operationLabel,
+          languageCode: operationLanguageCode,
+          wordTimings: reviewedWordTimings,
+        );
         throw StateError('Uploaded to the server library, but could not attach the local copy: $error');
       }
       rethrow;
     }
     await _storeReviewedRevision(
       cues: reviewedCues,
+      operation: operationLabel,
+      languageCode: operationLanguageCode,
+      wordTimings: reviewedWordTimings,
+    );
+    await _storeUndoHistory(
+      cues: reviewedCues,
+      undoHistory: undoHistory,
       operation: operationLabel,
       languageCode: operationLanguageCode,
       wordTimings: reviewedWordTimings,

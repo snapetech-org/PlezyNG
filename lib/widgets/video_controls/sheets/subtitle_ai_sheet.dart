@@ -14,9 +14,10 @@ import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 import '../../../mpv/mpv.dart';
 import '../../../media/ids.dart';
 import '../../../profiles/active_profile_provider.dart';
-import '../../../mpv/player/platform/player_android.dart';
+import '../../../mpv/player/subtitle_pcm_capture_source.dart';
 import '../../../services/file_picker_service.dart';
 import '../../../services/subtitle_ai_service.dart';
+import '../../../services/subtitle_placement_evidence.dart';
 import '../../../services/subtitle_retimer.dart';
 import '../../../services/subtitle_word_timing.dart';
 import '../../../services/subtitle_sync_service.dart';
@@ -95,8 +96,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _refreshCapabilityState() async {
     var translationSupported = false;
-    final androidPlayer = widget.player is PlayerAndroid ? widget.player as PlayerAndroid : null;
-    final playbackCaptureSupported = androidPlayer != null && !androidPlayer.usingMpvFallback && !androidPlayer.isLivePlayback;
+    var playbackCaptureSupported = false;
+    final captureSource = widget.player;
+    if (captureSource is SubtitlePcmCaptureSource) {
+      try {
+        playbackCaptureSupported = await captureSource.subtitlePcmCaptureAvailable();
+      } catch (_) {
+        playbackCaptureSupported = false;
+      }
+    }
     try {
       translationSupported = SubtitleTranslationService.desktopPlatformSupported ||
           await SubtitleTranslationService.isSupportedOnCurrentDevice();
@@ -227,7 +235,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     setState(() {
       _status = 'Generated ${result.cues.length} cues from ${(result.durationMs / 60000).ceil()} minutes of audio. '
           '${result.translatedToEnglish ? 'Speech translated to English' : 'Detected language: ${result.detectedLanguage}'}. '
-          'Requested/initialized backend: $providerLabel. Original audio remains unchanged.'
+          'Requested/initialized backend: $providerLabel. Placement evidence: ${result.placementEvidence.displayLabel}. '
+          'Original audio remains unchanged.'
           '${_lastResultUploadedToServer ? ' Uploaded to the server library.' : ''}';
     });
     await _showApplied();
@@ -287,8 +296,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _captureLivePlayback() => _run(() async {
     final player = widget.player;
-    if (player is! PlayerAndroid) {
-      throw UnsupportedError('Live subtitle capture is available only through Android ExoPlayer.');
+    if (player is! SubtitlePcmCaptureSource) {
+      throw UnsupportedError('This player does not expose decoded PCM to live subtitles.');
     }
     final service = SubtitlePlaybackTranscriptionService.instance;
     if (service.isRunning || service.hasActiveSession) {
@@ -1611,7 +1620,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         children: [
           Text(
-            'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Android ExoPlayer supports an opt-in local CPU caption tap for watched VOD sections. MPV fallback and other players do not expose decoded audio.',
+            'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 12),
@@ -1644,8 +1653,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           const SizedBox(height: 6),
           Text(
             _provider == SubtitleInferenceProvider.desktopGpu
-                ? 'Desktop GPU uses CUDA or Vulkan only when compiled into the native Whisper runtime. Device discovery and execution can vary by packaged build; failures restart on CPU.'
-                : 'CPU is the baseline. Core ML/QNN/RKNN are provider requests for the installed native runtime; unsupported requests retry on CPU, and per-operation hardware placement is not reported.',
+                ? 'Desktop GPU uses CUDA or Vulkan only when compiled into the native Whisper runtime. Successful inference does not prove every operation ran on the GPU; placement is unverified and failures restart on CPU.'
+                : 'CPU is the baseline. Core ML/QNN/RKNN are provider requests for the installed native runtime; unsupported requests retry on CPU. The result reports provider initialization/fallback and marks per-operation placement as unverified.',
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 12),
@@ -1676,7 +1685,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             Text('Live captions from playback', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
             Text(
-              'Android ExoPlayer copies a bounded PCM window after decoding. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable during tunneling, audio offload, or unsupported output formats.',
+              'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 6),
@@ -1712,7 +1721,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                             ? 'Loading the local Whisper model'
                             : (service.isRunning || service.hasActiveSession)
                                 ? 'Stop capture and retain the transcript for sync'
-                                : 'VOD on Android ExoPlayer; downloads the local Whisper model on first use',
+                                : 'This player session; downloads the local Whisper model on first use',
                       ),
                       onTap: (_busy || service.isStarting) ? null : () => unawaited(_captureLivePlayback()),
                     ),

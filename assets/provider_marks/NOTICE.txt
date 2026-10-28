@@ -27,4 +27,4 @@ Dashboard Icons marks (Apache-2.0):
 - dashboard_hulu.svg, dashboard_peacock.svg, and dashboard_premiumize.svg are copied from homarr-labs/dashboard-icons. Their source URLs and upstream blob IDs are recorded in sources.json. The provider marks remain the respective owners' trademarks and are used only to identify external destinations.
 
 TorBox:
-- torbox.svg is the TorBox logo from https://torbox.app/assets/logo-bb7a9572.svg, extracted from the public SVG data URI recorded in sources.json. TorBox API Developer Terms restrict use of brand assets to published brand guidelines or written permission: https://torbox.app/policies/api-developer-terms . Confirm permission before distributing a production build that includes this mark.
+- torbox.svg is the TorBox logo from https://torbox.app/assets/logo-bb7a9579.svg, extracted from the public SVG data URI recorded in sources.json. TorBox API Developer Terms restrict use of brand assets to published brand guidelines or written permission: https://torbox.app/policies/api-developer-terms . Confirm permission before distributing a production build that includes this mark.

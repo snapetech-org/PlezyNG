@@ -774,7 +774,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                 onTap: _busy ? null : () => _browse(importedName: name),
                                 subtitle: Text(
                                   name.toLowerCase().endsWith('.milk2')
-                                      ? 'Stored offline · .milk2 playback unavailable'
+                                      ? 'Stored offline · limited MilkRust support'
                                       : 'Stored offline · browse to play or view details',
                                 ),
                                 trailing: Row(

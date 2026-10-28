@@ -1,9 +1,10 @@
 # TV visualization integration
 
-Status: Tizen PCM, EGL/texture host and optional artifact packaging are now
-implemented in source in [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74).
-They have not been compiled or run. webOS still needs a supported PCM source
-and native host. Neither platform is release-qualified.
+Status: Tizen PCM, EGL/texture host and optional artifact packaging source from
+closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) is retained on
+this continuation branch for re-review. It has not been compiled or run. webOS
+still needs a supported PCM source and native host. Neither platform is
+release-qualified.
 
 ## Tizen source implementation
 

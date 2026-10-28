@@ -50,7 +50,7 @@ Updated: 2026-10-28. The original plan and signed-catalog source were merged via
 
 ## Native boundaries that prevent a release claim
 
-The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS and Android/TV now have native MilkRust host source; none has been compiled or device-qualified in this session. Tizen now has an unbuilt same-player PCM/EGL/texture host in PR #74; webOS still lacks its required host path. Storage/import availability and engine availability are separate.
+The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS and Android/TV now have native MilkRust host source; none has been compiled or device-qualified in this session. Tizen has unbuilt same-player PCM/EGL/texture host source retained from closed PR #74 on this continuation branch. webOS still lacks a supported PCM source and renderer host. Storage/import availability and engine availability are separate.
 
 The in-process renderer catches exceptions, but cannot contain a hung shader compiler or GPU driver. Teardown joins the worker and can therefore block in that case. Process isolation/watchdog behavior, resource budgets and driver recovery remain required work before claiming arbitrary community inputs are safely supported.
 
@@ -123,19 +123,21 @@ The follow-up is preserved on `codex/visualizer-catalog-checkpoint-20261028`
 without reopening the closed PR. Production trust remains empty and no
 broader pack or platform has been newly qualified.
 
-## Samsung native host increment
+## Samsung native host source retained after PR #74 closed
 
-[PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) preserves the earlier
-checkpoint and adds synchronized same-player PCM, exact player-ID binding,
-GLES 3 rendering, bounded image decoding, leased Flutter pixel buffers and
-optional runtime/source/notice packaging with an independently reviewed manifest
-digest. App readiness now admits a bound Samsung music player. Regression source
+Closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) added
+synchronized same-player PCM, exact player-ID binding, GLES 3 rendering,
+bounded image decoding, leased Flutter pixel buffers and optional runtime/source/
+notice packaging with an independently reviewed manifest digest. That PR was
+closed without merging; this continuation branch carries its source forward for
+re-review. App readiness admits a bound Samsung music player. Regression source
 covers binding cancellation, missing-host fallback and artifact tampering.
 
 The implementation is uncompiled and unrun. Normal-speed S16LE stereo and
 PNG/JPEG/BMP/TGA are the current Tizen host limits. The callback teardown contract,
 SDK/firmware availability, driver hangs and physical TV behavior remain open.
 No platform or broader pack gained qualification; production trust is still
-empty. The previous checkpoint branch was also deleted remotely, so current
-work lives on `codex/tizen-native-visualizer-20261028`. See
+empty. The previous checkpoint branch was also deleted remotely. This
+continuation branch is being prepared from current `main` with the retained
+Tizen source; see
 [TV_HOST_INTEGRATION.md](TV_HOST_INTEGRATION.md) for the current source contract.

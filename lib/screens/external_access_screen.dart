@@ -101,6 +101,8 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
     if (_dependenciesInitialized && _appleMusicPlaying != null) unawaited(_stopAppleMusic());
     _dependenciesInitialized = true;
     _availabilityGeneration++;
+    _watchmodeResult = null;
+    _watchmodeLoading = false;
     _profileId = profileId;
     _countryCode = _defaultCountryCode();
     _savingCountry = false;
@@ -158,6 +160,7 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
     } on Object {
       if (mounted && _profileId == profileId) {
         setState(() => _countryCode = old);
+        unawaited(_loadWatchmodeAvailability());
         showErrorSnackBar(context, t.common.error);
       }
     } finally {

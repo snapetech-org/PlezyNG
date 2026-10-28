@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 
 import '../utils/app_logger.dart';
+import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
 import 'subtitle_whisper_cpp_service.dart';
@@ -42,6 +43,7 @@ final class SubtitleTranscriptionResult {
     required this.requestedProvider,
     required this.runtimeProvider,
     required this.fellBackToCpu,
+    this.placementEvidence = SubtitlePlacementEvidence.unverified,
     required this.detectedLanguage,
     required this.translatedToEnglish,
     this.wordTimings = const <SubtitleWordTiming>[],
@@ -57,6 +59,7 @@ final class SubtitleTranscriptionResult {
   final String runtimeProvider;
 
   final bool fellBackToCpu;
+  final SubtitlePlacementEvidence placementEvidence;
   final String detectedLanguage;
   final bool translatedToEnglish;
 }
@@ -248,6 +251,7 @@ final class SubtitleAiService {
         requestedProvider: requested,
         runtimeProvider: whisperResult.runtimeProvider,
         fellBackToCpu: whisperResult.fellBackToCpu,
+        placementEvidence: whisperResult.placementEvidence,
         detectedLanguage: whisperResult.detectedLanguage,
         translatedToEnglish: whisperResult.translatedToEnglish,
         wordTimings: whisperResult.wordTimings,
@@ -289,6 +293,11 @@ final class SubtitleAiService {
       requestedProvider: requested,
       runtimeProvider: result['runtimeProvider'] as String,
       fellBackToCpu: result['fellBackToCpu'] as bool,
+      placementEvidence: result['fellBackToCpu'] as bool
+          ? SubtitlePlacementEvidence.cpuFallbackAfterAcceleratorUnavailable
+          : (requested == SubtitleInferenceProvider.cpu
+              ? SubtitlePlacementEvidence.cpuOnlyConfigured
+              : SubtitlePlacementEvidence.acceleratorRequestSucceededButUnverified),
       detectedLanguage: 'en',
       translatedToEnglish: false,
     );

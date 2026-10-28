@@ -61,7 +61,10 @@ class IptvSourceRepository {
       kind: kind,
       endpoint: endpoint.trim(),
       guideEndpoint: guideEndpoint.trim(),
-      additionalGuideEndpoints: additionalGuideEndpoints.map((value) => value.trim()).where((value) => value.isNotEmpty).toList(),
+      additionalGuideEndpoints: additionalGuideEndpoints
+          .map((value) => value.trim())
+          .where((value) => value.isNotEmpty)
+          .toList(),
       username: username,
       password: password,
       macAddress: macAddress.trim().toUpperCase(),
@@ -72,17 +75,19 @@ class IptvSourceRepository {
     );
     _validate(config);
     final protectedConfig = await CredentialVault.protect(jsonEncode(config.toJson()));
-    await _database.runIdentityMutation(() => _database.customStatement(
-      'INSERT INTO iptv_sources(id, profile_id, display_name, kind, config_ciphertext, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-      [
-        config.id,
-        config.profileId,
-        config.displayName,
-        config.kind.name,
-        protectedConfig,
-        DateTime.now().millisecondsSinceEpoch,
-      ],
-    ));
+    await _database.runIdentityMutation(
+      () => _database.customStatement(
+        'INSERT INTO iptv_sources(id, profile_id, display_name, kind, config_ciphertext, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+        [
+          config.id,
+          config.profileId,
+          config.displayName,
+          config.kind.name,
+          protectedConfig,
+          DateTime.now().millisecondsSinceEpoch,
+        ],
+      ),
+    );
     return config.id;
   }
 
@@ -122,12 +127,17 @@ class IptvSourceRepository {
   }
 
   Future<List<IptvSourceSummary>> sources(String profileId) async {
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT s.id, s.profile_id, s.display_name, s.kind, s.generation, s.last_success_at, s.last_error_code,
              (SELECT COUNT(*) FROM iptv_channels c WHERE c.source_id=s.id) AS channel_count,
              (SELECT COUNT(*) FROM iptv_programmes p WHERE p.source_id=s.id) AS programme_count
       FROM iptv_sources s WHERE s.profile_id=? ORDER BY s.created_at
-    ''', variables: [Variable(profileId)]).get();
+    ''',
+          variables: [Variable(profileId)],
+        )
+        .get();
     return [
       for (final row in rows)
         IptvSourceSummary(
@@ -148,24 +158,32 @@ class IptvSourceRepository {
 
   Future<List<LiveTvChannel>> channels(String profileId) async {
     final sourceRows = await _database
-        .customSelect('SELECT id, display_name FROM iptv_sources WHERE profile_id=? ORDER BY created_at',
-            variables: [Variable(profileId)])
+        .customSelect(
+          'SELECT id, display_name FROM iptv_sources WHERE profile_id=? ORDER BY created_at',
+          variables: [Variable(profileId)],
+        )
         .get();
     final channels = <LiveTvChannel>[];
     for (final source in sourceRows) {
       final sourceId = source.read<String>('id');
       final rows = await _database
-          .customSelect('SELECT channel_id, title, tvg_id, number, group_title, logo_url, is_radio, catchup_days, catchup_source_ciphertext FROM iptv_channels WHERE source_id=?',
-              variables: [Variable(sourceId)])
+          .customSelect(
+            'SELECT channel_id, title, tvg_id, number, group_title, logo_url, is_radio, catchup_days, catchup_source_ciphertext FROM iptv_channels WHERE source_id=?',
+            variables: [Variable(sourceId)],
+          )
           .get();
-      final overrideRows = await _database.customSelect(
-        'SELECT channel_id, favorite, favorite_order, hidden, custom_title, group_override, guide_id_override, parental_locked FROM iptv_channel_overrides WHERE profile_id=? AND source_id=?',
-        variables: [Variable(profileId), Variable(sourceId)],
-      ).get();
-      final groupLockRows = await _database.customSelect(
-        'SELECT group_key FROM iptv_group_locks WHERE profile_id=? AND source_id=?',
-        variables: [Variable(profileId), Variable(sourceId)],
-      ).get();
+      final overrideRows = await _database
+          .customSelect(
+            'SELECT channel_id, favorite, favorite_order, hidden, custom_title, group_override, guide_id_override, parental_locked FROM iptv_channel_overrides WHERE profile_id=? AND source_id=?',
+            variables: [Variable(profileId), Variable(sourceId)],
+          )
+          .get();
+      final groupLockRows = await _database
+          .customSelect(
+            'SELECT group_key FROM iptv_group_locks WHERE profile_id=? AND source_id=?',
+            variables: [Variable(profileId), Variable(sourceId)],
+          )
+          .get();
       final lockedGroups = {for (final row in groupLockRows) row.read<String>('group_key')};
       final overrides = {for (final row in overrideRows) row.read<String>('channel_id'): row};
       final snapshots = <IptvChannelSnapshot>[];
@@ -184,7 +202,9 @@ class IptvSourceRepository {
             id: id,
             sourceId: sourceId,
             title: customTitle != null && customTitle.isNotEmpty ? customTitle : row.read<String>('title'),
-            tvgId: guideIdOverride != null && guideIdOverride.isNotEmpty ? guideIdOverride : row.readNullable<String>('tvg_id'),
+            tvgId: guideIdOverride != null && guideIdOverride.isNotEmpty
+                ? guideIdOverride
+                : row.readNullable<String>('tvg_id'),
             number: row.readNullable<String>('number'),
             groupTitle: groupTitle,
             logoUrl: row.readNullable<String>('logo_url'),
@@ -193,14 +213,15 @@ class IptvSourceRepository {
             catchupDays: row.readNullable<int>('catchup_days'),
             favorite: override?.read<int>('favorite') == 1,
             favoriteOrder: override?.read<int>('favorite_order') ?? 0,
-            parentalLocked: override?.read<int>('parental_locked') == 1 ||
-                lockedGroups.contains(iptvGroupLockKey(groupTitle)),
+            parentalLocked:
+                override?.read<int>('parental_locked') == 1 || lockedGroups.contains(iptvGroupLockKey(groupTitle)),
           ),
         );
       }
       snapshots.sort((a, b) {
-        final number = (double.tryParse(a.number ?? '') ?? double.infinity)
-            .compareTo(double.tryParse(b.number ?? '') ?? double.infinity);
+        final number = (double.tryParse(a.number ?? '') ?? double.infinity).compareTo(
+          double.tryParse(b.number ?? '') ?? double.infinity,
+        );
         return number != 0 ? number : a.title.toLowerCase().compareTo(b.title.toLowerCase());
       });
       channels.addAll(snapshots.map((channel) => channel.toLiveTvChannel(source.read<String>('display_name'))));
@@ -211,14 +232,19 @@ class IptvSourceRepository {
   Future<List<IptvEditableChannel>> editableChannels(String profileId, String sourceId) async {
     final source = await _source(profileId, sourceId);
     if (source == null) throw const IptvImportException('source_missing');
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT c.channel_id, c.title, c.tvg_id, c.number, c.group_title, c.logo_url,
              COALESCE(o.hidden, 0) AS hidden, o.custom_title, o.group_override, o.guide_id_override,
              COALESCE(o.parental_locked, 0) AS parental_locked
       FROM iptv_channels c LEFT JOIN iptv_channel_overrides o
         ON o.profile_id=? AND o.source_id=c.source_id AND o.channel_id=c.channel_id
       WHERE c.source_id=? ORDER BY c.number, c.title
-    ''', variables: [Variable(profileId), Variable(sourceId)]).get();
+    ''',
+          variables: [Variable(profileId), Variable(sourceId)],
+        )
+        .get();
     return [
       for (final row in rows)
         IptvEditableChannel(
@@ -255,7 +281,9 @@ class IptvSourceRepository {
     if ((title?.length ?? 0) > 160 || (group?.length ?? 0) > 120 || (guideId?.length ?? 0) > 180) {
       throw const IptvImportException('source_invalid');
     }
-    final changed = await _database.runIdentityMutation(() => _database.customUpdate('''
+    final changed = await _database.runIdentityMutation(
+      () => _database.customUpdate(
+        '''
       INSERT INTO iptv_channel_overrides(
         profile_id, source_id, channel_id, favorite, favorite_order, hidden, custom_title, group_override, guide_id_override, parental_locked
       )
@@ -263,25 +291,30 @@ class IptvSourceRepository {
       ON CONFLICT(profile_id, source_id, channel_id) DO UPDATE SET
         hidden=excluded.hidden, custom_title=excluded.custom_title, group_override=excluded.group_override,
         guide_id_override=excluded.guide_id_override, parental_locked=excluded.parental_locked
-    ''', variables: [
-      Variable(profileId),
-      Variable(sourceId),
-      Variable(hidden ? 1 : 0),
-      Variable(title == null || title.isEmpty ? null : title),
-      Variable(group == null || group.isEmpty ? null : group),
-      Variable(guideId == null || guideId.isEmpty ? null : guideId),
-      Variable(parentalLocked ? 1 : 0),
-      Variable(sourceId),
-      Variable(channelId),
-    ]));
+    ''',
+        variables: [
+          Variable(profileId),
+          Variable(sourceId),
+          Variable(hidden ? 1 : 0),
+          Variable(title == null || title.isEmpty ? null : title),
+          Variable(group == null || group.isEmpty ? null : group),
+          Variable(guideId == null || guideId.isEmpty ? null : guideId),
+          Variable(parentalLocked ? 1 : 0),
+          Variable(sourceId),
+          Variable(channelId),
+        ],
+      ),
+    );
     if (changed != 1) throw const IptvImportException('source_missing');
   }
 
   Future<Set<String>> lockedGroups(String profileId, String sourceId) async {
-    final rows = await _database.customSelect(
-      'SELECT group_key FROM iptv_group_locks WHERE profile_id=? AND source_id=?',
-      variables: [Variable(profileId), Variable(sourceId)],
-    ).get();
+    final rows = await _database
+        .customSelect(
+          'SELECT group_key FROM iptv_group_locks WHERE profile_id=? AND source_id=?',
+          variables: [Variable(profileId), Variable(sourceId)],
+        )
+        .get();
     return {for (final row in rows) row.read<String>('group_key')};
   }
 
@@ -298,11 +331,14 @@ class IptvSourceRepository {
     final key = iptvGroupLockKey(title);
     await _database.runIdentityMutation(() async {
       if (locked) {
-        await _database.customStatement('''
+        await _database.customStatement(
+          '''
           INSERT INTO iptv_group_locks(profile_id, source_id, group_key, group_title)
           VALUES (?, ?, ?, ?)
           ON CONFLICT(profile_id, source_id, group_key) DO UPDATE SET group_title=excluded.group_title
-        ''', [profileId, sourceId, key, title]);
+        ''',
+          [profileId, sourceId, key, title],
+        );
       } else {
         await _database.customStatement(
           'DELETE FROM iptv_group_locks WHERE profile_id=? AND source_id=? AND group_key=?',
@@ -313,13 +349,18 @@ class IptvSourceRepository {
   }
 
   Future<List<FavoriteChannel>> favorites(String profileId) async {
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT o.source_id, o.channel_id, COALESCE(NULLIF(o.custom_title, ''), c.title) AS title, c.logo_url, c.number
       FROM iptv_channel_overrides o JOIN iptv_channels c
         ON c.source_id=o.source_id AND c.channel_id=o.channel_id
       JOIN iptv_sources s ON s.id=o.source_id AND s.profile_id=o.profile_id
       WHERE o.profile_id=? AND o.favorite=1 AND o.hidden=0 ORDER BY o.favorite_order, c.number, c.title
-    ''', variables: [Variable(profileId)]).get();
+    ''',
+          variables: [Variable(profileId)],
+        )
+        .get();
     return [
       for (final row in rows)
         FavoriteChannel(
@@ -336,19 +377,24 @@ class IptvSourceRepository {
     final source = await _source(profileId, sourceId);
     if (source == null) throw const IptvImportException('source_missing');
     final orderedIds = channelIds.toSet().toList();
-    await _database.runIdentityMutation(() => _database.transaction(() async {
-      await _database.customStatement(
-        'UPDATE iptv_channel_overrides SET favorite=0 WHERE profile_id=? AND source_id=? AND favorite=1 AND hidden=0',
-        [profileId, sourceId],
-      );
-      for (var index = 0; index < orderedIds.length; index++) {
-        await _database.customStatement('''
+    await _database.runIdentityMutation(
+      () => _database.transaction(() async {
+        await _database.customStatement(
+          'UPDATE iptv_channel_overrides SET favorite=0 WHERE profile_id=? AND source_id=? AND favorite=1 AND hidden=0',
+          [profileId, sourceId],
+        );
+        for (var index = 0; index < orderedIds.length; index++) {
+          await _database.customStatement(
+            '''
           INSERT INTO iptv_channel_overrides(profile_id, source_id, channel_id, favorite, favorite_order)
           SELECT ?, ?, channel_id, 1, ? FROM iptv_channels WHERE source_id=? AND channel_id=?
           ON CONFLICT(profile_id, source_id, channel_id) DO UPDATE SET favorite=1, favorite_order=excluded.favorite_order
-        ''', [profileId, sourceId, index, sourceId, orderedIds[index]]);
-      }
-    }));
+        ''',
+            [profileId, sourceId, index, sourceId, orderedIds[index]],
+          );
+        }
+      }),
+    );
   }
 
   Future<List<LiveTvProgram>> schedule(
@@ -358,21 +404,26 @@ class IptvSourceRepository {
     String? sourceId,
     String? channelId,
   }) async {
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT p.source_id, p.channel_id, p.begins_at, p.ends_at, p.title, p.summary, p.category, p.episode_id, p.thumb_url
       FROM iptv_programmes p JOIN iptv_sources s ON s.id=p.source_id
       WHERE s.profile_id=? AND p.begins_at < ? AND p.ends_at > ?
         AND (? IS NULL OR p.source_id=?) AND (? IS NULL OR p.channel_id=?)
       ORDER BY p.begins_at
-    ''', variables: [
-      Variable(profileId),
-      Variable(to.millisecondsSinceEpoch ~/ 1000),
-      Variable(from.millisecondsSinceEpoch ~/ 1000),
-      Variable(sourceId),
-      Variable(sourceId),
-      Variable(channelId),
-      Variable(channelId),
-    ]).get();
+    ''',
+          variables: [
+            Variable(profileId),
+            Variable(to.millisecondsSinceEpoch ~/ 1000),
+            Variable(from.millisecondsSinceEpoch ~/ 1000),
+            Variable(sourceId),
+            Variable(sourceId),
+            Variable(channelId),
+            Variable(channelId),
+          ],
+        )
+        .get();
     return [
       for (final row in rows)
         IptvProgrammeSnapshot(
@@ -398,11 +449,7 @@ class IptvSourceRepository {
     return available;
   }
 
-  Future<List<IptvVodCategory>> fetchVodCategories(
-    String profileId,
-    String sourceId,
-    IptvVodKind kind,
-  ) async {
+  Future<List<IptvVodCategory>> fetchVodCategories(String profileId, String sourceId, IptvVodKind kind) async {
     final config = await configuration(profileId, sourceId);
     if (config == null) throw const IptvImportException('source_missing');
     if (!config.supportsXtreamCatalog) throw const IptvImportException('vod_unavailable');
@@ -466,24 +513,31 @@ class IptvSourceRepository {
               _valueString(info, const ['movie_image', 'cover', 'cover_big']),
           config,
         );
-        final backdropRaw = _firstStringValue(row, const ['backdrop_path', 'backdrop', 'backdrop_url']) ??
+        final backdropRaw =
+            _firstStringValue(row, const ['backdrop_path', 'backdrop', 'backdrop_url']) ??
             _firstStringValue(info, const ['backdrop_path', 'backdrop', 'backdrop_url']);
         items.add(
           IptvVodItem(
             id: id,
             sourceId: sourceId,
             kind: kind,
-            title: _safeCatalogText(title, 240),
+            title: _safeCatalogText(title, 240) ?? id,
             categoryId: _valueString(row, const ['category_id']),
-            plot: _safeCatalogText(_valueString(row, const ['plot', 'description']) ?? _valueString(info, const ['plot']), 4000),
+            plot: _safeCatalogText(
+              _valueString(row, const ['plot', 'description']) ?? _valueString(info, const ['plot']),
+              4000,
+            ),
             year: _valueInt(row, const ['year', 'releasedate']) ?? _valueInt(info, const ['releasedate', 'year']),
-            durationSeconds: _valueInt(row, const ['duration_secs', 'duration']) ??
+            durationSeconds:
+                _valueInt(row, const ['duration_secs', 'duration']) ??
                 _durationSeconds(_valueString(row, const ['duration']) ?? _valueString(info, const ['duration'])),
             rating: _valueDouble(row, const ['rating', 'rating_5based']),
             posterUrl: poster,
             backdropUrl: _safeVodArtwork(backdropRaw, config),
-            containerExtension: _safeContainerExtension(
-              _valueString(row, const ['container_extension']) ?? _valueString(info, const ['container_extension']) ?? 'mp4',
+            containerExtension: _iptvSafeExtension(
+              _valueString(row, const ['container_extension']) ??
+                  _valueString(info, const ['container_extension']) ??
+                  'mp4',
             ),
           ),
         );
@@ -501,11 +555,7 @@ class IptvSourceRepository {
     }
   }
 
-  Future<IptvVodSeriesDetails> fetchVodSeriesDetails(
-    String profileId,
-    String sourceId,
-    IptvVodItem series,
-  ) async {
+  Future<IptvVodSeriesDetails> fetchVodSeriesDetails(String profileId, String sourceId, IptvVodItem series) async {
     if (series.kind != IptvVodKind.series || series.sourceId != sourceId) {
       throw const IptvImportException('invalid_data');
     }
@@ -542,7 +592,7 @@ class IptvSourceRepository {
         id: series.id,
         sourceId: sourceId,
         kind: IptvVodKind.series,
-        title: _safeCatalogText(_valueString(info, const ['name', 'title']) ?? series.title, 240),
+        title: _safeCatalogText(_valueString(info, const ['name', 'title']) ?? series.title, 240) ?? series.id,
         categoryId: series.categoryId,
         plot: _safeCatalogText(_valueString(info, const ['plot', 'description']) ?? series.plot, 4000),
         year: _valueInt(info, const ['year', 'releaseDate']) ?? series.year,
@@ -551,7 +601,8 @@ class IptvSourceRepository {
           _valueString(info, const ['cover', 'cover_big', 'movie_image']) ?? series.posterUrl,
           config,
         ),
-        backdropUrl: _safeVodArtwork(_firstStringValue(info, const ['backdrop_path', 'backdrop', 'backdrop_url']), config) ??
+        backdropUrl:
+            _safeVodArtwork(_firstStringValue(info, const ['backdrop_path', 'backdrop', 'backdrop_url']), config) ??
             series.backdropUrl,
       );
       return IptvVodSeriesDetails(series: updatedSeries, episodes: episodes);
@@ -567,10 +618,18 @@ class IptvSourceRepository {
   }
 
   Future<List<IptvVodCategory>> cachedVodCategories(String profileId, String sourceId, IptvVodKind kind) async {
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT category_id, name FROM iptv_vod_categories WHERE source_id=? AND kind=? ORDER BY name COLLATE NOCASE
-    ''', variables: [Variable(sourceId), Variable(kind.name)]).get();
-    return [for (final row in rows) IptvVodCategory(id: row.read<String>('category_id'), name: row.read<String>('name'), kind: kind)];
+    ''',
+          variables: [Variable(sourceId), Variable(kind.name)],
+        )
+        .get();
+    return [
+      for (final row in rows)
+        IptvVodCategory(id: row.read<String>('category_id'), name: row.read<String>('name'), kind: kind),
+    ];
   }
 
   Future<List<IptvVodItem>> cachedVodItems(
@@ -579,12 +638,17 @@ class IptvSourceRepository {
     IptvVodKind kind, {
     String? categoryId,
   }) async {
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT item_id, category_id, title, plot, year, duration_seconds, rating, poster_url, backdrop_url, container_extension
       FROM iptv_vod_items
       WHERE source_id=? AND kind=? AND (? IS NULL OR category_id=?)
       ORDER BY title COLLATE NOCASE
-    ''', variables: [Variable(sourceId), Variable(kind.name), Variable(categoryId), Variable(categoryId)]).get();
+    ''',
+          variables: [Variable(sourceId), Variable(kind.name), Variable(categoryId), Variable(categoryId)],
+        )
+        .get();
     return [
       for (final row in rows)
         IptvVodItem(
@@ -609,7 +673,9 @@ class IptvSourceRepository {
   Future<List<IptvVodItem>> searchVod(String profileId, String query, {int limit = 40}) async {
     final value = query.trim();
     if (value.isEmpty) return const [];
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT v.source_id, v.kind, v.item_id, v.category_id, v.title, v.plot, v.year,
              v.duration_seconds, v.rating, v.poster_url, v.backdrop_url, v.container_extension
       FROM iptv_vod_items v JOIN iptv_sources s ON s.id=v.source_id
@@ -617,7 +683,16 @@ class IptvSourceRepository {
         AND (instr(lower(v.title), lower(?)) > 0 OR instr(lower(COALESCE(v.plot, '')), lower(?)) > 0)
       ORDER BY CASE WHEN instr(lower(v.title), lower(?))=1 THEN 0 ELSE 1 END, v.title COLLATE NOCASE
       LIMIT ?
-    ''', variables: [Variable(profileId), Variable(value), Variable(value), Variable(value), Variable(limit.clamp(1, 100).toInt())]).get();
+    ''',
+          variables: [
+            Variable(profileId),
+            Variable(value),
+            Variable(value),
+            Variable(value),
+            Variable(limit.clamp(1, 100).toInt()),
+          ],
+        )
+        .get();
     return [
       for (final row in rows)
         IptvVodItem(
@@ -638,12 +713,17 @@ class IptvSourceRepository {
   }
 
   Future<List<IptvVodProgress>> vodProgresses(String profileId, String sourceId, IptvVodKind kind) async {
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT p.source_id, p.kind, p.item_id, p.episode_id, p.position_ms, p.duration_ms, p.updated_at, p.finished
       FROM iptv_vod_progress p JOIN iptv_sources s ON s.id=p.source_id
       WHERE s.profile_id=? AND p.source_id=? AND p.kind=?
       ORDER BY p.updated_at DESC LIMIT 2000
-    ''', variables: [Variable(profileId), Variable(sourceId), Variable(kind.name)]).get();
+    ''',
+          variables: [Variable(profileId), Variable(sourceId), Variable(kind.name)],
+        )
+        .get();
     return [for (final row in rows) _vodProgressFromRow(row)];
   }
 
@@ -654,11 +734,22 @@ class IptvSourceRepository {
     required String itemId,
     String episodeId = '',
   }) async {
-    final row = await _database.customSelect('''
+    final row = await _database
+        .customSelect(
+          '''
       SELECT p.source_id, p.kind, p.item_id, p.episode_id, p.position_ms, p.duration_ms, p.updated_at, p.finished
       FROM iptv_vod_progress p JOIN iptv_sources s ON s.id=p.source_id
       WHERE s.profile_id=? AND p.source_id=? AND p.kind=? AND p.item_id=? AND p.episode_id=?
-    ''', variables: [Variable(profileId), Variable(sourceId), Variable(kind.name), Variable(itemId), Variable(episodeId)]).getSingleOrNull();
+    ''',
+          variables: [
+            Variable(profileId),
+            Variable(sourceId),
+            Variable(kind.name),
+            Variable(itemId),
+            Variable(episodeId),
+          ],
+        )
+        .getSingleOrNull();
     return row == null ? null : _vodProgressFromRow(row);
   }
 
@@ -678,33 +769,41 @@ class IptvSourceRepository {
     if (await _source(profileId, sourceId) == null) throw const IptvImportException('source_missing');
     final duration = durationMs.clamp(0, 14 * 24 * 60 * 60 * 1000).toInt();
     final position = positionMs.clamp(0, 14 * 24 * 60 * 60 * 1000).toInt();
-    await _database.customStatement('''
+    await _database.customStatement(
+      '''
       INSERT INTO iptv_vod_progress(source_id, kind, item_id, episode_id, position_ms, duration_ms, updated_at, finished)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(source_id, kind, item_id, episode_id) DO UPDATE SET
         position_ms=excluded.position_ms, duration_ms=excluded.duration_ms,
         updated_at=excluded.updated_at, finished=excluded.finished
-    ''', [
-      sourceId,
-      kind.name,
-      itemId,
-      episodeId,
-      position,
-      duration,
-      DateTime.now().millisecondsSinceEpoch,
-      finished ? 1 : 0,
-    ]);
+    ''',
+      [
+        sourceId,
+        kind.name,
+        itemId,
+        episodeId,
+        position,
+        duration,
+        DateTime.now().millisecondsSinceEpoch,
+        finished ? 1 : 0,
+      ],
+    );
   }
 
   /// Compact, credential-free progress rows suitable for the user's opt-in
   /// Plex account sync. Source endpoints and usernames are represented only
   /// by a SHA-256 fingerprint.
   Future<List<Map<String, Object?>>> exportVodProgressForSync(String profileId) async {
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT p.source_id, p.kind, p.item_id, p.episode_id, p.position_ms, p.duration_ms, p.updated_at, p.finished
       FROM iptv_vod_progress p JOIN iptv_sources s ON s.id=p.source_id
       WHERE s.profile_id=? ORDER BY p.updated_at DESC LIMIT 1000
-    ''', variables: [Variable(profileId)]).get();
+    ''',
+          variables: [Variable(profileId)],
+        )
+        .get();
     final fingerprints = <String, String>{};
     for (final sourceId in rows.map((row) => row.read<String>('source_id')).toSet()) {
       final config = await configuration(profileId, sourceId);
@@ -745,33 +844,46 @@ class IptvSourceRepository {
       final duration = row['duration'];
       final updated = row['updated'];
       final finished = row['finished'];
-      if (fingerprint is! String || fingerprint.length != 64 ||
-          kind is! String || !const {'movie', 'series'}.contains(kind) ||
-          item is! String || item.isEmpty || item.length > 180 ||
-          episode is! String || episode.length > 180 ||
-          position is! int || position < 0 || duration is! int || duration < 0 ||
-          updated is! int || updated < 0 || finished is! bool) {
+      if (fingerprint is! String ||
+          fingerprint.length != 64 ||
+          kind is! String ||
+          !const {'movie', 'series'}.contains(kind) ||
+          item is! String ||
+          item.isEmpty ||
+          item.length > 180 ||
+          episode is! String ||
+          episode.length > 180 ||
+          position is! int ||
+          position < 0 ||
+          duration is! int ||
+          duration < 0 ||
+          updated is! int ||
+          updated < 0 ||
+          finished is! bool) {
         continue;
       }
       final sourceId = fingerprints[fingerprint];
       if (sourceId == null) continue;
-      await _database.customStatement('''
+      await _database.customStatement(
+        '''
         INSERT INTO iptv_vod_progress(source_id, kind, item_id, episode_id, position_ms, duration_ms, updated_at, finished)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(source_id, kind, item_id, episode_id) DO UPDATE SET
           position_ms=excluded.position_ms, duration_ms=excluded.duration_ms,
           updated_at=excluded.updated_at, finished=excluded.finished
         WHERE excluded.updated_at > iptv_vod_progress.updated_at
-      ''', [
-        sourceId,
-        kind,
-        item,
-        episode,
-        position.clamp(0, 14 * 24 * 60 * 60 * 1000).toInt(),
-        duration.clamp(0, 14 * 24 * 60 * 60 * 1000).toInt(),
-        updated,
-        finished ? 1 : 0,
-      ]);
+      ''',
+        [
+          sourceId,
+          kind,
+          item,
+          episode,
+          position.clamp(0, 14 * 24 * 60 * 60 * 1000).toInt(),
+          duration.clamp(0, 14 * 24 * 60 * 60 * 1000).toInt(),
+          updated,
+          finished ? 1 : 0,
+        ],
+      );
     }
   }
 
@@ -817,11 +929,16 @@ class IptvSourceRepository {
   }
 
   Future<List<IptvLocalRecording>> localRecordings(String profileId) async {
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT id, source_id, channel_id, title, programme_title, file_path, started_at, completed_at,
              duration_seconds, size_bytes, state, error_code
       FROM iptv_recordings WHERE profile_id=? ORDER BY started_at DESC
-    ''', variables: [Variable(profileId)]).get();
+    ''',
+          variables: [Variable(profileId)],
+        )
+        .get();
     return [
       for (final row in rows)
         IptvLocalRecording(
@@ -835,7 +952,7 @@ class IptvSourceRepository {
           startedAt: DateTime.fromMillisecondsSinceEpoch(row.read<int>('started_at') * 1000),
           completedAt: row.readNullable<int>('completed_at') == null
               ? null
-              : DateTime.fromMillisecondsSinceEpoch(row.read<int>('completed_at')! * 1000),
+              : DateTime.fromMillisecondsSinceEpoch(row.read<int>('completed_at') * 1000),
           durationSeconds: row.readNullable<int>('duration_seconds'),
           sizeBytes: row.readNullable<int>('size_bytes'),
           state: row.read<String>('state'),
@@ -845,19 +962,24 @@ class IptvSourceRepository {
   }
 
   Future<void> beginLocalRecording(IptvLocalRecording recording) async {
-    await _database.runIdentityMutation(() => _database.customStatement('''
+    await _database.runIdentityMutation(
+      () => _database.customStatement(
+        '''
       INSERT INTO iptv_recordings(id, profile_id, source_id, channel_id, title, programme_title, file_path,
         started_at, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'recording')
-    ''', [
-      recording.id,
-      recording.profileId,
-      recording.sourceId,
-      recording.channelId,
-      recording.title,
-      recording.programmeTitle,
-      recording.filePath,
-      recording.startedAt.millisecondsSinceEpoch ~/ 1000,
-    ]));
+    ''',
+        [
+          recording.id,
+          recording.profileId,
+          recording.sourceId,
+          recording.channelId,
+          recording.title,
+          recording.programmeTitle,
+          recording.filePath,
+          recording.startedAt.millisecondsSinceEpoch ~/ 1000,
+        ],
+      ),
+    );
   }
 
   Future<void> updateLocalRecordingFilePath({
@@ -865,10 +987,13 @@ class IptvSourceRepository {
     required String recordingId,
     required String filePath,
   }) async {
-    await _database.runIdentityMutation(() => _database.customStatement(
-      'UPDATE iptv_recordings SET file_path=? WHERE profile_id=? AND id=?',
-      [filePath, profileId, recordingId],
-    ));
+    await _database.runIdentityMutation(
+      () => _database.customStatement('UPDATE iptv_recordings SET file_path=? WHERE profile_id=? AND id=?', [
+        filePath,
+        profileId,
+        recordingId,
+      ]),
+    );
   }
 
   Future<String> scheduleLocalRecording(String profileId, LiveTvChannel channel, LiveTvProgram program) async {
@@ -877,33 +1002,62 @@ class IptvSourceRepository {
     final startsAt = program.beginsAt;
     final endsAt = program.endsAt;
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    if (sourceId == null || channelId == null || startsAt == null || endsAt == null || endsAt <= now || endsAt <= startsAt) {
+    if (sourceId == null ||
+        channelId == null ||
+        startsAt == null ||
+        endsAt == null ||
+        endsAt <= now ||
+        endsAt <= startsAt) {
       throw const IptvImportException('recording_schedule_invalid');
     }
     if (await _source(profileId, sourceId) == null) throw const IptvImportException('source_missing');
     final id = _uuid.v4();
     final stamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     try {
-      await _database.runIdentityMutation(() => _database.transaction(() async {
-        final active = await _database.customSelect('''
+      await _database.runIdentityMutation(
+        () => _database.transaction(() async {
+          final active = await _database
+              .customSelect(
+                '''
           SELECT id FROM iptv_recording_schedules
           WHERE profile_id=? AND source_id=? AND channel_id=? AND starts_at=?
             AND state IN ('scheduled', 'starting', 'recording')
           LIMIT 1
-        ''', variables: [Variable(profileId), Variable(sourceId), Variable(channelId), Variable(startsAt)]).getSingleOrNull();
-        if (active != null) throw const IptvImportException('recording_schedule_exists');
-        await _database.customStatement('''
+        ''',
+                variables: [Variable(profileId), Variable(sourceId), Variable(channelId), Variable(startsAt)],
+              )
+              .getSingleOrNull();
+          if (active != null) throw const IptvImportException('recording_schedule_exists');
+          await _database.customStatement(
+            '''
           DELETE FROM iptv_recording_schedules
           WHERE profile_id=? AND source_id=? AND channel_id=? AND starts_at=?
             AND state IN ('completed', 'failed', 'missed', 'cancelled')
-        ''', [profileId, sourceId, channelId, startsAt]);
-        await _database.customStatement('''
+        ''',
+            [profileId, sourceId, channelId, startsAt],
+          );
+          await _database.customStatement(
+            '''
           INSERT INTO iptv_recording_schedules(
             id, profile_id, source_id, channel_id, title, programme_title, starts_at, ends_at,
             state, created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'scheduled', ?, ?)
-        ''', [id, profileId, sourceId, channelId, channel.displayName, program.displayTitle, startsAt, endsAt, stamp, stamp]);
-      }));
+        ''',
+            [
+              id,
+              profileId,
+              sourceId,
+              channelId,
+              channel.displayName,
+              program.displayTitle,
+              startsAt,
+              endsAt,
+              stamp,
+              stamp,
+            ],
+          );
+        }),
+      );
     } on IptvImportException {
       rethrow;
     } on Object {
@@ -913,13 +1067,18 @@ class IptvSourceRepository {
   }
 
   Future<List<IptvLocalRecordingSchedule>> localRecordingSchedules({String? profileId}) async {
-    final rows = await _database.customSelect('''
+    final rows = await _database
+        .customSelect(
+          '''
       SELECT id, profile_id, source_id, channel_id, title, programme_title, starts_at, ends_at, state,
              recording_id, error_code, created_at, updated_at
       FROM iptv_recording_schedules
       WHERE (? IS NULL OR profile_id=?) AND state IN ('scheduled', 'starting', 'recording', 'failed', 'missed')
       ORDER BY starts_at, title COLLATE NOCASE
-    ''', variables: [Variable(profileId), Variable(profileId)]).get();
+    ''',
+          variables: [Variable(profileId), Variable(profileId)],
+        )
+        .get();
     return [
       for (final row in rows)
         IptvLocalRecordingSchedule(
@@ -975,30 +1134,48 @@ class IptvSourceRepository {
     if (!const {'scheduled', 'starting', 'recording', 'completed', 'failed', 'missed', 'cancelled'}.contains(state)) {
       throw const IptvImportException('invalid_data');
     }
-    await _database.runIdentityMutation(() => _database.customStatement('''
+    await _database.runIdentityMutation(
+      () => _database.customStatement(
+        '''
       UPDATE iptv_recording_schedules SET state=?, recording_id=?, error_code=?, updated_at=? WHERE id=?
-    ''', [state, recordingId, errorCode, DateTime.now().millisecondsSinceEpoch ~/ 1000, scheduleId]));
+    ''',
+        [state, recordingId, errorCode, DateTime.now().millisecondsSinceEpoch ~/ 1000, scheduleId],
+      ),
+    );
   }
 
   Future<void> recoverLocalRecordingSchedules() async {
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    await _database.runIdentityMutation(() => _database.transaction(() async {
-      await _database.customStatement('''
+    await _database.runIdentityMutation(
+      () => _database.transaction(() async {
+        await _database.customStatement(
+          '''
         UPDATE iptv_recordings SET state='interrupted', completed_at=?, error_code='app_interrupted'
         WHERE state='recording'
-      ''', [now]);
-      await _database.customStatement('''
+      ''',
+          [now],
+        );
+        await _database.customStatement(
+          '''
         UPDATE iptv_recording_schedules SET state='failed', error_code='app_interrupted', updated_at=?
         WHERE state IN ('starting', 'recording')
-      ''', [now]);
-    }));
+      ''',
+          [now],
+        );
+      }),
+    );
   }
 
   Future<void> cancelLocalRecordingSchedule(String profileId, String scheduleId) async {
-    await _database.runIdentityMutation(() => _database.customStatement('''
+    await _database.runIdentityMutation(
+      () => _database.customStatement(
+        '''
       UPDATE iptv_recording_schedules SET state='cancelled', updated_at=?
       WHERE profile_id=? AND id=? AND state='scheduled'
-    ''', [DateTime.now().millisecondsSinceEpoch ~/ 1000, profileId, scheduleId]));
+    ''',
+        [DateTime.now().millisecondsSinceEpoch ~/ 1000, profileId, scheduleId],
+      ),
+    );
   }
 
   Future<void> finishLocalRecording({
@@ -1009,25 +1186,32 @@ class IptvSourceRepository {
     int? sizeBytes,
     String? errorCode,
   }) async {
-    await _database.runIdentityMutation(() => _database.customStatement('''
+    await _database.runIdentityMutation(
+      () => _database.customStatement(
+        '''
       UPDATE iptv_recordings SET completed_at=?, duration_seconds=?, size_bytes=?, state=?, error_code=?
       WHERE profile_id=? AND id=?
-    ''', [
-      DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      durationSeconds,
-      sizeBytes,
-      completed ? 'complete' : 'failed',
-      errorCode,
-      profileId,
-      recordingId,
-    ]));
+    ''',
+        [
+          DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          durationSeconds,
+          sizeBytes,
+          completed ? 'complete' : 'failed',
+          errorCode,
+          profileId,
+          recordingId,
+        ],
+      ),
+    );
   }
 
   Future<void> deleteLocalRecording(String profileId, String recordingId) async {
-    await _database.runIdentityMutation(() => _database.customStatement(
-      'DELETE FROM iptv_recordings WHERE profile_id=? AND id=?',
-      [profileId, recordingId],
-    ));
+    await _database.runIdentityMutation(
+      () => _database.customStatement('DELETE FROM iptv_recordings WHERE profile_id=? AND id=?', [
+        profileId,
+        recordingId,
+      ]),
+    );
   }
 
   Future<List<IptvDispatcharrRecording>> dispatcharrRecordings(String profileId) async {
@@ -1119,11 +1303,7 @@ class IptvSourceRepository {
     }
   }
 
-  Future<void> scheduleDispatcharrRecording(
-    String profileId,
-    LiveTvChannel channel,
-    LiveTvProgram program,
-  ) async {
+  Future<void> scheduleDispatcharrRecording(String profileId, LiveTvChannel channel, LiveTvProgram program) async {
     final sourceId = channel.iptvSourceId;
     if (sourceId == null) throw const IptvImportException('dvr_unavailable');
     final config = await configuration(profileId, sourceId);
@@ -1144,11 +1324,16 @@ class IptvSourceRepository {
   }
 
   Future<String?> resolveStream(String profileId, String sourceId, String channelId) async {
-    final row = await _database.customSelect('''
+    final row = await _database
+        .customSelect(
+          '''
       SELECT c.stream_url_ciphertext FROM iptv_sources s
       JOIN iptv_channels c ON c.source_id=s.id
       WHERE s.profile_id=? AND s.id=? AND c.channel_id=?
-    ''', variables: [Variable(profileId), Variable(sourceId), Variable(channelId)]).getSingleOrNull();
+    ''',
+          variables: [Variable(profileId), Variable(sourceId), Variable(channelId)],
+        )
+        .getSingleOrNull();
     if (row == null) return null;
     return CredentialVault.reveal(row.read<String>('stream_url_ciphertext'));
   }
@@ -1161,11 +1346,16 @@ class IptvSourceRepository {
   }) async {
     final config = await configuration(profileId, sourceId);
     if (config == null) return null;
-    final row = await _database.customSelect('''
+    final row = await _database
+        .customSelect(
+          '''
       SELECT c.stream_url_ciphertext, c.catchup_source_ciphertext, c.catchup_days, c.stream_headers_ciphertext
       FROM iptv_sources s JOIN iptv_channels c ON c.source_id=s.id
       WHERE s.profile_id=? AND s.id=? AND c.channel_id=?
-    ''', variables: [Variable(profileId), Variable(sourceId), Variable(channelId)]).getSingleOrNull();
+    ''',
+          variables: [Variable(profileId), Variable(sourceId), Variable(channelId)],
+        )
+        .getSingleOrNull();
     if (row == null) return null;
     final streamCiphertext = row.read<String>('stream_url_ciphertext');
     final catchupCiphertext = row.readNullable<String>('catchup_source_ciphertext');
@@ -1182,7 +1372,12 @@ class IptvSourceRepository {
             if (entry.key is! String || entry.value is! String) continue;
             final key = (entry.key as String).toLowerCase();
             if (key == 'user-agent' || key == 'referer' || key == 'origin') {
-              headers[key == 'user-agent' ? 'User-Agent' : key == 'referer' ? 'Referer' : 'Origin'] = entry.value as String;
+              headers[key == 'user-agent'
+                      ? 'User-Agent'
+                      : key == 'referer'
+                      ? 'Referer'
+                      : 'Origin'] =
+                  entry.value as String;
             }
           }
         }
@@ -1256,10 +1451,12 @@ class IptvSourceRepository {
   }
 
   Future<void> deleteSource(String profileId, String sourceId) async {
-    await _database.runIdentityMutation(() => _database.customUpdate(
-      'DELETE FROM iptv_sources WHERE profile_id=? AND id=?',
-      variables: [Variable(profileId), Variable(sourceId)],
-    ));
+    await _database.runIdentityMutation(
+      () => _database.customUpdate(
+        'DELETE FROM iptv_sources WHERE profile_id=? AND id=?',
+        variables: [Variable(profileId), Variable(sourceId)],
+      ),
+    );
   }
 
   Future<void> deleteProfile(String profileId) async {
@@ -1271,10 +1468,7 @@ class IptvSourceRepository {
     }
     await _database.runIdentityMutation(() async {
       await _database.customStatement('DELETE FROM iptv_recordings WHERE profile_id=?', [profileId]);
-      await _database.customUpdate(
-        'DELETE FROM iptv_sources WHERE profile_id=?',
-        variables: [Variable(profileId)],
-      );
+      await _database.customUpdate('DELETE FROM iptv_sources WHERE profile_id=?', variables: [Variable(profileId)]);
     });
     try {
       final appSupport = await getApplicationSupportDirectory();
@@ -1348,10 +1542,12 @@ class IptvSourceRepository {
         }
       }
 
-      final overrideRows = await _database.customSelect(
-        'SELECT channel_id, guide_id_override FROM iptv_channel_overrides WHERE profile_id=? AND source_id=?',
-        variables: [Variable(profileId), Variable(sourceId)],
-      ).get();
+      final overrideRows = await _database
+          .customSelect(
+            'SELECT channel_id, guide_id_override FROM iptv_channel_overrides WHERE profile_id=? AND source_id=?',
+            variables: [Variable(profileId), Variable(sourceId)],
+          )
+          .get();
       final guideIdOverrides = {
         for (final row in overrideRows)
           row.read<String>('channel_id'): row.readNullable<String>('guide_id_override')?.trim(),
@@ -1388,7 +1584,8 @@ class IptvSourceRepository {
             tvgId: channel.tvgId,
             number: channel.number,
             groupTitle: channel.groupTitle,
-            logoUrl: channel.logoUrl ??
+            logoUrl:
+                channel.logoUrl ??
                 (effectiveTvgIds[channel.id] == null ? null : guideLogos[effectiveTvgIds[channel.id]!]),
             radio: channel.radio,
             catchupSource: channel.catchupSource,
@@ -1427,7 +1624,8 @@ class IptvSourceRepository {
     final protectedStreams = await _mapInBatches(entries, (entry) => CredentialVault.protect(entry.streamUrl));
     final protectedCatchup = await _mapInBatches(
       entries,
-      (entry) => entry.catchupSource == null ? Future<String?>.value(null) : CredentialVault.protect(entry.catchupSource!),
+      (entry) =>
+          entry.catchupSource == null ? Future<String?>.value(null) : CredentialVault.protect(entry.catchupSource!),
     );
     final protectedHeaders = await _mapInBatches(
       entries,
@@ -1436,94 +1634,106 @@ class IptvSourceRepository {
           : CredentialVault.protect(jsonEncode(entry.streamHeaders)),
     );
     final now = DateTime.now().millisecondsSinceEpoch;
-    await _database.runIdentityMutation(() => _database.transaction(() async {
-      final current = await _source(expected.profileId, expected.id);
-      if (current == null || current.revision != expected.revision || current.generation != expected.generation) {
-        throw const IptvImportException('source_changed');
-      }
-      await _database.customStatement('DELETE FROM iptv_programmes WHERE source_id=?', [expected.id]);
-      await _database.customStatement('DELETE FROM iptv_channels WHERE source_id=?', [expected.id]);
-      final channelRows = <List<Object?>>[];
-      for (var index = 0; index < entries.length; index++) {
-        final entry = entries[index];
-        channelRows.add([
-          expected.id,
-          entry.id,
-          entry.title,
-          entry.tvgId,
-          entry.number,
-          entry.groupTitle,
-          entry.logoUrl,
-          protectedCatchup[index],
-          entry.catchupDays,
-          protectedStreams[index],
-          entry.radio ? 1 : 0,
-          protectedHeaders[index],
-          now,
-        ]);
-      }
-      await _insertRows(
-        table: 'iptv_channels',
-        columns: const [
-          'source_id',
-          'channel_id',
-          'title',
-          'tvg_id',
-          'number',
-          'group_title',
-          'logo_url',
-          'catchup_source_ciphertext',
-          'catchup_days',
-          'stream_url_ciphertext',
-          'is_radio',
-          'stream_headers_ciphertext',
-          'updated_at',
-        ],
-        rows: channelRows,
-      );
-      final programmeRows = [
-        for (final item in programmes)
-          [
+    await _database.runIdentityMutation(
+      () => _database.transaction(() async {
+        final current = await _source(expected.profileId, expected.id);
+        if (current == null || current.revision != expected.revision || current.generation != expected.generation) {
+          throw const IptvImportException('source_changed');
+        }
+        await _database.customStatement('DELETE FROM iptv_programmes WHERE source_id=?', [expected.id]);
+        await _database.customStatement('DELETE FROM iptv_channels WHERE source_id=?', [expected.id]);
+        final channelRows = <List<Object?>>[];
+        for (var index = 0; index < entries.length; index++) {
+          final entry = entries[index];
+          channelRows.add([
             expected.id,
-            item.channelId,
-            item.beginsAt,
-            item.endsAt,
-            item.title,
-            item.summary,
-            item.category,
-            item.episodeId,
-            item.thumb,
+            entry.id,
+            entry.title,
+            entry.tvgId,
+            entry.number,
+            entry.groupTitle,
+            entry.logoUrl,
+            protectedCatchup[index],
+            entry.catchupDays,
+            protectedStreams[index],
+            entry.radio ? 1 : 0,
+            protectedHeaders[index],
+            now,
+          ]);
+        }
+        await _insertRows(
+          table: 'iptv_channels',
+          columns: const [
+            'source_id',
+            'channel_id',
+            'title',
+            'tvg_id',
+            'number',
+            'group_title',
+            'logo_url',
+            'catchup_source_ciphertext',
+            'catchup_days',
+            'stream_url_ciphertext',
+            'is_radio',
+            'stream_headers_ciphertext',
+            'updated_at',
           ],
-      ];
-      await _insertRows(
-        table: 'iptv_programmes',
-        columns: const [
-          'source_id',
-          'channel_id',
-          'begins_at',
-          'ends_at',
-          'title',
-          'summary',
-          'category',
-          'episode_id',
-          'thumb_url',
-        ],
-        rows: programmeRows,
-      );
-      await _database.customStatement('''
+          rows: channelRows,
+        );
+        final programmeRows = [
+          for (final item in programmes)
+            [
+              expected.id,
+              item.channelId,
+              item.beginsAt,
+              item.endsAt,
+              item.title,
+              item.summary,
+              item.category,
+              item.episodeId,
+              item.thumb,
+            ],
+        ];
+        await _insertRows(
+          table: 'iptv_programmes',
+          columns: const [
+            'source_id',
+            'channel_id',
+            'begins_at',
+            'ends_at',
+            'title',
+            'summary',
+            'category',
+            'episode_id',
+            'thumb_url',
+          ],
+          rows: programmeRows,
+        );
+        await _database.customStatement(
+          '''
         DELETE FROM iptv_channel_overrides
         WHERE source_id=? AND profile_id=?
           AND channel_id NOT IN (SELECT channel_id FROM iptv_channels WHERE source_id=?)
-      ''', [expected.id, expected.profileId, expected.id]);
-      await _database.customStatement('''
+      ''',
+          [expected.id, expected.profileId, expected.id],
+        );
+        await _database.customStatement(
+          '''
         UPDATE iptv_sources SET generation=generation+1, last_success_at=?, last_error_code=NULL
         WHERE id=? AND profile_id=? AND revision=? AND generation=?
-      ''', [now, expected.id, expected.profileId, expected.revision, expected.generation]);
-    }));
+      ''',
+          [now, expected.id, expected.profileId, expected.revision, expected.generation],
+        );
+      }),
+    );
     return entries.length;
   }
 
-  Future<void> _insertRows({required String table, required List<String> columns, required List<List<Object?>> rows}) async {
+  Future<void> _insertRows({
+    required String table,
+    required List<String> columns,
+    required List<List<Object?>> rows,
+  }) async {
     if (rows.isEmpty) return;
     final rowsPerStatement = (900 ~/ columns.length).clamp(1, 100).toInt();
     for (var start = 0; start < rows.length; start += rowsPerStatement) {
@@ -1544,20 +1754,27 @@ class IptvSourceRepository {
     List<IptvVodCategory> categories,
   ) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    await _database.runIdentityMutation(() => _database.transaction(() async {
-      final current = await _source(expected.profileId, expected.id);
-      if (current == null || current.revision != expected.revision) {
-        throw const IptvImportException('source_changed');
-      }
-      await _database.customStatement('DELETE FROM iptv_vod_categories WHERE source_id=? AND kind=?', [expected.id, kind.name]);
-      if (categories.isNotEmpty) {
-        await _insertRows(
-          table: 'iptv_vod_categories',
-          columns: const ['source_id', 'kind', 'category_id', 'name', 'updated_at'],
-          rows: [for (final item in categories) [expected.id, kind.name, item.id, item.name, now]],
-        );
-      }
-    }));
+    await _database.runIdentityMutation(
+      () => _database.transaction(() async {
+        final current = await _source(expected.profileId, expected.id);
+        if (current == null || current.revision != expected.revision) {
+          throw const IptvImportException('source_changed');
+        }
+        await _database.customStatement('DELETE FROM iptv_vod_categories WHERE source_id=? AND kind=?', [
+          expected.id,
+          kind.name,
+        ]);
+        if (categories.isNotEmpty) {
+          await _insertRows(
+            table: 'iptv_vod_categories',
+            columns: const ['source_id', 'kind', 'category_id', 'name', 'updated_at'],
+            rows: [
+              for (final item in categories) [expected.id, kind.name, item.id, item.name, now],
+            ],
+          );
+        }
+      }),
+    );
   }
 
   Future<void> _replaceVodItems(
@@ -1567,58 +1784,64 @@ class IptvSourceRepository {
     List<IptvVodItem> items,
   ) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    await _database.runIdentityMutation(() => _database.transaction(() async {
-      final current = await _source(expected.profileId, expected.id);
-      if (current == null || current.revision != expected.revision) {
-        throw const IptvImportException('source_changed');
-      }
-      if (categoryId == null) {
-        await _database.customStatement('DELETE FROM iptv_vod_items WHERE source_id=? AND kind=?', [expected.id, kind.name]);
-      } else {
-        await _database.customStatement(
-          'DELETE FROM iptv_vod_items WHERE source_id=? AND kind=? AND category_id=?',
-          [expected.id, kind.name, categoryId],
-        );
-      }
-      if (items.isNotEmpty) {
-        await _insertRows(
-          table: 'iptv_vod_items',
-          columns: const [
-            'source_id',
-            'kind',
-            'item_id',
-            'category_id',
-            'title',
-            'plot',
-            'year',
-            'duration_seconds',
-            'rating',
-            'poster_url',
-            'backdrop_url',
-            'container_extension',
-            'updated_at',
-          ],
-          rows: [
-            for (final item in items)
-              [
-                expected.id,
-                kind.name,
-                item.id,
-                item.categoryId,
-                item.title,
-                item.plot,
-                item.year,
-                item.durationSeconds,
-                item.rating,
-                item.posterUrl,
-                item.backdropUrl,
-                item.containerExtension,
-                now,
-              ],
-          ],
-        );
-      }
-    }));
+    await _database.runIdentityMutation(
+      () => _database.transaction(() async {
+        final current = await _source(expected.profileId, expected.id);
+        if (current == null || current.revision != expected.revision) {
+          throw const IptvImportException('source_changed');
+        }
+        if (categoryId == null) {
+          await _database.customStatement('DELETE FROM iptv_vod_items WHERE source_id=? AND kind=?', [
+            expected.id,
+            kind.name,
+          ]);
+        } else {
+          await _database.customStatement('DELETE FROM iptv_vod_items WHERE source_id=? AND kind=? AND category_id=?', [
+            expected.id,
+            kind.name,
+            categoryId,
+          ]);
+        }
+        if (items.isNotEmpty) {
+          await _insertRows(
+            table: 'iptv_vod_items',
+            columns: const [
+              'source_id',
+              'kind',
+              'item_id',
+              'category_id',
+              'title',
+              'plot',
+              'year',
+              'duration_seconds',
+              'rating',
+              'poster_url',
+              'backdrop_url',
+              'container_extension',
+              'updated_at',
+            ],
+            rows: [
+              for (final item in items)
+                [
+                  expected.id,
+                  kind.name,
+                  item.id,
+                  item.categoryId,
+                  item.title,
+                  item.plot,
+                  item.year,
+                  item.durationSeconds,
+                  item.rating,
+                  item.posterUrl,
+                  item.backdropUrl,
+                  item.containerExtension,
+                  now,
+                ],
+            ],
+          );
+        }
+      }),
+    );
   }
 
   Future<Object?> _xtreamJson(SourceTransport transport, Uri uri) async {
@@ -1662,15 +1885,21 @@ class IptvSourceRepository {
         title: _safeCatalogText(title, 240) ?? 'Episode',
         season: season.clamp(0, 999).toInt(),
         episode: episode.clamp(0, 9999).toInt(),
-        plot: _safeCatalogText(_valueString(row, const ['plot', 'description']) ?? _valueString(info, const ['plot']), 4000),
-        durationSeconds: _valueInt(row, const ['duration_secs', 'duration']) ??
+        plot: _safeCatalogText(
+          _valueString(row, const ['plot', 'description']) ?? _valueString(info, const ['plot']),
+          4000,
+        ),
+        durationSeconds:
+            _valueInt(row, const ['duration_secs', 'duration']) ??
             _durationSeconds(_valueString(info, const ['duration'])),
         posterUrl: _safeVodArtwork(
           _valueString(info, const ['movie_image', 'cover', 'cover_big']) ?? _valueString(row, const ['cover']),
           config,
         ),
         containerExtension: _iptvSafeExtension(
-          _valueString(row, const ['container_extension']) ?? _valueString(info, const ['container_extension']) ?? 'mp4',
+          _valueString(row, const ['container_extension']) ??
+              _valueString(info, const ['container_extension']) ??
+              'mp4',
         ),
       ),
     );
@@ -1765,10 +1994,15 @@ class IptvSourceRepository {
   }
 
   Future<_StoredIptvSource?> _source(String profileId, String sourceId) async {
-    final row = await _database.customSelect('''
+    final row = await _database
+        .customSelect(
+          '''
       SELECT id, profile_id, display_name, kind, revision, generation, created_at, last_success_at, last_error_code
       FROM iptv_sources WHERE profile_id=? AND id=?
-    ''', variables: [Variable(profileId), Variable(sourceId)]).getSingleOrNull();
+    ''',
+          variables: [Variable(profileId), Variable(sourceId)],
+        )
+        .getSingleOrNull();
     if (row == null) return null;
     return _StoredIptvSource(
       id: row.read<String>('id'),
@@ -1833,10 +2067,13 @@ class IptvSourceRepository {
 
   Future<void> _recordError(String profileId, String sourceId, String code) async {
     try {
-      await _database.runIdentityMutation(() => _database.customStatement(
-        'UPDATE iptv_sources SET last_error_code=? WHERE profile_id=? AND id=?',
-        [code, profileId, sourceId],
-      ));
+      await _database.runIdentityMutation(
+        () => _database.customStatement('UPDATE iptv_sources SET last_error_code=? WHERE profile_id=? AND id=?', [
+          code,
+          profileId,
+          sourceId,
+        ]),
+      );
     } on Object {
       // A removed source is intentionally not recreated by a late failure.
     }
@@ -1866,7 +2103,9 @@ class IptvSourceRepository {
       if (uri.scheme != 'https' && !(config.allowHttp && uri.scheme == 'http')) {
         throw const IptvImportException('http_not_allowed');
       }
-      if (value == config.endpoint && config.kind == IptvInputKind.xtream && uri.queryParameters.keys.any((key) => key == 'password')) {
+      if (value == config.endpoint &&
+          config.kind == IptvInputKind.xtream &&
+          uri.queryParameters.keys.any((key) => key == 'password')) {
         throw const IptvImportException('source_invalid');
       }
     }

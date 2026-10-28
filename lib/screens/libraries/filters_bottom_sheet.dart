@@ -379,7 +379,9 @@ class _FiltersBottomSheetState extends State<FiltersBottomSheet> {
         return FocusableListTile(
           focusNode: focusNode,
           autofocus: autofocus,
-          title: Text(filter.title),
+          title: filter.isRequired
+              ? Semantics(label: '${filter.title}, ${t.streaming.catalogRequiredLabel}', child: Text(filter.title))
+              : Text(filter.title),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

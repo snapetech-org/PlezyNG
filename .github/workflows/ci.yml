@@ -333,7 +333,7 @@ jobs:
 
       - name: Build embedded Moonlight and Steam Android modules
         working-directory: android
-        run: ./gradlew :moonlight:assembleDebug :steam:assembleDebug --stacktrace
+        run: ./gradlew :moonlight:assembleDebug :steam:assembleDebug :steam:testDebugUnitTest --stacktrace
 
       - name: Upload CodeQL analysis
         uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4

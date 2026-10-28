@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../media/ids.dart';
 import 'package:provider/provider.dart';
 
-import '../../i18n/iptv_copy.dart';
+import '../../i18n/strings.g.dart';
 import '../../iptv/iptv_source_repository.dart';
 import '../../models/livetv_channel.dart';
 import '../../models/livetv_program.dart';
@@ -79,7 +79,8 @@ mixin LiveTvActionsMixin<T extends StatefulWidget> on State<T> {
     final programStart = program.beginsAt;
     final catchupAge = programStart == null ? null : now - programStart;
     final catchupDays = channel?.iptvCatchupDays;
-    final canPlayCatchup = channel?.iptvCatchupAvailable == true &&
+    final canPlayCatchup =
+        channel?.iptvCatchupAvailable == true &&
         programStart != null &&
         catchupAge != null &&
         catchupAge > 0 &&
@@ -91,8 +92,7 @@ mixin LiveTvActionsMixin<T extends StatefulWidget> on State<T> {
     final profileId = effectiveContext.read<ActiveProfileProvider>().activeId;
     if (sourceId != null && channel?.iptvChannelId != null && profileId != null) {
       final repository = effectiveContext.read<IptvSourceRepository>();
-      if (program.beginsAt != null &&
-          (program.endsAt ?? 0) > DateTime.now().millisecondsSinceEpoch ~/ 1000) {
+      if (program.beginsAt != null && (program.endsAt ?? 0) > DateTime.now().millisecondsSinceEpoch ~/ 1000) {
         onLocalIptvRecordProgram = () async {
           try {
             await repository.scheduleLocalRecording(profileId, channel!, program);

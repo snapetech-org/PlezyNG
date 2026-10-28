@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import '../utils/display_text_finder.dart';
 
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -40,6 +42,8 @@ import 'package:plezy/services/seerr/seerr_client.dart';
 import 'package:plezy/services/seerr/seerr_constants.dart';
 import 'package:plezy/services/storage_service.dart';
 import 'package:plezy/services/settings_service.dart';
+import 'package:plezy/sources/source_database.dart';
+import 'package:plezy/sources/publication_shelf.dart';
 import 'package:plezy/theme/mono_theme.dart';
 import 'package:plezy/utils/platform_detector.dart';
 import 'package:plezy/utils/media_server_http_client.dart';
@@ -53,6 +57,7 @@ import 'package:provider/provider.dart';
 import '../test_helpers/prefs.dart';
 import '../test_helpers/media_items.dart';
 import '../test_helpers/multi_server_fixtures.dart';
+import '../sources/fixtures/memory_sources.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -282,6 +287,45 @@ void main() {
     expect(tester.widget<TextField>(find.byType(TextField)).readOnly, isTrue);
 
     await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('cached debrid video files appear in Search with no media server connected', (tester) async {
+    final database = SourceDatabase(NativeDatabase.memory());
+    const entry = SourceEntry(
+      sourceId: 'remote-cloud:account-1',
+      id: 'tb:42:7',
+      title: 'Arrival.mkv',
+      kind: SourceItemKind.video,
+      files: [
+        PublicationFile(id: 'tb:42:7', name: 'Arrival.mkv', mimeType: 'video/x-matroska', size: 1000, streamOnly: true),
+      ],
+    );
+    final sourceRepository = _SearchSourceRepository(database, [entry]);
+    final sourceController = _SearchIndexedSources(sourceRepository, Directory('unused'))
+      ..sources = [
+        const FileSource(
+          id: 'remote-cloud:account-1',
+          profileId: 'alice',
+          kind: FileSourceKind.remoteCloud,
+          name: 'viewer@example.com',
+          endpoint: 'remote-cloud://torbox/account-1',
+          options: {'accountId': 'account-1', 'service': 'torbox'},
+        ),
+      ];
+    addTearDown(() async {
+      sourceController.dispose();
+      await database.close();
+    });
+
+    final (_, key) = await _pumpTvSearchScreen(tester, registerClient: false, sourceController: sourceController);
+    (key.currentState! as SearchInputFocusable).submitSearchQuery('arrival');
+    await tester.pumpAndSettle();
+
+    expect(sourceRepository.queries, ['arrival']);
+    expect(findDisplayText('Arrival'), findsOneWidget);
+    expect(findDisplayText(t.streaming.cloudFiles), findsOneWidget);
+    expect(findDisplayText(t.messages.noResultsFound), findsNothing);
+    expect(FocusManager.instance.primaryFocus?.debugLabel, 'SearchFirstResult');
   });
 
   testWidgets('partial server failure shows available results and a warning', (tester) async {
@@ -1016,6 +1060,7 @@ Future<(_FakeMediaServerClient, GlobalKey<State<SearchScreen>>)> _pumpTvSearchSc
   List<MediaLibrary> libraries = const [],
   // A connected Seerr instance; null pumps without one, as most users run.
   SeerrCatalogSource? seerr,
+  SourceController? sourceController,
   SourceController? sources,
 }) async {
   TvDetectionService.debugSetAppleTVOverride(tv);
@@ -1066,7 +1111,8 @@ Future<(_FakeMediaServerClient, GlobalKey<State<SearchScreen>>)> _pumpTvSearchSc
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider<MultiServerProvider>.value(value: provider),
-          if (sources != null) ChangeNotifierProvider<SourceController>.value(value: sources),
+          if (sources != null || sourceController != null)
+            ChangeNotifierProvider<SourceController>.value(value: sources ?? sourceController!),
           ChangeNotifierProvider<HiddenLibrariesProvider>.value(value: hidden),
           ChangeNotifierProvider<LibrariesProvider>.value(value: librariesProvider),
           if (catalogSources != null) ChangeNotifierProvider<CatalogSourcesProvider>.value(value: catalogSources),
@@ -1218,6 +1264,47 @@ class _FakeCatalogSourcesProvider extends CatalogSourcesProvider {
 
   @override
   SeerrCatalogSource? get seerrSource => seerr;
+}
+
+class _SearchIndexedSources extends MemorySources {
+  _SearchIndexedSources(super.repository, super.directory);
+
+  @override
+  Future<List<SourceEntry>> searchIndex(String query, {int limit = 500}) async {
+    requireSession();
+    return (await repository.entriesPage(profileId!, query: query, limit: limit)).items;
+  }
+}
+
+class _SearchSourceRepository extends SourceRepository {
+  _SearchSourceRepository(super.database, this.cachedEntries);
+
+  final List<SourceEntry> cachedEntries;
+  final List<String?> queries = [];
+
+  @override
+  Future<({List<SourceEntry> items, String? cursor})> entriesPage(
+    String profile, {
+    String? source,
+    String? parent,
+    bool filterParent = false,
+    PublicationShelf? shelf,
+    String? query,
+    String? cursor,
+    int limit = 200,
+  }) async {
+    queries.add(query);
+    final matching = cachedEntries
+        .where(
+          (entry) =>
+              (source == null || entry.sourceId == source) &&
+              (shelf == null || entry.kind == SourceItemKind.video) &&
+              (query == null || entry.displayTitle.toLowerCase().contains(query.trim().toLowerCase())),
+        )
+        .take(limit.clamp(1, 500).toInt())
+        .toList(growable: false);
+    return (items: matching, cursor: null);
+  }
 }
 
 TextEditingController _searchController(WidgetTester tester) {

@@ -8,13 +8,7 @@ import 'integration_contracts.dart';
 /// This value contains no credential and has no persistence API. The service
 /// that owns a provider still owns its sign-in, vault record, refresh, and
 /// disconnect lifecycle.
-enum IntegrationConnectionState {
-  connected,
-  reauthenticationRequired,
-  expired,
-  revoked,
-  disconnected,
-}
+enum IntegrationConnectionState { connected, reauthenticationRequired, expired, revoked, disconnected }
 
 class IntegrationConnectionRef {
   const IntegrationConnectionRef({
@@ -43,14 +37,7 @@ class IntegrationConnectionRef {
   bool get isConnected => isValid && state == IntegrationConnectionState.connected;
 }
 
-enum IntegrationEvidenceKind {
-  localCopy,
-  purchase,
-  subscription,
-  libraryLoan,
-  providerLibrary,
-  userAssertion,
-}
+enum IntegrationEvidenceKind { localCopy, purchase, subscription, libraryLoan, providerLibrary, userAssertion }
 
 enum IntegrationEvidenceStatus { verified, selfReported, unknown, expired, revoked }
 
@@ -92,18 +79,14 @@ class IntegrationAccessEvidence {
       (status == IntegrationEvidenceStatus.verified || allowedActions.isEmpty);
 
   IntegrationEvidenceStatus statusAt(DateTime now) {
-    if (status == IntegrationEvidenceStatus.verified &&
-        validUntil != null &&
-        !validUntil!.isAfter(now)) {
+    if (status == IntegrationEvidenceStatus.verified && validUntil != null && !validUntil!.isAfter(now)) {
       return IntegrationEvidenceStatus.expired;
     }
     return status;
   }
 
   bool allows(AccessAction action, {required DateTime now}) =>
-      isValid &&
-      statusAt(now) == IntegrationEvidenceStatus.verified &&
-      allowedActions.contains(action);
+      isValid && statusAt(now) == IntegrationEvidenceStatus.verified && allowedActions.contains(action);
 }
 
 class IntegrationMoney {
@@ -118,16 +101,7 @@ class IntegrationMoney {
       (currencyCode == null || _currencyPattern.hasMatch(currencyCode!));
 }
 
-enum LicensedOfferKind {
-  subscription,
-  adSupported,
-  channelAddon,
-  rent,
-  purchase,
-  libraryLoan,
-  preview,
-  free,
-}
+enum LicensedOfferKind { subscription, adSupported, channelAddon, rent, purchase, libraryLoan, preview, free }
 
 enum LicensedOfferAvailability { available, comingSoon }
 
@@ -206,8 +180,7 @@ class LicensedOffer {
       (languageTag == null || _languagePattern.hasMatch(languageTag!)) &&
       source.isValid;
 
-  bool isCurrentAt(DateTime now) =>
-      isValid && !source.observedAt.isAfter(now) && source.expiresAt.isAfter(now);
+  bool isCurrentAt(DateTime now) => isValid && !source.observedAt.isAfter(now) && source.expiresAt.isAfter(now);
 }
 
 class AvailabilityLookupRequest {
@@ -286,14 +259,7 @@ final class AvailabilityInvalidResponseException extends AvailabilityProviderExc
   const AvailabilityInvalidResponseException();
 }
 
-enum AvailabilityProviderStatus {
-  success,
-  notConfigured,
-  timedOut,
-  rateLimited,
-  unavailable,
-  invalidResponse,
-}
+enum AvailabilityProviderStatus { success, notConfigured, timedOut, rateLimited, unavailable, invalidResponse }
 
 class AvailabilityProviderOutcome {
   AvailabilityProviderOutcome({
@@ -310,20 +276,16 @@ class AvailabilityProviderOutcome {
 }
 
 class AvailabilityLookupResult {
-  AvailabilityLookupResult({
-    required List<AvailabilityProviderOutcome> providers,
-    required List<LicensedOffer> offers,
-  }) : providers = List.unmodifiable(providers),
-       offers = List.unmodifiable(offers);
+  AvailabilityLookupResult({required List<AvailabilityProviderOutcome> providers, required List<LicensedOffer> offers})
+    : providers = List.unmodifiable(providers),
+      offers = List.unmodifiable(offers);
 
   final List<AvailabilityProviderOutcome> providers;
   final List<LicensedOffer> offers;
 
   bool get hasProviderFailures => providers.any(
-    (result) => !const {
-      AvailabilityProviderStatus.success,
-      AvailabilityProviderStatus.notConfigured,
-    }.contains(result.status),
+    (result) =>
+        !const {AvailabilityProviderStatus.success, AvailabilityProviderStatus.notConfigured}.contains(result.status),
   );
 }
 
@@ -361,10 +323,7 @@ class AvailabilityLookupService {
       for (final outcome in outcomes)
         if (outcome.status == AvailabilityProviderStatus.success) ...outcome.offers,
     ];
-    return AvailabilityLookupResult(
-      providers: List.unmodifiable(outcomes),
-      offers: List.unmodifiable(offers),
-    );
+    return AvailabilityLookupResult(providers: List.unmodifiable(outcomes), offers: List.unmodifiable(offers));
   }
 
   Future<AvailabilityProviderOutcome> _lookupProvider(
@@ -374,10 +333,7 @@ class AvailabilityLookupService {
   ) async {
     final provider = _providers[providerId];
     if (provider == null) {
-      return AvailabilityProviderOutcome(
-        providerId: providerId,
-        status: AvailabilityProviderStatus.notConfigured,
-      );
+      return AvailabilityProviderOutcome(providerId: providerId, status: AvailabilityProviderStatus.notConfigured);
     }
 
     final deadline = Stopwatch()..start();
@@ -439,12 +395,7 @@ class AvailabilityLookupService {
     return _failure(providerId, AvailabilityProviderStatus.unavailable);
   }
 
-  bool _matchesRequest(
-    LicensedOffer offer,
-    String sourceProviderId,
-    AvailabilityLookupRequest request,
-    DateTime now,
-  ) =>
+  bool _matchesRequest(LicensedOffer offer, String sourceProviderId, AvailabilityLookupRequest request, DateTime now) =>
       offer.isCurrentAt(now) &&
       offer.source.providerId == sourceProviderId &&
       _sameEntity(offer.entity, request.entity) &&
@@ -468,20 +419,13 @@ class AvailabilityLookupService {
 }
 
 bool _sameEntity(IntegrationEntityRef a, IntegrationEntityRef b) =>
-    a.providerId == b.providerId &&
-    a.nativeId == b.nativeId &&
-    a.kind == b.kind &&
-    a.editionId == b.editionId;
+    a.providerId == b.providerId && a.nativeId == b.nativeId && a.kind == b.kind && a.editionId == b.editionId;
 
 bool _safeIdentifier(String value, {required int maxLength}) =>
-    value.trim().isNotEmpty &&
-    value.length <= maxLength &&
-    !value.contains(RegExp(r'[\x00-\x1f\x7f]'));
+    value.trim().isNotEmpty && value.length <= maxLength && !value.contains(RegExp(r'[\x00-\x1f\x7f]'));
 
 bool _safeLabel(String value, {required int maxLength}) =>
-    value.trim().isNotEmpty &&
-    value.length <= maxLength &&
-    !value.contains(RegExp(r'[\x00-\x1f\x7f]'));
+    value.trim().isNotEmpty && value.length <= maxLength && !value.contains(RegExp(r'[\x00-\x1f\x7f]'));
 
 final _providerIdPattern = RegExp(r'^[a-z0-9][a-z0-9._-]{0,63}$');
 final _countryPattern = RegExp(r'^[A-Z]{2}$');

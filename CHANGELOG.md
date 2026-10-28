@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Repair merged application compilation across visualizer archive extraction, IPTV, catalog search and player settings. Preserve bounded archive writes and explicitly track untranslated merged messages as English fallbacks.
+
 - Bound Steam startup and first-frame waits; retry unsupported HEVC with H.264, normalize Android/Linux codec framing, and wait for decoder shutdown before reconnecting. Serialize native source preparation and include transitive crypto archives in Apple builds.
 
 - Add an experimental Windows Steam receiver with Credential Manager pairing, cancellable DNS, Media Foundation video, bounded XAudio2 surround audio, retained workspace textures and shared input controls. Windows SDK and device qualification remain required; missing Media Feature Pack support keeps library browsing available.
@@ -19,6 +21,14 @@
 - Add capability-negotiated Steam Input and game-properties actions on paired computers, plus confirmed Cloud files and Families destinations in the existing adaptive Steam menu.
 
 - Add an embedded Linux Steam receiver with OS-keyring pairing, dedicated H.264/HEVC and PCM decoding, retained Flutter textures, controller seats, connection details and acknowledged reconnect; bundle its fixed GStreamer plugins with Linux releases.
+- Add experimental native MilkRust visualization hosts across Linux, Windows, Apple and Android, with same-player PCM routing, profile-scoped engine selection, and optional SHA-256-checked desktop runtime/source packaging with notices; compiled engines are not in current releases and platform behavior remains unqualified.
+
+- Add profile-scoped Real-Debrid, AllDebrid, Premiumize and TorBox connections, Stremio add-on imports, cloud/server canonical libraries, renewable shared playback, scheduled preparation, and optional native libtorrent streaming; live-provider and packaged-device qualification remains open.
+
+- Add a Watchmode title-availability adapter behind server-side credentials and an explicit commercial-approval gate, plus an iOS-only Apple MusicKit catalog/playback pilot behind a build flag; provider, account and device qualification remains open.
+
+- Clear Watchmode availability rows and loading state when the title Links screen changes profiles.
+
 - Add normalized provider, evidence, and licensed-offer contracts with bounded, no-cache availability lookup; keep offers non-actionable until approval and exclude generic OPDS purchase links from local-file access.
 - Make a single tap or click toggle playback by default across platforms, with a preference to show the playback controls instead.
 - Add signed visualizer catalog support with release-pinned Ed25519 keys, quorum verification, explicit refresh, revocation and rollback protection, and durable install receipts. Remote updates remain disabled until release keys are configured.

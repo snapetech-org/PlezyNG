@@ -3,6 +3,9 @@
 For current follow-up PR #54 completion status, see
 [CONNECTED_EXPERIENCE.md](CONNECTED_EXPERIENCE.md#scope-and-acceptance).
 Historical builds below do not validate the current branch.
+Use [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) for the exact-commit build
+procedure, three-computer library cases, receiver recovery, security and
+accessibility checks, and evidence template.
 
 Historical evidence begins on 2026-10-26; PR #54 follow-up records appear below.
 The earlier platform/codec descriptions are snapshots, not the current support

@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../exceptions/media_server_exceptions.dart';
 import '../focus/focusable_text_field.dart';
 import '../i18n/strings.g.dart';
+import '../discovery/discovery_choice.dart';
+import '../media/canonical_video_identity.dart';
 import '../media/catalog_item_ref.dart';
 import '../media/ids.dart';
 import '../media/media_item.dart';
@@ -297,12 +299,26 @@ class _SearchScreenState extends State<SearchScreen>
               !_matchesConfirmedCrosswalk(item, [...?result?.candidates, ...?seerr], crosswalks))
             item.toMediaItem(),
       ]);
+      final serverVideoIdentities = <String>{
+        for (final item in result?.candidates ?? const <MediaItem>[]) ...canonicalVideoIdentitiesForMediaItem(item),
+      };
+      final remoteCloudSourceIds = {
+        for (final source in sources?.sources ?? const <FileSource>[])
+          if (source.kind == FileSourceKind.remoteCloud) source.id,
+      };
+      final sourceEntries = [
+        for (final entry in files.entries)
+          if ((!remoteCloudSourceIds.contains(entry.sourceId) || !entry.unavailable) &&
+              (entry.kind != SourceItemKind.video ||
+                  !canonicalVideoIdentitiesForSourceEntry(entry).any(serverVideoIdentities.contains)))
+            entry,
+      ];
       _pendingSearchOutcome = (
         query: query,
         result: result,
         seerr: seerr ?? const [],
         catalogs: catalogItems,
-        files: files.entries,
+        files: sourceEntries,
         iptvVod: iptvVod.items,
         iptvVodProfileId: iptvVod.profileId,
         partial: partial,
@@ -310,7 +326,7 @@ class _SearchScreenState extends State<SearchScreen>
       );
       return [
         ...rankSearchHits(
-          [...?result?.hits, for (final entry in files.entries) SourceSearchHit(entry)],
+          [...?result?.hits, for (final entry in sourceEntries) SourceSearchHit(entry)],
           query,
           limit: defaultMediaSearchLimit,
         ),
@@ -323,15 +339,15 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<({List<IptvVodItem> items, String? profileId, bool available})> _searchIptvVod(String query) async {
-    final profileId = context.read<ActiveProfileProvider>().activeId;
-    if (profileId == null) return (items: const [], profileId: null, available: false);
+    final profileId = context.read<ActiveProfileProvider?>()?.activeId;
+    if (profileId == null) return (items: const <IptvVodItem>[], profileId: null, available: false);
     try {
       final repository = context.read<IptvSourceRepository>();
       final sources = await repository.vodSources(profileId);
       final items = await repository.searchVod(profileId, query);
       return (items: items, profileId: profileId, available: sources.isNotEmpty);
     } on Object {
-      return (items: const [], profileId: profileId, available: false);
+      return (items: const <IptvVodItem>[], profileId: profileId, available: false);
     }
   }
 
@@ -679,10 +695,7 @@ class _SearchScreenState extends State<SearchScreen>
     if (_focusResultsForQuery == null || _focusResultsForQuery != query) return;
     _focusResultsForQuery = null;
     if (searchController.text.trim() != query) return; // user kept editing
-    FocusUtils.requestFocusAfterBuild(
-      this,
-      results.isNotEmpty ? firstResultFocusNode : _firstIptvVodFocusNode,
-    );
+    FocusUtils.requestFocusAfterBuild(this, results.isNotEmpty ? firstResultFocusNode : _firstIptvVodFocusNode);
   }
 
   /// OSK "Search" / hardware Enter on TV additionally focuses the results
@@ -990,6 +1003,7 @@ class _SearchScreenState extends State<SearchScreen>
       CatalogSourceId.simkl => 'Simkl',
       CatalogSourceId.seerr => t.seerr.title,
       CatalogSourceId.mdblist => 'MDBList',
+      CatalogSourceId.stremio => 'Stremio',
     };
   }
 
@@ -1293,9 +1307,11 @@ class _SearchScreenState extends State<SearchScreen>
             final item = _iptvVodResults[index];
             final itemKind = item.kind == IptvVodKind.movie ? t.iptv.movies : t.iptv.series;
             final metadata = [itemKind, if (item.year != null) '${item.year}', 'IPTV'].join(' · ');
-            final onSelect = () => unawaited(
+            void onSelect() => unawaited(
               Navigator.of(context).push<void>(
-                MaterialPageRoute(builder: (_) => IptvVodDetailsScreen(profileId: profileId, item: item)),
+                MaterialPageRoute(
+                  builder: (_) => IptvVodDetailsScreen(profileId: profileId, item: item),
+                ),
               ),
             );
             return Padding(
@@ -1323,11 +1339,7 @@ class _SearchScreenState extends State<SearchScreen>
                       leading: SizedBox(
                         width: 44,
                         height: 58,
-                        child: OptimizedMediaImage.poster(
-                          imagePath: item.posterUrl,
-                          width: 44,
-                          height: 58,
-                        ),
+                        child: OptimizedMediaImage.poster(imagePath: item.posterUrl, width: 44, height: 58),
                       ),
                       title: Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
                       subtitle: Text(metadata, maxLines: 1, overflow: TextOverflow.ellipsis),

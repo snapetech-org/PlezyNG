@@ -93,6 +93,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$trakt$en trakt = Translations$trakt$en.internal(_root);
 	late final Translations$seerr$en seerr = Translations$seerr$en.internal(_root);
 	late final Translations$services$en services = Translations$services$en.internal(_root);
+	late final Translations$streaming$en streaming = Translations$streaming$en.internal(_root);
 	late final Translations$addServer$en addServer = Translations$addServer$en.internal(_root);
 	late final Translations$cast$en cast = Translations$cast$en.internal(_root);
 	late final Translations$automation$en automation = Translations$automation$en.internal(_root);
@@ -7773,6 +7774,354 @@ class Translations$services$en {
 	String get seerrDescription => 'Connect to Seerr or Overseerr to search for titles and submit media requests.';
 
 	late final Translations$services$trackerDescriptions$en trackerDescriptions = Translations$services$trackerDescriptions$en.internal(_root);
+}
+
+// Path: streaming
+class Translations$streaming$en {
+	Translations$streaming$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Cloud & add-on streaming'
+	String get title => 'Cloud & add-on streaming';
+
+	/// en: 'Debrid accounts let you browse files already in your cloud and resolve supported streams; Stremio-compatible add-ons add stream choices to movie and episode details. Connections stay private to this profile and encrypted on this device.'
+	String get subtitle => 'Debrid accounts let you browse files already in your cloud and resolve supported streams; Stremio-compatible add-ons add stream choices to movie and episode details. Connections stay private to this profile and encrypted on this device.';
+
+	/// en: '${count} connected source(s)'
+	String connectionsConfigured({required Object count}) => '${count} connected source(s)';
+
+	/// en: 'Couldn't unlock the saved streaming settings. Unlock the device, then try again before changing connections.'
+	String get settingsLoadFailed => 'Couldn\'t unlock the saved streaming settings. Unlock the device, then try again before changing connections.';
+
+	/// en: 'These saved connections can't be unlocked. Clear them to reconnect services.'
+	String get settingsUnreadable => 'These saved connections can\'t be unlocked. Clear them to reconnect services.';
+
+	/// en: 'Clear saved settings'
+	String get clearUnreadableSettings => 'Clear saved settings';
+
+	/// en: 'Clear saved streaming settings?'
+	String get clearUnreadableSettingsConfirm => 'Clear saved streaming settings?';
+
+	/// en: 'This removes every saved provider account and add-on address from this profile. It can't be undone.'
+	String get clearUnreadableSettingsBody => 'This removes every saved provider account and add-on address from this profile. It can\'t be undone.';
+
+	/// en: 'Couldn't clear the saved streaming settings. Unlock the device and try again.'
+	String get clearUnreadableSettingsFailed => 'Couldn\'t clear the saved streaming settings. Unlock the device and try again.';
+
+	/// en: 'Retry loading connections'
+	String get retrySettingsLoad => 'Retry loading connections';
+
+	/// en: 'Stremio-compatible add-ons'
+	String get addons => 'Stremio-compatible add-ons';
+
+	/// en: 'Import from Stremio or connect by manifest URL. Browse catalogs in Explore and use streams from supported title details.'
+	String get addonsDescription => 'Import from Stremio or connect by manifest URL. Browse catalogs in Explore and use streams from supported title details.';
+
+	/// en: 'This catalog couldn't be loaded. Refresh to try again.'
+	String get catalogLoadFailed => 'This catalog couldn\'t be loaded. Refresh to try again.';
+
+	/// en: 'Choose the required filters to browse this catalog.'
+	String get catalogFiltersRequired => 'Choose the required filters to browse this catalog.';
+
+	/// en: 'Required'
+	String get catalogRequiredLabel => 'Required';
+
+	/// en: 'Import from Stremio'
+	String get importFromStremio => 'Import from Stremio';
+
+	/// en: 'Scan the QR code or open the link, sign in on Stremio, then approve access. PlezyNG only reads your add-on list; it never asks for your password or changes your Stremio settings.'
+	String get stremioImportInstructions => 'Scan the QR code or open the link, sign in on Stremio, then approve access. PlezyNG only reads your add-on list; it never asks for your password or changes your Stremio settings.';
+
+	/// en: 'Open Stremio account link'
+	String get stremioImportOpen => 'Open Stremio account link';
+
+	/// en: 'Link code'
+	String get stremioImportCode => 'Link code';
+
+	/// en: 'Choose add-ons'
+	String get stremioImportPreviewTitle => 'Choose add-ons';
+
+	/// en: 'Select the add-ons to connect to PlezyNG. Only secure HTTPS add-ons are available in this import.'
+	String get stremioImportPreviewBody => 'Select the add-ons to connect to PlezyNG. Only secure HTTPS add-ons are available in this import.';
+
+	/// en: 'Skipped ${count} add-on(s) with an unsupported or unsecured address.'
+	String stremioImportIgnored({required Object count}) => 'Skipped ${count} add-on(s) with an unsupported or unsecured address.';
+
+	/// en: 'Catalogs'
+	String get stremioCatalogs => 'Catalogs';
+
+	/// en: 'Streams'
+	String get stremioStreams => 'Streams';
+
+	/// en: 'Add selected (${count})'
+	String stremioImportAddSelected({required Object count}) => 'Add selected (${count})';
+
+	/// en: 'Connected ${count} add-on(s) from Stremio.'
+	String stremioImportAdded({required Object count}) => 'Connected ${count} add-on(s) from Stremio.';
+
+	/// en: 'Connected ${added} add-on(s); ${failed} couldn't be connected.'
+	String stremioImportPartial({required Object added, required Object failed}) => 'Connected ${added} add-on(s); ${failed} couldn\'t be connected.';
+
+	/// en: 'Couldn't import add-ons from Stremio. Try again.'
+	String get stremioImportFailed => 'Couldn\'t import add-ons from Stremio. Try again.';
+
+	/// en: 'Stremio approval timed out. Start the import again.'
+	String get stremioImportTimedOut => 'Stremio approval timed out. Start the import again.';
+
+	/// en: 'No new compatible add-ons were found in this Stremio account.'
+	String get stremioImportEmpty => 'No new compatible add-ons were found in this Stremio account.';
+
+	/// en: 'Remove an add-on before importing more.'
+	String get stremioImportLimitReached => 'Remove an add-on before importing more.';
+
+	/// en: 'Add by manifest URL'
+	String get addByManifestUrl => 'Add by manifest URL';
+
+	/// en: 'Add add-on'
+	String get addAddon => 'Add add-on';
+
+	/// en: 'Add-on manifest URL'
+	String get manifestUrl => 'Add-on manifest URL';
+
+	/// en: 'Paste the add-on's manifest URL. PlezyNG checks for supported catalogs or stream resources before connecting.'
+	String get manifestUrlHint => 'Paste the add-on\'s manifest URL. PlezyNG checks for supported catalogs or stream resources before connecting.';
+
+	/// en: 'Allow an unsecured HTTP address'
+	String get allowHttp => 'Allow an unsecured HTTP address';
+
+	/// en: 'Use only for a trusted add-on on your private network.'
+	String get allowHttpDescription => 'Use only for a trusted add-on on your private network.';
+
+	/// en: 'Connect add-on'
+	String get installAddon => 'Connect add-on';
+
+	/// en: 'Add-on connected'
+	String get addonInstalled => 'Add-on connected';
+
+	/// en: 'Add-on removed'
+	String get addonRemoved => 'Add-on removed';
+
+	/// en: 'Enable add-on'
+	String get addonToggle => 'Enable add-on';
+
+	/// en: 'No add-ons connected yet'
+	String get addonEmpty => 'No add-ons connected yet';
+
+	/// en: 'PlezyNG couldn't connect to that add-on. Check the manifest URL and try again.'
+	String get addonError => 'PlezyNG couldn\'t connect to that add-on. Check the manifest URL and try again.';
+
+	/// en: 'Install only add-ons you trust. An add-on can receive the title you ask it to search and can return third-party stream links.'
+	String get addonPrivacy => 'Install only add-ons you trust. An add-on can receive the title you ask it to search and can return third-party stream links.';
+
+	/// en: 'Real-Debrid'
+	String get realDebrid => 'Real-Debrid';
+
+	/// en: 'Resolve torrent-backed streams through your Real-Debrid account.'
+	String get realDebridDescription => 'Resolve torrent-backed streams through your Real-Debrid account.';
+
+	/// en: 'Connect with QR code'
+	String get connectRealDebrid => 'Connect with QR code';
+
+	/// en: 'Disconnect Real-Debrid'
+	String get disconnectRealDebrid => 'Disconnect Real-Debrid';
+
+	/// en: 'Connected as ${username}'
+	String realDebridConnected({required Object username}) => 'Connected as ${username}';
+
+	/// en: 'Scan the QR code or open the address, then enter this activation code to connect PlezyNG:'
+	String get realDebridInstructions => 'Scan the QR code or open the address, then enter this activation code to connect PlezyNG:';
+
+	/// en: 'Open Real-Debrid to activate'
+	String get realDebridActivate => 'Open Real-Debrid to activate';
+
+	/// en: 'Activation code'
+	String get realDebridCode => 'Activation code';
+
+	/// en: 'Couldn't connect to Real-Debrid. Try again.'
+	String get realDebridConnectFailed => 'Couldn\'t connect to Real-Debrid. Try again.';
+
+	/// en: 'AllDebrid'
+	String get allDebrid => 'AllDebrid';
+
+	/// en: 'Resolve torrent-backed streams through your AllDebrid account.'
+	String get allDebridDescription => 'Resolve torrent-backed streams through your AllDebrid account.';
+
+	/// en: 'Connect with QR code'
+	String get connectAllDebrid => 'Connect with QR code';
+
+	/// en: 'Scan the QR code or open the address to approve PlezyNG. Keep this screen open while it connects:'
+	String get allDebridInstructions => 'Scan the QR code or open the address to approve PlezyNG. Keep this screen open while it connects:';
+
+	/// en: 'Open AllDebrid to activate'
+	String get allDebridActivate => 'Open AllDebrid to activate';
+
+	/// en: 'Activation PIN'
+	String get allDebridCode => 'Activation PIN';
+
+	/// en: 'Couldn't connect to AllDebrid. Try again.'
+	String get allDebridConnectFailed => 'Couldn\'t connect to AllDebrid. Try again.';
+
+	/// en: 'Premiumize'
+	String get premiumize => 'Premiumize';
+
+	/// en: 'Resolve cached torrent streams and files through Premiumize.'
+	String get premiumizeDescription => 'Resolve cached torrent streams and files through Premiumize.';
+
+	/// en: 'TorBox'
+	String get torbox => 'TorBox';
+
+	/// en: 'Resolve cached torrent streams and files through TorBox.'
+	String get torboxDescription => 'Resolve cached torrent streams and files through TorBox.';
+
+	/// en: 'Connect with API key'
+	String get connectApiKey => 'Connect with API key';
+
+	/// en: 'Connect ${service}'
+	String apiKeyTitle({required Object service}) => 'Connect ${service}';
+
+	/// en: 'API key'
+	String get apiKey => 'API key';
+
+	/// en: 'Paste the API key from your ${service} account settings. PlezyNG encrypts it on this device and keeps it private to this profile.'
+	String apiKeyHint({required Object service}) => 'Paste the API key from your ${service} account settings. PlezyNG encrypts it on this device and keeps it private to this profile.';
+
+	/// en: 'Couldn't verify that API key. Check it and try again.'
+	String get apiKeyConnectFailed => 'Couldn\'t verify that API key. Check it and try again.';
+
+	/// en: 'Connected as ${username}'
+	String accountConnected({required Object username}) => 'Connected as ${username}';
+
+	/// en: 'Connect a debrid service to play this torrent stream.'
+	String get streamNeedsProvider => 'Connect a debrid service to play this torrent stream.';
+
+	/// en: 'Play via debrid'
+	String get playViaProvider => 'Play via debrid';
+
+	/// en: 'Disconnect ${service}?'
+	String disconnectConfirm({required Object service}) => 'Disconnect ${service}?';
+
+	/// en: 'PlezyNG will remove this device's authorization. Your provider files and transfers stay untouched.'
+	String get disconnectBody => 'PlezyNG will remove this device\'s authorization. Your provider files and transfers stay untouched.';
+
+	/// en: 'Choose a stream'
+	String get streamsTitle => 'Choose a stream';
+
+	/// en: 'Checking connected add-ons…'
+	String get searchingStreams => 'Checking connected add-ons…';
+
+	/// en: 'No streams were found for this title.'
+	String get noStreams => 'No streams were found for this title.';
+
+	/// en: 'Manage streaming services'
+	String get manageConnections => 'Manage streaming services';
+
+	/// en: '${count} subtitle track(s)'
+	String subtitleTracks({required Object count}) => '${count} subtitle track(s)';
+
+	/// en: 'Choose a subtitle'
+	String get chooseSubtitle => 'Choose a subtitle';
+
+	/// en: 'Choose a debrid service'
+	String get chooseProvider => 'Choose a debrid service';
+
+	/// en: 'No subtitle'
+	String get subtitleOff => 'No subtitle';
+
+	/// en: 'Couldn't load that subtitle. Try another track.'
+	String get subtitleLoadFailed => 'Couldn\'t load that subtitle. Try another track.';
+
+	/// en: 'Subtitle selected for playback'
+	String get subtitleApplied => 'Subtitle selected for playback';
+
+	/// en: 'Some add-ons couldn't be reached.'
+	String get streamLookupPartial => 'Some add-ons couldn\'t be reached.';
+
+	/// en: 'Couldn't check the connected add-ons.'
+	String get streamLookupFailed => 'Couldn\'t check the connected add-ons.';
+
+	/// en: 'Open external link'
+	String get streamOpenExternal => 'Open external link';
+
+	/// en: 'Preparing through your debrid service…'
+	String get streamPrepare => 'Preparing through your debrid service…';
+
+	/// en: 'This stream couldn't be prepared. Check the connected account and try another source.'
+	String get streamPrepareFailed => 'This stream couldn\'t be prepared. Check the connected account and try another source.';
+
+	/// en: 'Connect a debrid service to play this torrent stream.'
+	String get streamNeedsRealDebrid => 'Connect a debrid service to play this torrent stream.';
+
+	/// en: 'This stream format isn't supported by the in-app player.'
+	String get streamUnsupported => 'This stream format isn\'t supported by the in-app player.';
+
+	/// en: 'Choose an episode before searching for a stream.'
+	String get remoteNeedsEpisode => 'Choose an episode before searching for a stream.';
+
+	/// en: 'This episode is missing its season or episode number.'
+	String get remoteNeedsEpisodeNumber => 'This episode is missing its season or episode number.';
+
+	/// en: 'PlezyNG couldn't find an IMDb or TMDB ID for this title.'
+	String get remoteNeedsExternalId => 'PlezyNG couldn\'t find an IMDb or TMDB ID for this title.';
+
+	/// en: 'Watch with connected services'
+	String get watchWithServices => 'Watch with connected services';
+
+	/// en: 'Choose episode'
+	String get chooseEpisode => 'Choose episode';
+
+	/// en: 'Episodes'
+	String get episodes => 'Episodes';
+
+	/// en: 'Season ${season}, episode ${episode}'
+	String episodePosition({required Object season, required Object episode}) => 'Season ${season}, episode ${episode}';
+
+	/// en: 'Opens available streams for this episode.'
+	String get episodeStreamHint => 'Opens available streams for this episode.';
+
+	/// en: 'Cloud files'
+	String get cloudFiles => 'Cloud files';
+
+	/// en: 'Browse files'
+	String get browseCloud => 'Browse files';
+
+	/// en: 'No ready video files were found in this account.'
+	String get cloudEmpty => 'No ready video files were found in this account.';
+
+	/// en: 'Couldn't load cloud files. Check the connection and retry.'
+	String get cloudLoadFailed => 'Couldn\'t load cloud files. Check the connection and retry.';
+
+	/// en: 'Debrid providers'
+	String get providers => 'Debrid providers';
+
+	/// en: 'Play torrents on this device'
+	String get nativePeerTitle => 'Play torrents on this device';
+
+	/// en: 'Play on this device'
+	String get nativePeerPlay => 'Play on this device';
+
+	/// en: 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Uses up to 4 GB per video and uploads up to 256 KB/s while playing; stops when playback ends.'
+	String get nativePeerHelp => 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Uses up to 4 GB per video and uploads up to 256 KB/s while playing; stops when playback ends.';
+
+	/// en: 'Available sources'
+	String get availableCopies => 'Available sources';
+
+	/// en: '${count} sources'
+	String availableCopiesCount({required Object count}) => '${count} sources';
+
+	/// en: 'Finding your server and cloud copies…'
+	String get canonicalIndexing => 'Finding your server and cloud copies…';
+
+	/// en: 'Preparation continues when the app is closed. Your device decides when to run it.'
+	String get preparationBackground => 'Preparation continues when the app is closed. Your device decides when to run it.';
+
+	/// en: 'This device can resume preparation while PlezyNG is open.'
+	String get preparationForeground => 'This device can resume preparation while PlezyNG is open.';
+
+	/// en: 'Preparation'
+	String get preparationQueue => 'Preparation';
 }
 
 // Path: addServer
@@ -16739,6 +17088,121 @@ extension on Translations {
 			'services.trackerDescriptions.anilist' => 'Sync anime lists and watch progress with AniList.',
 			'services.trackerDescriptions.simkl' => 'Sync watched movies, TV shows, and anime with Simkl.',
 			'services.trackerDescriptions.mdblist' => 'Show MDBList ratings and lists in recommendations and Explore.',
+			'streaming.title' => 'Cloud & add-on streaming',
+			'streaming.subtitle' => 'Debrid accounts let you browse files already in your cloud and resolve supported streams; Stremio-compatible add-ons add stream choices to movie and episode details. Connections stay private to this profile and encrypted on this device.',
+			'streaming.connectionsConfigured' => ({required Object count}) => '${count} connected source(s)',
+			'streaming.settingsLoadFailed' => 'Couldn\'t unlock the saved streaming settings. Unlock the device, then try again before changing connections.',
+			'streaming.settingsUnreadable' => 'These saved connections can\'t be unlocked. Clear them to reconnect services.',
+			'streaming.clearUnreadableSettings' => 'Clear saved settings',
+			'streaming.clearUnreadableSettingsConfirm' => 'Clear saved streaming settings?',
+			'streaming.clearUnreadableSettingsBody' => 'This removes every saved provider account and add-on address from this profile. It can\'t be undone.',
+			'streaming.clearUnreadableSettingsFailed' => 'Couldn\'t clear the saved streaming settings. Unlock the device and try again.',
+			'streaming.retrySettingsLoad' => 'Retry loading connections',
+			'streaming.addons' => 'Stremio-compatible add-ons',
+			'streaming.addonsDescription' => 'Import from Stremio or connect by manifest URL. Browse catalogs in Explore and use streams from supported title details.',
+			'streaming.catalogLoadFailed' => 'This catalog couldn\'t be loaded. Refresh to try again.',
+			'streaming.catalogFiltersRequired' => 'Choose the required filters to browse this catalog.',
+			'streaming.catalogRequiredLabel' => 'Required',
+			'streaming.importFromStremio' => 'Import from Stremio',
+			'streaming.stremioImportInstructions' => 'Scan the QR code or open the link, sign in on Stremio, then approve access. PlezyNG only reads your add-on list; it never asks for your password or changes your Stremio settings.',
+			'streaming.stremioImportOpen' => 'Open Stremio account link',
+			'streaming.stremioImportCode' => 'Link code',
+			'streaming.stremioImportPreviewTitle' => 'Choose add-ons',
+			'streaming.stremioImportPreviewBody' => 'Select the add-ons to connect to PlezyNG. Only secure HTTPS add-ons are available in this import.',
+			'streaming.stremioImportIgnored' => ({required Object count}) => 'Skipped ${count} add-on(s) with an unsupported or unsecured address.',
+			'streaming.stremioCatalogs' => 'Catalogs',
+			'streaming.stremioStreams' => 'Streams',
+			'streaming.stremioImportAddSelected' => ({required Object count}) => 'Add selected (${count})',
+			'streaming.stremioImportAdded' => ({required Object count}) => 'Connected ${count} add-on(s) from Stremio.',
+			'streaming.stremioImportPartial' => ({required Object added, required Object failed}) => 'Connected ${added} add-on(s); ${failed} couldn\'t be connected.',
+			'streaming.stremioImportFailed' => 'Couldn\'t import add-ons from Stremio. Try again.',
+			'streaming.stremioImportTimedOut' => 'Stremio approval timed out. Start the import again.',
+			'streaming.stremioImportEmpty' => 'No new compatible add-ons were found in this Stremio account.',
+			'streaming.stremioImportLimitReached' => 'Remove an add-on before importing more.',
+			'streaming.addByManifestUrl' => 'Add by manifest URL',
+			'streaming.addAddon' => 'Add add-on',
+			'streaming.manifestUrl' => 'Add-on manifest URL',
+			'streaming.manifestUrlHint' => 'Paste the add-on\'s manifest URL. PlezyNG checks for supported catalogs or stream resources before connecting.',
+			'streaming.allowHttp' => 'Allow an unsecured HTTP address',
+			'streaming.allowHttpDescription' => 'Use only for a trusted add-on on your private network.',
+			'streaming.installAddon' => 'Connect add-on',
+			'streaming.addonInstalled' => 'Add-on connected',
+			_ => null,
+		} ?? switch (path) {
+			'streaming.addonRemoved' => 'Add-on removed',
+			'streaming.addonToggle' => 'Enable add-on',
+			'streaming.addonEmpty' => 'No add-ons connected yet',
+			'streaming.addonError' => 'PlezyNG couldn\'t connect to that add-on. Check the manifest URL and try again.',
+			'streaming.addonPrivacy' => 'Install only add-ons you trust. An add-on can receive the title you ask it to search and can return third-party stream links.',
+			'streaming.realDebrid' => 'Real-Debrid',
+			'streaming.realDebridDescription' => 'Resolve torrent-backed streams through your Real-Debrid account.',
+			'streaming.connectRealDebrid' => 'Connect with QR code',
+			'streaming.disconnectRealDebrid' => 'Disconnect Real-Debrid',
+			'streaming.realDebridConnected' => ({required Object username}) => 'Connected as ${username}',
+			'streaming.realDebridInstructions' => 'Scan the QR code or open the address, then enter this activation code to connect PlezyNG:',
+			'streaming.realDebridActivate' => 'Open Real-Debrid to activate',
+			'streaming.realDebridCode' => 'Activation code',
+			'streaming.realDebridConnectFailed' => 'Couldn\'t connect to Real-Debrid. Try again.',
+			'streaming.allDebrid' => 'AllDebrid',
+			'streaming.allDebridDescription' => 'Resolve torrent-backed streams through your AllDebrid account.',
+			'streaming.connectAllDebrid' => 'Connect with QR code',
+			'streaming.allDebridInstructions' => 'Scan the QR code or open the address to approve PlezyNG. Keep this screen open while it connects:',
+			'streaming.allDebridActivate' => 'Open AllDebrid to activate',
+			'streaming.allDebridCode' => 'Activation PIN',
+			'streaming.allDebridConnectFailed' => 'Couldn\'t connect to AllDebrid. Try again.',
+			'streaming.premiumize' => 'Premiumize',
+			'streaming.premiumizeDescription' => 'Resolve cached torrent streams and files through Premiumize.',
+			'streaming.torbox' => 'TorBox',
+			'streaming.torboxDescription' => 'Resolve cached torrent streams and files through TorBox.',
+			'streaming.connectApiKey' => 'Connect with API key',
+			'streaming.apiKeyTitle' => ({required Object service}) => 'Connect ${service}',
+			'streaming.apiKey' => 'API key',
+			'streaming.apiKeyHint' => ({required Object service}) => 'Paste the API key from your ${service} account settings. PlezyNG encrypts it on this device and keeps it private to this profile.',
+			'streaming.apiKeyConnectFailed' => 'Couldn\'t verify that API key. Check it and try again.',
+			'streaming.accountConnected' => ({required Object username}) => 'Connected as ${username}',
+			'streaming.streamNeedsProvider' => 'Connect a debrid service to play this torrent stream.',
+			'streaming.playViaProvider' => 'Play via debrid',
+			'streaming.disconnectConfirm' => ({required Object service}) => 'Disconnect ${service}?',
+			'streaming.disconnectBody' => 'PlezyNG will remove this device\'s authorization. Your provider files and transfers stay untouched.',
+			'streaming.streamsTitle' => 'Choose a stream',
+			'streaming.searchingStreams' => 'Checking connected add-ons…',
+			'streaming.noStreams' => 'No streams were found for this title.',
+			'streaming.manageConnections' => 'Manage streaming services',
+			'streaming.subtitleTracks' => ({required Object count}) => '${count} subtitle track(s)',
+			'streaming.chooseSubtitle' => 'Choose a subtitle',
+			'streaming.chooseProvider' => 'Choose a debrid service',
+			'streaming.subtitleOff' => 'No subtitle',
+			'streaming.subtitleLoadFailed' => 'Couldn\'t load that subtitle. Try another track.',
+			'streaming.subtitleApplied' => 'Subtitle selected for playback',
+			'streaming.streamLookupPartial' => 'Some add-ons couldn\'t be reached.',
+			'streaming.streamLookupFailed' => 'Couldn\'t check the connected add-ons.',
+			'streaming.streamOpenExternal' => 'Open external link',
+			'streaming.streamPrepare' => 'Preparing through your debrid service…',
+			'streaming.streamPrepareFailed' => 'This stream couldn\'t be prepared. Check the connected account and try another source.',
+			'streaming.streamNeedsRealDebrid' => 'Connect a debrid service to play this torrent stream.',
+			'streaming.streamUnsupported' => 'This stream format isn\'t supported by the in-app player.',
+			'streaming.remoteNeedsEpisode' => 'Choose an episode before searching for a stream.',
+			'streaming.remoteNeedsEpisodeNumber' => 'This episode is missing its season or episode number.',
+			'streaming.remoteNeedsExternalId' => 'PlezyNG couldn\'t find an IMDb or TMDB ID for this title.',
+			'streaming.watchWithServices' => 'Watch with connected services',
+			'streaming.chooseEpisode' => 'Choose episode',
+			'streaming.episodes' => 'Episodes',
+			'streaming.episodePosition' => ({required Object season, required Object episode}) => 'Season ${season}, episode ${episode}',
+			'streaming.episodeStreamHint' => 'Opens available streams for this episode.',
+			'streaming.cloudFiles' => 'Cloud files',
+			'streaming.browseCloud' => 'Browse files',
+			'streaming.cloudEmpty' => 'No ready video files were found in this account.',
+			'streaming.cloudLoadFailed' => 'Couldn\'t load cloud files. Check the connection and retry.',
+			'streaming.providers' => 'Debrid providers',
+			'streaming.nativePeerTitle' => 'Play torrents on this device',
+			'streaming.nativePeerPlay' => 'Play on this device',
+			'streaming.nativePeerHelp' => 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Uses up to 4 GB per video and uploads up to 256 KB/s while playing; stops when playback ends.',
+			'streaming.availableCopies' => 'Available sources',
+			'streaming.availableCopiesCount' => ({required Object count}) => '${count} sources',
+			'streaming.canonicalIndexing' => 'Finding your server and cloud copies…',
+			'streaming.preparationBackground' => 'Preparation continues when the app is closed. Your device decides when to run it.',
+			'streaming.preparationForeground' => 'This device can resume preparation while PlezyNG is open.',
+			'streaming.preparationQueue' => 'Preparation',
 			'addServer.addMediaBrowserTitle' => ({required Object product}) => 'Add ${product} server',
 			'addServer.serverUrls' => 'Server URLs',
 			'addServer.serverUrlsHelper' => 'Multiple URLs allowed, separated by commas.',
@@ -16778,8 +17242,6 @@ extension on Translations {
 			'addServer.responseNotJson' => 'The server response was not valid JSON',
 			'addServer.responseMissingIdentity' => ({required Object product}) => 'The response is missing an ID or server name — is this a ${product} server?',
 			'addServer.probeFailed' => ({required Object error}) => 'Could not reach the server: ${error}',
-			_ => null,
-		} ?? switch (path) {
 			'addServer.enterAtLeastOneUrl' => ({required Object product}) => 'Enter at least one ${product} server URL',
 			'addServer.noReachableServer' => ({required Object product}) => 'No reachable ${product} server was found',
 			'addServer.urlsPointToDifferentServers' => ({required Object product}) => 'These URLs point to different ${product} servers',
@@ -17179,6 +17641,8 @@ extension on Translations {
 			'fileSources.removeSource' => 'Disconnect source',
 			'fileSources.disconnectMessage' => 'Disconnect this source? Downloaded files and your reading and listening history will stay on this device.',
 			'fileSources.localFolder' => 'Choose folder',
+			_ => null,
+		} ?? switch (path) {
 			'fileSources.empty' => 'Nothing here yet',
 			'fileSources.emptyHint' => 'Add a source or import a book, audiobook, music, or video.',
 			'fileSources.search' => 'Search this folder',
@@ -17292,8 +17756,6 @@ extension on Translations {
 			'fileSources.microsoftSignIn' => 'Sign in with Microsoft',
 			'fileSources.zoomIn' => 'Zoom in',
 			'fileSources.zoomOut' => 'Zoom out',
-			_ => null,
-		} ?? switch (path) {
 			'fileSources.fitPage' => 'Fit page',
 			'fileSources.fitWidth' => 'Fit width',
 			'fileSources.actualSize' => 'Actual size',
@@ -17693,6 +18155,8 @@ extension on Translations {
 			'games.streamChroma' => 'Color sampling',
 			'games.streamHostFps' => 'Host frame rate target',
 			'games.streamHostBitrate' => 'Host bitrate target',
+			_ => null,
+		} ?? switch (path) {
 			'games.streamLimits' => 'Host-reported frame rate limits',
 			'games.streamLimitHost' => 'Host capture or encoder',
 			'games.streamLimitNetwork' => 'Network',
@@ -17806,8 +18270,6 @@ extension on Translations {
 			'issueReport.instructions' => 'Scan the QR code to open a prefilled GitHub draft. Review it and submit only when you are ready.',
 			'issueReport.privacy' => 'The draft includes app version, platform, and connection counts. It excludes server addresses, account and profile names, media titles, and file paths.',
 			'issueReport.logPrivacy' => 'Logs are optional. Review them before uploading. Their ID is added to the draft, which may be public.',
-			_ => null,
-		} ?? switch (path) {
 			'issueReport.openDraft' => 'Open GitHub draft',
 			_ => null,
 		};

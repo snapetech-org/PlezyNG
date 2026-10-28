@@ -3,7 +3,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/strings.g.dart';
-import '../../i18n/iptv_copy.dart';
 import '../../iptv/iptv_models.dart';
 import '../../iptv/iptv_source_repository.dart';
 import '../../services/settings_service.dart';
@@ -40,19 +39,23 @@ class _IptvSourcesSettingsScreenState extends State<IptvSourcesSettingsScreen> {
     if (!mounted) return;
     final profileId = widget.profileId;
     if (profileId == null) {
-      if (mounted) setState(() {
-        _sources = const [];
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _sources = const [];
+          _loading = false;
+        });
+      }
       return;
     }
     if (mounted) setState(() => _loading = true);
     try {
       final sources = await context.read<IptvSourceRepository>().sources(profileId);
-      if (mounted) setState(() {
-        _sources = sources;
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _sources = sources;
+          _loading = false;
+        });
+      }
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
@@ -208,10 +211,8 @@ class _IptvSourcesSettingsScreenState extends State<IptvSourcesSettingsScreen> {
                       title: Text(t.iptv.vodProgressSync),
                       subtitle: Text(t.iptv.vodProgressSyncHelp),
                       value: enabled,
-                      onChanged: (value) => SettingsService.instance.write(
-                        SettingsService.iptvVodProgressSyncEnabled,
-                        value,
-                      ),
+                      onChanged: (value) =>
+                          SettingsService.instance.write(SettingsService.iptvVodProgressSyncEnabled, value),
                     ),
                   ),
                 ],
@@ -229,10 +230,7 @@ class _IptvSourcesSettingsScreenState extends State<IptvSourcesSettingsScreen> {
             ),
           )
         else if (_loading)
-          const SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(child: CircularProgressIndicator()),
-          )
+          const SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator()))
         else if (_sources.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,
@@ -278,10 +276,11 @@ class _IptvSourcesSettingsScreenState extends State<IptvSourcesSettingsScreen> {
       subtitle: Text(subtitleParts.join(' · '), maxLines: 2, overflow: TextOverflow.ellipsis),
       onTap: () => _openEditor(source),
       trailing: busy
-          ? const SizedBox(width: 44, height: 44, child: Padding(
-              padding: EdgeInsets.all(12),
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ))
+          ? const SizedBox(
+              width: 44,
+              height: 44,
+              child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator(strokeWidth: 2)),
+            )
           : PopupMenuButton<_SourceAction>(
               tooltip: t.iptv.edit,
               onSelected: (action) => _handleAction(source, action),

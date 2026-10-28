@@ -74,7 +74,7 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
     // group children can use plain `if`s (a SizedBox.shrink() child would
     // corrupt the SettingsGroup corner shapes).
     return SettingsBuilder(
-      prefs: const [
+      prefs: [
         SettingsService.useExoPlayer,
         SettingsService.matchRefreshRate,
         SettingsService.matchDynamicRange,
@@ -182,7 +182,8 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
                   icon: Symbols.blur_on_rounded,
                   title: t.videoSettings.motionClarity,
                   description: t.videoSettings.motionClarityDescription,
-                  subtitleBuilder: (preset) => '${_motionClarityPresetTitle(preset)} · ${_motionClarityPresetDescription(preset)}',
+                  subtitleBuilder: (preset) =>
+                      '${_motionClarityPresetTitle(preset)} · ${_motionClarityPresetDescription(preset)}',
                   options: MotionClarityPreset.values
                       .map(
                         (preset) => DialogOption(

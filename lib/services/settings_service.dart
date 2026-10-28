@@ -845,6 +845,7 @@ class SettingsService extends BaseSharedPreferencesService {
   /// (see HomeLayoutSyncService). Off by default; a device left off keeps
   /// its own layout and neither sends nor receives changes.
   static const homeLayoutSyncEnabled = BoolPref('home_layout_sync_enabled', defaultValue: false);
+
   /// Optional Plex account sync for IPTV VOD watch positions only.
   static const iptvVodProgressSyncEnabled = BoolPref('iptv_vod_progress_sync_enabled', defaultValue: false);
   static const groupLibrariesByServer = BoolPref('group_libraries_by_server', defaultValue: true);
@@ -974,6 +975,7 @@ class SettingsService extends BaseSharedPreferencesService {
     values: MotionClarityPreset.values,
     defaultValue: MotionClarityPreset.original,
   );
+
   /// Preset restored when the player-bar motion toggle is turned back on.
   static const motionClarityLastPreset = EnumPref<MotionClarityPreset>(
     'motion_clarity_last_preset',

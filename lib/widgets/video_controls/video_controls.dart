@@ -72,7 +72,6 @@ import 'widgets/player_toast_indicator.dart';
 import 'widgets/transport_feedback_indicator.dart';
 import '../../utils/app_logger.dart';
 import '../../i18n/strings.g.dart';
-import '../../i18n/iptv_copy.dart';
 import '../../focus/input_mode_tracker.dart';
 import 'models/track_controls_state.dart';
 import 'widgets/double_tap_feedback.dart';

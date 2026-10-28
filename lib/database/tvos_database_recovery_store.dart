@@ -525,7 +525,8 @@ final class TvosDatabaseRecoveryStore {
     final rows = decoded['rows'];
     final rowKeys = rows is Map<String, dynamic> ? rows.keys.toSet() : <String>{};
     final acceptedShapes = [expectedKeys, ...compatibleKeys];
-    if (rows is! Map<String, dynamic> || !acceptedShapes.any((keys) => rowKeys.length == keys.length && rowKeys.containsAll(keys))) {
+    if (rows is! Map<String, dynamic> ||
+        !acceptedShapes.any((keys) => rowKeys.length == keys.length && rowKeys.containsAll(keys))) {
       return null;
     }
     for (final key in rowKeys) {

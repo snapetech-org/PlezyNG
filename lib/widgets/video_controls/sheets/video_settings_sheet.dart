@@ -1329,7 +1329,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
             beforeSourceOpen: false,
             engine: oldEngine,
             outputRate: _motionOutputRate,
-          mciQuality: _motionMciQuality,
+            mciQuality: _motionMciQuality,
           );
           rethrow;
         }
@@ -1380,7 +1380,8 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
           _motionComparisonBypass = false;
         });
         _state.onMotionClarityChanged?.call();
-      });    } catch (error, stackTrace) {
+      });
+    } catch (error, stackTrace) {
       appLogger.w('Failed to change motion clarity output rate', error: error, stackTrace: stackTrace);
       if (mounted) showErrorSnackBar(context, t.videoSettings.motionClaritySaveFailed);
     }
@@ -1421,7 +1422,8 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
           _motionComparisonBypass = false;
         });
         _state.onMotionClarityChanged?.call();
-      });    } catch (error, stackTrace) {
+      });
+    } catch (error, stackTrace) {
       appLogger.w('Failed to change motion-compensation quality', error: error, stackTrace: stackTrace);
       if (mounted) showErrorSnackBar(context, t.videoSettings.motionClaritySaveFailed);
     }
@@ -1481,7 +1483,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
             beforeSourceOpen: false,
             engine: _motionEngine,
             outputRate: _motionOutputRate,
-          mciQuality: _motionMciQuality,
+            mciQuality: _motionMciQuality,
           );
           rethrow;
         }
@@ -1494,7 +1496,8 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
           _motionComparisonBypass = false;
         });
         _state.onMotionClarityChanged?.call();
-      });    } catch (error, stackTrace) {
+      });
+    } catch (error, stackTrace) {
       appLogger.w('Failed to change motion clarity preset', error: error, stackTrace: stackTrace);
       if (mounted) showErrorSnackBar(context, t.videoSettings.motionClaritySaveFailed);
     }
@@ -1534,7 +1537,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
             beforeSourceOpen: false,
             engine: _motionEngine,
             outputRate: _motionOutputRate,
-          mciQuality: _motionMciQuality,
+            mciQuality: _motionMciQuality,
           );
           rethrow;
         }
@@ -1546,7 +1549,8 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
           _motionComparisonBypass = false;
         });
         _state.onMotionClarityChanged?.call();
-      });    } catch (error, stackTrace) {
+      });
+    } catch (error, stackTrace) {
       appLogger.w('Failed to change motion clarity kernel', error: error, stackTrace: stackTrace);
       if (mounted) showErrorSnackBar(context, t.videoSettings.motionClaritySaveFailed);
     }
@@ -1564,15 +1568,11 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
       beforeSourceOpen: false,
       engine: _motionEngine,
       outputRate: _motionOutputRate,
-          mciQuality: _motionMciQuality,
+      mciQuality: _motionMciQuality,
     );
     try {
       await ScopedPlayerPrefs.write(ScopedPlayerPrefs.motionClarityThreshold, _state.metadata, threshold);
-      await ScopedPlayerPrefs.write(
-        ScopedPlayerPrefs.motionClarityPreset,
-        _state.metadata,
-        MotionClarityPreset.custom,
-      );
+      await ScopedPlayerPrefs.write(ScopedPlayerPrefs.motionClarityPreset, _state.metadata, MotionClarityPreset.custom);
       if (mounted) {
         setState(() {
           _motionPreset = MotionClarityPreset.custom;
@@ -1593,7 +1593,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
         beforeSourceOpen: false,
         engine: _motionEngine,
         outputRate: _motionOutputRate,
-          mciQuality: _motionMciQuality,
+        mciQuality: _motionMciQuality,
       );
       appLogger.w('Failed to save motion clarity threshold', error: error, stackTrace: stackTrace);
       if (mounted) showErrorSnackBar(context, t.videoSettings.motionClaritySaveFailed);
@@ -1620,14 +1620,14 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
     final statusText = status == null
         ? t.common.loading
         : !status.isSupported
-            ? t.videoSettings.motionClarityOutputUnsupported
-            : status.isConfigured && status.effectiveEngine == MotionClarityEngine.motionCompensated
-                ? t.videoSettings.motionClarityMciConfigured
-                : status.requiresSourceReload
-                    ? t.videoSettings.motionClarityRestartRequired
-                    : status.isConfigured
-                        ? t.videoSettings.motionClarityConfigured
-                        : t.videoSettings.motionClarityOriginalDescription;
+        ? t.videoSettings.motionClarityOutputUnsupported
+        : status.isConfigured && status.effectiveEngine == MotionClarityEngine.motionCompensated
+        ? t.videoSettings.motionClarityMciConfigured
+        : status.requiresSourceReload
+        ? t.videoSettings.motionClarityRestartRequired
+        : status.isConfigured
+        ? t.videoSettings.motionClarityConfigured
+        : t.videoSettings.motionClarityOriginalDescription;
     final outputDetail = [
       if (status != null && status.outputDriver != null && status.outputDriver!.isNotEmpty) status.outputDriver!,
       if (_motionSourceFps != null)
@@ -1648,7 +1648,10 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-          child: Text(t.videoSettings.motionClarityDescription, style: TextStyle(color: tokens(context).textMuted, fontSize: 12)),
+          child: Text(
+            t.videoSettings.motionClarityDescription,
+            style: TextStyle(color: tokens(context).textMuted, fontSize: 12),
+          ),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -1672,10 +1675,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
                   children: [
                     if (outputDetail.isNotEmpty) Text(outputDetail),
                     if (showEngineReason)
-                      Text(
-                        status!.reason!,
-                        style: TextStyle(color: tokens(context).textMuted, fontSize: 11),
-                      ),
+                      Text(status.reason!, style: TextStyle(color: tokens(context).textMuted, fontSize: 11)),
                     if (status?.isConfigured == true && status?.audioPassthroughActive == true)
                       Text(
                         t.videoSettings.motionClarityPassthroughWarning,
@@ -1699,7 +1699,10 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
           ),
           for (final engine in MotionClarityEngine.values)
             FocusableListTile(
-              title: Text(_motionEngineTitle(engine), style: TextStyle(color: _motionEngine == engine ? primary : null)),
+              title: Text(
+                _motionEngineTitle(engine),
+                style: TextStyle(color: _motionEngine == engine ? primary : null),
+              ),
               subtitle: Text(
                 engine == MotionClarityEngine.motionCompensated
                     ? t.videoSettings.motionClarityMotionCompensatedDescription
@@ -1716,11 +1719,17 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(t.videoSettings.motionClarityMciQualityDescription, style: TextStyle(color: tokens(context).textMuted, fontSize: 12)),
+              child: Text(
+                t.videoSettings.motionClarityMciQualityDescription,
+                style: TextStyle(color: tokens(context).textMuted, fontSize: 12),
+              ),
             ),
             for (final quality in MotionClarityMciQuality.values)
               FocusableListTile(
-                title: Text(_motionMciQualityTitle(quality), style: TextStyle(color: _motionMciQuality == quality ? primary : null)),
+                title: Text(
+                  _motionMciQualityTitle(quality),
+                  style: TextStyle(color: _motionMciQuality == quality ? primary : null),
+                ),
                 trailing: _motionMciQuality == quality ? AppIcon(Symbols.check_rounded, fill: 1, color: primary) : null,
                 onTap: () => _selectMotionClarityMciQuality(quality),
               ),
@@ -1737,7 +1746,10 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
             ),
             for (final rate in MotionClarityOutputRate.values)
               FocusableListTile(
-                title: Text(_motionOutputRateTitle(rate), style: TextStyle(color: _motionOutputRate == rate ? primary : null)),
+                title: Text(
+                  _motionOutputRateTitle(rate),
+                  style: TextStyle(color: _motionOutputRate == rate ? primary : null),
+                ),
                 trailing: _motionOutputRate == rate ? AppIcon(Symbols.check_rounded, fill: 1, color: primary) : null,
                 onTap: () => _selectMotionClarityOutputRate(rate),
               ),
@@ -1772,15 +1784,17 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
             trailing: _motionPreset == preset ? AppIcon(Symbols.check_rounded, fill: 1, color: primary) : null,
             onTap: () => _selectMotionClarityPreset(preset),
           ),
-        if (_motionPreset == MotionClarityPreset.custom &&
-            _motionEngine == MotionClarityEngine.temporalBlend) ...[
+        if (_motionPreset == MotionClarityPreset.custom && _motionEngine == MotionClarityEngine.temporalBlend) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
             child: Text(t.videoSettings.motionClarityKernel, style: Theme.of(context).textTheme.titleSmall),
           ),
           for (final kernel in MotionTemporalKernel.values)
             FocusableListTile(
-              title: Text(_motionKernelTitle(kernel), style: TextStyle(color: _motionKernel == kernel ? primary : null)),
+              title: Text(
+                _motionKernelTitle(kernel),
+                style: TextStyle(color: _motionKernel == kernel ? primary : null),
+              ),
               trailing: _motionKernel == kernel ? AppIcon(Symbols.check_rounded, fill: 1, color: primary) : null,
               onTap: () => _selectMotionTemporalKernel(kernel),
             ),
@@ -2415,7 +2429,12 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
     final isZoomActive = (_zoomScale - 1.0).abs() > 0.0001;
     final isIconActive =
         _currentView == _SettingsView.menu &&
-        (sleepTimer.isActive || _audioSyncOffset != 0 || _subtitleSyncOffset != 0 || isShaderActive || isMotionActive || isZoomActive);
+        (sleepTimer.isActive ||
+            _audioSyncOffset != 0 ||
+            _subtitleSyncOffset != 0 ||
+            isShaderActive ||
+            isMotionActive ||
+            isZoomActive);
 
     return BaseVideoControlSheet(
       title: _getTitle(),

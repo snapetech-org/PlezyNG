@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Fall back to packaged LiteRT providers when Qualcomm HTP context preparation fails.
 - Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.
 - Repair combined application compilation across visualizer and subtitle archive extraction, IPTV, catalog search, motion and player settings. Preserve bounded archive writes, stale-operation guards and subtitle timing, use shared icon styling, and explicitly track untranslated messages as English fallbacks.

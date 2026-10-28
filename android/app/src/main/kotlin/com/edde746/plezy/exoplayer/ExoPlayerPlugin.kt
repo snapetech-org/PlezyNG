@@ -1397,7 +1397,8 @@ open class ExoPlayerPlugin(
     }
     if (usingMpvFallback) {
       val session = mpvCore?.subtitlePcmCaptureSessionId()
-      if (session == null || MilkRustNativeBridge.loadError != null ||
+      if (session == null ||
+        MilkRustNativeBridge.loadError != null ||
         !MilkRustNativeBridge.subtitlePcmCaptureAvailable()
       ) {
         result.success(false)
@@ -1424,7 +1425,8 @@ open class ExoPlayerPlugin(
     }
 
     val session = mpvCore?.subtitlePcmCaptureSessionId()
-    if (session == null || MilkRustNativeBridge.loadError != null ||
+    if (session == null ||
+      MilkRustNativeBridge.loadError != null ||
       !MilkRustNativeBridge.subtitlePcmCaptureAvailable()
     ) {
       result.error("SUBTITLE_PCM_UNAVAILABLE", "The Android MPV capture bridge is unavailable.", null)
@@ -1455,7 +1457,7 @@ open class ExoPlayerPlugin(
             "channels" to channels,
             "encoding" to "float32",
             "pcm" to pcm,
-            "droppedFrames" to droppedFrames.toLong().and(0xffff_ffffL),
+            "droppedFrames" to droppedFrames.toLong().and(0xffff_ffffL)
           )
         )
       }

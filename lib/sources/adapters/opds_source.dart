@@ -65,9 +65,19 @@ class OpdsSourceAdapter extends SourceAdapter {
   bool _openAccessAcquisition(Iterable<String> rels) => _hasRel(rels, 'http://opds-spec.org/acquisition/open-access');
   bool _supportedFileAcquisition(Iterable<String> rels) => _sampleAcquisition(rels) || _openAccessAcquisition(rels);
   bool _downloadable(String rel) => _supportedFileAcquisition([rel]);
-  SourceItemKind _entryKind(List<PublicationFile> files) => files
-      .map((file) => file.kind)
-      .firstWhere((kind) => kind != SourceItemKind.unknown, orElse: () => files.first.kind);
+  SourceItemKind _entryKind(List<PublicationFile> files) {
+    if (files.any((file) => file.kind == SourceItemKind.audiobook)) return SourceItemKind.audiobook;
+    // OPDS book entries can offer an audio sample alongside an open EPUB.
+    // Keep the publication classified as an audiobook instead of letting the
+    // first acquisition link make the entire edition look like music.
+    if (files.any((file) => file.sampleOnly && file.kind == SourceItemKind.music) &&
+        files.any((file) => file.kind == SourceItemKind.ebook)) {
+      return SourceItemKind.audiobook;
+    }
+    return files
+        .map((file) => file.kind)
+        .firstWhere((kind) => kind != SourceItemKind.unknown, orElse: () => files.first.kind);
+  }
 
   @override
   SourceCapabilities get capabilities => const SourceCapabilities();

@@ -3612,14 +3612,22 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     // The tracker snapshots duration, tracks, identity and position before
     // yielding. Native stop may reset them. This also retains offline writes
     // and the tracker's terminal watched-state settlement.
-    final stoppedReport = _sendStoppedProgressOnce(positionOverride: currentPlayer?.state.position);
+    final stoppedReport = _sendStoppedProgressOnce(
+      positionOverride: currentPlayer?.state.position,
+      durationOverride: currentPlayer?.state.duration,
+    );
     unawaited(() async {
       try {
         await _finishIptvRecording(currentPlayer, notify: false);
-        await stoppedReport;
-        if (currentPlayer != null) {
-          await (pauseForRouteExit ? _pauseAndHidePlayerForRouteExit(currentPlayer) : currentPlayer.stop());
-        }
+        // Progress captured its terminal position and duration above, so it
+        // can settle alongside native stop/pause. Do not let a slow server
+        // report hold the decoder open or delay an accepted route exit.
+        final playerCleanup = currentPlayer == null
+            ? Future<void>.value()
+            : Future<void>.sync(
+                () => pauseForRouteExit ? _pauseAndHidePlayerForRouteExit(currentPlayer) : currentPlayer.stop(),
+              );
+        await Future.wait<void>([stoppedReport, playerCleanup]);
         await Future.wait<void>(cancellations);
         completer.complete();
       } catch (error, stackTrace) {
@@ -3629,7 +3637,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     return completer.future;
   }
 
-  Future<void> _sendStoppedProgressOnce({Duration? positionOverride}) {
+  Future<void> _sendStoppedProgressOnce({Duration? positionOverride, Duration? durationOverride}) {
     if (widget.isLive) {
       _stopLiveTimelineUpdates();
       return _sendLiveTimeline('stopped');
@@ -3638,9 +3646,11 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     final tracker = _progressTracker;
     if (tracker == null) return Future<void>.value();
 
-    return tracker.sendStoppedProgressOnce(positionOverride: positionOverride).catchError((Object e, StackTrace st) {
-      appLogger.d('Stopped progress flush failed', error: e, stackTrace: st);
-    });
+    return tracker
+        .sendStoppedProgressOnce(positionOverride: positionOverride, durationOverride: durationOverride)
+        .catchError((Object e, StackTrace st) {
+          appLogger.d('Stopped progress flush failed', error: e, stackTrace: st);
+        });
   }
 
   @override

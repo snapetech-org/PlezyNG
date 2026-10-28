@@ -58,6 +58,7 @@ import '../test_helpers/prefs.dart';
 import '../test_helpers/media_items.dart';
 import '../test_helpers/multi_server_fixtures.dart';
 import '../sources/fixtures/memory_sources.dart';
+import '../test_helpers/media_server_client_test_defaults.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -1323,7 +1324,7 @@ void _resetGlobalTestState() {
   SettingsService.resetForTesting();
 }
 
-class _FakeMediaServerClient implements MediaServerClient {
+class _FakeMediaServerClient with TestMediaServerClientDefaults implements MediaServerClient {
   final String serverIdValue;
   final String serverNameValue;
   final List<MediaItem> items;

@@ -4,6 +4,9 @@
 
 - Refuse reused Qualcomm context output roots and atomically publish the manifest only after the full selected context set completes.
 - Prepare Qualcomm HTP contexts on hardened Linux hosts by preserving short temporary paths and clearing executable-stack requests only on generated host model libraries.
+- Fix Apple native configuration to use Boost headers from CMake's extracted source root.
+- Install GStreamer development packages for Linux native CI and set Git identity in codegen test clones.
+- Fix Tizen subtitle PCM capture compilation by importing the base64 decoder.
 - Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.
 - Repair combined application compilation across visualizer and subtitle archive extraction, IPTV, catalog search, motion and player settings. Preserve bounded archive writes, stale-operation guards and subtitle timing, use shared icon styling, and explicitly track untranslated messages as English fallbacks.

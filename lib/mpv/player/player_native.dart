@@ -1578,7 +1578,12 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<bool> subtitlePcmCaptureAvailable() async {
-    if (_nativeCoreUnavailable || audioOnly || !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) || _isLivePlayback) return false;
+    if (_nativeCoreUnavailable ||
+        audioOnly ||
+        !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) ||
+        _isLivePlayback) {
+      return false;
+    }
     await _ensureInitialized();
     if (_nativeCoreUnavailable || !initialized) return false;
     try {
@@ -1590,7 +1595,12 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
-    if (_nativeCoreUnavailable || audioOnly || !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) || !initialized) return false;
+    if (_nativeCoreUnavailable ||
+        audioOnly ||
+        !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) ||
+        !initialized) {
+      return false;
+    }
     try {
       return await invoke<bool>('setSubtitlePcmCaptureEnabled', {'enabled': enabled}) ?? false;
     } on Object {
@@ -1600,12 +1610,14 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
-    if (_nativeCoreUnavailable || audioOnly || !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) || !initialized) return const [];
+    if (_nativeCoreUnavailable ||
+        audioOnly ||
+        !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) ||
+        !initialized) {
+      return const [];
+    }
     final packets = await invoke<List<dynamic>>('drainSubtitlePcmCapture');
-    return packets
-            ?.whereType<Map>()
-            .map((packet) => Map<String, Object?>.from(packet))
-            .toList(growable: false) ??
+    return packets?.whereType<Map>().map((packet) => Map<String, Object?>.from(packet)).toList(growable: false) ??
         const [];
   }
 

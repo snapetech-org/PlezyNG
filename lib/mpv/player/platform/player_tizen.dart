@@ -16,8 +16,7 @@ import 'webos_media_proxy.dart';
 
 /// Samsung's native media plane. The existing app supplies browsing, focus,
 /// transport controls and watch progress; no browser-hosted UI is involved.
-class PlayerTizen extends PlayerBase
-    implements SubtitlePcmCaptureSource, NativeVisualizationAudioSource {
+class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, NativeVisualizationAudioSource {
   PlayerTizen({this.audioOnly = false}) : super(listenToNativeEvents: false);
   static const _visualizer = MethodChannel('com.plezy/mpv_audio_player');
 
@@ -25,11 +24,7 @@ class PlayerTizen extends PlayerBase
   bool _visualizerBound = false;
   @override
   bool get nativeVisualizationAudioReady =>
-      audioOnly &&
-      _visualizerBound &&
-      !disposed &&
-      !_closing &&
-      (_controller?.value.isInitialized ?? false);
+      audioOnly && _visualizerBound && !disposed && !_closing && (_controller?.value.isInitialized ?? false);
   final ValueNotifier<int> surfaceRevision = ValueNotifier(0);
   final ValueNotifier<String> caption = ValueNotifier('');
   final SerialFutureQueue _sources = SerialFutureQueue();

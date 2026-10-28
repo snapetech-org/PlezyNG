@@ -5,7 +5,6 @@ Status: all code remains implemented but unqualified. Existing synthetic fixture
 **High confidence:** these boundary checks protect against false entitlement, accidental purchase/circulation actions, profile leakage, credential exposure, and unsupported playback claims.
 
 ## Functional acceptance matrix
-## Functional acceptance matrix
 
 | ID | Scenario | Required result | Packages |
 | --- | --- | --- | --- |

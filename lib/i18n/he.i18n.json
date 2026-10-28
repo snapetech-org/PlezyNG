@@ -1891,12 +1891,14 @@
     "filtersWithCount": "מסננים (${count})",
     "noRecommendations": "אין המלצות זמינות",
     "noCollections": "אין אוסף בספריה זו",
+    "noGenres": "",
     "noFoldersFound": "לא נמצאו קבצים",
     "folders": "תיקיות",
     "tabs": {
       "recommended": "מומלץ",
       "browse": "עיין",
       "collections": "אוספים",
+      "genres": "",
       "playlists": "רשימות נגינה"
     },
     "groupings": {

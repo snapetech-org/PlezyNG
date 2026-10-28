@@ -282,7 +282,7 @@ const _detailFields =
     // extra round-trip.
     'ProviderIds';
 
-mixin _JellyfinBrowseMethods on _JellyfinClientInternals {
+mixin _JellyfinBrowseMethods on _JellyfinClientInternals implements LibraryGenreProvider {
   // Shared endpoints and query shapes follow the official Jellyfin SDK so
   // Jellyfin requests remain unchanged. [MediaBrowserPaths] owns the measured
   // route differences: Emby 4.9.5 requires the older user-scoped spellings,
@@ -502,6 +502,44 @@ mixin _JellyfinBrowseMethods on _JellyfinClientInternals {
       values[key] = sorted.map((v) => MediaFilterValue(key: v, title: v)).toList();
     }
     return LibraryFilterResult(filters: filters, cachedValues: values);
+  }
+
+  /// Fetch genres scoped to the library and to the item type its Browse tab
+  /// lists. Unscoped requests can return genres that select no Browse rows.
+  @override
+  Future<List<LibraryGenre>> fetchLibraryGenres(String libraryId, {required MediaKind libraryKind}) async {
+    final rows = await _fetchItemsArray('/Genres', {
+      'UserId': connection.userId,
+      'ParentId': libraryId,
+      'Recursive': 'true',
+      'IncludeItemTypes': ?switch (libraryKind) {
+        MediaKind.movie => 'Movie',
+        MediaKind.show => 'Series',
+        _ => null,
+      },
+      'SortBy': 'SortName',
+      'EnableImageTypes': 'Primary',
+      'ImageTypeLimit': '1',
+      'EnableTotalRecordCount': 'false',
+    });
+    final genres = <LibraryGenre>[];
+    for (final row in rows) {
+      final id = row['Id'];
+      final name = row['Name'];
+      if (name is! String || name.isEmpty) continue;
+      final imageTags = row['ImageTags'];
+      final primaryTag = imageTags is Map<String, dynamic> ? imageTags['Primary'] : null;
+      genres.add(
+        LibraryGenre(
+          title: name,
+          filterValue: name,
+          artPath: id is String && id.isNotEmpty && primaryTag is String && primaryTag.isNotEmpty
+              ? '/Items/${_segment(id)}/Images/Primary?tag=${Uri.encodeComponent(primaryTag)}'
+              : null,
+        ),
+      );
+    }
+    return genres;
   }
 
   Future<Map<String, dynamic>?> _safeFetchFilterPayload(String libraryId) async {

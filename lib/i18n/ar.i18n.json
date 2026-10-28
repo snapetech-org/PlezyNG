@@ -1921,12 +1921,14 @@
     "filtersWithCount": "الفلاتر (${count})",
     "noRecommendations": "لا توجد توصيات متاحة",
     "noCollections": "لا توجد مجموعات في هذه المكتبة",
+    "noGenres": "",
     "noFoldersFound": "لا توجد ملفات",
     "folders": "المجلدات",
     "tabs": {
       "recommended": "الموصى بها",
       "browse": "استعراض",
       "collections": "المجموعات",
+      "genres": "",
       "playlists": "قوائم التشغيل"
     },
     "groupings": {

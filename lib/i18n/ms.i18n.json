@@ -1881,12 +1881,14 @@
     "filtersWithCount": "Filter (${count})",
     "noRecommendations": "Tiada cadangan yang tersedia",
     "noCollections": "Tiada koleksi dalam perpustakaan ini",
+    "noGenres": "",
     "noFoldersFound": "Tiada folder yang ditemui",
     "folders": "Folder-folder",
     "tabs": {
       "recommended": "Rekomendasi",
       "browse": "Semak imbas",
       "collections": "Koleksi",
+      "genres": "",
       "playlists": "Senarai ulangmain"
     },
     "groupings": {

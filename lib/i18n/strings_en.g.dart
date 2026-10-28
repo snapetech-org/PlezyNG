@@ -4905,6 +4905,9 @@ class Translations$libraries$en {
 	/// en: 'No collections in this library'
 	String get noCollections => 'No collections in this library';
 
+	/// en: 'No genres in this library'
+	String get noGenres => 'No genres in this library';
+
 	/// en: 'No folders found'
 	String get noFoldersFound => 'No folders found';
 
@@ -12677,6 +12680,9 @@ class Translations$libraries$tabs$en {
 	/// en: 'Collections'
 	String get collections => 'Collections';
 
+	/// en: 'Genres'
+	String get genres => 'Genres';
+
 	/// en: 'Playlists'
 	String get playlists => 'Playlists';
 }
@@ -15984,11 +15990,13 @@ extension on Translations {
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filters (${count})',
 			'libraries.noRecommendations' => 'No recommendations available',
 			'libraries.noCollections' => 'No collections in this library',
+			'libraries.noGenres' => 'No genres in this library',
 			'libraries.noFoldersFound' => 'No folders found',
 			'libraries.folders' => 'folders',
 			'libraries.tabs.recommended' => 'Recommended',
 			'libraries.tabs.browse' => 'Browse',
 			'libraries.tabs.collections' => 'Collections',
+			'libraries.tabs.genres' => 'Genres',
 			'libraries.tabs.playlists' => 'Playlists',
 			'libraries.groupings.title' => 'Grouping',
 			'libraries.groupings.all' => 'All',
@@ -16256,10 +16264,10 @@ extension on Translations {
 			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
 			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
 			'explore.detail.originalTitle' => 'Original title',
-			'explore.detail.alsoKnownAs' => 'Also known as',
-			'explore.detail.studios' => 'Studios',
 			_ => null,
 		} ?? switch (path) {
+			'explore.detail.alsoKnownAs' => 'Also known as',
+			'explore.detail.studios' => 'Studios',
 			'explore.detail.country' => 'Country',
 			'explore.detail.language' => 'Language',
 			'explore.detail.released' => 'Released',
@@ -16770,10 +16778,10 @@ extension on Translations {
 			'downloads.notificationPaused' => 'Download paused',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
-			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',
-			'shaders.lanczosUpscaling' => 'Lanczos upscaling',
 			_ => null,
 		} ?? switch (path) {
+			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',
+			'shaders.lanczosUpscaling' => 'Lanczos upscaling',
 			'shaders.lanczosUpscalingDescription' => 'GPU resampling for video smaller than the display; unavailable with DRM or tunneled playback.',
 			'shaders.artcnnVariantNeutral' => 'Neutral',
 			'shaders.artcnnVariantDenoise' => 'Denoise',
@@ -17284,10 +17292,10 @@ extension on Translations {
 			'services.deviceCode.codeCopied' => 'Code copied',
 			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
 			'services.oauthProxy.body' => 'Scan this QR code or open the URL on any device.',
-			'services.oauthProxy.openToSignIn' => ({required Object service}) => 'Open ${service} to sign in',
-			'services.pendingAuth.copyUrl' => 'Copy sign-in URL',
 			_ => null,
 		} ?? switch (path) {
+			'services.oauthProxy.openToSignIn' => ({required Object service}) => 'Open ${service} to sign in',
+			'services.pendingAuth.copyUrl' => 'Copy sign-in URL',
 			'services.pendingAuth.urlCopied' => 'URL copied',
 			'services.libraryFilter.title' => 'Library filter',
 			'services.libraryFilter.subtitleAllSyncing' => 'Syncing all libraries',
@@ -17798,10 +17806,10 @@ extension on Translations {
 			'universalMedia.extensionsIntro' => 'Add a data-only search extension to find media. Choose a result to load it into the familiar Open media form.',
 			'universalMedia.extensionsPrivacy' => 'A manifest can define one HTTPS search endpoint and map response fields. It cannot run code, add request headers, read files, or launch shell commands.',
 			'universalMedia.extensionImport' => 'Add extension manifest',
-			'universalMedia.extensionEmpty' => 'No search services yet. Choose a trusted manifest JSON file to add one.',
-			'universalMedia.extensionChoose' => 'Search service',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.extensionEmpty' => 'No search services yet. Choose a trusted manifest JSON file to add one.',
+			'universalMedia.extensionChoose' => 'Search service',
 			'universalMedia.extensionSearchConsent' => 'Each search sends your words to this HTTPS service. Results open only after you select one.',
 			'universalMedia.extensionSearchLabel' => 'Search media',
 			'universalMedia.extensionSearch' => 'Search',
@@ -18312,10 +18320,10 @@ extension on Translations {
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
 			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
-			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
-			'games.connecting' => 'Connecting…',
 			_ => null,
 		} ?? switch (path) {
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'games.connecting' => 'Connecting…',
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',

@@ -1889,12 +1889,14 @@
     "filtersWithCount": "फ़िल्टर (${count})",
     "noRecommendations": "कोई प्रस्ताव उपलब्ध नहीं है",
     "noCollections": "इस पुस्तकालय में कोई संग्रह नहीं",
+    "noGenres": "",
     "noFoldersFound": "कोई फ़ोल्डर नहीं मिला",
     "folders": "फ़ोल्डर",
     "tabs": {
       "recommended": "अनुशंसित",
       "browse": "ब्राउज़",
       "collections": "संग्रह",
+      "genres": "",
       "playlists": "प्लेलिस्ट"
     },
     "groupings": {

@@ -1903,12 +1903,14 @@
     "filtersWithCount": "Фільтри (${count})",
     "noRecommendations": "Немає доступних рекомендацій",
     "noCollections": "Ніяких колекцій в цій бібліотеці",
+    "noGenres": "",
     "noFoldersFound": "Не знайдено жодних паперів",
     "folders": "Теки",
     "tabs": {
       "recommended": "Рекомендовані",
       "browse": "Огляд",
       "collections": "Колекції",
+      "genres": "",
       "playlists": "Плейлисти"
     },
     "groupings": {

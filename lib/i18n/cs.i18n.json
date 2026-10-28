@@ -1903,12 +1903,14 @@
     "filtersWithCount": "Filtry (${count})",
     "noRecommendations": "Žádné doporučení k dispozici",
     "noCollections": "Žádné sbírky v této knihovně",
+    "noGenres": "",
     "noFoldersFound": "Žádné složky nenajdete",
     "folders": "Složky",
     "tabs": {
       "recommended": "Doporučené",
       "browse": "Procházet",
       "collections": "Kolekce",
+      "genres": "",
       "playlists": "Seznamy skladeb"
     },
     "groupings": {

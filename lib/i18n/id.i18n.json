@@ -1881,12 +1881,14 @@
     "filtersWithCount": "Filter (${count})",
     "noRecommendations": "Tidak ada rekomendasi tersedia",
     "noCollections": "Tidak ada koleksi di perpustakaan ini",
+    "noGenres": "",
     "noFoldersFound": "Tidak ditemukan folder",
     "folders": "Folder",
     "tabs": {
       "recommended": "Disarankan",
       "browse": "Jelajah",
       "collections": "Koleksi",
+      "genres": "",
       "playlists": "Daftar putar"
     },
     "groupings": {

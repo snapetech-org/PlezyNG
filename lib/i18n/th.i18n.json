@@ -1881,12 +1881,14 @@
     "filtersWithCount": "ตัวกรอง (${count})",
     "noRecommendations": "ไม่มีคําแนะนําที่มีอยู่",
     "noCollections": "ไม่มีคอลเลกชันในห้องสมุดนี้",
+    "noGenres": "",
     "noFoldersFound": "ไม่พบโฟลเดอร์",
     "folders": "โฟลเดอร์",
     "tabs": {
       "recommended": "คําแนะนํา",
       "browse": "เรียกดู",
       "collections": "คอลเลกชัน",
+      "genres": "",
       "playlists": "เพลย์ลิสต์"
     },
     "groupings": {

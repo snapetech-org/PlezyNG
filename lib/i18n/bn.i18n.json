@@ -1889,12 +1889,14 @@
     "filtersWithCount": "ফিল্টার (${count})",
     "noRecommendations": "উপলব্ধি নেই",
     "noCollections": "এই লাইব্রেরিতে কোন সংগ্রহ নেই",
+    "noGenres": "",
     "noFoldersFound": "কোন ফাইল পাওয়া যায়নি",
     "folders": "ফোল্ডার",
     "tabs": {
       "recommended": "পরামর্শ",
       "browse": "ব্রাউজ",
       "collections": "কালেকশন",
+      "genres": "",
       "playlists": "খেলোয়াড়"
     },
     "groupings": {

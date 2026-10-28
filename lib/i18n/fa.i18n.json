@@ -1889,12 +1889,14 @@
     "filtersWithCount": "فیلترها (${count})",
     "noRecommendations": "بدون توصیه در دسترس",
     "noCollections": "هیچ مجموعه ای در این کتابخانه وجود ندارد",
+    "noGenres": "",
     "noFoldersFound": "هیچ پوشه ای یافت نشد",
     "folders": "پوشه‌ها",
     "tabs": {
       "recommended": "توصیه شده",
       "browse": "مرور کردن",
       "collections": "مجموعه‌ها",
+      "genres": "",
       "playlists": "لیست‌های پخش"
     },
     "groupings": {

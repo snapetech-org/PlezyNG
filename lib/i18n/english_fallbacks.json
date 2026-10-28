@@ -1,6 +1,6 @@
 {
   "baseLocale": "en",
-  "reason": "Product-specific Steam, service integration, discovery, privacy, IPTV, motion processing, subtitle and playback copy use the existing Slang base_locale_empty_string English fallback until reviewed translations are available. This manifest does not imply language review; remove each key when translations no longer need fallback.",
+  "reason": "Product-specific Steam, service integration, discovery, library genre, privacy, IPTV, motion processing, subtitle and playback copy use the existing Slang base_locale_empty_string English fallback until reviewed translations are available. This manifest does not imply language review; remove each key when translations no longer need fallback.",
   "keys": [
     "audiobook.syncFolderHelp",
     "audiobook.syncPrivacy",
@@ -361,6 +361,8 @@
     "iptv.xtream",
     "iptv.xtreamEndpoint",
     "iptv.xtreamHelp",
+    "libraries.noGenres",
+    "libraries.tabs.genres",
     "matchScreen.embyLibrary",
     "matchScreen.jellyfinLibrary",
     "matchScreen.plexDiscover",

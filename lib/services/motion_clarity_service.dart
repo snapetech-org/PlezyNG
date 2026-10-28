@@ -85,6 +85,9 @@ class MotionClarityService {
   int? _lastDropCount;
   int _healthReadFailures = 0;
   int _sustainedDropWindows = 0;
+  Future<void> _configurationTail = Future<void>.value();
+  int _pendingConfigurationOperations = 0;
+  int _configurationGeneration = 0;
 
   MotionClarityService._(this._player);
 
@@ -97,6 +100,25 @@ class MotionClarityService {
   MotionClarityMciQuality get currentMciQuality => _currentMciQuality;
   bool get isComparisonBypass => _comparisonBypass;
   bool get isMotionProcessingActive => _currentPreset.interpolationEnabled && !_comparisonBypass;
+
+  // A single mpv filter graph is shared by user changes and telemetry. Keep
+  // multi-await updates in order so an older fallback cannot win a race.
+  Future<MotionClarityApplyResult> _enqueueConfiguration(Future<MotionClarityApplyResult> Function() operation) {
+    final previous = _configurationTail;
+    final release = Completer<void>();
+    _configurationTail = release.future;
+    _pendingConfigurationOperations++;
+    _configurationGeneration++;
+    return () async {
+      try {
+        await previous;
+        return await operation();
+      } finally {
+        _pendingConfigurationOperations--;
+        release.complete();
+      }
+    }();
+  }
 
   /// Call once the player has opened a source, before applying per-item
   /// overrides. Decoder surface pools are allocated at source open.
@@ -151,6 +173,30 @@ class MotionClarityService {
   }
 
   Future<MotionClarityApplyResult> configure({
+    required MotionClarityPreset preset,
+    required MotionTemporalKernel kernel,
+    required int thresholdPercent,
+    required bool beforeSourceOpen,
+    MotionClarityEngine engine = MotionClarityEngine.temporalBlend,
+    MotionClarityOutputRate outputRate = MotionClarityOutputRate.currentDisplay,
+    MotionClarityMciQuality mciQuality = MotionClarityMciQuality.balanced,
+    double? sourceFps,
+    bool applyPresetRouting = true,
+  }) => _enqueueConfiguration(
+    () => _configure(
+      preset: preset,
+      kernel: kernel,
+      thresholdPercent: thresholdPercent,
+      beforeSourceOpen: beforeSourceOpen,
+      engine: engine,
+      outputRate: outputRate,
+      mciQuality: mciQuality,
+      sourceFps: sourceFps,
+      applyPresetRouting: applyPresetRouting,
+    ),
+  );
+
+  Future<MotionClarityApplyResult> _configure({
     required MotionClarityPreset preset,
     required MotionTemporalKernel kernel,
     required int thresholdPercent,
@@ -336,7 +382,10 @@ class MotionClarityService {
   /// Comparison is available while interpolation is active. A pending decoder
   /// frame-pool reservation is reported separately and does not block mpv's
   /// runtime filter/property toggle; a renderer refusal is returned as a failure.
-  Future<MotionClarityApplyResult> setComparisonBypass(bool bypass) async {
+  Future<MotionClarityApplyResult> setComparisonBypass(bool bypass) =>
+      _enqueueConfiguration(() => _setComparisonBypass(bypass));
+
+  Future<MotionClarityApplyResult> _setComparisonBypass(bool bypass) async {
     final current = await inspect();
     if (!current.isSupported || !_currentPreset.interpolationEnabled || bypass == _comparisonBypass) {
       return current;
@@ -512,7 +561,7 @@ class MotionClarityService {
     required bool passthroughActive,
     required String reason,
   }) async {
-    final result = await configure(
+    final result = await _configure(
       preset: preset,
       kernel: kernel,
       thresholdPercent: thresholdPercent,
@@ -564,19 +613,27 @@ class MotionClarityService {
 
   Future<void> _sampleMotionHealth() async {
     if (_samplingHealth) return;
+    if (_pendingConfigurationOperations != 0) return;
     if (_currentEngine != MotionClarityEngine.motionCompensated || !_currentPreset.interpolationEnabled) {
       _stopHealthMonitor();
       return;
     }
+    final configurationGeneration = _configurationGeneration;
     _samplingHealth = true;
     try {
       await _followCurrentDisplayRate();
+      if (_configurationGeneration != configurationGeneration || _pendingConfigurationOperations != 0) {
+        return;
+      }
       if (_currentEngine != MotionClarityEngine.motionCompensated || !_currentPreset.interpolationEnabled) {
         _stopHealthMonitor();
         return;
       }
       final rawDelayedCount = await _readProperty('vo-delayed-frame-count');
       final rawDropCount = await _readProperty('frame-drop-count');
+      if (_configurationGeneration != configurationGeneration || _pendingConfigurationOperations != 0) {
+        return;
+      }
       if (_currentEngine != MotionClarityEngine.motionCompensated || !_currentPreset.interpolationEnabled) {
         _stopHealthMonitor();
         return;
@@ -680,7 +737,9 @@ class MotionClarityService {
     final quality = _currentMciQuality;
     final targetFps = _currentTargetFps;
     final comparisonBypass = _comparisonBypass;
-    if (outputRate != MotionClarityOutputRate.currentDisplay ||
+    final configurationGeneration = _configurationGeneration;
+    if (_pendingConfigurationOperations != 0 ||
+        outputRate != MotionClarityOutputRate.currentDisplay ||
         engine != MotionClarityEngine.motionCompensated ||
         !preset.interpolationEnabled ||
         comparisonBypass) {
@@ -695,7 +754,9 @@ class MotionClarityService {
         _currentThresholdPercent == threshold &&
         _currentMciQuality == quality &&
         _currentTargetFps == targetFps &&
-        _comparisonBypass == comparisonBypass;
+        _comparisonBypass == comparisonBypass &&
+        _configurationGeneration == configurationGeneration &&
+        _pendingConfigurationOperations == 0;
 
     final displayFps = _readFps(await _readProperty('display-fps'));
     if (!isStillCurrent() || displayFps == null || displayFps <= 0) return;

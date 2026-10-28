@@ -1881,12 +1881,14 @@
     "filtersWithCount": "Bộ lọc (${count})",
     "noRecommendations": "Không có khuyến nghị có sẵn",
     "noCollections": "Không có tập hợp trong thư viện này",
+    "noGenres": "",
     "noFoldersFound": "Không tìm thấy thư mục",
     "folders": "Thư Mục",
     "tabs": {
       "recommended": "khuyến cáo",
       "browse": "Duyệt",
       "collections": "Bộ Sưu Tập",
+      "genres": "",
       "playlists": "Danh sách phát"
     },
     "groupings": {

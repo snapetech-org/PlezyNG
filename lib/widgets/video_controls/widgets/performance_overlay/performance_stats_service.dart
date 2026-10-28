@@ -675,6 +675,7 @@ class PerformanceStatsService {
   bool _isNeuralProviderReady(String? provider, {required bool outputObserved}) {
     final normalized = provider?.trim().toLowerCase();
     if (normalized == null || normalized.isEmpty) return false;
+    if (MotionProcessingService.isCpuOnlyNeuralProviderStatus(normalized)) return false;
     if (const {'ready', 'active'}.contains(normalized) || normalized.endsWith('-ready')) return true;
     if (RegExp(r'^qnn-htp-v\d+(-ready)?$').hasMatch(normalized)) {
       // ANVIL reports `qnn-htp-vN-ready` after asynchronous context setup and
@@ -720,6 +721,8 @@ class PerformanceStatsService {
       token = 'directml-gpu';
     } else if (name.contains('winml')) {
       token = 'winml$deviceSuffix';
+    } else if (name == 'cpu' || name == 'cpuexecutionprovider') {
+      token = 'cpu';
     } else {
       token = name;
     }

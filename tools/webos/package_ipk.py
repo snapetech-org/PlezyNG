@@ -158,7 +158,7 @@ def _validate_visualizer_manifest(raw: bytes) -> dict[str, object]:
         or not re.fullmatch(r"[0-9a-f]{40}", str(data.get("sourceRevision", "")))
         or data.get("runnerPolicy") != "private-ephemeral-jit"
         or not re.fullmatch(
-            r"https://github\.com/snapetech-org/MilkRust/actions/runs/[1-9][0-9]*",
+            r"https://github\.com/snapetech-org/(MilkRust|PlezyNG)/actions/runs/[1-9][0-9]*",
             str(data.get("buildRun", "")),
         )
     ):
@@ -169,9 +169,9 @@ def _validate_visualizer_manifest(raw: bytes) -> dict[str, object]:
     return data
 
 
-def _stage_visualizer(app_dir: Path, bundle_path: Path, reviewed_manifest_sha256: str) -> dict[str, object]:
-    if not re.fullmatch(r"[0-9a-f]{64}", str(reviewed_manifest_sha256 or "")):
-        raise PackageError("An independently reviewed MilkRust manifest SHA-256 is required")
+def _stage_visualizer(app_dir: Path, bundle_path: Path, expected_manifest_sha256: str) -> dict[str, object]:
+    if not re.fullmatch(r"[0-9a-f]{64}", str(expected_manifest_sha256 or "")):
+        raise PackageError("An expected MilkRust manifest SHA-256 is required")
     raw_bundle = Path(bundle_path)
     if raw_bundle.is_symlink() or not raw_bundle.is_dir():
         raise PackageError("MilkRust artifact input must be a regular directory")
@@ -184,9 +184,9 @@ def _stage_visualizer(app_dir: Path, bundle_path: Path, reviewed_manifest_sha256
         manifest.is_symlink()
         or not manifest.is_file()
         or manifest.stat().st_size > 65536
-        or _sha256(manifest) != reviewed_manifest_sha256
+        or _sha256(manifest) != expected_manifest_sha256
     ):
-        raise PackageError("MilkRust manifest does not match the independently reviewed digest")
+        raise PackageError("MilkRust manifest does not match the expected digest")
     data = _validate_visualizer_manifest(manifest.read_bytes())
     try:
         pin = json.loads((ROOT / "native/visualizer/sources.lock.json").read_text(encoding="utf-8"))["milkrust"]
@@ -379,7 +379,7 @@ def package(
     if not (app_real == expected_data_root / "usr/palm/applications" / app_id):
         raise PackageError("app directory is not the expected IPK staging tree")
     if bool(visualizer_native) != bool(visualizer_manifest_sha256):
-        raise PackageError("Specify both the MilkRust bundle and its reviewed manifest SHA-256")
+        raise PackageError("Specify both the MilkRust bundle and its manifest SHA-256")
     if visualizer_native is not None:
         _stage_visualizer(app_real, visualizer_native, visualizer_manifest_sha256 or "")
     elif (app_real / "lib/libmilkrust_native.so").exists() or (app_real / "visualizer").exists():
@@ -449,8 +449,8 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--no-minify", action="store_true", required=True)
     parser.add_argument("app_dir", type=Path)
     parser.add_argument("-o", "--outdir", type=Path, required=True)
-    parser.add_argument("--visualizer-native", type=Path, help="Optional complete reviewed MilkRust ARM artifact directory")
-    parser.add_argument("--visualizer-manifest-sha256", help="Independently reviewed SHA-256 of milkrust-native.json")
+    parser.add_argument("--visualizer-native", type=Path, help="Complete source-built MilkRust ARM bundle required by the standard release path")
+    parser.add_argument("--visualizer-manifest-sha256", help="Expected SHA-256 of milkrust-native.json")
     return parser.parse_args(argv)
 
 

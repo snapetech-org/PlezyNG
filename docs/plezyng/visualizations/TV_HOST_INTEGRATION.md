@@ -4,8 +4,9 @@ Status: Tizen PCM, EGL/texture host and optional artifact packaging source from
 closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) were merged
 through [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78). Those
 sources have not been compiled or run. webOS now has a separate, bounded
-SoLoud-owned audio route, native PCM/texture host source, and optional runtime
-admission path. Neither platform is release-qualified.
+SoLoud-owned audio route and native PCM/texture host source; the standard
+candidate-build source path builds and requires its MilkRust runtime bundle.
+Neither platform is release-qualified.
 
 ## Tizen source implementation
 
@@ -120,33 +121,34 @@ SoLoud errors retry through the NDL route.
 The native plugin also owns a GLES 3 pbuffer context and Flutter pixel-buffer
 texture, with a worker-owned MilkRust renderer, bounded image decoding and
 leased pixels. The host is registered by the app's webOS Flutter plugin
-registrant. These are source changes only. The MilkRust runtime is still an
-optional reviewed artifact and is not included by default; until an ARMv7
-runtime/source/notice bundle is staged, the capability is unavailable. The
-SoLoud tap observes that plugin's master mix, so introducing simultaneous
-`audioplayers_soloud` voices would require per-voice isolation before claiming
-exact-source analysis.
+registrant. The release-candidate source path now cross-builds the exact pinned
+MilkRust crate, bundles its corresponding-source archive and notices, and
+requires the runtime in every IPK created by `tools/webos/build_ipk.sh`. The IPK
+verifier rejects a package without it. This source integration has not been
+executed; the regular build remains dependent on a compatible private JIT
+runner and the pinned toolchains. The SoLoud tap observes that plugin's master
+mix, so introducing simultaneous `audioplayers_soloud` voices would require
+per-voice isolation before claiming exact-source analysis.
 
 The `com.webos.service.audiooutput` system service is not an app-level route:
 LG's webOS OSE API reference says applications must not call it directly. No
 system loopback or microphone path is used.
 
-### Optional native runtime admission
+### Native runtime build and admission
 
-The regular webOS build contains the host but no MilkRust shared library. A
-reviewed ARMv7 artifact can be staged only by supplying both
-`PLEZY_WEBOS_VISUALIZER_NATIVE` and `PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256` to
-the pinned IPK packager. The artifact directory must contain
+The private-JIT release-candidate builder creates the ARMv7 artifact bundle
+from the source revision pinned in `native/visualizer/sources.lock.json`; it
+sets `PLEZY_WEBOS_VISUALIZER_NATIVE` and
+`PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256` for the pinned IPK packager. The bundle
+contains
 `libmilkrust_native.so`, `milkrust-source.tar.gz`, `MILKRUST-NOTICES.txt`, and
 `milkrust-native.json`. The manifest pins ABI 1, the exact MilkRust source
 revision in `native/visualizer/sources.lock.json`, target `webos-arm`, SHA-256
 digests for all three payloads, a private-ephemeral-JIT runner policy and the
-reviewed build run. The external manifest digest is required separately.
-Package inspection checks the bundle is complete, matches those digests and is
-ARM ELF32. This is artifact admission and structural inspection; it does not
-prove reproducibility, build provenance, runtime loading or TV compatibility.
-Without an admitted runtime, capability remains unavailable while SoLoud audio
-playback continues.
+build run URL. Package inspection checks the bundle is complete, matches those
+digests and is ARM ELF32. This is source plumbing and structural inspection;
+it does not prove a successful cross-build, runtime loading or TV compatibility.
+No generated runtime has been produced in this workspace.
 
 ## Qualification still required
 

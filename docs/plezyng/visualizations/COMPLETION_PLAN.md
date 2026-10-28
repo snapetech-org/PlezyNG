@@ -286,13 +286,12 @@ or device qualification ran.
 The webOS follow-up adds a pinned LG SoLoud plugin for bounded known-size
 MP3/WAV/OGG/FLAC audio, a post-mix PCM tap, a bounded native queue, a GLES 3
 Flutter texture host and an app-owned `Player.audio()` route. Unsupported,
-unknown-size, live and video sources continue through LG NDL. An optional
-fail-closed IPK admission path accepts only a separately reviewed, manifest-
-pinned ARMv7 MilkRust runtime/source/notices bundle; no runtime is admitted by
-default. This closes the source gap for that constrained music path while
-leaving webOS/Tizen builds, runtime staging, device/audio/driver qualification
-and per-voice isolation open. No tests, builds, CI, packaging, captures or device
-qualification ran for this increment.
+unknown-size, live and video sources continue through LG NDL. The release-
+candidate path now builds the pinned ARMv7 MilkRust runtime, archives its exact
+source and notices, and makes the bundle mandatory for IPKs made by the normal
+webOS packaging script. The IPK verifier rejects packages without the runtime.
+The source build, generated IPK, device/audio/driver qualification and per-voice
+isolation remain open. No build or device qualification ran for this increment.
 
 MilkRust's WebGL import now accepts saved `.milk2` pairs only when the bounded
 parser and compatibility gate identify the supported uniform Fade subset.

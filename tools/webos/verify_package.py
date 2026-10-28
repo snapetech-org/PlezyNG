@@ -233,10 +233,10 @@ def verify_arm_elf(data: bytes, name: str) -> None:
         raise ValueError(f"{name} has ELF machine {machine}; expected ARM (40)")
 
 
-def inspect_visualizer(entries: dict[str, bytes]) -> dict[str, object] | None:
+def inspect_visualizer(entries: dict[str, bytes]) -> dict[str, object]:
     present = VISUALIZER_ARTIFACTS.intersection(entries)
     if not present:
-        return None
+        raise ValueError("IPK omits the required MilkRust runtime/source/notice bundle")
     if present != VISUALIZER_ARTIFACTS:
         raise ValueError("IPK contains an incomplete MilkRust runtime/source/notice bundle")
     manifest_bytes = entries[VISUALIZER_MANIFEST]
@@ -256,7 +256,7 @@ def inspect_visualizer(entries: dict[str, bytes]) -> dict[str, object] | None:
         or not re.fullmatch(r"[0-9a-f]{40}", str(manifest.get("sourceRevision", "")))
         or manifest.get("runnerPolicy") != "private-ephemeral-jit"
         or not re.fullmatch(
-            r"https://github\.com/snapetech-org/MilkRust/actions/runs/[1-9][0-9]*",
+            r"https://github\.com/snapetech-org/(MilkRust|PlezyNG)/actions/runs/[1-9][0-9]*",
             str(manifest.get("buildRun", "")),
         )
     ):

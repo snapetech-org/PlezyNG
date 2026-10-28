@@ -28,10 +28,13 @@
   },
   "milkrust": {
     "repository": "https://github.com/snapetech-org/MilkRust.git",
-    "commit": "c622b0f6614c62bf55abacf334b464487bb97256",
+    "ref": "refs/pull/20/head",
+    "commit": "35aab5bbc6d7deb48ff9aaa57fdb09f942986166",
     "abi": 1,
     "crate": "milkrust-native",
     "license": "AGPL-3.0-only",
-    "qualification": "source-only-unqualified"
+    "qualification": "source-only-unqualified",
+    "webosTarget": "armv7-unknown-linux-gnueabi",
+    "webosFloatAbi": "base-aapcs-softfp-compatible"
   }
 }

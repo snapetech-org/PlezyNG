@@ -7,6 +7,8 @@ IPK_DIR="$ROOT/build/webos/arm/release/ipk"
 : "${FLUTTER_WEBOS_SDK_ROOT:?Set this to the pinned, patched flutter-webos checkout}"
 : "${WEBOS_ENGINE_LOCAL_PATH:?Set this to the pinned webos-arm-release.zip}"
 : "${WEBOS_NDK_ROOT:?Set this to the pinned LG webOS 26 NDK root}"
+: "${PLEZY_WEBOS_VISUALIZER_NATIVE:?Release IPKs must include the pinned MilkRust runtime bundle}"
+: "${PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256:?Release IPKs must pin the generated MilkRust manifest digest}"
 : "${WEBOS_PYTHON_BIN:=python3}"
 export WEBOS_PYTHON_BIN
 
@@ -20,7 +22,7 @@ if [[ -n "${PLEZY_WEBOS_VISUALIZER_NATIVE:-}" || -n "${PLEZY_WEBOS_VISUALIZER_MA
     exit 1
   fi
   if [[ ! "$PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256" =~ ^[0-9a-f]{64}$ ]]; then
-    echo "The independently reviewed MilkRust manifest digest must be lowercase SHA-256." >&2
+    echo "The MilkRust manifest digest must be lowercase SHA-256." >&2
     exit 1
   fi
   export PLEZY_WEBOS_VISUALIZER_NATIVE PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256

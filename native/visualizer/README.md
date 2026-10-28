@@ -162,9 +162,11 @@ The app source now includes these hosts:
 | Android/Android TV | EGL ES 3 pbuffer, bounded BitmapFactory decoding, SurfaceTexture native window | AAR `SessionGuard` admission lease; opaque session ID |
 
 All entries are source-only and unqualified. The non-Linux hosts currently offer
-MilkRust; selecting projectM produces an explicit unavailable response. webOS
-and Tizen still lack a decoded-PCM/native-texture path. No host claims to play
-all shaders or all `.milk2` patterns. Native MilkRust currently uses immediate
+MilkRust; selecting projectM produces an explicit unavailable response. Tizen
+and webOS now have decoded-audio and native-texture host source. The webOS route
+uses app-owned SoLoud decoding/output for its bounded supported-file subset;
+LG NDL remains the fallback for other sources. No host claims to play all
+shaders or all `.milk2` patterns. Native MilkRust currently uses immediate
 preset cuts, not qualified cross-preset transitions.
 
 Android's exact pinned mpv-build tree contains the session-leased native bridge
@@ -187,6 +189,14 @@ normal playback.
   Include the host's OpenGL/OpenGLES, ImageIO and CoreVideo framework links in the
   signed target. A universal/XCFramework artifact must carry device and simulator
   slices separately. The existing default mpv artifacts are not patched here.
+
+The webOS release-candidate path builds the MilkRust crate pinned in
+`sources.lock.json` with the pinned Rust toolchain and LG ARM linker, creates a
+matching source archive and notices bundle, and requires that bundle in every
+IPK made through `tools/webos/build_ipk.sh`. The IPK verifier rejects a package
+without the runtime. This closes the optional-staging source gap; the cross
+build, generated IPK, ABI loading and device behavior remain unverified until a
+compatible private JIT run and physical TV qualification complete.
 
 Do not edit the application dependency lock until those artifacts exist and
 have verified digests. Package the AGPL-3.0-only MilkRust notice, exact corresponding

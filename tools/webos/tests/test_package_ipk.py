@@ -46,6 +46,26 @@ def make_staging_tree(root: Path) -> tuple[Path, Path]:
 
 
 class PackageIpkTests(unittest.TestCase):
+    def test_regular_webos_ipk_validation_requires_visualizer_runtime(self) -> None:
+        with self.assertRaisesRegex(ValueError, "omits the required MilkRust runtime"):
+            verify_package.inspect_visualizer({})
+
+    def test_milkrust_provenance_accepts_private_plezyng_build_run(self) -> None:
+        manifest = {
+            "schemaVersion": 1,
+            "abi": 1,
+            "target": "webos-arm",
+            "sourceRevision": json.loads(
+                (TOOLS_ROOT.parents[1] / "native/visualizer/sources.lock.json").read_text(encoding="utf-8")
+            )["milkrust"]["commit"],
+            "runnerPolicy": "private-ephemeral-jit",
+            "buildRun": "https://github.com/snapetech-org/PlezyNG/actions/runs/123",
+            "librarySha256": "0" * 64,
+            "sourceArchiveSha256": "1" * 64,
+            "noticesSha256": "2" * 64,
+        }
+        package_ipk._validate_visualizer_manifest(json.dumps(manifest).encode("utf-8"))
+
     def test_control_parser_rejects_duplicate_fields(self) -> None:
         with self.assertRaisesRegex(ValueError, "repeats field 'Package'"):
             verify_package.parse_control_fields(b"Package: first\nPackage: second\n\n")

@@ -50,7 +50,7 @@ Updated: 2026-10-28. The original plan and signed-catalog source were merged via
 
 ## Native boundaries that prevent a release claim
 
-The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS, Android/TV and Tizen have native MilkRust host source; none has been compiled or device-qualified in this session. webOS now has an app-owned SoLoud post-mix tap, bounded native PCM queue, GLES/Flutter texture host and Dart music route for known supported static/progressive audio no larger than 10 MiB. Existing LG NDL playback remains the fallback and still has no PCM callback. All webOS source is uncompiled; the ARMv7 MilkRust runtime is not staged by default, master-mix audio is not per-voice isolated, and no TV run has been performed. Storage/import availability and engine availability are separate.
+The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS, Android/TV and Tizen have native MilkRust host source; none has been compiled or device-qualified in this session. webOS has an app-owned SoLoud post-mix tap, bounded native PCM queue, GLES/Flutter texture host and Dart music route for supported static/progressive audio no larger than 10 MiB. Existing LG NDL playback remains the fallback and still has no PCM callback. The release-candidate source path now cross-builds the pinned ARMv7 MilkRust runtime and requires it in every IPK made through `tools/webos/build_ipk.sh`; the verifier rejects packages without it. That cross-build path remains unexecuted, and no TV run has been performed. The SoLoud tap observes the master mix and is not per-voice isolated. Storage/import availability and engine availability are separate.
 
 The in-process renderer catches exceptions, but cannot contain a hung shader compiler or GPU driver. Teardown joins the worker and can therefore block in that case. Process isolation/watchdog behavior, resource budgets and driver recovery remain required work before claiming arbitrary community inputs are safely supported.
 
@@ -96,8 +96,9 @@ Tizen's host source attaches to a Samsung decoded-packet callback. webOS video
 and unsupported music continue through LG NDL without PCM access; supported
 small progressive music now has a distinct SoLoud decoder/output route whose
 master mix feeds the renderer. This does not tap NDL or provide per-voice
-isolation for future simultaneous SoLoud sources. webOS's optional MilkRust
-ARMv7 runtime admission and all device/driver/audio qualification remain open.
+isolation for future simultaneous SoLoud sources. The standard webOS candidate
+source path now builds and requires the pinned ARMv7 runtime bundle; running
+that cross-build and all device/driver/audio qualification remain open.
 Native-engine acknowledgements are now also bundled in Flutter's license
 registry, independently of per-pack rights and content notices.
 
@@ -109,14 +110,14 @@ metadata for broader pack downloads. The MilkRust publisher now checks exact
 archive/preset evidence and the private JIT/device matrix before promoting a
 broader pack. The library labels the authored fixtures as unqualified and links
 broader qualification reports. See [catalog release configuration](CATALOG_RELEASE.md).
-Empty production keys, absent qualification evidence and the source-only
-execution restriction still prevent a production delivery claim. Full HLSL and
+Empty production keys, absent qualification evidence and unavailable private
+JIT capacity still prevent a production delivery claim. Full HLSL and
 non-Fade `.milk2` patterns remain implementation work. Tizen and webOS now have
 PCM/texture host source; those hosts remain uncompiled and unqualified. The
 webOS source follow-up is under review, and publication gates do not substitute
 for qualified packs or production key custody.
 
-The current MilkRust source pin is `c622b0f6614c62bf55abacf334b464487bb97256`.
+The webOS build source pin is `35aab5bbc6d7deb48ff9aaa57fdb09f942986166`.
 It adds bounded native/WebGL lowering for legacy `tex2D`/`tex`, `tex2Dlod`,
 `tex2Dbias`, `tex2Dproj` and `tex2Dgrad` calls, including nested sampling and
 known sampler bindings. Full HLSL/runtime/resource compatibility remains open;

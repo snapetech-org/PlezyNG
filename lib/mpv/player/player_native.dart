@@ -14,6 +14,7 @@ import 'audio_rendering_mode.dart';
 import 'audio_spectrum.dart';
 import 'player_base.dart';
 import 'video_rect_support.dart';
+import 'subtitle_pcm_capture_source.dart';
 import 'mpv_certificate_trust.dart';
 
 typedef _AudioStateRequest = ({
@@ -37,7 +38,7 @@ typedef _AudioStateGenerations = ({
 });
 
 /// MPV-backed player for platforms where AetherEngine is not the native route.
-class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFocusControl, AudioSpectrumAnalyzer {
+class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFocusControl, AudioSpectrumAnalyzer, SubtitlePcmCaptureSource {
   final StreamController<AudioSpectrumSample?> _audioSpectrumController =
       StreamController<AudioSpectrumSample?>.broadcast(sync: true);
   final Stopwatch _audioSpectrumClock = Stopwatch()..start();
@@ -47,7 +48,18 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
   bool _audioSpectrumPropertyObserved = false;
 
   bool _hasSeenSegmentLoopSource = false;
+  int _mediaSessionGeneration = 0;
+  bool _isLivePlayback = false;
   ({int left, int top, int right, int bottom, double devicePixelRatio})? _pendingVideoRect;
+
+  @override
+  int get mediaSessionGeneration => _mediaSessionGeneration;
+
+  @override
+  bool get isLivePlayback => _isLivePlayback;
+
+  @override
+  String? get subtitlePcmAudioTrackId => state.track.audio?.id;
 
   Future<void> _clearTransientSegmentLoop() async {
     for (final property in const ['ab-loop-a', 'ab-loop-b']) {
@@ -489,8 +501,11 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
     bool startLivePlaylistFromBeginning = false,
   }) async {
     if (_nativeCoreUnavailable) return null;
+    ++_mediaSessionGeneration;
     await _ensureInitialized();
     if (_nativeCoreUnavailable) return null;
+    final previousIsLivePlayback = _isLivePlayback;
+    _isLivePlayback = isLive;
     // MPV retains A/B points when it advances to another file. They are
     // playback-local controls in PlezyNG, so clear both before every explicit
     // replacement load and keep a failed optional-property write from
@@ -530,6 +545,7 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
         startLivePlaylistFromBeginning: startLivePlaylistFromBeginning,
       );
     } catch (_) {
+      _isLivePlayback = previousIsLivePlayback;
       // Nothing loaded: no `start-file` will release the track-list gate, and
       // the file still playing keeps its frame, tracks, timeline and playhead.
       // Consumers that bound in this window — a Watch Together rebind reads
@@ -680,6 +696,8 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
   @override
   Future<void> stop() async {
     if (_nativeCoreUnavailable) return;
+    ++_mediaSessionGeneration;
+    _isLivePlayback = false;
     // `stop` tears down the playlist without mpv opening the armed entry —
     // settle its content-fd claim first. No transition: playback is ending.
     await _clearArmedNext(adoptIfRolledIn: false);
@@ -873,6 +891,7 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
   @override
   void handlePlayerEvent(String name, Map? data) {
     if (name == 'start-file' && !audioOnly) {
+      ++_mediaSessionGeneration;
       if (_hasSeenSegmentLoopSource) unawaited(_clearTransientSegmentLoop());
       _hasSeenSegmentLoopSource = true;
     }
@@ -1547,6 +1566,39 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
   Future<void> clearVideoFrameRate() async {
     if (_nativeCoreUnavailable || !Platform.isAndroid || !initialized) return;
     await invoke('clearVideoFrameRate');
+  }
+
+  @override
+  Future<bool> subtitlePcmCaptureAvailable() async {
+    if (_nativeCoreUnavailable || audioOnly || !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) || _isLivePlayback) return false;
+    await _ensureInitialized();
+    if (_nativeCoreUnavailable || !initialized) return false;
+    try {
+      return await invoke<bool>('subtitlePcmCaptureAvailable') ?? false;
+    } on Object {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
+    if (_nativeCoreUnavailable || audioOnly || !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) || !initialized) return false;
+    try {
+      return await invoke<bool>('setSubtitlePcmCaptureEnabled', {'enabled': enabled}) ?? false;
+    } on Object {
+      return false;
+    }
+  }
+
+  @override
+  Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
+    if (_nativeCoreUnavailable || audioOnly || !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) || !initialized) return const [];
+    final packets = await invoke<List<dynamic>>('drainSubtitlePcmCapture');
+    return packets
+            ?.whereType<Map>()
+            .map((packet) => Map<String, Object?>.from(packet))
+            .toList(growable: false) ??
+        const [];
   }
 
   /// Describes the runtime libraries and accelerator generation packaged for

@@ -93,11 +93,15 @@ download or fabricate production artifacts.
 
 
 The Tizen and webOS runners currently delegate audio to their Samsung/LG media
-backends rather than the mpv core used by the new hosts. A decoded-PCM callback
-and texture/lifecycle bridge in those backends is still required; copying the
-Linux mpv host would not attach it to those playback streams. Native-engine
-acknowledgements are now also bundled in Flutter's license registry, independently
-of per-pack rights and content notices.
+backends rather than the mpv core used by the new hosts. Tizen's host source
+attaches to a Samsung PCM callback; webOS's integrated LG player exposes no such
+callback in this repository. A decoded-PCM callback and texture/lifecycle bridge
+in those backends is still required; copying the Linux mpv host would not attach
+it to those playback streams. The webOS investigation also records why the
+public NDL feed API and the system-only `com.webos.service.audiooutput` API do
+not provide that callback, and the replacement audio-core contract still
+required. Native-engine acknowledgements are now also bundled in Flutter's
+license registry, independently of per-pack rights and content notices.
 
 ## Catalog release follow-up
 

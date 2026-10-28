@@ -573,6 +573,12 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(entry.description, style: Theme.of(context).textTheme.bodyMedium),
+                                    Text(entry.qualification.label, style: Theme.of(context).textTheme.bodySmall),
+                                    if (entry.qualification.reportUrl != null)
+                                      TextButton(
+                                        onPressed: () => launchUrl(Uri.parse(entry.qualification.reportUrl!), mode: LaunchMode.externalApplication),
+                                        child: const Text('Open qualification report'),
+                                      ),
                                     if (entry.bundledAsset != null)
                                       const Text('Included with the app. Installation and restoration work offline.'),
                                     if (!_store.canDownload(entry))

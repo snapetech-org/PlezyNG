@@ -98,3 +98,16 @@ and texture/lifecycle bridge in those backends is still required; copying the
 Linux mpv host would not attach it to those playback streams. Native-engine
 acknowledgements are now also bundled in Flutter's license registry, independently
 of per-pack rights and content notices.
+
+## Catalog release follow-up
+
+PR #61 has merged. The follow-up compiles one reviewed public trust root across
+all app platforms, adds a release sequence floor, and requires signed report
+metadata for broader pack downloads. The MilkRust publisher now checks exact
+archive/preset evidence and the private JIT/device matrix before promoting a
+broader pack. The library labels the authored fixtures as unqualified and links
+broader qualification reports. See [catalog release configuration](CATALOG_RELEASE.md).
+Empty production keys, absent qualification evidence and the source-only
+execution restriction still prevent a production delivery claim. Full HLSL,
+non-Fade `.milk2` patterns and webOS/Tizen PCM/texture hosts remain implementation
+work; none is completed by adding publication gates.

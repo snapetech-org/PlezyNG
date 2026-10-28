@@ -413,6 +413,9 @@ class Translations$common$en {
 	/// en: 'OK'
 	String get ok => 'OK';
 
+	/// en: 'On'
+	String get on => 'On';
+
 	/// en: 'Off'
 	String get off => 'Off';
 
@@ -1452,6 +1455,75 @@ class Translations$settings$en {
 	/// en: 'Match display refresh rate in fullscreen'
 	String get matchRefreshRateDescription => 'Match display refresh rate in fullscreen';
 
+	/// en: 'Motion processing'
+	String get motionProcessing => 'Motion processing';
+
+	/// en: 'Motion smoothing'
+	String get motionSmoothing => 'Motion smoothing';
+
+	/// en: 'Display-synchronized frame resampling on supported MPV GPU outputs; fast motion can look soft or show artifacts.'
+	String get motionSmoothingDescription => 'Display-synchronized frame resampling on supported MPV GPU outputs; fast motion can look soft or show artifacts.';
+
+	/// en: 'If this player has no display-synchronized GPU renderer, MPV smoothing is skipped and playback continues normally.'
+	String get motionSmoothingUnavailableDescription => 'If this player has no display-synchronized GPU renderer, MPV smoothing is skipped and playback continues normally.';
+
+	/// en: 'The player could not apply motion smoothing. Playback will continue unchanged.'
+	String get motionSmoothingApplyFailed => 'The player could not apply motion smoothing. Playback will continue unchanged.';
+
+	/// en: 'Motion smoothing is disabled for live playback to preserve stream timing.'
+	String get motionSmoothingLiveUnavailableDescription => 'Motion smoothing is disabled for live playback to preserve stream timing.';
+
+	/// en: 'MPV has not activated display-synchronized interpolation for this session.'
+	String get motionSmoothingNotActiveDescription => 'MPV has not activated display-synchronized interpolation for this session.';
+
+	/// en: 'Saved for the next video. The player prepares its motion processor when playback starts.'
+	String get motionSmoothingNextPlayback => 'Saved for the next video. The player prepares its motion processor when playback starts.';
+
+	/// en: 'Off'
+	String get motionSmoothingOff => 'Off';
+
+	/// en: 'Keep the player’s existing display and frame cadence.'
+	String get motionSmoothingOffDescription => 'Keep the player’s existing display and frame cadence.';
+
+	/// en: 'MPV'
+	String get motionSmoothingMpv => 'MPV';
+
+	/// en: 'Use MPV’s display-synchronized temporal interpolation. On Android, eligible SDR 24/30 fps video uses the GPU renderer while keeping the decoder setting. This does not generate motion with a neural model.'
+	String get motionSmoothingMpvDescription => 'Use MPV’s display-synchronized temporal interpolation. On Android, eligible SDR 24/30 fps video uses the GPU renderer while keeping the decoder setting. This does not generate motion with a neural model.';
+
+	/// en: 'Neural interpolation'
+	String get neuralInterpolation => 'Neural interpolation';
+
+	/// en: 'Presets'
+	String get neuralInterpolationPresets => 'Presets';
+
+	/// en: 'Neural unavailable'
+	String get neuralInterpolationUnavailable => 'Neural unavailable';
+
+	/// en: 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. Playback diagnostics show the provider that actually ran. Unsupported video uses MPV smoothing when available. Choose Performance, Balanced, or Quality.'
+	String get neuralInterpolationUnavailableDescription => 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. Playback diagnostics show the provider that actually ran. Unsupported video uses MPV smoothing when available. Choose Performance, Balanced, or Quality.';
+
+	/// en: 'Performance'
+	String get neuralInterpolationPresetPerformance => 'Performance';
+
+	/// en: 'Balanced'
+	String get neuralInterpolationPresetBalanced => 'Balanced';
+
+	/// en: 'Quality'
+	String get neuralInterpolationPresetQuality => 'Quality';
+
+	/// en: 'Only when plugged in'
+	String get neuralOnlyWhenPluggedIn => 'Only when plugged in';
+
+	/// en: 'Pause Neural processing when running on battery. MPV smoothing stays available where supported; Neural resumes on the next video while connected to external power.'
+	String get neuralOnlyWhenPluggedInDescription => 'Pause Neural processing when running on battery. MPV smoothing stays available where supported; Neural resumes on the next video while connected to external power.';
+
+	/// en: 'Paused on battery; MPV smoothing remains available where supported.'
+	String get neuralPowerLimited => 'Paused on battery; MPV smoothing remains available where supported.';
+
+	/// en: 'Paused at elevated device temperature; MPV smoothing remains available where supported.'
+	String get neuralThermalLimited => 'Paused at elevated device temperature; MPV smoothing remains available where supported.';
+
 	/// en: 'Match Dynamic Range'
 	String get matchDynamicRange => 'Match Dynamic Range';
 
@@ -2056,6 +2128,12 @@ class Translations$settings$en {
 
 	/// en: 'Allow direct playback for this codec when supported. Unchecked codecs are transcoded by the media server.'
 	String get videoCodecOptionDescription => 'Allow direct playback for this codec when supported. Unchecked codecs are transcoded by the media server.';
+
+	/// en: 'Show subtitles when muted'
+	String get subtitleOnMute => 'Show subtitles when muted';
+
+	/// en: 'Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track.'
+	String get subtitleOnMuteDescription => 'Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track.';
 }
 
 // Path: themeEditor
@@ -6492,6 +6570,12 @@ class Translations$shaders$en {
 	/// en: 'NVIDIA image scaling for sharper video'
 	String get nvscalerDescription => 'NVIDIA image scaling for sharper video';
 
+	/// en: 'Lanczos upscaling'
+	String get lanczosUpscaling => 'Lanczos upscaling';
+
+	/// en: 'GPU resampling for video smaller than the display; unavailable with DRM or tunneled playback.'
+	String get lanczosUpscalingDescription => 'GPU resampling for video smaller than the display; unavailable with DRM or tunneled playback.';
+
 	/// en: 'Neutral'
 	String get artcnnVariantNeutral => 'Neutral';
 
@@ -6907,6 +6991,84 @@ class Translations$videoSettings$en {
 
 	/// en: 'Couldn't save motion clarity settings.'
 	String get motionClaritySaveFailed => 'Couldn\'t save motion clarity settings.';
+
+	/// en: 'Export synchronized subtitle'
+	String get subtitleExport => 'Export synchronized subtitle';
+
+	/// en: 'Synchronized subtitle saved.'
+	String get subtitleExportSuccess => 'Synchronized subtitle saved.';
+
+	/// en: 'Could not export this subtitle file. The original remains unchanged.'
+	String get subtitleExportFailed => 'Could not export this subtitle file. The original remains unchanged.';
+
+	/// en: 'Some subtitle cues end before playback starts and will be removed from the exported file. Continue?'
+	String get subtitleExportClipped => 'Some subtitle cues end before playback starts and will be removed from the exported file. Continue?';
+
+	/// en: 'A file with this name already exists. Replace it?'
+	String get subtitleExportReplace => 'A file with this name already exists. Replace it?';
+
+	/// en: 'Calibrate subtitle drift'
+	String get subtitleDriftCalibration => 'Calibrate subtitle drift';
+
+	/// en: 'Match two subtitle cue times to the playback times when each cue should appear. Choose anchors at least 60 seconds apart.'
+	String get subtitleDriftCalibrationHelp => 'Match two subtitle cue times to the playback times when each cue should appear. Choose anchors at least 60 seconds apart.';
+
+	/// en: 'Preview correction'
+	String get subtitleDriftPreview => 'Preview correction';
+
+	/// en: 'Preview active. Save to keep this correction, or cancel to restore the previous timing.'
+	String get subtitleDriftPreviewActive => 'Preview active. Save to keep this correction, or cancel to restore the previous timing.';
+
+	/// en: 'The player could not preview this correction. The previous timing was restored.'
+	String get subtitleDriftPreviewFailed => 'The player could not preview this correction. The previous timing was restored.';
+
+	/// en: 'Undo drift calibration'
+	String get subtitleDriftUndo => 'Undo drift calibration';
+
+	/// en: 'Subtitle cue 1 time'
+	String get subtitleCueTimeAnchor1 => 'Subtitle cue 1 time';
+
+	/// en: 'Playback position for cue 1'
+	String get subtitlePlaybackTimeAnchor1 => 'Playback position for cue 1';
+
+	/// en: 'Subtitle cue 2 time'
+	String get subtitleCueTimeAnchor2 => 'Subtitle cue 2 time';
+
+	/// en: 'Playback position for cue 2'
+	String get subtitlePlaybackTimeAnchor2 => 'Playback position for cue 2';
+
+	/// en: 'Use current playback time'
+	String get subtitleUsePlaybackTime => 'Use current playback time';
+
+	/// en: 'Choose increasing anchors at least 60 seconds apart. Corrections are limited to 80%–125% speed and ±60 seconds.'
+	String get subtitleDriftInvalidAnchors => 'Choose increasing anchors at least 60 seconds apart. Corrections are limited to 80%–125% speed and ±60 seconds.';
+
+	/// en: 'Subtitle cues'
+	String get subtitleCueTools => 'Subtitle cues';
+
+	/// en: 'Previous subtitle cue'
+	String get subtitlePreviousCue => 'Previous subtitle cue';
+
+	/// en: 'Next subtitle cue'
+	String get subtitleNextCue => 'Next subtitle cue';
+
+	/// en: 'Replay current cue'
+	String get subtitleReplayCue => 'Replay current cue';
+
+	/// en: 'Copy current cue'
+	String get subtitleCopyCue => 'Copy current cue';
+
+	/// en: 'Subtitle cue copied.'
+	String get subtitleCueCopied => 'Subtitle cue copied.';
+
+	/// en: 'No suitable subtitle cue is available.'
+	String get subtitleCueUnavailable => 'No suitable subtitle cue is available.';
+
+	/// en: 'Could not seek to that subtitle cue.'
+	String get subtitleCueSeekUnavailable => 'Could not seek to that subtitle cue.';
+
+	/// en: 'Replay preroll'
+	String get subtitleReplayPreroll => 'Replay preroll';
 }
 
 // Path: performanceOverlay
@@ -7003,6 +7165,27 @@ class Translations$performanceOverlay$en {
 
 	/// en: 'Display FPS'
 	String get displayFps => 'Display FPS';
+
+	/// en: 'Video Output'
+	String get videoOutput => 'Video Output';
+
+	/// en: 'Interpolation'
+	String get motionInterpolation => 'Interpolation';
+
+	/// en: 'Thermal'
+	String get thermalStatus => 'Thermal';
+
+	/// en: 'p95'
+	String get neuralP95 => 'p95';
+
+	/// en: 'scene cut bypasses'
+	String get sceneCutBypasses => 'scene cut bypasses';
+
+	/// en: 'deadline misses'
+	String get deadlineMisses => 'deadline misses';
+
+	/// en: 'Video Sync'
+	String get videoSync => 'Video Sync';
 
 	/// en: 'A/V Sync'
 	String get avSync => 'A/V Sync';
@@ -10862,8 +11045,20 @@ class Translations$games$en {
 	/// en: 'On-screen controller'
 	String get touchControls => 'On-screen controller';
 
-	/// en: 'Show the native controller during a stream. It supports multiple fingers, sticks, buttons and triggers.'
-	String get touchDescription => 'Show the native controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
+	/// en: 'Press Shift+Escape to release game input and return to the workspace controls.'
+	String get inputReleaseHint => 'Press Shift+Escape to release game input and return to the workspace controls.';
+
+	/// en: 'Left stick'
+	String get leftStick => 'Left stick';
+
+	/// en: 'Right stick'
+	String get rightStick => 'Right stick';
+
+	/// en: 'Enlarge this game window or use full screen to show the controller.'
+	String get touchResizeHint => 'Enlarge this game window or use full screen to show the controller.';
+
+	/// en: 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.'
+	String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
 
 	/// en: 'On-screen controls'
 	String get touchSetup => 'On-screen controls';
@@ -10895,8 +11090,8 @@ class Translations$games$en {
 	/// en: 'Games help'
 	String get help => 'Games help';
 
-	/// en: 'Enable Games for your profile, choose a computer and approve the first connection. Sunshine-compatible hosts load their app list into the game grid. On Android, Steam pairing opens Big Picture inside PlezyNG; saved Steam app-ID shortcuts launch directly. Steam pairing does not grant access to a private account library. Both Android engines include touch controls and gamepad input. Pyrowave is an experimental Android option; other native platforms remain in development. Pairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network. Disconnecting leaves the game running on the computer.'
-	String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Sunshine-compatible hosts load their app list into the game grid. On Android, Steam pairing opens Big Picture inside PlezyNG; saved Steam app-ID shortcuts launch directly. Steam pairing does not grant access to a private account library.\n\nBoth Android engines include touch controls and gamepad input. Pyrowave is an experimental Android option; other native platforms remain in development.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
+	/// en: 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library. Steam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network. Pairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network. Disconnecting leaves the game running on the computer.'
+	String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 
 	/// en: 'Cancel'
 	String get cancel => 'Cancel';
@@ -10916,8 +11111,8 @@ class Translations$games$en {
 	/// en: 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.'
 	String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 
-	/// en: 'This build does not include the embedded Steam engine. Android builds with Games enabled bundle device pairing and in-app H.264/HEVC playback. Pyrowave is experimental on Android; other platforms remain under development.'
-	String get steamEnginePending => 'This build does not include the embedded Steam engine. Android builds with Games enabled bundle device pairing and in-app H.264/HEVC playback. Pyrowave is experimental on Android; other platforms remain under development.';
+	/// en: 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.'
+	String get steamEnginePending => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.';
 
 	/// en: 'Pyrowave · experimental'
 	String get steamBetaTitle => 'Pyrowave · experimental';
@@ -11104,6 +11299,12 @@ class Translations$games$en {
 
 	/// en: 'Vulkan with CPU readback'
 	String get streamReadbackDecoder => 'Vulkan with CPU readback';
+
+	/// en: 'Metal · direct GPU'
+	String get streamMetalDecoder => 'Metal · direct GPU';
+
+	/// en: 'Color sampling'
+	String get streamChroma => 'Color sampling';
 
 	/// en: 'Host frame rate target'
 	String get streamHostFps => 'Host frame rate target';
@@ -11329,6 +11530,60 @@ class Translations$games$en {
 
 	/// en: 'Surround (5.1)'
 	String get audioSurround51 => 'Surround (5.1)';
+
+	/// en: 'Configure Steam Input on computer'
+	String get inputOnComputer => 'Configure Steam Input on computer';
+
+	/// en: 'Cloud and game settings on computer'
+	String get propertiesOnComputer => 'Cloud and game settings on computer';
+
+	/// en: 'Open in Steam'
+	String get openInSteam => 'Open in Steam';
+
+	/// en: 'Steam Cloud files'
+	String get steamCloudFiles => 'Steam Cloud files';
+
+	/// en: 'Steam Families'
+	String get steamFamilies => 'Steam Families';
+
+	/// en: 'Open this game’s Steam Cloud files in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Steam handles downloads, sync and conflicts. Files depend on the game’s Cloud support.'
+	String get steamCloudHelp => 'Open this game’s Steam Cloud files in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Steam handles downloads, sync and conflicts. Files depend on the game’s Cloud support.';
+
+	/// en: 'Open Steam Families in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Invitations, household eligibility, copy availability and parental controls are managed by Steam.'
+	String get steamFamiliesHelp => 'Open Steam Families in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Invitations, household eligibility, copy availability and parental controls are managed by Steam.';
+
+	/// en: 'Directional pad up'
+	String get touchDpadUp => 'Directional pad up';
+
+	/// en: 'Directional pad down'
+	String get touchDpadDown => 'Directional pad down';
+
+	/// en: 'Directional pad left'
+	String get touchDpadLeft => 'Directional pad left';
+
+	/// en: 'Directional pad right'
+	String get touchDpadRight => 'Directional pad right';
+
+	/// en: 'Left shoulder button'
+	String get touchLeftBumper => 'Left shoulder button';
+
+	/// en: 'Right shoulder button'
+	String get touchRightBumper => 'Right shoulder button';
+
+	/// en: 'Left trigger'
+	String get touchLeftTrigger => 'Left trigger';
+
+	/// en: 'Right trigger'
+	String get touchRightTrigger => 'Right trigger';
+
+	/// en: 'View button'
+	String get touchViewButton => 'View button';
+
+	/// en: 'Menu button'
+	String get touchMenuButton => 'Menu button';
+
+	/// en: 'Drag to move. Double-tap to press the stick.'
+	String get touchStickHint => 'Drag to move. Double-tap to press the stick.';
 }
 
 // Path: deepLinks
@@ -11770,6 +12025,9 @@ class Translations$hotkeys$actions$en {
 
 	/// en: 'Next Frame'
 	String get frameNext => 'Next Frame';
+
+	/// en: 'Reset Subtitle Timing'
+	String get subtitleDelayReset => 'Reset Subtitle Timing';
 }
 
 // Path: videoControls.pipErrors
@@ -14083,6 +14341,7 @@ extension on Translations {
 			'common.settings' => 'Settings',
 			'common.mute' => 'Mute',
 			'common.ok' => 'OK',
+			'common.on' => 'On',
 			'common.off' => 'Off',
 			'common.options' => 'Options',
 			'common.seasonNumber' => ({required Object number}) => 'Season ${number}',
@@ -14442,6 +14701,29 @@ extension on Translations {
 			'settings.matchContentResolutionDescription' => 'Switch the display to the video\'s native resolution so your TV handles upscaling. Menus and subtitles are upscaled too during playback',
 			'settings.matchRefreshRate' => 'Match Refresh Rate',
 			'settings.matchRefreshRateDescription' => 'Match display refresh rate in fullscreen',
+			'settings.motionProcessing' => 'Motion processing',
+			'settings.motionSmoothing' => 'Motion smoothing',
+			'settings.motionSmoothingDescription' => 'Display-synchronized frame resampling on supported MPV GPU outputs; fast motion can look soft or show artifacts.',
+			'settings.motionSmoothingUnavailableDescription' => 'If this player has no display-synchronized GPU renderer, MPV smoothing is skipped and playback continues normally.',
+			'settings.motionSmoothingApplyFailed' => 'The player could not apply motion smoothing. Playback will continue unchanged.',
+			'settings.motionSmoothingLiveUnavailableDescription' => 'Motion smoothing is disabled for live playback to preserve stream timing.',
+			'settings.motionSmoothingNotActiveDescription' => 'MPV has not activated display-synchronized interpolation for this session.',
+			'settings.motionSmoothingNextPlayback' => 'Saved for the next video. The player prepares its motion processor when playback starts.',
+			'settings.motionSmoothingOff' => 'Off',
+			'settings.motionSmoothingOffDescription' => 'Keep the player’s existing display and frame cadence.',
+			'settings.motionSmoothingMpv' => 'MPV',
+			'settings.motionSmoothingMpvDescription' => 'Use MPV’s display-synchronized temporal interpolation. On Android, eligible SDR 24/30 fps video uses the GPU renderer while keeping the decoder setting. This does not generate motion with a neural model.',
+			'settings.neuralInterpolation' => 'Neural interpolation',
+			'settings.neuralInterpolationPresets' => 'Presets',
+			'settings.neuralInterpolationUnavailable' => 'Neural unavailable',
+			'settings.neuralInterpolationUnavailableDescription' => 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. Playback diagnostics show the provider that actually ran. Unsupported video uses MPV smoothing when available. Choose Performance, Balanced, or Quality.',
+			'settings.neuralInterpolationPresetPerformance' => 'Performance',
+			'settings.neuralInterpolationPresetBalanced' => 'Balanced',
+			'settings.neuralInterpolationPresetQuality' => 'Quality',
+			'settings.neuralOnlyWhenPluggedIn' => 'Only when plugged in',
+			'settings.neuralOnlyWhenPluggedInDescription' => 'Pause Neural processing when running on battery. MPV smoothing stays available where supported; Neural resumes on the next video while connected to external power.',
+			'settings.neuralPowerLimited' => 'Paused on battery; MPV smoothing remains available where supported.',
+			'settings.neuralThermalLimited' => 'Paused at elevated device temperature; MPV smoothing remains available where supported.',
 			'settings.matchDynamicRange' => 'Match Dynamic Range',
 			'settings.matchDynamicRangeDescription' => 'Switch HDR on for HDR content, then back to SDR',
 			'settings.displaySwitchDelay' => 'Display Switch Delay',
@@ -14461,6 +14743,8 @@ extension on Translations {
 			'settings.audioChannelLimitStereo' => 'Stereo',
 			'settings.audioChannelLimitStereoDescription' => 'Mix down to two channels for stereo speakers or headphones. Turns passthrough off.',
 			'settings.downmixCenterBoost' => 'Center Channel Boost',
+			_ => null,
+		} ?? switch (path) {
 			'settings.downmixCenterBoostValue' => ({required Object db}) => '${db} dB',
 			'settings.downmixCenterBoostLabel' => 'Boost (dB)',
 			'settings.downmixCenterBoostShort' => 'dB',
@@ -14485,8 +14769,6 @@ extension on Translations {
 			'settings.dvExperimentDiagnosticsDescription' => 'Enable detailed player logs on the next playback.',
 			'settings.disableDolbyVision' => 'Disable Dolby Vision',
 			'settings.disableDolbyVisionDescription' => 'Play the file\'s HDR10 or HLG layer instead of Dolby Vision, when it has one',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversion' => 'HDR to SDR Conversion',
 			'settings.hdrSdrConversionDescription' => 'Choose what converts HDR video when the display can\'t show HDR.',
 			'settings.hdrSdrConversionAuto' => 'Auto',
@@ -14649,6 +14931,8 @@ extension on Translations {
 			'settings.prerollSelectionDescription' => 'Choose which clips from the selected library can play before movies.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Wait this many minutes without input before showing screensaver artwork.',
 			'settings.videoCodecOptionDescription' => 'Allow direct playback for this codec when supported. Unchecked codecs are transcoded by the media server.',
+			'settings.subtitleOnMute' => 'Show subtitles when muted',
+			'settings.subtitleOnMuteDescription' => 'Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track.',
 			'themeEditor.builtIn' => 'Built-in',
 			'themeEditor.presets' => 'Presets',
 			'themeEditor.custom' => 'Custom',
@@ -14738,6 +15022,7 @@ extension on Translations {
 			'hotkeys.actions.screenshot' => 'Take Screenshot',
 			'hotkeys.actions.framePrevious' => 'Previous Frame',
 			'hotkeys.actions.frameNext' => 'Next Frame',
+			'hotkeys.actions.subtitleDelayReset' => 'Reset Subtitle Timing',
 			'fileInfo.title' => 'File Info',
 			'fileInfo.overview' => 'Overview',
 			'fileInfo.video' => 'Video',
@@ -14972,6 +15257,8 @@ extension on Translations {
 			'videoControls.playButton' => 'Play',
 			'videoControls.pauseButton' => 'Pause',
 			'videoControls.playbackPaused' => 'Paused',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.playbackResumed' => 'Playing',
 			'videoControls.loadingVideo' => 'Loading video',
 			'videoControls.showPlaybackControls' => 'Show playback controls',
@@ -14999,8 +15286,6 @@ extension on Translations {
 			'videoControls.bookmarksButton' => 'Bookmarks',
 			'videoControls.chaptersAndBookmarks' => 'Chapters and bookmarks',
 			'videoControls.segmentLoop' => 'Segment loop',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.addBookmark' => 'Add bookmark',
 			'videoControls.bookmarkName' => 'Bookmark name',
 			'videoControls.bookmarkNameHint' => 'For example, Opening scene',
@@ -15486,6 +15771,8 @@ extension on Translations {
 			'accountPreferences.forcedSubtitleOptions.preferForcedDescription' => 'Prefer forced tracks when available, but allow regular subtitles as a fallback.',
 			'accountPreferences.forcedSubtitleOptions.onlyForcedDescription' => 'Use only tracks marked as forced.',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForcedDescription' => 'Exclude tracks marked as forced.',
+			_ => null,
+		} ?? switch (path) {
 			'accountPreferences.displayMissingEpisodes' => 'Show missing episodes',
 			'accountPreferences.displayMissingEpisodesDescription' => 'List episodes the server knows about but has no file for.',
 			'accountPreferences.hidePlayedInLatest' => 'Hide watched items in Latest',
@@ -15513,8 +15800,6 @@ extension on Translations {
 			'accountPreferences.mediaReviewsOptions.criticsOnlyDescription' => 'Show critic ratings and reviews.',
 			'accountPreferences.mediaReviewsOptions.nobodyDescription' => 'Hide ratings and reviews.',
 			'accountPreferences.preferredAudioLanguageDescription' => 'Prefer audio tracks in this language when the server or player selects a track automatically.',
-			_ => null,
-		} ?? switch (path) {
 			'accountPreferences.preferredSubtitleLanguageDescription' => 'Prefer subtitle tracks in this language when subtitles are selected automatically.',
 			'accountPreferences.subtitleAccessibilityDescription' => 'Choose whether SDH captions are preferred or required during automatic subtitle selection.',
 			'accountPreferences.forcedSubtitleDescription' => 'Choose whether forced subtitle tracks are preferred or required during automatic selection.',
@@ -16000,6 +16285,8 @@ extension on Translations {
 			'explore.relation.other' => 'Related',
 			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
 			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
+			_ => null,
+		} ?? switch (path) {
 			'explore.detail.originalTitle' => 'Original title',
 			'explore.detail.alsoKnownAs' => 'Also known as',
 			'explore.detail.studios' => 'Studios',
@@ -16027,8 +16314,6 @@ extension on Translations {
 			'explore.detail.favoritedBy' => ({required Object who}) => 'Favorited by ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} not aired yet',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Recommended by ${percent} of viewers',
-			_ => null,
-		} ?? switch (path) {
 			'explore.detail.relatedTitles' => 'Related titles',
 			'explore.detail.background' => 'Background',
 			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} result', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} results', ), 
@@ -16514,8 +16799,12 @@ extension on Translations {
 			'downloads.notificationComplete' => 'Download complete',
 			'downloads.notificationPaused' => 'Download paused',
 			'shaders.title' => 'Shaders',
+			_ => null,
+		} ?? switch (path) {
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',
+			'shaders.lanczosUpscaling' => 'Lanczos upscaling',
+			'shaders.lanczosUpscalingDescription' => 'GPU resampling for video smaller than the display; unavailable with DRM or tunneled playback.',
 			'shaders.artcnnVariantNeutral' => 'Neutral',
 			'shaders.artcnnVariantDenoise' => 'Denoise',
 			'shaders.artcnnVariantDenoiseSharpen' => 'Denoise + Sharpen',
@@ -16541,8 +16830,6 @@ extension on Translations {
 			'companionRemote.session.usePhoneToControl' => 'Use your mobile device to control this app',
 			'companionRemote.session.startServer' => 'Start Server',
 			'companionRemote.session.stopServer' => 'Stop Server',
-			_ => null,
-		} ?? switch (path) {
 			'companionRemote.session.minimize' => 'Minimize',
 			'companionRemote.session.manualAddressHint' => 'Manual connection address:',
 			'companionRemote.pairing.discoveryDescription' => 'PlezyNG devices with the same Plex account appear here',
@@ -16718,6 +17005,32 @@ extension on Translations {
 			'videoSettings.motionClarityCompareProcessingDescription' => 'Temporarily bypass frame processing while keeping display synchronization, scaling and audio settings unchanged.',
 			'videoSettings.motionClarityCompareFailed' => 'The renderer couldn\'t switch comparison mode. Playback settings were left as they are.',
 			'videoSettings.motionClaritySaveFailed' => 'Couldn\'t save motion clarity settings.',
+			'videoSettings.subtitleExport' => 'Export synchronized subtitle',
+			'videoSettings.subtitleExportSuccess' => 'Synchronized subtitle saved.',
+			'videoSettings.subtitleExportFailed' => 'Could not export this subtitle file. The original remains unchanged.',
+			'videoSettings.subtitleExportClipped' => 'Some subtitle cues end before playback starts and will be removed from the exported file. Continue?',
+			'videoSettings.subtitleExportReplace' => 'A file with this name already exists. Replace it?',
+			'videoSettings.subtitleDriftCalibration' => 'Calibrate subtitle drift',
+			'videoSettings.subtitleDriftCalibrationHelp' => 'Match two subtitle cue times to the playback times when each cue should appear. Choose anchors at least 60 seconds apart.',
+			'videoSettings.subtitleDriftPreview' => 'Preview correction',
+			'videoSettings.subtitleDriftPreviewActive' => 'Preview active. Save to keep this correction, or cancel to restore the previous timing.',
+			'videoSettings.subtitleDriftPreviewFailed' => 'The player could not preview this correction. The previous timing was restored.',
+			'videoSettings.subtitleDriftUndo' => 'Undo drift calibration',
+			'videoSettings.subtitleCueTimeAnchor1' => 'Subtitle cue 1 time',
+			'videoSettings.subtitlePlaybackTimeAnchor1' => 'Playback position for cue 1',
+			'videoSettings.subtitleCueTimeAnchor2' => 'Subtitle cue 2 time',
+			'videoSettings.subtitlePlaybackTimeAnchor2' => 'Playback position for cue 2',
+			'videoSettings.subtitleUsePlaybackTime' => 'Use current playback time',
+			'videoSettings.subtitleDriftInvalidAnchors' => 'Choose increasing anchors at least 60 seconds apart. Corrections are limited to 80%–125% speed and ±60 seconds.',
+			'videoSettings.subtitleCueTools' => 'Subtitle cues',
+			'videoSettings.subtitlePreviousCue' => 'Previous subtitle cue',
+			'videoSettings.subtitleNextCue' => 'Next subtitle cue',
+			'videoSettings.subtitleReplayCue' => 'Replay current cue',
+			'videoSettings.subtitleCopyCue' => 'Copy current cue',
+			'videoSettings.subtitleCueCopied' => 'Subtitle cue copied.',
+			'videoSettings.subtitleCueUnavailable' => 'No suitable subtitle cue is available.',
+			'videoSettings.subtitleCueSeekUnavailable' => 'Could not seek to that subtitle cue.',
+			'videoSettings.subtitleReplayPreroll' => 'Replay preroll',
 			'performanceOverlay.color' => 'Color',
 			'performanceOverlay.performance' => 'Performance',
 			'performanceOverlay.buffer' => 'Buffer',
@@ -16747,6 +17060,13 @@ extension on Translations {
 			'performanceOverlay.transfer' => 'Transfer',
 			'performanceOverlay.renderFps' => 'Render FPS',
 			'performanceOverlay.displayFps' => 'Display FPS',
+			'performanceOverlay.videoOutput' => 'Video Output',
+			'performanceOverlay.motionInterpolation' => 'Interpolation',
+			'performanceOverlay.thermalStatus' => 'Thermal',
+			'performanceOverlay.neuralP95' => 'p95',
+			'performanceOverlay.sceneCutBypasses' => 'scene cut bypasses',
+			'performanceOverlay.deadlineMisses' => 'deadline misses',
+			'performanceOverlay.videoSync' => 'Video Sync',
 			'performanceOverlay.avSync' => 'A/V Sync',
 			'performanceOverlay.dropped' => 'Dropped',
 			'performanceOverlay.dvRpus' => 'DV RPUs',
@@ -16993,6 +17313,8 @@ extension on Translations {
 			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
 			'services.deviceCode.codeCopied' => 'Code copied',
 			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
+			_ => null,
+		} ?? switch (path) {
 			'services.oauthProxy.body' => 'Scan this QR code or open the URL on any device.',
 			'services.oauthProxy.openToSignIn' => ({required Object service}) => 'Open ${service} to sign in',
 			'services.pendingAuth.copyUrl' => 'Copy sign-in URL',
@@ -17055,8 +17377,6 @@ extension on Translations {
 			'streaming.allowHttpDescription' => 'Use only for a trusted add-on on your private network.',
 			'streaming.installAddon' => 'Connect add-on',
 			'streaming.addonInstalled' => 'Add-on connected',
-			_ => null,
-		} ?? switch (path) {
 			'streaming.addonRemoved' => 'Add-on removed',
 			'streaming.addonToggle' => 'Enable add-on',
 			'streaming.addonEmpty' => 'No add-ons connected yet',
@@ -17507,6 +17827,8 @@ extension on Translations {
 			'universalMedia.shareCopyUrl' => 'Copy stream address',
 			'universalMedia.shareExpiresLabel' => 'Link expires at',
 			'universalMedia.shareStarting' => 'Preparing the stream…',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.shareStart' => 'Start sharing',
 			'universalMedia.shareStop' => 'Stop sharing',
 			'universalMedia.extensionsMode' => 'Extensions and CLI',
@@ -17569,8 +17891,6 @@ extension on Translations {
 			'fileSources.removeSource' => 'Disconnect source',
 			'fileSources.disconnectMessage' => 'Disconnect this source? Downloaded files and your reading and listening history will stay on this device.',
 			'fileSources.localFolder' => 'Choose folder',
-			_ => null,
-		} ?? switch (path) {
 			'fileSources.empty' => 'Nothing here yet',
 			'fileSources.emptyHint' => 'Add a source or import a book, audiobook, music, or video.',
 			'fileSources.search' => 'Search this folder',
@@ -17994,7 +18314,11 @@ extension on Translations {
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
 			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
-			'games.touchDescription' => 'Show the native controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
+			'games.inputReleaseHint' => 'Press Shift+Escape to release game input and return to the workspace controls.',
+			'games.leftStick' => 'Left stick',
+			'games.rightStick' => 'Right stick',
+			'games.touchResizeHint' => 'Enlarge this game window or use full screen to show the controller.',
+			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
 			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
@@ -18005,18 +18329,20 @@ extension on Translations {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Sunshine-compatible hosts load their app list into the game grid. On Android, Steam pairing opens Big Picture inside PlezyNG; saved Steam app-ID shortcuts launch directly. Steam pairing does not grant access to a private account library.\n\nBoth Android engines include touch controls and gamepad input. Pyrowave is an experimental Android option; other native platforms remain in development.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
+			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
-			'games.steamEnginePending' => 'This build does not include the embedded Steam engine. Android builds with Games enabled bundle device pairing and in-app H.264/HEVC playback. Pyrowave is experimental on Android; other platforms remain under development.',
+			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamBetaTitle' => 'Pyrowave · experimental',
 			'games.steamBetaDescription' => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, PlezyNG reconnects using a compatible codec.',
 			'games.steamLibrary' => 'Steam library',
 			'games.linkSteamAccount' => 'Link Steam account',
+			_ => null,
+		} ?? switch (path) {
 			'games.refreshSteamAccount' => 'Refresh Steam account',
 			'games.unlinkSteamAccount' => 'Unlink Steam account',
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
@@ -18075,6 +18401,8 @@ extension on Translations {
 			'games.streamHardwareDecoder' => 'Hardware',
 			'games.streamSoftwareDecoder' => 'Software',
 			'games.streamReadbackDecoder' => 'Vulkan with CPU readback',
+			'games.streamMetalDecoder' => 'Metal · direct GPU',
+			'games.streamChroma' => 'Color sampling',
 			'games.streamHostFps' => 'Host frame rate target',
 			'games.streamHostBitrate' => 'Host bitrate target',
 			'games.streamLimits' => 'Host-reported frame rate limits',
@@ -18083,8 +18411,6 @@ extension on Translations {
 			'games.streamLimitDecoder' => 'Receiver decoder',
 			'games.streamLimitBurst' => 'Burst throttling',
 			'games.streamPresentedFps' => 'Frames submitted to the display',
-			_ => null,
-		} ?? switch (path) {
 			'games.streamReceivedBitrate' => 'Received video payload',
 			'games.streamCompletionTime' => 'Average receiver frame completion',
 			'games.streamDroppedFrames' => 'Receiver-dropped frames this session',
@@ -18152,6 +18478,24 @@ extension on Translations {
 			'games.audioStereo' => 'Stereo',
 			'games.audioQuad' => 'Quad (4 speakers)',
 			'games.audioSurround51' => 'Surround (5.1)',
+			'games.inputOnComputer' => 'Configure Steam Input on computer',
+			'games.propertiesOnComputer' => 'Cloud and game settings on computer',
+			'games.openInSteam' => 'Open in Steam',
+			'games.steamCloudFiles' => 'Steam Cloud files',
+			'games.steamFamilies' => 'Steam Families',
+			'games.steamCloudHelp' => 'Open this game’s Steam Cloud files in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Steam handles downloads, sync and conflicts. Files depend on the game’s Cloud support.',
+			'games.steamFamiliesHelp' => 'Open Steam Families in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Invitations, household eligibility, copy availability and parental controls are managed by Steam.',
+			'games.touchDpadUp' => 'Directional pad up',
+			'games.touchDpadDown' => 'Directional pad down',
+			'games.touchDpadLeft' => 'Directional pad left',
+			'games.touchDpadRight' => 'Directional pad right',
+			'games.touchLeftBumper' => 'Left shoulder button',
+			'games.touchRightBumper' => 'Right shoulder button',
+			'games.touchLeftTrigger' => 'Left trigger',
+			'games.touchRightTrigger' => 'Right trigger',
+			'games.touchViewButton' => 'View button',
+			'games.touchMenuButton' => 'Menu button',
+			'games.touchStickHint' => 'Drag to move. Double-tap to press the stick.',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

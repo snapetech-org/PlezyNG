@@ -23,11 +23,15 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   final EventChannel eventChannel;
 
   String _bufferTier = 'auto';
+  bool _isLive = false;
+  int _mediaSessionGeneration = 0;
+  List<SubtitleTrack> _externalSubtitleMetadata = const [];
   int _bufferMb = 0;
   int _transcodeBufferSeconds = 0;
   bool _tunnelingEnabled = false;
   String _dvConversionMode = 'auto';
   bool _audioNormalizationEnabled = false;
+  bool _videoUpscalingEnabled = false;
   bool _audioPassthroughEnabled = false;
   bool _downmixEnabled = false;
   int _downmixCenterBoostDb = 0;
@@ -46,6 +50,12 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   bool _usingMpvFallback = false;
 
   bool get usingMpvFallback => _usingMpvFallback;
+
+  /// Whether the current ExoPlayer item is a live stream.
+  bool get isLivePlayback => _isLive;
+
+  /// Changes whenever a new item replaces the current media session.
+  int get mediaSessionGeneration => _mediaSessionGeneration;
 
   /// Subtitles are hidden through the player's visibility toggle. Sticky
   /// across media opens, like mpv's global `sub-visibility`, so an episode
@@ -69,6 +79,13 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
 
   @override
   bool get supportsSecondarySubtitles => false;
+
+  @override
+  bool get supportsSubtitleStyleControls => true;
+
+  @override
+  Set<String> get supportedLocalSubtitleExtensions =>
+      _isLive ? const <String>{} : const {'srt', 'ass', 'ssa', 'vtt'};
 
   // The fallback runs mpv over MediaCodec — the same display-switch decoder
   // constraint as PlayerNative on Android. The whole startup-gate chain
@@ -182,6 +199,7 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
         'centerBoostDb': _downmixCenterBoostDb,
         'normalize': _downmixNormalize,
       });
+      await invoke('setVideoUpscaling', {'enabled': _videoUpscalingEnabled});
       if (disposed) throw StateError('Player was disposed during initialization');
 
       initialized = true;
@@ -218,13 +236,19 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
     Duration timelineOffset = Duration.zero,
   }) async {
     if (disposed) return;
+    final generation = ++_mediaSessionGeneration;
     await _ensureInitialized();
+    if (disposed || generation != _mediaSessionGeneration) return;
     final startPosition = media.start ?? timelineOffset;
     final previousState = state;
     final previousPosition = currentPosition;
     final previousTimelineDuration = configuredTimelineDuration;
     final previousTimelineOffset = this.timelineOffset;
     final previousExternalSubtitleMetadata = snapshotExternalSubtitleMetadata();
+    final previousExternalSubtitleTracks = _externalSubtitleMetadata;
+    final previousIsLive = _isLive;
+    _isLive = isLive;
+    _externalSubtitleMetadata = externalSubtitles ?? const [];
     configureTimeline(duration: timelineDuration, offset: timelineOffset);
     final sourceStart = sourcePositionFor(startPosition);
     final hasStartPosition = media.start != null && sourceStart > Duration.zero;
@@ -267,6 +291,8 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
         restorePlaybackProgress(previousState, position: previousPosition);
         restoreTracks(previousState);
         restoreExternalSubtitleMetadata(previousExternalSubtitleMetadata);
+        _externalSubtitleMetadata = previousExternalSubtitleTracks;
+        _isLive = previousIsLive;
         setSeekable(previousState.seekable);
       }
       rethrow;
@@ -285,7 +311,11 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
 
   @override
   Future<void> stop() async {
+    ++_mediaSessionGeneration;
     await invoke('stop');
+    _isLive = false;
+    _externalSubtitleMetadata = const [];
+    setExternalSubtitleMetadata(null);
     setSeekable(false);
     await setVisible(false);
   }
@@ -349,6 +379,14 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
         break;
       case 'speed':
         await setRate(double.tryParse(value) ?? 1.0);
+        break;
+      case 'exo-video-upscaling':
+        final enabled = value == 'yes';
+        _videoUpscalingEnabled = enabled;
+        await _applyWhenInitialized(
+          () => invoke('setVideoUpscaling', {'enabled': enabled}),
+          () => _videoUpscalingEnabled == enabled,
+        );
         break;
       // Not an mpv property. mpv takes the Buffer Size setting as demuxer-max-bytes, which the
       // fallback replay carries; this tier is
@@ -529,13 +567,70 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
     }
   }
 
-  /// Raw mpv commands don't apply to the ExoPlayer backend. Every command
-  /// dispatched through the [Player] interface ('change-list', 'drop-buffers',
-  /// 'sub-seek', 'screenshot') targets an mpv core and has always been a
-  /// silent no-op here — including in the native MPV fallback mode.
+  /// Handles the shared local-subtitle import command on ExoPlayer and its
+  /// mpv fallback. Other mpv-specific commands remain unsupported here.
+  /// Starts or stops a bounded copy of decoded PCM for local subtitle ASR.
+  /// The ExoPlayer fallback path does not expose PCM and returns false.
+  Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
+    if (disposed || _usingMpvFallback) return false;
+    return await methodChannel.invokeMethod<bool>(
+          'setSubtitlePcmCaptureEnabled',
+          {'enabled': enabled},
+        ) ??
+        false;
+  }
+
+  /// Drains captured PCM packets. Each packet carries its media presentation timestamp.
+  Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
+    if (disposed || _usingMpvFallback) return const [];
+    final packets = await methodChannel.invokeMethod<List<dynamic>>('drainSubtitlePcmCapture');
+    return packets
+            ?.map((packet) => Map<String, Object?>.from(packet as Map))
+            .toList(growable: false) ??
+        const [];
+  }
+
   @override
-  // ignore: no-empty-block - deliberate no-op, mpv commands target the mpv backend
-  Future<void> command(List<String> args) async {}
+  Future<void> command(List<String> args) async {
+    if (disposed || args.isEmpty || args.first != 'sub-add') return;
+    if (args.length < 2) throw ArgumentError('sub-add requires a local file path.');
+    if (_isLive) throw UnsupportedError('Local subtitle import is unavailable during live playback.');
+
+    final rawPath = args[1];
+    final parsed = Uri.tryParse(rawPath);
+    final uri = parsed != null && parsed.hasScheme ? parsed : Uri.file(rawPath);
+    if (uri.scheme != 'file') throw UnsupportedError('Only local subtitle files can be imported here.');
+    final fileName = uri.pathSegments.isEmpty ? 'Subtitle' : Uri.decodeComponent(uri.pathSegments.last);
+    final extension = fileName.lastIndexOf('.') < 0
+        ? ''
+        : fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+    if (!supportedLocalSubtitleExtensions.contains(extension)) {
+      throw UnsupportedError('Android supports local SRT, ASS, SSA, and WebVTT subtitles.');
+    }
+
+    final track = SubtitleTrack.uri(uri.toString(), title: fileName, codec: extension);
+    final existing = _externalSubtitleMetadata.any((candidate) => candidate.uri == track.uri);
+    final previousMetadata = snapshotExternalSubtitleMetadata();
+    final previousTracks = _externalSubtitleMetadata;
+    final importGeneration = _mediaSessionGeneration;
+    if (!existing) {
+      _externalSubtitleMetadata = [..._externalSubtitleMetadata, track];
+      setExternalSubtitleMetadata(_externalSubtitleMetadata);
+    }
+    try {
+      await invoke('addSubtitleTrack', {
+        'uri': uri.toString(),
+        'title': fileName,
+        'select': args.length < 3 || args[2] == 'select',
+      });
+    } catch (_) {
+      if (importGeneration == _mediaSessionGeneration) {
+        _externalSubtitleMetadata = previousTracks;
+        restoreExternalSubtitleMetadata(previousMetadata);
+      }
+      rethrow;
+    }
+  }
 
   /// Apply subtitle styling to the native ExoPlayer layer.
   ///

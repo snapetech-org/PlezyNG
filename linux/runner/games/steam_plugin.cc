@@ -69,7 +69,10 @@ double real(FlValue* map, const char* key) {
   return fl_value_get_float(value);
 }
 Host hostFrom(FlValue* args) {
-  return {text(args, "address"), uint16_t(number(args, "port", 27036, 1, 65535)), identifier(text(args, "hostId"))};
+  Host host{text(args, "address"), uint16_t(number(args, "port", 27036, 1, 65535)), identifier(text(args, "hostId"))};
+  for (int i = 0; i < 6; ++i) host.relayPorts[i] = number(args, ("relayPort" + std::to_string(i)).c_str(), 0, 1, 65535);
+  if (!host.validRelay()) throw std::invalid_argument("Invalid relay route");
+  return host;
 }
 Host resolve(Host host, GCancellable* cancel) {
   g_autoptr(GResolver) resolver = g_resolver_get_default();
@@ -748,7 +751,7 @@ void Manager::method(FlMethodCall* call, bool receiver) {
   if (!receiver && name == "capabilities") {
     const bool available = text(args, "protocol") == "steam" && GStreamerSink::supported();
     g_autoptr(FlValue) result = fl_value_new_map();
-    for (const char* key : {"available", "inlinePairing", "library", "embeddedSurface"})
+    for (const char* key : {"available", "inlinePairing", "library", "embeddedSurface", "internetTunnel"})
       fl_value_set_string_take(result, key, fl_value_new_bool(available));
     ok(call, result);
     return;

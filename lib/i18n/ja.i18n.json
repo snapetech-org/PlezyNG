@@ -4567,7 +4567,11 @@
     "cloudReviewDelete": "",
     "cloudRefreshRequired": "",
     "cloudLimit": "",
-    "cloudChanged": ""
+    "cloudChanged": "",
+    "internetStreaming": "",
+    "internetStreamingHelp": "",
+    "internetDirect": "",
+    "internetRelay": ""
   },
   "deepLinks": {
     "invalid": "この Plezy リンクは有効ではありません。",

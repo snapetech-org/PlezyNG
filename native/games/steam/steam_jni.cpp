@@ -217,7 +217,7 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI(pair)(
 static void runSession(
     JNIEnv* env, jlong id, jstring address, jint port, jlong hostId, jlong deviceId, jlong userId, jbyteArray key,
     jlong game, jboolean hevc, jboolean pyrowave, jint width, jint height, jint fps, jint bitrateKbps,
-    jint controllerCount, jint audioChannels, jobject target, bool hdr10 = false) {
+    jint controllerCount, jint audioChannels, jobject target, bool hdr10 = false, jintArray relay = nullptr) {
   auto runtime = get(id);
   Credentials c{};
   if (!runtime || !target || port < 1 || port > 65535 || !credentials(env, deviceId, userId, key, c)) {
@@ -226,9 +226,25 @@ static void runSession(
   }
   auto sink = std::make_shared<JavaSink>(env, target);
   if (env->ExceptionCheck() || !sink->valid()) return;
+  Host host{string(env, address), static_cast<uint16_t>(port), static_cast<uint64_t>(hostId)};
+  if (relay) {
+    if (env->GetArrayLength(relay) != 6) {
+      fail(env, -1);
+      return;
+    }
+    jint ports[6]{};
+    env->GetIntArrayRegion(relay, 0, 6, ports);
+    if (env->ExceptionCheck()) return;
+    for (int i = 0; i < 6; ++i) {
+      if (ports[i] < 0 || ports[i] > 65535) {
+        fail(env, -1);
+        return;
+      }
+      host.relayPorts[i] = static_cast<uint16_t>(ports[i]);
+    }
+  }
   int result = runtime->run(
-      {string(env, address), static_cast<uint16_t>(port), static_cast<uint64_t>(hostId)}, c,
-      static_cast<uint64_t>(game), hevc, pyrowave, sink,
+      host, c, static_cast<uint64_t>(game), hevc, pyrowave, sink,
       {width, height, fps, bitrateKbps, controllerCount, audioChannels, hdr10});
   std::fill(c.key.begin(), c.key.end(), 0);
   if (result != 0 && result != -2) fail(env, result);
@@ -265,6 +281,14 @@ extern "C" JNIEXPORT void JNICALL JNI(runWithVideo)(
   runSession(
       env, id, address, port, hostId, deviceId, userId, key, game, hevc, pyrowave, width, height, fps, bitrateKbps,
       controllerCount, audioChannels, target, hdr10);
+}
+extern "C" JNIEXPORT void JNICALL JNI(runWithRelay)(
+    JNIEnv* env, jclass, jlong id, jstring address, jint port, jlong hostId, jlong deviceId, jlong userId,
+    jbyteArray key, jlong game, jboolean hevc, jboolean pyrowave, jint width, jint height, jint fps, jint bitrateKbps,
+    jint controllerCount, jint audioChannels, jboolean hdr10, jintArray relay, jobject target) {
+  runSession(
+      env, id, address, port, hostId, deviceId, userId, key, game, hevc, pyrowave, width, height, fps, bitrateKbps,
+      controllerCount, audioChannels, target, hdr10, relay);
 }
 extern "C" JNIEXPORT jlong JNICALL JNI(gpuCreate)(JNIEnv* env, jclass, jobject surface, jboolean hdr) {
   if (!surface) return 0;

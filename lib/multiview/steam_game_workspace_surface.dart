@@ -9,6 +9,7 @@ import 'package:universal_gamepad/universal_gamepad.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../games/game_models.dart';
+import '../games/steam_internet_tunnel.dart';
 import '../games/steam_native_plane.dart';
 import '../games/steam_stream_preferences.dart';
 import '../games/steam_stream_metrics.dart';
@@ -37,7 +38,10 @@ class SteamGameWorkspaceSession {
     this.controllerCount = 1,
     this.audio = SteamStreamAudio.stereo,
     this.onFirstFrame,
+    SteamInternetTunnel? internetTunnel,
+    this.connectInternet,
   }) {
+    _setTunnel(internetTunnel);
     if (controllerCount < 1 || controllerCount > 4) throw ArgumentError.value(controllerCount, 'controllerCount');
     _inputBinding = WorkspaceGameInputBinding(
       onEvent: handleInput,
@@ -60,6 +64,33 @@ class SteamGameWorkspaceSession {
   final int controllerCount;
   final SteamStreamAudio audio;
   final VoidCallback? onFirstFrame;
+  final Future<SteamInternetTunnel?> Function()? connectInternet;
+  SteamInternetTunnel? _tunnel;
+  VoidCallback? _tunnelListener;
+  final internetPath = ValueNotifier<SteamInternetPath?>(null);
+  void _setTunnel(SteamInternetTunnel? tunnel) {
+    final old = _tunnel;
+    if (_tunnelListener != null) old?.path.removeListener(_tunnelListener!);
+    old?.close();
+    old?.path.dispose();
+    _tunnel = tunnel;
+    _tunnelListener = () {
+      if (!_disposed) internetPath.value = tunnel?.path.value;
+    };
+    tunnel?.path.addListener(_tunnelListener!);
+    internetPath.value = tunnel?.path.value;
+    if (tunnel != null) {
+      unawaited(
+        tunnel.done.then((_) {
+          if (!_disposed && !_restarting && identical(_tunnel, tunnel)) {
+            unawaited(_invoke('disconnect'));
+            _stateChanged('failed');
+          }
+        }),
+      );
+    }
+  }
+
   bool _reportedFirstFrame = false;
   bool _disposed = false;
   bool _restarting = false;
@@ -85,13 +116,15 @@ class SteamGameWorkspaceSession {
   Map<String, Object?> get creationParams => {
     'hostId': host.id,
     'hostKey': 'steam:${host.id}',
-    'address': host.address,
-    'port': host.port,
+    'address': _tunnel == null ? host.address : '127.0.0.1',
+    'port': _tunnel == null ? host.port : _tunnel!.ports[5],
+    if (_tunnel != null)
+      for (var i = 0; i < 6; i++) 'relayPort$i': _tunnel!.ports[i],
     'appId': game.id,
     'appName': game.name,
     'touchControls': touchControls,
-    'pyrowave': pyrowave,
-    'allowHdr': allowHdr,
+    'pyrowave': pyrowave && _tunnel == null,
+    'allowHdr': allowHdr && _tunnel == null,
     ...quality.nativeArguments,
     'allowHevc': codec == SteamStreamCodec.automatic,
     'controllerCount': controllerCount,
@@ -326,6 +359,7 @@ class SteamGameWorkspaceSession {
       onFirstFrame?.call();
     }
     if (state == 'failed' || state == 'disconnected' || state == 'reconnecting') resetInput();
+    if (state == 'failed' || state == 'disconnected') _setTunnel(null);
   }
 
   /// A replacement surface may only start after native teardown acknowledges
@@ -343,6 +377,14 @@ class SteamGameWorkspaceSession {
       if (channel != null) await channel.invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
       if (_disposed) return;
       detach();
+      _setTunnel(null);
+      final route = await connectInternet?.call();
+      if (_disposed) {
+        route?.close();
+        route?.path.dispose();
+        return;
+      }
+      _setTunnel(route);
       sessionState.value = 'connecting';
       surfaceGeneration.value++;
     } catch (_) {
@@ -367,6 +409,7 @@ class SteamGameWorkspaceSession {
     } catch (_) {
       if (!_disposed) sessionState.value = 'failed';
     } finally {
+      if (!_disposed) _setTunnel(null);
       _restarting = false;
     }
   }
@@ -390,6 +433,7 @@ class SteamGameWorkspaceSession {
 
   void dispose() {
     if (_disposed) return;
+    _setTunnel(null);
     resetInput();
     unawaited(_invoke('disconnect'));
     _disposed = true;
@@ -401,6 +445,7 @@ class SteamGameWorkspaceSession {
     streamAspectRatio.dispose();
     inputAvailable.dispose();
     inputResets.dispose();
+    internetPath.dispose();
   }
 }
 
@@ -601,7 +646,10 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
         if (!mounted) return;
         await showScopedDialog<void>(
           context: context,
-          builder: (_) => SteamStreamDiagnostics(readMetrics: widget.session.readMetrics),
+          builder: (_) => SteamStreamDiagnostics(
+            readMetrics: widget.session.readMetrics,
+            internetPath: widget.session.internetPath,
+          ),
         );
       });
     } finally {

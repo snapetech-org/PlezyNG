@@ -60,7 +60,12 @@ bool boolean(NSDictionary* args, NSString* key, bool fallback = false) {
   return [value boolValue];
 }
 Host hostFrom(NSDictionary* args) {
-  return {stringValue(args[@"address"]), uint16_t(number(args, @"port", 27036, 1, 65535)), identifier(args[@"hostId"])};
+  Host host{
+      stringValue(args[@"address"]), uint16_t(number(args, @"port", 27036, 1, 65535)), identifier(args[@"hostId"])};
+  for (int i = 0; i < 6; ++i)
+    host.relayPorts[i] = number(args, [NSString stringWithFormat:@"relayPort%d", i], 0, 1, 65535);
+  if (!host.validRelay()) throw std::invalid_argument("Invalid relay route");
+  return host;
 }
 bool usable(const sockaddr* address) {
   if (!address || address->sa_family != AF_INET) return false;
@@ -593,7 +598,8 @@ void Manager::method(FlutterMethodCall* call, FlutterResult reply, bool create) 
       @"available" : @(available),
       @"inlinePairing" : @(available),
       @"library" : @(available),
-      @"embeddedSurface" : @(available)
+      @"embeddedSurface" : @(available),
+      @"internetTunnel" : @(available)
     });
     return;
   }

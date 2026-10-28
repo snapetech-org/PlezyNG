@@ -11,6 +11,7 @@ import '../../focus/focusable_text_field.dart';
 import '../../focus/input_mode_tracker.dart';
 import '../../games/game_discovery.dart';
 import '../../games/game_library_controller.dart';
+import '../../games/steam_internet_tunnel.dart';
 import '../../games/game_models.dart';
 import '../../games/steam_stream_preferences.dart';
 import '../../games/steam_inventory_exchange.dart';
@@ -30,6 +31,7 @@ import '../../profiles/active_profile_provider.dart';
 import '../../services/playback_coordinator.dart';
 import '../../services/trackers/oauth_proxy_client.dart';
 import '../../services/settings_service.dart';
+import '../../services/companion_remote/companion_remote_host_controller.dart';
 import '../../sources/source_controller.dart';
 import '../../utils/dialogs.dart';
 import '../../utils/platform_detector.dart';
@@ -573,7 +575,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         if (!mounted || !c.current) return;
         await showScopedDialog<void>(
           context: context,
-          builder: (_) => SteamStreamDiagnostics(readMetrics: session.readMetrics),
+          builder: (_) => SteamStreamDiagnostics(readMetrics: session.readMetrics, internetPath: session.internetPath),
         );
       });
     }
@@ -608,7 +610,33 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       return;
     }
 
+    Future<SteamInternetTunnel?> connectInternet() async {
+      c.requireCurrent();
+      if (!capability.internetTunnel ||
+          steamRelayUri() == null ||
+          !SettingsService.instance.read(SettingsService.steamInternetForProfile(c.profileId))) {
+        return null;
+      }
+      final inventory = c.library.inventories.where((i) => i.hostKey == host.key).firstOrNull;
+      if (inventory == null || await steamHostReachable(host)) return null;
+      if (!mounted) throw const GameClientException(GameClientFailure.cancelled);
+      c.requireCurrent();
+      final remote = context.read<CompanionRemoteProvider>();
+      final ready = await ensureCompanionRemoteCryptoFromContext(context, checkCurrent: c.requireCurrent);
+      c.requireCurrent();
+      if (!ready) throw const GameClientException(GameClientFailure.unavailable);
+      return remote.openSteamInternet(inventory.peerId, isCurrent: () => mounted && c.current);
+    }
+
+    final tunnel = await connectInternet();
+    if (!mounted || !c.current) {
+      tunnel?.close();
+      tunnel?.path.dispose();
+      return;
+    }
     final session = SteamGameWorkspaceSession(
+      internetTunnel: tunnel,
+      connectInternet: connectInternet,
       onFirstFrame: () {
         if (c.current && game.id != '0') {
           unawaited(c.connected(GameRoute(host: host, game: game)).catchError((Object _) {}));
@@ -1156,6 +1184,13 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
             child: SettingsGroup(
               children: [
                 Padding(padding: const EdgeInsets.all(16), child: Text(t.games.availabilityHint)),
+                if (_profile != null && steamRelayUri() != null)
+                  SettingSwitchTile(
+                    pref: SettingsService.steamInternetForProfile(_profile!),
+                    icon: Symbols.public_rounded,
+                    title: t.games.internetStreaming,
+                    subtitle: t.games.internetStreamingHelp,
+                  ),
                 if (_profile != null && PlatformDetector.supportsEmbeddedGameStreaming()) ...[
                   SettingSelectionTile<SteamStreamQuality>(
                     pref: SettingsService.steamQualityForProfile(_profile!),
@@ -1204,7 +1239,12 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
                   ),
                 ],
                 if (_profile != null &&
-                    {TargetPlatform.android, TargetPlatform.iOS, TargetPlatform.macOS}.contains(defaultTargetPlatform))
+                    {
+                      TargetPlatform.android,
+                      TargetPlatform.iOS,
+                      TargetPlatform.macOS,
+                      TargetPlatform.linux,
+                    }.contains(defaultTargetPlatform))
                   SettingSwitchTile(
                     pref: SettingsService.gamePyrowaveForProfile(_profile!),
                     icon: Symbols.speed_rounded,

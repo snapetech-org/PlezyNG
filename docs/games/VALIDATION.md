@@ -1,11 +1,12 @@
 # Games validation and release gates
 
-Current receiver source update: [Vulkan native video](VULKAN_RECEIVER.md) adds
-Android/Wayland direct GPU Pyrowave and gated HDR10 negotiation/presentation.
-The sections below retain earlier platform milestones; they are not evidence of
-hardware HDR qualification. See that document for current limits and test gates.
+Current source checkpoint is [PR #81](https://github.com/snapetech-org/PlezyNG/pull/81):
+[Vulkan/HDR10](VULKAN_RECEIVER.md), [Cloud files](STEAM_CLOUD.md) and
+[paired internet streaming](STEAM_INTERNET.md). Its three checkpoint sections
+at the end record local evidence. Older platform milestones below are historical;
+they do not establish hardware HDR, current SDK builds or deployed service support.
 
-For current follow-up PR #71 completion status, see
+For current completion status, see
 [CONNECTED_EXPERIENCE.md](CONNECTED_EXPERIENCE.md#scope-and-acceptance).
 Historical builds below do not validate the current branch.
 Use [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) for the exact-commit build
@@ -457,3 +458,41 @@ does not validate these sources. No hosted fallback is authorized.
   [STEAM_CLOUD.md](STEAM_CLOUD.md) for configuration and a disposable-save handoff.
   Confidence: high in the recorded local checks; unknown in live Valve/device
   behavior. Families membership mutation is not implemented.
+
+### Paired internet checkpoint (2026-10-28, PR #81)
+
+- `go test -race ./...` passes, including relay same-account admission,
+  wrong/expired/revoked grants, origin/header checks, third-peer rejection,
+  bounded frames/queues, paired disconnect and disabled/insecure configuration.
+- **43 Flutter tests pass** for the new authenticated packet codec, real
+  localhost TLS/WSS/UDP upgrade/fallback fixture, Companion provider and Games
+  dialogs. The two network tests were rerun after adding retained-workspace
+  identity, loopback mapping, compatible-codec, route-label and retirement
+  assertions; they pass and are included in the 43, not additional tests.
+- **24 existing native-client/workspace/texture/diagnostics Flutter tests pass**
+  after the tunnel lifecycle integration. This is a separate focused set; it
+  does not qualify the full app test suite.
+- The repository's **standard analyzer passes with zero diagnostics**. Slang
+  generation, translation normalization/unused-key checks and locale validation
+  pass: 37 locales, 4,280 messages and 19,512 explicit English fallback entries.
+  The Cloud/internet source hashes record the current reviewed English copy;
+  these fallbacks are not language-reviewed translations.
+- **42 native tests pass; one hardware Vulkan/Wayland test explicitly skips**.
+  Native routing rejects incomplete/duplicate/non-loopback proxy mappings.
+  Linux adapter/Wayland and Windows adapter strict syntax checks pass; Flutter
+  SDK headers are external system includes in the Windows check. The portable
+  Windows runtime/receiver and tests cross-compile/link with MinGW-w64. None of
+  this is MSVC or Windows execution.
+- The Android Steam Java module compiles against API 36 with generated resource
+  symbols and 20 compatibility deprecation warnings. The new JNI entry point
+  preserves all older entry points, but Android NDK/link/minified packages and
+  current Apple SDK builds still require private JIT verification.
+
+See [STEAM_INTERNET.md](STEAM_INTERNET.md) for the disabled-by-default deployment,
+two-device opt-in, same-account admission, fixed-port forwarding, cryptographic
+and resource limits, and real-network test matrix. No real internet relay
+deployment, router traversal, Steam session throughput, hardware HDR output or
+independent cryptographic audit was performed here. Current-head private JIT
+jobs have not been dispatched from this environment; use the commands in
+[LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md). Confidence is high in the recorded
+local results and unknown in untested device/service/network behavior.

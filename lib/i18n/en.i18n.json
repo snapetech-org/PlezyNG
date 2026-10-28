@@ -4572,7 +4572,11 @@
     "cloudReviewDelete": "Permanently delete ${name} from Steam Cloud? This cannot be undone here. Steam may sync the deletion to your computers.",
     "cloudRefreshRequired": "The file may have changed or the result is uncertain. Refresh and check the Cloud files before trying again.",
     "cloudLimit": "Cloud file transfers are limited to ${size}.",
-    "cloudChanged": "Cloud change completed."
+    "cloudChanged": "Cloud change completed.",
+    "internetStreaming": "Internet streaming",
+    "internetStreamingHelp": "Use paired Companion computers away from home. Link the same Steam account and enable this on both devices, keep the computer’s Companion Remote server running, and import its installed games once. Connections prefer direct access, then use an encrypted relay. This shares your network address with the paired device and relay operator and can use substantial data. Internet streams use a compatible codec; Pyrowave and HDR remain local.",
+    "internetDirect": "Direct encrypted connection",
+    "internetRelay": "Encrypted relay · additional latency possible"
   },
   "deepLinks": {
     "invalid": "This Plezy link isn't valid.",

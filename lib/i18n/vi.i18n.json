@@ -4547,7 +4547,11 @@
     "cloudReviewDelete": "",
     "cloudRefreshRequired": "",
     "cloudLimit": "",
-    "cloudChanged": ""
+    "cloudChanged": "",
+    "internetStreaming": "",
+    "internetStreamingHelp": "",
+    "internetDirect": "",
+    "internetRelay": ""
   },
   "deepLinks": {
     "invalid": "Liên kết Plezy này không hợp lệ.",

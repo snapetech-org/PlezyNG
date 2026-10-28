@@ -24,6 +24,10 @@ final class NativeSteam {
       long handle, String address, int port, long hostId, long deviceId, long userId, byte[] key, long game,
       boolean hevc, boolean pyrowave, int width, int height, int fps, int bitrateKbps, int controllerCount,
       int audioChannels, boolean hdr10, SteamDecoder decoder);
+  static native void runWithRelay(
+      long handle, String address, int port, long hostId, long deviceId, long userId, byte[] key, long game,
+      boolean hevc, boolean pyrowave, int width, int height, int fps, int bitrateKbps, int controllerCount,
+      int audioChannels, boolean hdr10, int[] relayPorts, SteamDecoder decoder);
   static native long gpuCreate(android.view.Surface surface, boolean allowHdr);
   static native boolean gpuHdrSupported(long gpu);
   static native boolean gpuConfigure(long gpu, int width, int height, byte[] initial);

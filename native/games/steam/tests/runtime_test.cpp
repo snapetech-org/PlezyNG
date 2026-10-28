@@ -158,6 +158,20 @@ uint32_t le(const uint8_t* p) {
   return uint32_t(p[0]) | uint32_t(p[1]) << 8 | uint32_t(p[2]) << 16 | uint32_t(p[3]) << 24;
 }
 int main() {
+  {
+    Host direct{"192.0.2.1", 27036, 1};
+    assert(direct.validRelay());
+    direct.relayPorts = {40001, 40002, 40003, 40004, 40005, 40006};
+    assert(!direct.validRelay());
+    direct.address = "127.0.0.1";
+    assert(!direct.validRelay());
+    direct.port = 40006;
+    assert(direct.validRelay());
+    direct.relayPorts[1] = direct.relayPorts[0];
+    assert(!direct.validRelay());
+    direct.relayPorts[1] = 0;
+    assert(!direct.validRelay());
+  }
   frameOwnership();
   sessionStartup();
   {

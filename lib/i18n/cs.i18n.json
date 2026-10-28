@@ -4616,7 +4616,11 @@
     "cloudReviewDelete": "",
     "cloudRefreshRequired": "",
     "cloudLimit": "",
-    "cloudChanged": ""
+    "cloudChanged": "",
+    "internetStreaming": "",
+    "internetStreamingHelp": "",
+    "internetDirect": "",
+    "internetRelay": ""
   },
   "deepLinks": {
     "invalid": "Tento odkaz Plezy není platný.",

@@ -1,9 +1,10 @@
 # Connected games implementation ledger
 
-Current receiver source update: [Vulkan native video](VULKAN_RECEIVER.md) adds
-Android/Wayland direct GPU Pyrowave and gated HDR10 negotiation/presentation.
-The sections below retain earlier platform milestones; they are not evidence of
-hardware HDR qualification. See that document for current limits and test gates.
+Current source checkpoint: [PR #81](https://github.com/snapetech-org/PlezyNG/pull/81)
+adds [Android/Wayland Vulkan and HDR10](VULKAN_RECEIVER.md),
+[scoped Cloud file actions](STEAM_CLOUD.md) and
+[paired internet traversal/relay](STEAM_INTERNET.md). Older sections below are
+historical milestones, not current hardware or service qualification.
 
 This is the review ledger for the connected Steam / GameStream experience.
 The product remains PlezyNG: existing poster geometry, theme tokens, focus,
@@ -14,8 +15,9 @@ shortcut establishes entitlement, authentication, reachability or playback.
 
 ## Scope and acceptance
 
-**Overall status: not code complete; draft PR; not ready for all-platform release.**
-The implemented slices below are not substitutes for the remaining scope.
+**Overall status: source checkpoint in draft PR #81; not ready for all-platform release.**
+The requested scope is not fully complete: Families mutations and Windows/Apple
+HDR remain absent, and current SDK/device/Valve/deployment qualification is open.
 The [live testing handoff](LIVE_TEST_HANDOFF.md) separates executable test cases,
 platform build prerequisites and features that still require implementation.
 
@@ -25,12 +27,12 @@ platform build prerequisites and features that still require implementation.
 | Catalog refresh and revocation | Implemented, Go race tests pass | Relay deployment and live account exercise |
 | Grid, details, routes and filtering | Implemented using existing app components | Device accessibility, RTL, controller and visual qualification; new strings currently use the English fallback |
 | Android stream preferences / recovery | Implemented through Flutter, Java and JNI | Full Android build/minification, real host reconnect and negotiated-quality measurements |
-| Native Steam transport | Portable Linux build and 41 tests pass locally; Windows runtime and five test executables cross-compile | Current-head sanitizer CI, Android packaging and live transport qualification |
+| Native Steam transport | Portable Linux build and 42 tests pass locally; native loopback tunnel mapping integrated in all four platform adapters | Current-head sanitizer CI, SDK builds, Android packaging and live transport qualification |
 | View-independent stream lifetime | Retained Android PlatformView and Windows/Linux/Apple texture surfaces | Native session still belongs to its retained surface; surface destruction stops it |
-| Adaptive metrics / advanced codecs | Host-driven feedback, measured diagnostics, request ceilings, one-to-four controller seats, mono/stereo/quad/5.1 mapping; Apple Metal direct GPU SDR 4:2:0/4:4:4 source | Apple SDK/GPU tests; Android/Linux direct GPU Pyrowave, HDR and 4K implementation; real host/audio/controller and adaptation measurements |
+| Adaptive metrics / advanced codecs | Host-driven feedback, measured diagnostics, request ceilings, one-to-four seats, mono/stereo/quad/5.1; Apple Metal SDR and Android/Wayland Vulkan direct GPU 4:2:0/4:4:4; gated Vulkan HDR10 | Actual hardware GPU/HDR/color tests, Apple SDK builds, 4K and Windows/Apple HDR implementation; audio/controller/adaptation measurements |
 | Other embedded receiver platforms | Linux receiver implemented; Windows Media Foundation/XAudio2 and Apple VideoToolbox/Core Audio/Metal receiver sources integrated; shared texture/touch input and workspace ownership | Full Linux/SteamOS packaging and host qualification; Apple SDK/device qualification; Windows MSVC x64/ARM64 and device qualification |
-| Rich Steam / host features | Achievements/news/optional friends-playing, Input/properties host actions, and confirmed Cloud/Families destinations implemented | Live API qualification, host cloud/family state APIs, live Steam Input configuration, Together and captures |
-| Companion game control / internet transport | Inventory, permissioned host launch/install/views, and active stream audio/fullscreen/disconnect controls implemented | Signaling/NAT/relay, internet connection diagnostics and actual host/device qualification |
+| Rich Steam / host features | Achievements/news/optional friends-playing, Input/properties host actions; optional AppID-scoped Cloud listing/download/replace/delete; confirmed Families destination | Valve Cloud approval/live contracts, Families mutations, host cloud/family state APIs, live Input configuration, Together and captures |
+| Companion game control / internet transport | Inventory, permissioned host actions and stream controls; paired encrypted WSS relay, authenticated IPv4 hole punching/fallback, same-account admission, existing diagnostics and opt-in settings | Deployment, actual routers/CGNAT, sustained bandwidth and platform/host qualification; internet Pyrowave/HDR not enabled |
 
 No claim of “every Steam API” is made: public catalog APIs, game-side Steamworks
 APIs, private client interfaces and services requiring Valve approval have

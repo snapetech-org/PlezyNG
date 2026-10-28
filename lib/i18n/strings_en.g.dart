@@ -11593,6 +11593,18 @@ class Translations$games$en {
 
 	/// en: 'Cloud change completed.'
 	String get cloudChanged => 'Cloud change completed.';
+
+	/// en: 'Internet streaming'
+	String get internetStreaming => 'Internet streaming';
+
+	/// en: 'Use paired Companion computers away from home. Link the same Steam account and enable this on both devices, keep the computer’s Companion Remote server running, and import its installed games once. Connections prefer direct access, then use an encrypted relay. This shares your network address with the paired device and relay operator and can use substantial data. Internet streams use a compatible codec; Pyrowave and HDR remain local.'
+	String get internetStreamingHelp => 'Use paired Companion computers away from home. Link the same Steam account and enable this on both devices, keep the computer’s Companion Remote server running, and import its installed games once. Connections prefer direct access, then use an encrypted relay. This shares your network address with the paired device and relay operator and can use substantial data. Internet streams use a compatible codec; Pyrowave and HDR remain local.';
+
+	/// en: 'Direct encrypted connection'
+	String get internetDirect => 'Direct encrypted connection';
+
+	/// en: 'Encrypted relay · additional latency possible'
+	String get internetRelay => 'Encrypted relay · additional latency possible';
 }
 
 // Path: deepLinks
@@ -18512,6 +18524,10 @@ extension on Translations {
 			'games.cloudRefreshRequired' => 'The file may have changed or the result is uncertain. Refresh and check the Cloud files before trying again.',
 			'games.cloudLimit' => ({required Object size}) => 'Cloud file transfers are limited to ${size}.',
 			'games.cloudChanged' => 'Cloud change completed.',
+			'games.internetStreaming' => 'Internet streaming',
+			'games.internetStreamingHelp' => 'Use paired Companion computers away from home. Link the same Steam account and enable this on both devices, keep the computer’s Companion Remote server running, and import its installed games once. Connections prefer direct access, then use an encrypted relay. This shares your network address with the paired device and relay operator and can use substantial data. Internet streams use a compatible codec; Pyrowave and HDR remain local.',
+			'games.internetDirect' => 'Direct encrypted connection',
+			'games.internetRelay' => 'Encrypted relay · additional latency possible',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

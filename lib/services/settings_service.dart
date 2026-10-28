@@ -788,6 +788,8 @@ class SettingsService extends BaseSharedPreferencesService {
       BoolPref(profileScopedPrefsKey(profileId, 'game_touch_controls'), defaultValue: true);
   static BoolPref shareSteamInventoryForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'share_steam_inventory'), defaultValue: false);
+  static BoolPref steamInternetForProfile(String profileId) =>
+      BoolPref(profileScopedPrefsKey(profileId, 'steam_internet'), defaultValue: false);
   static BoolPref allowSteamActionsForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'allow_steam_actions'), defaultValue: false);
   static BoolPref allowGameSessionControlForProfile(String profileId) =>

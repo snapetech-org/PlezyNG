@@ -4622,7 +4622,11 @@
     "cloudReviewDelete": "",
     "cloudRefreshRequired": "",
     "cloudLimit": "",
-    "cloudChanged": ""
+    "cloudChanged": "",
+    "internetStreaming": "",
+    "internetStreamingHelp": "",
+    "internetDirect": "",
+    "internetRelay": ""
   },
   "deepLinks": {
     "invalid": "Ten link Plezy nie jest ważny.",

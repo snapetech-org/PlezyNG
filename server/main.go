@@ -2690,6 +2690,8 @@ func main() {
 	registerOAuthRoutes(mux, srv.oauth)
 	registerComicCommerceRoutes(mux, clientIPs)
 	registerWatchmodeAvailabilityRoutes(mux, clientIPs)
+	steamRelay := registerSteamRelay(mux, clientIPs, srv.oauth)
+	defer steamRelay.close()
 
 	httpSrv := newHTTPServer(*addr, mux)
 
@@ -2716,6 +2718,7 @@ func main() {
 	// Relay sockets outlive HTTP shutdown, so rooms are still occupied here.
 	// Queue their activity now; the final flush below makes it durable.
 	srv.recordOccupiedRoomActivity()
+	steamRelay.close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

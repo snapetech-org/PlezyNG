@@ -4579,7 +4579,11 @@
     "cloudReviewDelete": "",
     "cloudRefreshRequired": "",
     "cloudLimit": "",
-    "cloudChanged": ""
+    "cloudChanged": "",
+    "internetStreaming": "",
+    "internetStreamingHelp": "",
+    "internetDirect": "",
+    "internetRelay": ""
   },
   "deepLinks": {
     "invalid": "Questo link Plezy non è valido.",

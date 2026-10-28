@@ -1,14 +1,14 @@
 # Steam receiver testing handoff
 
-PR: [#71](https://github.com/snapetech-org/PlezyNG/pull/71)
+PR: [#81](https://github.com/snapetech-org/PlezyNG/pull/81)
 
-Branch: `codex/steam-live-test-handoff`
+Branch: `codex/steam-vulkan-cloud-relay-20261028`
 
 ## What this handoff covers
 
-PR #54 has merged. This follow-up preserves its receiver implementation and
-regression coverage while reconciling the app with main `4f177e93`. Build the
-exact PR #71 head; the earlier PR and historical test results are not substitutes.
+PRs #54 and #71 have merged. This follow-up adds native Vulkan/HDR10 reception,
+scoped Cloud file actions and paired internet streaming. Build the exact PR #81
+head; earlier PRs and historical test results are not substitutes.
 
 Test the implemented receivers and connected library described below. The
 expanded request is **not fully code complete**. Do not convert the missing
@@ -19,14 +19,15 @@ qualify a different commit. Record `git rev-parse HEAD` with every result.
 | Area | Implemented behavior to test | Still missing |
 | --- | --- | --- |
 | Windows | Media Foundation H.264/HEVC SDR, retained texture, XAudio2, Credential Manager and input | Current-head MSVC x64/ARM64 builds and device qualification; HDR/Pyrowave presentation |
-| Linux/SteamOS | GStreamer H.264/HEVC SDR, retained texture, libsecret, surround and input | Packaged app qualification; direct GPU Pyrowave and HDR implementation |
+| Linux/SteamOS | GStreamer H.264/HEVC SDR; opt-in Wayland Vulkan direct GPU Pyrowave 4:2:0/4:4:4 and gated HDR10; libsecret, surround and input | Packaged app, compositor/GPU/HDR and host qualification; X11 keeps the compatible SDR path |
 | macOS/iOS/iPadOS/tvOS | VideoToolbox/Core Audio, Keychain, retained texture; opt-in Metal Pyrowave SDR 4:2:0/4:4:4 on supported GPUs | Current-head Apple SDK builds and device qualification; HDR presentation implementation |
-| Android/Android TV/Fire TV | H.264/HEVC SurfaceView, retained pane/activity, Opus, controller seats; opt-in Vulkan Pyrowave SDR 4:2:0 with CPU readback | Current-head Gradle/NDK/release builds and device qualification; direct GPU Pyrowave and HDR implementation |
+| Android/Android TV/Fire TV | H.264/HEVC SurfaceView, retained pane/activity, Opus, controller seats; opt-in native Vulkan direct GPU Pyrowave 4:2:0/4:4:4 and gated HDR10 | Current-head Gradle/NDK/release builds, GPU/display/color and host qualification |
 | Connected library | Canonical AppID cards with independent routes from several computers, inventory permissions, favorites and preferred routes | Real-host inventory/availability and large-library qualification |
-| Steam account/host features | Public catalog/achievements/news, optional social context; permissioned host launch/install/Input/properties handoffs; Cloud/Families account destinations | Live API/host qualification; programmatic Cloud/family mutations |
-| Internet streaming | Manually reachable paired hosts, including an existing VPN route | Authenticated rendezvous, NAT traversal and relay implementation/deployment |
+| Steam account/host features | Public catalog/achievements/news, optional social context; permissioned host actions; scoped Cloud listing/download/replace/delete; Families destination | Valve-issued Cloud approval/configuration and live qualification; global Cloud settings and programmatic Families mutations |
+| Internet streaming | Paired same-Steam-account WSS relay, encrypted IPv4 UDP hole punching, automatic relay fallback and route diagnostics | Operator deployment, current platform builds, real NAT/CGNAT/mobile and throughput qualification; Pyrowave/HDR stay LAN-only |
 
-No HDR capability is advertised by these SDR receiver paths. A successful
+HDR is advertised only by the qualified Vulkan decoder/surface capability path;
+Windows and Apple SDR receivers do not advertise it. A successful
 decoder probe, a visible menu entry, or a browser/Steam URI submission is not
 evidence of HDR, an installed game, a completed host action, or a changed account.
 Cloud OAuth writes require a Valve-issued client grant scoped to the relevant
@@ -48,10 +49,10 @@ maintainer session:
 
 ```sh
 gh workflow run ci.yml --repo snapetech-org/PlezyNG \
-  --ref codex/steam-live-test-handoff \
+  --ref codex/steam-vulkan-cloud-relay-20261028 \
   -f action=ci -f runner_pool=private -f build_linux_packages=true
 gh workflow run games-native.yml --repo snapetech-org/PlezyNG \
-  --ref codex/steam-live-test-handoff \
+  --ref codex/steam-vulkan-cloud-relay-20261028 \
   -f action=games -f runner_pool=private
 ```
 
@@ -133,20 +134,31 @@ framing. A missing plugin is a provisioning failure, not a passing test.
    type. Confirm unsolicited PQ/HLG content is rejected by SDR paths. Record
    CPU/GPU load, latency, dropped frames, memory, thermals and power over a
    sustained session and repeated reconnects. Direct GPU/HDR proof is required
-   before any future support claim; this handoff supplies no such proof.
+   before a release support claim; this handoff supplies no hardware proof.
+   Follow [VULKAN_RECEIVER.md](VULKAN_RECEIVER.md) for Android/Wayland PQ,
+   10-bit swapchain, GPU synchronization and SDR fallback cases.
 7. **Check account/companion boundaries.** Exercise public/private accounts,
    unavailable API credentials, expiry, revocation and account switching. Verify
    hidden achievements remain hidden. With host actions disabled, commands must
    fail; enable narrowly, then revoke while an action is pending. Reject replay,
    unknown AppIDs/actions, retired peers and unsolicited URLs. Confirm the
-   actual host result separately from submission. Cloud/Families actions should
-   open the fixed Steam destination with consent, never claim a mutation.
+   actual host result separately from submission. Follow
+   [STEAM_CLOUD.md](STEAM_CLOUD.md) with a disposable authorized save for the
+   separate read/write grants, conflict, cancellation and ambiguous-result cases.
+   Disabled/older servers keep the confirmed browser fallback. Families remains
+   a fixed Steam destination and must never claim a programmatic mutation.
 8. **Accessibility and older builds.** Test screen readers, keyboard-only and
    remote-only use, 2× text, RTL, narrow portrait/landscape, high contrast and
    existing light/dark themes. Focus must return to the opening control after a
    menu/dialog. Upgrade a populated legacy profile and connect an older companion
    lacking new capabilities; unavailable actions must stay unavailable. New
    English fallbacks are explicitly tracked, not language-reviewed translations.
+9. **Internet routes.** Provision the optional service and follow
+   [STEAM_INTERNET.md](STEAM_INTERNET.md). Verify the two opt-ins, same-account
+   admission and pairing gates; LAN preference, WSS start, authenticated direct
+   UDP upgrade and automatic WSS fallback. Measure interruption and sustained
+   load across real networks, including a mid-stream revoked grant. Confirm
+   each computer on a shared game card remains a distinct route.
 
 ## Result record and stop conditions
 
@@ -157,7 +169,7 @@ PR / exact commit:
 Build workflow URL, job, architecture and artifact checksum:
 Client OS / SDK / device / GPU / driver / display / audio route:
 Steam host OS / stable-or-beta version / GPU / selected computer:
-Network route (LAN / existing VPN), link speed and loss conditions:
+Network route (LAN / existing VPN / direct UDP / WSS relay), speed and loss:
 Requested settings / observed codec, chroma, resolution, rate and channels:
 Checks performed / pass, fail or skipped / reproduction steps:
 First-frame time / reconnect time / latency / drops / CPU-GPU-memory-power:

@@ -7,8 +7,10 @@ import java.util.Map;
 final class SteamStreamOptions {
   final int width, height, fps, bitrateKbps, controllerCount, audioChannels;
   final boolean allowHevc, allowHdr;
+  final int[] relayPorts = new int[6];
 
   private SteamStreamOptions(Map<?, ?> args) {
+    for (int i = 0; i < 6; ++i) relayPorts[i] = integer(args, "relayPort" + i, 0, 1, 65535);
     width = integer(args, "streamWidth", 1920, 640, 1920);
     height = integer(args, "streamHeight", 1080, 360, 1080);
     fps = integer(args, "streamFps", 60, 15, 60);

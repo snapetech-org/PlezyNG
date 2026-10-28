@@ -6,8 +6,8 @@ import android.graphics.Color;
 import android.hardware.input.InputManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Gravity;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -282,7 +282,8 @@ public final class SteamStreamView
     displayHdr10 = false;
     if (display != null) {
       for (int type : display.getHdrCapabilities().getSupportedHdrTypes()) {
-        if (type == Display.HdrCapabilities.HDR_TYPE_HDR10) displayHdr10 = true;
+        if (type == Display.HdrCapabilities.HDR_TYPE_HDR10)
+          displayHdr10 = true;
       }
     }
     long created = NativeSteam.create();
@@ -318,8 +319,8 @@ public final class SteamStreamView
       // Each fallback removes a capability; at most four attempts, never a
       // reconnect loop. The prior transport has returned before replacement.
       for (int attempt = 0; attempt < 4 && !stopping; attempt++) {
-        SteamDecoder sink = new SteamDecoder(session, holder, decoderEvents(session), pyrowave,
-            options.allowHdr && displayHdr10);
+        SteamDecoder sink =
+            new SteamDecoder(session, holder, decoderEvents(session), pyrowave, options.allowHdr && displayHdr10);
         decoder = sink;
         sink.setVolume(requestedAudio ? 1.0f : 0.0f);
         if (stopping) {
@@ -336,9 +337,10 @@ public final class SteamStreamView
         Exception failure = null;
         try {
           boolean hdr10 = sink.awaitHdrCapability();
-          NativeSteam.runWithVideo(
+          NativeSteam.runWithRelay(
               session, address, port(), hostId(), trust.device(), user, key, gameId(), hevc, pyrowave, options.width,
-              options.height, options.fps, options.bitrateKbps, options.controllerCount, audioChannels, hdr10, sink);
+              options.height, options.fps, options.bitrateKbps, options.controllerCount, audioChannels, hdr10,
+              options.relayPorts, sink);
         } catch (Exception error) {
           failure = error;
         }

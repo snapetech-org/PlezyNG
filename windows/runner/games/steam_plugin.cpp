@@ -80,7 +80,10 @@ double real(const Value* args, const char* key) {
   return *n;
 }
 Host hostFrom(const Value* args) {
-  return {text(args, "address"), uint16_t(number(args, "port", 27036, 1, 65535)), identifier(text(args, "hostId"))};
+  Host host{text(args, "address"), uint16_t(number(args, "port", 27036, 1, 65535)), identifier(text(args, "hostId"))};
+  for (int i = 0; i < 6; ++i) host.relayPorts[i] = number(args, ("relayPort" + std::to_string(i)).c_str(), 0, 1, 65535);
+  if (!host.validRelay()) throw std::invalid_argument("Invalid relay route");
+  return host;
 }
 void error(const Reply& reply, const char* code = "UNAVAILABLE") { reply->Error(code, "Steam connection unavailable"); }
 std::wstring credentialName(uint64_t id) { return L"PlezyNG/Steam/" + std::to_wstring(id); }
@@ -609,7 +612,7 @@ void Manager::method(const Call& call, Reply reply, bool stream) {
     static const bool decoderAvailable = WindowsSink::supported();
     const bool available = text(args, "protocol") == "steam" && decoderAvailable;
     Map result;
-    for (const char* key : {"available", "inlinePairing", "library", "embeddedSurface"})
+    for (const char* key : {"available", "inlinePairing", "library", "embeddedSurface", "internetTunnel"})
       result[Value(key)] = Value(available);
     reply->Success(Value(result));
     return;

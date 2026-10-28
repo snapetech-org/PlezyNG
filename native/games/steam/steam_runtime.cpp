@@ -27,7 +27,7 @@ Runtime::~Runtime() {
   for (size_t i = 0; i < sizeof(info_.sessionKey); ++i) sessionKey[i] = 0;
 }
 bool Runtime::hostInfo(const Host& host, IHS_HostInfo& out) {
-  if (!host.port || !IHS_IPAddressFromString(&out.address.ip, host.address.c_str())) return false;
+  if (!host.port || !host.validRelay() || !IHS_IPAddressFromString(&out.address.ip, host.address.c_str())) return false;
   out.address.port = host.port;
   out.clientId = host.id;
   out.universe = IHS_SteamUniversePublic;
@@ -148,6 +148,10 @@ int Runtime::run(
   closeClient(client);
   if (result != 0) return result;
   if (cancelled_) return -2;
+  if (host.relayPorts[0]) {
+    if (info_.address.port < 27031 || info_.address.port > 27036) return -1;
+    info_.address.port = host.relayPorts[info_.address.port - 27031];
+  }
   info_.steamId = credentials.user;
   IHS_Session* session = IHS_SessionCreate(&config, &info_);
   if (!session) return -1;

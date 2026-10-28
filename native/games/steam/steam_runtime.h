@@ -33,6 +33,21 @@ struct Host {
   std::string address;
   uint16_t port = 27036;
   uint64_t id = 0;
+  // Optional app-owned loopback proxy ports for Steam UDP 27031..27036.
+  // Zeroes preserve every existing caller's direct route.
+  std::array<uint16_t, 6> relayPorts{};
+  bool validRelay() const {
+    bool any = false;
+    for (auto p : relayPorts) any |= p != 0;
+    if (!any) return true;
+    if (address != "127.0.0.1" || port != relayPorts[5]) return false;
+    for (size_t i = 0; i < relayPorts.size(); ++i) {
+      if (!relayPorts[i]) return false;
+      for (size_t j = 0; j < i; ++j)
+        if (relayPorts[i] == relayPorts[j]) return false;
+    }
+    return true;
+  }
 };
 struct PadState {
   std::mutex mutex;

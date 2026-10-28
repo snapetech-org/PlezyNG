@@ -477,7 +477,9 @@ class MotionClarityService {
       );
     }
 
-    final rateText = targetFps.toStringAsFixed(3);
+    // Keep the measured display-rate precision; fixed three-decimal rounding
+    // can change the requested cadence for fractional refresh modes.
+    final rateText = targetFps.toString();
     final filterSpec =
         '@$_mciFilterLabel:lavfi=[minterpolate=fps=$rateText:mi_mode=mci:${mciQuality.ffmpegOptions}:scd=fdiff:scd_threshold=10]';
     final needsReload =

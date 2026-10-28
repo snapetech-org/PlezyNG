@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
 
-import '../mpv/player/platform/player_android.dart';
+import '../mpv/player/subtitle_pcm_capture_source.dart';
 import 'subtitle_ai_service.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_whisper_cpp_service.dart';
@@ -37,7 +37,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   final List<SubtitleCue> _cues = <SubtitleCue>[];
   final List<SubtitleWordTiming> _wordTimings = <SubtitleWordTiming>[];
 
-  PlayerAndroid? _player;
+  SubtitlePcmCaptureSource? _player;
   int? _playerGeneration;
   String? _audioTrackId;
   whisper.FlutterWhisper? _session;
@@ -69,7 +69,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   bool get hasRecentTranscript => _recentTranscript?.cues.isNotEmpty == true;
 
   Future<void> start(
-    PlayerAndroid player, {
+    SubtitlePcmCaptureSource player, {
     String? languageCode,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
@@ -81,16 +81,19 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (_starting || _running || _session != null) {
       throw StateError('A live subtitle capture session is already active.');
     }
-    if (player.usingMpvFallback) {
-      throw UnsupportedError('The Android MPV fallback does not expose decoded PCM to live subtitles.');
-    }
     if (player.isLivePlayback) {
       throw UnsupportedError('Live TV capture is not supported; use a VOD playback session.');
+    }
+    if (!await player.subtitlePcmCaptureAvailable()) {
+      throw UnsupportedError('This player build does not expose decoded PCM to live subtitles.');
+    }
+    if (_starting || _running || _session != null) {
+      throw StateError('A live subtitle capture session is already active.');
     }
 
     _starting = true;
     final startGeneration = player.mediaSessionGeneration;
-    final startAudioTrackId = player.state.track.audio?.id;
+    final startAudioTrackId = player.subtitlePcmAudioTrackId;
     whisper.FlutterWhisper? loadedSession;
     var captureEnabled = false;
     try {
@@ -117,21 +120,19 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         },
       );
       if (player.disposed ||
-          player.usingMpvFallback ||
           player.isLivePlayback ||
           player.mediaSessionGeneration != startGeneration ||
-          player.state.track.audio?.id != startAudioTrackId) {
+          player.subtitlePcmAudioTrackId != startAudioTrackId) {
         throw StateError('Playback changed while Whisper was loading. Start live captions again.');
       }
       captureEnabled = await player.setSubtitlePcmCaptureEnabled(true);
       if (!captureEnabled) {
-        throw UnsupportedError('This Android player session cannot capture decoded PCM.');
+        throw UnsupportedError('This player session cannot capture decoded PCM.');
       }
       if (player.disposed ||
-          player.usingMpvFallback ||
           player.isLivePlayback ||
           player.mediaSessionGeneration != startGeneration ||
-          player.state.track.audio?.id != startAudioTrackId) {
+          player.subtitlePcmAudioTrackId != startAudioTrackId) {
         throw StateError('Playback changed while live capture was starting. Start again on the current audio track.');
       }
 
@@ -239,12 +240,12 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     return _recentTranscript;
   }
 
-  String? _invalidCaptureSessionReason(PlayerAndroid? player) {
+  String? _invalidCaptureSessionReason(SubtitlePcmCaptureSource? player) {
     if (player == null) return 'Playback session ended; captured transcript was discarded.';
-    if (player.disposed || player.usingMpvFallback || player.mediaSessionGeneration != _playerGeneration) {
+    if (player.disposed || player.isLivePlayback || player.mediaSessionGeneration != _playerGeneration) {
       return 'Playback session changed; captured transcript was discarded.';
     }
-    if (player.state.track.audio?.id != _audioTrackId) {
+    if (player.subtitlePcmAudioTrackId != _audioTrackId) {
       return 'Selected audio track changed; captured transcript was discarded. Start capture again on the new track.';
     }
     return null;

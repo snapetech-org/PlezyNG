@@ -45,6 +45,7 @@ class SubtitleAiSheet extends StatefulWidget {
     this.serverId,
     this.ratingKey,
     this.mediaIndex = 0,
+    this.revisionIdentity,
     this.seriesKey,
     this.selectedSubtitleBurnedIn = false,
   });
@@ -53,6 +54,9 @@ class SubtitleAiSheet extends StatefulWidget {
   final String? serverId;
   final String? ratingKey;
   final int mediaIndex;
+  /// Optional device-local identity for standalone source media. Server
+  /// attachment still requires [serverId] and [ratingKey].
+  final SubtitleRevisionIdentity? revisionIdentity;
   final String? seriesKey;
   final bool selectedSubtitleBurnedIn;
 
@@ -587,6 +591,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   SubtitleRevisionIdentity? get _revisionIdentity {
+    final standaloneIdentity = widget.revisionIdentity;
+    if (standaloneIdentity != null) return standaloneIdentity;
     final profileId = _activeProfileId?.trim();
     final serverId = widget.serverId?.trim();
     final ratingKey = widget.ratingKey?.trim();
@@ -645,7 +651,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (identity == null) {
       if (mounted) {
         setState(() => _revisionStatus =
-            'Persistent undo checkpoints need an active profile and server library item; session undo is still available.');
+            'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.');
       }
       return true;
     }
@@ -658,7 +664,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         cues: cues,
         wordTimings: wordTimings,
       );
-      if (mounted) setState(() => _revisionStatus = 'Saved an undo checkpoint to this device for this library item.');
+      if (mounted) setState(() => _revisionStatus = 'Saved an undo checkpoint to this device for this item.');
       return true;
     } catch (error) {
       if (mounted) {

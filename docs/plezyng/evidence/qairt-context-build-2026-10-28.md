@@ -1,5 +1,7 @@
 # Qualcomm QAIRT context build — 2026-10-28 (partial)
 
+> This is the initial interrupted attempt. A later run generated all 22 contexts and passed Android runtime staging; see [the full context and staging evidence](qairt-context-staging-2026-10-28.md). The records below preserve what happened in this partial run.
+
 This records a host-side QAIRT context-generation run for the Android ANVIL
 QNN HTP route. It is partial evidence; it is not an Android package input or
 device qualification.
@@ -50,10 +52,7 @@ does not establish HTP execution on a phone. No APK was packaged, no Android
 device/provider execution was performed, and the partial manifest was not
 accepted as complete packaging provenance.
 
-## Remaining work
+## Follow-on work
 
-After the QAIRT license gate is resolved, regenerate the complete 22-context
-selection into a clean task-owned output directory, produce a matching full
-manifest, verify each context hash and SDK provenance, and then package and
-qualify on a compatible Snapdragon device. Keep this 19-context directory and
-its log as partial evidence until that work is complete.
+The missing contexts were later generated into a clean full pack, whose manifest
+and Android staging result are recorded in [the follow-on evidence](qairt-context-staging-2026-10-28.md). Keep this partial directory and its log as a historical record. Snapdragon inference and playback qualification remain open.

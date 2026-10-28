@@ -20,7 +20,7 @@
   },
   "appMpvBuild": {
     "repository": "https://github.com/snapetech-org/mpv-build",
-    "commit": "850294fa9d7f535be44d9ecde40b95d3eeca20fe",
+    "commit": "39626d5c455b2f1e7441d7b5c3d8a6cef8111b45",
     "integrationStatus": "all-platform-build-series-updated-android-bridge-integrated-export-gated; source-pull-request-pending-publication",
     "orderedPcmPatch": "patches/mpv/pool/0210-plezy-ordered-audio-tap.patch",
     "androidBridgePatch": "patches/mpv-build-android-visualizer-bridge.patch",

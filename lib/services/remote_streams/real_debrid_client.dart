@@ -10,7 +10,15 @@ class RealDebridException implements Exception {
   final RealDebridFailure reason;
 }
 
-enum RealDebridFailure { authentication, unavailable, invalidResponse, unsupported, preparationFailed, timeout, cancelled }
+enum RealDebridFailure {
+  authentication,
+  unavailable,
+  invalidResponse,
+  unsupported,
+  preparationFailed,
+  timeout,
+  cancelled,
+}
 
 class RealDebridDeviceCode {
   const RealDebridDeviceCode({
@@ -38,9 +46,8 @@ class ResolvedRemoteStream {
 /// The public app id is the one Real-Debrid publishes for open-source apps;
 /// user-bound client credentials are acquired separately per account.
 class RealDebridClient {
-  RealDebridClient({http.Client? client, required RemoteStreamAccount account, this.onAccountRefreshed})
-    : _http = client ?? http.Client(),
-      _account = account;
+  RealDebridClient({http.Client? client, required this._account, this.onAccountRefreshed})
+    : _http = client ?? http.Client();
 
   static const _publicClientId = 'X245A4XAIBGVM';
   static const _oauthBase = 'https://api.real-debrid.com/oauth/v2';
@@ -54,12 +61,12 @@ class RealDebridClient {
     final owned = client == null;
     final transport = client ?? http.Client();
     try {
-      final uri = Uri.parse('$_oauthBase/device/code').replace(
-        queryParameters: {'client_id': _publicClientId, 'new_credentials': 'yes'},
-      );
-      final response = await transport.get(uri, headers: const {'accept': 'application/json'}).timeout(
-        const Duration(seconds: 15),
-      );
+      final uri = Uri.parse(
+        '$_oauthBase/device/code',
+      ).replace(queryParameters: {'client_id': _publicClientId, 'new_credentials': 'yes'});
+      final response = await transport
+          .get(uri, headers: const {'accept': 'application/json'})
+          .timeout(const Duration(seconds: 15));
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw const RealDebridException(RealDebridFailure.unavailable);
       }
@@ -98,12 +105,12 @@ class RealDebridClient {
       Map<String, dynamic>? credentials;
       while (DateTime.now().isBefore(deadline)) {
         if (shouldCancel?.call() == true) return null;
-        final uri = Uri.parse('$_oauthBase/device/credentials').replace(
-          queryParameters: {'client_id': _publicClientId, 'code': code.deviceCode},
-        );
-        final response = await transport.get(uri, headers: const {'accept': 'application/json'}).timeout(
-          const Duration(seconds: 15),
-        );
+        final uri = Uri.parse(
+          '$_oauthBase/device/credentials',
+        ).replace(queryParameters: {'client_id': _publicClientId, 'code': code.deviceCode});
+        final response = await transport
+            .get(uri, headers: const {'accept': 'application/json'})
+            .timeout(const Duration(seconds: 15));
         if (response.statusCode >= 200 && response.statusCode < 300) {
           credentials = _decodeObject(response.bodyBytes);
           break;
@@ -192,7 +199,11 @@ class RealDebridClient {
       final magnet = 'magnet:?xt=urn:btih:${hash.toLowerCase()}';
       final created = await _apiPost('/torrents/addMagnet', {'magnet': magnet});
       final rawTorrentId = created['id'];
-      torrentId = rawTorrentId is String ? rawTorrentId : rawTorrentId is num ? '$rawTorrentId' : '';
+      torrentId = rawTorrentId is String
+          ? rawTorrentId
+          : rawTorrentId is num
+          ? '$rawTorrentId'
+          : '';
     }
     if (!RegExp(r'^\d{1,32}$').hasMatch(torrentId)) {
       throw const RealDebridException(RealDebridFailure.invalidResponse);
@@ -280,7 +291,11 @@ class RealDebridClient {
       throw const RealDebridException(RealDebridFailure.invalidResponse);
     }
     final rawName = result['filename'] ?? result['original_filename'];
-    final name = rawName is String ? rawName : link.pathSegments.isEmpty ? 'Video.mp4' : link.pathSegments.last;
+    final name = rawName is String
+        ? rawName
+        : link.pathSegments.isEmpty
+        ? 'Video.mp4'
+        : link.pathSegments.last;
     final safeName = name
         .replaceAll('\\', '/')
         .split('/')
@@ -474,8 +489,17 @@ class RealDebridClient {
   static bool _looksLikeVideo(String path) {
     final dot = path.lastIndexOf('.');
     if (dot < 0) return false;
-    return const {'.mkv', '.mp4', '.avi', '.m4v', '.mov', '.ts', '.webm', '.mpg', '.mpeg'}
-        .contains(path.substring(dot).toLowerCase());
+    return const {
+      '.mkv',
+      '.mp4',
+      '.avi',
+      '.m4v',
+      '.mov',
+      '.ts',
+      '.webm',
+      '.mpg',
+      '.mpeg',
+    }.contains(path.substring(dot).toLowerCase());
   }
 
   static Map<String, dynamic> _decodeObject(List<int> bytes) {
@@ -486,7 +510,10 @@ class RealDebridClient {
   }
 
   static String _safeFileName(String value) {
-    final pieces = value.replaceAll('\\', '/').split('/').where((part) => part.isNotEmpty && part != '.' && part != '..');
+    final pieces = value
+        .replaceAll('\\', '/')
+        .split('/')
+        .where((part) => part.isNotEmpty && part != '.' && part != '..');
     final name = pieces.isEmpty ? 'Video.mp4' : pieces.last.replaceAll(RegExp(r'[\x00-\x1f\x7f]'), '').trim();
     if (name.isEmpty) return 'Video.mp4';
     return name.length > 240 ? name.substring(name.length - 240) : name;

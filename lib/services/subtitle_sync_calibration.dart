@@ -21,12 +21,7 @@ final class SubtitleSyncCalibration {
     required double subtitleTime2Seconds,
     required double playbackTime2Seconds,
   }) {
-    final values = [
-      subtitleTime1Seconds,
-      playbackTime1Seconds,
-      subtitleTime2Seconds,
-      playbackTime2Seconds,
-    ];
+    final values = [subtitleTime1Seconds, playbackTime1Seconds, subtitleTime2Seconds, playbackTime2Seconds];
     if (values.any((value) => !value.isFinite || value < 0)) {
       throw ArgumentError('Anchor times must be finite, non-negative values.');
     }
@@ -38,14 +33,11 @@ final class SubtitleSyncCalibration {
     }
 
     final multiplier = playbackSpan / subtitleSpan;
-    if (!multiplier.isFinite ||
-        multiplier < minimumTimestampMultiplier ||
-        multiplier > maximumTimestampMultiplier) {
-      throw RangeError.range(
+    if (!multiplier.isFinite || multiplier < minimumTimestampMultiplier || multiplier > maximumTimestampMultiplier) {
+      throw RangeError.value(
         multiplier,
-        minimumTimestampMultiplier,
-        maximumTimestampMultiplier,
         'timestampMultiplier',
+        'Must be finite and between $minimumTimestampMultiplier and $maximumTimestampMultiplier',
       );
     }
 

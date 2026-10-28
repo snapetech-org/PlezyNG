@@ -32,7 +32,7 @@ final class SubtitleWhisperResult {
 /// whisper.cpp provides the multilingual CPU baseline and optional compiled
 /// CUDA/Vulkan devices. GPU use is selected only from devices reported by the
 /// native runtime; a failed GPU load or inference is retried on CPU.
-abstract final class SubtitleWhisperCppService {
+final class SubtitleWhisperCppService {
   static final SubtitleWhisperCppService instance = SubtitleWhisperCppService._();
   SubtitleWhisperCppService._();
 
@@ -48,11 +48,7 @@ abstract final class SubtitleWhisperCppService {
       !_tvOsBuild &&
       !_tizenBuild &&
       !_webOsBuild &&
-      (Platform.isAndroid ||
-          Platform.isIOS ||
-          Platform.isWindows ||
-          Platform.isMacOS ||
-          Platform.isLinux);
+      (Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isMacOS || Platform.isLinux);
 
   /// Loads the same verified multilingual model used by WAV transcription for
   /// repeated, in-memory Android PCM windows. The caller owns and disposes it.
@@ -62,15 +58,14 @@ abstract final class SubtitleWhisperCppService {
     if (!supportedPlatform) {
       throw UnsupportedError('Local Whisper inference is unavailable on this platform.');
     }
-    final modelDirectory =
-        p.join((await getApplicationSupportDirectory()).path, 'subtitle_models', 'whisper_cpp');
+    final modelDirectory = p.join((await getApplicationSupportDirectory()).path, 'subtitle_models', 'whisper_cpp');
     final model = whisper.WhisperModels.baseQ5_1;
     return whisper.FlutterWhisper.loadModel(
       model: model,
       modelDirectory: modelDirectory,
       config: const whisper.WhisperModelConfig(useGpu: false),
       onDownloadProgress: (progress) {
-        onProgress?.call('Downloading multilingual ' + model.id, progress.receivedBytes, progress.totalBytes);
+        onProgress?.call('Downloading multilingual ${model.id}', progress.receivedBytes, progress.totalBytes);
       },
       onModelProgress: (progress) => onProgress?.call('Loading Whisper model', progress, 100),
     );
@@ -85,7 +80,9 @@ abstract final class SubtitleWhisperCppService {
   }) async {
     if (!supportedPlatform) throw UnsupportedError('Local Whisper inference is unavailable on this platform.');
     final normalizedLanguageCode = languageCode?.trim().toLowerCase().split(RegExp(r'[-_]')).first ?? '';
-    final selectedLanguage = normalizedLanguageCode.isEmpty || normalizedLanguageCode == 'auto' ? 'auto' : normalizedLanguageCode;
+    final selectedLanguage = normalizedLanguageCode.isEmpty || normalizedLanguageCode == 'auto'
+        ? 'auto'
+        : normalizedLanguageCode;
     if (selectedLanguage != 'auto' && !RegExp(r'^[a-z]{2,3}$').hasMatch(selectedLanguage)) {
       throw ArgumentError.value(languageCode, 'languageCode', 'Use a two or three letter language code or auto.');
     }
@@ -187,10 +184,7 @@ abstract final class SubtitleWhisperCppService {
         ),
         onProgress: (progress) => onProgress?.call('Whisper inference', progress, 100),
       );
-      final wordTimings = SubtitleWordTimingBuilder.fromWhisperSegments(
-        result.segments,
-        durationMs: durationMs,
-      );
+      final wordTimings = SubtitleWordTimingBuilder.fromWhisperSegments(result.segments, durationMs: durationMs);
       final cues = <SubtitleCue>[];
       for (final segment in result.segments) {
         final text = segment.text.trim().replaceAll(RegExp(r'\s+'), ' ');
@@ -224,7 +218,7 @@ abstract final class _WavDurationReader {
     try {
       final length = await file.length();
       if (length < 44) throw const FormatException('WAV file is too short.');
-      if (length > _maximumWavBytes) {
+      if (length > SubtitleWhisperCppService._maximumWavBytes) {
         throw const FormatException('WAV file exceeds the 1 GiB Whisper processing limit.');
       }
       final header = await file.read(12);
@@ -259,9 +253,7 @@ abstract final class _WavDurationReader {
           final supportedPcmDepth = audioFormat == 1 && const {8, 16, 24, 32}.contains(bitsPerSample);
           final supportedFloatDepth = audioFormat == 3 && const {32, 64}.contains(bitsPerSample);
           final bytesPerSample = (bitsPerSample + 7) ~/ 8;
-          if ((!supportedPcmDepth && !supportedFloatDepth) ||
-              channels < 1 ||
-              blockAlign < channels * bytesPerSample) {
+          if ((!supportedPcmDepth && !supportedFloatDepth) || channels < 1 || blockAlign < channels * bytesPerSample) {
             throw const FormatException('Choose an uncompressed PCM or IEEE-float WAV file.');
           }
         } else if (name == 'data') {

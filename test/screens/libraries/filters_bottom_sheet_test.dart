@@ -278,11 +278,15 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Required'));
     await tester.pumpAndSettle();
-    expect(applied.last, const [LibraryFilter(field: 'genre', values: ['1'])]);
+    expect(applied.last, const [
+      LibraryFilter(field: 'genre', values: ['1']),
+    ]);
     await tester.tap(find.text('Comedy'));
     await tester.pumpAndSettle();
 
-    expect(applied.last, const [LibraryFilter(field: 'genre', values: ['2'])]);
+    expect(applied.last, const [
+      LibraryFilter(field: 'genre', values: ['2']),
+    ]);
   });
 
   testWidgets('the exclude row negates the clause and survives a value change', (tester) async {
@@ -492,11 +496,15 @@ void main() {
 
     await tester.enterText(find.byType(TextField).first, 'Mystery');
     await tester.pumpAndSettle();
-    expect(applied.last, const [LibraryFilter(field: 'query', values: ['Mystery'])]);
+    expect(applied.last, const [
+      LibraryFilter(field: 'query', values: ['Mystery']),
+    ]);
 
     await tester.enterText(find.byType(TextField).first, '');
     await tester.pumpAndSettle();
-    expect(applied.last, const [LibraryFilter(field: 'query', values: ['Mystery'])]);
+    expect(applied.last, const [
+      LibraryFilter(field: 'query', values: ['Mystery']),
+    ]);
   });
 
   testWidgets('cached values bypass the lazy loader', (tester) async {

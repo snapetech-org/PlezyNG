@@ -498,8 +498,7 @@ extension _VideoPlayerPlaybackServiceMethods on VideoPlayerScreenState {
     // Local media still reports live when its server is online; only queue
     // locally when no reporting client is reachable.
     if (_playbackContext?.recordsLocalProgress == true) {
-      bool externalProgressOwnerIsCurrent() =>
-          _externalStreamGatewayValid && _externalSourceFor(metadata) != null;
+      bool externalProgressOwnerIsCurrent() => _externalStreamGatewayValid && _externalSourceFor(metadata) != null;
 
       _progressTracker = PlaybackProgressTracker(
         client: null,
@@ -508,8 +507,7 @@ extension _VideoPlayerPlaybackServiceMethods on VideoPlayerScreenState {
         localOnly: true,
         offlineWatchService: offlineWatchService,
         localProgressCallback: _externalSourceFor(metadata)?.onProgress,
-        canReportPlayback: () =>
-            _firstFrame.rendered && !_hasFatalPlaybackError && externalProgressOwnerIsCurrent(),
+        canReportPlayback: () => _firstFrame.rendered && !_hasFatalPlaybackError && externalProgressOwnerIsCurrent(),
         hasRenderedPlayback: () => _firstFrame.rendered && externalProgressOwnerIsCurrent(),
       );
       _progressTracker!.startTracking();

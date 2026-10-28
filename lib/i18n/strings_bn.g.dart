@@ -2852,7 +2852,6 @@ class _Translations$streaming$bn extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'আপনার Real-Debrid অ্যাকাউন্ট দিয়ে সমর্থিত টরেন্ট স্ট্রিম চালান।';
 	@override String get connectRealDebrid => 'QR কোড দিয়ে সংযোগ করুন';
-	@override String get disconnectRealDebrid => 'Real-Debrid সংযোগ বিচ্ছিন্ন করুন';
 	@override String realDebridConnected({required Object username}) => '${username} হিসেবে সংযুক্ত';
 	@override String get realDebridInstructions => 'QR কোড স্ক্যান করুন বা লিংক খুলুন, তারপর PlezyNG সংযোগ করতে এই সক্রিয়করণ কোড দিন:';
 	@override String get realDebridActivate => 'সক্রিয় করতে Real-Debrid খুলুন';
@@ -2880,21 +2879,17 @@ class _Translations$streaming$bn extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => '${service} সংযোগ বিচ্ছিন্ন করবেন?';
 	@override String get disconnectBody => 'PlezyNG এই ডিভাইসের অনুমতি সরিয়ে দেবে। প্রদানকারীর ফাইল ও চলমান স্থানান্তর অপরিবর্তিত থাকবে।';
 	@override String get streamsTitle => 'স্ট্রিম বেছে নিন';
-	@override String get searchingStreams => 'সংযুক্ত অ্যাড-অন পরীক্ষা করা হচ্ছে…';
 	@override String get noStreams => 'এই শিরোনামের জন্য কোনো স্ট্রিম পাওয়া যায়নি।';
 	@override String get manageConnections => 'স্ট্রিমিং পরিষেবা পরিচালনা';
 	@override String subtitleTracks({required Object count}) => 'সাবটাইটেল ট্র্যাক: ${count}';
 	@override String get chooseSubtitle => 'সাবটাইটেল বেছে নিন';
 	@override String get chooseProvider => 'Debrid পরিষেবা বেছে নিন';
 	@override String get subtitleOff => 'সাবটাইটেল বন্ধ';
-	@override String get subtitleLoadFailed => 'এই সাবটাইটেল লোড করা যায়নি। অন্য ট্র্যাক চেষ্টা করুন।';
-	@override String get subtitleApplied => 'প্লেব্যাকের জন্য সাবটাইটেল নির্বাচিত';
 	@override String get streamLookupPartial => 'কিছু অ্যাড-অনে পৌঁছানো যায়নি।';
 	@override String get streamLookupFailed => 'সংযুক্ত অ্যাড-অন পরীক্ষা করা যায়নি।';
 	@override String get streamOpenExternal => 'বাইরের লিংক খুলুন';
 	@override String get streamPrepare => 'আপনার Debrid পরিষেবা দিয়ে প্রস্তুত করা হচ্ছে…';
 	@override String get streamPrepareFailed => 'এই স্ট্রিম প্রস্তুত করা যায়নি। সংযুক্ত অ্যাকাউন্ট পরীক্ষা করে অন্য উৎস চেষ্টা করুন।';
-	@override String get streamNeedsRealDebrid => 'এই টরেন্ট স্ট্রিম চালাতে Debrid পরিষেবা সংযোগ করুন।';
 	@override String get streamUnsupported => 'অ্যাপের বিল্ট-ইন প্লেয়ার এই স্ট্রিম ফরম্যাট সমর্থন করে না।';
 	@override String get remoteNeedsEpisode => 'স্ট্রিম খোঁজার আগে একটি পর্ব বেছে নিন।';
 	@override String get remoteNeedsEpisodeNumber => 'এই পর্বে সিজন বা পর্ব নম্বর নেই।';
@@ -7903,7 +7898,6 @@ extension on TranslationsBn {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'আপনার Real-Debrid অ্যাকাউন্ট দিয়ে সমর্থিত টরেন্ট স্ট্রিম চালান।',
 			'streaming.connectRealDebrid' => 'QR কোড দিয়ে সংযোগ করুন',
-			'streaming.disconnectRealDebrid' => 'Real-Debrid সংযোগ বিচ্ছিন্ন করুন',
 			'streaming.realDebridConnected' => ({required Object username}) => '${username} হিসেবে সংযুক্ত',
 			'streaming.realDebridInstructions' => 'QR কোড স্ক্যান করুন বা লিংক খুলুন, তারপর PlezyNG সংযোগ করতে এই সক্রিয়করণ কোড দিন:',
 			'streaming.realDebridActivate' => 'সক্রিয় করতে Real-Debrid খুলুন',
@@ -7931,21 +7925,17 @@ extension on TranslationsBn {
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service} সংযোগ বিচ্ছিন্ন করবেন?',
 			'streaming.disconnectBody' => 'PlezyNG এই ডিভাইসের অনুমতি সরিয়ে দেবে। প্রদানকারীর ফাইল ও চলমান স্থানান্তর অপরিবর্তিত থাকবে।',
 			'streaming.streamsTitle' => 'স্ট্রিম বেছে নিন',
-			'streaming.searchingStreams' => 'সংযুক্ত অ্যাড-অন পরীক্ষা করা হচ্ছে…',
 			'streaming.noStreams' => 'এই শিরোনামের জন্য কোনো স্ট্রিম পাওয়া যায়নি।',
 			'streaming.manageConnections' => 'স্ট্রিমিং পরিষেবা পরিচালনা',
 			'streaming.subtitleTracks' => ({required Object count}) => 'সাবটাইটেল ট্র্যাক: ${count}',
 			'streaming.chooseSubtitle' => 'সাবটাইটেল বেছে নিন',
 			'streaming.chooseProvider' => 'Debrid পরিষেবা বেছে নিন',
 			'streaming.subtitleOff' => 'সাবটাইটেল বন্ধ',
-			'streaming.subtitleLoadFailed' => 'এই সাবটাইটেল লোড করা যায়নি। অন্য ট্র্যাক চেষ্টা করুন।',
-			'streaming.subtitleApplied' => 'প্লেব্যাকের জন্য সাবটাইটেল নির্বাচিত',
 			'streaming.streamLookupPartial' => 'কিছু অ্যাড-অনে পৌঁছানো যায়নি।',
 			'streaming.streamLookupFailed' => 'সংযুক্ত অ্যাড-অন পরীক্ষা করা যায়নি।',
 			'streaming.streamOpenExternal' => 'বাইরের লিংক খুলুন',
 			'streaming.streamPrepare' => 'আপনার Debrid পরিষেবা দিয়ে প্রস্তুত করা হচ্ছে…',
 			'streaming.streamPrepareFailed' => 'এই স্ট্রিম প্রস্তুত করা যায়নি। সংযুক্ত অ্যাকাউন্ট পরীক্ষা করে অন্য উৎস চেষ্টা করুন।',
-			'streaming.streamNeedsRealDebrid' => 'এই টরেন্ট স্ট্রিম চালাতে Debrid পরিষেবা সংযোগ করুন।',
 			'streaming.streamUnsupported' => 'অ্যাপের বিল্ট-ইন প্লেয়ার এই স্ট্রিম ফরম্যাট সমর্থন করে না।',
 			'streaming.remoteNeedsEpisode' => 'স্ট্রিম খোঁজার আগে একটি পর্ব বেছে নিন।',
 			'streaming.remoteNeedsEpisodeNumber' => 'এই পর্বে সিজন বা পর্ব নম্বর নেই।',
@@ -8200,13 +8190,13 @@ extension on TranslationsBn {
 			'universalMedia.playlistFormatsHelp' => 'একটি খেলা লিস্টে সর্বাধিক 1,000 পণ্য এবং 2 মিবি রয়েছে. HLS স্ট্রিম হিসাবে খোলা হয়, তাই খেলোয়াড় একটি মান নির্বাচন করতে পারেন।',
 			'universalMedia.saveQueuePlaylist' => 'কিউ প্লেলিস্ট হিসেবে সংরক্ষণ করুন',
 			'universalMedia.queuePlaylistSaved' => 'মিডিয়া ফাইলগুলোর পাশে প্লেলিস্ট সংরক্ষিত হয়েছে।',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'এই কিউ পুনরায় ব্যবহারযোগ্য স্থানীয় প্লেলিস্ট হিসেবে সংরক্ষণ করা যাবে না।',
 			'universalMedia.queuePlaylistFolderRequired' => 'কিউতে থাকা ফাইলগুলোর একই ফোল্ডারে সংরক্ষণের স্থান বেছে নিন।',
 			'universalMedia.noFavorites' => 'এখনো কোন প্রেমের পছন্দ সংরক্ষণ করা হয় না. পছন্দের এই प्रोফাইলে থাকুন।',
 			'universalMedia.removeFavorite' => 'প্রিয় স্ট্রিম মুছে ফেলুন',
 			'universalMedia.filesHelp' => 'অডিও, ভিডিও বা আইএসও ফাইলগুলি একটি temporary quue জন্য নির্বাচন করুন. ফাইল এবং URLs লাইব্রেরির ইতিহাসে যোগ করা হয় না।',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi এর মাধ্যমে ফাইল পাঠান',
@@ -8714,13 +8704,13 @@ extension on TranslationsBn {
 			'sourceSetup.nfsEncryptionFailure' => 'এনক্রিপ্ট করা NFS-এর জন্য NAS-এর দুই সেবায় RFC 9289 ও TLS 1.3 সমর্থন, সার্টিফিকেটের নাম এবং এক্সপোর্টের UID/GID পরীক্ষা করুন। PlezyNG এনক্রিপশন ছাড়া এই সংযোগ আবার চেষ্টা করবে না।',
 			'sourceSetup.sourceConnecting' => 'উৎসের সঙ্গে সংযোগ করা হচ্ছে',
 			'sourceSetup.metadataSearchPrivacy' => 'এই শিরোনাম অনুসন্ধান Trakt-এ পাঠানো হয়। শুধু আপনার লেখা শিরোনাম পাঠানো হয়, ভিডিও বা উৎসের প্রবেশতথ্য নয়।',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'মিল পাওয়া ফলাফল বেছে নিন',
 			'sourceSetup.metadataMatchHelp' => 'বেছে নেওয়ার আগে শিরোনাম ও বছর পরীক্ষা করুন। Trakt অনুসন্ধানের শিরোনাম পায়; ভিডিও তার উৎসেই থাকে।',
 			'sourceSetup.metadataNoMatches' => 'অনলাইনে মিলে যায় এমন কোনো শিরোনাম পাওয়া যায়নি। অন্য শিরোনাম দিয়ে চেষ্টা করুন।',
 			'sourceSetup.metadataSearch' => 'অনলাইন মেটাডেটা খুঁজুন',
 			'sourceSetup.metadataLoading' => 'সিনেমা ও টিভি অনুষ্ঠানের তথ্য অনলাইনে খোঁজা হচ্ছে…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt থেকে অনলাইন মেটাডেটা',
 			'sourceSetup.metadataNoAutomaticMatch' => 'স্বয়ংক্রিয়ভাবে কোনো শিরোনামের মিল পাওয়া যায়নি। শিরোনাম খুঁজে সঠিক ফলাফল বেছে নিন।',
 			'sourceSetup.metadataFailed' => 'অনলাইন মেটাডেটা লোড করা যায়নি। প্লেব্যাক ও স্থানীয় তথ্য এখনো পাওয়া যাবে।',

@@ -2852,7 +2852,6 @@ class _Translations$streaming$nb extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Spill av støttede torrentstrømmer via Real-Debrid-kontoen din.';
 	@override String get connectRealDebrid => 'Koble til med QR-kode';
-	@override String get disconnectRealDebrid => 'Koble fra Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'Tilkoblet som ${username}';
 	@override String get realDebridInstructions => 'Skann QR-koden eller åpne lenken, og skriv deretter inn denne aktiveringskoden for å koble til PlezyNG:';
 	@override String get realDebridActivate => 'Åpne Real-Debrid for å aktivere';
@@ -2880,21 +2879,17 @@ class _Translations$streaming$nb extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'Koble fra ${service}?';
 	@override String get disconnectBody => 'PlezyNG fjerner denne enhetens tilgang. Filer hos leverandøren og pågående overføringer påvirkes ikke.';
 	@override String get streamsTitle => 'Velg en strøm';
-	@override String get searchingStreams => 'Sjekker tilkoblede tillegg…';
 	@override String get noStreams => 'Fant ingen strømmer for denne tittelen.';
 	@override String get manageConnections => 'Administrer strømmetjenester';
 	@override String subtitleTracks({required Object count}) => 'Undertekstspor: ${count}';
 	@override String get chooseSubtitle => 'Velg undertekst';
 	@override String get chooseProvider => 'Velg Debrid-tjeneste';
 	@override String get subtitleOff => 'Undertekster av';
-	@override String get subtitleLoadFailed => 'Kunne ikke laste inn denne underteksten. Prøv et annet spor.';
-	@override String get subtitleApplied => 'Undertekst valgt for avspilling';
 	@override String get streamLookupPartial => 'Noen tillegg kan ikke nås.';
 	@override String get streamLookupFailed => 'Kunne ikke sjekke de tilkoblede tilleggene.';
 	@override String get streamOpenExternal => 'Åpne ekstern lenke';
 	@override String get streamPrepare => 'Forbereder via Debrid-tjenesten din…';
 	@override String get streamPrepareFailed => 'Denne strømmen kunne ikke klargjøres. Kontroller den tilkoblede kontoen og prøv en annen kilde.';
-	@override String get streamNeedsRealDebrid => 'Koble til en Debrid-tjeneste for å spille av denne torrentstrømmen.';
 	@override String get streamUnsupported => 'Dette strømmeformatet støttes ikke av den innebygde spilleren.';
 	@override String get remoteNeedsEpisode => 'Velg en episode før du søker etter en strøm.';
 	@override String get remoteNeedsEpisodeNumber => 'Denne episoden mangler sesong- eller episodenummer.';
@@ -7903,7 +7898,6 @@ extension on TranslationsNb {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Spill av støttede torrentstrømmer via Real-Debrid-kontoen din.',
 			'streaming.connectRealDebrid' => 'Koble til med QR-kode',
-			'streaming.disconnectRealDebrid' => 'Koble fra Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Tilkoblet som ${username}',
 			'streaming.realDebridInstructions' => 'Skann QR-koden eller åpne lenken, og skriv deretter inn denne aktiveringskoden for å koble til PlezyNG:',
 			'streaming.realDebridActivate' => 'Åpne Real-Debrid for å aktivere',
@@ -7931,21 +7925,17 @@ extension on TranslationsNb {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Koble fra ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG fjerner denne enhetens tilgang. Filer hos leverandøren og pågående overføringer påvirkes ikke.',
 			'streaming.streamsTitle' => 'Velg en strøm',
-			'streaming.searchingStreams' => 'Sjekker tilkoblede tillegg…',
 			'streaming.noStreams' => 'Fant ingen strømmer for denne tittelen.',
 			'streaming.manageConnections' => 'Administrer strømmetjenester',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Undertekstspor: ${count}',
 			'streaming.chooseSubtitle' => 'Velg undertekst',
 			'streaming.chooseProvider' => 'Velg Debrid-tjeneste',
 			'streaming.subtitleOff' => 'Undertekster av',
-			'streaming.subtitleLoadFailed' => 'Kunne ikke laste inn denne underteksten. Prøv et annet spor.',
-			'streaming.subtitleApplied' => 'Undertekst valgt for avspilling',
 			'streaming.streamLookupPartial' => 'Noen tillegg kan ikke nås.',
 			'streaming.streamLookupFailed' => 'Kunne ikke sjekke de tilkoblede tilleggene.',
 			'streaming.streamOpenExternal' => 'Åpne ekstern lenke',
 			'streaming.streamPrepare' => 'Forbereder via Debrid-tjenesten din…',
 			'streaming.streamPrepareFailed' => 'Denne strømmen kunne ikke klargjøres. Kontroller den tilkoblede kontoen og prøv en annen kilde.',
-			'streaming.streamNeedsRealDebrid' => 'Koble til en Debrid-tjeneste for å spille av denne torrentstrømmen.',
 			'streaming.streamUnsupported' => 'Dette strømmeformatet støttes ikke av den innebygde spilleren.',
 			'streaming.remoteNeedsEpisode' => 'Velg en episode før du søker etter en strøm.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Denne episoden mangler sesong- eller episodenummer.',
@@ -8200,13 +8190,13 @@ extension on TranslationsNb {
 			'universalMedia.playlistFormatsHelp' => 'En spillliste kan inneholde opptil 1000 elementer og 2 MB. HLS manifesterer seg åpent som strømmer slik at spilleren kan velge en kvalitet.',
 			'universalMedia.saveQueuePlaylist' => 'Lagre køen som spilleliste',
 			'universalMedia.queuePlaylistSaved' => 'Spillelisten ble lagret ved siden av mediefilene.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Denne køen kan ikke lagres som en gjenbrukbar lokal spilleliste.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Velg et lagringssted i samme mappe som filene i køen.',
 			'universalMedia.noFavorites' => 'Ingen sparte stream favoritter ennå. Favoritter forblir i denne profilen.',
 			'universalMedia.removeFavorite' => 'Fjern stream favoritt',
 			'universalMedia.filesHelp' => 'Velg audio, video eller ISO-filer for en midlertidig kue. filer og URL\'er er ikke lagt til bibliotekets historie.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Velg filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nb'))(n, one: '1 utvalgte filer', other: '${count} utvalgte filer', ), 
 			'universalMedia.wifiTransfer' => 'Send filer via Wi-Fi',
@@ -8714,13 +8704,13 @@ extension on TranslationsNb {
 			'sourceSetup.nfsEncryptionFailure' => 'For kryptert NFS må du kontrollere støtte for RFC 9289 og TLS 1.3 på begge NAS-tjenestene, sertifikatnavnet og delingens UID/GID. PlezyNG prøver ikke denne tilkoblingen på nytt uten kryptering.',
 			'sourceSetup.sourceConnecting' => 'Kobler til kilde',
 			'sourceSetup.metadataSearchPrivacy' => 'Dette tittelsøket sendes til Trakt. Det sender tittelen du oppgir, ikke videoen eller kildens påloggingsinformasjon.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Velg et treff',
 			'sourceSetup.metadataMatchHelp' => 'Kontroller tittel og år før du velger. Trakt mottar søketittelen; videoen blir på kilden sin.',
 			'sourceSetup.metadataNoMatches' => 'Ingen samsvarende titler funnet på nettet. Prøv en annen tittel.',
 			'sourceSetup.metadataSearch' => 'Søk etter metadata på nettet',
 			'sourceSetup.metadataLoading' => 'Søker etter film- og serieinformasjon på nettet…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadata fra Trakt på nettet',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Fant ikke et automatisk titteltreff. Søk etter tittelen for å velge et treff.',
 			'sourceSetup.metadataFailed' => 'Kunne ikke laste metadata fra nettet. Avspilling og lokal informasjon er fortsatt tilgjengelig.',

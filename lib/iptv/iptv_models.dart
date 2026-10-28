@@ -4,6 +4,7 @@ import '../models/livetv_program.dart';
 /// Profile-owned IPTV inputs. Tunerr and Dispatcharr can be used through
 /// standard feeds; Stalker/Ministra uses its optional MAG portal adapter.
 enum IptvInputKind { m3u, xtream, tunerr, dispatcharr, stalker }
+
 enum IptvVodKind { movie, series }
 
 extension IptvInputKindVodSupport on IptvInputKind {
@@ -69,7 +70,8 @@ class IptvSourceConfiguration {
     kind: IptvInputKind.values.byName(json['kind'] as String),
     endpoint: json['endpoint'] as String,
     guideEndpoint: json['guideEndpoint'] as String? ?? '',
-    additionalGuideEndpoints: (json['additionalGuideEndpoints'] as List<dynamic>?)?.whereType<String>().toList() ?? const [],
+    additionalGuideEndpoints:
+        (json['additionalGuideEndpoints'] as List<dynamic>?)?.whereType<String>().toList() ?? const [],
     username: json['username'] as String? ?? '',
     password: json['password'] as String? ?? '',
     macAddress: json['macAddress'] as String? ?? '',
@@ -82,7 +84,10 @@ class IptvSourceConfiguration {
   Uri playlistUri() {
     final endpointUri = Uri.parse(endpoint);
     if (kind != IptvInputKind.xtream &&
-        !(kind == IptvInputKind.dispatcharr && username.isNotEmpty && password.isNotEmpty && !_isXtreamEndpointFile(endpointUri))) {
+        !(kind == IptvInputKind.dispatcharr &&
+            username.isNotEmpty &&
+            password.isNotEmpty &&
+            !_isXtreamEndpointFile(endpointUri))) {
       return endpointUri;
     }
     final base = xtreamBaseUri;
@@ -105,11 +110,7 @@ class IptvSourceConfiguration {
     final base = xtreamBaseUri;
     return base.replace(
       path: '${base.path.replaceFirst(RegExp(r'/+$'), '')}/xmltv.php',
-      queryParameters: {
-        ...base.queryParameters,
-        'username': username,
-        'password': password,
-      },
+      queryParameters: {...base.queryParameters, 'username': username, 'password': password},
     );
   }
 
@@ -136,12 +137,7 @@ class IptvSourceConfiguration {
     final base = xtreamBaseUri;
     return base.replace(
       path: '${base.path.replaceFirst(RegExp(r'/+$'), '')}/player_api.php',
-      queryParameters: {
-        'username': username,
-        'password': password,
-        'action': action,
-        ...parameters,
-      },
+      queryParameters: {'username': username, 'password': password, 'action': action, ...parameters},
     );
   }
 

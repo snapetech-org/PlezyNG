@@ -2928,7 +2928,6 @@ class _Translations$streaming$ar extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'شغّل روابط التورنت المدعومة عبر حساب Real-Debrid.';
 	@override String get connectRealDebrid => 'الربط باستخدام رمز QR';
-	@override String get disconnectRealDebrid => 'قطع اتصال Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'متصل باسم ${username}';
 	@override String get realDebridInstructions => 'امسح رمز QR أو افتح الرابط، ثم أدخل رمز التفعيل هذا لربط PlezyNG:';
 	@override String get realDebridActivate => 'فتح Real-Debrid للتفعيل';
@@ -2956,21 +2955,17 @@ class _Translations$streaming$ar extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'قطع الاتصال بـ ${service}؟';
 	@override String get disconnectBody => 'سيزيل PlezyNG صلاحية هذا الجهاز. لن تتأثر ملفات المزوّد أو عمليات النقل الجارية.';
 	@override String get streamsTitle => 'اختيار مصدر بث';
-	@override String get searchingStreams => 'جارٍ فحص الإضافات المرتبطة…';
 	@override String get noStreams => 'لم يتم العثور على بث لهذا العنوان.';
 	@override String get manageConnections => 'إدارة خدمات البث';
 	@override String subtitleTracks({required Object count}) => 'مسارات الترجمة النصية: ${count}';
 	@override String get chooseSubtitle => 'اختيار ترجمة';
 	@override String get chooseProvider => 'اختيار خدمة Debrid';
 	@override String get subtitleOff => 'الترجمة النصية متوقفة';
-	@override String get subtitleLoadFailed => 'تعذّر تحميل هذه الترجمة النصية. جرّب مسارًا آخر.';
-	@override String get subtitleApplied => 'تم اختيار الترجمة النصية للتشغيل';
 	@override String get streamLookupPartial => 'تعذّر الوصول إلى بعض الإضافات.';
 	@override String get streamLookupFailed => 'تعذّر فحص الإضافات المرتبطة.';
 	@override String get streamOpenExternal => 'فتح رابط خارجي';
 	@override String get streamPrepare => 'جارٍ التحضير عبر خدمة Debrid…';
 	@override String get streamPrepareFailed => 'تعذّر تجهيز هذا البث. تحقق من الحساب المرتبط وجرّب مصدرًا آخر.';
-	@override String get streamNeedsRealDebrid => 'اربط خدمة Debrid لتشغيل بث التورنت هذا.';
 	@override String get streamUnsupported => 'تنسيق البث هذا غير مدعوم في المشغّل داخل التطبيق.';
 	@override String get remoteNeedsEpisode => 'اختر حلقة قبل البحث عن بث.';
 	@override String get remoteNeedsEpisodeNumber => 'لا يتوفر رقم الموسم أو الحلقة لهذا المحتوى.';
@@ -8003,7 +7998,6 @@ extension on TranslationsAr {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'شغّل روابط التورنت المدعومة عبر حساب Real-Debrid.',
 			'streaming.connectRealDebrid' => 'الربط باستخدام رمز QR',
-			'streaming.disconnectRealDebrid' => 'قطع اتصال Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'متصل باسم ${username}',
 			'streaming.realDebridInstructions' => 'امسح رمز QR أو افتح الرابط، ثم أدخل رمز التفعيل هذا لربط PlezyNG:',
 			'streaming.realDebridActivate' => 'فتح Real-Debrid للتفعيل',
@@ -8031,21 +8025,17 @@ extension on TranslationsAr {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'قطع الاتصال بـ ${service}؟',
 			'streaming.disconnectBody' => 'سيزيل PlezyNG صلاحية هذا الجهاز. لن تتأثر ملفات المزوّد أو عمليات النقل الجارية.',
 			'streaming.streamsTitle' => 'اختيار مصدر بث',
-			'streaming.searchingStreams' => 'جارٍ فحص الإضافات المرتبطة…',
 			'streaming.noStreams' => 'لم يتم العثور على بث لهذا العنوان.',
 			'streaming.manageConnections' => 'إدارة خدمات البث',
 			'streaming.subtitleTracks' => ({required Object count}) => 'مسارات الترجمة النصية: ${count}',
 			'streaming.chooseSubtitle' => 'اختيار ترجمة',
 			'streaming.chooseProvider' => 'اختيار خدمة Debrid',
 			'streaming.subtitleOff' => 'الترجمة النصية متوقفة',
-			'streaming.subtitleLoadFailed' => 'تعذّر تحميل هذه الترجمة النصية. جرّب مسارًا آخر.',
-			'streaming.subtitleApplied' => 'تم اختيار الترجمة النصية للتشغيل',
 			'streaming.streamLookupPartial' => 'تعذّر الوصول إلى بعض الإضافات.',
 			'streaming.streamLookupFailed' => 'تعذّر فحص الإضافات المرتبطة.',
 			'streaming.streamOpenExternal' => 'فتح رابط خارجي',
 			'streaming.streamPrepare' => 'جارٍ التحضير عبر خدمة Debrid…',
 			'streaming.streamPrepareFailed' => 'تعذّر تجهيز هذا البث. تحقق من الحساب المرتبط وجرّب مصدرًا آخر.',
-			'streaming.streamNeedsRealDebrid' => 'اربط خدمة Debrid لتشغيل بث التورنت هذا.',
 			'streaming.streamUnsupported' => 'تنسيق البث هذا غير مدعوم في المشغّل داخل التطبيق.',
 			'streaming.remoteNeedsEpisode' => 'اختر حلقة قبل البحث عن بث.',
 			'streaming.remoteNeedsEpisodeNumber' => 'لا يتوفر رقم الموسم أو الحلقة لهذا المحتوى.',
@@ -8300,13 +8290,13 @@ extension on TranslationsAr {
 			'universalMedia.playlistFormatsHelp' => 'يمكن أن يحتوي قائمة التشغيل على ما يصل إلى 1000 عنصر و 2 ميغابايت.HLS يظهر مفتوحا مثل التدفقات بحيث يمكن للاعب اختيار نوعية.',
 			'universalMedia.saveQueuePlaylist' => 'حفظ قائمة الانتظار كقائمة تشغيل',
 			'universalMedia.queuePlaylistSaved' => 'تم حفظ قائمة التشغيل بجوار ملفات الوسائط.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'لا يمكن حفظ قائمة الانتظار هذه كقائمة تشغيل محلية قابلة لإعادة الاستخدام.',
 			'universalMedia.queuePlaylistFolderRequired' => 'اختر موقع حفظ في المجلد نفسه الذي توجد فيه الملفات في قائمة الانتظار.',
 			'universalMedia.noFavorites' => 'لم يتم تخزين المفضلة حتى الآن.المفضلة تبقى في هذا الملف الشخصي.',
 			'universalMedia.removeFavorite' => 'إزالة البث المفضل',
 			'universalMedia.filesHelp' => 'حدد الملفات الصوتية أو الفيديوية أو ملفات ISO لفترة مؤقتة.لا يتم إضافة الملفين أو عناوين URL إلى تاريخ المكتبة.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'اختيار الملفات',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات المختارة', one: '1 الملفات المختارة', two: '${count} الملفات المختارة', few: '${count} الملفات المختارة', many: '${count} الملفات المختارة', other: '${count} الملفات المختارة', ), 
 			'universalMedia.wifiTransfer' => 'إرسال الملفات عبر Wi-Fi',
@@ -8814,13 +8804,13 @@ extension on TranslationsAr {
 			'sourceSetup.nfsEncryptionFailure' => 'لاتصال NFS المشفّر، تحقّق من دعم RFC 9289 وTLS 1.3 في خدمتي NAS، ومن اسم الشهادة ومعرّفات UID/GID للتصدير. لن يعيد PlezyNG محاولة هذا الاتصال دون تشفير.',
 			'sourceSetup.sourceConnecting' => 'جارٍ الاتصال بالمصدر',
 			'sourceSetup.metadataSearchPrivacy' => 'يُرسل هذا البحث عن العنوان إلى Trakt. يُرسل العنوان الذي تدخله فقط، ولا يُرسل الفيديو أو بيانات اعتماد المصدر.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'اختيار نتيجة مطابقة',
 			'sourceSetup.metadataMatchHelp' => 'راجع العنوان والسنة قبل الاختيار. يتلقى Trakt عنوان البحث؛ ويبقى الفيديو في مصدره.',
 			'sourceSetup.metadataNoMatches' => 'لم يُعثر على عناوين مطابقة على الإنترنت. جرّب عنوانًا آخر.',
 			'sourceSetup.metadataSearch' => 'البحث عن بيانات وصفية على الإنترنت',
 			'sourceSetup.metadataLoading' => 'جارٍ البحث عن معلومات الأفلام والمسلسلات على الإنترنت…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'بيانات وصفية من Trakt عبر الإنترنت',
 			'sourceSetup.metadataNoAutomaticMatch' => 'لم يُعثر على تطابق تلقائي للعنوان. ابحث عن العنوان لاختيار نتيجة مطابقة.',
 			'sourceSetup.metadataFailed' => 'تعذّر تحميل البيانات الوصفية من الإنترنت. لا يزال التشغيل والمعلومات المحلية متاحين.',

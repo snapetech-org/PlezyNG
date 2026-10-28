@@ -20,9 +20,7 @@ class AllDebridClient {
     final owned = client == null;
     final httpClient = client ?? http.Client();
     try {
-      final response = await httpClient
-          .get(Uri.parse('$_base/v4.1/pin/get'))
-          .timeout(const Duration(seconds: 15));
+      final response = await httpClient.get(Uri.parse('$_base/v4.1/pin/get')).timeout(const Duration(seconds: 15));
       final row = _decodeEnvelope(response.bodyBytes, response.statusCode);
       final pin = row['pin'];
       final check = row['check'];
@@ -54,10 +52,7 @@ class AllDebridClient {
       while (DateTime.now().isBefore(deadline)) {
         if (shouldCancel?.call() == true) return null;
         final response = await httpClient
-            .post(
-              Uri.parse('$_base/v4/pin/check'),
-              body: {'check': code.check, 'pin': code.pin},
-            )
+            .post(Uri.parse('$_base/v4/pin/check'), body: {'check': code.check, 'pin': code.pin})
             .timeout(const Duration(seconds: 15));
         final row = _decodeEnvelope(response.bodyBytes, response.statusCode, allowPending: true);
         final apiKey = row['apikey'];
@@ -135,7 +130,11 @@ class AllDebridClient {
       if (statusCode != lastStatus) {
         lastStatus = statusCode;
         await onProgress?.call(
-          stage: statusCode == 4 ? 'ready' : statusCode is num && statusCode >= 5 ? 'failed' : 'preparing',
+          stage: statusCode == 4
+              ? 'ready'
+              : statusCode is num && statusCode >= 5
+              ? 'failed'
+              : 'preparing',
           providerJobId: id,
         );
       }
@@ -240,10 +239,11 @@ class AllDebridClient {
   Future<Map<String, dynamic>> _api(String method, String path, {Map<String, String>? fields}) async {
     final uri = Uri.parse('$_base$path');
     final headers = {'authorization': 'Bearer ${account.accessToken}', 'accept': 'application/json'};
-    final response = await (method == 'GET'
-            ? _http.get(uri, headers: headers)
-            : _http.post(uri, headers: headers, body: fields ?? const {}))
-        .timeout(const Duration(seconds: 20));
+    final response =
+        await (method == 'GET'
+                ? _http.get(uri, headers: headers)
+                : _http.post(uri, headers: headers, body: fields ?? const {}))
+            .timeout(const Duration(seconds: 20));
     return _decodeEnvelope(response.bodyBytes, response.statusCode);
   }
 
@@ -251,7 +251,12 @@ class AllDebridClient {
 }
 
 class AllDebridDeviceCode {
-  const AllDebridDeviceCode({required this.pin, required this.check, required this.userUrl, required this.expiresInSeconds});
+  const AllDebridDeviceCode({
+    required this.pin,
+    required this.check,
+    required this.userUrl,
+    required this.expiresInSeconds,
+  });
   final String pin;
   final String check;
   final Uri userUrl;
@@ -317,11 +322,13 @@ class PremiumizeClient {
       final rawUrl = row['link'];
       final uri = rawUrl is String ? Uri.tryParse(rawUrl) : null;
       if (uri == null || uri.scheme != 'https' || uri.host.isEmpty || uri.userInfo.isNotEmpty) continue;
-      files.add(_DebridFile(
-        name: _safeFileName(row['path'] as String? ?? 'Video'),
-        url: uri,
-        size: row['size'] is num ? (row['size'] as num).toInt() : null,
-      ));
+      files.add(
+        _DebridFile(
+          name: _safeFileName(row['path'] as String? ?? 'Video'),
+          url: uri,
+          size: row['size'] is num ? (row['size'] as num).toInt() : null,
+        ),
+      );
     }
     if (files.isEmpty) throw const RemoteProviderException(RemoteProviderFailure.preparationFailed);
     final selected = _selectFile(files, fileIndex);
@@ -351,11 +358,13 @@ class PremiumizeClient {
       final rawUrl = row['link'];
       final uri = rawUrl is String ? Uri.tryParse(rawUrl) : null;
       if (uri == null || uri.scheme != 'https' || uri.host.isEmpty || uri.userInfo.isNotEmpty) continue;
-      files.add(_DebridFile(
-        name: _safeFileName(row['path'] as String? ?? 'Video'),
-        url: uri,
-        size: row['size'] is num ? (row['size'] as num).toInt() : null,
-      ));
+      files.add(
+        _DebridFile(
+          name: _safeFileName(row['path'] as String? ?? 'Video'),
+          url: uri,
+          size: row['size'] is num ? (row['size'] as num).toInt() : null,
+        ),
+      );
     }
     if (files.isEmpty) throw const RemoteProviderException(RemoteProviderFailure.preparationFailed);
     final selected = _selectFile(files, null);
@@ -364,9 +373,7 @@ class PremiumizeClient {
 
   Future<RemoteCloudPage> browseCloud({String? folderId}) async {
     final baseUri = Uri.parse('$_base/folder/list');
-    final uri = baseUri.replace(queryParameters: {
-      if (folderId != null && folderId.isNotEmpty) 'id': folderId,
-    });
+    final uri = baseUri.replace(queryParameters: {if (folderId != null && folderId.isNotEmpty) 'id': folderId});
     final response = await _http
         .get(uri, headers: {'authorization': 'Bearer ${account.accessToken}', 'accept': 'application/json'})
         .timeout(const Duration(seconds: 25));
@@ -394,17 +401,19 @@ class PremiumizeClient {
               link.toString().length > 8192)) {
         continue;
       }
-      items.add(RemoteCloudItem(
-        id: 'pm:${isFolder ? 'folder' : 'file'}:$id',
-        name: _safeFileName(name),
-        service: RemoteStreamService.premiumize,
-        kind: isFolder ? RemoteCloudItemKind.folder : RemoteCloudItemKind.file,
-        size: _safeSize(row['size']),
-        mimeType: row['mime_type'] as String?,
-        providerId: id,
-        providerFileId: isFolder ? null : id,
-        uri: isFolder ? null : link,
-      ));
+      items.add(
+        RemoteCloudItem(
+          id: 'pm:${isFolder ? 'folder' : 'file'}:$id',
+          name: _safeFileName(name),
+          service: RemoteStreamService.premiumize,
+          kind: isFolder ? RemoteCloudItemKind.folder : RemoteCloudItemKind.file,
+          size: _safeSize(row['size']),
+          mimeType: row['mime_type'] as String?,
+          providerId: id,
+          providerFileId: isFolder ? null : id,
+          uri: isFolder ? null : link,
+        ),
+      );
     }
     return RemoteCloudPage(items: items);
   }
@@ -474,10 +483,9 @@ class TorBoxClient {
     } else {
       // Reuse a matching account item when available so repeated playback does
       // not create another remote item. New items are admitted only when cached.
-      final listUri = Uri.parse('$_base/torrents/mylist').replace(queryParameters: {
-        'bypass_cache': 'true',
-        'limit': '1000',
-      });
+      final listUri = Uri.parse(
+        '$_base/torrents/mylist',
+      ).replace(queryParameters: {'bypass_cache': 'true', 'limit': '1000'});
       final list = await _request('GET', listUri);
       final rows = list['data'];
       torrent = rows is List
@@ -533,24 +541,28 @@ class TorBoxClient {
         final row = Map<String, dynamic>.from(item);
         final fileId = row['id'];
         if (fileId == null) continue;
-        files.add(_DebridFile(
-          name: _safeFileName(row['name'] as String? ?? 'Video'),
-          size: row['size'] is num ? (row['size'] as num).toInt() : null,
-          url: Uri.https('pending.invalid', '/$fileId'),
-          id: fileId.toString(),
-        ));
+        files.add(
+          _DebridFile(
+            name: _safeFileName(row['name'] as String? ?? 'Video'),
+            size: row['size'] is num ? (row['size'] as num).toInt() : null,
+            url: Uri.https('pending.invalid', '/$fileId'),
+            id: fileId.toString(),
+          ),
+        );
       }
     }
     if (files.isEmpty) throw const RemoteProviderException(RemoteProviderFailure.preparationFailed);
     final selected = _selectFile(files, fileIndex);
     await onProgress?.call(stage: 'file_selected', providerJobId: '${torrent['id']}');
-    final downloadUri = Uri.parse('$_base/torrents/requestdl').replace(queryParameters: {
-      'token': account.accessToken,
-      'torrent_id': '${torrent['id']}',
-      'file_id': selected.id!,
-      'redirect': 'false',
-      'append_name': 'true',
-    });
+    final downloadUri = Uri.parse('$_base/torrents/requestdl').replace(
+      queryParameters: {
+        'token': account.accessToken,
+        'torrent_id': '${torrent['id']}',
+        'file_id': selected.id!,
+        'redirect': 'false',
+        'append_name': 'true',
+      },
+    );
     final download = await _request('GET', downloadUri);
     final rawUrl = download['data'];
     final uri = rawUrl is String ? Uri.tryParse(rawUrl) : null;
@@ -565,11 +577,9 @@ class TorBoxClient {
       if (offset < 0 || offset > 1000000000 || limit < 1 || limit > 100) {
         throw const RemoteProviderException(RemoteProviderFailure.unsupported);
       }
-      final uri = Uri.parse('$_base/torrents/mylist').replace(queryParameters: {
-        'bypass_cache': 'true',
-        'limit': '$limit',
-        'offset': '$offset',
-      });
+      final uri = Uri.parse(
+        '$_base/torrents/mylist',
+      ).replace(queryParameters: {'bypass_cache': 'true', 'limit': '$limit', 'offset': '$offset'});
       final response = await _request('GET', uri);
       final rows = response['data'];
       if (rows is! List) throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
@@ -622,17 +632,22 @@ class TorBoxClient {
     if (torrentId == null || fileId == null || torrentId.length > 128 || fileId.length > 128) {
       throw const RemoteProviderException(RemoteProviderFailure.unsupported);
     }
-    final uri = Uri.parse('$_base/torrents/requestdl').replace(queryParameters: {
-      'token': account.accessToken,
-      'torrent_id': torrentId,
-      'file_id': fileId,
-      'redirect': 'false',
-      'append_name': 'true',
-    });
+    final uri = Uri.parse('$_base/torrents/requestdl').replace(
+      queryParameters: {
+        'token': account.accessToken,
+        'torrent_id': torrentId,
+        'file_id': fileId,
+        'redirect': 'false',
+        'append_name': 'true',
+      },
+    );
     final response = await _request('GET', uri);
     final rawUrl = response['data'];
     final downloadUri = rawUrl is String ? Uri.tryParse(rawUrl) : null;
-    if (downloadUri == null || downloadUri.scheme != 'https' || downloadUri.host.isEmpty || downloadUri.userInfo.isNotEmpty) {
+    if (downloadUri == null ||
+        downloadUri.scheme != 'https' ||
+        downloadUri.host.isEmpty ||
+        downloadUri.userInfo.isNotEmpty) {
       throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
     }
     return ResolvedRemoteStream(uri: downloadUri, fileName: item.name, size: item.size);
@@ -715,11 +730,7 @@ class TorBoxClient {
     }
   }
 
-  Future<Map<String, dynamic>> _request(
-    String method,
-    Uri uri, {
-    Map<String, String>? fields,
-  }) async {
+  Future<Map<String, dynamic>> _request(String method, Uri uri, {Map<String, String>? fields}) async {
     final headers = {'accept': 'application/json', 'authorization': 'Bearer ${account.accessToken}'};
     late final http.Response response;
     if (method == 'GET') {
@@ -772,19 +783,16 @@ List<_DebridFile> _flattenAllDebridFiles(Object? raw, String parent, List<_Debri
     final rawUrl = row['l'];
     final uri = rawUrl is String ? Uri.tryParse(rawUrl) : null;
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty || uri.userInfo.isNotEmpty) continue;
-    output.add(_DebridFile(
-      name: _safeFileName(path),
-      url: uri,
-      size: _safeSize(row['s']),
-      id: path,
-    ));
+    output.add(_DebridFile(name: _safeFileName(path), url: uri, size: _safeSize(row['s']), id: path));
   }
   return output;
 }
 
 _DebridFile _selectFile(List<_DebridFile> files, int? fileIndex) {
   if (fileIndex != null) {
-    if (fileIndex < 0 || fileIndex >= files.length) throw const RemoteProviderException(RemoteProviderFailure.unsupported);
+    if (fileIndex < 0 || fileIndex >= files.length) {
+      throw const RemoteProviderException(RemoteProviderFailure.unsupported);
+    }
     return files[fileIndex];
   }
   final videos = files.where((file) => _isVideoName(file.name)).toList();
@@ -794,15 +802,27 @@ _DebridFile _selectFile(List<_DebridFile> files, int? fileIndex) {
 }
 
 String _safeFileName(String value) {
-  final normalized = value.replaceAll('\\', '/').split('/').where((part) => part.isNotEmpty && part != '.' && part != '..').lastOrNull;
+  final normalized = value
+      .replaceAll('\\', '/')
+      .split('/')
+      .where((part) => part.isNotEmpty && part != '.' && part != '..')
+      .lastOrNull;
   final name = (normalized ?? 'Video').replaceAll(RegExp(r'[\x00-\x1f\x7f]'), '').trim();
   if (name.isEmpty) return 'Video.mp4';
   return name.length > 240 ? name.substring(name.length - 240) : name;
 }
 
-bool _isVideoName(String name) =>
-    const {'.mkv', '.mp4', '.avi', '.m4v', '.mov', '.ts', '.webm', '.mpg', '.mpeg'}
-        .contains(name.contains('.') ? name.substring(name.lastIndexOf('.')).toLowerCase() : '');
+bool _isVideoName(String name) => const {
+  '.mkv',
+  '.mp4',
+  '.avi',
+  '.m4v',
+  '.mov',
+  '.ts',
+  '.webm',
+  '.mpg',
+  '.mpeg',
+}.contains(name.contains('.') ? name.substring(name.lastIndexOf('.')).toLowerCase() : '');
 
 Map<String, dynamic> _decodeObject(List<int> bytes, int statusCode) {
   if (statusCode == 401 || statusCode == 403) throw const RemoteProviderException(RemoteProviderFailure.authentication);

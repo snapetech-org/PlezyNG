@@ -11,6 +11,8 @@ shortcut establishes entitlement, authentication, reachability or playback.
 
 **Overall status: not code complete; draft PR; not ready for all-platform release.**
 The implemented slices below are not substitutes for the remaining scope.
+The [live testing handoff](LIVE_TEST_HANDOFF.md) separates executable test cases,
+platform build prerequisites and features that still require implementation.
 
 | Area | Code on this branch | Outstanding evidence or implementation |
 | --- | --- | --- |

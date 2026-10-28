@@ -480,6 +480,7 @@ class PlayerTizen extends PlayerBase {
 
     if (args.length < 3 || args[2] == 'select') await selectSubtitleTrack(track);
   }
+
   @override
   Future<void> configureSubtitleFonts() async {}
   @override

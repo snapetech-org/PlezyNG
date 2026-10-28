@@ -2852,7 +2852,6 @@ class _Translations$streaming$tr extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Desteklenen torrent akışlarını Real-Debrid hesabınla oynat.';
 	@override String get connectRealDebrid => 'QR koduyla bağlan';
-	@override String get disconnectRealDebrid => 'Real-Debrid bağlantısını kes';
 	@override String realDebridConnected({required Object username}) => '${username} olarak bağlandı';
 	@override String get realDebridInstructions => 'QR kodunu tara veya bağlantıyı aç, ardından PlezyNG’yi bağlamak için bu etkinleştirme kodunu gir:';
 	@override String get realDebridActivate => 'Etkinleştirmek için Real-Debrid’i aç';
@@ -2880,21 +2879,17 @@ class _Translations$streaming$tr extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => '${service} bağlantısı kesilsin mi?';
 	@override String get disconnectBody => 'PlezyNG bu cihazın yetkisini kaldırır. Sağlayıcıdaki dosyaların ve devam eden aktarımların durumu değişmez.';
 	@override String get streamsTitle => 'Akış seç';
-	@override String get searchingStreams => 'Bağlı eklentiler kontrol ediliyor…';
 	@override String get noStreams => 'Bu başlık için akış bulunamadı.';
 	@override String get manageConnections => 'Akış hizmetlerini yönet';
 	@override String subtitleTracks({required Object count}) => 'Altyazı parçası: ${count}';
 	@override String get chooseSubtitle => 'Altyazı seç';
 	@override String get chooseProvider => 'Debrid hizmeti seç';
 	@override String get subtitleOff => 'Altyazılar kapalı';
-	@override String get subtitleLoadFailed => 'Bu altyazı yüklenemedi. Başka bir parça dene.';
-	@override String get subtitleApplied => 'Altyazı oynatma için seçildi';
 	@override String get streamLookupPartial => 'Bazı eklentilere ulaşılamadı.';
 	@override String get streamLookupFailed => 'Bağlı eklentiler kontrol edilemedi.';
 	@override String get streamOpenExternal => 'Harici bağlantıyı aç';
 	@override String get streamPrepare => 'Debrid hizmetinle hazırlanıyor…';
 	@override String get streamPrepareFailed => 'Bu akış hazırlanamadı. Bağlı hesabı kontrol et ve başka bir kaynak dene.';
-	@override String get streamNeedsRealDebrid => 'Bu torrent akışını oynatmak için bir Debrid hizmeti bağla.';
 	@override String get streamUnsupported => 'Bu akış biçimi uygulama içi oynatıcıda desteklenmiyor.';
 	@override String get remoteNeedsEpisode => 'Akış aramadan önce bir bölüm seç.';
 	@override String get remoteNeedsEpisodeNumber => 'Bu bölümde sezon veya bölüm numarası eksik.';
@@ -7903,7 +7898,6 @@ extension on TranslationsTr {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Desteklenen torrent akışlarını Real-Debrid hesabınla oynat.',
 			'streaming.connectRealDebrid' => 'QR koduyla bağlan',
-			'streaming.disconnectRealDebrid' => 'Real-Debrid bağlantısını kes',
 			'streaming.realDebridConnected' => ({required Object username}) => '${username} olarak bağlandı',
 			'streaming.realDebridInstructions' => 'QR kodunu tara veya bağlantıyı aç, ardından PlezyNG’yi bağlamak için bu etkinleştirme kodunu gir:',
 			'streaming.realDebridActivate' => 'Etkinleştirmek için Real-Debrid’i aç',
@@ -7931,21 +7925,17 @@ extension on TranslationsTr {
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service} bağlantısı kesilsin mi?',
 			'streaming.disconnectBody' => 'PlezyNG bu cihazın yetkisini kaldırır. Sağlayıcıdaki dosyaların ve devam eden aktarımların durumu değişmez.',
 			'streaming.streamsTitle' => 'Akış seç',
-			'streaming.searchingStreams' => 'Bağlı eklentiler kontrol ediliyor…',
 			'streaming.noStreams' => 'Bu başlık için akış bulunamadı.',
 			'streaming.manageConnections' => 'Akış hizmetlerini yönet',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Altyazı parçası: ${count}',
 			'streaming.chooseSubtitle' => 'Altyazı seç',
 			'streaming.chooseProvider' => 'Debrid hizmeti seç',
 			'streaming.subtitleOff' => 'Altyazılar kapalı',
-			'streaming.subtitleLoadFailed' => 'Bu altyazı yüklenemedi. Başka bir parça dene.',
-			'streaming.subtitleApplied' => 'Altyazı oynatma için seçildi',
 			'streaming.streamLookupPartial' => 'Bazı eklentilere ulaşılamadı.',
 			'streaming.streamLookupFailed' => 'Bağlı eklentiler kontrol edilemedi.',
 			'streaming.streamOpenExternal' => 'Harici bağlantıyı aç',
 			'streaming.streamPrepare' => 'Debrid hizmetinle hazırlanıyor…',
 			'streaming.streamPrepareFailed' => 'Bu akış hazırlanamadı. Bağlı hesabı kontrol et ve başka bir kaynak dene.',
-			'streaming.streamNeedsRealDebrid' => 'Bu torrent akışını oynatmak için bir Debrid hizmeti bağla.',
 			'streaming.streamUnsupported' => 'Bu akış biçimi uygulama içi oynatıcıda desteklenmiyor.',
 			'streaming.remoteNeedsEpisode' => 'Akış aramadan önce bir bölüm seç.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Bu bölümde sezon veya bölüm numarası eksik.',
@@ -8200,13 +8190,13 @@ extension on TranslationsTr {
 			'universalMedia.playlistFormatsHelp' => 'Bir oynatma listesi en fazla 1000 öğe ve 2 MB içerebilir. HLS akışlar olarak açıktır, böylece oyuncu bir kaliteyi seçebilir.',
 			'universalMedia.saveQueuePlaylist' => 'Sırayı çalma listesi olarak kaydet',
 			'universalMedia.queuePlaylistSaved' => 'Çalma listesi medya dosyalarının yanına kaydedildi.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Bu sıra yeniden kullanılabilir bir yerel çalma listesi olarak kaydedilemiyor.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Sıradaki dosyalarla aynı klasörde bir kayıt konumu seçin.',
 			'universalMedia.noFavorites' => 'Hiç kaydedilmemiş akış favori henüz. Favoriler bu profilde kalır.',
 			'universalMedia.removeFavorite' => 'En sevdiğiniz akışları kaldırın',
 			'universalMedia.filesHelp' => 'Ses, video veya ISO dosyalarını geçici bir çerçeve için seçin. Dosyalar ve URL\'ler kütüphane geçmişine eklenmez.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Dosyaları seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '1 seçilmiş dosya', other: '${count} seçilmiş dosyalar', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi üzerinden dosyaları gönderin',
@@ -8714,13 +8704,13 @@ extension on TranslationsTr {
 			'sourceSetup.nfsEncryptionFailure' => 'Şifreli NFS için her iki NAS hizmetinde RFC 9289 ve TLS 1.3 desteğini, sertifika adını ve paylaşımın UID/GID değerlerini kontrol edin. PlezyNG bu bağlantıyı şifreleme olmadan yeniden denemeyecek.',
 			'sourceSetup.sourceConnecting' => 'Kaynağa bağlanılıyor',
 			'sourceSetup.metadataSearchPrivacy' => 'Bu başlık araması Trakt’a gönderilir. Girdiğiniz başlığı gönderir; videoyu veya kaynak kimlik bilgilerini göndermez.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Bir eşleşme seç',
 			'sourceSetup.metadataMatchHelp' => 'Seçmeden önce başlığı ve yılı kontrol edin. Trakt aranan başlığı alır; video kendi kaynağında kalır.',
 			'sourceSetup.metadataNoMatches' => 'Çevrimiçi eşleşen başlık bulunamadı. Başka bir başlık deneyin.',
 			'sourceSetup.metadataSearch' => 'Çevrimiçi meta veri ara',
 			'sourceSetup.metadataLoading' => 'Çevrimiçi film ve dizi bilgileri aranıyor…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt’tan çevrimiçi meta veriler',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Otomatik başlık eşleşmesi bulunamadı. Eşleşme seçmek için başlığı arayın.',
 			'sourceSetup.metadataFailed' => 'Çevrimiçi meta veriler yüklenemedi. Oynatma ve yerel bilgiler hâlâ kullanılabilir.',

@@ -1,3 +1,5 @@
+import '../../widgets/app_icon.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -72,7 +74,9 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
     try {
       final settings = await SettingsService.getInstance();
       await settings.write(SettingsService.subtitleLanguageOrder, order);
-      if (mounted) setState(() => _status = order.isEmpty ? 'Language fallback order cleared.' : 'Language order saved.');
+      if (mounted) {
+        setState(() => _status = order.isEmpty ? 'Language fallback order cleared.' : 'Language order saved.');
+      }
     } catch (_) {
       if (mounted) setState(() => _error = 'Could not save the subtitle language order.');
     } finally {
@@ -142,12 +146,12 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
                     onPressed: _saving ? null : _save,
                     icon: _saving
                         ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.save_outlined),
+                        : const AppIcon(Symbols.save_rounded),
                     label: const Text('Save order'),
                   ),
                   TextButton.icon(
                     onPressed: _saving ? null : _clear,
-                    icon: const Icon(Icons.clear_all),
+                    icon: const AppIcon(Symbols.clear_all_rounded),
                     label: const Text('Clear'),
                   ),
                 ],

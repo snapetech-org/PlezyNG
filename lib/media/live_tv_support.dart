@@ -64,6 +64,7 @@ abstract interface class LiveTvTimeshiftSession {
 class LiveTvSeekRequest {
   final String url;
   final double? effectiveTargetEpoch;
+
   /// Local MPV position for seekable cache windows that do not expose a
   /// server-side offset URL. When present, the active source stays open.
   final Duration? localPosition;

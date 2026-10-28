@@ -12,12 +12,14 @@ import 'package:plezy/media/server_capabilities.dart';
 import 'package:plezy/models/media_grab_operation.dart';
 import 'package:plezy/models/media_subscription.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
+import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/screens/livetv/tabs/recordings_tab.dart';
 import 'package:plezy/services/multi_server_manager.dart';
 import 'package:plezy/theme/mono_theme.dart';
 import 'package:provider/provider.dart';
 
 import '../../test_helpers/multi_server_fixtures.dart';
+import '../../test_helpers/profile_stack.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -31,13 +33,18 @@ void main() {
     final provider = testMultiServerProvider(manager)
       ..debugSetLiveTvServersForTesting([LiveTvServerInfo(serverId: client.serverId.value, dvrKey: 'dvr')]);
     addTearDown(provider.dispose);
+    final profiles = await ProfileStack.create(withStorage: false);
+    addTearDown(profiles.dispose);
     final tabKey = GlobalKey<RecordingsTabState>();
 
     await tester.pumpWidget(
       TranslationProvider(
         child: InputModeTracker(
-          child: ChangeNotifierProvider<MultiServerProvider>.value(
-            value: provider,
+          child: MultiProvider(
+            providers: [
+              ChangeNotifierProvider<MultiServerProvider>.value(value: provider),
+              ChangeNotifierProvider<ActiveProfileProvider>.value(value: profiles.active),
+            ],
             child: MaterialApp(
               theme: monoTheme(MonoPalette.dark),
               home: Scaffold(body: RecordingsTab(key: tabKey)),

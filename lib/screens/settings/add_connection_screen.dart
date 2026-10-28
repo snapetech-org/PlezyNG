@@ -4,7 +4,6 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../focus/focusable_wrapper.dart';
 import '../../i18n/strings.g.dart';
-import '../../i18n/iptv_copy.dart';
 import '../../media/media_backend.dart';
 import '../../media/media_browser_dialect.dart';
 import '../../theme/mono_tokens.dart';

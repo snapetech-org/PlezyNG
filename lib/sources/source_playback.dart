@@ -436,14 +436,14 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
         }
       }
     }
-    candidate ??= tracks.first;
-    if (candidate.id == current?.id) return;
+    final selectedCandidate = candidate ?? tracks.first;
+    if (selectedCandidate.id == current?.id) return;
     final restore = (
       player: native,
       fileIndex: _fileIndex,
       fingerprint: files[_fileIndex].fingerprint,
       previousTrack: current ?? SubtitleTrack.off,
-      temporaryTrackId: candidate.id,
+      temporaryTrackId: selectedCandidate.id,
     );
     _subtitleMuteRestore = restore;
     await _queueSubtitleMuteMutation(() async {
@@ -461,7 +461,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
         _subtitleMuteRestore = null;
         return;
       }
-      await native.selectSubtitleTrack(candidate);
+      await native.selectSubtitleTrack(selectedCandidate);
     });
   }
 
@@ -486,7 +486,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> _queueSubtitleMuteMutation(Future<void> Function() action) async {
     final previous = _subtitleMuteQueue;
-    final operation = previous.catchError((Object _, StackTrace __) {}).then((_) => action());
+    final operation = previous.catchError((Object _, StackTrace _) {}).then((_) => action());
     _subtitleMuteQueue = operation.catchError((Object error, StackTrace stackTrace) {
       appLogger.w('Standalone subtitle-on-mute operation failed', error: error, stackTrace: stackTrace);
     });
@@ -1275,42 +1275,46 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     required int delayMs,
     required double rate,
     required int prerollMs,
-  }) => _serialize(() async {
-    if (cueStartMs < 0 ||
-        cueStartMs > 24 * 60 * 60 * 1000 ||
-        prerollMs < 0 ||
-        prerollMs > 5000 ||
-        delayMs < ScopedPlayerPrefs.minimumSyncOffsetMs ||
-        delayMs > ScopedPlayerPrefs.maximumSyncOffsetMs ||
-        !rate.isFinite ||
-        rate < ScopedPlayerPrefs.minimumSubtitleSyncRate ||
-        rate > ScopedPlayerPrefs.maximumSubtitleSyncRate) {
-      throw RangeError('Subtitle cue seek values are outside the supported range.');
-    }
-    final native = player;
-    if (!_valid ||
-        !video ||
-        _liveInput ||
-        native == null ||
-        native.playerType != 'mpv' ||
-        !native.state.seekable ||
-        !canExportActiveExternalSubtitle ||
-        activeExternalSubtitleIdentity != expectedIdentity) {
-      return false;
-    }
+  }) async {
+    var sought = false;
+    await _serialize(() async {
+      if (cueStartMs < 0 ||
+          cueStartMs > 24 * 60 * 60 * 1000 ||
+          prerollMs < 0 ||
+          prerollMs > 5000 ||
+          delayMs < ScopedPlayerPrefs.minimumSyncOffsetMs ||
+          delayMs > ScopedPlayerPrefs.maximumSyncOffsetMs ||
+          !rate.isFinite ||
+          rate < ScopedPlayerPrefs.minimumSubtitleSyncRate ||
+          rate > ScopedPlayerPrefs.maximumSubtitleSyncRate) {
+        throw RangeError('Subtitle cue seek values are outside the supported range.');
+      }
+      final native = player;
+      if (!_valid ||
+          !video ||
+          _liveInput ||
+          native == null ||
+          native.playerType != 'mpv' ||
+          !native.state.seekable ||
+          !canExportActiveExternalSubtitle ||
+          activeExternalSubtitleIdentity != expectedIdentity) {
+        return;
+      }
 
-    final durationMs = currentFileDurationMs;
-    if (durationMs <= 0) return false;
-    final correctedCueStartMs = (cueStartMs * rate).round() + delayMs;
-    final targetInFileMs = correctedCueStartMs - prerollMs;
-    if (targetInFileMs >= durationMs) return false;
+      final durationMs = currentFileDurationMs;
+      if (durationMs <= 0) return;
+      final correctedCueStartMs = (cueStartMs * rate).round() + delayMs;
+      final targetInFileMs = correctedCueStartMs - prerollMs;
+      if (targetInFileMs >= durationMs) return;
 
-    final currentFileStartMs = positionMs - currentFilePositionMs;
-    final targetInFile = targetInFileMs.clamp(0, durationMs - 1).toInt();
-    _undoSeek = (file: _fileIndex, position: currentFilePositionMs);
-    await _seek(currentFileStartMs + targetInFile);
-    return activeExternalSubtitleIdentity == expectedIdentity;
-  });
+      final currentFileStartMs = positionMs - currentFilePositionMs;
+      final targetInFile = targetInFileMs.clamp(0, durationMs - 1).toInt();
+      _undoSeek = (file: _fileIndex, position: currentFilePositionMs);
+      await _seek(currentFileStartMs + targetInFile);
+      sought = activeExternalSubtitleIdentity == expectedIdentity;
+    });
+    return sought;
+  }
 
   Future<void> persistExternalSubtitleSync({int? delayMs, double? rate}) async {
     if (delayMs == null && rate == null) return;
@@ -1327,11 +1331,10 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
         (!rate.isFinite ||
             rate < ScopedPlayerPrefs.minimumSubtitleSyncRate ||
             rate > ScopedPlayerPrefs.maximumSubtitleSyncRate)) {
-      throw RangeError.range(
+      throw RangeError.value(
         rate,
-        ScopedPlayerPrefs.minimumSubtitleSyncRate,
-        ScopedPlayerPrefs.maximumSubtitleSyncRate,
         'rate',
+        'Must be finite and between ${ScopedPlayerPrefs.minimumSubtitleSyncRate} and ${ScopedPlayerPrefs.maximumSubtitleSyncRate}',
       );
     }
     final next = _subtitleSyncWrites.then((_) async {
@@ -1455,7 +1458,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   String _externalSubtitleSyncBinding(Player native, String path) =>
-      _subtitleAudioIdentity(native) + '|' + (native.state.track.subtitle?.id ?? 'off') + '|' + path;
+      '${_subtitleAudioIdentity(native)}|${native.state.track.subtitle?.id ?? 'off'}|$path';
 
   Future<void> _reapplySelectedExternalSubtitleSyncForCurrentTrack() async {
     await _commands;
@@ -2158,10 +2161,15 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     }
     final future = _writes.then((_) async {
       final latest = progress;
-      if (latest == null || latest.key != current.key) return;
+      if (latest == null || latest.key != current.key || latest.session != current.session || _profile != profile) {
+        return;
+      }
+      // Earlier writes from this same session may already have committed.
+      // Carry their revision forward while keeping this queued position. A
+      // reset or another session in the database still fails its revision check.
       progress = await sources.repository.saveProgress(
         profile,
-        snapshot,
+        snapshot.copyWith(revision: latest.revision, finished: finished ?? latest.finished),
         kind: finished == true ? 'finished' : 'position',
       );
     });

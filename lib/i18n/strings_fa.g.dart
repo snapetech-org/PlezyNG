@@ -2852,7 +2852,6 @@ class _Translations$streaming$fa extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'جریان‌های تورنت پشتیبانی‌شده را با حساب Real-Debrid خود پخش کنید.';
 	@override String get connectRealDebrid => 'اتصال با کد QR';
-	@override String get disconnectRealDebrid => 'قطع اتصال Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'متصل به نام ${username}';
 	@override String get realDebridInstructions => 'کد QR را اسکن یا پیوند را باز کنید، سپس این کد فعال‌سازی را برای اتصال PlezyNG وارد کنید:';
 	@override String get realDebridActivate => 'باز کردن Real-Debrid برای فعال‌سازی';
@@ -2880,21 +2879,17 @@ class _Translations$streaming$fa extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'اتصال ${service} قطع شود؟';
 	@override String get disconnectBody => 'PlezyNG مجوز این دستگاه را حذف می‌کند. فایل‌های ارائه‌دهنده و انتقال‌های در حال انجام دست‌نخورده می‌مانند.';
 	@override String get streamsTitle => 'انتخاب جریان';
-	@override String get searchingStreams => 'در حال بررسی افزونه‌های متصل…';
 	@override String get noStreams => 'جریانی برای این عنوان پیدا نشد.';
 	@override String get manageConnections => 'مدیریت سرویس‌های پخش';
 	@override String subtitleTracks({required Object count}) => 'زیرنویس‌ها: ${count}';
 	@override String get chooseSubtitle => 'انتخاب زیرنویس';
 	@override String get chooseProvider => 'انتخاب سرویس Debrid';
 	@override String get subtitleOff => 'زیرنویس خاموش';
-	@override String get subtitleLoadFailed => 'بارگیری این زیرنویس ممکن نشد. زیرنویس دیگری را امتحان کنید.';
-	@override String get subtitleApplied => 'زیرنویس برای پخش انتخاب شد';
 	@override String get streamLookupPartial => 'دسترسی به بعضی افزونه‌ها ممکن نشد.';
 	@override String get streamLookupFailed => 'بررسی افزونه‌های متصل ممکن نشد.';
 	@override String get streamOpenExternal => 'باز کردن پیوند خارجی';
 	@override String get streamPrepare => 'آماده‌سازی با سرویس Debrid شما…';
 	@override String get streamPrepareFailed => 'آماده‌سازی این جریان ممکن نشد. حساب متصل را بررسی و منبع دیگری را امتحان کنید.';
-	@override String get streamNeedsRealDebrid => 'برای پخش این جریان تورنت، یک سرویس Debrid وصل کنید.';
 	@override String get streamUnsupported => 'این قالب جریان در پخش‌کننده داخل برنامه پشتیبانی نمی‌شود.';
 	@override String get remoteNeedsEpisode => 'پیش از جست‌وجوی جریان، یک قسمت انتخاب کنید.';
 	@override String get remoteNeedsEpisodeNumber => 'شماره فصل یا قسمت این مورد موجود نیست.';
@@ -7903,7 +7898,6 @@ extension on TranslationsFa {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'جریان‌های تورنت پشتیبانی‌شده را با حساب Real-Debrid خود پخش کنید.',
 			'streaming.connectRealDebrid' => 'اتصال با کد QR',
-			'streaming.disconnectRealDebrid' => 'قطع اتصال Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'متصل به نام ${username}',
 			'streaming.realDebridInstructions' => 'کد QR را اسکن یا پیوند را باز کنید، سپس این کد فعال‌سازی را برای اتصال PlezyNG وارد کنید:',
 			'streaming.realDebridActivate' => 'باز کردن Real-Debrid برای فعال‌سازی',
@@ -7931,21 +7925,17 @@ extension on TranslationsFa {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'اتصال ${service} قطع شود؟',
 			'streaming.disconnectBody' => 'PlezyNG مجوز این دستگاه را حذف می‌کند. فایل‌های ارائه‌دهنده و انتقال‌های در حال انجام دست‌نخورده می‌مانند.',
 			'streaming.streamsTitle' => 'انتخاب جریان',
-			'streaming.searchingStreams' => 'در حال بررسی افزونه‌های متصل…',
 			'streaming.noStreams' => 'جریانی برای این عنوان پیدا نشد.',
 			'streaming.manageConnections' => 'مدیریت سرویس‌های پخش',
 			'streaming.subtitleTracks' => ({required Object count}) => 'زیرنویس‌ها: ${count}',
 			'streaming.chooseSubtitle' => 'انتخاب زیرنویس',
 			'streaming.chooseProvider' => 'انتخاب سرویس Debrid',
 			'streaming.subtitleOff' => 'زیرنویس خاموش',
-			'streaming.subtitleLoadFailed' => 'بارگیری این زیرنویس ممکن نشد. زیرنویس دیگری را امتحان کنید.',
-			'streaming.subtitleApplied' => 'زیرنویس برای پخش انتخاب شد',
 			'streaming.streamLookupPartial' => 'دسترسی به بعضی افزونه‌ها ممکن نشد.',
 			'streaming.streamLookupFailed' => 'بررسی افزونه‌های متصل ممکن نشد.',
 			'streaming.streamOpenExternal' => 'باز کردن پیوند خارجی',
 			'streaming.streamPrepare' => 'آماده‌سازی با سرویس Debrid شما…',
 			'streaming.streamPrepareFailed' => 'آماده‌سازی این جریان ممکن نشد. حساب متصل را بررسی و منبع دیگری را امتحان کنید.',
-			'streaming.streamNeedsRealDebrid' => 'برای پخش این جریان تورنت، یک سرویس Debrid وصل کنید.',
 			'streaming.streamUnsupported' => 'این قالب جریان در پخش‌کننده داخل برنامه پشتیبانی نمی‌شود.',
 			'streaming.remoteNeedsEpisode' => 'پیش از جست‌وجوی جریان، یک قسمت انتخاب کنید.',
 			'streaming.remoteNeedsEpisodeNumber' => 'شماره فصل یا قسمت این مورد موجود نیست.',
@@ -8200,13 +8190,13 @@ extension on TranslationsFa {
 			'universalMedia.playlistFormatsHelp' => 'یک لیست پخش می تواند حاوی حداکثر 1000 آیتم و 2 مگابایت باشد.HLS به عنوان جریان ها باز می شود تا بازیکن بتواند کیفیت را انتخاب کند.',
 			'universalMedia.saveQueuePlaylist' => 'ذخیره صف به‌صورت فهرست پخش',
 			'universalMedia.queuePlaylistSaved' => 'فهرست پخش کنار فایل‌های رسانه ذخیره شد.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'این صف را نمی‌توان به‌صورت فهرست پخش محلی و قابل استفادهٔ دوباره ذخیره کرد.',
 			'universalMedia.queuePlaylistFolderRequired' => 'محلی برای ذخیره در همان پوشهٔ فایل‌های صف انتخاب کنید.',
 			'universalMedia.noFavorites' => 'در حال حاضر هیچ مورد علاقه ذخیره نشده است.Favorites در این پروفایل باقی بماند.',
 			'universalMedia.removeFavorite' => 'حذف جریان مورد علاقه',
 			'universalMedia.filesHelp' => 'فایل های صوتی، ویدئویی یا ISO را برای یک دوره موقت انتخاب کنید.فایلهای و URL ها به تاریخچه کتابخانه اضافه نمی شوند.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'انتخاب فایل ها',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '1 فایل انتخاب شده', other: '${count} فایل های انتخاب شده', ), 
 			'universalMedia.wifiTransfer' => 'ارسال فایل ها از طریق Wi-Fi',
@@ -8714,13 +8704,13 @@ extension on TranslationsFa {
 			'sourceSetup.nfsEncryptionFailure' => 'برای NFS رمزگذاری‌شده، پشتیبانی هر دو سرویس NAS از RFC 9289 و TLS 1.3، نام گواهی و UID/GID اشتراک را بررسی کنید. PlezyNG این اتصال را بدون رمزگذاری دوباره امتحان نمی‌کند.',
 			'sourceSetup.sourceConnecting' => 'در حال اتصال به منبع',
 			'sourceSetup.metadataSearchPrivacy' => 'این جست‌وجوی عنوان به Trakt فرستاده می‌شود. فقط عنوانی که وارد می‌کنید ارسال می‌شود، نه ویدیو یا اطلاعات ورود منبع.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'انتخاب نتیجهٔ مطابق',
 			'sourceSetup.metadataMatchHelp' => 'پیش از انتخاب، عنوان و سال را بررسی کنید. Trakt عنوان جست‌وجو را دریافت می‌کند؛ ویدیو در منبع خود باقی می‌ماند.',
 			'sourceSetup.metadataNoMatches' => 'عنوان مطابقی در اینترنت پیدا نشد. عنوان دیگری را امتحان کنید.',
 			'sourceSetup.metadataSearch' => 'جست‌وجوی فرادادهٔ آنلاین',
 			'sourceSetup.metadataLoading' => 'در حال جست‌وجوی آنلاین اطلاعات فیلم و سریال…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'فرادادهٔ آنلاین از Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'عنوان مطابقی به‌صورت خودکار پیدا نشد. عنوان را جست‌وجو کنید تا نتیجهٔ مطابق را انتخاب کنید.',
 			'sourceSetup.metadataFailed' => 'فرادادهٔ آنلاین بارگیری نشد. پخش و اطلاعات محلی همچنان در دسترس هستند.',

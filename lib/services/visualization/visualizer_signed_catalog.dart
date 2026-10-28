@@ -80,8 +80,9 @@ class VisualizerCatalogVerifier {
         trust.keys.values.map(base64Encode).toSet().length != trust.keys.length) {
       throw const FormatException('This build has no catalog signing trust root');
     }
-    if (bytes.isEmpty || bytes.length > maxEnvelopeBytes)
+    if (bytes.isEmpty || bytes.length > maxEnvelopeBytes) {
       throw const FormatException('Catalog envelope exceeds its limit');
+    }
     final wrapper = jsonDecode(utf8.decode(bytes));
     if (wrapper is! Map<String, dynamic> ||
         wrapper['schemaVersion'] != 1 ||
@@ -91,8 +92,9 @@ class VisualizerCatalogVerifier {
       throw const FormatException('Invalid signed catalog envelope');
     }
     final payload = base64Decode(wrapper['payload'] as String);
-    if (payload.isEmpty || payload.length > maxPayloadBytes)
+    if (payload.isEmpty || payload.length > maxPayloadBytes) {
       throw const FormatException('Catalog payload exceeds its limit');
+    }
     final message = [...utf8.encode(domain), ...payload];
     final accepted = <String>{};
     for (final signature in wrapper['signatures'] as List) {
@@ -106,8 +108,9 @@ class VisualizerCatalogVerifier {
       if (await Ed25519().verify(
         message,
         signature: Signature(raw, publicKey: SimplePublicKey(key, type: KeyPairType.ed25519)),
-      ))
+      )) {
         accepted.add(keyId);
+      }
     }
     if (accepted.length < trust.threshold) throw const FormatException('Catalog signature quorum was not met');
     final data = jsonDecode(utf8.decode(payload));
@@ -269,7 +272,7 @@ class VisualizerSignedCatalog {
 
   Future<void> refresh() {
     final operation = _tail.then((_) => _refresh());
-    _tail = operation.then<void>((_) {}, onError: (Object _, StackTrace __) {});
+    _tail = operation.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     return operation;
   }
 
@@ -288,12 +291,14 @@ class VisualizerSignedCatalog {
       final request = http.AbortableRequest('GET', endpoint, abortTrigger: abort.future)..followRedirects = false;
       final response = await _client.send(request).timeout(const Duration(seconds: 20));
       if (response.statusCode != 200) throw HttpException('Catalog request failed: ${response.statusCode}');
-      if ((response.contentLength ?? 0) > VisualizerCatalogVerifier.maxEnvelopeBytes)
+      if ((response.contentLength ?? 0) > VisualizerCatalogVerifier.maxEnvelopeBytes) {
         throw const FormatException('Catalog response is too large');
+      }
       final bytes = <int>[];
       await for (final chunk in response.stream.timeout(const Duration(seconds: 20))) {
-        if (bytes.length + chunk.length > VisualizerCatalogVerifier.maxEnvelopeBytes)
+        if (bytes.length + chunk.length > VisualizerCatalogVerifier.maxEnvelopeBytes) {
           throw const FormatException('Catalog response is too large');
+        }
         bytes.addAll(chunk);
       }
       final next = await verifier.verify(bytes, _clock());

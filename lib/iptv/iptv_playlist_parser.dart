@@ -31,6 +31,7 @@ class IptvPlaylistEntry {
   final bool radio;
   final String? catchupSource;
   final int? catchupDays;
+
   /// Only the standard playback presentation headers understood by common
   /// IPTV players are retained. Authentication and arbitrary headers from a
   /// playlist are deliberately ignored.
@@ -53,7 +54,7 @@ class IptvPlaylistParser {
   static const maxCharacters = 8 * 1024 * 1024;
   static const maxEntries = 20_000;
   static const maxLineLength = 16 * 1024;
-  static const _secretQueryKey = RegExp(
+  static final _secretQueryKey = RegExp(
     r'(token|password|signature|credential|authorization|secret|api[_-]?key|^auth$|^key$|^code$|x-amz-|x-goog-|^(expires|expiry|expiration|policy|key-pair-id|sig|se|sp|sv|sr|st|skoid|sktid|skt|ske|sks|skv|rscc|rscd|rsct)$)',
     caseSensitive: false,
   );
@@ -136,7 +137,7 @@ class IptvPlaylistParser {
       if (line.startsWith('#')) continue;
       if (!pending) continue;
       pending = false;
-      if (durationSeconds != null && durationSeconds! > 0) {
+      if (durationSeconds != null && durationSeconds > 0) {
         // Finite-duration entries are VOD items. The Live TV import keeps
         // the guide free of movies and episodes until the library adapter is
         // available for this source.
@@ -148,10 +149,7 @@ class IptvPlaylistParser {
       }
       try {
         final uri = UniversalMediaAddress.parse(line, allowHttp: allowHttp, allowMpvProtocols: true, base: base);
-        final displayTitle = _clean(
-          _first(attributes, const ['tvg-name', 'channel-name']) ?? title,
-          240,
-        );
+        final displayTitle = _clean(_first(attributes, const ['tvg-name', 'channel-name']) ?? title, 240);
         if (displayTitle.isEmpty) {
           skipped++;
           continue;
@@ -160,17 +158,20 @@ class IptvPlaylistParser {
         final number = _cleanNullable(_first(attributes, const ['tvg-chno', 'channel-number']), 32);
         final group = _cleanNullable(_first(attributes, const ['group-title', 'group']), 120);
         final logo = _safeLogo(_first(attributes, const ['tvg-logo', 'logo']), base, allowHttp);
-        final identity = tvgId?.toLowerCase() ?? [
-          number?.toLowerCase() ?? '',
-          group?.toLowerCase() ?? '',
-          displayTitle.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim(),
-          uri.host.toLowerCase(),
-          uri.path.toLowerCase(),
-        ].join('|');
-        final baseId = tvgId == null ? 'local-${sha256.convert(identity.codeUnits).toString().substring(0, 24)}' : tvgId;
+        final identity =
+            tvgId?.toLowerCase() ??
+            [
+              number?.toLowerCase() ?? '',
+              group?.toLowerCase() ?? '',
+              displayTitle.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim(),
+              uri.host.toLowerCase(),
+              uri.path.toLowerCase(),
+            ].join('|');
+        final baseId = tvgId ?? 'local-${sha256.convert(identity.codeUnits).toString().substring(0, 24)}';
         final duplicateIndex = duplicateIds.update(baseId, (value) => value + 1, ifAbsent: () => 0);
         final id = duplicateIndex == 0 ? baseId : '$baseId#$duplicateIndex';
-        final radio = _first(attributes, const ['radio'])?.toLowerCase() == 'true' ||
+        final radio =
+            _first(attributes, const ['radio'])?.toLowerCase() == 'true' ||
             _first(attributes, const ['radio']) == '1' ||
             (group?.toLowerCase().contains('radio') ?? false);
         result.add(
@@ -238,10 +239,10 @@ class IptvPlaylistParser {
     return null;
   }
 
-  static String _clean(String value, int max) => value.replaceAll(RegExp(r'[\x00-\x1f\x7f]'), '').trim().substring(
-    0,
-    value.replaceAll(RegExp(r'[\x00-\x1f\x7f]'), '').trim().length.clamp(0, max).toInt(),
-  );
+  static String _clean(String value, int max) => value
+      .replaceAll(RegExp(r'[\x00-\x1f\x7f]'), '')
+      .trim()
+      .substring(0, value.replaceAll(RegExp(r'[\x00-\x1f\x7f]'), '').trim().length.clamp(0, max).toInt());
 
   static String? _cleanNullable(String? value, int max) => value == null ? null : _clean(value, max).ifNotEmpty;
 

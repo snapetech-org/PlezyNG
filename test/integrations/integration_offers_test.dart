@@ -56,21 +56,22 @@ LicensedOffer _offer({
   ),
 );
 
-AvailabilityLookupRequest _request({List<String> providers = const ['availability-a']}) =>
-    AvailabilityLookupRequest(
-      entity: _entity,
-      countryCode: 'CA',
-      channel: DistributionChannel.web,
-      providerIds: providers,
-      offerKinds: const {LicensedOfferKind.purchase, LicensedOfferKind.rent},
-    );
+AvailabilityLookupRequest _request({List<String> providers = const ['availability-a']}) => AvailabilityLookupRequest(
+  entity: _entity,
+  countryCode: 'CA',
+  channel: DistributionChannel.web,
+  providerIds: providers,
+  offerKinds: const {LicensedOfferKind.purchase, LicensedOfferKind.rent},
+);
 
 void main() {
   group('availability contract', () {
     test('returns exact, fresh offers and keeps unknown price unknown', () async {
       final expected = _offer(addOns: const {'channel.extra'});
       final service = AvailabilityLookupService(
-        providers: [_Provider('availability-a', (_) async => [expected])],
+        providers: [
+          _Provider('availability-a', (_) async => [expected]),
+        ],
         clock: () => _now,
       );
 
@@ -130,10 +131,7 @@ void main() {
       mutableProviders.clear();
       mutableKinds.clear();
 
-      await AvailabilityLookupService(
-        providers: [providerA, providerB],
-        clock: () => _now,
-      ).lookup(request);
+      await AvailabilityLookupService(providers: [providerA, providerB], clock: () => _now).lookup(request);
 
       expect(received, [
         ['availability-a'],
@@ -157,9 +155,7 @@ void main() {
         clock: () => _now,
       );
 
-      final result = await service.lookup(
-        _request(providers: const ['limited', 'slow', 'not-installed', 'healthy']),
-      );
+      final result = await service.lookup(_request(providers: const ['limited', 'slow', 'not-installed', 'healthy']));
 
       expect(result.providers.map((value) => value.status), [
         AvailabilityProviderStatus.rateLimited,
@@ -198,10 +194,7 @@ void main() {
     test('rejects duplicates, cross-provider rows, and invalid request scope', () async {
       final offer = _offer();
       final duplicateProvider = _Provider('availability-a', (_) async => [offer, offer]);
-      final duplicateService = AvailabilityLookupService(
-        providers: [duplicateProvider],
-        clock: () => _now,
-      );
+      final duplicateService = AvailabilityLookupService(providers: [duplicateProvider], clock: () => _now);
       final duplicateResult = await duplicateService.lookup(_request());
       expect(duplicateResult.providers.single.status, AvailabilityProviderStatus.invalidResponse);
 

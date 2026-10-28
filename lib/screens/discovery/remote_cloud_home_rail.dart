@@ -233,7 +233,7 @@ class RemoteCloudHomeRailState extends State<RemoteCloudHomeRail> {
             ),
             child: Row(
               children: [
-                Icon(Symbols.cloud_rounded, size: tvMode ? 18 : 20, color: colors.primary),
+                AppIcon(Symbols.cloud_rounded, size: tvMode ? 18 : 20, color: colors.primary),
                 SizedBox(width: tvMode ? 6 : 8),
                 Expanded(
                   child: Text(

@@ -344,7 +344,9 @@ class _SeerrConnectScreenState extends State<SeerrConnectScreen>
             onPressed: busy ? null : _signInWithPlex,
             child: FilledButton.icon(
               onPressed: busy ? null : _signInWithPlex,
-              icon: busy ? const LoadingIndicatorBox() : const ConnectorBrandMark(providerId: 'plex', name: 'Plex', size: 20),
+              icon: busy
+                  ? const LoadingIndicatorBox()
+                  : const ConnectorBrandMark(providerId: 'plex', name: 'Plex', size: 20),
               label: Text(t.auth.signInWithPlex),
             ),
           ),
@@ -381,21 +383,13 @@ class _SeerrConnectScreenState extends State<SeerrConnectScreen>
     });
   }
 
-  Widget _buildMethodButton({
-    required String label,
-    required Widget leading,
-    required VoidCallback onPressed,
-  }) {
+  Widget _buildMethodButton({required String label, required Widget leading, required VoidCallback onPressed}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: FocusableButton(
         useBackgroundFocus: true,
         onPressed: busy ? null : onPressed,
-        child: OutlinedButton.icon(
-          onPressed: busy ? null : onPressed,
-          icon: leading,
-          label: Text(label),
-        ),
+        child: OutlinedButton.icon(onPressed: busy ? null : onPressed, icon: leading, label: Text(label)),
       ),
     );
   }

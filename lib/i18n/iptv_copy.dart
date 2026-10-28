@@ -22,11 +22,14 @@ class IptvTranslationCopy {
   String get noLiveChannelResults => 'No channels match this search.';
   String get uncategorizedChannels => 'Other channels';
   String get additionalGuideEndpoints => 'Additional XMLTV guide URLs';
-  String get additionalGuideEndpointsHelp => 'Optional. Add one guide URL per line to combine schedules from several providers. Up to 8.';
+  String get additionalGuideEndpointsHelp =>
+      'Optional. Add one guide URL per line to combine schedules from several providers. Up to 8.';
   String get guideEndpointHelp => 'One XMLTV guide URL. Xtream credentials can supply this automatically.';
   String get epgChannelId => 'XMLTV channel ID';
-  String get epgChannelIdHelp => 'Match this playlist channel to a guide entry. Leave blank to use the provider ID, then refresh the source.';
-  String get guideMappingRefreshFailed => 'Guide match saved, but the guide could not refresh. Retry from IPTV sources.';
+  String get epgChannelIdHelp =>
+      'Match this playlist channel to a guide entry. Leave blank to use the provider ID, then refresh the source.';
+  String get guideMappingRefreshFailed =>
+      'Guide match saved, but the guide could not refresh. Retry from IPTV sources.';
   String get noChannels => 'No channels loaded from this source yet.';
   String get searchChannels => 'Search channels';
   String get customChannelName => 'Display name';
@@ -35,7 +38,8 @@ class IptvTranslationCopy {
   String get hideFromGuide => 'Hide this channel from the guide';
   String get lockChannel => 'Require profile PIN to watch this channel';
   String get lockChannelGroup => 'Require profile PIN for this group';
-  String get parentalPinRequired => 'Channel locks need a PIN-protected local profile. Add a PIN in Profiles to use parental controls.';
+  String get parentalPinRequired =>
+      'Channel locks need a PIN-protected local profile. Add a PIN in Profiles to use parental controls.';
   String get parentalAccessDenied => 'Enter the profile PIN to watch locked IPTV channels.';
   String get parentalLockedLabel => 'PIN locked';
   String get noActiveProfile => 'Choose a profile before adding IPTV sources.';
@@ -59,20 +63,26 @@ class IptvTranslationCopy {
   String get allowHttp => 'Allow unencrypted HTTP';
   String get allowHttpDescription => 'Use only for a trusted local network. HTTPS is preferred when available.';
   String get m3uHelp => 'Paste the M3U playlist URL. Add an XMLTV URL to show programme details in the guide.';
-  String get xtreamHelp => 'Enter the provider server URL and login. PlezyNG requests its M3U playlist and XMLTV guide.';
-  String get dispatcharrHelp => 'Use a Dispatcharr playlist URL. Add Xtream credentials for movies and series, or an API key for DVR controls.';
+  String get xtreamHelp =>
+      'Enter the provider server URL and login. PlezyNG requests its M3U playlist and XMLTV guide.';
+  String get dispatcharrHelp =>
+      'Use a Dispatcharr playlist URL. Add Xtream credentials for movies and series, or an API key for DVR controls.';
   String get managedFeedHelp => 'Use the playlist and XMLTV URLs shown by this service. The service remains optional.';
-  String get playlistHeadersHelp => 'Playlist User-Agent, referrer, and origin options are honored for playback. Other playlist commands and headers are ignored.';
+  String get playlistHeadersHelp =>
+      'Playlist User-Agent, referrer, and origin options are honored for playback. Other playlist commands and headers are ignored.';
   String get dispatcharrDvr => 'Dispatcharr DVR (optional)';
-  String get dispatcharrDvrHelp => 'Connect the Dispatcharr server API to schedule and manage recordings stored on that server.';
+  String get dispatcharrDvrHelp =>
+      'Connect the Dispatcharr server API to schedule and manage recordings stored on that server.';
   String get dispatcharrApiEndpoint => 'Dispatcharr server URL';
   String get dispatcharrApiKey => 'Dispatcharr API key';
   String get localTimeShift => 'Use the player buffer for time-shifting';
-  String get localTimeShiftHelp => 'On native MPV players, keep a bounded seek window when the stream provides seekable data.';
+  String get localTimeShiftHelp =>
+      'On native MPV players, keep a bounded seek window when the stream provides seekable data.';
   String get vodTitle => 'Movies & Series';
   String get iptvSearchResults => 'IPTV movies & series';
   String get vodProgressSync => 'Sync IPTV watch progress';
-  String get vodProgressSyncHelp => 'Share movie and series positions through your Plex account. Each device keeps its own provider credentials.';
+  String get vodProgressSyncHelp =>
+      'Share movie and series positions through your Plex account. Each device keeps its own provider credentials.';
   String get vodSource => 'VOD source';
   String get movies => 'Movies';
   String get series => 'Series';
@@ -113,7 +123,8 @@ class IptvTranslationCopy {
   String get cancelSchedule => 'Cancel schedule';
   String get localRecordingCancelled => 'Local recording schedule cancelled.';
   String get recordingStopped => 'Dispatcharr recording stopped.';
-  String get recordingActionFailed => 'Could not update the recording. Check the Dispatcharr connection and permissions.';
+  String get recordingActionFailed =>
+      'Could not update the recording. Check the Dispatcharr connection and permissions.';
   String get recordingLoadFailed => 'Some IPTV recording details could not be loaded.';
   String get recordingFileMissing => 'The local recording file is missing.';
   String get deleteRecordingRule => 'Delete recording rule?';
@@ -132,12 +143,14 @@ class IptvTranslationCopy {
   String get edit => 'Edit source';
   String get remove => 'Remove source';
   String get removeTitle => 'Remove IPTV source?';
-  String removeMessage({required Object name}) => 'This removes $name, its imported channels, programme guide and favorites from this profile.';
+  String removeMessage({required Object name}) =>
+      'This removes $name, its imported channels, programme guide and favorites from this profile.';
   String channels({required Object count}) => '$count channels';
   String programmes({required Object count}) => '$count guide listings';
   String lastUpdated({required Object date}) => 'Updated $date';
   String get neverUpdated => 'Not imported yet';
-  String get savedRefreshFailed => 'Source saved, but channels could not be loaded. Check the feed and retry from IPTV sources.';
+  String get savedRefreshFailed =>
+      'Source saved, but channels could not be loaded. Check the feed and retry from IPTV sources.';
   String importComplete({required Object count}) => 'Loaded $count channels';
   String get required => 'Required';
   String get sourceInvalid => 'Check the source details and URL.';
@@ -152,6 +165,7 @@ class IptvTranslationCopy {
   String get sourceMissing => 'This IPTV source no longer exists.';
   String get vodUnavailableShort => 'VOD is not configured for this source.';
   String get recordingSaveFailed => 'The live recording could not be finalized.';
-  String get recordingStorageLow => 'There is not enough free space to start a recording. Free at least 512 MB and try again.';
+  String get recordingStorageLow =>
+      'There is not enough free space to start a recording. Free at least 512 MB and try again.';
   String get genericError => 'Could not save this IPTV source. Check the details and retry.';
 }

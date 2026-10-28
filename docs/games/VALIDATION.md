@@ -1,8 +1,115 @@
 # Games validation and release gates
 
-For current follow-up PR #54 completion status, see
+For current follow-up PR #71 completion status, see
 [CONNECTED_EXPERIENCE.md](CONNECTED_EXPERIENCE.md#scope-and-acceptance).
 Historical builds below do not validate the current branch.
+Use [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) for the exact-commit build
+procedure, three-computer library cases, receiver recovery, security and
+accessibility checks, and evidence template.
+
+## Main reconciliation for PR #71 — 2026-10-28
+
+The follow-up incorporates main `4f177e93`, including its subtitle, motion,
+connector and genre-browsing changes. PR #54 is already merged. Receiver
+implementation and security regressions are retained; Windows/JVM test
+registration and shared Apple test wiring remain part of private JIT CI.
+
+This pass repairs source/API integration errors in the combined app, restores
+bounded TAR parsing, keeps stale settings writes from winning, and preserves
+subtitle operation serialization and widget lifetime checks. Typed subtitle
+translation references prevent cleanup from silently dropping runtime messages.
+New controls use the shared AppIcon/rounded Symbols styling, retaining provider
+marks and a distinct filled/unfilled favorite state.
+The optional library-genre capability is queried through its own interface,
+preserving compatibility with clients that do not provide it.
+
+- **524 focused Flutter tests passed** in the final combined run: Games,
+  Multiview, gamepads, companion provider/receiver/peer, visualization,
+  recordings, search, settings, subtitle timing/imports, source playback,
+  music playback and library browsing/navigation.
+  The retry regression now preserves the current session's progress revision
+  while still rejecting late writes after an explicit reset or profile change.
+- The repository's **standard analyzer passed with zero diagnostics**;
+  formatting passed for **2,042 authored Dart files**, and icon consistency
+  passed for **1,197 non-generated application files**.
+- **Isolated full code generation passed**: all generated outputs match the
+  committed files. The successful local run used a task-local Dart runtime
+  with a bounded heap; the shared SDK and repository checks were not changed.
+- **41 native Debug tests passed** with Vulkan and GStreamer enabled.
+- **458 workflow/script guard tests passed** across 41 suites.
+- **17 new subtitle regression tests passed**, covering ZIP/TAR/gzip-TAR,
+  traversal, underdeclared expansion, octal validation, resource bounds,
+  fractional drift, invalid rates and unchanged source bytes. These are
+  included in the 524-test Flutter total, not additional tests.
+- Localization checks pass for **37 locales / 4,265 messages**, with **18,972
+  explicitly allowlisted English fallback entries**; these are not reviewed
+  translations. Existing translated copy and native permission messages remain.
+
+The standard unused-code check still reports eight existing declarations:
+`IptvChannels`, `IptvProgrammes`, `IptvChannelOverrides`,
+`IptvTranslationFallback`, `IntegrationConnectionRef`,
+`IntegrationAccessEvidence`, `AvailabilityLookupService` and
+`MotionProcessingModeSettings`. The unused-file check reports
+`lib/i18n/iptv_copy.dart` and `lib/integrations/integration_offers.dart`.
+These application-wide hygiene gates are unresolved; no exclusions or runner
+policy changes were introduced to conceal them. The full repository test suite
+is not qualified by the focused receiver/application checks. The music-player
+tests pass in this combined run as well as in their earlier isolated run;
+overlapping and interrupted attempts are not added to these totals.
+
+The PR description records the final combined application checks and exact
+published commit. Full SDK builds and live tests must use that revision. No new
+HDR, Android/Linux direct GPU output, internet rendezvous/traversal/relay or
+programmatic Cloud/Families implementation is claimed by this reconciliation.
+
+## Earlier code handoff pass — 2026-10-28 (`f1e14bcc`)
+
+This pass incorporates main `f0f1e104` and the startup/build hardening in
+`60c8d0a4`. The PR records the final handoff commit; always check out that
+revision before building. Local evidence below is not private-JIT CI or
+platform/device qualification.
+
+- **287 Flutter tests passed** across Games, Multiview, gamepads, companion
+  provider/receiver/peer, visualization, recordings and search. They include
+  three archive-extraction regressions, failure cleanup, existing controller
+  ownership tests, and cloud-source search. The 42-test search/card rerun
+  overlaps this count and must not be added to it.
+- The repository's **standard analyzer check passed with zero diagnostics**.
+  This covers the combined application and tests, after repairing compilation,
+  async-context lifetime and fixture failures introduced by the merged sources.
+- **41 native Debug tests passed with Vulkan and GStreamer enabled**. A separate
+  **41-test ASan/UBSan run passed with Pyrowave disabled**, covering the portable
+  transport and GStreamer receiver. Local LeakSanitizer was disabled because
+  this environment cannot inspect the required process state; private CI keeps
+  leak detection enabled. Neither run establishes Vulkan GPU execution.
+- Real GStreamer H.264 red-pixel decoding now passes both Annex-B and
+  avcC/length-prefixed framing. Runtime tests cover bounded connection and
+  first-frame waits, cancellation wakeups and tracked presentation evidence.
+- Windows transport, Media Foundation/XAudio2 receiver and five test executables
+  cross-compile/link with MinGW-w64. Strict Windows and Linux Flutter adapter
+  syntax/type checks and the JNI check pass. This is not MSVC or Windows test
+  execution, nor a complete Linux app/package build.
+- All Android Steam Java sources compile against Google's real API 36 classes
+  with real AAPT2-generated resources. **15 Java JUnit tests pass**, including
+  decoder-worker joining/interruption. Nineteen compatibility deprecation
+  warnings remain. The repository's SDK pins were preserved; these checks do
+  not replace its API 37 Gradle/NDK and minified-release builds.
+- **458 workflow/script guard tests passed**, including eight tvOS wiring
+  regressions and nine Steam source/archive tests. The Apple archive tests
+  verify transactionality, architecture checks and transitive crypto inputs
+  using mocked build commands; they do not compile an Apple SDK target.
+- Translation normalization, placeholder/source-hash checks, native localization
+  and localized quantities pass for **37 locales / 4,200 messages**, with
+  **16,632 explicitly allowlisted English fallback entries**. Removed ten unused
+  keys and normalized missing keys to the existing empty-string fallback
+  convention. This does not constitute language review.
+
+Current-head private-JIT CI, Windows MSVC/execution, Apple SDK/Metal tests,
+Android Gradle/NDK/release builds and real-host qualification remain required.
+HDR presentation, Android/Linux direct GPU Pyrowave, automatic internet
+rendezvous/traversal/relay, and programmatic Cloud/Families mutations remain
+implementation gaps, as detailed in the handoff. Do not describe them as
+completed features awaiting only live testing.
 
 Historical evidence begins on 2026-10-26; PR #54 follow-up records appear below.
 The earlier platform/codec descriptions are snapshots, not the current support

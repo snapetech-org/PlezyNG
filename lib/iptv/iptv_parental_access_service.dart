@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../i18n/iptv_copy.dart';
 import '../i18n/strings.g.dart';
 import '../models/livetv_channel.dart';
 import '../profiles/active_profile_provider.dart';

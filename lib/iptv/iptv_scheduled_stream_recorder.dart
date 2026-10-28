@@ -36,10 +36,10 @@ class IptvScheduledStreamRecorder {
     }
     if (await _recordDirect(uri)) return _recordHls(uri);
     final filename = uri.pathSegments.isEmpty ? '' : uri.pathSegments.last;
-    final extension = RegExp(r'\.(ts|mp2t|m2ts|mp4|m4v|mkv|mp3|aac|m4a|mpg|mpeg|webm)$', caseSensitive: false)
-        .firstMatch(filename)
-        ?.group(1)
-        ?.toLowerCase();
+    final extension = RegExp(
+      r'\.(ts|mp2t|m2ts|mp4|m4v|mkv|mp3|aac|m4a|mpg|mpeg|webm)$',
+      caseSensitive: false,
+    ).firstMatch(filename)?.group(1)?.toLowerCase();
     return extension == null ? '.ts' : '.$extension';
   }
 
@@ -149,8 +149,7 @@ class IptvScheduledStreamRecorder {
               : _decryptHlsSegment(
                   encryptedMap,
                   await _keyBytes(transport, playlistUri.resolve(parsed.initializationKey!.uri), keyCache),
-                  parsed.initializationKey!.iv ??
-                      _sequenceIv(parsed.initializationSequence, requireExplicit: true),
+                  parsed.initializationKey!.iv ?? _sequenceIv(parsed.initializationSequence, requireExplicit: true),
                 );
           sink.add(mapBytes);
         }
@@ -190,10 +189,7 @@ class IptvScheduledStreamRecorder {
     final response = await transport.send(
       'GET',
       resource,
-      headers: {
-        ...headers,
-        if (range != null) 'Range': 'bytes=${range.offset}-${range.offset + range.length - 1}',
-      },
+      headers: {...headers, if (range != null) 'Range': 'bytes=${range.offset}-${range.offset + range.length - 1}'},
       redirects: true,
     );
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -202,7 +198,9 @@ class IptvScheduledStreamRecorder {
     }
     if (range != null) {
       final contentRange = response.headers['content-range'];
-      final match = contentRange == null ? null : RegExp(r'^bytes (\d+)-(\d+)/', caseSensitive: false).firstMatch(contentRange);
+      final match = contentRange == null
+          ? null
+          : RegExp(r'^bytes (\d+)-(\d+)/', caseSensitive: false).firstMatch(contentRange);
       if (response.statusCode != 206 ||
           match == null ||
           int.tryParse(match.group(1) ?? '') != range.offset ||
@@ -222,11 +220,7 @@ class IptvScheduledStreamRecorder {
     return bytes.takeBytes();
   }
 
-  Future<Uint8List> _keyBytes(
-    SourceTransport transport,
-    Uri keyUri,
-    Map<String, Uint8List> cache,
-  ) async {
+  Future<Uint8List> _keyBytes(SourceTransport transport, Uri keyUri, Map<String, Uint8List> cache) async {
     final key = keyUri.toString();
     final cached = cache[key];
     if (cached != null) return cached;
@@ -250,14 +244,14 @@ class IptvScheduledStreamRecorder {
     if (ciphertext.isEmpty || ciphertext.length % 16 != 0 || key.length != 16 || iv.length != 16) {
       throw const FileSystemException('Invalid AES-128 HLS segment');
     }
-    final cipher = CBCBlockCipher(AESEngine())
-      ..init(false, ParametersWithIV<KeyParameter>(KeyParameter(key), iv));
+    final cipher = CBCBlockCipher(AESEngine())..init(false, ParametersWithIV<KeyParameter>(KeyParameter(key), iv));
     final padded = Uint8List(ciphertext.length);
     for (var offset = 0; offset < ciphertext.length; offset += cipher.blockSize) {
       cipher.processBlock(ciphertext, offset, padded, offset);
     }
     final paddingLength = padded.last;
-    if (paddingLength < 1 || paddingLength > cipher.blockSize ||
+    if (paddingLength < 1 ||
+        paddingLength > cipher.blockSize ||
         !padded.sublist(padded.length - paddingLength).every((byte) => byte == paddingLength)) {
       throw const FileSystemException('Invalid AES-128 HLS padding');
     }
@@ -265,7 +259,7 @@ class IptvScheduledStreamRecorder {
   }
 
   static Uint8List _sequenceIv(int sequence, {bool requireExplicit = false}) {
-    if (requireExplicit) throw const UnsupportedError('AES-128 HLS initialization maps need an explicit IV');
+    if (requireExplicit) throw UnsupportedError('AES-128 HLS initialization maps need an explicit IV');
     if (sequence < 0) throw const FileSystemException('Invalid HLS media sequence');
     final iv = Uint8List(16);
     var value = sequence;
@@ -322,13 +316,14 @@ class IptvScheduledStreamRecorder {
           currentKey = null;
         } else if (method == 'AES-128') {
           final keyUri = attributes['URI'];
-          if (keyUri == null || keyUri.isEmpty ||
+          if (keyUri == null ||
+              keyUri.isEmpty ||
               (attributes['KEYFORMAT'] != null && attributes['KEYFORMAT'] != 'identity')) {
-            throw const UnsupportedError('Unsupported HLS encryption key format');
+            throw UnsupportedError('Unsupported HLS encryption key format');
           }
           currentKey = _IptvHlsEncryption(uri: keyUri, iv: _parseIv(attributes['IV']));
         } else {
-          throw const UnsupportedError('Unsupported encrypted HLS method');
+          throw UnsupportedError('Unsupported encrypted HLS method');
         }
       } else if (line.startsWith('#EXT-X-MAP:')) {
         final attributes = _parseHlsAttributes(line.substring('#EXT-X-MAP:'.length));
@@ -348,7 +343,9 @@ class IptvScheduledStreamRecorder {
         endList = true;
       } else if (line.isNotEmpty && !line.startsWith('#')) {
         final resourceUri = base.resolve(line).toString();
-        final range = pendingByteRange == null ? null : _parseByteRange(pendingByteRange!, resourceUri, nextByteRangeOffset);
+        final range = pendingByteRange == null
+            ? null
+            : _parseByteRange(pendingByteRange, resourceUri, nextByteRangeOffset);
         segments.add(_IptvHlsSegment(uri: line, sequence: sequence + segments.length, key: currentKey, range: range));
         pendingByteRange = null;
       }
@@ -368,9 +365,7 @@ class IptvScheduledStreamRecorder {
   _IptvHlsRange _parseByteRange(String value, String resource, Map<String, int> nextOffsetByResource) {
     final match = RegExp(r'^(\d+)(?:@(\d+))?$').firstMatch(value.trim());
     final length = int.tryParse(match?.group(1) ?? '');
-    final offset = match?.group(2) == null
-        ? nextOffsetByResource[resource]
-        : int.tryParse(match!.group(2)!);
+    final offset = match?.group(2) == null ? nextOffsetByResource[resource] : int.tryParse(match!.group(2)!);
     if (length == null || length <= 0 || offset == null || offset < 0 || offset + length <= offset) {
       throw const FileSystemException('Invalid HLS byte range');
     }
@@ -397,7 +392,9 @@ class IptvScheduledStreamRecorder {
       throw const FileSystemException('Invalid HLS encryption IV');
     }
     final padded = hex.padLeft(32, '0');
-    return Uint8List.fromList([for (var index = 0; index < 32; index += 2) int.parse(padded.substring(index, index + 2), radix: 16)]);
+    return Uint8List.fromList([
+      for (var index = 0; index < 32; index += 2) int.parse(padded.substring(index, index + 2), radix: 16),
+    ]);
   }
 }
 

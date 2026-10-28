@@ -393,7 +393,7 @@ extension _VideoPlayerBuildMethods on VideoPlayerScreenState {
                           constraints: const BoxConstraints(maxWidth: 900),
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.78),
+                              color: Colors.black.withValues(alpha: 0.78),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Padding(

@@ -71,9 +71,14 @@ class StremioAccountClient {
     final code = row['code'];
     final link = row['link'];
     final qrData = row['qrcode'];
-    if (code is! String || code.isEmpty || code.length > 128 ||
-        link is! String || link.length > 2048 ||
-        qrData is! String || qrData.isEmpty || qrData.length > 2048) {
+    if (code is! String ||
+        code.isEmpty ||
+        code.length > 128 ||
+        link is! String ||
+        link.length > 2048 ||
+        qrData is! String ||
+        qrData.isEmpty ||
+        qrData.length > 2048) {
       throw const StremioAccountException(StremioAccountFailure.invalidResponse);
     }
     final linkUri = Uri.tryParse(link);
@@ -89,11 +94,10 @@ class StremioAccountClient {
   }) async {
     final authKey = await _waitForAccountKey(code, shouldCancel: shouldCancel);
     if (shouldCancel()) throw const StremioAccountException(StremioAccountFailure.cancelled);
-    final login = await _postJson(
-      Uri.https(_apiHost, '/api/loginWithToken'),
-      {'authKey': null, 'token': authKey},
-      allowedHost: _apiHost,
-    );
+    final login = await _postJson(Uri.https(_apiHost, '/api/loginWithToken'), {
+      'authKey': null,
+      'token': authKey,
+    }, allowedHost: _apiHost);
     final loginResult = login['result'];
     final accountKey = loginResult is Map ? loginResult['authKey'] : null;
     if (accountKey is! String || accountKey.isEmpty || accountKey.length > 4096) {
@@ -101,11 +105,11 @@ class StremioAccountClient {
     }
     if (shouldCancel()) throw const StremioAccountException(StremioAccountFailure.cancelled);
 
-    final collection = await _postJson(
-      Uri.https(_apiHost, '/api/addonCollectionGet'),
-      {'authKey': accountKey, 'update': true, 'addFromURL': <String>[]},
-      allowedHost: _apiHost,
-    );
+    final collection = await _postJson(Uri.https(_apiHost, '/api/addonCollectionGet'), {
+      'authKey': accountKey,
+      'update': true,
+      'addFromURL': <String>[],
+    }, allowedHost: _apiHost);
     final result = collection['result'];
     final rawAddons = result is Map ? result['addons'] : null;
     if (rawAddons is! List) throw const StremioAccountException(StremioAccountFailure.invalidResponse);
@@ -115,7 +119,8 @@ class StremioAccountClient {
     var ignored = 0;
     for (final raw in rawAddons.take(200)) {
       final descriptor = _parseDescriptor(raw);
-      if (descriptor == null || (!descriptor.supportsCatalogs && !descriptor.supportsStreams) ||
+      if (descriptor == null ||
+          (!descriptor.supportsCatalogs && !descriptor.supportsStreams) ||
           !seenUrls.add(descriptor.manifestUrl)) {
         ignored++;
         continue;
@@ -226,8 +231,16 @@ class StremioAccountClient {
     final uri = Uri.tryParse(rawUrl);
     final id = manifest['id'];
     final name = manifest['name'];
-    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty || uri.userInfo.isNotEmpty || uri.hasFragment ||
-        id is! String || id.trim().isEmpty || id.length > 512 || name is! String || name.trim().isEmpty ||
+    if (uri == null ||
+        uri.scheme != 'https' ||
+        uri.host.isEmpty ||
+        uri.userInfo.isNotEmpty ||
+        uri.hasFragment ||
+        id is! String ||
+        id.trim().isEmpty ||
+        id.length > 512 ||
+        name is! String ||
+        name.trim().isEmpty ||
         manifest['resources'] is! List) {
       return null;
     }

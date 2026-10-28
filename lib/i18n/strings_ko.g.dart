@@ -2848,7 +2848,6 @@ class _Translations$streaming$ko extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Real-Debrid 계정으로 지원되는 토렌트 스트림을 재생하세요.';
 	@override String get connectRealDebrid => 'QR 코드로 연결';
-	@override String get disconnectRealDebrid => 'Real-Debrid 연결 해제';
 	@override String realDebridConnected({required Object username}) => '${username} 계정으로 연결됨';
 	@override String get realDebridInstructions => 'QR 코드를 스캔하거나 링크를 연 다음 이 활성화 코드를 입력해 PlezyNG를 연결하세요:';
 	@override String get realDebridActivate => 'Real-Debrid를 열어 활성화';
@@ -2876,21 +2875,17 @@ class _Translations$streaming$ko extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => '${service} 연결을 해제할까요?';
 	@override String get disconnectBody => 'PlezyNG가 이 기기의 권한을 삭제합니다. 제공업체에 저장된 파일과 진행 중인 전송은 변경되지 않습니다.';
 	@override String get streamsTitle => '스트림 선택';
-	@override String get searchingStreams => '연결된 애드온 확인 중…';
 	@override String get noStreams => '이 제목에 사용할 스트림을 찾지 못했습니다.';
 	@override String get manageConnections => '스트리밍 서비스 관리';
 	@override String subtitleTracks({required Object count}) => '자막 트랙: ${count}';
 	@override String get chooseSubtitle => '자막 선택';
 	@override String get chooseProvider => 'Debrid 서비스 선택';
 	@override String get subtitleOff => '자막 끄기';
-	@override String get subtitleLoadFailed => '자막을 불러오지 못했습니다. 다른 트랙을 시도하세요.';
-	@override String get subtitleApplied => '재생할 자막을 선택했습니다';
 	@override String get streamLookupPartial => '일부 애드온에 연결할 수 없습니다.';
 	@override String get streamLookupFailed => '연결된 애드온을 확인하지 못했습니다.';
 	@override String get streamOpenExternal => '외부 링크 열기';
 	@override String get streamPrepare => 'Debrid 서비스로 준비 중…';
 	@override String get streamPrepareFailed => '스트림을 준비하지 못했습니다. 연결된 계정을 확인하고 다른 소스를 시도하세요.';
-	@override String get streamNeedsRealDebrid => '이 토렌트 스트림을 재생하려면 Debrid 서비스를 연결하세요.';
 	@override String get streamUnsupported => '앱 내 플레이어에서 이 스트림 형식을 지원하지 않습니다.';
 	@override String get remoteNeedsEpisode => '스트림을 검색하기 전에 에피소드를 선택하세요.';
 	@override String get remoteNeedsEpisodeNumber => '이 에피소드에 시즌 또는 에피소드 번호가 없습니다.';
@@ -7898,7 +7893,6 @@ extension on TranslationsKo {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Real-Debrid 계정으로 지원되는 토렌트 스트림을 재생하세요.',
 			'streaming.connectRealDebrid' => 'QR 코드로 연결',
-			'streaming.disconnectRealDebrid' => 'Real-Debrid 연결 해제',
 			'streaming.realDebridConnected' => ({required Object username}) => '${username} 계정으로 연결됨',
 			'streaming.realDebridInstructions' => 'QR 코드를 스캔하거나 링크를 연 다음 이 활성화 코드를 입력해 PlezyNG를 연결하세요:',
 			'streaming.realDebridActivate' => 'Real-Debrid를 열어 활성화',
@@ -7926,21 +7920,17 @@ extension on TranslationsKo {
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service} 연결을 해제할까요?',
 			'streaming.disconnectBody' => 'PlezyNG가 이 기기의 권한을 삭제합니다. 제공업체에 저장된 파일과 진행 중인 전송은 변경되지 않습니다.',
 			'streaming.streamsTitle' => '스트림 선택',
-			'streaming.searchingStreams' => '연결된 애드온 확인 중…',
 			'streaming.noStreams' => '이 제목에 사용할 스트림을 찾지 못했습니다.',
 			'streaming.manageConnections' => '스트리밍 서비스 관리',
 			'streaming.subtitleTracks' => ({required Object count}) => '자막 트랙: ${count}',
 			'streaming.chooseSubtitle' => '자막 선택',
 			'streaming.chooseProvider' => 'Debrid 서비스 선택',
 			'streaming.subtitleOff' => '자막 끄기',
-			'streaming.subtitleLoadFailed' => '자막을 불러오지 못했습니다. 다른 트랙을 시도하세요.',
-			'streaming.subtitleApplied' => '재생할 자막을 선택했습니다',
 			'streaming.streamLookupPartial' => '일부 애드온에 연결할 수 없습니다.',
 			'streaming.streamLookupFailed' => '연결된 애드온을 확인하지 못했습니다.',
 			'streaming.streamOpenExternal' => '외부 링크 열기',
 			'streaming.streamPrepare' => 'Debrid 서비스로 준비 중…',
 			'streaming.streamPrepareFailed' => '스트림을 준비하지 못했습니다. 연결된 계정을 확인하고 다른 소스를 시도하세요.',
-			'streaming.streamNeedsRealDebrid' => '이 토렌트 스트림을 재생하려면 Debrid 서비스를 연결하세요.',
 			'streaming.streamUnsupported' => '앱 내 플레이어에서 이 스트림 형식을 지원하지 않습니다.',
 			'streaming.remoteNeedsEpisode' => '스트림을 검색하기 전에 에피소드를 선택하세요.',
 			'streaming.remoteNeedsEpisodeNumber' => '이 에피소드에 시즌 또는 에피소드 번호가 없습니다.',
@@ -8195,13 +8185,13 @@ extension on TranslationsKo {
 			'universalMedia.playlistFormatsHelp' => '플레이리스트는 최대 1,000 개의 항목과 2 MB를 포함할 수 있습니다.HLS는 스트림으로 열려 있으므로 플레이어가 품질을 선택할 수 있도록합니다.',
 			'universalMedia.saveQueuePlaylist' => '대기열을 재생목록으로 저장',
 			'universalMedia.queuePlaylistSaved' => '재생목록을 미디어 파일 옆에 저장했습니다.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => '이 대기열은 재사용 가능한 로컬 재생목록으로 저장할 수 없습니다.',
 			'universalMedia.queuePlaylistFolderRequired' => '대기열 파일과 같은 폴더를 저장 위치로 선택하세요.',
 			'universalMedia.noFavorites' => '아직 좋아하는 스트림을 저장하지 않았습니다.Favorites 이 프로필에 남아 있습니다.',
 			'universalMedia.removeFavorite' => '좋아하는 스트림을 제거',
 			'universalMedia.filesHelp' => '오디오, 비디오 또는 ISO 파일을 일시적인 쿼드를 선택합니다.파일 및 URL은 도서관 역사에 추가되지 않습니다.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => '파일 선택',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '1 선택된 파일', other: '${count} 선택된 파일', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi를 통해 파일을 보내기',
@@ -8709,13 +8699,13 @@ extension on TranslationsKo {
 			'sourceSetup.nfsEncryptionFailure' => '암호화된 NFS 연결에서는 NAS의 두 서비스가 RFC 9289와 TLS 1.3을 지원하는지, 인증서 이름과 내보내기 UID/GID가 올바른지 확인하세요. PlezyNG는 암호화 없이 이 연결을 다시 시도하지 않습니다.',
 			'sourceSetup.sourceConnecting' => '소스에 연결 중',
 			'sourceSetup.metadataSearchPrivacy' => '이 제목 검색은 Trakt로 전송됩니다. 입력한 제목만 전송하며, 동영상이나 소스 자격 증명은 전송하지 않습니다.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => '일치하는 결과 선택',
 			'sourceSetup.metadataMatchHelp' => '선택하기 전에 제목과 연도를 확인하세요. Trakt에는 검색 제목이 전송되며, 동영상은 원래 소스에 그대로 남습니다.',
 			'sourceSetup.metadataNoMatches' => '일치하는 온라인 제목을 찾지 못했습니다. 다른 제목으로 검색하세요.',
 			'sourceSetup.metadataSearch' => '온라인 메타데이터 검색',
 			'sourceSetup.metadataLoading' => '온라인 영화 및 TV 프로그램 정보 조회 중…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt의 온라인 메타데이터',
 			'sourceSetup.metadataNoAutomaticMatch' => '자동으로 일치하는 제목을 찾지 못했습니다. 제목을 검색하여 일치하는 결과를 선택하세요.',
 			'sourceSetup.metadataFailed' => '온라인 메타데이터를 불러오지 못했습니다. 재생과 로컬 정보는 계속 사용할 수 있습니다.',

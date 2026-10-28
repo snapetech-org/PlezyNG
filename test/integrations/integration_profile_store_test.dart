@@ -79,21 +79,21 @@ void main() {
         String destination, {
         IdentifierMatchMethod method = IdentifierMatchMethod.userConfirmed,
       }) => IdentityCrosswalk(
-            id: id,
-            from: const IntegrationEntityRef(
-              providerId: 'catalog',
-              nativeId: 'comic-12',
-              kind: IntegrationEntityKind.comicIssue,
-            ),
-            to: IntegrationEntityRef(
-              providerId: 'local-library',
-              nativeId: destination,
-              kind: IntegrationEntityKind.comicIssue,
-            ),
-            relation: EntityRelationKind.sameWork,
-            method: method,
-            confirmedAt: DateTime.utc(2026, 10, 28),
-          );
+        id: id,
+        from: const IntegrationEntityRef(
+          providerId: 'catalog',
+          nativeId: 'comic-12',
+          kind: IntegrationEntityKind.comicIssue,
+        ),
+        to: IntegrationEntityRef(
+          providerId: 'local-library',
+          nativeId: destination,
+          kind: IntegrationEntityKind.comicIssue,
+        ),
+        relation: EntityRelationKind.sameWork,
+        method: method,
+        confirmedAt: DateTime.utc(2026, 10, 28),
+      );
 
       final suggestion = row('suggestion', 'file-1', method: IdentifierMatchMethod.suggested);
       expect(suggestion.isValid, isFalse);

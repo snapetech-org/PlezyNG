@@ -6,11 +6,14 @@ final class PlaybackCapabilityReport {
   final String? videoOutput;
   final String? hardwareDecoder;
   final String? pixelFormat;
+
   /// Coded source dimensions; presentation transforms are not applied.
   final int? sourceWidth;
   final int? sourceHeight;
+
   /// Tri-state source classification. Null means the backend could not report it.
   final bool? sourceIsHdr;
+
   /// Source Dolby Vision profile; null means no profile was reported.
   final int? dolbyVisionProfile;
   final double? sourceFps;
@@ -20,6 +23,7 @@ final class PlaybackCapabilityReport {
   final int? decoderDroppedFrames;
   final bool? rendererInterpolationActive;
   final String? nativeInterpolationStatus;
+
   /// Platform thermal-pressure tier reported for this playback session.
   final String? thermalStatus;
 

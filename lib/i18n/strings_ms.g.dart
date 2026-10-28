@@ -2833,7 +2833,6 @@ class _Translations$streaming$ms extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Mainkan strim torrent yang disokong melalui akaun Real-Debrid anda.';
 	@override String get connectRealDebrid => 'Sambung dengan kod QR';
-	@override String get disconnectRealDebrid => 'Putuskan sambungan Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'Disambungkan sebagai ${username}';
 	@override String get realDebridInstructions => 'Imbas kod QR atau buka pautan, kemudian masukkan kod pengaktifan ini untuk menyambungkan PlezyNG:';
 	@override String get realDebridActivate => 'Buka Real-Debrid untuk mengaktifkan';
@@ -2861,21 +2860,17 @@ class _Translations$streaming$ms extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'Putuskan sambungan ${service}?';
 	@override String get disconnectBody => 'PlezyNG akan membatalkan kebenaran peranti ini. Fail penyedia dan pemindahan yang sedang berjalan tidak akan berubah.';
 	@override String get streamsTitle => 'Pilih strim';
-	@override String get searchingStreams => 'Menyemak add-on yang disambungkan…';
 	@override String get noStreams => 'Tiada strim ditemukan untuk tajuk ini.';
 	@override String get manageConnections => 'Urus perkhidmatan penstriman';
 	@override String subtitleTracks({required Object count}) => 'Trek sari kata: ${count}';
 	@override String get chooseSubtitle => 'Pilih sari kata';
 	@override String get chooseProvider => 'Pilih perkhidmatan Debrid';
 	@override String get subtitleOff => 'Sari kata dimatikan';
-	@override String get subtitleLoadFailed => 'Tidak dapat memuatkan sari kata ini. Cuba trek lain.';
-	@override String get subtitleApplied => 'Sari kata dipilih untuk main balik';
 	@override String get streamLookupPartial => 'Sesetengah add-on tidak dapat dicapai.';
 	@override String get streamLookupFailed => 'Tidak dapat menyemak add-on yang disambungkan.';
 	@override String get streamOpenExternal => 'Buka pautan luaran';
 	@override String get streamPrepare => 'Menyediakan melalui perkhidmatan Debrid…';
 	@override String get streamPrepareFailed => 'Tidak dapat menyediakan strim ini. Semak akaun yang disambungkan dan cuba sumber lain.';
-	@override String get streamNeedsRealDebrid => 'Sambungkan perkhidmatan Debrid untuk memainkan strim torrent ini.';
 	@override String get streamUnsupported => 'Format strim ini tidak disokong oleh pemain dalam aplikasi.';
 	@override String get remoteNeedsEpisode => 'Pilih episod sebelum mencari strim.';
 	@override String get remoteNeedsEpisodeNumber => 'Nombor musim atau episod tiada untuk episod ini.';
@@ -7878,7 +7873,6 @@ extension on TranslationsMs {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Mainkan strim torrent yang disokong melalui akaun Real-Debrid anda.',
 			'streaming.connectRealDebrid' => 'Sambung dengan kod QR',
-			'streaming.disconnectRealDebrid' => 'Putuskan sambungan Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Disambungkan sebagai ${username}',
 			'streaming.realDebridInstructions' => 'Imbas kod QR atau buka pautan, kemudian masukkan kod pengaktifan ini untuk menyambungkan PlezyNG:',
 			'streaming.realDebridActivate' => 'Buka Real-Debrid untuk mengaktifkan',
@@ -7906,21 +7900,17 @@ extension on TranslationsMs {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Putuskan sambungan ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG akan membatalkan kebenaran peranti ini. Fail penyedia dan pemindahan yang sedang berjalan tidak akan berubah.',
 			'streaming.streamsTitle' => 'Pilih strim',
-			'streaming.searchingStreams' => 'Menyemak add-on yang disambungkan…',
 			'streaming.noStreams' => 'Tiada strim ditemukan untuk tajuk ini.',
 			'streaming.manageConnections' => 'Urus perkhidmatan penstriman',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Trek sari kata: ${count}',
 			'streaming.chooseSubtitle' => 'Pilih sari kata',
 			'streaming.chooseProvider' => 'Pilih perkhidmatan Debrid',
 			'streaming.subtitleOff' => 'Sari kata dimatikan',
-			'streaming.subtitleLoadFailed' => 'Tidak dapat memuatkan sari kata ini. Cuba trek lain.',
-			'streaming.subtitleApplied' => 'Sari kata dipilih untuk main balik',
 			'streaming.streamLookupPartial' => 'Sesetengah add-on tidak dapat dicapai.',
 			'streaming.streamLookupFailed' => 'Tidak dapat menyemak add-on yang disambungkan.',
 			'streaming.streamOpenExternal' => 'Buka pautan luaran',
 			'streaming.streamPrepare' => 'Menyediakan melalui perkhidmatan Debrid…',
 			'streaming.streamPrepareFailed' => 'Tidak dapat menyediakan strim ini. Semak akaun yang disambungkan dan cuba sumber lain.',
-			'streaming.streamNeedsRealDebrid' => 'Sambungkan perkhidmatan Debrid untuk memainkan strim torrent ini.',
 			'streaming.streamUnsupported' => 'Format strim ini tidak disokong oleh pemain dalam aplikasi.',
 			'streaming.remoteNeedsEpisode' => 'Pilih episod sebelum mencari strim.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Nombor musim atau episod tiada untuk episod ini.',
@@ -8175,13 +8165,13 @@ extension on TranslationsMs {
 			'universalMedia.playlistFormatsHelp' => 'Senarai main boleh mengandungi sehingga 1,000 item dan 2 MB. HLS terbuka sebagai aliran supaya pemain boleh memilih kualiti.',
 			'universalMedia.saveQueuePlaylist' => 'Simpan baris gilir sebagai senarai main',
 			'universalMedia.queuePlaylistSaved' => 'Senarai main disimpan di sebelah fail media.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Baris gilir ini tidak dapat disimpan sebagai senarai main setempat yang boleh digunakan semula.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Pilih lokasi simpanan dalam folder yang sama dengan fail dalam baris gilir.',
 			'universalMedia.noFavorites' => 'Tiada rangkaian kegemaran disimpan sehingga kini. kekal dalam profil ini.',
 			'universalMedia.removeFavorite' => 'Menghapuskan stream kegemaran',
 			'universalMedia.filesHelp' => 'Pilih fail audio, video, atau ISO untuk tempoh sementara. fail dan URL tidak ditambah kepada sejarah perpustakaan.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Pilih fail',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang dipilih', ), 
 			'universalMedia.wifiTransfer' => 'Hantar fail melalui Wi-Fi',
@@ -8689,13 +8679,13 @@ extension on TranslationsMs {
 			'sourceSetup.nfsEncryptionFailure' => 'Untuk NFS disulitkan, semak sokongan RFC 9289 dan TLS 1.3 pada kedua-dua perkhidmatan NAS, nama sijil dan UID/GID perkongsian. PlezyNG tidak akan mencuba semula sambungan ini tanpa penyulitan.',
 			'sourceSetup.sourceConnecting' => 'Menyambung ke sumber',
 			'sourceSetup.metadataSearchPrivacy' => 'Carian tajuk ini dihantar ke Trakt. Carian menghantar tajuk yang anda masukkan, bukan video atau bukti kelayakan sumber.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Pilih padanan',
 			'sourceSetup.metadataMatchHelp' => 'Semak tajuk dan tahun sebelum memilih. Trakt menerima tajuk carian; video kekal pada sumbernya.',
 			'sourceSetup.metadataNoMatches' => 'Tiada padanan tajuk dalam talian ditemukan. Cuba tajuk lain.',
 			'sourceSetup.metadataSearch' => 'Cari metadata dalam talian',
 			'sourceSetup.metadataLoading' => 'Mencari butiran filem dan rancangan TV dalam talian…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadata dalam talian daripada Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Tiada padanan tajuk automatik ditemukan. Cari tajuk untuk memilih padanan.',
 			'sourceSetup.metadataFailed' => 'Metadata dalam talian tidak dapat dimuatkan. Main balik dan butiran setempat masih tersedia.',

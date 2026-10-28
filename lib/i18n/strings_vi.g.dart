@@ -2833,7 +2833,6 @@ class _Translations$streaming$vi extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Phát các luồng torrent được hỗ trợ qua tài khoản Real-Debrid.';
 	@override String get connectRealDebrid => 'Kết nối bằng mã QR';
-	@override String get disconnectRealDebrid => 'Ngắt kết nối Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'Đã kết nối với tên ${username}';
 	@override String get realDebridInstructions => 'Quét mã QR hoặc mở liên kết, rồi nhập mã kích hoạt này để kết nối PlezyNG:';
 	@override String get realDebridActivate => 'Mở Real-Debrid để kích hoạt';
@@ -2861,21 +2860,17 @@ class _Translations$streaming$vi extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'Ngắt kết nối ${service}?';
 	@override String get disconnectBody => 'PlezyNG sẽ thu hồi quyền của thiết bị này. Tệp trên dịch vụ và các lần truyền đang diễn ra vẫn được giữ nguyên.';
 	@override String get streamsTitle => 'Chọn luồng';
-	@override String get searchingStreams => 'Đang kiểm tra tiện ích đã kết nối…';
 	@override String get noStreams => 'Không tìm thấy luồng cho tiêu đề này.';
 	@override String get manageConnections => 'Quản lý dịch vụ phát trực tuyến';
 	@override String subtitleTracks({required Object count}) => 'Bản phụ đề: ${count}';
 	@override String get chooseSubtitle => 'Chọn phụ đề';
 	@override String get chooseProvider => 'Chọn dịch vụ Debrid';
 	@override String get subtitleOff => 'Tắt phụ đề';
-	@override String get subtitleLoadFailed => 'Không thể tải phụ đề này. Hãy thử bản phụ đề khác.';
-	@override String get subtitleApplied => 'Đã chọn phụ đề để phát';
 	@override String get streamLookupPartial => 'Không thể truy cập một số tiện ích.';
 	@override String get streamLookupFailed => 'Không thể kiểm tra các tiện ích đã kết nối.';
 	@override String get streamOpenExternal => 'Mở liên kết bên ngoài';
 	@override String get streamPrepare => 'Đang chuẩn bị qua dịch vụ Debrid…';
 	@override String get streamPrepareFailed => 'Không thể chuẩn bị luồng này. Hãy kiểm tra tài khoản đã kết nối và thử nguồn khác.';
-	@override String get streamNeedsRealDebrid => 'Kết nối dịch vụ Debrid để phát luồng torrent này.';
 	@override String get streamUnsupported => 'Trình phát trong ứng dụng không hỗ trợ định dạng luồng này.';
 	@override String get remoteNeedsEpisode => 'Chọn tập trước khi tìm luồng.';
 	@override String get remoteNeedsEpisodeNumber => 'Tập này thiếu số mùa hoặc số tập.';
@@ -7878,7 +7873,6 @@ extension on TranslationsVi {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Phát các luồng torrent được hỗ trợ qua tài khoản Real-Debrid.',
 			'streaming.connectRealDebrid' => 'Kết nối bằng mã QR',
-			'streaming.disconnectRealDebrid' => 'Ngắt kết nối Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Đã kết nối với tên ${username}',
 			'streaming.realDebridInstructions' => 'Quét mã QR hoặc mở liên kết, rồi nhập mã kích hoạt này để kết nối PlezyNG:',
 			'streaming.realDebridActivate' => 'Mở Real-Debrid để kích hoạt',
@@ -7906,21 +7900,17 @@ extension on TranslationsVi {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Ngắt kết nối ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG sẽ thu hồi quyền của thiết bị này. Tệp trên dịch vụ và các lần truyền đang diễn ra vẫn được giữ nguyên.',
 			'streaming.streamsTitle' => 'Chọn luồng',
-			'streaming.searchingStreams' => 'Đang kiểm tra tiện ích đã kết nối…',
 			'streaming.noStreams' => 'Không tìm thấy luồng cho tiêu đề này.',
 			'streaming.manageConnections' => 'Quản lý dịch vụ phát trực tuyến',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Bản phụ đề: ${count}',
 			'streaming.chooseSubtitle' => 'Chọn phụ đề',
 			'streaming.chooseProvider' => 'Chọn dịch vụ Debrid',
 			'streaming.subtitleOff' => 'Tắt phụ đề',
-			'streaming.subtitleLoadFailed' => 'Không thể tải phụ đề này. Hãy thử bản phụ đề khác.',
-			'streaming.subtitleApplied' => 'Đã chọn phụ đề để phát',
 			'streaming.streamLookupPartial' => 'Không thể truy cập một số tiện ích.',
 			'streaming.streamLookupFailed' => 'Không thể kiểm tra các tiện ích đã kết nối.',
 			'streaming.streamOpenExternal' => 'Mở liên kết bên ngoài',
 			'streaming.streamPrepare' => 'Đang chuẩn bị qua dịch vụ Debrid…',
 			'streaming.streamPrepareFailed' => 'Không thể chuẩn bị luồng này. Hãy kiểm tra tài khoản đã kết nối và thử nguồn khác.',
-			'streaming.streamNeedsRealDebrid' => 'Kết nối dịch vụ Debrid để phát luồng torrent này.',
 			'streaming.streamUnsupported' => 'Trình phát trong ứng dụng không hỗ trợ định dạng luồng này.',
 			'streaming.remoteNeedsEpisode' => 'Chọn tập trước khi tìm luồng.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Tập này thiếu số mùa hoặc số tập.',
@@ -8175,13 +8165,13 @@ extension on TranslationsVi {
 			'universalMedia.playlistFormatsHelp' => 'Một danh sách phát có thể chứa tối đa 1.000 mục và 2 MB. HLS hiển thị mở như dòng để người chơi có thể chọn một chất lượng.',
 			'universalMedia.saveQueuePlaylist' => 'Lưu hàng đợi thành danh sách phát',
 			'universalMedia.queuePlaylistSaved' => 'Danh sách phát đã được lưu cạnh các tệp phương tiện.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Không thể lưu hàng đợi này thành danh sách phát cục bộ để dùng lại.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Chọn vị trí lưu trong cùng thư mục với các tệp trong hàng đợi.',
 			'universalMedia.noFavorites' => 'Không được lưu stream yêu thích cho đến nay. Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Xóa stream yêu thích',
 			'universalMedia.filesHelp' => 'Chọn các tệp âm thanh, video hoặc ISO cho một cặp tạm thời. tệp và URL không được thêm vào lịch sử thư viện.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Chọn file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} tập tin được chọn', ), 
 			'universalMedia.wifiTransfer' => 'Gửi file qua Wi-Fi',
@@ -8689,13 +8679,13 @@ extension on TranslationsVi {
 			'sourceSetup.nfsEncryptionFailure' => 'Với NFS được mã hóa, kiểm tra hỗ trợ RFC 9289 và TLS 1.3 trên cả hai dịch vụ NAS, tên trong chứng chỉ và UID/GID của vùng chia sẻ. PlezyNG sẽ không thử lại kết nối này khi không mã hóa.',
 			'sourceSetup.sourceConnecting' => 'Đang kết nối đến nguồn',
 			'sourceSetup.metadataSearchPrivacy' => 'Lượt tìm tiêu đề này được gửi đến Trakt. Chỉ tiêu đề bạn nhập được gửi đi, không phải video hay thông tin xác thực của nguồn.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Chọn kết quả phù hợp',
 			'sourceSetup.metadataMatchHelp' => 'Kiểm tra tiêu đề và năm trước khi chọn. Trakt nhận tiêu đề tìm kiếm; video vẫn ở nguồn của nó.',
 			'sourceSetup.metadataNoMatches' => 'Không tìm thấy tiêu đề trực tuyến phù hợp. Hãy thử tiêu đề khác.',
 			'sourceSetup.metadataSearch' => 'Tìm siêu dữ liệu trực tuyến',
 			'sourceSetup.metadataLoading' => 'Đang tra cứu thông tin phim và chương trình TV trực tuyến…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Siêu dữ liệu trực tuyến từ Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Không tự động tìm thấy tiêu đề phù hợp. Hãy tìm tiêu đề để chọn kết quả.',
 			'sourceSetup.metadataFailed' => 'Không tải được siêu dữ liệu trực tuyến. Vẫn có thể phát và xem thông tin cục bộ.',

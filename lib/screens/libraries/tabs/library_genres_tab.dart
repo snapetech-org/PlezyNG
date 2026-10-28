@@ -76,8 +76,10 @@ class _LibraryGenresTabState extends BaseLibraryTabState<LibraryGenre, LibraryGe
   Future<void> loadItems() => runLoadTransaction(() {
     final library = widget.library;
     final client = getMediaClientForLibrary();
-    if (client is! LibraryGenreProvider) return Future.value(const <LibraryGenre>[]);
-    return client.fetchLibraryGenres(library.id, libraryKind: library.kind);
+    if (client case final LibraryGenreProvider provider) {
+      return provider.fetchLibraryGenres(library.id, libraryKind: library.kind);
+    }
+    return Future.value(const <LibraryGenre>[]);
   });
 
   @override

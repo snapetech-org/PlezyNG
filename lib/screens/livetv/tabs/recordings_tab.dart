@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import '../../../exceptions/media_server_exceptions.dart';
 import '../../../focus/focusable_wrapper.dart';
 import '../../../i18n/strings.g.dart';
-import '../../../i18n/iptv_copy.dart';
 import '../../../iptv/dispatcharr_dvr_client.dart';
 import '../../../iptv/iptv_models.dart';
 import '../../../iptv/iptv_source_repository.dart';
@@ -68,6 +67,7 @@ class _RuleEntry {
 }
 
 enum _RuleAction { edit, delete }
+
 enum _DispatcharrAction { play, stop, delete }
 
 class RecordingsTabState extends State<RecordingsTab> with WidgetsBindingObserver, LiveTvRefreshMixin<RecordingsTab> {
@@ -153,7 +153,8 @@ class RecordingsTabState extends State<RecordingsTab> with WidgetsBindingObserve
     if (!mounted) return;
     final loadGeneration = ++_loadGeneration;
     setState(() {
-      _isLoading = _serverRecordings.isEmpty &&
+      _isLoading =
+          _serverRecordings.isEmpty &&
           _localRecordings.isEmpty &&
           _localSchedules.isEmpty &&
           _dispatcharrRecordings.isEmpty &&
@@ -190,7 +191,7 @@ class RecordingsTabState extends State<RecordingsTab> with WidgetsBindingObserve
       },
     );
 
-    if (!_isCurrentLoad(loadGeneration)) return;
+    if (!mounted || !_isCurrentLoad(loadGeneration)) return;
     final profileId = context.read<ActiveProfileProvider>().activeId;
     var localRecordings = <IptvLocalRecording>[];
     var localSchedules = <IptvLocalRecordingSchedule>[];
@@ -224,7 +225,11 @@ class RecordingsTabState extends State<RecordingsTab> with WidgetsBindingObserve
       _dispatcharrRules = dispatcharrRules;
       _iptvError = iptvFailed ? t.iptv.recordingLoadFailed : null;
       _isLoading = false;
-      final hasIptvItems = localRecordings.isNotEmpty || localSchedules.isNotEmpty || dispatcharrRecordings.isNotEmpty || dispatcharrRules.isNotEmpty;
+      final hasIptvItems =
+          localRecordings.isNotEmpty ||
+          localSchedules.isNotEmpty ||
+          dispatcharrRecordings.isNotEmpty ||
+          dispatcharrRules.isNotEmpty;
       _adminBlocked = results.isEmpty && !hasIptvItems && anyAdminError;
       _error = (results.isEmpty && !hasIptvItems && anyOtherError && !anyAdminError) ? t.liveTv.recordingFailed : null;
     });
@@ -313,6 +318,7 @@ class RecordingsTabState extends State<RecordingsTab> with WidgetsBindingObserve
       kind: SourceItemKind.video,
       files: [mediaFile],
     );
+    if (!mounted || context.read<ActiveProfileProvider>().activeId != recording.profileId) return;
     await context.read<SourcePlayback>().start(
       entry,
       [mediaFile],
@@ -479,7 +485,11 @@ class RecordingsTabState extends State<RecordingsTab> with WidgetsBindingObserve
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    final hasIptvItems = _localRecordings.isNotEmpty || _localSchedules.isNotEmpty || _dispatcharrRecordings.isNotEmpty || _dispatcharrRules.isNotEmpty;
+    final hasIptvItems =
+        _localRecordings.isNotEmpty ||
+        _localSchedules.isNotEmpty ||
+        _dispatcharrRecordings.isNotEmpty ||
+        _dispatcharrRules.isNotEmpty;
     if (_serverRecordings.isEmpty && !hasIptvItems && _adminBlocked) {
       return Center(child: _EmptyMessage(text: t.liveTv.dvrAdminRequired));
     }
@@ -490,7 +500,12 @@ class RecordingsTabState extends State<RecordingsTab> with WidgetsBindingObserve
     final grabs = _allGrabs;
     final rules = _allRules;
 
-    if (grabs.isEmpty && rules.isEmpty && _localSchedules.isEmpty && _localRecordings.isEmpty && _dispatcharrRecordings.isEmpty && _dispatcharrRules.isEmpty) {
+    if (grabs.isEmpty &&
+        rules.isEmpty &&
+        _localSchedules.isEmpty &&
+        _localRecordings.isEmpty &&
+        _dispatcharrRecordings.isEmpty &&
+        _dispatcharrRules.isEmpty) {
       return Center(child: _EmptyMessage(text: _iptvError ?? t.liveTv.noScheduledRecordings));
     }
 
@@ -500,7 +515,10 @@ class RecordingsTabState extends State<RecordingsTab> with WidgetsBindingObserve
         if (_iptvError != null)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: Text(_iptvError!, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error)),
+            child: Text(
+              _iptvError!,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+            ),
           ),
         if (_localSchedules.isNotEmpty)
           SettingsGroup(
@@ -525,10 +543,14 @@ class RecordingsTabState extends State<RecordingsTab> with WidgetsBindingObserve
                 _LocalIptvRecordingTile(
                   recording: _localRecordings[i],
                   autofocus: _localSchedules.isEmpty && grabs.isEmpty && rules.isEmpty && i == 0,
-                  focusNode: _localSchedules.isEmpty && grabs.isEmpty && rules.isEmpty && i == 0 ? _firstTileFocusNode : null,
+                  focusNode: _localSchedules.isEmpty && grabs.isEmpty && rules.isEmpty && i == 0
+                      ? _firstTileFocusNode
+                      : null,
                   onPlay: () => _playLocalRecording(_localRecordings[i]),
                   onDelete: () => _deleteLocalRecording(_localRecordings[i]),
-                  onNavigateUp: _localSchedules.isEmpty && grabs.isEmpty && rules.isEmpty && i == 0 ? widget.onNavigateUp : null,
+                  onNavigateUp: _localSchedules.isEmpty && grabs.isEmpty && rules.isEmpty && i == 0
+                      ? widget.onNavigateUp
+                      : null,
                   onBack: widget.onBack,
                 ),
             ],
@@ -678,11 +700,23 @@ class _LocalIptvScheduleTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
-                    Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: tokens(context).textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(color: tokens(context).textMuted),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               ),
-              StatusPill(label: stateLabel, color: active ? Colors.red : failed ? theme.colorScheme.error : theme.colorScheme.primary),
+              StatusPill(
+                label: stateLabel,
+                color: active
+                    ? Colors.red
+                    : failed
+                    ? theme.colorScheme.error
+                    : theme.colorScheme.primary,
+              ),
               if (schedule.state == 'scheduled')
                 IconButton(
                   tooltip: t.iptv.cancelSchedule,
@@ -767,7 +801,12 @@ class _LocalIptvRecordingTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: tokens(context).textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(color: tokens(context).textMuted),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
@@ -821,10 +860,20 @@ class _DispatcharrRecordingTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(recording.title, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(
+                      recording.title,
+                      style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     const SizedBox(height: 2),
                     Text(
-                      [recording.sourceName, if (recording.channelName != null) recording.channelName!, if (when != null) formatClockTime(when, is24Hour: MediaQuery.alwaysUse24HourFormatOf(context)), recording.state],
+                      [
+                        recording.sourceName,
+                        if (recording.channelName != null) recording.channelName!,
+                        if (when != null) formatClockTime(when, is24Hour: MediaQuery.alwaysUse24HourFormatOf(context)),
+                        recording.state,
+                      ].join(' · '),
                       style: theme.textTheme.bodySmall?.copyWith(color: tokens(context).textMuted),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -868,7 +917,14 @@ class _DispatcharrRuleTile extends StatelessWidget {
             children: [
               AppIcon(Symbols.event_repeat_rounded, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: 12),
-              Expanded(child: Text(rule.title, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis)),
+              Expanded(
+                child: Text(
+                  rule.title,
+                  style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
               Text(rule.kind, style: theme.textTheme.bodySmall?.copyWith(color: tokens(context).textMuted)),
               const SizedBox(width: 8),
               const AppIcon(Symbols.more_horiz_rounded, color: Colors.white54),

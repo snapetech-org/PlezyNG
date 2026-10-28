@@ -46,12 +46,8 @@ abstract final class SubtitleRejectionService {
     if (result.key.trim().isEmpty) return false;
     try {
       final rejected = settings.read(SettingsService.subtitleRejectedRevisions);
-      final timestamp = rejected[revisionKey(
-        serverId: serverId,
-        itemId: itemId,
-        mediaIndex: mediaIndex,
-        result: result,
-      )];
+      final timestamp =
+          rejected[revisionKey(serverId: serverId, itemId: itemId, mediaIndex: mediaIndex, result: result)];
       if (timestamp == null) return false;
       final now = DateTime.now().millisecondsSinceEpoch;
       final age = now - timestamp;
@@ -69,12 +65,7 @@ abstract final class SubtitleRejectionService {
     required SubtitleSearchResult result,
   }) {
     if (result.key.trim().isEmpty) return Future<void>.value();
-    final key = revisionKey(
-      serverId: serverId,
-      itemId: itemId,
-      mediaIndex: mediaIndex,
-      result: result,
-    );
+    final key = revisionKey(serverId: serverId, itemId: itemId, mediaIndex: mediaIndex, result: result);
     return _enqueueWrite(() async {
       final now = DateTime.now().millisecondsSinceEpoch;
       final entries = _prune(settings.read(SettingsService.subtitleRejectedRevisions), now);
@@ -95,12 +86,7 @@ abstract final class SubtitleRejectionService {
     required SubtitleSearchResult result,
   }) {
     if (result.key.trim().isEmpty) return Future<void>.value();
-    final key = revisionKey(
-      serverId: serverId,
-      itemId: itemId,
-      mediaIndex: mediaIndex,
-      result: result,
-    );
+    final key = revisionKey(serverId: serverId, itemId: itemId, mediaIndex: mediaIndex, result: result);
     return _enqueueWrite(() async {
       final now = DateTime.now().millisecondsSinceEpoch;
       final entries = _prune(settings.read(SettingsService.subtitleRejectedRevisions), now);
@@ -111,8 +97,8 @@ abstract final class SubtitleRejectionService {
 
   static Future<void> _enqueueWrite(Future<void> Function() action) {
     final previous = _writeQueue;
-    final operation = previous.catchError((Object _, StackTrace __) {}).then((_) => action());
-    _writeQueue = operation.catchError((Object _, StackTrace __) {});
+    final operation = previous.catchError((Object _, StackTrace _) {}).then((_) => action());
+    _writeQueue = operation.catchError((Object _, StackTrace _) {});
     return operation;
   }
 

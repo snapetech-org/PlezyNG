@@ -2833,7 +2833,6 @@ class _Translations$streaming$th extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'เล่นสตรีมทอร์เรนต์ที่รองรับผ่านบัญชี Real-Debrid';
 	@override String get connectRealDebrid => 'เชื่อมต่อด้วยคิวอาร์โค้ด';
-	@override String get disconnectRealDebrid => 'ยกเลิกการเชื่อมต่อ Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'เชื่อมต่อเป็น ${username}';
 	@override String get realDebridInstructions => 'สแกนคิวอาร์โค้ดหรือเปิดลิงก์ จากนั้นป้อนรหัสเปิดใช้งานนี้เพื่อเชื่อมต่อ PlezyNG:';
 	@override String get realDebridActivate => 'เปิด Real-Debrid เพื่อเปิดใช้งาน';
@@ -2861,21 +2860,17 @@ class _Translations$streaming$th extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'ยกเลิกการเชื่อมต่อ ${service} หรือไม่';
 	@override String get disconnectBody => 'PlezyNG จะนำสิทธิ์ของอุปกรณ์นี้ออก ไฟล์ของผู้ให้บริการและการโอนที่กำลังดำเนินอยู่จะไม่เปลี่ยนแปลง';
 	@override String get streamsTitle => 'เลือกสตรีม';
-	@override String get searchingStreams => 'กำลังตรวจสอบส่วนเสริมที่เชื่อมต่อ…';
 	@override String get noStreams => 'ไม่พบสตรีมสำหรับเรื่องนี้';
 	@override String get manageConnections => 'จัดการบริการสตรีม';
 	@override String subtitleTracks({required Object count}) => 'แทร็กคำบรรยาย: ${count}';
 	@override String get chooseSubtitle => 'เลือกคำบรรยาย';
 	@override String get chooseProvider => 'เลือกบริการ Debrid';
 	@override String get subtitleOff => 'ปิดคำบรรยาย';
-	@override String get subtitleLoadFailed => 'โหลดคำบรรยายนี้ไม่ได้ ลองแทร็กอื่น';
-	@override String get subtitleApplied => 'เลือกคำบรรยายสำหรับการเล่นแล้ว';
 	@override String get streamLookupPartial => 'เข้าถึงส่วนเสริมบางรายการไม่ได้';
 	@override String get streamLookupFailed => 'ตรวจสอบส่วนเสริมที่เชื่อมต่อไม่ได้';
 	@override String get streamOpenExternal => 'เปิดลิงก์ภายนอก';
 	@override String get streamPrepare => 'กำลังเตรียมผ่านบริการ Debrid…';
 	@override String get streamPrepareFailed => 'เตรียมสตรีมนี้ไม่ได้ ตรวจสอบบัญชีที่เชื่อมต่อแล้วลองแหล่งอื่น';
-	@override String get streamNeedsRealDebrid => 'เชื่อมต่อบริการ Debrid เพื่อเล่นสตรีมทอร์เรนต์นี้';
 	@override String get streamUnsupported => 'เครื่องเล่นในแอปไม่รองรับรูปแบบสตรีมนี้';
 	@override String get remoteNeedsEpisode => 'เลือกตอนก่อนค้นหาสตรีม';
 	@override String get remoteNeedsEpisodeNumber => 'ตอนนี้ไม่มีหมายเลขซีซันหรือตอน';
@@ -7878,7 +7873,6 @@ extension on TranslationsTh {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'เล่นสตรีมทอร์เรนต์ที่รองรับผ่านบัญชี Real-Debrid',
 			'streaming.connectRealDebrid' => 'เชื่อมต่อด้วยคิวอาร์โค้ด',
-			'streaming.disconnectRealDebrid' => 'ยกเลิกการเชื่อมต่อ Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'เชื่อมต่อเป็น ${username}',
 			'streaming.realDebridInstructions' => 'สแกนคิวอาร์โค้ดหรือเปิดลิงก์ จากนั้นป้อนรหัสเปิดใช้งานนี้เพื่อเชื่อมต่อ PlezyNG:',
 			'streaming.realDebridActivate' => 'เปิด Real-Debrid เพื่อเปิดใช้งาน',
@@ -7906,21 +7900,17 @@ extension on TranslationsTh {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'ยกเลิกการเชื่อมต่อ ${service} หรือไม่',
 			'streaming.disconnectBody' => 'PlezyNG จะนำสิทธิ์ของอุปกรณ์นี้ออก ไฟล์ของผู้ให้บริการและการโอนที่กำลังดำเนินอยู่จะไม่เปลี่ยนแปลง',
 			'streaming.streamsTitle' => 'เลือกสตรีม',
-			'streaming.searchingStreams' => 'กำลังตรวจสอบส่วนเสริมที่เชื่อมต่อ…',
 			'streaming.noStreams' => 'ไม่พบสตรีมสำหรับเรื่องนี้',
 			'streaming.manageConnections' => 'จัดการบริการสตรีม',
 			'streaming.subtitleTracks' => ({required Object count}) => 'แทร็กคำบรรยาย: ${count}',
 			'streaming.chooseSubtitle' => 'เลือกคำบรรยาย',
 			'streaming.chooseProvider' => 'เลือกบริการ Debrid',
 			'streaming.subtitleOff' => 'ปิดคำบรรยาย',
-			'streaming.subtitleLoadFailed' => 'โหลดคำบรรยายนี้ไม่ได้ ลองแทร็กอื่น',
-			'streaming.subtitleApplied' => 'เลือกคำบรรยายสำหรับการเล่นแล้ว',
 			'streaming.streamLookupPartial' => 'เข้าถึงส่วนเสริมบางรายการไม่ได้',
 			'streaming.streamLookupFailed' => 'ตรวจสอบส่วนเสริมที่เชื่อมต่อไม่ได้',
 			'streaming.streamOpenExternal' => 'เปิดลิงก์ภายนอก',
 			'streaming.streamPrepare' => 'กำลังเตรียมผ่านบริการ Debrid…',
 			'streaming.streamPrepareFailed' => 'เตรียมสตรีมนี้ไม่ได้ ตรวจสอบบัญชีที่เชื่อมต่อแล้วลองแหล่งอื่น',
-			'streaming.streamNeedsRealDebrid' => 'เชื่อมต่อบริการ Debrid เพื่อเล่นสตรีมทอร์เรนต์นี้',
 			'streaming.streamUnsupported' => 'เครื่องเล่นในแอปไม่รองรับรูปแบบสตรีมนี้',
 			'streaming.remoteNeedsEpisode' => 'เลือกตอนก่อนค้นหาสตรีม',
 			'streaming.remoteNeedsEpisodeNumber' => 'ตอนนี้ไม่มีหมายเลขซีซันหรือตอน',
@@ -8175,13 +8165,13 @@ extension on TranslationsTh {
 			'universalMedia.playlistFormatsHelp' => 'รายการการเล่นสามารถมีรายการสูงสุด 1,000 และ 2 MB HLS จะเปิดเป็น Streams เพื่อให้ผู้เล่นสามารถเลือกคุณภาพ',
 			'universalMedia.saveQueuePlaylist' => 'บันทึกคิวเป็นเพลย์ลิสต์',
 			'universalMedia.queuePlaylistSaved' => 'บันทึกเพลย์ลิสต์ไว้ข้างไฟล์สื่อแล้ว',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'บันทึกคิวนี้เป็นเพลย์ลิสต์ในเครื่องเพื่อใช้ซ้ำไม่ได้',
 			'universalMedia.queuePlaylistFolderRequired' => 'เลือกตำแหน่งบันทึกในโฟลเดอร์เดียวกับไฟล์ในคิว',
 			'universalMedia.noFavorites' => 'ไม่ได้บันทึก Stream Favorites ยังคงอยู่ในโปรไฟล์นี้',
 			'universalMedia.removeFavorite' => 'ลบ Stream Favorite',
 			'universalMedia.filesHelp' => 'เลือกไฟล์เสียงวิดีโอหรือไฟล์ ISO สําหรับแบบชั่วคราว ไฟล์และ URLs ไม่มีการเพิ่มไปยังประวัติของห้องสมุด',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'เลือกไฟล์',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่เลือก', ), 
 			'universalMedia.wifiTransfer' => 'ส่งไฟล์ผ่าน Wi-Fi',
@@ -8689,13 +8679,13 @@ extension on TranslationsTh {
 			'sourceSetup.nfsEncryptionFailure' => 'สำหรับ NFS ที่เข้ารหัส ให้ตรวจสอบว่าบริการทั้งสองของ NAS รองรับ RFC 9289 และ TLS 1.3 ตรวจสอบชื่อในใบรับรองและ UID/GID ของส่วนแบ่งปัน PlezyNG จะไม่ลองเชื่อมต่อใหม่โดยไม่มีการเข้ารหัส',
 			'sourceSetup.sourceConnecting' => 'กำลังเชื่อมต่อแหล่งข้อมูล',
 			'sourceSetup.metadataSearchPrivacy' => 'การค้นหาชื่อเรื่องนี้ส่งไปยัง Trakt โดยส่งชื่อที่คุณป้อน ไม่ใช่วิดีโอหรือข้อมูลรับรองของแหล่งข้อมูล',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'เลือกผลลัพธ์ที่ตรงกัน',
 			'sourceSetup.metadataMatchHelp' => 'ตรวจสอบชื่อเรื่องและปีก่อนเลือก Trakt จะได้รับชื่อเรื่องที่ค้นหา ส่วนวิดีโอยังคงอยู่ในแหล่งข้อมูลเดิม',
 			'sourceSetup.metadataNoMatches' => 'ไม่พบชื่อเรื่องที่ตรงกันออนไลน์ ลองใช้ชื่อเรื่องอื่น',
 			'sourceSetup.metadataSearch' => 'ค้นหาข้อมูลกำกับออนไลน์',
 			'sourceSetup.metadataLoading' => 'กำลังค้นหาข้อมูลภาพยนตร์และรายการทีวีออนไลน์…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'ข้อมูลกำกับออนไลน์จาก Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'ไม่พบชื่อเรื่องที่ตรงกันโดยอัตโนมัติ ค้นหาชื่อเรื่องเพื่อเลือกผลลัพธ์ที่ตรงกัน',
 			'sourceSetup.metadataFailed' => 'โหลดข้อมูลกำกับออนไลน์ไม่ได้ แต่ยังเล่นวิดีโอและดูข้อมูลในเครื่องได้',

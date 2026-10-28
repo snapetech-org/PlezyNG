@@ -1572,10 +1572,7 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
   /// verified ANVIL context file and returns the directory used by QNN.
   Future<String?> prepareAndroidAnvilRuntime({String? contextPath, required String modelId}) async {
     if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) return null;
-    return invoke<String>('prepareAndroidAnvilRuntime', {
-      if (contextPath != null) 'contextPath': contextPath,
-      'modelId': modelId,
-    });
+    return invoke<String>('prepareAndroidAnvilRuntime', {'contextPath': ?contextPath, 'modelId': modelId});
   }
 
   /// Installs the verified LiteRT model variants used by Android's ANVIL

@@ -14,7 +14,7 @@ import '../../services/open_subtitles_client.dart';
 import '../../services/settings_service.dart';
 import '../../services/subtitle_rejection_service.dart';
 import '../../services/subtitle_retimer.dart';
-import '../../utils/formatters.dart';
+import '../../utils/language_codes.dart';
 import '../../utils/track_label_builder.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/focusable_list_tile.dart';
@@ -158,7 +158,6 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
     }
   }
 
-
   String get _rejectionItemId => [
     widget.movieHash?.trim() ?? '',
     widget.imdbId?.trim() ?? '',
@@ -187,9 +186,7 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
         );
   }
 
-  ({List<SubtitleSearchResult> visible, int hidden}) _filterRejectedResults(
-    List<SubtitleSearchResult> results,
-  ) {
+  ({List<SubtitleSearchResult> visible, int hidden}) _filterRejectedResults(List<SubtitleSearchResult> results) {
     final visible = <SubtitleSearchResult>[];
     var hidden = 0;
     for (final result in results) {
@@ -313,14 +310,8 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(t.common.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(t.common.confirm),
-          ),
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(t.common.cancel)),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(t.common.confirm)),
         ],
       ),
     );
@@ -468,16 +459,22 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
                                   languageCode: result.languageCode,
                                 );
                                 final tags = <String>[
-                                  if (languageDisplay != null) languageDisplay,
+                                  ?languageDisplay,
                                   if (result.codec?.isNotEmpty == true) 'Format ${result.codec!.toUpperCase()}',
                                   if (result.providerTitle?.trim().isNotEmpty == true)
                                     'Provider ${result.providerTitle!.trim()}',
-                                  if (result.hearingImpaired || titleSaysHearingImpaired(result.title) || titleSaysHearingImpaired(result.displayTitle))
+                                  if (result.hearingImpaired ||
+                                      titleSaysHearingImpaired(result.title) ||
+                                      titleSaysHearingImpaired(result.displayTitle))
                                     t.fileInfo.flagHearingImpaired,
-                                  if (result.forced || titleSaysForced(result.title) || titleSaysForced(result.displayTitle))
+                                  if (result.forced ||
+                                      titleSaysForced(result.title) ||
+                                      titleSaysForced(result.displayTitle))
                                     t.fileInfo.flagForced,
                                   if (result.score != null)
-                                    t.sourceSetup.subtitleRating(rating: formatDecimal(result.score!, maximumDecimals: 1)),
+                                    t.sourceSetup.subtitleRating(
+                                      rating: formatDecimal(result.score!, maximumDecimals: 1),
+                                    ),
                                   if (ignored) 'Ignored revision',
                                 ];
                                 final active = _downloading == result.key;
@@ -506,15 +503,17 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
                                                 visualDensity: VisualDensity.compact,
                                                 padding: EdgeInsets.zero,
                                                 constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                                onPressed: () => unawaited(
-                                                  _setRevisionRejected(result, rejected: !ignored),
-                                                ),
-                                                icon: Icon(
-                                                  ignored ? Icons.undo_rounded : Icons.visibility_off_outlined,
+                                                onPressed: () =>
+                                                    unawaited(_setRevisionRejected(result, rejected: !ignored)),
+                                                icon: AppIcon(
+                                                  ignored ? Symbols.undo_rounded : Symbols.visibility_off_rounded,
                                                   size: 18,
                                                 ),
                                               ),
-                                            AppIcon(Symbols.download_rounded, semanticLabel: t.sourceSetup.downloadSubtitle),
+                                            AppIcon(
+                                              Symbols.download_rounded,
+                                              semanticLabel: t.sourceSetup.downloadSubtitle,
+                                            ),
                                           ],
                                         ),
                                   onTap: _downloading == null ? () => _download(result) : null,

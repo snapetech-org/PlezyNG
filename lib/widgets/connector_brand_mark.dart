@@ -1,3 +1,4 @@
+import 'app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:simple_icons/simple_icons.dart';
@@ -9,13 +10,7 @@ import 'package:simple_icons/simple_icons.dart';
 /// the provider's mark, the widget can hotlink its official-domain logo from
 /// Brandfetch when the build has been configured with a public client ID.
 class ConnectorBrandMark extends StatelessWidget {
-  const ConnectorBrandMark({
-    super.key,
-    required this.providerId,
-    required this.name,
-    this.size = 24,
-    this.logoDomain,
-  });
+  const ConnectorBrandMark({super.key, required this.providerId, required this.name, this.size = 24, this.logoDomain});
 
   final String providerId;
   final String name;
@@ -165,7 +160,9 @@ class ConnectorBrandMark extends StatelessWidget {
     if (value == null) return null;
     var domain = value.trim().toLowerCase();
     domain = domain.replaceFirst(RegExp(r'^https?://'), '').split('/').first;
-    if (!RegExp(r'^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$').hasMatch(domain)) {
+    if (!RegExp(
+      r'^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$',
+    ).hasMatch(domain)) {
       return null;
     }
     return domain;
@@ -177,10 +174,7 @@ class ConnectorBrandMark extends StatelessWidget {
       width: size,
       height: size,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(size * .24),
-      ),
+      decoration: BoxDecoration(color: scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(size * .24)),
       child: Text(
         _monogram,
         maxLines: 1,
@@ -220,10 +214,7 @@ class ConnectorBrandMark extends StatelessWidget {
           width: size,
           height: size,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: const Color(0xfff4f4f4),
-            borderRadius: BorderRadius.circular(size * .24),
-          ),
+          decoration: BoxDecoration(color: const Color(0xfff4f4f4), borderRadius: BorderRadius.circular(size * .24)),
           padding: EdgeInsets.all(size * .13),
           child: SvgPicture.asset(
             'assets/provider_marks/$assetName',
@@ -250,7 +241,7 @@ class ConnectorBrandMark extends StatelessWidget {
             color: needsLightSurface ? const Color(0xfff4f4f4) : Colors.transparent,
             borderRadius: BorderRadius.circular(size * .24),
           ),
-          child: Icon(icon, size: size * .74, color: brandColor),
+          child: AppIcon(icon, size: size * .74, color: brandColor),
         ),
       );
     }

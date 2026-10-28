@@ -3,7 +3,6 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../focus/focusable_button.dart';
 import '../../i18n/strings.g.dart';
-import '../../i18n/iptv_copy.dart';
 import '../../media/media_server_client.dart';
 import '../../mixins/mounted_set_state_mixin.dart';
 import '../../models/livetv_channel.dart';
@@ -240,7 +239,8 @@ class _ProgramDetailsSheetContentState extends State<_ProgramDetailsSheetContent
       );
     }
 
-    if (widget.onDispatcharrRecordProgram != null && (program.endsAt ?? 0) > DateTime.now().millisecondsSinceEpoch ~/ 1000) {
+    if (widget.onDispatcharrRecordProgram != null &&
+        (program.endsAt ?? 0) > DateTime.now().millisecondsSinceEpoch ~/ 1000) {
       actions.add(
         _SheetAction(
           label: t.iptv.scheduleRecording,
@@ -254,7 +254,8 @@ class _ProgramDetailsSheetContentState extends State<_ProgramDetailsSheetContent
       );
     }
 
-    if (widget.onLocalIptvRecordProgram != null && (program.endsAt ?? 0) > DateTime.now().millisecondsSinceEpoch ~/ 1000) {
+    if (widget.onLocalIptvRecordProgram != null &&
+        (program.endsAt ?? 0) > DateTime.now().millisecondsSinceEpoch ~/ 1000) {
       actions.add(
         _SheetAction(
           label: t.iptv.scheduleRecordingOnDevice,

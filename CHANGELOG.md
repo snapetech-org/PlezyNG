@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 - Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
+- Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.
+- Repair combined application compilation across visualizer and subtitle archive extraction, IPTV, catalog search, motion and player settings. Preserve bounded archive writes, stale-operation guards and subtitle timing, use shared icon styling, and explicitly track untranslated messages as English fallbacks.
 - Add an optional Brandfetch hotlink fallback for official connector logos, with curated provider domains and approval gates for AllDebrid and TorBox.
 - Add attributed Amazon and Xbox marks to their matching external destinations.
 - Show the Discord brand mark on its rich-presence integration switch.

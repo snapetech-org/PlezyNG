@@ -70,8 +70,7 @@ final class SubtitleAiService {
   static const String _modelArchiveUrl =
       'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/$_modelId.tar.bz2';
   static const int _modelArchiveBytes = 29858559;
-  static const String _modelArchiveSha256 =
-      '9ec31b342d8fa3240c3b81b8f82e1cf7e3ac467c93ca5a999b741d5887164f8d';
+  static const String _modelArchiveSha256 = '9ec31b342d8fa3240c3b81b8f82e1cf7e3ac467c93ca5a999b741d5887164f8d';
   static const String _vadUrl =
       'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.int8.onnx';
   static const int _vadBytes = 212860;
@@ -117,7 +116,12 @@ final class SubtitleAiService {
       if (!await marker.exists()) return false;
       final manifest = jsonDecode(await marker.readAsString()) as Map<String, dynamic>;
       if (manifest['model'] != _modelId || manifest['archiveSha256'] != _modelArchiveSha256) return false;
-      for (final name in const ['encoder_model.ort', 'decoder_model_merged.ort', 'tokens.txt', 'silero_vad.int8.onnx']) {
+      for (final name in const [
+        'encoder_model.ort',
+        'decoder_model_merged.ort',
+        'tokens.txt',
+        'silero_vad.int8.onnx',
+      ]) {
         final file = File(p.join(root.path, name));
         if (!await file.exists() || await file.length() == 0) return false;
       }
@@ -127,9 +131,7 @@ final class SubtitleAiService {
     }
   }
 
-  Future<void> downloadModel({
-    void Function(String phase, int received, int total)? onProgress,
-  }) async {
+  Future<void> downloadModel({void Function(String phase, int received, int total)? onProgress}) async {
     if (!supportedPlatform) throw UnsupportedError('Local speech generation is unavailable on this platform.');
     if (await isModelInstalled()) return;
 
@@ -186,8 +188,7 @@ final class SubtitleAiService {
   }) async {
     final client = http.Client();
     try {
-      final request = http.Request('GET', Uri.parse(url))
-        ..headers['User-Agent'] = 'PlezyNG subtitle model manager';
+      final request = http.Request('GET', Uri.parse(url))..headers['User-Agent'] = 'PlezyNG subtitle model manager';
       final response = await client.send(request).timeout(const Duration(minutes: 10));
       if (response.statusCode != 200) {
         await response.stream.drain<void>();
@@ -257,7 +258,9 @@ final class SubtitleAiService {
       throw UnsupportedError('The installed accelerator speech model is English-only; choose English or Auto-detect.');
     }
     if (translateToEnglish) {
-      throw UnsupportedError('Speech translation uses the multilingual CPU/GPU Whisper model. Select CPU or desktop GPU.');
+      throw UnsupportedError(
+        'Speech translation uses the multilingual CPU/GPU Whisper model. Select CPU or desktop GPU.',
+      );
     }
     if (!await isModelInstalled()) {
       await downloadModel(onProgress: onProgress);
@@ -319,7 +322,7 @@ void _extractMoonshineArchive(Uint8List compressed, String stagingPath) {
       throw const FormatException('Model package is missing a bounded required file.');
     }
     final content = entry.content;
-    final bytes = content is Uint8List ? content : Uint8List.fromList(content as List<int>);
+    final bytes = content;
     if (bytes.lengthInBytes != entry.size) throw const FormatException('Model member size does not match its header.');
     File(p.join(stagingPath, name)).writeAsBytesSync(bytes, flush: true);
   }
@@ -397,15 +400,8 @@ Future<Map<String, Object?>> _runSubtitleTranscriptionWorker({
             final text = recognizer.getResult(stream).text.replaceAll(RegExp(r'\s+'), ' ').trim();
             if (text.isNotEmpty && text.runes.length <= 600 && output.length < SubtitleAiService._maximumCueCount) {
               final previous = output.isEmpty ? null : output.last;
-              if (previous == null ||
-                  previous['text'] != text ||
-                  startMs - (previous['endMs'] as int) > 1200) {
-                output.add({
-                  'index': output.length + 1,
-                  'startMs': startMs,
-                  'endMs': endMs,
-                  'text': text,
-                });
+              if (previous == null || previous['text'] != text || startMs - (previous['endMs'] as int) > 1200) {
+                output.add({'index': output.length + 1, 'startMs': startMs, 'endMs': endMs, 'text': text});
               }
             }
           } finally {
@@ -562,8 +558,7 @@ final class _PcmWavReader {
 
       final output = Float32List(count);
       for (var index = 0; index < count; index++) {
-        final sourcePosition =
-            ((outputStart + index) * sampleRate / SubtitleAiService._sampleRate) - sourceStart;
+        final sourcePosition = ((outputStart + index) * sampleRate / SubtitleAiService._sampleRate) - sourceStart;
         final lower = sourcePosition.floor().clamp(0, frameCount - 1).toInt();
         final upper = (lower + 1).clamp(0, frameCount - 1).toInt();
         final fraction = (sourcePosition - lower).clamp(0.0, 1.0);

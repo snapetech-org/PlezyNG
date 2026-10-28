@@ -185,7 +185,10 @@ abstract final class ScopedPlayerPrefs {
       return;
     }
     final entries = Map<String, dynamic>.from(_entriesFor(svc, pref.id));
-    entries[key] = <String, dynamic>{'v': pref._encode?.call(value) ?? value, 't': DateTime.now().millisecondsSinceEpoch};
+    entries[key] = <String, dynamic>{
+      'v': pref._encode?.call(value) ?? value,
+      't': DateTime.now().millisecondsSinceEpoch,
+    };
     final store = Map<String, dynamic>.from(svc.read(SettingsService.scopedPlayerPrefValues));
     store[pref.id] = _prune(entries);
     await svc.write(SettingsService.scopedPlayerPrefValues, store);
@@ -223,7 +226,10 @@ abstract final class ScopedPlayerPrefs {
     if (scope == PlayerSettingScope.global) return svc.write(pref.global, value, checkCurrent: checkCurrent);
     final key = _requireScopeKey(scope, item, library);
     final entries = Map<String, dynamic>.from(_entriesFor(svc, pref.id));
-    entries[key] = <String, dynamic>{'v': pref._encode?.call(value) ?? value, 't': DateTime.now().millisecondsSinceEpoch};
+    entries[key] = <String, dynamic>{
+      'v': pref._encode?.call(value) ?? value,
+      't': DateTime.now().millisecondsSinceEpoch,
+    };
     final store = Map<String, dynamic>.from(svc.read(SettingsService.scopedPlayerPrefValues));
     store[pref.id] = _prune(entries);
     await svc.write(SettingsService.scopedPlayerPrefValues, store, checkCurrent: checkCurrent);
@@ -320,8 +326,7 @@ abstract final class ScopedPlayerPrefs {
   static MotionTemporalKernel? _decodeMotionTemporalKernel(Object? raw) =>
       raw is String ? MotionTemporalKernel.values.asNameMap()[raw] : null;
 
-  static int? _decodeMotionClarityThreshold(Object? raw) =>
-      raw is int ? raw.clamp(0, 10).toInt() : null;
+  static int? _decodeMotionClarityThreshold(Object? raw) => raw is int ? raw.clamp(0, 10).toInt() : null;
 
   static MotionClarityEngine? _decodeMotionClarityEngine(Object? raw) =>
       raw is String ? MotionClarityEngine.values.asNameMap()[raw] : null;

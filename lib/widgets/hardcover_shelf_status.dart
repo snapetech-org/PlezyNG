@@ -1,3 +1,4 @@
+import 'app_icon.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -125,7 +126,7 @@ class _HardcoverShelfStatusState extends State<HardcoverShelfStatus> {
           label: detail,
           child: Row(
             children: [
-              Icon(Symbols.menu_book_rounded, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              AppIcon(Symbols.menu_book_rounded, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(

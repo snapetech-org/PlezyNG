@@ -11,6 +11,7 @@ import '../utils/app_logger.dart';
 import '../media/live_tv_support.dart';
 import '../sources/source_models.dart';
 import 'iptv_models.dart';
+import 'iptv_live_tv_session.dart';
 import 'iptv_scheduled_stream_recorder.dart';
 import 'iptv_source_repository.dart';
 
@@ -56,7 +57,9 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
       final folder = Directory(p.join(root.path, 'iptv-recordings'));
       if (!await folder.exists()) return;
       await for (final entity in folder.list(recursive: true, followLinks: false)) {
-        if (entity is File && p.basename(entity.path).startsWith('.') && p.basename(entity.path).contains('.partial.')) {
+        if (entity is File &&
+            p.basename(entity.path).startsWith('.') &&
+            p.basename(entity.path).contains('.partial.')) {
           try {
             await entity.delete();
           } on Object {
@@ -159,7 +162,7 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
       final capture = IptvScheduledStreamRecorder(
         uri: uri,
         allowHttp: config.allowHttp,
-        headers: session.streamHeaders,
+        headers: session is IptvLiveTvPlaybackSession ? session.streamHeaders : const <String, String>{},
         outputFile: recordingPartial,
         endsAt: schedule.endsAt,
       );
@@ -214,7 +217,11 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
           errorCode: errorCode,
         );
       } on Object catch (finalizeError, finalizeStackTrace) {
-        appLogger.w('Could not finalize IPTV scheduled recording', error: finalizeError, stackTrace: finalizeStackTrace);
+        appLogger.w(
+          'Could not finalize IPTV scheduled recording',
+          error: finalizeError,
+          stackTrace: finalizeStackTrace,
+        );
       }
     } finally {
       _active.remove(schedule.id);

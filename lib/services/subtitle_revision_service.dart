@@ -24,12 +24,7 @@ final class SubtitleRevisionIdentity {
   final int mediaIndex;
 
   String get storageKey => sha256
-      .convert(utf8.encode([
-        profileId.trim(),
-        serverId.trim(),
-        ratingKey.trim(),
-        mediaIndex.toString(),
-      ].join('\u0000')))
+      .convert(utf8.encode([profileId.trim(), serverId.trim(), ratingKey.trim(), mediaIndex.toString()].join('\u0000')))
       .toString();
 }
 
@@ -52,30 +47,27 @@ final class SubtitleRevision {
   final List<SubtitleWordTiming> wordTimings;
 
   Map<String, Object?> toJson() => {
-        'schema': 'plezyng.subtitle-revision.v1',
-        'id': id,
-        'createdAt': createdAt.toUtc().toIso8601String(),
-        'operation': operation,
-        'languageCode': languageCode,
-        'cues': cues
-            .map((cue) => {
-                  'index': cue.index,
-                  'startMs': cue.startMs,
-                  'endMs': cue.endMs,
-                  'text': cue.text,
-                })
-            .toList(growable: false),
-        'wordTimings': wordTimings
-            .map((timing) => {
-                  'startMs': timing.startMs,
-                  'endMs': timing.endMs,
-                  'text': timing.text,
-                  'confidence': timing.confidence,
-                  'unit': timing.unit.name,
-                  'cueIndex': timing.cueIndex,
-                })
-            .toList(growable: false),
-      };
+    'schema': 'plezyng.subtitle-revision.v1',
+    'id': id,
+    'createdAt': createdAt.toUtc().toIso8601String(),
+    'operation': operation,
+    'languageCode': languageCode,
+    'cues': cues
+        .map((cue) => {'index': cue.index, 'startMs': cue.startMs, 'endMs': cue.endMs, 'text': cue.text})
+        .toList(growable: false),
+    'wordTimings': wordTimings
+        .map(
+          (timing) => {
+            'startMs': timing.startMs,
+            'endMs': timing.endMs,
+            'text': timing.text,
+            'confidence': timing.confidence,
+            'unit': timing.unit.name,
+            'cueIndex': timing.cueIndex,
+          },
+        )
+        .toList(growable: false),
+  };
 
   static SubtitleRevision fromJson(Object? value) {
     if (value is! Map<String, dynamic> || value['schema'] != 'plezyng.subtitle-revision.v1') {
@@ -152,14 +144,16 @@ final class SubtitleRevision {
       }
       final unit = SubtitleWordTimingUnit.values.where((candidate) => candidate.name == unitName);
       if (unit.isEmpty) throw const FormatException('Subtitle revision timing unit is invalid.');
-      wordTimings.add(SubtitleWordTiming(
-        startMs: start,
-        endMs: end,
-        text: text,
-        confidence: confidence.toDouble(),
-        unit: unit.first,
-        cueIndex: cueIndex as int?,
-      ));
+      wordTimings.add(
+        SubtitleWordTiming(
+          startMs: start,
+          endMs: end,
+          text: text,
+          confidence: confidence.toDouble(),
+          unit: unit.first,
+          cueIndex: cueIndex as int?,
+        ),
+      );
     }
 
     return SubtitleRevision(
@@ -326,7 +320,7 @@ abstract final class SubtitleRevisionService {
     }
     await _exclusive(() async {
       final directory = Directory(p.join((await _rootDirectory()).path, identity.storageKey));
-      final file = File(p.join(directory.path, id + '.json'));
+      final file = File(p.join(directory.path, '$id.json'));
       if (await file.exists()) await file.delete();
     });
   }

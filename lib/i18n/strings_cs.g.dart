@@ -2886,7 +2886,6 @@ class _Translations$streaming$cs extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Přehrávejte podporované torrentové streamy přes účet Real-Debrid.';
 	@override String get connectRealDebrid => 'Připojit pomocí QR kódu';
-	@override String get disconnectRealDebrid => 'Odpojit Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'Připojeno jako ${username}';
 	@override String get realDebridInstructions => 'Naskenujte QR kód nebo otevřete odkaz a zadejte tento aktivační kód pro připojení PlezyNG:';
 	@override String get realDebridActivate => 'Otevřít Real-Debrid a aktivovat';
@@ -2914,21 +2913,17 @@ class _Translations$streaming$cs extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'Odpojit ${service}?';
 	@override String get disconnectBody => 'PlezyNG odebere oprávnění tohoto zařízení. Soubory u poskytovatele ani probíhající přenosy se nezmění.';
 	@override String get streamsTitle => 'Vybrat stream';
-	@override String get searchingStreams => 'Kontrolují se připojené doplňky…';
 	@override String get noStreams => 'Pro tento titul nebyly nalezeny žádné streamy.';
 	@override String get manageConnections => 'Spravovat streamovací služby';
 	@override String subtitleTracks({required Object count}) => 'Titulky: ${count}';
 	@override String get chooseSubtitle => 'Vybrat titulky';
 	@override String get chooseProvider => 'Vybrat službu Debrid';
 	@override String get subtitleOff => 'Titulky vypnuté';
-	@override String get subtitleLoadFailed => 'Titulky se nepodařilo načíst. Zkuste jinou stopu.';
-	@override String get subtitleApplied => 'Titulky vybrány pro přehrávání';
 	@override String get streamLookupPartial => 'Některé doplňky nejsou dostupné.';
 	@override String get streamLookupFailed => 'Připojené doplňky se nepodařilo zkontrolovat.';
 	@override String get streamOpenExternal => 'Otevřít externí odkaz';
 	@override String get streamPrepare => 'Připravuje se přes službu Debrid…';
 	@override String get streamPrepareFailed => 'Stream se nepodařilo připravit. Zkontrolujte připojený účet a zkuste jiný zdroj.';
-	@override String get streamNeedsRealDebrid => 'Pro přehrání tohoto torrentového streamu připojte službu Debrid.';
 	@override String get streamUnsupported => 'Tento formát streamu vestavěný přehrávač nepodporuje.';
 	@override String get remoteNeedsEpisode => 'Před vyhledáním streamu vyberte epizodu.';
 	@override String get remoteNeedsEpisodeNumber => 'U této epizody chybí číslo řady nebo epizody.';
@@ -7947,7 +7942,6 @@ extension on TranslationsCs {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Přehrávejte podporované torrentové streamy přes účet Real-Debrid.',
 			'streaming.connectRealDebrid' => 'Připojit pomocí QR kódu',
-			'streaming.disconnectRealDebrid' => 'Odpojit Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Připojeno jako ${username}',
 			'streaming.realDebridInstructions' => 'Naskenujte QR kód nebo otevřete odkaz a zadejte tento aktivační kód pro připojení PlezyNG:',
 			'streaming.realDebridActivate' => 'Otevřít Real-Debrid a aktivovat',
@@ -7975,21 +7969,17 @@ extension on TranslationsCs {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Odpojit ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG odebere oprávnění tohoto zařízení. Soubory u poskytovatele ani probíhající přenosy se nezmění.',
 			'streaming.streamsTitle' => 'Vybrat stream',
-			'streaming.searchingStreams' => 'Kontrolují se připojené doplňky…',
 			'streaming.noStreams' => 'Pro tento titul nebyly nalezeny žádné streamy.',
 			'streaming.manageConnections' => 'Spravovat streamovací služby',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Titulky: ${count}',
 			'streaming.chooseSubtitle' => 'Vybrat titulky',
 			'streaming.chooseProvider' => 'Vybrat službu Debrid',
 			'streaming.subtitleOff' => 'Titulky vypnuté',
-			'streaming.subtitleLoadFailed' => 'Titulky se nepodařilo načíst. Zkuste jinou stopu.',
-			'streaming.subtitleApplied' => 'Titulky vybrány pro přehrávání',
 			'streaming.streamLookupPartial' => 'Některé doplňky nejsou dostupné.',
 			'streaming.streamLookupFailed' => 'Připojené doplňky se nepodařilo zkontrolovat.',
 			'streaming.streamOpenExternal' => 'Otevřít externí odkaz',
 			'streaming.streamPrepare' => 'Připravuje se přes službu Debrid…',
 			'streaming.streamPrepareFailed' => 'Stream se nepodařilo připravit. Zkontrolujte připojený účet a zkuste jiný zdroj.',
-			'streaming.streamNeedsRealDebrid' => 'Pro přehrání tohoto torrentového streamu připojte službu Debrid.',
 			'streaming.streamUnsupported' => 'Tento formát streamu vestavěný přehrávač nepodporuje.',
 			'streaming.remoteNeedsEpisode' => 'Před vyhledáním streamu vyberte epizodu.',
 			'streaming.remoteNeedsEpisodeNumber' => 'U této epizody chybí číslo řady nebo epizody.',
@@ -8244,13 +8234,13 @@ extension on TranslationsCs {
 			'universalMedia.playlistFormatsHelp' => 'Přehrávač může obsahovat až 1000 položek a 2 MB. HLS se otevírají jako toky, takže hráč si může vybrat kvalitu.',
 			'universalMedia.saveQueuePlaylist' => 'Uložit frontu jako seznam skladeb',
 			'universalMedia.queuePlaylistSaved' => 'Seznam skladeb byl uložen vedle souborů médií.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Tuto frontu nelze uložit jako znovu použitelný místní seznam skladeb.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Vyberte umístění ve stejné složce, ve které jsou soubory ve frontě.',
 			'universalMedia.noFavorites' => 'Není zachráněno stream oblíbené zatím. Oblíbené zůstanou v tomto profilu.',
 			'universalMedia.removeFavorite' => 'Odstranit stream oblíbené',
 			'universalMedia.filesHelp' => 'Vyberte si audio, video nebo ISO soubory pro dočasný průběh. Soubory a URL nejsou přidány do historie knihovny.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Vyberte soubory',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
 			'universalMedia.wifiTransfer' => 'Odesílání souborů přes Wi-Fi',
@@ -8758,13 +8748,13 @@ extension on TranslationsCs {
 			'sourceSetup.nfsEncryptionFailure' => 'U šifrovaného NFS ověřte podporu RFC 9289 a TLS 1.3 u obou služeb NAS, název v certifikátu a UID/GID exportu. PlezyNG se nepokusí toto spojení zopakovat bez šifrování.',
 			'sourceSetup.sourceConnecting' => 'Připojování ke zdroji',
 			'sourceSetup.metadataSearchPrivacy' => 'Toto hledání názvu se odesílá do Trakt. Odesílá zadaný název, nikoli video ani přihlašovací údaje zdroje.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Vybrat shodu',
 			'sourceSetup.metadataMatchHelp' => 'Před výběrem zkontrolujte název a rok. Trakt obdrží hledaný název; video zůstává ve svém zdroji.',
 			'sourceSetup.metadataNoMatches' => 'Online nebyl nalezen odpovídající název. Zkuste jiný název.',
 			'sourceSetup.metadataSearch' => 'Hledat online metadata',
 			'sourceSetup.metadataLoading' => 'Vyhledávání online informací o filmech a seriálech…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Online metadata z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nebyla nalezena automatická shoda názvu. Vyhledejte název a vyberte shodu.',
 			'sourceSetup.metadataFailed' => 'Online metadata se nepodařilo načíst. Přehrávání i místní informace jsou stále dostupné.',

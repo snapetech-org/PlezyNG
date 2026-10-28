@@ -2223,9 +2223,7 @@ class _MainScreenState extends State<MainScreen>
 
   void _openConnectors() {
     unawaited(
-      Navigator.of(context).push<void>(
-        MaterialPageRoute<void>(builder: (_) => const ServicesSettingsScreen()),
-      ),
+      Navigator.of(context).push<void>(MaterialPageRoute<void>(builder: (_) => const ServicesSettingsScreen())),
     );
   }
 

@@ -14,7 +14,7 @@ from workflow_yaml import job_block, scalar
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = ROOT / "docs/maintainers/capability-manifest.json"
 ERRORS: list[str] = []
-FINDING_IDS = [f"F{index:02d}" for index in range(1, 17)]
+FINDING_IDS = [f"F{index:02d}" for index in range(1, 18)]
 STATUSES = {"implemented", "partial", "gated"}
 
 
@@ -100,7 +100,7 @@ def check_manifest(data: dict) -> None:
         ERRORS.append("findings must be a list")
         findings = []
     ids = [item.get("id") for item in findings if isinstance(item, dict)]
-    require(ids == FINDING_IDS, "findings must contain F01 through F16 once, in order")
+    require(ids == FINDING_IDS, "findings must contain F01 through F17 once, in order")
     for item in findings:
         if not isinstance(item, dict):
             ERRORS.append("each finding must be an object")

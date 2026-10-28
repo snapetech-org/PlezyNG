@@ -79,7 +79,7 @@ class PlayerWebOS extends PlayerBase {
               child: ValueListenableBuilder<String>(
                 valueListenable: caption,
                 builder: (context, text, child) =>
-                    text.isEmpty ? const SizedBox.shrink() : webos_media.ClosedCaption(text),
+                    text.isEmpty ? const SizedBox.shrink() : webos_media.ClosedCaption(text: text),
               ),
             ),
           ),

@@ -18,19 +18,13 @@ final class SubtitleRetimingResult {
 
 /// A text-backed subtitle event available for manual timing alignment.
 final class SubtitleCue {
-  const SubtitleCue({
-    required this.index,
-    required this.startMs,
-    required this.endMs,
-    required this.text,
-  });
+  const SubtitleCue({required this.index, required this.startMs, required this.endMs, required this.text});
 
   final int index;
   final int startMs;
   final int endMs;
   final String text;
 }
-
 
 enum _SubtitleTextEncoding { utf8, utf8Bom, utf16LittleEndian, utf16BigEndian }
 
@@ -130,6 +124,7 @@ abstract final class SubtitleRetimer {
         ..add(unit & 0xff);
     }
   }
+
   static const int maximumInputBytes = 5 * 1024 * 1024;
   static const int maximumCueCount = 50000;
   static const int maximumTimeMs = 60 * 24 * 60 * 60 * 1000;
@@ -145,25 +140,18 @@ abstract final class SubtitleRetimer {
 
   /// Parses bounded SRT, WebVTT, ASS, or SSA timing and payload for an interactive cue
   /// picker. The source bytes remain untouched and cues retain display text.
-  static List<SubtitleCue> parseCues({
-    required List<int> sourceBytes,
-    required String extension,
-  }) {
+  static List<SubtitleCue> parseCues({required List<int> sourceBytes, required String extension}) {
     final format = extension.toLowerCase();
     const supportedFormats = {'.srt', '.vtt', '.ass', '.ssa'};
     if (!supportedFormats.contains(format)) {
-      throw ArgumentError.value(
-        extension,
-        'extension',
-        'Only SRT, WebVTT, ASS, and SSA cue inspection is supported.',
-      );
+      throw ArgumentError.value(extension, 'extension', 'Only SRT, WebVTT, ASS, and SSA cue inspection is supported.');
     }
     if (sourceBytes.isEmpty || sourceBytes.length > maximumInputBytes) {
       throw FormatException('Subtitle input is empty or larger than the 5 MiB processing bound.');
     }
     if (format == '.ass' || format == '.ssa') return _parseAssCues(sourceBytes);
 
-    var source = _decodeText(sourceBytes).text;
+    final source = _decodeText(sourceBytes).text;
     if (source.contains('\u0000')) throw const FormatException('Subtitle contains a NUL byte.');
     final lines = source.replaceAll('\r\n', '\n').replaceAll('\r', '\n').split('\n');
     final isVtt = format == '.vtt';
@@ -239,7 +227,7 @@ abstract final class SubtitleRetimer {
       throw RangeError.range(delayMs, minimumDelayMs, maximumDelayMs, 'delayMs');
     }
     if (!rate.isFinite || rate < minimumRate || rate > maximumRate) {
-      throw RangeError.range(rate, minimumRate, maximumRate, 'rate');
+      throw RangeError.value(rate, 'rate', 'Must be finite and between $minimumRate and $maximumRate');
     }
 
     if (format == '.ass' || format == '.ssa') {
@@ -247,7 +235,7 @@ abstract final class SubtitleRetimer {
     }
 
     final decoded = _decodeText(sourceBytes);
-    var source = decoded.text;
+    final source = decoded.text;
     if (source.contains('\u0000')) throw const FormatException('Subtitle contains a NUL byte.');
     final newline = source.contains('\r\n')
         ? '\r\n'
@@ -342,7 +330,7 @@ abstract final class SubtitleRetimer {
     required String format,
   }) {
     final decoded = _decodeText(sourceBytes);
-    var source = decoded.text;
+    final source = decoded.text;
     if (source.contains('\u0000')) throw const FormatException('Subtitle contains a NUL byte.');
     final newline = source.contains('\r\n')
         ? '\r\n'
@@ -371,7 +359,11 @@ abstract final class SubtitleRetimer {
         continue;
       }
       if (inEvents && trimmed.toLowerCase().startsWith('format:')) {
-        formatFields = trimmed.substring('format:'.length).split(',').map((field) => field.trim().toLowerCase()).toList();
+        formatFields = trimmed
+            .substring('format:'.length)
+            .split(',')
+            .map((field) => field.trim().toLowerCase())
+            .toList();
         if (!formatFields.contains('start') ||
             !formatFields.contains('end') ||
             !formatFields.contains('text') ||
@@ -393,7 +385,9 @@ abstract final class SubtitleRetimer {
       final textIndex = fields.indexOf('text');
       final text = values[textIndex];
       if (_assTimedTag.hasMatch(text)) {
-        throw const FormatException('ASS dialogue contains karaoke or animated timing tags and cannot be retimed safely.');
+        throw const FormatException(
+          'ASS dialogue contains karaoke or animated timing tags and cannot be retimed safely.',
+        );
       }
       final effectIndex = fields.indexOf('effect');
       if (effectIndex >= 0 && values[effectIndex].trim().isNotEmpty) {
@@ -445,17 +439,11 @@ abstract final class SubtitleRetimer {
     final minutes = (totalMs ~/ 60000) % 60;
     final seconds = (totalMs ~/ 1000) % 60;
     final subsecond = centiseconds % 100;
-    return hours.toString() +
-        ':' +
-        minutes.toString().padLeft(2, '0') +
-        ':' +
-        seconds.toString().padLeft(2, '0') +
-        '.' +
-        subsecond.toString().padLeft(2, '0');
+    return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}.${subsecond.toString().padLeft(2, '0')}';
   }
 
   static List<SubtitleCue> _parseAssCues(List<int> sourceBytes) {
-    var source = _decodeText(sourceBytes).text;
+    final source = _decodeText(sourceBytes).text;
     if (source.contains('\u0000')) throw const FormatException('Subtitle contains a NUL byte.');
 
     final cues = <SubtitleCue>[];
@@ -471,7 +459,11 @@ abstract final class SubtitleRetimer {
       }
       if (!inEvents) continue;
       if (trimmed.toLowerCase().startsWith('format:')) {
-        formatFields = trimmed.substring('format:'.length).split(',').map((field) => field.trim().toLowerCase()).toList();
+        formatFields = trimmed
+            .substring('format:'.length)
+            .split(',')
+            .map((field) => field.trim().toLowerCase())
+            .toList();
         if (!formatFields.contains('start') ||
             !formatFields.contains('end') ||
             !formatFields.contains('text') ||

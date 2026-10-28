@@ -380,10 +380,7 @@ class _FiltersBottomSheetState extends State<FiltersBottomSheet> {
           focusNode: focusNode,
           autofocus: autofocus,
           title: filter.isRequired
-              ? Semantics(
-                  label: '${filter.title}, ${t.streaming.catalogRequiredLabel}',
-                  child: Text(filter.title),
-                )
+              ? Semantics(label: '${filter.title}, ${t.streaming.catalogRequiredLabel}', child: Text(filter.title))
               : Text(filter.title),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,

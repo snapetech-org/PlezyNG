@@ -11,13 +11,8 @@ import 'package:plezy/sources/source_transport.dart';
 http.Response _json(Object value, {int status = 200}) =>
     http.Response(jsonEncode(value), status, headers: const {'content-type': 'application/json'});
 
-FileSource _source(FileSourceKind kind, String endpoint) => FileSource(
-  id: 'source-1',
-  profileId: 'profile-a',
-  kind: kind,
-  name: 'Fixture source',
-  endpoint: endpoint,
-);
+FileSource _source(FileSourceKind kind, String endpoint) =>
+    FileSource(id: 'source-1', profileId: 'profile-a', kind: kind, name: 'Fixture source', endpoint: endpoint);
 
 String _jwt(int expiry) {
   final payload = base64Url.encode(utf8.encode(jsonEncode({'exp': expiry}))).replaceAll('=', '');
@@ -38,7 +33,9 @@ void main() {
               expect(request.method, 'POST');
               expect(request.headers['x-return-tokens'], 'true');
               expect(jsonDecode(request.body), {'username': 'reader', 'password': 'private-password'});
-              return _json({'user': {'token': 'legacy-access'}});
+              return _json({
+                'user': {'token': 'legacy-access'},
+              });
             }
             if (request.url.path == '/api/libraries') {
               expect(request.headers['authorization'], 'Bearer legacy-access');
@@ -52,7 +49,9 @@ void main() {
           }),
         ),
         () async => {'username': 'reader', 'password': 'private-password'},
-        persistCredentials: (value) async { persisted = Map.of(value); },
+        persistCredentials: (value) async {
+          persisted = Map.of(value);
+        },
       );
 
       try {
@@ -99,7 +98,9 @@ void main() {
           'refreshToken': 'refresh-old',
           'authMode': 'jwt',
         },
-        persistCredentials: (value) async { persisted = Map.of(value); },
+        persistCredentials: (value) async {
+          persisted = Map.of(value);
+        },
       );
 
       try {
@@ -122,11 +123,7 @@ void main() {
           {
             'metadata': {'title': 'Open edition', 'author': 'Reader', 'identifier': '9780306406157'},
             'links': [
-              {
-                'rel': 'http://opds-spec.org/acquisition/open-access',
-                'href': '/open.pdf',
-                'type': 'application/pdf',
-              },
+              {'rel': 'http://opds-spec.org/acquisition/open-access', 'href': '/open.pdf', 'type': 'application/pdf'},
               {
                 'rel': 'http://opds-spec.org/acquisition',
                 'href': '/purchased-copy.epub',
@@ -137,11 +134,7 @@ void main() {
           {
             'metadata': {'title': 'Audio sample'},
             'links': [
-              {
-                'rel': 'http://opds-spec.org/acquisition/sample',
-                'href': '/sample.mp3',
-                'type': 'audio/mpeg',
-              },
+              {'rel': 'http://opds-spec.org/acquisition/sample', 'href': '/sample.mp3', 'type': 'audio/mpeg'},
               {
                 'rel': 'http://opds-spec.org/acquisition/open-access',
                 'href': '/full-book.epub',
@@ -152,11 +145,7 @@ void main() {
           {
             'metadata': {'title': 'Purchase only'},
             'links': [
-              {
-                'rel': 'http://opds-spec.org/acquisition',
-                'href': '/licensed.epub',
-                'type': 'application/epub+zip',
-              },
+              {'rel': 'http://opds-spec.org/acquisition', 'href': '/licensed.epub', 'type': 'application/epub+zip'},
             ],
           },
         ],

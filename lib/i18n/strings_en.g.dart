@@ -3372,6 +3372,9 @@ class Translations$videoControls$en {
 
 	/// en: 'Tap again to unlock'
 	String get tapAgainToUnlock => 'Tap again to unlock';
+
+	/// en: 'Secondary subtitle'
+	String get secondarySubtitle => 'Secondary subtitle';
 }
 
 // Path: messages
@@ -4361,9 +4364,6 @@ class Translations$iptv$en {
 	/// en: 'This source could not load its catalogue. Check the provider credentials and retry.'
 	String get vodUnavailable => 'This source could not load its catalogue. Check the provider credentials and retry.';
 
-	/// en: 'VOD is not configured for this source.'
-	String get vodUnavailableShort => 'VOD is not configured for this source.';
-
 	/// en: 'Could not start this title. Check the provider connection and try again.'
 	String get vodPlaybackFailed => 'Could not start this title. Check the provider connection and try again.';
 
@@ -4381,12 +4381,6 @@ class Translations$iptv$en {
 
 	/// en: 'Local recordings'
 	String get localRecordings => 'Local recordings';
-
-	/// en: 'Recording saved to this device.'
-	String get recordingSavedLocal => 'Recording saved to this device.';
-
-	/// en: 'The recording could not be saved.'
-	String get recordingFailedLocal => 'The recording could not be saved.';
 
 	/// en: 'Recording'
 	String get recordingInProgressLocal => 'Recording';
@@ -4408,9 +4402,6 @@ class Translations$iptv$en {
 
 	/// en: 'The provider denied access to this stream.'
 	String get recordingProviderPermission => 'The provider denied access to this stream.';
-
-	/// en: 'This source is no longer available.'
-	String get sourceUnavailable => 'This source is no longer available.';
 
 	/// en: 'Delete recording'
 	String get deleteRecording => 'Delete recording';
@@ -6995,6 +6986,18 @@ class Translations$videoSettings$en {
 	/// en: 'Couldn't save motion clarity settings.'
 	String get motionClaritySaveFailed => 'Couldn\'t save motion clarity settings.';
 
+	/// en: 'Subtitle cue 1 time'
+	String get subtitleCueTimeAnchor1 => 'Subtitle cue 1 time';
+
+	/// en: 'Use current playback time'
+	String get subtitleUsePlaybackTime => 'Use current playback time';
+
+	/// en: 'Previous subtitle cue'
+	String get subtitlePreviousCue => 'Previous subtitle cue';
+
+	/// en: 'Next subtitle cue'
+	String get subtitleNextCue => 'Next subtitle cue';
+
 	/// en: 'Export synchronized subtitle'
 	String get subtitleExport => 'Export synchronized subtitle';
 
@@ -7028,9 +7031,6 @@ class Translations$videoSettings$en {
 	/// en: 'Undo drift calibration'
 	String get subtitleDriftUndo => 'Undo drift calibration';
 
-	/// en: 'Subtitle cue 1 time'
-	String get subtitleCueTimeAnchor1 => 'Subtitle cue 1 time';
-
 	/// en: 'Playback position for cue 1'
 	String get subtitlePlaybackTimeAnchor1 => 'Playback position for cue 1';
 
@@ -7040,20 +7040,11 @@ class Translations$videoSettings$en {
 	/// en: 'Playback position for cue 2'
 	String get subtitlePlaybackTimeAnchor2 => 'Playback position for cue 2';
 
-	/// en: 'Use current playback time'
-	String get subtitleUsePlaybackTime => 'Use current playback time';
-
 	/// en: 'Choose increasing anchors at least 60 seconds apart. Corrections are limited to 80%–125% speed and ±60 seconds.'
 	String get subtitleDriftInvalidAnchors => 'Choose increasing anchors at least 60 seconds apart. Corrections are limited to 80%–125% speed and ±60 seconds.';
 
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
-
-	/// en: 'Previous subtitle cue'
-	String get subtitlePreviousCue => 'Previous subtitle cue';
-
-	/// en: 'Next subtitle cue'
-	String get subtitleNextCue => 'Next subtitle cue';
 
 	/// en: 'Replay current cue'
 	String get subtitleReplayCue => 'Replay current cue';
@@ -8111,9 +8102,6 @@ class Translations$streaming$en {
 	/// en: 'Connect with QR code'
 	String get connectRealDebrid => 'Connect with QR code';
 
-	/// en: 'Disconnect Real-Debrid'
-	String get disconnectRealDebrid => 'Disconnect Real-Debrid';
-
 	/// en: 'Connected as ${username}'
 	String realDebridConnected({required Object username}) => 'Connected as ${username}';
 
@@ -8195,9 +8183,6 @@ class Translations$streaming$en {
 	/// en: 'Choose a stream'
 	String get streamsTitle => 'Choose a stream';
 
-	/// en: 'Checking connected add-ons…'
-	String get searchingStreams => 'Checking connected add-ons…';
-
 	/// en: 'No streams were found for this title.'
 	String get noStreams => 'No streams were found for this title.';
 
@@ -8216,12 +8201,6 @@ class Translations$streaming$en {
 	/// en: 'No subtitle'
 	String get subtitleOff => 'No subtitle';
 
-	/// en: 'Couldn't load that subtitle. Try another track.'
-	String get subtitleLoadFailed => 'Couldn\'t load that subtitle. Try another track.';
-
-	/// en: 'Subtitle selected for playback'
-	String get subtitleApplied => 'Subtitle selected for playback';
-
 	/// en: 'Some add-ons couldn't be reached.'
 	String get streamLookupPartial => 'Some add-ons couldn\'t be reached.';
 
@@ -8236,9 +8215,6 @@ class Translations$streaming$en {
 
 	/// en: 'This stream couldn't be prepared. Check the connected account and try another source.'
 	String get streamPrepareFailed => 'This stream couldn\'t be prepared. Check the connected account and try another source.';
-
-	/// en: 'Connect a debrid service to play this torrent stream.'
-	String get streamNeedsRealDebrid => 'Connect a debrid service to play this torrent stream.';
 
 	/// en: 'This stream format isn't supported by the in-app player.'
 	String get streamUnsupported => 'This stream format isn\'t supported by the in-app player.';
@@ -11143,9 +11119,6 @@ class Translations$games$en {
 
 	/// en: 'Steam account linked. Its library is private or unavailable, so no games were imported.'
 	String get steamLibraryPrivate => 'Steam account linked. Its library is private or unavailable, so no games were imported.';
-
-	/// en: 'Steam App ID'
-	String get steamAppId => 'Steam App ID';
 
 	/// en: 'Steam could not refresh the library. Showing the last available catalog.'
 	String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
@@ -15368,6 +15341,7 @@ extension on Translations {
 			'videoControls.skipAds' => 'Skip Ads',
 			'videoControls.tapToUnlock' => 'Tap to unlock',
 			'videoControls.tapAgainToUnlock' => 'Tap again to unlock',
+			'videoControls.secondarySubtitle' => 'Secondary subtitle',
 			'messages.markedAsWatched' => 'Marked as watched',
 			'messages.markedAsUnwatched' => 'Marked as unwatched',
 			'messages.markedAsWatchedOffline' => 'Marked as watched (will sync when online)',
@@ -15685,15 +15659,12 @@ extension on Translations {
 			'iptv.allCategories' => 'All categories',
 			'iptv.noVodItems' => 'No titles in this category.',
 			'iptv.vodUnavailable' => 'This source could not load its catalogue. Check the provider credentials and retry.',
-			'iptv.vodUnavailableShort' => 'VOD is not configured for this source.',
 			'iptv.vodPlaybackFailed' => 'Could not start this title. Check the provider connection and try again.',
 			'iptv.play' => 'Play',
 			'iptv.noEpisodes' => 'No episodes are available for this series.',
 			'iptv.season' => 'Season',
 			'iptv.specials' => 'Specials',
 			'iptv.localRecordings' => 'Local recordings',
-			'iptv.recordingSavedLocal' => 'Recording saved to this device.',
-			'iptv.recordingFailedLocal' => 'The recording could not be saved.',
 			'iptv.recordingInProgressLocal' => 'Recording',
 			'iptv.recordingInterrupted' => 'Interrupted',
 			'iptv.recordingMissed' => 'Missed',
@@ -15701,7 +15672,6 @@ extension on Translations {
 			'iptv.recordingEncryptedHls' => 'This provider uses an unsupported HLS encryption mode.',
 			'iptv.recordingProviderAuthentication' => 'The provider rejected the recording connection.',
 			'iptv.recordingProviderPermission' => 'The provider denied access to this stream.',
-			'iptv.sourceUnavailable' => 'This source is no longer available.',
 			'iptv.deleteRecording' => 'Delete recording',
 			'iptv.deleteRecordingConfirm' => 'Delete this recording and its file from this device?',
 			'iptv.deleteDispatcharrRecordingConfirm' => 'Delete this recording and its file from the Dispatcharr server?',
@@ -15777,11 +15747,11 @@ extension on Translations {
 			'accountPreferences.forcedSubtitleOptions.preferForcedDescription' => 'Prefer forced tracks when available, but allow regular subtitles as a fallback.',
 			'accountPreferences.forcedSubtitleOptions.onlyForcedDescription' => 'Use only tracks marked as forced.',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForcedDescription' => 'Exclude tracks marked as forced.',
-			_ => null,
-		} ?? switch (path) {
 			'accountPreferences.displayMissingEpisodes' => 'Show missing episodes',
 			'accountPreferences.displayMissingEpisodesDescription' => 'List episodes the server knows about but has no file for.',
 			'accountPreferences.hidePlayedInLatest' => 'Hide watched items in Latest',
+			_ => null,
+		} ?? switch (path) {
 			'accountPreferences.hidePlayedInLatestDescription' => 'Leave items you have already watched out of the server\'s Latest rows.',
 			'accountPreferences.displayCollectionsView' => 'Show the Collections view',
 			'accountPreferences.displayCollectionsViewDescription' => 'Offer the server\'s Collections view alongside your libraries.',
@@ -16291,11 +16261,11 @@ extension on Translations {
 			'explore.relation.parentStory' => 'Parent story',
 			'explore.relation.adaptation' => 'Adaptation',
 			'explore.relation.other' => 'Related',
-			_ => null,
-		} ?? switch (path) {
 			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
 			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
 			'explore.detail.originalTitle' => 'Original title',
+			_ => null,
+		} ?? switch (path) {
 			'explore.detail.alsoKnownAs' => 'Also known as',
 			'explore.detail.studios' => 'Studios',
 			'explore.detail.country' => 'Country',
@@ -16805,11 +16775,11 @@ extension on Translations {
 			'downloads.reasonDeviceStorageFull' => 'this device is out of storage',
 			'downloads.notificationDownloading' => 'Downloading...',
 			'downloads.notificationComplete' => 'Download complete',
-			_ => null,
-		} ?? switch (path) {
 			'downloads.notificationPaused' => 'Download paused',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
+			_ => null,
+		} ?? switch (path) {
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',
 			'shaders.lanczosUpscaling' => 'Lanczos upscaling',
 			'shaders.lanczosUpscalingDescription' => 'GPU resampling for video smaller than the display; unavailable with DRM or tunneled playback.',
@@ -17013,6 +16983,10 @@ extension on Translations {
 			'videoSettings.motionClarityCompareProcessingDescription' => 'Temporarily bypass frame processing while keeping display synchronization, scaling and audio settings unchanged.',
 			'videoSettings.motionClarityCompareFailed' => 'The renderer couldn\'t switch comparison mode. Playback settings were left as they are.',
 			'videoSettings.motionClaritySaveFailed' => 'Couldn\'t save motion clarity settings.',
+			'videoSettings.subtitleCueTimeAnchor1' => 'Subtitle cue 1 time',
+			'videoSettings.subtitleUsePlaybackTime' => 'Use current playback time',
+			'videoSettings.subtitlePreviousCue' => 'Previous subtitle cue',
+			'videoSettings.subtitleNextCue' => 'Next subtitle cue',
 			'videoSettings.subtitleExport' => 'Export synchronized subtitle',
 			'videoSettings.subtitleExportSuccess' => 'Synchronized subtitle saved.',
 			'videoSettings.subtitleExportFailed' => 'Could not export this subtitle file. The original remains unchanged.',
@@ -17024,15 +16998,11 @@ extension on Translations {
 			'videoSettings.subtitleDriftPreviewActive' => 'Preview active. Save to keep this correction, or cancel to restore the previous timing.',
 			'videoSettings.subtitleDriftPreviewFailed' => 'The player could not preview this correction. The previous timing was restored.',
 			'videoSettings.subtitleDriftUndo' => 'Undo drift calibration',
-			'videoSettings.subtitleCueTimeAnchor1' => 'Subtitle cue 1 time',
 			'videoSettings.subtitlePlaybackTimeAnchor1' => 'Playback position for cue 1',
 			'videoSettings.subtitleCueTimeAnchor2' => 'Subtitle cue 2 time',
 			'videoSettings.subtitlePlaybackTimeAnchor2' => 'Playback position for cue 2',
-			'videoSettings.subtitleUsePlaybackTime' => 'Use current playback time',
 			'videoSettings.subtitleDriftInvalidAnchors' => 'Choose increasing anchors at least 60 seconds apart. Corrections are limited to 80%–125% speed and ±60 seconds.',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
-			'videoSettings.subtitlePreviousCue' => 'Previous subtitle cue',
-			'videoSettings.subtitleNextCue' => 'Next subtitle cue',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',
 			'videoSettings.subtitleCueCopied' => 'Subtitle cue copied.',
@@ -17319,11 +17289,11 @@ extension on Translations {
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Open ${service} to activate',
 			'services.deviceCode.copyCode' => 'Copy activation code',
 			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
-			_ => null,
-		} ?? switch (path) {
 			'services.deviceCode.codeCopied' => 'Code copied',
 			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
 			'services.oauthProxy.body' => 'Scan this QR code or open the URL on any device.',
+			_ => null,
+		} ?? switch (path) {
 			'services.oauthProxy.openToSignIn' => ({required Object service}) => 'Open ${service} to sign in',
 			'services.pendingAuth.copyUrl' => 'Copy sign-in URL',
 			'services.pendingAuth.urlCopied' => 'URL copied',
@@ -17393,7 +17363,6 @@ extension on Translations {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Resolve torrent-backed streams through your Real-Debrid account.',
 			'streaming.connectRealDebrid' => 'Connect with QR code',
-			'streaming.disconnectRealDebrid' => 'Disconnect Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Connected as ${username}',
 			'streaming.realDebridInstructions' => 'Scan the QR code or open the address, then enter this activation code to connect PlezyNG:',
 			'streaming.realDebridActivate' => 'Open Real-Debrid to activate',
@@ -17421,21 +17390,17 @@ extension on Translations {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Disconnect ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG will remove this device\'s authorization. Your provider files and transfers stay untouched.',
 			'streaming.streamsTitle' => 'Choose a stream',
-			'streaming.searchingStreams' => 'Checking connected add-ons…',
 			'streaming.noStreams' => 'No streams were found for this title.',
 			'streaming.manageConnections' => 'Manage streaming services',
 			'streaming.subtitleTracks' => ({required Object count}) => '${count} subtitle track(s)',
 			'streaming.chooseSubtitle' => 'Choose a subtitle',
 			'streaming.chooseProvider' => 'Choose a debrid service',
 			'streaming.subtitleOff' => 'No subtitle',
-			'streaming.subtitleLoadFailed' => 'Couldn\'t load that subtitle. Try another track.',
-			'streaming.subtitleApplied' => 'Subtitle selected for playback',
 			'streaming.streamLookupPartial' => 'Some add-ons couldn\'t be reached.',
 			'streaming.streamLookupFailed' => 'Couldn\'t check the connected add-ons.',
 			'streaming.streamOpenExternal' => 'Open external link',
 			'streaming.streamPrepare' => 'Preparing through your debrid service…',
 			'streaming.streamPrepareFailed' => 'This stream couldn\'t be prepared. Check the connected account and try another source.',
-			'streaming.streamNeedsRealDebrid' => 'Connect a debrid service to play this torrent stream.',
 			'streaming.streamUnsupported' => 'This stream format isn\'t supported by the in-app player.',
 			'streaming.remoteNeedsEpisode' => 'Choose an episode before searching for a stream.',
 			'streaming.remoteNeedsEpisodeNumber' => 'This episode is missing its season or episode number.',
@@ -17833,8 +17798,6 @@ extension on Translations {
 			'universalMedia.shareQrHelp' => 'Scan with a compatible player connected to the same private network.',
 			'universalMedia.shareHttpHint' => 'This stream uses unencrypted HTTP. In PlezyNG, allow HTTP before opening it.',
 			'universalMedia.shareCopyUrl' => 'Copy stream address',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.shareExpiresLabel' => 'Link expires at',
 			'universalMedia.shareStarting' => 'Preparing the stream…',
 			'universalMedia.shareStart' => 'Start sharing',
@@ -17843,6 +17806,8 @@ extension on Translations {
 			'universalMedia.extensionsIntro' => 'Add a data-only search extension to find media. Choose a result to load it into the familiar Open media form.',
 			'universalMedia.extensionsPrivacy' => 'A manifest can define one HTTPS search endpoint and map response fields. It cannot run code, add request headers, read files, or launch shell commands.',
 			'universalMedia.extensionImport' => 'Add extension manifest',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.extensionEmpty' => 'No search services yet. Choose a trusted manifest JSON file to add one.',
 			'universalMedia.extensionChoose' => 'Search service',
 			'universalMedia.extensionSearchConsent' => 'Each search sends your words to this HTTPS service. Results open only after you select one.',
@@ -18347,8 +18312,6 @@ extension on Translations {
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamBetaTitle' => 'Pyrowave · experimental',
 			'games.steamBetaDescription' => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, PlezyNG reconnects using a compatible codec.',
-			_ => null,
-		} ?? switch (path) {
 			'games.steamLibrary' => 'Steam library',
 			'games.linkSteamAccount' => 'Link Steam account',
 			'games.refreshSteamAccount' => 'Refresh Steam account',
@@ -18356,8 +18319,9 @@ extension on Translations {
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
-			'games.steamAppId' => 'Steam App ID',
 			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			_ => null,
+		} ?? switch (path) {
 			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'games.connecting' => 'Connecting…',
 			'games.disconnect' => 'Disconnect',

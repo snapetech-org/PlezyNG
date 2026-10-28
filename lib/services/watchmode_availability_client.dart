@@ -135,7 +135,7 @@ class WatchmodeAvailabilityClient {
       for (final raw in rawSources) {
         if (raw is! Map<String, dynamic>) return null;
         final source = WatchmodeAvailabilitySource.fromJson(raw, country);
-        final key = source.sourceId.toString() + ':' + source.type + ':' + (source.format ?? '');
+        final key = '${source.sourceId}:${source.type}:${source.format ?? ''}';
         if (seen.add(key)) sources.add(source);
       }
       return WatchmodeAvailabilityResult(

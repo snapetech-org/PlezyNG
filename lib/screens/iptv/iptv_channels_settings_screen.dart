@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
-import '../../i18n/iptv_copy.dart';
 import '../../i18n/strings.g.dart';
 import '../../iptv/iptv_models.dart';
 import '../../iptv/iptv_source_repository.dart';
@@ -60,11 +59,13 @@ class _IptvChannelsSettingsScreenState extends State<IptvChannelsSettingsScreen>
       final repository = context.read<IptvSourceRepository>();
       final channels = await repository.editableChannels(profileId, widget.sourceId);
       final lockedGroups = await repository.lockedGroups(profileId, widget.sourceId);
-      if (mounted) setState(() {
-        _channels = channels;
-        _lockedGroups = lockedGroups;
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _channels = channels;
+          _lockedGroups = lockedGroups;
+          _loading = false;
+        });
+      }
     } catch (error) {
       if (mounted) {
         setState(() => _loading = false);
@@ -78,7 +79,9 @@ class _IptvChannelsSettingsScreenState extends State<IptvChannelsSettingsScreen>
     if (query.isEmpty) return _channels;
     return [
       for (final channel in _channels)
-        if ('${channel.displayTitle} ${channel.displayGroup ?? ''} ${channel.number ?? ''}'.toLowerCase().contains(query))
+        if ('${channel.displayTitle} ${channel.displayGroup ?? ''} ${channel.number ?? ''}'.toLowerCase().contains(
+          query,
+        ))
           channel,
     ];
   }
@@ -145,11 +148,11 @@ class _IptvChannelsSettingsScreenState extends State<IptvChannelsSettingsScreen>
       final title = custom.isNotEmpty ? custom : channel.groupTitle?.trim();
       return title == null || title.isEmpty ? null : title;
     }
+
     var groupLocked = _lockedGroups.contains(iptvGroupLockKey(effectiveGroupTitle()));
     final activeProfile = context.read<ActiveProfileProvider>().active;
-    final canUseParentalControls = activeProfile is LocalProfile &&
-        activeProfile.id == widget.profileId &&
-        activeProfile.isPinProtected;
+    final canUseParentalControls =
+        activeProfile is LocalProfile && activeProfile.id == widget.profileId && activeProfile.isPinProtected;
     final saved = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
@@ -200,8 +203,9 @@ class _IptvChannelsSettingsScreenState extends State<IptvChannelsSettingsScreen>
                       ? null
                       : (value) async {
                           if (value && !canUseParentalControls) return;
-                          if (canUseParentalControls &&
-                              !await requestActiveProfileActionPin(context)) return;
+                          if (canUseParentalControls && !await requestActiveProfileActionPin(context)) {
+                            return;
+                          }
                           if (!context.mounted) return;
                           setDialogState(() => parentalLocked = value);
                         },
@@ -217,8 +221,9 @@ class _IptvChannelsSettingsScreenState extends State<IptvChannelsSettingsScreen>
                         ? null
                         : (value) async {
                             if (value && !canUseParentalControls) return;
-                            if (canUseParentalControls &&
-                                !await requestActiveProfileActionPin(context)) return;
+                            if (canUseParentalControls && !await requestActiveProfileActionPin(context)) {
+                              return;
+                            }
                             if (!context.mounted) return;
                             setDialogState(() => groupLocked = value);
                           },
@@ -293,10 +298,7 @@ class _IptvChannelsSettingsScreenState extends State<IptvChannelsSettingsScreen>
           ),
         ),
         if (_loading)
-          const SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(child: CircularProgressIndicator()),
-          )
+          const SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator()))
         else if (_channels.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,
@@ -308,10 +310,7 @@ class _IptvChannelsSettingsScreenState extends State<IptvChannelsSettingsScreen>
             ),
           )
         else if (channels.isEmpty)
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(child: Text(t.search.tryDifferentTerm)),
-          )
+          SliverFillRemaining(hasScrollBody: false, child: Center(child: Text(t.search.tryDifferentTerm)))
         else
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
@@ -326,12 +325,15 @@ class _IptvChannelsSettingsScreenState extends State<IptvChannelsSettingsScreen>
                     clipBehavior: Clip.antiAlias,
                     shape: RoundedRectangleBorder(borderRadius: groupItemRadii(context, index, channels.length)),
                     child: ListTileTheme.merge(
-                      visualDensity: PlatformDetector.isAutomotive() ? VisualDensity.standard : const VisualDensity(vertical: -3),
+                      visualDensity: PlatformDetector.isAutomotive()
+                          ? VisualDensity.standard
+                          : const VisualDensity(vertical: -3),
                       child: ListTile(
                         title: Row(
                           children: [
                             Expanded(child: Text(channel.displayTitle, maxLines: 1, overflow: TextOverflow.ellipsis)),
-                            if (channel.parentalLocked || _lockedGroups.contains(iptvGroupLockKey(channel.displayGroup)))
+                            if (channel.parentalLocked ||
+                                _lockedGroups.contains(iptvGroupLockKey(channel.displayGroup)))
                               Padding(
                                 padding: const EdgeInsets.only(left: 8),
                                 child: AppIcon(Symbols.lock_rounded, size: 16, color: colors.onSurfaceVariant),
@@ -352,7 +354,10 @@ class _IptvChannelsSettingsScreenState extends State<IptvChannelsSettingsScreen>
                                 ),
                         ),
                         subtitle: Text(
-                          [if (channel.number != null) channel.number!, if (channel.displayGroup != null) channel.displayGroup!].join(' · '),
+                          [
+                            if (channel.number != null) channel.number!,
+                            if (channel.displayGroup != null) channel.displayGroup!,
+                          ].join(' · '),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),

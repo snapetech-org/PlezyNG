@@ -48,8 +48,7 @@ class MotionClarityApplyResult {
 class MotionClarityService {
   static final Expando<MotionClarityService> _instances = Expando<MotionClarityService>();
 
-  static MotionClarityService forPlayer(Player player) =>
-      _instances[player] ??= MotionClarityService._(player);
+  static MotionClarityService forPlayer(Player player) => _instances[player] ??= MotionClarityService._(player);
 
   static const _supportedOutputs = {'gpu', 'gpu-next', 'libmpv'};
   static const _mciFilterLabel = 'plezyng-motion-clarity';
@@ -104,9 +103,7 @@ class MotionClarityService {
 
   // A single mpv filter graph is shared by user changes and telemetry. Keep
   // multi-await updates in order so an older fallback cannot win a race.
-  Future<MotionClarityApplyResult> _enqueueConfiguration(
-    Future<MotionClarityApplyResult> Function() operation,
-  ) {
+  Future<MotionClarityApplyResult> _enqueueConfiguration(Future<MotionClarityApplyResult> Function() operation) {
     final previous = _configurationTail;
     final release = Completer<void>();
     _configurationTail = release.future;
@@ -169,7 +166,8 @@ class MotionClarityService {
       targetFps: _currentTargetFps,
       outputDriver: driver,
       displayFps: fps,
-      reason: _statusReason ??
+      reason:
+          _statusReason ??
           (driver == null || driver.isEmpty ? 'The renderer has not reported its active output yet.' : null),
     );
   }
@@ -184,18 +182,19 @@ class MotionClarityService {
     MotionClarityMciQuality mciQuality = MotionClarityMciQuality.balanced,
     double? sourceFps,
     bool applyPresetRouting = true,
-  }) =>
-      _enqueueConfiguration(() => _configure(
-        preset: preset,
-        kernel: kernel,
-        thresholdPercent: thresholdPercent,
-        beforeSourceOpen: beforeSourceOpen,
-        engine: engine,
-        outputRate: outputRate,
-        mciQuality: mciQuality,
-        sourceFps: sourceFps,
-        applyPresetRouting: applyPresetRouting,
-      ));
+  }) => _enqueueConfiguration(
+    () => _configure(
+      preset: preset,
+      kernel: kernel,
+      thresholdPercent: thresholdPercent,
+      beforeSourceOpen: beforeSourceOpen,
+      engine: engine,
+      outputRate: outputRate,
+      mciQuality: mciQuality,
+      sourceFps: sourceFps,
+      applyPresetRouting: applyPresetRouting,
+    ),
+  );
 
   Future<MotionClarityApplyResult> _configure({
     required MotionClarityPreset preset,
@@ -278,8 +277,8 @@ class MotionClarityService {
     }
 
     if (requestedEngine == MotionClarityEngine.motionCompensated) {
-      final resolvedSourceFps = sourceFps ??
-          (!beforeSourceOpen ? _readFps(await _readProperty('container-fps')) : null);
+      final resolvedSourceFps =
+          sourceFps ?? (!beforeSourceOpen ? _readFps(await _readProperty('container-fps')) : null);
       return _configureMotionCompensated(
         preset: preset,
         kernel: kernel,
@@ -301,12 +300,8 @@ class MotionClarityService {
         : preset.defaultThresholdPercent;
     // mpv documents -1 as the explicit always-interpolate sentinel. The UI
     // exposes this as threshold 0%, so translate that choice directly.
-    final mpvThreshold = effectiveThreshold == 0
-        ? '-1'
-        : (effectiveThreshold / 100).toStringAsFixed(2);
-    final requiresReload = !beforeSourceOpen &&
-        _sourceHasOpened &&
-        !_currentPreset.interpolationEnabled;
+    final mpvThreshold = effectiveThreshold == 0 ? '-1' : (effectiveThreshold / 100).toStringAsFixed(2);
+    final requiresReload = !beforeSourceOpen && _sourceHasOpened && !_currentPreset.interpolationEnabled;
 
     final writes = <(String, String)>[
       // Keep encoded audio passthrough intact; decoded PCM can use mpv's
@@ -328,7 +323,11 @@ class MotionClarityService {
         await _player.setProperty(name, value);
       }
     } catch (error, stackTrace) {
-      appLogger.w('MotionClarityService: could not configure temporal interpolation', error: error, stackTrace: stackTrace);
+      appLogger.w(
+        'MotionClarityService: could not configure temporal interpolation',
+        error: error,
+        stackTrace: stackTrace,
+      );
       await _restoreOriginalValues();
       _currentPreset = MotionClarityPreset.original;
       _currentEngine = MotionClarityEngine.temporalBlend;
@@ -388,9 +387,7 @@ class MotionClarityService {
 
   Future<MotionClarityApplyResult> _setComparisonBypass(bool bypass) async {
     final current = await inspect();
-    if (!current.isSupported ||
-        !_currentPreset.interpolationEnabled ||
-        bypass == _comparisonBypass) {
+    if (!current.isSupported || !_currentPreset.interpolationEnabled || bypass == _comparisonBypass) {
       return current;
     }
 
@@ -483,7 +480,8 @@ class MotionClarityService {
     final rateText = targetFps.toStringAsFixed(3);
     final filterSpec =
         '@$_mciFilterLabel:lavfi=[minterpolate=fps=$rateText:mi_mode=mci:${mciQuality.ffmpegOptions}:scd=fdiff:scd_threshold=10]';
-    final needsReload = !beforeSourceOpen &&
+    final needsReload =
+        !beforeSourceOpen &&
         _sourceHasOpened &&
         (!_currentPreset.interpolationEnabled ||
             _currentEngine != MotionClarityEngine.motionCompensated ||
@@ -503,7 +501,11 @@ class MotionClarityService {
       _mciFilterAdded = true;
       _mciFilterSpec = filterSpec;
     } catch (error, stackTrace) {
-      appLogger.w('MotionClarityService: minterpolate unavailable; falling back to temporal blending', error: error, stackTrace: stackTrace);
+      appLogger.w(
+        'MotionClarityService: minterpolate unavailable; falling back to temporal blending',
+        error: error,
+        stackTrace: stackTrace,
+      );
       await _removeMciFilter();
       await _restoreOriginalValues();
       return _fallbackToTemporal(
@@ -568,7 +570,7 @@ class MotionClarityService {
       outputRate: outputRate,
       applyPresetRouting: false,
     );
-    final effectiveReason = reason + ' ' + (result.reason ?? 'Temporal blending is active.');
+    final effectiveReason = '$reason ${result.reason ?? 'Temporal blending is active.'}';
     _statusReason = effectiveReason;
     return MotionClarityApplyResult(
       isSupported: result.isSupported,
@@ -658,8 +660,8 @@ class MotionClarityService {
       final useDelayedCount = delayedCount != null && previousDelayedCount != null;
       final useDropCount = !useDelayedCount && delayedCount == null && dropCount != null && previousDropCount != null;
       if (!useDelayedCount && !useDropCount) return;
-      final count = useDelayedCount ? delayedCount! : dropCount!;
-      final previous = useDelayedCount ? previousDelayedCount! : previousDropCount!;
+      final count = useDelayedCount ? delayedCount : dropCount!;
+      final previous = useDelayedCount ? previousDelayedCount : previousDropCount!;
       if (count < previous) {
         _sustainedDropWindows = 0;
         return;
@@ -774,18 +776,6 @@ class MotionClarityService {
       sourceFps: sourceFps,
       applyPresetRouting: false,
     );
-  }
-
-  void _resetActiveProcessing() {
-    _stopHealthMonitor();
-    _currentPreset = MotionClarityPreset.original;
-    _currentEngine = MotionClarityEngine.temporalBlend;
-    _currentOutputRate = MotionClarityOutputRate.currentDisplay;
-    _currentMciQuality = MotionClarityMciQuality.balanced;
-    _currentTargetFps = null;
-    _comparisonBypass = false;
-    _requiresSourceReload = false;
-    _statusReason = null;
   }
 
   Future<void> _removeMciFilter({bool throwOnError = false}) async {

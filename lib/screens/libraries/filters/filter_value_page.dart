@@ -148,9 +148,9 @@ class _FilterValuePageState extends State<FilterValuePage> {
                 label: t.streaming.catalogRequiredLabel,
                 child: Text(
                   t.streaming.catalogRequiredLabel,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ),
             );
@@ -172,8 +172,9 @@ class _FilterValuePageState extends State<FilterValuePage> {
         }
         final value = visible[index - headerCount];
         final id = _idOf(value);
-        final requiredChoiceFocusNode =
-            widget.filter.isRequired && index == headerCount ? widget.initialFocusNode : null;
+        final requiredChoiceFocusNode = widget.filter.isRequired && index == headerCount
+            ? widget.initialFocusNode
+            : null;
         final requiredChoiceAutofocus = widget.filter.isRequired && index == headerCount && autofocusFirst;
         if (widget.filter.selectionLimit == 1) {
           final checked = selected.contains(id);

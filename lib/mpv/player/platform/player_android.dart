@@ -84,8 +84,7 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   bool get supportsSubtitleStyleControls => true;
 
   @override
-  Set<String> get supportedLocalSubtitleExtensions =>
-      _isLive ? const <String>{} : const {'srt', 'ass', 'ssa', 'vtt'};
+  Set<String> get supportedLocalSubtitleExtensions => _isLive ? const <String>{} : const {'srt', 'ass', 'ssa', 'vtt'};
 
   // The fallback runs mpv over MediaCodec — the same display-switch decoder
   // constraint as PlayerNative on Android. The whole startup-gate chain
@@ -573,21 +572,14 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   /// The ExoPlayer fallback path does not expose PCM and returns false.
   Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
     if (disposed || _usingMpvFallback) return false;
-    return await methodChannel.invokeMethod<bool>(
-          'setSubtitlePcmCaptureEnabled',
-          {'enabled': enabled},
-        ) ??
-        false;
+    return await methodChannel.invokeMethod<bool>('setSubtitlePcmCaptureEnabled', {'enabled': enabled}) ?? false;
   }
 
   /// Drains captured PCM packets. Each packet carries its media presentation timestamp.
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
     if (disposed || _usingMpvFallback) return const [];
     final packets = await methodChannel.invokeMethod<List<dynamic>>('drainSubtitlePcmCapture');
-    return packets
-            ?.map((packet) => Map<String, Object?>.from(packet as Map))
-            .toList(growable: false) ??
-        const [];
+    return packets?.map((packet) => Map<String, Object?>.from(packet as Map)).toList(growable: false) ?? const [];
   }
 
   @override

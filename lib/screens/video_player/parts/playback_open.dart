@@ -202,7 +202,6 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
           LanguageCodes.getIso6391Code(name ?? '') == preferred;
     }
 
-
     for (final preferred in orderedLanguages) {
       final existingPreferredTrack = source.subtitleTracks
           .where((track) => matchesLanguageFor(preferred, track.languageCode, track.language))
@@ -215,7 +214,8 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
     final client = context.tryGetMediaClientForServer(serverIdOrNull(metadata.serverId));
     if (client == null) return (result: result, streamId: null);
     final languagesToSearch = orderedLanguages.take(3).toList(growable: false);
-    final attemptKey = '${metadata.globalKey}:${source.mediaSourceId ?? result.selectedMediaIndex}:${languagesToSearch.join(',')}';
+    final attemptKey =
+        '${metadata.globalKey}:${source.mediaSourceId ?? result.selectedMediaIndex}:${languagesToSearch.join(',')}';
     if (!_autoSubtitleFetchAttempts.add(attemptKey)) return (result: result, streamId: null);
 
     final activePlayer = player;
@@ -689,10 +689,12 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
           final target = plan.motionCompensatedOutputFps != null
               ? (
                   fps: plan.motionCompensatedOutputFps,
-                  width: settingsService.read(SettingsService.matchContentResolution) && measurement.output.hasDimensions
+                  width:
+                      settingsService.read(SettingsService.matchContentResolution) && measurement.output.hasDimensions
                       ? measurement.output.width
                       : 0,
-                  height: settingsService.read(SettingsService.matchContentResolution) && measurement.output.hasDimensions
+                  height:
+                      settingsService.read(SettingsService.matchContentResolution) && measurement.output.hasDimensions
                       ? measurement.output.height
                       : 0,
                 )
@@ -1369,16 +1371,13 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
     void Function(bool available)? onMediaAvailabilityChanged,
   }) async {
     final displayCriteria = result.mediaInfo?.displayCriteria;
-    final motionCompensatedOutputRate =
-        ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.motionClarityOutputRate, metadata);
+    final motionCompensatedOutputRate = ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.motionClarityOutputRate, metadata);
     final motionCompensatedRequested =
         currentPlayer.playerType == 'mpv' &&
         ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.motionClarityPreset, metadata).interpolationEnabled &&
         ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.motionClarityEngine, metadata) ==
             MotionClarityEngine.motionCompensated;
-    final motionCompensatedOutputFps = motionCompensatedRequested
-        ? motionCompensatedOutputRate.resolve(null)
-        : null;
+    final motionCompensatedOutputFps = motionCompensatedRequested ? motionCompensatedOutputRate.resolve(null) : null;
 
     final frameRatePlan = await _prepareFrameRateForOpen(
       currentPlayer: currentPlayer,

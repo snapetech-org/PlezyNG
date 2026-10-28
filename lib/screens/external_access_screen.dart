@@ -242,7 +242,8 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
   Future<void> _loadWatchmodeAvailability() async {
     final type = widget.tmdbType?.toLowerCase();
     final tmdbId = widget.tmdbId;
-    if ((type != 'movie' && type != 'tv') ||
+    if (type == null ||
+        (type != 'movie' && type != 'tv') ||
         tmdbId == null ||
         !widget.categories.contains(ExternalAccessCategory.video) ||
         widget.title.trim().isEmpty) {
@@ -309,7 +310,7 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
     final host = uri.host.toLowerCase().replaceFirst(RegExp(r'^www\.'), '');
     for (final destination in candidates) {
       final registered = destination.host.toLowerCase().replaceFirst(RegExp(r'^www\.'), '');
-      if (host != registered && !host.endsWith('.' + registered)) continue;
+      if (host != registered && !host.endsWith('.$registered')) continue;
       final provider = destination.integrationDefinition((_countryCode ?? _defaultCountryCode()).toLowerCase());
       final decision = ActionPolicyEvaluator.evaluate(
         provider: provider,
@@ -362,14 +363,7 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
                   logoDomain: _watchmodeDestination(source)?.host,
                 ),
                 title: Text(source.name),
-                subtitle: Text(
-                  [
-                    source.typeLabel,
-                    source.region,
-                    if (source.price case final price?) price,
-                    if (source.format case final format?) format,
-                  ].join(' · '),
-                ),
+                subtitle: Text([source.typeLabel, source.region, ?source.price, ?source.format].join(' · ')),
                 trailing: _watchmodeDestination(source) == null ? null : const AppIcon(Symbols.open_in_new_rounded),
                 onTap: _watchmodeDestination(source) == null ? null : () => _openWatchmodeSource(source),
               ),
@@ -417,9 +411,9 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
                       children: [
                         for (final song in songs)
                           FocusableListTile(
-                            leading: const AppIcon(Symbols.play_circle_outline_rounded),
+                            leading: const AppIcon(Symbols.play_circle_rounded),
                             title: Text(song.title),
-                            subtitle: Text([song.artist, if (song.album case final album?) album].join(' · ')),
+                            subtitle: Text([song.artist, ?song.album].join(' · ')),
                             onTap: () => Navigator.of(sheetContext).pop(song),
                           ),
                       ],
@@ -435,10 +429,12 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
         if (mounted) showErrorSnackBar(context, t.common.error);
         return;
       }
+      if (!mounted) return;
       final localPlayer = Provider.of<MusicPlaybackService?>(context, listen: false);
       if (localPlayer != null && localPlayer.status != MusicPlaybackStatus.idle) {
         await localPlayer.stop();
       }
+      if (!mounted) return;
       await _appleMusic.play(selected);
       if (mounted) setState(() => _appleMusicPlaying = selected);
     } on Object {

@@ -1,3 +1,4 @@
+import '../../app_icon.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -44,8 +45,7 @@ class _InPlayerSubtitleStyleSheetState extends State<InPlayerSubtitleStyleSheet>
     });
   }
 
-  String _safeColor(String value, String fallback) =>
-      RegExp(r'^#[0-9A-Fa-f]{6}$').hasMatch(value) ? value : fallback;
+  String _safeColor(String value, String fallback) => RegExp(r'^#[0-9A-Fa-f]{6}$').hasMatch(value) ? value : fallback;
 
   Future<void> _setMpvProperty(String name, String value) async {
     try {
@@ -103,7 +103,7 @@ class _InPlayerSubtitleStyleSheetState extends State<InPlayerSubtitleStyleSheet>
         await _setMpvProperty('sub-italic', settings.read(SettingsService.subtitleItalic) ? 'yes' : 'no');
         await _setMpvProperty('sub-border-size', settings.read(SettingsService.subtitleBorderSize).toString());
         await _setMpvProperty('sub-border-color', borderColor);
-        await _setMpvProperty('sub-back-color', '#' + alpha + backgroundColor.substring(1));
+        await _setMpvProperty('sub-back-color', '#$alpha${backgroundColor.substring(1)}');
         await _setMpvProperty('sub-border-style', backgroundOpacity > 0 ? 'background-box' : 'outline-and-shadow');
       }
     } catch (error, stackTrace) {
@@ -126,7 +126,10 @@ class _InPlayerSubtitleStyleSheetState extends State<InPlayerSubtitleStyleSheet>
     await settings.write(SettingsService.subtitleItalic, SettingsService.subtitleItalic.defaultValue);
     await settings.write(SettingsService.subtitleBorderSize, SettingsService.subtitleBorderSize.defaultValue);
     await settings.write(SettingsService.subtitleBorderColor, SettingsService.subtitleBorderColor.defaultValue);
-    await settings.write(SettingsService.subtitleBackgroundOpacity, SettingsService.subtitleBackgroundOpacity.defaultValue);
+    await settings.write(
+      SettingsService.subtitleBackgroundOpacity,
+      SettingsService.subtitleBackgroundOpacity.defaultValue,
+    );
     await settings.write(SettingsService.subtitleBackgroundColor, SettingsService.subtitleBackgroundColor.defaultValue);
     if (!mounted) return;
     setState(() {
@@ -238,7 +241,7 @@ class _InPlayerSubtitleStyleSheetState extends State<InPlayerSubtitleStyleSheet>
                     alignment: AlignmentDirectional.centerEnd,
                     child: TextButton.icon(
                       onPressed: _resetAppearance,
-                      icon: const Icon(Symbols.restart_alt_rounded),
+                      icon: const AppIcon(Symbols.restart_alt_rounded),
                       label: Text(t.common.reset),
                     ),
                   ),

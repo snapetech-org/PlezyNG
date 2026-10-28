@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../focus/focusable_wrapper.dart';
-import '../../i18n/iptv_copy.dart';
 import '../../i18n/strings.g.dart';
 import '../../models/livetv_channel.dart';
 import '../../utils/live_tv_grouping.dart';
@@ -19,20 +18,24 @@ Future<LiveTvChannel?> showIptvLiveChannelPicker(
   required List<LiveTvChannel> channels,
   required LiveTvChannel? currentChannel,
   Map<String, int> recentChannelOrder = const {},
-}) =>
-    OverlaySheetController.showAdaptive<LiveTvChannel>(
-      context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (_) => IptvLiveChannelPickerSheet(
-        channels: channels,
-        currentChannelKey: currentChannel?.key,
-        recentChannelOrder: recentChannelOrder,
-      ),
-    );
+}) => OverlaySheetController.showAdaptive<LiveTvChannel>(
+  context,
+  showDragHandle: true,
+  isScrollControlled: true,
+  builder: (_) => IptvLiveChannelPickerSheet(
+    channels: channels,
+    currentChannelKey: currentChannel?.key,
+    recentChannelOrder: recentChannelOrder,
+  ),
+);
 
 class IptvLiveChannelPickerSheet extends StatefulWidget {
-  const IptvLiveChannelPickerSheet({super.key, required this.channels, this.currentChannelKey, this.recentChannelOrder = const {}});
+  const IptvLiveChannelPickerSheet({
+    super.key,
+    required this.channels,
+    this.currentChannelKey,
+    this.recentChannelOrder = const {},
+  });
 
   final List<LiveTvChannel> channels;
   final String? currentChannelKey;
@@ -147,7 +150,10 @@ class _IptvLiveChannelPickerSheetState extends State<IptvLiveChannelPickerSheet>
                       ),
                       items: [
                         for (final group in groups)
-                          DropdownMenuItem(value: group.key, child: Text(group.label, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                          DropdownMenuItem(
+                            value: group.key,
+                            child: Text(group.label, maxLines: 1, overflow: TextOverflow.ellipsis),
+                          ),
                       ],
                       onChanged: (value) => setState(() => _groupKey = value ?? 'all'),
                     ),

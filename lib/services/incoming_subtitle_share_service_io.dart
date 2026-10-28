@@ -71,11 +71,9 @@ final class IncomingSubtitleShareService {
   }
 
   Future<void> _enqueue(List<SharedMediaFile> media) {
-    _serial = _serial
-        .then((_) => _copySharedFiles(media))
-        .catchError((Object error, StackTrace stackTrace) {
-          appLogger.w('Could not stage shared subtitle files', error: error, stackTrace: stackTrace);
-        });
+    _serial = _serial.then((_) => _copySharedFiles(media)).catchError((Object error, StackTrace stackTrace) {
+      appLogger.w('Could not stage shared subtitle files', error: error, stackTrace: stackTrace);
+    });
     return _serial;
   }
 
@@ -102,7 +100,10 @@ final class IncomingSubtitleShareService {
           continue;
         }
         final extension = p.extension(entity.path).toLowerCase().replaceFirst('.', '');
-        if (!_extensions.contains(extension) || (extension == 'gz' && !p.basename(entity.path).toLowerCase().endsWith('.tar.gz'))) continue;
+        if (!_extensions.contains(extension) ||
+            (extension == 'gz' && !p.basename(entity.path).toLowerCase().endsWith('.tar.gz'))) {
+          continue;
+        }
         final length = await entity.length();
         final maximum = _isArchiveName(entity.path) ? _maximumArchiveBytes : _maximumSubtitleBytes;
         if (length == 0 || length > maximum || restored.length >= _maximumFiles) continue;
@@ -121,10 +122,7 @@ final class IncomingSubtitleShareService {
 
   bool _isArchiveName(String path) {
     final name = p.basename(path).toLowerCase();
-    return name.endsWith('.zip') ||
-        name.endsWith('.tar') ||
-        name.endsWith('.tar.gz') ||
-        name.endsWith('.tgz');
+    return name.endsWith('.zip') || name.endsWith('.tar') || name.endsWith('.tar.gz') || name.endsWith('.tgz');
   }
 
   Future<void> _copySharedFiles(List<SharedMediaFile> media) async {
@@ -143,7 +141,10 @@ final class IncomingSubtitleShareService {
         if (uri != null && uri.hasScheme && uri.scheme != 'file') continue;
         final sourcePath = uri?.scheme == 'file' ? uri!.toFilePath() : rawPath;
         final extension = p.extension(sourcePath).toLowerCase().replaceFirst('.', '');
-        if (!_extensions.contains(extension) || (extension == 'gz' && !p.basename(sourcePath).toLowerCase().endsWith('.tar.gz'))) continue;
+        if (!_extensions.contains(extension) ||
+            (extension == 'gz' && !p.basename(sourcePath).toLowerCase().endsWith('.tar.gz'))) {
+          continue;
+        }
 
         final source = File(sourcePath);
         final sourceBytes = await source.length();
@@ -210,7 +211,11 @@ final class IncomingSubtitleShareService {
           final target = File(p.join(usedDirectory.path, p.basename(path)));
           moved.add((await file.rename(target.path)).path);
         } catch (error, stackTrace) {
-          appLogger.w('Could not move imported subtitle out of the pending queue', error: error, stackTrace: stackTrace);
+          appLogger.w(
+            'Could not move imported subtitle out of the pending queue',
+            error: error,
+            stackTrace: stackTrace,
+          );
           moved.add(path);
         }
       }

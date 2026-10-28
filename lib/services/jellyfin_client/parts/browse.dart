@@ -282,7 +282,7 @@ const _detailFields =
     // extra round-trip.
     'ProviderIds';
 
-mixin _JellyfinBrowseMethods on _JellyfinClientInternals {
+mixin _JellyfinBrowseMethods on _JellyfinClientInternals implements LibraryGenreProvider {
   // Shared endpoints and query shapes follow the official Jellyfin SDK so
   // Jellyfin requests remain unchanged. [MediaBrowserPaths] owns the measured
   // route differences: Emby 4.9.5 requires the older user-scoped spellings,

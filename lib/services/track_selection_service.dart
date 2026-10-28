@@ -808,7 +808,11 @@ class TrackSelectionService {
     final candidates = forcedOnly ? availableTracks.where((track) => track.effectiveForced).toList() : availableTracks;
     if (candidates.isEmpty) return null;
     for (final preferredLanguage in _subtitleLanguageOrder(profile)) {
-      final match = _findTrackByPreferredLanguage<SubtitleTrack>(candidates, preferredLanguage, (track) => track.language);
+      final match = _findTrackByPreferredLanguage<SubtitleTrack>(
+        candidates,
+        preferredLanguage,
+        (track) => track.language,
+      );
       if (match != null) return match;
     }
     return null;

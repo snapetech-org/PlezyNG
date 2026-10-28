@@ -15,7 +15,6 @@ import '../../../focus/focus_theme.dart';
 import '../../../focus/input_mode_tracker.dart';
 import '../../../focus/back_press.dart';
 import '../../../i18n/strings.g.dart';
-import '../../../i18n/iptv_copy.dart';
 import '../../../mixins/mounted_set_state_mixin.dart';
 import '../../../models/livetv_channel.dart';
 import '../../../models/livetv_program.dart';
@@ -494,6 +493,7 @@ class GuideTabState extends State<GuideTab>
         },
       );
 
+      if (!mounted || !_isCurrentProgramLoad(loadGeneration)) return;
       if (widget.channels.any((channel) => channel.iptvSourceId != null)) {
         final profileId = context.read<ActiveProfileProvider>().activeId;
         if (profileId != null) {
@@ -698,7 +698,8 @@ class GuideTabState extends State<GuideTab>
       if (!isIptvSource || !hasCategories) {
         if (showSourceNames) rows.add(_GuideSourceHeaderRow(label: group.label));
         rows.addAll([
-          for (final channel in group.channels) _GuideChannelRow(channel: channel, channelIndex: channelIndexes[channel] ?? 0),
+          for (final channel in group.channels)
+            _GuideChannelRow(channel: channel, channelIndex: channelIndexes[channel] ?? 0),
         ]);
         continue;
       }
@@ -716,11 +717,10 @@ class GuideTabState extends State<GuideTab>
       for (final category in categoryOrder) {
         final channels = byCategory[category]!;
         final title = category.isEmpty ? t.iptv.uncategorizedChannels : category;
-        rows.add(
-          _GuideSourceHeaderRow(label: showSourceNames ? '${group.label} · $title' : title),
-        );
+        rows.add(_GuideSourceHeaderRow(label: showSourceNames ? '${group.label} · $title' : title));
         rows.addAll([
-          for (final channel in channels) _GuideChannelRow(channel: channel, channelIndex: channelIndexes[channel] ?? 0),
+          for (final channel in channels)
+            _GuideChannelRow(channel: channel, channelIndex: channelIndexes[channel] ?? 0),
         ]);
       }
     }
@@ -2001,7 +2001,8 @@ class _ChannelCellState extends State<_ChannelCell> {
                       AnimatedOpacity(
                         opacity: showAction ? 0.3 : 1.0,
                         duration: FocusTheme.getAnimationDuration(context),
-                        child: widget.channelThumb != null &&
+                        child:
+                            widget.channelThumb != null &&
                                 (widget.client != null || widget.channelThumb!.startsWith('http'))
                             ? OptimizedMediaImage.thumb(
                                 client: widget.client,

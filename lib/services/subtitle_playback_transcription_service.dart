@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
@@ -226,15 +225,15 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     liveCaption.value = null;
 
     if (_lastError != null) {
-      _setStatus('Capture ended with an inference error: ' + _lastError.toString());
-      throw StateError('Live subtitle transcription failed: ' + _lastError.toString());
+      _setStatus('Capture ended with an inference error: $_lastError');
+      throw StateError('Live subtitle transcription failed: $_lastError');
     }
     if (invalidReason != null) {
       _setStatus(invalidReason);
     } else if (_recentTranscript == null || _recentTranscript!.cues.isEmpty) {
       _setStatus('No speech captions were produced. Check the audio track and try again.');
     } else {
-      _setStatus('Captured ' + _recentTranscript!.cues.length.toString() + ' speech cues from the watched portion.');
+      _setStatus('Captured ${_recentTranscript!.cues.length} speech cues from the watched portion.');
     }
     return _recentTranscript;
   }
@@ -288,12 +287,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         _appendPackets(packets);
         _packetsReceived += packets.length;
         _lastPacketAt = DateTime.now();
-        _setStatus('Listening locally on CPU; captured ' + _packetsReceived.toString() + ' audio packets.');
+        _setStatus('Listening locally on CPU; captured $_packetsReceived audio packets.');
       } else {
         final started = _startedAt;
         final lastPacket = _lastPacketAt;
         if (started != null && lastPacket == null && DateTime.now().difference(started) > const Duration(seconds: 8)) {
-          _setStatus('No decoded PCM is reaching the capture tap. Tunneling/offload or this audio route may prevent capture.');
+          _setStatus(
+            'No decoded PCM is reaching the capture tap. Tunneling/offload or this audio route may prevent capture.',
+          );
         } else if (lastPacket != null && DateTime.now().difference(lastPacket) > const Duration(seconds: 8)) {
           _setStatus('No recent PCM packets. Playback may be paused or the route may not expose decoded audio.');
         }
@@ -307,7 +308,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       try {
         await player.setSubtitlePcmCaptureEnabled(false);
       } catch (_) {}
-      _setStatus('Live capture stopped: ' + error.toString());
+      _setStatus('Live capture stopped: $error');
     } finally {
       _polling = false;
     }
@@ -336,7 +337,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       final frames = raw.length ~/ bytesPerFrame;
       if (frames <= 0) continue;
 
-      final changedFormat = (_lastSampleRate != null && _lastSampleRate != sampleRate) ||
+      final changedFormat =
+          (_lastSampleRate != null && _lastSampleRate != sampleRate) ||
           (_lastChannels != null && _lastChannels != channels) ||
           (_lastEncoding != null && _lastEncoding != encoding);
       final expected = _nextExpectedPtsUs;
@@ -378,7 +380,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         final fraction = sourcePosition - left;
         _samples.add((mono[left] * (1.0 - fraction) + mono[right] * fraction).clamp(-1.0, 1.0));
       }
-      if (_streamStartMs == null) _streamStartMs = ptsUs / 1000.0;
+      _streamStartMs ??= ptsUs / 1000.0;
       _trimOldSamples();
     }
   }
@@ -424,7 +426,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           _timer = null;
           final player = _player;
           if (player != null) unawaited(player.setSubtitlePcmCaptureEnabled(false));
-          _setStatus('Whisper inference failed: ' + error.toString());
+          _setStatus('Whisper inference failed: $error');
         })
         .whenComplete(() {
           _inferenceFuture = null;
@@ -556,9 +558,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         ? null
         : SubtitleLiveCaption(startMs: current.startMs, endMs: current.endMs, text: current.text);
     final previous = liveCaption.value;
-    if (previous?.startMs != next?.startMs ||
-        previous?.endMs != next?.endMs ||
-        previous?.text != next?.text) {
+    if (previous?.startMs != next?.startMs || previous?.endMs != next?.endMs || previous?.text != next?.text) {
       liveCaption.value = next;
     }
   }

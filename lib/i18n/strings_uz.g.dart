@@ -2852,7 +2852,6 @@ class _Translations$streaming$uz extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Real-Debrid hisobingiz orqali qo‘llab-quvvatlanadigan torrent oqimlarini ijro eting.';
 	@override String get connectRealDebrid => 'QR kod orqali ulash';
-	@override String get disconnectRealDebrid => 'Real-Debrid’ni uzish';
 	@override String realDebridConnected({required Object username}) => '${username} nomi bilan ulandi';
 	@override String get realDebridInstructions => 'QR kodni skanerlang yoki havolani oching, so‘ng PlezyNG’ni ulash uchun faollashtirish kodini kiriting:';
 	@override String get realDebridActivate => 'Faollashtirish uchun Real-Debrid’ni ochish';
@@ -2880,21 +2879,17 @@ class _Translations$streaming$uz extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => '${service}’dan uzilsinmi?';
 	@override String get disconnectBody => 'PlezyNG bu qurilma ruxsatini bekor qiladi. Provayderdagi fayllar va davom etayotgan uzatishlar o‘zgarmaydi.';
 	@override String get streamsTitle => 'Oqimni tanlang';
-	@override String get searchingStreams => 'Ulangan qo‘shimchalar tekshirilmoqda…';
 	@override String get noStreams => 'Bu nom uchun oqim topilmadi.';
 	@override String get manageConnections => 'Oqim xizmatlarini boshqarish';
 	@override String subtitleTracks({required Object count}) => 'Subtitr yo‘laklari: ${count}';
 	@override String get chooseSubtitle => 'Subtitr tanlash';
 	@override String get chooseProvider => 'Debrid xizmatini tanlash';
 	@override String get subtitleOff => 'Subtitrlar o‘chiq';
-	@override String get subtitleLoadFailed => 'Bu subtitrni yuklab bo‘lmadi. Boshqa yo‘lakni sinab ko‘ring.';
-	@override String get subtitleApplied => 'Ijro uchun subtitr tanlandi';
 	@override String get streamLookupPartial => 'Ba’zi qo‘shimchalarga ulanib bo‘lmadi.';
 	@override String get streamLookupFailed => 'Ulangan qo‘shimchalarni tekshirib bo‘lmadi.';
 	@override String get streamOpenExternal => 'Tashqi havolani ochish';
 	@override String get streamPrepare => 'Debrid xizmati orqali tayyorlanmoqda…';
 	@override String get streamPrepareFailed => 'Bu oqimni tayyorlab bo‘lmadi. Ulangan hisobni tekshiring va boshqa manbani sinab ko‘ring.';
-	@override String get streamNeedsRealDebrid => 'Bu torrent oqimini ijro etish uchun Debrid xizmatini ulang.';
 	@override String get streamUnsupported => 'Ilova ichidagi pleyer bu oqim formatini qo‘llab-quvvatlamaydi.';
 	@override String get remoteNeedsEpisode => 'Oqim qidirishdan oldin epizodni tanlang.';
 	@override String get remoteNeedsEpisodeNumber => 'Bu epizodda mavsum yoki epizod raqami yo‘q.';
@@ -7903,7 +7898,6 @@ extension on TranslationsUz {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Real-Debrid hisobingiz orqali qo‘llab-quvvatlanadigan torrent oqimlarini ijro eting.',
 			'streaming.connectRealDebrid' => 'QR kod orqali ulash',
-			'streaming.disconnectRealDebrid' => 'Real-Debrid’ni uzish',
 			'streaming.realDebridConnected' => ({required Object username}) => '${username} nomi bilan ulandi',
 			'streaming.realDebridInstructions' => 'QR kodni skanerlang yoki havolani oching, so‘ng PlezyNG’ni ulash uchun faollashtirish kodini kiriting:',
 			'streaming.realDebridActivate' => 'Faollashtirish uchun Real-Debrid’ni ochish',
@@ -7931,21 +7925,17 @@ extension on TranslationsUz {
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service}’dan uzilsinmi?',
 			'streaming.disconnectBody' => 'PlezyNG bu qurilma ruxsatini bekor qiladi. Provayderdagi fayllar va davom etayotgan uzatishlar o‘zgarmaydi.',
 			'streaming.streamsTitle' => 'Oqimni tanlang',
-			'streaming.searchingStreams' => 'Ulangan qo‘shimchalar tekshirilmoqda…',
 			'streaming.noStreams' => 'Bu nom uchun oqim topilmadi.',
 			'streaming.manageConnections' => 'Oqim xizmatlarini boshqarish',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Subtitr yo‘laklari: ${count}',
 			'streaming.chooseSubtitle' => 'Subtitr tanlash',
 			'streaming.chooseProvider' => 'Debrid xizmatini tanlash',
 			'streaming.subtitleOff' => 'Subtitrlar o‘chiq',
-			'streaming.subtitleLoadFailed' => 'Bu subtitrni yuklab bo‘lmadi. Boshqa yo‘lakni sinab ko‘ring.',
-			'streaming.subtitleApplied' => 'Ijro uchun subtitr tanlandi',
 			'streaming.streamLookupPartial' => 'Ba’zi qo‘shimchalarga ulanib bo‘lmadi.',
 			'streaming.streamLookupFailed' => 'Ulangan qo‘shimchalarni tekshirib bo‘lmadi.',
 			'streaming.streamOpenExternal' => 'Tashqi havolani ochish',
 			'streaming.streamPrepare' => 'Debrid xizmati orqali tayyorlanmoqda…',
 			'streaming.streamPrepareFailed' => 'Bu oqimni tayyorlab bo‘lmadi. Ulangan hisobni tekshiring va boshqa manbani sinab ko‘ring.',
-			'streaming.streamNeedsRealDebrid' => 'Bu torrent oqimini ijro etish uchun Debrid xizmatini ulang.',
 			'streaming.streamUnsupported' => 'Ilova ichidagi pleyer bu oqim formatini qo‘llab-quvvatlamaydi.',
 			'streaming.remoteNeedsEpisode' => 'Oqim qidirishdan oldin epizodni tanlang.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Bu epizodda mavsum yoki epizod raqami yo‘q.',
@@ -8200,13 +8190,13 @@ extension on TranslationsUz {
 			'universalMedia.playlistFormatsHelp' => 'Bir playlist 1000\'dan fazla o‘yadi, 2 MB. HLS-i qaytarlar olarak açılır, bu yüzden oyungan bir kalite seçib.',
 			'universalMedia.saveQueuePlaylist' => 'Navbatni pleylist sifatida saqlash',
 			'universalMedia.queuePlaylistSaved' => 'Pleylist media fayllari yonida saqlandi.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Bu navbatni qayta ishlatiladigan mahalliy pleylist sifatida saqlab bo‘lmaydi.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Saqlash joyini navbatdagi fayllar bilan bir xil jilddan tanlang.',
 			'universalMedia.noFavorites' => 'U\'yadi bu profili yo‘zilgan.Favoritlar bu profilda qalib.',
 			'universalMedia.removeFavorite' => 'Riyadh preferni qaytadi.',
 			'universalMedia.filesHelp' => 'Audio, video, o ISO fillar bir temporary quue. Fillar və URL\'ler library istoriyaya qo‘zilmaydi.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Filmi seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '1 seçkin fildi', other: '${count} seçkin fillar', ), 
 			'universalMedia.wifiTransfer' => 'Filmi Wi-Fi-dan qaytadi',
@@ -8714,13 +8704,13 @@ extension on TranslationsUz {
 			'sourceSetup.nfsEncryptionFailure' => 'Shifrlangan NFS uchun NAS ning ikkala xizmatida RFC 9289 va TLS 1.3 qo‘llanishini, sertifikat nomini hamda umumiy katalogning UID/GID qiymatlarini tekshiring. PlezyNG bu ulanishni shifrlashsiz qayta sinamaydi.',
 			'sourceSetup.sourceConnecting' => 'Manbaga ulanmoqda',
 			'sourceSetup.metadataSearchPrivacy' => 'Bu nom qidiruvi Trakt xizmatiga yuboriladi. Kiritgan nomingiz yuboriladi, video yoki manbaning kirish ma’lumotlari emas.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Mos natijani tanlash',
 			'sourceSetup.metadataMatchHelp' => 'Tanlashdan oldin nomi va yilini tekshiring. Trakt qidirilayotgan nomni oladi; video o‘z manbasida qoladi.',
 			'sourceSetup.metadataNoMatches' => 'Onlayn mos nom topilmadi. Boshqa nomni sinab ko‘ring.',
 			'sourceSetup.metadataSearch' => 'Onlayn metama’lumotlarni qidirish',
 			'sourceSetup.metadataLoading' => 'Onlayn film va serial tafsilotlari qidirilmoqda…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt xizmatidan onlayn metama’lumotlar',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nomga avtomatik moslik topilmadi. Mos natijani tanlash uchun nomni qidiring.',
 			'sourceSetup.metadataFailed' => 'Onlayn metama’lumotlarni yuklab bo‘lmadi. Ijro va mahalliy tafsilotlar hali ham mavjud.',

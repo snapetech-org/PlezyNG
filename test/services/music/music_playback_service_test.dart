@@ -82,6 +82,12 @@ class _CallGate {
 /// In-memory audio player: records calls, exposes manual stream controllers
 /// so tests drive transitions/completion/errors deterministically.
 class FakePlayer implements Player, PlayerAudioFocusControl {
+  @override
+  Set<String> get supportedLocalSubtitleExtensions => const {};
+  @override
+  bool get supportsSubtitleStepSync => false;
+  @override
+  bool get supportsSubtitleStyleControls => false;
   final playingCtrl = StreamController<bool>.broadcast(sync: true);
   final completedCtrl = StreamController<bool>.broadcast(sync: true);
   final bufferingCtrl = StreamController<bool>.broadcast(sync: true);

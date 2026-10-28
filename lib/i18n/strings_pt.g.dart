@@ -2855,7 +2855,6 @@ class Translations$streaming$pt extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Reproduza streams compatíveis baseados em torrent com sua conta Real-Debrid.';
 	@override String get connectRealDebrid => 'Conectar com código QR';
-	@override String get disconnectRealDebrid => 'Desconectar Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'Conectado como ${username}';
 	@override String get realDebridInstructions => 'Leia o código QR ou abra o link e insira este código de ativação para conectar o PlezyNG:';
 	@override String get realDebridActivate => 'Abrir Real-Debrid para ativar';
@@ -2883,21 +2882,17 @@ class Translations$streaming$pt extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'Desconectar ${service}?';
 	@override String get disconnectBody => 'O PlezyNG removerá a autorização deste dispositivo. Os arquivos do provedor e as transferências em andamento não serão alterados.';
 	@override String get streamsTitle => 'Escolher um stream';
-	@override String get searchingStreams => 'Verificando complementos conectados…';
 	@override String get noStreams => 'Nenhum stream foi encontrado para este título.';
 	@override String get manageConnections => 'Gerenciar serviços de streaming';
 	@override String subtitleTracks({required Object count}) => 'Faixas de legenda: ${count}';
 	@override String get chooseSubtitle => 'Escolher legenda';
 	@override String get chooseProvider => 'Escolher serviço Debrid';
 	@override String get subtitleOff => 'Legendas desativadas';
-	@override String get subtitleLoadFailed => 'Não foi possível carregar esta legenda. Tente outra faixa.';
-	@override String get subtitleApplied => 'Legenda selecionada para reprodução';
 	@override String get streamLookupPartial => 'Não foi possível acessar alguns complementos.';
 	@override String get streamLookupFailed => 'Não foi possível verificar os complementos conectados.';
 	@override String get streamOpenExternal => 'Abrir link externo';
 	@override String get streamPrepare => 'Preparando pelo seu serviço Debrid…';
 	@override String get streamPrepareFailed => 'Não foi possível preparar este stream. Confira a conta conectada e tente outra fonte.';
-	@override String get streamNeedsRealDebrid => 'Conecte um serviço Debrid para reproduzir este stream de torrent.';
 	@override String get streamUnsupported => 'Este formato de stream não é compatível com o player do app.';
 	@override String get remoteNeedsEpisode => 'Escolha um episódio antes de buscar um stream.';
 	@override String get remoteNeedsEpisodeNumber => 'Este episódio está sem o número da temporada ou do episódio.';
@@ -7910,7 +7905,6 @@ extension on TranslationsPt {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Reproduza streams compatíveis baseados em torrent com sua conta Real-Debrid.',
 			'streaming.connectRealDebrid' => 'Conectar com código QR',
-			'streaming.disconnectRealDebrid' => 'Desconectar Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Conectado como ${username}',
 			'streaming.realDebridInstructions' => 'Leia o código QR ou abra o link e insira este código de ativação para conectar o PlezyNG:',
 			'streaming.realDebridActivate' => 'Abrir Real-Debrid para ativar',
@@ -7938,21 +7932,17 @@ extension on TranslationsPt {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Desconectar ${service}?',
 			'streaming.disconnectBody' => 'O PlezyNG removerá a autorização deste dispositivo. Os arquivos do provedor e as transferências em andamento não serão alterados.',
 			'streaming.streamsTitle' => 'Escolher um stream',
-			'streaming.searchingStreams' => 'Verificando complementos conectados…',
 			'streaming.noStreams' => 'Nenhum stream foi encontrado para este título.',
 			'streaming.manageConnections' => 'Gerenciar serviços de streaming',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Faixas de legenda: ${count}',
 			'streaming.chooseSubtitle' => 'Escolher legenda',
 			'streaming.chooseProvider' => 'Escolher serviço Debrid',
 			'streaming.subtitleOff' => 'Legendas desativadas',
-			'streaming.subtitleLoadFailed' => 'Não foi possível carregar esta legenda. Tente outra faixa.',
-			'streaming.subtitleApplied' => 'Legenda selecionada para reprodução',
 			'streaming.streamLookupPartial' => 'Não foi possível acessar alguns complementos.',
 			'streaming.streamLookupFailed' => 'Não foi possível verificar os complementos conectados.',
 			'streaming.streamOpenExternal' => 'Abrir link externo',
 			'streaming.streamPrepare' => 'Preparando pelo seu serviço Debrid…',
 			'streaming.streamPrepareFailed' => 'Não foi possível preparar este stream. Confira a conta conectada e tente outra fonte.',
-			'streaming.streamNeedsRealDebrid' => 'Conecte um serviço Debrid para reproduzir este stream de torrent.',
 			'streaming.streamUnsupported' => 'Este formato de stream não é compatível com o player do app.',
 			'streaming.remoteNeedsEpisode' => 'Escolha um episódio antes de buscar um stream.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Este episódio está sem o número da temporada ou do episódio.',
@@ -8207,13 +8197,13 @@ extension on TranslationsPt {
 			'universalMedia.playlistFormatsHelp' => 'Uma lista de reprodução pode conter até 1.000 itens e 2 MB. HLS manifesta-se aberta como fluxos para que o jogador possa escolher uma qualidade.',
 			'universalMedia.saveQueuePlaylist' => 'Guardar fila como lista de reprodução',
 			'universalMedia.queuePlaylistSaved' => 'A lista de reprodução foi guardada junto aos ficheiros multimédia.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Esta fila não pode ser guardada como uma lista local reutilizável.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Escolha uma localização na mesma pasta dos ficheiros da fila.',
 			'universalMedia.noFavorites' => 'Não foram salvos favoritos ainda. favoritos permanecem neste perfil.',
 			'universalMedia.removeFavorite' => 'Remover streaming favorito',
 			'universalMedia.filesHelp' => 'Escolha arquivos de áudio, vídeo ou ISO para uma quebra temporária. arquivos e URLs não são adicionados ao histórico da biblioteca.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Escolha arquivos',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '1 arquivo selecionado', many: '${count} arquivos selecionados', other: '${count} arquivos selecionados', ), 
 			'universalMedia.wifiTransfer' => 'Enviar arquivos por Wi-Fi',
@@ -8721,13 +8711,13 @@ extension on TranslationsPt {
 			'sourceSetup.nfsEncryptionFailure' => 'Para NFS criptografado, verifique o suporte a RFC 9289 e TLS 1.3 nos dois serviços do NAS, o nome no certificado e os UID/GID do compartilhamento. PlezyNG não tentará esta conexão novamente sem criptografia.',
 			'sourceSetup.sourceConnecting' => 'Conectando à fonte',
 			'sourceSetup.metadataSearchPrivacy' => 'Esta busca de títulos é enviada ao Trakt. Ela envia o título digitado, não o vídeo nem as credenciais da fonte.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Escolher uma correspondência',
 			'sourceSetup.metadataMatchHelp' => 'Confira o título e o ano antes de escolher. O Trakt recebe o título pesquisado; o vídeo permanece na fonte.',
 			'sourceSetup.metadataNoMatches' => 'Nenhum título correspondente encontrado online. Tente outro título.',
 			'sourceSetup.metadataSearch' => 'Buscar metadados online',
 			'sourceSetup.metadataLoading' => 'Buscando detalhes de filmes e séries online…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadados online do Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nenhuma correspondência automática encontrada para o título. Pesquise o título para escolher uma correspondência.',
 			'sourceSetup.metadataFailed' => 'Não foi possível carregar os metadados online. A reprodução e os detalhes locais continuam disponíveis.',

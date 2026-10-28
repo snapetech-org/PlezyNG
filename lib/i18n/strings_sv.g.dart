@@ -2852,7 +2852,6 @@ class _Translations$streaming$sv extends Translations$streaming$en {
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Spela upp torrentströmmar som stöds via ditt Real-Debrid-konto.';
 	@override String get connectRealDebrid => 'Anslut med QR-kod';
-	@override String get disconnectRealDebrid => 'Koppla från Real-Debrid';
 	@override String realDebridConnected({required Object username}) => 'Ansluten som ${username}';
 	@override String get realDebridInstructions => 'Skanna QR-koden eller öppna länken och ange aktiveringskoden för att ansluta PlezyNG:';
 	@override String get realDebridActivate => 'Öppna Real-Debrid för att aktivera';
@@ -2880,21 +2879,17 @@ class _Translations$streaming$sv extends Translations$streaming$en {
 	@override String disconnectConfirm({required Object service}) => 'Koppla från ${service}?';
 	@override String get disconnectBody => 'PlezyNG tar bort den här enhetens behörighet. Filer hos leverantören och pågående överföringar påverkas inte.';
 	@override String get streamsTitle => 'Välj en ström';
-	@override String get searchingStreams => 'Kontrollerar anslutna tillägg…';
 	@override String get noStreams => 'Inga strömmar hittades för den här titeln.';
 	@override String get manageConnections => 'Hantera strömningstjänster';
 	@override String subtitleTracks({required Object count}) => 'Undertextspår: ${count}';
 	@override String get chooseSubtitle => 'Välj undertext';
 	@override String get chooseProvider => 'Välj Debrid-tjänst';
 	@override String get subtitleOff => 'Undertexter av';
-	@override String get subtitleLoadFailed => 'Det gick inte att läsa in undertexten. Prova ett annat spår.';
-	@override String get subtitleApplied => 'Undertext vald för uppspelning';
 	@override String get streamLookupPartial => 'Vissa tillägg kunde inte nås.';
 	@override String get streamLookupFailed => 'Det gick inte att kontrollera de anslutna tilläggen.';
 	@override String get streamOpenExternal => 'Öppna extern länk';
 	@override String get streamPrepare => 'Förbereder via din Debrid-tjänst…';
 	@override String get streamPrepareFailed => 'Det gick inte att förbereda strömmen. Kontrollera det anslutna kontot och prova en annan källa.';
-	@override String get streamNeedsRealDebrid => 'Anslut en Debrid-tjänst för att spela upp den här torrentströmmen.';
 	@override String get streamUnsupported => 'Den inbyggda spelaren stöder inte det här strömningsformatet.';
 	@override String get remoteNeedsEpisode => 'Välj ett avsnitt innan du söker efter en ström.';
 	@override String get remoteNeedsEpisodeNumber => 'Avsnittet saknar säsongs- eller avsnittsnummer.';
@@ -7903,7 +7898,6 @@ extension on TranslationsSv {
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Spela upp torrentströmmar som stöds via ditt Real-Debrid-konto.',
 			'streaming.connectRealDebrid' => 'Anslut med QR-kod',
-			'streaming.disconnectRealDebrid' => 'Koppla från Real-Debrid',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Ansluten som ${username}',
 			'streaming.realDebridInstructions' => 'Skanna QR-koden eller öppna länken och ange aktiveringskoden för att ansluta PlezyNG:',
 			'streaming.realDebridActivate' => 'Öppna Real-Debrid för att aktivera',
@@ -7931,21 +7925,17 @@ extension on TranslationsSv {
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Koppla från ${service}?',
 			'streaming.disconnectBody' => 'PlezyNG tar bort den här enhetens behörighet. Filer hos leverantören och pågående överföringar påverkas inte.',
 			'streaming.streamsTitle' => 'Välj en ström',
-			'streaming.searchingStreams' => 'Kontrollerar anslutna tillägg…',
 			'streaming.noStreams' => 'Inga strömmar hittades för den här titeln.',
 			'streaming.manageConnections' => 'Hantera strömningstjänster',
 			'streaming.subtitleTracks' => ({required Object count}) => 'Undertextspår: ${count}',
 			'streaming.chooseSubtitle' => 'Välj undertext',
 			'streaming.chooseProvider' => 'Välj Debrid-tjänst',
 			'streaming.subtitleOff' => 'Undertexter av',
-			'streaming.subtitleLoadFailed' => 'Det gick inte att läsa in undertexten. Prova ett annat spår.',
-			'streaming.subtitleApplied' => 'Undertext vald för uppspelning',
 			'streaming.streamLookupPartial' => 'Vissa tillägg kunde inte nås.',
 			'streaming.streamLookupFailed' => 'Det gick inte att kontrollera de anslutna tilläggen.',
 			'streaming.streamOpenExternal' => 'Öppna extern länk',
 			'streaming.streamPrepare' => 'Förbereder via din Debrid-tjänst…',
 			'streaming.streamPrepareFailed' => 'Det gick inte att förbereda strömmen. Kontrollera det anslutna kontot och prova en annan källa.',
-			'streaming.streamNeedsRealDebrid' => 'Anslut en Debrid-tjänst för att spela upp den här torrentströmmen.',
 			'streaming.streamUnsupported' => 'Den inbyggda spelaren stöder inte det här strömningsformatet.',
 			'streaming.remoteNeedsEpisode' => 'Välj ett avsnitt innan du söker efter en ström.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Avsnittet saknar säsongs- eller avsnittsnummer.',
@@ -8200,13 +8190,13 @@ extension on TranslationsSv {
 			'universalMedia.playlistFormatsHelp' => 'En spellista kan innehålla upp till 1000 objekt och 2 MB. HLS manifesterar sig öppen som strömmar så att spelaren kan välja en kvalitet.',
 			'universalMedia.saveQueuePlaylist' => 'Spara kön som spellista',
 			'universalMedia.queuePlaylistSaved' => 'Spellistan sparades bredvid mediefilerna.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.queuePlaylistUnavailable' => 'Den här kön kan inte sparas som en återanvändbar lokal spellista.',
 			'universalMedia.queuePlaylistFolderRequired' => 'Välj en plats i samma mapp som filerna i kön.',
 			'universalMedia.noFavorites' => 'Inga spara ström favorit än. Favoriter stannar i denna profil.',
 			'universalMedia.removeFavorite' => 'Ta bort stream favorit',
 			'universalMedia.filesHelp' => 'Välj ljud, video eller ISO-filer för en tillfällig spårning. filer och URL-adresser läggs inte till i bibliotekshistorik.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Välj filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('sv'))(n, one: '1 Utvalda filer', other: '${count} valda filer', ), 
 			'universalMedia.wifiTransfer' => 'Skicka filer via Wi-Fi',
@@ -8714,13 +8704,13 @@ extension on TranslationsSv {
 			'sourceSetup.nfsEncryptionFailure' => 'För krypterad NFS: kontrollera stöd för RFC 9289 och TLS 1.3 i båda NAS-tjänsterna, certifikatnamnet och delningens UID/GID. PlezyNG försöker inte ansluta igen utan kryptering.',
 			'sourceSetup.sourceConnecting' => 'Ansluter till källa',
 			'sourceSetup.metadataSearchPrivacy' => 'Den här titelsökningen skickas till Trakt. Den skickar titeln du anger, inte videon eller källans inloggningsuppgifter.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.chooseMatch' => 'Välj en träff',
 			'sourceSetup.metadataMatchHelp' => 'Kontrollera titel och år innan du väljer. Trakt får söktiteln; videon stannar på sin källa.',
 			'sourceSetup.metadataNoMatches' => 'Inga matchande titlar hittades på nätet. Försök med en annan titel.',
 			'sourceSetup.metadataSearch' => 'Sök metadata på nätet',
 			'sourceSetup.metadataLoading' => 'Söker efter film- och serieinformation på nätet…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadata från Trakt på nätet',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Ingen automatisk titelträff hittades. Sök efter titeln för att välja en träff.',
 			'sourceSetup.metadataFailed' => 'Metadata från nätet kunde inte läsas in. Uppspelning och lokal information är fortfarande tillgängliga.',

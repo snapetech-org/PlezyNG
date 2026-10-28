@@ -17,6 +17,7 @@ class _SubtitleClient extends OpenSubtitlesClient {
     String? imdbId,
     String? tmdbId,
     int? year,
+    String? movieHash,
   }) async {
     languages.add(languageCode);
     return const [];

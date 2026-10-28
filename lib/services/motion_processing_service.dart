@@ -215,18 +215,17 @@ abstract final class MotionProcessingService {
     bool isTranscoding = false,
     MediaVersion? selectedVersion,
     NeuralInterpolationPreset neuralPreset = NeuralInterpolationPreset.balanced,
-  }) =>
-      _serializePlayerOperation(
-        player,
-        () => _configureForPlayback(
-          player,
-          mode,
-          isLive: isLive,
-          isTranscoding: isTranscoding,
-          selectedVersion: selectedVersion,
-          neuralPreset: neuralPreset,
-        ),
-      );
+  }) => _serializePlayerOperation(
+    player,
+    () => _configureForPlayback(
+      player,
+      mode,
+      isLive: isLive,
+      isTranscoding: isTranscoding,
+      selectedVersion: selectedVersion,
+      neuralPreset: neuralPreset,
+    ),
+  );
 
   static Future<void> _configureForPlayback(
     Player player,
@@ -450,11 +449,7 @@ abstract final class MotionProcessingService {
     Player player,
     MotionProcessingMode mode, {
     NeuralInterpolationPreset neuralPreset = NeuralInterpolationPreset.balanced,
-  }) =>
-      _serializePlayerOperation(
-        player,
-        () => _apply(player, mode, neuralPreset: neuralPreset),
-      );
+  }) => _serializePlayerOperation(player, () => _apply(player, mode, neuralPreset: neuralPreset));
 
   static Future<void> _apply(
     Player player,
@@ -801,16 +796,18 @@ abstract final class MotionProcessingService {
           if (settings?.read(SettingsService.neuralOnlyWhenPluggedIn) != true) return;
           _powerLimited[player] = true;
           _powerSuspendedForSession[player] = true;
-          unawaited(_serializePlayerOperation(player, () async {
-            if (player.disposed ||
-                _powerSourceGeneration[player] != generation ||
-                _neuralRequested[player] != true ||
-                (SettingsService.instanceOrNull?.read(SettingsService.neuralOnlyWhenPluggedIn) ?? true) != true) {
-              return;
-            }
-            final disabled = await _suspendNeuralForPower(player);
-            if (!disabled && _powerSourceGeneration[player] == generation) _powerLimited[player] = false;
-          }));
+          unawaited(
+            _serializePlayerOperation(player, () async {
+              if (player.disposed ||
+                  _powerSourceGeneration[player] != generation ||
+                  _neuralRequested[player] != true ||
+                  (SettingsService.instanceOrNull?.read(SettingsService.neuralOnlyWhenPluggedIn) ?? true) != true) {
+                return;
+              }
+              final disabled = await _suspendNeuralForPower(player);
+              if (!disabled && _powerSourceGeneration[player] == generation) _powerLimited[player] = false;
+            }),
+          );
         },
         onError: (Object error, StackTrace stackTrace) {
           appLogger.d('MotionProcessingService: power-source updates are unavailable', error: error);
@@ -971,7 +968,7 @@ abstract final class MotionProcessingService {
         'preset': neuralPreset.name,
         'allow-cpu': 'no',
         'require-neural': 'yes',
-      }.entries.map((entry) => entry.key + '=' + _escapeMpvFilterValue(entry.value)).join(':');
+      }.entries.map((entry) => '${entry.key}=${_escapeMpvFilterValue(entry.value)}').join(':');
       await player.command(['vf', 'add', '@plezy-pme:plezy-pme=$filterOptions']);
       _desktopPmeActive[player] = true;
       return true;
@@ -1143,7 +1140,7 @@ abstract final class MotionProcessingService {
           )) {
         return true;
       }
-      return _configureAndroidAnvilLiteRt(
+      return await _configureAndroidAnvilLiteRt(
         player,
         capabilities: capabilities,
         selectedVersion: selectedVersion,

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -604,13 +605,13 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                           Padding(
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
-                              t['videoSettings.subtitleCueTools'] as String,
+                              t.videoSettings.subtitleCueTools,
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                           ),
                           Row(
                             children: [
-                              Expanded(child: Text(t['videoSettings.subtitleReplayPreroll'] as String)),
+                              Expanded(child: Text(t.videoSettings.subtitleReplayPreroll)),
                               Text('$replayPrerollMs ms'),
                             ],
                           ),
@@ -630,12 +631,13 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                             runSpacing: 4,
                             children: [
                               IconButton(
-                                tooltip: t['videoSettings.subtitlePreviousCue'] as String,
+                                tooltip: t.videoSettings.subtitlePreviousCue,
                                 onPressed: targetPlayer.state.seekable
                                     ? () => sourceAction(context, () async {
                                         final cues = await loadSubtitleCues();
                                         final sync = await playback.activeExternalSubtitleSync();
                                         if (!mounted ||
+                                            !context.mounted ||
                                             playback.player != targetPlayer ||
                                             playback.activeExternalSubtitleIdentity != identity ||
                                             sync == null) {
@@ -652,7 +654,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                                           }
                                         }
                                         if (target == null) {
-                                          showSnackBar(context, t['videoSettings.subtitleCueUnavailable'] as String);
+                                          showSnackBar(context, t.videoSettings.subtitleCueUnavailable);
                                           return;
                                         }
                                         await _seekExternalSubtitleCue(
@@ -668,11 +670,12 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                                 icon: const AppIcon(Symbols.skip_previous_rounded),
                               ),
                               IconButton(
-                                tooltip: t['videoSettings.subtitleCopyCue'] as String,
+                                tooltip: t.videoSettings.subtitleCopyCue,
                                 onPressed: () => sourceAction(context, () async {
                                   final cues = await loadSubtitleCues();
                                   final sync = await playback.activeExternalSubtitleSync();
                                   if (!mounted ||
+                                      !context.mounted ||
                                       playback.player != targetPlayer ||
                                       playback.activeExternalSubtitleIdentity != identity ||
                                       sync == null) {
@@ -689,14 +692,16 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                                       .where((value) => value.isNotEmpty)
                                       .join('\n');
                                   if (text.isEmpty) {
-                                    showSnackBar(context, t['videoSettings.subtitleCueUnavailable'] as String);
+                                    showSnackBar(context, t.videoSettings.subtitleCueUnavailable);
                                     return;
                                   }
                                   await Clipboard.setData(ClipboardData(text: text));
-                                  if (mounted && playback.activeExternalSubtitleIdentity == identity) {
+                                  if (mounted &&
+                                      context.mounted &&
+                                      playback.activeExternalSubtitleIdentity == identity) {
                                     showSnackBar(
                                       context,
-                                      t['videoSettings.subtitleCueCopied'] as String,
+                                      t.videoSettings.subtitleCueCopied,
                                       type: SnackBarType.success,
                                     );
                                   }
@@ -704,12 +709,13 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                                 icon: const AppIcon(Symbols.content_copy_rounded),
                               ),
                               IconButton(
-                                tooltip: t['videoSettings.subtitleNextCue'] as String,
+                                tooltip: t.videoSettings.subtitleNextCue,
                                 onPressed: targetPlayer.state.seekable
                                     ? () => sourceAction(context, () async {
                                         final cues = await loadSubtitleCues();
                                         final sync = await playback.activeExternalSubtitleSync();
                                         if (!mounted ||
+                                            !context.mounted ||
                                             playback.player != targetPlayer ||
                                             playback.activeExternalSubtitleIdentity != identity ||
                                             sync == null) {
@@ -725,7 +731,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                                           }
                                         }
                                         if (target == null) {
-                                          showSnackBar(context, t['videoSettings.subtitleCueUnavailable'] as String);
+                                          showSnackBar(context, t.videoSettings.subtitleCueUnavailable);
                                           return;
                                         }
                                         await _seekExternalSubtitleCue(
@@ -741,12 +747,13 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                                 icon: const AppIcon(Symbols.skip_next_rounded),
                               ),
                               IconButton(
-                                tooltip: t['videoSettings.subtitleReplayCue'] as String,
+                                tooltip: t.videoSettings.subtitleReplayCue,
                                 onPressed: targetPlayer.state.seekable
                                     ? () => sourceAction(context, () async {
                                         final cues = await loadSubtitleCues();
                                         final sync = await playback.activeExternalSubtitleSync();
                                         if (!mounted ||
+                                            !context.mounted ||
                                             playback.player != targetPlayer ||
                                             playback.activeExternalSubtitleIdentity != identity ||
                                             sync == null ||
@@ -800,7 +807,12 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
     double rate, {
     int prerollMs = 0,
   }) async {
-    if (!mounted || playback.player != targetPlayer || playback.activeExternalSubtitleIdentity != identity) return;
+    if (!mounted ||
+        !context.mounted ||
+        playback.player != targetPlayer ||
+        playback.activeExternalSubtitleIdentity != identity) {
+      return;
+    }
     try {
       final sought = await playback.seekExternalSubtitleCue(
         expectedIdentity: identity,
@@ -810,11 +822,11 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
         prerollMs: prerollMs,
       );
       if (!sought && mounted && playback.activeExternalSubtitleIdentity == identity) {
-        showSnackBar(context, t['videoSettings.subtitleCueSeekUnavailable'] as String);
+        showSnackBar(context, t.videoSettings.subtitleCueSeekUnavailable);
       }
     } on Object catch (error, stackTrace) {
       appLogger.w('Could not seek to a subtitle cue', error: error, stackTrace: stackTrace);
-      if (mounted && playback.activeExternalSubtitleIdentity == identity) {
+      if (mounted && context.mounted && playback.activeExternalSubtitleIdentity == identity) {
         showErrorSnackBar(context, t.common.error);
       }
     }
@@ -839,6 +851,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
       final cues = SubtitleRetimer.parseCues(sourceBytes: bytes, extension: extension);
       final initialSync = await playback.activeExternalSubtitleSync();
       if (!mounted ||
+          !context.mounted ||
           playback.player != targetPlayer ||
           playback.activeExternalSubtitleIdentity != identity ||
           initialSync == null) {
@@ -904,8 +917,9 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
       if (result.clippedCueCount > 0) {
         final proceed = await showConfirmDialog(
           context,
-          title: t['videoSettings.subtitleExport'] as String,
-          message: t['videoSettings.subtitleExportClipped'] as String,
+          title: t.videoSettings.subtitleExport,
+          message: t.videoSettings.subtitleExportClipped,
+          confirmText: t.common.confirm,
         );
         if (!proceed || !mounted || playback.activeExternalSubtitleIdentity != identity) return;
       }
@@ -918,8 +932,8 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
       if (baseName.isEmpty) baseName = 'subtitle';
       baseName = baseName.substring(0, math.min(120, baseName.length));
       var path = await FilePicker.saveFile(
-        dialogTitle: t['videoSettings.subtitleExport'] as String,
-        fileName: baseName + '.synced' + extension,
+        dialogTitle: t.videoSettings.subtitleExport,
+        fileName: '$baseName.synced$extension',
         type: FileType.custom,
         allowedExtensions: [extension.substring(1)],
       );
@@ -927,7 +941,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
       if (p.extension(path).isEmpty) path += extension;
       if (p.extension(path).toLowerCase() != extension ||
           p.equals(p.normalize(p.absolute(path)), p.normalize(sourceFile.absolute.path))) {
-        showErrorSnackBar(context, t['videoSettings.subtitleExportFailed'] as String);
+        showErrorSnackBar(context, t.videoSettings.subtitleExportFailed);
         return;
       }
 
@@ -936,23 +950,24 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
         if (!mounted) return;
         final replace = await showConfirmDialog(
           context,
-          title: t['videoSettings.subtitleExport'] as String,
-          message: t['videoSettings.subtitleExportReplace'] as String,
+          title: t.videoSettings.subtitleExport,
+          message: t.videoSettings.subtitleExportReplace,
+          confirmText: t.common.confirm,
         );
         if (!replace || !mounted) return;
       }
       if (playback.activeExternalSubtitleIdentity != identity) return;
       await _writeSubtitleExport(target, result.bytes);
-      if (mounted) showSnackBar(context, t['videoSettings.subtitleExportSuccess'] as String);
+      if (mounted) showSnackBar(context, t.videoSettings.subtitleExportSuccess);
     } on Object {
-      if (mounted) showErrorSnackBar(context, t['videoSettings.subtitleExportFailed'] as String);
+      if (mounted) showErrorSnackBar(context, t.videoSettings.subtitleExportFailed);
     }
   }
 
   Future<void> _writeSubtitleExport(File target, List<int> bytes) async {
     final nonce = DateTime.now().microsecondsSinceEpoch.toString();
-    final staged = File(target.path + '.plezyng.' + nonce + '.pending');
-    final backup = File(target.path + '.plezyng.' + nonce + '.backup');
+    final staged = File('${target.path}.plezyng.$nonce.pending');
+    final backup = File('${target.path}.plezyng.$nonce.backup');
     var backedUp = false;
     try {
       await staged.writeAsBytes(bytes, flush: true);
@@ -1339,7 +1354,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                   valid: (v) => parseListeningTime(v) != null,
                 );
                 if (value != null) {
-                  await s.seek(parseListeningTime(value)!(s.hasCompleteTimeline ? 0 : s.timelineStartMs));
+                  await s.seek(parseListeningTime(value)! + (s.hasCompleteTimeline ? 0 : s.timelineStartMs));
                 }
               }),
             ),
@@ -1374,7 +1389,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
           ),
           if (s.video && s.canExportActiveExternalSubtitle)
             IconButton(
-              tooltip: t['videoSettings.subtitleExport'] as String,
+              tooltip: t.videoSettings.subtitleExport,
               onPressed: () => sourceAction(context, () => _exportSynchronizedSubtitle(s)),
               icon: const AppIcon(Symbols.download_rounded),
             ),

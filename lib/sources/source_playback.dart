@@ -183,6 +183,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
         video &&
         _persistProgress &&
         !_liveInput &&
+        _profile != null &&
         currentEntry != null &&
         currentEdition?.isNotEmpty == true &&
         player?.playerType == 'mpv' &&

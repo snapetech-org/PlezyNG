@@ -194,7 +194,10 @@ The webOS release-candidate path builds the MilkRust crate pinned in
 `sources.lock.json` with the pinned Rust toolchain and LG ARM linker, creates a
 matching source archive and notices bundle, and requires that bundle in every
 IPK made through `tools/webos/build_ipk.sh`. The IPK verifier rejects a package
-without the runtime. This closes the optional-staging source gap; the cross
+without the runtime. The C++ host first uses the normal ELF loader path, then
+resolves `libmilkrust_native.so` beside its own plugin module; the packaged
+runtime and Flutter plugin are both staged under the app's `lib/` directory.
+This closes the optional-staging and runtime-discovery source gaps; the cross
 build, generated IPK, ABI loading and device behavior remain unverified until a
 compatible private JIT run and physical TV qualification complete.
 

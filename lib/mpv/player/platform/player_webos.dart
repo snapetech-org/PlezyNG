@@ -11,15 +11,19 @@ import '../../models.dart';
 import '../audio_rendering_mode.dart';
 import '../player_base.dart';
 import 'webos_media_proxy.dart';
+import 'webos_soloud_player.dart';
 
-/// LG's native webOS media pipeline, exposed through the official Flutter
-/// video-player plugin. webOS reports itself as Linux through `dart:io`, so it
-/// must be selected before the generic Linux MPV backend.
-class PlayerWebOS extends PlayerBase {
+/// LG's webOS media pipeline. Video and unsupported audio use LG's player;
+/// bounded supported music files may use PlezyNG's app-owned SoLoud route.
+/// webOS reports itself as Linux through `dart:io`, so select this before the
+/// generic Linux MPV backend.
+class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   PlayerWebOS({this.audioOnly = false}) : super(listenToNativeEvents: false);
 
   static const _methodChannel = MethodChannel('com.plezy/webos_media');
   static const _eventChannel = EventChannel('com.plezy/webos_media/events');
+  static const _visualizerChannel = MethodChannel('com.plezy/mpv_audio_player');
+  static const _soloudMemoryLimit = 10 * 1024 * 1024;
   static int _nextSourceId = 0;
 
   @override
@@ -46,6 +50,12 @@ class PlayerWebOS extends PlayerBase {
   final bool audioOnly;
   final ValueNotifier<int> surfaceRevision = ValueNotifier(0);
   webos_media.VideoPlayerController? _controller;
+  WebOSSoLoudPlayer? _audioPlayer;
+  Duration? _pendingAudioDuration;
+  bool _usingSoLoud = false;
+  bool _visualizerBound = false;
+  bool _audioPlaying = false;
+  bool _activeIsLive = false;
   WebOSMediaProxy? _proxy;
   int? _sourceId;
   int _generation = 0;
@@ -55,6 +65,9 @@ class PlayerWebOS extends PlayerBase {
   bool _errorSent = false;
   bool _completionQueued = false;
   Media? _nextMedia;
+  Media? _currentMedia;
+  final Set<String> _soLoudDeclinedUris = <String>{};
+  bool _recoveringSoLoud = false;
   String? _subtitleSelection;
   List<SubtitleTrack> _externalSubtitles = const [];
   webos_media.ClosedCaptionFile? _captions;
@@ -63,6 +76,16 @@ class PlayerWebOS extends PlayerBase {
   bool _subtitlesVisible = false;
 
   bool get hasVideoSurface => !audioOnly && _controller != null;
+
+  @override
+  bool get nativeVisualizationAudioReady =>
+      audioOnly && _usingSoLoud && _visualizerBound && _loaded && _audioPlaying &&
+      !_activeIsLive && !disposed && !_errorSent;
+
+  void _declineSoLoud(String uri) {
+    if (_soLoudDeclinedUris.length >= 64) _soLoudDeclinedUris.remove(_soLoudDeclinedUris.first);
+    _soLoudDeclinedUris.add(uri);
+  }
 
   Widget videoSurface() {
     final controller = _controller;
@@ -99,6 +122,8 @@ class PlayerWebOS extends PlayerBase {
   }) async {
     if (disposed) return;
     final generation = ++_generation;
+    _activeIsLive = isLive;
+    _currentMedia = media;
     await _releaseSource();
     if (disposed || generation != _generation) return;
 
@@ -143,11 +168,18 @@ class PlayerWebOS extends PlayerBase {
         throw const FormatException('webOS playback requires an HTTP(S) stream or an app-local file');
       }
 
+      _proxy = proxy;
+      if (audioOnly && !isLive && !_soLoudDeclinedUris.contains(media.uri) &&
+          await _canUseSoLoud(sourceUri, playerUri, proxy)) {
+        final opened = await _openSoLoud(playerUri, sourceId, generation, startPosition, play, isLive);
+        if (opened) return;
+        if (disposed || generation != _generation) return;
+      }
+
       controller = playerUri.scheme == 'file'
           ? webos_media.VideoPlayerController.file(File.fromUri(playerUri))
           : webos_media.VideoPlayerController.network(playerUri, httpHeaders: const {});
       _controller = controller;
-      _proxy = proxy;
       controller.addListener(() => _onControllerValue(controller!, sourceId, generation, isLive: isLive));
       surfaceRevision.value++;
 
@@ -168,6 +200,185 @@ class PlayerWebOS extends PlayerBase {
         await proxy?.close();
       }
       rethrow;
+    }
+  }
+
+  Future<bool> _canUseSoLoud(Uri source, Uri playerUri, WebOSMediaProxy? proxy) async {
+    if (!audioOnly) return false;
+    const supportedTypes = {'audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/ogg', 'audio/flac'};
+    final extension = source.path.toLowerCase().split('.').last;
+    final supportedExtension = const {'mp3', 'wav', 'ogg', 'flac'}.contains(extension);
+    try {
+      int? length;
+      String? contentType;
+      if (playerUri.scheme == 'file') {
+        final file = File.fromUri(playerUri);
+        length = await file.length();
+      } else {
+        final metadata = await proxy?.inspect(playerUri);
+        length = metadata?.length;
+        contentType = metadata?.contentType;
+      }
+      final supportedType = contentType != null && supportedTypes.contains(contentType);
+      return length != null && length > 0 && length <= _soloudMemoryLimit &&
+          (supportedExtension || supportedType);
+    } catch (_) {
+      // Keep uncertain sizes, formats and server behavior on LG's regular NDL path.
+      return false;
+    }
+  }
+
+  Future<bool> _openSoLoud(
+    Uri playerUri,
+    int sourceId,
+    int generation,
+    Duration startPosition,
+    bool play,
+    bool isLive,
+  ) async {
+    late final WebOSSoLoudPlayer player;
+    player = WebOSSoLoudPlayer(
+      playerId: 'plezy-webos-$sourceId',
+      onPosition: (position) {
+        if (disposed || generation != _generation || !identical(_audioPlayer, player) || !_loaded) return;
+        handlePropertyChange('time-pos', position.inMilliseconds / Duration.millisecondsPerSecond);
+      },
+      onDuration: (duration) {
+        if (disposed || generation != _generation || !identical(_audioPlayer, player)) return;
+        _pendingAudioDuration = duration;
+        if (_loaded) _adoptAudioDuration(duration, isLive);
+      },
+      onComplete: () {
+        if (disposed || generation != _generation || !identical(_audioPlayer, player) || _completionQueued) return;
+        _audioPlaying = false;
+        handlePropertyChange('pause', true);
+        _completionQueued = true;
+        final next = _nextMedia;
+        _nextMedia = null;
+        if (next != null) {
+          unawaited(_advanceAudio(next, sourceId));
+        } else {
+          handlePropertyChange('eof-reached', true);
+        }
+      },
+      onError: (_) => _recoverFromSoLoudError(generation),
+    );
+    _audioPlayer = player;
+    _usingSoLoud = true;
+    _pendingAudioDuration = null;
+
+    try {
+      await player.load(playerUri, isLocal: playerUri.scheme == 'file');
+      if (disposed || generation != _generation) return true;
+      final duration = _pendingAudioDuration ?? await player.getDuration() ?? Duration.zero;
+      _loaded = true;
+      handlePlayerEvent('file-loaded', {'sourceId': sourceId});
+      updateTracks(const Tracks(audio: [AudioTrack(id: '0', title: 'Default')], subtitle: [SubtitleTrack.off]));
+      primaryMediaReadyController.add(null);
+      _adoptAudioDuration(duration, isLive);
+      final sourceStart = sourcePositionFor(startPosition);
+      if (sourceStart > Duration.zero) {
+        await player.seek(sourceStart);
+        await _notifyVisualizerDiscontinuity(sourceId);
+      }
+      await _bindVisualizer(sourceId);
+      if (play) {
+        await player.resume();
+        _audioPlaying = true;
+        handlePropertyChange('pause', false);
+        await _setVisualizerAudioActive(sourceId, true);
+      }
+      return true;
+    } catch (_) {
+      final uri = _currentMedia?.uri;
+      if (uri != null) _declineSoLoud(uri);
+      await _discardSoLoudPlayer(sourceId);
+      _loaded = false;
+      _firstFrameSent = false;
+      _completionQueued = false;
+      return false;
+    }
+  }
+
+  void _recoverFromSoLoudError(int generation) {
+    if (_recoveringSoLoud || disposed || generation != _generation || !_usingSoLoud || !_loaded) return;
+    final media = _currentMedia;
+    if (media == null) return;
+    _recoveringSoLoud = true;
+    _declineSoLoud(media.uri);
+    unawaited(() async {
+      try {
+        await open(media, play: _audioPlaying, isLive: _activeIsLive);
+      } catch (_) {
+        final sourceId = _sourceId;
+        if (sourceId != null) _emitFailure(sourceId);
+      } finally {
+        _recoveringSoLoud = false;
+      }
+    }());
+  }
+
+  void _adoptAudioDuration(Duration duration, bool isLive) {
+    handlePropertyChange('duration', duration.inMilliseconds / Duration.millisecondsPerSecond);
+    setSeekable(!isLive && duration > Duration.zero);
+  }
+
+  Future<void> _bindVisualizer(int sourceId) async {
+    try {
+      await _visualizerChannel.invokeMethod<void>('visualizerBindPlayer', {'playerId': sourceId});
+      _visualizerBound = true;
+    } on MissingPluginException {
+      // Audio continues when the optional native renderer is not packaged.
+    } on PlatformException {
+      // Playback remains independent of native visualization availability.
+    }
+  }
+
+  Future<void> _setVisualizerAudioActive(int sourceId, bool active) async {
+    if (!_visualizerBound) return;
+    try {
+      await _visualizerChannel.invokeMethod<void>('visualizerSetAudioActive', {
+        'playerId': sourceId,
+        'active': active,
+      });
+    } on MissingPluginException {
+      _visualizerBound = false;
+    } on PlatformException {
+      _visualizerBound = false;
+    }
+  }
+
+  Future<void> _notifyVisualizerDiscontinuity(int sourceId) async {
+    if (!_visualizerBound) return;
+    try {
+      await _visualizerChannel.invokeMethod<void>('visualizerAudioDiscontinuity', {'playerId': sourceId});
+    } on MissingPluginException {
+      _visualizerBound = false;
+    } on PlatformException {
+      _visualizerBound = false;
+    }
+  }
+
+  Future<void> _discardSoLoudPlayer(int sourceId) async {
+    if (_visualizerBound) {
+      try {
+        await _setVisualizerAudioActive(sourceId, false);
+        await _visualizerChannel.invokeMethod<void>('visualizerUnbindPlayer', {'playerId': sourceId});
+      } on MissingPluginException {
+        // Optional native host teardown.
+      } on PlatformException {
+        // Optional native host teardown.
+      }
+    }
+    _visualizerBound = false;
+    _audioPlaying = false;
+    final player = _audioPlayer;
+    _audioPlayer = null;
+    _usingSoLoud = false;
+    try {
+      await player?.dispose();
+    } catch (_) {
+      // The plugin may have already released its player after a failed load.
     }
   }
 
@@ -303,6 +514,7 @@ class PlayerWebOS extends PlayerBase {
 
   Future<void> _releaseSource() async {
     final controller = _controller;
+    final sourceId = _sourceId;
     _controller = null;
     _subtitleGeneration++;
     _captions = null;
@@ -310,7 +522,8 @@ class PlayerWebOS extends PlayerBase {
     _subtitleSelection = null;
     caption.value = '';
     _externalSubtitles = const [];
-    await _proxy?.close();
+    if (_audioPlayer != null && sourceId != null) await _discardSoLoudPlayer(sourceId);
+    final proxy = _proxy;
     _proxy = null;
     if (controller != null) {
       try {
@@ -321,22 +534,39 @@ class PlayerWebOS extends PlayerBase {
         // The native pipeline may already have released this controller.
       }
     }
+    await proxy?.close();
+    _audioPlaying = false;
+    _visualizerBound = false;
     surfaceRevision.value++;
   }
 
   @override
   Future<void> play() async {
-    final controller = _controller;
-    if (disposed || controller == null) return;
-    await controller.play();
+    if (disposed) return;
+    final player = _audioPlayer;
+    if (player != null) {
+      await player.resume();
+      _audioPlaying = true;
+      final sourceId = _sourceId;
+      if (sourceId != null) await _setVisualizerAudioActive(sourceId, true);
+    } else {
+      await _controller?.play();
+    }
     handlePropertyChange('pause', false);
   }
 
   @override
   Future<void> pause() async {
-    final controller = _controller;
-    if (disposed || controller == null) return;
-    await controller.pause();
+    if (disposed) return;
+    final player = _audioPlayer;
+    if (player != null) {
+      await player.pause();
+      _audioPlaying = false;
+      final sourceId = _sourceId;
+      if (sourceId != null) await _setVisualizerAudioActive(sourceId, false);
+    } else {
+      await _controller?.pause();
+    }
     handlePropertyChange('pause', true);
   }
 
@@ -353,9 +583,19 @@ class PlayerWebOS extends PlayerBase {
 
   @override
   Future<void> seek(Duration position) async {
-    final controller = _controller;
-    if (disposed || controller == null || !controller.value.isInitialized) return;
+    if (disposed) return;
     final target = position < Duration.zero ? Duration.zero : position;
+    final player = _audioPlayer;
+    if (player != null && _loaded) {
+      await runSeek(target, () async {
+        await player.seek(sourcePositionFor(target));
+        final sourceId = _sourceId;
+        if (sourceId != null) await _notifyVisualizerDiscontinuity(sourceId);
+      });
+      return;
+    }
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
     await runSeek(target, () async => controller.seekTo(sourcePositionFor(target)));
   }
 
@@ -455,6 +695,12 @@ class PlayerWebOS extends PlayerBase {
   @override
   Future<void> setVolume(double volume) async {
     final clamped = volume.clamp(0, 100).toDouble();
+    final player = _audioPlayer;
+    if (player != null) {
+      await player.setVolume(clamped / 100);
+      setVolumeState(clamped);
+      return;
+    }
     final controller = _controller;
     if (controller != null) {
       try {
@@ -471,8 +717,17 @@ class PlayerWebOS extends PlayerBase {
 
   @override
   Future<void> setRate(double rate) async {
+    if (disposed) return;
+    final player = _audioPlayer;
+    if (player != null) {
+      await player.setPlaybackRate(rate);
+      setRateState(rate);
+      final sourceId = _sourceId;
+      if (sourceId != null) await _notifyVisualizerDiscontinuity(sourceId);
+      return;
+    }
     final controller = _controller;
-    if (disposed || controller == null) return;
+    if (controller == null) return;
     await controller.setPlaybackSpeed(rate);
     setRateState(rate);
   }
@@ -526,12 +781,14 @@ class PlayerWebOS extends PlayerBase {
   Future<String?> getProperty(String name) async {
     final controller = _controller;
     final value = controller?.value;
+    final audioPosition = _audioPlayer == null ? null : await _audioPlayer!.getCurrentPosition();
+    final audioDuration = _audioPlayer == null ? null : await _audioPlayer!.getDuration();
     return switch (name) {
       'pause' => state.playing ? 'no' : 'yes',
       'volume' => state.volume.toString(),
       'speed' => state.rate.toString(),
-      'time-pos' => ((value?.position.inMilliseconds ?? 0) / Duration.millisecondsPerSecond).toString(),
-      'duration' => ((value?.duration.inMilliseconds ?? 0) / Duration.millisecondsPerSecond).toString(),
+      'time-pos' => (((audioPosition ?? value?.position ?? Duration.zero).inMilliseconds) / Duration.millisecondsPerSecond).toString(),
+      'duration' => (((audioDuration ?? value?.duration ?? Duration.zero).inMilliseconds) / Duration.millisecondsPerSecond).toString(),
       'seekable' => state.seekable ? 'yes' : 'no',
       'width' || 'dwidth' => value?.size.width.toInt().toString(),
       'height' || 'dheight' => value?.size.height.toInt().toString(),

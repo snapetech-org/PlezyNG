@@ -1,6 +1,6 @@
 # Visualizer implementation status
 
-Updated: 2026-10-28. The original plan and signed-catalog source were merged via PlezyNG PRs #55 and #57. Native host source now covers Linux, Windows, Apple and Android and is integrated in [PlezyNG PR #61](https://github.com/snapetech-org/PlezyNG/pull/61); compiled engines are not in current releases and platform behavior remains unqualified. See the upstream [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The [original plan](COMPLETION_PLAN.md) and its completion gates remain authoritative. **The end-to-end plan is not complete and the implementation is not release-qualified.**
+Updated: 2026-10-28. The original plan and signed-catalog source were merged via PlezyNG PRs #55 and #57. Native host source now covers Linux, Windows, Apple, Android, Tizen and webOS; native sources remain uncompiled and platform behavior unqualified. Linux, Windows, Apple and Android integration is recorded in [PlezyNG PR #61](https://github.com/snapetech-org/PlezyNG/pull/61); Tizen host and optional artifact admission source were merged through [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78). The current webOS audio-owned route and host source are in the follow-up branch. See the upstream [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The [original plan](COMPLETION_PLAN.md) and its completion gates remain authoritative. **The end-to-end plan is not complete and the implementation is not release-qualified.**
 
 ## Implemented source
 
@@ -29,7 +29,7 @@ Updated: 2026-10-28. The original plan and signed-catalog source were merged via
 - Targeted EEL fixes cover lazy branches, boolean thresholds/operators, power/remainder operations and bounded memory helpers. Assignment destinations are resolved once, avoiding duplicate side effects; integer remainder handles signed-minimum overflow without panicking. Regression source is committed but unrun.
 - Preset/fragment input limits reject oversized text, sparse/overflowing object indices and excessive record sizes with retained compatibility diagnostics. Both EEL evaluators share bounded recursion and nested work. Checked stateful frame generation shares an aggregate equation-work limit, reports evaluation errors and resets failed state; WebGL/desktop playback and CLI/headless statistics consume that checked path. This is not native compiler/driver isolation or a wall-clock/memory guarantee. Regression source remains unrun.
 - Two-state frame construction resolves each preset's shader/texture data independently. Experimental WebGL now has separate warp/composite programs, shader-aware mesh warping, feedback that excludes display-only composite, and explicit compile/texture/context failure status. A stage-order fixture and SDK/core regressions are committed but unrun. This is not a native MilkRust renderer or proof of visual fidelity.
-- The generic report conservatively blocks unqualified stages; only the explicit WebGL import gate opts into the new stage implementation. Unsupported equations/shader features and saved `.milk2` blends remain blocked. WebGPU subset status includes unsupported equation calls. Named textures load with bounded cache/upload sizes and fail explicitly; browser image decoding still lacks allocation containment. Pack-provided JavaScript is not executed; Studio exports default to local-only/NOASSERTION.
+- The generic report conservatively blocks unqualified stages; only the explicit WebGL import gate opts into the new stage implementation. That gate now accepts saved `.milk2` pairs only for the uniform Fade subset with supported metadata; spatial patterns and executable extensions remain blocked. Unsupported equations/shader features remain gated. WebGPU subset status includes unsupported equation calls. Named textures load with bounded cache/upload sizes and fail explicitly; browser image decoding still lacks allocation containment. Pack-provided JavaScript is not executed; Studio exports default to local-only/NOASSERTION.
 - A deterministic `.rmpack` builder requires a redistribution basis, per-asset provenance and shipped notices. One CC0 fixture archive is published on an immutable repository commit. Historical `NOASSERTION` collections remain link/import sources in PlezyNG.
 
 ## Completion gates
@@ -37,7 +37,7 @@ Updated: 2026-10-28. The original plan and signed-catalog source were merged via
 | Package | Current source state | Remaining exit evidence or work |
 | --- | --- | --- |
 | V0 Audit/harness | Identified false-positive and denominator paths repaired | Regenerate the full corpus ledger, account for every original omission, reference/negative-control runs |
-| V1 Native integration | Linux projectM/MilkRust and Windows, Apple, Android MilkRust host source | Compiler/device evidence on every host; webOS PCM+texture host; Tizen SDK/device validation; context-loss recovery |
+| V1 Native integration | Linux projectM/MilkRust, Windows, Apple, Android, Tizen host source; webOS SoLoud PCM+texture host and bounded Player.audio route source | Compiler/device evidence on every host; webOS ARMv7 runtime admission and device runs; Tizen SDK/device validation; context-loss recovery |
 | V2 Audio | Optional patched PCM ABI with Linux/Windows/Apple consumers and Android AAR admission bridge source | Patched artifacts on each platform; timing, seeks, gapless, layout/rate/speed, passthrough and overload qualification; qualify original-scene live statistics |
 | V3 Parser/VM | Targeted syntax/EEL fixes, input/depth/work limits and checked frame failures | Full state/reference/RNG/encoding conformance; bounded parser/evaluator coverage |
 | V4 MilkRust rendering | Native C ABI/GL renderer and experimental WebGL; real saved-pair parser and uniform Fade candidate path | Qualified native renderer, complete HLSL, stage/feedback/transition fidelity, all `.milk2` patterns and remaining formats |
@@ -50,7 +50,7 @@ Updated: 2026-10-28. The original plan and signed-catalog source were merged via
 
 ## Native boundaries that prevent a release claim
 
-The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS and Android/TV now have native MilkRust host source; none has been compiled or device-qualified in this session. Tizen has unbuilt same-player PCM/EGL/texture host source retained from closed PR #74 on continuation [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78). webOS still lacks a supported PCM source and renderer host. Storage/import availability and engine availability are separate.
+The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS, Android/TV and Tizen have native MilkRust host source; none has been compiled or device-qualified in this session. webOS now has an app-owned SoLoud post-mix tap, bounded native PCM queue, GLES/Flutter texture host and Dart music route for known supported static/progressive audio no larger than 10 MiB. Existing LG NDL playback remains the fallback and still has no PCM callback. All webOS source is uncompiled; the ARMv7 MilkRust runtime is not staged by default, master-mix audio is not per-voice isolated, and no TV run has been performed. Storage/import availability and engine availability are separate.
 
 The in-process renderer catches exceptions, but cannot contain a hung shader compiler or GPU driver. Teardown joins the worker and can therefore block in that case. Process isolation/watchdog behavior, resource budgets and driver recovery remain required work before claiming arbitrary community inputs are safely supported.
 
@@ -92,16 +92,14 @@ library/source archives only when their reviewed SHA-256 pins match; it does not
 download or fabricate production artifacts.
 
 
-The Tizen and webOS runners currently delegate audio to their Samsung/LG media
-backends rather than the mpv core used by the new hosts. Tizen's host source
-attaches to a Samsung PCM callback; webOS's integrated LG player exposes no such
-callback in this repository. A decoded-PCM callback and texture/lifecycle bridge
-in those backends is still required; copying the Linux mpv host would not attach
-it to those playback streams. The webOS investigation also records why the
-public NDL feed API and the system-only `com.webos.service.audiooutput` API do
-not provide that callback, and the replacement audio-core contract still
-required. Native-engine acknowledgements are now also bundled in Flutter's
-license registry, independently of per-pack rights and content notices.
+Tizen's host source attaches to a Samsung decoded-packet callback. webOS video
+and unsupported music continue through LG NDL without PCM access; supported
+small progressive music now has a distinct SoLoud decoder/output route whose
+master mix feeds the renderer. This does not tap NDL or provide per-voice
+isolation for future simultaneous SoLoud sources. webOS's optional MilkRust
+ARMv7 runtime admission and all device/driver/audio qualification remain open.
+Native-engine acknowledgements are now also bundled in Flutter's license
+registry, independently of per-pack rights and content notices.
 
 ## Catalog release follow-up
 
@@ -112,9 +110,11 @@ archive/preset evidence and the private JIT/device matrix before promoting a
 broader pack. The library labels the authored fixtures as unqualified and links
 broader qualification reports. See [catalog release configuration](CATALOG_RELEASE.md).
 Empty production keys, absent qualification evidence and the source-only
-execution restriction still prevent a production delivery claim. Full HLSL,
-non-Fade `.milk2` patterns and webOS/Tizen PCM/texture hosts remain implementation
-work; none is completed by adding publication gates.
+execution restriction still prevent a production delivery claim. Full HLSL and
+non-Fade `.milk2` patterns remain implementation work. Tizen and webOS now have
+PCM/texture host source; those hosts remain uncompiled and unqualified. The
+webOS source follow-up is under review, and publication gates do not substitute
+for qualified packs or production key custody.
 
 The current MilkRust source pin is `c622b0f6614c62bf55abacf334b464487bb97256`.
 It adds bounded native/WebGL lowering for legacy `tex2D`/`tex`, `tex2Dlod`,
@@ -124,8 +124,8 @@ unsupported resource models, control flow, matrices, functions and runtime
 semantics are not covered, and no GPU fidelity comparison has run. The saved
 non-Fade `.milk2` patterns remain blocked. The qualification matrix matches the
 actual 32-bit ARM webOS/Tizen package targets and also covers Android armv7.
-The [TV integration investigation](TV_HOST_INTEGRATION.md) records the concrete
-same-player PCM and native texture work still required. PR #69 and its branch
+The [TV integration investigation](TV_HOST_INTEGRATION.md) records the current
+source hosts and outstanding runtime/device qualification. PR #69 and its branch
 were closed/deleted externally during implementation. The follow-up is
 preserved on `codex/visualizer-catalog-checkpoint-20261028` without reopening
 the closed PR. Production trust remains empty and no broader pack or platform

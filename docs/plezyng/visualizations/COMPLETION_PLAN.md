@@ -241,9 +241,10 @@ WebGL/desktop playback and CLI/headless statistics consume those checked APIs;
 regression source covers rejection/accounting and recovery but remains unrun.
 
 The full completion contract remains open. In particular, a complete native
-MilkRust renderer, faithful shader/.milk2 handling, other platform hosts,
-broader cleared content and signed catalog publication, bounded compiler/GPU
-hang containment, and real artifact/device/conformance evidence are not done.
+MilkRust renderer, full HLSL and spatial `.milk2` handling, qualified platform
+hosts, broader cleared content and production signed-catalog delivery, bounded
+compiler/GPU hang containment, and real artifact/device/conformance evidence
+are not done.
 No tests, builds, CI, render captures or device qualification were run in this
 session. Source preparation is recorded separately from those checks.
 
@@ -257,10 +258,11 @@ source for Linux, Windows, macOS, iOS/tvOS and Android/TV, paired with MilkRust
 PR #20. The latter also contains the saved-pair parser, native C renderer ABI,
 conservative MIT pack-conversion recipe and signed-catalog publisher source.
 
-This checkpoint does **not** close complete HLSL/`.milk2` semantics, webOS/Tizen,
-produced native artifacts, qualified broader downloadable packs, production
-catalog key custody/publication, or V9/V10. No builds, tests, CI jobs, GPU captures
-or device qualification were executed for these increments. See
+This checkpoint does **not** close complete HLSL/`.milk2` semantics, webOS/Tizen
+qualification, produced native artifacts, qualified broader downloadable
+packs, production catalog key custody/publication, or V9/V10. No builds, tests,
+CI jobs, GPU captures or device qualification were executed for these
+increments. See
 [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the evidence ledger.
 
 
@@ -271,9 +273,29 @@ Samsung same-player PCM/EGL/texture path, source-generation protection, app
 capability routing and explicit artifact/source/notice packaging inputs. Its
 source is retained on current-main
 [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78) for re-review. This
-preserves the original plan; V1 remains open for
-SDK/device qualification, webOS and context-loss/hang handling. Tizen's current
+preserves the original plan; V1 remains open for SDK/device qualification and
+context-loss/hang handling. Tizen's current
 source limits are normal-speed S16LE stereo and PNG/JPEG/BMP/TGA texture
 decoding. Full HLSL, other `.milk2` patterns, qualified broader packs and
 production key custody/publication remain open. No tests, builds, CI, captures
 or device qualification ran.
+
+
+## webOS source continuation, 2026-10-28
+
+The webOS follow-up adds a pinned LG SoLoud plugin for bounded known-size
+MP3/WAV/OGG/FLAC audio, a post-mix PCM tap, a bounded native queue, a GLES 3
+Flutter texture host and an app-owned `Player.audio()` route. Unsupported,
+unknown-size, live and video sources continue through LG NDL. An optional
+fail-closed IPK admission path accepts only a separately reviewed, manifest-
+pinned ARMv7 MilkRust runtime/source/notices bundle; no runtime is admitted by
+default. This closes the source gap for that constrained music path while
+leaving webOS/Tizen builds, runtime staging, device/audio/driver qualification
+and per-voice isolation open. No tests, builds, CI, packaging, captures or device
+qualification ran for this increment.
+
+MilkRust's WebGL import now accepts saved `.milk2` pairs only when the bounded
+parser and compatibility gate identify the supported uniform Fade subset.
+Spatial patterns and unsupported extensions still fail closed. Full HLSL and
+all-pattern `.milk2` compatibility remain open; the gate change has not been
+built or renderer-qualified.

@@ -33,7 +33,23 @@ REQUIRED_NATIVE_LIBRARIES = (
     "libflutter_secure_storage_webos_plugin.so",
     "libshared_preferences_webos_plugin.so",
     "libvideo_player_drm_plugin.so",
+    "libaudioplayers_soloud_plugin.so",
 )
+VISUALIZER_MANIFEST = str(APP_ROOT / "visualizer/milkrust-native.json")
+VISUALIZER_LIBRARY = str(APP_ROOT / "lib/libmilkrust_native.so")
+VISUALIZER_SOURCE = str(APP_ROOT / "visualizer/milkrust-source.tar.gz")
+VISUALIZER_NOTICES = str(APP_ROOT / "visualizer/MILKRUST-NOTICES.txt")
+VISUALIZER_ARTIFACTS = {
+    VISUALIZER_MANIFEST,
+    VISUALIZER_LIBRARY,
+    VISUALIZER_SOURCE,
+    VISUALIZER_NOTICES,
+}
+VISUALIZER_FILES = {
+    VISUALIZER_LIBRARY: ("librarySha256", 256 * 1024 * 1024),
+    VISUALIZER_SOURCE: ("sourceArchiveSha256", 256 * 1024 * 1024),
+    VISUALIZER_NOTICES: ("noticesSha256", 1024 * 1024),
+}
 LICENSE_ASSET = ROOT / "assets" / "licenses" / "LGFlutterWebOSRuntimeNotice.txt"
 MAX_IPK_BYTES = 512 * 1024 * 1024
 MAX_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
@@ -134,6 +150,7 @@ def read_tar_members(
     archive_bytes: bytes,
     required: set[str],
     *,
+    optional: set[str] | None = None,
     validate_app_layout: bool = True,
     expected_names: set[str] | None = None,
 ) -> dict[str, bytes]:
@@ -142,6 +159,7 @@ def read_tar_members(
             found: dict[str, bytes] = {}
             names: set[str] = set()
             unpacked_bytes = 0
+            collectible = required | (optional or set())
             app_prefix = f"{APP_ROOT.as_posix()}/"
             package_prefix = f"usr/palm/packages/{APP_ID}/"
             allowed_directories = {
@@ -179,6 +197,8 @@ def read_tar_members(
                     raise ValueError("IPK data exceeds the 512 MiB uncompressed safety limit")
                 if not (member.isdir() or member.isfile()):
                     raise ValueError(f"unsupported special file in IPK tar archive: {name!r}")
+                if PurePosixPath(name).name == "libmilkrust_native.so" and name != VISUALIZER_LIBRARY:
+                    raise ValueError("unexpected or duplicate MilkRust runtime location in webOS IPK")
                 if validate_app_layout:
                     if not (name in allowed_directories or name.startswith(app_prefix) or name.startswith(package_prefix)):
                         raise ValueError(f"unexpected path in PlezyNG IPK: {name!r}")
@@ -188,7 +208,7 @@ def read_tar_members(
                             raise ValueError(f"unexpected directory permissions {member.mode:o} on {name!r}")
                     elif member.mode not in (0o644, 0o755):
                         raise ValueError(f"unexpected file permissions {member.mode:o} on {name!r}")
-                if member.isfile() and name in required:
+                if member.isfile() and name in collectible:
                     stream = archive.extractfile(member)
                     if stream is None:
                         raise ValueError(f"{name} is not a regular file")
@@ -211,6 +231,54 @@ def verify_arm_elf(data: bytes, name: str) -> None:
     machine = struct.unpack_from("<H", data, 18)[0]
     if machine != 40:
         raise ValueError(f"{name} has ELF machine {machine}; expected ARM (40)")
+
+
+def inspect_visualizer(entries: dict[str, bytes]) -> dict[str, object] | None:
+    present = VISUALIZER_ARTIFACTS.intersection(entries)
+    if not present:
+        return None
+    if present != VISUALIZER_ARTIFACTS:
+        raise ValueError("IPK contains an incomplete MilkRust runtime/source/notice bundle")
+    manifest_bytes = entries[VISUALIZER_MANIFEST]
+    if not manifest_bytes or len(manifest_bytes) > 65536:
+        raise ValueError("MilkRust artifact manifest is empty or exceeds 64 KiB")
+    try:
+        manifest = json.loads(manifest_bytes)
+    except json.JSONDecodeError as exc:
+        raise ValueError("MilkRust artifact manifest is not valid JSON") from exc
+    if (
+        not isinstance(manifest, dict)
+        or type(manifest.get("schemaVersion")) is not int
+        or manifest.get("schemaVersion") != 1
+        or type(manifest.get("abi")) is not int
+        or manifest.get("abi") != 1
+        or manifest.get("target") != "webos-arm"
+        or not re.fullmatch(r"[0-9a-f]{40}", str(manifest.get("sourceRevision", "")))
+        or manifest.get("runnerPolicy") != "private-ephemeral-jit"
+        or not re.fullmatch(
+            r"https://github\.com/snapetech-org/MilkRust/actions/runs/[1-9][0-9]*",
+            str(manifest.get("buildRun", "")),
+        )
+    ):
+        raise ValueError("MilkRust artifact identity, ABI, target or build provenance is invalid")
+    pin = json.loads((ROOT / "native/visualizer/sources.lock.json").read_text(encoding="utf-8"))["milkrust"]
+    if manifest["sourceRevision"] != pin["commit"] or manifest["abi"] != pin["abi"]:
+        raise ValueError("MilkRust artifact differs from the app's exact source or ABI pin")
+    for path, (digest_key, maximum_size) in VISUALIZER_FILES.items():
+        data = entries[path]
+        if not 0 < len(data) <= maximum_size:
+            raise ValueError(f"MilkRust package resource exceeds its size limit: {path}")
+        if not re.fullmatch(r"[0-9a-f]{64}", str(manifest.get(digest_key, ""))):
+            raise ValueError(f"MilkRust artifact digest is missing: {digest_key}")
+        if sha256(data) != manifest[digest_key]:
+            raise ValueError(f"MilkRust package digest mismatch: {path}")
+    verify_arm_elf(entries[VISUALIZER_LIBRARY], "libmilkrust_native.so")
+    return {
+        **manifest,
+        "manifestSha256": sha256(manifest_bytes),
+        "hardwareQualified": False,
+        "catalogueEligible": False,
+    }
 
 
 def load_lock() -> dict[str, object]:
@@ -305,7 +373,11 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
     package_info_path = f"usr/palm/packages/{APP_ID}/packageinfo.json"
     notice_path = str(APP_ROOT / "data/flutter_assets/assets/licenses/LGFlutterWebOSRuntimeNotice.txt")
     library_paths = [str(APP_ROOT / "lib" / name) for name in (*RUNTIME_LIBRARIES, *REQUIRED_NATIVE_LIBRARIES)]
-    selected = read_tar_members(data_tar, {appinfo_path, executable_path, package_info_path, notice_path, *library_paths})
+    selected = read_tar_members(
+        data_tar,
+        {appinfo_path, executable_path, package_info_path, notice_path, *library_paths},
+        optional=VISUALIZER_ARTIFACTS,
+    )
     appinfo = json.loads(selected[appinfo_path])
     if appinfo.get("id") != APP_ID:
         raise ValueError(f"IPK app ID is {appinfo.get('id')!r}; expected {APP_ID!r}")
@@ -347,6 +419,8 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
     if packaged_notice != LICENSE_ASSET.read_bytes():
         raise ValueError("IPK is missing the exact LG runtime OSS notice asset")
 
+    visualizer = inspect_visualizer(selected)
+
     return {
         "appId": APP_ID,
         "version": version,
@@ -354,6 +428,7 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
         "packageSha256": sha256(path.read_bytes()),
         "packageBytes": path.stat().st_size,
         "requiredACG": sorted(required_acg),
+        "visualizer": visualizer,
     }
 
 

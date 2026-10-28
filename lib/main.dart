@@ -1264,6 +1264,13 @@ void _registerAppLicenses() {
       yield LicenseEntryWithLineBreaks(const [
         'LG Electronics Flutter webOS Runtime',
       ], await rootBundle.loadString('assets/licenses/LGFlutterWebOSRuntimeNotice.txt'));
+      yield LicenseEntryWithLineBreaks(const [
+        'LG audioplayers_soloud webOS plugin',
+      ], await rootBundle.loadString('assets/licenses/LG_AudioPlayers_WebOS_BSD3.txt'));
+      yield LicenseEntryWithLineBreaks(const ['flutter_soloud'],
+          await rootBundle.loadString('assets/licenses/flutter_soloud_MIT.txt'));
+      yield LicenseEntryWithLineBreaks(const ['SoLoud'],
+          await rootBundle.loadString('assets/licenses/SoLoud.txt'));
     });
   }
   // iOS covers iPhone, iPad, and Apple TV; mpv-build links SpatialAudioBridge

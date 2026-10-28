@@ -39,6 +39,19 @@ class WebOSMediaProxy {
 
   int get port => _server.port;
 
+  /// Reads only authenticated response metadata through the same bounded-origin
+  /// proxy used by playback. Unknown or unsupported sources stay on NDL.
+  Future<({int? length, String? contentType})> inspect(Uri localUri) async {
+    if (_closed) throw StateError('The webOS media proxy is closed');
+    final request = await _client.headUrl(localUri);
+    request.followRedirects = false;
+    final response = await request.close();
+    final length = response.contentLength >= 0 ? response.contentLength : null;
+    final contentType = response.headers.contentType?.mimeType.toLowerCase();
+    await response.drain<void>();
+    return (length: length, contentType: contentType);
+  }
+
   /// Registers a server URL and returns an opaque loopback URL for NDL media.
   Uri register(Uri source, {Map<String, String>? headers}) {
     if (_closed) throw StateError('The webOS media proxy is closed');

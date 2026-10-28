@@ -10,6 +10,7 @@ import io
 import json
 import os
 import re
+import shutil
 import stat
 import struct
 import sys
@@ -26,6 +27,12 @@ AR_BLOCK = 60
 PACKAGER_VERSION = "1"
 MAINTAINER = "SnapeTech <noreply@github.com>"
 DESCRIPTION = "Plex media client for LG webOS TVs."
+ROOT = Path(__file__).resolve().parents[2]
+VISUALIZER_FILES = {
+    "libmilkrust_native.so": ("librarySha256", 256 * 1024 * 1024),
+    "milkrust-source.tar.gz": ("sourceArchiveSha256", 256 * 1024 * 1024),
+    "MILKRUST-NOTICES.txt": ("noticesSha256", 1024 * 1024),
+}
 
 
 class PackageError(ValueError):
@@ -124,6 +131,93 @@ def _elf_machine(path: Path) -> int:
     if header[4] != 1 or header[5] != 1:
         raise PackageError("webOS ARM package requires a little-endian ELF32 executable")
     return struct.unpack_from("<H", header, 18)[0]
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        while chunk := stream.read(1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _validate_visualizer_manifest(raw: bytes) -> dict[str, object]:
+    if not raw or len(raw) > 65536:
+        raise PackageError("MilkRust artifact manifest is empty or exceeds 64 KiB")
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise PackageError("MilkRust artifact manifest is not valid JSON") from exc
+    if (
+        not isinstance(data, dict)
+        or type(data.get("schemaVersion")) is not int
+        or data.get("schemaVersion") != 1
+        or type(data.get("abi")) is not int
+        or data.get("abi") != 1
+        or data.get("target") != "webos-arm"
+        or not re.fullmatch(r"[0-9a-f]{40}", str(data.get("sourceRevision", "")))
+        or data.get("runnerPolicy") != "private-ephemeral-jit"
+        or not re.fullmatch(
+            r"https://github\.com/snapetech-org/MilkRust/actions/runs/[1-9][0-9]*",
+            str(data.get("buildRun", "")),
+        )
+    ):
+        raise PackageError("MilkRust artifact identity, ABI, target or build provenance is invalid")
+    for key, _ in VISUALIZER_FILES.values():
+        if not re.fullmatch(r"[0-9a-f]{64}", str(data.get(key, ""))):
+            raise PackageError(f"MilkRust artifact digest is missing: {key}")
+    return data
+
+
+def _stage_visualizer(app_dir: Path, bundle_path: Path, reviewed_manifest_sha256: str) -> dict[str, object]:
+    if not re.fullmatch(r"[0-9a-f]{64}", str(reviewed_manifest_sha256 or "")):
+        raise PackageError("An independently reviewed MilkRust manifest SHA-256 is required")
+    raw_bundle = Path(bundle_path)
+    if raw_bundle.is_symlink() or not raw_bundle.is_dir():
+        raise PackageError("MilkRust artifact input must be a regular directory")
+    bundle = raw_bundle.resolve(strict=True)
+    expected_names = {"milkrust-native.json", *VISUALIZER_FILES}
+    if {entry.name for entry in bundle.iterdir()} != expected_names:
+        raise PackageError("MilkRust artifact directory must contain only the complete reviewed bundle")
+    manifest = bundle / "milkrust-native.json"
+    if (
+        manifest.is_symlink()
+        or not manifest.is_file()
+        or manifest.stat().st_size > 65536
+        or _sha256(manifest) != reviewed_manifest_sha256
+    ):
+        raise PackageError("MilkRust manifest does not match the independently reviewed digest")
+    data = _validate_visualizer_manifest(manifest.read_bytes())
+    try:
+        pin = json.loads((ROOT / "native/visualizer/sources.lock.json").read_text(encoding="utf-8"))["milkrust"]
+    except (OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
+        raise PackageError("Cannot read the app's pinned MilkRust source identity") from exc
+    if data["sourceRevision"] != pin["commit"] or data["abi"] != pin["abi"]:
+        raise PackageError("MilkRust artifact differs from the app's exact source or ABI pin")
+
+    for name, (digest_key, limit) in VISUALIZER_FILES.items():
+        path = bundle / name
+        if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size <= limit:
+            raise PackageError(f"MilkRust artifact is missing, linked or outside the size limit: {name}")
+        if _sha256(path) != data[digest_key]:
+            raise PackageError(f"MilkRust artifact digest mismatch: {name}")
+        if name.endswith(".so") and _elf_machine(path) != 40:
+            raise PackageError("MilkRust runtime must be little-endian ARM ELF32 for webOS TVs")
+
+    lib_dir = app_dir / "lib"
+    resource_dir = app_dir / "visualizer"
+    if lib_dir.is_symlink() or not lib_dir.is_dir() or resource_dir.exists() or resource_dir.is_symlink():
+        raise PackageError("MilkRust target path is linked, missing its library directory, or already occupied")
+    runtime = lib_dir / "libmilkrust_native.so"
+    if runtime.exists() or runtime.is_symlink():
+        raise PackageError("An unreviewed MilkRust runtime already exists in the app directory")
+
+    resource_dir.mkdir(mode=0o755)
+    shutil.copyfile(manifest, resource_dir / manifest.name)
+    for name in VISUALIZER_FILES:
+        destination = runtime if name.endswith(".so") else resource_dir / name
+        shutil.copyfile(bundle / name, destination)
+    return data
 
 
 def _validate_app(app_dir: Path, output_dir: Path) -> tuple[dict[str, object], str]:
@@ -268,7 +362,13 @@ def _write_ipk(destination: Path, control_tar: Path, data_tar: Path) -> None:
             pass
 
 
-def package(app_dir: Path, output_dir: Path) -> Path:
+def package(
+    app_dir: Path,
+    output_dir: Path,
+    *,
+    visualizer_native: Path | None = None,
+    visualizer_manifest_sha256: str | None = None,
+) -> Path:
     if output_dir.is_symlink() or not output_dir.is_dir():
         raise PackageError("IPK output directory must be a regular directory")
     output_real = output_dir.resolve(strict=True)
@@ -278,6 +378,12 @@ def package(app_dir: Path, output_dir: Path) -> Path:
     expected_data_root = output_real / "data"
     if not (app_real == expected_data_root / "usr/palm/applications" / app_id):
         raise PackageError("app directory is not the expected IPK staging tree")
+    if bool(visualizer_native) != bool(visualizer_manifest_sha256):
+        raise PackageError("Specify both the MilkRust bundle and its reviewed manifest SHA-256")
+    if visualizer_native is not None:
+        _stage_visualizer(app_real, visualizer_native, visualizer_manifest_sha256 or "")
+    elif (app_real / "lib/libmilkrust_native.so").exists() or (app_real / "visualizer").exists():
+        raise PackageError("MilkRust files must be supplied only through the reviewed artifact input")
     if sorted(path.name for path in expected_data_root.iterdir()) != ["usr"]:
         raise PackageError("IPK staging data tree must contain only usr/")
     list(_iter_tree(expected_data_root))
@@ -343,6 +449,8 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--no-minify", action="store_true", required=True)
     parser.add_argument("app_dir", type=Path)
     parser.add_argument("-o", "--outdir", type=Path, required=True)
+    parser.add_argument("--visualizer-native", type=Path, help="Optional complete reviewed MilkRust ARM artifact directory")
+    parser.add_argument("--visualizer-manifest-sha256", help="Independently reviewed SHA-256 of milkrust-native.json")
     return parser.parse_args(argv)
 
 
@@ -353,7 +461,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     try:
         args = _parse_args(arguments)
-        result = package(args.app_dir, args.outdir)
+        result = package(
+            args.app_dir,
+            args.outdir,
+            visualizer_native=args.visualizer_native,
+            visualizer_manifest_sha256=args.visualizer_manifest_sha256,
+        )
         digest = hashlib.sha256()
         with result.open("rb") as packaged:
             while chunk := packaged.read(1024 * 1024):

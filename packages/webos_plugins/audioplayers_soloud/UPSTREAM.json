@@ -1,0 +1,19 @@
+{
+  "repository": "https://github.com/lg-flutter-webos/plugins",
+  "revision": "3a742bb86b04e261044f0864f9b1f71acf0bbad3",
+  "path": "packages/audioplayers_soloud",
+  "packageVersion": "1.0.0",
+  "changes": [
+    "Vendored under packages/webos_plugins/audioplayers_soloud to permit a pinned app dependency.",
+    "Added an atomic SoLoud post-mix callback over the final interleaved audio sent to ALSA.",
+    "Added a bounded PCM ring and a Flutter GLES texture host for MilkRust.",
+    "The app routes only known progressive MP3, WAV, OGG Vorbis, and FLAC inputs of at most 10 MiB to this backend; other inputs keep the LG NDL route."
+  ],
+  "licenses": {
+    "plugin": "BSD-3-Clause; retain upstream SPDX headers and copyright notices",
+    "SoLoud": "zlib/libpng; retain src/soloud/LICENSE",
+    "flutter_soloud": "MIT; retain LICENSE",
+    "additional_sources": "The pinned LG Flutter webOS runtime OSS notice enumerates the vendored flutter_soloud, SoLoud, Xiph Ogg/Opus and other plugin dependencies. Source-level SPDX headers remain in place; the app registers the LG BSD-3-Clause, flutter_soloud MIT and SoLoud zlib/libpng notices separately."
+  },
+  "qualification": "Source only; native compile, webOS device behavior, playback compatibility, rendering fidelity, and binary distribution review are unqualified."
+}

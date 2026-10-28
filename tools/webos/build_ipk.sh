@@ -10,6 +10,22 @@ IPK_DIR="$ROOT/build/webos/arm/release/ipk"
 : "${WEBOS_PYTHON_BIN:=python3}"
 export WEBOS_PYTHON_BIN
 
+if [[ -n "${PLEZY_WEBOS_VISUALIZER_NATIVE:-}" || -n "${PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256:-}" ]]; then
+  if [[ -z "${PLEZY_WEBOS_VISUALIZER_NATIVE:-}" || -z "${PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256:-}" ]]; then
+    echo "Set both PLEZY_WEBOS_VISUALIZER_NATIVE and PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256." >&2
+    exit 1
+  fi
+  if [[ "$PLEZY_WEBOS_VISUALIZER_NATIVE" != /* || -L "$PLEZY_WEBOS_VISUALIZER_NATIVE" || ! -d "$PLEZY_WEBOS_VISUALIZER_NATIVE" ]]; then
+    echo "The reviewed MilkRust artifact directory must be an absolute, regular directory." >&2
+    exit 1
+  fi
+  if [[ ! "$PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256" =~ ^[0-9a-f]{64}$ ]]; then
+    echo "The independently reviewed MilkRust manifest digest must be lowercase SHA-256." >&2
+    exit 1
+  fi
+  export PLEZY_WEBOS_VISUALIZER_NATIVE PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256
+fi
+
 SDK_ROOT="$(cd -- "$FLUTTER_WEBOS_SDK_ROOT" && pwd)"
 NDK_ROOT="$(cd -- "$WEBOS_NDK_ROOT" && pwd)"
 ENGINE_ARCHIVE="$(cd -- "$(dirname -- "$WEBOS_ENGINE_LOCAL_PATH")" && pwd)/$(basename -- "$WEBOS_ENGINE_LOCAL_PATH")"

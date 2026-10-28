@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   shared_preferences_webos
   flutter_secure_storage_webos
   video_player_drm
+  audioplayers_soloud
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

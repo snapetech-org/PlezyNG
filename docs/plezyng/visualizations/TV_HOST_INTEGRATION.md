@@ -1,10 +1,11 @@
 # TV visualization integration
 
 Status: Tizen PCM, EGL/texture host and optional artifact packaging source from
-closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) is retained on
-continuation [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78) for
-re-review. It has not been compiled or run. webOS still needs a supported PCM
-source and native host. Neither platform is release-qualified.
+closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) were merged
+through [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78). Those
+sources have not been compiled or run. webOS now has a separate, bounded
+SoLoud-owned audio route, native PCM/texture host source, and optional runtime
+admission path. Neither platform is release-qualified.
 
 ## Tizen source implementation
 
@@ -98,63 +99,64 @@ The actual pinned build SDK must compile and exercise the host on physical TVs.
 
 ## webOS
 
-`packages/webos_plugins/video_player_drm/webos/webos_player.cc` delegates media
-to LG's pipeline. Its integrated callback interface exposes playback, timing,
-track, buffering and DRM events, not decoded PCM. The `PlayerWebOS.audioOnly`
-flag likewise hides the Dart video surface; it does not replace the decoder.
-The current release packaging targets `webos/arm`, not arm64.
+The existing `PlayerWebOS` video path and its audio-only NDL mode remain
+unchanged for video, live streams and unsupported sources. That integrated LG
+player still exposes no decoded PCM callback, and the public NDL DirectMedia
+feed API consumes app-supplied buffers rather than tapping `NDL_Media`.
 
-An approved PCM callback from that exact playback pipeline, or an explicitly
-implemented audio-only backend that owns both decode and audible output, is
-required before a MilkRust host can attach. A second muted decoder, microphone
-capture, system-wide capture, fabricated FFT or loopback HTTP proxy is not an
-implementation of the planned same-player tap. No public PCM contract was
-identified in the integrated plugin during this inspection; that does not prove
-LG cannot provide a supported partner API. The platform texture/context bridge
-and lifecycle work still follow after a real PCM source is established.
+A separately owned audio route is now implemented in source for a constrained
+subset of music files. Plezy's `Player.audio()` uses LG's pinned
+`audioplayers_soloud` plugin only when an authenticated metadata probe confirms
+a supported static/progressive MP3, WAV, OGG Vorbis or FLAC file with a known
+size of at most 10 MiB. The SoLoud decoder and ALSA output own playback for that
+source. Its modified mixer exposes the final interleaved float output to a
+bounded single-producer/single-consumer PCM ring immediately before ALSA's
+integer conversion. The app binds that output to its music source lifecycle;
+pause, seek, source changes and visualizer visibility advance or disable the
+PCM generation. Larger files, unknown sizes, live input, HLS, unsupported codecs
+and video continue through LG NDL and do not advertise native MilkRust audio.
+SoLoud errors retry through the NDL route.
 
-### Output-route feasibility
+The native plugin also owns a GLES 3 pbuffer context and Flutter pixel-buffer
+texture, with a worker-owned MilkRust renderer, bounded image decoding and
+leased pixels. The host is registered by the app's webOS Flutter plugin
+registrant. These are source changes only. The MilkRust runtime is still an
+optional reviewed artifact and is not included by default; until an ARMv7
+runtime/source/notice bundle is staged, the capability is unavailable. The
+SoLoud tap observes that plugin's master mix, so introducing simultaneous
+`audioplayers_soloud` voices would require per-voice isolation before claiming
+exact-source analysis.
 
-The public NDL DirectMedia API is a feed API: an application declares a stream,
-then supplies encoded audio or PCM buffers with presentation timestamps. Its
-`NDL_DirectAudioPlay` call consumes app-provided buffers; it is not a callback
-from `NDL_Media` and cannot reveal samples decoded by the current LG player. The
-community sample's PCM path also relies on a DirectMedia v2 setup and a source
-format negotiation step; that is a separate playback pipeline, not a tap into
-the integrated player.
+The `com.webos.service.audiooutput` system service is not an app-level route:
+LG's webOS OSE API reference says applications must not call it directly. No
+system loopback or microphone path is used.
 
-The `com.webos.service.audiooutput` service is not an app-level workaround:
-LG's webOS OSE API reference explicitly says applications must not call it
-directly and reserves it for the system audio service. This plan therefore does
-not bind the app to that service or to process-wide loopback capture.
+### Optional native runtime admission
 
-The source implementation required for a replacement backend is consequently:
-
-1. A separately owned audio-only MPV core, built for the app's 32-bit ARM webOS
-   target and configured without the LG video player.
-2. A platform audio output for that core which owns the audible PCM route, with
-   bounded buffering, seek/reset, pause/resume and track/format changes.
-3. The existing patched MPV PCM tap attached to that same core, plus a native
-   GLES 3 / Flutter texture host using the shared worker and image decoder.
-4. A Dart audio-player adapter that uses the new core for `Player.audio()` and
-   binds the visualizer to its exact session. Ordinary video continues to use
-   the existing LG pipeline.
-
-The app's pinned LG NDK and a supported TV are not present in this source-only
-checkout, and the current NDK package has not been inspected for a supported
-audio sink declaration. I have not added a guessed `ao=ndl` implementation or
-reported an NDL feed API as a PCM tap. The backend, texture host integration,
-player adapter, NDK compilation and physical-TV qualification remain open.
+The regular webOS build contains the host but no MilkRust shared library. A
+reviewed ARMv7 artifact can be staged only by supplying both
+`PLEZY_WEBOS_VISUALIZER_NATIVE` and `PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256` to
+the pinned IPK packager. The artifact directory must contain
+`libmilkrust_native.so`, `milkrust-source.tar.gz`, `MILKRUST-NOTICES.txt`, and
+`milkrust-native.json`. The manifest pins ABI 1, the exact MilkRust source
+revision in `native/visualizer/sources.lock.json`, target `webos-arm`, SHA-256
+digests for all three payloads, a private-ephemeral-JIT runner policy and the
+reviewed build run. The external manifest digest is required separately.
+Package inspection checks the bundle is complete, matches those digests and is
+ARM ELF32. This is artifact admission and structural inspection; it does not
+prove reproducibility, build provenance, runtime loading or TV compatibility.
+Without an admitted runtime, capability remains unavailable while SoLoud audio
+playback continues.
 
 ## Qualification still required
 
-Both targets remain open in `all-native-hosts-v1`. After execution is authorized,
-use compatible private ephemeral JIT runners and physical TVs to exercise
-ordinary playback with and without the renderer library; offload/protected/
-unsupported outputs; exact-source rebinding; pause/seek/rate/track changes;
-buffering; suspend/restore; late callbacks; pending pixel leases; allocation
-limits; context loss and driver failures. Compare captured output and audio
-synchronization against the approved reference corpus. Emulator results cannot
-replace physical TV evidence. No tests, builds, CI jobs or device runs have been
-performed for this increment. Broader packs cannot be promoted with missing
-platform evidence.
+Both TV targets remain unqualified. The webOS integration needs the pinned LG
+SDK build, source and native artifact admission, then physical-TV checks for
+SoLoud and NDL playback boundaries, audio continuity, known/unknown sizes,
+unsupported format fallback, authenticated redirects, pause/seek/rate changes,
+background suspension, late callbacks, ring overflow, texture leases, EGL and
+driver failures, render/audio synchronization and native fidelity. Tizen needs
+its SDK/device checks. Emulator results cannot replace physical-TV evidence.
+No tests, builds, CI jobs, captures or device runs have been performed for this
+source increment. Broader packs cannot be promoted with missing platform
+evidence.

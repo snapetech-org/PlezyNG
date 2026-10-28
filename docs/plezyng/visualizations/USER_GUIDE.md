@@ -30,7 +30,7 @@ Remove a pack or loose import in the library manager. Removing a pinned pack rem
 
 Imports reject executable asset types, shader includes, ambiguous portable paths, unsupported image layouts and missing declared dependencies. Texture headers are checked before activation: 4096 pixels per side, 8 megapixels per image and 32 megapixels per pack. The installed library is capped at 512 MB; remove unused packs or older versions to make room. These checks do not establish native decoder/driver isolation.
 
-The Linux integration uses native pixel-buffer readback at up to 1280×720 and about 30 FPS; performance and driver behavior have not been qualified. Native hosts for other platforms, a complete custom MilkRust renderer, full shader/`.milk2` fidelity, signed remote catalog updates, broader cleared community packs, previews and physical-device validation remain open. The implementation status document records the complete remaining gates.
+The Linux integration uses native pixel-buffer readback at up to 1280×720 and about 30 FPS; performance and driver behavior have not been qualified. Native host source now exists for the other listed platforms, including Tizen and webOS, but is uncompiled and unqualified; existing release binaries have not gained those hosts. Full HLSL and spatial `.milk2` fidelity, production signed-catalog delivery, broader qualified community packs, previews and physical-device validation remain open. The implementation status document records the complete remaining gates.
 
 ## Pack catalog updates
 

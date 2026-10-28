@@ -86,7 +86,11 @@ dependencies:
       url: https://github.com/lg-flutter-webos/plugins.git
       ref: 3a742bb86b04e261044f0864f9b1f71acf0bbad3
       path: packages/url_launcher
-  # LG's webOS native media plane is the supported playback backend on TV.
+  # LG's SoLoud audio implementation owns decoding/output for bounded
+  # progressive audio files and exposes the final mixer PCM to the visualizer.
+  audioplayers_soloud:
+    path: packages/webos_plugins/audioplayers_soloud
+  # LG's webOS native media plane is the supported video playback backend on TV.
   # Vendor the pinned upstream plugin so sensitive stream URLs stay redacted
   # from the native device log.
   video_player_drm:
@@ -268,6 +272,9 @@ flutter:
     - assets/licenses/Boost.txt
     - assets/licenses/JellyfinWebTranslations.txt
     - assets/licenses/MilkRust_Sample_Pack.txt
+    - assets/licenses/LG_AudioPlayers_WebOS_BSD3.txt
+    - assets/licenses/flutter_soloud_MIT.txt
+    - assets/licenses/SoLoud.txt
     - assets/visualizer/milkrust-sample-pack-0.1.0.rmpack
     - assets/licenses/ANVIL_MIT_LICENSE.txt
     - assets/plezy.png

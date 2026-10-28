@@ -67,6 +67,106 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def qairt_sdk_metadata(qairt: Path) -> dict[str, str]:
+    metadata_path = qairt / "sdk.yaml"
+    if not metadata_path.is_file():
+        raise FileNotFoundError(f"QAIRT SDK metadata is missing: {metadata_path}")
+    metadata: dict[str, str] = {}
+    for line in metadata_path.read_text(encoding="utf-8").splitlines():
+        key, separator, value = line.partition(":")
+        if separator and key.strip() in {"version", "build_id"}:
+            metadata[key.strip()] = value.strip().strip("'\"")
+    if not metadata.get("version") or not metadata.get("build_id"):
+        raise ValueError(f"QAIRT SDK metadata has no version/build_id: {metadata_path}")
+    return {
+        "version": metadata["version"],
+        "build_id": metadata["build_id"],
+        "sdk_yaml_sha256": sha256_file(metadata_path),
+    }
+
+
+def calibration_manifest(
+    calibration_root: Path,
+    calibration_lists: dict[str, Path],
+) -> dict[str, Any]:
+    metadata_path = calibration_root / "metadata.json"
+    metadata: dict[str, Any] = {}
+    if metadata_path.is_file():
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    source_metadata = metadata.get("source")
+    result: dict[str, Any] = {}
+
+    for resolution, calibration_list_path in sorted(calibration_lists.items()):
+        listed = [
+            Path(line.strip())
+            for line in calibration_list_path.read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.strip().startswith("#")
+        ]
+        records: list[dict[str, Any]] = []
+        expected_records = {
+            item.get("file"): item
+            for item in metadata.get("samples", {}).get(resolution, {}).get("pairs", [])
+            if isinstance(item, dict) and item.get("file")
+        }
+        for sample in listed:
+            if not sample.is_absolute():
+                sample = calibration_list_path.parent / sample
+            sample = sample.resolve(strict=True)
+            record = {
+                "file": sample.name,
+                "bytes": sample.stat().st_size,
+                "sha256": sha256_file(sample),
+            }
+            expected = expected_records.get(sample.name)
+            if expected and sample.parent == (calibration_root / resolution).resolve():
+                if record["sha256"] != expected.get("sha256"):
+                    raise ValueError(f"Calibration sample differs from metadata.json: {sample}")
+            records.append(record)
+
+        canonical = json.dumps(records, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        result[resolution] = {
+            "source": source_metadata,
+            "source_metadata_sha256": sha256_file(metadata_path) if metadata_path.is_file() else None,
+            "sampling": metadata.get("sampling"),
+            "tensor": metadata.get("tensor"),
+            "sample_count": len(records),
+            "sample_manifest_sha256": hashlib.sha256(canonical).hexdigest(),
+            "samples": records,
+        }
+    return result
+
+
+def reject_stale_contexts(output: Path, targets: list[str], models: list[str]) -> None:
+    selected_paths = {
+        f"{target_id}/{model_id}-{TARGETS[target_id]['resolution']}/context.serialized.bin"
+        for target_id in targets
+        for model_id in models
+    }
+    existing_paths = {
+        path.relative_to(output).as_posix()
+        for path in output.rglob("context.serialized.bin")
+        if path.is_file()
+    }
+    stale_paths = sorted(existing_paths - selected_paths)
+    if stale_paths:
+        raise ValueError(
+            "Output directory contains context files outside this target/model selection; "
+            "use a fresh --output-dir so the package manifest matches its files: "
+            + ", ".join(stale_paths)
+        )
+    canonical_output = output.resolve(strict=True)
+    for selected_path in selected_paths:
+        destination = output / selected_path
+        for candidate in (destination.parent.parent, destination.parent, destination):
+            if candidate.is_symlink():
+                raise ValueError(f"Context output path must not use symlinks: {candidate}")
+            if candidate.exists():
+                if not candidate.resolve().is_relative_to(canonical_output):
+                    raise ValueError(
+                        f"Context output path escapes the selected output directory: {candidate}"
+                    )
+
+
 def run(command: list[str], *, env: dict[str, str], cwd: Path) -> None:
     print("+", " ".join(command), flush=True)
     subprocess.run(command, check=True, cwd=cwd, env=env)
@@ -299,6 +399,18 @@ def main() -> int:
     parser.add_argument("--onnx-dir", type=Path, required=True)
     parser.add_argument("--calibration-root", type=Path, required=True, help="Contains 720p/ and 1080p/ calibration lists and raw samples.")
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument(
+        "--targets",
+        nargs="+",
+        choices=tuple(TARGETS),
+        help="Build only these SoC contexts; the default builds every supported target.",
+    )
+    parser.add_argument(
+        "--models",
+        nargs="+",
+        choices=tuple(MODELS),
+        help="Build only these model variants; the default builds ANVIL-S and ANVIL-M.",
+    )
     args = parser.parse_args()
 
     if args.qairt_root is None:
@@ -308,10 +420,17 @@ def main() -> int:
     calibration_root = args.calibration_root.resolve()
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
+    qairt_metadata = qairt_sdk_metadata(qairt)
+    requested_targets = set(args.targets or TARGETS)
+    requested_models = set(args.models or MODELS)
+    selected_targets = [target_id for target_id in TARGETS if target_id in requested_targets]
+    selected_models = [model_id for model_id in MODELS if model_id in requested_models]
+    reject_stale_contexts(output, selected_targets, selected_models)
 
     prepared: list[dict[str, Any]] = []
     calibration_by_resolution: dict[str, Path] = {}
-    for target_id, target in TARGETS.items():
+    for target_id in selected_targets:
+        target = TARGETS[target_id]
         resolution = target["resolution"]
         calibration = calibration_by_resolution.get(resolution)
         if calibration is None:
@@ -319,7 +438,8 @@ def main() -> int:
             calibration_work.mkdir(parents=True, exist_ok=True)
             calibration = calibration_list(calibration_root, resolution, calibration_work)
             calibration_by_resolution[resolution] = calibration
-        for model_id, onnx_stem in MODELS.items():
+        for model_id in selected_models:
+            onnx_stem = MODELS[model_id]
             onnx = onnx_dir / f"{onnx_stem}_{resolution}.onnx"
             if not onnx.is_file():
                 raise FileNotFoundError(
@@ -343,11 +463,14 @@ def main() -> int:
             )
 
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "runtime": "Qualcomm QNN HTP",
         "quantization": "W8A8",
+        "qairt_sdk": qairt_metadata,
         "anvil_source_revision": ANVIL_SOURCE_REVISION,
         "anvil_model_revision": ANVIL_MODEL_REVISION,
+        "selection": {"targets": selected_targets, "models": selected_models},
+        "calibration": calibration_manifest(calibration_root, calibration_by_resolution),
         "contexts": prepared,
     }
     manifest_path = output / "manifest.json"

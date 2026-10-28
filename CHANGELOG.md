@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Preserve the measured display-rate precision when configuring motion-compensated frame generation, avoiding cadence changes from three-decimal rounding.
+- Preserve measured display-rate precision for motion-compensated frame generation and accept the 48×1000/1001 Hz fractional display cadence.
 - Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.
 - Repair combined application compilation across visualizer and subtitle archive extraction, IPTV, catalog search, motion and player settings. Preserve bounded archive writes, stale-operation guards and subtitle timing, use shared icon styling, and explicitly track untranslated messages as English fallbacks.

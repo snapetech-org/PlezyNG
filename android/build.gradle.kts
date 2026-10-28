@@ -47,6 +47,13 @@ subprojects {
                 // GeneratedPluginRegistrant references, and the app's R8 fails on the
                 // missing classes. Only the app should shrink.
                 extension.buildTypes.findByName("minified")?.isMinifyEnabled = false
+                if (name == "receive_sharing_intent") {
+                    // This plugin leaves Java at AGP 9's default (11), while
+                    // Kotlin targets 17. Match the app's Java target to avoid
+                    // Gradle's mixed-target validation failure.
+                    extension.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+                    extension.compileOptions.targetCompatibility = JavaVersion.VERSION_17
+                }
             }
         }
     }

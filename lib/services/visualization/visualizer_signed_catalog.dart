@@ -9,22 +9,26 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'visualizer_catalog_entry.dart';
+import 'visualizer_release_trust.dart';
 
-/// The trust root is supplied by the release build, never by the downloaded
-/// envelope. Rotation uses overlapping independently pinned keys and a quorum.
+/// All platforms compile the same reviewed public root. Build environment and
+/// downloaded envelopes cannot replace it. Rotation requires an app release.
 class VisualizerCatalogTrust {
-  const VisualizerCatalogTrust({required this.keys, this.threshold = 1});
+  const VisualizerCatalogTrust({required this.keys, this.threshold = 1, this.minimumSequence = 1});
   final Map<String, List<int>> keys;
   final int threshold;
+  final int minimumSequence;
 
   static VisualizerCatalogTrust release() {
-    const encoded = String.fromEnvironment('MILKRUST_CATALOG_KEYS');
-    const threshold = int.fromEnvironment('MILKRUST_CATALOG_THRESHOLD', defaultValue: 1);
-    if (encoded.isEmpty) return const VisualizerCatalogTrust(keys: {});
-    final data = jsonDecode(encoded);
-    if (data is! Map<String, dynamic> || data.isEmpty || data.length > 16) {
+    final root = jsonDecode(visualizerReleaseTrustJson) as Map<String, dynamic>;
+    final data = root['keys'];
+    final threshold = root['threshold'];
+    final minimumSequence = root['minimumSequence'];
+    if (data is! Map<String, dynamic> || data.length > 16 || threshold is! int ||
+        minimumSequence is! int || minimumSequence < 1 || minimumSequence > 9007199254740991) {
       throw const FormatException('Invalid release catalog trust root');
     }
+    if (data.isEmpty) return const VisualizerCatalogTrust(keys: {});
     final keys = <String, List<int>>{};
     for (final item in data.entries) {
       if (!RegExp(r'^[a-z0-9_-]{1,64}$').hasMatch(item.key) || item.value is! String) {
@@ -38,7 +42,7 @@ class VisualizerCatalogTrust {
       throw const FormatException('Catalog key IDs must pin distinct public keys');
     }
     if (threshold < 1 || threshold > keys.length) throw const FormatException('Invalid catalog signature quorum');
-    return VisualizerCatalogTrust(keys: Map.unmodifiable(keys), threshold: threshold);
+    return VisualizerCatalogTrust(keys: Map.unmodifiable(keys), threshold: threshold, minimumSequence: minimumSequence);
   }
 }
 
@@ -76,6 +80,7 @@ class VisualizerCatalogVerifier {
         trust.keys.length > 16 ||
         trust.threshold < 1 ||
         trust.threshold > trust.keys.length ||
+        trust.minimumSequence < 1 || trust.minimumSequence > 9007199254740991 ||
         trust.keys.values.any((key) => key.length != 32) ||
         trust.keys.values.map(base64Encode).toSet().length != trust.keys.length) {
       throw const FormatException('This build has no catalog signing trust root');
@@ -117,7 +122,7 @@ class VisualizerCatalogVerifier {
     if (data is! Map<String, dynamic> ||
         data['schemaVersion'] != 1 ||
         data['sequence'] is! int ||
-        data['sequence'] <= 0 ||
+        data['sequence'] < trust.minimumSequence ||
         data['sequence'] > 9007199254740991 ||
         data['entries'] is! List ||
         (data['entries'] as List).length > 1000 ||
@@ -144,6 +149,13 @@ class VisualizerCatalogVerifier {
         throw const FormatException('Catalog contains an uncleared pack');
       }
       final entry = VisualizerPackCatalogEntry.fromJson(item);
+      if (entry.qualification.status == 'unassessed' ||
+          (entry.qualification.status == 'sample-fixture-only' &&
+              (entry.id != VisualizerPackCatalogEntry.sampleFixtureId ||
+               entry.version != VisualizerPackCatalogEntry.sampleFixtureVersion ||
+               entry.sha256 != VisualizerPackCatalogEntry.sampleFixtureSha256))) {
+        throw const FormatException('Catalog pack lacks reviewed rendering qualification');
+      }
       if (entry.license == 'NOASSERTION' || !identities.add(entry.identity) || !ids.add(entry.id)) {
         throw const FormatException('Duplicate or uncleared catalog entry');
       }

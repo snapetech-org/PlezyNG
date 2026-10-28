@@ -38,7 +38,13 @@ typedef _AudioStateGenerations = ({
 });
 
 /// MPV-backed player for platforms where AetherEngine is not the native route.
-class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFocusControl, AudioSpectrumAnalyzer, SubtitlePcmCaptureSource {
+class PlayerNative extends PlayerBase
+    implements
+        VideoRectSupport,
+        PlayerAudioFocusControl,
+        AudioSpectrumAnalyzer,
+        SubtitlePcmCaptureSource,
+        NativeVisualizationAudioSource {
   final StreamController<AudioSpectrumSample?> _audioSpectrumController =
       StreamController<AudioSpectrumSample?>.broadcast(sync: true);
   final Stopwatch _audioSpectrumClock = Stopwatch()..start();
@@ -221,6 +227,8 @@ class PlayerNative extends PlayerBase implements VideoRectSupport, PlayerAudioFo
   /// The dedicated music core exists; optional PCM APIs are negotiated by
   /// the visualization controller, independently of this ownership signal.
   bool get isAudioCoreReady => audioOnly && initialized && !disposed;
+  @override
+  bool get nativeVisualizationAudioReady => isAudioCoreReady;
 
   @override
   final MethodChannel methodChannel;

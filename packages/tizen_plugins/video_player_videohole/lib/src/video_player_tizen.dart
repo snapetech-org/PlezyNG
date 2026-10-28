@@ -91,6 +91,7 @@ class VideoPlayerTizen extends VideoPlayerPlatform {
       case DataSourceType.file:
       case DataSourceType.contentUri:
         message.uri = dataSource.uri;
+        message.playerOptions = dataSource.playerOptions;
     }
 
     message.windowGeometry = await _getWindowGeometry();
@@ -528,6 +529,7 @@ class VideoPlayerTizen extends VideoPlayerPlatform {
         case DataSourceType.file:
         case DataSourceType.contentUri:
           message.uri = dataSource.uri;
+          message.playerOptions = dataSource.playerOptions;
       }
     }
     message?.windowGeometry = await _getWindowGeometry();

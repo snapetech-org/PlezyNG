@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import '../../i18n/strings.g.dart';
 import '../../media/media_source_info.dart';
 import '../../mpv/player/audio_spectrum.dart';
-import '../../mpv/player/player_native.dart';
+import '../../mpv/player/player_base.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../profiles/active_profile_provider.dart';
 import '../../services/visualization/visualizer_pack_store.dart';
@@ -247,7 +247,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
           (service as MusicVisualizationAudioService).hasNativeVisualizationAudio;
     }
     final player = widget.sourcePlayback?.player;
-    return player is PlayerNative && player.isAudioCoreReady;
+    return player is NativeVisualizationAudioSource && player.nativeVisualizationAudioReady;
   }
 
   void _syncTicker() {

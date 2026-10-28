@@ -75,6 +75,8 @@ FLUTTER_PLUGIN_EXPORT void ffi_free_string(char* ptr);
 }  // extern "C"
 
 namespace video_player_videohole_tizen {
+class VisualizerPcm;
+std::shared_ptr<VisualizerPcm> GetVisualizationPcm(int64_t player_id);
 
 class CreateMessage {
  public:

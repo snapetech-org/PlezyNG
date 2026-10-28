@@ -1,7 +1,7 @@
 MilkRust native engine and visualization integration
 SPDX-License-Identifier: AGPL-3.0-only
 Source: https://github.com/snapetech-org/MilkRust
-Pinned engine source: 0d72d71e87276da0e659a094b6c767a1cd56be0f
+Pinned engine source: f546fdc1f9160a44daf9e980dd6eca602681d2d0
 
 The native engine is an optional component. Its presence in acknowledgements
 is not a statement that this build includes a qualified runtime, nor that all

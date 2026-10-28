@@ -285,13 +285,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     File file, {
     this.closedCaptionFile,
     this.videoPlayerOptions,
+    this.playerOptions,
   })  : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
         formatHint = null,
         httpHeaders = const <String, String>{},
         drmConfigs = null,
-        playerOptions = const <String, dynamic>{},
         super(
           VideoPlayerValue(
             duration: DurationRange(Duration.zero, Duration.zero),
@@ -418,6 +418,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.file,
           uri: dataSource,
+          playerOptions: playerOptions,
         );
       case DataSourceType.contentUri:
         dataSourceDescription = DataSource(

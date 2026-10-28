@@ -577,6 +577,12 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(entry.description, style: Theme.of(context).textTheme.bodyMedium),
+                                    Text(entry.qualification.label, style: Theme.of(context).textTheme.bodySmall),
+                                    if (entry.qualification.reportUrl != null)
+                                      TextButton(
+                                        onPressed: () => launchUrl(Uri.parse(entry.qualification.reportUrl!), mode: LaunchMode.externalApplication),
+                                        child: const Text('Open qualification report'),
+                                      ),
                                     if (entry.bundledAsset != null)
                                       const Text('Included with the app. Installation and restoration work offline.'),
                                     if (!_store.canDownload(entry))
@@ -772,7 +778,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                 onTap: _busy ? null : () => _browse(importedName: name),
                                 subtitle: Text(
                                   name.toLowerCase().endsWith('.milk2')
-                                      ? 'Stored offline · .milk2 playback unavailable'
+                                      ? 'Stored offline · limited MilkRust support'
                                       : 'Stored offline · browse to play or view details',
                                 ),
                                 trailing: Row(

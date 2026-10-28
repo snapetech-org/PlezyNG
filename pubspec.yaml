@@ -253,6 +253,7 @@ flutter:
     - assets/reader/foliate/
     - assets/certificates/cacert.pem
     - assets/licenses/MilkRust_Native.txt
+    - assets/licenses/stb_image_MIT.txt
     - assets/licenses/Moonlight_GPL_3.txt
     - assets/licenses/Moonlight_NOTICE.txt
     - assets/licenses/Steam_NATIVE.txt

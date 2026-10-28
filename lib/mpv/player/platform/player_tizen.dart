@@ -16,10 +16,20 @@ import 'webos_media_proxy.dart';
 
 /// Samsung's native media plane. The existing app supplies browsing, focus,
 /// transport controls and watch progress; no browser-hosted UI is involved.
-class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource {
+class PlayerTizen extends PlayerBase
+    implements SubtitlePcmCaptureSource, NativeVisualizationAudioSource {
   PlayerTizen({this.audioOnly = false}) : super(listenToNativeEvents: false);
+  static const _visualizer = MethodChannel('com.plezy/mpv_audio_player');
 
   final bool audioOnly;
+  bool _visualizerBound = false;
+  @override
+  bool get nativeVisualizationAudioReady =>
+      audioOnly &&
+      _visualizerBound &&
+      !disposed &&
+      !_closing &&
+      (_controller?.value.isInitialized ?? false);
   final ValueNotifier<int> surfaceRevision = ValueNotifier(0);
   final ValueNotifier<String> caption = ValueNotifier('');
   final SerialFutureQueue _sources = SerialFutureQueue();
@@ -155,9 +165,15 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource {
           // Samsung only forwards Cookie/User-Agent. The loopback bridge
           // forwards authenticated byte ranges and same-origin HLS children.
           final local = proxy.register(uri, headers: media.headers);
-          controller = samsung.VideoPlayerController.network(local.toString());
+          controller = samsung.VideoPlayerController.network(
+            local.toString(),
+            playerOptions: {'plezyAudioOnly': audioOnly},
+          );
         } else if (uri.scheme == 'file' || (uri.scheme.isEmpty && media.uri.startsWith('/'))) {
-          controller = samsung.VideoPlayerController.file(uri.scheme == 'file' ? File.fromUri(uri) : File(media.uri));
+          controller = samsung.VideoPlayerController.file(
+            uri.scheme == 'file' ? File.fromUri(uri) : File(media.uri),
+            playerOptions: {'plezyAudioOnly': audioOnly},
+          );
         } else {
           throw const FormatException('Tizen playback requires HTTP(S) or an app-local file');
         }
@@ -165,6 +181,8 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource {
         controller.addListener(() => _onValue(controller, generation, sourceId, isLive));
         surfaceRevision.value++;
         await controller.initialize().timeout(const Duration(seconds: 45));
+        if (!_current(generation)) return;
+        if (audioOnly) await _bindVisualization(controller.playerId, true);
         if (!_current(generation)) return;
         await _loadTracks(controller, generation);
         if (!_current(generation)) return;
@@ -268,6 +286,7 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource {
     final controller = _controller;
     final proxy = _proxy;
     _controller = null;
+    _visualizerBound = false;
     _proxy = null;
     _subtitleGeneration++;
     _captions = null;
@@ -275,9 +294,24 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource {
     caption.value = '';
     surfaceRevision.value++;
     try {
+      if (audioOnly && controller != null) await _bindVisualization(controller.playerId, false);
       await controller?.dispose();
     } finally {
       await proxy?.close();
+    }
+  }
+
+  Future<void> _bindVisualization(int playerId, bool bind) async {
+    if (playerId < 0) return;
+    try {
+      await _visualizer.invokeMethod<void>(bind ? 'visualizerBindPlayer' : 'visualizerUnbindPlayer', {
+        'playerId': playerId,
+      });
+      if (bind) _visualizerBound = true;
+    } on MissingPluginException {
+      // Optional renderer support cannot prevent ordinary music playback.
+    } on PlatformException {
+      // The visualizer's capability/status channel exposes native failures.
     }
   }
 

@@ -49,6 +49,11 @@ static std::shared_ptr<VideoPlayer> GetPlayer(int64_t player_id) {
   return nullptr;
 }
 
+std::shared_ptr<VisualizerPcm> GetVisualizationPcm(int64_t player_id) {
+  const auto player = GetPlayer(player_id);
+  return player ? player->VisualizationPcm() : nullptr;
+}
+
 static flutter::EncodableValue EncodableValueFromJson(const json& j) {
   if (j.is_null()) {
     return flutter::EncodableValue();

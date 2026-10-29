@@ -22,6 +22,7 @@ import '../../../services/subtitle_ai_service.dart';
 import '../../../services/subtitle_placement_evidence.dart';
 import '../../../services/subtitle_retimer.dart';
 import '../../../services/subtitle_word_timing.dart';
+import '../../../services/subtitle_language_text.dart';
 import '../../../services/subtitle_sync_service.dart';
 import '../../../services/subtitle_interval_service.dart';
 import '../../../services/subtitle_job_service.dart';
@@ -3506,7 +3507,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     for (final cue in reviewedCues) {
       final original = originalCuesById[cue.stableId];
       if (original != null &&
-          (original.startMs != cue.startMs || original.endMs != cue.endMs || original.text != cue.text)) {
+          (original.startMs != cue.startMs || original.endMs != cue.endMs ||
+            !SubtitleLanguageText.sameWordsWithLanguageEdits(original.text, cue.text))) {
         editedCueIds.add(cue.stableId);
       }
     }

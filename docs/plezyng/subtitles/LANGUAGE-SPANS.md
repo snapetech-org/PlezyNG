@@ -16,7 +16,9 @@ The parser limits a cue to 4000 characters, 256 markup tokens, 64 annotations an
 eight nested language levels. Unsupported/malformed annotations fall back to
 readable plain text in the overlay. Horizontal text spans carry both glyph
 locale and accessibility locale; retained word highlights can cross language
-boundaries without rewriting the cue or inventing timestamps. Where language
+boundaries without rewriting the cue or inventing timestamps. Review retains
+existing word timings after annotation-only edits with unchanged cue times and
+spoken text; changed words or times still invalidate them. Where language
 annotations and ruby coexist, the annotated base text is shown without ruby
 readings. Vertical spans retain plain text and do not claim locale-aware native
 vertical shaping.

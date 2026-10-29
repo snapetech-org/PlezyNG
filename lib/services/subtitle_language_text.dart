@@ -72,6 +72,17 @@ abstract final class SubtitleLanguageText {
         _open.hasMatch(match[0]!) || _close.hasMatch(match[0]!) ? '' : match[0]!);
   }
 
+  static bool sameWordsWithLanguageEdits(String before, String after) {
+    if (before == after) return true;
+    if (parse(before) == null && parse(after) == null) return false;
+    final a = removeTagsForSrt(before), b = removeTagsForSrt(after);
+    if (a == b) return true;
+    // The plain-selection helper escapes literal angle brackets/ampersands.
+    // Compare decoded text only when no other authored markup is involved.
+    final markup = RegExp(r'<[^>]*>|\{[^}]*\}');
+    return !markup.hasMatch(a) && !markup.hasMatch(b) && SubtitleRubyText.plain(a) == SubtitleRubyText.plain(b);
+  }
+
   static String webVtt(String text) {
     String escape(String value) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
     final runs = parse(text);

@@ -222,7 +222,8 @@ def export_google_tensor_aot(
         compiler_flags["google_tensor_sharding_intensity"] = "maximum"
 
     export_name = f"{model_name}-{resolution}"
-    filename = f"{export_name}-google-tensor-{soc_model.lower().replace('_', '-')}.tflite"
+    soc_suffix = soc_model.removeprefix("Tensor_").lower().replace("_", "-")
+    filename = f"{export_name}-google-tensor-{soc_suffix}.tflite"
     destination = output_dir / filename
     with tempfile.TemporaryDirectory(
         prefix=f"plezy-google-tensor-aot-{model_name}-{resolution}-{soc_model.lower()}-",
@@ -239,8 +240,12 @@ def export_google_tensor_aot(
         if hasattr(compilation, "compilation_report"):
             print(f"Google Tensor {soc_model} compile report for {model_name}/{resolution}:")
             print(compilation.compilation_report())
-        suffix = f"_Google_Tensor_{soc_model.removeprefix('Tensor_')}.tflite"
-        compiled_models = sorted(export_dir.rglob(f"*{suffix}"))
+        target_marker = f"_Google_Tensor_{soc_model.removeprefix('Tensor_')}"
+        compiled_models = sorted(
+            path
+            for path in export_dir.rglob("*.tflite")
+            if path.name.startswith(export_name + target_marker)
+        )
         if len(compiled_models) != 1 or compiled_models[0].stat().st_size == 0:
             outputs = sorted(path.name for path in export_dir.rglob("*.tflite"))
             raise RuntimeError(
@@ -544,7 +549,8 @@ def main() -> int:
 
             if google_tensor_aot_compile is not None and google_tensor_target is not None:
                 for soc_model in args.google_tensor_socs:
-                    provider_key = f"google-tensor-{soc_model.lower().replace('_', '-')}"
+                    soc_suffix = soc_model.removeprefix("Tensor_").lower().replace("_", "-")
+                    provider_key = f"google-tensor-{soc_suffix}"
                     output_variants[resolution][provider_key] = export_google_tensor_aot(
                         float_path,
                         google_tensor_aot_compile,

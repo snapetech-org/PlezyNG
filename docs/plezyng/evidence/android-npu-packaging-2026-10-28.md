@@ -56,7 +56,9 @@ latest universal debug APK, rebuilt after the MPV cadence precision fixes, was m
 The Google Tensor provider runtime plugin is packaged, but this APK has no
 `Tensor_G5` or `Tensor_G6` AOT model. The Exynos-named file in retained scratch
 has no compiler report, manifest, or approval record and is not treated as a
-usable Samsung model pack.
+usable Samsung model pack. This APK predates the Tensor compilation and remains
+without Tensor AOT entries. A later local arm64 debug APK packages four 720p
+Tensor models; see the [Tensor AOT evidence](tensor-sdk-access-2026-10-28.md).
 
 ## Local checks
 
@@ -86,8 +88,8 @@ quality, A/V synchronization, power/thermal behavior, and asynchronous provider
 failover remain unqualified on device. Samsung AOT model development remains
 gated by the separate prior written consent recorded in the LiteCore acquisition
 evidence. Downloads contains six `ai-litecore` archives and two generic ZIPs
-whose contents identify them as Qualcomm QAIRT. No Google Tensor compiler
-archive or companion Python package is available in the checked local
-environment, and no Google Tensor AOT pack was generated. This is a debug
-package, not a release artifact, and the pinned MPV artifact lock was not
-changed.
+whose contents identify them as Qualcomm QAIRT. The Tensor archive was not
+available when this APK was built. A later arm64 debug APK was built with the
+Tensor pack and verified separately, but no APK was installed on a target
+device. This is a debug package, not a release artifact, and the pinned MPV
+artifact lock was not changed.

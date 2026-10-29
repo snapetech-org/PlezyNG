@@ -207,6 +207,7 @@ final class SubtitleCompanionService {
     String translationMode = 'faithful', String scriptConversion = 's2t', String readingMode = 'hiragana',
     String? translationProviderFingerprint, String? visionProviderFingerprint, Map<String, String> glossary = const {},
     Map<String, List<String>> lyricSyllables = const {}, bool lyricPitchEvidence = false,
+    Map<String, dynamic>? microphoneArray,
     bool sceneObjectTracking = false, String? sceneDetectorFingerprint,
     List<double> crop = const [0, 0.65, 1, 0.35],
     void Function(String jobId)? onCreated, void Function(int sent, int total)? onUpload,
@@ -220,6 +221,12 @@ final class SubtitleCompanionService {
     if (sceneMotionTracking && caps['sceneMotionTracking'] != true) throw UnsupportedError('The companion has not installed local motion tracking');
     if (lyricSyllables.isNotEmpty && caps['lyricSyllables'] != true) throw UnsupportedError('Update the companion for supplied lyric syllables');
     if (lyricPitchEvidence && caps['lyricPitchEvidence'] != true) throw UnsupportedError('The companion has not installed lyric pitch analysis');
+    if (task == 'sound_localize' && (caps['microphoneArrayLocalization'] != true || microphoneArray == null ||
+        cues.isEmpty || cues.length > 60 || cues.any((cue) => cue.endMs > 120000 || (cue.endMs - cue.startMs) > 12000) ||
+        cues.fold<int>(0, (total, cue) => total + (cue.endMs - cue.startMs)) > 120000 || itemTimeline || timelineOffsetMs != 0 ||
+        preprocess || audioTrack != 0 || utf8.encode(jsonEncode(microphoneArray)).length > 16384)) {
+      throw const FormatException('Array localization needs reviewed calibration and 1–60 file-clock cues, up to 12 seconds each and two minutes total.');
+    }
     if ((sceneObjectTracking || task == 'scene_track') && (caps['sceneObjectTracking'] != true || caps['sceneObjectDetector'] is! Map ||
         sceneDetectorFingerprint == null || (caps['sceneObjectDetector'] as Map)['fingerprint'] != sceneDetectorFingerprint)) {
       throw UnsupportedError('The companion object detector changed or is unavailable; review its configuration again');
@@ -242,6 +249,7 @@ final class SubtitleCompanionService {
       'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop, 'timelineOffsetMs': timelineOffsetMs, 'itemTimeline': itemTimeline, 'soundStereoEvidence': soundStereoEvidence, 'sceneTemporalRegions': sceneTemporalRegions, 'sceneAudioEvidence': sceneAudioEvidence, 'sceneMotionTracking': sceneMotionTracking,
       'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs, 'duckRatio': duckRatio, 'voiceFingerprint': voiceFingerprint,
       'lyricSyllables': lyricSyllables, 'lyricPitchEvidence': lyricPitchEvidence,
+      'microphoneArray': microphoneArray,
       'sceneObjectTracking': sceneObjectTracking, 'sceneDetectorFingerprint': sceneDetectorFingerprint,
       'translationMode': translationMode, 'scriptConversion': scriptConversion, 'readingMode': readingMode,
       'translationProviderFingerprint': translationProviderFingerprint, 'visionProviderFingerprint': visionProviderFingerprint, 'glossary': glossary,
@@ -288,7 +296,7 @@ final class SubtitleCompanionService {
     }
     final evidence = <String, Object?>{
       for (final key in const ['coverageEvidence', 'ensembleEvidence', 'soundEvidence', 'lyricTimingEvidence', 'lyricSyllableEvidence', 'lyricPitchEvidence',
-        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'synthesisEvidence'])
+        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'soundLocalizationEvidence', 'synthesisEvidence'])
         if (data[key] != null) key: data[key],
     };
     final provenance = <String, Object?>{

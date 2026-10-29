@@ -77,6 +77,8 @@ class CompanionClient:
         return f"/v1/jobs/{job_id}" + (f"/{action}" if action else "")
 
     def create(self, *, task, identity, media=None, **options):
+        if task == 'sound_localize' and self.capabilities().get('microphoneArrayLocalization') is not True:
+            raise ValueError('companion_microphone_array_localization_unavailable')
         if options.get('sceneObjectTracking', False) or task == 'scene_track':
             caps = self.capabilities()
             detector = caps.get('sceneObjectDetector')

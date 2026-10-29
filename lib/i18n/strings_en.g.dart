@@ -14641,6 +14641,84 @@ class Translations$videoControls$subtitleAiControls$en {
 	/// en: 'Cancel companion upload/job'
 	String get cancelCompanionUpload => 'Cancel companion upload/job';
 
+	/// en: 'The WAV duration is unavailable.'
+	String get audioDurationUnavailable => 'The WAV duration is unavailable.';
+
+	/// en: 'Choose audio interval'
+	String get audioIntervalTitle => 'Choose audio interval';
+
+	/// en: 'Only this audio range is analyzed. Existing subtitle cues outside it are preserved.'
+	String get audioIntervalDescription => 'Only this audio range is analyzed. Existing subtitle cues outside it are preserved.';
+
+	/// en: 'Start'
+	String get start => 'Start';
+
+	/// en: 'End'
+	String get end => 'End';
+
+	/// en: 'Enter a valid range inside the WAV duration.'
+	String get invalidAudioInterval => 'Enter a valid range inside the WAV duration.';
+
+	/// en: 'Use interval'
+	String get useAudioInterval => 'Use interval';
+
+	/// en: 'Preview caption transformations'
+	String get transformPreviewTitle => 'Preview caption transformations';
+
+	/// en: 'All transformations are off by default. The original is retained; review and edit the derived result before saving.'
+	String get transformPreviewDescription => 'All transformations are off by default. The original is retained; review and edit the derived result before saving.';
+
+	/// en: 'Reflow plain text into up to two lines'
+	String get reflowPlainText => 'Reflow plain text into up to two lines';
+
+	/// en: 'Line limit: ${count} characters'
+	String lineLimit({required Object count}) => 'Line limit: ${count} characters';
+
+	/// en: 'Reading-speed warning: ${count} characters/second'
+	String readingSpeedWarning({required Object count}) => 'Reading-speed warning: ${count} characters/second';
+
+	/// en: 'Normalize spacing'
+	String get normalizeSpacing => 'Normalize spacing';
+
+	/// en: 'Remove bracketed descriptions'
+	String get removeBracketedDescriptions => 'Remove bracketed descriptions';
+
+	/// en: 'Can remove dialogue in parentheses; review required'
+	String get removeBracketedDescriptionsHelp => 'Can remove dialogue in parentheses; review required';
+
+	/// en: 'Remove lines marked with musical notes'
+	String get removeMusicalLines => 'Remove lines marked with musical notes';
+
+	/// en: 'Remove explicit subtitle-credit/URL lines'
+	String get removeSubtitleCredits => 'Remove explicit subtitle-credit/URL lines';
+
+	/// en: 'English credit labels and standalone URLs only'
+	String get removeSubtitleCreditsHelp => 'English credit labels and standalone URLs only';
+
+	/// en: 'Explicit FPS conversion'
+	String get explicitFpsConversion => 'Explicit FPS conversion';
+
+	/// en: 'No frame-rate conversion'
+	String get noFpsConversion => 'No frame-rate conversion';
+
+	/// en: 'Explicit spelling/term corrections (JSON)'
+	String get explicitCorrectionsJson => 'Explicit spelling/term corrections (JSON)';
+
+	/// en: 'Enter a JSON object with text keys and text values.'
+	String get invalidCorrectionJson => 'Enter a JSON object with text keys and text values.';
+
+	/// en: 'Preview'
+	String get previewTransformations => 'Preview';
+
+	/// en: 'Caption transformations'
+	String get transformOperationLabel => 'Caption transformations';
+
+	/// en: '${changed} cues changed; ${removed} cues removed. Original: ${source}.'
+	String transformationSummary({required Object changed, required Object removed, required Object source}) => '${changed} cues changed; ${removed} cues removed. Original: ${source}.';
+
+	/// en: 'Removed cue ${index}: ${text}'
+	String removedCue({required Object index, required Object text}) => 'Removed cue ${index}: ${text}';
+
 }
 
 // Path: videoControls.subtitleLiveCapture
@@ -19248,6 +19326,32 @@ extension on Translations {
 			'videoControls.subtitleAiControls.companionSceneTrack' => 'Track scene objects across a chosen video (experimental)',
 			'videoControls.subtitleAiControls.cancelCompanionUpload' => 'Cancel companion upload/job',
 			'videoControls.subtitleAiControls.musicLibrary' => 'Music library',
+			'videoControls.subtitleAiControls.audioDurationUnavailable' => 'The WAV duration is unavailable.',
+			'videoControls.subtitleAiControls.audioIntervalTitle' => 'Choose audio interval',
+			'videoControls.subtitleAiControls.audioIntervalDescription' => 'Only this audio range is analyzed. Existing subtitle cues outside it are preserved.',
+			'videoControls.subtitleAiControls.start' => 'Start',
+			'videoControls.subtitleAiControls.end' => 'End',
+			'videoControls.subtitleAiControls.invalidAudioInterval' => 'Enter a valid range inside the WAV duration.',
+			'videoControls.subtitleAiControls.useAudioInterval' => 'Use interval',
+			'videoControls.subtitleAiControls.transformPreviewTitle' => 'Preview caption transformations',
+			'videoControls.subtitleAiControls.transformPreviewDescription' => 'All transformations are off by default. The original is retained; review and edit the derived result before saving.',
+			'videoControls.subtitleAiControls.reflowPlainText' => 'Reflow plain text into up to two lines',
+			'videoControls.subtitleAiControls.lineLimit' => ({required Object count}) => 'Line limit: ${count} characters',
+			'videoControls.subtitleAiControls.readingSpeedWarning' => ({required Object count}) => 'Reading-speed warning: ${count} characters/second',
+			'videoControls.subtitleAiControls.normalizeSpacing' => 'Normalize spacing',
+			'videoControls.subtitleAiControls.removeBracketedDescriptions' => 'Remove bracketed descriptions',
+			'videoControls.subtitleAiControls.removeBracketedDescriptionsHelp' => 'Can remove dialogue in parentheses; review required',
+			'videoControls.subtitleAiControls.removeMusicalLines' => 'Remove lines marked with musical notes',
+			'videoControls.subtitleAiControls.removeSubtitleCredits' => 'Remove explicit subtitle-credit/URL lines',
+			'videoControls.subtitleAiControls.removeSubtitleCreditsHelp' => 'English credit labels and standalone URLs only',
+			'videoControls.subtitleAiControls.explicitFpsConversion' => 'Explicit FPS conversion',
+			'videoControls.subtitleAiControls.noFpsConversion' => 'No frame-rate conversion',
+			'videoControls.subtitleAiControls.explicitCorrectionsJson' => 'Explicit spelling/term corrections (JSON)',
+			'videoControls.subtitleAiControls.invalidCorrectionJson' => 'Enter a JSON object with text keys and text values.',
+			'videoControls.subtitleAiControls.previewTransformations' => 'Preview',
+			'videoControls.subtitleAiControls.transformOperationLabel' => 'Caption transformations',
+			'videoControls.subtitleAiControls.transformationSummary' => ({required Object changed, required Object removed, required Object source}) => '${changed} cues changed; ${removed} cues removed. Original: ${source}.',
+			'videoControls.subtitleAiControls.removedCue' => ({required Object index, required Object text}) => 'Removed cue ${index}: ${text}',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',

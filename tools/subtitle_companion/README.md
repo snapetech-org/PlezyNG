@@ -612,3 +612,12 @@ with bounded cue-local placement proposals, and offers `scene-tracks.jsonl` as a
 `audio_artifact` still accepts WAV only. See
 [whole-file scene bounds](../../docs/plezyng/subtitles/WHOLE-FILE-SCENES.md).
 No scene-quality or runtime qualification has been performed.
+
+## Raw microphone-array direction research
+
+`sound_localize` accepts reviewed 4–8 channel noncoplanar array calibration and
+original synchronized PCM16 WAV input. It preserves source channels and returns
+bounded, unqualified far-field direction evidence without editing captions.
+It is separate from stereo soundtrack evidence. The optional dependency is
+`requirements-array.txt`; no installation or qualification was run here.
+See [microphone-array bounds and calibration format](../../docs/plezyng/subtitles/MICROPHONE-ARRAY.md).

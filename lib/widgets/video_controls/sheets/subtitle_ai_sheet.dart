@@ -63,6 +63,7 @@ import 'subtitle_cloud_sync_dialog.dart';
 import 'subtitle_resource_dialog.dart';
 import 'subtitle_research_review_dialog.dart';
 import 'subtitle_lyric_units_dialog.dart';
+import 'subtitle_array_dialog.dart';
 import 'subtitle_dictionary_dialog.dart';
 import 'subtitle_language_dialog.dart';
 
@@ -639,7 +640,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   });
 
   Future<SubtitleAudioInterval?> _chooseAudioInterval(int durationMs) async {
-    if (durationMs <= 0) throw const FormatException('The WAV duration is unavailable.');
+    final copy = Translations.of(context).videoControls.subtitleAiControls;
+    if (durationMs <= 0) throw FormatException(copy.audioDurationUnavailable);
     final playbackPositionMs = widget.player.currentPosition.inMilliseconds;
     final latestStartMs = (durationMs - 60000).clamp(0, durationMs - 1).toInt();
     final startMs = playbackPositionMs.clamp(0, latestStartMs).toInt();
@@ -652,22 +654,22 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         context: context,
         builder: (dialogContext) => StatefulBuilder(
           builder: (dialogContext, setDialogState) => AlertDialog(
-            title: const Text('Choose audio interval'),
+            title: Text(copy.audioIntervalTitle),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('Only this audio range is analyzed. Existing subtitle cues outside it are preserved.'),
+                Text(copy.audioIntervalDescription),
                 const SizedBox(height: 12),
                 TextField(
                   controller: startController,
                   keyboardType: TextInputType.datetime,
-                  decoration: const InputDecoration(labelText: 'Start', hintText: 'HH:MM:SS'),
+                  decoration: InputDecoration(labelText: copy.start, hintText: 'HH:MM:SS'),
                 ),
                 TextField(
                   controller: endController,
                   keyboardType: TextInputType.datetime,
-                  decoration: const InputDecoration(labelText: 'End', hintText: 'HH:MM:SS'),
+                  decoration: InputDecoration(labelText: copy.end, hintText: 'HH:MM:SS'),
                 ),
                 if (error != null) ...[
                   const SizedBox(height: 8),
@@ -885,7 +887,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         throw const FormatException('The companion did not declare its translation destination.');
       }
       List<SubtitleCue> cues = const [];
-      if (task == 'align' || task == 'singing_align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || task == 'scene_track' || textTask) {
+      if (task == 'align' || task == 'singing_align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || task == 'scene_track' || task == 'sound_localize' || textTask) {
         final selected = await _pickSubtitleCues();
         if (selected == null || !mounted) return;
         cues = selected.$1;
@@ -918,7 +920,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       }
       if (!textTask && !useCurrentSource) {
         if (task == 'bitmap_ocr' && mounted) setState(() => _status = 'Choose PGS SUP, a video container, or a ZIP containing one matching VobSub IDX/SUB pair.');
-        final selected = await FilePickerService.instance.pickFiles(type: FileType.any);
+        final selected = await FilePickerService.instance.pickFiles(
+          type: task == 'sound_localize' ? FileType.custom : FileType.any,
+          allowedExtensions: task == 'sound_localize' ? const ['wav'] : null);
         if (selected == null || selected.files.isEmpty || !mounted) return;
         final file = selected.files.first;
         if (file.size <= 0 || file.size > SubtitleCompanionService.maximumInputBytes) throw const FormatException('Choose media up to 1 GiB and within the task duration limit.');
@@ -933,6 +937,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         }
       }
       if (!mounted) return;
+      final microphoneArray = task == 'sound_localize' ? await showSubtitleArrayCalibration(context) : null;
+      if (!mounted || task == 'sound_localize' && microphoneArray == null) return;
       var preprocess = false;
       var soundStereoEvidence = false;
       var sceneTemporalRegions = false;
@@ -1056,7 +1062,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               subtitle: const Text('Measures repeated left/right energy dominance in a stereo rendering. It cannot identify a sound’s physical direction or isolate it from the rest of the mix.'),
               value: soundStereoEvidence, onChanged: (v) => update(() => soundStereoEvidence = v)),
             if (task == 'diarize') const Text('Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.'),
-            if (path != null && task != 'ocr' && task != 'bitmap_ocr') ...[
+            if (task == 'sound_localize') const Text('All original WAV channels are analyzed together, without resampling or preprocessing. '
+              'At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback.'),
+            if (path != null && task != 'ocr' && task != 'bitmap_ocr' && task != 'sound_localize') ...[
               DropdownButtonFormField<int>(initialValue: track, decoration: const InputDecoration(labelText: 'Audio stream (zero based)'),
                 items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text('Audio stream $i'))),
                 onChanged: (value) => update(() => track = value ?? 0)),
@@ -1097,6 +1105,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, sceneAudioEvidence: sceneAudioEvidence, sceneMotionTracking: sceneMotionTracking, crop: [0, cropTop, 1, 1 - cropTop],
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         lyricSyllables: lyricSyllables, lyricPitchEvidence: lyricPitchEvidence,
+        microphoneArray: microphoneArray,
         sceneObjectTracking: sceneObjectTracking,
         sceneDetectorFingerprint: sceneObjectTracking || task == 'scene_track'
             ? (capabilities['sceneObjectDetector'] as Map?)?['fingerprint'] as String? : null,
@@ -4064,6 +4073,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('ensemble', aiCopy.companionEnsemble),
             ('separate', aiCopy.companionSeparate),
             ('sound_events', aiCopy.companionSoundEvents),
+            ('sound_localize', 'Review calibrated microphone-array directions (experimental)'),
             ('completeness', aiCopy.companionCompleteness),
             ('extract_text', aiCopy.companionExtractText),
             ('signs', aiCopy.companionSigns),

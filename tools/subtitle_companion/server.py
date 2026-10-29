@@ -29,6 +29,7 @@ from text_adapters import TEXT_TASKS, SCRIPT_MODES, MODES, capabilities as trans
 
 from research import MEDIA_TASKS
 from lyric_research import validate_syllables
+from microphone_array import validate as validate_microphone_array
 from dubbing import voice_config, capabilities as synthesis_capabilities
 from visual_research import vision_capabilities
 from scene_objects import capabilities as scene_object_capabilities
@@ -133,7 +134,7 @@ class Store:
         if task in {"align", "singing_align"} and value.get("spokenLanguage") != language:
             raise ValueError("alignment_requires_matching_spoken_language")
         cues = value.get("cues", [])
-        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "singing_align", "completeness", "dub_mix", "scene_review", "scene_track"} | TEXT_TASKS and not cues):
+        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "singing_align", "completeness", "dub_mix", "scene_review", "scene_track", "sound_localize"} | TEXT_TASKS and not cues):
             raise ValueError("cue_limit")
         ids = set()
         for cue in cues:
@@ -180,6 +181,13 @@ class Store:
         track = value.get("audioTrack", 0)
         if type(track) is not int or not 0 <= track <= 63:
             raise ValueError("invalid_audio_track")
+        microphone_array = None
+        if task == 'sound_localize':
+            if track != 0 or value.get('preprocess', False) is not False or importlib.util.find_spec('numpy') is None:
+                raise ValueError('array_requires_unprocessed_channels_and_numpy')
+            microphone_array = validate_microphone_array(value.get('microphoneArray'), cues)
+        elif value.get('microphoneArray') is not None:
+            raise ValueError('microphone_calibration_requires_array_task')
         subtitle_track = value.get("subtitleTrack", 0)
         if type(subtitle_track) is not int or not 0 <= subtitle_track <= 63:
             raise ValueError("invalid_subtitle_track")
@@ -256,6 +264,7 @@ class Store:
                          "cues": cues, "audioTrack": track, "timelineOffsetMs": timeline_offset, "itemTimeline": item_timeline, "soundStereoEvidence": stereo_evidence, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "lyricSyllables": lyric_syllables, "lyricPitchEvidence": lyric_pitch,
+                         "microphoneArray": microphone_array,
                          "sceneObjectTracking": object_tracking, "sceneDetectorFingerprint": object_fingerprint,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
                          "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions, "sceneAudioEvidence": audio_evidence, "sceneMotionTracking": motion_tracking,
@@ -441,6 +450,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/v1/capabilities" and self.command == "GET":
             installed = lambda module: importlib.util.find_spec(module) is not None
             tasks = []
+            if installed('numpy'): tasks.append('sound_localize')
             if installed("faster_whisper") and shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
                 tasks.extend(["transcribe", "completeness"])
                 if os.environ.get("PLEZY_SECOND_WHISPER_MODEL"):
@@ -489,6 +499,7 @@ class Handler(BaseHTTPRequestHandler):
                              "sceneTitleMaximumCues": 5000,
                              "lyricSyllables": 'singing_align' in tasks,
                              "lyricPitchEvidence": 'singing_align' in tasks and installed('librosa'),
+                             "microphoneArrayLocalization": 'sound_localize' in tasks,
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
                              "visionProvider": vision, "sceneAudioEvidence": vision is not None and vision['audioEvidence'], "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES), "readingModes": ["hiragana", "hepburn", "ruby"],
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})

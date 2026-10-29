@@ -337,6 +337,10 @@ def main():
         from scene_title import run
         result = run(folder, job, progress, atomic_json, read_json)
         device = "local-DETR-CPU"
+    elif task == 'sound_localize':
+        from microphone_array import run
+        result = run(folder, job, progress)
+        device = 'numpy-cpu-native-channel-pcm'
     elif task in {"ocr", "ocr_auto", "signs"}:
         result = ocr(folder, job)
         device = "tesseract-cpu"

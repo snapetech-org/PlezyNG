@@ -1,0 +1,2 @@
+# Optional raw microphone-array adapter; installation is a host action.
+numpy>=1.26,<3

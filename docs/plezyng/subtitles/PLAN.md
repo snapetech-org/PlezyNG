@@ -33,6 +33,19 @@ The appended source updates identify implementation details and bounds. They do
 not supersede the unfinished boundaries above or the definition of done. Derived
 files keep originals intact; optional processing and sharing remain explicit.
 
+The latest connected source paths are documented separately:
+
+- [Native HDR controls](NATIVE-HDR.md): active gpu-next/option probing, independent text/OSD and bitmap diffuse white, readback and explicit restoration; no app/display calibration.
+- [Direct and standalone live media](STANDALONE-LIVE.md): explicit transient source-analysis grants and expiring paused-frame UTC anchors; no inferred DVR bounds.
+- [Mixed-language spans](LANGUAGE-SPANS.md): explicit annotations, horizontal glyph/accessibility locale, retained word timings for annotation-only edits, JSON/WebVTT preservation and SRT flattening.
+- [Book-wide transcripts](BOOK-TRANSCRIPTS.md): explicitly selected per-file revisions, bounded aggregate search, guarded source seeks and provenance-bound JSON; ordinary source books require complete file durations.
+- [Supplied-result evaluation](RESULT-EVALUATION.md): paired lexical errors, explicit timing correspondences and supplied wall-time metrics with visible missing cases; no recognizer execution or qualification result.
+
+The source changes above are committed with `[skip ci]`. Confidence is high in
+verified Git publication, moderate in unexecuted source integration and unknown
+in device/runtime quality. The release and research boundaries in this document
+remain acceptance work, not success claims inferred from code presence.
+
 # 1 What PlezyNG already has
 
 The correct starting point is an established subtitle system. Rebuilding track selection or replacing libass would create avoidable regressions. The table distinguishes working code paths from settings, engine capabilities, and proposed additions.

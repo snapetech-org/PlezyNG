@@ -18,3 +18,17 @@ These are unedited captures of the production Flutter widgets using deterministi
 ![Phone library in PlezyNG's paper theme](library-phone-paper.png)
 
 The detail test mounts the screen as its home route; the real pushed route also includes the existing back affordance. Below-fold content remains scrollable and its actions are exercised by the tests. No sign-in credentials, real account identifiers or private host inventory are present.
+
+## Browse-only catalog follow-through
+
+[Catalog on a device without an embedded receiver](catalog-only-tv.png) is a
+ninth, separately captured production-widget view from code commit
+`54298205c062ee2bf3c26fffbb9413df2584f1d7`. It retains existing poster/favorite
+geometry, Steam attribution and multi-computer filters, explains local playback
+availability, and omits streaming settings. Touch and D-pad activation open
+details; menu tests retain favorites and omit playback/controller-only actions.
+Its [separate receipt](catalog-only-receipt.json) preserves the original eight
+captures' provenance. The actual GamesScreen loading/persistence/profile path
+also passes separately under both webOS and Tizen build flags.
+
+![Browse-only game library retaining computer filters and favorites](catalog-only-tv.png)

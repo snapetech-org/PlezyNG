@@ -148,6 +148,14 @@ inventory separately from completion or a guaranteed transfer source.
 
 ## Evidence
 
+The catalog/ownership closure at `54298205c062ee2bf3c26fffbb9413df2584f1d7`
+passes **209** portable tests (one TV-only case explicitly skipped there),
+**19** cases under each webOS/Tizen build flag, and clean focused analysis and
+localization checks. These include the production GamesScreen profile/persistence
+path, session-only grants, bounded capabilities and exact dialog retirement.
+See [the closure record](VALIDATION.md#catalog-and-ownership-closure--2026-10-29).
+Earlier source/SDK receipts below retain their original scope.
+
 - Nineteen targeted Flutter tests pass for presentation lifetime, late teardown,
   input ownership and the real TLS/UDP relay fixture after enabling codec
   preferences over the tunnel.

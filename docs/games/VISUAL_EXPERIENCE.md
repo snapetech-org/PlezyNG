@@ -84,4 +84,4 @@ The detail fixture is mounted as the home route; normal in-app navigation also s
 
 ## Reviewed screenshots
 
-Eight unedited production-widget captures and their hashes are in [visuals/](visuals/README.md). They cover desktop dark, phone paper, 2× RTL/custom palette, first use, responsive details, grouped settings and OLED stream recovery. The final documentation-only commit does not change the validated source tree's code files.
+Eight original production-widget captures and a ninth browse-only catalog capture, with separate code-bound receipts, are in [visuals/](visuals/README.md). They cover desktop dark, phone paper, 2× RTL/custom palette, first use, responsive details, grouped settings and OLED stream recovery. The browse-only capture is bound to `54298205c062ee2bf3c26fffbb9413df2584f1d7`; the original eight retain their earlier source receipt.

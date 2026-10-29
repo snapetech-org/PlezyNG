@@ -1,5 +1,56 @@
 # Games validation and release gates
 
+## Catalog and ownership closure — 2026-10-29
+
+Code commit `54298205c062ee2bf3c26fffbb9413df2584f1d7`, tree
+`84307dbd6ffd62911a02adbb47b6c014e1f77b5a`, closes receiver/catalog coupling,
+a Games-screen Provider lifecycle error, exact-dialog ownership, native
+capability timeouts and secure session-only catalog authorization.
+
+- **209 tests pass** in all Games, Steam workspace/texture, shared dialogs and
+  platform-detector suites. One TV-only screen test is explicitly skipped in
+  this ordinary-platform run; it is exercised in the flag-specific runs below.
+- **19 tests pass under each of `PLEZY_WEBOS=true` and `PLEZY_TIZEN=true`.** The
+  production GamesScreen loads a real in-memory database catalog, opens details,
+  persists favorites and retires the old profile's detail route. No native
+  capability/pair/play invocation is made. These are platform-flag fixtures,
+  not TV package or hardware builds.
+- New tests verify session grants never enter preferences; refresh preserves
+  the active grant; unlink/account replacement/profile retirement removes
+  access; failed persistence and invalid credentials cannot publish a grant.
+- A stalled native capability query is bounded; late generation and malformed
+  bridge responses fail closed. Exact-dialog tests preserve newer dialogs and
+  support cancellation before first build or after owner retirement.
+- Standard Dart analysis of every changed source and test reports **zero
+  diagnostics**. Localization integrity passes for **37 locales / 4,410
+  messages / 24,372 explicit English fallback entries**. The strict usage scan
+  reports zero unused keys after removing an obsolete recovery message.
+- A ninth production-widget capture is visually reviewed with real fonts and
+  Steam fixture artwork. The [separate receipt](visuals/catalog-only-receipt.json)
+  binds it to this code; the original eight screenshots retain their provenance.
+
+Reproduce the portable suite:
+
+```sh
+flutter test --concurrency=1 test/games \
+  test/multiview/steam_game_workspace_surface_test.dart \
+  test/multiview/steam_texture_surface_test.dart \
+  test/utils/dialogs_test.dart test/utils/platform_detector_test.dart
+flutter test --dart-define=PLEZY_WEBOS=true \
+  test/games/game_catalog_screen_test.dart test/utils/platform_detector_test.dart
+flutter test --dart-define=PLEZY_TIZEN=true \
+  test/games/game_catalog_screen_test.dart test/utils/platform_detector_test.dart
+python3 scripts/checks/check_localizations.py
+python3 scripts/checks/clean_translations.py --check --unused --strict
+```
+
+No native receiver, server or CI workflow changed in this closure. Their earlier
+receipts remain earlier evidence; SDK packages, real Steam/Cloud/Families,
+physical HDR/input/audio/accessibility and deployed relay qualification remain
+build/live gates. The [source acceptance ledger](CONNECTED_EXPERIENCE.md)
+separates these gates from implemented code and records the still-unimplemented
+account-global Cloud write contract and game-side-only Steam SDK features.
+
 ## Steam visual and interaction pass — 2026-10-29
 
 Code commit `db4376768ebf95b0c87afe7e0892fb723a346b74`, tree

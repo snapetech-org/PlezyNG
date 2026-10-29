@@ -5,10 +5,11 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 
+import '../i18n/strings.g.dart';
 import '../utils/platform_detector.dart';
-import 'subtitle_retimer.dart';
-import 'subtitle_language_text.dart';
 import 'settings_service.dart';
+import 'subtitle_language_text.dart';
+import 'subtitle_retimer.dart';
 
 /// Subtitle text translated on-device, using ML Kit on mobile or an optional
 /// locally installed Argos Translate runtime on desktop.
@@ -100,10 +101,10 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     void Function(String status)? onStatus,
   }) async {
     if (!mobilePlatformSupported) {
-      throw UnsupportedError('Offline language model preparation is available on supported phones and tablets only.');
+      throw UnsupportedError(t.videoControls.subtitleAiControls.translationModelPreparationUnsupported);
     }
     if (sourceLanguage == targetLanguage) {
-      throw ArgumentError('Choose different source and target languages.');
+      throw ArgumentError(t.videoControls.subtitleAiControls.translationLanguagePairMustDiffer);
     }
     final manager = OnDeviceTranslatorModelManager();
     for (final language in {sourceLanguage, targetLanguage}) {
@@ -138,7 +139,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
   ) {
     final normalizedSeriesId = seriesId.trim();
     if (normalizedSeriesId.isEmpty || utf8.encode(normalizedSeriesId).length > 512) {
-      throw ArgumentError.value(seriesId, 'seriesId', 'Use a non-empty series identifier up to 512 bytes.');
+      throw ArgumentError.value(seriesId, 'seriesId', t.videoControls.subtitleAiControls.glossarySeriesIdentifierInvalid);
     }
     final encodedSeriesId = base64Url.encode(utf8.encode(normalizedSeriesId));
     return '$encodedSeriesId|${_glossaryPairKey(sourceLanguage, targetLanguage)}';
@@ -285,7 +286,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     while (serializedBytes() > 1024 * 1024) {
       final oldest = entries.keys.firstWhere((key) => key != entryKey, orElse: () => '');
       if (oldest.isEmpty) {
-        throw const FormatException('Series glossary storage exceeds the 1 MiB profile bound.');
+        throw FormatException(t.videoControls.subtitleAiControls.seriesGlossaryStorageLimit);
       }
       entries.remove(oldest);
     }
@@ -359,7 +360,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
         }
       }
       if (oldestScope == null) {
-        throw const FormatException('Glossary revision history exceeds the 1 MiB profile bound.');
+        throw FormatException(t.videoControls.subtitleAiControls.glossaryHistoryStorageLimit);
       }
       final oldest = history[oldestScope]!;
       oldest.removeLast();
@@ -419,21 +420,21 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     if (!await isSupportedOnCurrentDevice()) {
       throw UnsupportedError(
         desktopPlatformSupported
-            ? 'Install Argos Translate and the selected language pair to translate locally on desktop.'
-            : 'On-device translation is available on supported phones and tablets only.',
+            ? t.videoControls.subtitleAiControls.translationDesktopRuntimeUnavailable
+            : t.videoControls.subtitleAiControls.translationMobileRuntimeUnavailable,
       );
     }
     final normalizedGlossary = _validateGlossary(glossary);
     final glossaryChecks = _buildGlossaryChecks(normalizedGlossary);
     if (sourceLanguage == targetLanguage) {
-      throw ArgumentError('Choose different source and target languages.');
+      throw ArgumentError(t.videoControls.subtitleAiControls.translationLanguagePairMustDiffer);
     }
     if (cues.isEmpty || cues.length > SubtitleRetimer.maximumCueCount) {
-      throw const FormatException('Subtitle has no cues or exceeds the 50000 cue processing bound.');
+      throw FormatException(t.videoControls.subtitleAiControls.translationCueCountLimit);
     }
     final textBytes = cues.fold<int>(0, (total, cue) => total + utf8.encode(cue.text).length);
     if (textBytes > SubtitleRetimer.maximumInputBytes || cues.any((cue) => cue.text.length > 4000)) {
-      throw const FormatException('Subtitle text exceeds the 5 MiB translation bound.');
+      throw FormatException(t.videoControls.subtitleAiControls.translationTextLimit);
     }
 
     if (desktopPlatformSupported) {
@@ -463,7 +464,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     var protectedInputBytes = 0;
     final qualityWarnings = <String>[
       if (cues.any((cue) => SubtitleLanguageText.parse(cue.text) != null))
-        'Source-language span labels are removed from translated text. Translation uses the selected source/target pair, not automatic per-span language switching.',
+        t.videoControls.subtitleAiControls.translationSpanLabelsWarning,
     ];
     try {
       for (var index = 0; index < cues.length; index++) {
@@ -471,23 +472,23 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
         final protected = _protectGlossaryMarkupAware(SubtitleLanguageText.removeTagsForSrt(source.text), normalizedGlossary, source.index);
         protectedInputBytes += utf8.encode(protected.text).length;
         if (protectedInputBytes > SubtitleRetimer.maximumInputBytes) {
-          throw const FormatException(
-            'Glossary placeholders expand subtitle input beyond the 5 MiB translation bound.',
+          throw FormatException(
+            t.videoControls.subtitleAiControls.translationPlaceholderExpansionLimit,
           );
         }
         final machineText = await _translateMarkupAware(translator, protected.text);
         final translatedText = _restoreGlossary(machineText, protected.markers);
         _collectTranslationWarnings(source, translatedText, glossaryChecks, qualityWarnings);
         if (translatedText.trim().isEmpty) {
-          throw FormatException('Translation returned empty text for cue ${source.index}.');
+          throw FormatException(t.videoControls.subtitleAiControls.translationEmptyCue(index: source.index));
         }
         final outputText = _composeBilingual(source.text, translatedText, bilingual);
         if (outputText.length > 4000) {
-          throw FormatException('Translation expanded cue ${source.index} beyond the 4000-character limit.');
+          throw FormatException(t.videoControls.subtitleAiControls.translationCueOutputLimit(index: source.index));
         }
         translatedBytes += utf8.encode(outputText).length;
         if (translatedBytes > SubtitleRetimer.maximumInputBytes) {
-          throw const FormatException('Translated subtitles exceed the 5 MiB output bound.');
+          throw FormatException(t.videoControls.subtitleAiControls.translationOutputLimit);
         }
         translated.add(
           SubtitleCue(
@@ -505,7 +506,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     }
     return SubtitleTranslationResult(
       cues: List.unmodifiable(translated),
-      backendLabel: 'ML Kit on-device; CPU/GPU placement is not reported',
+      backendLabel: t.videoControls.subtitleAiControls.translationBackendMlKit,
       fellBackToCpu: false,
       qualityWarnings: List.unmodifiable(qualityWarnings),
     );
@@ -542,7 +543,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       final protected = _protectGlossaryMarkupAware(SubtitleLanguageText.removeTagsForSrt(cue.text), glossary, cue.index);
       protectedInputBytes += utf8.encode(protected.text).length;
       if (protectedInputBytes > SubtitleRetimer.maximumInputBytes) {
-        throw const FormatException('Glossary placeholders expand subtitle input beyond the 5 MiB translation bound.');
+        throw FormatException(t.videoControls.subtitleAiControls.translationPlaceholderExpansionLimit);
       }
       protectedCues.add(protected);
       final matches = markup.allMatches(protected.text).toList(growable: false);
@@ -582,14 +583,14 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
 
     List<String> translatedText;
     var fellBack = false;
-    var backendLabel = 'Argos Translate CPU (local)';
+    var backendLabel = t.videoControls.subtitleAiControls.translationBackendArgosCpu;
     if (requestCuda) {
       try {
         translatedText = await _runArgosBatch(textToTranslate, sourceCode, targetCode, device: 'cuda');
-        backendLabel = 'Argos Translate CUDA requested; per-operation placement is not reported';
+        backendLabel = t.videoControls.subtitleAiControls.translationBackendArgosCuda;
       } catch (_) {
         translatedText = await _runArgosBatch(textToTranslate, sourceCode, targetCode, device: 'cpu');
-        backendLabel = 'Argos Translate CPU (CUDA request failed and retried on CPU)';
+        backendLabel = t.videoControls.subtitleAiControls.translationBackendArgosFallback;
         fellBack = true;
       }
     } else {
@@ -597,12 +598,12 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     }
 
     if (translatedText.length != textToTranslate.length) {
-      throw const FormatException('Local translation returned an unexpected number of text segments.');
+      throw FormatException(t.videoControls.subtitleAiControls.translationUnexpectedSegments);
     }
     final translated = <SubtitleCue>[];
     final qualityWarnings = <String>[
       if (cues.any((cue) => SubtitleLanguageText.parse(cue.text) != null))
-        'Source-language span labels are removed from translated text. Translation uses the selected source/target pair, not automatic per-span language switching.',
+        t.videoControls.subtitleAiControls.translationSpanLabelsWarning,
     ];
     var translatedBytes = 0;
     for (var cueIndex = 0; cueIndex < cues.length; cueIndex++) {
@@ -614,15 +615,15 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       final restoredText = _restoreGlossary(output.toString(), protectedCues[cueIndex].markers);
       _collectTranslationWarnings(source, restoredText, glossaryChecks, qualityWarnings);
       if (restoredText.trim().isEmpty) {
-        throw FormatException('Local translation returned invalid text for cue ${source.index}.');
+        throw FormatException(t.videoControls.subtitleAiControls.translationLocalEmptyCue(index: source.index));
       }
       final outputText = _composeBilingual(source.text, restoredText, bilingual);
       if (outputText.length > 4000) {
-        throw FormatException('Local translation expanded cue ${source.index} beyond the 4000-character limit.');
+        throw FormatException(t.videoControls.subtitleAiControls.translationLocalCueOutputLimit(index: source.index));
       }
       translatedBytes += utf8.encode(outputText).length;
       if (translatedBytes > SubtitleRetimer.maximumInputBytes) {
-        throw const FormatException('Translated subtitles exceed the 5 MiB output bound.');
+        throw FormatException(t.videoControls.subtitleAiControls.translationOutputLimit);
       }
       translated.add(
         SubtitleCue(
@@ -665,7 +666,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
         const Duration(minutes: 30),
         onTimeout: () {
           process.kill();
-          throw TimeoutException('Local subtitle translation exceeded 30 minutes.');
+          throw TimeoutException(t.videoControls.subtitleAiControls.translationTimeout);
         },
       );
       processFinished = true;
@@ -675,15 +676,17 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
         final lines = error.trim().split('\n').where((line) => line.trim().isNotEmpty).toList();
         final lastLine = lines.isEmpty ? null : lines.last;
         throw StateError(
-          lastLine == null ? 'Argos Translate exited with code $exitCode.' : 'Argos Translate: $lastLine',
+          lastLine == null
+              ? t.videoControls.subtitleAiControls.translationEngineExit(code: exitCode)
+              : t.videoControls.subtitleAiControls.translationEngineError(error: lastLine),
         );
       }
       if (output.length > 12 * 1024 * 1024) {
-        throw const FormatException('Local translation output exceeds the 12 MiB processing bound.');
+        throw FormatException(t.videoControls.subtitleAiControls.translationRuntimeOutputLimit);
       }
       final value = jsonDecode(output);
       if (value is! List || value.any((item) => item is! String)) {
-        throw const FormatException('Local translation returned malformed data.');
+        throw FormatException(t.videoControls.subtitleAiControls.translationMalformedRuntimeOutput);
       }
       return value.cast<String>();
     } finally {
@@ -712,7 +715,11 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       if (warnings.length >= 100) break;
       if (check.sourcePattern.hasMatch(source.text) && !check.targetPattern.hasMatch(translatedText)) {
         warnings.add(
-          'Cue ${source.index}: “${check.source}” may be missing its glossary translation “${check.target}”.',
+          t.videoControls.subtitleAiControls.translationGlossaryMissingWarning(
+            cue: source.index,
+            source: check.source,
+            target: check.target,
+          ),
         );
       }
     }
@@ -735,16 +742,22 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     }
     if (missingNumbers.isNotEmpty) {
       final examples = missingNumbers.take(3).join(', ');
-      final remainder = missingNumbers.length > 3 ? ' (${missingNumbers.length - 3} more)' : '';
+      final remainder = missingNumbers.length > 3
+          ? t.videoControls.subtitleAiControls.translationMoreCount(count: missingNumbers.length - 3)
+          : '';
       warnings.add(
-        'Cue ${source.index}: source number(s) $examples are missing or changed$remainder; verify quantities before attaching.',
+        t.videoControls.subtitleAiControls.translationMissingNumbersWarning(
+          cue: source.index,
+          examples: examples,
+          remainder: remainder,
+        ),
       );
     }
   }
 
   static Map<String, String> _validateGlossary(Map<String, String> glossary) {
     if (glossary.length > 200) {
-      throw const FormatException('A translation glossary may contain at most 200 terms.');
+      throw FormatException(t.videoControls.subtitleAiControls.glossaryTermLimit);
     }
     final output = <String, String>{};
     final normalizedTerms = <String>{};
@@ -763,12 +776,12 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
           source.contains('>') ||
           target.contains('<') ||
           target.contains('>')) {
-        throw const FormatException(
-          'Glossary terms and translations must be single-line plain text of at most 128 characters.',
+        throw FormatException(
+          t.videoControls.subtitleAiControls.glossaryTermPlainTextRequired,
         );
       }
       if (!normalizedTerms.add(source.toLowerCase())) {
-        throw const FormatException('Glossary source terms must be unique without regard to case.');
+        throw FormatException(t.videoControls.subtitleAiControls.glossarySourceUnique);
       }
       output[source] = target;
     }
@@ -817,8 +830,8 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
   static String _restoreGlossary(String text, Map<String, String> markers) {
     for (final marker in markers.entries) {
       if (marker.key.allMatches(text).length != 1) {
-        throw const FormatException(
-          'Translation changed a protected glossary term; the source subtitle was left intact.',
+        throw FormatException(
+          t.videoControls.subtitleAiControls.glossaryPlaceholderChanged,
         );
       }
       text = text.replaceFirst(marker.key, marker.value);

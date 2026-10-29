@@ -3079,7 +3079,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     ) : <String, String>{};
     final pending = selected.$1.where((cue) => !remembered.containsKey(cue.stableId)).toList();
     final generated = pending.isEmpty
-        ? const SubtitleTranslationResult(cues: [], backendLabel: 'Reviewed translation memory', fellBackToCpu: false, qualityWarnings: [])
+        ? SubtitleTranslationResult(
+            cues: [],
+            backendLabel: t.videoControls.subtitleAiControls.reviewedTranslationMemoryBackend,
+            fellBackToCpu: false,
+            qualityWarnings: [],
+          )
         : await SubtitleTranslationService.translateCues(
       cues: pending,
       sourceLanguage: _sourceLanguage,

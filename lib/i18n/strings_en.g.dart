@@ -15412,6 +15412,77 @@ class Translations$videoControls$subtitleAiControls$en {
 	/// en: 'Subtitle revision identifier is invalid.'
 	String get revisionIdentifierInvalid => 'Subtitle revision identifier is invalid.';
 
+	/// en: 'Series glossary storage exceeds the 1 MiB profile bound.'
+	String get seriesGlossaryStorageLimit => 'Series glossary storage exceeds the 1 MiB profile bound.';
+	/// en: 'Glossary revision history exceeds the 1 MiB profile bound.'
+	String get glossaryHistoryStorageLimit => 'Glossary revision history exceeds the 1 MiB profile bound.';
+	/// en: 'Choose different source and target languages.'
+	String get translationLanguagePairMustDiffer => 'Choose different source and target languages.';
+	/// en: 'Subtitle has no cues or exceeds the 50000 cue processing bound.'
+	String get translationCueCountLimit => 'Subtitle has no cues or exceeds the 50000 cue processing bound.';
+	/// en: 'Subtitle text exceeds the 5 MiB translation bound.'
+	String get translationTextLimit => 'Subtitle text exceeds the 5 MiB translation bound.';
+	/// en: 'Glossary placeholders expand subtitle input beyond the 5 MiB translation bound.'
+	String get translationPlaceholderExpansionLimit => 'Glossary placeholders expand subtitle input beyond the 5 MiB translation bound.';
+	/// en: 'Translation returned empty text for cue ${index}.'
+	String translationEmptyCue({required Object index}) => 'Translation returned empty text for cue ${index}.';
+	/// en: 'Translation expanded cue ${index} beyond the 4000-character limit.'
+	String translationCueOutputLimit({required Object index}) => 'Translation expanded cue ${index} beyond the 4000-character limit.';
+	/// en: 'Translated subtitles exceed the 5 MiB output bound.'
+	String get translationOutputLimit => 'Translated subtitles exceed the 5 MiB output bound.';
+	/// en: 'Local translation returned an unexpected number of text segments.'
+	String get translationUnexpectedSegments => 'Local translation returned an unexpected number of text segments.';
+	/// en: 'Local translation returned invalid text for cue ${index}.'
+	String translationLocalEmptyCue({required Object index}) => 'Local translation returned invalid text for cue ${index}.';
+	/// en: 'Local translation expanded cue ${index} beyond the 4000-character limit.'
+	String translationLocalCueOutputLimit({required Object index}) => 'Local translation expanded cue ${index} beyond the 4000-character limit.';
+	/// en: 'Local subtitle translation exceeded 30 minutes.'
+	String get translationTimeout => 'Local subtitle translation exceeded 30 minutes.';
+	/// en: 'Argos Translate exited with code ${code}.'
+	String translationEngineExit({required Object code}) => 'Argos Translate exited with code ${code}.';
+	/// en: 'Argos Translate: ${error}'
+	String translationEngineError({required Object error}) => 'Argos Translate: ${error}';
+	/// en: 'Local translation output exceeds the 12 MiB processing bound.'
+	String get translationRuntimeOutputLimit => 'Local translation output exceeds the 12 MiB processing bound.';
+	/// en: 'Local translation returned malformed data.'
+	String get translationMalformedRuntimeOutput => 'Local translation returned malformed data.';
+	/// en: 'A translation glossary may contain at most 200 terms.'
+	String get glossaryTermLimit => 'A translation glossary may contain at most 200 terms.';
+	/// en: 'Glossary terms and translations must be single-line plain text of at most 128 characters.'
+	String get glossaryTermPlainTextRequired => 'Glossary terms and translations must be single-line plain text of at most 128 characters.';
+	/// en: 'Glossary source terms must be unique without regard to case.'
+	String get glossarySourceUnique => 'Glossary source terms must be unique without regard to case.';
+	/// en: 'Translation changed a protected glossary term; the source subtitle was left intact.'
+	String get glossaryPlaceholderChanged => 'Translation changed a protected glossary term; the source subtitle was left intact.';
+	/// en: 'Source-language span labels are removed from translated text. Translation uses the selected source/target pair, not automatic per-span language switching.'
+	String get translationSpanLabelsWarning => 'Source-language span labels are removed from translated text. Translation uses the selected source/target pair, not automatic per-span language switching.';
+	/// en: 'Cue ${cue}: “${source}” may be missing its glossary translation “${target}”.'
+	String translationGlossaryMissingWarning({required Object cue, required Object source, required Object target}) => 'Cue ${cue}: “${source}” may be missing its glossary translation “${target}”.';
+	/// en: ' (${count} more)'
+	String translationMoreCount({required Object count}) => ' (${count} more)';
+	/// en: 'Cue ${cue}: source number(s) ${examples} are missing or changed${remainder}; verify quantities before attaching.'
+	String translationMissingNumbersWarning({required Object cue, required Object examples, required Object remainder}) => 'Cue ${cue}: source number(s) ${examples} are missing or changed${remainder}; verify quantities before attaching.';
+	/// en: 'ML Kit on-device; CPU/GPU placement is not reported'
+	String get translationBackendMlKit => 'ML Kit on-device; CPU/GPU placement is not reported';
+	/// en: 'Argos Translate CPU (local)'
+	String get translationBackendArgosCpu => 'Argos Translate CPU (local)';
+	/// en: 'Argos Translate CUDA requested; per-operation placement is not reported'
+	String get translationBackendArgosCuda => 'Argos Translate CUDA requested; per-operation placement is not reported';
+	/// en: 'Argos Translate CPU (CUDA request failed and retried on CPU)'
+	String get translationBackendArgosFallback => 'Argos Translate CPU (CUDA request failed and retried on CPU)';
+	/// en: 'Reviewed translation memory'
+	String get reviewedTranslationMemoryBackend => 'Reviewed translation memory';
+
+	/// en: 'Use a non-empty series identifier up to 512 bytes.'
+	String get glossarySeriesIdentifierInvalid => 'Use a non-empty series identifier up to 512 bytes.';
+
+	/// en: 'Offline language model preparation is available on supported phones and tablets only.'
+	String get translationModelPreparationUnsupported => 'Offline language model preparation is available on supported phones and tablets only.';
+	/// en: 'Install Argos Translate and the selected language pair to translate locally on desktop.'
+	String get translationDesktopRuntimeUnavailable => 'Install Argos Translate and the selected language pair to translate locally on desktop.';
+	/// en: 'On-device translation is available on supported phones and tablets only.'
+	String get translationMobileRuntimeUnavailable => 'On-device translation is available on supported phones and tablets only.';
+
 }
 
 // Path: videoControls.subtitleLiveCapture
@@ -20315,6 +20386,40 @@ extension on Translations {
 			'videoControls.subtitleAiControls.revisionFilenameMismatch' => 'Revision filename does not match its record.',
 			'videoControls.subtitleAiControls.savedTranscriptIdentityInvalid' => 'Saved transcript identity is invalid.',
 			'videoControls.subtitleAiControls.revisionIdentifierInvalid' => 'Subtitle revision identifier is invalid.',
+			'videoControls.subtitleAiControls.seriesGlossaryStorageLimit' => 'Series glossary storage exceeds the 1 MiB profile bound.',
+			'videoControls.subtitleAiControls.glossaryHistoryStorageLimit' => 'Glossary revision history exceeds the 1 MiB profile bound.',
+			'videoControls.subtitleAiControls.translationLanguagePairMustDiffer' => 'Choose different source and target languages.',
+			'videoControls.subtitleAiControls.translationCueCountLimit' => 'Subtitle has no cues or exceeds the 50000 cue processing bound.',
+			'videoControls.subtitleAiControls.translationTextLimit' => 'Subtitle text exceeds the 5 MiB translation bound.',
+			'videoControls.subtitleAiControls.translationPlaceholderExpansionLimit' => 'Glossary placeholders expand subtitle input beyond the 5 MiB translation bound.',
+			'videoControls.subtitleAiControls.translationEmptyCue' => ({required Object index}) => 'Translation returned empty text for cue ${index}.',
+			'videoControls.subtitleAiControls.translationCueOutputLimit' => ({required Object index}) => 'Translation expanded cue ${index} beyond the 4000-character limit.',
+			'videoControls.subtitleAiControls.translationOutputLimit' => 'Translated subtitles exceed the 5 MiB output bound.',
+			'videoControls.subtitleAiControls.translationUnexpectedSegments' => 'Local translation returned an unexpected number of text segments.',
+			'videoControls.subtitleAiControls.translationLocalEmptyCue' => ({required Object index}) => 'Local translation returned invalid text for cue ${index}.',
+			'videoControls.subtitleAiControls.translationLocalCueOutputLimit' => ({required Object index}) => 'Local translation expanded cue ${index} beyond the 4000-character limit.',
+			'videoControls.subtitleAiControls.translationTimeout' => 'Local subtitle translation exceeded 30 minutes.',
+			'videoControls.subtitleAiControls.translationEngineExit' => ({required Object code}) => 'Argos Translate exited with code ${code}.',
+			'videoControls.subtitleAiControls.translationEngineError' => ({required Object error}) => 'Argos Translate: ${error}',
+			'videoControls.subtitleAiControls.translationRuntimeOutputLimit' => 'Local translation output exceeds the 12 MiB processing bound.',
+			'videoControls.subtitleAiControls.translationMalformedRuntimeOutput' => 'Local translation returned malformed data.',
+			'videoControls.subtitleAiControls.glossaryTermLimit' => 'A translation glossary may contain at most 200 terms.',
+			'videoControls.subtitleAiControls.glossaryTermPlainTextRequired' => 'Glossary terms and translations must be single-line plain text of at most 128 characters.',
+			'videoControls.subtitleAiControls.glossarySourceUnique' => 'Glossary source terms must be unique without regard to case.',
+			'videoControls.subtitleAiControls.glossaryPlaceholderChanged' => 'Translation changed a protected glossary term; the source subtitle was left intact.',
+			'videoControls.subtitleAiControls.translationSpanLabelsWarning' => 'Source-language span labels are removed from translated text. Translation uses the selected source/target pair, not automatic per-span language switching.',
+			'videoControls.subtitleAiControls.translationGlossaryMissingWarning' => ({required Object cue, required Object source, required Object target}) => 'Cue ${cue}: “${source}” may be missing its glossary translation “${target}”.',
+			'videoControls.subtitleAiControls.translationMoreCount' => ({required Object count}) => ' (${count} more)',
+			'videoControls.subtitleAiControls.translationMissingNumbersWarning' => ({required Object cue, required Object examples, required Object remainder}) => 'Cue ${cue}: source number(s) ${examples} are missing or changed${remainder}; verify quantities before attaching.',
+			'videoControls.subtitleAiControls.translationBackendMlKit' => 'ML Kit on-device; CPU/GPU placement is not reported',
+			'videoControls.subtitleAiControls.translationBackendArgosCpu' => 'Argos Translate CPU (local)',
+			'videoControls.subtitleAiControls.translationBackendArgosCuda' => 'Argos Translate CUDA requested; per-operation placement is not reported',
+			'videoControls.subtitleAiControls.translationBackendArgosFallback' => 'Argos Translate CPU (CUDA request failed and retried on CPU)',
+			'videoControls.subtitleAiControls.reviewedTranslationMemoryBackend' => 'Reviewed translation memory',
+			'videoControls.subtitleAiControls.glossarySeriesIdentifierInvalid' => 'Use a non-empty series identifier up to 512 bytes.',
+			'videoControls.subtitleAiControls.translationModelPreparationUnsupported' => 'Offline language model preparation is available on supported phones and tablets only.',
+			'videoControls.subtitleAiControls.translationDesktopRuntimeUnavailable' => 'Install Argos Translate and the selected language pair to translate locally on desktop.',
+			'videoControls.subtitleAiControls.translationMobileRuntimeUnavailable' => 'On-device translation is available on supported phones and tablets only.',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',

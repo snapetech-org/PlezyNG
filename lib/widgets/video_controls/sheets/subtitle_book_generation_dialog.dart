@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../i18n/strings.g.dart';
 import '../../../profiles/active_profile_provider.dart';
 import '../../../services/subtitle_ai_service.dart';
 import '../../../services/subtitle_book_generation.dart';
 import '../../../services/subtitle_book_timeline.dart';
+import '../../../services/subtitle_job_service.dart';
 import '../../../services/subtitle_revision_service.dart';
 
 class SubtitleBookGenerationDialog extends StatefulWidget {
@@ -43,18 +45,19 @@ class _SubtitleBookGenerationDialogState extends State<SubtitleBookGenerationDia
     setState(() { _working = true; _error = null; });
     try { await action(); }
     catch (_) {
-      if (mounted) _error = 'This action could not finish. Confirm the source, file durations, available job slots and storage, then retry.';
+      if (mounted) _error = Translations.of(context).videoControls.subtitleBook.generationActionFailed;
     } finally { if (mounted) setState(() => _working = false); }
   }
 
   Future<void> _review(int index) => _action(() async {
     final revision = await _service.result(index);
     if (!mounted || !_current) return;
+    final copy = Translations.of(context).videoControls.subtitleBook;
     if (revision == null) {
       await showDialog<void>(context: context, builder: (context) => AlertDialog(
-        title: const Text('No recognized cues'),
-        content: const Text('Every window was processed without producing a cue. This does not prove there was no speech.'),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))]));
+        title: Text(copy.noCuesTitle),
+        content: Text(copy.noCuesBody),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(Translations.of(context).common.close))]));
       return;
     }
     final part = widget.timeline.parts[index];
@@ -62,22 +65,20 @@ class _SubtitleBookGenerationDialogState extends State<SubtitleBookGenerationDia
     widget.timeline.useRevision(part, revision, bookClock: false);
     var confirmed = false;
     final accept = await showDialog<bool>(context: context, builder: (context) => StatefulBuilder(
-      builder: (context, update) => AlertDialog(title: Text('Review ${part.title}'),
+      builder: (context, update) => AlertDialog(title: Text(copy.reviewGeneratedFile(file: part.title)),
         content: SizedBox(width: 700, height: (MediaQuery.sizeOf(context).height - 180).clamp(240.0, 620.0).toDouble(),
           child: CustomScrollView(slivers: [SliverToBoxAdapter(child: Column(children: [
-            const Text('Generated text is unreviewed. Times below are local to this file. '
-                'Saving adds a separate revision; it does not select or attach captions. '
-                'You can edit the saved revision through the file’s subtitle history.'),
-            CheckboxListTile(value: confirmed, title: const Text('I reviewed the text and confirmed this narration, file and clock'),
+            Text(copy.unreviewedGeneratedHelp),
+            CheckboxListTile(value: confirmed, title: Text(copy.confirmGeneratedReview),
               onChanged: (value) => update(() => confirmed = value == true)),
           ])), SliverList(delegate: SliverChildBuilderDelegate((context, cueIndex) {
             final cue = revision.cues[cueIndex];
             return ListTile(title: SelectableText(cue.text),
               subtitle: Text('${Duration(milliseconds: cue.startMs)} – ${Duration(milliseconds: cue.endMs)}'));
           }, childCount: revision.cues.length))])),
-        actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Close')),
+        actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(Translations.of(context).common.close)),
           FilledButton(onPressed: confirmed && _current ? () => Navigator.pop(context, true) : null,
-            child: const Text('Save accepted revision'))],
+            child: Text(copy.saveAcceptedGeneration))],
       )));
     if (accept != true || !_current) return;
     await SubtitleRevisionService.saveRevision(identity: part.identity, operation: 'Book transcription',
@@ -85,75 +86,121 @@ class _SubtitleBookGenerationDialogState extends State<SubtitleBookGenerationDia
   });
 
   Future<void> _delete() => _action(() async {
+    final copy = Translations.of(context).videoControls.subtitleBook;
     final accepted = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
-      title: const Text('Delete this generation batch?'),
-      content: const Text('This removes unaccepted batch results and its active file job. Accepted revisions remain in file history.'),
-      actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete batch'))]));
+      title: Text(copy.deleteGenerationTitle),
+      content: Text(copy.deleteGenerationHelp),
+      actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(Translations.of(context).common.cancel)),
+        FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(copy.deleteBatchAction))]));
     if (accepted == true && _current) await _service.delete();
   });
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(animation: _service, builder: (context, _) {
+    final translations = Translations.of(context);
+    final copy = translations.videoControls.subtitleBook;
+    final jobsCopy = translations.videoControls.subtitleJobs;
     final current = _current, enabled = _ready && !_working && current;
     final existing = _service.hasStoredBatch;
-    return PopScope(canPop: !_working, child: AlertDialog(title: const Text('Generate the whole book'),
+    String batchMessage(String? message) {
+      if (message == null) return '';
+      final progress = RegExp(r'^(\d+)/(\d+) files saved · (.+)$').firstMatch(message);
+      if (progress != null) return copy.generationProgress(
+        completed: progress.group(1)!, total: progress.group(2)!, file: progress.group(3)!);
+      return switch (message) {
+        'All selected files have saved results. Review before use.' ||
+        'All files have saved results. Review before use.' => copy.generationComplete,
+        'Saved batch paused. Resume explicitly with this book open.' => copy.generationPaused,
+        'This batch record could not be opened. Delete this batch before creating another; reviewed history is separate.' => copy.generationRecordUnavailable,
+        'Preparing the next incomplete file.' => copy.preparingNextFile,
+        'Book, order, edition or profile changed. Reopen the original book to resume.' => copy.bookGenerationChanged,
+        'Paused outside the foreground. Resume explicitly.' => copy.pausedOutsideForeground,
+        'The active file job was removed. Resume again to create a new job for that file.' => copy.generationJobMissing,
+        'This saved file job does not match the book.' => copy.generationJobMismatch,
+        'The file job paused or failed. Resume explicitly to retry its incomplete window.' => copy.retryGenerationWindow,
+        'The file job was cancelled. Delete it in Transcription jobs, then resume this batch to retry.' => copy.generationJobCancelled,
+        'This batch reached its 64 MiB result limit. The completed file job is retained for review.' => copy.generationResultLimit,
+        'The batch paused. Completed files and windows are retained; check Transcription jobs, reopen the source and resume. Cancelled jobs must be deleted before retry; a full queue or result store must be cleared first.' => copy.generationPausedWithDetails,
+        'Batch results deleted. Reviewed revision history is unchanged.' => copy.generationDeleted,
+        _ => copy.generationStatusUnavailable,
+      };
+    }
+    String jobState(SubtitleJobState state) => switch (state) {
+      SubtitleJobState.queued => jobsCopy.stateQueued,
+      SubtitleJobState.running => jobsCopy.stateRunning,
+      SubtitleJobState.paused => jobsCopy.statePaused,
+      SubtitleJobState.completed => jobsCopy.stateCompleted,
+      SubtitleJobState.cancelled => jobsCopy.stateCancelled,
+      SubtitleJobState.failed => jobsCopy.stateFailed,
+    };
+    String jobMessage(String? message) {
+      if (message == null) return '';
+      final progress = RegExp(r'^.+ · (\d+)/(\d+) windows saved$').firstMatch(message);
+      if (progress != null) return jobsCopy.progressStatus(
+        completed: progress.group(1)!, total: progress.group(2)!);
+      return switch (message) {
+        'Reopen the original file and audio stream to resume this source job.' => jobsCopy.reopenSource,
+        'Waiting for playback to stop (reopen this item to report playback state).' => jobsCopy.waitingPlayback,
+        'Waiting for confirmed external power.' => jobsCopy.waitingPower,
+        'Preparing transcription' => jobsCopy.preparing,
+        'All audio windows saved; review before attachment.' => jobsCopy.allAudioSaved,
+        'This window could not finish. Completed windows are saved; resume to retry.' => jobsCopy.windowFailed,
+        _ => jobsCopy.statusUnavailable,
+      };
+    }
+    return PopScope(canPop: !_working, child: AlertDialog(title: Text(copy.generationTitle),
       content: SizedBox(width: 740, height: (MediaQuery.sizeOf(context).height - 180).clamp(300.0, 680.0).toDouble(),
         child: CustomScrollView(slivers: [SliverToBoxAdapter(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text('Process each file in this book through its source transport, one file at a time. '
-              'Playback is unchanged. This uses bandwidth and may download the speech model on first use. '
-              'Choose the file-order audio stream for every file; matching stream numbers do not prove the same language. '
-              'The batch continues with the book open while the app stays in the foreground, even after this dialog closes. '
-              'Completed files and window checkpoints survive restarts; resume is explicit.'),
-          if (!current) const Text('The book changed. Reopen its transcript tools.'),
+          Text(copy.generationDescription),
+          if (!current) Text(copy.bookGenerationChanged),
           if (!_ready) const LinearProgressIndicator(),
           if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-          if (_service.message != null) Semantics(liveRegion: true, child: Text(_service.message!)),
+          if (_service.message != null) Semantics(liveRegion: true, child: Text(batchMessage(_service.message))),
           if (existing) ...[
-            Text('${_service.completedFiles}/${widget.timeline.parts.length} files saved'),
+            Text(copy.generationSavedFiles(completed: _service.completedFiles, total: widget.timeline.parts.length)),
             if (_service.activeJob case final job?) ...[
               LinearProgressIndicator(value: job.progress),
-              Text('${job.completedChunks}/${job.chunkCount} windows · ${job.message ?? job.state.name}'),
+              Text(jobsCopy.progress(state: jobState(job.state), completed: job.completedChunks, total: job.chunkCount)),
+              if (job.message != null) Text(jobMessage(job.message)),
             ],
           ] else ...[
             DropdownButtonFormField<SubtitleInferenceProvider>(initialValue: _provider,
-              decoration: const InputDecoration(labelText: 'Local speech provider'),
+              decoration: InputDecoration(labelText: copy.localSpeechProvider),
               items: [for (final provider in SubtitleAiService.availableProviderRequests)
                 DropdownMenuItem(value: provider, child: Text(provider.displayName))],
               onChanged: !enabled ? null : (value) => setState(() => _provider = value ?? _provider)),
             TextField(controller: _language, maxLength: 3,
-              decoration: const InputDecoration(labelText: 'Spoken language (two/three-letter code; blank for automatic)'),
+              decoration: InputDecoration(labelText: copy.spokenLanguage),
               enabled: enabled),
-            SwitchListTile(title: const Text('Only on external power'), value: _charging,
+            SwitchListTile(title: Text(jobsCopy.externalPower), value: _charging,
               onChanged: !enabled ? null : (value) => setState(() => _charging = value)),
-            SwitchListTile(title: const Text('Only while playback is idle'), value: _idle,
+            SwitchListTile(title: Text(jobsCopy.playbackIdle), value: _idle,
               onChanged: !enabled ? null : (value) => setState(() => _idle = value)),
-            CheckboxListTile(value: _confirmed, title: const Text('I confirmed every file’s audio stream and want local generation'),
+            CheckboxListTile(value: _confirmed, title: Text(copy.confirmEveryFileStream),
               onChanged: !enabled ? null : (value) => setState(() => _confirmed = value == true)),
           ],
-          const Text('Limits: 256 files, eight hours per file, seven days per book; four retained batches and 64 MiB per batch. '
-              'A batch uses one slot in the twelve-job queue. Runtime and recognition quality remain unqualified.'),
+          Text(copy.generationLimits),
         ])), SliverList(delegate: SliverChildBuilderDelegate((context, index) {
           final part = widget.timeline.parts[index];
           return ListTile(title: Text(part.title), subtitle: Text('${Duration(milliseconds: part.durationMs)}'),
             trailing: existing ? (_service.completedIndices.contains(index)
-              ? TextButton(onPressed: enabled ? () => _review(index) : null, child: const Text('Review')) : const Text('Pending'))
+              ? TextButton(onPressed: enabled ? () => _review(index) : null, child: Text(jobsCopy.reviewResult)) : Text(copy.generationPending))
               : SizedBox(width: 85, child: TextFormField(initialValue: '${_ordinals[index]}', enabled: enabled,
-                  keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Audio 0–63'),
+                  keyboardType: TextInputType.number, decoration: InputDecoration(labelText: copy.audioOrdinal),
                   onChanged: (value) { _ordinals[index] = int.tryParse(value) ?? -1; _confirmed = false; setState(() {}); })));
         }, childCount: widget.timeline.parts.length))])),
       actions: [
         if (existing) ...[
-          TextButton(onPressed: enabled && !_service.busy ? _delete : null, child: const Text('Delete batch')),
+          TextButton(onPressed: enabled && !_service.busy ? _delete : null, child: Text(copy.deleteBatchAction)),
           if (!_service.complete) FilledButton(onPressed: !enabled || _service.busy ? null
               : () => _action(_service.running ? _service.pause : _service.resume),
-            child: Text(_service.running ? 'Pause' : 'Resume')),
+            child: Text(_service.running ? jobsCopy.pause : jobsCopy.resume)),
         ] else FilledButton(onPressed: !enabled || !_confirmed ? null : () => _action(() async {
           final language = _language.text.trim().toLowerCase();
           await _service.create(ordinals: _ordinals, provider: _provider, language: language.isEmpty ? null : language,
             chargingOnly: _charging, idleOnly: _idle);
-        }), child: const Text('Start generation')),
-        TextButton(onPressed: _working ? null : () => Navigator.pop(context), child: const Text('Close')),
+        }), child: Text(copy.startGeneration)),
+        TextButton(onPressed: _working ? null : () => Navigator.pop(context), child: Text(translations.common.close)),
       ],
     ));
   });

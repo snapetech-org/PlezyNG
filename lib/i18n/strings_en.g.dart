@@ -12220,6 +12220,111 @@ class Translations$videoControls$subtitleBook$en {
 	/// en: 'None'
 	String get none => 'None';
 
+	/// en: 'Generate the whole book'
+	String get generationTitle => 'Generate the whole book';
+
+	/// en: 'Process each file in this book through its source transport, one file at a time. Playback is unchanged. This uses bandwidth and may download the speech model on first use. Choose the file-order audio stream for every file; matching stream numbers do not prove the same language. The batch continues with the book open while the app stays in the foreground, even after this dialog closes. Completed files and window checkpoints survive restarts; resume is explicit.'
+	String get generationDescription => 'Process each file in this book through its source transport, one file at a time. Playback is unchanged. This uses bandwidth and may download the speech model on first use. Choose the file-order audio stream for every file; matching stream numbers do not prove the same language. The batch continues with the book open while the app stays in the foreground, even after this dialog closes. Completed files and window checkpoints survive restarts; resume is explicit.';
+
+	/// en: 'This action could not finish. Confirm the source, file durations, available job slots and storage, then retry.'
+	String get generationActionFailed => 'This action could not finish. Confirm the source, file durations, available job slots and storage, then retry.';
+
+	/// en: 'No recognized cues'
+	String get noCuesTitle => 'No recognized cues';
+
+	/// en: 'Every window was processed without producing a cue. This does not prove there was no speech.'
+	String get noCuesBody => 'Every window was processed without producing a cue. This does not prove there was no speech.';
+
+	/// en: 'Review ${file}'
+	String reviewGeneratedFile({required Object file}) => 'Review ${file}';
+
+	/// en: 'Generated text is unreviewed. Times below are local to this file. Saving adds a separate revision; it does not select or attach captions. You can edit the saved revision through the file’s subtitle history.'
+	String get unreviewedGeneratedHelp => 'Generated text is unreviewed. Times below are local to this file. Saving adds a separate revision; it does not select or attach captions. You can edit the saved revision through the file’s subtitle history.';
+
+	/// en: 'I reviewed the text and confirmed this narration, file and clock'
+	String get confirmGeneratedReview => 'I reviewed the text and confirmed this narration, file and clock';
+
+	/// en: 'Save accepted revision'
+	String get saveAcceptedGeneration => 'Save accepted revision';
+
+	/// en: 'Delete this generation batch?'
+	String get deleteGenerationTitle => 'Delete this generation batch?';
+
+	/// en: 'This removes unaccepted batch results and its active file job. Accepted revisions remain in file history.'
+	String get deleteGenerationHelp => 'This removes unaccepted batch results and its active file job. Accepted revisions remain in file history.';
+
+	/// en: 'Delete batch'
+	String get deleteBatchAction => 'Delete batch';
+
+	/// en: '${completed}/${total} files saved · ${file}'
+	String generationProgress({required Object completed, required Object total, required Object file}) => '${completed}/${total} files saved · ${file}';
+
+	/// en: 'All selected files have saved results. Review before use.'
+	String get generationComplete => 'All selected files have saved results. Review before use.';
+
+	/// en: 'Saved batch paused. Resume explicitly with this book open.'
+	String get generationPaused => 'Saved batch paused. Resume explicitly with this book open.';
+
+	/// en: 'This batch record could not be opened. Delete this batch before creating another; reviewed history is separate.'
+	String get generationRecordUnavailable => 'This batch record could not be opened. Delete this batch before creating another; reviewed history is separate.';
+
+	/// en: 'Preparing the next incomplete file.'
+	String get preparingNextFile => 'Preparing the next incomplete file.';
+
+	/// en: 'Book, order, edition or profile changed. Reopen the original book to resume.'
+	String get bookGenerationChanged => 'Book, order, edition or profile changed. Reopen the original book to resume.';
+
+	/// en: 'Paused outside the foreground. Resume explicitly.'
+	String get pausedOutsideForeground => 'Paused outside the foreground. Resume explicitly.';
+
+	/// en: 'The active file job was removed. Resume again to create a new job for that file.'
+	String get generationJobMissing => 'The active file job was removed. Resume again to create a new job for that file.';
+
+	/// en: 'This saved file job does not match the book.'
+	String get generationJobMismatch => 'This saved file job does not match the book.';
+
+	/// en: 'The file job paused or failed. Resume explicitly to retry its incomplete window.'
+	String get retryGenerationWindow => 'The file job paused or failed. Resume explicitly to retry its incomplete window.';
+
+	/// en: 'The file job was cancelled. Delete it in Transcription jobs, then resume this batch to retry.'
+	String get generationJobCancelled => 'The file job was cancelled. Delete it in Transcription jobs, then resume this batch to retry.';
+
+	/// en: 'This batch reached its 64 MiB result limit. The completed file job is retained for review.'
+	String get generationResultLimit => 'This batch reached its 64 MiB result limit. The completed file job is retained for review.';
+
+	/// en: 'The batch paused. Completed files and windows are retained; check Transcription jobs, reopen the source and resume. Cancelled jobs must be deleted before retry; a full queue or result store must be cleared first.'
+	String get generationPausedWithDetails => 'The batch paused. Completed files and windows are retained; check Transcription jobs, reopen the source and resume. Cancelled jobs must be deleted before retry; a full queue or result store must be cleared first.';
+
+	/// en: 'Batch results deleted. Reviewed revision history is unchanged.'
+	String get generationDeleted => 'Batch results deleted. Reviewed revision history is unchanged.';
+
+	/// en: 'Book generation status is unavailable. Reopen this book to refresh.'
+	String get generationStatusUnavailable => 'Book generation status is unavailable. Reopen this book to refresh.';
+
+	/// en: '${completed}/${total} files saved'
+	String generationSavedFiles({required Object completed, required Object total}) => '${completed}/${total} files saved';
+
+	/// en: 'Local speech provider'
+	String get localSpeechProvider => 'Local speech provider';
+
+	/// en: 'Spoken language (two/three-letter code; blank for automatic)'
+	String get spokenLanguage => 'Spoken language (two/three-letter code; blank for automatic)';
+
+	/// en: 'I confirmed every file’s audio stream and want local generation'
+	String get confirmEveryFileStream => 'I confirmed every file’s audio stream and want local generation';
+
+	/// en: 'Limits: 256 files, eight hours per file, seven days per book; four retained batches and 64 MiB per batch. A batch uses one slot in the twelve-job queue. Runtime and recognition quality remain unqualified.'
+	String get generationLimits => 'Limits: 256 files, eight hours per file, seven days per book; four retained batches and 64 MiB per batch. A batch uses one slot in the twelve-job queue. Runtime and recognition quality remain unqualified.';
+
+	/// en: 'Pending'
+	String get generationPending => 'Pending';
+
+	/// en: 'Audio 0–63'
+	String get audioOrdinal => 'Audio 0–63';
+
+	/// en: 'Start generation'
+	String get startGeneration => 'Start generation';
+
 }
 
 // Path: videoControls.subtitleFonts
@@ -16603,6 +16708,41 @@ extension on Translations {
 			'videoControls.subtitleBook.exportTooLarge' => 'Book transcript export exceeds 16 MiB.',
 			'videoControls.subtitleBook.invalidExport' => 'The book changed or the transcript is empty or too large.',
 			'videoControls.subtitleBook.none' => 'None',
+			'videoControls.subtitleBook.generationTitle' => 'Generate the whole book',
+			'videoControls.subtitleBook.generationDescription' => 'Process each file in this book through its source transport, one file at a time. Playback is unchanged. This uses bandwidth and may download the speech model on first use. Choose the file-order audio stream for every file; matching stream numbers do not prove the same language. The batch continues with the book open while the app stays in the foreground, even after this dialog closes. Completed files and window checkpoints survive restarts; resume is explicit.',
+			'videoControls.subtitleBook.generationActionFailed' => 'This action could not finish. Confirm the source, file durations, available job slots and storage, then retry.',
+			'videoControls.subtitleBook.noCuesTitle' => 'No recognized cues',
+			'videoControls.subtitleBook.noCuesBody' => 'Every window was processed without producing a cue. This does not prove there was no speech.',
+			'videoControls.subtitleBook.reviewGeneratedFile' => ({required Object file}) => 'Review ${file}',
+			'videoControls.subtitleBook.unreviewedGeneratedHelp' => 'Generated text is unreviewed. Times below are local to this file. Saving adds a separate revision; it does not select or attach captions. You can edit the saved revision through the file’s subtitle history.',
+			'videoControls.subtitleBook.confirmGeneratedReview' => 'I reviewed the text and confirmed this narration, file and clock',
+			'videoControls.subtitleBook.saveAcceptedGeneration' => 'Save accepted revision',
+			'videoControls.subtitleBook.deleteGenerationTitle' => 'Delete this generation batch?',
+			'videoControls.subtitleBook.deleteGenerationHelp' => 'This removes unaccepted batch results and its active file job. Accepted revisions remain in file history.',
+			'videoControls.subtitleBook.deleteBatchAction' => 'Delete batch',
+			'videoControls.subtitleBook.generationProgress' => ({required Object completed, required Object total, required Object file}) => '${completed}/${total} files saved · ${file}',
+			'videoControls.subtitleBook.generationComplete' => 'All selected files have saved results. Review before use.',
+			'videoControls.subtitleBook.generationPaused' => 'Saved batch paused. Resume explicitly with this book open.',
+			'videoControls.subtitleBook.generationRecordUnavailable' => 'This batch record could not be opened. Delete this batch before creating another; reviewed history is separate.',
+			'videoControls.subtitleBook.preparingNextFile' => 'Preparing the next incomplete file.',
+			'videoControls.subtitleBook.bookGenerationChanged' => 'Book, order, edition or profile changed. Reopen the original book to resume.',
+			'videoControls.subtitleBook.pausedOutsideForeground' => 'Paused outside the foreground. Resume explicitly.',
+			'videoControls.subtitleBook.generationJobMissing' => 'The active file job was removed. Resume again to create a new job for that file.',
+			'videoControls.subtitleBook.generationJobMismatch' => 'This saved file job does not match the book.',
+			'videoControls.subtitleBook.retryGenerationWindow' => 'The file job paused or failed. Resume explicitly to retry its incomplete window.',
+			'videoControls.subtitleBook.generationJobCancelled' => 'The file job was cancelled. Delete it in Transcription jobs, then resume this batch to retry.',
+			'videoControls.subtitleBook.generationResultLimit' => 'This batch reached its 64 MiB result limit. The completed file job is retained for review.',
+			'videoControls.subtitleBook.generationPausedWithDetails' => 'The batch paused. Completed files and windows are retained; check Transcription jobs, reopen the source and resume. Cancelled jobs must be deleted before retry; a full queue or result store must be cleared first.',
+			'videoControls.subtitleBook.generationDeleted' => 'Batch results deleted. Reviewed revision history is unchanged.',
+			'videoControls.subtitleBook.generationStatusUnavailable' => 'Book generation status is unavailable. Reopen this book to refresh.',
+			'videoControls.subtitleBook.generationSavedFiles' => ({required Object completed, required Object total}) => '${completed}/${total} files saved',
+			'videoControls.subtitleBook.localSpeechProvider' => 'Local speech provider',
+			'videoControls.subtitleBook.spokenLanguage' => 'Spoken language (two/three-letter code; blank for automatic)',
+			'videoControls.subtitleBook.confirmEveryFileStream' => 'I confirmed every file’s audio stream and want local generation',
+			'videoControls.subtitleBook.generationLimits' => 'Limits: 256 files, eight hours per file, seven days per book; four retained batches and 64 MiB per batch. A batch uses one slot in the twelve-job queue. Runtime and recognition quality remain unqualified.',
+			'videoControls.subtitleBook.generationPending' => 'Pending',
+			'videoControls.subtitleBook.audioOrdinal' => 'Audio 0–63',
+			'videoControls.subtitleBook.startGeneration' => 'Start generation',
 			'videoControls.subtitleFonts.title' => 'Offline subtitle fonts',
 			'videoControls.subtitleFonts.description' => 'Bundled multilingual and Hangul fonts are always available offline. Imported single-font TTF/OTF files are shared on this device, limited to 16 fonts, 16 MiB per font and 128 MiB including metadata. Font collections and web fonts are unsupported.',
 			'videoControls.subtitleFonts.storageStatus' => ({required Object storage, required Object count, required Object registered}) => 'Saved storage: ${storage} · ${count} saved · ${registered}/16 registered this app session',

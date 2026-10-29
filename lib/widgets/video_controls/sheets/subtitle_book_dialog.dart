@@ -135,7 +135,7 @@ class _SubtitleBookDialogState extends State<SubtitleBookDialog> {
         child: CustomScrollView(slivers: [SliverToBoxAdapter(child: Column(children: [
           Text(copy.description),
           if (widget.timeline.openAnalysisSource != null && SubtitleAnalysisDecoder.available && SubtitleAiService.supportedPlatform)
-            TextButton.icon(icon: const Icon(Icons.auto_awesome), label: const Text('Generate the whole book'),
+            TextButton.icon(icon: const Icon(Icons.auto_awesome), label: Text(copy.generationTitle),
               onPressed: _busy || !current ? null : () => _run(() => showDialog<void>(context: context,
                 builder: (_) => SubtitleBookGenerationDialog(timeline: widget.timeline)))),
           Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [Text(copy.selectedSummary(

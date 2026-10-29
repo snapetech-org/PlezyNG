@@ -435,3 +435,16 @@ an experimental texture tracker; background drift and false cut gates remain
 possible. No tracking/quality/device run was performed during implementation.
 
 API reference: [OpenCV feature optical flow](https://docs.opencv.org/4.x/dc/d6b/group__video__track.html).
+
+### App research evidence export
+
+Completed research jobs expose their bounded measurements in the app before
+caption editing: comparison counts, VAD gaps, lyric boundary disagreements,
+possible sound events/mix balance, sampled/locally tracked regions, audio/image
+requests and synthesized-line fitting. Expand observations or export a JSON
+report containing the input digest, clock basis, model/runtime provenance,
+returned cues/word proposals, alternatives and artifact digests. These are host
+observations before viewer edits and remain unqualified. The app accepts at most
+4 MiB of evidence and exports reports up to 24 MiB. Image bundles include the
+same metadata; audio/image pixels are exported separately through their existing
+explicit actions. No new network destination or automatic upload is added.

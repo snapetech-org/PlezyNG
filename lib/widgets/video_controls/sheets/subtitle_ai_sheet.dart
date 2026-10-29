@@ -57,6 +57,7 @@ import 'subtitle_bitmap_review_dialog.dart';
 import 'subtitle_discovery_dialog.dart';
 import 'subtitle_cloud_sync_dialog.dart';
 import 'subtitle_resource_dialog.dart';
+import 'subtitle_research_review_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -1007,6 +1008,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       final identity = _operationRevisionIdentity;
       if (identity == null || job['identity'] != identity.storageKey) throw StateError('The job belongs to another item.');
       final result = await service.result(job['id'] as String, identityKey: identity.storageKey, audioDigest: job['audioDigest'] as String);
+      if (!mounted) return;
+      _requireCurrentOperationIdentity();
+      if (result.researchEvidence.isNotEmpty) {
+        final reviewed = await showDialog<bool>(context: context, builder: (_) => SubtitleResearchReviewDialog(
+          result: result, jobId: job['id'] as String, inputDigest: job['audioDigest'] as String,
+          isCurrent: () => mounted && _operationIdentityIsCurrent));
+        if (reviewed != true || !mounted) return;
+        _requireCurrentOperationIdentity();
+      }
       if (result.artifacts.isNotEmpty) {
         final artifact = result.artifacts.single;
         final export = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
@@ -1046,13 +1056,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         if (!mounted) return;
         _requireCurrentOperationIdentity();
         final reviewed = await showDialog<List<SubtitleCue>>(context: context,
-          builder: (_) => SubtitleBitmapReviewDialog(service: service, result: result, jobId: job['id'] as String,
+          builder: (_) => SubtitleBitmapReviewDialog(service: service, result: result, initialCues: cues, jobId: job['id'] as String,
             mediaDigest: job['audioDigest'] as String, isCurrent: () => mounted && _operationIdentityIsCurrent));
         if (reviewed == null || !mounted) return;
         cues = reviewed;
       }
+      final sourceById = {for (final cue in result.sourceCues) cue.stableId: cue};
       await _writeAndApply(cues, operationLabel: 'Companion ${job['task']}', operationLanguageCode: result.language,
-        sourceCues: result.sourceCues.isEmpty ? null : result.sourceCues,
+        sourceCues: result.sourceCues.isEmpty ? null : [for (final cue in cues) sourceById[cue.stableId]!],
         wordTimings: result.alternatives.isEmpty ? result.wordTimings : const [],
         onItemTimeline: result.itemTimeline, regions: result.regions, avoidRegions: result.avoidRegions, reviewWarnings: result.warnings);
     } finally { service.close(); }

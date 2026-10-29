@@ -16,17 +16,18 @@ import '../../../services/subtitle_retimer.dart';
 /// replaces the host's original OCR result or image evidence.
 class SubtitleBitmapReviewDialog extends StatefulWidget {
   const SubtitleBitmapReviewDialog({super.key, required this.service, required this.result,
-    required this.jobId, required this.mediaDigest, required this.isCurrent});
+    required this.jobId, required this.mediaDigest, required this.isCurrent, this.initialCues});
   final SubtitleCompanionService service;
   final SubtitleCompanionResult result;
   final String jobId, mediaDigest;
   final bool Function() isCurrent;
+  final List<SubtitleCue>? initialCues;
   @override
   State<SubtitleBitmapReviewDialog> createState() => _SubtitleBitmapReviewDialogState();
 }
 
 class _SubtitleBitmapReviewDialogState extends State<SubtitleBitmapReviewDialog> {
-  late final _cues = List<SubtitleCue>.of(widget.result.cues);
+  late final _cues = _initialCues();
   late final _indices = {for (var i = 0; i < _cues.length; i++) _cues[i].stableId: i};
   final _text = TextEditingController();
   final _reviewed = <String>{}, _excluded = <String>{};
@@ -35,6 +36,19 @@ class _SubtitleBitmapReviewDialogState extends State<SubtitleBitmapReviewDialog>
   bool _onlyUncertain = false, _loading = false, _exporting = false;
   Uint8List? _bytes;
   String? _error, _message;
+
+  List<SubtitleCue> _initialCues() {
+    final original = widget.result.cues, selected = widget.initialCues ?? original;
+    if (selected.length != original.length) throw const FormatException('Image review cue count changed');
+    for (var i = 0; i < selected.length; i++) {
+      if (selected[i].stableId != original[i].stableId || selected[i].startMs != original[i].startMs ||
+          selected[i].endMs != original[i].endMs || selected[i].text.trim().isEmpty || selected[i].text.length > 4000) {
+        throw const FormatException('Image review cue identity or bounds changed');
+      }
+    }
+    return List<SubtitleCue>.of(selected);
+  }
+  bool get _scene => widget.result.provenance['task'] == 'scene_review';
 
   SubtitleCompanionImage get _image => widget.result.images[_imageIndex];
   bool get _current => mounted && widget.isCurrent();
@@ -112,6 +126,8 @@ class _SubtitleBitmapReviewDialogState extends State<SubtitleBitmapReviewDialog>
       }
       Map<String, Object> cue(SubtitleCue c) => {'cueId': c.stableId, 'startMs': c.startMs, 'endMs': c.endMs, 'text': c.text};
       final manifest = utf8.encode(jsonEncode({'schema': 1, 'jobId': widget.jobId, 'mediaDigest': widget.mediaDigest,
+        'itemTimeline': widget.result.itemTimeline, 'provenance': widget.result.provenance,
+        'researchEvidence': widget.result.researchEvidence,
         'language': widget.result.language, 'images': widget.result.images.map((i) => i.toJson()).toList(),
         'originalOcrCues': widget.result.cues.map(cue).toList(), 'reviewedCues': _cues.map(cue).toList(),
         'excludedCueIds': _excluded.toList(), 'imageReviewedCueIds': _reviewed.toList(), 'warnings': widget.result.warnings}));
@@ -138,11 +154,12 @@ class _SubtitleBitmapReviewDialogState extends State<SubtitleBitmapReviewDialog>
     final visible = _visible, position = _visible.indexOf(_imageIndex);
     final busy = _loading || _exporting;
     final unresolved = widget.result.images.where((i) => i.requiresReview && !_reviewed.contains(i.cueId) && !_excluded.contains(i.cueId)).length;
-    return AlertDialog(title: const Text('Review bitmap OCR against images'),
+    return AlertDialog(title: Text(_scene ? 'Review scene hypotheses against images' : 'Review bitmap OCR against images'),
       content: SizedBox(width: 760, height: (MediaQuery.sizeOf(context).height - 200).clamp(280.0, 720.0).toDouble(),
         child: ListView(children: [
           Text('Image ${_imageIndex + 1} of ${widget.result.images.length} · $unresolved uncertain cues still need review'),
-          Text('${Duration(milliseconds: cue.startMs)} → ${Duration(milliseconds: cue.endMs)} · OCR ${(image.confidence * 100).round()}% (uncalibrated)'),
+          Text('${Duration(milliseconds: cue.startMs)} → ${Duration(milliseconds: cue.endMs)} · '
+            '${_scene ? 'Unverified scene hypothesis' : 'OCR ${(image.confidence * 100).round()}% (uncalibrated)'}'),
           Text('${image.width} × ${image.height} at (${image.x}, ${image.y})${image.forced ? ' · forced' : ''}'),
           FilterChip(label: const Text('Uncertain images only'), selected: _onlyUncertain,
             onSelected: busy ? null : (value) {

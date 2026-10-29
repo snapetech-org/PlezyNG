@@ -14,7 +14,7 @@ import 'subtitle_word_timing.dart';
 
 final class SubtitleCompanionResult {
   const SubtitleCompanionResult({required this.cues, required this.wordTimings, required this.language,
-      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const [], this.alternatives = const {}, this.regions = const {}, this.artifacts = const [], this.avoidRegions = const {}, this.itemTimeline = false});
+      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const [], this.alternatives = const {}, this.regions = const {}, this.artifacts = const [], this.avoidRegions = const {}, this.itemTimeline = false, this.researchEvidence = const {}, this.provenance = const {}});
   final List<SubtitleCue> cues;
   final List<SubtitleWordTiming> wordTimings;
   final String language;
@@ -28,6 +28,9 @@ final class SubtitleCompanionResult {
   final Map<String, List<Rect>> avoidRegions;
   final List<SubtitleCompanionArtifact> artifacts;
   final bool itemTimeline;
+  /// Bounded host measurements for explicit review/export, never instructions
+  /// or verified confidence. They do not change caption text or cue timing.
+  final Map<String, Object?> researchEvidence, provenance;
 }
 
 final class SubtitleCompanionArtifact {
@@ -260,6 +263,34 @@ final class SubtitleCompanionService {
     if (data['schema'] != 1 || data['identity'] != identityKey || data['audioDigest'] != audioDigest || data['jobId'] != id) {
       throw const FormatException('The companion returned a result for a different input or item.');
     }
+    final evidence = <String, Object?>{
+      for (final key in const ['coverageEvidence', 'ensembleEvidence', 'soundEvidence', 'lyricTimingEvidence',
+        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'synthesisEvidence'])
+        if (data[key] != null) key: data[key],
+    };
+    final provenance = <String, Object?>{
+      for (final key in const ['task', 'model', 'providerFingerprint', 'requestedDevice', 'runtimeDevice',
+        'cpuFallback', 'placementEvidence', 'preprocessing', 'durationMs', 'timelineOffsetMs', 'itemTimeline', 'sceneSampleCount', 'normalizationGain'])
+        if (data[key] != null) key: data[key],
+    };
+    // Copy the allowlisted fields into immutable JSON values. No arbitrary
+    // server configuration, headers, model code or raw request is retained.
+    var nodes = 0;
+    Object? bounded(Object? value, [int depth = 0]) {
+      if (++nodes > 300000 || depth > 12) throw const FormatException('Research evidence exceeds its structural bound');
+      if (value == null || value is bool || value is num && value.isFinite) return value;
+      if (value is String && value.length <= 4000) return value;
+      if (value is List && value.length <= 20000) return List<Object?>.unmodifiable(value.map((v) => bounded(v, depth + 1)));
+      if (value is Map && value.length <= 100 && value.keys.every((key) => key is String && key.length <= 120)) {
+        return Map<String, Object?>.unmodifiable(value.map((key, v) => MapEntry(key as String, bounded(v, depth + 1))));
+      }
+      throw const FormatException('Invalid research evidence');
+    }
+    final safeEvidence = bounded(evidence) as Map<String, Object?>;
+    final safeProvenance = bounded(provenance) as Map<String, Object?>;
+    if (utf8.encode(jsonEncode([safeEvidence, safeProvenance])).length > 4 * 1024 * 1024) {
+      throw const FormatException('Research evidence exceeds 4 MiB');
+    }
     final raw = data['cues'], rawWords = data['wordTimings'];
     if (raw is! List || raw.isEmpty || raw.length > 50000 || rawWords is! List || rawWords.length > 250000) {
       throw const FormatException('Companion result exceeds caption limits.');
@@ -389,7 +420,7 @@ final class SubtitleCompanionService {
       artifacts.add(SubtitleCompanionArtifact('dubbed.wav', rawArtifact['sha256'], rawArtifact['bytes'], 'audio/wav'));
     }
     if (data['itemTimeline'] != null && data['itemTimeline'] is! bool) throw const FormatException('Invalid companion clock basis');
-    return SubtitleCompanionResult(itemTimeline: data['itemTimeline'] == true, avoidRegions: Map.unmodifiable(avoidRegions), artifacts: List.unmodifiable(artifacts), alternatives: Map.unmodifiable(alternatives), regions: Map.unmodifiable(regions), cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
+    return SubtitleCompanionResult(researchEvidence: safeEvidence, provenance: safeProvenance, itemTimeline: data['itemTimeline'] == true, avoidRegions: Map.unmodifiable(avoidRegions), artifacts: List.unmodifiable(artifacts), alternatives: Map.unmodifiable(alternatives), regions: Map.unmodifiable(regions), cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
       language: label(data['language'], 24, 'unknown'), warnings: warnings,
       runtimeDevice: runtime, cpuFallback: data['cpuFallback'] == true, images: List.unmodifiable(images), sourceCues: List.unmodifiable(sourceCues));
   }

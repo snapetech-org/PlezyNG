@@ -1241,3 +1241,22 @@ source-timestamp gaps and exact bounded durations; the TV helper configuration
 and receipt gate require the matching resample/pad/trim filters. Native decoder
 windows already have bounded sample-clock padding. These source changes have
 not been executed or qualified, following the no-tests/no-builds instruction.
+
+## Research evidence in the app review path
+
+The app now retains bounded, allowlisted recognition-comparison, speech-coverage,
+lyric-boundary, sound-candidate, scene-track, audio/image and synthesis measurements
+returned by the companion. An expandable review exposes per-cue observations,
+processing provenance and warnings before the caption editor. Explicit JSON
+export includes the immutable input digest, clock basis, original returned cues,
+word proposals, alternatives and image/audio artifact digests. It labels the
+report as unqualified host observations before viewer edits; it does not convert
+heuristics into verified confidence. Evidence has a 4 MiB/300,000-node/depth-12
+bound; the report has a 24 MiB bound. Media pixels/audio stay in their existing
+explicit artifact export flows.
+
+Chosen recognition alternatives now survive the subsequent image review; image
+review accepts wording changes only for the same cue IDs/times. Excluding an
+image cue keeps before/after source pairing aligned with retained IDs. Image
+bundles include the research metadata and clock basis, while the returned host
+baseline remains separately identified. No models or evaluation jobs were run.

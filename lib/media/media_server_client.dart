@@ -941,6 +941,11 @@ abstract class MediaServerClient {
     String? mediaSourceId,
   });
 
+  /// A provider-backed read without attaching anything to the library. Only
+  /// backends with a documented authenticated preview route expose this.
+  bool get supportsRemoteSubtitlePreview => false;
+  Future<List<int>?> previewRemoteSubtitle(String key, {required String format, AbortController? abort}) async => null;
+
   /// Attach a validated text subtitle to the library item.
   ///
   /// Plex, Jellyfin, and Emby may persist the uploaded asset and refresh their

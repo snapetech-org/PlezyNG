@@ -18,6 +18,7 @@ import '../services/subtitle_analysis_source.dart';
 import '../services/subtitle_manual_live_clock.dart';
 import '../services/subtitle_book_timeline.dart';
 import '../services/subtitle_revision_service.dart';
+import '../services/subtitle_selection_rules.dart';
 import '../services/track_selection_service.dart';
 import '../services/music/music_hardware_transport.dart';
 import '../services/player_sync_offsets.dart';
@@ -548,9 +549,9 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     }
     final current = native.state.track.subtitle;
     if (current != null && current.id != SubtitleTrack.off.id && current.id != SubtitleTrack.auto.id) return;
-    final tracks = (availableTracks ?? native.state.tracks.subtitle)
+    final tracks = SubtitleSelectionRules.resolve().arrange((availableTracks ?? native.state.tracks.subtitle)
         .where((track) => track.id != SubtitleTrack.off.id && track.id != SubtitleTrack.auto.id)
-        .toList(growable: false);
+        .toList(growable: false));
     if (tracks.isEmpty || _fileIndex < 0 || _fileIndex >= files.length) return;
 
     SubtitleTrack? candidate;

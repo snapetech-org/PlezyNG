@@ -42,6 +42,7 @@ import 'subtitle_search_sheet.dart';
 import 'subtitle_ai_sheet.dart';
 import 'subtitle_import_dialog.dart';
 import 'subtitle_style_sheet.dart';
+import 'subtitle_role_dialog.dart';
 import '../models/track_controls_state.dart';
 import '../helpers/track_filter_helper.dart';
 import '../helpers/track_selection_helper.dart';
@@ -732,6 +733,12 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
       ),
     );
   }
+
+  actions.add(FocusableListTile(leading: const AppIcon(Symbols.subtitles_rounded),
+    title: const Text('Subtitle role preferences'),
+    subtitle: const Text('Profile defaults and an optional title override'),
+    onTap: () => showSubtitleRoleDialog(context, titleIdentity: state.metadata?.globalKey ??
+      (state.serverId != null && state.ratingKey.isNotEmpty ? '${state.serverId}:${state.ratingKey}' : null))));
 
   if (actions.isEmpty) return const [];
   return [Divider(height: 1, color: Theme.of(context).dividerColor), ...actions];

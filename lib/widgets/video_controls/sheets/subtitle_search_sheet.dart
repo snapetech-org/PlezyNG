@@ -3,6 +3,7 @@ import '../../../media/ids.dart';
 
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:provider/provider.dart';
 
 import '../../../focus/focusable_button.dart';
 import '../../../focus/focusable_text_field.dart';
@@ -12,6 +13,9 @@ import '../../../mixins/controller_disposer_mixin.dart';
 import '../../../models/subtitles/subtitle_search_result.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_rejection_service.dart';
+import '../../../services/subtitle_retimer.dart';
+import '../../../profiles/active_profile_provider.dart';
+import '../../../utils/media_server_http_client.dart' show AbortController;
 import '../../../utils/app_logger.dart';
 import '../../../utils/error_message_utils.dart';
 import '../../../utils/language_codes.dart';
@@ -76,6 +80,8 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
   String? _error;
   String? _downloadingKey;
   int _searchGeneration = 0;
+  AbortController? _previewAbort;
+  String? _previewingKey;
 
   bool _showLanguagePicker = false;
 
@@ -100,6 +106,7 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
   @override
   void dispose() {
     ++_searchGeneration;
+    _previewAbort?.abort();
     _debounceTimer?.cancel();
     _languageFocusNode.dispose();
     _titleFocusNode.dispose();
@@ -109,6 +116,7 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
 
   Future<void> _search() async {
     if (!mounted) return;
+    _previewAbort?.abort();
     final generation = ++_searchGeneration;
     setState(() {
       _isSearching = true;
@@ -292,7 +300,7 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
   }
 
   Future<void> _downloadSubtitle(SubtitleSearchResult result) async {
-    if (_downloadingKey != null) return;
+    if (_downloadingKey != null || _previewingKey != null) return;
     setState(() => _downloadingKey = result.key);
 
     try {
@@ -340,6 +348,47 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
       showErrorSnackBar(context, t.videoControls.subtitleDownloadFailed);
       setState(() => _downloadingKey = null);
     }
+  }
+
+  Future<void> _previewSubtitle(SubtitleSearchResult result) async {
+    if (_previewingKey != null || _downloadingKey != null) return;
+    final client = context.tryGetMediaClientForServer(ServerId(widget.serverId));
+    if (client == null || !client.supportsRemoteSubtitlePreview) return;
+    final profiles = context.read<ActiveProfileProvider>(), profile = context.read<ActiveProfileProvider>().activeId;
+    final generation = _searchGeneration, abort = AbortController();
+    bool current() => mounted && generation == _searchGeneration && profiles.activeId == profile &&
+        identical(client, context.tryGetMediaClientForServer(ServerId(widget.serverId)));
+    _previewAbort = abort; setState(() => _previewingKey = result.key);
+    var apply = false;
+    try {
+      final format = result.codec?.toLowerCase() ?? '';
+      final bytes = await client.previewRemoteSubtitle(result.key, format: format, abort: abort);
+      if (!current()) return;
+      if (bytes == null || bytes.isEmpty) throw const FormatException('Preview is unavailable');
+      final cues = SubtitleRetimer.parseCues(sourceBytes: bytes, extension: '.$format');
+      if (cues.isEmpty) throw const FormatException('No previewable text');
+      apply = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
+        title: const Text('Preview provider subtitles'),
+        content: SizedBox(width: 620, height: (MediaQuery.sizeOf(context).height - 180).clamp(240.0, 560.0).toDouble(),
+          child: ListView(children: [
+            Text(result.title ?? result.displayTitle ?? 'Provider subtitle'),
+            const Text('These are the first 12 text cues fetched through the server. No library subtitle has been attached. '
+                'The provider may count this read against its download quota. Timing and edition match still require review; '
+                'ASS styling, positions and animation are not shown.'),
+            for (final cue in cues.take(12)) ListTile(title: SelectableText(cue.text.length > 4000 ? '${cue.text.substring(0, 4000)}…' : cue.text),
+              subtitle: Text('${Duration(milliseconds: cue.startMs)} – ${Duration(milliseconds: cue.endMs)}')),
+          ])),
+        actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t.common.close)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Download to library'))],
+      )) == true && current();
+    } catch (_) {
+      if (current()) showErrorSnackBar(context, 'This provider result could not be previewed. Its existing download action remains available.');
+    } finally {
+      abort.abort();
+      if (identical(_previewAbort, abort)) _previewAbort = null;
+      if (mounted) setState(() => _previewingKey = null);
+    }
+    if (apply && current()) await _downloadSubtitle(result);
   }
 
   @override
@@ -528,6 +577,13 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
                 if (isRejected) 'Ignored revision',
               ];
               final trailingChildren = <Widget>[];
+              if (context.tryGetMediaClientForServer(ServerId(widget.serverId))?.supportsRemoteSubtitlePreview == true &&
+                  const {'srt', 'vtt', 'ass', 'ssa'}.contains(result.codec?.toLowerCase())) {
+                trailingChildren.add(IconButton(tooltip: 'Preview text before downloading',
+                  onPressed: _previewingKey != null || _downloadingKey != null ? null : () => _previewSubtitle(result),
+                  icon: _previewingKey == result.key ? const LoadingIndicatorBox(size: 18)
+                    : const AppIcon(Symbols.preview_rounded, size: 18)));
+              }
               if (isDownloading) {
                 trailingChildren.add(const LoadingIndicatorBox(size: 20));
               } else {

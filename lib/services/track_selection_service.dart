@@ -11,6 +11,7 @@ import '../utils/app_logger.dart';
 import '../utils/language_codes.dart';
 import '../utils/subtitle_forced_semantics.dart';
 import 'subtitle_preference.dart';
+import 'subtitle_selection_rules.dart';
 
 // These functions match MPV tracks to Plex tracks by properties (language,
 // codec, title, etc.) instead of list index, since the two may be ordered
@@ -715,6 +716,8 @@ class TrackSelectionService {
   final MediaSourceInfo? plexMediaInfo;
   final bool alwaysShowSubtitlesOnDevice;
   final List<String> preferredSubtitleLanguages;
+  final SubtitleRoleRules? subtitleRoleRules;
+  SubtitleRoleRules get _subtitleRules => subtitleRoleRules ?? SubtitleSelectionRules.resolve(titleIdentity: metadata.globalKey);
 
   TrackSelectionService({
     this.player,
@@ -723,6 +726,7 @@ class TrackSelectionService {
     this.plexMediaInfo,
     this.alwaysShowSubtitlesOnDevice = false,
     this.preferredSubtitleLanguages = const [],
+    this.subtitleRoleRules,
   });
 
   /// The profile's preferred language for one track kind, or null when unset.
@@ -826,6 +830,7 @@ class TrackSelectionService {
   }
 
   SubtitleTrack? _selectDeviceLocalSubtitle(List<SubtitleTrack> availableTracks) {
+    availableTracks = _subtitleRules.arrange(availableTracks);
     if (!alwaysShowSubtitlesOnDevice ||
         availableTracks.isEmpty ||
         profileSettings?.subtitleMode == SubtitlePlaybackMode.none) {
@@ -1238,16 +1243,17 @@ class TrackSelectionService {
     // Priority 3: Apply the server profile's subtitle mode where the server
     // does not pre-select for us (MediaBrowser). Plex never reaches this with
     // a mode: PMS already folded it into `selected` above.
-    final profileSelectedTrack = _selectSubtitleTrackByProfile(availableTracks, selectedAudioTrack);
+    final fallbackTracks = _subtitleRules.arrange(availableTracks);
+    final profileSelectedTrack = _selectSubtitleTrackByProfile(fallbackTracks, selectedAudioTrack);
     if (profileSelectedTrack != null) return profileSelectedTrack;
 
-    final localTrack = _selectDeviceLocalSubtitle(availableTracks);
+    final localTrack = _selectDeviceLocalSubtitle(fallbackTracks);
     if (localTrack != null) {
       return TrackSelectionResult(localTrack, TrackSelectionPriority.deviceLocalOverride);
     }
 
     // Priority 4: Check for default subtitle
-    final defaultTrack = _findDefaultSubtitleTrack(availableTracks);
+    final defaultTrack = _findDefaultSubtitleTrack(fallbackTracks);
     if (defaultTrack != null) {
       return TrackSelectionResult(defaultTrack, TrackSelectionPriority.defaultTrack);
     }

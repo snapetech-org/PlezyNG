@@ -196,6 +196,7 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
     addLanguage(appLanguage);
     if (orderedLanguages.isEmpty) return (result: result, streamId: null);
     final language = orderedLanguages.first;
+    final roleRules = SubtitleSelectionRules.resolve(titleIdentity: metadata.globalKey);
 
     bool matchesLanguageFor(String preferred, String? code, String? name) {
       return LanguageCodes.getIso6391Code(code ?? name ?? '') == preferred ||
@@ -203,9 +204,14 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
     }
 
     for (final preferred in orderedLanguages) {
-      final existingPreferredTrack = source.subtitleTracks
-          .where((track) => matchesLanguageFor(preferred, track.languageCode, track.language))
-          .firstOrNull;
+      final matchingTracks = source.subtitleTracks
+          .where((track) => matchesLanguageFor(preferred, track.languageCode, track.language) &&
+              roleRules.acceptsForced(track.effectiveForced)).toList();
+      var existingPreferredTrack = matchingTracks.firstOrNull;
+      for (final track in matchingTracks.skip(1)) {
+        if (roleRules.accessRank(track.effectiveHearingImpaired) <
+            roleRules.accessRank(existingPreferredTrack!.effectiveHearingImpaired)) existingPreferredTrack = track;
+      }
       if (existingPreferredTrack != null) {
         return (result: result, streamId: existingPreferredTrack.id);
       }
@@ -251,6 +257,7 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
             .where(
               (candidate) =>
                   candidate.key.isNotEmpty &&
+                  roleRules.acceptsForced(candidate.forced || titleSaysForced(candidate.title) || titleSaysForced(candidate.displayTitle)) &&
                   matchesLanguageFor(searchLanguage, candidate.languageCode, candidate.language) &&
                   !SubtitleRejectionService.isRejected(
                     settings,
@@ -264,6 +271,9 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
         candidates.sort((a, b) {
           final perfect = (b.perfectMatch ? 1 : 0).compareTo(a.perfectMatch ? 1 : 0);
           if (perfect != 0) return perfect;
+          final access = roleRules.accessRank(a.hearingImpaired || titleSaysHearingImpaired(a.title) || titleSaysHearingImpaired(a.displayTitle))
+              .compareTo(roleRules.accessRank(b.hearingImpaired || titleSaysHearingImpaired(b.title) || titleSaysHearingImpaired(b.displayTitle)));
+          if (access != 0) return access;
           final forced = (a.forced ? 1 : 0).compareTo(b.forced ? 1 : 0);
           if (forced != 0) return forced;
           final hearingImpaired = (a.hearingImpaired ? 1 : 0).compareTo(b.hearingImpaired ? 1 : 0);

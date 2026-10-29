@@ -10,6 +10,7 @@ import '../providers/multi_server_provider.dart';
 import '../services/multi_server_manager.dart';
 import '../services/plex_auth_service.dart';
 import '../services/settings_service.dart';
+import '../services/subtitle_selection_rules.dart';
 import '../utils/app_logger.dart';
 import 'active_profile_provider.dart';
 import 'plex_home_switch.dart';
@@ -190,6 +191,7 @@ class ActiveProfileBinder {
   void start({bool allowInitialPinPrompt = true}) {
     if (_started) return;
     _started = true;
+    SubtitleSelectionRules.bindProfile(activeProfile);
     _initialBindMayPromptPin = allowInitialPinPrompt;
     // Flip `isBinding` before anything else: callers navigate right after
     // start(), and screens (DiscoverScreen's no-servers gate) read the flag

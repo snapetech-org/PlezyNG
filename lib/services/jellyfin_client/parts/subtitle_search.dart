@@ -2,6 +2,18 @@ part of '../../jellyfin_client.dart';
 
 mixin _JellyfinSubtitleSearchMethods on _JellyfinClientInternals {
   @override
+  bool get supportsRemoteSubtitlePreview => true;
+
+  @override
+  Future<List<int>?> previewRemoteSubtitle(String key, {required String format, AbortController? abort}) async {
+    if (key.isEmpty || key.length > 4096 || !const {'srt', 'vtt', 'ass', 'ssa'}.contains(format.toLowerCase())) return null;
+    // Jellyfin and Emby expose a provider read separately from the POST that
+    // attaches a remote result to a library item. Provider quotas may apply.
+    return _http.getBytes('/Providers/Subtitles/Subtitles/${_segment(key)}',
+      timeout: const Duration(seconds: 15), maxBytes: 5 * 1024 * 1024, abort: abort);
+  }
+
+  @override
   Future<List<SubtitleSearchResult>> searchSubtitles(
     String ratingKey, {
     required String language,

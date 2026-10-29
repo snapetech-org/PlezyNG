@@ -8,6 +8,7 @@ import '../../services/settings_service.dart';
 import '../../utils/language_codes.dart';
 import '../../widgets/settings_page.dart';
 import '../../widgets/settings_section.dart';
+import '../../widgets/video_controls/sheets/subtitle_role_dialog.dart';
 
 class SubtitleLanguageOrderScreen extends StatefulWidget {
   const SubtitleLanguageOrderScreen({super.key});
@@ -110,6 +111,9 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
         SettingsGroup(
           title: 'Device-local fallback order',
           children: [
+            ListTile(title: const Text('Subtitle role preferences'),
+              subtitle: const Text('Profile defaults for forced and SDH / CC fallback selection'),
+              onTap: () => showSubtitleRoleDialog(context)),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Text(

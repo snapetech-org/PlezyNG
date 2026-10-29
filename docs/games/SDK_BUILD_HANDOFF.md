@@ -7,11 +7,13 @@ receiver. It does not certify a signed app, physical HDR output or a live Steam
 account/service. Continue with [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) after
 the relevant app build passes.
 
-Controller-only phone mode was added after the previously recorded
-42-export Android build. Its new JNI connection query and input-only negotiation
-need an exact-head Android build, followed by iOS SDK compilation and paired-host
-acceptance. Do not treat the earlier export count as validation of this follow-up.
-
+Controller-only phone mode now passes fresh source preparation and all four
+Android Release JNI builds at `605e4059981148ba34c466df8eebe6f2cd517c89`, with
+43 exported JNI methods verified per ABI. Module resources and Java compile
+against real API 36. See [the current receipt](receipts/android-controller-only.json)
+and [validation](VALIDATION.md). Full Gradle/R8 app packaging, the Kotlin app
+bridge, iOS SDK builds and paired-host acceptance remain separate gates. The
+42-export evidence in the historical table below predates this follow-up.
 
 All Actions jobs remain on compatible private ephemeral JIT runners. Provision
 only an idle, isolated build agent; preserve active builds and existing SDKs.

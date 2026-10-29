@@ -1,5 +1,28 @@
 # Games validation and release gates
 
+## Controller-only native build closure — 2026-10-29
+
+Code `605e4059981148ba34c466df8eebe6f2cd517c89` repairs a real source-preparation
+failure: the controller-only negotiation patch had stale context after HDR was
+added. It also retained a pointer to a codec array whose block scope ended before
+protobuf serialization. The corrected patch preserves function-scope storage,
+keeps the HDR integration, and advertises no video codecs/colorspaces or HEVC
+configuration for input-only sessions. Ordinary media defaults remain enabled.
+
+Fresh preparation of all pinned sources and patches now succeeds. Local cached
+Git repositories supplied the pinned objects; no network Git transport was used.
+All four Android Release JNI receivers compile and link with NDK 29 / CMake
+3.22.1 at native API 25. Each passes all **43 JNI export** checks, ELF machine,
+no text relocations/runtime search paths, and 16 KB LOAD alignment for 64-bit
+ABIs. The build started from the clean code commit above; hashes are in
+[the receipt](receipts/android-controller-only.json).
+
+The real module resources compile/link with aapt2; its generated R class and all
+Steam Java sources compile against API 36 with JDK 21 (20 compatibility
+deprecation warnings). All 25 Games SDK/preparation tests pass. Earlier Flutter
+results retain their original code scope. This is not a Gradle/R8 APK/AAB,
+Windows/Apple SDK result or live host/controller-only qualification.
+
 ## Catalog and ownership closure — 2026-10-29
 
 Code commit `54298205c062ee2bf3c26fffbb9413df2584f1d7`, tree

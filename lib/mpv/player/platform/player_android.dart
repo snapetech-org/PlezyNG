@@ -53,6 +53,8 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   bool _usingMpvFallback = false;
 
   bool get usingMpvFallback => _usingMpvFallback;
+  @override
+  bool get canReadSubtitleLiveClock => !disposed && _isLive && !_usingMpvFallback;
 
   /// Whether the current ExoPlayer item is a live stream.
   @override
@@ -621,7 +623,7 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
 
   @override
   Future<SubtitleLiveClockSnapshot?> readSubtitleLiveClock() async {
-    if (disposed || !_isLive || _usingMpvFallback) return null;
+    if (!canReadSubtitleLiveClock) return null;
     final generation = _mediaSessionGeneration;
     final data = await invoke<Map<dynamic, dynamic>>('subtitleLiveClock');
     if (disposed || generation != _mediaSessionGeneration || _usingMpvFallback || data == null) return null;
@@ -634,7 +636,7 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
 
   @override
   Future<bool> seekSubtitleLiveEpoch(int epochMs, {required int generation}) async {
-    if (disposed || !_isLive || _usingMpvFallback) return false;
+    if (!canReadSubtitleLiveClock) return false;
     final media = _mediaSessionGeneration, seek = ++_playbackTimelineGeneration;
     final token = beginPlayheadRelocation();
     announcePlayheadJump(null);

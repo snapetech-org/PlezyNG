@@ -11,6 +11,9 @@ class SubtitleLiveClockSnapshot {
 }
 
 abstract interface class SubtitleLiveClockSource implements PlayerMediaSessionIdentity {
+  /// Whether this backend currently owns live playback and has not fallen back
+  /// to a renderer that cannot expose its program clock.
+  bool get canReadSubtitleLiveClock;
   Future<SubtitleLiveClockSnapshot?> readSubtitleLiveClock();
   /// The native side must re-read the current window and refuse expired
   /// targets/generations before converting this epoch into a source position.

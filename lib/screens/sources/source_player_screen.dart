@@ -38,6 +38,7 @@ import '../../sources/source_models.dart';
 import '../../sources/source_playback.dart';
 import '../../sources/source_subtitle_discovery.dart';
 import '../../mpv/player/subtitle_pcm_capture_source.dart';
+import '../../mpv/player/subtitle_live_clock_source.dart';
 import '../../sources/listening_tools.dart';
 import '../../theme/mono_tokens.dart';
 import '../../utils/dialogs.dart';
@@ -1631,7 +1632,9 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
               onPressed: () => _openSourceSubtitleAi(s),
               icon: const AppIcon(Symbols.auto_awesome_rounded),
             ),
-          if (s.isLiveInput) IconButton(tooltip: t.videoControls.subtitleLive.title,
+          if (s.isLiveInput && s.player is SubtitleLiveClockSource &&
+              (s.player as SubtitleLiveClockSource).canReadSubtitleLiveClock)
+            IconButton(tooltip: t.videoControls.subtitleLive.title,
             icon: const Icon(Icons.history), onPressed: () => sourceAction(context, () => _openStandaloneDvr(s))),
           if (s.canUseBookTranscript) IconButton(tooltip: Translations.of(context).videoControls.subtitleBook.buttonTooltip, icon: const Icon(Icons.menu_book),
             onPressed: () => sourceAction(context, () async {

@@ -171,7 +171,7 @@ def export_samsung_aot(
 
 
 def configure_google_tensor_aot() -> tuple[Any, Any]:
-    """Load LiteRT's Google Tensor AOT compiler after enabling its backend."""
+    """Load LiteRT's Google Tensor AOT compiler and its beta SDK libraries."""
     # LiteRT hides the experimental Google Tensor backend unless this is set
     # before importing the AOT package. The compiler payload itself is
     # installed from Google's Tensor SDK Beta package by the operator.
@@ -179,11 +179,25 @@ def configure_google_tensor_aot() -> tuple[Any, Any]:
     try:
         from ai_edge_litert.aot import aot_compile as aot_module
         from ai_edge_litert.aot.vendors.google_tensor import target as google_tensor_target
+        import ai_edge_litert_sdk_google_tensor
     except (ImportError, OSError) as error:
         raise RuntimeError(
             "Install scripts/motion/requirements-android-litert-google-tensor-aot.txt "
-            "with the Google Tensor SDK Beta compiler archive configured to enable Tensor AOT export."
+            "with GOOGLE_TENSOR_SDK_BETA set to the authorized compiler archive."
         ) from error
+
+    sdk_libs_path = ai_edge_litert_sdk_google_tensor.path_to_sdk_libs()
+    sdk_path = Path(sdk_libs_path) if sdk_libs_path is not None else None
+    if (
+        sdk_path is None
+        or not sdk_path.is_dir()
+        or not any(path.is_file() for path in sdk_path.glob("*.so"))
+    ):
+        raise RuntimeError(
+            "Google Tensor SDK compiler libraries are missing. Reinstall "
+            "scripts/motion/requirements-android-litert-google-tensor-aot.txt "
+            "with GOOGLE_TENSOR_SDK_BETA set to the authorized compiler archive."
+        )
 
     compile_model = getattr(aot_module, "aot_compile", aot_module)
     return compile_model, google_tensor_target

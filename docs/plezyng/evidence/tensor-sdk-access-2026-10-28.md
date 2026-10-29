@@ -17,6 +17,10 @@ recorded, while the archive's path, integrity, and availability to the build
 environment remain unverified. No Tensor AOT model pack is in the retained
 task evidence.
 
+The exporter now checks for the companion SDK package and compiler shared
+libraries before it starts a Tensor model export, so LiteRT's public backend
+alone cannot appear ready for AOT compilation.
+
 The official [Tensor SDK compilation guide](https://developers.google.com/edge/tensor-sdk/slm-compilation)
 says to extract the approved compiler archive and install the separate
 `ai-edge-litert-sdk-google-tensor-nightly` package. This confirms the public

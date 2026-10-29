@@ -9,6 +9,31 @@ preparation scripts, exact platform commands and build-agent assignments. All
 four Android JNI ABIs and the Kotlin bridge now compile against real SDKs;
 full application packages and native Windows/Apple builds remain separate gates.
 
+## Catalog and ownership closure — 2026-10-29
+
+The Games tab, settings visibility and profile library loader now use catalog
+eligibility independently of embedded receiver eligibility. webOS/Tizen keep
+account linking, refresh, search/filtering, favorites, details/activity, manual
+computers, Companion inventory and permissioned host tools. Cards open details
+by touch or D-pad; native pairing/play/mini-player/controller-only controls are
+absent when a receiver is unsupported. Streaming settings have an explanatory
+state if reached directly. Automotive restrictions remain intact.
+
+If the OS credential vault cannot protect a new catalog grant, the grant stays
+only in its current profile controller's memory. The saved catalog remains
+browseable after restart, but a new sign-in is required for online operations.
+Refresh preserves that grant; unlink, account replacement and controller
+retirement remove it. Nothing falls back to plaintext preference storage.
+
+The full-screen regression also caught and fixes a Provider subscription made
+from an unsupported lifecycle method; Games can now mount in debug builds and
+observe source/profile changes correctly. Native capability discovery times out after five seconds and ignores responses
+from retired client generations or incompatible bridge versions. Steam sign-in
+owns an exact dialog handle, so cancellation/profile retirement cannot pop a
+newer route. Cloud/Families dialogs also use the existing scoped ownership.
+The focused and platform-specific verification is recorded at the top of
+[VALIDATION.md](VALIDATION.md).
+
 ## Implemented in this follow-through
 
 - Desktop/Apple receiver creation and teardown are owned by the workspace
@@ -99,6 +124,10 @@ full application packages and native Windows/Apple builds remain separate gates.
 - Cloud settings: public Steamworks exposes account-wide read access and an
   app-scoped setter for the calling game's own AppID. A general account-wide
   mutation must not be fabricated from those APIs or from an assumed VDF key.
+  A re-audit also found an unversioned reverse-engineered account setter whose
+  return type is unknown; it is not an established callable backend. The pinned
+  client Cloud RPC schema has no global-enable mutation. Source references and
+  the distinction from implemented Cloud file writes are in [STEAM_CLOUD.md](STEAM_CLOUD.md).
 - Steam Input game-side glyph/action APIs and automatic Together invites belong
   to the game SDK, not an arbitrary receiver. The implemented receiver layout and
   host overlay flows do not impersonate game AppIDs.

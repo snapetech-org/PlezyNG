@@ -12,13 +12,25 @@ import '../../widgets/focused_scroll_scaffold.dart';
 import '../../widgets/settings_section.dart';
 import '../../widgets/setting_tile.dart';
 import '../settings/settings_utils.dart' show DialogOption;
+import 'game_presentation.dart';
 
 class GameSettingsScreen extends StatelessWidget {
   const GameSettingsScreen({super.key, required this.profileId, required this.onChooseFolder});
   final String profileId;
   final VoidCallback onChooseFolder;
   @override
-  Widget build(BuildContext context) => FocusedScrollScaffold(
+  Widget build(BuildContext context) => !PlatformDetector.supportsEmbeddedGameStreaming()
+      ? FocusedScrollScaffold(
+          title: Text(t.games.streamSettings),
+          slivers: [
+            SliverToBoxAdapter(
+              child: GameNotice(title: t.games.browseOnlyTitle, message: t.games.browseOnlyHelp),
+            ),
+          ],
+        )
+      : _streamingSettings(context);
+
+  Widget _streamingSettings(BuildContext context) => FocusedScrollScaffold(
     title: Text(t.games.streamSettings),
     focusableAppBarActions: true,
     slivers: [

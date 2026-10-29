@@ -115,7 +115,7 @@ class _SteamGameActivityPanelState extends State<SteamGameActivityPanel> {
         return;
       }
       if (!mounted) return;
-      await showDialog<void>(
+      await showScopedDialog<void>(
         context: context,
         barrierDismissible: false,
         builder: (_) => SteamCloudDialog(
@@ -163,7 +163,7 @@ class _SteamGameActivityPanelState extends State<SteamGameActivityPanel> {
       }
       if (!mounted) return;
       final activeClient = client;
-      await showDialog<void>(
+      await showScopedDialog<void>(
         context: context,
         barrierDismissible: false,
         builder: (_) => SteamFamiliesDialog(

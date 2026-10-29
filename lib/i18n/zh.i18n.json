@@ -4490,7 +4490,6 @@
     "reconnect": "",
     "reconnecting": "",
     "disconnectHelp": "",
-    "streamFailed": "",
     "steamActivity": "",
     "includeFriends": "",
     "includeFriendsHelp": "",
@@ -4704,7 +4703,11 @@
     "steamActivityPrivacy": "",
     "disconnecting": "",
     "useAsController": "",
-    "controllerOnlyHelp": ""
+    "controllerOnlyHelp": "",
+    "browseOnlyTitle": "",
+    "browseOnlyHelp": "",
+    "browseComputersHelp": "",
+    "steamSessionSignIn": ""
   },
   "deepLinks": {
     "invalid": "此 Plezy 链接不有效。",

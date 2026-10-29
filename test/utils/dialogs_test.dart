@@ -11,6 +11,51 @@ void main() {
     TvDetectionService.setForceTVSync(false);
   });
 
+  testWidgets('a dialog handle closes its exact route beneath a newer dialog', (tester) async {
+    final context = await _pumpHost(tester);
+    final first = openScopedDialog<String>(
+      context: context,
+      builder: (_) => const AlertDialog(title: Text('Account sign-in')),
+    );
+    await tester.pumpAndSettle();
+    final newer = openScopedDialog<String>(
+      context: context,
+      builder: (_) => const AlertDialog(title: Text('Unrelated dialog')),
+    );
+    await tester.pumpAndSettle();
+    first.close('cancelled');
+    await tester.pumpAndSettle();
+    await expectLater(first.closed, completion('cancelled'));
+    expect(find.text('Account sign-in', skipOffstage: false), findsNothing);
+    expect(find.text('Unrelated dialog'), findsOneWidget);
+    first.close();
+    expect(find.text('Unrelated dialog'), findsOneWidget);
+    newer.close();
+    await tester.pumpAndSettle();
+    expect(ModalRoute.of(context)!.isCurrent, isTrue);
+  });
+
+  testWidgets('a dialog handle can close before first build and after owner retirement', (tester) async {
+    final context = await _pumpHost(tester);
+    final pending = openScopedDialog<void>(
+      context: context,
+      builder: (_) => const AlertDialog(title: Text('Never mounted')),
+    );
+    pending.close();
+    await tester.pumpAndSettle();
+    await expectLater(pending.closed, completes);
+    expect(find.text('Never mounted'), findsNothing);
+    final retired = openScopedDialog<void>(
+      context: context,
+      builder: (_) => const AlertDialog(title: Text('Retired')),
+    );
+    dismissDialogsOwnedBy(ModalRoute.of(context)!);
+    await tester.pumpAndSettle();
+    retired.close();
+    await expectLater(retired.closed, completes);
+    expect(ModalRoute.of(context)!.isCurrent, isTrue);
+  });
+
   testWidgets('owned dialog cancels before its first build without removing its page', (tester) async {
     final hostContext = await _pumpHost(tester);
     final owner = ModalRoute.of(hostContext)!;

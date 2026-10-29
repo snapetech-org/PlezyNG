@@ -27,6 +27,21 @@ The streaming settings route retains existing keys, defaults and capability gate
 
 Pushed pages observe profile/source ownership and controller changes. Profile retirement hides stale content, removes only owned routes/dialogs and retires the corresponding streams. Viewing details starts neither a stream nor an account activity request. Credential, permission, external-navigation and account boundaries remain authoritative.
 
+## Browse-only platforms and secure sign-in
+
+On webOS/Tizen, the library remains a first-class destination. The existing
+notice component explains playback availability, card activation opens details,
+and favorites, filters, Steam activity and Connections remain interactive.
+Playback-specific controls are omitted. Connections explains Companion imports
+instead of suggesting unavailable native pairing. A directly opened streaming
+settings route explains the receiver requirement.
+
+When secure storage is unavailable, sign-in uses a profile-owned memory grant
+with a visible session-only explanation. Cached game metadata remains available
+on the next visit; online actions then offer sign-in again. Sign-in owns its
+exact dialog and cannot dismiss an unrelated page after a profile change.
+Cloud/Families dialogs share scoped navigation ownership.
+
 ## Branding boundary
 
 Valve's December 2024 [family brand guidelines](https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/steamworks_docs/english/steam_brandGuidelines.pdf), pages 5–8, require a separate logo licence, unmodified approved artwork, clear space and a 50-pixel logo height. The [Web API terms](https://steamcommunity.com/dev/apiterms) allow factual API attribution and grant branding rights for applicable web pages; they do not establish a general native-client logo licence. The [OpenID documentation](https://partner.steamgames.com/doc/features/auth) explicitly supplies sign-in artwork for third-party websites.

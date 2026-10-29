@@ -18,11 +18,30 @@ const _buttonShape = StadiumBorder();
 
 final _dialogOwners = <Route<dynamic>, Set<Route<dynamic>>>{};
 
+/// A handle to one exact scoped route. Closing it cannot pop a newer page or
+/// dialog, and works before its first build or after its owner has retired.
+class ScopedDialogHandle<T> {
+  ScopedDialogHandle._(this._route, this.closed);
+  final DialogRoute<T> _route;
+  final Future<T?> closed;
+
+  void close([T? result]) {
+    if (_route.isActive) _route.navigator?.removeRoute(_route, result);
+  }
+}
+
 /// Shows a dialog on the nearest navigator instead of Flutter's default root
 /// navigator. Use this for profile/session-owned modal routes so they are
 /// disposed when the active profile session is replaced. Ownership is captured
 /// when the route is pushed, before the dialog's builder runs.
 Future<T?> showScopedDialog<T>({
+  required BuildContext context,
+  required WidgetBuilder builder,
+  bool barrierDismissible = true,
+}) => openScopedDialog<T>(context: context, builder: builder, barrierDismissible: barrierDismissible).closed;
+
+/// Use a handle when asynchronous work must dismiss its own dialog explicitly.
+ScopedDialogHandle<T> openScopedDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   bool barrierDismissible = true,
@@ -43,7 +62,8 @@ Future<T?> showScopedDialog<T>({
     // completes first and its registration is removed.
     _dialogOwners[route] = {owner, ...?_dialogOwners[owner]};
   }
-  return navigator.push(route).whenComplete(() => _dialogOwners.remove(route));
+  final closed = navigator.push(route).whenComplete(() => _dialogOwners.remove(route));
+  return ScopedDialogHandle._(route, closed);
 }
 
 /// Cancels only scoped dialogs opened by [owner], including nested dialogs.

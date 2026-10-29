@@ -11360,9 +11360,6 @@ class Translations$games$en {
 	/// en: 'Disconnecting leaves the game running on the computer.'
 	String get disconnectHelp => 'Disconnecting leaves the game running on the computer.';
 
-	/// en: 'The stream stopped. Check that the computer is reachable and Steam Remote Play is enabled.'
-	String get streamFailed => 'The stream stopped. Check that the computer is reachable and Steam Remote Play is enabled.';
-
 	/// en: 'Steam activity'
 	String get steamActivity => 'Steam activity';
 
@@ -11992,6 +11989,18 @@ class Translations$games$en {
 
 	/// en: 'Use this phone or tablet for controls while you watch and hear the game on the computer. Requires a paired Steam computer.'
 	String get controllerOnlyHelp => 'Use this phone or tablet for controls while you watch and hear the game on the computer. Requires a paired Steam computer.';
+
+	/// en: 'Your library is available here'
+	String get browseOnlyTitle => 'Your library is available here';
+
+	/// en: 'Browse games, manage favorites and view Steam activity on this device. Playing here needs a compatible streaming receiver.'
+	String get browseOnlyHelp => 'Browse games, manage favorites and view Steam activity on this device. Playing here needs a compatible streaming receiver.';
+
+	/// en: 'Save your computers and import their installed games through Companion Remote. Streaming and Steam pairing are unavailable on this device.'
+	String get browseComputersHelp => 'Save your computers and import their installed games through Companion Remote. Streaming and Steam pairing are unavailable on this device.';
+
+	/// en: 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.'
+	String get steamSessionSignIn => 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.';
 }
 
 // Path: deepLinks
@@ -18833,7 +18842,6 @@ extension on Translations {
 			'games.reconnect' => 'Reconnect',
 			'games.reconnecting' => 'Reconnecting…',
 			'games.disconnectHelp' => 'Disconnecting leaves the game running on the computer.',
-			'games.streamFailed' => 'The stream stopped. Check that the computer is reachable and Steam Remote Play is enabled.',
 			'games.steamActivity' => 'Steam activity',
 			'games.includeFriends' => 'Include friends playing',
 			'games.includeFriendsHelp' => 'Also ask Steam which friends are playing this game. Respects Steam privacy settings. Off by default.',
@@ -19042,6 +19050,10 @@ extension on Translations {
 			'games.disconnecting' => 'Disconnecting…',
 			'games.useAsController' => 'Use as controller',
 			'games.controllerOnlyHelp' => 'Use this phone or tablet for controls while you watch and hear the game on the computer. Requires a paired Steam computer.',
+			'games.browseOnlyTitle' => 'Your library is available here',
+			'games.browseOnlyHelp' => 'Browse games, manage favorites and view Steam activity on this device. Playing here needs a compatible streaming receiver.',
+			'games.browseComputersHelp' => 'Save your computers and import their installed games through Companion Remote. Streaming and Steam pairing are unavailable on this device.',
+			'games.steamSessionSignIn' => 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

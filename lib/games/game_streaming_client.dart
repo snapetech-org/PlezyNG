@@ -46,8 +46,12 @@ class NativeGameStreamingClient implements GameStreamingClient {
 
   @override
   Future<GameClientCapabilities> capabilities(GameHost host) async {
+    final generation = _generation;
     try {
-      final result = await channel.invokeMapMethod<String, dynamic>('capabilities', _host(host));
+      final result = await channel
+          .invokeMapMethod<String, dynamic>('capabilities', _host(host))
+          .timeout(const Duration(seconds: 5));
+      if (generation != _generation) return const GameClientCapabilities(available: false);
       return GameClientCapabilities(
         available: result?['available'] == true,
         inlinePairing: result?['inlinePairing'] == true,
@@ -58,6 +62,10 @@ class NativeGameStreamingClient implements GameStreamingClient {
     } on PlatformException {
       return const GameClientCapabilities(available: false);
     } on MissingPluginException {
+      return const GameClientCapabilities(available: false);
+    } on TimeoutException {
+      return const GameClientCapabilities(available: false);
+    } on TypeError {
       return const GameClientCapabilities(available: false);
     }
   }

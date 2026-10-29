@@ -14,6 +14,15 @@ Connections and streaming-settings routes, responsive game details, explicit
 computer preferences and consistent Steam attribution. Its widget evidence
 and physical accessibility checks are recorded separately from receiver builds.
 
+The catalog/ownership closure also makes webOS/Tizen browsing independent of
+receivers and adds memory-only catalog authorization when secure storage is
+unavailable. Verify cached browsing after restart, reauthorization for online
+requests, D-pad detail/favorite actions, Companion inventory import, and profile
+changes during sign-in. No plaintext grant may appear in exported preferences.
+Run `flutter test --dart-define=PLEZY_WEBOS=true test/games/game_catalog_screen_test.dart test/utils/platform_detector_test.dart`
+and repeat with `PLEZY_TIZEN=true`; these compile-time platform fixtures do not
+replace device packages.
+
 ## What this handoff covers
 
 PRs #54 and #71 have merged. This follow-up adds native Vulkan/HDR10 reception,

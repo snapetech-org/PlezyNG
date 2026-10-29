@@ -4545,7 +4545,6 @@
     "reconnect": "",
     "reconnecting": "",
     "disconnectHelp": "",
-    "streamFailed": "",
     "steamActivity": "",
     "includeFriends": "",
     "includeFriendsHelp": "",
@@ -4763,7 +4762,11 @@
     "steamActivityPrivacy": "",
     "disconnecting": "",
     "useAsController": "",
-    "controllerOnlyHelp": ""
+    "controllerOnlyHelp": "",
+    "browseOnlyTitle": "",
+    "browseOnlyHelp": "",
+    "browseComputersHelp": "",
+    "steamSessionSignIn": ""
   },
   "deepLinks": {
     "invalid": "Ten link Plezy nie jest ważny.",

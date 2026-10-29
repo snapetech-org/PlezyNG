@@ -4495,7 +4495,6 @@
     "reconnect": "Reconnect",
     "reconnecting": "Reconnecting…",
     "disconnectHelp": "Disconnecting leaves the game running on the computer.",
-    "streamFailed": "The stream stopped. Check that the computer is reachable and Steam Remote Play is enabled.",
     "steamActivity": "Steam activity",
     "includeFriends": "Include friends playing",
     "includeFriendsHelp": "Also ask Steam which friends are playing this game. Respects Steam privacy settings. Off by default.",
@@ -4709,7 +4708,11 @@
     "steamActivityPrivacy": "News and achievements load when requested. Friends activity is optional.",
     "disconnecting": "Disconnecting…",
     "useAsController": "Use as controller",
-    "controllerOnlyHelp": "Use this phone or tablet for controls while you watch and hear the game on the computer. Requires a paired Steam computer."
+    "controllerOnlyHelp": "Use this phone or tablet for controls while you watch and hear the game on the computer. Requires a paired Steam computer.",
+    "browseOnlyTitle": "Your library is available here",
+    "browseOnlyHelp": "Browse games, manage favorites and view Steam activity on this device. Playing here needs a compatible streaming receiver.",
+    "browseComputersHelp": "Save your computers and import their installed games through Companion Remote. Streaming and Steam pairing are unavailable on this device.",
+    "steamSessionSignIn": "Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG."
   },
   "deepLinks": {
     "invalid": "This Plezy link isn't valid.",

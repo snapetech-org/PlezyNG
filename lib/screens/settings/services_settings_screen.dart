@@ -127,7 +127,7 @@ class ServicesSettingsScreen extends StatelessWidget {
                 ),
               ],
             ),
-            if (profileId != null && PlatformDetector.supportsEmbeddedGameStreaming())
+            if (profileId != null && PlatformDetector.supportsGameLibrary())
               SettingsGroup(
                 title: t.games.title,
                 children: [

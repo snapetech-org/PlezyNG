@@ -270,7 +270,13 @@ The private JIT-routed `android-test` job builds both Android libraries alongsid
 
 New Games messages are seeded with reviewed English fallback copy in non-English base locales; they are **not language-reviewed translations**. Regional locales inherit their parent. Latest-main localization fixes are preserved independently of these new keys.
 
-## Required before Android release
+## Historical Android release checklist (superseded source scope)
+
+This early checkpoint predates the current receivers, direct GPU/HDR, controller,
+microphone and UX work. Its device cases remain useful; implementation status
+and build gates are defined by the newer sections above and LIVE_TEST_HANDOFF.md.
+
+### Required before Android release
 
 1. Build debug and minified release APKs for supported ABIs. Verify manifest merging, app identity, backup exclusions, private components, merged resources and shrinker retention. Test with the embedded module enabled and with `-PplezyGamesEmbedded=false`.
 2. Sunshine stable/current, Apollo, Wolf and representative legacy GameStream hosts: discovery, manual address/custom port, correct/wrong/expired PIN, rejection, certificate change, reconnect and revoked trust. Confirm no host credentials or trust material enter logs, QR codes, profile exports or backups.
@@ -279,7 +285,7 @@ New Games messages are seeded with reviewed English fallback copy in non-English
 5. Missing, malformed, oversized and slow cover art; large libraries; empty app list; offline refresh; multiple computers with duplicate game names. Confirm cards remain usable without artwork.
 6. Package the pinned modified engine's complete corresponding source, build instructions, dependencies and required license notices with each distribution. Review all third-party components and distribution-channel compatibility. The Moonlight and Steam notice assets alone are not a complete corresponding-source release bundle.
 
-## Remaining gates
+### Gates at that historical checkpoint
 
 - **Steam interoperability:** current stable/beta and representative older hosts, correct/wrong/expired PIN, host rejection, revoked trust, selected-game launch, input and decoder behavior. A compiled independent protocol implementation is not host certification.
 - **Steam account and catalog:** browser-based Steam OpenID identity linking and bounded import of public owned-game metadata are implemented. Configure `STEAM_WEB_API_KEY` on the server for catalog retrieval; without it, account identity still links but the catalog is unavailable. The import does not expose private libraries or establish host installation. A catalog tap uses a matching saved Steam host shortcut and requires host-side launch acceptance. Validate public/private profiles, stale refresh retention, account switching, 2,000-item truncation, QR/browser flow, Steam Guard prompts handled by Steam, and the server's configured callback in the current private-JIT run. See [STEAM_LIBRARY.md](STEAM_LIBRARY.md).
@@ -573,7 +579,8 @@ does not validate these sources. No hosted fallback is authorized.
   platform pickers and real save changes remain unqualified. See
   [STEAM_CLOUD.md](STEAM_CLOUD.md) for configuration and a disposable-save handoff.
   Confidence: high in the recorded local checks; unknown in live Valve/device
-  behavior. Families membership mutation is not implemented.
+  behavior. Families mutation was not implemented at this checkpoint; the later
+  Families source and qualification are recorded in STEAM_FAMILIES.md.
 
 ### Paired internet checkpoint (2026-10-28, PR #81)
 

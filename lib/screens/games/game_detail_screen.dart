@@ -29,10 +29,12 @@ class GameDetailScreen extends StatelessWidget {
     this.sessions = const [],
     this.onMiniPlayer,
     this.onUseAsController,
+    this.canStream = true,
   });
   final LibraryGame game;
   final GameArtworkLoader artwork;
   final bool favorite;
+  final bool canStream;
   final String? preferredRouteKey;
   final VoidCallback? onFavorite, onPlay, onChooseComputer, onMiniPlayer, onUseAsController;
   final void Function(GameRoute)? onPlayRoute;
@@ -74,16 +76,17 @@ class GameDetailScreen extends StatelessWidget {
           spacing: 12,
           runSpacing: 8,
           children: [
-            FocusableButton(
-              onPressed: onPlay,
-              useBackgroundFocus: true,
-              child: FilledButton.icon(
+            if (canStream)
+              FocusableButton(
                 onPressed: onPlay,
-                icon: AppIcon(game.routes.isEmpty ? Symbols.add_rounded : Symbols.play_arrow_rounded),
-                label: Text(game.routes.isEmpty ? t.games.connectComputer : t.games.play),
+                useBackgroundFocus: true,
+                child: FilledButton.icon(
+                  onPressed: onPlay,
+                  icon: AppIcon(game.routes.isEmpty ? Symbols.add_rounded : Symbols.play_arrow_rounded),
+                  label: Text(game.routes.isEmpty ? t.games.connectComputer : t.games.play),
+                ),
               ),
-            ),
-            if (game.routes.isNotEmpty)
+            if (canStream && game.routes.isNotEmpty)
               FocusableButton(
                 onPressed: onChooseComputer,
                 child: OutlinedButton.icon(
@@ -100,7 +103,7 @@ class GameDetailScreen extends StatelessWidget {
                 label: Text(favorite ? t.games.unfavorite : t.games.favorite),
               ),
             ),
-            if (onUseAsController != null)
+            if (canStream && onUseAsController != null)
               FocusableButton(
                 onPressed: onUseAsController,
                 child: TextButton.icon(
@@ -109,7 +112,7 @@ class GameDetailScreen extends StatelessWidget {
                   label: Text(t.games.useAsController),
                 ),
               ),
-            if (onMiniPlayer != null)
+            if (canStream && onMiniPlayer != null)
               FocusableButton(
                 onPressed: onMiniPlayer,
                 child: TextButton.icon(
@@ -120,13 +123,17 @@ class GameDetailScreen extends StatelessWidget {
               ),
           ],
         ),
-        if (onUseAsController != null) ...[
+        if (canStream && onUseAsController != null) ...[
           const SizedBox(height: 8),
           Text(t.games.controllerOnlyHelp, style: theme.textTheme.bodySmall),
         ],
         const SizedBox(height: 8),
         Text(
-          game.routes.isEmpty ? t.games.connectToPlay : t.games.inventorySnapshotHelp,
+          !canStream
+              ? t.games.browseOnlyHelp
+              : game.routes.isEmpty
+              ? t.games.connectToPlay
+              : t.games.inventorySnapshotHelp,
           style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
         ),
       ],
@@ -169,7 +176,7 @@ class GameDetailScreen extends StatelessWidget {
                   GameComputerTile(
                     route: route,
                     preferred: preferredRouteKey == route.key,
-                    onPlay: onPlayRoute == null ? null : () => onPlayRoute!(route),
+                    onPlay: !canStream || onPlayRoute == null ? null : () => onPlayRoute!(route),
                     actions: routeActions(route),
                   ),
               ],

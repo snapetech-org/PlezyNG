@@ -4502,7 +4502,6 @@
     "reconnect": "",
     "reconnecting": "",
     "disconnectHelp": "",
-    "streamFailed": "",
     "steamActivity": "",
     "includeFriends": "",
     "includeFriendsHelp": "",
@@ -4718,7 +4717,11 @@
     "steamActivityPrivacy": "",
     "disconnecting": "",
     "useAsController": "",
-    "controllerOnlyHelp": ""
+    "controllerOnlyHelp": "",
+    "browseOnlyTitle": "",
+    "browseOnlyHelp": "",
+    "browseComputersHelp": "",
+    "steamSessionSignIn": ""
   },
   "deepLinks": {
     "invalid": "Ce lien Plezy n’est pas valide.",

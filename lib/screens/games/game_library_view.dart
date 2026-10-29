@@ -31,6 +31,7 @@ class GameLibraryView extends StatefulWidget {
     this.loading = false,
     this.busy = false,
     this.available = true,
+    this.canStream = true,
     this.catalogNotices = const [],
   });
   final GameLibrary library;
@@ -39,7 +40,7 @@ class GameLibraryView extends StatefulWidget {
   final VoidCallback onConnections, onSettings, onHelp, onLink, onRefresh;
   final void Function(LibraryGame) onPlay, onDetails, onFavorite, onMiniPlayer;
   final void Function(LibraryGame)? onUseAsController;
-  final bool loading, busy, available;
+  final bool loading, busy, available, canStream;
   final List<Widget> catalogNotices;
   @override
   State<GameLibraryView> createState() => _GameLibraryViewState();
@@ -85,15 +86,24 @@ class _GameLibraryViewState extends State<GameLibraryView> {
         favorite: widget.library.favoriteKeys.contains(game.key),
         focusNode: first && game == games.first ? widget.firstFocus : null,
         playLabel: game.routes.isEmpty ? t.games.gameDetails : t.games.play,
-        onPlay: widget.busy || !widget.available ? null : () => widget.onPlay(game),
+        onActivate: !widget.busy && widget.available && (!widget.canStream || game.routes.isEmpty)
+            ? () => widget.onDetails(game)
+            : null,
+        onPlay: widget.busy || !widget.available || !widget.canStream || game.routes.isEmpty
+            ? null
+            : () => widget.onPlay(game),
         onDetails: widget.busy || !widget.available ? null : () => widget.onDetails(game),
         onPlayInWorkspace:
-            widget.busy || !widget.available || !game.routes.any((r) => r.host.protocol == GameProtocol.steam)
+            widget.busy ||
+                !widget.available ||
+                !widget.canStream ||
+                !game.routes.any((r) => r.host.protocol == GameProtocol.steam)
             ? null
             : () => widget.onMiniPlayer(game),
         onUseAsController:
             widget.busy ||
                 !widget.available ||
+                !widget.canStream ||
                 widget.onUseAsController == null ||
                 !game.routes.any((r) => r.host.protocol == GameProtocol.steam)
             ? null
@@ -145,15 +155,16 @@ class _GameLibraryViewState extends State<GameLibraryView> {
             onPressed: enabled ? widget.onConnections : null,
           ),
         ),
-        FocusableButton(
-          autoScroll: false,
-          onPressed: enabled ? widget.onSettings : null,
-          child: IconButton(
-            tooltip: t.games.streamSettings,
-            icon: const AppIcon(Symbols.tune_rounded),
+        if (widget.canStream)
+          FocusableButton(
+            autoScroll: false,
             onPressed: enabled ? widget.onSettings : null,
+            child: IconButton(
+              tooltip: t.games.streamSettings,
+              icon: const AppIcon(Symbols.tune_rounded),
+              onPressed: enabled ? widget.onSettings : null,
+            ),
           ),
-        ),
         FocusableButton(
           autoScroll: false,
           onPressed: widget.onHelp,
@@ -173,9 +184,14 @@ class _GameLibraryViewState extends State<GameLibraryView> {
           SliverToBoxAdapter(
             child: GameNotice(title: t.games.title, message: t.games.nativeEnginePending),
           ),
+        if (!widget.loading && widget.available && !widget.canStream)
+          SliverToBoxAdapter(
+            child: GameNotice(title: t.games.browseOnlyTitle, message: t.games.browseOnlyHelp),
+          ),
         if (!widget.loading && entries.isEmpty) ...[
           SliverToBoxAdapter(
             child: GameSetupPanel(
+              canStream: widget.canStream,
               firstFocus: widget.firstFocus,
               accountLinked: state.steamAccountId != null,
               onConnect: enabled ? widget.onConnections : null,
@@ -186,7 +202,7 @@ class _GameLibraryViewState extends State<GameLibraryView> {
             SliverToBoxAdapter(
               child: GameNotice(
                 title: t.games.emptyLibraryTitle,
-                message: t.games.emptyConnectedHelp,
+                message: widget.canStream ? t.games.emptyConnectedHelp : t.games.browseComputersHelp,
                 actionLabel: t.games.manageConnections,
                 onAction: enabled ? widget.onConnections : null,
               ),

@@ -77,6 +77,7 @@ class GameCard extends StatefulWidget {
     required this.artwork,
     required this.favorite,
     required this.onPlay,
+    this.onActivate,
     required this.onFavorite,
     this.onPlayInWorkspace,
     this.onUseAsController,
@@ -90,6 +91,9 @@ class GameCard extends StatefulWidget {
   final GameArtworkLoader artwork;
   final bool favorite;
   final VoidCallback? onPlay;
+
+  /// Browse-only devices activate details while retaining a distinct Play menu.
+  final VoidCallback? onActivate;
   final VoidCallback? onFavorite;
   final VoidCallback? onPlayInWorkspace;
   final VoidCallback? onUseAsController;
@@ -178,12 +182,12 @@ class _GameCardState extends State<GameCard> {
         descendantsAreFocusable: true,
         semanticLabel: '${isolateDisplayText(widget.game.name)}, ${isolateDisplayText(_subtitle)}',
         semanticValue: widget.favorite ? t.games.favorites : null,
-        onSelect: widget.onPlay,
+        onSelect: widget.onActivate ?? widget.onPlay,
         onLongPress: _menu,
         enableLongPress: true,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: widget.onPlay,
+          onTap: widget.onActivate ?? widget.onPlay,
           onLongPress: _menu,
           onSecondaryTap: _menu,
           child: Column(

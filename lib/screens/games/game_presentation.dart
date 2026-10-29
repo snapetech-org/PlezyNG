@@ -120,9 +120,17 @@ class GameNotice extends StatelessWidget {
 }
 
 class GameSetupPanel extends StatelessWidget {
-  const GameSetupPanel({super.key, this.onConnect, this.onLink, this.accountLinked = false, this.firstFocus});
+  const GameSetupPanel({
+    super.key,
+    this.onConnect,
+    this.onLink,
+    this.accountLinked = false,
+    this.firstFocus,
+    this.canStream = true,
+  });
   final VoidCallback? onConnect, onLink;
   final bool accountLinked;
+  final bool canStream;
   final FocusNode? firstFocus;
 
   @override
@@ -149,8 +157,8 @@ class GameSetupPanel extends StatelessWidget {
         SettingsGroup(
           children: [
             GameNotice(
-              title: t.games.computerSetupTitle,
-              message: t.games.computerSetupHelp,
+              title: canStream ? t.games.computerSetupTitle : t.games.computers,
+              message: canStream ? t.games.computerSetupHelp : t.games.browseComputersHelp,
               icon: Symbols.computer_rounded,
               actionLabel: t.games.findComputers,
               onAction: onConnect,

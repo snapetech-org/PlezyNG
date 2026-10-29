@@ -114,3 +114,16 @@ account-global mutation. `ISteamRemoteStorage::SetCloudEnabledForApp` belongs to
 the calling game's AppID; `IsCloudEnabledForAccount` is read-only. PlezyNG does not
 impersonate other AppIDs or modify guessed private VDF keys. A general programmatic
 account toggle remains blocked on a legitimate Valve/host-client write contract.
+
+
+Re-audited 2026-10-29: the Steam client's published protobuf mirror
+[`steammessages_cloud.steamclient.proto` at `89b77382`](https://github.com/SteamTracking/Protobufs/blob/89b77382edac5f747bfc196c2edf8996a7fe92bc/steam/steammessages_cloud.steamclient.proto)
+contains Cloud file, sync, batch and session methods, but no global-enable RPC.
+An [unversioned reverse-engineered IClientRemoteStorage header](https://github.com/emily33901/SteamStructs/blob/master/IClientRemoteStorage.h)
+does name `SetCloudEnabledForAccount(bool)`, with `unknown_ret`. This means an
+internal method has been observed; it does **not** establish a versioned ABI,
+authorization model or safe public third-party call. Neither guessing its vtable
+slot nor adding a disabled adapter would complete the feature. The actual
+account-wide programmatic toggle remains unimplemented pending a verified
+contract. Supported Cloud file operations and explicit host settings assistance
+remain available under the separate permissions described above.

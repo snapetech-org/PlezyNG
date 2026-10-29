@@ -65,6 +65,8 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   final _presentationRevision = ValueNotifier<int>(0);
   final _pages = <Route<dynamic>>{};
   final _pageContexts = <Route<dynamic>, BuildContext>{};
+  ScopedDialogHandle<void>? _accountLinkDialog;
+  VoidCallback? _cancelAccountLink;
   BuildContext get _actionContext => _pageContexts.values.lastOrNull ?? context;
   final _firstFocus = FocusNode(debugLabel: 'First Games action');
   final _addFocus = FocusNode(debugLabel: 'Add gaming computer');
@@ -79,7 +81,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   void didChangeDependencies() {
     super.didChangeDependencies();
     final id = context.watch<ActiveProfileProvider>().activeId;
-    final generation = context.select<SourceController, int>((s) => s.generation);
+    // select is only supported during build; dependency changes also deliver
+    // profile/source retirement before a pushed Games page can act again.
+    final generation = context.watch<SourceController>().generation;
     if (id == _profile && generation == _sourceGeneration && _controller != null) return;
     _profile = id;
     _sourceGeneration = generation;
@@ -90,7 +94,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
 
   Future<void> _load(String? id, int epoch) async {
     if (!mounted || epoch != _epoch || id == null) return;
-    if (!PlatformDetector.supportsEmbeddedGameStreaming()) {
+    if (!PlatformDetector.supportsGameLibrary()) {
       setState(() => _loading = false);
       return;
     }
@@ -121,7 +125,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           _loading = false;
           _loadFailed = false;
         });
-        unawaited(_scan());
+        if (PlatformDetector.supportsEmbeddedGameStreaming()) unawaited(_scan());
       }
     } catch (_) {
       if (mounted && epoch == _epoch) {
@@ -141,11 +145,16 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   }
 
   void _retire() {
+    _cancelAccountLink?.call();
+    _cancelAccountLink = null;
+    final accountDialog = _accountLinkDialog;
+    _accountLinkDialog = null;
     final retiring = _pages.toList();
     _pages.clear();
     _pageContexts.clear();
-    if (retiring.isNotEmpty) {
+    if (retiring.isNotEmpty || accountDialog != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        accountDialog?.close();
         for (final route in retiring.reversed) {
           dismissDialogsOwnedBy(route);
           if (route.isActive) route.navigator?.removeRoute(route);
@@ -233,10 +242,13 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       c.requireCurrent();
       if (!mounted) return;
       final cancelled = Completer<void>();
-      final navigator = Navigator.of(context, rootNavigator: true);
       var dialogClosedByFlow = false;
-      var dialogOpen = true;
-      final dialog = showDialog<void>(
+      void cancel() {
+        if (!cancelled.isCompleted) cancelled.complete();
+      }
+
+      _cancelAccountLink = cancel;
+      final dialog = _accountLinkDialog = openScopedDialog<void>(
         context: _actionContext,
         barrierDismissible: false,
         builder: (_) => OAuthProxyDialog(
@@ -244,10 +256,14 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           serviceName: 'Steam',
           onCancel: () {
             if (dialogClosedByFlow) return;
-            dialogOpen = false;
-            if (!cancelled.isCompleted) cancelled.complete();
+            cancel();
           },
         ),
+      );
+      unawaited(
+        dialog.closed.then((_) {
+          if (!dialogClosedByFlow) cancel();
+        }),
       );
       OAuthProxyResult? result;
       try {
@@ -257,23 +273,32 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           onCancel: cancelled.future,
         );
       } finally {
-        if (dialogOpen) {
-          dialogClosedByFlow = true;
-          dialogOpen = false;
-          if (navigator.mounted) navigator.pop();
-        }
-        await dialog;
+        dialogClosedByFlow = true;
+        dialog.close();
+        await dialog.closed;
+        if (identical(_accountLinkDialog, dialog)) _accountLinkDialog = null;
+        if (identical(_cancelAccountLink, cancel)) _cancelAccountLink = null;
       }
       c.requireCurrent();
       final linked = result;
       if (cancelled.isCompleted || linked == null || linked.steamId == null) return;
       final catalog = linked.steamGames.map(SteamCatalogGame.fromJson).toList(growable: false);
-      final protectedCredential = linked.steamCatalogToken == null
-          ? null
-          : await CredentialVault.protect(linked.steamCatalogToken!);
+      String? protectedCredential, sessionCredential;
+      final token = linked.steamCatalogToken;
+      if (token != null) {
+        try {
+          protectedCredential = await CredentialVault.protect(token);
+        } catch (_) {
+          // A missing/locked OS keystore must neither block browsing nor cause
+          // plaintext persistence. This grant lives only in this profile owner.
+          sessionCredential = token;
+        }
+      }
       c.requireCurrent();
       await c.saveSteamCatalog(
         protectedCredential: protectedCredential,
+        sessionCredential: sessionCredential,
+        replaceCredential: true,
         steamId: linked.steamId!,
         games: catalog,
         catalogAvailable: linked.steamLibraryAvailable,
@@ -282,7 +307,11 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       if (mounted && c.current) {
         showSuccessSnackBar(
           context,
-          linked.steamLibraryAvailable ? t.games.steamAccountLinked : t.games.steamLibraryPrivate,
+          sessionCredential != null
+              ? t.games.steamSessionSignIn
+              : linked.steamLibraryAvailable
+              ? t.games.steamAccountLinked
+              : t.games.steamLibraryPrivate,
         );
       }
     } finally {
@@ -293,7 +322,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   Future<void> _refreshSteamAccount() async {
     final c = _controller;
     if (c == null || !c.current || c.busy) return;
-    final encrypted = c.library.steamCatalogCredential;
+    final encrypted = c.catalogCredential;
     if (encrypted == null) {
       await _linkSteamAccount();
       return;
@@ -338,7 +367,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     );
     if (confirmed && mounted && c == _controller) {
       await _run((active) async {
-        final encrypted = active.library.steamCatalogCredential;
+        final encrypted = active.catalogCredential;
         await active.unlinkSteamAccount();
         if (encrypted != null) {
           final proxy = OAuthProxyClient();
@@ -374,7 +403,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     );
     if (host == null || !mounted || c != _controller) return;
     if (!await _run((c) => c.saveHost(host))) return;
-    if (mounted && c == _controller) await _connect(host);
+    if (mounted && c == _controller && PlatformDetector.supportsEmbeddedGameStreaming()) await _connect(host);
   }
 
   Future<void> _connect(GameHost host, {bool forcePair = false}) => _run((c) async {
@@ -411,6 +440,10 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     if (paired == true) await c.refreshGames(selected);
   }).then<void>((_) {});
   Future<void> _open(GameHost host, StreamGame game) async {
+    if (!PlatformDetector.supportsEmbeddedGameStreaming()) {
+      await _engineUnavailable(host);
+      return;
+    }
     if (PlatformDetector.supportsEmbeddedGameStreaming() && host.protocol == GameProtocol.steam) {
       await _openInWorkspace(host, game, fullscreen: true);
       return;
@@ -448,6 +481,10 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   }) async {
     final c = _controller;
     if (c == null || !c.current || c.busy) return;
+    if (!PlatformDetector.supportsEmbeddedGameStreaming()) {
+      await _details(game);
+      return;
+    }
     final routes = controllerOnly
         ? game.routes.where((route) => route.host.protocol == GameProtocol.steam).toList()
         : game.routes;
@@ -517,7 +554,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     final c = _controller;
     if (c == null || !c.current) return;
     final activityIdentity = c.library.steamAccountId;
-    final activityCredential = c.library.steamCatalogCredential;
+    final activityCredential = c.catalogCredential;
     final choice = await _page<Object>((pageContext) {
       final game = c.library.entries.where((g) => g.key == initial.key).firstOrNull;
       if (game == null) {
@@ -532,14 +569,21 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       }
       final enabled = !c.busy;
       return GameDetailScreen(
+        canStream: PlatformDetector.supportsEmbeddedGameStreaming(),
         game: game,
         artwork: c.artwork,
         favorite: c.library.favoriteKeys.contains(game.key),
         preferredRouteKey: (c.library.routeSelections[game.key] ?? c.library.preferredRoutes[game.key]),
         onFavorite: enabled ? () => _run((c) => c.toggleLibraryFavorite(game)) : null,
-        onPlay: enabled ? () => Navigator.pop(pageContext, game.routes.isEmpty ? 'add' : 'play') : null,
-        onChooseComputer: enabled ? () => Navigator.pop(pageContext, 'choose') : null,
-        onPlayRoute: enabled ? (route) => Navigator.pop(pageContext, route) : null,
+        onPlay: enabled && PlatformDetector.supportsEmbeddedGameStreaming()
+            ? () => Navigator.pop(pageContext, game.routes.isEmpty ? 'add' : 'play')
+            : null,
+        onChooseComputer: enabled && PlatformDetector.supportsEmbeddedGameStreaming()
+            ? () => Navigator.pop(pageContext, 'choose')
+            : null,
+        onPlayRoute: enabled && PlatformDetector.supportsEmbeddedGameStreaming()
+            ? (route) => Navigator.pop(pageContext, route)
+            : null,
         onMiniPlayer:
             enabled &&
                 PlatformDetector.supportsEmbeddedGameStreaming() &&
@@ -563,7 +607,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
                 isCurrent: () =>
                     c.current &&
                     c.library.steamAccountId == activityIdentity &&
-                    c.library.steamCatalogCredential == activityCredential,
+                    c.catalogCredential == activityCredential,
                 onLink: () => Navigator.pop(pageContext, 'link'),
               ),
         sessions: [
@@ -886,7 +930,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
               ) ==
               true
         : await showConfirmDialog(
-            context,
+            _actionContext,
             title: label,
             message:
                 '${t.games.hostActionConfirm(computer: isolateDisplayText(host.name))}${action == SteamHostAction.properties ? '\n\n${t.games.cloudSettingsHelp}' : ''}',
@@ -958,7 +1002,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     subtitle: Text(
       '${isolateDisplayText(host.address)} · ${host.protocol == GameProtocol.steam ? t.games.steam : t.games.moonlight}',
     ),
-    onTap: _controller!.busy ? null : () => _connect(host),
+    onTap: _controller!.busy || !PlatformDetector.supportsEmbeddedGameStreaming() ? null : () => _connect(host),
     trailing: AppMenuButton<String>(
       tooltip: t.games.computers,
       icon: const AppIcon(Symbols.more_vert_rounded),
@@ -967,14 +1011,16 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       entriesBuilder: (_) => [
         if (host.protocol == GameProtocol.steam)
           AppMenuItem(value: 'inventory', label: t.games.importInstalledGames, icon: Symbols.download_rounded),
-        if (host.protocol == GameProtocol.steam)
+        if (host.protocol == GameProtocol.steam && PlatformDetector.supportsEmbeddedGameStreaming())
           AppMenuItem(value: 'library', label: t.games.steamLibrary, icon: Symbols.apps_rounded),
         if (host.protocol == GameProtocol.steam) ...[
           AppMenuItem(value: 'hostLibrary', label: t.games.hostLibrary, icon: Symbols.desktop_windows_rounded),
           AppMenuItem(value: 'hostDownloads', label: t.games.hostDownloads, icon: Symbols.download_rounded),
         ],
-        AppMenuItem(value: 'pair', label: t.games.pair, icon: Symbols.link_rounded),
-        AppMenuItem(value: 'refresh', label: t.games.refreshGames, icon: Symbols.refresh_rounded),
+        if (PlatformDetector.supportsEmbeddedGameStreaming()) ...[
+          AppMenuItem(value: 'pair', label: t.games.pair, icon: Symbols.link_rounded),
+          AppMenuItem(value: 'refresh', label: t.games.refreshGames, icon: Symbols.refresh_rounded),
+        ],
         AppMenuItem(value: 'add', label: t.games.addGame, icon: Symbols.add_rounded),
         if (host.mac != null) AppMenuItem(value: 'wake', label: t.games.wake, icon: Symbols.power_settings_new_rounded),
         AppMenuItem(value: 'forget', label: t.games.forget, icon: Symbols.delete_rounded, destructive: true),
@@ -1027,6 +1073,10 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       if (state.steamAccountId != null) ...[const SizedBox(height: 8), Text(t.games.accountSetupHelp)],
+                      if (c.usesSessionSteamCredential) ...[
+                        const SizedBox(height: 8),
+                        Text(t.games.steamSessionSignIn),
+                      ],
                       const SizedBox(height: 12),
                       Wrap(
                         spacing: 12,
@@ -1077,7 +1127,11 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
                     child: Text(t.games.computers, style: Theme.of(context).textTheme.titleLarge),
                   ),
                   const SizedBox(height: 8),
-                  Text(t.games.computerSetupHint),
+                  Text(
+                    PlatformDetector.supportsEmbeddedGameStreaming()
+                        ? t.games.computerSetupHint
+                        : t.games.browseComputersHelp,
+                  ),
                   const SizedBox(height: 16),
                   Wrap(
                     spacing: 12,
@@ -1134,7 +1188,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
                       onTap: enabled
                           ? () async {
                               final saved = await _run((c) => c.saveHost(host));
-                              if (saved && mounted && c.current) await _connect(host);
+                              if (saved && mounted && c.current && PlatformDetector.supportsEmbeddedGameStreaming()) {
+                                await _connect(host);
+                              }
                             }
                           : null,
                     ),
@@ -1226,7 +1282,8 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       artwork: c.artwork,
       loading: _loading,
       busy: c.busy,
-      available: c.current && PlatformDetector.supportsEmbeddedGameStreaming(),
+      available: c.current,
+      canStream: PlatformDetector.supportsEmbeddedGameStreaming(),
       firstFocus: _firstFocus,
       onConnections: _connections,
       onSettings: _settings,

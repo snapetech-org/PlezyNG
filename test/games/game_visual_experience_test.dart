@@ -173,8 +173,16 @@ void main() {
     });
   }
 
-  Widget grid({GameLibrary? state, VoidCallback? connect, void Function(LibraryGame)? controller}) => GameLibraryView(
+  Widget grid({
+    GameLibrary? state,
+    VoidCallback? connect,
+    void Function(LibraryGame)? controller,
+    bool canStream = true,
+    void Function(LibraryGame)? details,
+    void Function(LibraryGame)? favorite,
+  }) => GameLibraryView(
     library: state ?? library,
+    canStream: canStream,
     artwork: artwork,
     firstFocus: first,
     onConnections: connect ?? () {},
@@ -183,11 +191,43 @@ void main() {
     onLink: () {},
     onRefresh: () {},
     onPlay: (_) {},
-    onDetails: (_) {},
-    onFavorite: (_) {},
+    onDetails: details ?? (_) {},
+    onFavorite: favorite ?? (_) {},
     onMiniPlayer: (_) {},
     onUseAsController: controller,
   );
+
+  testWidgets('catalog-only TV keeps details and favorites without playback actions', (tester) async {
+    LibraryGame? selected, favorited;
+    await mount(
+      tester,
+      grid(
+        canStream: false,
+        details: (game) => selected = game,
+        favorite: (game) => favorited = game,
+        controller: (_) {},
+      ),
+    );
+    await capture(tester, 'catalog-only-tv');
+    expect(find.text(t.games.browseOnlyTitle), findsOneWidget);
+    expect(find.byTooltip(t.games.streamSettings), findsNothing);
+    await tester.tap(find.byType(GameCard).first);
+    expect(selected?.steamAppId, 620);
+    selected = null;
+    first.requestFocus();
+    InputModeTracker.reportNonPointerInput();
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    expect(selected?.steamAppId, 620);
+    await tester.longPress(find.byType(GameCard).first);
+    await tester.pumpAndSettle();
+    expect(find.text(t.games.play), findsNothing);
+    expect(find.text(t.games.useAsController), findsNothing);
+    expect(find.text(t.videoControls.openMiniPlayer), findsNothing);
+    await tester.tap(find.text(t.games.unfavorite));
+    await tester.pumpAndSettle();
+    expect(favorited?.steamAppId, 620);
+  });
 
   for (final variant in [
     (name: 'library-desktop-dark', size: const Size(1280, 900), palette: MonoPalette.dark, scale: 1.0, rtl: false),

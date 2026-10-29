@@ -4470,7 +4470,6 @@
     "reconnect": "",
     "reconnecting": "",
     "disconnectHelp": "",
-    "streamFailed": "",
     "steamActivity": "",
     "includeFriends": "",
     "includeFriendsHelp": "",
@@ -4682,7 +4681,11 @@
     "steamActivityPrivacy": "",
     "disconnecting": "",
     "useAsController": "",
-    "controllerOnlyHelp": ""
+    "controllerOnlyHelp": "",
+    "browseOnlyTitle": "",
+    "browseOnlyHelp": "",
+    "browseComputersHelp": "",
+    "steamSessionSignIn": ""
   },
   "deepLinks": {
     "invalid": "Liên kết Plezy này không hợp lệ.",

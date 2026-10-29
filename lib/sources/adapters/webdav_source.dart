@@ -50,7 +50,15 @@ class WebDavSourceAdapter extends SourceAdapter {
   }
 
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     final target = contained(parent ?? '');
     final response = await transport.text(
       'PROPFIND',
@@ -78,7 +86,7 @@ class WebDavSourceAdapter extends SourceAdapter {
       if (query != null && !name.toLowerCase().contains(query.toLowerCase())) continue;
       final mime = text('getcontenttype') ?? '';
       final kind = folder ? SourceItemKind.folder : classifySourceFile(name, mime);
-      if (kind == SourceItemKind.unknown) continue;
+      if (kind == SourceItemKind.unknown && !(includeSubtitles && isSourceTextSubtitle(name))) continue;
       final id = uri.toString();
       result.add(
         SourceEntry(

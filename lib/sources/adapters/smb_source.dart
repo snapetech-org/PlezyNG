@@ -99,7 +99,15 @@ class SmbSourceAdapter extends SourceAdapter {
   }
 
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     try {
       final directory = _sourcePath(parent ?? source.root);
       final rows = await (await _connection()).listDirectory(directory);
@@ -111,7 +119,7 @@ class SmbSourceAdapter extends SourceAdapter {
         final kind = row.isDirectory
             ? SourceItemKind.folder
             : classifySourceFile(row.name, lookupMimeType(row.name) ?? '');
-        if (kind == SourceItemKind.unknown) continue;
+        if (kind == SourceItemKind.unknown && !(includeSubtitles && isSourceTextSubtitle(row.name))) continue;
         if (query != null && !row.name.toLowerCase().contains(query.toLowerCase())) continue;
         final mimeType = row.isDirectory ? '' : lookupMimeType(row.name) ?? '';
         entries.add(

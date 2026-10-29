@@ -803,3 +803,6 @@ SourceItemKind classifySourceFile(String name, [String mime = '']) {
   }
   return SourceItemKind.unknown;
 }
+
+/// Native text sidecars. Archives and bitmap pairs use explicit file import.
+bool isSourceTextSubtitle(String name) => const {'.srt', '.vtt', '.ass', '.ssa'}.contains(p.extension(name).toLowerCase());

@@ -33,13 +33,21 @@ class LocalSourceAdapter extends SourceAdapter {
   }
 
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     final relative = parent ?? '';
     final root = await Directory(source.root).resolveSymbolicLinks();
     final directory = await _contained(relative);
     final stamp = (await Directory(directory).stat()).modified.microsecondsSinceEpoch;
     final normalizedQuery = query?.trim().toLowerCase() ?? '';
-    final queryKey = sourceDigest(normalizedQuery).substring(0, 12);
+    final queryKey = sourceDigest('$includeSubtitles:$normalizedQuery').substring(0, 12);
     final snapshotKey = '$directory\u0000$queryKey';
     _pruneSnapshots();
     _LocalDirectorySnapshot? snapshot;
@@ -78,11 +86,11 @@ class LocalSourceAdapter extends SourceAdapter {
       }
       start = offset;
       _discardSnapshot(snapshotKey);
-      snapshot = await _enumerate(directory, root, relative, expectedStamp, snapshotKey, normalizedQuery);
+      snapshot = await _enumerate(directory, root, relative, expectedStamp, snapshotKey, normalizedQuery, includeSubtitles);
     } else if (cursor == null) {
       start = 0;
       _discardSnapshot(snapshotKey);
-      snapshot = await _enumerate(directory, root, relative, stamp, snapshotKey, normalizedQuery);
+      snapshot = await _enumerate(directory, root, relative, stamp, snapshotKey, normalizedQuery, includeSubtitles);
     } else {
       throw const SourceException(SourceFailure.cancelled);
     }
@@ -105,6 +113,7 @@ class LocalSourceAdapter extends SourceAdapter {
     int initialStamp,
     String snapshotKey,
     String query,
+    bool includeSubtitles,
   ) async {
     final entries = <SourceEntry>[];
     var recognizedEntries = 0;
@@ -115,7 +124,7 @@ class LocalSourceAdapter extends SourceAdapter {
       if (name.startsWith('.')) continue;
       final folder = entity is Directory;
       final kind = folder ? SourceItemKind.folder : classifySourceFile(name);
-      if (kind == SourceItemKind.unknown) continue;
+      if (kind == SourceItemKind.unknown && !(includeSubtitles && isSourceTextSubtitle(name))) continue;
       if (recognizedEntries >= _maxSpooledEntries) throw const SourceException(SourceFailure.invalidData);
       recognizedEntries++;
       if (query.isNotEmpty && !name.toLowerCase().contains(query)) continue;

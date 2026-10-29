@@ -774,3 +774,25 @@ encoded and tunneled bypass routes stay intact and decline capture. Media3's
 [AudioProcessor contract](https://github.com/androidx/media/blob/release/libraries/common/src/main/java/androidx/media3/common/audio/AudioProcessor.java)
 and [DefaultAudioSink](https://github.com/androidx/media/blob/release/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/audio/DefaultAudioSink.java)
 were inspected. No backend or device execution was performed.
+
+## Folder discovery and read-only sharing source update
+
+Standalone sources now explicitly refresh matching SRT/VTT/ASS/SSA sidecars
+through their existing adapters: local directories, SMB/NFS, FTP/SFTP, WebDAV,
+S3, Google Drive, OneDrive, Dropbox and provider-listed remote-cloud files.
+Only the media folder and named subtitle subfolders are searched, bounded to
+50 pages/10000 rows/128 candidates/30 seconds. Reads use renewable source leases,
+are capped at 5 MiB, and check media/profile identity again before applying a
+separate managed copy. Expired permissions and provider omissions remain visible;
+no filename-URL guessing or arbitrary remote folder scans are introduced.
+
+Reviewed app overlays can be explicitly shared through a read-only private-LAN
+HTTP listener with a random 256-bit link, one-hour expiry, source/profile guards,
+manual revocation, request bounds and no playback controls. A browser second
+screen follows the current source clock, clears stale text on disconnect and
+reconnects with bounded backoff. Visibility and text size stay on that device.
+WebVTT downloads apply each selected track's correction on the open-file clock;
+a receiver can consume those URLs, but this does not claim automatic delivery
+of app overlays to Cast/PiP or Watch Together. HTTP requires a trusted local
+network; no media URL, server credentials, transcript telemetry or automatic
+room message is exposed. No tests, builds, runtime execution or CI were run.

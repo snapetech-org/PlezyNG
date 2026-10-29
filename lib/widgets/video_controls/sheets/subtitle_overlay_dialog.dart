@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../../../services/subtitle_handoff_service.dart';
 import '../../../mpv/mpv.dart';
 import '../../../services/subtitle_overlay_service.dart';
 import '../../../services/subtitle_speech_service.dart';
@@ -55,6 +57,23 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
           Slider(value: SubtitleSpeechService.instance.duck, min: 0, max: 1,
             onChanged: (v) => update(() => SubtitleSpeechService.instance.duck = v)),
         ],
+        const Divider(),
+        const Text('Share the reviewed app overlays as a read-only second screen and receiver-compatible WebVTT links. '
+          'Only private-network peers with the secret link can read them. HTTP is unencrypted; use a trusted local network. '
+          'Playback URLs and credentials are never shared. App styling and authored layouts are flattened.'),
+        TextButton(onPressed: () async {
+          final sharing = SubtitleHandoffService.instance;
+          try {
+            if (sharing.running) { await sharing.stop(); }
+            else { await sharing.start(player, session.lanes.whereType<SubtitleOverlayTrack>().toList()); }
+          } catch (_) {
+            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Subtitle sharing could not start on this network.')));
+          }
+          if (context.mounted) update(() {});
+        }, child: Text(SubtitleHandoffService.instance.running ? 'Stop sharing and revoke links' : 'Share both reviewed overlays on this network')),
+        for (final url in SubtitleHandoffService.instance.urls) ListTile(title: SelectableText(url),
+          trailing: IconButton(tooltip: 'Copy private subtitle link', icon: const Icon(Icons.copy),
+            onPressed: () => Clipboard.setData(ClipboardData(text: url)))),
         SwitchListTile(title: const Text('Cover burned captions in a bottom band'),
           subtitle: const Text('Opaque cover on this screen only. It hides picture detail; it does not reconstruct the background or edit the video.'),
           value: session.coverRegion != null, onChanged: (v) => change(() => session.coverRegion = v ? const Rect.fromLTWH(0, .8, 1, .2) : null)),

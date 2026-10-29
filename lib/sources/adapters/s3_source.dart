@@ -76,7 +76,15 @@ class S3SourceAdapter extends SourceAdapter {
   }
 
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     final prefix = parent ?? source.root;
     _checkKey(prefix);
     final target = _base.replace(
@@ -101,7 +109,7 @@ class S3SourceAdapter extends SourceAdapter {
       final name = id.replaceAll(RegExp(r'/+$'), '').split('/').last;
       if (query != null && !name.toLowerCase().contains(query.toLowerCase())) continue;
       final kind = folder ? SourceItemKind.folder : classifySourceFile(name);
-      if (kind == SourceItemKind.unknown) continue;
+      if (kind == SourceItemKind.unknown && !(includeSubtitles && isSourceTextSubtitle(name))) continue;
       entries.add(
         SourceEntry(
           sourceId: source.id,

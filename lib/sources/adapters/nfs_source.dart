@@ -554,7 +554,7 @@ class NfsSourceAdapter extends SourceAdapter {
     return _NfsDirectoryPage(rows, nextVerifier, eof, lastCookie);
   }
 
-  Future<SourcePage> _browse(String directory, {String? cursor, String? query}) async {
+  Future<SourcePage> _browse(String directory, {String? cursor, String? query, bool includeSubtitles = false}) async {
     var cookie = 0;
     var verifier = _emptyVerifier;
     if (cursor != null && cursor.isNotEmpty) {
@@ -579,7 +579,7 @@ class NfsSourceAdapter extends SourceAdapter {
       if (!isDirectory && !isFile) continue;
       if (query != null && !row.name.toLowerCase().contains(query.toLowerCase())) continue;
       final kind = isDirectory ? SourceItemKind.folder : classifySourceFile(row.name, lookupMimeType(row.name) ?? '');
-      if (kind == SourceItemKind.unknown) continue;
+      if (kind == SourceItemKind.unknown && !(includeSubtitles && isSourceTextSubtitle(row.name))) continue;
       final size = row.attributes?.size;
       final revision = row.attributes == null ? null : '${size?.toString() ?? ''}:${row.attributes!.modifiedSeconds}';
       entries.add(
@@ -617,6 +617,12 @@ class NfsSourceAdapter extends SourceAdapter {
   @override
   Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
       _browse(_path(parent ?? _root), cursor: cursor, query: query);
+
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browse(_path(parent ?? _root), cursor: cursor, includeSubtitles: true);
 
   Future<Uint8List?> _readWhole(List<int> handle, int size, int limit) async {
     if (size <= 0 || size > limit) return null;

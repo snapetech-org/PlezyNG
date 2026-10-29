@@ -117,6 +117,12 @@ abstract class SourceAdapter {
   final SourceTransport transport;
   SourceCapabilities get capabilities;
   Future<SourcePage> browse({String? parent, String? cursor, String? query});
+  /// Explicit sibling subtitle discovery, distinct from the media catalogue.
+  /// Adapters opt in only where their own authenticated directory API can list
+  /// arbitrary files; callers must not synthesize provider paths or URLs.
+  bool get supportsSubtitleBrowse => false;
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) async =>
+      throw const SourceException(SourceFailure.unsupported);
   Future<SourceEntry> hydrate(SourceEntry entry) async => entry;
   Future<ContentLease> resolve(PublicationFile file);
   Future<int?> contentSize(PublicationFile file) async => file.size;

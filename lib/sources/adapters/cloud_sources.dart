@@ -72,7 +72,15 @@ class GoogleDriveSourceAdapter extends OAuthSourceAdapter {
       'id,name,mimeType,size,modifiedTime,md5Checksum,version,capabilities(canDownload),shortcutDetails(targetId,targetMimeType, targetResourceKey),resourceKey';
   String _quote(String value) => value.replaceAll('\\', '\\\\').replaceAll("'", "\\'");
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     final parentKey = parent ?? (source.root.isEmpty ? 'root' : source.root);
     final parentRef = parentKey.startsWith('{') ? sourceMap(jsonDecode(parentKey)) : {'id': parentKey};
     final folder = parentRef['id'] as String;
@@ -104,7 +112,7 @@ class GoogleDriveSourceAdapter extends OAuthSourceAdapter {
       final folderItem = mime == 'application/vnd.google-apps.folder';
       final name = j['name'] as String? ?? id;
       final kind = folderItem ? SourceItemKind.folder : classifySourceFile(name, mime);
-      if (kind == SourceItemKind.unknown) continue;
+      if (kind == SourceItemKind.unknown && !(includeSubtitles && isSourceTextSubtitle(name))) continue;
       final resourceKey = (shortcut['targetResourceKey'] ?? j['resourceKey']) as String?;
       final fileId = resourceKey == null ? id : jsonEncode({'id': id, 'resourceKey': resourceKey});
       result.add(
@@ -176,7 +184,15 @@ class OneDriveSourceAdapter extends OAuthSourceAdapter {
       source.options['driveId']?.isNotEmpty == true ? '/drives/${source.options['driveId']}' : '/me/drive';
   Uri _uri(String path, [Map<String, String>? query]) => Uri.https('graph.microsoft.com', '/v1.0$_drive$path', query);
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     final folder = parent ?? source.root;
     final base = folder.isEmpty ? '/root' : '/items/$folder';
     final Uri uri;
@@ -197,7 +213,7 @@ class OneDriveSourceAdapter extends OAuthSourceAdapter {
       if (query != null && !name.toLowerCase().contains(query.toLowerCase())) continue;
       final mime = sourceMap(j['file'])['mimeType'] as String? ?? '';
       final kind = j['folder'] != null ? SourceItemKind.folder : classifySourceFile(name, mime);
-      if (kind == SourceItemKind.unknown) continue;
+      if (kind == SourceItemKind.unknown && !(includeSubtitles && isSourceTextSubtitle(name))) continue;
       final id = j['id'] as String;
       entries.add(
         SourceEntry(
@@ -260,7 +276,15 @@ class DropboxSourceAdapter extends OAuthSourceAdapter {
   DropboxSourceAdapter(super.source, super.transport, super.token, [super.backgroundCredentials]);
   Uri _uri(String action) => Uri.https('api.dropboxapi.com', '/2/files/$action');
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     final folder = parent ?? source.root;
     final data = await api(
       'POST',
@@ -274,7 +298,7 @@ class DropboxSourceAdapter extends OAuthSourceAdapter {
       if (query != null && !name.toLowerCase().contains(query.toLowerCase())) continue;
       final folderItem = j['.tag'] == 'folder';
       final kind = folderItem ? SourceItemKind.folder : classifySourceFile(name);
-      if (kind == SourceItemKind.unknown) continue;
+      if (kind == SourceItemKind.unknown && !(includeSubtitles && isSourceTextSubtitle(name))) continue;
       final id = (folderItem ? j['path_lower'] : j['id']) as String;
       result.add(
         SourceEntry(

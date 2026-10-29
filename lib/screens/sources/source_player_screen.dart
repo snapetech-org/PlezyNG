@@ -30,6 +30,8 @@ import '../../services/player_sync_offsets.dart';
 import '../../services/subtitle_retimer.dart';
 import '../../sources/source_models.dart';
 import '../../sources/source_playback.dart';
+import '../../sources/source_subtitle_discovery.dart';
+import '../../mpv/player/subtitle_pcm_capture_source.dart';
 import '../../sources/listening_tools.dart';
 import '../../theme/mono_tokens.dart';
 import '../../utils/dialogs.dart';
@@ -282,6 +284,25 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
       mediaTitle: entry.title,
       sourceLabel: SubtitleRevisionService.privacySafeSourceLabel('Source', entry.sourceId),
     );
+  }
+
+  Future<void> _discoverSourceSubtitles(SourcePlayback playback) async {
+    final core = playback.player, entry = playback.entry;
+    if (core == null || entry == null || playback.files.isEmpty) return;
+    final fingerprint = playback.files[playback.fileIndex].fingerprint;
+    final result = await playback.discoverSourceSubtitles();
+    if (!mounted || playback.player != core || playback.entry != entry) return;
+    final chosen = await showDialog<SourceSubtitleCandidate>(context: context, builder: (context) => AlertDialog(
+      title: const Text('Subtitles in this source folder'),
+      content: SizedBox(width: 600, height: 400, child: ListView(children: [
+        const Text('Refresh searches this source’s media folder and named subtitle subfolders. Choose a file to attach a separate local copy. Originals stay on the source.'),
+        if (result.limited) const Text('Search limit reached. Use explicit file import for other folders.'),
+        if (result.candidates.isEmpty) const Text('No matching SRT, VTT, ASS or SSA files were found.'),
+        for (final candidate in result.candidates) ListTile(title: Text(candidate.file.name), subtitle: Text(candidate.folder),
+          onTap: () => Navigator.pop(context, candidate)),
+      ])), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))]));
+    if (chosen == null || !mounted || playback.entry != entry || playback.player != core) return;
+    await playback.attachSourceSubtitle(chosen, expectedFileFingerprint: fingerprint);
   }
 
   void _openSourceSubtitleAi(SourcePlayback playback) {
@@ -1543,6 +1564,9 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const SourceListeningSettings())),
             icon: const AppIcon(Symbols.tune_rounded),
           ),
+          if (s.canDiscoverSourceSubtitles && s.player?.playerType == 'mpv')
+            IconButton(tooltip: 'Refresh subtitles from this source folder', icon: const Icon(Icons.folder_open),
+              onPressed: () => sourceAction(context, () => _discoverSourceSubtitles(s))),
           if (s.video && s.canExportActiveExternalSubtitle)
             IconButton(
               tooltip: t.videoSettings.subtitleExport,
@@ -1555,9 +1579,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
               onPressed: () => sourceAction(context, () => _openExternalSubtitleSync(s)),
               icon: const AppIcon(Symbols.sync_rounded),
             ),
-          if (!s.isLiveInput &&
-              s.player?.playerType == 'mpv' &&
-              s.player?.supportedLocalSubtitleExtensions.contains('srt') == true)
+          if (s.player is SubtitlePcmCaptureSource || s.player?.supportedLocalSubtitleExtensions.contains('srt') == true)
             IconButton(
               tooltip: 'Generate, sync, translate, or study a transcript',
               onPressed: () => _openSourceSubtitleAi(s),

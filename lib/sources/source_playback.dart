@@ -29,6 +29,7 @@ import '../utils/notification_permission.dart';
 import '../screens/video_player/wakelock_controller.dart';
 import 'content_access.dart';
 import 'source_controller.dart';
+import 'source_subtitle_discovery.dart';
 import 'source_models.dart';
 
 typedef LocalPlaylistExportItem = ({String title, Uri uri});
@@ -226,6 +227,30 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       return SubtitleAnalysisSource(uri: uri, identity: sourceDigest('$profile:${item.key}:${file.fingerprint}'),
         isCurrent: current, close: gateway.close);
     } catch (_) { await gateway.close(); rethrow; }
+  }
+
+  bool get canDiscoverSourceSubtitles => _valid && !_liveInput && !isTransientInput && entry != null &&
+      files.isNotEmpty && sources.adapter(entry!.sourceId).supportsSubtitleBrowse;
+
+  Future<SourceSubtitleListing> discoverSourceSubtitles() async {
+    if (!canDiscoverSourceSubtitles) throw const SourceException(SourceFailure.unsupported);
+    final item = entry!, epoch = _fileEpoch, generation = _generation, file = files[_fileIndex];
+    bool current() => _valid && entry == item && _fileEpoch == epoch && _generation == generation;
+    return SourceSubtitleDiscovery.discover(sources.adapter(item.sourceId), item, file, current);
+  }
+
+  Future<void> attachSourceSubtitle(SourceSubtitleCandidate candidate, {required String expectedFileFingerprint}) async {
+    final item = entry, native = player, profile = _profile, index = _fileIndex;
+    if (!canDiscoverSourceSubtitles || item == null || native == null || profile == null ||
+        files[index].fingerprint != expectedFileFingerprint) throw const SourceException(SourceFailure.cancelled);
+    final epoch = _fileEpoch, generation = _generation, edition = progress?.edition;
+    bool current() => _valid && entry == item && player == native && _profile == profile &&
+        _fileEpoch == epoch && _generation == generation && _fileIndex == index &&
+        index < files.length && files[index].fingerprint == expectedFileFingerprint;
+    final bytes = await SourceSubtitleDiscovery.read(sources.adapter(item.sourceId), candidate.file, current);
+    if (!current()) throw const SourceException(SourceFailure.cancelled);
+    await applyExternalSubtitle(name: candidate.file.name, bytes: bytes, expectedPlayer: native,
+      expectedScope: edition == null ? null : (entryKey: item.key, edition: edition, fileIndex: index, fileFingerprint: expectedFileFingerprint));
   }
 
   bool get isRecordingStream => _streamRecordingPartial != null;

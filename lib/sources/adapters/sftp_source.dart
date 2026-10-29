@@ -137,7 +137,15 @@ class SftpSourceAdapter extends SourceAdapter {
   }
 
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     final directory = _path(parent ?? _root);
     try {
       final rows = await (await _connection()).listdir(directory);
@@ -150,7 +158,7 @@ class SftpSourceAdapter extends SourceAdapter {
         if (!isDirectory && !row.attr.isFile) continue;
         if (query != null && !name.toLowerCase().contains(query.toLowerCase())) continue;
         final kind = isDirectory ? SourceItemKind.folder : classifySourceFile(name, lookupMimeType(name) ?? '');
-        if (kind == SourceItemKind.unknown) continue;
+        if (kind == SourceItemKind.unknown && !(includeSubtitles && isSourceTextSubtitle(name))) continue;
         final size = row.attr.size;
         final modified = row.attr.modifyTime;
         entries.add(

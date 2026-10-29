@@ -38,7 +38,15 @@ class RemoteCloudSourceAdapter extends SourceAdapter {
   SourceCapabilities get capabilities => const SourceCapabilities(search: true, rangeRequests: false);
 
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     String? providerParent;
     if (parent != null && parent.isNotEmpty) {
       providerParent = _folderProviderIds[parent];
@@ -53,7 +61,7 @@ class RemoteCloudSourceAdapter extends SourceAdapter {
     if (parent != null && parent.isNotEmpty && providerParent == null) {
       throw const SourceException(SourceFailure.unavailable);
     }
-    return _loadPage(parent: parent, providerParent: providerParent, cursor: cursor, query: query);
+    return _loadPage(parent: parent, providerParent: providerParent, cursor: cursor, query: query, includeSubtitles: includeSubtitles);
   }
 
   Future<SourcePage> _loadPage({
@@ -61,6 +69,7 @@ class RemoteCloudSourceAdapter extends SourceAdapter {
     required String? providerParent,
     String? cursor,
     String? query,
+    bool includeSubtitles = false,
   }) async {
     final page = await loadPage(parentId: providerParent, cursor: cursor);
     final entries = <SourceEntry>[];
@@ -87,7 +96,7 @@ class RemoteCloudSourceAdapter extends SourceAdapter {
         continue;
       }
       final mimeType = _safeMimeType(item.mimeType, item.name);
-      if (classifySourceFile(item.name, mimeType) != SourceItemKind.video) continue;
+      if (classifySourceFile(item.name, mimeType) != SourceItemKind.video && !(includeSubtitles && isSourceTextSubtitle(item.name))) continue;
       _remember(item);
       final identifiers = <String, String>{};
       if (providerParent != null) identifiers['remoteCloudParentProviderId'] = providerParent;
@@ -98,7 +107,7 @@ class RemoteCloudSourceAdapter extends SourceAdapter {
           sourceId: source.id,
           id: item.id,
           title: item.name,
-          kind: SourceItemKind.video,
+          kind: classifySourceFile(item.name, mimeType),
           parentId: parent,
           identifiers: identifiers,
           files: [PublicationFile(id: item.id, name: item.name, mimeType: mimeType, size: item.size)],

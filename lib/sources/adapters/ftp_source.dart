@@ -126,7 +126,15 @@ class FtpSourceAdapter extends SourceAdapter {
   }
 
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     final directory = _path(parent ?? _root);
     var text = '';
     var facts = true;
@@ -158,7 +166,7 @@ class FtpSourceAdapter extends SourceAdapter {
       if (!row.directory && row.size == null) continue;
       final id = _child(directory, row.name);
       final kind = row.directory ? SourceItemKind.folder : classifySourceFile(row.name, lookupMimeType(row.name) ?? '');
-      if (kind == SourceItemKind.unknown) continue;
+      if (kind == SourceItemKind.unknown && !(includeSubtitles && isSourceTextSubtitle(row.name))) continue;
       final mime = row.directory ? '' : lookupMimeType(row.name) ?? '';
       entries.add(
         SourceEntry(

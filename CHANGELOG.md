@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Resolve tvOS CocoaPods plugins from Flutter's resolved package paths without relying on iOS symlinks.
 - Stabilize Android and Windows validation on private CI runners, retry the pinned FFmpeg header download, and bypass the proxy for loopback tests.
 - Fix Android Kotlin compilation by correcting a duplicate visibility modifier and implementing the shared video-surface method.
 - Restore Apple CI by quoting simulator-only Xcode project settings and keeping the macOS test plugin current with its shared protocol.

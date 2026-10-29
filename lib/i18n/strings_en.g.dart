@@ -15206,6 +15206,126 @@ class Translations$videoControls$subtitleAiControls$en {
 	/// en: 'Continue'
 	String get continueAction => 'Continue';
 
+	/// en: 'The subtitle timing is outside the supported range for this item.'
+	String get historyItemClockRangeExceeded => 'The subtitle timing is outside the supported range for this item.';
+	/// en: 'Playback closed before the subtitle revision could be restored.'
+	String get historyPlaybackClosed => 'Playback closed before the subtitle revision could be restored.';
+	/// en: 'The opened media part changed before the subtitle revision could be restored.'
+	String get historyOpenedMediaPartChanged => 'The opened media part changed before the subtitle revision could be restored.';
+	/// en: 'This subtitle revision belongs to a different media item or profile.'
+	String get historyWrongItemProfile => 'This subtitle revision belongs to a different media item or profile.';
+	/// en: 'Attached reviewed revision from ${date}.'
+	String historyAttachedRevision({required Object date}) => 'Attached reviewed revision from ${date}.';
+	/// en: 'Export reviewed subtitle revision'
+	String get historyRevisionSrtExportTitle => 'Export reviewed subtitle revision';
+	/// en: 'Reviewed subtitle revision exported as SRT.'
+	String get historyRevisionSrtExported => 'Reviewed subtitle revision exported as SRT.';
+	/// en: 'Export subtitle revision with word timings'
+	String get historyRevisionJsonExportTitle => 'Export subtitle revision with word timings';
+	/// en: 'Revision JSON exported with stable cue IDs and retained word timings.'
+	String get historyRevisionJsonExported => 'Revision JSON exported with stable cue IDs and retained word timings.';
+	/// en: 'Playback or profile changed during subtitle history import.'
+	String get historyImportContextChanged => 'Playback or profile changed during subtitle history import.';
+	/// en: 'Subtitle history JSON must not be empty or exceed 32 MiB.'
+	String get historyImportSizeLimit => 'Subtitle history JSON must not be empty or exceed 32 MiB.';
+	/// en: 'Subtitle revision JSON changed while it was being selected.'
+	String get historyImportFileChanged => 'Subtitle revision JSON changed while it was being selected.';
+	/// en: 'This platform did not provide a readable revision JSON stream.'
+	String get historyImportStreamUnavailable => 'This platform did not provide a readable revision JSON stream.';
+	/// en: 'Subtitle revision JSON changed or was truncated while it was read.'
+	String get historyImportFileTruncated => 'Subtitle revision JSON changed or was truncated while it was read.';
+	/// en: 'Subtitle history JSON must contain between 1 and 12 valid revisions.'
+	String get historyImportInvalidRevisionCount => 'Subtitle history JSON must contain between 1 and 12 valid revisions.';
+	/// en: 'Subtitle history JSON contains duplicate revision records.'
+	String get historyImportDuplicateRevisions => 'Subtitle history JSON contains duplicate revision records.';
+	/// en: 'There is no saved subtitle history to export for this item.'
+	String get historyExportNoSavedHistory => 'There is no saved subtitle history to export for this item.';
+	/// en: 'This subtitle history bundle exceeds the 32 MiB export limit.'
+	String get historyExportSizeLimit => 'This subtitle history bundle exceeds the 32 MiB export limit.';
+	/// en: 'Export subtitle revision history for another device'
+	String get historyExportDialogTitle => 'Export subtitle revision history for another device';
+	/// en: 'Exported one subtitle revision for transfer to another device.'
+	String get historyExportedOne => 'Exported one subtitle revision for transfer to another device.';
+	/// en: 'Exported ${count} subtitle revisions for transfer to another device.'
+	String historyExportedMany({required Object count}) => 'Exported ${count} subtitle revisions for transfer to another device.';
+	/// en: 'Import subtitle history?'
+	String get historyImportConfirmTitle => 'Import subtitle history?';
+	/// en: 'Imported revisions are added to this item on this device. The item keeps at most 12 revisions and 24 MiB, so its oldest entries may be removed.'
+	String get historyImportConfirmDescription => 'Imported revisions are added to this item on this device. The item keeps at most 12 revisions and 24 MiB, so its oldest entries may be removed.';
+	/// en: 'Reviewed subtitle cue JSON metadata is invalid.'
+	String get historyCueMetadataInvalid => 'Reviewed subtitle cue JSON metadata is invalid.';
+	/// en: 'Revision history needs a stable profile and media item.'
+	String get historyIdentityRequired => 'Revision history needs a stable profile and media item.';
+	/// en: 'Export history bundle'
+	String get historyRevisionExportBundleTooltip => 'Export history bundle';
+	/// en: 'No reviewed revisions have been saved for this item yet.'
+	String get historyEmptyState => 'No reviewed revisions have been saved for this item yet.';
+	/// en: 'Unfinished review · ${operation}'
+	String historyDraftTitle({required Object operation}) => 'Unfinished review · ${operation}';
+	/// en: '${date} · ${cues} ${cueLabel} · ${undoSteps} ${undoStepLabel}'
+	String historyDraftSummary({required Object date, required Object cues, required Object cueLabel, required Object undoSteps, required Object undoStepLabel}) => '${date} · ${cues} ${cueLabel} · ${undoSteps} ${undoStepLabel}';
+	/// en: 'cue'
+	String get historyCueUnitSingular => 'cue';
+	/// en: 'cues'
+	String get historyCueUnitPlural => 'cues';
+	/// en: 'undo step'
+	String get historyUndoStepUnitSingular => 'undo step';
+	/// en: 'undo steps'
+	String get historyUndoStepUnitPlural => 'undo steps';
+	/// en: 'Resume review'
+	String get historyResumeReview => 'Resume review';
+	/// en: 'Delete draft'
+	String get historyDeleteDraft => 'Delete draft';
+	/// en: ' · ${language}'
+	String historyRevisionLanguageSuffix({required Object language}) => ' · ${language}';
+	/// en: '${date} · ${cues} ${cueLabel}${language}'
+	String historyRevisionSummary({required Object date, required Object cues, required Object cueLabel, required Object language}) => '${date} · ${cues} ${cueLabel}${language}';
+	/// en: '${count} ${spanLabel} retained'
+	String historyTimingSpanSummary({required Object count, required Object spanLabel}) => '${count} ${spanLabel} retained';
+	/// en: 'token-derived timing span'
+	String get historyTimingSpanUnitSingular => 'token-derived timing span';
+	/// en: 'token-derived timing spans'
+	String get historyTimingSpanUnitPlural => 'token-derived timing spans';
+	/// en: 'Restore checkpoint'
+	String get historyRestoreCheckpoint => 'Restore checkpoint';
+	/// en: 'Attach'
+	String get historyAttachRevision => 'Attach';
+	/// en: 'Export'
+	String get historyExportSrt => 'Export';
+	/// en: 'Export JSON'
+	String get historyExportJson => 'Export JSON';
+	/// en: 'Imported one subtitle revision into this item history.'
+	String get historyImportOneSuccess => 'Imported one subtitle revision into this item history.';
+	/// en: 'Imported ${count} subtitle revisions into this item history.'
+	String historyImportManySuccess({required Object count}) => 'Imported ${count} subtitle revisions into this item history.';
+	/// en: 'Import JSON'
+	String get historyImportJson => 'Import JSON';
+	/// en: 'Could not open subtitle revision history: ${error}'
+	String historyOpenFailed({required Object error}) => 'Could not open subtitle revision history: ${error}';
+	/// en: 'Saved glossary override for this series and language pair.'
+	String get glossarySavedSeries => 'Saved glossary override for this series and language pair.';
+	/// en: 'Saved glossary for this profile and language pair.'
+	String get glossarySavedProfile => 'Saved glossary for this profile and language pair.';
+	/// en: 'An active profile is required to save a translation glossary.'
+	String get glossaryProfileRequired => 'An active profile is required to save a translation glossary.';
+	/// en: 'No previous glossary versions are saved for this scope and language pair.'
+	String get glossaryNoPreviousVersions => 'No previous glossary versions are saved for this scope and language pair.';
+	/// en: 'Saved glossary history'
+	String get glossaryHistoryTitle => 'Saved glossary history';
+	/// en: '${count} ${termLabel} · series scope'
+	String glossaryHistorySeriesSummary({required Object count, required Object termLabel}) => '${count} ${termLabel} · series scope';
+	/// en: '${count} ${termLabel} · profile scope'
+	String glossaryHistoryProfileSummary({required Object count, required Object termLabel}) => '${count} ${termLabel} · profile scope';
+	/// en: 'term'
+	String get glossaryTermUnitSingular => 'term';
+	/// en: 'terms'
+	String get glossaryTermUnitPlural => 'terms';
+	/// en: 'Loaded glossary version from ${date}. Save it to replace the current glossary.'
+	String glossaryLoadedFrom({required Object date}) => 'Loaded glossary version from ${date}. Save it to replace the current glossary.';
+
+	/// en: 'An active profile is required to load glossary history.'
+	String get glossaryHistoryProfileRequired => 'An active profile is required to load glossary history.';
+
 }
 
 // Path: videoControls.subtitleLiveCapture
@@ -20008,6 +20128,65 @@ extension on Translations {
 			'videoControls.subtitleAiControls.translateTranscriptSubtitleLabel' => 'Subtitle language',
 			'videoControls.subtitleAiControls.translateTranscriptLocalDescription' => 'This translates the captured portion locally and keeps its speech timings.',
 			'videoControls.subtitleAiControls.continueAction' => 'Continue',
+			'videoControls.subtitleAiControls.historyItemClockRangeExceeded' => 'The subtitle timing is outside the supported range for this item.',
+			'videoControls.subtitleAiControls.historyPlaybackClosed' => 'Playback closed before the subtitle revision could be restored.',
+			'videoControls.subtitleAiControls.historyOpenedMediaPartChanged' => 'The opened media part changed before the subtitle revision could be restored.',
+			'videoControls.subtitleAiControls.historyWrongItemProfile' => 'This subtitle revision belongs to a different media item or profile.',
+			'videoControls.subtitleAiControls.historyAttachedRevision' => ({required Object date}) => 'Attached reviewed revision from ${date}.',
+			'videoControls.subtitleAiControls.historyRevisionSrtExportTitle' => 'Export reviewed subtitle revision',
+			'videoControls.subtitleAiControls.historyRevisionSrtExported' => 'Reviewed subtitle revision exported as SRT.',
+			'videoControls.subtitleAiControls.historyRevisionJsonExportTitle' => 'Export subtitle revision with word timings',
+			'videoControls.subtitleAiControls.historyRevisionJsonExported' => 'Revision JSON exported with stable cue IDs and retained word timings.',
+			'videoControls.subtitleAiControls.historyImportContextChanged' => 'Playback or profile changed during subtitle history import.',
+			'videoControls.subtitleAiControls.historyImportSizeLimit' => 'Subtitle history JSON must not be empty or exceed 32 MiB.',
+			'videoControls.subtitleAiControls.historyImportFileChanged' => 'Subtitle revision JSON changed while it was being selected.',
+			'videoControls.subtitleAiControls.historyImportStreamUnavailable' => 'This platform did not provide a readable revision JSON stream.',
+			'videoControls.subtitleAiControls.historyImportFileTruncated' => 'Subtitle revision JSON changed or was truncated while it was read.',
+			'videoControls.subtitleAiControls.historyImportInvalidRevisionCount' => 'Subtitle history JSON must contain between 1 and 12 valid revisions.',
+			'videoControls.subtitleAiControls.historyImportDuplicateRevisions' => 'Subtitle history JSON contains duplicate revision records.',
+			'videoControls.subtitleAiControls.historyExportNoSavedHistory' => 'There is no saved subtitle history to export for this item.',
+			'videoControls.subtitleAiControls.historyExportSizeLimit' => 'This subtitle history bundle exceeds the 32 MiB export limit.',
+			'videoControls.subtitleAiControls.historyExportDialogTitle' => 'Export subtitle revision history for another device',
+			'videoControls.subtitleAiControls.historyExportedOne' => 'Exported one subtitle revision for transfer to another device.',
+			'videoControls.subtitleAiControls.historyExportedMany' => ({required Object count}) => 'Exported ${count} subtitle revisions for transfer to another device.',
+			'videoControls.subtitleAiControls.historyImportConfirmTitle' => 'Import subtitle history?',
+			'videoControls.subtitleAiControls.historyImportConfirmDescription' => 'Imported revisions are added to this item on this device. The item keeps at most 12 revisions and 24 MiB, so its oldest entries may be removed.',
+			'videoControls.subtitleAiControls.historyCueMetadataInvalid' => 'Reviewed subtitle cue JSON metadata is invalid.',
+			'videoControls.subtitleAiControls.historyIdentityRequired' => 'Revision history needs a stable profile and media item.',
+			'videoControls.subtitleAiControls.historyRevisionExportBundleTooltip' => 'Export history bundle',
+			'videoControls.subtitleAiControls.historyEmptyState' => 'No reviewed revisions have been saved for this item yet.',
+			'videoControls.subtitleAiControls.historyDraftTitle' => ({required Object operation}) => 'Unfinished review · ${operation}',
+			'videoControls.subtitleAiControls.historyDraftSummary' => ({required Object date, required Object cues, required Object cueLabel, required Object undoSteps, required Object undoStepLabel}) => '${date} · ${cues} ${cueLabel} · ${undoSteps} ${undoStepLabel}',
+			'videoControls.subtitleAiControls.historyCueUnitSingular' => 'cue',
+			'videoControls.subtitleAiControls.historyCueUnitPlural' => 'cues',
+			'videoControls.subtitleAiControls.historyUndoStepUnitSingular' => 'undo step',
+			'videoControls.subtitleAiControls.historyUndoStepUnitPlural' => 'undo steps',
+			'videoControls.subtitleAiControls.historyResumeReview' => 'Resume review',
+			'videoControls.subtitleAiControls.historyDeleteDraft' => 'Delete draft',
+			'videoControls.subtitleAiControls.historyRevisionLanguageSuffix' => ({required Object language}) => ' · ${language}',
+			'videoControls.subtitleAiControls.historyRevisionSummary' => ({required Object date, required Object cues, required Object cueLabel, required Object language}) => '${date} · ${cues} ${cueLabel}${language}',
+			'videoControls.subtitleAiControls.historyTimingSpanSummary' => ({required Object count, required Object spanLabel}) => '${count} ${spanLabel} retained',
+			'videoControls.subtitleAiControls.historyTimingSpanUnitSingular' => 'token-derived timing span',
+			'videoControls.subtitleAiControls.historyTimingSpanUnitPlural' => 'token-derived timing spans',
+			'videoControls.subtitleAiControls.historyRestoreCheckpoint' => 'Restore checkpoint',
+			'videoControls.subtitleAiControls.historyAttachRevision' => 'Attach',
+			'videoControls.subtitleAiControls.historyExportSrt' => 'Export',
+			'videoControls.subtitleAiControls.historyExportJson' => 'Export JSON',
+			'videoControls.subtitleAiControls.historyImportOneSuccess' => 'Imported one subtitle revision into this item history.',
+			'videoControls.subtitleAiControls.historyImportManySuccess' => ({required Object count}) => 'Imported ${count} subtitle revisions into this item history.',
+			'videoControls.subtitleAiControls.historyImportJson' => 'Import JSON',
+			'videoControls.subtitleAiControls.historyOpenFailed' => ({required Object error}) => 'Could not open subtitle revision history: ${error}',
+			'videoControls.subtitleAiControls.glossarySavedSeries' => 'Saved glossary override for this series and language pair.',
+			'videoControls.subtitleAiControls.glossarySavedProfile' => 'Saved glossary for this profile and language pair.',
+			'videoControls.subtitleAiControls.glossaryProfileRequired' => 'An active profile is required to save a translation glossary.',
+			'videoControls.subtitleAiControls.glossaryNoPreviousVersions' => 'No previous glossary versions are saved for this scope and language pair.',
+			'videoControls.subtitleAiControls.glossaryHistoryTitle' => 'Saved glossary history',
+			'videoControls.subtitleAiControls.glossaryHistorySeriesSummary' => ({required Object count, required Object termLabel}) => '${count} ${termLabel} · series scope',
+			'videoControls.subtitleAiControls.glossaryHistoryProfileSummary' => ({required Object count, required Object termLabel}) => '${count} ${termLabel} · profile scope',
+			'videoControls.subtitleAiControls.glossaryTermUnitSingular' => 'term',
+			'videoControls.subtitleAiControls.glossaryTermUnitPlural' => 'terms',
+			'videoControls.subtitleAiControls.glossaryLoadedFrom' => ({required Object date}) => 'Loaded glossary version from ${date}. Save it to replace the current glossary.',
+			'videoControls.subtitleAiControls.glossaryHistoryProfileRequired' => 'An active profile is required to load glossary history.',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',

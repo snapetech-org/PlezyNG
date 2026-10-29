@@ -2353,7 +2353,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (offset == 0) return cues;
     return cues.map((cue) {
       if (cue.endMs + offset > SubtitleRetimer.maximumTimeMs) {
-        throw const FormatException('The item subtitle clock exceeds the supported range');
+        throw FormatException(t.videoControls.subtitleAiControls.historyItemClockRangeExceeded);
       }
       return SubtitleCue(index: cue.index, startMs: cue.startMs + offset,
         endMs: cue.endMs + offset, text: cue.text, cueId: cue.stableId);
@@ -2365,7 +2365,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final offset = widget.player.timelineOffset.inMilliseconds;
     final output = SubtitleSyncService.writeSrtForPart(cues, offset);
     if (output.clipped > 0) {
-      if (!mounted) throw StateError('Playback closed');
+      if (!mounted) throw StateError(t.videoControls.subtitleAiControls.historyPlaybackClosed);
       final copy = _t.videoControls.subtitleReviewFlow;
       final accepted = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
         title: Text(copy.clipPartTitle),
@@ -2375,13 +2375,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (accepted != true) throw StateError(copy.attachmentCancelled);
     }
     _requireCurrentOperationIdentity();
-    if (widget.player.timelineOffset.inMilliseconds != offset) throw StateError('The opened media part changed');
+    if (widget.player.timelineOffset.inMilliseconds != offset) {
+      throw StateError(t.videoControls.subtitleAiControls.historyOpenedMediaPartChanged);
+    }
     return output.bytes;
   }
 
   Future<void> _restoreSubtitleRevision(SubtitleRevision revision, SubtitleRevisionIdentity expectedIdentity) async {
     if (_operationRevisionIdentity?.storageKey != expectedIdentity.storageKey) {
-      throw StateError('The selected subtitle revision belongs to a different media item or profile.');
+      throw StateError(t.videoControls.subtitleAiControls.historyWrongItemProfile);
     }
     if (widget.appOverlayOnly) {
       await _writeAndApply(revision.cues, operationLabel: revision.operation,
@@ -2396,40 +2398,45 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     _requireCurrentOperationIdentity();
     await widget.player.command(['sub-add', path, 'select']);
     if (mounted) {
-      setState(() => _status = 'Attached reviewed revision from ${_formatRevisionDate(revision.createdAt)}.');
+      setState(
+        () => _status = t.videoControls.subtitleAiControls.historyAttachedRevision(
+          date: _formatRevisionDate(revision.createdAt),
+        ),
+      );
       OverlaySheetController.of(context).refocus();
     }
   }
 
   Future<void> _exportSubtitleRevision(SubtitleRevision revision) async {
     final result = await FilePickerService.instance.saveFile(
-      dialogTitle: 'Export reviewed subtitle revision',
+      dialogTitle: t.videoControls.subtitleAiControls.historyRevisionSrtExportTitle,
       fileName: 'PlezyNG_revision_${revision.id}.srt',
       bytes: SubtitleSyncService.writeSrt(revision.cues),
       type: FileType.custom,
       allowedExtensions: const ['srt'],
     );
     if (mounted && result != null) {
-      setState(() => _status = 'Reviewed subtitle revision exported as SRT.');
+      setState(() => _status = t.videoControls.subtitleAiControls.historyRevisionSrtExported);
     }
   }
 
   Future<void> _exportSubtitleRevisionJson(SubtitleRevision revision) async {
     final bytes = Uint8List.fromList(utf8.encode(const JsonEncoder.withIndent('  ').convert(revision.toJson())));
     final result = await FilePickerService.instance.saveFile(
-      dialogTitle: 'Export subtitle revision with word timings',
+      dialogTitle: t.videoControls.subtitleAiControls.historyRevisionJsonExportTitle,
       fileName: 'PlezyNG_revision_${revision.id}.json',
       bytes: bytes,
       type: FileType.custom,
       allowedExtensions: const ['json'],
     );
     if (mounted && result != null) {
-      setState(() => _status = 'Revision JSON exported with stable cue IDs and retained word timings.');
+      setState(() => _status = t.videoControls.subtitleAiControls.historyRevisionJsonExported);
     }
   }
 
   Future<List<SubtitleRevision>?> _importSubtitleRevisionJson(SubtitleRevisionIdentity identity,
       {required bool Function() isHistoryCurrent}) async {
+    final copy = t.videoControls.subtitleAiControls;
     final player = widget.player;
     final snapshot = _SubtitleOperationSnapshot(player: player,
       mediaSessionGeneration: player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null,
@@ -2439,7 +2446,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       currentRevisionIdentity: _revisionIdentity, currentProfileId: _activeProfileId,
       isRevisionIdentityCurrent: widget.isRevisionIdentityCurrent);
     void requireCurrent() {
-      if (!current()) throw StateError('Playback or profile changed during subtitle history import.');
+      if (!current()) throw StateError(copy.historyImportContextChanged);
     }
     requireCurrent();
     final picked = await FilePickerService.instance.pickFiles(
@@ -2453,21 +2460,21 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (p.extension(file.name).toLowerCase() != '.json' ||
         file.size <= 0 ||
         file.size > SubtitleRevisionService.maximumHistoryBundleBytes) {
-      throw const FormatException('Choose a subtitle history JSON file no larger than 32 MiB.');
+      throw FormatException(copy.historyImportSizeLimit);
     }
     Stream<List<int>>? source = file.readStream;
     if (source == null && file.path != null) {
       final input = File(file.path!);
       final actualSize = await input.length();
       if (actualSize != file.size) {
-        throw const FormatException('Subtitle revision JSON changed while it was being selected.');
+        throw FormatException(copy.historyImportFileChanged);
       }
       source = input.openRead();
     }
     final pickedBytes = file.bytes;
     if (source == null && pickedBytes != null) source = Stream<List<int>>.value(pickedBytes);
     if (source == null) {
-      throw const FormatException('This platform did not provide a readable revision JSON stream.');
+      throw FormatException(copy.historyImportStreamUnavailable);
     }
     final output = BytesBuilder(copy: false);
     var received = 0;
@@ -2475,15 +2482,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       requireCurrent();
       received += chunk.length;
       if (received > SubtitleRevisionService.maximumHistoryBundleBytes) {
-        throw const FormatException('Subtitle history JSON exceeds the 32 MiB import limit.');
+        throw FormatException(copy.historyImportSizeLimit);
       }
       output.add(chunk);
     }
     if (received != file.size) {
-      throw const FormatException('Subtitle revision JSON changed or was truncated while it was read.');
+      throw FormatException(copy.historyImportFileTruncated);
     }
     if (received <= 0 || received > SubtitleRevisionService.maximumHistoryBundleBytes) {
-      throw const FormatException('Subtitle history JSON exceeds the 32 MiB import limit.');
+      throw FormatException(copy.historyImportSizeLimit);
     }
     final bytes = output.takeBytes();
     final decoded = jsonDecode(utf8.decode(bytes, allowMalformed: false));
@@ -2494,13 +2501,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (rawRevisions is! List ||
         rawRevisions.isEmpty ||
         rawRevisions.length > SubtitleRevisionService.maximumRevisionsPerItem) {
-      throw const FormatException('Subtitle history JSON must contain between 1 and 12 valid revisions.');
+      throw FormatException(copy.historyImportInvalidRevisionCount);
     }
     final importedRevisions = rawRevisions
         .map((record) => SubtitleRevision.fromJson(_normalizeSubtitleRevisionImport(record)))
         .toList(growable: false);
     if (importedRevisions.map((revision) => revision.id).toSet().length != importedRevisions.length) {
-      throw const FormatException('Subtitle history JSON contains duplicate revision records.');
+      throw FormatException(copy.historyImportDuplicateRevisions);
     }
     final saved = <SubtitleRevision>[];
     for (final imported in importedRevisions.reversed) {
@@ -2521,9 +2528,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Future<void> _exportSubtitleHistoryJson(SubtitleRevisionIdentity identity) async {
+    final copy = t.videoControls.subtitleAiControls;
     final revisions = await SubtitleRevisionService.loadRevisions(identity);
     if (revisions.isEmpty) {
-      if (mounted) setState(() => _revisionStatus = 'There is no saved subtitle history to export for this item.');
+      if (mounted) setState(() => _revisionStatus = copy.historyExportNoSavedHistory);
       return;
     }
     final bytes = Uint8List.fromList(
@@ -2537,17 +2545,21 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       ),
     );
     if (bytes.length > SubtitleRevisionService.maximumHistoryBundleBytes) {
-      throw const FormatException('This subtitle history bundle exceeds the 32 MiB export limit.');
+      throw FormatException(copy.historyExportSizeLimit);
     }
     final result = await FilePickerService.instance.saveFile(
-      dialogTitle: 'Export subtitle revision history for another device',
+      dialogTitle: copy.historyExportDialogTitle,
       fileName: 'PlezyNG_subtitle_history_${DateTime.now().microsecondsSinceEpoch}.json',
       bytes: bytes,
       type: FileType.custom,
       allowedExtensions: const ['json'],
     );
     if (mounted && result != null) {
-      setState(() => _revisionStatus = 'Exported ${revisions.length} subtitle revisions for transfer to another device.');
+      setState(
+        () => _revisionStatus = revisions.length == 1
+            ? copy.historyExportedOne
+            : copy.historyExportedMany(count: revisions.length),
+      );
     }
   }
 
@@ -2555,13 +2567,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: const Text('Import subtitle history?'),
-          content: const Text(
-            'Imported revisions are added to this item on this device. The item keeps at most 12 revisions and 24 MiB, so its oldest entries may be removed.',
-          ),
+          title: Text(t.videoControls.subtitleAiControls.historyImportConfirmTitle),
+          content: Text(t.videoControls.subtitleAiControls.historyImportConfirmDescription),
           actions: [
-            TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Continue')),
+            TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(t.common.cancel)),
+            FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(t.videoControls.subtitleAiControls.continueAction)),
           ],
         ),
       ) ??
@@ -2575,7 +2585,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         (value['language'] != null && value['language'] is! String) ||
         value['cues'] is! List ||
         value['wordTimings'] is! List) {
-      throw const FormatException('Reviewed subtitle cue JSON metadata is invalid.');
+      throw FormatException(t.videoControls.subtitleAiControls.historyCueMetadataInvalid);
     }
     final wordTimings = (value['wordTimings'] as List).map((rawTiming) {
       if (rawTiming is! Map) return rawTiming;
@@ -2616,9 +2626,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Future<void> _showRevisionHistory() async {
+    final copy = t.videoControls.subtitleAiControls;
     final identity = _revisionIdentity;
     if (identity == null) {
-      setState(() => _revisionStatus = 'Revision history needs a stable profile and media item.');
+      setState(() => _revisionStatus = copy.historyIdentityRequired);
       return;
     }
     final historyPlayer = widget.player;
@@ -2641,7 +2652,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             return AlertDialog(
               title: Row(
                 children: [
-                  const Expanded(child: Text('Subtitle revision history')),
+                  Expanded(child: Text(copy.revisionHistoryTitle)),
                   IconButton(
                     tooltip: t.videoControls.subtitleArchive.title,
                     onPressed: () {
@@ -2654,7 +2665,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     icon: const AppIcon(Symbols.folder_open_rounded),
                   ),
                   IconButton(
-                    tooltip: 'Export history bundle',
+                    tooltip: copy.historyRevisionExportBundleTooltip,
                     onPressed: () {
                       Navigator.of(dialogContext).pop();
                       unawaited(_run(() => _exportSubtitleHistoryJson(identity)));
@@ -2667,7 +2678,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 width: 620,
                 height: height,
                 child: revisions.isEmpty && draft == null
-                    ? const Center(child: Text('No reviewed revisions have been saved for this item yet.'))
+                    ? Center(child: Text(copy.historyEmptyState))
                     : ListView.separated(
                         itemCount: revisions.length + (draft == null ? 0 : 1),
                         separatorBuilder: (_, _) => const Divider(height: 12),
@@ -2681,12 +2692,21 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
                                     Text(
-                                      'Unfinished review · ${pendingDraft.operation}',
+                                      copy.historyDraftTitle(operation: pendingDraft.operation),
                                       style: Theme.of(context).textTheme.titleSmall,
                                     ),
                                     Text(
-                                      '${_formatRevisionDate(pendingDraft.savedAt)} · ${pendingDraft.cues.length} cues · '
-                                      '${pendingDraft.undoHistory.length} undo steps',
+                                      copy.historyDraftSummary(
+                                        date: _formatRevisionDate(pendingDraft.savedAt),
+                                        cues: pendingDraft.cues.length,
+                                        cueLabel: pendingDraft.cues.length == 1
+                                            ? copy.historyCueUnitSingular
+                                            : copy.historyCueUnitPlural,
+                                        undoSteps: pendingDraft.undoHistory.length,
+                                        undoStepLabel: pendingDraft.undoHistory.length == 1
+                                            ? copy.historyUndoStepUnitSingular
+                                            : copy.historyUndoStepUnitPlural,
+                                      ),
                                       style: Theme.of(context).textTheme.bodySmall,
                                     ),
                                     Wrap(
@@ -2711,7 +2731,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                             );
                                           },
                                           icon: const AppIcon(Symbols.play_arrow_rounded),
-                                          label: const Text('Resume review'),
+                                          label: Text(copy.historyResumeReview),
                                         ),
                                         TextButton.icon(
                                           onPressed: () async {
@@ -2720,7 +2740,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                             setDialogState(() => draft = null);
                                           },
                                           icon: const AppIcon(Symbols.delete_outline_rounded),
-                                          label: const Text('Delete draft'),
+                                          label: Text(copy.historyDeleteDraft),
                                         ),
                                       ],
                                     ),
@@ -2731,7 +2751,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                           }
                           final revisionIndex = index - (draft == null ? 0 : 1);
                           final revision = revisions[revisionIndex];
-                          final language = revision.languageCode == null ? '' : ' · ${revision.languageCode}';
+                          final language = revision.languageCode == null
+                              ? ''
+                              : copy.historyRevisionLanguageSuffix(
+                                  language: revision.languageCode!,
+                                );
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             child: Column(
@@ -2739,12 +2763,24 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                               children: [
                                 Text(revision.operation, style: Theme.of(context).textTheme.titleSmall),
                                 Text(
-                                  '${_formatRevisionDate(revision.createdAt)} · ${revision.cues.length} cues$language',
+                                  copy.historyRevisionSummary(
+                                    date: _formatRevisionDate(revision.createdAt),
+                                    cues: revision.cues.length,
+                                    cueLabel: revision.cues.length == 1
+                                        ? copy.historyCueUnitSingular
+                                        : copy.historyCueUnitPlural,
+                                    language: language,
+                                  ),
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                                 if (revision.wordTimings.isNotEmpty)
                                   Text(
-                                    '${revision.wordTimings.length} token-derived timing spans retained',
+                                    copy.historyTimingSpanSummary(
+                                      count: revision.wordTimings.length,
+                                      spanLabel: revision.wordTimings.length == 1
+                                          ? copy.historyTimingSpanUnitSingular
+                                          : copy.historyTimingSpanUnitPlural,
+                                    ),
                                     style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                 Wrap(
@@ -2762,8 +2798,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                       ),
                                       label: Text(
                                         revision.operation.startsWith(_subtitleUndoCheckpointPrefix)
-                                            ? 'Restore checkpoint'
-                                            : 'Attach',
+                                            ? copy.historyRestoreCheckpoint
+                                            : copy.historyAttachRevision,
                                       ),
                                     ),
                                     TextButton.icon(
@@ -2772,7 +2808,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                         unawaited(_run(() => _exportSubtitleRevision(revision)));
                                       },
                                       icon: const AppIcon(Symbols.save_alt_rounded),
-                                      label: const Text('Export'),
+                                      label: Text(copy.historyExportSrt),
                                     ),
                                     TextButton.icon(
                                       onPressed: () {
@@ -2780,7 +2816,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                         unawaited(_run(() => _exportSubtitleRevisionJson(revision)));
                                       },
                                       icon: const AppIcon(Symbols.data_object_rounded),
-                                      label: const Text('Export JSON'),
+                                      label: Text(copy.historyExportJson),
                                     ),
                                     TextButton.icon(
                                       onPressed: () async {
@@ -2793,7 +2829,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                         );
                                       },
                                       icon: const AppIcon(Symbols.delete_outline_rounded),
-                                      label: const Text('Delete'),
+                                      label: Text(t.common.delete),
                                     ),
                                   ],
                                 ),
@@ -2815,8 +2851,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                         if (!mounted || !dialogContext.mounted) return;
                         setDialogState(() => revisions = refreshed);
                         setState(
-                          () => _revisionStatus =
-                              'Imported ${imported.length} subtitle revision${imported.length == 1 ? '' : 's'} into this item history.',
+                          () => _revisionStatus = imported.length == 1
+                              ? copy.historyImportOneSuccess
+                              : copy.historyImportManySuccess(count: imported.length),
                         );
                       }
                     } catch (error) {
@@ -2824,16 +2861,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     }
                   },
                   icon: const AppIcon(Symbols.file_upload),
-                  label: const Text('Import JSON'),
+                  label: Text(copy.historyImportJson),
                 ),
-                TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Close')),
+                TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(t.common.close)),
               ],
             );
           },
         ),
       );
     } catch (error) {
-      if (mounted) setState(() => _revisionStatus = 'Could not open subtitle revision history: $error');
+      if (mounted) setState(() => _revisionStatus = copy.historyOpenFailed(error: error));
     }
   }
 
@@ -2906,7 +2943,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   Future<void> _saveGlossary() async {
     final profileId = _activeProfileId;
     if (profileId == null) {
-      throw StateError('An active profile is required to save a translation glossary.');
+      throw StateError(t.videoControls.subtitleAiControls.glossaryProfileRequired);
     }
     final glossary = _parseGlossary();
     await SubtitleTranslationService.saveGlossaryForProfile(
@@ -2920,8 +2957,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (mounted) {
       setState(
         () => _status = _useSeriesGlossary
-            ? 'Saved glossary override for this series and language pair.'
-            : 'Saved glossary for this profile and language pair.',
+            ? t.videoControls.subtitleAiControls.glossarySavedSeries
+            : t.videoControls.subtitleAiControls.glossarySavedProfile,
       );
     }
   }
@@ -2929,7 +2966,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   Future<void> _showGlossaryHistory() async {
     final profileId = _activeProfileId;
     if (profileId == null) {
-      if (mounted) setState(() => _status = 'An active profile is required to load glossary history.');
+      if (mounted) setState(() => _status = t.videoControls.subtitleAiControls.glossaryHistoryProfileRequired);
       return;
     }
     final revisions = SubtitleTranslationService.loadGlossaryHistoryForProfile(
@@ -2939,13 +2976,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       seriesId: _useSeriesGlossary ? widget.seriesKey : null,
     );
     if (revisions.isEmpty) {
-      if (mounted) setState(() => _status = 'No previous glossary versions are saved for this scope and language pair.');
+      if (mounted) setState(() => _status = t.videoControls.subtitleAiControls.glossaryNoPreviousVersions);
       return;
     }
     final selected = await showDialog<SubtitleGlossaryRevision>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Saved glossary history'),
+        title: Text(t.videoControls.subtitleAiControls.glossaryHistoryTitle),
         content: SizedBox(
           width: 520,
           height: 360,
@@ -2955,7 +2992,21 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               final revision = revisions[index];
               return ListTile(
                 title: Text(_formatRevisionDate(revision.createdAt)),
-                subtitle: Text('${revision.glossary.length} terms · ${_useSeriesGlossary ? 'series' : 'profile'} scope'),
+                subtitle: Text(
+                  _useSeriesGlossary
+                      ? t.videoControls.subtitleAiControls.glossaryHistorySeriesSummary(
+                          count: revision.glossary.length,
+                          termLabel: revision.glossary.length == 1
+                              ? t.videoControls.subtitleAiControls.glossaryTermUnitSingular
+                              : t.videoControls.subtitleAiControls.glossaryTermUnitPlural,
+                        )
+                      : t.videoControls.subtitleAiControls.glossaryHistoryProfileSummary(
+                          count: revision.glossary.length,
+                          termLabel: revision.glossary.length == 1
+                              ? t.videoControls.subtitleAiControls.glossaryTermUnitSingular
+                              : t.videoControls.subtitleAiControls.glossaryTermUnitPlural,
+                        ),
+                ),
                 onTap: () => Navigator.of(dialogContext).pop(revision),
               );
             },
@@ -2971,7 +3022,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     setState(() {
       _glossaryController.text = restoredDraft;
       _glossaryDrafts[_currentGlossaryDraftKey()] = restoredDraft;
-      _status = 'Loaded glossary version from ${_formatRevisionDate(selected.createdAt)}. Save it to replace the current glossary.';
+      _status = t.videoControls.subtitleAiControls.glossaryLoadedFrom(
+          date: _formatRevisionDate(selected.createdAt),
+        );
     });
   }
 

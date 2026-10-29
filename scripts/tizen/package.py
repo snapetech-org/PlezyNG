@@ -44,7 +44,7 @@ def visualizer_metadata(raw, arch):
             or data.get('target') != f'tizen-{arch}'
             or not re.fullmatch(r'[0-9a-f]{40}', str(data.get('sourceRevision', '')))
             or data.get('runnerPolicy') != 'private-ephemeral-jit'
-            or not re.fullmatch(r'https://github\.com/snapetech-org/MilkRust/actions/runs/[1-9][0-9]*', str(data.get('buildRun', '')))):
+            or not re.fullmatch(r'https://github\.com/snapetech-org/(MilkRust|PlezyNG)/actions/runs/[1-9][0-9]*', str(data.get('buildRun', '')))):
         raise ValueError('MilkRust artifact identity, ABI or build provenance is invalid')
     for key, _ in VISUALIZER_FILES.values():
         if not re.fullmatch(r'[0-9a-f]{64}', str(data.get(key, ''))):
@@ -450,6 +450,8 @@ def stage(source, destination, native_dir, arch, *, visualizer_native=None, visu
 
 
 def build(args):
+    if not args.visualizer_native or not args.visualizer_manifest_sha256:
+        raise ValueError('TV packages require the app-pinned MilkRust runtime and manifest digest; run scripts/tizen/build_milkrust.py first')
     sdk = Path(args.sdk).resolve(strict=True)
     actual = subprocess.check_output(['git', '-C', str(sdk), 'rev-parse', 'HEAD'], text=True).strip()
     if actual != PINS['flutter_tizen_revision']:

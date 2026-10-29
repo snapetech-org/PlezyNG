@@ -480,6 +480,14 @@ jobs:
           print("GRADLE_OPTS=" + " ".join(([existing] if existing else []) + options))
           PY
 
+      - name: Build bundled MilkRust for all Android ABIs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/visualizer/build_runtime.py --platform android \
+            --architectures arm64-v8a,armeabi-v7a,x86,x86_64 \
+            --ndk "$ANDROID_HOME/ndk/29.0.14206865" --output build/visualizer-native
+
       - name: Build APKs
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
         run: flutter build apk --release --split-per-abi ${{ env.RELEASE_DART_DEFINES }} --obfuscate --split-debug-info=debug-info/android-apk --extra-gen-snapshot-options=--save-obfuscation-map=debug-info/android-apk/obfuscation.map.json
@@ -1718,6 +1726,10 @@ jobs:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         run: dart run scripts/configure_updater.dart
 
+      - name: Build bundled MilkRust for Windows
+        shell: pwsh
+        run: python scripts/visualizer/build_runtime.py --platform windows --architectures "${{ matrix.arch }}" --output build/visualizer-native
+
       - name: Build Windows ${{ matrix.arch }}
         shell: pwsh
         env:
@@ -2157,6 +2169,10 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Build bundled MilkRust for Linux
+        shell: bash
+        run: python3 scripts/visualizer/build_runtime.py --platform linux --architectures "${{ matrix.arch }}" --output build/visualizer-native
 
       - name: Build Linux ${{ matrix.arch }}
         shell: bash

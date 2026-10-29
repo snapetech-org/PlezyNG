@@ -923,6 +923,8 @@ android {
       // is extractMpvNatives' output (the AAR's 16 KB-capable libc++), wired
       // below via the JniLibFolders dependency.
       jniLibs.srcDir(mpvLibcxxJniDir)
+      jniLibs.srcDir(File(rootDir, "../build/visualizer-native/jniLibs"))
+      assets.srcDir(File(rootDir, "../build/visualizer-native/assets"))
       jniLibs.srcDir(File(androidLiteRtRuntimeDir, "jniLibs"))
       assets.srcDir(androidLiteRtModelAssetsDir)
       assets.srcDir(File(androidLiteRtRuntimeDir, "assets"))
@@ -980,6 +982,24 @@ kotlin {
   }
 }
 
+// All APK/AAB entrypoints, including instrumentation package jobs, stage the
+// same pinned runtime before Gradle snapshots assets and native libraries.
+val stageMilkRustRuntime by tasks.registering(Exec::class) {
+  group = "build"
+  workingDir(rootProject.file(".."))
+  doFirst {
+    val localProperties = Properties()
+    val localFile = rootProject.file("local.properties")
+    if (localFile.isFile) localFile.inputStream().use { localProperties.load(it) }
+    val sdkRoot = System.getenv("ANDROID_HOME") ?: localProperties.getProperty("sdk.dir")
+      ?: throw GradleException("The pinned Android SDK is required for MilkRust")
+    commandLine("python3", "scripts/visualizer/build_runtime.py", "--platform", "android",
+      "--architectures", mpvAbis.joinToString(","),
+      "--ndk", File(sdkRoot, "ndk/29.0.14206865").absolutePath,
+      "--output", "build/visualizer-native")
+  }
+}
+
 flutter {
   source = "../.."
 }
@@ -995,11 +1015,13 @@ tasks.matching { it.name.startsWith("pre") && it.name.endsWith("Build") }.config
 // Gradle snapshots jniLibs source dirs before task execution; this keeps the
 // extracted libc++ directory present during input discovery.
 tasks.matching { it.name.startsWith("merge") && it.name.endsWith("JniLibFolders") }.configureEach {
+  dependsOn(stageMilkRustRuntime)
   dependsOn(extractMpvNatives)
   dependsOn(stageAndroidAnvilRuntime)
   dependsOn(stageAndroidLiteRtArtifacts)
 }
 tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }.configureEach {
+  dependsOn(stageMilkRustRuntime)
   dependsOn(stageAndroidAnvilRuntime)
   dependsOn(stageAndroidLiteRtArtifacts)
   dependsOn(stageAndroidLiteRtModels)

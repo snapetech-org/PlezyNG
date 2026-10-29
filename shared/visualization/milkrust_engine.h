@@ -31,8 +31,7 @@ struct MilkRustApi {
     library = reinterpret_cast<void*>(LoadLibraryExW(
         L"milkrust_native.dll", nullptr, LOAD_LIBRARY_SEARCH_APPLICATION_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32));
 #elif defined(__APPLE__)
-    // Mobile builds link a static library and export its public symbols. Desktop
-    // bundles may ship the equivalent dylib in their signed Frameworks folder.
+    // Apple builds link the per-SDK static archive with strong ABI references.
     library = dlopen(nullptr, RTLD_NOW | RTLD_LOCAL);
 #else
     library = dlopen("libmilkrust_native.so", RTLD_NOW | RTLD_LOCAL);
@@ -53,8 +52,14 @@ struct MilkRustApi {
       return;
     }
     // clang-format off
+#if defined(__APPLE__)
+    // Strong references pull the ABI objects from the app's static archive;
+    // this remains valid with dead stripping and does not rely on dlsym exports.
+#define LOAD(name) name = &milkrust_##name;
+#else
 #define LOAD(name) name = reinterpret_cast<decltype(name)>(Symbol("milkrust_" #name)); \
     if (!name) { error = "Native MilkRust lacks the required ABI v1 symbols."; return; }
+#endif
     LOAD(abi_version) LOAD(create) LOAD(load) LOAD(texture_names) LOAD(texture)
     LOAD(pcm) LOAD(render) LOAD(render_rgba) LOAD(destroy) LOAD(last_error)
 #undef LOAD

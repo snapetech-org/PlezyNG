@@ -6,5 +6,6 @@
   "libsmb2_revision": "e94eee9465d55ed094ace2c038a8705b4822dada",
   "libsmb2_scripts_revision": "83553cb356448f3f7f052ab8d91196b1755ffb35",
   "dart_smb2_version": "0.2.3",
-  "sqlite_source_sha3_256": "28e484abdaa43630e34040ef6ed92be973a1ad54107803d8af5145b889c23ed7"
+  "sqlite_source_sha3_256": "28e484abdaa43630e34040ef6ed92be973a1ad54107803d8af5145b889c23ed7",
+  "milkrust_rust_toolchain": "1.97.0"
 }

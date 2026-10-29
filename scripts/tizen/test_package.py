@@ -23,6 +23,10 @@ def elf(arch='arm'):
 
 
 class PackageTest(unittest.TestCase):
+    def test_build_requires_the_visualizer_bundle_before_sdk_access(self):
+        with self.assertRaisesRegex(ValueError, 'require.*MilkRust'):
+            package.build(SimpleNamespace(visualizer_native=None, visualizer_manifest_sha256=None))
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

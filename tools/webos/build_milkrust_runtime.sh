@@ -10,7 +10,7 @@ ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 : "${WEBOS_NDK_ROOT:?Set this to the pinned LG webOS 26 NDK root}"
 : "${WEBOS_PYTHON_BIN:=python3}"
 
-if [[ "$GITHUB_REPOSITORY" != "snapetech-org/PlezyNG" ]]; then
+if [[ "$GITHUB_REPOSITORY" != "snapetech-org/PlezyNG" || "${RUNNER_ENVIRONMENT:-}" != "self-hosted" ]]; then
   echo "MilkRust webOS provenance must be produced by snapetech-org/PlezyNG." >&2
   exit 1
 fi
@@ -83,6 +83,31 @@ if [[ -L "$LINKER" || ! -x "$LINKER" ]]; then
   exit 1
 fi
 
+# cc-rs now compiles the vendored HLSL parser. Explicit target tools and flags
+# prevent an accidental host-C++ object from entering the ARM Rust archive.
+CXX="${LINKER%-gcc}-g++"
+AR="${LINKER%-gcc}-ar"
+TARGET_SYSROOT="$NDK_ROOT/sysroots/ca9v1-webosmllib32-linux-gnueabi"
+for tool in "$CXX" "$AR"; do
+  if [[ -L "$tool" || ! -x "$tool" ]]; then
+    echo "The pinned NDK C++ tool is missing or linked: $tool" >&2
+    exit 1
+  fi
+done
+EXPECTED_GCC="$("$WEBOS_PYTHON_BIN" -c 'import json,sys; print(json.load(open(sys.argv[1]))["engineBuild"]["gccVersion"])' "$ROOT/tools/webos/compatibility.json")"
+if [[ "$("$CXX" -dumpfullversion)" != "$EXPECTED_GCC" ]]; then
+  echo "MilkRust C++ compiler differs from the webOS NDK version." >&2
+  exit 1
+fi
+TARGET_FLAGS="--sysroot=$TARGET_SYSROOT -march=armv7-a -marm -mfpu=neon -mfloat-abi=softfp"
+unset RUSTFLAGS CARGO_ENCODED_RUSTFLAGS
+export CC_armv7_unknown_linux_gnueabi="$LINKER"
+export CXX_armv7_unknown_linux_gnueabi="$CXX"
+export AR_armv7_unknown_linux_gnueabi="$AR"
+export CFLAGS_armv7_unknown_linux_gnueabi="$TARGET_FLAGS"
+export CXXFLAGS_armv7_unknown_linux_gnueabi="$TARGET_FLAGS"
+export CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABI_RUSTFLAGS="-C link-arg=--sysroot=$TARGET_SYSROOT -C link-arg=-march=armv7-a -C link-arg=-mfloat-abi=softfp -C link-arg=-mfpu=neon"
+
 TASK_ROOT_REAL="$(cd -- "$TASK_ROOT" && pwd)"
 TASK_RUSTUP_HOME="$TASK_ROOT_REAL/rustup-home"
 TASK_CARGO_HOME="$TASK_ROOT_REAL/cargo-home"
@@ -139,9 +164,13 @@ PY
 
 mkdir -m 700 -- "$BUNDLE_DIR"
 install -m 0644 -- "$LIBRARY" "$BUNDLE_DIR/libmilkrust_native.so"
-git -C "$TASK_SOURCE" archive --format=tar --prefix="milkrust-$SOURCE_REVISION/" "$SOURCE_REVISION" |
+git -C "$TASK_SOURCE" archive --format=tar --prefix="milkrust-$SOURCE_REVISION/" "$SOURCE_REVISION" -- Cargo.toml Cargo.lock LICENSE LICENSE-SCOPE.md README.md crates docs tools |
   gzip --no-name --best > "$BUNDLE_DIR/milkrust-source.tar.gz"
 install -m 0644 -- "$ROOT/native/visualizer/notices/MilkRust-AGPL-3.0.txt" "$BUNDLE_DIR/MILKRUST-NOTICES.txt"
+{
+  printf '\n\nVendored HLSLParser (MIT):\n'
+  cat "$TASK_SOURCE/crates/milkrust-hlsl/vendor/hlslparser/LICENSE"
+} >> "$BUNDLE_DIR/MILKRUST-NOTICES.txt"
 
 "$WEBOS_PYTHON_BIN" - "$BUNDLE_DIR" "$SOURCE_REVISION" "$ABI" "$RUST_TOOLCHAIN" "$RUST_TARGET" "$RUNNER_POLICY" "$GITHUB_RUN_ID" <<'PY'
 import hashlib

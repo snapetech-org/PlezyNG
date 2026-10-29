@@ -29,11 +29,11 @@ class AppleContext final : public NativeContext {
   AppleContext() {
 #if TARGET_OS_OSX
     CGLPixelFormatAttribute attrs[] = {kCGLPFAOpenGLProfile,
-        static_cast<CGLPixelFormatAttribute>(kCGLOGLPVersion_3_2_Core), kCGLPFAAccelerated,
+        static_cast<CGLPixelFormatAttribute>(kCGLOGLPVersion_4_1_Core), kCGLPFAAccelerated,
         static_cast<CGLPixelFormatAttribute>(0)};
     CGLPixelFormatObj format = nullptr; GLint count = 0;
     auto result = CGLChoosePixelFormat(attrs, &format, &count);
-    if (result != kCGLNoError || !format) throw std::runtime_error("No macOS OpenGL 3.2 core configuration.");
+    if (result != kCGLNoError || !format) throw std::runtime_error("No macOS OpenGL 4.1 core configuration.");
     result = CGLCreateContext(format, nullptr, &context_); CGLDestroyPixelFormat(format);
     if (result != kCGLNoError || !context_) throw std::runtime_error("Could not create the macOS visualization context.");
     if (CGLSetCurrentContext(context_) != kCGLNoError) {

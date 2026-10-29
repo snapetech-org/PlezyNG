@@ -354,6 +354,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 33CC10FB2044A3C60003C045 /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
+				B7F1001AA1100000000000A1 /* Build MilkRust Runtime */,
 				5E41E5A55F14C910C5BEEE03 /* [CP] Check Pods Manifest.lock */,
 				66082DF2D9B2E84DE42C4474 /* Build Steam transport */,
 				33CC10E92044A3C60003C045 /* Sources */,
@@ -485,6 +486,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		B7F1001AA1100000000000A1 /* Build MilkRust Runtime */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = ();
+			inputPaths = ();
+			name = "Build MilkRust Runtime";
+			outputPaths = ("$(DERIVED_FILE_DIR)/plezy-milkrust/libmilkrust_native.a",);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "bash \"$PROJECT_DIR/../scripts/visualizer/build_apple_runtime.sh\"";
+		};
+
 		3399D490228B24CF009A79C7 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -836,7 +850,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/../native/games/steam", "$(SRCROOT)/../.dart_tool/games/steam/ihslib/include", "$(SRCROOT)/../.dart_tool/games/steam/opus/include", "$(SRCROOT)/../.dart_tool/games/steam/pyrowave/metal");
-				OTHER_LDFLAGS = ("$(inherited)", "-weak_framework", PIP, "$(DERIVED_FILE_DIR)/plezy-steam/libplezy_steam.a", "-framework", VideoToolbox, "-framework", AudioToolbox, "-framework", CoreMedia, "-framework", CoreVideo, "-framework", AVFoundation, "-framework", Security, "-framework", Network, "-framework", Metal, "-framework", IOSurface);
+				OTHER_LDFLAGS = ("$(inherited)", "-weak_framework", PIP, "$(DERIVED_FILE_DIR)/plezy-steam/libplezy_steam.a", "$(DERIVED_FILE_DIR)/plezy-milkrust/libmilkrust_native.a", "-lc++", "-liconv", "-framework", OpenGL, "-framework", ImageIO, "-framework", VideoToolbox, "-framework", AudioToolbox, "-framework", CoreMedia, "-framework", CoreVideo, "-framework", AVFoundation, "-framework", Security, "-framework", Network, "-framework", Metal, "-framework", IOSurface);
 				SWIFT_VERSION = 5.0;
 			};
 			name = Profile;
@@ -977,7 +991,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/../native/games/steam", "$(SRCROOT)/../.dart_tool/games/steam/ihslib/include", "$(SRCROOT)/../.dart_tool/games/steam/opus/include", "$(SRCROOT)/../.dart_tool/games/steam/pyrowave/metal");
-				OTHER_LDFLAGS = ("$(inherited)", "-weak_framework", PIP, "$(DERIVED_FILE_DIR)/plezy-steam/libplezy_steam.a", "-framework", VideoToolbox, "-framework", AudioToolbox, "-framework", CoreMedia, "-framework", CoreVideo, "-framework", AVFoundation, "-framework", Security, "-framework", Network, "-framework", Metal, "-framework", IOSurface);
+				OTHER_LDFLAGS = ("$(inherited)", "-weak_framework", PIP, "$(DERIVED_FILE_DIR)/plezy-steam/libplezy_steam.a", "$(DERIVED_FILE_DIR)/plezy-milkrust/libmilkrust_native.a", "-lc++", "-liconv", "-framework", OpenGL, "-framework", ImageIO, "-framework", VideoToolbox, "-framework", AudioToolbox, "-framework", CoreMedia, "-framework", CoreVideo, "-framework", AVFoundation, "-framework", Security, "-framework", Network, "-framework", Metal, "-framework", IOSurface);
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -1006,7 +1020,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/../native/games/steam", "$(SRCROOT)/../.dart_tool/games/steam/ihslib/include", "$(SRCROOT)/../.dart_tool/games/steam/opus/include", "$(SRCROOT)/../.dart_tool/games/steam/pyrowave/metal");
-				OTHER_LDFLAGS = ("$(inherited)", "-weak_framework", PIP, "$(DERIVED_FILE_DIR)/plezy-steam/libplezy_steam.a", "-framework", VideoToolbox, "-framework", AudioToolbox, "-framework", CoreMedia, "-framework", CoreVideo, "-framework", AVFoundation, "-framework", Security, "-framework", Network, "-framework", Metal, "-framework", IOSurface);
+				OTHER_LDFLAGS = ("$(inherited)", "-weak_framework", PIP, "$(DERIVED_FILE_DIR)/plezy-steam/libplezy_steam.a", "$(DERIVED_FILE_DIR)/plezy-milkrust/libmilkrust_native.a", "-lc++", "-liconv", "-framework", OpenGL, "-framework", ImageIO, "-framework", VideoToolbox, "-framework", AudioToolbox, "-framework", CoreMedia, "-framework", CoreVideo, "-framework", AVFoundation, "-framework", Security, "-framework", Network, "-framework", Metal, "-framework", IOSurface);
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

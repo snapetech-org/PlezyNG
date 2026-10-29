@@ -331,6 +331,9 @@ jobs:
       - name: Verify Games embedded manifests and cancellation patches
         run: python3 -m unittest discover -s scripts/games -p 'test_*.py'
 
+      - name: Check visualization artifact receipt boundaries
+        run: python3 -m unittest discover -s scripts/visualizer -p 'test_*.py'
+
       - name: Build embedded Moonlight and Steam Android modules
         working-directory: android
         run: ./gradlew :moonlight:assembleDebug :steam:assembleDebug :steam:testDebugUnitTest --stacktrace

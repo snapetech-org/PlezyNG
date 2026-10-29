@@ -46,10 +46,10 @@ class WglContext final : public NativeContext {
       if (!context_ || !wglMakeCurrent(dc_, context_)) throw std::runtime_error("Could not initialize OpenGL.");
       using Create = HGLRC(WINAPI*)(HDC, HGLRC, const int*);
       auto create = reinterpret_cast<Create>(Proc("wglCreateContextAttribsARB"));
-      if (!create) throw std::runtime_error("OpenGL 3.2 core contexts are unavailable.");
-      const int attributes[] = {0x2091, 3, 0x2092, 2, 0x9126, 1, 0};
+      if (!create) throw std::runtime_error("OpenGL 3.3 core contexts are unavailable.");
+      const int attributes[] = {0x2091, 3, 0x2092, 3, 0x9126, 1, 0};
       auto core = create(dc_, nullptr, attributes);
-      if (!core) throw std::runtime_error("Could not create the MilkRust OpenGL 3.2 context.");
+      if (!core) throw std::runtime_error("Could not create the MilkRust OpenGL 3.3 context.");
       wglMakeCurrent(nullptr, nullptr);
       wglDeleteContext(context_);
       context_ = core;

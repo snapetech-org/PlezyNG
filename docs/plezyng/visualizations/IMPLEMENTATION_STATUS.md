@@ -2,7 +2,7 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `5a75ec77ed8d6b44793c2c2bc0bcd31883a90736`; the exact dependency
+pins MilkRust `bf132800434814b168688ee57abcb5c06e60d12f`; the exact dependency
 contract is in `native/visualizer/sources.lock.json`. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
@@ -19,6 +19,7 @@ moderate for source integration; compiled behavior and device fidelity are unkno
 | HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/arrays/matrices/control flow, bounded errors | Corpus coverage, remaining emitter/environment semantics and reference fidelity |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
 | `.milk2` | Saved wrapper, two independent states, saved progress/direction/randoms, independent masks, active saved sprite equations and native/WebGL layers/blends | Exact MilkDrop3 mask/progress and sprite-field/filtering semantics |
+| Browser texture decode | Static raster codecs run in a disposable Web Worker; packaged same-origin worker with bounded blob fallback, timeout and decoded-size checks | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
 | Library/UI | Search, notices, favorites, playlists, import, download/cancel/retry/update/remove, offline receipts and controls | Executed user flows, accessibility, TV focus, localization and performance |
@@ -89,7 +90,7 @@ qualification, rights decisions and production custody/publication are also open
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `5a75ec77ed8d6b44793c2c2bc0bcd31883a90736`:
+- The app pins MilkRust `bf132800434814b168688ee57abcb5c06e60d12f`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -276,3 +277,17 @@ SpriteRot controls, extended sprite alpha and layer/burn interactions remain
 reference-dependent. The checked official source still does not contain the
 saved-pattern implementation. Physical hardware alone cannot resolve that
 missing reference or these remaining language features.
+
+
+## 2026-10-29 browser texture worker checkpoint
+
+The app pin packages `milkrust_texture_decoder.js` beside the browser WASM
+module. The SDK selects the static worker only when it shares the page origin;
+direct users can configure a same-origin URL. Browser-rejected static worker
+construction falls back to a blob worker when policy permits it. PNG/JPEG/BMP/
+static GIF/WebP decoding and decoded-dimension checks run in a disposable
+worker; an 8-second timer terminates the decoder and transfers the resulting
+ImageBitmap for upload. This bounds renderer-thread waiting but does not isolate
+browser-process allocation failures or a wedged graphics driver. The source
+change passed whitespace and JavaScript syntax checks only; no build, browser
+execution, GPU run or device qualification was performed.

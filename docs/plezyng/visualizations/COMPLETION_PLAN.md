@@ -347,7 +347,7 @@ completion contract satisfied.
 
 ## 2026-10-29 declarations, aggregate semantics and classic sprite checkpoint
 
-The app now selects MilkRust `5a75ec77ed8d6b44793c2c2bc0bcd31883a90736`. Its compiler adds scoped
+The app now selects MilkRust `bf132800434814b168688ee57abcb5c06e60d12f`. Its compiler adds scoped
 aliases/numeric templates, flattened legacy aggregate initialization and casts,
 typed constant selections, GLSL name isolation and readonly destination checks.
 Classic sprite alpha/key/byte-color handling, persistent unwrapped rotation and

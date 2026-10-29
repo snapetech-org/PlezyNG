@@ -23,7 +23,7 @@ Receipts record source identity and file digests, never a qualification pass.
 | macOS/iOS/tvOS | Runner Xcode `Build MilkRust Runtime` phase → `build_apple_runtime.sh` | Selected Xcode SDK/architectures; static archive, strong ABI links, C++/iconv |
 | Tizen | `.github/workflows/tizen.yml` → `scripts/tizen/build_milkrust.py` → `package.py build` | Explicit Samsung CMake cross toolchain/sysroot; ARM or x64 runtime plus digest-verified manifest |
 | webOS | Normal candidate build → `tools/webos/build_milkrust_runtime.sh` → IPK staging/verifier | Pinned LG 26 ARMv7 softfp NDK with target C/C++/AR and Rust target |
-| Browser SDK | MilkRust `tools/build-wasm-package.sh` | wasm-bindgen 0.2.120 plus pinned Emscripten 3.1.64 compiler JS/WASM and notices |
+| Browser SDK | MilkRust `tools/build-wasm-package.sh` | wasm-bindgen 0.2.120 plus pinned Emscripten 3.1.64 compiler JS/WASM, `milkrust_texture_decoder.js`, and notices |
 
 Desktop CMake's `PLEZY_VISUALIZER_REQUIRE_MILKRUST` defaults to ON. An explicit
 OFF build can omit native presets, but is not a visualization release artifact.
@@ -104,11 +104,13 @@ fragments through the existing include directory. Their license/provenance
 remains the vendored MIT notice plus local patch inventory.
 
 
-The current MilkRust pin `5a75ec77ed8d6b44793c2c2bc0bcd31883a90736` also
+The current MilkRust pin `bf132800434814b168688ee57abcb5c06e60d12f` also
 contains bounded function-macro stringification with preserved token-boundary
-whitespace and escaped string tokens. Preserve this pin when building the native
-and Emscripten compiler. Its source was not compiled or executed during this
-source-only continuation.
+whitespace and escaped string tokens, plus worker-based browser raster decoding.
+The WASM package builder stages the decoder worker beside the generated module;
+the SDK configures its static URL only when it shares the page origin. Preserve
+this pin when building the native and Emscripten compiler. Its source was not
+compiled or executed during this source-only continuation.
 
 
 The declaration/aggregate continuation additionally wires

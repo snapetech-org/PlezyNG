@@ -18,6 +18,7 @@ runs:
     # Windows egress proxy can leave certificate revocation endpoints offline;
     # keep Schannel verification enabled and tolerate only unavailable CRLs.
     - name: Enable best-effort Schannel revocation for Flutter downloads
+      id: windows_curl
       shell: bash
       run: |
         curl_path="$(command -v curl)"
@@ -36,22 +37,41 @@ runs:
           exit 1
         fi
         wrapper_dir="$(cygpath -u "$RUNNER_TEMP")/plezy-curl-wrapper"
-        runner_wrapper_dir="$(cygpath -w "$wrapper_dir")"
+        bash_env="$wrapper_dir/curl-best-effort.sh"
         mkdir -p "$wrapper_dir"
-        printf '%s\n' '#!/usr/bin/env bash' 'exec "$PLEZY_REAL_CURL" --ssl-revoke-best-effort "$@"' > "$wrapper_dir/curl"
-        chmod +x "$wrapper_dir/curl"
-        printf 'PLEZY_REAL_CURL=%s\n' "$curl_path" >> "$GITHUB_ENV"
-        printf '%s\n' "$runner_wrapper_dir" >> "$GITHUB_PATH"
+        printf '%s\n' \
+          'curl() {' \
+          '  "$PLEZY_REAL_CURL" --ssl-revoke-best-effort "$@"' \
+          '}' > "$bash_env"
+        printf 'curl_path=%s\n' "$curl_path" >> "$GITHUB_OUTPUT"
+        printf 'bash_env=%s\n' "$bash_env" >> "$GITHUB_OUTPUT"
+
+    - name: Verify best-effort curl wrapper for Flutter setup
+      shell: bash
+      env:
+        BASH_ENV: ${{ steps.windows_curl.outputs.bash_env }}
+        PLEZY_REAL_CURL: ${{ steps.windows_curl.outputs.curl_path }}
+      run: |
+        if [[ "$(type -t curl)" != "function" ]]; then
+          echo "The Flutter setup Bash shell did not load its curl wrapper." >&2
+          exit 1
+        fi
+        curl_version="$(curl --version)"
+        if ! grep -Eiq 'Schannel' <<<"$curl_version"; then
+          echo "The Flutter setup curl wrapper did not invoke Schannel curl." >&2
+          exit 1
+        fi
 
     - name: Probe pinned Flutter release connectivity
       continue-on-error: true
       shell: bash
       env:
         FLUTTER_VERSION: ${{ inputs.flutter-version }}
+        PLEZY_REAL_CURL: ${{ steps.windows_curl.outputs.curl_path }}
       run: |
         manifest_url="${FLUTTER_STORAGE_BASE_URL:-https://storage.googleapis.com}/flutter_infra_release/releases/releases_windows.json"
         set +e
-        manifest="$(curl --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 0 "$manifest_url")"
+        manifest="$("$PLEZY_REAL_CURL" --ssl-revoke-best-effort --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 0 "$manifest_url")"
         manifest_exit=$?
         set -e
         if [[ $manifest_exit -ne 0 ]]; then
@@ -69,7 +89,7 @@ runs:
         fi
         archive_url="${FLUTTER_STORAGE_BASE_URL:-https://storage.googleapis.com}/flutter_infra_release/releases/$archive_path"
         set +e
-        curl --ssl-revoke-best-effort --head --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 0 --output /dev/null --write-out 'Pinned Flutter archive HTTP %{http_code}; TLS verify %{ssl_verify_result}.\n' "$archive_url"
+        "$PLEZY_REAL_CURL" --ssl-revoke-best-effort --head --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 0 --output /dev/null --write-out 'Pinned Flutter archive HTTP %{http_code}; TLS verify %{ssl_verify_result}.\n' "$archive_url"
         archive_exit=$?
         set -e
         if [[ $archive_exit -ne 0 ]]; then
@@ -81,6 +101,9 @@ runs:
       id: first
       continue-on-error: true
       uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+      env:
+        BASH_ENV: ${{ steps.windows_curl.outputs.bash_env }}
+        PLEZY_REAL_CURL: ${{ steps.windows_curl.outputs.curl_path }}
       with:
         channel: ${{ inputs.channel }}
         flutter-version: ${{ inputs.flutter-version }}
@@ -94,6 +117,9 @@ runs:
       if: ${{ steps.first.outcome == 'failure' }}
       continue-on-error: true
       uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+      env:
+        BASH_ENV: ${{ steps.windows_curl.outputs.bash_env }}
+        PLEZY_REAL_CURL: ${{ steps.windows_curl.outputs.curl_path }}
       with:
         channel: ${{ inputs.channel }}
         flutter-version: ${{ inputs.flutter-version }}
@@ -107,6 +133,9 @@ runs:
       if: ${{ steps.first.outcome == 'failure' && steps.second.outcome == 'failure' }}
       continue-on-error: true
       uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+      env:
+        BASH_ENV: ${{ steps.windows_curl.outputs.bash_env }}
+        PLEZY_REAL_CURL: ${{ steps.windows_curl.outputs.curl_path }}
       with:
         channel: ${{ inputs.channel }}
         flutter-version: ${{ inputs.flutter-version }}

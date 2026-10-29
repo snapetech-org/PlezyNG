@@ -231,7 +231,14 @@ require(
     and "throw 'Flutter setup failed three times" in setup_flutter_windows
     and "name: Probe pinned Flutter release connectivity" in setup_flutter_windows
     and "--ssl-revoke-best-effort" in setup_flutter_windows
-    and "curl --ssl-revoke-best-effort --head --fail" in setup_flutter_windows
+    and "--ssl-revoke-best-effort --head --fail" in setup_flutter_windows
+    and 'manifest="$("$PLEZY_REAL_CURL" --ssl-revoke-best-effort --fail' in setup_flutter_windows
+    and setup_flutter_windows.count("BASH_ENV: ${{ steps.windows_curl.outputs.bash_env }}") == 4
+    and setup_flutter_windows.count(
+        "PLEZY_REAL_CURL: ${{ steps.windows_curl.outputs.curl_path }}"
+    ) == 5
+    and 'curl() {' in setup_flutter_windows
+    and "name: Verify best-effort curl wrapper for Flutter setup" in setup_flutter_windows
     and "PLEZY_REAL_CURL" in setup_flutter_windows
     and "--show-error" in setup_flutter_windows,
     "Windows Flutter setup must retry three times with a trusted cache key and fail closed",

@@ -40,7 +40,7 @@ def visualizer_metadata(raw, arch):
     if not raw or len(raw) > 65536:
         raise ValueError('Invalid MilkRust artifact manifest size')
     data = json.loads(raw)
-    if (not isinstance(data, dict) or data.get('schemaVersion') != 1 or data.get('abi') != 1
+    if (not isinstance(data, dict) or data.get('schemaVersion') != 1 or data.get('abi') != 2
             or data.get('target') != f'tizen-{arch}'
             or not re.fullmatch(r'[0-9a-f]{40}', str(data.get('sourceRevision', '')))
             or data.get('runnerPolicy') != 'private-ephemeral-jit'

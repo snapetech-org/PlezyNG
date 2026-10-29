@@ -1,0 +1,64 @@
+# Third-party notices
+
+## GIF decoding dependencies
+
+MilkRust uses `gif` 0.14.2 from
+[image-rs/image-gif](https://github.com/image-rs/image-gif) to decode bounded
+GIF frames. Its `weezl` 0.1.12 dependency from
+[image-rs/weezl](https://github.com/image-rs/weezl) provides LZW decoding.
+Both declare `MIT OR Apache-2.0`; this distribution elects the MIT terms.
+
+Copyright (c) 2015 nwin
+Copyright (c) HeroicKatora 2020
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+## MilkDrop 3 saved blend and sprite behavior
+
+The saved blend-pattern equations in `src/milk2_mask.rs` are a clean-room port of
+the behavioral implementation and published specification in
+[M0Rf30/lactea](https://github.com/M0Rf30/lactea), principally
+`crates/lactea/src/engine/md3_blend.rs`,
+`crates/lactea/src/engine/blend_patterns.rs`, and `docs/md3.md`. The published
+sprite-field behavior in that specification informed the independent parser,
+runtime, geometry and renderer in MilkRust. The bounded R8 mask rasterizer and
+GPU integration are MilkRust implementations. This notice does not imply
+reference-renderer qualification.
+
+Copyright (c) 2026 The Lactea Authors (Gianluca Boiano)
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -18,8 +18,8 @@ moderate for source integration; compiled behavior and device fidelity are unkno
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
 | HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/one-dimensional arrays/all numeric matrix shapes/control flow, bounded errors; unsupported ESSL profile constructs fail closed | Compiler/corpus execution and reference fidelity; nested/resource-array forms remain outside the declared profile, and ESSL 3.00 forbids arrays of arrays |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
-| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas, explicit sprite opt-in, saved progress/direction/randoms, sprite flips/alpha/rotation/offset/repeat fields, and all eleven native/WebGL sprite blend modes/layers | Reference pixel comparison for mask rasterization/compositing and sprite filtering/layer order |
-| Browser texture decode | Static raster codecs run in a disposable Web Worker; packaged same-origin worker with bounded blob fallback, timeout and decoded-size checks | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
+| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, explicit sprite opt-in, saved progress/direction/randoms, sprite flips/alpha/rotation/offset/repeat fields, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
+| Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
 | Library/UI | Search, notices, favorites, playlists, import, download/cancel/retry/update/remove, offline receipts and controls | Executed user flows, accessibility, TV focus, localization and performance |
@@ -92,7 +92,7 @@ corpus qualification, rights decisions and production custody/publication are al
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `f5215e9d56afa03dc06dd52d961cdf2df656853a`:
+- The app pins MilkRust `4b71467ff1b031c7fc63d34f4964e46b19a1d20e` with C ABI v2:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -101,8 +101,9 @@ corpus qualification, rights decisions and production custody/publication are al
 - All native MilkRust hosts share a bounded CPU decoder for legacy DDS
   (DXT1/3/5 and masked 24/32-bit RGB) and TGA (truecolor/grayscale, raw/RLE and
   orientation). This closes the prior gap where app import allowed those assets
-  but a platform codec could not read them. TV stb decoding also accepts GIF's
-  first frame. Unsupported DDS arrays/cubes/volumes/modern formats remain explicit.
+  but a platform codec could not read them. Animated GIF frames use MilkRust's
+  bounded decoder and disposal/timing path through ABI v2. Unsupported DDS
+  arrays/cubes/volumes and animated PNG/WebP remain explicit.
 - Native render workers now capture shared state instead of a host `this`.
   Two-second operation watchdogs report stalled rendering. Teardown disconnects
   bounded PCM/Flutter callbacks before waiting up to 250 ms on the render
@@ -151,7 +152,7 @@ corpus qualification, rights decisions and production custody/publication are al
 - `.milk2` honors explicit `sprite=0` with well-formed disabled trailer blocks,
   preserving them on export. Active sprite equations/layers and all eleven saved
   blend modes have bounded native/WebGL source paths; disabled blocks remain inert.
-  The saved-mask R8 rasterizer and sprite filtering still need reference-pixel qualification.
+  The GPU triangle interpolation/compositing and sprite filtering still need reference-pixel qualification.
 - Native DDS row validation avoids multiplication overflow on 32-bit TV targets.
   Regression source covers excessive pitch in addition to color/alpha/orientation.
 - Current main at `804a1cc658bba6f2bfb336c0b347b100bf9858ca` is merged, preserving
@@ -305,3 +306,22 @@ ImageBitmap for upload. This bounds renderer-thread waiting but does not isolate
 browser-process allocation failures or a wedged graphics driver. The source
 change passed whitespace and JavaScript syntax checks only; no build, browser
 execution, GPU run or device qualification was performed.
+
+
+## 2026-10-29 animated GIF and ABI v2 source checkpoint
+
+MilkRust now admits bounded animated GIF assets through a shared Rust decoder.
+Native GL and WebGL upload the composed frame sequence and select frames using
+sprite-local or preset elapsed time. The app passes encoded GIF bytes through
+the ABI v2 entry point; webOS/Tizen packaging validates the same ABI. Runtime
+notices now include the GIF/LZW dependency terms, and Plezy's Licenses screen
+registers the core notices from an app asset.
+
+This is source integration only. GIF decoding in WASM runs on the calling thread.
+Finite GIF loop counts now repeat each cycle before holding the final frame; a
+missing loop extension plays once and a zero count loops forever. The app pins
+MilkRust `4b71467ff1b031c7fc63d34f4964e46b19a1d20e` with ABI v2. The matching
+engine source also raises both hosts to the 100-name image-cache limit and uses
+packed 32-bit blend-vertex data with per-fragment 64×48 triangle interpolation.
+Reference compositing, browser CSP/codec behavior, compile/link, GPU, build and
+device results remain unknown; runtime artifacts remain unbuilt.

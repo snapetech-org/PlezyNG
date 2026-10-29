@@ -1237,6 +1237,9 @@ void _registerAppLicenses() {
       'MilkRust native integration (AGPL-3.0)',
     ], await rootBundle.loadString('assets/licenses/MilkRust_Native.txt'));
     yield LicenseEntryWithLineBreaks(const [
+      'MilkRust core and GIF decoder dependencies',
+    ], await rootBundle.loadString('assets/licenses/MilkRust_Core_Third_Party.txt'));
+    yield LicenseEntryWithLineBreaks(const [
       'stb_image (native visualization textures)',
     ], await rootBundle.loadString('assets/licenses/stb_image_MIT.txt'));
     yield LicenseEntryWithLineBreaks(const [

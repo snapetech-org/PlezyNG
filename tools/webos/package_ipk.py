@@ -153,7 +153,7 @@ def _validate_visualizer_manifest(raw: bytes) -> dict[str, object]:
         or type(data.get("schemaVersion")) is not int
         or data.get("schemaVersion") != 1
         or type(data.get("abi")) is not int
-        or data.get("abi") != 1
+        or data.get("abi") != 2
         or data.get("target") != "webos-arm"
         or not re.fullmatch(r"[0-9a-f]{40}", str(data.get("sourceRevision", "")))
         or data.get("runnerPolicy") != "private-ephemeral-jit"

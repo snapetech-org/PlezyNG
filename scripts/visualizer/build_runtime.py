@@ -153,6 +153,7 @@ def build(args):
                 shutil.copyfileobj(original, compressed)
         notice = (ROOT / "native/visualizer/notices/MilkRust-AGPL-3.0.txt").read_text()
         notice += "\n\nHLSLParser (MIT):\n" + (source / "crates/milkrust-hlsl/vendor/hlslparser/LICENSE").read_text()
+        notice += "\n\nMilkRust core third-party notices:\n" + (source / "crates/milkrust-core/THIRD_PARTY_NOTICES.md").read_text()
         (assets / "MILKRUST-NOTICES.txt").write_text(notice)
         files = {path.relative_to(staged).as_posix(): digest(path) for path in staged.rglob("*") if path.is_file()}
         metadata = {"schemaVersion": 1, "sourceRevision": lock["commit"], "platform": args.platform, "architectures": architectures,

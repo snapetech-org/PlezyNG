@@ -53,7 +53,7 @@ class PackageIpkTests(unittest.TestCase):
     def test_milkrust_provenance_accepts_private_plezyng_build_run(self) -> None:
         manifest = {
             "schemaVersion": 1,
-            "abi": 1,
+            "abi": 2,
             "target": "webos-arm",
             "sourceRevision": json.loads(
                 (TOOLS_ROOT.parents[1] / "native/visualizer/sources.lock.json").read_text(encoding="utf-8")

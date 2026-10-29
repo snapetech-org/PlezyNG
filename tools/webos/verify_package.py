@@ -251,7 +251,7 @@ def inspect_visualizer(entries: dict[str, bytes]) -> dict[str, object]:
         or type(manifest.get("schemaVersion")) is not int
         or manifest.get("schemaVersion") != 1
         or type(manifest.get("abi")) is not int
-        or manifest.get("abi") != 1
+        or manifest.get("abi") != 2
         or manifest.get("target") != "webos-arm"
         or not re.fullmatch(r"[0-9a-f]{40}", str(manifest.get("sourceRevision", "")))
         or manifest.get("runnerPolicy") != "private-ephemeral-jit"

@@ -21,7 +21,7 @@
     "rustTarget": "armv7-unknown-linux-gnueabi",
     "linker": "arm-webos-linux-gnueabi-gcc",
     "crate": "milkrust-native",
-    "abi": 1,
+    "abi": 2,
     "runnerPolicy": "private-ephemeral-jit"
   },
   "sdk": {

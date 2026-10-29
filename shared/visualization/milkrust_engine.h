@@ -24,7 +24,7 @@ struct MilkRustApi {
   // clang-format off
 #define DECLARE(name) decltype(&milkrust_##name) name = nullptr;
   DECLARE(abi_version) DECLARE(create) DECLARE(load) DECLARE(texture_names)
-  DECLARE(texture) DECLARE(pcm) DECLARE(render) DECLARE(render_rgba) DECLARE(destroy) DECLARE(last_error)
+  DECLARE(texture) DECLARE(texture_gif) DECLARE(pcm) DECLARE(render) DECLARE(render_rgba) DECLARE(destroy) DECLARE(last_error)
 #undef DECLARE
       // clang-format on
       MilkRustApi() {
@@ -59,9 +59,9 @@ struct MilkRustApi {
 #define LOAD(name) name = &milkrust_##name;
 #else
 #define LOAD(name) name = reinterpret_cast<decltype(name)>(Symbol("milkrust_" #name)); \
-    if (!name) { error = "Native MilkRust lacks the required ABI v1 symbols."; return; }
+    if (!name) { error = "Native MilkRust lacks the required ABI v2 symbols."; return; }
 #endif
-    LOAD(abi_version) LOAD(create) LOAD(load) LOAD(texture_names) LOAD(texture)
+    LOAD(abi_version) LOAD(create) LOAD(load) LOAD(texture_names) LOAD(texture) LOAD(texture_gif)
     LOAD(pcm) LOAD(render) LOAD(render_rgba) LOAD(destroy) LOAD(last_error)
 #undef LOAD
         // clang-format on
@@ -126,7 +126,7 @@ class MilkRustEngine {
       throw std::runtime_error("Preset changed while loading.");
     Check(api_.load(handle_, source.data(), source.size()));
     const auto capacity = api_.texture_names(handle_, nullptr, 0);
-    if (!capacity || capacity > 64 * 513 + 1) throw std::runtime_error("Invalid texture dependency list.");
+    if (!capacity || capacity > 100 * 513 + 1) throw std::runtime_error("Invalid texture dependency list.");
     std::vector<uint8_t> names(capacity);
     if (api_.texture_names(handle_, names.data(), names.size()) != capacity)
       throw std::runtime_error("Texture dependency list changed.");
@@ -135,8 +135,22 @@ class MilkRustEngine {
     for (std::string name; std::getline(lines, name);) {
       const auto asset = Resolve(canonical_root, file.parent_path(), name);
       if (asset.empty()) continue;  // Engine reports a missing asset if the active stage needs it.
-      if (std::filesystem::file_size(asset) > 16 * 1024 * 1024) throw std::runtime_error("Texture exceeds 16 MiB.");
       const auto extension = Fold(asset.extension().u8string());
+      if (extension == ".gif") {
+        const auto encoded_size = std::filesystem::file_size(asset);
+        if (!encoded_size || encoded_size > 16 * 1024 * 1024)
+          throw std::runtime_error("GIF exceeds 16 MiB or is empty.");
+        std::ifstream encoded_input(asset, std::ios::binary);
+        std::vector<uint8_t> encoded(static_cast<size_t>(encoded_size));
+        if (!encoded_input.read(reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
+            encoded_input.peek() != EOF)
+          throw std::runtime_error("GIF changed while loading.");
+        Check(api_.texture_gif(handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(),
+                               encoded.data(), encoded.size()));
+        continue;
+      }
+      if (std::filesystem::file_size(asset) > 16 * 1024 * 1024)
+        throw std::runtime_error("Texture exceeds 16 MiB.");
       const auto image = extension == ".dds" || extension == ".tga"
           ? legacy_image::Decode(asset, extension == ".dds")
           : decode(asset);  // Platform decoder must enforce dimensions before allocation.
@@ -218,7 +232,7 @@ class MilkRustEngine {
       if (part == ".." || part == ".") throw std::runtime_error("Unsafe texture path.");
     size_t remaining = 20000;
     for (const auto& directory : {preset_folder, root, root / "textures"}) {
-      for (const char* extension : {"", ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".tga", ".dds"}) {
+      for (const char* extension : {"", ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".gif", ".tga", ".dds"}) {
         if (*extension && relative.has_extension()) continue;
         const auto candidate = directory / std::filesystem::u8path(name + extension);
         if (std::filesystem::exists(candidate)) return Inside(root, candidate);

@@ -6,7 +6,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define MILKRUST_ABI_VERSION 1
+#define MILKRUST_ABI_VERSION 2
 /* 0 success; negative values are failures. Copy last_error on the same thread. */
 #define MILKRUST_ERROR (-1)
 #define MILKRUST_INVALID_HANDLE (-2)
@@ -33,6 +33,12 @@ size_t milkrust_texture_names(milkrust_handle handle, uint8_t* output, size_t ca
 int milkrust_texture(
     milkrust_handle handle, const uint8_t* name, size_t name_length, uint32_t width, uint32_t height,
     const uint8_t* rgba, size_t length);
+/* Uploads a bounded encoded GIF. Frame timing and Netscape/AnimExts repeat counts
+ * are honored. Shader textures use preset time; sprites use sprite-local time.
+ */
+int milkrust_texture_gif(
+    milkrust_handle handle, const uint8_t* name, size_t name_length,
+    const uint8_t* encoded, size_t length);
 /* Interleaved float stereo at 44100 Hz. At most 4096 frames/call. A new generation
  * discards pre-seek audio. Call from the render consumer, never the real-time AO.
  */

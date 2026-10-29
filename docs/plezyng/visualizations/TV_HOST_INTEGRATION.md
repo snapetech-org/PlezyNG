@@ -71,7 +71,7 @@ library discovery. The generated directory must contain:
 - `libmilkrust_native.so` for the selected TV ARM or emulator x64 target.
 - `milkrust-source.tar.gz` with its exact corresponding source.
 - `MILKRUST-NOTICES.txt` with dependency notices.
-- `milkrust-native.json` with `schemaVersion: 1`, `abi: 1`, `sourceRevision`
+- `milkrust-native.json` with `schemaVersion: 1`, MilkRust `abi: 2`, `sourceRevision`
   matching `native/visualizer/sources.lock.json`, `target: tizen-arm` or
   `tizen-x64`, `librarySha256`, `sourceArchiveSha256`, `noticesSha256`,
   `runnerPolicy: private-ephemeral-jit`, and a PlezyNG or MilkRust Actions `buildRun` URL.
@@ -146,7 +146,7 @@ sets `PLEZY_WEBOS_VISUALIZER_NATIVE` and
 `PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256` for the pinned IPK packager. The bundle
 contains
 `libmilkrust_native.so`, `milkrust-source.tar.gz`, `MILKRUST-NOTICES.txt`, and
-`milkrust-native.json`. The manifest pins ABI 1, the exact MilkRust source
+`milkrust-native.json`. The manifest pins ABI 2, the exact MilkRust source
 revision in `native/visualizer/sources.lock.json`, target `webos-arm`, SHA-256
 digests for all three payloads, a private-ephemeral-JIT runner policy and the
 build run URL. Package inspection checks the bundle is complete, matches those

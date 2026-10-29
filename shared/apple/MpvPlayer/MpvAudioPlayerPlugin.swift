@@ -162,7 +162,7 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
     if call.method == "visualizerCapabilities" {
       let unavailable = reason()
       result([
-        "available": unavailable.isEmpty, "reason": unavailable, "engine": "milkrust-native-abi1",
+        "available": unavailable.isEmpty, "reason": unavailable, "engine": "milkrust-native-abi2",
         "audioTap": PlezyVisualizationTapAvailable(),
       ]); return
     }

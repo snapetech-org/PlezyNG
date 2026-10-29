@@ -64,7 +64,7 @@ class PackageTest(unittest.TestCase):
         content = {'libmilkrust_native.so': elf(arch), 'milkrust-source.tar.gz': b'synthetic source, not a build',
                    'MILKRUST-NOTICES.txt': b'synthetic fixture notice'}
         pin = json.loads((package.ROOT / 'native/visualizer/sources.lock.json').read_text())['milkrust']
-        metadata = {'schemaVersion': 1, 'abi': 1, 'sourceRevision': pin['commit'], 'target': f'tizen-{arch}',
+        metadata = {'schemaVersion': 1, 'abi': 2, 'sourceRevision': pin['commit'], 'target': f'tizen-{arch}',
                     'runnerPolicy': 'private-ephemeral-jit',
                     'buildRun': 'https://github.com/snapetech-org/MilkRust/actions/runs/123'}
         for name, (key, _) in package.VISUALIZER_FILES.items():

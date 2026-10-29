@@ -145,13 +145,16 @@ claimed by these source changes.
 
 ## Native MilkRust and platform hosts
 
-`sources.lock.json` also pins MilkRust's `milkrust-native` crate and C ABI v1.
+`sources.lock.json` also pins MilkRust's `milkrust-native` crate and C ABI v2,
+including the bounded animated-GIF upload entry point.
 It builds a static library and a dynamic library; no new third-party Rust
 renderer dependency is introduced. The shared C++ adapter resolves the ABI,
 loads bounded UTF-8 presets, resolves assets within the installed pack root and
 uses platform image decoders with dimensions checked before pixel allocation.
-The Rust engine owns shader programs, named textures, per-layer feedback and
-final composite passes. `milkrust_render_rgba` returns bounded top-down RGBA8.
+Encoded GIFs go through the bounded Rust animation decoder in ABI v2; DDS/TGA
+use the shared bounded native decoder. The Rust engine owns shader programs,
+named textures, per-layer feedback and final composite passes.
+`milkrust_render_rgba` returns bounded top-down RGBA8.
 
 The app source now includes these hosts:
 

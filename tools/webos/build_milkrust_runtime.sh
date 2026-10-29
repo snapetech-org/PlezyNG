@@ -69,7 +69,7 @@ CRATE="${PIN[7]}"
 RUNNER_POLICY="${PIN[8]}"
 if [[ "$SOURCE_URL" != "https://github.com/snapetech-org/MilkRust.git" ||
       ! "$SOURCE_REF" =~ ^refs/pull/[1-9][0-9]*/head$ ||
-      ! "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ || "$ABI" != "1" ||
+      ! "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ || "$ABI" != "2" ||
       "$RUNNER_POLICY" != "private-ephemeral-jit" ]]; then
   echo "MilkRust source or runner identity is invalid." >&2
   exit 1
@@ -170,6 +170,8 @@ install -m 0644 -- "$ROOT/native/visualizer/notices/MilkRust-AGPL-3.0.txt" "$BUN
 {
   printf '\n\nVendored HLSLParser (MIT):\n'
   cat "$TASK_SOURCE/crates/milkrust-hlsl/vendor/hlslparser/LICENSE"
+  printf '\n\nMilkRust core third-party notices:\n'
+  cat "$TASK_SOURCE/crates/milkrust-core/THIRD_PARTY_NOTICES.md"
 } >> "$BUNDLE_DIR/MILKRUST-NOTICES.txt"
 
 "$WEBOS_PYTHON_BIN" - "$BUNDLE_DIR" "$SOURCE_REVISION" "$ABI" "$RUST_TOOLCHAIN" "$RUST_TARGET" "$RUNNER_POLICY" "$GITHUB_RUN_ID" <<'PY'

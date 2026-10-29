@@ -415,3 +415,34 @@ from that value, and selectors outside 0–10 resolve to mode 0. The authored
 browser control now covers all eleven modes and 66 combinations of mode, source
 alpha and opaque color-key state. These source controls remain unrun under the
 source-only restriction; reference-pixel parity remains an independent gate.
+
+
+## 2026-10-29 animated GIF and ABI v2 source checkpoint
+
+MilkRust now admits bounded animated GIF assets through a shared Rust decoder.
+It validates the logical canvas, frame rectangles, sub-block framing, frame
+count and decoded-pixel budget before allocation; frame output handles offsets,
+transparency, disposal, and delays, with zero delays mapped to 100 ms. Native GL
+and WebGL upload the frame sequence, select frames by sprite-local or preset
+time, and account all frames in the shared texture budget. The app forwards
+encoded GIF bytes through C ABI v2 instead of passing them through platform
+single-frame decoders. Native bundle generation now carries the core decoder
+notices, and webOS/Tizen validators require the new ABI version.
+
+Source review and static whitespace/JSON checks only; no build, test, browser,
+GPU or device run was performed. The WASM GIF decoder runs on its calling thread;
+reference compositing and performance qualification remain open. The source lock
+records the exact engine revision and ABI separately from platform artifacts.
+
+## 2026-10-29 saved blend and animation source checkpoint
+
+The app now pins MilkRust `4b71467ff1b031c7fc63d34f4964e46b19a1d20e`, C ABI v2.
+Native GL and WebGL upload a packed 32-bit vertex field and evaluate the saved
+64×48 transition mesh with matching triangle interpolation. Both hosts admit
+the documented 100-name image cache within the existing decoded-pixel budget.
+Animated GIF playback honors single-play, finite repeat and infinite-loop
+metadata; the finite-repeat timing path was corrected in this checkpoint.
+
+This closes those implementation items in source. Reference pixels, compile/link,
+GPU, browser and target-device results remain unverified under the source-only
+restriction and are kept as separate qualification gates.

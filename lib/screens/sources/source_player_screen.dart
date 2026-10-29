@@ -1564,7 +1564,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const SourceListeningSettings())),
             icon: const AppIcon(Symbols.tune_rounded),
           ),
-          if (s.canDiscoverSourceSubtitles && s.player?.playerType == 'mpv')
+          if (s.canDiscoverSourceSubtitles && (s.player?.supportedLocalSubtitleExtensions.isNotEmpty ?? false))
             IconButton(tooltip: 'Refresh subtitles from this source folder', icon: const Icon(Icons.folder_open),
               onPressed: () => sourceAction(context, () => _discoverSourceSubtitles(s))),
           if (s.video && s.canExportActiveExternalSubtitle)

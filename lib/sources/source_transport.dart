@@ -123,6 +123,9 @@ abstract class SourceAdapter {
   bool get supportsSubtitleBrowse => false;
   Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) async =>
       throw const SourceException(SourceFailure.unsupported);
+  /// Explicit resources linked by catalogue metadata to this exact media item.
+  /// Separate from filename matching, e.g. ContentDirectory subtitle resources.
+  Future<List<PublicationFile>> linkedSubtitles(SourceEntry entry, PublicationFile media) async => const [];
   Future<SourceEntry> hydrate(SourceEntry entry) async => entry;
   Future<ContentLease> resolve(PublicationFile file);
   Future<int?> contentSize(PublicationFile file) async => file.size;

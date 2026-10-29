@@ -1071,7 +1071,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     if (expectedPlayer != null && native != expectedPlayer) {
       throw const SourceException(SourceFailure.cancelled);
     }
-    if (native.playerType != 'mpv' || files.isEmpty || _fileIndex < 0 || _fileIndex >= files.length) {
+    if (native.supportedLocalSubtitleExtensions.isEmpty || files.isEmpty || _fileIndex < 0 || _fileIndex >= files.length) {
       throw const SourceException(SourceFailure.unsupported);
     }
     if (expectedScope != null &&
@@ -1694,13 +1694,22 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> _applyExternalSubtitleSync(Player native, {required int delayMs, required double rate}) async {
-    if (native.playerType != 'mpv' ||
-        delayMs < ScopedPlayerPrefs.minimumSyncOffsetMs ||
+    if (delayMs < ScopedPlayerPrefs.minimumSyncOffsetMs ||
         delayMs > ScopedPlayerPrefs.maximumSyncOffsetMs ||
         !rate.isFinite ||
         rate < ScopedPlayerPrefs.minimumSubtitleSyncRate ||
         rate > ScopedPlayerPrefs.maximumSubtitleSyncRate) {
       throw const SourceException(SourceFailure.unsupported);
+    }
+    if (native.playerType != 'mpv') {
+      // Native text import supports delay but no portable timestamp multiplier.
+      // Never silently discard a correction saved by a different backend.
+      if ((rate - 1).abs() > .000001) throw const SourceException(SourceFailure.unsupported);
+      await native.setProperty(PlayerSyncOffsets.subtitleProperty, (delayMs / 1000.0).toString());
+      final offsets = PlayerSyncOffsets.of(native);
+      offsets.recordSubtitleRate(1);
+      offsets.recordApplied(PlayerSyncOffsets.subtitleProperty, delayMs);
+      return;
     }
     await native.setProperty(PlayerSyncOffsets.subtitleRateProperty, rate.toStringAsFixed(6));
     await native.setProperty(PlayerSyncOffsets.subtitleProperty, (delayMs / 1000.0).toString());
@@ -1773,8 +1782,10 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     required String language,
     required bool forced,
     required bool hearingImpaired,
+    bool select = true,
   }) {
-    final flags = ['select', if (forced) 'forced', if (hearingImpaired) 'hearing-impaired'].join(' ');
+    if (player?.playerType != 'mpv') return ['sub-add', path, select ? 'select' : 'auto'];
+    final flags = [select ? 'select' : 'auto', if (forced) 'forced', if (hearingImpaired) 'hearing-impaired'].join(' ');
     final title = language.isEmpty ? 'External subtitle' : language;
     return ['sub-add', path, flags, title, if (language.isNotEmpty) language];
   }
@@ -1951,7 +1962,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     required int generation,
     required int fileEpoch,
   }) async {
-    if (!_persistProgress || _liveInput || !video || native.playerType != 'mpv') return;
+    if (!_persistProgress || _liveInput || !video || native.supportedLocalSubtitleExtensions.isEmpty) return;
     final directory = _externalSubtitleAssetDirectory(
       profile: profile,
       item: item,
@@ -2004,12 +2015,16 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
         )) {
           return;
         }
+        final savedSync = _subtitleSyncForAudio(
+          asset['syncByAudio'] as Map<String, dynamic>, _subtitleAudioIdentity(native));
+        if (native.playerType != 'mpv' && (savedSync.rate - 1).abs() > .000001) continue;
         await native.command(
           _externalSubtitleCommand(
             path: file.path,
             language: asset['language'] as String,
             forced: asset['forced'] as bool,
             hearingImpaired: asset['hearingImpaired'] as bool,
+            select: asset['slot'] == selected,
           ),
         );
         if (asset['slot'] == selected) {

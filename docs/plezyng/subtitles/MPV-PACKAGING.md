@@ -31,3 +31,9 @@ The existing Apple mirror-refresh procedure still applies after promotion.
 No build, packaging execution, publication, dependency promotion, test or CI run
 was performed for this source change. New release binary checksums cannot be
 filled in until those actual artifacts exist. No hosted runner fallback exists.
+
+The manifest freshness check now rejects MPV entries without an exact packaged
+receipt, including all four Android ABI paths. The package hash and every
+inspected native member hash are retained. Changes to the inspector move MPV
+content keys, so an archive accepted by an older inspection contract cannot
+reuse an immutable artifact name. This does not constitute runtime qualification.

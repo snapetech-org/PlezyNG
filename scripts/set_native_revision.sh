@@ -513,13 +513,18 @@ def require_pcm_receipts(platforms):
     def receipt(value, label, count=None):
         evidence = value.get("capabilities", {})
         binaries = evidence.get("binaries", [])
+        hashes = evidence.get("binarySha256", {})
         if (evidence.get("orderedSubtitlePcmAbi") != 1 or
                 evidence.get("symbol") != "mpv_plezy_audio_tap_read_next" or
                 evidence.get("artifactSha256") != value.get("checksum") or
                 not isinstance(binaries, list) or not binaries or
+                any(not isinstance(name, str) for name in binaries) or
+                len(set(binaries)) != len(binaries) or
+                not isinstance(hashes, dict) or set(hashes) != set(binaries) or
+                any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value) for value in hashes.values()) or
                 count is not None and len(binaries) != count):
             errors.append(f"{label}: missing or mismatched packaged ordered-PCM ABI receipt")
-        return binaries
+        return binaries if isinstance(binaries, list) else []
     for group, (library, variants) in expected.items():
         entry = platforms.get(group, {}).get("libraries", {}).get(library, {})
         if group == "android":

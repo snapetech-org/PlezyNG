@@ -24,10 +24,18 @@ abstract final class SourceSubtitleDiscovery {
       bool Function() current) async {
     if (!adapter.supportsSubtitleBrowse) throw const SourceException(SourceFailure.unsupported);
     final stem = _match(p.basenameWithoutExtension(media.name));
-    if (stem.length < 2) throw const SourceException(SourceFailure.invalidData);
     final folders = <(String?, int)>[(item.parentId, 0)];
     final visited = <String>{}, files = <String>{};
     final results = <SourceSubtitleCandidate>[];
+    final linked = await adapter.linkedSubtitles(item, media).timeout(const Duration(seconds: 12));
+    if (!current()) throw const SourceException(SourceFailure.cancelled);
+    for (final file in linked.take(128)) {
+      if (isSourceTextSubtitle(file.name) && !file.streamOnly && !file.sampleOnly &&
+          (file.size == null || file.size! > 0 && file.size! <= 5 * 1024 * 1024) && files.add(file.id)) {
+        results.add(SourceSubtitleCandidate(file, 'Linked by source metadata'));
+      }
+    }
+    if (stem.length < 2) return SourceSubtitleListing(List.unmodifiable(results), linked.length > 128);
     final deadline = DateTime.now().add(const Duration(seconds: 30));
     var pages = 0, rows = 0, limited = false;
     for (var f = 0; f < folders.length && !limited; f++) {

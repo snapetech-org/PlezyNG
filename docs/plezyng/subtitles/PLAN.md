@@ -837,3 +837,19 @@ WER/CER reports and conditional CTranslate2 export. It never activates or
 publishes a model. The code includes quality gates but none were run. A positive
 holdout result would still not establish broad accent/language improvement or
 quantized-runtime equivalence. See the companion README for schema and commands.
+
+## Native attachment and DLNA source update
+
+Source-folder subtitle selection now calls the existing native local-import
+contract on MPV, ExoPlayer, Tizen and webOS where that format is supported.
+Managed copies retain the existing profile/edition/file identity and bounds.
+Only MPV applies affine corrections; other backends refuse a saved non-unit
+rate instead of silently losing it. Restore adds unselected assets without
+selecting every intermediate track. Native imports remain format/route limited.
+
+DLNA ContentDirectory discovery includes text subtitle resources explicitly
+linked to the chosen item and matching sibling subtitle items. URLs are resolved
+again from metadata on acquisition, under the adapter's same-host transport
+policy; query credentials are never copied into file identity. Resource identity
+includes path/MIME and duplicate matches are refused. Servers exposing captions
+only through vendor-specific tags remain outside this standard resource path.

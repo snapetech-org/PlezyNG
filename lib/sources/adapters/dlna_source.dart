@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:mime/mime.dart';
 import 'package:xml/xml.dart';
 
@@ -13,6 +14,29 @@ class DlnaSourceAdapter extends SourceAdapter {
   static const _soapEnvelopeNs = 'http://schemas.xmlsoap.org/soap/envelope/';
   static const _requestedCount = 200;
   _DlnaService? _service;
+  static const _subtitlePrefix = 'plezy-dlna-subtitle:';
+  @override
+  bool get supportsSubtitleBrowse => true;
+  @override
+  Future<SourcePage> browseSubtitleFiles({String? parent, String? cursor}) =>
+      _browseContent(parent: parent, cursor: cursor, includeSubtitles: true);
+  @override
+  Future<List<PublicationFile>> linkedSubtitles(SourceEntry entry, PublicationFile media) async {
+    final result = await _browse(entry.id, metadata: true);
+    final item = result.objects.where((row) => row.entry.id == entry.id).firstOrNull;
+    return item?.subtitles.map((resource) => _subtitleFile(entry.id, entry.title, resource)).toList(growable: false) ?? const [];
+  }
+
+  String _resourceKey(_DlnaResource resource) => sourceDigest(jsonEncode([
+    resource.uri.scheme, resource.uri.host.toLowerCase(), resource.uri.port,
+    resource.uri.path, resource.mimeType.toLowerCase(),
+  ]));
+
+  PublicationFile _subtitleFile(String objectId, String title, _DlnaResource resource) => PublicationFile(
+    id: '$_subtitlePrefix${base64Url.encode(utf8.encode(jsonEncode([objectId, _resourceKey(resource)])))}',
+    name: isSourceTextSubtitle(resource.name) ? resource.name : '$title.${resource.subtitleExtension}',
+    mimeType: resource.mimeType, size: resource.size,
+  );
 
   @override
   SourceCapabilities get capabilities => const SourceCapabilities(rangeRequests: true);
@@ -161,7 +185,7 @@ class DlnaSourceAdapter extends SourceAdapter {
       _validateSameHost(resourceUri);
       final protocol = res.getAttribute('protocolInfo') ?? '';
       final protocolParts = protocol.split(':');
-      final mimeType = protocolParts.length >= 3 ? protocolParts[2] : '';
+      final mimeType = protocolParts.length >= 3 ? protocolParts[2].split(';').first.trim().toLowerCase() : '';
       final name = resourceUri.pathSegments.isEmpty ? title : Uri.decodeComponent(resourceUri.pathSegments.last);
       final kind = classifySourceFile(name, mimeType);
       final duration = _durationMs(res.getAttribute('duration'));
@@ -179,7 +203,13 @@ class DlnaSourceAdapter extends SourceAdapter {
               mediaClass.contains('audio') && resource.mimeType.startsWith('audio/'),
         )
         .firstOrNull;
-    if (preferred == null) return null;
+    final subtitles = resources.where((resource) => resource.subtitleExtension != null).take(128).toList(growable: false);
+    if (preferred == null) {
+      if (subtitles.isEmpty) return null;
+      return _DlnaObject(entry: SourceEntry(sourceId: source.id, id: id, title: title,
+        kind: SourceItemKind.unknown, files: subtitles.map((resource) => _subtitleFile(id, title, resource)).toList(growable: false)),
+        subtitles: subtitles);
+    }
     final kind = mediaClass.contains('video') || preferred.kind == SourceItemKind.video
         ? SourceItemKind.video
         : SourceItemKind.music;
@@ -191,7 +221,7 @@ class DlnaSourceAdapter extends SourceAdapter {
       durationMs: preferred.durationMs,
     );
     return _DlnaObject(
-      resource: preferred,
+      resource: preferred, subtitles: subtitles,
       entry: SourceEntry(sourceId: source.id, id: id, title: title, kind: kind, files: [file]),
     );
   }
@@ -208,17 +238,21 @@ class DlnaSourceAdapter extends SourceAdapter {
   }
 
   @override
-  Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+  Future<SourcePage> browse({String? parent, String? cursor, String? query}) =>
+      _browseContent(parent: parent, cursor: cursor, query: query);
+
+  Future<SourcePage> _browseContent({String? parent, String? cursor, String? query, bool includeSubtitles = false}) async {
     final root = source.root.trim().isEmpty ? '0' : source.root.trim();
     final objectId = parent ?? root;
     final start = int.tryParse(cursor ?? '') ?? 0;
     if (start < 0) throw const SourceException(SourceFailure.invalidData);
     final result = await _browse(objectId, metadata: false, start: start);
     final entries = result.objects
+        .where((item) => includeSubtitles || item.entry.isFolder || item.resource != null)
         .where((item) => query == null || item.entry.title.toLowerCase().contains(query.toLowerCase()))
         .map((item) => item.entry.copyWith(parentId: objectId))
         .toList(growable: false);
-    final next = result.total > start + result.returned ? '${start + result.returned}' : null;
+    final next = result.returned > 0 && result.total > start + result.returned ? '${start + result.returned}' : null;
     return SourcePage(entries, next: next);
   }
 
@@ -226,11 +260,27 @@ class DlnaSourceAdapter extends SourceAdapter {
   Future<SourceEntry> hydrate(SourceEntry entry) async {
     if (entry.kind == SourceItemKind.folder) return entry;
     final result = await _browse(entry.id, metadata: true);
-    return result.objects.map((item) => item.entry).where((item) => item.id == entry.id).firstOrNull ?? entry;
+    return result.objects.map((item) => item.entry.copyWith(parentId: entry.parentId)).where((item) => item.id == entry.id).firstOrNull ?? entry;
   }
 
   Future<_DlnaResource> _resource(String objectId) async {
+    String? subtitleKey;
+    if (objectId.startsWith(_subtitlePrefix)) {
+      if (objectId.length > 16384) throw const SourceException(SourceFailure.invalidData);
+      try {
+        final parts = jsonDecode(utf8.decode(base64Url.decode(objectId.substring(_subtitlePrefix.length))));
+        if (parts is! List || parts.length != 2 || parts[0] is! String || parts[1] is! String ||
+            !RegExp(r'^[0-9a-f]{64}$').hasMatch(parts[1] as String)) throw const FormatException();
+        objectId = parts[0] as String; subtitleKey = parts[1] as String;
+      } catch (_) { throw const SourceException(SourceFailure.invalidData); }
+    }
     final result = await _browse(objectId, metadata: true);
+    if (subtitleKey != null) {
+      final matches = result.objects.where((item) => item.entry.id == objectId)
+          .expand((item) => item.subtitles).where((resource) => _resourceKey(resource) == subtitleKey).toList();
+      if (matches.length != 1) throw const SourceException(SourceFailure.conflict);
+      return matches.single;
+    }
     final resource = result.objects
         .where((item) => item.entry.id == objectId)
         .map((item) => item.resource)
@@ -275,12 +325,23 @@ class _DlnaResource {
   final SourceItemKind kind;
   final int? size;
   final int? durationMs;
+  String? get subtitleExtension {
+    if (isSourceTextSubtitle(name)) return name.split('.').last.toLowerCase();
+    return switch (mimeType.toLowerCase()) {
+      'application/x-subrip' || 'application/srt' || 'text/srt' => 'srt',
+      'text/vtt' => 'vtt',
+      'text/x-ass' || 'text/ass' => 'ass',
+      'text/x-ssa' || 'text/ssa' => 'ssa',
+      _ => null,
+    };
+  }
 }
 
 class _DlnaObject {
-  const _DlnaObject({required this.entry, this.resource});
+  const _DlnaObject({required this.entry, this.resource, this.subtitles = const []});
   final SourceEntry entry;
   final _DlnaResource? resource;
+  final List<_DlnaResource> subtitles;
 }
 
 class _DlnaBrowseResult {

@@ -14900,6 +14900,47 @@ class Translations$videoControls$subtitleAiControls$en {
 
 	/// en: 'All original WAV channels are analyzed together, without resampling or preprocessing. At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback.'
 	String get microphoneArrayTaskDescription => 'All original WAV channels are analyzed together, without resampling or preprocessing. At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback.';
+	/// en: 'Use a host you control. Media is sent only after you choose a file and submit a job. The host retains that file until you delete the job. Its token is stored in the OS credential store.'
+	String get pairingSecurityDescription => 'Use a host you control. Media is sent only after you choose a file and submit a job. The host retains that file until you delete the job. Its token is stored in the OS credential store.';
+
+	/// en: 'Host URL'
+	String get pairingHostUrl => 'Host URL';
+
+	/// en: 'Pairing token'
+	String get pairingToken => 'Pairing token';
+
+	/// en: 'Remember pairing in the OS credential store'
+	String get pairingRememberTitle => 'Remember pairing in the OS credential store';
+
+	/// en: 'Turn off for a session-only pairing on devices without a credential plugin'
+	String get pairingRememberDescription => 'Turn off for a session-only pairing on devices without a credential plugin';
+
+	/// en: 'Forget'
+	String get pairingForget => 'Forget';
+
+	/// en: 'Save pairing'
+	String get pairingSave => 'Save pairing';
+
+	/// en: 'The saved pairing could not be removed.'
+	String get pairingRemoveFailed => 'The saved pairing could not be removed.';
+
+	/// en: 'Choose an active profile before pairing a companion.'
+	String get pairingProfileRequired => 'Choose an active profile before pairing a companion.';
+
+	/// en: 'Active profile changed.'
+	String get pairingProfileChanged => 'Active profile changed.';
+
+	/// en: 'Choose companion input'
+	String get companionInputTitle => 'Choose companion input';
+
+	/// en: 'Use the current VOD file through its owning source transport, or choose a matching file. The current-file option copies at most 1 GiB / one hour to temporary storage, then uploads after review. It may use additional bandwidth and cannot copy a playlist, live stream or protected source.'
+	String get companionInputDescription => 'Use the current VOD file through its owning source transport, or choose a matching file. The current-file option copies at most 1 GiB / one hour to temporary storage, then uploads after review. It may use additional bandwidth and cannot copy a playlist, live stream or protected source.';
+
+	/// en: 'Choose a matching file'
+	String get companionInputChooseMatchingFile => 'Choose a matching file';
+
+	/// en: 'Use current source file'
+	String get companionInputUseCurrentSource => 'Use current source file';
 }
 
 // Path: videoControls.subtitleLiveCapture
@@ -19594,6 +19635,20 @@ extension on Translations {
 			'videoControls.subtitleAiControls.vocalNoteAddMissing' => 'Add missing note',
 			'videoControls.subtitleAiControls.vocalNoteExportSelected' => 'Export selected reviewed notes',
 			'videoControls.subtitleAiControls.microphoneArrayTaskDescription' => 'All original WAV channels are analyzed together, without resampling or preprocessing. At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback.',
+			'videoControls.subtitleAiControls.pairingSecurityDescription' => 'Use a host you control. Media is sent only after you choose a file and submit a job. The host retains that file until you delete the job. Its token is stored in the OS credential store.',
+			'videoControls.subtitleAiControls.pairingHostUrl' => 'Host URL',
+			'videoControls.subtitleAiControls.pairingToken' => 'Pairing token',
+			'videoControls.subtitleAiControls.pairingRememberTitle' => 'Remember pairing in the OS credential store',
+			'videoControls.subtitleAiControls.pairingRememberDescription' => 'Turn off for a session-only pairing on devices without a credential plugin',
+			'videoControls.subtitleAiControls.pairingForget' => 'Forget',
+			'videoControls.subtitleAiControls.pairingSave' => 'Save pairing',
+			'videoControls.subtitleAiControls.pairingRemoveFailed' => 'The saved pairing could not be removed.',
+			'videoControls.subtitleAiControls.pairingProfileRequired' => 'Choose an active profile before pairing a companion.',
+			'videoControls.subtitleAiControls.pairingProfileChanged' => 'Active profile changed.',
+			'videoControls.subtitleAiControls.companionInputTitle' => 'Choose companion input',
+			'videoControls.subtitleAiControls.companionInputDescription' => 'Use the current VOD file through its owning source transport, or choose a matching file. The current-file option copies at most 1 GiB / one hour to temporary storage, then uploads after review. It may use additional bandwidth and cannot copy a playlist, live stream or protected source.',
+			'videoControls.subtitleAiControls.companionInputChooseMatchingFile' => 'Choose a matching file',
+			'videoControls.subtitleAiControls.companionInputUseCurrentSource' => 'Use current source file',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',

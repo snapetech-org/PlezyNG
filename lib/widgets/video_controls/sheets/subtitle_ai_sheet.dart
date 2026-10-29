@@ -821,8 +821,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   });
 
   Future<void> _configureCompanion() => _run(() async {
+    final translations = Translations.of(context);
+    final aiCopy = translations.videoControls.subtitleAiControls;
     final profile = _activeProfileId;
-    if (profile == null) throw StateError('Choose an active profile before pairing a companion.');
+    if (profile == null) throw StateError(aiCopy.pairingProfileRequired);
     final existing = await SubtitleCompanionService.load(profile);
     final address = TextEditingController(text: existing?.endpoint.toString() ?? 'https://');
     final token = TextEditingController();
@@ -834,15 +836,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     try {
       await showDialog<void>(context: context, builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, update) => AlertDialog(
-          title: const Text('Pair subtitle companion'),
+          title: Text(aiCopy.pairCompanion),
           content: SizedBox(width: 520, child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Text('Use a host you control. Media is sent only after you choose a file and submit a job. '
-                'The host retains that file until you delete the job. Its token is stored in the OS credential store.'),
-            TextField(controller: address, decoration: const InputDecoration(labelText: 'Host URL'), keyboardType: TextInputType.url),
+            Text(aiCopy.pairingSecurityDescription),
+            TextField(controller: address, decoration: InputDecoration(labelText: aiCopy.pairingHostUrl), keyboardType: TextInputType.url),
             TextField(controller: token, obscureText: true, enableSuggestions: false, autocorrect: false,
-                decoration: const InputDecoration(labelText: 'Pairing token')),
-            SwitchListTile(title: const Text('Remember pairing in the OS credential store'),
-              subtitle: const Text('Turn off for a session-only pairing on devices without a credential plugin'),
+                decoration: InputDecoration(labelText: aiCopy.pairingToken)),
+            SwitchListTile(title: Text(aiCopy.pairingRememberTitle),
+              subtitle: Text(aiCopy.pairingRememberDescription),
               value: remember, onChanged: saving ? null : (value) => update(() => remember = value)),
             if (saving) const LinearProgressIndicator(),
             if (error != null) Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
@@ -851,19 +852,19 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             TextButton(onPressed: saving ? null : () async {
               update(() => saving = true);
               try { await SubtitleCompanionService.forget(profile); if (dialogContext.mounted) Navigator.pop(dialogContext); }
-              catch (_) { if (dialogContext.mounted) update(() { saving = false; error = 'The saved pairing could not be removed.'; }); }
-            }, child: const Text('Forget')),
-            TextButton(onPressed: saving ? null : () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+              catch (_) { if (dialogContext.mounted) update(() { saving = false; error = aiCopy.pairingRemoveFailed; }); }
+            }, child: Text(aiCopy.pairingForget)),
+            TextButton(onPressed: saving ? null : () => Navigator.pop(dialogContext), child: Text(translations.common.cancel)),
             FilledButton(onPressed: saving ? null : () async {
               update(() { saving = true; error = null; });
               try {
-                if (_activeProfileId != profile) throw StateError('Active profile changed.');
+                if (_activeProfileId != profile) throw StateError(aiCopy.pairingProfileChanged);
                 await SubtitleCompanionService.configure(profile, address.text, token.text.trim(), remember: remember);
                 if (dialogContext.mounted) Navigator.pop(dialogContext);
               } catch (failure) {
                 if (dialogContext.mounted) update(() { saving = false; error = _readableError(failure); });
               }
-            }, child: const Text('Save pairing')),
+            }, child: Text(aiCopy.pairingSave)),
           ],
         ),
       ));
@@ -905,13 +906,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var useCurrentSource = false;
       if (!textTask && cues.isEmpty && widget.openAnalysisSource != null && capabilities['sourceTimelineOffsets'] == true && task != 'bitmap_ocr' && mounted) {
         final choice = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
-          title: const Text('Choose companion input'),
-          content: const Text('Use the current VOD file through its owning source transport, or choose a matching file. '
-            'The current-file option copies at most 1 GiB / one hour to temporary storage, then uploads after review. '
-            'It may use additional bandwidth and cannot copy a playlist, live stream or protected source.'),
-          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Choose a matching file')),
-            FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Use current source file'))]));
+          title: Text(aiCopy.companionInputTitle),
+          content: Text(aiCopy.companionInputDescription),
+          actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(Translations.of(context).common.cancel)),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(aiCopy.companionInputChooseMatchingFile)),
+            FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(aiCopy.companionInputUseCurrentSource))]));
         if (choice == null || !mounted) return;
         useCurrentSource = choice;
       }

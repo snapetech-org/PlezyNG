@@ -5324,5 +5324,19 @@
   "videoControls.subtitleAiControls.vocalNoteExportSelected": "6fb17f24768f0b4a",
   "videoControls.subtitleResearchReview.vocalNoteReviewAction": "910b6733269425ec",
   "videoControls.subtitleAiControls.microphoneArrayTaskDescription": "793d2dd95578381f",
-  "videoControls.subtitleResearchReview.vocalNoteEvidenceSection": "616df1639ce2d8f1"
+  "videoControls.subtitleResearchReview.vocalNoteEvidenceSection": "616df1639ce2d8f1",
+  "videoControls.subtitleAiControls.pairingSecurityDescription": "d084e3df06e6ef28",
+  "videoControls.subtitleAiControls.pairingHostUrl": "d114b5c9acd73657",
+  "videoControls.subtitleAiControls.pairingToken": "62cc4e1a518c3968",
+  "videoControls.subtitleAiControls.pairingRememberTitle": "8f5b820a460b446f",
+  "videoControls.subtitleAiControls.pairingRememberDescription": "2fa934316cc3ddc3",
+  "videoControls.subtitleAiControls.pairingForget": "7f8a54f8001f577e",
+  "videoControls.subtitleAiControls.pairingSave": "886dcc2dc971bcac",
+  "videoControls.subtitleAiControls.pairingRemoveFailed": "9dc2a31e37e857b4",
+  "videoControls.subtitleAiControls.pairingProfileRequired": "f9512be7d191a2b3",
+  "videoControls.subtitleAiControls.pairingProfileChanged": "5797de14f64987b1",
+  "videoControls.subtitleAiControls.companionInputTitle": "99070464920e75ac",
+  "videoControls.subtitleAiControls.companionInputDescription": "fc9bbacab1b0f643",
+  "videoControls.subtitleAiControls.companionInputChooseMatchingFile": "cea60be5bed1c4ed",
+  "videoControls.subtitleAiControls.companionInputUseCurrentSource": "06fa7d32aa93d1e5"
 }

@@ -2242,7 +2242,21 @@
       "vocalNoteSelectedSummary": "${count} selected; exports are separate from lyric captions.",
       "vocalNoteAddMissing": "Add missing note",
       "vocalNoteExportSelected": "Export selected reviewed notes",
-      "microphoneArrayTaskDescription": "All original WAV channels are analyzed together, without resampling or preprocessing. At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback."
+      "microphoneArrayTaskDescription": "All original WAV channels are analyzed together, without resampling or preprocessing. At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback.",
+      "pairingSecurityDescription": "Use a host you control. Media is sent only after you choose a file and submit a job. The host retains that file until you delete the job. Its token is stored in the OS credential store.",
+      "pairingHostUrl": "Host URL",
+      "pairingToken": "Pairing token",
+      "pairingRememberTitle": "Remember pairing in the OS credential store",
+      "pairingRememberDescription": "Turn off for a session-only pairing on devices without a credential plugin",
+      "pairingForget": "Forget",
+      "pairingSave": "Save pairing",
+      "pairingRemoveFailed": "The saved pairing could not be removed.",
+      "pairingProfileRequired": "Choose an active profile before pairing a companion.",
+      "pairingProfileChanged": "Active profile changed.",
+      "companionInputTitle": "Choose companion input",
+      "companionInputDescription": "Use the current VOD file through its owning source transport, or choose a matching file. The current-file option copies at most 1 GiB / one hour to temporary storage, then uploads after review. It may use additional bandwidth and cannot copy a playlist, live stream or protected source.",
+      "companionInputChooseMatchingFile": "Choose a matching file",
+      "companionInputUseCurrentSource": "Use current source file"
     }
   },
   "userStatus": {},

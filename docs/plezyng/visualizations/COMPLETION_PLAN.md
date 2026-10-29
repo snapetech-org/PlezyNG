@@ -436,7 +436,7 @@ records the exact engine revision and ABI separately from platform artifacts.
 
 ## 2026-10-29 saved blend and animation source checkpoint
 
-The app now pins MilkRust `4b71467ff1b031c7fc63d34f4964e46b19a1d20e`, C ABI v2.
+The app now pins MilkRust `597cdfb74090c983191dca0505adb8878152c07d`, C ABI v2.
 Native GL and WebGL upload a packed 32-bit vertex field and evaluate the saved
 64×48 transition mesh with matching triangle interpolation. Both hosts admit
 the documented 100-name image cache within the existing decoded-pixel budget.
@@ -446,3 +446,15 @@ metadata; the finite-repeat timing path was corrected in this checkpoint.
 This closes those implementation items in source. Reference pixels, compile/link,
 GPU, browser and target-device results remain unverified under the source-only
 restriction and are kept as separate qualification gates.
+
+
+
+## Saved blend header carry-forward source checkpoint, 2026-10-29
+
+The current app pin resolves omitted saved .milk2 header values from the
+previous double-preset runtime state. Process-start defaults are an unset
+pattern, progress 1, direction 0 and zero random values. Missing first-load
+patterns fail closed. The source lock records MilkRust commit
+597cdfb74090c983191dca0505adb8878152c07d. This closes the header carry-forward
+implementation item; it does not establish saved-pair visual parity or a
+qualified app runtime.

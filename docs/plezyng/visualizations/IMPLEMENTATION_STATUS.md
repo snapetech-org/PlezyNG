@@ -92,7 +92,7 @@ corpus qualification, rights decisions and production custody/publication are al
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `4b71467ff1b031c7fc63d34f4964e46b19a1d20e` with C ABI v2:
+- The app pins MilkRust `597cdfb74090c983191dca0505adb8878152c07d` with C ABI v2:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -320,8 +320,22 @@ registers the core notices from an app asset.
 This is source integration only. GIF decoding in WASM runs on the calling thread.
 Finite GIF loop counts now repeat each cycle before holding the final frame; a
 missing loop extension plays once and a zero count loops forever. The app pins
-MilkRust `4b71467ff1b031c7fc63d34f4964e46b19a1d20e` with ABI v2. The matching
+MilkRust `597cdfb74090c983191dca0505adb8878152c07d` with ABI v2. The matching
 engine source also raises both hosts to the 100-name image-cache limit and uses
 packed 32-bit blend-vertex data with per-fragment 64×48 triangle interpolation.
 Reference compositing, browser CSP/codec behavior, compile/link, GPU, build and
 device results remain unknown; runtime artifacts remain unbuilt.
+
+
+## 2026-10-29 saved blend register carry-forward checkpoint
+
+MilkRust PR #20 now resolves omitted .milk2 header registers from the prior
+double-preset state. A new runtime starts with an unset pattern, progress 1,
+direction 0 and zero random registers; a missing first-load pattern fails
+closed instead of being treated as Fade. Serialization preserves whether those
+header records were present. PlezyNG pins the exact engine commit in
+native/visualizer/sources.lock.json.
+
+The app behavior remains source-only and unqualified. No build, test, browser,
+GPU or device run was performed for this checkpoint. Renderer pixel parity,
+non-default sprite-field conformance and the other ledger items remain open.

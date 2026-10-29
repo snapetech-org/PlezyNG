@@ -106,7 +106,7 @@ fragments through the existing include directory. Their license/provenance
 remains the vendored MIT notice plus local patch inventory.
 
 
-The current MilkRust pin `4b71467ff1b031c7fc63d34f4964e46b19a1d20e` also
+The current MilkRust pin `597cdfb74090c983191dca0505adb8878152c07d` also
 contains bounded function-macro stringification with preserved token-boundary
 whitespace and escaped string tokens, plus worker-based browser raster decoding.
 The WASM package builder stages the decoder worker beside the generated module;

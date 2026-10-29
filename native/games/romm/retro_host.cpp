@@ -230,18 +230,20 @@ API void plezy_retro_pause_audio(int paused) {
   std::lock_guard<std::mutex> lock(host->audio_mutex);
   host->audio_paused=paused!=0;host->read=host->write;
 }
-API int plezy_retro_capture(int state) {
-  if(!host||!host->loaded)return 0;
-  size_t size=state?host->serialize_size():host->get_memory_size(RETRO_MEMORY_SAVE_RAM);
+API int plezy_retro_capture(int kind) {
+  if(!host||!host->loaded||kind<0||kind>2)return 0;
+  const bool state=kind==1;const unsigned memory=kind==2?RETRO_MEMORY_RTC:RETRO_MEMORY_SAVE_RAM;
+  size_t size=state?host->serialize_size():host->get_memory_size(memory);
   if(!size||size>134217728)return 0;host->snapshot.resize(size);
   if(state){if(!host->serialize(host->snapshot.data(),size))return 0;}
-  else {auto* data=host->get_memory_data(RETRO_MEMORY_SAVE_RAM);if(!data)return 0;std::memcpy(host->snapshot.data(),data,size);}
+  else {auto* data=host->get_memory_data(memory);if(!data)return 0;std::memcpy(host->snapshot.data(),data,size);}
   return static_cast<int>(size);
 }
 API const uint8_t* plezy_retro_snapshot(){return host&&!host->snapshot.empty()?host->snapshot.data():nullptr;}
-API int plezy_retro_restore(const uint8_t* bytes,int size,int state) {
-  if(!host||!host->loaded||!bytes||size<=0||size>134217728)return 0;
-  if(state)return host->unserialize(bytes,static_cast<size_t>(size))?1:0;
-  const auto expected=host->get_memory_size(RETRO_MEMORY_SAVE_RAM);auto* destination=host->get_memory_data(RETRO_MEMORY_SAVE_RAM);
+API int plezy_retro_restore(const uint8_t* bytes,int size,int kind) {
+  if(!host||!host->loaded||!bytes||size<=0||size>134217728||kind<0||kind>2)return 0;
+  if(kind==1)return host->unserialize(bytes,static_cast<size_t>(size))?1:0;
+  const unsigned memory=kind==2?RETRO_MEMORY_RTC:RETRO_MEMORY_SAVE_RAM;
+  const auto expected=host->get_memory_size(memory);auto* destination=host->get_memory_data(memory);
   if(expected!=static_cast<size_t>(size)||!destination)return 0;std::memcpy(destination,bytes,expected);return 1;
 }

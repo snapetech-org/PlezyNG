@@ -532,25 +532,26 @@ class RommStorage extends ChangeNotifier {
   String _nativeKey(RommGame game, String core, String fileHash) => '${game.key}:${game.identity}:${fileHash.isEmpty ? downloads[game.key]?['sha1'] : fileHash}:$core';
   Future<void> keepNativeProgress(RommGame game, String core, Uint8List bytes, {bool state = false, String fileHash = ''}) =>
     keepNativeSnapshot(game, core, sram: state ? null : bytes, state: state ? bytes : null, fileHash: fileHash);
-  Future<void> keepNativeSnapshot(RommGame game, String core, {Uint8List? sram, Uint8List? state, String fileHash = ''}) =>
-    _track(_keepNativeSnapshot(game, core, sram: sram, state: state, fileHash: fileHash));
-  Future<void> _keepNativeSnapshot(RommGame game, String core, {Uint8List? sram, Uint8List? state, String fileHash = ''}) async {
+  Future<void> keepNativeSnapshot(RommGame game, String core, {Uint8List? sram, Uint8List? state, Uint8List? rtc, String fileHash = ''}) =>
+    _track(_keepNativeSnapshot(game, core, sram: sram, state: state, rtc: rtc, fileHash: fileHash));
+  Future<void> _keepNativeSnapshot(RommGame game, String core, {Uint8List? sram, Uint8List? state, Uint8List? rtc, String fileHash = ''}) async {
     check();
-    final a = sram?.length ?? 0, b = state?.length ?? 0;
-    if (a + b == 0 || a > 128 * 1024 * 1024 || b > 128 * 1024 * 1024) throw const RommFailure('romm.invalidFile');
+    final a = sram?.length ?? 0, b = state?.length ?? 0, c = rtc?.length ?? 0;
+    if (a + b + c == 0 || a > 128 * 1024 * 1024 || b > 128 * 1024 * 1024 || c > 1024 * 1024) throw const RommFailure('romm.invalidFile');
     final path = _path(_nativeKey(game, core, fileHash), 'progress'), temp = File('$path.next');
-    final header = Uint8List(16)..setAll(0, ascii.encode('PLZYPRG1'));
-    ByteData.sublistView(header)..setUint32(8, a)..setUint32(12, b);
+    final header = Uint8List(20)..setAll(0, ascii.encode('PLZYPRG2'));
+    ByteData.sublistView(header)..setUint32(8, a)..setUint32(12, b)..setUint32(16, c);
     final output = await temp.open(mode: FileMode.write);
     try {
       await output.writeFrom(header);
       if (sram != null) await output.writeFrom(sram);
       if (state != null) await output.writeFrom(state);
+      if (rtc != null) await output.writeFrom(rtc);
       await output.flush();
     } finally { await output.close(); }
-    check(); await temp.rename(path); // One commit keeps SRAM and state from the same emulated frame.
+    check(); await temp.rename(path); // SRAM, state and cartridge clock from the same emulated frame.
   }
-  Future<({Uint8List? sram, Uint8List? state})> nativeSnapshot(RommGame game, String core, {String fileHash = ''}) async {
+  Future<({Uint8List? sram, Uint8List? state, Uint8List? rtc})> nativeSnapshot(RommGame game, String core, {String fileHash = ''}) async {
     check(); final key = _nativeKey(game, core, fileHash), file = File(_path(key, 'progress'));
     if (!await file.exists()) {
       Future<Uint8List?> legacy(String suffix) async {
@@ -558,16 +559,21 @@ class RommStorage extends ChangeNotifier {
         if (await old.length() > 128 * 1024 * 1024) throw const RommFailure('romm.invalidFile');
         final bytes = await old.readAsBytes(); check(); return bytes;
       }
-      return (sram: await legacy('sram'), state: await legacy('state'));
+      return (sram: await legacy('sram'), state: await legacy('state'), rtc: null);
     }
     final size = await file.length();
-    if (size < 16 || size > 256 * 1024 * 1024 + 16) throw const RommFailure('romm.invalidFile');
+    if (size < 16 || size > 257 * 1024 * 1024 + 20) throw const RommFailure('romm.invalidFile');
     final bytes = await file.readAsBytes(); check();
-    if (bytes.length != size || ascii.decode(bytes.sublist(0, 8), allowInvalid: true) != 'PLZYPRG1') throw const RommFailure('romm.invalidFile');
+    if (bytes.length != size) throw const RommFailure('romm.invalidFile');
+    final magic = ascii.decode(bytes.sublist(0, 8), allowInvalid: true);
+    final offset = magic == 'PLZYPRG1' ? 16 : magic == 'PLZYPRG2' ? 20 : 0;
+    if (offset == 0 || size < offset) throw const RommFailure('romm.invalidFile');
     final header = ByteData.sublistView(bytes), a = header.getUint32(8), b = header.getUint32(12);
-    if (a > 128 * 1024 * 1024 || b > 128 * 1024 * 1024 || 16 + a + b != size) throw const RommFailure('romm.invalidFile');
-    return (sram: a == 0 ? null : Uint8List.sublistView(bytes, 16, 16 + a),
-      state: b == 0 ? null : Uint8List.sublistView(bytes, 16 + a));
+    final c = offset == 20 ? header.getUint32(16) : 0;
+    if (a + b + c == 0 || a > 128 * 1024 * 1024 || b > 128 * 1024 * 1024 || c > 1024 * 1024 || offset + a + b + c != size) throw const RommFailure('romm.invalidFile');
+    return (sram: a == 0 ? null : Uint8List.sublistView(bytes, offset, offset + a),
+      state: b == 0 ? null : Uint8List.sublistView(bytes, offset + a, offset + a + b),
+      rtc: c == 0 ? null : Uint8List.sublistView(bytes, offset + a + b));
   }
   Future<Uint8List?> nativeProgress(RommGame game, String core, {bool state = false, String fileHash = ''}) async {
     final snapshot = await nativeSnapshot(game, core, fileHash: fileHash); return state ? snapshot.state : snapshot.sram;

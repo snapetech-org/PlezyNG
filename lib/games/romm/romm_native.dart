@@ -146,13 +146,14 @@ class RommNative extends ChangeNotifier {
     final data = await _request('capture', {'state': state});
     return data is TransferableTypedData ? data.materialize().asUint8List() : null;
   }
-  Future<({Uint8List? sram, Uint8List? state})> captureProgress() async {
+  Future<({Uint8List? sram, Uint8List? state, Uint8List? rtc})> captureProgress() async {
     final data = rommMap(await _request('captureProgress'));
     Uint8List? bytes(Object? value) => value is TransferableTypedData ? value.materialize().asUint8List() : null;
-    return (sram: bytes(data['sram']), state: bytes(data['state']));
+    return (sram: bytes(data['sram']), state: bytes(data['state']), rtc: bytes(data['rtc']));
   }
-  Future<void> restore(Uint8List bytes, {bool state = false}) async {
-    await _request('restore', {'bytes': TransferableTypedData.fromList([bytes]), 'state': state});
+  Future<void> restore(Uint8List bytes, {bool state = false, bool rtc = false}) async {
+    if (state && rtc) throw const RommFailure('romm.invalidFile');
+    await _request('restore', {'bytes': TransferableTypedData.fromList([bytes]), 'state': state, 'rtc': rtc});
   }
   Future<void> shutdown() => _shutdown ??= _stop();
   Future<void> _stop() async {
@@ -225,16 +226,16 @@ void _retroWorker(Map<String, Object?> args) {
             if (size > 0) result = TransferableTypedData.fromList([binding.snapshot().asTypedList(size)]);
           case 'captureProgress':
             final progress = <String, Object?>{};
-            for (final state in [false, true]) {
-              final size = binding.capture(state ? 1 : 0);
-              if (size > 0) progress[state ? 'state' : 'sram'] = TransferableTypedData.fromList([binding.snapshot().asTypedList(size)]);
+            for (final entry in {0: 'sram', 1: 'state', 2: 'rtc'}.entries) {
+              final size = binding.capture(entry.key);
+              if (size > 0) progress[entry.value] = TransferableTypedData.fromList([binding.snapshot().asTypedList(size)]);
             }
             result = progress;
           case 'restore':
             final bytes = (row['bytes'] as TransferableTypedData).materialize().asUint8List();
             final data = binding.alloc(bytes.length);
             if (data == nullptr) throw const RommFailure('romm.nativeError');
-            try { data.asTypedList(bytes.length).setAll(0, bytes); if (binding.restore(data, bytes.length, row['state'] == true ? 1 : 0) != 1) throw const RommFailure('romm.nativeError'); }
+            try { data.asTypedList(bytes.length).setAll(0, bytes); if (binding.restore(data, bytes.length, row['state'] == true ? 1 : row['rtc'] == true ? 2 : 0) != 1) throw const RommFailure('romm.nativeError'); }
             finally { binding.free(data); }
           case 'close': clock?.cancel(); binding.close(); out.send({'id': id, 'closed': true}); input.close(); Isolate.exit();
         }

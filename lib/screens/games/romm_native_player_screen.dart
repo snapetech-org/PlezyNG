@@ -110,10 +110,11 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
         await _cloudResume();
       } else if (widget.resume) {
         final snapshot = await storage.nativeSnapshot(widget.game, _runtime.identity, fileHash: _fileHash);
-        final sram = snapshot.sram, state = snapshot.state;
+        final sram = snapshot.sram, state = snapshot.state, rtc = snapshot.rtc;
         if (sram != null) await _runtime.restore(sram);
+        if (rtc != null) await _runtime.restore(rtc, rtc: true);
         if (state != null) await _runtime.restore(state, state: true);
-        if (sram == null && state == null) await _cloudResume();
+        if (sram == null && state == null && rtc == null) await _cloudResume();
       }
       if (!live) return;
       setState(() => _ready = true);
@@ -155,33 +156,59 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       !(saves.first.updatedAt ?? DateTime(1970)).isAfter(states.first.updatedAt ?? DateTime(1970)));
     if (useState) {
       final bytes = await api.saveBytes(states.first);
-      const marker = 'PLZYRETRO1\n';
-      if (bytes.length <= marker.length || String.fromCharCodes(bytes.take(marker.length)) != marker) throw const RommFailure('romm.coreVersionDifferent');
-      final newline = bytes.indexOf(10, marker.length);
-      if (newline < 0 || newline > marker.length + 10) throw const RommFailure('romm.invalidFile');
-      final length = int.tryParse(String.fromCharCodes(bytes.sublist(marker.length, newline))) ?? 0;
-      final offset = newline + 1;
-      if (length < 1 || length > 4096 || offset + length >= bytes.length) throw const RommFailure('romm.invalidFile');
-      final metadata = rommMap(jsonDecode(utf8.decode(bytes.sublist(offset, offset + length))));
-      if (metadata['format'] != 'plezy-libretro-state-v2' || metadata['core'] != _runtime.identity ||
-          metadata['rom'] != widget.game.identity || metadata['file'] != _copyIdentity) {
-        throw const RommFailure('romm.coreVersionDifferent');
-      }
+      if (states.first.hash.isNotEmpty && md5.convert(bytes).toString() != states.first.hash) throw const RommFailure('romm.checksumFailed');
+      final parsed = _readEnvelope(bytes, 'PLZYRETRO1\n', {'plezy-libretro-state-v2', 'plezy-libretro-state-v3'});
+      final snapshot = parsed.metadata['format'] == 'plezy-libretro-state-v2'
+          ? (sram: null, state: parsed.bytes, rtc: null) : _splitProgress(parsed.metadata, parsed.bytes, requireState: true);
       if (!live) return;
-      final snapshot = Uint8List.sublistView(bytes, offset + length);
-      await _runtime.restore(snapshot, state: true);
-      await widget.controller.storage.keepNativeProgress(widget.game, _runtime.identity, snapshot, state: true, fileHash: _fileHash);
+      if (snapshot.sram != null) await _runtime.restore(snapshot.sram!);
+      if (snapshot.rtc != null) await _runtime.restore(snapshot.rtc!, rtc: true);
+      await _runtime.restore(snapshot.state!, state: true);
+      await widget.controller.storage.keepNativeSnapshot(widget.game, _runtime.identity,
+        sram: snapshot.sram, state: snapshot.state, rtc: snapshot.rtc, fileHash: _fileHash);
     } else if (saves.isNotEmpty) {
       final save = saves.first;
       final bytes = await api.saveBytes(save, deviceId: source.deviceId);
       final hash = md5.convert(bytes).toString();
       if (save.hash.isNotEmpty && hash != save.hash) throw const RommFailure('romm.checksumFailed');
       if (!live) return;
-      await _runtime.restore(bytes);
-      await widget.controller.storage.keepNativeProgress(widget.game, _runtime.identity, bytes, fileHash: _fileHash);
+      const marker = 'PLZYRAM1\n';
+      final bundled = bytes.length > marker.length && String.fromCharCodes(bytes.take(marker.length)) == marker;
+      final parsed = bundled ? _readEnvelope(bytes, marker, {'plezy-libretro-memory-v1'}) : null;
+      final progress = parsed == null ? (sram: bytes, state: null, rtc: null)
+          : _splitProgress(parsed.metadata, parsed.bytes, requireState: false);
+      if (progress.sram != null) await _runtime.restore(progress.sram!);
+      if (progress.rtc != null) await _runtime.restore(progress.rtc!, rtc: true);
+      await widget.controller.storage.keepNativeSnapshot(widget.game, _runtime.identity, sram: progress.sram, rtc: progress.rtc, fileHash: _fileHash);
       await widget.controller.storage.rememberSaveBaseline(widget.game, save);
       try { await api.acknowledgeSave(save, source.deviceId, hash); } catch (_) { /* Local progress is already durable; a later upload can surface a conflict. */ }
     }
+  }
+  Uint8List _envelope(String marker, String format, {Uint8List? sram, Uint8List? state, Uint8List? rtc}) {
+    final header = utf8.encode(jsonEncode({'format': format, 'core': _runtime.identity,
+      'rom': widget.game.identity, 'file': _copyIdentity, 'sram': sram?.length ?? 0, 'state': state?.length ?? 0, 'rtc': rtc?.length ?? 0}));
+    if (header.length > 8192) throw const RommFailure('romm.invalidFile');
+    final result = BytesBuilder()..add(utf8.encode(marker))..add(utf8.encode('${header.length}\n'))..add(header);
+    for (final bytes in [sram, state, rtc]) { if (bytes != null) result.add(bytes); }
+    return result.takeBytes();
+  }
+  ({Map<String, dynamic> metadata, Uint8List bytes}) _readEnvelope(Uint8List bytes, String marker, Set<String> formats) {
+    if (bytes.length <= marker.length || String.fromCharCodes(bytes.take(marker.length)) != marker) throw const RommFailure('romm.coreVersionDifferent');
+    final newline = bytes.indexOf(10, marker.length);
+    if (newline < 0 || newline > marker.length + 10) throw const RommFailure('romm.invalidFile');
+    final length = int.tryParse(String.fromCharCodes(bytes.sublist(marker.length, newline))) ?? 0, offset = newline + 1;
+    if (length < 1 || length > 8192 || offset + length >= bytes.length) throw const RommFailure('romm.invalidFile');
+    final metadata = rommMap(jsonDecode(utf8.decode(bytes.sublist(offset, offset + length))));
+    if (!formats.contains(metadata['format']) || metadata['core'] != _runtime.identity ||
+        metadata['rom'] != widget.game.identity || metadata['file'] != _copyIdentity) throw const RommFailure('romm.coreVersionDifferent');
+    return (metadata: metadata, bytes: Uint8List.sublistView(bytes, offset + length));
+  }
+  ({Uint8List? sram, Uint8List? state, Uint8List? rtc}) _splitProgress(Map<String, dynamic> metadata, Uint8List bytes, {required bool requireState}) {
+    final a = rommInt(metadata['sram'], -1), b = rommInt(metadata['state'], -1), c = rommInt(metadata['rtc'], -1);
+    if (a < 0 || b < 0 || c < 0 || a > 128 * 1024 * 1024 || b > 128 * 1024 * 1024 || c > 1024 * 1024 ||
+        a + b + c != bytes.length || (requireState ? b == 0 : b != 0 || a + c == 0)) throw const RommFailure('romm.invalidFile');
+    return (sram: a == 0 ? null : Uint8List.sublistView(bytes, 0, a),
+      state: b == 0 ? null : Uint8List.sublistView(bytes, a, a + b), rtc: c == 0 ? null : Uint8List.sublistView(bytes, a + b));
   }
   void _newFrame() {
     if (live && _runtime.failure.isNotEmpty) {
@@ -287,19 +314,17 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     try {
       final storage = widget.controller.storage;
       final progress = await _runtime.captureProgress();
-      final sram = progress.sram, snapshot = progress.state;
+      final sram = progress.sram, snapshot = progress.state, rtc = progress.rtc;
       if (!live) return;
-      if (sram == null && snapshot == null) throw const RommFailure('romm.saveFailed');
-      await storage.keepNativeSnapshot(widget.game, _runtime.identity, sram: sram, state: snapshot, fileHash: _fileHash);
-      final bytes = state || sram == null ? snapshot ?? (allowSramFallback ? sram : null) : sram;
+      if (sram == null && snapshot == null && rtc == null) throw const RommFailure('romm.saveFailed');
+      await storage.keepNativeSnapshot(widget.game, _runtime.identity, sram: sram, state: snapshot, rtc: rtc, fileHash: _fileHash);
+      final nativeState = snapshot != null && (state || sram == null && rtc == null);
+      if (state && !nativeState && !allowSramFallback) throw const RommFailure('romm.saveFailed');
+      final bytes = nativeState ? _envelope('PLZYRETRO1\n', 'plezy-libretro-state-v3', sram: sram, state: snapshot, rtc: rtc)
+          : rtc == null ? sram : _envelope('PLZYRAM1\n', 'plezy-libretro-memory-v1', sram: sram, rtc: rtc);
       if (bytes == null) throw const RommFailure('romm.saveFailed');
       final hash = sha256.convert(bytes).toString(); if (hash == _lastHash && !state) return;
-      final nativeState = snapshot != null && (state || sram == null);
-      // State files carry their own exact core/version/ROM envelope. Browser
-      // and streamed cores cannot accidentally interpret these as their states.
-      final header = utf8.encode(jsonEncode({'format': 'plezy-libretro-state-v2', 'core': _runtime.identity, 'rom': widget.game.identity, 'file': _copyIdentity}));
-      final envelope = BytesBuilder()..add(utf8.encode('PLZYRETRO1\n'))..add(utf8.encode('${header.length}\n'))..add(header)..add(bytes);
-      final id = await storage.enqueue(game: widget.game, bytes: nativeState ? envelope.takeBytes() : bytes,
+      final id = await storage.enqueue(game: widget.game, bytes: bytes,
         emulator: _emulator, core: _runtime.identity, state: nativeState, slot: '$_emulator-autosave', nativeFileHash: _fileHash);
       _lastHash = hash;
       // Exiting waits for durable local bytes, not for network availability.
@@ -310,9 +335,13 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     if (!_ready || _capturing || _closing) return;
     _capturing = true; _restoring = true; _release(); _applyPause();
     try {
-      final bytes = await widget.controller.storage.nativeProgress(widget.game, _runtime.identity, state: true, fileHash: _fileHash);
-      if (bytes == null) throw const RommFailure('romm.noLocalSave');
-      if (live) { await _runtime.restore(bytes, state: true); _lastHash = ''; }
+      final snapshot = await widget.controller.storage.nativeSnapshot(widget.game, _runtime.identity, fileHash: _fileHash);
+      if (snapshot.state == null) throw const RommFailure('romm.noLocalSave');
+      if (live) {
+        if (snapshot.sram != null) await _runtime.restore(snapshot.sram!);
+        if (snapshot.rtc != null) await _runtime.restore(snapshot.rtc!, rtc: true);
+        await _runtime.restore(snapshot.state!, state: true); _lastHash = '';
+      }
     } catch (error) { if (live) setState(() => _error = error is RommFailure ? error.code : 'romm.nativeError'); }
     finally { _capturing = false; _restoring = false; if (live) _applyPause(); }
   }

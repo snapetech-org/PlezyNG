@@ -40,6 +40,66 @@ typedef SubtitleSourceSubtitleSaver = Future<void> Function(String name, Uint8Li
 
 const _subtitleUndoCheckpointPrefix = 'Undo checkpoint: ';
 
+Map<String, SubtitleCue> _subtitleCuesByStableId(List<SubtitleCue> cues) {
+  final result = <String, SubtitleCue>{};
+  for (final cue in cues) {
+    if (result.containsKey(cue.stableId)) {
+      throw const FormatException('Subtitle operation returned duplicate cue identities.');
+    }
+    result[cue.stableId] = cue;
+  }
+  return result;
+}
+
+void _requireSubtitleCueIdentityPreserved(List<SubtitleCue> source, List<SubtitleCue> translated) {
+  if (source.length != translated.length) {
+    throw const StateError('Translation changed the cue count; no synchronization was applied.');
+  }
+  final sourceById = _subtitleCuesByStableId(source);
+  final translatedById = _subtitleCuesByStableId(translated);
+  if (sourceById.length != translatedById.length) {
+    throw const StateError('Translation changed cue identities; no synchronization was applied.');
+  }
+  for (final entry in sourceById.entries) {
+    final translatedCue = translatedById[entry.key];
+    if (translatedCue == null ||
+        translatedCue.startMs != entry.value.startMs ||
+        translatedCue.endMs != entry.value.endMs) {
+      throw const StateError('Translation changed cue identity or timing; no synchronization was applied.');
+    }
+  }
+}
+
+List<SubtitleCue> _restoreOriginalCueTextWithAlignedTimes(
+  List<SubtitleCue> original,
+  List<SubtitleCue> aligned,
+) {
+  final alignedById = _subtitleCuesByStableId(aligned);
+  if (alignedById.length != original.length) {
+    throw const FormatException('Alignment changed cue identities, so the original text was left unchanged.');
+  }
+  final output = <SubtitleCue>[];
+  for (final source in original) {
+    final timing = alignedById.remove(source.stableId);
+    if (timing == null) {
+      throw const FormatException('Alignment lost a cue identity, so the original text was left unchanged.');
+    }
+    output.add(
+      SubtitleCue(
+        index: source.index,
+        startMs: timing.startMs,
+        endMs: timing.endMs,
+        text: source.text,
+        cueId: source.stableId,
+      ),
+    );
+  }
+  if (alignedById.isNotEmpty) {
+    throw const FormatException('Alignment added cues, so the original text was left unchanged.');
+  }
+  return List<SubtitleCue>.unmodifiable(output);
+}
+
 class SubtitleAiSheet extends StatefulWidget {
   const SubtitleAiSheet({
     super.key,
@@ -700,9 +760,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       },
     );
     if (!mounted) return;
-    if (translated.cues.length != target.$1.length) {
-      throw StateError('Translation changed the cue count; no synchronization was applied.');
-    }
+    _requireSubtitleCueIdentityPreserved(target.$1, translated.cues);
 
     setState(() => _status = 'Aligning translated target text against the reference…');
     final aligned = SubtitleSyncService.synchronizeAgainstReference(
@@ -711,20 +769,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       mediaDurationMs: durationMs,
       repairCuts: repairCuts,
     );
-    if (aligned.cues.length != target.$1.length) {
-      throw StateError('Cross-language alignment changed the target cue count.');
-    }
-    final retimedOriginal = List<SubtitleCue>.generate(
-      target.$1.length,
-      (index) => SubtitleCue(
-        index: target.$1[index].index,
-        startMs: aligned.cues[index].startMs,
-        endMs: aligned.cues[index].endMs,
-        text: target.$1[index].text,
-        cueId: target.$1[index].stableId,
-      ),
-      growable: false,
-    );
+    final retimedOriginal = _restoreOriginalCueTextWithAlignedTimes(target.$1, aligned.cues);
     if (!await _writeAndApply(
       retimedOriginal,
       operationLabel: repairCuts ? 'Cross-language reference cut repair' : 'Cross-language subtitle sync',
@@ -906,15 +951,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       },
     );
     if (!mounted) return;
-    if (translated.cues.length != selected.$1.length) {
-      throw const StateError('Translation changed the cue count; no synchronization was applied.');
-    }
-    for (var index = 0; index < translated.cues.length; index++) {
-      if (translated.cues[index].startMs != selected.$1[index].startMs ||
-          translated.cues[index].endMs != selected.$1[index].endMs) {
-        throw const StateError('Translation changed subtitle timing; no synchronization was applied.');
-      }
-    }
+    _requireSubtitleCueIdentityPreserved(selected.$1, translated.cues);
 
     setState(() => _status = 'Matching translated subtitle text against $transcriptDescription…');
     final aligned = SubtitleSyncService.synchronize(
@@ -924,20 +961,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       repairCuts: repairCuts,
       preserveUnmatchedOutsideEvidence: repairCuts,
     );
-    if (aligned.cues.length != selected.$1.length) {
-      throw const FormatException('Alignment clipped one or more cues, so the original-language track was left unchanged.');
-    }
-    final retimedOriginal = List<SubtitleCue>.generate(
-      selected.$1.length,
-      (index) => SubtitleCue(
-        index: selected.$1[index].index,
-        startMs: aligned.cues[index].startMs,
-        endMs: aligned.cues[index].endMs,
-        text: selected.$1[index].text,
-        cueId: selected.$1[index].stableId,
-      ),
-      growable: false,
-    );
+    final retimedOriginal = _restoreOriginalCueTextWithAlignedTimes(selected.$1, aligned.cues);
     if (!await _writeAndApply(
       retimedOriginal,
       operationLabel: repairCuts ? 'Cross-language transcript cut repair' : 'Cross-language transcript sync',

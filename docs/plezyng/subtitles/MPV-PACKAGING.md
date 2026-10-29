@@ -55,11 +55,17 @@ tvOS arm64e slice). Missing simulator/device slices cannot pass merely because
 the remaining slices export the ABI. Consumer promotion requires schema 3;
 older receipt-bearing artifacts are not silently promoted.
 
-Publication availability was checked read-only on October 29, 2026. The main
-manifest at `bb618dfd5b6bb1a06088d411eb283137cda05f73` still has no ordered-PCM
-receipts on its MPV assets. The ordered-PCM PR branch reports no workflow runs;
-the visible Apple rolling assets predate this patch, and the Linux rolling
-release has no assets. There is no compatible published manifest to promote
+Publication availability was rechecked read-only on October 29, 2026. The main
+manifest at `33949c2122e9281a5bc05c2ce7967836258d0b11` still has no ordered-PCM
+receipts on its MPV assets. The Apple rolling release has 27 assets last updated
+on October 28 before this patch, with no PCM receipt assets. The Linux rolling
+release has no assets; the Android and Windows rolling-release API endpoints
+currently return 404. There is no compatible published manifest to promote
 under the code-only constraint. Consumer pins therefore remain unchanged.
 Confidence is high in that metadata finding; no archive inspection, build or
 publication was executed during this check.
+
+The ordered-PCM packaging branch now also merges main's Windows cross-build
+memory-limit change from that revision. It preserves private ephemeral JIT
+routing and does not dispatch a build or publish any artifact. Actual compilation,
+archive inspection, receipt publication and atomic app promotion remain required.

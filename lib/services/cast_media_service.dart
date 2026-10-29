@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, InternetAddress;
+import '../sources/network_media_stream_server.dart';
 
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -33,6 +34,9 @@ class CastMediaService extends ChangeNotifier {
   final _remote = GoogleCastRemoteMediaClient.instance;
 
   bool _initialized = false;
+  bool _captionReloading = false;
+  GoogleCastMediaInformation? _captionRestoreInformation;
+  List<int>? _captionRestoreTracks;
   String? _deviceName;
   MediaItem? _activeItem;
   MediaServerClient? _activeClient;
@@ -227,6 +231,7 @@ class CastMediaService extends ChangeNotifier {
         activeTrackIds: textTracks.defaultTrackIds.isEmpty ? null : textTracks.defaultTrackIds,
       );
 
+      _captionRestoreInformation = null; _captionRestoreTracks = null;
       _deviceName = device?.friendlyName ?? _sessions.currentSession?.device?.friendlyName ?? _deviceName;
       _activeItem = item;
       _activeClient = client;
@@ -389,7 +394,7 @@ class CastMediaService extends ChangeNotifier {
   }
 
   void _onMediaStatusChanged(GoggleCastMediaStatus? status) {
-    if (_activeItem != null) {
+    if (_activeItem != null && !_captionReloading) {
       if (status?.playerState == CastMediaPlayerState.idle &&
           status?.idleReason != null &&
           status?.idleReason != GoogleCastMediaIdleReason.none) {
@@ -414,12 +419,106 @@ class CastMediaService extends ChangeNotifier {
       _reportSession = null;
       _activeItem = null;
       _activeClient = null;
+      _captionRestoreInformation = null; _captionRestoreTracks = null;
       _partStart = Duration.zero;
       _duration = null;
       _lastPausedState = null;
       notifyListeners();
     } finally {
       _finishingPlayback = false;
+    }
+  }
+
+  Future<void> _loadReviewedCaptionLink(BuildContext context) async {
+    final initial = _remote.mediaStatus;
+    final item = _activeItem;
+    final information = initial?.mediaInformation;
+    if (initial == null || information == null || item == null || !isConnected ||
+        information.streamType != CastMediaStreamType.buffered || _captionReloading) return;
+    final address = TextEditingController();
+    String? error;
+    try {
+      final uri = await showDialog<Uri>(context: context, builder: (context) => StatefulBuilder(builder: (context, update) => AlertDialog(
+        title: const Text('Load a reviewed WebVTT track on Cast'),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Text('Paste a WebVTT download URL from app subtitle sharing or a trusted HTTPS host. '
+            'Confirm it matches this edition and the currently opened media part. The receiver will fetch the full track, including future dialogue. '
+            'Loading reloads this Cast item at its current position and pause state. Local sharing must stay active and reachable; receiver styling may differ.'),
+          TextField(controller: address, maxLength: 4096, autocorrect: false, enableSuggestions: false,
+            decoration: InputDecoration(labelText: 'WebVTT URL', errorText: error)),
+        ]), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          FilledButton(onPressed: () {
+            final uri = Uri.tryParse(address.text.trim());
+            final ip = uri == null ? null : InternetAddress.tryParse(uri.host);
+            if (uri == null || uri.host.isEmpty || uri.userInfo.isNotEmpty || uri.hasFragment ||
+                uri.toString().length > 4096 || !uri.path.toLowerCase().endsWith('.vtt') ||
+                !(uri.scheme == 'https' || uri.scheme == 'http' && ip != null && !ip.isLoopback && NetworkMediaStreamPolicy.isPrivateIPv4(ip))) {
+              update(() => error = 'Use an HTTPS .vtt URL or a private-network IPv4 .vtt link.'); return;
+            }
+            Navigator.pop(context, uri);
+          }, child: const Text('Load on receiver'))])));
+      if (uri == null || !context.mounted) return;
+      final status = _remote.mediaStatus;
+      if (!identical(_activeItem, item) || status?.mediaSessionID != initial.mediaSessionID || !isConnected) {
+        throw const CastPlaybackException('Cast media changed before subtitle handoff.');
+      }
+      final tracks = information.tracks ?? const <GoogleCastMediaTrack>[];
+      if (tracks.length >= 128) throw const CastPlaybackException('The receiver track limit was reached.');
+      var id = 1;
+      for (final track in tracks) { if (track.trackId >= id) id = track.trackId + 1; }
+      final caption = GoogleCastMediaTrack(trackId: id, type: TrackType.text, subtype: TextTrackType.subtitles,
+        trackContentId: uri.toString(), trackContentType: 'text/vtt', name: 'Reviewed PlezyNG subtitles');
+      final active = [for (final track in tracks) if (track.type != TrackType.text &&
+        (status!.activeTrackIds ?? const <int>[]).contains(track.trackId)) track.trackId, id];
+      _captionRestoreInformation ??= information;
+      _captionRestoreTracks ??= List<int>.of(status!.activeTrackIds ?? const []);
+      final updated = GoogleCastMediaInformation(contentId: information.contentId, contentType: information.contentType,
+        streamType: information.streamType, contentUrl: information.contentUrl, metadata: information.metadata,
+        duration: information.duration, tracks: [...tracks, caption], textTrackStyle: information.textTrackStyle,
+        customData: information.customData, entity: information.entity, atvEntity: information.atvEntity,
+        breaks: information.breaks, breakClips: information.breakClips, hlsSegmentFormat: information.hlsSegmentFormat,
+        hlsVideoSegmentFormat: information.hlsVideoSegmentFormat, startAbsoluteTime: information.startAbsoluteTime,
+        userActionStates: information.userActionStates, vmapAdsRequest: information.vmapAdsRequest);
+      await _reloadCaptionInformation(updated, active, status!);
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Subtitle track sent to the Cast receiver. Check its display; fetch and rendering support vary by receiver.')));
+    } catch (_) {
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not load this subtitle track on the current Cast item.')));
+    } finally { address.dispose(); }
+  }
+
+  Future<void> _reloadCaptionInformation(GoogleCastMediaInformation information, List<int> active,
+      GoggleCastMediaStatus expected) async {
+    if (_captionReloading || !isConnected || _remote.mediaStatus?.mediaSessionID != expected.mediaSessionID) {
+      throw const CastPlaybackException('The Cast session changed.');
+    }
+    _captionReloading = true; notifyListeners();
+    try {
+      await _remote.loadMedia(information, playPosition: _remote.playerPosition,
+        autoPlay: expected.playerState != CastMediaPlayerState.paused,
+        playbackRate: expected.playbackRate.toDouble(), activeTrackIds: active);
+      // Suppress the reload's transient idle event. SDK acknowledgment does not
+      // establish that a receiver fetched/rendered a remote text asset.
+      final expectedIds = information.tracks?.map((track) => track.trackId).toSet() ?? <int>{};
+      bool accepted(GoggleCastMediaStatus? value) {
+        if (value == null || value.mediaInformation?.contentId != information.contentId || value.playerState == CastMediaPlayerState.idle) return false;
+        final ids = value.mediaInformation?.tracks?.map((track) => track.trackId).toSet() ?? <int>{};
+        return value.mediaSessionID != expected.mediaSessionID ||
+            ids.length == expectedIds.length && ids.containsAll(expectedIds) && (value.activeTrackIds ?? const <int>[]).toSet().containsAll(active);
+      }
+      if (!accepted(_remote.mediaStatus)) {
+        await _remote.mediaStatusStream.firstWhere(accepted).timeout(const Duration(seconds: 15));
+      }
+    } finally { _captionReloading = false; notifyListeners(); }
+  }
+
+  Future<void> _restoreCastCaptions(BuildContext context) async {
+    final info = _captionRestoreInformation, current = _remote.mediaStatus;
+    if (info == null || current == null || current.mediaInformation?.contentId != info.contentId) return;
+    try {
+      await _reloadCaptionInformation(info, _captionRestoreTracks ?? const [], current);
+      _captionRestoreInformation = null; _captionRestoreTracks = null; notifyListeners();
+    } catch (_) {
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not restore the original Cast caption tracks.')));
     }
   }
 
@@ -463,6 +562,12 @@ class CastMediaService extends ChangeNotifier {
                     },
                   ),
                   const SizedBox(height: 12),
+                  if (status?.mediaInformation?.streamType == CastMediaStreamType.buffered && _activeItem != null)
+                    TextButton.icon(onPressed: _captionReloading ? null : () => _loadReviewedCaptionLink(context),
+                      icon: const Icon(Icons.subtitles_outlined), label: const Text('Load reviewed WebVTT URL')),
+                  if (_captionRestoreInformation != null)
+                    TextButton(onPressed: _captionReloading ? null : () => _restoreCastCaptions(context),
+                      child: const Text('Restore previous Cast captions')),
                   Row(
                     children: [
                       IconButton.filledTonal(

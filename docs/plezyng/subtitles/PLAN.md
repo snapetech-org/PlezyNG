@@ -893,3 +893,19 @@ track must show at least 6 dB side dominance in 80% of four or more half-second
 windows before a candidate says the mix is weighted left/right. This describes
 the entire downmix, not isolated-event location or a physical source direction.
 No sound localization or classifier accuracy has been measured.
+
+## DVR delay ownership and Cast receiver handoff
+
+DVR delay can now be held explicitly on the backend seek grid, with a bounded
+30-second minimum between correction seeks and a 20-second acknowledgment/fresh
+clock timeout. It stops when the viewer seeks, pauses, changes speed, media,
+audio or profile; a backend reopening the media also retires ownership. This
+maintains a requested playback lag, not pre-dialogue caption inference.
+
+Cast controls can load an explicitly supplied reviewed WebVTT URL on the current
+Cast VOD item, preserving current position, pause/rate and non-text active track
+IDs. The UI discloses the receiver reload, edition/part matching, full-text fetch
+and sharing lifetime. HTTPS or literal private IPv4 links are accepted; media
+session guards reject stale handoffs. Previous receiver tracks can be restored.
+The subtitle share UI exposes direct VTT links in addition to the second screen.
+Receiver fetching, rendering, styling and multi-track support remain unqualified.

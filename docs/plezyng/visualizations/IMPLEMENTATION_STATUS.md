@@ -2,7 +2,7 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `ff9af9b510179a6c3ba2fb616a3c0396ed38d1b2`; the exact dependency
+pins MilkRust `b44720c104754cc70e3a3c5d2f31a24c3171cd4a`; the exact dependency
 contract is in `native/visualizer/sources.lock.json`. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
@@ -89,7 +89,7 @@ qualification, rights decisions and production custody/publication are also open
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `ff9af9b510179a6c3ba2fb616a3c0396ed38d1b2`:
+- The app pins MilkRust `b44720c104754cc70e3a3c5d2f31a24c3171cd4a`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file

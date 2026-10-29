@@ -58,6 +58,22 @@ class SubtitleFontLoader {
   /// process — caching the result skips ~20ms on every subsequent Player
   /// instantiation.
   static Future<String?>? _cachedFontDir;
+  static Future<void>? _overlayFonts;
+  static const overlayFamily = 'Plezy Subtitle Universal';
+  static const overlayHangulFamily = 'Plezy Subtitle Hangul';
+
+  /// Register the shipped, licensed fonts for Flutter captions too. The two
+  /// families remain separate so SkParagraph can select the Hangul fallback.
+  /// No network or media-attached font is consulted by this operation.
+  static Future<void> loadOverlayFonts() => _overlayFonts ??= _loadOverlayFonts();
+
+  static Future<void> _loadOverlayFonts() async {
+    for (var index = 0; index < fonts.length; index++) {
+      final loader = FontLoader(index == 0 ? overlayFamily : overlayHangulFamily);
+      loader.addFont(rootBundle.load(fonts[index].asset));
+      await loader.load();
+    }
+  }
 
   static Future<String?> loadSubtitleFont() {
     return _cachedFontDir ??= _loadSubtitleFontOnce();

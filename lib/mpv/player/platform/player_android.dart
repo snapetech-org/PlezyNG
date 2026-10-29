@@ -546,13 +546,17 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
       case 'ivtc-active':
         final stats = await getStats();
         return stats[name]?.toString();
-      case 'width':
       case 'dwidth':
+        final stats = await getStats();
+        return (stats['videoDisplayWidth'] ?? stats['video-params/dw'] ?? stats['videoWidth'] ?? stats['video-params/w'])?.toString();
+      case 'width':
         final stats = await getStats();
         final width = stats['videoWidth'];
         return width?.toString();
-      case 'height':
       case 'dheight':
+        final stats = await getStats();
+        return (stats['videoDisplayHeight'] ?? stats['video-params/dh'] ?? stats['videoHeight'] ?? stats['video-params/h'])?.toString();
+      case 'height':
         final stats = await getStats();
         final height = stats['videoHeight'];
         return height?.toString();

@@ -24,7 +24,7 @@ with `[skip ci]`. Existing native dependency pins were not fabricated or promote
 | Live/DVR | Ordered PCM consumption, seek generation retirement, immutable finalized cues, bounded retained history, ExoPlayer source-frame clocks and moving DVR origin rebasing, optional late-text display, backend-grid DVR delay and opt-in delay hold. | No general future-audio live ingestion or incremental stable-prefix ASR. Delay hold seeks the viewer, not a second live decoder. Clock/output routes remain unqualified. |
 | Playback/source access | Android Media3 pre-speed PCM processor; native MPV bridges; Tizen tap; desktop FFmpeg read-ahead via renewable standalone/library source leases; explicit companion staging of eligible current VOD files on IO platforms. | Current locked MPV libraries lack the ordered ABI. webOS NDL has no direct PCM tap; there is no browser Player. Mobile/TV do not yet have a separate local analysis decoder. Companion staging is limited to complete, accessible files up to 1 GiB/one hour; playlists/live/protected sources are refused. |
 | Import and attachment | Existing format conversion/archive/drop/share flows; Plex/Jellyfin/Emby upload; managed standalone native text attachment; adapter-owned folder discovery for local/network/cloud sources and DLNA metadata-linked text resources. | Backend format limits still apply. Non-MPV attachment refuses saved affine corrections. Vendor-only DLNA caption tags and catalogue-specific sources without a file listing remain unsupported. |
-| App rendering | Two independent text lanes, per-profile/lane appearance defaults, installed-family/script fallback, original word highlights, fixed authored sign regions, stable optional scene-region avoidance, manual burned-caption cover, focused-pane density limit, spoken subtitles with explicit duck/rate. | App styling is not a replacement for native ASS/bitmap rendering. HDR luminance, font shaping and output paths are unqualified. Full video/crop geometry, ruby/vertical typography, new closed-caption service semantics and localized new controls are unfinished. |
+| App rendering | Two independent text lanes, per-profile/lane appearance defaults, installed-family/script fallback, original word highlights, fixed authored sign regions, stable optional scene-region avoidance, manual burned-caption cover, focused-pane density limit, spoken subtitles with explicit duck/rate. | App styling is not a replacement for native ASS/bitmap rendering. HDR luminance, font shaping and output paths are unqualified. Centered contain/cover/stretch/zoom geometry and screen/video anchoring are implemented; renderer/output qualification, ruby/vertical typography, new closed-caption service semantics and localized new controls remain open. |
 | Ecosystem | Corrected SRT/native snapshot handoff on the opened-part clock; expiring LAN second screen and WebVTT exports; explicit Cast WebVTT loading/restoration; revision/history transfer bundles and study tools. | Receiver rendering/native PiP remain capability limited. Automatic Watch Together asset policy, cross-device conflict sync, font-aware offline packaging/accounting and HDR subtitle screenshot composition remain unfinished. |
 | Research | Bitmap/burned OCR with image review and automatic text-band proposals; positioned signs; second-model disagreements; local speech separation; VAD completeness; single-frame scene proposals; stereo-mix event evidence; licensed generic-voice dubbing/mixing; offline Whisper adaptation with separate holdouts. | These are opt-in, reviewable experimental adapters. Physical sound localization, true audiovisual speech fusion, singing-specific timing, temporal visual tracking and proven quality improvements are not implemented or established. No adaptation/evaluation run occurred. |
 | MPV packaging | Shared ordered-PCM patch and all platform bridge sources; final archive/native export inspection; per-binary/archive receipts; receipt-aware content keys and manifest freshness; atomic consumer promotion gate. | No new binaries were built/published and no consumer lock was advanced. The private-JIT build/publication and exact-artifact promotion described in `MPV-PACKAGING.md` are still required. |
@@ -402,7 +402,7 @@ All entries below are target requirements unless explicitly marked Existing. Exi
 | R05 | Distinguish PGS/VobSub bitmap movement/scaling from text font styling. | M1 |
 | R06 | App primary/secondary lanes have independent font family/fallback, size, color, outline, background, margins, text alignment, vertical position and delay. Appearance defaults save per profile/lane; correction timing stays track-specific. Native ASS/bitmap retains its renderer. | M6 |
 | R07 | Share all appearance settings with the in-player preview rather than duplicating preference logic. | M1 |
-| R08 | Provide screen/video anchoring, safe area, zoom/crop, letterbox, and overscan-aware placement. | M1 |
+| R08 | App lanes offer screen or video anchoring plus per-profile overscan. The renderer maps signs, cover bands and scene evidence through the centered contain/cover/stretch/zoom transform using backend display dimensions and pane bounds, including safe area and chrome insets. Missing dimensions use screen dialogue and suppress positioned evidence; output/rotation qualification remains open. | M1 |
 | R09 | App captions expose SDR colors/background/outline and a gray foreground option. This does not calibrate HDR subtitle luminance; actual HDR/output qualification remains open. | M6 |
 | R10 | App lanes separate overlapping positions and choose stable cue-boundary placements around authored sign regions using bounded text-layout estimates. Native layout and screen chrome still need output qualification. | M6 |
 | R11 | Optional reviewed scene jobs return bounded single-frame face/object rectangle proposals. App placement uses them only under an explicit switch, remains stable within the cue, preserves authored sign regions and drops evidence after retiming. Temporal tracking and detection accuracy remain unqualified. | M9 |
@@ -901,3 +901,24 @@ and sharing lifetime. HTTPS or literal private IPv4 links are accepted; media
 session guards reject stale handoffs. Previous receiver tracks can be restored.
 The subtitle share UI exposes direct VTT links in addition to the second screen.
 Receiver fetching, rendering, styling and multi-track support remain unqualified.
+
+### Caption clock and geometry follow-through
+
+Companion generation marks the result clock explicitly, including zero-offset
+first parts. Revisions, edit drafts, undo checkpoints, JSON transfer and
+transcript translation/sync retain that basis. Native sidecar attachment
+subtracts the opened part offset once; clipping requires review. App overlays
+convert file-relative cues and words to item time. Multipart server attachment
+is refused without a part-specific server contract.
+
+App captions now use the player's centered contain/cover/stretch plus zoom
+transform. Backend display dimensions are guarded by media generation; Android
+reports pixel aspect and unapplied rotation in its display-size statistics.
+Authored signs, scene proposals and burned-caption cover bands map from the
+image rectangle into pane pixels before clipping. Dialogue can anchor to the
+screen/letterbox or visible image, with safe-area/chrome bounds and a saved
+0–15% TV overscan inset. Unknown image size falls back to screen dialogue and
+suppresses image-positioned cover/avoidance. The bundled universal and Hangul
+fonts are also registered with Flutter, so offline app captions no longer rely
+only on installed system-family names. Native ASS stays in its existing renderer.
+These are source changes; no output, shaping, HDR or device qualification ran.

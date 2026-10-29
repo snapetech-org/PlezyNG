@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../mpv/mpv.dart';
+import '../mpv/font_loader.dart';
 import '../mpv/player/player_media_session_identity.dart';
 import 'subtitle_retimer.dart';
 import 'settings_service.dart';
@@ -63,14 +64,21 @@ class SubtitleOverlayTrack {
   bool bold = false;
   bool italic = false;
   bool avoidObjects = false;
-  String fontFamily = 'System';
+  bool videoAnchored = false;
+  double overscan = 0;
+  String fontFamily = 'Bundled multilingual';
+  String? get renderedFontFamily => fontFamily == 'System' ? null
+      : fontFamily == 'Bundled multilingual' ? SubtitleFontLoader.overlayFamily : fontFamily;
+  static const fallbackFonts = [SubtitleFontLoader.overlayFamily, SubtitleFontLoader.overlayHangulFamily,
+    'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans CJK SC'];
   TextAlign alignment = TextAlign.center;
   Color backgroundColor = Colors.black;
-  static const fonts = ['System', 'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans CJK SC', 'Arial', 'Georgia', 'monospace'];
+  static const fonts = ['Bundled multilingual', 'System', 'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans CJK SC', 'Arial', 'Georgia', 'monospace'];
 
   Map<String, Object> appearance() => {'fontSize': fontSize, 'position': position,
     'backgroundOpacity': backgroundOpacity, 'color': color.toARGB32(), 'outline': outline.toARGB32(),
     'outlineWidth': outlineWidth, 'margin': margin, 'karaoke': karaoke, 'bold': bold, 'italic': italic,
+    'videoAnchored': videoAnchored, 'overscan': overscan,
     'backgroundColor': backgroundColor.toARGB32(), 'fontFamily': fontFamily, 'alignment': alignment.name};
 
   void applyAppearance(Map<String, dynamic> value) {
@@ -86,6 +94,8 @@ class SubtitleOverlayTrack {
     if (const ['left', 'center', 'right', 'start', 'end'].contains(value['alignment'])) {
       alignment = TextAlign.values.byName(value['alignment'] as String);
     }
+    overscan = number('overscan', overscan, 0, .15);
+    if (value['videoAnchored'] is bool) videoAnchored = value['videoAnchored'] as bool;
     if (value['karaoke'] is bool) karaoke = value['karaoke'] as bool;
     if (value['bold'] is bool) bold = value['bold'] as bool;
     if (value['italic'] is bool) italic = value['italic'] as bool;

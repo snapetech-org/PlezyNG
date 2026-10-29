@@ -4449,6 +4449,11 @@ class ExoPlayerCore(private val activity: Activity) :
     val videoFormat = player.videoFormat
     val audioFormat = player.audioFormat
     val audioTrackConfig = lastAudioTrackConfig
+    val captionSize = lastVideoSize?.takeIf { it.width > 0 && it.height > 0 }
+      ?: player.videoSize.takeIf { it.width > 0 && it.height > 0 }
+    val captionRotated = captionSize != null && captionSize.unappliedRotationDegrees % 180 != 0
+    val captionWidth = captionSize?.let { if (captionRotated) it.height.toDouble() else it.width * it.pixelWidthHeightRatio.toDouble() }
+    val captionHeight = captionSize?.let { if (captionRotated) it.width * it.pixelWidthHeightRatio.toDouble() else it.height.toDouble() }
 
     // Get decoder info from the format's codecs field and check if hardware accelerated
     val videoDecoderInfo = getVideoDecoderInfo(videoFormat)
@@ -4473,6 +4478,8 @@ class ExoPlayerCore(private val activity: Activity) :
       "videoMimeType" to videoFormat?.sampleMimeType,
       "videoWidth" to videoFormat?.width,
       "videoHeight" to videoFormat?.height,
+      "videoDisplayWidth" to captionWidth,
+      "videoDisplayHeight" to captionHeight,
       "videoFps" to (videoFormat?.frameRate?.takeIf { it > 0 } ?: detectedFrameRate.takeIf { it > 0 }),
       "sourceIsHdr" to sourceIsHdr,
       "videoBitrate" to videoFormat?.bitrate,

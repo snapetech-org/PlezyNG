@@ -3914,7 +3914,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               value: selected,
               isExpanded: true,
               items: [
-                const DropdownMenuItem(value: 'auto', child: Text(aiCopy.autoDetect)),
+                DropdownMenuItem(value: 'auto', child: Text(aiCopy.autoDetect)),
                 ...languages.entries.map(
                   (entry) => DropdownMenuItem(
                     value: entry.key,
@@ -4015,7 +4015,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           const SizedBox(height: 10),
           if (_busy) const LinearProgressIndicator(),
           if (_busy && _activeCompanion != null)
-            TextButton(onPressed: _cancelCompanionUpload, child: const Text('Cancel companion upload/job')),
+            TextButton(onPressed: _cancelCompanionUpload, child: Text(aiCopy.cancelCompanionUpload)),
           if (_status != null) ...[
             const SizedBox(height: 8),
             Text(_status!, style: Theme.of(context).textTheme.bodyMedium),
@@ -4077,7 +4077,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('dubbing', aiCopy.companionDubbing),
             ('dub_mix', aiCopy.companionDubMix),
             ('scene_review', aiCopy.companionSceneReview),
-            ('scene_track', 'Track scene objects across a chosen video (experimental)'),
+            ('scene_track', aiCopy.companionSceneTrack),
             ('ocr_auto', aiCopy.companionOcrAuto),
             ('ocr', aiCopy.companionOcr),
             ('bitmap_ocr', aiCopy.companionBitmapOcr),
@@ -4092,15 +4092,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 subtitle: Text(service.status), onTap: _busy || service.busy && !service.running
                     ? null : () => unawaited(_preparePlaybackCaptions()));
             }),
-          if (!localSpeech) const Padding(padding: EdgeInsets.symmetric(vertical: 8),
+          if (!localSpeech) Padding(padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(aiCopy.localSpeechUnavailable)),
           if (_playbackCaptureSupported) ...[
             const Divider(height: 24),
             Text(liveCopy.sectionTitle, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
-            Text(liveCopy.description),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(liveCopy.description, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 6),
             AnimatedBuilder(
               animation: SubtitlePlaybackTranscriptionService.instance,
@@ -4161,8 +4159,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     if (service.singlePassTails > 0) Text(liveCopy.singlePassTails(count: service.singlePassTails)),
                     SwitchListTile(
                       title: Text(liveCopy.showLateCaptions),
-                      subtitle: const Text('Off uses exact media timing only. DVR replay reuses retained finalized cues. '
-                        'This does not delay the video or send overlays into native PiP or Cast.'),
+                      subtitle: Text(liveCopy.showLateCaptionsDescription),
                       value: service.showDelayedText,
                       onChanged: service.setShowDelayedText,
                     ),
@@ -4246,7 +4243,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                         FocusableListTile(
                           leading: const AppIcon(Symbols.content_cut_rounded),
                           title: Text(liveCopy.repairSavedLanguages),
-                          subtitle: Text(liveCopy.repairSavedLanguagesDescription),
+                          subtitle: Text(liveCopy.repairCapturedLanguagesDescription),
                           onTap: _busy ? null : () => unawaited(_synchronizeSavedTranscriptAcrossLanguages(repairCuts: true)),
                         ),
                       ],
@@ -4296,9 +4293,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(aiCopy.translateDetectedSpeech),
-              subtitle: const Text(
-                aiCopy.translationGenerationOnly,
-              ),
+              subtitle: Text(aiCopy.translationGenerationOnly),
               value: _translateSpeechToEnglish,
               onChanged: _busy ? null : (value) => setState(() => _translateSpeechToEnglish = value),
             ),

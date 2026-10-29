@@ -189,7 +189,6 @@ class SubtitleOverlayTrack {
 
   List<InlineSpan> spans(SubtitleCue cue, int positionMs) {
     final text = plain(cue.text);
-    if (writingMode != 'horizontal') return [TextSpan(text: text)];
     if (_languageRuns.length > 128) _languageRuns.clear();
     final languages = _languageRuns.putIfAbsent(cue.stableId, () => SubtitleLanguageText.parse(cue.text));
     List<InlineSpan> slice(int start, int end, {TextStyle? style}) {
@@ -209,15 +208,38 @@ class SubtitleOverlayTrack {
       }
       return result;
     }
-    if (languages == null && ruby && cue.text.toLowerCase().contains('<ruby')) {
+    List<InlineSpan> withRuby(List<InlineSpan> painted) {
+      if (!ruby || !cue.text.toLowerCase().contains('<ruby')) return painted;
       if (_rubyRuns.length > 128) _rubyRuns.clear();
       final runs = _rubyRuns.putIfAbsent(cue.stableId, () => SubtitleRubyText.parse(cue.text));
-      if (runs != null) return [for (final run in runs)
-        if (run.reading == null) TextSpan(text: run.base) else SubtitleRubySpan(run.base, run.reading!)];
+      if (runs == null || runs.map((run) => run.base).join() != text) return painted;
+      List<InlineSpan> between(int start, int end) {
+        final output = <InlineSpan>[];
+        var cursor = 0;
+        for (final span in painted.whereType<TextSpan>()) {
+          final value = span.text ?? '';
+          final lo = start > cursor ? start : cursor;
+          final hi = end < cursor + value.length ? end : cursor + value.length;
+          if (hi > lo) output.add(TextSpan(text: value.substring(lo - cursor, hi - cursor),
+            style: span.style, locale: span.locale));
+          cursor += value.length;
+          if (cursor >= end) break;
+        }
+        return output;
+      }
+      final output = <InlineSpan>[];
+      var cursor = 0;
+      for (final run in runs) {
+        final base = between(cursor, cursor + run.base.length);
+        if (run.reading == null) { output.addAll(base); }
+        else { output.add(SubtitleRubySpan(run.base, run.reading!, baseSpans: base)); }
+        cursor += run.base.length;
+      }
+      return output;
     }
     final sourceMs = positionToSourceMs == null ? positionMs : positionToSourceMs!(positionMs);
     final timing = _words[cue.stableId];
-    if (!karaoke || timing == null) return slice(0, text.length);
+    if (!karaoke || timing == null) return withRuby(slice(0, text.length));
     // Match the original string in order. A changed/uncertain token cannot
     // rewrite the caption or fabricate evenly-spaced lyric timing.
     final result = <InlineSpan>[];
@@ -225,7 +247,7 @@ class SubtitleOverlayTrack {
     for (final word in timing) {
       if (word.text.isEmpty) continue;
       final found = text.indexOf(word.text, offset);
-      if (found < 0) return slice(0, text.length);
+      if (found < 0) return withRuby(slice(0, text.length));
       result.addAll(slice(offset, found));
       final active = sourceMs != null && sourceMs - delayMs >= word.startMs && sourceMs - delayMs < word.endMs;
       result.addAll(slice(found, found + word.text.length, style: active
@@ -233,7 +255,7 @@ class SubtitleOverlayTrack {
       offset = found + word.text.length;
     }
     result.addAll(slice(offset, text.length));
-    return result;
+    return withRuby(result);
   }
 
   static String plain(String text) => SubtitleRubyText.plain(text);

@@ -233,7 +233,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
       return DecoratedBox(decoration: BoxDecoration(color: track.backgroundColor.withValues(alpha: opacity),
         borderRadius: BorderRadius.circular(4)), child: Padding(padding: const EdgeInsets.all(6),
           child: ConstrainedBox(constraints: BoxConstraints(maxHeight: heightLimit ?? MediaQuery.sizeOf(context).height * .65),
-            child: SubtitleVerticalText(text: content.toPlainText(), style: style,
+            child: SubtitleVerticalText(content: content, style: style,
               rightToLeft: track.writingMode == 'vertical-rl', outline: outline, outlineWidth: border,
               maximumColumns: SubtitlePanePolicy.of(context) == null ? 6 : 3))));
     }

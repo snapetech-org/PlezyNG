@@ -3292,6 +3292,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleCloudSync$en subtitleCloudSync = Translations$videoControls$subtitleCloudSync$en.internal(_root);
 	late final Translations$videoControls$subtitleResearchReview$en subtitleResearchReview = Translations$videoControls$subtitleResearchReview$en.internal(_root);
 	late final Translations$videoControls$subtitleReviewFlow$en subtitleReviewFlow = Translations$videoControls$subtitleReviewFlow$en.internal(_root);
+	late final Translations$videoControls$subtitleAiControls$en subtitleAiControls = Translations$videoControls$subtitleAiControls$en.internal(_root);
 	late final Translations$videoControls$subtitleLiveCapture$en subtitleLiveCapture = Translations$videoControls$subtitleLiveCapture$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
@@ -14305,6 +14306,343 @@ class Translations$videoControls$subtitleReviewFlow$en {
 
 }
 
+// Path: videoControls.subtitleAiControls
+class Translations$videoControls$subtitleAiControls$en {
+	Translations$videoControls$subtitleAiControls$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'AI subtitles'
+	String get title => 'AI subtitles';
+
+	/// en: 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.'
+	String get intro => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.';
+
+	/// en: 'Inference backend'
+	String get inferenceBackend => 'Inference backend';
+
+	/// en: 'Desktop GPU uses CUDA or Vulkan only when compiled into the native Whisper runtime. Successful inference does not prove every operation ran on the GPU; placement is unverified and failures restart on CPU.'
+	String get desktopGpuAvailability => 'Desktop GPU uses CUDA or Vulkan only when compiled into the native Whisper runtime. Successful inference does not prove every operation ran on the GPU; placement is unverified and failures restart on CPU.';
+
+	/// en: 'CPU is the baseline. Core ML/QNN/RKNN are provider requests for the installed native runtime; unsupported requests retry on CPU. The result reports provider initialization/fallback and marks per-operation placement as unverified.'
+	String get cpuProviderNote => 'CPU is the baseline. Core ML/QNN/RKNN are provider requests for the installed native runtime; unsupported requests retry on CPU. The result reports provider initialization/fallback and marks per-operation placement as unverified.';
+
+	/// en: 'Speech language'
+	String get speechLanguage => 'Speech language';
+
+	/// en: 'Auto-detect'
+	String get autoDetect => 'Auto-detect';
+
+	/// en: 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.'
+	String get englishOnlyAccelerator => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.';
+
+	/// en: 'Subtitle revision history'
+	String get revisionHistoryTitle => 'Subtitle revision history';
+
+	/// en: 'Restore, export, or delete reviewed versions stored on this device'
+	String get revisionHistoryDescription => 'Restore, export, or delete reviewed versions stored on this device';
+
+	/// en: 'Sync reviewed subtitles across devices'
+	String get syncReviewedTitle => 'Sync reviewed subtitles across devices';
+
+	/// en: 'Encrypted cloud transfer with explicit item pairing and conflict choices'
+	String get syncReviewedDescription => 'Encrypted cloud transfer with explicit item pairing and conflict choices';
+
+	/// en: 'Companion processing'
+	String get companionProcessing => 'Companion processing';
+
+	/// en: 'Optional processing on a paired host. Each upload requires explicit selection. Results are reviewed before attachment.'
+	String get companionProcessingDescription => 'Optional processing on a paired host. Each upload requires explicit selection. Results are reviewed before attachment.';
+
+	/// en: 'Pair subtitle companion'
+	String get pairCompanion => 'Pair subtitle companion';
+
+	/// en: 'Companion jobs'
+	String get companionJobs => 'Companion jobs';
+
+	/// en: 'Resume, cancel, review, or delete uploaded media and results'
+	String get companionJobsDescription => 'Resume, cancel, review, or delete uploaded media and results';
+
+	/// en: 'Companion source / spoken language'
+	String get companionSourceLanguage => 'Companion source / spoken language';
+
+	/// en: 'Companion translation language'
+	String get companionTargetLanguage => 'Companion translation language';
+
+	/// en: 'Transcribe a media file on the companion'
+	String get companionTranscribe => 'Transcribe a media file on the companion';
+
+	/// en: 'Compare two recognition models'
+	String get companionEnsemble => 'Compare two recognition models';
+
+	/// en: 'Separate overlapping voice candidates (experimental)'
+	String get companionSeparate => 'Separate overlapping voice candidates (experimental)';
+
+	/// en: 'Propose sound-event captions (experimental)'
+	String get companionSoundEvents => 'Propose sound-event captions (experimental)';
+
+	/// en: 'Compare detected speech against subtitle coverage'
+	String get companionCompleteness => 'Compare detected speech against subtitle coverage';
+
+	/// en: 'Extract an embedded text subtitle stream'
+	String get companionExtractText => 'Extract an embedded text subtitle stream';
+
+	/// en: 'Read on-screen signs in a chosen crop'
+	String get companionSigns => 'Read on-screen signs in a chosen crop';
+
+	/// en: 'Force-align a matching-language transcript'
+	String get companionAlign => 'Force-align a matching-language transcript';
+
+	/// en: 'Propose lyric word timing against music (experimental)'
+	String get companionSingingAlign => 'Propose lyric word timing against music (experimental)';
+
+	/// en: 'Transcribe with anonymous speaker labels'
+	String get companionDiarize => 'Transcribe with anonymous speaker labels';
+
+	/// en: 'Translate subtitles on the companion'
+	String get companionTranslate => 'Translate subtitles on the companion';
+
+	/// en: 'Translate with faithful, natural, or literal wording'
+	String get companionTranslateModel => 'Translate with faithful, natural, or literal wording';
+
+	/// en: 'Convert Chinese script or region variants'
+	String get companionScriptConvert => 'Convert Chinese script or region variants';
+
+	/// en: 'Add Japanese kana or romanization readings'
+	String get companionReading => 'Add Japanese kana or romanization readings';
+
+	/// en: 'Synthesize a timed subtitle voice track'
+	String get companionDubbing => 'Synthesize a timed subtitle voice track';
+
+	/// en: 'Mix synthesized subtitles with explicitly uploaded audio'
+	String get companionDubMix => 'Mix synthesized subtitles with explicitly uploaded audio';
+
+	/// en: 'Review uncertain captions against scene images'
+	String get companionSceneReview => 'Review uncertain captions against scene images';
+
+	/// en: 'Find a burned-caption region and read it'
+	String get companionOcrAuto => 'Find a burned-caption region and read it';
+
+	/// en: 'Extract burned captions from a video crop'
+	String get companionOcr => 'Extract burned captions from a video crop';
+
+	/// en: 'Read PGS/VobSub images and correct OCR'
+	String get companionBitmapOcr => 'Read PGS/VobSub images and correct OCR';
+
+	/// en: 'App overlay appearance and cover'
+	String get appOverlayAppearance => 'App overlay appearance and cover';
+
+	/// en: 'Prepare playback captions ahead'
+	String get preparePlaybackTitle => 'Prepare playback captions ahead';
+
+	/// en: 'Stop preparing playback captions'
+	String get stopPreparingPlaybackTitle => 'Stop preparing playback captions';
+
+	/// en: 'Local speech inference is unavailable in this build. Companion processing and text-based editing remain available.'
+	String get localSpeechUnavailable => 'Local speech inference is unavailable in this build. Companion processing and text-based editing remain available.';
+
+	/// en: 'Translate detected speech to English'
+	String get translateDetectedSpeech => 'Translate detected speech to English';
+
+	/// en: 'Used only for generation; sync always transcribes the source language. Whisper translates audio instead of transcribing it.'
+	String get translationGenerationOnly => 'Used only for generation; sync always transcribes the source language. Whisper translates audio instead of transcribing it.';
+
+	/// en: 'Translate speech to English from WAV'
+	String get translateSpeechFromWav => 'Translate speech to English from WAV';
+
+	/// en: 'Generate subtitles from WAV'
+	String get generateSubtitlesFromWav => 'Generate subtitles from WAV';
+
+	/// en: 'Downloads a verified multilingual Whisper model on first use'
+	String get downloadMultilingualModel => 'Downloads a verified multilingual Whisper model on first use';
+
+	/// en: 'Downloads a verified English model on first use'
+	String get downloadEnglishModel => 'Downloads a verified English model on first use';
+
+	/// en: 'Replace captions in an interval'
+	String get replaceIntervalTitle => 'Replace captions in an interval';
+
+	/// en: 'Transcribe a selected WAV range; keep source cues outside it'
+	String get replaceIntervalDescription => 'Transcribe a selected WAV range; keep source cues outside it';
+
+	/// en: 'Fill speech-detected caption gaps'
+	String get fillGapsTitle => 'Fill speech-detected caption gaps';
+
+	/// en: 'Add recognized speech only in long uncovered ranges; review before attaching'
+	String get fillGapsDescription => 'Add recognized speech only in long uncovered ranges; review before attaching';
+
+	/// en: 'Automatically sync an existing subtitle'
+	String get syncExistingTitle => 'Automatically sync an existing subtitle';
+
+	/// en: 'Aligns SRT, VTT, ASS, or SSA text against local speech recognition'
+	String get syncExistingDescription => 'Aligns SRT, VTT, ASS, or SSA text against local speech recognition';
+
+	/// en: 'Reflow, correct, filter, or convert FPS'
+	String get reflowTitle => 'Reflow, correct, filter, or convert FPS';
+
+	/// en: 'Preview reading limits, explicit spelling fixes, SDH/song/credit filters, and timing conversion'
+	String get reflowDescription => 'Preview reading limits, explicit spelling fixes, SDH/song/credit filters, and timing conversion';
+
+	/// en: 'Review spelling with an offline dictionary'
+	String get spellingReviewTitle => 'Review spelling with an offline dictionary';
+
+	/// en: 'Choose a language pack and approve individual word occurrences'
+	String get spellingReviewDescription => 'Choose a language pack and approve individual word occurrences';
+
+	/// en: 'Convert or repair subtitle text encoding'
+	String get encodingTitle => 'Convert or repair subtitle text encoding';
+
+	/// en: 'Preview legacy encodings, TTML/IMSC text, SAMI, MicroDVD, SBV, LRC, or MPL2 as a separate SRT'
+	String get encodingDescription => 'Preview legacy encodings, TTML/IMSC text, SAMI, MicroDVD, SBV, LRC, or MPL2 as a separate SRT';
+
+	/// en: 'Find subtitles in folders'
+	String get discoverSubtitlesTitle => 'Find subtitles in folders';
+
+	/// en: 'Search beside local media or in this profile’s chosen subtitle folders'
+	String get discoverSubtitlesDescription => 'Search beside local media or in this profile’s chosen subtitle folders';
+
+	/// en: 'Study a subtitle transcript'
+	String get studySubtitleTitle => 'Study a subtitle transcript';
+
+	/// en: 'Search, replay, pause after lines, loop with gaps, and save phrases from a matching subtitle'
+	String get studySubtitleDescription => 'Search, replay, pause after lines, loop with gaps, and save phrases from a matching subtitle';
+
+	/// en: 'Study a saved transcript'
+	String get studySavedTranscriptTitle => 'Study a saved transcript';
+
+	/// en: 'Reuse this item’s saved speech transcript and source times'
+	String get studySavedTranscriptDescription => 'Reuse this item’s saved speech transcript and source times';
+
+	/// en: 'Waveform and spectrogram editor'
+	String get waveformEditorTitle => 'Waveform and spectrogram editor';
+
+	/// en: 'Edit cue anchors against a matching WAV interval up to five minutes'
+	String get waveformEditorDescription => 'Edit cue anchors against a matching WAV interval up to five minutes';
+
+	/// en: 'Repair cuts and sync'
+	String get repairCutsTitle => 'Repair cuts and sync';
+
+	/// en: 'Uses piecewise timing where subtitle/audio text anchors suggest a cut offset change'
+	String get repairCutsDescription => 'Uses piecewise timing where subtitle/audio text anchors suggest a cut offset change';
+
+	/// en: 'Sync to another subtitle'
+	String get syncReferenceTitle => 'Sync to another subtitle';
+
+	/// en: 'Use a same-language SRT, VTT, ASS, or SSA subtitle as the timing reference'
+	String get syncReferenceDescription => 'Use a same-language SRT, VTT, ASS, or SSA subtitle as the timing reference';
+
+	/// en: 'Sync across subtitle languages'
+	String get syncLanguagesTitle => 'Sync across subtitle languages';
+
+	/// en: 'Translate target text locally for matching; keep its original text'
+	String get syncLanguagesDescription => 'Translate target text locally for matching; keep its original text';
+
+	/// en: 'Repair cuts across subtitle languages'
+	String get repairLanguagesTitle => 'Repair cuts across subtitle languages';
+
+	/// en: 'Uses translated text for anchors and keeps the original target text'
+	String get repairLanguagesDescription => 'Uses translated text for anchors and keeps the original target text';
+
+	/// en: 'Repair cuts using another subtitle'
+	String get repairReferenceTitle => 'Repair cuts using another subtitle';
+
+	/// en: 'Apply piecewise offsets where dialogue anchors show a timing discontinuity'
+	String get repairReferenceDescription => 'Apply piecewise offsets where dialogue anchors show a timing discontinuity';
+
+	/// en: 'Reuse and remember reviewed translations'
+	String get reuseTranslationMemory => 'Reuse and remember reviewed translations';
+
+	/// en: 'Profile-local exact text/context and glossary matches. Only accepted results are remembered; model revisions are not reported.'
+	String get translationMemoryDescription => 'Profile-local exact text/context and glossary matches. Only accepted results are remembered; model revisions are not reported.';
+
+	/// en: 'Clear this profile’s translation memory'
+	String get clearTranslationMemory => 'Clear this profile’s translation memory';
+
+	/// en: 'Reviewed translation memory cleared for this profile.'
+	String get translationMemoryCleared => 'Reviewed translation memory cleared for this profile.';
+
+	/// en: 'Local subtitle translation'
+	String get localSubtitleTranslation => 'Local subtitle translation';
+
+	/// en: 'Desktop uses optional local Argos Translate. Install its Python package and the source-to-target language model; set PLEZY_ARGOS_PYTHON if python/python3 is not on PATH.'
+	String get desktopArgosDescription => 'Desktop uses optional local Argos Translate. Install its Python package and the source-to-target language model; set PLEZY_ARGOS_PYTHON if python/python3 is not on PATH.';
+
+	/// en: 'Mobile translation uses on-device ML Kit models.'
+	String get mobileMlKitDescription => 'Mobile translation uses on-device ML Kit models.';
+
+	/// en: 'Source'
+	String get sourceLanguage => 'Source';
+
+	/// en: 'Target'
+	String get targetLanguage => 'Target';
+
+	/// en: 'Use a series-specific glossary'
+	String get seriesGlossary => 'Use a series-specific glossary';
+
+	/// en: 'Starts with the profile glossary; saved edits apply only to this series.'
+	String get seriesGlossaryDescription => 'Starts with the profile glossary; saved edits apply only to this series.';
+
+	/// en: 'Bilingual subtitle output'
+	String get bilingualOutput => 'Bilingual subtitle output';
+
+	/// en: 'Show the original line followed by its translation in each cue'
+	String get bilingualOutputDescription => 'Show the original line followed by its translation in each cue';
+
+	/// en: 'Translation glossary (JSON)'
+	String get glossaryLabel => 'Translation glossary (JSON)';
+
+	/// en: '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}'
+	String get glossaryHint => '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}';
+
+	/// en: 'Protects up to 200 whole terms. Saved for this profile and language pair.'
+	String get glossaryProfileHelper => 'Protects up to 200 whole terms. Saved for this profile and language pair.';
+
+	/// en: 'Protects up to 200 terms. Choose profile or series scope above.'
+	String get glossarySeriesHelper => 'Protects up to 200 terms. Choose profile or series scope above.';
+
+	/// en: 'History'
+	String get history => 'History';
+
+	/// en: 'Save glossary'
+	String get saveGlossary => 'Save glossary';
+
+	/// en: 'Allow language-model downloads over mobile data'
+	String get allowMobileDownloads => 'Allow language-model downloads over mobile data';
+
+	/// en: 'Prepare offline language models'
+	String get prepareOfflineModels => 'Prepare offline language models';
+
+	/// en: 'Request Argos CUDA'
+	String get requestArgosCuda => 'Request Argos CUDA';
+
+	/// en: 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.'
+	String get requestArgosCudaDescription => 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.';
+
+	/// en: 'Subtitle text stays local. Argos does not report per-cue hardware placement; GPU requests are best-effort.'
+	String get desktopTranslationLocalNote => 'Subtitle text stays local. Argos does not report per-cue hardware placement; GPU requests are best-effort.';
+
+	/// en: 'Translation runs locally through ML Kit. Its CPU/GPU choice is not exposed by the provider.'
+	String get mobileTranslationLocalNote => 'Translation runs locally through ML Kit. Its CPU/GPU choice is not exposed by the provider.';
+
+	/// en: 'Translate an existing subtitle'
+	String get translateExistingTitle => 'Translate an existing subtitle';
+
+	/// en: 'Timing and source file remain unchanged'
+	String get translateExistingDescription => 'Timing and source file remain unchanged';
+
+	/// en: 'Track scene objects across a chosen video (experimental)'
+	String get companionSceneTrack => 'Track scene objects across a chosen video (experimental)';
+
+	/// en: 'Music library'
+	String get musicLibrary => 'Music library';
+
+	/// en: 'Cancel companion upload/job'
+	String get cancelCompanionUpload => 'Cancel companion upload/job';
+
+}
+
 // Path: videoControls.subtitleLiveCapture
 class Translations$videoControls$subtitleLiveCapture$en {
 	Translations$videoControls$subtitleLiveCapture$en.internal(this._root);
@@ -14348,6 +14686,138 @@ class Translations$videoControls$subtitleLiveCapture$en {
 
 	/// en: 'Could not seek to this transcript cue.'
 	String get seekFailed => 'Could not seek to this transcript cue.';
+
+	/// en: 'Live captions from playback'
+	String get sectionTitle => 'Live captions from playback';
+
+	/// en: 'The active player copies bounded decoded PCM with media timestamps. Live Whisper supports CPU and a best-effort compiled desktop GPU request; GPU placement is unverified and inference failures fall back to CPU. Audio is not saved, and captions arrive with a short delay.'
+	String get description => 'The active player copies bounded decoded PCM with media timestamps. Live Whisper supports CPU and a best-effort compiled desktop GPU request; GPU placement is unverified and inference failures fall back to CPU. Audio is not saved, and captions arrive with a short delay.';
+
+	/// en: 'Choose a local streaming-model manifest'
+	String get chooseManifest => 'Choose a local streaming-model manifest';
+
+	/// en: 'Streaming CPU model: ${model}. Uses the manifest’s declared language. Partial text can change. Final cue times cover decoder utterance windows; no word alignment is claimed.'
+	String streamingModelDescription({required Object model}) => 'Streaming CPU model: ${model}. Uses the manifest’s declared language. Partial text can change. Final cue times cover decoder utterance windows; no word alignment is claimed.';
+
+	/// en: 'Use multilingual Whisper'
+	String get useWhisper => 'Use multilingual Whisper';
+
+	/// en: 'Live captions backend'
+	String get backendLabel => 'Live captions backend';
+
+	/// en: 'Live captions backend: CPU (multilingual Whisper)'
+	String get backendCpu => 'Live captions backend: CPU (multilingual Whisper)';
+
+	/// en: 'Stabilize live partial captions'
+	String get stabilizePartials => 'Stabilize live partial captions';
+
+	/// en: 'Compare overlapping recognition passes before freezing text. Partial text can change and is excluded from history; pause/end and 12-second boundaries may finalize a single pass. Uses more inference work.'
+	String get stabilizeDescription => 'Compare overlapping recognition passes before freezing text. Partial text can change and is excluded from history; pause/end and 12-second boundaries may finalize a single pass. Uses more inference work.';
+
+	/// en: '${count} caption tails finalized at a pause or bounded window without two-pass agreement.'
+	String singlePassTails({required Object count}) => '${count} caption tails finalized at a pause or bounded window without two-pass agreement.';
+
+	/// en: 'Show late captions when recognition finishes'
+	String get showLateCaptions => 'Show late captions when recognition finishes';
+
+	/// en: 'Off uses exact media timing only. DVR replay reuses retained finalized cues. This does not delay the video or send overlays into native PiP or Cast.'
+	String get showLateCaptionsDescription => 'Off uses exact media timing only. DVR replay reuses retained finalized cues. This does not delay the video or send overlays into native PiP or Cast.';
+
+	/// en: 'Dropped analysis audio: ${milliseconds} ms; clock discontinuities: ${discontinuities}. Missing audio is not inferred.'
+	String droppedAudio({required Object milliseconds, required Object discontinuities}) => 'Dropped analysis audio: ${milliseconds} ms; clock discontinuities: ${discontinuities}. Missing audio is not inferred.';
+
+	/// en: 'Preparing live captions…'
+	String get preparing => 'Preparing live captions…';
+
+	/// en: 'Stop live capture'
+	String get stopCapture => 'Stop live capture';
+
+	/// en: 'Start live captions'
+	String get start => 'Start live captions';
+
+	/// en: 'Loading the local recognition model'
+	String get loadingModel => 'Loading the local recognition model';
+
+	/// en: 'Stop capture and retain the transcript for sync'
+	String get stopRetainTranscript => 'Stop capture and retain the transcript for sync';
+
+	/// en: 'This player session; downloads the local Whisper model on first use'
+	String get whisperSessionDescription => 'This player session; downloads the local Whisper model on first use';
+
+	/// en: 'This player session; verifies and loads the selected local streaming model'
+	String get streamingSessionDescription => 'This player session; verifies and loads the selected local streaming model';
+
+	/// en: 'Browse captured transcript'
+	String get browseTranscript => 'Browse captured transcript';
+
+	/// en: 'Search cues, seek to their start, or hide future dialogue'
+	String get browseTranscriptDescription => 'Search cues, seek to their start, or hide future dialogue';
+
+	/// en: 'Save transcript to revision history'
+	String get saveTranscript => 'Save transcript to revision history';
+
+	/// en: 'Keep its cues and word timings with this item on this device'
+	String get saveTranscriptDescription => 'Keep its cues and word timings with this item on this device';
+
+	/// en: 'Sync from a saved transcript'
+	String get syncSaved => 'Sync from a saved transcript';
+
+	/// en: 'Reuse watched-portion speech saved for this item'
+	String get syncSavedDescription => 'Reuse watched-portion speech saved for this item';
+
+	/// en: 'Repair cuts from a saved transcript'
+	String get repairSaved => 'Repair cuts from a saved transcript';
+
+	/// en: 'Keep timing outside the transcript evidence'
+	String get repairSavedDescription => 'Keep timing outside the transcript evidence';
+
+	/// en: 'Translate a saved transcript into subtitles'
+	String get translateSaved => 'Translate a saved transcript into subtitles';
+
+	/// en: 'Reuse its speech timings for another subtitle language'
+	String get translateSavedDescription => 'Reuse its speech timings for another subtitle language';
+
+	/// en: 'Sync across languages from a saved transcript'
+	String get syncSavedLanguages => 'Sync across languages from a saved transcript';
+
+	/// en: 'Translate target cues locally to match this transcript language'
+	String get syncSavedLanguagesDescription => 'Translate target cues locally to match this transcript language';
+
+	/// en: 'Repair cuts across languages from a saved transcript'
+	String get repairSavedLanguages => 'Repair cuts across languages from a saved transcript';
+
+	/// en: 'Use translated text for anchors and preserve original dialogue'
+	String get repairSavedLanguagesDescription => 'Use translated text for anchors and preserve original dialogue';
+
+	/// en: 'Translate captured speech into subtitles'
+	String get translateCaptured => 'Translate captured speech into subtitles';
+
+	/// en: 'Create timed subtitles in another language for the watched portion'
+	String get translateCapturedDescription => 'Create timed subtitles in another language for the watched portion';
+
+	/// en: 'Sync from captured playback'
+	String get syncCaptured => 'Sync from captured playback';
+
+	/// en: 'Aligns the watched portion against an existing subtitle'
+	String get syncCapturedDescription => 'Aligns the watched portion against an existing subtitle';
+
+	/// en: 'Repair cuts from captured playback'
+	String get repairCaptured => 'Repair cuts from captured playback';
+
+	/// en: 'Preserves cue timing outside speech-matched evidence'
+	String get repairCapturedDescription => 'Preserves cue timing outside speech-matched evidence';
+
+	/// en: 'Sync across languages from captured playback'
+	String get syncCapturedLanguages => 'Sync across languages from captured playback';
+
+	/// en: 'Translate target cues locally to match detected speech language'
+	String get syncCapturedLanguagesDescription => 'Translate target cues locally to match detected speech language';
+
+	/// en: 'Repair cuts across languages from captured playback'
+	String get repairCapturedLanguages => 'Repair cuts across languages from captured playback';
+
+	/// en: 'Use translated text for anchors and preserve original dialogue'
+	String get repairCapturedLanguagesDescription => 'Use translated text for anchors and preserve original dialogue';
 
 }
 // Path: videoControls.subtitleRoles
@@ -18669,6 +19139,115 @@ extension on Translations {
 			'videoControls.subtitleReviewFlow.notServerItem' => 'This playback item is not linked to a server library entry.',
 			'videoControls.subtitleReviewFlow.serverOffline' => 'The media server is offline or unavailable.',
 			'videoControls.subtitleReviewFlow.serverRefusedUpload' => 'The server refused this subtitle upload or does not support library attachment.',
+			'videoControls.subtitleAiControls.title' => 'AI subtitles',
+			'videoControls.subtitleAiControls.intro' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
+			'videoControls.subtitleAiControls.inferenceBackend' => 'Inference backend',
+			'videoControls.subtitleAiControls.desktopGpuAvailability' => 'Desktop GPU uses CUDA or Vulkan only when compiled into the native Whisper runtime. Successful inference does not prove every operation ran on the GPU; placement is unverified and failures restart on CPU.',
+			'videoControls.subtitleAiControls.cpuProviderNote' => 'CPU is the baseline. Core ML/QNN/RKNN are provider requests for the installed native runtime; unsupported requests retry on CPU. The result reports provider initialization/fallback and marks per-operation placement as unverified.',
+			'videoControls.subtitleAiControls.speechLanguage' => 'Speech language',
+			'videoControls.subtitleAiControls.autoDetect' => 'Auto-detect',
+			'videoControls.subtitleAiControls.englishOnlyAccelerator' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
+			'videoControls.subtitleAiControls.revisionHistoryTitle' => 'Subtitle revision history',
+			'videoControls.subtitleAiControls.revisionHistoryDescription' => 'Restore, export, or delete reviewed versions stored on this device',
+			'videoControls.subtitleAiControls.syncReviewedTitle' => 'Sync reviewed subtitles across devices',
+			'videoControls.subtitleAiControls.syncReviewedDescription' => 'Encrypted cloud transfer with explicit item pairing and conflict choices',
+			'videoControls.subtitleAiControls.companionProcessing' => 'Companion processing',
+			'videoControls.subtitleAiControls.companionProcessingDescription' => 'Optional processing on a paired host. Each upload requires explicit selection. Results are reviewed before attachment.',
+			'videoControls.subtitleAiControls.pairCompanion' => 'Pair subtitle companion',
+			'videoControls.subtitleAiControls.companionJobs' => 'Companion jobs',
+			'videoControls.subtitleAiControls.companionJobsDescription' => 'Resume, cancel, review, or delete uploaded media and results',
+			'videoControls.subtitleAiControls.companionSourceLanguage' => 'Companion source / spoken language',
+			'videoControls.subtitleAiControls.companionTargetLanguage' => 'Companion translation language',
+			'videoControls.subtitleAiControls.companionTranscribe' => 'Transcribe a media file on the companion',
+			'videoControls.subtitleAiControls.companionEnsemble' => 'Compare two recognition models',
+			'videoControls.subtitleAiControls.companionSeparate' => 'Separate overlapping voice candidates (experimental)',
+			'videoControls.subtitleAiControls.companionSoundEvents' => 'Propose sound-event captions (experimental)',
+			'videoControls.subtitleAiControls.companionCompleteness' => 'Compare detected speech against subtitle coverage',
+			'videoControls.subtitleAiControls.companionExtractText' => 'Extract an embedded text subtitle stream',
+			'videoControls.subtitleAiControls.companionSigns' => 'Read on-screen signs in a chosen crop',
+			'videoControls.subtitleAiControls.companionAlign' => 'Force-align a matching-language transcript',
+			'videoControls.subtitleAiControls.companionSingingAlign' => 'Propose lyric word timing against music (experimental)',
+			'videoControls.subtitleAiControls.companionDiarize' => 'Transcribe with anonymous speaker labels',
+			'videoControls.subtitleAiControls.companionTranslate' => 'Translate subtitles on the companion',
+			'videoControls.subtitleAiControls.companionTranslateModel' => 'Translate with faithful, natural, or literal wording',
+			'videoControls.subtitleAiControls.companionScriptConvert' => 'Convert Chinese script or region variants',
+			'videoControls.subtitleAiControls.companionReading' => 'Add Japanese kana or romanization readings',
+			'videoControls.subtitleAiControls.companionDubbing' => 'Synthesize a timed subtitle voice track',
+			'videoControls.subtitleAiControls.companionDubMix' => 'Mix synthesized subtitles with explicitly uploaded audio',
+			'videoControls.subtitleAiControls.companionSceneReview' => 'Review uncertain captions against scene images',
+			'videoControls.subtitleAiControls.companionOcrAuto' => 'Find a burned-caption region and read it',
+			'videoControls.subtitleAiControls.companionOcr' => 'Extract burned captions from a video crop',
+			'videoControls.subtitleAiControls.companionBitmapOcr' => 'Read PGS/VobSub images and correct OCR',
+			'videoControls.subtitleAiControls.appOverlayAppearance' => 'App overlay appearance and cover',
+			'videoControls.subtitleAiControls.preparePlaybackTitle' => 'Prepare playback captions ahead',
+			'videoControls.subtitleAiControls.stopPreparingPlaybackTitle' => 'Stop preparing playback captions',
+			'videoControls.subtitleAiControls.localSpeechUnavailable' => 'Local speech inference is unavailable in this build. Companion processing and text-based editing remain available.',
+			'videoControls.subtitleAiControls.translateDetectedSpeech' => 'Translate detected speech to English',
+			'videoControls.subtitleAiControls.translationGenerationOnly' => 'Used only for generation; sync always transcribes the source language. Whisper translates audio instead of transcribing it.',
+			'videoControls.subtitleAiControls.translateSpeechFromWav' => 'Translate speech to English from WAV',
+			'videoControls.subtitleAiControls.generateSubtitlesFromWav' => 'Generate subtitles from WAV',
+			'videoControls.subtitleAiControls.downloadMultilingualModel' => 'Downloads a verified multilingual Whisper model on first use',
+			'videoControls.subtitleAiControls.downloadEnglishModel' => 'Downloads a verified English model on first use',
+			'videoControls.subtitleAiControls.replaceIntervalTitle' => 'Replace captions in an interval',
+			'videoControls.subtitleAiControls.replaceIntervalDescription' => 'Transcribe a selected WAV range; keep source cues outside it',
+			'videoControls.subtitleAiControls.fillGapsTitle' => 'Fill speech-detected caption gaps',
+			'videoControls.subtitleAiControls.fillGapsDescription' => 'Add recognized speech only in long uncovered ranges; review before attaching',
+			'videoControls.subtitleAiControls.syncExistingTitle' => 'Automatically sync an existing subtitle',
+			'videoControls.subtitleAiControls.syncExistingDescription' => 'Aligns SRT, VTT, ASS, or SSA text against local speech recognition',
+			'videoControls.subtitleAiControls.reflowTitle' => 'Reflow, correct, filter, or convert FPS',
+			'videoControls.subtitleAiControls.reflowDescription' => 'Preview reading limits, explicit spelling fixes, SDH/song/credit filters, and timing conversion',
+			'videoControls.subtitleAiControls.spellingReviewTitle' => 'Review spelling with an offline dictionary',
+			'videoControls.subtitleAiControls.spellingReviewDescription' => 'Choose a language pack and approve individual word occurrences',
+			'videoControls.subtitleAiControls.encodingTitle' => 'Convert or repair subtitle text encoding',
+			'videoControls.subtitleAiControls.encodingDescription' => 'Preview legacy encodings, TTML/IMSC text, SAMI, MicroDVD, SBV, LRC, or MPL2 as a separate SRT',
+			'videoControls.subtitleAiControls.discoverSubtitlesTitle' => 'Find subtitles in folders',
+			'videoControls.subtitleAiControls.discoverSubtitlesDescription' => 'Search beside local media or in this profile’s chosen subtitle folders',
+			'videoControls.subtitleAiControls.studySubtitleTitle' => 'Study a subtitle transcript',
+			'videoControls.subtitleAiControls.studySubtitleDescription' => 'Search, replay, pause after lines, loop with gaps, and save phrases from a matching subtitle',
+			'videoControls.subtitleAiControls.studySavedTranscriptTitle' => 'Study a saved transcript',
+			'videoControls.subtitleAiControls.studySavedTranscriptDescription' => 'Reuse this item’s saved speech transcript and source times',
+			'videoControls.subtitleAiControls.waveformEditorTitle' => 'Waveform and spectrogram editor',
+			'videoControls.subtitleAiControls.waveformEditorDescription' => 'Edit cue anchors against a matching WAV interval up to five minutes',
+			'videoControls.subtitleAiControls.repairCutsTitle' => 'Repair cuts and sync',
+			'videoControls.subtitleAiControls.repairCutsDescription' => 'Uses piecewise timing where subtitle/audio text anchors suggest a cut offset change',
+			'videoControls.subtitleAiControls.syncReferenceTitle' => 'Sync to another subtitle',
+			'videoControls.subtitleAiControls.syncReferenceDescription' => 'Use a same-language SRT, VTT, ASS, or SSA subtitle as the timing reference',
+			'videoControls.subtitleAiControls.syncLanguagesTitle' => 'Sync across subtitle languages',
+			'videoControls.subtitleAiControls.syncLanguagesDescription' => 'Translate target text locally for matching; keep its original text',
+			'videoControls.subtitleAiControls.repairLanguagesTitle' => 'Repair cuts across subtitle languages',
+			'videoControls.subtitleAiControls.repairLanguagesDescription' => 'Uses translated text for anchors and keeps the original target text',
+			'videoControls.subtitleAiControls.repairReferenceTitle' => 'Repair cuts using another subtitle',
+			'videoControls.subtitleAiControls.repairReferenceDescription' => 'Apply piecewise offsets where dialogue anchors show a timing discontinuity',
+			'videoControls.subtitleAiControls.reuseTranslationMemory' => 'Reuse and remember reviewed translations',
+			'videoControls.subtitleAiControls.translationMemoryDescription' => 'Profile-local exact text/context and glossary matches. Only accepted results are remembered; model revisions are not reported.',
+			'videoControls.subtitleAiControls.clearTranslationMemory' => 'Clear this profile’s translation memory',
+			'videoControls.subtitleAiControls.translationMemoryCleared' => 'Reviewed translation memory cleared for this profile.',
+			'videoControls.subtitleAiControls.localSubtitleTranslation' => 'Local subtitle translation',
+			'videoControls.subtitleAiControls.desktopArgosDescription' => 'Desktop uses optional local Argos Translate. Install its Python package and the source-to-target language model; set PLEZY_ARGOS_PYTHON if python/python3 is not on PATH.',
+			'videoControls.subtitleAiControls.mobileMlKitDescription' => 'Mobile translation uses on-device ML Kit models.',
+			'videoControls.subtitleAiControls.sourceLanguage' => 'Source',
+			'videoControls.subtitleAiControls.targetLanguage' => 'Target',
+			'videoControls.subtitleAiControls.seriesGlossary' => 'Use a series-specific glossary',
+			'videoControls.subtitleAiControls.seriesGlossaryDescription' => 'Starts with the profile glossary; saved edits apply only to this series.',
+			'videoControls.subtitleAiControls.bilingualOutput' => 'Bilingual subtitle output',
+			'videoControls.subtitleAiControls.bilingualOutputDescription' => 'Show the original line followed by its translation in each cue',
+			'videoControls.subtitleAiControls.glossaryLabel' => 'Translation glossary (JSON)',
+			'videoControls.subtitleAiControls.glossaryHint' => '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}',
+			'videoControls.subtitleAiControls.glossaryProfileHelper' => 'Protects up to 200 whole terms. Saved for this profile and language pair.',
+			'videoControls.subtitleAiControls.glossarySeriesHelper' => 'Protects up to 200 terms. Choose profile or series scope above.',
+			'videoControls.subtitleAiControls.history' => 'History',
+			'videoControls.subtitleAiControls.saveGlossary' => 'Save glossary',
+			'videoControls.subtitleAiControls.allowMobileDownloads' => 'Allow language-model downloads over mobile data',
+			'videoControls.subtitleAiControls.prepareOfflineModels' => 'Prepare offline language models',
+			'videoControls.subtitleAiControls.requestArgosCuda' => 'Request Argos CUDA',
+			'videoControls.subtitleAiControls.requestArgosCudaDescription' => 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.',
+			'videoControls.subtitleAiControls.desktopTranslationLocalNote' => 'Subtitle text stays local. Argos does not report per-cue hardware placement; GPU requests are best-effort.',
+			'videoControls.subtitleAiControls.mobileTranslationLocalNote' => 'Translation runs locally through ML Kit. Its CPU/GPU choice is not exposed by the provider.',
+			'videoControls.subtitleAiControls.translateExistingTitle' => 'Translate an existing subtitle',
+			'videoControls.subtitleAiControls.translateExistingDescription' => 'Timing and source file remain unchanged',
+			'videoControls.subtitleAiControls.companionSceneTrack' => 'Track scene objects across a chosen video (experimental)',
+			'videoControls.subtitleAiControls.cancelCompanionUpload' => 'Cancel companion upload/job',
+			'videoControls.subtitleAiControls.musicLibrary' => 'Music library',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',
@@ -18681,6 +19260,50 @@ extension on Translations {
 			'videoControls.subtitleLiveCapture.noMatchingCues' => 'No cues match this view.',
 			'videoControls.subtitleLiveCapture.close' => 'Close',
 			'videoControls.subtitleLiveCapture.seekFailed' => 'Could not seek to this transcript cue.',
+			'videoControls.subtitleLiveCapture.sectionTitle' => 'Live captions from playback',
+			'videoControls.subtitleLiveCapture.description' => 'The active player copies bounded decoded PCM with media timestamps. Live Whisper supports CPU and a best-effort compiled desktop GPU request; GPU placement is unverified and inference failures fall back to CPU. Audio is not saved, and captions arrive with a short delay.',
+			'videoControls.subtitleLiveCapture.chooseManifest' => 'Choose a local streaming-model manifest',
+			'videoControls.subtitleLiveCapture.streamingModelDescription' => ({required Object model}) => 'Streaming CPU model: ${model}. Uses the manifest’s declared language. Partial text can change. Final cue times cover decoder utterance windows; no word alignment is claimed.',
+			'videoControls.subtitleLiveCapture.useWhisper' => 'Use multilingual Whisper',
+			'videoControls.subtitleLiveCapture.backendLabel' => 'Live captions backend',
+			'videoControls.subtitleLiveCapture.backendCpu' => 'Live captions backend: CPU (multilingual Whisper)',
+			'videoControls.subtitleLiveCapture.stabilizePartials' => 'Stabilize live partial captions',
+			'videoControls.subtitleLiveCapture.stabilizeDescription' => 'Compare overlapping recognition passes before freezing text. Partial text can change and is excluded from history; pause/end and 12-second boundaries may finalize a single pass. Uses more inference work.',
+			'videoControls.subtitleLiveCapture.singlePassTails' => ({required Object count}) => '${count} caption tails finalized at a pause or bounded window without two-pass agreement.',
+			'videoControls.subtitleLiveCapture.showLateCaptions' => 'Show late captions when recognition finishes',
+			'videoControls.subtitleLiveCapture.showLateCaptionsDescription' => 'Off uses exact media timing only. DVR replay reuses retained finalized cues. This does not delay the video or send overlays into native PiP or Cast.',
+			'videoControls.subtitleLiveCapture.droppedAudio' => ({required Object milliseconds, required Object discontinuities}) => 'Dropped analysis audio: ${milliseconds} ms; clock discontinuities: ${discontinuities}. Missing audio is not inferred.',
+			'videoControls.subtitleLiveCapture.preparing' => 'Preparing live captions…',
+			'videoControls.subtitleLiveCapture.stopCapture' => 'Stop live capture',
+			'videoControls.subtitleLiveCapture.start' => 'Start live captions',
+			'videoControls.subtitleLiveCapture.loadingModel' => 'Loading the local recognition model',
+			'videoControls.subtitleLiveCapture.stopRetainTranscript' => 'Stop capture and retain the transcript for sync',
+			'videoControls.subtitleLiveCapture.whisperSessionDescription' => 'This player session; downloads the local Whisper model on first use',
+			'videoControls.subtitleLiveCapture.streamingSessionDescription' => 'This player session; verifies and loads the selected local streaming model',
+			'videoControls.subtitleLiveCapture.browseTranscript' => 'Browse captured transcript',
+			'videoControls.subtitleLiveCapture.browseTranscriptDescription' => 'Search cues, seek to their start, or hide future dialogue',
+			'videoControls.subtitleLiveCapture.saveTranscript' => 'Save transcript to revision history',
+			'videoControls.subtitleLiveCapture.saveTranscriptDescription' => 'Keep its cues and word timings with this item on this device',
+			'videoControls.subtitleLiveCapture.syncSaved' => 'Sync from a saved transcript',
+			'videoControls.subtitleLiveCapture.syncSavedDescription' => 'Reuse watched-portion speech saved for this item',
+			'videoControls.subtitleLiveCapture.repairSaved' => 'Repair cuts from a saved transcript',
+			'videoControls.subtitleLiveCapture.repairSavedDescription' => 'Keep timing outside the transcript evidence',
+			'videoControls.subtitleLiveCapture.translateSaved' => 'Translate a saved transcript into subtitles',
+			'videoControls.subtitleLiveCapture.translateSavedDescription' => 'Reuse its speech timings for another subtitle language',
+			'videoControls.subtitleLiveCapture.syncSavedLanguages' => 'Sync across languages from a saved transcript',
+			'videoControls.subtitleLiveCapture.syncSavedLanguagesDescription' => 'Translate target cues locally to match this transcript language',
+			'videoControls.subtitleLiveCapture.repairSavedLanguages' => 'Repair cuts across languages from a saved transcript',
+			'videoControls.subtitleLiveCapture.repairSavedLanguagesDescription' => 'Use translated text for anchors and preserve original dialogue',
+			'videoControls.subtitleLiveCapture.translateCaptured' => 'Translate captured speech into subtitles',
+			'videoControls.subtitleLiveCapture.translateCapturedDescription' => 'Create timed subtitles in another language for the watched portion',
+			'videoControls.subtitleLiveCapture.syncCaptured' => 'Sync from captured playback',
+			'videoControls.subtitleLiveCapture.syncCapturedDescription' => 'Aligns the watched portion against an existing subtitle',
+			'videoControls.subtitleLiveCapture.repairCaptured' => 'Repair cuts from captured playback',
+			'videoControls.subtitleLiveCapture.repairCapturedDescription' => 'Preserves cue timing outside speech-matched evidence',
+			'videoControls.subtitleLiveCapture.syncCapturedLanguages' => 'Sync across languages from captured playback',
+			'videoControls.subtitleLiveCapture.syncCapturedLanguagesDescription' => 'Translate target cues locally to match detected speech language',
+			'videoControls.subtitleLiveCapture.repairCapturedLanguages' => 'Repair cuts across languages from captured playback',
+			'videoControls.subtitleLiveCapture.repairCapturedLanguagesDescription' => 'Use translated text for anchors and preserve original dialogue',
 			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
 			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
 			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',

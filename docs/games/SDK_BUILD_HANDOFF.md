@@ -7,6 +7,12 @@ receiver. It does not certify a signed app, physical HDR output or a live Steam
 account/service. Continue with [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) after
 the relevant app build passes.
 
+Controller-only phone mode was added after the previously recorded
+42-export Android build. Its new JNI connection query and input-only negotiation
+need an exact-head Android build, followed by iOS SDK compilation and paired-host
+acceptance. Do not treat the earlier export count as validation of this follow-up.
+
+
 All Actions jobs remain on compatible private ephemeral JIT runners. Provision
 only an idle, isolated build agent; preserve active builds and existing SDKs.
 Missing private capacity is a provisioning blocker. No hosted fallback, runner

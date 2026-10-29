@@ -1,5 +1,15 @@
 # Games validation and release gates
 
+## Controller-only phone receiver follow-up — 2026-10-29
+
+The implementation now adds an input-only Steam request and session negotiation,
+plus an Android connection-state JNI entry point. It is newer than the Android
+42-export and native-test evidence recorded below. This follow-up has not been
+built or run against a paired Steam host; the earlier counts do not qualify it.
+Run the exact current PR head through the private Android/iOS build gates and
+verify whether the host permits this separate controller session alongside an
+existing play session.
+
 ## SDK preparation and real Android compilation — 2026-10-29
 
 [SDK_BUILD_HANDOFF.md](SDK_BUILD_HANDOFF.md) contains the committed platform

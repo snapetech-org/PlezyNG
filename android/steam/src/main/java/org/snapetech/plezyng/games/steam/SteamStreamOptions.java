@@ -6,7 +6,7 @@ import java.util.Map;
 /** Bounded optional arguments; older Flutter/Activity callers retain defaults. */
 final class SteamStreamOptions {
   final int width, height, fps, bitrateKbps, controllerCount, audioChannels;
-  final boolean allowHevc, allowHdr, swapTouchSides;
+  final boolean allowHevc, allowHdr, swapTouchSides, controllerOnly;
   final int touchOpacity;
   final int[] relayPorts = new int[6];
 
@@ -35,6 +35,10 @@ final class SteamStreamOptions {
     if (sides != null && !(sides instanceof Boolean))
       throw new IllegalArgumentException("Invalid touch layout");
     swapTouchSides = Boolean.TRUE.equals(sides);
+    Object controller = args.get("controllerOnly");
+    if (controller != null && !(controller instanceof Boolean))
+      throw new IllegalArgumentException("Invalid controller-only option");
+    controllerOnly = Boolean.TRUE.equals(controller);
   }
 
   static SteamStreamOptions from(Map<?, ?> args) {

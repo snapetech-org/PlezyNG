@@ -431,14 +431,24 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     });
   }
 
-  Future<void> _openLibraryGame(LibraryGame game, {bool choose = false, bool mini = false}) async {
+  Future<void> _openLibraryGame(
+    LibraryGame game, {
+    bool choose = false,
+    bool mini = false,
+    bool controllerOnly = false,
+  }) async {
     final c = _controller;
     if (c == null || !c.current || c.busy) return;
-    if (game.routes.isEmpty) {
+    final routes = controllerOnly
+        ? game.routes.where((route) => route.host.protocol == GameProtocol.steam).toList()
+        : game.routes;
+    if (routes.isEmpty) {
       await _details(game);
       return;
     }
-    var route = choose ? null : game.preferredRoute(c.library);
+    var route = controllerOnly
+        ? (routes.length == 1 ? routes.first : null)
+        : (choose ? null : game.preferredRoute(c.library));
     route ??= await showScopedDialog<GameRoute>(
       context: context,
       builder: (dialogContext) => SimpleDialog(
@@ -448,7 +458,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             child: Text(t.games.availabilityHint),
           ),
-          for (final choice in game.routes)
+          for (final choice in routes)
             FocusableListTile(
               leading: const AppIcon(Symbols.computer_rounded),
               title: Text(isolateDisplayText(choice.host.name)),
@@ -461,7 +471,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       ),
     );
     if (route == null || !mounted || !c.current) return;
-    if (mini) {
+    if (controllerOnly) {
+      await _openInWorkspace(route.host, route.game, fullscreen: true, controllerOnly: true);
+    } else if (mini) {
       await _openInWorkspace(route.host, route.game);
     } else {
       await _open(route.host, route.game);
@@ -593,7 +605,12 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     }
   }
 
-  Future<void> _openInWorkspace(GameHost host, StreamGame game, {bool fullscreen = false}) => _run((c) async {
+  Future<void> _openInWorkspace(
+    GameHost host,
+    StreamGame game, {
+    bool fullscreen = false,
+    bool controllerOnly = false,
+  }) => _run((c) async {
     final capability = await c.client.capabilities(host);
     if (!mounted || !c.current) return;
     if (!capability.embeddedSurface ||
@@ -605,7 +622,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
 
     final workspace = context.read<MultiviewWorkspaceController>();
     _workspaceController = workspace;
-    final sessionId = 'game:${game.key}';
+    final sessionId = controllerOnly ? 'game-controller:${game.key}:${host.id}' : 'game:${game.key}';
     final existing = workspace.session(sessionId);
     if (existing != null) {
       workspace.showSessionInWorkspace(sessionId, fullscreen: fullscreen);
@@ -638,6 +655,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       return;
     }
     final session = SteamGameWorkspaceSession(
+      controllerOnly: controllerOnly,
       inputProfile: SteamInputProfile.restore(
         SettingsService.instance.read(SettingsService.steamInputForGame(c.profileId, game.id)),
       ),
@@ -680,8 +698,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       host: host,
       game: game,
       touchControls:
-          !PlatformDetector.isTV() &&
-          SettingsService.instance.read(SettingsService.gameTouchControlsForProfile(c.profileId)),
+          controllerOnly ||
+          (!PlatformDetector.isTV() &&
+              SettingsService.instance.read(SettingsService.gameTouchControlsForProfile(c.profileId))),
     );
     final registration = WorkspaceSurfaceRegistration(
       descriptor: WorkspaceSessionDescriptor(
@@ -690,8 +709,8 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         title: game.name,
         subtitle: host.name,
         mediaKey: game.key,
-        hasAudio: true,
-        hasVideo: true,
+        hasAudio: !controllerOnly,
+        hasVideo: !controllerOnly,
         acceptsInput: true,
         openedAt: DateTime.now(),
       ),
@@ -964,6 +983,13 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
             c.busy || !Platform.isAndroid || !game.routes.any((r) => r.host.protocol == GameProtocol.steam)
             ? null
             : () => _openLibraryGame(game, mini: true),
+        onUseAsController:
+            c.busy ||
+                (!Platform.isAndroid && !Platform.isIOS) ||
+                PlatformDetector.isTV() ||
+                !game.routes.any((r) => r.host.protocol == GameProtocol.steam)
+            ? null
+            : () => _openLibraryGame(game, controllerOnly: true),
         onFavorite: c.busy ? null : () => _run((c) => c.toggleLibraryFavorite(game)),
       );
     },

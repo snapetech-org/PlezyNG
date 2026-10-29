@@ -256,7 +256,8 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI(pair)(
 static void runSession(
     JNIEnv* env, jlong id, jstring address, jint port, jlong hostId, jlong deviceId, jlong userId, jbyteArray key,
     jlong game, jboolean hevc, jboolean pyrowave, jint width, jint height, jint fps, jint bitrateKbps,
-    jint controllerCount, jint audioChannels, jobject target, bool hdr10 = false, jintArray relay = nullptr) {
+    jint controllerCount, jint audioChannels, jobject target, bool hdr10 = false, jintArray relay = nullptr,
+    bool controllerOnly = false) {
   auto runtime = get(id);
   Credentials c{};
   if (!runtime || !target || port < 1 || port > 65535 || !credentials(env, deviceId, userId, key, c)) {
@@ -282,9 +283,9 @@ static void runSession(
       host.relayPorts[i] = static_cast<uint16_t>(ports[i]);
     }
   }
-  int result = runtime->run(
-      host, c, static_cast<uint64_t>(game), hevc, pyrowave, sink,
-      {width, height, fps, bitrateKbps, controllerCount, audioChannels, hdr10});
+  StreamOptions options{width, height, fps, bitrateKbps, controllerCount, audioChannels, hdr10};
+  options.controllerOnly = controllerOnly;
+  int result = runtime->run(host, c, static_cast<uint64_t>(game), hevc, pyrowave, sink, options);
   std::fill(c.key.begin(), c.key.end(), 0);
   if (result != 0 && result != -2) fail(env, result);
 }
@@ -324,10 +325,10 @@ extern "C" JNIEXPORT void JNICALL JNI(runWithVideo)(
 extern "C" JNIEXPORT void JNICALL JNI(runWithRelay)(
     JNIEnv* env, jclass, jlong id, jstring address, jint port, jlong hostId, jlong deviceId, jlong userId,
     jbyteArray key, jlong game, jboolean hevc, jboolean pyrowave, jint width, jint height, jint fps, jint bitrateKbps,
-    jint controllerCount, jint audioChannels, jboolean hdr10, jintArray relay, jobject target) {
+    jint controllerCount, jint audioChannels, jboolean hdr10, jboolean controllerOnly, jintArray relay, jobject target) {
   runSession(
       env, id, address, port, hostId, deviceId, userId, key, game, hevc, pyrowave, width, height, fps, bitrateKbps,
-      controllerCount, audioChannels, target, hdr10, relay);
+      controllerCount, audioChannels, target, hdr10, relay, controllerOnly == JNI_TRUE);
 }
 extern "C" JNIEXPORT jlong JNICALL JNI(gpuCreate)(JNIEnv* env, jclass, jobject surface, jboolean hdr) {
   if (!surface) return 0;
@@ -492,6 +493,10 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI(pyrowaveDecode)(JNIEnv* env, jclass,
 }
 extern "C" JNIEXPORT void JNICALL JNI(pyrowaveStop)(JNIEnv*, jclass, jlong id) {
   if (auto r = get(id)) r->stopPyrowave();
+}
+extern "C" JNIEXPORT jboolean JNICALL JNI(isConnected)(JNIEnv*, jclass, jlong id) {
+  auto runtime = get(id);
+  return runtime && runtime->isConnected() ? JNI_TRUE : JNI_FALSE;
 }
 extern "C" JNIEXPORT jlongArray JNICALL JNI(metrics)(JNIEnv* env, jclass, jlong id) {
   auto r = get(id);

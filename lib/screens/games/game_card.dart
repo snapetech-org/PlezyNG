@@ -70,6 +70,7 @@ class GameCard extends StatefulWidget {
     required this.onPlay,
     required this.onFavorite,
     this.onPlayInWorkspace,
+    this.onUseAsController,
     this.focusNode,
   });
   final StreamGame game;
@@ -82,6 +83,7 @@ class GameCard extends StatefulWidget {
   final VoidCallback? onPlay;
   final VoidCallback? onFavorite;
   final VoidCallback? onPlayInWorkspace;
+  final VoidCallback? onUseAsController;
   final FocusNode? focusNode;
 
   @override
@@ -136,6 +138,12 @@ class _GameCardState extends State<GameCard> {
             label: t.videoControls.openMiniPlayer,
             icon: Symbols.picture_in_picture_alt_rounded,
           ),
+        if (widget.onUseAsController != null)
+          AppMenuItem(
+            value: 'use_as_controller',
+            label: t.games.touchControls,
+            icon: Symbols.sports_esports_rounded,
+          ),
         if (widget.onFavorite != null)
           AppMenuItem(
             value: 'favorite',
@@ -149,6 +157,7 @@ class _GameCardState extends State<GameCard> {
     if (action == 'details') widget.onDetails?.call();
     if (action == 'play') widget.onPlay?.call();
     if (action == 'play_in_workspace') widget.onPlayInWorkspace?.call();
+    if (action == 'use_as_controller') widget.onUseAsController?.call();
     if (action == 'favorite') widget.onFavorite?.call();
     if (action == 'storefronts') {
       unawaited(

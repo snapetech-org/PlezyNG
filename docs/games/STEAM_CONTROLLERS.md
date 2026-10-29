@@ -67,6 +67,21 @@ Labels, layout semantics, theme colors and opacity remain consistent with the
 existing overlay. Embedded Android uses this shared overlay; standalone legacy
 Android callers keep their native controls when the new argument is absent.
 
+## Controller-only phone connection
+
+On iOS and Android, a Steam game's card menu offers **On-screen controller**.
+It opens that game in the workspace with touch controls enabled and hardware
+controllers still accepted. The receiver requests Steam video and audio off
+while keeping input on; native negotiation preserves those independent flags,
+does not start audio/video decoders, and marks the session ready on connection
+instead of waiting for a first frame.
+
+This is a separate app-scoped Steam Remote Play connection to the selected
+paired computer. Steam and the host decide whether it can coexist with another
+device already playing that game. It does not use a Steamworks game API or
+guarantee Remote Play Together behavior. Multi-device host behavior remains a
+live qualification item.
+
 ## Qualification
 
 Run the exact PR head on each platform with USB and Bluetooth controllers,

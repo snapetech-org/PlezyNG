@@ -154,3 +154,9 @@ including a final 27-case receiver/touch run, and a clean standard analyzer.
 Delayed reset acknowledgements cannot overwrite newer input grants, and the
 touch editor's merged semantics support named, axis-specific adjustment.
 See [the follow-up evidence](VALIDATION.md#input-ownership-and-accessible-adjustment--2026-10-29).
+
+The controller-only phone follow-up adds a separate Steam receiver mode
+that disables audio/video negotiation while retaining touch and physical input.
+It is documented in [STEAM_CONTROLLERS.md](STEAM_CONTROLLERS.md). This code was
+added after the verification counts above and still needs exact-head Android/iOS
+builds and paired-host acceptance; it is not included in those counts.

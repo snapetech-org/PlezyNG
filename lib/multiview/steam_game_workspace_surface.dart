@@ -45,6 +45,7 @@ class SteamGameWorkspaceSession {
     required this.host,
     required this.game,
     required this.touchControls,
+    this.controllerOnly = false,
     this.touchOpacity = 100,
     this.swapTouchSides = false,
     this.controllerRumble = true,
@@ -84,6 +85,7 @@ class SteamGameWorkspaceSession {
   final GameHost host;
   final StreamGame game;
   final bool touchControls;
+  final bool controllerOnly;
   final int touchOpacity;
   final bool swapTouchSides;
   final bool controllerRumble, motionController;
@@ -272,13 +274,14 @@ class SteamGameWorkspaceSession {
       for (var i = 0; i < 6; i++) 'relayPort$i': _tunnel!.ports[i],
     'appId': game.id,
     'appName': game.name,
-    'touchControls': touchControls,
+    'touchControls': controllerOnly || touchControls,
     'flutterTouchControls': true,
+    'controllerOnly': controllerOnly,
     'touchOpacity': touchOpacity,
     'swapTouchSides': swapTouchSides,
     'motionController': motionController,
-    'pyrowave': pyrowave,
-    'allowHdr': allowHdr,
+    'pyrowave': controllerOnly ? false : pyrowave,
+    'allowHdr': controllerOnly ? false : allowHdr,
     ...quality.nativeArguments,
     if (_tunnel != null) 'streamBitrateKbps': min(quality.bitrateKbps, _tunnel!.relayBitrateCeilingKbps),
     'allowHevc': codec == SteamStreamCodec.automatic,
@@ -325,7 +328,7 @@ class SteamGameWorkspaceSession {
 
   Future<bool> requestMicrophonePermission() async {
     final channel = _channel;
-    if (!current || channel == null) return false;
+    if (!current || controllerOnly || channel == null) return false;
     try {
       final granted = await channel.invokeMethod<bool>('requestMicrophonePermission');
       return granted == true && current && _channel == channel;
@@ -343,7 +346,7 @@ class SteamGameWorkspaceSession {
   }
 
   Future<bool> enableMicrophone() async {
-    if (_microphoneStarting) return false;
+    if (controllerOnly || _microphoneStarting) return false;
     _microphoneStarting = true;
     try {
       return await _enableMicrophone();
@@ -980,7 +983,8 @@ class SteamGameWorkspaceSurface extends StatefulWidget {
 
 class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
   bool _detailsOpen = false;
-  late bool _touchVisible = widget.session.touchControls && (Platform.isIOS || Platform.isAndroid);
+  late bool _touchVisible = (widget.session.controllerOnly || widget.session.touchControls) &&
+      (Platform.isIOS || Platform.isAndroid);
 
   Future<void> _showDetails() async {
     if (_detailsOpen) return;
@@ -1108,6 +1112,7 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
 
   Future<void> _toggleMicrophone() async {
     final session = widget.session;
+    if (session.controllerOnly) return;
     if (session.microphoneState.value >= 2) {
       session.muteMicrophone();
       return;
@@ -1230,6 +1235,31 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
             );
           },
         ),
+        if (session.controllerOnly)
+          PositionedDirectional(
+            top: 8,
+            start: 8,
+            child: ValueListenableBuilder<String>(
+              valueListenable: session.sessionState,
+              builder: (context, state, _) => state != 'playing'
+                  ? const SizedBox.shrink()
+                  : Material(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.92),
+                      borderRadius: BorderRadius.circular(20),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const AppIcon(Symbols.sports_esports_rounded, size: 18),
+                            const SizedBox(width: 8),
+                            Text(t.games.touchControls, style: Theme.of(context).textTheme.labelMedium),
+                          ],
+                        ),
+                      ),
+                    ),
+            ),
+          ),
         PositionedDirectional(
           top: 8,
           end: 8,
@@ -1240,30 +1270,31 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
                 : Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ValueListenableBuilder<int>(
-                        valueListenable: session.microphoneState,
-                        builder: (_, microphone, _) {
-                          final active = microphone >= 2;
-                          final label = switch (microphone) {
-                            2 => t.games.microphoneStarting,
-                            3 => t.games.microphoneActive,
-                            _ => t.games.microphoneMuted,
-                          };
-                          final callback = active || !_detailsOpen ? _toggleMicrophone : null;
-                          return Semantics(
-                            liveRegion: true,
-                            child: FocusableButton(
-                              onPressed: callback,
-                              child: IconButton.filledTonal(
-                                tooltip: '$label\n${active ? t.games.microphoneMute : t.games.microphoneEnable}',
-                                isSelected: active,
+                      if (!session.controllerOnly)
+                        ValueListenableBuilder<int>(
+                          valueListenable: session.microphoneState,
+                          builder: (_, microphone, _) {
+                            final active = microphone >= 2;
+                            final label = switch (microphone) {
+                              2 => t.games.microphoneStarting,
+                              3 => t.games.microphoneActive,
+                              _ => t.games.microphoneMuted,
+                            };
+                            final callback = active || !_detailsOpen ? _toggleMicrophone : null;
+                            return Semantics(
+                              liveRegion: true,
+                              child: FocusableButton(
                                 onPressed: callback,
-                                icon: AppIcon(active ? Symbols.mic_rounded : Symbols.mic_off_rounded),
+                                child: IconButton.filledTonal(
+                                  tooltip: '$label\n${active ? t.games.microphoneMute : t.games.microphoneEnable}',
+                                  isSelected: active,
+                                  onPressed: callback,
+                                  icon: AppIcon(active ? Symbols.mic_rounded : Symbols.mic_off_rounded),
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
+                            );
+                          },
+                        ),
                       FocusableButton(
                         onPressed: _detailsOpen ? null : _showSteamTools,
                         child: IconButton.filledTonal(

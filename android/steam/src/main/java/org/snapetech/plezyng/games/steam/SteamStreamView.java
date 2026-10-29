@@ -277,7 +277,7 @@ public final class SteamStreamView
         NativeSteam.microphoneMute(source);
       return true;
     }
-    return inputEnabled && !stopping && source != 0 && "playing".equals(sessionState)
+    return !options.controllerOnly && inputEnabled && !stopping && source != 0 && "playing".equals(sessionState)
         && context.checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
         == android.content.pm.PackageManager.PERMISSION_GRANTED
         && SteamMicrophone.start(source);
@@ -378,11 +378,25 @@ public final class SteamStreamView
     sessionThread = new Thread(() -> runSession(created, holder), "PlezySteamWorkspaceSession");
     sessionThread.setDaemon(true);
     sessionThread.start();
+    if (options.controllerOnly)
+      main.postDelayed(() -> watchConnected(created), 150);
     main.postDelayed(() -> {
       // Bound DNS/trust/probe setup separately from a connected attempt.
       if (!shown && !stopping && handle == created && decoder == null)
         failOnMain(created);
     }, 30000);
+  }
+
+  private void watchConnected(long source) {
+    if (!options.controllerOnly || stopping || shown || handle != source)
+      return;
+    if (NativeSteam.isConnected(source)) {
+      shown = true;
+      status.setVisibility(View.GONE);
+      state("playing");
+      return;
+    }
+    main.postDelayed(() -> watchConnected(source), 150);
   }
 
   private void runSession(long initialHandle, SurfaceHolder holder) {
@@ -396,8 +410,9 @@ public final class SteamStreamView
       record = trust.load(text("hostKey"));
       long user = ByteBuffer.wrap(record).order(ByteOrder.LITTLE_ENDIAN).getLong();
       key = Arrays.copyOfRange(record, 8, 40);
-      boolean pyrowave = Boolean.TRUE.equals(args.get("pyrowave")) && NativeSteam.pyrowaveSupported();
-      boolean hevc = options.allowHevc && SteamDecoder.supportsHevc();
+      boolean pyrowave = !options.controllerOnly && Boolean.TRUE.equals(args.get("pyrowave")) &&
+          NativeSteam.pyrowaveSupported();
+      boolean hevc = !options.controllerOnly && options.allowHevc && SteamDecoder.supportsHevc();
       int audioChannels = options.audioChannels;
       // Each fallback removes a capability; at most four attempts, never a
       // reconnect loop. The prior transport has returned before replacement.
@@ -421,11 +436,11 @@ public final class SteamStreamView
         }, 75000);
         Exception failure = null;
         try {
-          boolean hdr10 = sink.awaitHdrCapability();
+          boolean hdr10 = !options.controllerOnly && sink.awaitHdrCapability();
           NativeSteam.runWithRelay(
               session, address, port(), hostId(), trust.device(), user, key, gameId(), hevc, pyrowave, options.width,
               options.height, options.fps, options.bitrateKbps, options.controllerCount, audioChannels, hdr10,
-              options.relayPorts, sink);
+              options.controllerOnly, options.relayPorts, sink);
         } catch (Exception error) {
           failure = error;
         }

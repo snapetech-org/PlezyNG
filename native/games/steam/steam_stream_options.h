@@ -9,6 +9,7 @@ struct StreamOptions {
   bool hdr10 = false;  // Actual qualified native output, not merely a preference.
   bool motionController = false;  // Explicit PS4-compatible virtual profile; Xbox remains the default.
   bool microphone = true;  // Native capture availability; consent is separate.
+  bool controllerOnly = false;  // Receive controller input without video or audio.
   // Current request bounds, not the decoder's theoretical limits.
   bool valid() const {
     return width >= 640 && width <= 3840 && height >= 360 && height <= 2160 && width % 2 == 0 && height % 2 == 0 &&

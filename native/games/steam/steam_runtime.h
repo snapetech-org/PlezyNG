@@ -105,6 +105,7 @@ class Runtime {
   const std::array<std::vector<uint8_t>, 3>& h26xParameters() const;
   bool normalizeH26x(const uint8_t* bytes, size_t length, std::vector<uint8_t>& output);
   void cancel();
+  bool isConnected();
   void pad(const std::array<int16_t, 6>& axes, uint32_t buttons);
   void padSeat(unsigned seat, const std::array<int16_t, 6>& axes, uint32_t buttons);
   bool controllerMapping(unsigned seat, const std::vector<int64_t>& encoded);
@@ -132,7 +133,8 @@ class Runtime {
   friend struct RuntimeTest;
   bool hostInfo(const Host&, IHS_HostInfo&);
   int wait(std::chrono::seconds timeout);
-  int awaitSession(std::chrono::milliseconds connectTimeout, std::chrono::milliseconds frameTimeout);
+  int awaitSession(
+      std::chrono::milliseconds connectTimeout, std::chrono::milliseconds frameTimeout, bool expectFrame = true);
   void finish(int result);
   void closeClient(IHS_Client*);
   static int videoStart(IHS_Session*, const IHS_StreamVideoConfig*, void*);

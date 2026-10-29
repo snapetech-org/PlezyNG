@@ -85,17 +85,24 @@ int Runtime::wait(std::chrono::seconds timeout) {
   if (!condition_.wait_for(lock, timeout, [&] { return done_ || cancelled_; })) return -3;
   return cancelled_ ? -2 : result_;
 }
-int Runtime::awaitSession(std::chrono::milliseconds connectTimeout, std::chrono::milliseconds frameTimeout) {
+int Runtime::awaitSession(
+    std::chrono::milliseconds connectTimeout, std::chrono::milliseconds frameTimeout, bool expectFrame) {
   std::unique_lock<std::mutex> lock(mutex_);
   if (!condition_.wait_for(lock, connectTimeout, [&] { return connected_ || disconnected_ || cancelled_; })) return -3;
   if (cancelled_) return -2;
   if (!connected_) return -1;
-  if (!condition_.wait_for(lock, frameTimeout, [&] { return firstFramePresented_ || disconnected_ || cancelled_; }))
-    return -4;
-  if (cancelled_) return -2;
-  if (!firstFramePresented_) return -1;
+  if (expectFrame) {
+    if (!condition_.wait_for(lock, frameTimeout, [&] { return firstFramePresented_ || disconnected_ || cancelled_; }))
+      return -4;
+    if (cancelled_) return -2;
+    if (!firstFramePresented_) return -1;
+  }
   condition_.wait(lock, [&] { return disconnected_ || cancelled_; });
   return cancelled_ ? -2 : 0;
+}
+bool Runtime::isConnected() {
+  std::lock_guard<std::mutex> lock(mutex_);
+  return connected_ && !disconnected_ && !cancelled_;
 }
 void Runtime::closeClient(IHS_Client* client) {
   IHS_ClientStop(client);
@@ -139,7 +146,7 @@ int Runtime::run(
   IHS_HostInfo target{};
   if (!hostInfo(host, target)) return -1;
   sink_ = std::move(sink);
-  pyrowaveEnabled_ = pyrowave;
+  pyrowaveEnabled_ = pyrowave && !options.controllerOnly;
   IHS_ClientConfig config{credentials.device, credentials.key.data(), "PlezyNG"};
   IHS_Client* client = IHS_ClientCreate(&config);
   if (!client) return -1;
@@ -162,7 +169,7 @@ int Runtime::run(
       }};
   IHS_ClientSetStreamingCallbacks(client, &streamCallbacks, this);
   IHS_StreamingRequest request{};
-  request.streamingEnable = {true, true, true};
+  request.streamingEnable = {!options.controllerOnly, !options.controllerOnly, true};
   request.maxResolution = {options.width, options.height};
   requestedAudioChannels_ = options.audioChannels;
   requestedWidth_ = options.width;
@@ -172,7 +179,7 @@ int Runtime::run(
   request.gameId = game;
   request.gamepadCount = options.controllerCount;
   request.streamDesktop = false;
-  request.displayHdr10 = pyrowave && options.hdr10;
+  request.displayHdr10 = !options.controllerOnly && pyrowave && options.hdr10;
   int result = IHS_ClientStreamingRequest(client, &target, &request) ? wait(std::chrono::seconds(30)) : -1;
   if (result == 0 && !cancelled_)
     IHS_ClientStreamingEstablished(client);
@@ -199,11 +206,13 @@ int Runtime::run(
       nullptr,
       [](IHS_Session*, IHS_SessionConfig* c, void* ctx) {
         auto* state = static_cast<SessionContext*>(ctx);
-        c->enableAudio = true;
+        c->enableAudio = !state->options.controllerOnly;
+        c->enableHevc = state->hevc && !state->options.controllerOnly;
+        c->enablePyrowave = state->pyrowave && !state->options.controllerOnly;
+        c->enableVideo = !state->options.controllerOnly;
+        c->enableInput = true;
         c->audioChannels = state->options.audioChannels;
-        c->enableHevc = state->hevc;
-        c->enablePyrowave = state->pyrowave;
-        c->enableHdr10 = state->pyrowave && state->options.hdr10;
+        c->enableHdr10 = !state->options.controllerOnly && state->pyrowave && state->options.hdr10;
         c->maxBitrateKbps = state->options.bitrateKbps;
         c->quality = IHS_StreamQualityBalanced;
         c->maxWidth = state->options.width;
@@ -241,17 +250,22 @@ int Runtime::run(
   static const IHS_StreamAudioCallbacks audioCallbacks{audioStart, audioSubmit, audioStop};
   static const IHS_StreamMicrophoneCallbacks microphoneCallbacks{microphoneStart, microphoneStop};
   IHS_SessionSetSessionCallbacks(session, &sessionCallbacks, &context);
-  IHS_SessionSetVideoCallbacks(session, &videoCallbacks, this);
-  IHS_SessionSetVideoTrackingIdentity(session, credentials.device);
-  IHS_SessionSetAudioCallbacks(session, &audioCallbacks, this);
-  if (options.microphone) IHS_SessionSetMicrophoneCallbacks(session, &microphoneCallbacks, this);
+  if (!options.controllerOnly) {
+    IHS_SessionSetVideoCallbacks(session, &videoCallbacks, this);
+    IHS_SessionSetVideoTrackingIdentity(session, credentials.device);
+    IHS_SessionSetAudioCallbacks(session, &audioCallbacks, this);
+  }
+  if (options.microphone && !options.controllerOnly)
+    IHS_SessionSetMicrophoneCallbacks(session, &microphoneCallbacks, this);
   for (int seat = 0; seat < options.controllerCount; ++seat)
     IHS_SessionHIDAddProvider(session, makeController(pads_[seat], static_cast<unsigned>(seat)));
   {
     std::lock_guard<std::mutex> lock(apiMutex_);
     session_ = session;
   }
-  result = IHS_SessionConnect(session) ? awaitSession(std::chrono::seconds(30), std::chrono::seconds(12)) : -1;
+  result = IHS_SessionConnect(session)
+               ? awaitSession(std::chrono::seconds(30), std::chrono::seconds(12), !options.controllerOnly)
+               : -1;
   muteMicrophone();
   controllerFeedbackEnabled(false);
   // Stop accepting input before teardown, but never hold apiMutex_ while joining

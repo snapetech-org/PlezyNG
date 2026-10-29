@@ -528,11 +528,22 @@ struct Session : std::enable_shared_from_this<Session> {
   void start() {
     auto self = shared_from_this();
     auto weak = weak_from_this();
-    if (plane) {
+    if (plane || options.controllerOnly) {
       displayWatch = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
       dispatch_source_set_timer(displayWatch, DISPATCH_TIME_NOW, 250 * NSEC_PER_MSEC, 25 * NSEC_PER_MSEC);
       dispatch_source_set_event_handler(displayWatch, ^{
         if (auto s = weak.lock()) {
+          if (s->options.controllerOnly) {
+            std::shared_ptr<Runtime> current;
+            {
+              std::lock_guard<std::mutex> lock(s->mutex);
+              if (s->active) current = s->runtime;
+            }
+            if (current && current->isConnected()) {
+              std::lock_guard<std::mutex> lock(s->mutex);
+              if (s->active && s->runtime == current) s->setState(@"playing");
+            }
+          }
           if (s->plane && !s->plane->refreshDisplay() && s->nativeRequested) {
             s->displayLost = true;
             s->setNative(false);
@@ -559,7 +570,8 @@ struct Session : std::enable_shared_from_this<Session> {
           Credentials credentials;
           if (!loadTrust(self->host.id, credentials)) throw std::runtime_error("Pairing required");
           Host resolved = resolveHost(self->host, self->closing);
-          bool hevc = self->hevc, pyrowave = self->pyrowave && AppleSink::supportsPyrowave();
+          bool hevc = !self->options.controllerOnly && self->hevc;
+          bool pyrowave = !self->options.controllerOnly && self->pyrowave && AppleSink::supportsPyrowave();
           int channels = self->options.audioChannels;
           for (int attempt = 0; attempt < 4 && !self->closing; ++attempt) {
             self->displayLost = false;
@@ -948,6 +960,7 @@ void Manager::method(FlutterMethodCall* call, FlutterResult reply, bool create) 
     options.bitrateKbps = number(args, @"streamBitrateKbps", 30000, 1000, 100000);
     options.controllerCount = number(args, @"controllerCount", 1, 1, 4);
     options.motionController = boolean(args, @"motionController");
+    options.controllerOnly = boolean(args, @"controllerOnly");
     options.audioChannels = number(args, @"audioChannels", 2, 2, 6);
     options.hdr10 = boolean(args, @"allowHdr");
     if (!options.valid()) throw std::invalid_argument("Invalid stream options");

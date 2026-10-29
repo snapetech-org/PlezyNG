@@ -569,3 +569,36 @@ a rejected request take ownership.
   or compiler-memory-limited test attempts are excluded from the passing totals.
   The successful focused runs used a task-local bounded compiler launcher;
   shared SDK files and repository checks were not altered.
+
+## Current-main reconciliation — 2026-10-29
+
+The final handoff incorporates actual main tip
+`86c852ee3267c955d557f2e9aa6be1dc8080a2ce`. The PR metadata had still reported the
+older base while the branch reference had advanced by 12 commits. Both semantic
+conflicts are resolved using main's equivalent monotonic playback-operation
+fix and explicit PCM capability cast. Its unified PCM timing and public Tizen
+handle contract replace the duplicate compatibility accessors from the previous
+checkpoint. Steam features and security controls are retained.
+
+Current-main SDK cache, private-runner routing, platform build repairs, database
+generation and test-fixture changes are retained. The workflow architecture
+guard passes, and formatting passes for all 30 authored Dart files that still
+differ from this base. These source checks do not establish a private-JIT build.
+
+- The standard analyzer again passes with zero diagnostics; localization
+  counts and explicit fallback tracking remain unchanged.
+- All 88 native-player bridge/Tizen tests pass again on this combined source.
+  Initial compilation exceeded the earlier compiler heap cap; the
+  successful retry used a larger task-local cap, with the shared SDK unchanged.
+- All 119 music, visualization, subtitle-import and source-playback tests pass
+  again, including main's revised signed-catalog fixtures.
+- All 29 selected Steam UI/client, real TLS/UDP tunnel, workspace and texture
+  tests pass again. These three non-overlapping current-main runs total 236
+  passing Flutter tests. The earlier checkpoint's totals are not additional
+  tests and do not qualify the final source on their own.
+
+Native Steam, server, Games and Steam detail-screen source files are unchanged
+from the preceding implementation checkpoint. Their recorded native/server
+results remain separately identified above; no new SDK build or live deployment
+is claimed. This reconciliation resolves source conflicts without merging the
+PR into main or changing the required private-JIT platform qualification gates.

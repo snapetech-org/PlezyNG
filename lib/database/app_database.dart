@@ -61,6 +61,10 @@ final class AppDatabaseBootstrap {
     Profiles,
     ProfileConnections,
     MusicSessions,
+    IptvSources,
+    IptvChannels,
+    IptvProgrammes,
+    IptvChannelOverrides,
   ],
 )
 class AppDatabase extends _$AppDatabase {

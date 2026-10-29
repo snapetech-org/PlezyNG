@@ -20,6 +20,16 @@ class VisualizerCatalogTrust {
   final int minimumSequence;
 
   static VisualizerCatalogTrust release() {
+    final sourceRevision = visualizerReleaseTrustRevision;
+    final sourceSha256 = visualizerReleaseTrustSha256;
+    final sourceIsUnpinned = sourceRevision.isEmpty && sourceSha256.isEmpty;
+    final sourcePinIsValid =
+        RegExp(r'^[a-f0-9]{40}$').hasMatch(sourceRevision) && RegExp(r'^[a-f0-9]{64}$').hasMatch(sourceSha256);
+    // The generator verifies the digest against the reviewed source bytes;
+    // reject a partially committed or malformed provenance pin at runtime.
+    if (!sourceIsUnpinned && !sourcePinIsValid) {
+      throw const FormatException('Invalid release catalog trust provenance');
+    }
     final root = jsonDecode(visualizerReleaseTrustJson) as Map<String, dynamic>;
     final data = root['keys'];
     final threshold = root['threshold'];

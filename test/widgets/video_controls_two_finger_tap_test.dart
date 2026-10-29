@@ -52,6 +52,7 @@ void main() {
     SettingsService.resetForTesting();
     final settings = await SettingsService.getInstance();
     await settings.write(SettingsService.seekTimeSmall, 10);
+    await settings.write(SettingsService.clickVideoTogglesPlayback, false);
 
     // Phone layout: the touch pointer pipeline is wired only when
     // PlatformDetector.isMobile(context) && !PlatformDetector.isTV().

@@ -378,14 +378,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   static const int kUninitializedPlayerId = -1;
   int _playerId = kUninitializedPlayerId;
 
-  /// This is just exposed for testing. It shouldn't be used by anyone depending
-  /// on the plugin.
-  @visibleForTesting
+  /// The native player id used by Tizen integrations for player-scoped APIs.
   int get playerId => _playerId;
-
-  /// Opaque handle for app-owned native companion channels. Valid only between
-  /// successful initialization and disposal; callers must not retain it later.
-  int get nativePlayerId => _playerId;
 
   final MethodChannel _channel = const MethodChannel(
     'dev.flutter.videoplayer.drm',

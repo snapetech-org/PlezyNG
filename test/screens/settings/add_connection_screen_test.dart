@@ -116,7 +116,7 @@ void main() {
       if (focused != null) visited.add(focused);
     }
 
-    expect(find.byType(FocusableWrapper), findsNWidgets(4));
-    expect(visited.length, greaterThanOrEqualTo(4), reason: 'D-pad did not reach every backend card');
+    expect(find.byType(FocusableWrapper), findsNWidgets(5));
+    expect(visited.length, greaterThanOrEqualTo(5), reason: 'D-pad did not reach every connection card');
   });
 }

@@ -2043,7 +2043,7 @@ class SettingsService extends BaseSharedPreferencesService {
 
     // Try extracting USB HID code from toString() output:
     // PhysicalKeyboardKey#ec9ed(usbHidUsage: "0x0007002c", debugName: "Space")
-    final usbHidMatch = RegExp(r'usbhidusage: "0x([0-9a-f] )"').firstMatch(normalized);
+    final usbHidMatch = RegExp(r'usbhidusage: "0x([0-9a-f]+)"').firstMatch(normalized);
     if (usbHidMatch != null) {
       final code = int.tryParse(usbHidMatch.group(1)!, radix: 16);
       if (code != null) return PhysicalKeyboardKey(code);

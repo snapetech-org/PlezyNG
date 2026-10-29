@@ -573,10 +573,6 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   /// mpv fallback. Other mpv-specific commands remain unsupported here.
   @override
   String? get subtitlePcmAudioTrackId => state.track.audio?.id;
-  @override
-  Duration get subtitlePcmPosition => currentPosition;
-  @override
-  Duration get subtitlePcmDuration => state.duration;
 
   @override
   Future<bool> subtitlePcmCaptureAvailable() async {

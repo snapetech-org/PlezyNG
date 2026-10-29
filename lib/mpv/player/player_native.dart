@@ -66,10 +66,6 @@ class PlayerNative extends PlayerBase
 
   @override
   String? get subtitlePcmAudioTrackId => state.track.audio?.id;
-  @override
-  Duration get subtitlePcmPosition => currentPosition;
-  @override
-  Duration get subtitlePcmDuration => state.duration;
 
   Future<void> _clearTransientSegmentLoop() async {
     for (final property in const ['ab-loop-a', 'ab-loop-b']) {

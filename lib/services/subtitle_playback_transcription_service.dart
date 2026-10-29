@@ -525,7 +525,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     final player = _player;
     if (_cues.isEmpty) return;
     final cueEnd = _cues.map((cue) => cue.endMs).reduce((left, right) => left > right ? left : right);
-    final playerDuration = player?.subtitlePcmDuration.inMilliseconds ?? 0;
+    final playerDuration = player?.state.duration.inMilliseconds ?? 0;
     final duration = math.max(cueEnd, playerDuration);
     _recentTranscript = SubtitleTranscriptionResult(
       cues: List.unmodifiable(_cues),
@@ -546,7 +546,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       if (liveCaption.value != null) liveCaption.value = null;
       return;
     }
-    final position = player.subtitlePcmPosition.inMilliseconds;
+    final position = player.currentPosition.inMilliseconds;
     SubtitleCue? current;
     for (final cue in _cues.reversed) {
       if (position >= cue.startMs - 1600 && position <= cue.endMs + 2200) {

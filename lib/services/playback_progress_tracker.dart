@@ -338,12 +338,12 @@ class PlaybackProgressTracker {
     await _sendProgress(state, positionOverride: positionOverride, durationOverride: durationOverride);
   }
 
-  Future<void> sendStoppedProgressOnce({Duration? positionOverride}) {
+  Future<void> sendStoppedProgressOnce({Duration? positionOverride, Duration? durationOverride}) {
     final existing = _stoppedProgressFuture;
     if (existing != null) return existing;
     final future = _serverTerminatedSession
-        ? _sendStoppedAfterServerTermination(positionOverride)
-        : sendProgress('stopped', positionOverride: positionOverride);
+        ? _sendStoppedAfterServerTermination(positionOverride, durationOverride)
+        : sendProgress('stopped', positionOverride: positionOverride, durationOverride: durationOverride);
     _stoppedProgressFuture = future;
     return future;
   }
@@ -414,7 +414,7 @@ class PlaybackProgressTracker {
   /// may have run on since, so the backend still learns where playback really
   /// ended — as a lone stopped report, which records the position (and, at
   /// the end, the watch) without re-opening a live session.
-  Future<void> _sendStoppedAfterServerTermination(Duration? positionOverride) async {
+  Future<void> _sendStoppedAfterServerTermination(Duration? positionOverride, Duration? durationOverride) async {
     await _serverTerminationStop;
     if (_serverTerminatedSession) {
       _resetReportSession();
@@ -422,7 +422,7 @@ class PlaybackProgressTracker {
       // position; this is the item's real end, so its event is still owed.
       _stopProgressNotified = false;
     }
-    await sendProgress('stopped', positionOverride: positionOverride);
+    await sendProgress('stopped', positionOverride: positionOverride, durationOverride: durationOverride);
   }
 
   Future<void> _sendProgress(String state, {Duration? positionOverride, Duration? durationOverride}) async {

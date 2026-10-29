@@ -7412,6 +7412,2672 @@ class MusicSessionsCompanion extends UpdateCompanion<MusicSessionRow> {
   }
 }
 
+class $IptvSourcesTable extends IptvSources
+    with TableInfo<$IptvSourcesTable, IptvSourceRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $IptvSourcesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _profileIdMeta = const VerificationMeta(
+    'profileId',
+  );
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _displayNameMeta = const VerificationMeta(
+    'displayName',
+  );
+  @override
+  late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
+    'display_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _configCiphertextMeta = const VerificationMeta(
+    'configCiphertext',
+  );
+  @override
+  late final GeneratedColumn<String> configCiphertext = GeneratedColumn<String>(
+    'config_ciphertext',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _generationMeta = const VerificationMeta(
+    'generation',
+  );
+  @override
+  late final GeneratedColumn<int> generation = GeneratedColumn<int>(
+    'generation',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastSuccessAtMeta = const VerificationMeta(
+    'lastSuccessAt',
+  );
+  @override
+  late final GeneratedColumn<int> lastSuccessAt = GeneratedColumn<int>(
+    'last_success_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastErrorCodeMeta = const VerificationMeta(
+    'lastErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastErrorCode = GeneratedColumn<String>(
+    'last_error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    profileId,
+    displayName,
+    kind,
+    configCiphertext,
+    revision,
+    generation,
+    createdAt,
+    lastSuccessAt,
+    lastErrorCode,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'iptv_sources';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<IptvSourceRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(
+        _profileIdMeta,
+        profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('display_name')) {
+      context.handle(
+        _displayNameMeta,
+        displayName.isAcceptableOrUnknown(
+          data['display_name']!,
+          _displayNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_displayNameMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('config_ciphertext')) {
+      context.handle(
+        _configCiphertextMeta,
+        configCiphertext.isAcceptableOrUnknown(
+          data['config_ciphertext']!,
+          _configCiphertextMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_configCiphertextMeta);
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    }
+    if (data.containsKey('generation')) {
+      context.handle(
+        _generationMeta,
+        generation.isAcceptableOrUnknown(data['generation']!, _generationMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('last_success_at')) {
+      context.handle(
+        _lastSuccessAtMeta,
+        lastSuccessAt.isAcceptableOrUnknown(
+          data['last_success_at']!,
+          _lastSuccessAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error_code')) {
+      context.handle(
+        _lastErrorCodeMeta,
+        lastErrorCode.isAcceptableOrUnknown(
+          data['last_error_code']!,
+          _lastErrorCodeMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  IptvSourceRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return IptvSourceRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      profileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profile_id'],
+      )!,
+      displayName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}display_name'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      configCiphertext: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}config_ciphertext'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      generation: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}generation'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      lastSuccessAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_success_at'],
+      ),
+      lastErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error_code'],
+      ),
+    );
+  }
+
+  @override
+  $IptvSourcesTable createAlias(String alias) {
+    return $IptvSourcesTable(attachedDatabase, alias);
+  }
+}
+
+class IptvSourceRow extends DataClass implements Insertable<IptvSourceRow> {
+  final String id;
+  final String profileId;
+  final String displayName;
+  final String kind;
+  final String configCiphertext;
+  final int revision;
+  final int generation;
+  final int createdAt;
+  final int? lastSuccessAt;
+  final String? lastErrorCode;
+  const IptvSourceRow({
+    required this.id,
+    required this.profileId,
+    required this.displayName,
+    required this.kind,
+    required this.configCiphertext,
+    required this.revision,
+    required this.generation,
+    required this.createdAt,
+    this.lastSuccessAt,
+    this.lastErrorCode,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['profile_id'] = Variable<String>(profileId);
+    map['display_name'] = Variable<String>(displayName);
+    map['kind'] = Variable<String>(kind);
+    map['config_ciphertext'] = Variable<String>(configCiphertext);
+    map['revision'] = Variable<int>(revision);
+    map['generation'] = Variable<int>(generation);
+    map['created_at'] = Variable<int>(createdAt);
+    if (!nullToAbsent || lastSuccessAt != null) {
+      map['last_success_at'] = Variable<int>(lastSuccessAt);
+    }
+    if (!nullToAbsent || lastErrorCode != null) {
+      map['last_error_code'] = Variable<String>(lastErrorCode);
+    }
+    return map;
+  }
+
+  IptvSourcesCompanion toCompanion(bool nullToAbsent) {
+    return IptvSourcesCompanion(
+      id: Value(id),
+      profileId: Value(profileId),
+      displayName: Value(displayName),
+      kind: Value(kind),
+      configCiphertext: Value(configCiphertext),
+      revision: Value(revision),
+      generation: Value(generation),
+      createdAt: Value(createdAt),
+      lastSuccessAt: lastSuccessAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSuccessAt),
+      lastErrorCode: lastErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastErrorCode),
+    );
+  }
+
+  factory IptvSourceRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return IptvSourceRow(
+      id: serializer.fromJson<String>(json['id']),
+      profileId: serializer.fromJson<String>(json['profileId']),
+      displayName: serializer.fromJson<String>(json['displayName']),
+      kind: serializer.fromJson<String>(json['kind']),
+      configCiphertext: serializer.fromJson<String>(json['configCiphertext']),
+      revision: serializer.fromJson<int>(json['revision']),
+      generation: serializer.fromJson<int>(json['generation']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      lastSuccessAt: serializer.fromJson<int?>(json['lastSuccessAt']),
+      lastErrorCode: serializer.fromJson<String?>(json['lastErrorCode']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'profileId': serializer.toJson<String>(profileId),
+      'displayName': serializer.toJson<String>(displayName),
+      'kind': serializer.toJson<String>(kind),
+      'configCiphertext': serializer.toJson<String>(configCiphertext),
+      'revision': serializer.toJson<int>(revision),
+      'generation': serializer.toJson<int>(generation),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'lastSuccessAt': serializer.toJson<int?>(lastSuccessAt),
+      'lastErrorCode': serializer.toJson<String?>(lastErrorCode),
+    };
+  }
+
+  IptvSourceRow copyWith({
+    String? id,
+    String? profileId,
+    String? displayName,
+    String? kind,
+    String? configCiphertext,
+    int? revision,
+    int? generation,
+    int? createdAt,
+    Value<int?> lastSuccessAt = const Value.absent(),
+    Value<String?> lastErrorCode = const Value.absent(),
+  }) => IptvSourceRow(
+    id: id ?? this.id,
+    profileId: profileId ?? this.profileId,
+    displayName: displayName ?? this.displayName,
+    kind: kind ?? this.kind,
+    configCiphertext: configCiphertext ?? this.configCiphertext,
+    revision: revision ?? this.revision,
+    generation: generation ?? this.generation,
+    createdAt: createdAt ?? this.createdAt,
+    lastSuccessAt: lastSuccessAt.present
+        ? lastSuccessAt.value
+        : this.lastSuccessAt,
+    lastErrorCode: lastErrorCode.present
+        ? lastErrorCode.value
+        : this.lastErrorCode,
+  );
+  IptvSourceRow copyWithCompanion(IptvSourcesCompanion data) {
+    return IptvSourceRow(
+      id: data.id.present ? data.id.value : this.id,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      displayName: data.displayName.present
+          ? data.displayName.value
+          : this.displayName,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      configCiphertext: data.configCiphertext.present
+          ? data.configCiphertext.value
+          : this.configCiphertext,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      generation: data.generation.present
+          ? data.generation.value
+          : this.generation,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastSuccessAt: data.lastSuccessAt.present
+          ? data.lastSuccessAt.value
+          : this.lastSuccessAt,
+      lastErrorCode: data.lastErrorCode.present
+          ? data.lastErrorCode.value
+          : this.lastErrorCode,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IptvSourceRow(')
+          ..write('id: $id, ')
+          ..write('profileId: $profileId, ')
+          ..write('displayName: $displayName, ')
+          ..write('kind: $kind, ')
+          ..write('configCiphertext: $configCiphertext, ')
+          ..write('revision: $revision, ')
+          ..write('generation: $generation, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastSuccessAt: $lastSuccessAt, ')
+          ..write('lastErrorCode: $lastErrorCode')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    profileId,
+    displayName,
+    kind,
+    configCiphertext,
+    revision,
+    generation,
+    createdAt,
+    lastSuccessAt,
+    lastErrorCode,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is IptvSourceRow &&
+          other.id == this.id &&
+          other.profileId == this.profileId &&
+          other.displayName == this.displayName &&
+          other.kind == this.kind &&
+          other.configCiphertext == this.configCiphertext &&
+          other.revision == this.revision &&
+          other.generation == this.generation &&
+          other.createdAt == this.createdAt &&
+          other.lastSuccessAt == this.lastSuccessAt &&
+          other.lastErrorCode == this.lastErrorCode);
+}
+
+class IptvSourcesCompanion extends UpdateCompanion<IptvSourceRow> {
+  final Value<String> id;
+  final Value<String> profileId;
+  final Value<String> displayName;
+  final Value<String> kind;
+  final Value<String> configCiphertext;
+  final Value<int> revision;
+  final Value<int> generation;
+  final Value<int> createdAt;
+  final Value<int?> lastSuccessAt;
+  final Value<String?> lastErrorCode;
+  final Value<int> rowid;
+  const IptvSourcesCompanion({
+    this.id = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.displayName = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.configCiphertext = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.generation = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.lastSuccessAt = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  IptvSourcesCompanion.insert({
+    required String id,
+    required String profileId,
+    required String displayName,
+    required String kind,
+    required String configCiphertext,
+    this.revision = const Value.absent(),
+    this.generation = const Value.absent(),
+    required int createdAt,
+    this.lastSuccessAt = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       profileId = Value(profileId),
+       displayName = Value(displayName),
+       kind = Value(kind),
+       configCiphertext = Value(configCiphertext),
+       createdAt = Value(createdAt);
+  static Insertable<IptvSourceRow> custom({
+    Expression<String>? id,
+    Expression<String>? profileId,
+    Expression<String>? displayName,
+    Expression<String>? kind,
+    Expression<String>? configCiphertext,
+    Expression<int>? revision,
+    Expression<int>? generation,
+    Expression<int>? createdAt,
+    Expression<int>? lastSuccessAt,
+    Expression<String>? lastErrorCode,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (profileId != null) 'profile_id': profileId,
+      if (displayName != null) 'display_name': displayName,
+      if (kind != null) 'kind': kind,
+      if (configCiphertext != null) 'config_ciphertext': configCiphertext,
+      if (revision != null) 'revision': revision,
+      if (generation != null) 'generation': generation,
+      if (createdAt != null) 'created_at': createdAt,
+      if (lastSuccessAt != null) 'last_success_at': lastSuccessAt,
+      if (lastErrorCode != null) 'last_error_code': lastErrorCode,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  IptvSourcesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? profileId,
+    Value<String>? displayName,
+    Value<String>? kind,
+    Value<String>? configCiphertext,
+    Value<int>? revision,
+    Value<int>? generation,
+    Value<int>? createdAt,
+    Value<int?>? lastSuccessAt,
+    Value<String?>? lastErrorCode,
+    Value<int>? rowid,
+  }) {
+    return IptvSourcesCompanion(
+      id: id ?? this.id,
+      profileId: profileId ?? this.profileId,
+      displayName: displayName ?? this.displayName,
+      kind: kind ?? this.kind,
+      configCiphertext: configCiphertext ?? this.configCiphertext,
+      revision: revision ?? this.revision,
+      generation: generation ?? this.generation,
+      createdAt: createdAt ?? this.createdAt,
+      lastSuccessAt: lastSuccessAt ?? this.lastSuccessAt,
+      lastErrorCode: lastErrorCode ?? this.lastErrorCode,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (displayName.present) {
+      map['display_name'] = Variable<String>(displayName.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (configCiphertext.present) {
+      map['config_ciphertext'] = Variable<String>(configCiphertext.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (generation.present) {
+      map['generation'] = Variable<int>(generation.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (lastSuccessAt.present) {
+      map['last_success_at'] = Variable<int>(lastSuccessAt.value);
+    }
+    if (lastErrorCode.present) {
+      map['last_error_code'] = Variable<String>(lastErrorCode.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IptvSourcesCompanion(')
+          ..write('id: $id, ')
+          ..write('profileId: $profileId, ')
+          ..write('displayName: $displayName, ')
+          ..write('kind: $kind, ')
+          ..write('configCiphertext: $configCiphertext, ')
+          ..write('revision: $revision, ')
+          ..write('generation: $generation, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastSuccessAt: $lastSuccessAt, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $IptvChannelsTable extends IptvChannels
+    with TableInfo<$IptvChannelsTable, IptvChannelRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $IptvChannelsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _sourceIdMeta = const VerificationMeta(
+    'sourceId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceId = GeneratedColumn<String>(
+    'source_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES iptv_sources (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _channelIdMeta = const VerificationMeta(
+    'channelId',
+  );
+  @override
+  late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
+    'channel_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tvgIdMeta = const VerificationMeta('tvgId');
+  @override
+  late final GeneratedColumn<String> tvgId = GeneratedColumn<String>(
+    'tvg_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _numberMeta = const VerificationMeta('number');
+  @override
+  late final GeneratedColumn<String> number = GeneratedColumn<String>(
+    'number',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _groupTitleMeta = const VerificationMeta(
+    'groupTitle',
+  );
+  @override
+  late final GeneratedColumn<String> groupTitle = GeneratedColumn<String>(
+    'group_title',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _logoUrlMeta = const VerificationMeta(
+    'logoUrl',
+  );
+  @override
+  late final GeneratedColumn<String> logoUrl = GeneratedColumn<String>(
+    'logo_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _catchupSourceCiphertextMeta =
+      const VerificationMeta('catchupSourceCiphertext');
+  @override
+  late final GeneratedColumn<String> catchupSourceCiphertext =
+      GeneratedColumn<String>(
+        'catchup_source_ciphertext',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _catchupDaysMeta = const VerificationMeta(
+    'catchupDays',
+  );
+  @override
+  late final GeneratedColumn<int> catchupDays = GeneratedColumn<int>(
+    'catchup_days',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _streamUrlCiphertextMeta =
+      const VerificationMeta('streamUrlCiphertext');
+  @override
+  late final GeneratedColumn<String> streamUrlCiphertext =
+      GeneratedColumn<String>(
+        'stream_url_ciphertext',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _streamHeadersCiphertextMeta =
+      const VerificationMeta('streamHeadersCiphertext');
+  @override
+  late final GeneratedColumn<String> streamHeadersCiphertext =
+      GeneratedColumn<String>(
+        'stream_headers_ciphertext',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _isRadioMeta = const VerificationMeta(
+    'isRadio',
+  );
+  @override
+  late final GeneratedColumn<bool> isRadio = GeneratedColumn<bool>(
+    'is_radio',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_radio" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    sourceId,
+    channelId,
+    title,
+    tvgId,
+    number,
+    groupTitle,
+    logoUrl,
+    catchupSourceCiphertext,
+    catchupDays,
+    streamUrlCiphertext,
+    streamHeadersCiphertext,
+    isRadio,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'iptv_channels';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<IptvChannelRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('source_id')) {
+      context.handle(
+        _sourceIdMeta,
+        sourceId.isAcceptableOrUnknown(data['source_id']!, _sourceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceIdMeta);
+    }
+    if (data.containsKey('channel_id')) {
+      context.handle(
+        _channelIdMeta,
+        channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_channelIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('tvg_id')) {
+      context.handle(
+        _tvgIdMeta,
+        tvgId.isAcceptableOrUnknown(data['tvg_id']!, _tvgIdMeta),
+      );
+    }
+    if (data.containsKey('number')) {
+      context.handle(
+        _numberMeta,
+        number.isAcceptableOrUnknown(data['number']!, _numberMeta),
+      );
+    }
+    if (data.containsKey('group_title')) {
+      context.handle(
+        _groupTitleMeta,
+        groupTitle.isAcceptableOrUnknown(data['group_title']!, _groupTitleMeta),
+      );
+    }
+    if (data.containsKey('logo_url')) {
+      context.handle(
+        _logoUrlMeta,
+        logoUrl.isAcceptableOrUnknown(data['logo_url']!, _logoUrlMeta),
+      );
+    }
+    if (data.containsKey('catchup_source_ciphertext')) {
+      context.handle(
+        _catchupSourceCiphertextMeta,
+        catchupSourceCiphertext.isAcceptableOrUnknown(
+          data['catchup_source_ciphertext']!,
+          _catchupSourceCiphertextMeta,
+        ),
+      );
+    }
+    if (data.containsKey('catchup_days')) {
+      context.handle(
+        _catchupDaysMeta,
+        catchupDays.isAcceptableOrUnknown(
+          data['catchup_days']!,
+          _catchupDaysMeta,
+        ),
+      );
+    }
+    if (data.containsKey('stream_url_ciphertext')) {
+      context.handle(
+        _streamUrlCiphertextMeta,
+        streamUrlCiphertext.isAcceptableOrUnknown(
+          data['stream_url_ciphertext']!,
+          _streamUrlCiphertextMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_streamUrlCiphertextMeta);
+    }
+    if (data.containsKey('stream_headers_ciphertext')) {
+      context.handle(
+        _streamHeadersCiphertextMeta,
+        streamHeadersCiphertext.isAcceptableOrUnknown(
+          data['stream_headers_ciphertext']!,
+          _streamHeadersCiphertextMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_radio')) {
+      context.handle(
+        _isRadioMeta,
+        isRadio.isAcceptableOrUnknown(data['is_radio']!, _isRadioMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {sourceId, channelId};
+  @override
+  IptvChannelRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return IptvChannelRow(
+      sourceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_id'],
+      )!,
+      channelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      tvgId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tvg_id'],
+      ),
+      number: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}number'],
+      ),
+      groupTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_title'],
+      ),
+      logoUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}logo_url'],
+      ),
+      catchupSourceCiphertext: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}catchup_source_ciphertext'],
+      ),
+      catchupDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}catchup_days'],
+      ),
+      streamUrlCiphertext: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stream_url_ciphertext'],
+      )!,
+      streamHeadersCiphertext: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stream_headers_ciphertext'],
+      ),
+      isRadio: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_radio'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $IptvChannelsTable createAlias(String alias) {
+    return $IptvChannelsTable(attachedDatabase, alias);
+  }
+}
+
+class IptvChannelRow extends DataClass implements Insertable<IptvChannelRow> {
+  final String sourceId;
+  final String channelId;
+  final String title;
+  final String? tvgId;
+  final String? number;
+  final String? groupTitle;
+  final String? logoUrl;
+  final String? catchupSourceCiphertext;
+  final int? catchupDays;
+  final String streamUrlCiphertext;
+  final String? streamHeadersCiphertext;
+  final bool isRadio;
+  final int updatedAt;
+  const IptvChannelRow({
+    required this.sourceId,
+    required this.channelId,
+    required this.title,
+    this.tvgId,
+    this.number,
+    this.groupTitle,
+    this.logoUrl,
+    this.catchupSourceCiphertext,
+    this.catchupDays,
+    required this.streamUrlCiphertext,
+    this.streamHeadersCiphertext,
+    required this.isRadio,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['source_id'] = Variable<String>(sourceId);
+    map['channel_id'] = Variable<String>(channelId);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || tvgId != null) {
+      map['tvg_id'] = Variable<String>(tvgId);
+    }
+    if (!nullToAbsent || number != null) {
+      map['number'] = Variable<String>(number);
+    }
+    if (!nullToAbsent || groupTitle != null) {
+      map['group_title'] = Variable<String>(groupTitle);
+    }
+    if (!nullToAbsent || logoUrl != null) {
+      map['logo_url'] = Variable<String>(logoUrl);
+    }
+    if (!nullToAbsent || catchupSourceCiphertext != null) {
+      map['catchup_source_ciphertext'] = Variable<String>(
+        catchupSourceCiphertext,
+      );
+    }
+    if (!nullToAbsent || catchupDays != null) {
+      map['catchup_days'] = Variable<int>(catchupDays);
+    }
+    map['stream_url_ciphertext'] = Variable<String>(streamUrlCiphertext);
+    if (!nullToAbsent || streamHeadersCiphertext != null) {
+      map['stream_headers_ciphertext'] = Variable<String>(
+        streamHeadersCiphertext,
+      );
+    }
+    map['is_radio'] = Variable<bool>(isRadio);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  IptvChannelsCompanion toCompanion(bool nullToAbsent) {
+    return IptvChannelsCompanion(
+      sourceId: Value(sourceId),
+      channelId: Value(channelId),
+      title: Value(title),
+      tvgId: tvgId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tvgId),
+      number: number == null && nullToAbsent
+          ? const Value.absent()
+          : Value(number),
+      groupTitle: groupTitle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(groupTitle),
+      logoUrl: logoUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(logoUrl),
+      catchupSourceCiphertext: catchupSourceCiphertext == null && nullToAbsent
+          ? const Value.absent()
+          : Value(catchupSourceCiphertext),
+      catchupDays: catchupDays == null && nullToAbsent
+          ? const Value.absent()
+          : Value(catchupDays),
+      streamUrlCiphertext: Value(streamUrlCiphertext),
+      streamHeadersCiphertext: streamHeadersCiphertext == null && nullToAbsent
+          ? const Value.absent()
+          : Value(streamHeadersCiphertext),
+      isRadio: Value(isRadio),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory IptvChannelRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return IptvChannelRow(
+      sourceId: serializer.fromJson<String>(json['sourceId']),
+      channelId: serializer.fromJson<String>(json['channelId']),
+      title: serializer.fromJson<String>(json['title']),
+      tvgId: serializer.fromJson<String?>(json['tvgId']),
+      number: serializer.fromJson<String?>(json['number']),
+      groupTitle: serializer.fromJson<String?>(json['groupTitle']),
+      logoUrl: serializer.fromJson<String?>(json['logoUrl']),
+      catchupSourceCiphertext: serializer.fromJson<String?>(
+        json['catchupSourceCiphertext'],
+      ),
+      catchupDays: serializer.fromJson<int?>(json['catchupDays']),
+      streamUrlCiphertext: serializer.fromJson<String>(
+        json['streamUrlCiphertext'],
+      ),
+      streamHeadersCiphertext: serializer.fromJson<String?>(
+        json['streamHeadersCiphertext'],
+      ),
+      isRadio: serializer.fromJson<bool>(json['isRadio']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'sourceId': serializer.toJson<String>(sourceId),
+      'channelId': serializer.toJson<String>(channelId),
+      'title': serializer.toJson<String>(title),
+      'tvgId': serializer.toJson<String?>(tvgId),
+      'number': serializer.toJson<String?>(number),
+      'groupTitle': serializer.toJson<String?>(groupTitle),
+      'logoUrl': serializer.toJson<String?>(logoUrl),
+      'catchupSourceCiphertext': serializer.toJson<String?>(
+        catchupSourceCiphertext,
+      ),
+      'catchupDays': serializer.toJson<int?>(catchupDays),
+      'streamUrlCiphertext': serializer.toJson<String>(streamUrlCiphertext),
+      'streamHeadersCiphertext': serializer.toJson<String?>(
+        streamHeadersCiphertext,
+      ),
+      'isRadio': serializer.toJson<bool>(isRadio),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  IptvChannelRow copyWith({
+    String? sourceId,
+    String? channelId,
+    String? title,
+    Value<String?> tvgId = const Value.absent(),
+    Value<String?> number = const Value.absent(),
+    Value<String?> groupTitle = const Value.absent(),
+    Value<String?> logoUrl = const Value.absent(),
+    Value<String?> catchupSourceCiphertext = const Value.absent(),
+    Value<int?> catchupDays = const Value.absent(),
+    String? streamUrlCiphertext,
+    Value<String?> streamHeadersCiphertext = const Value.absent(),
+    bool? isRadio,
+    int? updatedAt,
+  }) => IptvChannelRow(
+    sourceId: sourceId ?? this.sourceId,
+    channelId: channelId ?? this.channelId,
+    title: title ?? this.title,
+    tvgId: tvgId.present ? tvgId.value : this.tvgId,
+    number: number.present ? number.value : this.number,
+    groupTitle: groupTitle.present ? groupTitle.value : this.groupTitle,
+    logoUrl: logoUrl.present ? logoUrl.value : this.logoUrl,
+    catchupSourceCiphertext: catchupSourceCiphertext.present
+        ? catchupSourceCiphertext.value
+        : this.catchupSourceCiphertext,
+    catchupDays: catchupDays.present ? catchupDays.value : this.catchupDays,
+    streamUrlCiphertext: streamUrlCiphertext ?? this.streamUrlCiphertext,
+    streamHeadersCiphertext: streamHeadersCiphertext.present
+        ? streamHeadersCiphertext.value
+        : this.streamHeadersCiphertext,
+    isRadio: isRadio ?? this.isRadio,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  IptvChannelRow copyWithCompanion(IptvChannelsCompanion data) {
+    return IptvChannelRow(
+      sourceId: data.sourceId.present ? data.sourceId.value : this.sourceId,
+      channelId: data.channelId.present ? data.channelId.value : this.channelId,
+      title: data.title.present ? data.title.value : this.title,
+      tvgId: data.tvgId.present ? data.tvgId.value : this.tvgId,
+      number: data.number.present ? data.number.value : this.number,
+      groupTitle: data.groupTitle.present
+          ? data.groupTitle.value
+          : this.groupTitle,
+      logoUrl: data.logoUrl.present ? data.logoUrl.value : this.logoUrl,
+      catchupSourceCiphertext: data.catchupSourceCiphertext.present
+          ? data.catchupSourceCiphertext.value
+          : this.catchupSourceCiphertext,
+      catchupDays: data.catchupDays.present
+          ? data.catchupDays.value
+          : this.catchupDays,
+      streamUrlCiphertext: data.streamUrlCiphertext.present
+          ? data.streamUrlCiphertext.value
+          : this.streamUrlCiphertext,
+      streamHeadersCiphertext: data.streamHeadersCiphertext.present
+          ? data.streamHeadersCiphertext.value
+          : this.streamHeadersCiphertext,
+      isRadio: data.isRadio.present ? data.isRadio.value : this.isRadio,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IptvChannelRow(')
+          ..write('sourceId: $sourceId, ')
+          ..write('channelId: $channelId, ')
+          ..write('title: $title, ')
+          ..write('tvgId: $tvgId, ')
+          ..write('number: $number, ')
+          ..write('groupTitle: $groupTitle, ')
+          ..write('logoUrl: $logoUrl, ')
+          ..write('catchupSourceCiphertext: $catchupSourceCiphertext, ')
+          ..write('catchupDays: $catchupDays, ')
+          ..write('streamUrlCiphertext: $streamUrlCiphertext, ')
+          ..write('streamHeadersCiphertext: $streamHeadersCiphertext, ')
+          ..write('isRadio: $isRadio, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    sourceId,
+    channelId,
+    title,
+    tvgId,
+    number,
+    groupTitle,
+    logoUrl,
+    catchupSourceCiphertext,
+    catchupDays,
+    streamUrlCiphertext,
+    streamHeadersCiphertext,
+    isRadio,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is IptvChannelRow &&
+          other.sourceId == this.sourceId &&
+          other.channelId == this.channelId &&
+          other.title == this.title &&
+          other.tvgId == this.tvgId &&
+          other.number == this.number &&
+          other.groupTitle == this.groupTitle &&
+          other.logoUrl == this.logoUrl &&
+          other.catchupSourceCiphertext == this.catchupSourceCiphertext &&
+          other.catchupDays == this.catchupDays &&
+          other.streamUrlCiphertext == this.streamUrlCiphertext &&
+          other.streamHeadersCiphertext == this.streamHeadersCiphertext &&
+          other.isRadio == this.isRadio &&
+          other.updatedAt == this.updatedAt);
+}
+
+class IptvChannelsCompanion extends UpdateCompanion<IptvChannelRow> {
+  final Value<String> sourceId;
+  final Value<String> channelId;
+  final Value<String> title;
+  final Value<String?> tvgId;
+  final Value<String?> number;
+  final Value<String?> groupTitle;
+  final Value<String?> logoUrl;
+  final Value<String?> catchupSourceCiphertext;
+  final Value<int?> catchupDays;
+  final Value<String> streamUrlCiphertext;
+  final Value<String?> streamHeadersCiphertext;
+  final Value<bool> isRadio;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const IptvChannelsCompanion({
+    this.sourceId = const Value.absent(),
+    this.channelId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.tvgId = const Value.absent(),
+    this.number = const Value.absent(),
+    this.groupTitle = const Value.absent(),
+    this.logoUrl = const Value.absent(),
+    this.catchupSourceCiphertext = const Value.absent(),
+    this.catchupDays = const Value.absent(),
+    this.streamUrlCiphertext = const Value.absent(),
+    this.streamHeadersCiphertext = const Value.absent(),
+    this.isRadio = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  IptvChannelsCompanion.insert({
+    required String sourceId,
+    required String channelId,
+    required String title,
+    this.tvgId = const Value.absent(),
+    this.number = const Value.absent(),
+    this.groupTitle = const Value.absent(),
+    this.logoUrl = const Value.absent(),
+    this.catchupSourceCiphertext = const Value.absent(),
+    this.catchupDays = const Value.absent(),
+    required String streamUrlCiphertext,
+    this.streamHeadersCiphertext = const Value.absent(),
+    this.isRadio = const Value.absent(),
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : sourceId = Value(sourceId),
+       channelId = Value(channelId),
+       title = Value(title),
+       streamUrlCiphertext = Value(streamUrlCiphertext),
+       updatedAt = Value(updatedAt);
+  static Insertable<IptvChannelRow> custom({
+    Expression<String>? sourceId,
+    Expression<String>? channelId,
+    Expression<String>? title,
+    Expression<String>? tvgId,
+    Expression<String>? number,
+    Expression<String>? groupTitle,
+    Expression<String>? logoUrl,
+    Expression<String>? catchupSourceCiphertext,
+    Expression<int>? catchupDays,
+    Expression<String>? streamUrlCiphertext,
+    Expression<String>? streamHeadersCiphertext,
+    Expression<bool>? isRadio,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (sourceId != null) 'source_id': sourceId,
+      if (channelId != null) 'channel_id': channelId,
+      if (title != null) 'title': title,
+      if (tvgId != null) 'tvg_id': tvgId,
+      if (number != null) 'number': number,
+      if (groupTitle != null) 'group_title': groupTitle,
+      if (logoUrl != null) 'logo_url': logoUrl,
+      if (catchupSourceCiphertext != null)
+        'catchup_source_ciphertext': catchupSourceCiphertext,
+      if (catchupDays != null) 'catchup_days': catchupDays,
+      if (streamUrlCiphertext != null)
+        'stream_url_ciphertext': streamUrlCiphertext,
+      if (streamHeadersCiphertext != null)
+        'stream_headers_ciphertext': streamHeadersCiphertext,
+      if (isRadio != null) 'is_radio': isRadio,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  IptvChannelsCompanion copyWith({
+    Value<String>? sourceId,
+    Value<String>? channelId,
+    Value<String>? title,
+    Value<String?>? tvgId,
+    Value<String?>? number,
+    Value<String?>? groupTitle,
+    Value<String?>? logoUrl,
+    Value<String?>? catchupSourceCiphertext,
+    Value<int?>? catchupDays,
+    Value<String>? streamUrlCiphertext,
+    Value<String?>? streamHeadersCiphertext,
+    Value<bool>? isRadio,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return IptvChannelsCompanion(
+      sourceId: sourceId ?? this.sourceId,
+      channelId: channelId ?? this.channelId,
+      title: title ?? this.title,
+      tvgId: tvgId ?? this.tvgId,
+      number: number ?? this.number,
+      groupTitle: groupTitle ?? this.groupTitle,
+      logoUrl: logoUrl ?? this.logoUrl,
+      catchupSourceCiphertext:
+          catchupSourceCiphertext ?? this.catchupSourceCiphertext,
+      catchupDays: catchupDays ?? this.catchupDays,
+      streamUrlCiphertext: streamUrlCiphertext ?? this.streamUrlCiphertext,
+      streamHeadersCiphertext:
+          streamHeadersCiphertext ?? this.streamHeadersCiphertext,
+      isRadio: isRadio ?? this.isRadio,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (sourceId.present) {
+      map['source_id'] = Variable<String>(sourceId.value);
+    }
+    if (channelId.present) {
+      map['channel_id'] = Variable<String>(channelId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (tvgId.present) {
+      map['tvg_id'] = Variable<String>(tvgId.value);
+    }
+    if (number.present) {
+      map['number'] = Variable<String>(number.value);
+    }
+    if (groupTitle.present) {
+      map['group_title'] = Variable<String>(groupTitle.value);
+    }
+    if (logoUrl.present) {
+      map['logo_url'] = Variable<String>(logoUrl.value);
+    }
+    if (catchupSourceCiphertext.present) {
+      map['catchup_source_ciphertext'] = Variable<String>(
+        catchupSourceCiphertext.value,
+      );
+    }
+    if (catchupDays.present) {
+      map['catchup_days'] = Variable<int>(catchupDays.value);
+    }
+    if (streamUrlCiphertext.present) {
+      map['stream_url_ciphertext'] = Variable<String>(
+        streamUrlCiphertext.value,
+      );
+    }
+    if (streamHeadersCiphertext.present) {
+      map['stream_headers_ciphertext'] = Variable<String>(
+        streamHeadersCiphertext.value,
+      );
+    }
+    if (isRadio.present) {
+      map['is_radio'] = Variable<bool>(isRadio.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IptvChannelsCompanion(')
+          ..write('sourceId: $sourceId, ')
+          ..write('channelId: $channelId, ')
+          ..write('title: $title, ')
+          ..write('tvgId: $tvgId, ')
+          ..write('number: $number, ')
+          ..write('groupTitle: $groupTitle, ')
+          ..write('logoUrl: $logoUrl, ')
+          ..write('catchupSourceCiphertext: $catchupSourceCiphertext, ')
+          ..write('catchupDays: $catchupDays, ')
+          ..write('streamUrlCiphertext: $streamUrlCiphertext, ')
+          ..write('streamHeadersCiphertext: $streamHeadersCiphertext, ')
+          ..write('isRadio: $isRadio, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $IptvProgrammesTable extends IptvProgrammes
+    with TableInfo<$IptvProgrammesTable, IptvProgrammeRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $IptvProgrammesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _sourceIdMeta = const VerificationMeta(
+    'sourceId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceId = GeneratedColumn<String>(
+    'source_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES iptv_sources (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _channelIdMeta = const VerificationMeta(
+    'channelId',
+  );
+  @override
+  late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
+    'channel_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _beginsAtMeta = const VerificationMeta(
+    'beginsAt',
+  );
+  @override
+  late final GeneratedColumn<int> beginsAt = GeneratedColumn<int>(
+    'begins_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endsAtMeta = const VerificationMeta('endsAt');
+  @override
+  late final GeneratedColumn<int> endsAt = GeneratedColumn<int>(
+    'ends_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _summaryMeta = const VerificationMeta(
+    'summary',
+  );
+  @override
+  late final GeneratedColumn<String> summary = GeneratedColumn<String>(
+    'summary',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _episodeIdMeta = const VerificationMeta(
+    'episodeId',
+  );
+  @override
+  late final GeneratedColumn<String> episodeId = GeneratedColumn<String>(
+    'episode_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _thumbUrlMeta = const VerificationMeta(
+    'thumbUrl',
+  );
+  @override
+  late final GeneratedColumn<String> thumbUrl = GeneratedColumn<String>(
+    'thumb_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    sourceId,
+    channelId,
+    beginsAt,
+    endsAt,
+    title,
+    summary,
+    category,
+    episodeId,
+    thumbUrl,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'iptv_programmes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<IptvProgrammeRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('source_id')) {
+      context.handle(
+        _sourceIdMeta,
+        sourceId.isAcceptableOrUnknown(data['source_id']!, _sourceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceIdMeta);
+    }
+    if (data.containsKey('channel_id')) {
+      context.handle(
+        _channelIdMeta,
+        channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_channelIdMeta);
+    }
+    if (data.containsKey('begins_at')) {
+      context.handle(
+        _beginsAtMeta,
+        beginsAt.isAcceptableOrUnknown(data['begins_at']!, _beginsAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_beginsAtMeta);
+    }
+    if (data.containsKey('ends_at')) {
+      context.handle(
+        _endsAtMeta,
+        endsAt.isAcceptableOrUnknown(data['ends_at']!, _endsAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endsAtMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('summary')) {
+      context.handle(
+        _summaryMeta,
+        summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
+    if (data.containsKey('episode_id')) {
+      context.handle(
+        _episodeIdMeta,
+        episodeId.isAcceptableOrUnknown(data['episode_id']!, _episodeIdMeta),
+      );
+    }
+    if (data.containsKey('thumb_url')) {
+      context.handle(
+        _thumbUrlMeta,
+        thumbUrl.isAcceptableOrUnknown(data['thumb_url']!, _thumbUrlMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {
+    sourceId,
+    channelId,
+    beginsAt,
+    title,
+  };
+  @override
+  IptvProgrammeRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return IptvProgrammeRow(
+      sourceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_id'],
+      )!,
+      channelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_id'],
+      )!,
+      beginsAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}begins_at'],
+      )!,
+      endsAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}ends_at'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      summary: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}summary'],
+      ),
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      ),
+      episodeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}episode_id'],
+      ),
+      thumbUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}thumb_url'],
+      ),
+    );
+  }
+
+  @override
+  $IptvProgrammesTable createAlias(String alias) {
+    return $IptvProgrammesTable(attachedDatabase, alias);
+  }
+}
+
+class IptvProgrammeRow extends DataClass
+    implements Insertable<IptvProgrammeRow> {
+  final String sourceId;
+  final String channelId;
+  final int beginsAt;
+  final int endsAt;
+  final String title;
+  final String? summary;
+  final String? category;
+  final String? episodeId;
+  final String? thumbUrl;
+  const IptvProgrammeRow({
+    required this.sourceId,
+    required this.channelId,
+    required this.beginsAt,
+    required this.endsAt,
+    required this.title,
+    this.summary,
+    this.category,
+    this.episodeId,
+    this.thumbUrl,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['source_id'] = Variable<String>(sourceId);
+    map['channel_id'] = Variable<String>(channelId);
+    map['begins_at'] = Variable<int>(beginsAt);
+    map['ends_at'] = Variable<int>(endsAt);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || summary != null) {
+      map['summary'] = Variable<String>(summary);
+    }
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<String>(category);
+    }
+    if (!nullToAbsent || episodeId != null) {
+      map['episode_id'] = Variable<String>(episodeId);
+    }
+    if (!nullToAbsent || thumbUrl != null) {
+      map['thumb_url'] = Variable<String>(thumbUrl);
+    }
+    return map;
+  }
+
+  IptvProgrammesCompanion toCompanion(bool nullToAbsent) {
+    return IptvProgrammesCompanion(
+      sourceId: Value(sourceId),
+      channelId: Value(channelId),
+      beginsAt: Value(beginsAt),
+      endsAt: Value(endsAt),
+      title: Value(title),
+      summary: summary == null && nullToAbsent
+          ? const Value.absent()
+          : Value(summary),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
+      episodeId: episodeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(episodeId),
+      thumbUrl: thumbUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(thumbUrl),
+    );
+  }
+
+  factory IptvProgrammeRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return IptvProgrammeRow(
+      sourceId: serializer.fromJson<String>(json['sourceId']),
+      channelId: serializer.fromJson<String>(json['channelId']),
+      beginsAt: serializer.fromJson<int>(json['beginsAt']),
+      endsAt: serializer.fromJson<int>(json['endsAt']),
+      title: serializer.fromJson<String>(json['title']),
+      summary: serializer.fromJson<String?>(json['summary']),
+      category: serializer.fromJson<String?>(json['category']),
+      episodeId: serializer.fromJson<String?>(json['episodeId']),
+      thumbUrl: serializer.fromJson<String?>(json['thumbUrl']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'sourceId': serializer.toJson<String>(sourceId),
+      'channelId': serializer.toJson<String>(channelId),
+      'beginsAt': serializer.toJson<int>(beginsAt),
+      'endsAt': serializer.toJson<int>(endsAt),
+      'title': serializer.toJson<String>(title),
+      'summary': serializer.toJson<String?>(summary),
+      'category': serializer.toJson<String?>(category),
+      'episodeId': serializer.toJson<String?>(episodeId),
+      'thumbUrl': serializer.toJson<String?>(thumbUrl),
+    };
+  }
+
+  IptvProgrammeRow copyWith({
+    String? sourceId,
+    String? channelId,
+    int? beginsAt,
+    int? endsAt,
+    String? title,
+    Value<String?> summary = const Value.absent(),
+    Value<String?> category = const Value.absent(),
+    Value<String?> episodeId = const Value.absent(),
+    Value<String?> thumbUrl = const Value.absent(),
+  }) => IptvProgrammeRow(
+    sourceId: sourceId ?? this.sourceId,
+    channelId: channelId ?? this.channelId,
+    beginsAt: beginsAt ?? this.beginsAt,
+    endsAt: endsAt ?? this.endsAt,
+    title: title ?? this.title,
+    summary: summary.present ? summary.value : this.summary,
+    category: category.present ? category.value : this.category,
+    episodeId: episodeId.present ? episodeId.value : this.episodeId,
+    thumbUrl: thumbUrl.present ? thumbUrl.value : this.thumbUrl,
+  );
+  IptvProgrammeRow copyWithCompanion(IptvProgrammesCompanion data) {
+    return IptvProgrammeRow(
+      sourceId: data.sourceId.present ? data.sourceId.value : this.sourceId,
+      channelId: data.channelId.present ? data.channelId.value : this.channelId,
+      beginsAt: data.beginsAt.present ? data.beginsAt.value : this.beginsAt,
+      endsAt: data.endsAt.present ? data.endsAt.value : this.endsAt,
+      title: data.title.present ? data.title.value : this.title,
+      summary: data.summary.present ? data.summary.value : this.summary,
+      category: data.category.present ? data.category.value : this.category,
+      episodeId: data.episodeId.present ? data.episodeId.value : this.episodeId,
+      thumbUrl: data.thumbUrl.present ? data.thumbUrl.value : this.thumbUrl,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IptvProgrammeRow(')
+          ..write('sourceId: $sourceId, ')
+          ..write('channelId: $channelId, ')
+          ..write('beginsAt: $beginsAt, ')
+          ..write('endsAt: $endsAt, ')
+          ..write('title: $title, ')
+          ..write('summary: $summary, ')
+          ..write('category: $category, ')
+          ..write('episodeId: $episodeId, ')
+          ..write('thumbUrl: $thumbUrl')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    sourceId,
+    channelId,
+    beginsAt,
+    endsAt,
+    title,
+    summary,
+    category,
+    episodeId,
+    thumbUrl,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is IptvProgrammeRow &&
+          other.sourceId == this.sourceId &&
+          other.channelId == this.channelId &&
+          other.beginsAt == this.beginsAt &&
+          other.endsAt == this.endsAt &&
+          other.title == this.title &&
+          other.summary == this.summary &&
+          other.category == this.category &&
+          other.episodeId == this.episodeId &&
+          other.thumbUrl == this.thumbUrl);
+}
+
+class IptvProgrammesCompanion extends UpdateCompanion<IptvProgrammeRow> {
+  final Value<String> sourceId;
+  final Value<String> channelId;
+  final Value<int> beginsAt;
+  final Value<int> endsAt;
+  final Value<String> title;
+  final Value<String?> summary;
+  final Value<String?> category;
+  final Value<String?> episodeId;
+  final Value<String?> thumbUrl;
+  final Value<int> rowid;
+  const IptvProgrammesCompanion({
+    this.sourceId = const Value.absent(),
+    this.channelId = const Value.absent(),
+    this.beginsAt = const Value.absent(),
+    this.endsAt = const Value.absent(),
+    this.title = const Value.absent(),
+    this.summary = const Value.absent(),
+    this.category = const Value.absent(),
+    this.episodeId = const Value.absent(),
+    this.thumbUrl = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  IptvProgrammesCompanion.insert({
+    required String sourceId,
+    required String channelId,
+    required int beginsAt,
+    required int endsAt,
+    required String title,
+    this.summary = const Value.absent(),
+    this.category = const Value.absent(),
+    this.episodeId = const Value.absent(),
+    this.thumbUrl = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : sourceId = Value(sourceId),
+       channelId = Value(channelId),
+       beginsAt = Value(beginsAt),
+       endsAt = Value(endsAt),
+       title = Value(title);
+  static Insertable<IptvProgrammeRow> custom({
+    Expression<String>? sourceId,
+    Expression<String>? channelId,
+    Expression<int>? beginsAt,
+    Expression<int>? endsAt,
+    Expression<String>? title,
+    Expression<String>? summary,
+    Expression<String>? category,
+    Expression<String>? episodeId,
+    Expression<String>? thumbUrl,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (sourceId != null) 'source_id': sourceId,
+      if (channelId != null) 'channel_id': channelId,
+      if (beginsAt != null) 'begins_at': beginsAt,
+      if (endsAt != null) 'ends_at': endsAt,
+      if (title != null) 'title': title,
+      if (summary != null) 'summary': summary,
+      if (category != null) 'category': category,
+      if (episodeId != null) 'episode_id': episodeId,
+      if (thumbUrl != null) 'thumb_url': thumbUrl,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  IptvProgrammesCompanion copyWith({
+    Value<String>? sourceId,
+    Value<String>? channelId,
+    Value<int>? beginsAt,
+    Value<int>? endsAt,
+    Value<String>? title,
+    Value<String?>? summary,
+    Value<String?>? category,
+    Value<String?>? episodeId,
+    Value<String?>? thumbUrl,
+    Value<int>? rowid,
+  }) {
+    return IptvProgrammesCompanion(
+      sourceId: sourceId ?? this.sourceId,
+      channelId: channelId ?? this.channelId,
+      beginsAt: beginsAt ?? this.beginsAt,
+      endsAt: endsAt ?? this.endsAt,
+      title: title ?? this.title,
+      summary: summary ?? this.summary,
+      category: category ?? this.category,
+      episodeId: episodeId ?? this.episodeId,
+      thumbUrl: thumbUrl ?? this.thumbUrl,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (sourceId.present) {
+      map['source_id'] = Variable<String>(sourceId.value);
+    }
+    if (channelId.present) {
+      map['channel_id'] = Variable<String>(channelId.value);
+    }
+    if (beginsAt.present) {
+      map['begins_at'] = Variable<int>(beginsAt.value);
+    }
+    if (endsAt.present) {
+      map['ends_at'] = Variable<int>(endsAt.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (summary.present) {
+      map['summary'] = Variable<String>(summary.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (episodeId.present) {
+      map['episode_id'] = Variable<String>(episodeId.value);
+    }
+    if (thumbUrl.present) {
+      map['thumb_url'] = Variable<String>(thumbUrl.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IptvProgrammesCompanion(')
+          ..write('sourceId: $sourceId, ')
+          ..write('channelId: $channelId, ')
+          ..write('beginsAt: $beginsAt, ')
+          ..write('endsAt: $endsAt, ')
+          ..write('title: $title, ')
+          ..write('summary: $summary, ')
+          ..write('category: $category, ')
+          ..write('episodeId: $episodeId, ')
+          ..write('thumbUrl: $thumbUrl, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $IptvChannelOverridesTable extends IptvChannelOverrides
+    with TableInfo<$IptvChannelOverridesTable, IptvChannelOverrideRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $IptvChannelOverridesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _profileIdMeta = const VerificationMeta(
+    'profileId',
+  );
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceIdMeta = const VerificationMeta(
+    'sourceId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceId = GeneratedColumn<String>(
+    'source_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES iptv_sources (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _channelIdMeta = const VerificationMeta(
+    'channelId',
+  );
+  @override
+  late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
+    'channel_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _favoriteMeta = const VerificationMeta(
+    'favorite',
+  );
+  @override
+  late final GeneratedColumn<bool> favorite = GeneratedColumn<bool>(
+    'favorite',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("favorite" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _favoriteOrderMeta = const VerificationMeta(
+    'favoriteOrder',
+  );
+  @override
+  late final GeneratedColumn<int> favoriteOrder = GeneratedColumn<int>(
+    'favorite_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _hiddenMeta = const VerificationMeta('hidden');
+  @override
+  late final GeneratedColumn<bool> hidden = GeneratedColumn<bool>(
+    'hidden',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("hidden" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _customTitleMeta = const VerificationMeta(
+    'customTitle',
+  );
+  @override
+  late final GeneratedColumn<String> customTitle = GeneratedColumn<String>(
+    'custom_title',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _groupOverrideMeta = const VerificationMeta(
+    'groupOverride',
+  );
+  @override
+  late final GeneratedColumn<String> groupOverride = GeneratedColumn<String>(
+    'group_override',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _guideIdOverrideMeta = const VerificationMeta(
+    'guideIdOverride',
+  );
+  @override
+  late final GeneratedColumn<String> guideIdOverride = GeneratedColumn<String>(
+    'guide_id_override',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _parentalLockedMeta = const VerificationMeta(
+    'parentalLocked',
+  );
+  @override
+  late final GeneratedColumn<bool> parentalLocked = GeneratedColumn<bool>(
+    'parental_locked',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("parental_locked" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    profileId,
+    sourceId,
+    channelId,
+    favorite,
+    favoriteOrder,
+    hidden,
+    customTitle,
+    groupOverride,
+    guideIdOverride,
+    parentalLocked,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'iptv_channel_overrides';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<IptvChannelOverrideRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('profile_id')) {
+      context.handle(
+        _profileIdMeta,
+        profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('source_id')) {
+      context.handle(
+        _sourceIdMeta,
+        sourceId.isAcceptableOrUnknown(data['source_id']!, _sourceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceIdMeta);
+    }
+    if (data.containsKey('channel_id')) {
+      context.handle(
+        _channelIdMeta,
+        channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_channelIdMeta);
+    }
+    if (data.containsKey('favorite')) {
+      context.handle(
+        _favoriteMeta,
+        favorite.isAcceptableOrUnknown(data['favorite']!, _favoriteMeta),
+      );
+    }
+    if (data.containsKey('favorite_order')) {
+      context.handle(
+        _favoriteOrderMeta,
+        favoriteOrder.isAcceptableOrUnknown(
+          data['favorite_order']!,
+          _favoriteOrderMeta,
+        ),
+      );
+    }
+    if (data.containsKey('hidden')) {
+      context.handle(
+        _hiddenMeta,
+        hidden.isAcceptableOrUnknown(data['hidden']!, _hiddenMeta),
+      );
+    }
+    if (data.containsKey('custom_title')) {
+      context.handle(
+        _customTitleMeta,
+        customTitle.isAcceptableOrUnknown(
+          data['custom_title']!,
+          _customTitleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('group_override')) {
+      context.handle(
+        _groupOverrideMeta,
+        groupOverride.isAcceptableOrUnknown(
+          data['group_override']!,
+          _groupOverrideMeta,
+        ),
+      );
+    }
+    if (data.containsKey('guide_id_override')) {
+      context.handle(
+        _guideIdOverrideMeta,
+        guideIdOverride.isAcceptableOrUnknown(
+          data['guide_id_override']!,
+          _guideIdOverrideMeta,
+        ),
+      );
+    }
+    if (data.containsKey('parental_locked')) {
+      context.handle(
+        _parentalLockedMeta,
+        parentalLocked.isAcceptableOrUnknown(
+          data['parental_locked']!,
+          _parentalLockedMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {profileId, sourceId, channelId};
+  @override
+  IptvChannelOverrideRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return IptvChannelOverrideRow(
+      profileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profile_id'],
+      )!,
+      sourceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_id'],
+      )!,
+      channelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_id'],
+      )!,
+      favorite: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}favorite'],
+      )!,
+      favoriteOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}favorite_order'],
+      )!,
+      hidden: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}hidden'],
+      )!,
+      customTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}custom_title'],
+      ),
+      groupOverride: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_override'],
+      ),
+      guideIdOverride: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}guide_id_override'],
+      ),
+      parentalLocked: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}parental_locked'],
+      )!,
+    );
+  }
+
+  @override
+  $IptvChannelOverridesTable createAlias(String alias) {
+    return $IptvChannelOverridesTable(attachedDatabase, alias);
+  }
+}
+
+class IptvChannelOverrideRow extends DataClass
+    implements Insertable<IptvChannelOverrideRow> {
+  final String profileId;
+  final String sourceId;
+  final String channelId;
+  final bool favorite;
+  final int favoriteOrder;
+  final bool hidden;
+  final String? customTitle;
+  final String? groupOverride;
+  final String? guideIdOverride;
+  final bool parentalLocked;
+  const IptvChannelOverrideRow({
+    required this.profileId,
+    required this.sourceId,
+    required this.channelId,
+    required this.favorite,
+    required this.favoriteOrder,
+    required this.hidden,
+    this.customTitle,
+    this.groupOverride,
+    this.guideIdOverride,
+    required this.parentalLocked,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['profile_id'] = Variable<String>(profileId);
+    map['source_id'] = Variable<String>(sourceId);
+    map['channel_id'] = Variable<String>(channelId);
+    map['favorite'] = Variable<bool>(favorite);
+    map['favorite_order'] = Variable<int>(favoriteOrder);
+    map['hidden'] = Variable<bool>(hidden);
+    if (!nullToAbsent || customTitle != null) {
+      map['custom_title'] = Variable<String>(customTitle);
+    }
+    if (!nullToAbsent || groupOverride != null) {
+      map['group_override'] = Variable<String>(groupOverride);
+    }
+    if (!nullToAbsent || guideIdOverride != null) {
+      map['guide_id_override'] = Variable<String>(guideIdOverride);
+    }
+    map['parental_locked'] = Variable<bool>(parentalLocked);
+    return map;
+  }
+
+  IptvChannelOverridesCompanion toCompanion(bool nullToAbsent) {
+    return IptvChannelOverridesCompanion(
+      profileId: Value(profileId),
+      sourceId: Value(sourceId),
+      channelId: Value(channelId),
+      favorite: Value(favorite),
+      favoriteOrder: Value(favoriteOrder),
+      hidden: Value(hidden),
+      customTitle: customTitle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customTitle),
+      groupOverride: groupOverride == null && nullToAbsent
+          ? const Value.absent()
+          : Value(groupOverride),
+      guideIdOverride: guideIdOverride == null && nullToAbsent
+          ? const Value.absent()
+          : Value(guideIdOverride),
+      parentalLocked: Value(parentalLocked),
+    );
+  }
+
+  factory IptvChannelOverrideRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return IptvChannelOverrideRow(
+      profileId: serializer.fromJson<String>(json['profileId']),
+      sourceId: serializer.fromJson<String>(json['sourceId']),
+      channelId: serializer.fromJson<String>(json['channelId']),
+      favorite: serializer.fromJson<bool>(json['favorite']),
+      favoriteOrder: serializer.fromJson<int>(json['favoriteOrder']),
+      hidden: serializer.fromJson<bool>(json['hidden']),
+      customTitle: serializer.fromJson<String?>(json['customTitle']),
+      groupOverride: serializer.fromJson<String?>(json['groupOverride']),
+      guideIdOverride: serializer.fromJson<String?>(json['guideIdOverride']),
+      parentalLocked: serializer.fromJson<bool>(json['parentalLocked']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'profileId': serializer.toJson<String>(profileId),
+      'sourceId': serializer.toJson<String>(sourceId),
+      'channelId': serializer.toJson<String>(channelId),
+      'favorite': serializer.toJson<bool>(favorite),
+      'favoriteOrder': serializer.toJson<int>(favoriteOrder),
+      'hidden': serializer.toJson<bool>(hidden),
+      'customTitle': serializer.toJson<String?>(customTitle),
+      'groupOverride': serializer.toJson<String?>(groupOverride),
+      'guideIdOverride': serializer.toJson<String?>(guideIdOverride),
+      'parentalLocked': serializer.toJson<bool>(parentalLocked),
+    };
+  }
+
+  IptvChannelOverrideRow copyWith({
+    String? profileId,
+    String? sourceId,
+    String? channelId,
+    bool? favorite,
+    int? favoriteOrder,
+    bool? hidden,
+    Value<String?> customTitle = const Value.absent(),
+    Value<String?> groupOverride = const Value.absent(),
+    Value<String?> guideIdOverride = const Value.absent(),
+    bool? parentalLocked,
+  }) => IptvChannelOverrideRow(
+    profileId: profileId ?? this.profileId,
+    sourceId: sourceId ?? this.sourceId,
+    channelId: channelId ?? this.channelId,
+    favorite: favorite ?? this.favorite,
+    favoriteOrder: favoriteOrder ?? this.favoriteOrder,
+    hidden: hidden ?? this.hidden,
+    customTitle: customTitle.present ? customTitle.value : this.customTitle,
+    groupOverride: groupOverride.present
+        ? groupOverride.value
+        : this.groupOverride,
+    guideIdOverride: guideIdOverride.present
+        ? guideIdOverride.value
+        : this.guideIdOverride,
+    parentalLocked: parentalLocked ?? this.parentalLocked,
+  );
+  IptvChannelOverrideRow copyWithCompanion(IptvChannelOverridesCompanion data) {
+    return IptvChannelOverrideRow(
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      sourceId: data.sourceId.present ? data.sourceId.value : this.sourceId,
+      channelId: data.channelId.present ? data.channelId.value : this.channelId,
+      favorite: data.favorite.present ? data.favorite.value : this.favorite,
+      favoriteOrder: data.favoriteOrder.present
+          ? data.favoriteOrder.value
+          : this.favoriteOrder,
+      hidden: data.hidden.present ? data.hidden.value : this.hidden,
+      customTitle: data.customTitle.present
+          ? data.customTitle.value
+          : this.customTitle,
+      groupOverride: data.groupOverride.present
+          ? data.groupOverride.value
+          : this.groupOverride,
+      guideIdOverride: data.guideIdOverride.present
+          ? data.guideIdOverride.value
+          : this.guideIdOverride,
+      parentalLocked: data.parentalLocked.present
+          ? data.parentalLocked.value
+          : this.parentalLocked,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IptvChannelOverrideRow(')
+          ..write('profileId: $profileId, ')
+          ..write('sourceId: $sourceId, ')
+          ..write('channelId: $channelId, ')
+          ..write('favorite: $favorite, ')
+          ..write('favoriteOrder: $favoriteOrder, ')
+          ..write('hidden: $hidden, ')
+          ..write('customTitle: $customTitle, ')
+          ..write('groupOverride: $groupOverride, ')
+          ..write('guideIdOverride: $guideIdOverride, ')
+          ..write('parentalLocked: $parentalLocked')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    profileId,
+    sourceId,
+    channelId,
+    favorite,
+    favoriteOrder,
+    hidden,
+    customTitle,
+    groupOverride,
+    guideIdOverride,
+    parentalLocked,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is IptvChannelOverrideRow &&
+          other.profileId == this.profileId &&
+          other.sourceId == this.sourceId &&
+          other.channelId == this.channelId &&
+          other.favorite == this.favorite &&
+          other.favoriteOrder == this.favoriteOrder &&
+          other.hidden == this.hidden &&
+          other.customTitle == this.customTitle &&
+          other.groupOverride == this.groupOverride &&
+          other.guideIdOverride == this.guideIdOverride &&
+          other.parentalLocked == this.parentalLocked);
+}
+
+class IptvChannelOverridesCompanion
+    extends UpdateCompanion<IptvChannelOverrideRow> {
+  final Value<String> profileId;
+  final Value<String> sourceId;
+  final Value<String> channelId;
+  final Value<bool> favorite;
+  final Value<int> favoriteOrder;
+  final Value<bool> hidden;
+  final Value<String?> customTitle;
+  final Value<String?> groupOverride;
+  final Value<String?> guideIdOverride;
+  final Value<bool> parentalLocked;
+  final Value<int> rowid;
+  const IptvChannelOverridesCompanion({
+    this.profileId = const Value.absent(),
+    this.sourceId = const Value.absent(),
+    this.channelId = const Value.absent(),
+    this.favorite = const Value.absent(),
+    this.favoriteOrder = const Value.absent(),
+    this.hidden = const Value.absent(),
+    this.customTitle = const Value.absent(),
+    this.groupOverride = const Value.absent(),
+    this.guideIdOverride = const Value.absent(),
+    this.parentalLocked = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  IptvChannelOverridesCompanion.insert({
+    required String profileId,
+    required String sourceId,
+    required String channelId,
+    this.favorite = const Value.absent(),
+    this.favoriteOrder = const Value.absent(),
+    this.hidden = const Value.absent(),
+    this.customTitle = const Value.absent(),
+    this.groupOverride = const Value.absent(),
+    this.guideIdOverride = const Value.absent(),
+    this.parentalLocked = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : profileId = Value(profileId),
+       sourceId = Value(sourceId),
+       channelId = Value(channelId);
+  static Insertable<IptvChannelOverrideRow> custom({
+    Expression<String>? profileId,
+    Expression<String>? sourceId,
+    Expression<String>? channelId,
+    Expression<bool>? favorite,
+    Expression<int>? favoriteOrder,
+    Expression<bool>? hidden,
+    Expression<String>? customTitle,
+    Expression<String>? groupOverride,
+    Expression<String>? guideIdOverride,
+    Expression<bool>? parentalLocked,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (profileId != null) 'profile_id': profileId,
+      if (sourceId != null) 'source_id': sourceId,
+      if (channelId != null) 'channel_id': channelId,
+      if (favorite != null) 'favorite': favorite,
+      if (favoriteOrder != null) 'favorite_order': favoriteOrder,
+      if (hidden != null) 'hidden': hidden,
+      if (customTitle != null) 'custom_title': customTitle,
+      if (groupOverride != null) 'group_override': groupOverride,
+      if (guideIdOverride != null) 'guide_id_override': guideIdOverride,
+      if (parentalLocked != null) 'parental_locked': parentalLocked,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  IptvChannelOverridesCompanion copyWith({
+    Value<String>? profileId,
+    Value<String>? sourceId,
+    Value<String>? channelId,
+    Value<bool>? favorite,
+    Value<int>? favoriteOrder,
+    Value<bool>? hidden,
+    Value<String?>? customTitle,
+    Value<String?>? groupOverride,
+    Value<String?>? guideIdOverride,
+    Value<bool>? parentalLocked,
+    Value<int>? rowid,
+  }) {
+    return IptvChannelOverridesCompanion(
+      profileId: profileId ?? this.profileId,
+      sourceId: sourceId ?? this.sourceId,
+      channelId: channelId ?? this.channelId,
+      favorite: favorite ?? this.favorite,
+      favoriteOrder: favoriteOrder ?? this.favoriteOrder,
+      hidden: hidden ?? this.hidden,
+      customTitle: customTitle ?? this.customTitle,
+      groupOverride: groupOverride ?? this.groupOverride,
+      guideIdOverride: guideIdOverride ?? this.guideIdOverride,
+      parentalLocked: parentalLocked ?? this.parentalLocked,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (sourceId.present) {
+      map['source_id'] = Variable<String>(sourceId.value);
+    }
+    if (channelId.present) {
+      map['channel_id'] = Variable<String>(channelId.value);
+    }
+    if (favorite.present) {
+      map['favorite'] = Variable<bool>(favorite.value);
+    }
+    if (favoriteOrder.present) {
+      map['favorite_order'] = Variable<int>(favoriteOrder.value);
+    }
+    if (hidden.present) {
+      map['hidden'] = Variable<bool>(hidden.value);
+    }
+    if (customTitle.present) {
+      map['custom_title'] = Variable<String>(customTitle.value);
+    }
+    if (groupOverride.present) {
+      map['group_override'] = Variable<String>(groupOverride.value);
+    }
+    if (guideIdOverride.present) {
+      map['guide_id_override'] = Variable<String>(guideIdOverride.value);
+    }
+    if (parentalLocked.present) {
+      map['parental_locked'] = Variable<bool>(parentalLocked.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IptvChannelOverridesCompanion(')
+          ..write('profileId: $profileId, ')
+          ..write('sourceId: $sourceId, ')
+          ..write('channelId: $channelId, ')
+          ..write('favorite: $favorite, ')
+          ..write('favoriteOrder: $favoriteOrder, ')
+          ..write('hidden: $hidden, ')
+          ..write('customTitle: $customTitle, ')
+          ..write('groupOverride: $groupOverride, ')
+          ..write('guideIdOverride: $guideIdOverride, ')
+          ..write('parentalLocked: $parentalLocked, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7435,6 +10101,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ProfileConnectionsTable profileConnections =
       $ProfileConnectionsTable(this);
   late final $MusicSessionsTable musicSessions = $MusicSessionsTable(this);
+  late final $IptvSourcesTable iptvSources = $IptvSourcesTable(this);
+  late final $IptvChannelsTable iptvChannels = $IptvChannelsTable(this);
+  late final $IptvProgrammesTable iptvProgrammes = $IptvProgrammesTable(this);
+  late final $IptvChannelOverridesTable iptvChannelOverrides =
+      $IptvChannelOverridesTable(this);
   late final Index idxDownloadedMediaStatus = Index(
     'idx_downloaded_media_status',
     'CREATE INDEX idx_downloaded_media_status ON downloaded_media (status)',
@@ -7491,6 +10162,30 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_profile_connections_profile_id',
     'CREATE INDEX idx_profile_connections_profile_id ON profile_connections (profile_id)',
   );
+  late final Index idxIptvSourcesProfile = Index(
+    'idx_iptv_sources_profile',
+    'CREATE INDEX idx_iptv_sources_profile ON iptv_sources (profile_id, created_at)',
+  );
+  late final Index idxIptvChannelsSourceNumber = Index(
+    'idx_iptv_channels_source_number',
+    'CREATE INDEX idx_iptv_channels_source_number ON iptv_channels (source_id, number)',
+  );
+  late final Index idxIptvChannelsSourceTvg = Index(
+    'idx_iptv_channels_source_tvg',
+    'CREATE INDEX idx_iptv_channels_source_tvg ON iptv_channels (source_id, tvg_id)',
+  );
+  late final Index idxIptvProgrammesChannelTime = Index(
+    'idx_iptv_programmes_channel_time',
+    'CREATE INDEX idx_iptv_programmes_channel_time ON iptv_programmes (source_id, channel_id, begins_at)',
+  );
+  late final Index idxIptvProgrammesTime = Index(
+    'idx_iptv_programmes_time',
+    'CREATE INDEX idx_iptv_programmes_time ON iptv_programmes (source_id, begins_at, ends_at)',
+  );
+  late final Index idxIptvOverridesFavorites = Index(
+    'idx_iptv_overrides_favorites',
+    'CREATE INDEX idx_iptv_overrides_favorites ON iptv_channel_overrides (profile_id, favorite, favorite_order)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7509,6 +10204,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     profiles,
     profileConnections,
     musicSessions,
+    iptvSources,
+    iptvChannels,
+    iptvProgrammes,
+    iptvChannelOverrides,
     idxDownloadedMediaStatus,
     idxDownloadedMediaServer,
     idxDownloadedMediaParent,
@@ -7523,6 +10222,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxProfilesKind,
     idxProfileConnectionsConnectionId,
     idxProfileConnectionsProfileId,
+    idxIptvSourcesProfile,
+    idxIptvChannelsSourceNumber,
+    idxIptvChannelsSourceTvg,
+    idxIptvProgrammesChannelTime,
+    idxIptvProgrammesTime,
+    idxIptvOverridesFavorites,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -7539,6 +10244,27 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('profile_connections', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'iptv_sources',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('iptv_channels', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'iptv_sources',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('iptv_programmes', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'iptv_sources',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('iptv_channel_overrides', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -11669,6 +14395,1938 @@ typedef $$MusicSessionsTableProcessedTableManager =
       MusicSessionRow,
       PrefetchHooks Function()
     >;
+typedef $$IptvSourcesTableCreateCompanionBuilder =
+    IptvSourcesCompanion Function({
+      required String id,
+      required String profileId,
+      required String displayName,
+      required String kind,
+      required String configCiphertext,
+      Value<int> revision,
+      Value<int> generation,
+      required int createdAt,
+      Value<int?> lastSuccessAt,
+      Value<String?> lastErrorCode,
+      Value<int> rowid,
+    });
+typedef $$IptvSourcesTableUpdateCompanionBuilder =
+    IptvSourcesCompanion Function({
+      Value<String> id,
+      Value<String> profileId,
+      Value<String> displayName,
+      Value<String> kind,
+      Value<String> configCiphertext,
+      Value<int> revision,
+      Value<int> generation,
+      Value<int> createdAt,
+      Value<int?> lastSuccessAt,
+      Value<String?> lastErrorCode,
+      Value<int> rowid,
+    });
+
+final class $$IptvSourcesTableReferences
+    extends BaseReferences<_$AppDatabase, $IptvSourcesTable, IptvSourceRow> {
+  $$IptvSourcesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$IptvChannelsTable, List<IptvChannelRow>>
+  _iptvChannelsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.iptvChannels,
+    aliasName: 'iptv_sources__id__iptv_channels__source_id',
+  );
+
+  $$IptvChannelsTableProcessedTableManager get iptvChannelsRefs {
+    final manager = $$IptvChannelsTableTableManager(
+      $_db,
+      $_db.iptvChannels,
+    ).filter((f) => f.sourceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_iptvChannelsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$IptvProgrammesTable, List<IptvProgrammeRow>>
+  _iptvProgrammesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.iptvProgrammes,
+    aliasName: 'iptv_sources__id__iptv_programmes__source_id',
+  );
+
+  $$IptvProgrammesTableProcessedTableManager get iptvProgrammesRefs {
+    final manager = $$IptvProgrammesTableTableManager(
+      $_db,
+      $_db.iptvProgrammes,
+    ).filter((f) => f.sourceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_iptvProgrammesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $IptvChannelOverridesTable,
+    List<IptvChannelOverrideRow>
+  >
+  _iptvChannelOverridesRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.iptvChannelOverrides,
+        aliasName: 'iptv_sources__id__iptv_channel_overrides__source_id',
+      );
+
+  $$IptvChannelOverridesTableProcessedTableManager
+  get iptvChannelOverridesRefs {
+    final manager = $$IptvChannelOverridesTableTableManager(
+      $_db,
+      $_db.iptvChannelOverrides,
+    ).filter((f) => f.sourceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _iptvChannelOverridesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$IptvSourcesTableFilterComposer
+    extends Composer<_$AppDatabase, $IptvSourcesTable> {
+  $$IptvSourcesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get profileId => $composableBuilder(
+    column: $table.profileId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get configCiphertext => $composableBuilder(
+    column: $table.configCiphertext,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get generation => $composableBuilder(
+    column: $table.generation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lastSuccessAt => $composableBuilder(
+    column: $table.lastSuccessAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> iptvChannelsRefs(
+    Expression<bool> Function($$IptvChannelsTableFilterComposer f) f,
+  ) {
+    final $$IptvChannelsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.iptvChannels,
+      getReferencedColumn: (t) => t.sourceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvChannelsTableFilterComposer(
+            $db: $db,
+            $table: $db.iptvChannels,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> iptvProgrammesRefs(
+    Expression<bool> Function($$IptvProgrammesTableFilterComposer f) f,
+  ) {
+    final $$IptvProgrammesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.iptvProgrammes,
+      getReferencedColumn: (t) => t.sourceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvProgrammesTableFilterComposer(
+            $db: $db,
+            $table: $db.iptvProgrammes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> iptvChannelOverridesRefs(
+    Expression<bool> Function($$IptvChannelOverridesTableFilterComposer f) f,
+  ) {
+    final $$IptvChannelOverridesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.iptvChannelOverrides,
+      getReferencedColumn: (t) => t.sourceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvChannelOverridesTableFilterComposer(
+            $db: $db,
+            $table: $db.iptvChannelOverrides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$IptvSourcesTableOrderingComposer
+    extends Composer<_$AppDatabase, $IptvSourcesTable> {
+  $$IptvSourcesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get profileId => $composableBuilder(
+    column: $table.profileId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get configCiphertext => $composableBuilder(
+    column: $table.configCiphertext,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get generation => $composableBuilder(
+    column: $table.generation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastSuccessAt => $composableBuilder(
+    column: $table.lastSuccessAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$IptvSourcesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $IptvSourcesTable> {
+  $$IptvSourcesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get profileId =>
+      $composableBuilder(column: $table.profileId, builder: (column) => column);
+
+  GeneratedColumn<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get configCiphertext => $composableBuilder(
+    column: $table.configCiphertext,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumn<int> get generation => $composableBuilder(
+    column: $table.generation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get lastSuccessAt => $composableBuilder(
+    column: $table.lastSuccessAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => column,
+  );
+
+  Expression<T> iptvChannelsRefs<T extends Object>(
+    Expression<T> Function($$IptvChannelsTableAnnotationComposer a) f,
+  ) {
+    final $$IptvChannelsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.iptvChannels,
+      getReferencedColumn: (t) => t.sourceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvChannelsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.iptvChannels,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> iptvProgrammesRefs<T extends Object>(
+    Expression<T> Function($$IptvProgrammesTableAnnotationComposer a) f,
+  ) {
+    final $$IptvProgrammesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.iptvProgrammes,
+      getReferencedColumn: (t) => t.sourceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvProgrammesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.iptvProgrammes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> iptvChannelOverridesRefs<T extends Object>(
+    Expression<T> Function($$IptvChannelOverridesTableAnnotationComposer a) f,
+  ) {
+    final $$IptvChannelOverridesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.iptvChannelOverrides,
+          getReferencedColumn: (t) => t.sourceId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$IptvChannelOverridesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.iptvChannelOverrides,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$IptvSourcesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $IptvSourcesTable,
+          IptvSourceRow,
+          $$IptvSourcesTableFilterComposer,
+          $$IptvSourcesTableOrderingComposer,
+          $$IptvSourcesTableAnnotationComposer,
+          $$IptvSourcesTableCreateCompanionBuilder,
+          $$IptvSourcesTableUpdateCompanionBuilder,
+          (IptvSourceRow, $$IptvSourcesTableReferences),
+          IptvSourceRow,
+          PrefetchHooks Function({
+            bool iptvChannelsRefs,
+            bool iptvProgrammesRefs,
+            bool iptvChannelOverridesRefs,
+          })
+        > {
+  $$IptvSourcesTableTableManager(_$AppDatabase db, $IptvSourcesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$IptvSourcesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$IptvSourcesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$IptvSourcesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> profileId = const Value.absent(),
+                Value<String> displayName = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<String> configCiphertext = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<int> generation = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int?> lastSuccessAt = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => IptvSourcesCompanion(
+                id: id,
+                profileId: profileId,
+                displayName: displayName,
+                kind: kind,
+                configCiphertext: configCiphertext,
+                revision: revision,
+                generation: generation,
+                createdAt: createdAt,
+                lastSuccessAt: lastSuccessAt,
+                lastErrorCode: lastErrorCode,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String profileId,
+                required String displayName,
+                required String kind,
+                required String configCiphertext,
+                Value<int> revision = const Value.absent(),
+                Value<int> generation = const Value.absent(),
+                required int createdAt,
+                Value<int?> lastSuccessAt = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => IptvSourcesCompanion.insert(
+                id: id,
+                profileId: profileId,
+                displayName: displayName,
+                kind: kind,
+                configCiphertext: configCiphertext,
+                revision: revision,
+                generation: generation,
+                createdAt: createdAt,
+                lastSuccessAt: lastSuccessAt,
+                lastErrorCode: lastErrorCode,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$IptvSourcesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                iptvChannelsRefs = false,
+                iptvProgrammesRefs = false,
+                iptvChannelOverridesRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (iptvChannelsRefs) db.iptvChannels,
+                    if (iptvProgrammesRefs) db.iptvProgrammes,
+                    if (iptvChannelOverridesRefs) db.iptvChannelOverrides,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (iptvChannelsRefs)
+                        await $_getPrefetchedData<
+                          IptvSourceRow,
+                          $IptvSourcesTable,
+                          IptvChannelRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$IptvSourcesTableReferences
+                              ._iptvChannelsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$IptvSourcesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).iptvChannelsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sourceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (iptvProgrammesRefs)
+                        await $_getPrefetchedData<
+                          IptvSourceRow,
+                          $IptvSourcesTable,
+                          IptvProgrammeRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$IptvSourcesTableReferences
+                              ._iptvProgrammesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$IptvSourcesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).iptvProgrammesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sourceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (iptvChannelOverridesRefs)
+                        await $_getPrefetchedData<
+                          IptvSourceRow,
+                          $IptvSourcesTable,
+                          IptvChannelOverrideRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$IptvSourcesTableReferences
+                              ._iptvChannelOverridesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$IptvSourcesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).iptvChannelOverridesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sourceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$IptvSourcesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $IptvSourcesTable,
+      IptvSourceRow,
+      $$IptvSourcesTableFilterComposer,
+      $$IptvSourcesTableOrderingComposer,
+      $$IptvSourcesTableAnnotationComposer,
+      $$IptvSourcesTableCreateCompanionBuilder,
+      $$IptvSourcesTableUpdateCompanionBuilder,
+      (IptvSourceRow, $$IptvSourcesTableReferences),
+      IptvSourceRow,
+      PrefetchHooks Function({
+        bool iptvChannelsRefs,
+        bool iptvProgrammesRefs,
+        bool iptvChannelOverridesRefs,
+      })
+    >;
+typedef $$IptvChannelsTableCreateCompanionBuilder =
+    IptvChannelsCompanion Function({
+      required String sourceId,
+      required String channelId,
+      required String title,
+      Value<String?> tvgId,
+      Value<String?> number,
+      Value<String?> groupTitle,
+      Value<String?> logoUrl,
+      Value<String?> catchupSourceCiphertext,
+      Value<int?> catchupDays,
+      required String streamUrlCiphertext,
+      Value<String?> streamHeadersCiphertext,
+      Value<bool> isRadio,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$IptvChannelsTableUpdateCompanionBuilder =
+    IptvChannelsCompanion Function({
+      Value<String> sourceId,
+      Value<String> channelId,
+      Value<String> title,
+      Value<String?> tvgId,
+      Value<String?> number,
+      Value<String?> groupTitle,
+      Value<String?> logoUrl,
+      Value<String?> catchupSourceCiphertext,
+      Value<int?> catchupDays,
+      Value<String> streamUrlCiphertext,
+      Value<String?> streamHeadersCiphertext,
+      Value<bool> isRadio,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$IptvChannelsTableReferences
+    extends BaseReferences<_$AppDatabase, $IptvChannelsTable, IptvChannelRow> {
+  $$IptvChannelsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $IptvSourcesTable _sourceIdTable(_$AppDatabase db) =>
+      db.iptvSources.createAlias('iptv_channels__source_id__iptv_sources__id');
+
+  $$IptvSourcesTableProcessedTableManager get sourceId {
+    final $_column = $_itemColumn<String>('source_id')!;
+
+    final manager = $$IptvSourcesTableTableManager(
+      $_db,
+      $_db.iptvSources,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sourceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$IptvChannelsTableFilterComposer
+    extends Composer<_$AppDatabase, $IptvChannelsTable> {
+  $$IptvChannelsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get channelId => $composableBuilder(
+    column: $table.channelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tvgId => $composableBuilder(
+    column: $table.tvgId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get number => $composableBuilder(
+    column: $table.number,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupTitle => $composableBuilder(
+    column: $table.groupTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get logoUrl => $composableBuilder(
+    column: $table.logoUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get catchupSourceCiphertext => $composableBuilder(
+    column: $table.catchupSourceCiphertext,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get catchupDays => $composableBuilder(
+    column: $table.catchupDays,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get streamUrlCiphertext => $composableBuilder(
+    column: $table.streamUrlCiphertext,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get streamHeadersCiphertext => $composableBuilder(
+    column: $table.streamHeadersCiphertext,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isRadio => $composableBuilder(
+    column: $table.isRadio,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$IptvSourcesTableFilterComposer get sourceId {
+    final $$IptvSourcesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceId,
+      referencedTable: $db.iptvSources,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvSourcesTableFilterComposer(
+            $db: $db,
+            $table: $db.iptvSources,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$IptvChannelsTableOrderingComposer
+    extends Composer<_$AppDatabase, $IptvChannelsTable> {
+  $$IptvChannelsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get channelId => $composableBuilder(
+    column: $table.channelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tvgId => $composableBuilder(
+    column: $table.tvgId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get number => $composableBuilder(
+    column: $table.number,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupTitle => $composableBuilder(
+    column: $table.groupTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get logoUrl => $composableBuilder(
+    column: $table.logoUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get catchupSourceCiphertext => $composableBuilder(
+    column: $table.catchupSourceCiphertext,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get catchupDays => $composableBuilder(
+    column: $table.catchupDays,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get streamUrlCiphertext => $composableBuilder(
+    column: $table.streamUrlCiphertext,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get streamHeadersCiphertext => $composableBuilder(
+    column: $table.streamHeadersCiphertext,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isRadio => $composableBuilder(
+    column: $table.isRadio,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$IptvSourcesTableOrderingComposer get sourceId {
+    final $$IptvSourcesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceId,
+      referencedTable: $db.iptvSources,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvSourcesTableOrderingComposer(
+            $db: $db,
+            $table: $db.iptvSources,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$IptvChannelsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $IptvChannelsTable> {
+  $$IptvChannelsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get channelId =>
+      $composableBuilder(column: $table.channelId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get tvgId =>
+      $composableBuilder(column: $table.tvgId, builder: (column) => column);
+
+  GeneratedColumn<String> get number =>
+      $composableBuilder(column: $table.number, builder: (column) => column);
+
+  GeneratedColumn<String> get groupTitle => $composableBuilder(
+    column: $table.groupTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get logoUrl =>
+      $composableBuilder(column: $table.logoUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get catchupSourceCiphertext => $composableBuilder(
+    column: $table.catchupSourceCiphertext,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get catchupDays => $composableBuilder(
+    column: $table.catchupDays,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get streamUrlCiphertext => $composableBuilder(
+    column: $table.streamUrlCiphertext,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get streamHeadersCiphertext => $composableBuilder(
+    column: $table.streamHeadersCiphertext,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isRadio =>
+      $composableBuilder(column: $table.isRadio, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$IptvSourcesTableAnnotationComposer get sourceId {
+    final $$IptvSourcesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceId,
+      referencedTable: $db.iptvSources,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvSourcesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.iptvSources,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$IptvChannelsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $IptvChannelsTable,
+          IptvChannelRow,
+          $$IptvChannelsTableFilterComposer,
+          $$IptvChannelsTableOrderingComposer,
+          $$IptvChannelsTableAnnotationComposer,
+          $$IptvChannelsTableCreateCompanionBuilder,
+          $$IptvChannelsTableUpdateCompanionBuilder,
+          (IptvChannelRow, $$IptvChannelsTableReferences),
+          IptvChannelRow,
+          PrefetchHooks Function({bool sourceId})
+        > {
+  $$IptvChannelsTableTableManager(_$AppDatabase db, $IptvChannelsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$IptvChannelsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$IptvChannelsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$IptvChannelsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> sourceId = const Value.absent(),
+                Value<String> channelId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> tvgId = const Value.absent(),
+                Value<String?> number = const Value.absent(),
+                Value<String?> groupTitle = const Value.absent(),
+                Value<String?> logoUrl = const Value.absent(),
+                Value<String?> catchupSourceCiphertext = const Value.absent(),
+                Value<int?> catchupDays = const Value.absent(),
+                Value<String> streamUrlCiphertext = const Value.absent(),
+                Value<String?> streamHeadersCiphertext = const Value.absent(),
+                Value<bool> isRadio = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => IptvChannelsCompanion(
+                sourceId: sourceId,
+                channelId: channelId,
+                title: title,
+                tvgId: tvgId,
+                number: number,
+                groupTitle: groupTitle,
+                logoUrl: logoUrl,
+                catchupSourceCiphertext: catchupSourceCiphertext,
+                catchupDays: catchupDays,
+                streamUrlCiphertext: streamUrlCiphertext,
+                streamHeadersCiphertext: streamHeadersCiphertext,
+                isRadio: isRadio,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String sourceId,
+                required String channelId,
+                required String title,
+                Value<String?> tvgId = const Value.absent(),
+                Value<String?> number = const Value.absent(),
+                Value<String?> groupTitle = const Value.absent(),
+                Value<String?> logoUrl = const Value.absent(),
+                Value<String?> catchupSourceCiphertext = const Value.absent(),
+                Value<int?> catchupDays = const Value.absent(),
+                required String streamUrlCiphertext,
+                Value<String?> streamHeadersCiphertext = const Value.absent(),
+                Value<bool> isRadio = const Value.absent(),
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => IptvChannelsCompanion.insert(
+                sourceId: sourceId,
+                channelId: channelId,
+                title: title,
+                tvgId: tvgId,
+                number: number,
+                groupTitle: groupTitle,
+                logoUrl: logoUrl,
+                catchupSourceCiphertext: catchupSourceCiphertext,
+                catchupDays: catchupDays,
+                streamUrlCiphertext: streamUrlCiphertext,
+                streamHeadersCiphertext: streamHeadersCiphertext,
+                isRadio: isRadio,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$IptvChannelsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({sourceId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (sourceId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.sourceId,
+                                referencedTable: $$IptvChannelsTableReferences
+                                    ._sourceIdTable(db),
+                                referencedColumn: $$IptvChannelsTableReferences
+                                    ._sourceIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$IptvChannelsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $IptvChannelsTable,
+      IptvChannelRow,
+      $$IptvChannelsTableFilterComposer,
+      $$IptvChannelsTableOrderingComposer,
+      $$IptvChannelsTableAnnotationComposer,
+      $$IptvChannelsTableCreateCompanionBuilder,
+      $$IptvChannelsTableUpdateCompanionBuilder,
+      (IptvChannelRow, $$IptvChannelsTableReferences),
+      IptvChannelRow,
+      PrefetchHooks Function({bool sourceId})
+    >;
+typedef $$IptvProgrammesTableCreateCompanionBuilder =
+    IptvProgrammesCompanion Function({
+      required String sourceId,
+      required String channelId,
+      required int beginsAt,
+      required int endsAt,
+      required String title,
+      Value<String?> summary,
+      Value<String?> category,
+      Value<String?> episodeId,
+      Value<String?> thumbUrl,
+      Value<int> rowid,
+    });
+typedef $$IptvProgrammesTableUpdateCompanionBuilder =
+    IptvProgrammesCompanion Function({
+      Value<String> sourceId,
+      Value<String> channelId,
+      Value<int> beginsAt,
+      Value<int> endsAt,
+      Value<String> title,
+      Value<String?> summary,
+      Value<String?> category,
+      Value<String?> episodeId,
+      Value<String?> thumbUrl,
+      Value<int> rowid,
+    });
+
+final class $$IptvProgrammesTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $IptvProgrammesTable, IptvProgrammeRow> {
+  $$IptvProgrammesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $IptvSourcesTable _sourceIdTable(_$AppDatabase db) => db.iptvSources
+      .createAlias('iptv_programmes__source_id__iptv_sources__id');
+
+  $$IptvSourcesTableProcessedTableManager get sourceId {
+    final $_column = $_itemColumn<String>('source_id')!;
+
+    final manager = $$IptvSourcesTableTableManager(
+      $_db,
+      $_db.iptvSources,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sourceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$IptvProgrammesTableFilterComposer
+    extends Composer<_$AppDatabase, $IptvProgrammesTable> {
+  $$IptvProgrammesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get channelId => $composableBuilder(
+    column: $table.channelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get beginsAt => $composableBuilder(
+    column: $table.beginsAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get endsAt => $composableBuilder(
+    column: $table.endsAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get summary => $composableBuilder(
+    column: $table.summary,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get episodeId => $composableBuilder(
+    column: $table.episodeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get thumbUrl => $composableBuilder(
+    column: $table.thumbUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$IptvSourcesTableFilterComposer get sourceId {
+    final $$IptvSourcesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceId,
+      referencedTable: $db.iptvSources,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvSourcesTableFilterComposer(
+            $db: $db,
+            $table: $db.iptvSources,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$IptvProgrammesTableOrderingComposer
+    extends Composer<_$AppDatabase, $IptvProgrammesTable> {
+  $$IptvProgrammesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get channelId => $composableBuilder(
+    column: $table.channelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get beginsAt => $composableBuilder(
+    column: $table.beginsAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get endsAt => $composableBuilder(
+    column: $table.endsAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get summary => $composableBuilder(
+    column: $table.summary,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get episodeId => $composableBuilder(
+    column: $table.episodeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get thumbUrl => $composableBuilder(
+    column: $table.thumbUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$IptvSourcesTableOrderingComposer get sourceId {
+    final $$IptvSourcesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceId,
+      referencedTable: $db.iptvSources,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvSourcesTableOrderingComposer(
+            $db: $db,
+            $table: $db.iptvSources,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$IptvProgrammesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $IptvProgrammesTable> {
+  $$IptvProgrammesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get channelId =>
+      $composableBuilder(column: $table.channelId, builder: (column) => column);
+
+  GeneratedColumn<int> get beginsAt =>
+      $composableBuilder(column: $table.beginsAt, builder: (column) => column);
+
+  GeneratedColumn<int> get endsAt =>
+      $composableBuilder(column: $table.endsAt, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get summary =>
+      $composableBuilder(column: $table.summary, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get episodeId =>
+      $composableBuilder(column: $table.episodeId, builder: (column) => column);
+
+  GeneratedColumn<String> get thumbUrl =>
+      $composableBuilder(column: $table.thumbUrl, builder: (column) => column);
+
+  $$IptvSourcesTableAnnotationComposer get sourceId {
+    final $$IptvSourcesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceId,
+      referencedTable: $db.iptvSources,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvSourcesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.iptvSources,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$IptvProgrammesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $IptvProgrammesTable,
+          IptvProgrammeRow,
+          $$IptvProgrammesTableFilterComposer,
+          $$IptvProgrammesTableOrderingComposer,
+          $$IptvProgrammesTableAnnotationComposer,
+          $$IptvProgrammesTableCreateCompanionBuilder,
+          $$IptvProgrammesTableUpdateCompanionBuilder,
+          (IptvProgrammeRow, $$IptvProgrammesTableReferences),
+          IptvProgrammeRow,
+          PrefetchHooks Function({bool sourceId})
+        > {
+  $$IptvProgrammesTableTableManager(
+    _$AppDatabase db,
+    $IptvProgrammesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$IptvProgrammesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$IptvProgrammesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$IptvProgrammesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> sourceId = const Value.absent(),
+                Value<String> channelId = const Value.absent(),
+                Value<int> beginsAt = const Value.absent(),
+                Value<int> endsAt = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> summary = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<String?> episodeId = const Value.absent(),
+                Value<String?> thumbUrl = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => IptvProgrammesCompanion(
+                sourceId: sourceId,
+                channelId: channelId,
+                beginsAt: beginsAt,
+                endsAt: endsAt,
+                title: title,
+                summary: summary,
+                category: category,
+                episodeId: episodeId,
+                thumbUrl: thumbUrl,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String sourceId,
+                required String channelId,
+                required int beginsAt,
+                required int endsAt,
+                required String title,
+                Value<String?> summary = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<String?> episodeId = const Value.absent(),
+                Value<String?> thumbUrl = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => IptvProgrammesCompanion.insert(
+                sourceId: sourceId,
+                channelId: channelId,
+                beginsAt: beginsAt,
+                endsAt: endsAt,
+                title: title,
+                summary: summary,
+                category: category,
+                episodeId: episodeId,
+                thumbUrl: thumbUrl,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$IptvProgrammesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({sourceId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (sourceId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.sourceId,
+                                referencedTable: $$IptvProgrammesTableReferences
+                                    ._sourceIdTable(db),
+                                referencedColumn:
+                                    $$IptvProgrammesTableReferences
+                                        ._sourceIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$IptvProgrammesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $IptvProgrammesTable,
+      IptvProgrammeRow,
+      $$IptvProgrammesTableFilterComposer,
+      $$IptvProgrammesTableOrderingComposer,
+      $$IptvProgrammesTableAnnotationComposer,
+      $$IptvProgrammesTableCreateCompanionBuilder,
+      $$IptvProgrammesTableUpdateCompanionBuilder,
+      (IptvProgrammeRow, $$IptvProgrammesTableReferences),
+      IptvProgrammeRow,
+      PrefetchHooks Function({bool sourceId})
+    >;
+typedef $$IptvChannelOverridesTableCreateCompanionBuilder =
+    IptvChannelOverridesCompanion Function({
+      required String profileId,
+      required String sourceId,
+      required String channelId,
+      Value<bool> favorite,
+      Value<int> favoriteOrder,
+      Value<bool> hidden,
+      Value<String?> customTitle,
+      Value<String?> groupOverride,
+      Value<String?> guideIdOverride,
+      Value<bool> parentalLocked,
+      Value<int> rowid,
+    });
+typedef $$IptvChannelOverridesTableUpdateCompanionBuilder =
+    IptvChannelOverridesCompanion Function({
+      Value<String> profileId,
+      Value<String> sourceId,
+      Value<String> channelId,
+      Value<bool> favorite,
+      Value<int> favoriteOrder,
+      Value<bool> hidden,
+      Value<String?> customTitle,
+      Value<String?> groupOverride,
+      Value<String?> guideIdOverride,
+      Value<bool> parentalLocked,
+      Value<int> rowid,
+    });
+
+final class $$IptvChannelOverridesTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $IptvChannelOverridesTable,
+          IptvChannelOverrideRow
+        > {
+  $$IptvChannelOverridesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $IptvSourcesTable _sourceIdTable(_$AppDatabase db) => db.iptvSources
+      .createAlias('iptv_channel_overrides__source_id__iptv_sources__id');
+
+  $$IptvSourcesTableProcessedTableManager get sourceId {
+    final $_column = $_itemColumn<String>('source_id')!;
+
+    final manager = $$IptvSourcesTableTableManager(
+      $_db,
+      $_db.iptvSources,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sourceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$IptvChannelOverridesTableFilterComposer
+    extends Composer<_$AppDatabase, $IptvChannelOverridesTable> {
+  $$IptvChannelOverridesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get profileId => $composableBuilder(
+    column: $table.profileId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get channelId => $composableBuilder(
+    column: $table.channelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get favorite => $composableBuilder(
+    column: $table.favorite,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get favoriteOrder => $composableBuilder(
+    column: $table.favoriteOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hidden => $composableBuilder(
+    column: $table.hidden,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get customTitle => $composableBuilder(
+    column: $table.customTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupOverride => $composableBuilder(
+    column: $table.groupOverride,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get guideIdOverride => $composableBuilder(
+    column: $table.guideIdOverride,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get parentalLocked => $composableBuilder(
+    column: $table.parentalLocked,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$IptvSourcesTableFilterComposer get sourceId {
+    final $$IptvSourcesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceId,
+      referencedTable: $db.iptvSources,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvSourcesTableFilterComposer(
+            $db: $db,
+            $table: $db.iptvSources,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$IptvChannelOverridesTableOrderingComposer
+    extends Composer<_$AppDatabase, $IptvChannelOverridesTable> {
+  $$IptvChannelOverridesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get profileId => $composableBuilder(
+    column: $table.profileId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get channelId => $composableBuilder(
+    column: $table.channelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get favorite => $composableBuilder(
+    column: $table.favorite,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get favoriteOrder => $composableBuilder(
+    column: $table.favoriteOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hidden => $composableBuilder(
+    column: $table.hidden,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get customTitle => $composableBuilder(
+    column: $table.customTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupOverride => $composableBuilder(
+    column: $table.groupOverride,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get guideIdOverride => $composableBuilder(
+    column: $table.guideIdOverride,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get parentalLocked => $composableBuilder(
+    column: $table.parentalLocked,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$IptvSourcesTableOrderingComposer get sourceId {
+    final $$IptvSourcesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceId,
+      referencedTable: $db.iptvSources,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvSourcesTableOrderingComposer(
+            $db: $db,
+            $table: $db.iptvSources,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$IptvChannelOverridesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $IptvChannelOverridesTable> {
+  $$IptvChannelOverridesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get profileId =>
+      $composableBuilder(column: $table.profileId, builder: (column) => column);
+
+  GeneratedColumn<String> get channelId =>
+      $composableBuilder(column: $table.channelId, builder: (column) => column);
+
+  GeneratedColumn<bool> get favorite =>
+      $composableBuilder(column: $table.favorite, builder: (column) => column);
+
+  GeneratedColumn<int> get favoriteOrder => $composableBuilder(
+    column: $table.favoriteOrder,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hidden =>
+      $composableBuilder(column: $table.hidden, builder: (column) => column);
+
+  GeneratedColumn<String> get customTitle => $composableBuilder(
+    column: $table.customTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get groupOverride => $composableBuilder(
+    column: $table.groupOverride,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get guideIdOverride => $composableBuilder(
+    column: $table.guideIdOverride,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get parentalLocked => $composableBuilder(
+    column: $table.parentalLocked,
+    builder: (column) => column,
+  );
+
+  $$IptvSourcesTableAnnotationComposer get sourceId {
+    final $$IptvSourcesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceId,
+      referencedTable: $db.iptvSources,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$IptvSourcesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.iptvSources,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$IptvChannelOverridesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $IptvChannelOverridesTable,
+          IptvChannelOverrideRow,
+          $$IptvChannelOverridesTableFilterComposer,
+          $$IptvChannelOverridesTableOrderingComposer,
+          $$IptvChannelOverridesTableAnnotationComposer,
+          $$IptvChannelOverridesTableCreateCompanionBuilder,
+          $$IptvChannelOverridesTableUpdateCompanionBuilder,
+          (IptvChannelOverrideRow, $$IptvChannelOverridesTableReferences),
+          IptvChannelOverrideRow,
+          PrefetchHooks Function({bool sourceId})
+        > {
+  $$IptvChannelOverridesTableTableManager(
+    _$AppDatabase db,
+    $IptvChannelOverridesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$IptvChannelOverridesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$IptvChannelOverridesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$IptvChannelOverridesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> profileId = const Value.absent(),
+                Value<String> sourceId = const Value.absent(),
+                Value<String> channelId = const Value.absent(),
+                Value<bool> favorite = const Value.absent(),
+                Value<int> favoriteOrder = const Value.absent(),
+                Value<bool> hidden = const Value.absent(),
+                Value<String?> customTitle = const Value.absent(),
+                Value<String?> groupOverride = const Value.absent(),
+                Value<String?> guideIdOverride = const Value.absent(),
+                Value<bool> parentalLocked = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => IptvChannelOverridesCompanion(
+                profileId: profileId,
+                sourceId: sourceId,
+                channelId: channelId,
+                favorite: favorite,
+                favoriteOrder: favoriteOrder,
+                hidden: hidden,
+                customTitle: customTitle,
+                groupOverride: groupOverride,
+                guideIdOverride: guideIdOverride,
+                parentalLocked: parentalLocked,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String profileId,
+                required String sourceId,
+                required String channelId,
+                Value<bool> favorite = const Value.absent(),
+                Value<int> favoriteOrder = const Value.absent(),
+                Value<bool> hidden = const Value.absent(),
+                Value<String?> customTitle = const Value.absent(),
+                Value<String?> groupOverride = const Value.absent(),
+                Value<String?> guideIdOverride = const Value.absent(),
+                Value<bool> parentalLocked = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => IptvChannelOverridesCompanion.insert(
+                profileId: profileId,
+                sourceId: sourceId,
+                channelId: channelId,
+                favorite: favorite,
+                favoriteOrder: favoriteOrder,
+                hidden: hidden,
+                customTitle: customTitle,
+                groupOverride: groupOverride,
+                guideIdOverride: guideIdOverride,
+                parentalLocked: parentalLocked,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$IptvChannelOverridesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({sourceId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (sourceId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.sourceId,
+                                referencedTable:
+                                    $$IptvChannelOverridesTableReferences
+                                        ._sourceIdTable(db),
+                                referencedColumn:
+                                    $$IptvChannelOverridesTableReferences
+                                        ._sourceIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$IptvChannelOverridesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $IptvChannelOverridesTable,
+      IptvChannelOverrideRow,
+      $$IptvChannelOverridesTableFilterComposer,
+      $$IptvChannelOverridesTableOrderingComposer,
+      $$IptvChannelOverridesTableAnnotationComposer,
+      $$IptvChannelOverridesTableCreateCompanionBuilder,
+      $$IptvChannelOverridesTableUpdateCompanionBuilder,
+      (IptvChannelOverrideRow, $$IptvChannelOverridesTableReferences),
+      IptvChannelOverrideRow,
+      PrefetchHooks Function({bool sourceId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -11702,4 +16360,12 @@ class $AppDatabaseManager {
       $$ProfileConnectionsTableTableManager(_db, _db.profileConnections);
   $$MusicSessionsTableTableManager get musicSessions =>
       $$MusicSessionsTableTableManager(_db, _db.musicSessions);
+  $$IptvSourcesTableTableManager get iptvSources =>
+      $$IptvSourcesTableTableManager(_db, _db.iptvSources);
+  $$IptvChannelsTableTableManager get iptvChannels =>
+      $$IptvChannelsTableTableManager(_db, _db.iptvChannels);
+  $$IptvProgrammesTableTableManager get iptvProgrammes =>
+      $$IptvProgrammesTableTableManager(_db, _db.iptvProgrammes);
+  $$IptvChannelOverridesTableTableManager get iptvChannelOverrides =>
+      $$IptvChannelOverridesTableTableManager(_db, _db.iptvChannelOverrides);
 }

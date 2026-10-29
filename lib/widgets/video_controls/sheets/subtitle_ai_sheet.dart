@@ -310,6 +310,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (player is! SubtitlePcmCaptureSource) {
       throw UnsupportedError('This player does not expose decoded PCM to live subtitles.');
     }
+    final captureSource = player as SubtitlePcmCaptureSource;
     final service = SubtitlePlaybackTranscriptionService.instance;
     if (service.isRunning || service.hasActiveSession) {
       await service.stop();
@@ -318,7 +319,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       return;
     }
     await service.start(
-      player as SubtitlePcmCaptureSource,
+      captureSource,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       onProgress: (phase, received, total) {
         if (!mounted) return;

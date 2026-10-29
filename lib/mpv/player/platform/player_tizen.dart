@@ -69,10 +69,6 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
 
   @override
   String? get subtitlePcmAudioTrackId => state.track.audio?.id;
-  @override
-  Duration get subtitlePcmPosition => currentPosition;
-  @override
-  Duration get subtitlePcmDuration => state.duration;
 
   @override
   Future<bool> subtitlePcmCaptureAvailable() async {
@@ -181,7 +177,7 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
         surfaceRevision.value++;
         await controller.initialize().timeout(const Duration(seconds: 45));
         if (!_current(generation)) return;
-        if (audioOnly) await _bindVisualization(controller.nativePlayerId, true);
+        if (audioOnly) await _bindVisualization(controller.playerId, true);
         if (!_current(generation)) return;
         await _loadTracks(controller, generation);
         if (!_current(generation)) return;
@@ -293,7 +289,7 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
     caption.value = '';
     surfaceRevision.value++;
     try {
-      if (audioOnly && controller != null) await _bindVisualization(controller.nativePlayerId, false);
+      if (audioOnly && controller != null) await _bindVisualization(controller.playerId, false);
       await controller?.dispose();
     } finally {
       await proxy?.close();

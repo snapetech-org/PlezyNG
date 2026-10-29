@@ -354,6 +354,7 @@ class PerformanceStats {
             ? generated / sourceFrames
             : null;
         final detail = [
+          if (playbackCapabilityReport?.neuralModelId case final modelId?) 'Model $modelId',
           if (generated != null && generated > 0) '$generated frames',
           if (synthesisRatio != null) '${synthesisRatio.toStringAsFixed(2)} synth/source',
           if (latencyLabel != null && latency! > 0) '$latencyLabel ms',

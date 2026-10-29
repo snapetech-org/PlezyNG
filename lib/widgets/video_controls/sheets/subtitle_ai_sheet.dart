@@ -21,6 +21,7 @@ import '../../../services/subtitle_placement_evidence.dart';
 import '../../../services/subtitle_retimer.dart';
 import '../../../services/subtitle_word_timing.dart';
 import '../../../services/subtitle_sync_service.dart';
+import '../../../services/subtitle_interval_service.dart';
 import '../../../services/subtitle_translation_service.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_playback_transcription_service.dart';
@@ -96,207 +97,6 @@ List<SubtitleCue> _restoreOriginalCueTextWithAlignedTimes(
   }
   if (alignedById.isNotEmpty) {
     throw const FormatException('Alignment added cues, so the original text was left unchanged.');
-  }
-  return List<SubtitleCue>.unmodifiable(output);
-}
-
-int? _parseSubtitleTimecode(String raw) {
-  final value = raw.trim();
-  if (value.isEmpty) return null;
-  final pieces = value.split(':');
-  if (pieces.length < 2 || pieces.length > 3) return null;
-  final finalPart = pieces.removeLast().split('.');
-  if (finalPart.length > 2) return null;
-  final seconds = int.tryParse(finalPart.first);
-  final hasHours = pieces.length == 2;
-  final minutes = int.tryParse(pieces.removeLast());
-  final hours = pieces.isEmpty ? 0 : int.tryParse(pieces.single);
-  if (seconds == null ||
-      minutes == null ||
-      hours == null ||
-      seconds < 0 ||
-      minutes < 0 ||
-      hours < 0 ||
-      seconds > 59 ||
-      (hasHours && minutes > 59)) {
-    return null;
-  }
-  var milliseconds = 0;
-  if (finalPart.length == 2) {
-    final fraction = finalPart.last;
-    final fractionValue = int.tryParse(fraction);
-    if (fraction.isEmpty || fraction.length > 3 || fractionValue == null || fractionValue < 0) return null;
-    milliseconds = int.parse(fraction.padRight(3, '0'));
-  }
-  return ((hours * 60 + minutes) * 60 + seconds) * 1000 + milliseconds;
-}
-
-String _formatSubtitleTimecode(int valueMs) {
-  final totalSeconds = valueMs.clamp(0, 359999999).toInt() ~/ 1000;
-  final hours = totalSeconds ~/ 3600;
-  final minutes = (totalSeconds % 3600) ~/ 60;
-  final seconds = totalSeconds % 60;
-  String pad(int value) => value.toString().padLeft(2, '0');
-  return '${pad(hours)}:${pad(minutes)}:${pad(seconds)}';
-}
-
-List<SubtitleCue> _mergeGeneratedSubtitleInterval({
-  required List<SubtitleCue> existing,
-  required List<SubtitleCue> generated,
-  required int startMs,
-  required int endMs,
-}) {
-  final merged = <SubtitleCue>[];
-  for (final cue in existing) {
-    if (cue.endMs <= startMs || cue.startMs >= endMs) {
-      merged.add(
-        SubtitleCue(
-          index: cue.index,
-          startMs: cue.startMs,
-          endMs: cue.endMs,
-          text: cue.text,
-          cueId: cue.stableId,
-        ),
-      );
-      continue;
-    }
-    final hasBefore = cue.startMs < startMs;
-    final hasAfter = cue.endMs > endMs;
-    if (hasBefore) {
-      merged.add(
-        SubtitleCue(
-          index: cue.index,
-          startMs: cue.startMs,
-          endMs: startMs,
-          text: cue.text,
-          cueId: cue.stableId,
-        ),
-      );
-    }
-    if (hasAfter) {
-      merged.add(
-        SubtitleCue(
-          index: cue.index,
-          startMs: endMs,
-          endMs: cue.endMs,
-          text: cue.text,
-          cueId: hasBefore ? null : cue.stableId,
-        ),
-      );
-    }
-  }
-  for (final cue in generated) {
-    final cueStart = cue.startMs.clamp(startMs, endMs).toInt();
-    final cueEnd = cue.endMs.clamp(startMs, endMs).toInt();
-    if (cueEnd <= cueStart || cue.text.trim().isEmpty) continue;
-    merged.add(
-      SubtitleCue(
-        index: cue.index,
-        startMs: cueStart,
-        endMs: cueEnd,
-        text: cue.text,
-        cueId: cue.cueId,
-      ),
-    );
-  }
-  merged.sort((a, b) {
-    final byStart = a.startMs.compareTo(b.startMs);
-    return byStart == 0 ? a.endMs.compareTo(b.endMs) : byStart;
-  });
-  if (merged.isEmpty || merged.length > SubtitleRetimer.maximumCueCount) {
-    throw const FormatException('Interval generation produced an empty or oversized subtitle result.');
-  }
-  final output = <SubtitleCue>[];
-  for (var index = 0; index < merged.length; index++) {
-    final cue = merged[index];
-    output.add(
-      SubtitleCue(
-        index: index + 1,
-        startMs: cue.startMs,
-        endMs: cue.endMs,
-        text: cue.text,
-        cueId: cue.cueId,
-      ),
-    );
-  }
-  return List<SubtitleCue>.unmodifiable(output);
-}
-
-List<SubtitleCue> _fillSpeechDetectedSubtitleGaps({
-  required List<SubtitleCue> existing,
-  required List<SubtitleCue> generated,
-  required int startMs,
-  required int endMs,
-}) {
-  const minimumGapMs = 1500;
-  const boundaryToleranceMs = 250;
-  final orderedExisting = existing.toList()..sort((a, b) => a.startMs.compareTo(b.startMs));
-  final gaps = <(int, int)>[];
-  var cursorMs = startMs;
-  for (final cue in orderedExisting) {
-    if (cue.endMs <= startMs || cue.startMs >= endMs) continue;
-    final cueStartMs = cue.startMs.clamp(startMs, endMs).toInt();
-    final cueEndMs = cue.endMs.clamp(startMs, endMs).toInt();
-    if (cueStartMs - cursorMs >= minimumGapMs) gaps.add((cursorMs, cueStartMs));
-    if (cueEndMs > cursorMs) cursorMs = cueEndMs;
-  }
-  if (endMs - cursorMs >= minimumGapMs) gaps.add((cursorMs, endMs));
-
-  final additions = <SubtitleCue>[];
-  for (final speech in generated) {
-    final midpointMs = speech.startMs + ((speech.endMs - speech.startMs) ~/ 2);
-    (int, int)? selectedGap;
-    for (final gap in gaps) {
-      final boundedStart = gap.$1 - boundaryToleranceMs;
-      final boundedEnd = gap.$2 + boundaryToleranceMs;
-      if (midpointMs >= gap.$1 && midpointMs <= gap.$2 &&
-          speech.startMs >= boundedStart && speech.endMs <= boundedEnd) {
-        selectedGap = gap;
-        break;
-      }
-    }
-    if (selectedGap == null) continue;
-    final cueStartMs = speech.startMs.clamp(selectedGap.$1, selectedGap.$2).toInt();
-    final cueEndMs = speech.endMs.clamp(selectedGap.$1, selectedGap.$2).toInt();
-    if (cueEndMs <= cueStartMs || speech.text.trim().isEmpty) continue;
-    final overlapsExisting = orderedExisting.any(
-      (cue) => cue.startMs < cueEndMs && cue.endMs > cueStartMs,
-    );
-    if (overlapsExisting) continue;
-    final duplicate = [...orderedExisting, ...additions].any(
-      (cue) => cue.text.trim().toLowerCase() == speech.text.trim().toLowerCase() &&
-          (cue.startMs - cueStartMs).abs() < 2000,
-    );
-    if (duplicate) continue;
-    additions.add(
-      SubtitleCue(
-        index: 0,
-        startMs: cueStartMs,
-        endMs: cueEndMs,
-        text: speech.text,
-      ),
-    );
-  }
-
-  if (additions.isEmpty) {
-    throw const FormatException('No speech-detected subtitle gaps were found in the selected interval.');
-  }
-  final merged = [...orderedExisting, ...additions]..sort((a, b) => a.startMs.compareTo(b.startMs));
-  if (merged.length > SubtitleRetimer.maximumCueCount) {
-    throw const FormatException('Gap filling would exceed the subtitle cue limit.');
-  }
-  final output = <SubtitleCue>[];
-  for (var index = 0; index < merged.length; index++) {
-    final cue = merged[index];
-    output.add(
-      SubtitleCue(
-        index: index + 1,
-        startMs: cue.startMs,
-        endMs: cue.endMs,
-        text: cue.text,
-        cueId: cue.cueId == null && existing.contains(cue) ? cue.stableId : cue.cueId,
-      ),
-    );
   }
   return List<SubtitleCue>.unmodifiable(output);
 }
@@ -544,17 +344,17 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     await _showApplied();
   });
 
-  Future<(int, int)?> _chooseAudioInterval(int durationMs) async {
+  Future<SubtitleAudioInterval?> _chooseAudioInterval(int durationMs) async {
     if (durationMs <= 0) throw const FormatException('The WAV duration is unavailable.');
     final playbackPositionMs = widget.player.currentPosition.inMilliseconds;
     final latestStartMs = (durationMs - 60000).clamp(0, durationMs - 1).toInt();
     final startMs = playbackPositionMs.clamp(0, latestStartMs).toInt();
     final endMs = (startMs + 60000).clamp(startMs + 1, durationMs).toInt();
-    final startController = TextEditingController(text: _formatSubtitleTimecode(startMs));
-    final endController = TextEditingController(text: _formatSubtitleTimecode(endMs));
+    final startController = TextEditingController(text: SubtitleAudioInterval.formatTimecode(startMs));
+    final endController = TextEditingController(text: SubtitleAudioInterval.formatTimecode(endMs));
     String? error;
     try {
-      return await showDialog<(int, int)>(
+      return await showDialog<SubtitleAudioInterval>(
         context: context,
         builder: (dialogContext) => StatefulBuilder(
           builder: (dialogContext, setDialogState) => AlertDialog(
@@ -585,13 +385,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
               FilledButton(
                 onPressed: () {
-                  final start = _parseSubtitleTimecode(startController.text);
-                  final end = _parseSubtitleTimecode(endController.text);
-                  if (start == null || end == null || start < 0 || end <= start || end > durationMs) {
+                  final interval = SubtitleAudioInterval.parse(
+                    startController.text,
+                    endController.text,
+                    durationMs: durationMs,
+                  );
+                  if (interval == null) {
                     setDialogState(() => error = 'Enter a valid range inside the WAV duration.');
                     return;
                   }
-                  Navigator.of(dialogContext).pop((start, end));
+                  Navigator.of(dialogContext).pop(interval);
                 },
                 child: const Text('Transcribe interval'),
               ),
@@ -621,8 +424,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final result = await SubtitleAiService.instance.transcribeWav(
       wavPath,
       provider: _provider,
-      startMs: interval.$1,
-      endMs: interval.$2,
+      startMs: interval.startMs,
+      endMs: interval.endMs,
       translateToEnglish: translateToEnglish,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       onProgress: (phase, received, total) {
@@ -632,21 +435,19 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       },
     );
     final merged = fillSpeechGaps
-        ? _fillSpeechDetectedSubtitleGaps(
+        ? SubtitleIntervalService.fillSpeechDetectedGaps(
             existing: selected.$1,
             generated: result.cues,
-            startMs: interval.$1,
-            endMs: interval.$2,
+            interval: interval,
           )
-        : _mergeGeneratedSubtitleInterval(
+        : SubtitleIntervalService.replaceRange(
             existing: selected.$1,
             generated: result.cues,
-            startMs: interval.$1,
-            endMs: interval.$2,
+            interval: interval,
           );
     final retainedCount = fillSpeechGaps
         ? selected.$1.length
-        : selected.$1.where((cue) => cue.endMs <= interval.$1 || cue.startMs >= interval.$2).length;
+        : selected.$1.where((cue) => cue.endMs <= interval.startMs || cue.startMs >= interval.endMs).length;
     final operationLabel = fillSpeechGaps
         ? 'Speech-detected subtitle gap fill'
         : translateToEnglish
@@ -664,7 +465,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     setState(() {
       _status =
           '${fillSpeechGaps ? 'Added speech-detected gap cues' : 'Generated interval cues'} from '
-          '${_formatSubtitleTimecode(interval.$1)} to ${_formatSubtitleTimecode(interval.$2)}; '
+          '${SubtitleAudioInterval.formatTimecode(interval.startMs)} to '
+          '${SubtitleAudioInterval.formatTimecode(interval.endMs)}; '
           'preserved $retainedCount existing cues${fillSpeechGaps ? '' : ' outside the interval'}. '
           'Detected language: ${result.detectedLanguage}. Original subtitle and audio remain unchanged.'
           '$_resultPersistenceSuffix';

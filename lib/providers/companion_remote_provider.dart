@@ -1084,7 +1084,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
           _ownsPeer(peer, generation) &&
           profileId != null &&
           profileId == _cryptoProfileId &&
-          Platform.isLinux &&
+          supportsLocalSteamCloudSettings &&
           SettingsService.instance.read(SettingsService.showGamesTabForProfile(profileId)) &&
           SettingsService.instance.read(SettingsService.allowSteamActionsForProfile(profileId)) &&
           SettingsService.instance.read(SettingsService.allowSteamCloudSettingsForProfile(profileId)),

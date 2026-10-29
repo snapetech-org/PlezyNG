@@ -313,3 +313,20 @@ Official setup references: [Android tools/checksums](https://developer.android.c
 [Apple additional components](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components),
 [Visual Studio installer parameters](https://learn.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=visualstudio),
 [Visual Studio component IDs](https://learn.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?view=visualstudio).
+
+
+## Account Cloud desktop IPC gate
+
+The existing private Linux reliability, macOS and Windows reliability jobs now
+run `python3 scripts/games/cloud_transport_probe.py` (`python` on Windows) using
+the installed Dart SDK. Run this before handoff on each desktop architecture.
+It exercises actual OS IPC with a simulated observer, never Steam. Keep the real
+Cloud plugin stopped; the harness refuses occupied endpoints. A socket denial is
+a failure, not a pass. Linux/macOS use Unix sockets; Windows uses same-SID local
+overlapped named pipes. The companion permission and capability cover all three.
+
+Then build/package the extension using its README and qualify the actual
+Steam/Decky runtime, identity switching, both toggle directions and persistence.
+Mobile/TV controls use the paired desktop transport, not a local Steam host.
+Windows/macOS loader availability, SDK builds and live semantics are separate
+requirements; source completion does not establish their success.

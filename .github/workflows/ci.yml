@@ -431,6 +431,9 @@ jobs:
             gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
             gstreamer1.0-plugins-bad gstreamer1.0-libav
 
+      - name: Verify Linux Cloud IPC with a simulated Steam observer
+        run: python3 scripts/games/cloud_transport_probe.py
+
       - name: Verify Linux Steam SDK and codec prerequisites
         run: python3 scripts/games/check_linux_sdk.py --report "$RUNNER_TEMP/steam-linux-sdk.json"
 
@@ -571,6 +574,10 @@ jobs:
         uses: ./.github/actions/setup-flutter-apple
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Verify macOS Cloud IPC with a simulated Steam observer
+        if: matrix.platform == 'macOS'
+        run: python3 scripts/games/cloud_transport_probe.py
 
       - name: Ensure CMake for the embedded Steam receiver
         shell: bash
@@ -801,6 +808,12 @@ jobs:
       - name: Install locked Dart dependencies
         shell: pwsh
         run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Verify Windows Cloud IPC with a simulated Steam observer
+        shell: pwsh
+        run: |
+          python scripts/games/cloud_transport_probe.py --dart (Get-Command dart -ErrorAction Stop).Source
+          if ($LASTEXITCODE -ne 0) { throw 'Windows Cloud IPC verification failed' }
 
       # Windows replacement semantics (`MoveFileExW` with
       # MOVEFILE_REPLACE_EXISTING) cannot be proven on the POSIX runners, and a

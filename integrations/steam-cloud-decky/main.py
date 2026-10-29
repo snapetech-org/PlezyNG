@@ -9,11 +9,23 @@ from bridge import Bridge
 
 class Plugin:
     async def _main(self):
-        uid = Path(decky.DECKY_USER_HOME).stat().st_uid
         self.session = None
         self.revision = 0
-        self.bridge = Bridge(uid, decky.emit)
-        await self.bridge.start(f'/run/user/{uid}')
+        if sys.platform == 'win32':
+            from windows_pipe import WindowsBridge
+            self.bridge = WindowsBridge(decky.emit)
+            await self.bridge.start()
+        else:
+            uid = Path(decky.DECKY_USER_HOME).stat().st_uid
+            self.bridge = Bridge(uid, decky.emit)
+            runtime = f'/run/user/{uid}'
+            if sys.platform == 'darwin':
+                runtime = f'/tmp/plezyng-steam-cloud-{uid}'
+                # Existing directories are validated by Bridge.start, never chmodded.
+                Path(runtime).mkdir(mode=0o700, exist_ok=True)
+            elif not sys.platform.startswith('linux'):
+                raise RuntimeError('unsupported Steam host')
+            await self.bridge.start(runtime)
 
     async def begin(self):
         self.bridge.allow(False)

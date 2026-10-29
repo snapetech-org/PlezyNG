@@ -1,5 +1,7 @@
 """Same-user Unix socket; no TCP, account tokens, paths or script execution API."""
 import asyncio
+import ctypes
+import sys
 import json
 import os
 import secrets
@@ -8,6 +10,22 @@ import stat
 import struct
 import time
 from pathlib import Path
+
+
+def peer_uid(connection):
+    if sys.platform == 'darwin':
+        libc = ctypes.CDLL(None, use_errno=True)
+        getpeereid = libc.getpeereid
+        getpeereid.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_uint), ctypes.POINTER(ctypes.c_uint)]
+        getpeereid.restype = ctypes.c_int
+        uid, gid = ctypes.c_uint(), ctypes.c_uint()
+        if getpeereid(connection.fileno(), ctypes.byref(uid), ctypes.byref(gid)) != 0:
+            raise PermissionError('peer identity unavailable')
+        return uid.value
+    if sys.platform == 'win32':
+        return connection.peer_identity
+    credentials = connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12)
+    return struct.unpack('3i', credentials)[1]
 
 
 class Bridge:
@@ -41,14 +59,14 @@ class Bridge:
 
     async def claim(self, request):
         p = self.pending
-        if not self.enabled or not p or p['id'] != request or p['claimed'] or p['future'].done() or time.monotonic() >= p['deadline']:
+        if not self.enabled or not p or p['id'] != request or p['claimed'] or p['future'].done() or (p.get('disconnected') is not None and p['disconnected'].done()) or time.monotonic() >= p['deadline']:
             return False
         p['claimed'] = True
         return True
 
     async def complete(self, request, result):
         p = self.pending
-        if not p or p['id'] != request or not p['claimed'] or p['future'].done() or time.monotonic() >= p['deadline']:
+        if not p or p['id'] != request or not p['claimed'] or p['future'].done() or (p.get('disconnected') is not None and p['disconnected'].done()) or time.monotonic() >= p['deadline']:
             return
         if not isinstance(result, dict) or result.get('status') not in ('observed', 'stale', 'denied', 'unknown', 'unavailable'):
             result = {'status': 'unknown'}
@@ -71,16 +89,17 @@ class Bridge:
         pending = None
         disconnected = None
         try:
-            credentials = writer.get_extra_info('socket').getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12)
-            _, uid, _ = struct.unpack('3i', credentials)
+            uid = peer_uid(writer.get_extra_info('socket'))
             if uid != self.uid or not self.enabled or self.pending:
                 raise ValueError('unavailable')
             line = await asyncio.wait_for(reader.readline(), 2)
+            if len(line) > 2048 or not line.endswith(b'\n'):
+                raise ValueError('invalid framing')
             request = json.loads(line)
             if not isinstance(request, dict) or set(request) - {'version', 'op', 'steamId', 'expected', 'enabled'}:
                 raise ValueError('invalid request')
             account = request.get('steamId')
-            if request.get('version') != 1 or not isinstance(account, str) or len(account) != 17 or not account.isascii() or not account.isdigit() or not account.startswith('7656119'):
+            if type(request.get('version')) is not int or request.get('version') != 1 or not isinstance(account, str) or len(account) != 17 or not account.isascii() or not account.isdigit() or not account.startswith('7656119'):
                 raise ValueError('invalid identity')
             if request.get('op') == 'set':
                 if type(request.get('enabled')) is not bool or type(request.get('expected')) is not bool:
@@ -94,8 +113,12 @@ class Bridge:
             self.pending = pending
             # A peer disconnect/extra data retires the claim before UI work starts.
             disconnected = asyncio.create_task(reader.read(1))
-            await self.emit('cloud_request', pending['id'], request)
-            done, _ = await asyncio.wait([pending['future'], disconnected], timeout=7, return_when=asyncio.FIRST_COMPLETED)
+            pending['disconnected'] = disconnected
+            await asyncio.sleep(0)
+            if disconnected.done():
+                raise ValueError('request already retired')
+            await asyncio.wait_for(self.emit('cloud_request', pending['id'], request), 2)
+            done, _ = await asyncio.wait([pending['future'], disconnected], timeout=max(0, pending['deadline'] - time.monotonic()), return_when=asyncio.FIRST_COMPLETED)
             if disconnected in done or pending['future'] not in done or not self.enabled:
                 raise ValueError('unavailable')
             result = pending['future'].result()

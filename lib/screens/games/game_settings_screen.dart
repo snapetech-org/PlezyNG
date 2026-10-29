@@ -187,7 +187,7 @@ class GameSettingsScreen extends StatelessWidget {
                 title: t.games.allowHostActions,
                 subtitle: t.games.allowHostActionsHelp,
               ),
-              if (defaultTargetPlatform == TargetPlatform.linux)
+              if ({TargetPlatform.linux, TargetPlatform.windows, TargetPlatform.macOS}.contains(defaultTargetPlatform))
                 SettingSwitchTile(
                   pref: SettingsService.allowSteamCloudSettingsForProfile(profileId),
                   icon: Symbols.cloud_sync_rounded,

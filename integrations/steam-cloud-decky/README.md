@@ -2,9 +2,10 @@
 
 This optional Decky plugin implements the account-wide Cloud setting through
 Steam's own UI-side `SteamClient.Settings.SetSetting` and settings callbacks.
-The implemented host transport is **Linux / SteamOS only**. Any PlezyNG client
+Host transport source is implemented for **Linux / SteamOS, Windows and macOS**. Any PlezyNG client
 with Companion support can request a change on that paired host, including a
-phone, desktop or TV. Windows/macOS host transports are not implemented here.
+phone, desktop or TV. Host operation still requires a working, compatible Decky
+installation on that OS; this change does not supply a Windows/macOS plugin loader.
 This is a community client interface, not a Valve-supported OAuth/Web API.
 
 ## Build and install
@@ -26,8 +27,11 @@ Steam desktop user; the backend refuses privileged execution on another user's
 behalf. No CEF debugging setting is changed. This extension relies on an existing
 working Decky installation; PlezyNG does not install or modify Steam or Decky.
 
-1. Run Steam and PlezyNG Companion as the same desktop user, with
-   `XDG_RUNTIME_DIR=/run/user/<uid>` pointing to that user's private runtime directory.
+1. Run Steam, the plugin backend and PlezyNG Companion as the same desktop user.
+   On Linux, use `XDG_RUNTIME_DIR=/run/user/<uid>` pointing to that user's private
+   runtime directory. macOS uses `/tmp/plezyng-steam-cloud-<uid>/` (mode 0700).
+   Windows uses a local named pipe scoped to the desktop user's SID. No local
+   firewall rule, secret file, administrator flag or network port is required.
 2. In the host PlezyNG profile's Games settings, enable host actions and the
    separate **Allow Steam Cloud settings changes** permission.
 3. In Decky, explicitly enable **Allow Cloud settings changes**. It resets off
@@ -51,10 +55,18 @@ with tracked English fallback in all 37 locales.
   account token is accepted. The host binds work to the current paired connection
   and profile. Disabling permission or retiring the peer closes the local request.
 - The backend exposes only a fixed Unix socket inside the user-owned mode-0700
-  runtime directory. The socket is mode 0600, checks `SO_PEERCRED`, caps clients
-  at four and permits one active operation. There is no TCP listener. A stale
+  runtime directory on Linux, or a validated private UID directory on macOS.
+  The socket is mode 0600 and checks `SO_PEERCRED` (Linux) or `getpeereid` (macOS).
+  The macOS client also verifies the server's effective UID. Windows uses a
+  protected same-SID DACL, `PIPE_REJECT_REMOTE_CLIENTS`, first-instance ownership,
+  client token verification and client-side server process token verification.
+  Identification-only client SQOS prevents delegation. Windows I/O is overlapped;
+  cancellation completes before native buffers or handles are freed.
+  These transports cap native connections at four and permit one active operation. There is no TCP listener. A stale
   socket is not silently replaced; after verifying the previous plugin is stopped,
-  remove only `/run/user/<uid>/plezyng-steam-cloud.sock` before retrying installation.
+  remove only the socket under that platform's directory before retrying installation.
+  Windows refuses an existing pipe owner; named pipes disappear when all handles
+  close. Never delete another process's endpoint to make installation succeed.
 - Backend requests are bounded to 2 KiB, seven seconds and one claim. Claims
   expire, cannot be replayed and are retired on disconnect. Frontend sessions and
   monotonically increasing consent revisions reject stale consent/response work.
@@ -84,3 +96,25 @@ revocation, plugin reload, Steam restart persistence and a second computer.
 Verify unchanged unrelated settings and save files. Report observed per-host
 state separately from account-setting propagation. A backend socket test skipped
 because the execution environment denies Unix sockets is not a passing test.
+
+## Desktop build-agent transport gate
+
+With the real plugin stopped, run from the repository root on **each** desktop OS:
+
+```sh
+python3 scripts/games/cloud_transport_probe.py --dart /path/to/dart
+```
+
+Use `python` on Windows and the installed Dart executable path. This launches the
+actual Python IPC server and Dart client, verifies read, write/readback, stale
+review, wrong account, malformed request, disabled consent and cancellation with
+a simulated Steam observer. It does not change a Steam account. Existing sockets
+are never replaced. Missing SDKs or unavailable native sockets fail the probe.
+Run under the desktop user, and separately confirm a second OS user cannot
+connect. Full app packaging and real Steam/Decky callback testing remain gates;
+platform source and static analysis do not prove those builds or callbacks.
+
+Native contracts: [Microsoft overlapped I/O cancellation](https://learn.microsoft.com/en-us/windows/win32/fileio/canceling-pending-i-o-operations),
+[Apple getpeereid](https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/getpeereid.3.html),
+and [Dart variadic FFI](https://api.dart.dev/dart-ffi/VarArgs-class.html).
+The Darwin `fcntl` binding explicitly marks its variadic argument for Apple ARM64.

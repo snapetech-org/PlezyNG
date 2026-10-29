@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'steam_cloud_desktop_transport.dart';
+
+bool get supportsLocalSteamCloudSettings => Platform.isLinux || Platform.isMacOS || Platform.isWindows;
 
 bool validCloudAccount(Object? value) => value is String && RegExp(r'^7656119[0-9]{10}$').hasMatch(value);
 
@@ -25,7 +28,19 @@ class SteamCloudSetting {
 }
 
 Future<SteamCloudSetting> localSteamCloudSetting(Map<String, dynamic> request, bool Function() current) async {
-  if (!Platform.isLinux || !current()) return const SteamCloudSetting('unavailable');
+  if (!supportsLocalSteamCloudSettings || !current()) return const SteamCloudSetting('unavailable');
+  if (!Platform.isLinux) {
+    try {
+      final response = await desktopCloudRequest(jsonEncode(request), current);
+      if (!current()) return const SteamCloudSetting('unknown');
+      return SteamCloudSetting.parse(
+        Map<String, dynamic>.from(jsonDecode(response) as Map),
+        request['steamId'] as String,
+      );
+    } catch (_) {
+      return SteamCloudSetting(request['op'] == 'set' ? 'unknown' : 'unavailable');
+    }
+  }
   final runtime = Platform.environment['XDG_RUNTIME_DIR'];
   if (runtime == null || !runtime.startsWith('/') || runtime.length > 100) {
     return const SteamCloudSetting('unavailable');

@@ -963,3 +963,26 @@ NAT/throughput tests. This is a source handoff, not hardware or deployment appro
   are unchanged from the preceding checkpoint. Their recorded source-check
   results and the outstanding SDK/device/service qualification gates still
   apply; this follow-up does not claim new platform builds or live testing.
+
+
+## Desktop Cloud IPC source checkpoint — 2026-10-29
+
+Windows and macOS host transports, permission visibility and Companion capability
+advertisement now join the Linux implementation. Native client bindings have no
+new Dart dependency. The plugin archive includes the Windows backend. A standalone
+`cloud_transport_probe.py`/`.dart` pair is provided for all three desktop build
+agents; it uses real IPC but simulated Steam observations.
+
+Locally: Dart analysis of both transport files and the probe is clean; Python
+compilation succeeds; ten Python unit tests pass and six Unix socket tests skip
+because this execution environment rejects AF_UNIX. The real IPC probe also fails
+with that explicit OS permission error, rather than passing or silently skipping.
+No Windows/macOS runtime result is claimed. The plugin JS tests/build/typecheck
+and the five standalone Dart exchange tests were rerun for this checkpoint.
+Full Flutter validation remains unavailable because the prior Flutter SDK source
+is absent. Desktop SDK builds, cross-user access rejection and live Steam/Decky
+qualification must run on the private platform agents before release.
+
+The existing private Linux, macOS and Windows CI jobs now run the real IPC probe.
+Runner routing, permissions and trust conditions are unchanged; these amended
+jobs have not been dispatched or observed here.

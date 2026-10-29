@@ -9,6 +9,7 @@ import '../../utils/future_extensions.dart';
 
 import '../../i18n/strings.g.dart';
 import '../../games/steam_host_actions.dart';
+import '../../games/steam_cloud_settings.dart';
 import '../../models/companion_remote/remote_command.dart';
 import '../../models/companion_remote/remote_session.dart';
 import '../../utils/app_logger.dart';
@@ -1389,7 +1390,7 @@ class CompanionRemotePeerService with KeepaliveMixin {
           'gameActionVersion': 1,
           'gameActionKinds': SteamHostAction.values.map((action) => action.name).toList(growable: false),
           'gameSessionVersion': 1,
-          if (Platform.isLinux) 'gameCloudSettingVersion': 1,
+          if (supportsLocalSteamCloudSettings) 'gameCloudSettingVersion': 1,
         },
       ),
     );

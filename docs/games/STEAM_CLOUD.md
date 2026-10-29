@@ -109,10 +109,11 @@ Primary references checked 2026-10-28:
 
 The optional [PlezyNG Steam Cloud Decky extension](../../integrations/steam-cloud-decky/README.md)
 now implements the source-defined client-settings route below. Its current host
-transport supports **Linux/SteamOS**, including a Decky-equipped Steambox, desktop
-or BC250. Receiving PlezyNG clients use the existing authenticated Companion
-connection; they do not require Decky or a Steam client themselves. Windows/macOS
-host transports are not implemented. This is not a Valve Web API or Cloud OAuth
+transport source supports **Linux/SteamOS, Windows and macOS**, including a
+Decky-equipped Steambox, desktop or BC250. Receiving PlezyNG clients use the existing authenticated Companion
+connection; they do not require Decky or a Steam client themselves. Each host
+still needs a compatible Decky runtime; Windows/macOS loader availability and
+live operation are not established by this implementation. This is not a Valve Web API or Cloud OAuth
 operation and does not inherit Cloud-file grants.
 
 The existing per-computer game menu offers **Steam Cloud on computer** only for
@@ -124,8 +125,9 @@ and stale review receive distinct messages; neither triggers a retry.
 
 Both the profile's existing host-action permission and a new default-off Cloud
 settings permission are required. The installed host extension has a separate
-consent switch that resets on reload. Its mode-0600 same-user Unix socket exposes
-no TCP port or general command execution. Requests are schema/bounds checked,
+consent switch that resets on reload. Its same-user Unix socket (Linux/macOS)
+or protected local named pipe (Windows) exposes no TCP port or general command
+execution. macOS and Windows clients also authenticate the server OS identity. Requests are schema/bounds checked,
 serialized and one-use, with fresh frontend-session binding, expiring claims and
 connection/profile retirement. Steam identity/settings changes invalidate old
 observations. The implementation never edits VDF or enables CEF debugging.

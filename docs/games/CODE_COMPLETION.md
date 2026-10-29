@@ -114,9 +114,10 @@ The focused and platform-specific verification is recorded at the top of
 
 ## Account-wide Cloud host implementation — 2026-10-29
 
-An opt-in Decky extension, same-user Unix socket and authenticated Companion
+An opt-in Decky extension, same-user desktop IPC and authenticated Companion
 exchange now connect the source-defined Steam client settings setter to the
-existing computer menu. Linux/SteamOS hosts are implemented; all supported
+existing computer menu. Linux/SteamOS, Windows and macOS host transport source
+is implemented; all supported
 Companion receiver platforms can request changes. The action requires a linked,
 matching Steam account, inventory-bound computer, default-off profile permission,
 local extension consent, observed prior state and explicit confirmation. Success
@@ -125,9 +126,13 @@ There are no VDF writes, automatic retries, general script execution or exposed
 TCP/debug listeners. See [Cloud scope](STEAM_CLOUD.md) and the
 [extension handoff](../../integrations/steam-cloud-decky/README.md).
 
-This closes the Linux host implementation gap. Windows/macOS host extension
-transports and actual Steam write/readback/propagation verification remain open;
-source declarations and simulated callbacks are not a verified live contract.
+The desktop transport implementation gap is closed in source: Windows has
+same-SID local overlapped named pipes; macOS has a peer-verified Unix socket.
+The existing permission switch and Companion capability now include all three
+host OSes. The transport probe exercises real IPC with a simulated observer on
+build agents. Windows/macOS execution, compatible Decky runtime availability and
+actual Steam write/readback/propagation verification remain open; source and
+simulated callbacks are not a verified live contract or all-platform release.
 
 ## Remaining contracts and qualification
 

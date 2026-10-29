@@ -125,8 +125,9 @@ Controls on `com.plezy/mpv_audio_player` are `visualizerCapabilities`, `Create`,
 `Load`, `Resize`, `SetPaused`, `Status`, and `Dispose` (all use the `visualizer`
 prefix). Create returns separate `sessionId` and `textureId` values. Every later
 operation requires the session lease. Loading requires a bounded preset under its installed asset root. projectM
-rejects `.milk2`; MilkRust attempts the documented saved patterns with its own
-procedural masks, without claiming reference parity.
+rejects `.milk2`; MilkRust implements all 30 saved pattern formulas and all
+eleven saved sprite blend modes in its native/WebGL profile. Reference-pixel
+parity remains unqualified.
 
 The controller serializes loads and disposal, handles missing plugins, and
 shows original scenes while a native preset has no current frame or has failed.
@@ -166,9 +167,10 @@ All entries are source-only and unqualified. The non-Linux hosts currently offer
 MilkRust; selecting projectM produces an explicit unavailable response. Tizen
 and webOS now have decoded-audio and native-texture host source. The webOS route
 uses app-owned SoLoud decoding/output for its bounded supported-file subset;
-LG NDL remains the fallback for other sources. No host claims to play all
-shaders or all `.milk2` patterns. Native MilkRust currently uses immediate
-preset cuts, not qualified cross-preset transitions.
+LG NDL remains the fallback for other sources. The renderer declares a bounded
+legacy HLSL/resource profile; unsupported shader constructs fail with
+diagnostics. Native MilkRust currently uses immediate preset cuts, not
+qualified cross-preset transitions.
 
 Android's exact pinned mpv-build tree contains the session-leased native bridge
 from `mpv-build-android-visualizer-bridge.patch`; source preparation verifies

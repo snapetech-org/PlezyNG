@@ -10,11 +10,11 @@ The library installs the small authored CC0 MilkRust sample pack from the app bu
 
 Installation verifies the pinned archive and its contents before making the directory active. Remote entries use the same verification path; Cancel stops installation even if transfer has finished and verification is still running. Retry starts a fresh transfer. When a future app catalog pins a newer version, Download update keeps previous complete versions available in Installed presets.
 
-Use Import .milk or .milk2 for loose files, Import folder with textures and notices for a local collection, or Import .rmpack for a packaged collection with its integrity index, provenance and license notices. Folder import preserves relative paths and notices in a private, content-addressed copy. It rejects links and unsupported assets, bounds the collection to 2,500 entries/64 MB, and can be canceled. Hidden repository/OS files are omitted. The source folder is unchanged; this local copy makes no redistribution-rights claim. Files stay on the device and work offline. MilkRust now attempts saved `.milk2` pairs with procedural masks for the documented pattern names. Those masks are not reference-accurate MilkDrop3 transitions; unknown patterns and saved executable extensions are blocked. Rendering fidelity is unqualified. Historical collections with unresolved redistribution status have source links rather than app-hosted downloads.
+Use Import .milk or .milk2 for loose files, Import folder with textures and notices for a local collection, or Import .rmpack for a packaged collection with its integrity index, provenance and license notices. Folder import preserves relative paths and notices in a private, content-addressed copy. It rejects links and unsupported assets, bounds the collection to 2,500 entries/64 MB, and can be canceled. Hidden repository/OS files are omitted. The source folder is unchanged; this local copy makes no redistribution-rights claim. Files stay on the device and work offline. MilkRust implements all 30 saved `.milk2` pattern formulas and the documented saved sprite fields in its native/WebGL profile. Pixel parity remains unqualified, and unknown executable trailer extensions are blocked. Historical collections with unresolved redistribution status have source links rather than app-hosted downloads.
 
 ## Choose and organize
 
-Choose Browse installed presets, search by title/author/pack/tag, and select a supported `.milk` or `.milk2` candidate. MilkRust attempts documented saved blend-pattern names using procedural masks; the typed legacy HLSL profile has explicit limits, and exact transition parity and embedded extensions remain unsupported. If the native dependency or playback audio is unavailable, the browser shows the reason and still offers metadata and notices. The details button shows author, license and content notice. Visual fidelity has not yet been measured for these entries.
+Choose Browse installed presets, search by title/author/pack/tag, and select a supported `.milk` or `.milk2` candidate. MilkRust implements the 30 documented saved blend formulas and all eleven saved sprite blend modes. The typed legacy HLSL profile has explicit limits; unsupported shaders, resources and trailer extensions produce diagnostics. If the native dependency or playback audio is unavailable, the browser shows the reason and still offers metadata and notices. The details button shows author, license and content notice. Visual fidelity has not yet been measured for these entries.
 
 Favorites and display choices belong to the active profile. Filter a list, save it under a playlist name, and use its reorder menu to move entries up or down. Selecting a preset uses the visible playable list for previous/next and shuffle. Playlists can be imported/exported as bounded JSON containing library-relative references. They do not include preset artwork; missing references require separately installing or importing the corresponding pack.
 
@@ -30,7 +30,7 @@ Remove a pack or loose import in the library manager. Removing a pinned pack rem
 
 Imports reject executable asset types, shader includes, ambiguous portable paths, unsupported image layouts and missing declared dependencies. Texture headers are checked before activation: 4096 pixels per side, 8 megapixels per image and 32 megapixels per pack. The installed library is capped at 512 MB; remove unused packs or older versions to make room. These checks do not establish native decoder/driver isolation.
 
-The Linux integration uses native pixel-buffer readback at up to 1280×720 and about 30 FPS; performance and driver behavior have not been qualified. Native host source now exists for the other listed platforms, including Tizen and webOS, but is uncompiled and unqualified; existing release binaries have not gained those hosts. Full HLSL and spatial `.milk2` fidelity, production signed-catalog delivery, broader qualified community packs, previews and physical-device validation remain open. The implementation status document records the complete remaining gates.
+The Linux integration uses native pixel-buffer readback at up to 1280×720 and about 30 FPS; performance and driver behavior have not been qualified. Native host source now exists for the other listed platforms, including Tizen and webOS, but is uncompiled and unqualified; existing release binaries have not gained those hosts. Unsupported HLSL/resource and preset-format cases, reference-pixel parity, production signed-catalog delivery, broader qualified community packs, previews and physical-device validation remain open. The implementation status document records the complete remaining gates.
 
 ## Pack catalog updates
 
@@ -45,10 +45,11 @@ iOS/tvOS, Android/TV, Tizen and webOS have source for native MilkRust. A build w
 matching engine and same-player PCM extension reports the missing dependency.
 This source increment does not add compiled engines to existing releases.
 
-Native MilkRust currently accepts classic `.milk` candidates and attempts
-documented `.milk2` blend-pattern names with procedural spatial masks. The broader typed legacy HLSL profile still has limits. Exact MilkDrop3
-transition behavior, embedded saved-state extensions,
-unsupported shaders and missing images remain blockers or produce diagnostics.
+Native MilkRust currently accepts classic `.milk` candidates and implements the
+documented saved `.milk2` pattern formulas and sprite fields in its native/WebGL
+profile. Reference-pixel and device fidelity are unqualified. The typed legacy
+HLSL profile has explicit unsupported resource and declaration forms; unknown
+trailer extensions, unsupported shaders and missing images produce diagnostics.
 Preset changes are immediate in this engine; the cross-preset transition setting
 applies to projectM. Compatibility and performance remain unqualified across
 devices.

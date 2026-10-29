@@ -385,3 +385,33 @@ This does not isolate browser-process OOM or GPU-driver hangs. Whitespace,
 JSON and JavaScript syntax checks passed; builds, tests, browser execution and
 device qualification remain unrun. Exact MilkDrop3 masks, HLSL profile gaps and
 non-default sprite semantics remain code/reference work.
+
+
+## 2026-10-29 saved-pattern and declared-profile source checkpoint
+
+MilkRust now includes all 30 saved-pattern formulas from its compatible MIT
+behavior specification, with per-crate attribution. The native and WebGL source
+paths consume saved progress, direction and random values, and execute documented
+sprite fields including opt-in, flips, alpha byte handling, rotation, offsets,
+repeats, layers and burn order. Saved sprite blocks are disabled by default in
+`.milk2` unless `sprite=1` is present; ordinary `.milk` retains its default
+behavior. ESSL 3.00 array-of-array declarations are rejected explicitly rather
+than emitting invalid shader code.
+
+The updated MilkRust source is pinned by the app lock. This checkpoint closes
+those recorded source gaps; compilation, test execution, reference-pixel
+comparison, browser execution and device qualification remain unrun. Unsupported
+HLSL/resource forms and unrecognized saved-preset extensions continue to fail
+closed within the declared renderer profile. Pack, mpv artifact, rights and
+signing gates remain separate product/release work.
+
+
+## 2026-10-29 saved sprite blend-table correction
+
+MilkRust's native/WebGL sprite shader now implements all eleven MilkDrop 3
+texture-stage/blend-factor modes, including multiplicative, subtractive, invert,
+cutoff, darken and vivid. `SpriteBlend` defaults to 4, EEL `blendmode` starts
+from that value, and selectors outside 0–10 resolve to mode 0. The authored
+browser control now covers all eleven modes and 66 combinations of mode, source
+alpha and opaque color-key state. These source controls remain unrun under the
+source-only restriction; reference-pixel parity remains an independent gate.

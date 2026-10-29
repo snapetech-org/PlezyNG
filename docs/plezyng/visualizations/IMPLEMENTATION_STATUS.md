@@ -2,8 +2,8 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `145d8a479dc232fdd22563277211839a8fd1c264`; the exact dependency
-contract is in `native/visualizer/sources.lock.json`. The
+pins the current MilkRust PR #20 source revision in `native/visualizer/sources.lock.json`; the exact dependency
+contract is in that file. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
 **This is implemented source, not a verified working release or universal
@@ -16,9 +16,9 @@ moderate for source integration; compiled behavior and device fidelity are unkno
 | Area | Current implementation | Evidence still required |
 | --- | --- | --- |
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
-| HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/arrays/matrices/control flow, bounded errors | Corpus coverage, remaining emitter/environment semantics and reference fidelity |
+| HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/one-dimensional arrays/all numeric matrix shapes/control flow, bounded errors; unsupported ESSL profile constructs fail closed | Compiler/corpus execution and reference fidelity; nested/resource-array forms remain outside the declared profile, and ESSL 3.00 forbids arrays of arrays |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
-| `.milk2` | Saved wrapper, two independent states, saved progress/direction/randoms, independent masks, active saved sprite equations and native/WebGL layers/blends | Exact MilkDrop3 mask/progress and sprite-field/filtering semantics |
+| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas, explicit sprite opt-in, saved progress/direction/randoms, sprite flips/alpha/rotation/offset/repeat fields, and all eleven native/WebGL sprite blend modes/layers | Reference pixel comparison for mask rasterization/compositing and sprite filtering/layer order |
 | Browser texture decode | Static raster codecs run in a disposable Web Worker; packaged same-origin worker with bounded blob fallback, timeout and decoded-size checks | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
@@ -64,9 +64,11 @@ The HLSL integration is a legacy pixel-shader profile, not every DirectX languag
 or resource feature. Unsupported semantics/resources/array bounds fail with
 bounded diagnostics. EEL, legacy encodings, external textures and remaining
 corpus formats still need complete conformance work. The separate WGSL renderer
-retains its own restricted translator. Exact `.milk2` semantics remain code and
-reference work: the available upstream snapshot does not contain the saved
-pattern renderer, and the independent masks are not evidence of equivalence.
+retains its own restricted translator. MilkRust source implements the published
+saved `.milk2` formulas and sprite fields in its declared native/WebGL profile.
+Pixel-level parity remains open: the available official snapshot does not
+contain the saved-pattern renderer, and source implementation is not a reference
+image comparison.
 
 Every imported file remains in the corpus denominator. Parse success, compiler
 acceptance and a nonblack frame must not be reported as faithful rendering.
@@ -85,12 +87,12 @@ must use compatible private ephemeral JIT runners under `AGENTS.md` and the
 existing source-only restriction; no workflow was dispatched for this change.
 
 The remaining work is broader than access to physical hardware: compiler/link
-verification, mpv artifact production/promotion, reference semantics, corpus
-qualification, rights decisions and production custody/publication are also open.
+verification, mpv artifact production/promotion, reference-pixel conformance,
+corpus qualification, rights decisions and production custody/publication are also open.
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `145d8a479dc232fdd22563277211839a8fd1c264`:
+- The app pins MilkRust `f5215e9d56afa03dc06dd52d961cdf2df656853a`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -147,8 +149,9 @@ qualification, rights decisions and production custody/publication are also open
   illegal uniform-initializer and unbound-custom-global cases; reference corpus
   conformance is still unmeasured.
 - `.milk2` honors explicit `sprite=0` with well-formed disabled trailer blocks,
-  preserving them on export. Active sprite equations/layers/blends now have bounded native/WebGL source paths; disabled blocks remain inert.
-  Independently authored pattern masks still are not exact MilkDrop3 semantics.
+  preserving them on export. Active sprite equations/layers and all eleven saved
+  blend modes have bounded native/WebGL source paths; disabled blocks remain inert.
+  The saved-mask R8 rasterizer and sprite filtering still need reference-pixel qualification.
 - Native DDS row validation avoids multiplication overflow on 32-bit TV targets.
   Regression source covers excessive pitch in addition to color/alpha/orientation.
 - Current main at `804a1cc658bba6f2bfb336c0b347b100bf9858ca` is merged, preserving
@@ -277,6 +280,17 @@ SpriteRot controls, extended sprite alpha and layer/burn interactions remain
 reference-dependent. The checked official source still does not contain the
 saved-pattern implementation. Physical hardware alone cannot resolve that
 missing reference or these remaining language features.
+
+
+## 2026-10-29 saved sprite blend-table correction
+
+The current MilkRust source path now follows the compatible MIT MilkDrop 3
+table for all eleven saved sprite blend modes, including the modes beyond the
+classic five. The saved `SpriteBlend` default is 4; out-of-range per-frame
+selectors map to mode 0. Existing browser pixel controls cover all modes and 66
+alpha/key/mode combinations. They have not run; builds, pixel references and
+device evidence remain unverified. The app lock is advanced to the exact PR
+head separately from those execution gates.
 
 
 ## 2026-10-29 browser texture worker checkpoint

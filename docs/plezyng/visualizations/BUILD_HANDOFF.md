@@ -55,8 +55,10 @@ mpv extension, but still need their own SDK and physical audio qualification.
    seeks, pause/background, context loss, dispose, TV focus and unsupported-input
    diagnostics. Preserve failures and exact artifact/engine/device identities.
 3. Run reference/corpus/device comparisons before marking any advertised preset
-   qualified. Unknown HLSL, legacy-format and exact `.milk2` behavior stays open;
-   this build pass does not resolve missing implementation semantics.
+   qualified. MilkRust source now implements the documented saved `.milk2`
+   formulas and sprite fields in its declared native/WebGL profile; pixel parity,
+   unsupported HLSL/format cases and platform behavior still require their own
+   evidence. A build alone does not establish those results.
 4. MilkRust's candidate workflow packages the original CC0 study sources, the
    pinned CC BY 4.0 CaYaDev sources, and separate rights-review-required converted
    candidates. Pending inventories are
@@ -104,7 +106,7 @@ fragments through the existing include directory. Their license/provenance
 remains the vendored MIT notice plus local patch inventory.
 
 
-The current MilkRust pin `145d8a479dc232fdd22563277211839a8fd1c264` also
+The current MilkRust pin `f5215e9d56afa03dc06dd52d961cdf2df656853a` also
 contains bounded function-macro stringification with preserved token-boundary
 whitespace and escaped string tokens, plus worker-based browser raster decoding.
 The WASM package builder stages the decoder worker beside the generated module;
@@ -121,9 +123,10 @@ nested struct/array casts, readonly storage and single-evaluation side effects.
 The invalid-input suite checks constant overflow/index bounds and readonly
 writes. Named texture-offset controls retain their constant-expression check.
 
-The sprite probe also includes 30 combinations of classic mode 0–4, source alpha
-and opaque-ARGB key matching. Preserve these pixel checks when running the
-private gate; source compilation cannot establish those results. These authored
-controls are not captures of the unavailable exact MD3 saved-pattern renderer.
+The sprite probe includes all eleven saved blend modes and 66 combinations of
+source alpha, blend mode and opaque-ARGB key matching. Preserve these pixel
+checks when running the private gate; source compilation cannot establish those
+results. These authored controls are not captures of the MilkDrop3 reference
+renderer.
 The native C++ and Emscripten builders already include the new aggregate headers
 and lowering fragments through their pinned vendored source directory.

@@ -23,6 +23,7 @@ internal object MilkRustNativeBridge {
   external fun status(handle: Long): Array<String>
   external fun subtitlePcmCaptureAvailable(): Boolean
   external fun subtitlePcmCaptureEnable(playerSession: Long, enabled: Boolean): Int
+
   /** Returns one bounded packet: pts double, four uint32 fields, then float32 PCM. */
   external fun subtitlePcmCaptureRead(playerSession: Long): ByteArray?
 

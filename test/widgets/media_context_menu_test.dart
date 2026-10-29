@@ -68,6 +68,7 @@ import '../test_helpers/http_fixtures.dart';
 import '../test_helpers/prefs.dart';
 import '../test_helpers/profile_stack.dart';
 import '../test_helpers/stub_music_playback_service.dart';
+import '../test_helpers/media_server_client_test_defaults.dart';
 
 void main() {
   testWidgets('cancelled media menu restores its live captured item', (tester) async {
@@ -2093,7 +2094,7 @@ class _RecordingMusicPlaybackService extends StubMusicPlaybackService {
   }
 }
 
-class _RelatedMusicClient implements MediaServerClient {
+class _RelatedMusicClient with TestMediaServerClientDefaults implements MediaServerClient {
   _RelatedMusicClient(Iterable<MediaItem> items)
     : _items = {for (final item in items) item.id: item},
       albumTracks = items.where((item) => item.kind == MediaKind.track).toList();

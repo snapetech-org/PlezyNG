@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Fix the Linux native runner build with Flutter's mutable `FlValue` accessors.
+- Quote the Windows Flutter cache key so GitHub can parse and dispatch CI workflows.
+- Prepare the checksum-verified Flutter SDK in each Mac JIT job's temporary APFS workspace with resumable parallel downloads.
+- Retry transient Flutter SDK setup failures on Windows x64 JIT runners.
+- Stabilize player startup assertions, install FFmpeg for unit tests, and retry transient Android Gradle fetch failures.
+- Fix Apple native configuration to use Boost headers from CMake's extracted source root.
+- Install GStreamer development packages for Linux native CI and set Git identity in codegen test clones.
+- Fix Tizen subtitle PCM capture compilation by importing the base64 decoder.
 - Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.
 - Repair combined application compilation across visualizer and subtitle archive extraction, IPTV, catalog search, motion and player settings. Preserve bounded archive writes, stale-operation guards and subtitle timing, use shared icon styling, and explicitly track untranslated messages as English fallbacks.
@@ -19,6 +27,7 @@
 - Serialize per-player motion-provider transitions, power and thermal fallbacks, and teardown so stale async work cannot override newer requests.
 - Fix the pinned Windows ML 2.4.89 package SHA-256 so Windows runtime downloads pass integrity verification.
 - Keep CPU-only motion providers out of real-time Neural readiness until playback timing is qualified.
+- Add an optional pinned OpenVINO Plugin EP runtime for Linux Intel GPUs/NPUs, and allow Qualcomm HTP context preparation to select SoC/model subsets, record QAIRT/calibration provenance, and package only checksum-verified contexts built with the matching QAIRT SDK; partial target sets remain an explicit opt-in.
 - Add experimental native MilkRust visualization hosts across Linux, Windows, Apple and Android, with same-player PCM routing, profile-scoped engine selection, and optional SHA-256-checked desktop runtime/source packaging with notices; compiled engines are not in current releases and platform behavior remains unqualified.
 
 - Add profile-scoped Real-Debrid, AllDebrid, Premiumize and TorBox connections, Stremio add-on imports, cloud/server canonical libraries, renewable shared playback, scheduled preparation, and optional native libtorrent streaming; live-provider and packaged-device qualification remains open.

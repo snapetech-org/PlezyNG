@@ -37,6 +37,7 @@ import '../../test_helpers/prefs.dart';
 import '../../test_helpers/playback_report_fakes.dart';
 import '../../test_helpers/stub_music_playback_service.dart';
 import '../../test_helpers/watch_together_fakes.dart';
+import '../../test_helpers/media_server_client_test_defaults.dart';
 
 /// The launch receipt an automation caller polls (`playback.status`) and
 /// stops through (`playback.stop`) must keep describing the session across
@@ -382,7 +383,7 @@ class _ObservedPlayer extends FakeSyncPlayer {
   }
 }
 
-class _ObservedClient with PlaybackReportRecorder implements MediaServerClient {
+class _ObservedClient with PlaybackReportRecorder, TestMediaServerClientDefaults implements MediaServerClient {
   @override
   ServerId get serverId => ServerId('srv-1');
   @override

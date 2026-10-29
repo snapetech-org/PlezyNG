@@ -343,8 +343,12 @@ open class MpvPlayerPlugin(
   private fun handleSubtitlePcmCapture(call: MethodCall, result: MethodChannel.Result) {
     if (call.method == "subtitlePcmCaptureAvailable") {
       val session = playerCore?.subtitlePcmCaptureSessionId()
-      result.success(!audioOnly && session != null && MilkRustNativeBridge.loadError == null &&
-        MilkRustNativeBridge.subtitlePcmCaptureAvailable())
+      result.success(
+        !audioOnly &&
+          session != null &&
+          MilkRustNativeBridge.loadError == null &&
+          MilkRustNativeBridge.subtitlePcmCaptureAvailable()
+      )
       return
     }
     if (audioOnly || MilkRustNativeBridge.loadError != null) {
@@ -384,14 +388,16 @@ open class MpvPlayerPlugin(
             if (sampleBytes != header.remaining()) continue
             val pcm = ByteArray(sampleBytes)
             header.get(pcm)
-            packets.add(mapOf(
-              "presentationTimeUs" to ptsUs.roundToLong(),
-              "sampleRate" to sampleRate,
-              "channels" to channels,
-              "encoding" to "float32",
-              "pcm" to pcm,
-              "droppedFrames" to droppedFrames.toLong()
-            ))
+            packets.add(
+              mapOf(
+                "presentationTimeUs" to ptsUs.roundToLong(),
+                "sampleRate" to sampleRate,
+                "channels" to channels,
+                "encoding" to "float32",
+                "pcm" to pcm,
+                "droppedFrames" to droppedFrames.toLong()
+              )
+            )
           }
           result.success(packets)
         }

@@ -6,11 +6,12 @@
 #include <jni.h>
 
 #include <atomic>
-#include <map>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <map>
 #include <vector>
+
 #include "../../../../../shared/visualization/native_worker.h"
 
 using namespace plezy::visualization;
@@ -25,9 +26,9 @@ struct TapApi {
   int (*read)(uint64_t, void*, size_t) =
       library ? reinterpret_cast<int (*)(uint64_t, void*, size_t)>(dlsym(library, "plezy_android_visualization_read"))
               : nullptr;
-  int (*read_next)(uint64_t, void*, size_t) =
-      library ? reinterpret_cast<int (*)(uint64_t, void*, size_t)>(dlsym(library, "plezy_android_subtitle_capture_read_next"))
-              : nullptr;
+  int (*read_next)(uint64_t, void*, size_t) = library ? reinterpret_cast<int (*)(uint64_t, void*, size_t)>(
+                                                            dlsym(library, "plezy_android_subtitle_capture_read_next"))
+                                                      : nullptr;
   bool available() const { return version && enable && read && version() == 1; }
   bool subtitle_available() const { return version && enable && read_next && version() == 1; }
   // Kept loaded for every host/session lifetime.
@@ -266,22 +267,28 @@ extern "C" JNIEXPORT jstring JNICALL JNI_NAME(dependencyError)(JNIEnv* env, jobj
     return nullptr;
   }
 }
-extern "C" JNIEXPORT jboolean JNICALL JNI_NAME(subtitlePcmCaptureAvailable)(JNIEnv*,jobject) {
+extern "C" JNIEXPORT jboolean JNICALL JNI_NAME(subtitlePcmCaptureAvailable)(JNIEnv*, jobject) {
   return Tap().subtitle_available() ? JNI_TRUE : JNI_FALSE;
 }
-extern "C" JNIEXPORT jint JNICALL JNI_NAME(subtitlePcmCaptureEnable)(JNIEnv* env,jobject,jlong session,jboolean enabled) {
+extern "C" JNIEXPORT jint JNICALL
+JNI_NAME(subtitlePcmCaptureEnable)(JNIEnv* env, jobject, jlong session, jboolean enabled) {
   try {
     if (session <= 0 || !Tap().subtitle_available()) return MPV_PLEZY_AUDIO_UNSUPPORTED;
     return Tap().enable(static_cast<uint64_t>(session), enabled ? 1 : 0);
-  } catch (const std::exception& ex) { Error(env,ex); return -1; }
+  } catch (const std::exception& ex) {
+    Error(env, ex);
+    return -1;
+  }
 }
-extern "C" JNIEXPORT jbyteArray JNICALL JNI_NAME(subtitlePcmCaptureRead)(JNIEnv* env,jobject,jlong session) {
+extern "C" JNIEXPORT jbyteArray JNICALL JNI_NAME(subtitlePcmCaptureRead)(JNIEnv* env, jobject, jlong session) {
   try {
-    if (session <= 0 || !Tap().subtitle_available()) throw std::runtime_error("The Android MPV PCM capture ABI is unavailable.");
+    if (session <= 0 || !Tap().subtitle_available())
+      throw std::runtime_error("The Android MPV PCM capture ABI is unavailable.");
     mpv_plezy_audio_block block{};
     const int status = Tap().read_next(static_cast<uint64_t>(session), &block, sizeof(block));
     if (status == 0) return nullptr;
-    if (status < 0) throw std::runtime_error("The Android MPV PCM capture tap failed (" + std::to_string(status) + ").");
+    if (status < 0)
+      throw std::runtime_error("The Android MPV PCM capture tap failed (" + std::to_string(status) + ").");
     if (!std::isfinite(block.pts) || block.frames == 0 || block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES ||
         block.sample_rate == 0 || block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS)
       throw std::runtime_error("The Android MPV PCM capture packet was invalid.");
@@ -289,17 +296,26 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI_NAME(subtitlePcmCaptureRead)(JNIEnv*
     constexpr size_t header_bytes = sizeof(double) + 4 * sizeof(uint32_t);
     std::vector<uint8_t> encoded(header_bytes + sample_bytes);
     size_t offset = 0;
-    std::memcpy(encoded.data() + offset, &block.pts, sizeof(block.pts)); offset += sizeof(block.pts);
-    std::memcpy(encoded.data() + offset, &block.frames, sizeof(block.frames)); offset += sizeof(block.frames);
-    std::memcpy(encoded.data() + offset, &block.sample_rate, sizeof(block.sample_rate)); offset += sizeof(block.sample_rate);
-    std::memcpy(encoded.data() + offset, &block.channels, sizeof(block.channels)); offset += sizeof(block.channels);
-    std::memcpy(encoded.data() + offset, &block.dropped_frames, sizeof(block.dropped_frames)); offset += sizeof(block.dropped_frames);
+    std::memcpy(encoded.data() + offset, &block.pts, sizeof(block.pts));
+    offset += sizeof(block.pts);
+    std::memcpy(encoded.data() + offset, &block.frames, sizeof(block.frames));
+    offset += sizeof(block.frames);
+    std::memcpy(encoded.data() + offset, &block.sample_rate, sizeof(block.sample_rate));
+    offset += sizeof(block.sample_rate);
+    std::memcpy(encoded.data() + offset, &block.channels, sizeof(block.channels));
+    offset += sizeof(block.channels);
+    std::memcpy(encoded.data() + offset, &block.dropped_frames, sizeof(block.dropped_frames));
+    offset += sizeof(block.dropped_frames);
     std::memcpy(encoded.data() + offset, block.samples, sample_bytes);
     auto result = env->NewByteArray(static_cast<jsize>(encoded.size()));
     if (!result) return nullptr;
-    env->SetByteArrayRegion(result, 0, static_cast<jsize>(encoded.size()), reinterpret_cast<const jbyte*>(encoded.data()));
+    env->SetByteArrayRegion(
+        result, 0, static_cast<jsize>(encoded.size()), reinterpret_cast<const jbyte*>(encoded.data()));
     return result;
-  } catch (const std::exception& ex) { Error(env,ex); return nullptr; }
+  } catch (const std::exception& ex) {
+    Error(env, ex);
+    return nullptr;
+  }
 }
 extern "C" JNIEXPORT jlong JNICALL JNI_NAME(create)(JNIEnv* env, jobject owner, jlong player, jobject surface) {
   try {

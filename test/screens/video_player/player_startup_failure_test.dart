@@ -152,7 +152,12 @@ void main() {
           ),
         );
 
-        await pumpUntil(tester, () => loadfileCalls > 0, describe: () => 'loadfileCalls=$loadfileCalls');
+        await pumpUntil(
+          tester,
+          () => loadfileCalls > 0,
+          describe: () => 'loadfileCalls=$loadfileCalls',
+          timeout: const Duration(seconds: 10),
+        );
         await pumpUntil(
           tester,
           () => find.text(t.messages.serverLimitTitle).evaluate().isNotEmpty,

@@ -22,6 +22,8 @@ import 'package:plezy/widgets/overlay_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../../test_helpers/multi_server_fixtures.dart';
+import 'package:plezy/profiles/active_profile_provider.dart';
+import '../../test_helpers/profile_stack.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -238,11 +240,16 @@ final class _SheetHarness {
   }
 
   Future<void> open(WidgetTester tester) async {
+    final profiles = await ProfileStack.create(withStorage: false);
+    addTearDown(profiles.dispose);
     await tester.pumpWidget(
       TranslationProvider(
         child: InputModeTracker(
-          child: ChangeNotifierProvider<MultiServerProvider>.value(
-            value: _provider,
+          child: MultiProvider(
+            providers: [
+              ChangeNotifierProvider<MultiServerProvider>.value(value: _provider),
+              ChangeNotifierProvider<ActiveProfileProvider>.value(value: profiles.active),
+            ],
             child: MaterialApp(
               theme: monoTheme(MonoPalette.dark),
               home: OverlaySheetHost(

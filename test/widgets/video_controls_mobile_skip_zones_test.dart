@@ -49,6 +49,7 @@ void main() {
     SettingsService.resetForTesting();
     final settings = await SettingsService.getInstance();
     await settings.write(SettingsService.seekTimeSmall, 10);
+    await settings.write(SettingsService.clickVideoTogglesPlayback, false);
 
     // Phone layout: the skip zones only exist when PlatformDetector.isMobile.
     TvDetectionService.debugSetAppleTVOverride(false);

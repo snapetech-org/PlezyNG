@@ -23,6 +23,8 @@ import 'package:plezy/focus/input_mode_tracker.dart';
 import 'package:provider/provider.dart';
 
 import '../../test_helpers/multi_server_fixtures.dart';
+import 'package:plezy/profiles/active_profile_provider.dart';
+import '../../test_helpers/profile_stack.dart';
 
 const _episodeRatingKey = 'plex%3A%2F%2Fepisode%2F6a7fba88cb8a706b4d3047bb';
 
@@ -73,6 +75,9 @@ void main() {
     final provider = testMultiServerProvider(manager)
       ..debugSetLiveTvServersForTesting([LiveTvServerInfo(serverId: 'server-a', dvrKey: 'dvr-a')]);
     addTearDown(provider.dispose);
+    addTearDown(manager.dispose);
+    final profiles = await ProfileStack.create(withStorage: false);
+    addTearDown(profiles.dispose);
 
     final channel = LiveTvChannel(
       key: 'channel-station-a',
@@ -85,8 +90,11 @@ void main() {
     await tester.pumpWidget(
       TranslationProvider(
         child: InputModeTracker(
-          child: ChangeNotifierProvider<MultiServerProvider>.value(
-            value: provider,
+          child: MultiProvider(
+            providers: [
+              ChangeNotifierProvider<MultiServerProvider>.value(value: provider),
+              ChangeNotifierProvider<ActiveProfileProvider>.value(value: profiles.active),
+            ],
             child: MaterialApp(
               theme: monoTheme(MonoPalette.dark),
               home: Scaffold(body: GuideTab(channels: [channel])),
@@ -281,6 +289,9 @@ final class _DvrFakeClient implements MediaServerClient {
 
   @override
   Future<List<MediaLibrary>> fetchLibraries() async => const [];
+
+  @override
+  void close() {}
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

@@ -12,9 +12,9 @@ int PlezyVisualizationTapEnable(void* player, BOOL enabled);
 int PlezyVisualizationTapRead(void* player, double pts, void* output, size_t size);
 BOOL PlezySubtitlePcmCaptureAvailable(void);
 int PlezySubtitlePcmCaptureEnable(void* player, BOOL enabled);
-int PlezySubtitlePcmCaptureReadNext(void* player, double* pts, uint32_t* frames, uint32_t* sample_rate,
-                                    uint32_t* channels, uint32_t* dropped_frames, void* samples,
-                                    size_t sample_capacity);
+int PlezySubtitlePcmCaptureReadNext(
+    void* player, double* pts, uint32_t* frames, uint32_t* sample_rate, uint32_t* channels, uint32_t* dropped_frames,
+    void* samples, size_t sample_capacity);
 #ifdef __cplusplus
 }
 #endif

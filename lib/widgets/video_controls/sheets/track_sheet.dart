@@ -738,6 +738,7 @@ Future<void> _loadSubtitleFile(BuildContext context, Player player) async {
     if (!isArchive && p.extension(pickedFile.name).toLowerCase() == '.idx') {
       await _validateDirectIdxSubtitlePair(pickedFile);
     }
+    if (!context.mounted) return;
     final selectedPath = SubtitleArchiveImporter.isSupportedArchiveName(pickedFile.name)
         ? await _selectArchivedSubtitle(context, pickedFile, supportedExtensions)
         : pickedFile.path;

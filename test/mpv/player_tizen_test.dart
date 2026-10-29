@@ -29,7 +29,9 @@ void main() {
     await player.dispose();
     player = PlayerTizen(audioOnly: true);
     final calls = <String>[];
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(visualizer, (call) async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(visualizer, (
+      call,
+    ) async {
       final id = (call.arguments as Map)['playerId'] as int;
       calls.add('${call.method}:$id');
       if (call.method == 'visualizerUnbindPlayer') expect(backend.disposed, isNot(contains(id)));
@@ -62,7 +64,9 @@ void main() {
     player = PlayerTizen(audioOnly: true);
     final binding = Completer<void>(), release = Completer<void>();
     final calls = <String>[];
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(visualizer, (call) async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(visualizer, (
+      call,
+    ) async {
       calls.add(call.method);
       if (call.method == 'visualizerBindPlayer') {
         binding.complete();

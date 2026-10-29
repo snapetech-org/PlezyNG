@@ -275,7 +275,13 @@ abstract final class SubtitleSyncService {
             return source.startMs <= speech.endMs + 15000 && source.endMs >= speech.startMs - 15000;
           })) {
         repaired.add(
-          SubtitleCue(index: repaired.length + 1, startMs: source.startMs, endMs: source.endMs, text: source.text),
+          SubtitleCue(
+            index: repaired.length + 1,
+            startMs: source.startMs,
+            endMs: source.endMs,
+            text: source.text,
+            cueId: source.stableId,
+          ),
         );
         continue;
       }
@@ -289,7 +295,13 @@ abstract final class SubtitleSyncService {
       final clippedEnd = end.clamp(clippedStart + 1, mediaDurationMs).toInt();
       if (clippedEnd <= clippedStart) continue;
       repaired.add(
-        SubtitleCue(index: repaired.length + 1, startMs: clippedStart, endMs: clippedEnd, text: source.text),
+        SubtitleCue(
+          index: repaired.length + 1,
+          startMs: clippedStart,
+          endMs: clippedEnd,
+          text: source.text,
+          cueId: source.stableId,
+        ),
       );
     }
     if (repaired.isEmpty) throw const FormatException('Alignment moved every subtitle cue outside the audio duration.');

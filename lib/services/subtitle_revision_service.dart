@@ -95,7 +95,15 @@ final class SubtitleRevision {
     'operation': operation,
     'languageCode': languageCode,
     'cues': cues
-        .map((cue) => {'index': cue.index, 'startMs': cue.startMs, 'endMs': cue.endMs, 'text': cue.text})
+        .map(
+          (cue) => {
+            'cueId': cue.stableId,
+            'index': cue.index,
+            'startMs': cue.startMs,
+            'endMs': cue.endMs,
+            'text': cue.text,
+          },
+        )
         .toList(growable: false),
     'wordTimings': wordTimings
         .map(
@@ -106,6 +114,7 @@ final class SubtitleRevision {
             'confidence': timing.confidence,
             'unit': timing.unit.name,
             'cueIndex': timing.cueIndex,
+            'cueId': timing.cueId,
           },
         )
         .toList(growable: false),
@@ -137,6 +146,8 @@ final class SubtitleRevision {
     }
 
     final cues = <SubtitleCue>[];
+    final seenCueIndexes = <int>{};
+    final seenCueIds = <String>{};
     for (final row in rawCues) {
       if (row is! Map<String, dynamic>) {
         throw const FormatException('Subtitle revision cue is invalid.');
@@ -145,20 +156,29 @@ final class SubtitleRevision {
       final start = row['startMs'];
       final end = row['endMs'];
       final text = row['text'];
+      final cueId = row['cueId'];
       if (index is! int ||
           start is! int ||
           end is! int ||
           text is! String ||
+          (cueId != null && (cueId is! String || !RegExp(r'^[0-9a-f]{64}$').hasMatch(cueId))) ||
           text.length > SubtitleRetimer.maximumInputBytes ||
+          index < 1 ||
           start < 0 ||
           end <= start ||
           end > SubtitleRetimer.maximumTimeMs) {
         throw const FormatException('Subtitle revision cue timing or text is invalid.');
       }
-      cues.add(SubtitleCue(index: index, startMs: start, endMs: end, text: text));
+      final cue = SubtitleCue(index: index, startMs: start, endMs: end, text: text, cueId: cueId as String?);
+      if (!seenCueIndexes.add(index) || !seenCueIds.add(cue.stableId)) {
+        throw const FormatException('Subtitle revision contains duplicate cue identity.');
+      }
+      cues.add(cue);
     }
 
     final wordTimings = <SubtitleWordTiming>[];
+    final cuesByIndex = <int, SubtitleCue>{for (final cue in cues) cue.index: cue};
+    final cuesById = <String, SubtitleCue>{for (final cue in cues) cue.stableId: cue};
     for (final row in rawWords) {
       if (row is! Map<String, dynamic>) {
         throw const FormatException('Subtitle revision word timing is invalid.');
@@ -169,12 +189,14 @@ final class SubtitleRevision {
       final confidence = row['confidence'];
       final unitName = row['unit'];
       final cueIndex = row['cueIndex'];
+      final cueId = row['cueId'];
       if (start is! int ||
           end is! int ||
           text is! String ||
           confidence is! num ||
           unitName is! String ||
           (cueIndex != null && cueIndex is! int) ||
+          (cueId != null && (cueId is! String || !RegExp(r'^[0-9a-f]{64}$').hasMatch(cueId))) ||
           start < 0 ||
           end <= start ||
           end > SubtitleRetimer.maximumTimeMs ||
@@ -186,6 +208,15 @@ final class SubtitleRevision {
       }
       final unit = SubtitleWordTimingUnit.values.where((candidate) => candidate.name == unitName);
       if (unit.isEmpty) throw const FormatException('Subtitle revision timing unit is invalid.');
+      final indexedCue = cueIndex == null ? null : cuesByIndex[cueIndex];
+      final identifiedCue = cueId == null ? null : cuesById[cueId];
+      if ((cueIndex != null && indexedCue == null) || (cueId != null && identifiedCue == null)) {
+        throw const FormatException('Subtitle revision word timing refers to a missing cue.');
+      }
+      if (cueId != null && indexedCue != null && indexedCue.stableId != cueId) {
+        throw const FormatException('Subtitle revision word timing refers to a different cue.');
+      }
+      final linkedCue = identifiedCue ?? indexedCue;
       wordTimings.add(
         SubtitleWordTiming(
           startMs: start,
@@ -193,7 +224,8 @@ final class SubtitleRevision {
           text: text,
           confidence: confidence.toDouble(),
           unit: unit.first,
-          cueIndex: cueIndex as int?,
+          cueIndex: (cueIndex as int?) ?? linkedCue?.index,
+          cueId: (cueId as String?) ?? linkedCue?.stableId,
         ),
       );
     }
@@ -287,14 +319,23 @@ abstract final class SubtitleRevisionService {
           wordTimings.length > 250000) {
         throw const FormatException('Subtitle revision exceeds the supported metadata or cue bound.');
       }
+      final cuesByIndex = <int, SubtitleCue>{};
+      final cuesById = <String, SubtitleCue>{};
       for (final cue in cues) {
         if (cue.startMs < 0 ||
             cue.endMs <= cue.startMs ||
             cue.endMs > SubtitleRetimer.maximumTimeMs ||
-            cue.text.length > SubtitleRetimer.maximumInputBytes) {
+            cue.text.length > SubtitleRetimer.maximumInputBytes ||
+            cue.index < 1 ||
+            !RegExp(r'^[0-9a-f]{64}$').hasMatch(cue.stableId) ||
+            cuesByIndex.containsKey(cue.index) ||
+            cuesById.containsKey(cue.stableId)) {
           throw const FormatException('Subtitle revision contains an invalid cue.');
         }
+        cuesByIndex[cue.index] = cue;
+        cuesById[cue.stableId] = cue;
       }
+      final savedWordTimings = <SubtitleWordTiming>[];
       for (final timing in wordTimings) {
         if (timing.startMs < 0 ||
             timing.endMs <= timing.startMs ||
@@ -303,9 +344,19 @@ abstract final class SubtitleRevisionService {
             !timing.confidence.isFinite ||
             timing.confidence < 0 ||
             timing.confidence > 1 ||
-            (timing.cueIndex != null && (timing.cueIndex! < 1 || timing.cueIndex! > cues.length))) {
+            (timing.cueIndex != null && !cuesByIndex.containsKey(timing.cueIndex!)) ||
+            (timing.cueId != null && !cuesById.containsKey(timing.cueId!))) {
           throw const FormatException('Subtitle revision contains an invalid word timing.');
         }
+        final indexedCue = timing.cueIndex == null ? null : cuesByIndex[timing.cueIndex];
+        final identifiedCue = timing.cueId == null ? null : cuesById[timing.cueId];
+        if (indexedCue != null && identifiedCue != null && indexedCue.stableId != identifiedCue.stableId) {
+          throw const FormatException('Subtitle revision word timing refers to different cues.');
+        }
+        final linkedCue = identifiedCue ?? indexedCue;
+        savedWordTimings.add(
+          timing.withCueIndex(timing.cueIndex ?? linkedCue?.index, cueId: linkedCue?.stableId),
+        );
       }
       final now = DateTime.now().toUtc();
       final directory = await _directoryFor(identity);
@@ -324,7 +375,7 @@ abstract final class SubtitleRevisionService {
         operation: operation.trim(),
         languageCode: languageCode?.trim().isEmpty == true ? null : languageCode?.trim(),
         cues: List<SubtitleCue>.unmodifiable(cues),
-        wordTimings: List<SubtitleWordTiming>.unmodifiable(wordTimings),
+        wordTimings: List<SubtitleWordTiming>.unmodifiable(savedWordTimings),
       );
       final bytes = utf8.encode(jsonEncode(revision.toJson()));
       if (bytes.length > maximumRevisionBytes) {

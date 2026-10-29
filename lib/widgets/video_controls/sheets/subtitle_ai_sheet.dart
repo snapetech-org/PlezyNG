@@ -721,6 +721,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         startMs: aligned.cues[index].startMs,
         endMs: aligned.cues[index].endMs,
         text: target.$1[index].text,
+        cueId: target.$1[index].stableId,
       ),
       growable: false,
     );
@@ -933,6 +934,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         startMs: aligned.cues[index].startMs,
         endMs: aligned.cues[index].endMs,
         text: selected.$1[index].text,
+        cueId: selected.$1[index].stableId,
       ),
       growable: false,
     );
@@ -1558,7 +1560,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     });
                     return;
                   }
-                  edited = SubtitleCue(index: cue.index, startMs: startMs, endMs: endMs, text: text);
+                  edited = SubtitleCue(
+                    index: cue.index,
+                    startMs: startMs,
+                    endMs: endMs,
+                    text: text,
+                    cueId: cue.stableId,
+                  );
                   Navigator.of(editorContext).pop(true);
                 },
                 child: const Text('Save cue'),

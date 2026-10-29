@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
+
 /// A derived subtitle file whose cue times follow the active MPV timing
 /// correction. The source bytes are never modified.
 final class SubtitleRetimingResult {
@@ -18,12 +20,24 @@ final class SubtitleRetimingResult {
 
 /// A text-backed subtitle event available for manual timing alignment.
 final class SubtitleCue {
-  const SubtitleCue({required this.index, required this.startMs, required this.endMs, required this.text});
+  const SubtitleCue({required this.index, required this.startMs, required this.endMs, required this.text, this.cueId});
 
   final int index;
   final int startMs;
   final int endMs;
   final String text;
+
+  /// Persistent cue identity carried through translation, retiming, and review.
+  /// Older file parsers can omit it; their content-and-position fingerprint is
+  /// deterministic so reopening the same source produces the same identifier.
+  final String? cueId;
+
+  String get stableId {
+    final savedId = cueId;
+    if (savedId != null) return savedId;
+    final canonicalCue = jsonEncode(<Object>[index, startMs, endMs, text]);
+    return sha256.convert(utf8.encode(canonicalCue)).toString();
+  }
 }
 
 enum _SubtitleTextEncoding { utf8, utf8Bom, utf16LittleEndian, utf16BigEndian }

@@ -473,7 +473,15 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
         if (translatedBytes > SubtitleRetimer.maximumInputBytes) {
           throw const FormatException('Translated subtitles exceed the 5 MiB output bound.');
         }
-        translated.add(SubtitleCue(index: index + 1, startMs: source.startMs, endMs: source.endMs, text: outputText));
+        translated.add(
+          SubtitleCue(
+            index: index + 1,
+            startMs: source.startMs,
+            endMs: source.endMs,
+            text: outputText,
+            cueId: source.stableId,
+          ),
+        );
         if ((index + 1) % 5 == 0 || index + 1 == cues.length) onProgress?.call(index + 1, cues.length);
       }
     } finally {
@@ -597,7 +605,15 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       if (translatedBytes > SubtitleRetimer.maximumInputBytes) {
         throw const FormatException('Translated subtitles exceed the 5 MiB output bound.');
       }
-      translated.add(SubtitleCue(index: cueIndex + 1, startMs: source.startMs, endMs: source.endMs, text: outputText));
+      translated.add(
+        SubtitleCue(
+          index: cueIndex + 1,
+          startMs: source.startMs,
+          endMs: source.endMs,
+          text: outputText,
+          cueId: source.stableId,
+        ),
+      );
     }
     onProgress?.call(cues.length, cues.length);
     return SubtitleTranslationResult(

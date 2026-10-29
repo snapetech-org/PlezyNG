@@ -509,6 +509,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         startMs: math.min(old.startMs, cue.startMs).toInt(),
         endMs: math.max(old.endMs, cue.endMs).toInt(),
         text: cue.text.length > old.text.length ? cue.text : old.text,
+        cueId: old.stableId,
       );
     } else if (_cues.length < _maximumCueCount) {
       _cues.add(cue);
@@ -516,7 +517,13 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _cues.sort((left, right) => left.startMs.compareTo(right.startMs));
     for (var index = 0; index < _cues.length; index++) {
       final cue = _cues[index];
-      _cues[index] = SubtitleCue(index: index + 1, startMs: cue.startMs, endMs: cue.endMs, text: cue.text);
+      _cues[index] = SubtitleCue(
+        index: index + 1,
+        startMs: cue.startMs,
+        endMs: cue.endMs,
+        text: cue.text,
+        cueId: cue.stableId,
+      );
     }
     _publishTranscript();
   }

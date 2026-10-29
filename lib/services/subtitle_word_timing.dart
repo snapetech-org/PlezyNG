@@ -14,6 +14,7 @@ final class SubtitleWordTiming {
     required this.confidence,
     required this.unit,
     this.cueIndex,
+    this.cueId,
   });
 
   final int startMs;
@@ -24,14 +25,16 @@ final class SubtitleWordTiming {
 
   /// One-based SRT cue index, assigned only when the timed span overlaps a cue.
   final int? cueIndex;
+  final String? cueId;
 
-  SubtitleWordTiming withCueIndex(int? value) => SubtitleWordTiming(
+  SubtitleWordTiming withCueIndex(int? value, {String? cueId}) => SubtitleWordTiming(
     startMs: startMs,
     endMs: endMs,
     text: text,
     confidence: confidence,
     unit: unit,
     cueIndex: value,
+    cueId: cueId,
   );
 }
 
@@ -158,7 +161,12 @@ abstract final class SubtitleWordTimingBuilder {
           bestIndex = index;
         }
       }
-      result.add(word.withCueIndex(bestIndex < 0 ? null : cues[bestIndex].index));
+      result.add(
+        word.withCueIndex(
+          bestIndex < 0 ? null : cues[bestIndex].index,
+          cueId: bestIndex < 0 ? null : cues[bestIndex].stableId,
+        ),
+      );
     }
     return List.unmodifiable(result);
   }

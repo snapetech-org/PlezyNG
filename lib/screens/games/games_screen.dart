@@ -12,6 +12,7 @@ import '../../focus/input_mode_tracker.dart';
 import '../../games/game_discovery.dart';
 import '../../games/game_library_controller.dart';
 import '../../games/steam_internet_tunnel.dart';
+import '../../games/steam_input_profile.dart';
 import '../../games/game_models.dart';
 import '../../games/steam_stream_preferences.dart';
 import '../../games/steam_inventory_exchange.dart';
@@ -635,6 +636,17 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       return;
     }
     final session = SteamGameWorkspaceSession(
+      inputProfile: SteamInputProfile.restore(
+        SettingsService.instance.read(SettingsService.steamInputForGame(c.profileId, game.id)),
+      ),
+      persistInputProfile: (profile) async {
+        c.requireCurrent();
+        await SettingsService.instance.write(
+          SettingsService.steamInputForGame(c.profileId, game.id),
+          profile.encode(),
+          checkCurrent: c.requireCurrent,
+        );
+      },
       internetTunnel: tunnel,
       connectInternet: connectInternet,
       onFirstFrame: () {

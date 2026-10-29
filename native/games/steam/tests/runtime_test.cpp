@@ -157,7 +157,47 @@ void sessionStartup() {
 uint32_t le(const uint8_t* p) {
   return uint32_t(p[0]) | uint32_t(p[1]) << 8 | uint32_t(p[2]) << 16 | uint32_t(p[3]) << 24;
 }
+void controllerMappings() {
+  std::vector<int64_t> encoded{1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 0, 0};
+  ControllerMapping mapping;
+  assert(ControllerMapping::decode(encoded, mapping));
+  for (size_t field : {size_t(0), size_t(1), size_t(16), size_t(17), size_t(18)}) {
+    auto malformed = encoded;
+    malformed[field] = 9999999999;
+    assert(!ControllerMapping::decode(malformed, mapping));
+  }
+  assert(!ControllerMapping::decode({}, mapping));
+  auto extra = encoded;
+  extra.push_back(0);
+  assert(!ControllerMapping::decode(extra, mapping));
+  encoded[1] = 1;
+  encoded[2] = 1;
+  encoded[3] = -1;
+  encoded[16] = 4096;
+  encoded[17] = 2048;
+  encoded[18] = 1 | 16 | 32;
+  assert(ControllerMapping::decode(encoded, mapping));
+  std::array<int16_t, 6> axes{-32768, 4096, -16384, 0, 32767, 1024};
+  uint32_t buttons = 7;
+  mapping.apply(axes, buttons);
+  assert(buttons == 2);  // Two sources OR together; the disabled source is absent.
+  assert(axes[0] < -14000 && axes[0] > -14060 && axes[1] == 0);
+  assert(axes[2] == 32767 && axes[3] == 0 && axes[4] == 0 && axes[5] == 32767);
+  axes = {};
+  buttons = 0;
+  mapping.apply(axes, buttons);
+  assert((axes == std::array<int16_t, 6>{}) && buttons == 0);
+  Runtime runtime;
+  runtime.padSeat(0, {32767, 0, 0, 0, 0, 0}, 1);
+  assert(runtime.controllerMapping(0, encoded));
+  assert(RuntimeTest::pad(runtime, 0)->buttons == 0);
+  assert(!runtime.controllerMapping(4, encoded));
+  runtime.padSeat(0, {}, 1);
+  runtime.padSeat(1, {}, 1);
+  assert(RuntimeTest::pad(runtime, 0)->buttons == 2 && RuntimeTest::pad(runtime, 1)->buttons == 1);
+}
 int main() {
+  controllerMappings();
   {
     Host direct{"192.0.2.1", 27036, 1};
     assert(direct.validRelay());

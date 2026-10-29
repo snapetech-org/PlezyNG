@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/games/game_models.dart';
+import 'package:plezy/games/steam_input_profile.dart';
 import 'package:plezy/multiview/steam_game_workspace_surface.dart';
 import 'package:plezy/services/gamepad_service.dart';
 import 'package:universal_gamepad/universal_gamepad.dart';
@@ -21,17 +22,95 @@ void main() {
     return done.future;
   }
 
-  SteamGameWorkspaceSession session({void Function()? onFirstFrame}) {
+  SteamGameWorkspaceSession session({
+    void Function()? onFirstFrame,
+    SteamInputProfile? inputProfile,
+    Future<void> Function(SteamInputProfile)? persist,
+  }) {
     final host = GameHost(id: '123', name: 'Desktop', address: 'desktop.local', protocol: GameProtocol.steam);
     return SteamGameWorkspaceSession(
       host: host,
       game: StreamGame(hostKey: host.key, id: '620', name: 'Portal 2'),
       touchControls: false,
       onFirstFrame: onFirstFrame,
+      inputProfile: inputProfile,
+      persistInputProfile: persist,
     );
   }
 
   tearDown(() => messenger.setMockMethodCallHandler(channel, null));
+
+  test('custom mapping gates input until acknowledgement and replays after fallback', () async {
+    final commands = <MethodCall>[];
+    var gate = Completer<bool>();
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      commands.add(call);
+      if (call.method == 'setControllerMapping') return gate.future;
+      return null;
+    });
+    final stream = session(inputProfile: SteamInputProfile.defaults().change(0, 1, 1));
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await stream.setInputEnabled(true);
+    await state('playing');
+    expect(stream.inputAvailable.value, isFalse);
+    gate.complete(true);
+    await Future<void>.delayed(Duration.zero);
+    expect(stream.inputAvailable.value, isTrue);
+    gate = Completer<bool>();
+    await state('reconnecting');
+    await state('playing');
+    expect(stream.inputAvailable.value, isFalse);
+    gate.complete(true);
+    await Future<void>.delayed(Duration.zero);
+    expect(stream.inputAvailable.value, isTrue);
+    expect(commands.where((c) => c.method == 'setControllerMapping'), hasLength(2));
+  });
+
+  test('rejected mapping is not saved and failed rollback holds input', () async {
+    var saved = false;
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'setControllerMapping') return false;
+      return null;
+    });
+    final stream = session(
+      persist: (_) async {
+        saved = true;
+      },
+    );
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await state('playing');
+    await stream.setInputEnabled(true);
+    await expectLater(stream.applyInputProfile(SteamInputProfile.defaults().change(0, 1, 1)), throwsStateError);
+    expect(saved, isFalse);
+    expect(stream.inputProfile.isDefault, isTrue);
+    expect(stream.inputAvailable.value, isFalse);
+    expect(stream.mappingFailed.value, isTrue);
+  });
+
+  test('retired receiver cannot finish saving a mapping', () async {
+    final gate = Completer<bool>();
+    var saved = false;
+    messenger.setMockMethodCallHandler(
+      channel,
+      (call) async => call.method == 'setControllerMapping' ? gate.future : null,
+    );
+    final stream = session(
+      persist: (_) async {
+        saved = true;
+      },
+    );
+    stream.attachPlatformView(99);
+    await state('playing');
+    final applied = stream.applyInputProfile(SteamInputProfile.defaults().change(0, 1, 1));
+    final rejected = expectLater(applied, throwsStateError);
+    await Future<void>.delayed(Duration.zero);
+    stream.dispose();
+    gate.complete(true);
+    await rejected;
+    expect(saved, isFalse);
+  });
 
   test('disconnect acknowledgement permits reconnect after a texture channel retires', () async {
     var stops = 0;

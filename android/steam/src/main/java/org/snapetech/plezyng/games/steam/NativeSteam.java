@@ -41,6 +41,7 @@ final class NativeSteam {
   static native byte[] h26xFrame(long handle, byte[] bytes);
   static native void pad(long handle, short[] axes, int buttons);
   static native void padSeat(long handle, int seat, short[] axes, int buttons);
+  static native boolean controllerMapping(long handle, int seat, int[] values);
   static native void key(long handle, int usage, boolean down);
   static native void mouse(long handle, float x, float y, int button, boolean down);
   static native void text(long handle, String text);

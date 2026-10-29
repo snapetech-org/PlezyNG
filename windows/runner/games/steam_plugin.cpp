@@ -638,6 +638,16 @@ void Session::method(const Call& call, Reply reply) {
   }
   std::lock_guard<std::mutex> lock(mutex);
   const bool live = runtime && active && runtime->metrics().epoch == renderedEpoch;
+  if (method == "setControllerMapping") {
+    const auto* encoded = field(args, "mapping");
+    const auto* values = encoded ? std::get_if<flutter::EncodableList>(encoded) : nullptr;
+    if (!values || values->size() != 19) throw std::invalid_argument("Invalid controller mapping");
+    std::vector<int64_t> mapping;
+    for (const auto& value : *values) mapping.push_back(integer(value));
+    if (runtime) input.reset(*runtime);
+    reply->Success(Value(runtime && runtime->controllerMapping(number(args, "seat", 0, 0, 3), mapping)));
+    return;
+  }
   if (method == "setAudioEnabled") {
     audible = boolean(args, "enabled");
     if (sink) sink->volume(audible);

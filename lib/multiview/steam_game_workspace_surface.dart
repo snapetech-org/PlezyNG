@@ -11,6 +11,8 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../games/game_models.dart';
 import '../games/steam_internet_tunnel.dart';
+import '../games/steam_input_profile.dart';
+import '../screens/games/steam_input_dialog.dart';
 import '../games/steam_native_plane.dart';
 import '../games/steam_stream_preferences.dart';
 import '../games/steam_stream_metrics.dart';
@@ -41,7 +43,11 @@ class SteamGameWorkspaceSession {
     this.onFirstFrame,
     SteamInternetTunnel? internetTunnel,
     this.connectInternet,
+    SteamInputProfile? inputProfile,
+    this.persistInputProfile,
   }) {
+    _inputProfile = inputProfile ?? SteamInputProfile.defaults();
+    _mappingReady = _inputProfile.isDefault;
     _setTunnel(internetTunnel);
     if (controllerCount < 1 || controllerCount > 4) throw ArgumentError.value(controllerCount, 'controllerCount');
     _inputBinding = WorkspaceGameInputBinding(
@@ -92,6 +98,84 @@ class SteamGameWorkspaceSession {
     }
   }
 
+  final Future<void> Function(SteamInputProfile)? persistInputProfile;
+  late SteamInputProfile _inputProfile;
+  SteamInputProfile get inputProfile => _inputProfile;
+  bool get current => !_disposed && !_restarting;
+  bool _mappingReady = false, _mappingBusy = false;
+  int _mappingEpoch = 0;
+  final mappingFailed = ValueNotifier(false);
+
+  void _requireMappingCurrent(MethodChannel channel, int epoch) {
+    if (!current || _channel != channel || _mappingEpoch != epoch || sessionState.value != 'playing') {
+      throw StateError('Steam receiver changed');
+    }
+  }
+
+  Future<void> _writeMapping(MethodChannel channel, int epoch, SteamInputProfile profile) async {
+    for (var seat = 0; seat < controllerCount; seat++) {
+      _requireMappingCurrent(channel, epoch);
+      final accepted = await channel
+          .invokeMethod<bool>('setControllerMapping', {'seat': seat, 'mapping': profile.seats[seat]})
+          .timeout(const Duration(seconds: 3));
+      _requireMappingCurrent(channel, epoch);
+      if (accepted != true) throw StateError('Steam mapping rejected');
+    }
+  }
+
+  /// All seats acknowledge before saving. Partial failures restore the previous
+  /// mapping, and input stays disabled if its state cannot be established.
+  Future<void> applyInputProfile(SteamInputProfile profile) async {
+    final channel = _channel;
+    if (_mappingBusy || channel == null) throw StateError('Steam mapping unavailable');
+    final epoch = _mappingEpoch;
+    _requireMappingCurrent(channel, epoch);
+    _mappingBusy = true;
+    final previous = _inputProfile;
+    try {
+      await withInputSuspended(() async {
+        _mappingReady = false;
+        try {
+          await _writeMapping(channel, epoch, profile);
+          await persistInputProfile?.call(profile);
+          _requireMappingCurrent(channel, epoch);
+          _inputProfile = profile;
+          _mappingReady = true;
+          mappingFailed.value = false;
+        } catch (_) {
+          try {
+            await _writeMapping(channel, epoch, previous);
+            _mappingReady = true;
+          } catch (_) {
+            if (current && _mappingEpoch == epoch) mappingFailed.value = true;
+          }
+          rethrow;
+        }
+      });
+    } finally {
+      _mappingBusy = false;
+      if (current && _mappingEpoch != epoch && sessionState.value == 'playing') unawaited(_restoreMapping());
+    }
+  }
+
+  Future<void> _restoreMapping() async {
+    final channel = _channel;
+    if (_mappingBusy || channel == null || _mappingReady) return;
+    _mappingBusy = true;
+    final epoch = _mappingEpoch;
+    try {
+      await _writeMapping(channel, epoch, _inputProfile);
+      _mappingReady = true;
+      mappingFailed.value = false;
+    } catch (_) {
+      if (current && _mappingEpoch == epoch) mappingFailed.value = true;
+    } finally {
+      _mappingBusy = false;
+      if (current && _mappingEpoch == epoch) await setInputEnabled(_inputEnabled);
+      if (current && _mappingEpoch != epoch && sessionState.value == 'playing') unawaited(_restoreMapping());
+    }
+  }
+
   bool _reportedFirstFrame = false;
   bool _surfaceAttached = false;
   int _receiverGeneration = 0;
@@ -119,6 +203,7 @@ class SteamGameWorkspaceSession {
       !_disposed &&
       !_restarting &&
       _surfaceAttached &&
+      _mappingReady &&
       _inputEnabled &&
       _inputSuspensions == 0 &&
       sessionState.value == 'playing';
@@ -360,6 +445,8 @@ class SteamGameWorkspaceSession {
     _channel?.setMethodCallHandler(null);
     final channel = MethodChannel(channelNameForViewId(viewId));
     _channel = channel;
+    _mappingEpoch++;
+    _mappingReady = _inputProfile.isDefault;
     final replayRevision = _stateRevision;
     channel.setMethodCallHandler((call) async {
       if (_disposed || _channel != channel || _restarting) return null;
@@ -413,7 +500,12 @@ class SteamGameWorkspaceSession {
         !{'connecting', 'playing', 'reconnecting', 'disconnected', 'failed'}.contains(state)) {
       return;
     }
+    if (state != 'playing') {
+      _mappingEpoch++;
+      _mappingReady = _inputProfile.isDefault;
+    }
     sessionState.value = state;
+    if (state == 'playing' && !_mappingReady) unawaited(_restoreMapping());
     _inputBinding.setEnabled(_canInput);
     inputAvailable.value = _canInput;
     unawaited(_invoke('setInputEnabled', {'enabled': _canInput}));
@@ -501,6 +593,8 @@ class SteamGameWorkspaceSession {
 
   void _releaseReceiverIdentity() {
     _receiverGeneration++;
+    _mappingEpoch++;
+    _mappingReady = _inputProfile.isDefault;
     _receiver = null;
     _channel?.setMethodCallHandler(null);
     _channel = null;
@@ -521,6 +615,7 @@ class SteamGameWorkspaceSession {
     inputAvailable.dispose();
     inputResets.dispose();
     internetPath.dispose();
+    mappingFailed.dispose();
   }
 }
 
@@ -709,6 +804,28 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
     }
   }
 
+  Future<void> _showInputLayout() async {
+    if (_detailsOpen) return;
+    setState(() => _detailsOpen = true);
+    final session = widget.session;
+    try {
+      await session.withInputSuspended(() async {
+        if (!mounted) return;
+        await showScopedDialog<void>(
+          context: context,
+          builder: (_) => SteamInputDialog(
+            initial: session.inputProfile,
+            players: session.controllerCount,
+            apply: session.applyInputProfile,
+            isCurrent: () => session.current,
+          ),
+        );
+      });
+    } finally {
+      if (mounted) setState(() => _detailsOpen = false);
+    }
+  }
+
   @override
   void didUpdateWidget(covariant SteamGameWorkspaceSurface oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -800,6 +917,17 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
                 : Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      ValueListenableBuilder<bool>(
+                        valueListenable: session.mappingFailed,
+                        builder: (_, failed, _) => FocusableButton(
+                          onPressed: _detailsOpen ? null : _showInputLayout,
+                          child: IconButton.filledTonal(
+                            tooltip: failed ? t.games.controllerLayoutFailed : t.games.controllerLayout,
+                            onPressed: _detailsOpen ? null : _showInputLayout,
+                            icon: AppIcon(failed ? Symbols.warning_rounded : Symbols.tune_rounded),
+                          ),
+                        ),
+                      ),
                       if (!Platform.isAndroid)
                         FocusableButton(
                           onPressed: () => setState(() => _touchVisible = !_touchVisible),

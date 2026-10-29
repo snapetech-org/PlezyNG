@@ -798,6 +798,8 @@ class SettingsService extends BaseSharedPreferencesService {
       BoolPref(profileScopedPrefsKey(profileId, 'allow_steam_install'), defaultValue: false);
   static StringPref steamInstallRootForProfile(String profileId) =>
       StringPref(profileScopedPrefsKey(profileId, 'steam_install_root'));
+  static StringPref steamInputForGame(String profileId, String appId) =>
+      StringPref(profileScopedPrefsKey(profileId, 'steam_input_$appId'));
   static BoolPref gamePyrowaveForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'game_pyrowave'), defaultValue: false);
   static EnumPref<SteamStreamQuality> steamQualityForProfile(String profileId) => EnumPref(

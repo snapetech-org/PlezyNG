@@ -725,6 +725,22 @@ void Session::method(FlutterMethodCall* call, FlutterResult reply) {
     return;
   }
   std::lock_guard<std::mutex> lock(mutex);
+  if ([method isEqualToString:@"setControllerMapping"]) {
+    auto args = arguments(call.arguments);
+    id encoded = args[@"mapping"];
+    if (![encoded isKindOfClass:NSArray.class] || [(NSArray*)encoded count] != 19)
+      throw std::invalid_argument("Invalid controller mapping");
+    std::vector<int64_t> mapping;
+    for (id value in (NSArray*)encoded) {
+      if (![value isKindOfClass:NSNumber.class] || CFGetTypeID((__bridge CFTypeRef)value) == CFBooleanGetTypeID() ||
+          CFNumberIsFloatType((__bridge CFNumberRef)value))
+        throw std::invalid_argument("Invalid controller mapping");
+      mapping.push_back([(NSNumber*)value longLongValue]);
+    }
+    if (runtime) input.reset(*runtime);
+    reply(@(runtime && runtime->controllerMapping(number(args, @"seat", 0, 0, 3), mapping)));
+    return;
+  }
   if ([method isEqualToString:@"resetInput"]) {
     if (runtime) input.reset(*runtime);
   } else if ([method isEqualToString:@"releaseTouchControls"]) {

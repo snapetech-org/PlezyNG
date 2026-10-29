@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "steam_audio.h"
+#include "steam_controller_mapping.h"
 #include "steam_h26x.h"
 #include "steam_pyrowave.h"
 #include "steam_stream_options.h"
@@ -53,6 +54,7 @@ struct PadState {
   std::mutex mutex;
   std::array<int16_t, 6> axes{};
   uint32_t buttons = 0;
+  ControllerMapping mapping;
 };
 struct StreamMetrics {
   uint64_t epoch = 0;  // Local measurement epoch, never a host/account identity.
@@ -96,6 +98,7 @@ class Runtime {
   void cancel();
   void pad(const std::array<int16_t, 6>& axes, uint32_t buttons);
   void padSeat(unsigned seat, const std::array<int16_t, 6>& axes, uint32_t buttons);
+  bool controllerMapping(unsigned seat, const std::vector<int64_t>& encoded);
   void key(uint32_t usage, bool down);
   void mouse(float x, float y, int button, bool down);
   void mouseWheel(int direction);

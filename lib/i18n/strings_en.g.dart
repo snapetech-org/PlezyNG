@@ -11692,6 +11692,126 @@ class Translations$games$en {
 
 	/// en: 'Pending invitations'
 	String get familyPendingInvites => 'Pending invitations';
+
+	/// en: 'Controller layout'
+	String get controllerLayout => 'Controller layout';
+
+	/// en: 'Saved for this game and PlezyNG profile on every computer. These mappings adjust the streamed controller before Steam Input applies its own layout. Changing a layout releases held controls.'
+	String get controllerLayoutHelp => 'Saved for this game and PlezyNG profile on every computer. These mappings adjust the streamed controller before Steam Input applies its own layout. Changing a layout releases held controls.';
+
+	/// en: 'Controller layout could not be applied. Open the layout to retry or reset it. Input stays paused if the receiver cannot confirm its layout.'
+	String get controllerLayoutFailed => 'Controller layout could not be applied. Open the layout to retry or reset it. Input stays paused if the receiver cannot confirm its layout.';
+
+	/// en: 'Player ${number:int}'
+	String controllerPlayer({required int number}) => 'Player ${number}';
+
+	/// en: 'Back / View'
+	String get padBack => 'Back / View';
+
+	/// en: 'Guide'
+	String get padGuide => 'Guide';
+
+	/// en: 'Start / Menu'
+	String get padStart => 'Start / Menu';
+
+	/// en: 'Left stick press'
+	String get padLeftStick => 'Left stick press';
+
+	/// en: 'Right stick press'
+	String get padRightStick => 'Right stick press';
+
+	/// en: 'Left bumper'
+	String get padLeftBumper => 'Left bumper';
+
+	/// en: 'Right bumper'
+	String get padRightBumper => 'Right bumper';
+
+	/// en: 'D-pad up'
+	String get padUp => 'D-pad up';
+
+	/// en: 'D-pad down'
+	String get padDown => 'D-pad down';
+
+	/// en: 'D-pad left'
+	String get padLeft => 'D-pad left';
+
+	/// en: 'D-pad right'
+	String get padRight => 'D-pad right';
+
+	/// en: 'Disabled'
+	String get padDisabled => 'Disabled';
+
+	/// en: 'left stick horizontal'
+	String get padLeftX => 'left stick horizontal';
+
+	/// en: 'left stick vertical'
+	String get padLeftY => 'left stick vertical';
+
+	/// en: 'right stick horizontal'
+	String get padRightX => 'right stick horizontal';
+
+	/// en: 'right stick vertical'
+	String get padRightY => 'right stick vertical';
+
+	/// en: 'Invert $axis'
+	String invertAxis({required Object axis}) => 'Invert ${axis}';
+
+	/// en: 'Swap left and right sticks'
+	String get swapSticks => 'Swap left and right sticks';
+
+	/// en: 'Swap left and right triggers'
+	String get swapTriggers => 'Swap left and right triggers';
+
+	/// en: 'Stick deadzone'
+	String get stickDeadzone => 'Stick deadzone';
+
+	/// en: 'Trigger deadzone'
+	String get triggerDeadzone => 'Trigger deadzone';
+
+	/// en: 'Steam controls'
+	String get steamTools => 'Steam controls';
+
+	/// en: 'Steam overlay · Remote Play Together'
+	String get steamOverlay => 'Steam overlay · Remote Play Together';
+
+	/// en: 'Open the host’s Steam overlay to invite friends in games that support Remote Play Together. This sends Shift+Tab; Steam must have that shortcut enabled. Steam handles invitations, eligibility and guest permissions.'
+	String get steamOverlayHelp => 'Open the host’s Steam overlay to invite friends in games that support Remote Play Together. This sends Shift+Tab; Steam must have that shortcut enabled. Steam handles invitations, eligibility and guest permissions.';
+
+	/// en: 'Take Steam screenshot'
+	String get steamScreenshot => 'Take Steam screenshot';
+
+	/// en: 'Send F12 to capture a screenshot on the streaming computer. Steam must have that shortcut enabled. Captures remain in Steam on that computer; this does not upload or share them.'
+	String get steamScreenshotHelp => 'Send F12 to capture a screenshot on the streaming computer. Steam must have that shortcut enabled. Captures remain in Steam on that computer; this does not upload or share them.';
+
+	/// en: 'Shortcut sent to the streaming computer'
+	String get steamShortcutSent => 'Shortcut sent to the streaming computer';
+
+	/// en: 'The streaming computer could not accept the shortcut. Focus this game and try again.'
+	String get steamShortcutFailed => 'The streaming computer could not accept the shortcut. Focus this game and try again.';
+
+	/// en: 'Send shortcut'
+	String get sendShortcut => 'Send shortcut';
+
+	/// en: 'Install with a nearby computer'
+	String get lanInstallTitle => 'Install with a nearby computer';
+
+	/// en: 'Steam can copy game files from another computer on the same local network when you start an installation. Both Steam clients must be online, allow local transfers, and have compatible current game files. Steam chooses the source and verifies the files; saves and Cloud files are not transferred.'
+	String get lanInstallHelp => 'Steam can copy game files from another computer on the same local network when you start an installation. Both Steam clients must be online, allow local transfers, and have compatible current game files. Steam chooses the source and verifies the files; saves and Cloud files are not transferred.';
+
+	/// en: 'These computers last reported the game installed. This does not confirm they are online, nearby or eligible to transfer:'
+	String get lanInstallCandidates => 'These computers last reported the game installed. This does not confirm they are online, nearby or eligible to transfer:';
+
+	/// en: 'No other computer has reported this game installed yet. Refresh inventories after enabling sharing on your computers.'
+	String get lanInstallNoCandidates => 'No other computer has reported this game installed yet. Refresh inventories after enabling sharing on your computers.';
+
+	/// en: 'Install on $computer'
+	String lanInstallTarget({required Object computer}) => 'Install on ${computer}';
+
+	/// en: 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.'
+	String get lanInstallSubmitted => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.';
+
+	/// en: 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.'
+	String get cloudSettingsHelp => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.';
 }
 
 // Path: deepLinks
@@ -18644,6 +18764,46 @@ extension on Translations {
 			'games.familyCooldown' => ({required Object days}) => 'Steam cooldown: up to ${days} days remaining.',
 			'games.familyInvitations' => 'Invitations for you',
 			'games.familyPendingInvites' => 'Pending invitations',
+			'games.controllerLayout' => 'Controller layout',
+			'games.controllerLayoutHelp' => 'Saved for this game and PlezyNG profile on every computer. These mappings adjust the streamed controller before Steam Input applies its own layout. Changing a layout releases held controls.',
+			'games.controllerLayoutFailed' => 'Controller layout could not be applied. Open the layout to retry or reset it. Input stays paused if the receiver cannot confirm its layout.',
+			'games.controllerPlayer' => ({required int number}) => 'Player ${number}',
+			'games.padBack' => 'Back / View',
+			'games.padGuide' => 'Guide',
+			'games.padStart' => 'Start / Menu',
+			'games.padLeftStick' => 'Left stick press',
+			'games.padRightStick' => 'Right stick press',
+			'games.padLeftBumper' => 'Left bumper',
+			'games.padRightBumper' => 'Right bumper',
+			'games.padUp' => 'D-pad up',
+			'games.padDown' => 'D-pad down',
+			'games.padLeft' => 'D-pad left',
+			'games.padRight' => 'D-pad right',
+			'games.padDisabled' => 'Disabled',
+			'games.padLeftX' => 'left stick horizontal',
+			'games.padLeftY' => 'left stick vertical',
+			'games.padRightX' => 'right stick horizontal',
+			'games.padRightY' => 'right stick vertical',
+			'games.invertAxis' => ({required Object axis}) => 'Invert ${axis}',
+			'games.swapSticks' => 'Swap left and right sticks',
+			'games.swapTriggers' => 'Swap left and right triggers',
+			'games.stickDeadzone' => 'Stick deadzone',
+			'games.triggerDeadzone' => 'Trigger deadzone',
+			'games.steamTools' => 'Steam controls',
+			'games.steamOverlay' => 'Steam overlay · Remote Play Together',
+			'games.steamOverlayHelp' => 'Open the host’s Steam overlay to invite friends in games that support Remote Play Together. This sends Shift+Tab; Steam must have that shortcut enabled. Steam handles invitations, eligibility and guest permissions.',
+			'games.steamScreenshot' => 'Take Steam screenshot',
+			'games.steamScreenshotHelp' => 'Send F12 to capture a screenshot on the streaming computer. Steam must have that shortcut enabled. Captures remain in Steam on that computer; this does not upload or share them.',
+			'games.steamShortcutSent' => 'Shortcut sent to the streaming computer',
+			'games.steamShortcutFailed' => 'The streaming computer could not accept the shortcut. Focus this game and try again.',
+			'games.sendShortcut' => 'Send shortcut',
+			'games.lanInstallTitle' => 'Install with a nearby computer',
+			'games.lanInstallHelp' => 'Steam can copy game files from another computer on the same local network when you start an installation. Both Steam clients must be online, allow local transfers, and have compatible current game files. Steam chooses the source and verifies the files; saves and Cloud files are not transferred.',
+			'games.lanInstallCandidates' => 'These computers last reported the game installed. This does not confirm they are online, nearby or eligible to transfer:',
+			'games.lanInstallNoCandidates' => 'No other computer has reported this game installed yet. Refresh inventories after enabling sharing on your computers.',
+			'games.lanInstallTarget' => ({required Object computer}) => 'Install on ${computer}',
+			'games.lanInstallSubmitted' => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.',
+			'games.cloudSettingsHelp' => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

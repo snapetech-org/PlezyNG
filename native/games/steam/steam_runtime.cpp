@@ -341,6 +341,18 @@ void Runtime::padSeat(unsigned seat, const std::array<int16_t, 6>& axes, uint32_
   std::lock_guard<std::mutex> lock(pad->mutex);
   pad->axes = axes;
   pad->buttons = buttons & 0x7fff;
+  pad->mapping.apply(pad->axes, pad->buttons);
+}
+bool Runtime::controllerMapping(unsigned seat, const std::vector<int64_t>& encoded) {
+  if (seat >= pads_.size()) return false;
+  ControllerMapping mapping;
+  if (!ControllerMapping::decode(encoded, mapping)) return false;
+  const auto& pad = pads_[seat];
+  std::lock_guard<std::mutex> lock(pad->mutex);
+  pad->axes = {};
+  pad->buttons = 0;
+  pad->mapping = mapping;
+  return true;
 }
 void Runtime::key(uint32_t usage, bool down) {
   if (usage > 255) return;

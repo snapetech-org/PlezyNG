@@ -510,6 +510,15 @@ JNI(padSeat)(JNIEnv* env, jclass, jlong id, jint seat, jshortArray axes, jint bu
 extern "C" JNIEXPORT void JNICALL JNI(key)(JNIEnv*, jclass, jlong id, jint usage, jboolean down) {
   if (auto r = get(id)) r->key(usage, down);
 }
+extern "C" JNIEXPORT jboolean JNICALL
+JNI(controllerMapping)(JNIEnv* env, jclass, jlong id, jint seat, jintArray values) {
+  auto runtime = get(id);
+  if (!runtime || seat < 0 || seat > 3 || !values || env->GetArrayLength(values) != 19) return false;
+  std::array<jint, 19> data{};
+  env->GetIntArrayRegion(values, 0, 19, data.data());
+  if (env->ExceptionCheck()) return false;
+  return runtime->controllerMapping(unsigned(seat), std::vector<int64_t>(data.begin(), data.end()));
+}
 extern "C" JNIEXPORT void JNICALL
 JNI(mouse)(JNIEnv*, jclass, jlong id, jfloat x, jfloat y, jint button, jboolean down) {
   if (auto r = get(id)) r->mouse(x, y, button, down);

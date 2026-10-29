@@ -19,9 +19,17 @@ does not replace the SDK build and real-device acceptance cases in
   authoritative. The tunnel forwards the same bounded encrypted datagrams,
   independent of codec; hardware and real-network throughput remain unmeasured.
 
+- Per-game, per-profile controller layouts are shared across host choices. The
+  in-app editor remaps or disables 15 buttons for each of up to four seats,
+  adjusts stick/trigger deadzones, inverts stick axes and swaps sticks/triggers.
+  The shared native runtime applies the mapping to physical and touch input on
+  every receiver. Custom layouts must acknowledge before input is enabled, replay
+  after fallback and roll back on partial failure. Host Steam Input remains the
+  authority for game-specific action sets through the existing host configuration
+  action. PlezyNG does not alter another game's Steam Input files.
+
 ## Work still in progress
 
-- In-app per-game controller remapping and the existing Steam configuration path.
 - Remote Play Together/host overlay and capture controls.
 - Multi-computer LAN-install assistance and honest transfer state.
 - Cloud settings: public Steamworks exposes account-wide read access and an

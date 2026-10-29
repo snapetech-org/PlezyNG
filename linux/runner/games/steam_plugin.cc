@@ -632,6 +632,22 @@ void Session::method(FlMethodCall* call) {
     return;
   }
   std::lock_guard<std::mutex> lock(mutex);
+  if (method == "setControllerMapping") {
+    auto* encoded = field(args, "mapping");
+    if (!encoded || fl_value_get_type(encoded) != FL_VALUE_TYPE_LIST || fl_value_get_length(encoded) != 19)
+      throw std::invalid_argument("Invalid controller mapping");
+    std::vector<int64_t> mapping;
+    for (size_t i = 0; i < 19; ++i) {
+      auto* value = fl_value_get_list_value(encoded, i);
+      if (fl_value_get_type(value) != FL_VALUE_TYPE_INT) throw std::invalid_argument("Invalid controller mapping");
+      mapping.push_back(fl_value_get_int(value));
+    }
+    if (runtime) input.reset(*runtime);
+    g_autoptr(FlValue) result =
+        fl_value_new_bool(runtime && runtime->controllerMapping(number(args, "seat", 0, 0, 3), mapping));
+    ok(call, result);
+    return;
+  }
   if (method == "setAudioEnabled") {
     audible = boolean(args, "enabled");
     if (sink) sink->volume(audible);

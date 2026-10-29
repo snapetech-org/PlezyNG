@@ -247,6 +247,18 @@ public final class SteamStreamView
   public void resetInput() {
     releaseInput();
   }
+  public boolean setControllerMapping(int seat, java.util.List<?> values) {
+    long session = handle;
+    if (session == 0 || stopping || seat < 0 || seat > 3 || values == null || values.size() != 19) return false;
+    int[] encoded = new int[19];
+    for (int i = 0; i < encoded.length; i++) {
+      Object value = values.get(i);
+      if (!(value instanceof Integer)) return false;
+      encoded[i] = (Integer) value;
+    }
+    releaseInput();
+    return NativeSteam.controllerMapping(session, seat, encoded);
+  }
 
   public void close() {
     stop();

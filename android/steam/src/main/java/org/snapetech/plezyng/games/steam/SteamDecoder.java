@@ -46,8 +46,9 @@ final class SteamDecoder implements AutoCloseable {
     }
   }
   private final long handle;
-  private final Surface surface;
-  private final SurfaceHolder surfaceHolder;
+  private volatile SurfaceHolder presentation;
+  private volatile long presentationRevision;
+  private volatile Video lastConfiguration;
   private final Events events;
   private final ArrayBlockingQueue<Video> video = new ArrayBlockingQueue<>(4);
   private final ArrayBlockingQueue<Audio> audio = new ArrayBlockingQueue<>(8);
@@ -75,18 +76,22 @@ final class SteamDecoder implements AutoCloseable {
   }
   SteamDecoder(long handle, SurfaceHolder surfaceHolder, Events events, boolean requestGpu, boolean allowHdr) {
     this.handle = handle;
-    this.surfaceHolder = surfaceHolder;
-    this.surface = surfaceHolder.getSurface();
+    this.presentation = surfaceHolder;
     this.events = events;
     this.requestGpu = requestGpu;
     this.allowHdr = allowHdr;
-    videoThread = new Thread(this::videoLoop, "PlezySteamVideo");
+    videoThread = new Thread(this::presentationLoop, "PlezySteamVideo");
     audioThread = new Thread(this::audioLoop, "PlezySteamAudio");
     videoThread.start();
     audioThread.start();
   }
   boolean awaitHdrCapability() throws InterruptedException {
     return gpuReady.await(5, TimeUnit.SECONDS) && gpuHdrSupported;
+  }
+  /** Presentation is replaceable; transport, audio and trust remain session-owned. */
+  synchronized void setPresentation(SurfaceHolder holder) {
+    presentation = holder;
+    presentationRevision++;
   }
   static boolean supportsHevc() {
     MediaFormat format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_HEVC, 1920, 1080);
@@ -98,7 +103,7 @@ final class SteamDecoder implements AutoCloseable {
     metrics.put("audioQueue", audio.size());
     metrics.put("hdr10", hdrActive ? 1 : 0);
   }
-  public boolean onVideo(int codec, int width, int height, byte[] extra) {
+  public synchronized boolean onVideo(int codec, int width, int height, byte[] extra) {
     if (closed)
       return false;
     if ((codec != 4 && codec != 5 && codec != 9) || width < 1 || height < 1 || width > 1920 || height > 1080
@@ -112,6 +117,7 @@ final class SteamDecoder implements AutoCloseable {
     config.width = width;
     config.height = height;
     config.bytes = extra;
+    lastConfiguration = config;
     discardQueuedVideo();
     lost.set(false);
     boolean accepted = video.offer(config);
@@ -119,8 +125,8 @@ final class SteamDecoder implements AutoCloseable {
       rejectPyrowave();
     return accepted;
   }
-  public boolean onFrame(byte[] bytes, int id, boolean key) {
-    if (closed || bytes.length > 2 * 1024 * 1024 || lost.getAndSet(false))
+  public synchronized boolean onFrame(byte[] bytes, int id, boolean key) {
+    if (closed || presentation == null || bytes.length > 2 * 1024 * 1024 || lost.getAndSet(false))
       return false;
     Video frame = new Video();
     frame.bytes = bytes;
@@ -251,7 +257,37 @@ final class SteamDecoder implements AutoCloseable {
       }
     }
   }
-  private void videoLoop() {
+  private void presentationLoop() {
+    boolean first = true;
+    while (!closed) {
+      final long revision = presentationRevision;
+      final SurfaceHolder holder = presentation;
+      if (holder == null) {
+        try {
+          Thread.sleep(10);
+        } catch (InterruptedException ignored) {
+          Thread.currentThread().interrupt();
+          return;
+        }
+        continue;
+      }
+      if (!first) {
+        synchronized (this) {
+          discardQueuedVideo();
+          Video config = lastConfiguration;
+          if (config != null) video.offer(config);
+          // Request recovery from the transport after the decoder was rebuilt.
+          lost.set(true);
+        }
+      }
+      first = false;
+      videoLoop(holder, revision);
+      if (revision == presentationRevision) return;
+    }
+  }
+
+  private void videoLoop(SurfaceHolder surfaceHolder, long revision) {
+    final Surface surface = surfaceHolder.getSurface();
     MediaCodec decoder = null;
     Map<Long, Integer> pending = new HashMap<>();
     long sequence = 1;
@@ -262,7 +298,7 @@ final class SteamDecoder implements AutoCloseable {
         gpuHdrSupported = gpu != 0 && NativeSteam.gpuHdrSupported(gpu);
       }
       gpuReady.countDown();
-      while (!closed) {
+      while (!closed && revision == presentationRevision) {
         Video item = video.poll(3, TimeUnit.MILLISECONDS);
         if (item != null && item.codec != 0) {
           videoCodec = item.codec;
@@ -435,7 +471,9 @@ final class SteamDecoder implements AutoCloseable {
     } catch (OutOfMemoryError e) {
       videoFailure();
     } catch (Exception e) {
-      videoFailure();
+      // Android can invalidate a Surface while its worker is presenting. A
+      // changed attachment restarts only video output, not the Steam session.
+      if (revision == presentationRevision) videoFailure();
     } finally {
       gpuReady.countDown();
       if (gpu != 0) {

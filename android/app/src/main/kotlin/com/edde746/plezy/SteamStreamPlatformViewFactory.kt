@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -17,41 +19,99 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
     const val VIEW_TYPE = "com.plezy/games/steam_stream"
   }
 
-  override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
-    val parameters = args as? Map<*, *> ?: throw IllegalArgumentException("Missing Steam stream arguments")
-    val viewClass = Class.forName("org.snapetech.plezyng.games.steam.SteamStreamView")
-    val streamView = viewClass.getConstructor(Context::class.java, Map::class.java).newInstance(context, parameters)
-    return SteamStreamPlatformView(viewId, streamView as View, streamView)
+  private val sessions = mutableMapOf<String, Session>()
+
+  fun closeAll() {
+    sessions.values.toList().forEach { it.close() }
+    sessions.clear()
   }
 
-  private inner class SteamStreamPlatformView(viewId: Int, private val view: View, private val target: Any) :
-    PlatformView,
-    MethodChannel.MethodCallHandler {
-    private val channel = MethodChannel(messenger, "com.plezy/games/steam_stream/$viewId")
-    private val booleanType = Boolean::class.javaPrimitiveType!!
-
-    init {
-      channel.setMethodCallHandler(this)
-      invoke(
-        "setOnStateChanged",
-        arrayOf(Runnable::class.java),
-        Runnable {
-          channel.invokeMethod("sessionState", target.javaClass.getMethod("getSessionState").invoke(target))
+  override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
+    val parameters = args as? Map<*, *> ?: throw IllegalArgumentException("Missing Steam stream arguments")
+    val requestedKey = parameters["sessionKey"]
+    val key = if (requestedKey == null) "legacy:$viewId" else {
+      require(requestedKey is String && requestedKey.matches(Regex("^[0-9a-f]{32}-[0-9]{1,10}$")))
+      requestedKey
+    }
+    val session = sessions[key] ?: run {
+      check(sessions.size < 8) { "Too many Steam sessions" }
+      val viewClass = Class.forName("org.snapetech.plezyng.games.steam.SteamStreamView")
+      val target = viewClass.getConstructor(Context::class.java, Map::class.java).newInstance(context, parameters)
+      Session(key, parameters.toMap(), target as View, target).also { sessions[key] = it }
+    }
+    check(!session.closed && session.parameters == parameters) { "Steam session identity changed" }
+    val container = FrameLayout(context)
+    (session.view.parent as? ViewGroup)?.removeView(session.view)
+    container.addView(session.view, FrameLayout.LayoutParams(-1, -1))
+    session.bind(viewId)
+    return object : PlatformView {
+      override fun getView(): View = container
+      override fun dispose() {
+        if (session.view.parent === container) {
+          session.suspendInput()
+          container.removeView(session.view)
         }
-      )
+        // The owning Dart session disconnects explicitly. Older clients retain
+        // their original view-owned teardown behavior.
+        if (requestedKey == null) session.close()
+      }
+    }
+  }
+
+  private inner class Session(
+    val key: String,
+    val parameters: Map<*, *>,
+    val view: View,
+    private val target: Any
+  ) : MethodChannel.MethodCallHandler {
+    private var channel: MethodChannel? = null
+    private val booleanType = Boolean::class.javaPrimitiveType!!
+    var closed = false
+      private set
+
+    fun bind(viewId: Int) {
+      channel?.setMethodCallHandler(null)
+      channel = MethodChannel(messenger, "com.plezy/games/steam_stream/$viewId")
+      channel?.setMethodCallHandler(this)
+      invoke("setOnStateChanged", arrayOf(Runnable::class.java), Runnable {
+        if (!closed) channel?.invokeMethod("sessionState", target.javaClass.getMethod("getSessionState").invoke(target))
+      })
     }
 
-    override fun getView(): View = view
+    fun suspendInput() {
+      runCatching { invoke("setInputEnabled", arrayOf(booleanType), false) }
+    }
+
+    fun close() {
+      if (closed) return
+      closed = true
+      runCatching { invoke("setOnStateChanged", arrayOf(Runnable::class.java), Runnable {}) }
+      runCatching { invoke("close") }
+      Thread({
+        if (runCatching { invoke("awaitTermination") }.isSuccess) {
+          Handler(Looper.getMainLooper()).post {
+            sessions.remove(key, this@Session)
+            channel?.setMethodCallHandler(null)
+          }
+        }
+      }, "PlezySteamRetire").apply { isDaemon = true }.start()
+    }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
       try {
+        if (closed && call.method != "disconnect") {
+          result.error("STREAM_RETIRED", "The game session has ended", null)
+          return
+        }
         when (call.method) {
           "disconnect" -> {
-            invoke("close")
+            close()
             Thread({
               val stopped = runCatching { invoke("awaitTermination") }.isSuccess
               Handler(Looper.getMainLooper()).post {
                 if (stopped) {
+                  sessions.remove(key, this@Session)
+                  channel?.setMethodCallHandler(null)
                   result.success(null)
                 } else {
                   result.error("STREAM_STOP_PENDING", "The previous stream is still stopping", null)
@@ -110,10 +170,5 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
       target.javaClass.getMethod(name, *types).invoke(target, *arguments)
     }
 
-    override fun dispose() {
-      channel.setMethodCallHandler(null)
-      runCatching { invoke("setOnStateChanged", arrayOf(Runnable::class.java), Runnable {}) }
-      runCatching { invoke("close") }
-    }
   }
 }

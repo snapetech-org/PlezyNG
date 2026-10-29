@@ -186,8 +186,8 @@ void main() {
       expect(session.creationParams['address'], '127.0.0.1');
       expect(session.creationParams['port'], receiver.ports[5]);
       expect(session.creationParams['relayPort0'], receiver.ports[0]);
-      expect(session.creationParams['pyrowave'], isFalse);
-      expect(session.creationParams['allowHdr'], isFalse);
+      expect(session.creationParams['pyrowave'], isTrue);
+      expect(session.creationParams['allowHdr'], isTrue);
       final steam = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 27036, reuseAddress: false);
       final native = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
       addTearDown(steam.close);

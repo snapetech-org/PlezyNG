@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep Steam transports alive across receiver-widget recreation, reattach Android video output to replacement Surfaces, and allow opted-in GPU/HDR negotiation over authenticated internet tunnels.
+
 - Fix the Linux native runner build with Flutter's mutable `FlValue` accessors.
 - Quote the Windows Flutter cache key so GitHub can parse and dispatch CI workflows.
 - Prepare the checksum-verified Flutter SDK in each Mac JIT job's temporary APFS workspace with resumable parallel downloads.

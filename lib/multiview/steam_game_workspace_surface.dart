@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,8 +25,8 @@ import 'workspace_game_input.dart';
 
 const steamGamePlatformViewType = 'com.plezy/games/steam_stream';
 
-/// One retained Steam session. The workspace owns audio/input leases; the
-/// native surface owns the decoder and acknowledges teardown before reconnect.
+/// The workspace owns the native receiver, audio/input leases and transport.
+/// Presentation widgets may disappear and reattach without retiring the stream.
 class SteamGameWorkspaceSession {
   SteamGameWorkspaceSession({
     required this.host,
@@ -92,6 +93,14 @@ class SteamGameWorkspaceSession {
   }
 
   bool _reportedFirstFrame = false;
+  bool _surfaceAttached = false;
+  int _receiverGeneration = 0;
+  final String _nativeOwner = List.generate(
+    16,
+    (_) => Random.secure().nextInt(256).toRadixString(16).padLeft(2, '0'),
+  ).join();
+  Future<Map<String, dynamic>>? _receiver;
+  static const _receiverChannel = MethodChannel('com.plezy/games/steam_receiver');
   bool _disposed = false;
   bool _restarting = false;
   int _stateRevision = 0;
@@ -107,13 +116,19 @@ class SteamGameWorkspaceSession {
   int _inputSuspensions = 0;
   int _inputRevision = 0;
   bool get _canInput =>
-      !_disposed && !_restarting && _inputEnabled && _inputSuspensions == 0 && sessionState.value == 'playing';
+      !_disposed &&
+      !_restarting &&
+      _surfaceAttached &&
+      _inputEnabled &&
+      _inputSuspensions == 0 &&
+      sessionState.value == 'playing';
   late final WorkspaceGameInputBinding _inputBinding;
   final GlobalKey _surfaceKey = GlobalKey();
 
   static String channelNameForViewId(int viewId) => 'com.plezy/games/steam_stream/$viewId';
 
   Map<String, Object?> get creationParams => {
+    'sessionKey': '$_nativeOwner-$_receiverGeneration',
     'hostId': host.id,
     'hostKey': 'steam:${host.id}',
     'address': _tunnel == null ? host.address : '127.0.0.1',
@@ -123,8 +138,8 @@ class SteamGameWorkspaceSession {
     'appId': game.id,
     'appName': game.name,
     'touchControls': touchControls,
-    'pyrowave': pyrowave && _tunnel == null,
-    'allowHdr': allowHdr && _tunnel == null,
+    'pyrowave': pyrowave,
+    'allowHdr': allowHdr,
     ...quality.nativeArguments,
     'allowHevc': codec == SteamStreamCodec.automatic,
     'controllerCount': controllerCount,
@@ -292,8 +307,56 @@ class SteamGameWorkspaceSession {
   /// pane and the retained offstage slot without disposing the native stream.
   Widget workspaceSurface() => SteamGameWorkspaceSurface(key: _surfaceKey, session: this);
 
-  void attachPlatformView(int viewId) {
-    if (_disposed) return;
+  /// A single in-flight creation belongs to the session, never to a widget.
+  Future<Map<String, dynamic>> acquireReceiver() => _receiver ??= _createReceiver(_receiverGeneration);
+
+  static Future<void> _retireReceiver(int id) async {
+    try {
+      await MethodChannel(
+        channelNameForViewId(id),
+      ).invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
+    } catch (_) {
+      // Native shutdown continues; this ID is never reused by this owner.
+    }
+  }
+
+  Future<Map<String, dynamic>> _createReceiver(int generation) async {
+    if (_disposed) throw StateError('Retired Steam session');
+    var expired = false;
+    final pending = _receiverChannel.invokeMapMethod<String, dynamic>('create', creationParams);
+    unawaited(
+      pending
+          .then((result) {
+            final id = result?['id'];
+            if ((expired || _disposed || generation != _receiverGeneration) && id is int && id > 0) {
+              unawaited(_retireReceiver(id));
+            }
+          })
+          .catchError((Object _) {}),
+    );
+    try {
+      final result = await pending.timeout(const Duration(seconds: 10));
+      if (_disposed || generation != _receiverGeneration) throw StateError('Retired Steam receiver');
+      final id = result?['id'], texture = result?['textureId'];
+      if (id is! int || id < 1 || texture is! int || texture < 0) {
+        if (id is int && id > 0) unawaited(_retireReceiver(id));
+        throw const FormatException('Invalid Steam receiver');
+      }
+      attachPlatformView(id, attachSurface: false);
+      return result!;
+    } catch (_) {
+      expired = true;
+      if (!_disposed && generation == _receiverGeneration) _stateChanged('failed');
+      rethrow;
+    }
+  }
+
+  void attachPlatformView(int viewId, {bool attachSurface = true}) {
+    if (_disposed) {
+      unawaited(_retireReceiver(viewId));
+      return;
+    }
+    if (attachSurface) _surfaceAttached = true;
     _channel?.setMethodCallHandler(null);
     final channel = MethodChannel(channelNameForViewId(viewId));
     _channel = channel;
@@ -376,7 +439,7 @@ class SteamGameWorkspaceSession {
       final channel = _channel;
       if (channel != null) await channel.invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
       if (_disposed) return;
-      detach();
+      _releaseReceiverIdentity();
       _setTunnel(null);
       final route = await connectInternet?.call();
       if (_disposed) {
@@ -403,7 +466,7 @@ class SteamGameWorkspaceSession {
     try {
       await _channel?.invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
       if (!_disposed) {
-        detach(); // Texture adapters retire their channel after acknowledging.
+        _releaseReceiverIdentity(); // Native teardown acknowledged.
         sessionState.value = 'disconnected';
       }
     } catch (_) {
@@ -427,6 +490,18 @@ class SteamGameWorkspaceSession {
   }
 
   void detach() {
+    if (_disposed) return;
+    _surfaceAttached = false;
+    resetInput();
+    _inputBinding.setEnabled(false);
+    inputAvailable.value = false;
+    unawaited(_invoke('setInputEnabled', {'enabled': false}));
+    unawaited(_invoke('setNativeRect', {'x': 0, 'y': 0, 'width': 0, 'height': 0, 'scale': 1}));
+  }
+
+  void _releaseReceiverIdentity() {
+    _receiverGeneration++;
+    _receiver = null;
     _channel?.setMethodCallHandler(null);
     _channel = null;
   }
@@ -438,7 +513,7 @@ class SteamGameWorkspaceSession {
     unawaited(_invoke('disconnect'));
     _disposed = true;
     _inputBinding.dispose();
-    detach();
+    _releaseReceiverIdentity();
     nativePresentation.dispose();
     sessionState.dispose();
     surfaceGeneration.dispose();
@@ -449,8 +524,7 @@ class SteamGameWorkspaceSession {
   }
 }
 
-/// Native texture ownership stays with this retained workspace surface. Late
-/// creation responses are explicitly retired after disposal or startup timeout.
+/// A presentation attachment to a session-owned native receiver.
 class _SteamTextureSurface extends StatefulWidget {
   const _SteamTextureSurface({super.key, required this.session});
   final SteamGameWorkspaceSession session;
@@ -459,12 +533,9 @@ class _SteamTextureSurface extends StatefulWidget {
 }
 
 class _SteamTextureSurfaceState extends State<_SteamTextureSurface> {
-  static const receiver = MethodChannel('com.plezy/games/steam_receiver');
   int? _id, _texture;
   bool _nativePlane = false;
   Map<String, int>? _sentNativeRect;
-  Timer? _deadline;
-  bool _expired = false;
   int _buttons = 0;
   int? _touchPointer;
   Offset? _pendingMove;
@@ -516,39 +587,22 @@ class _SteamTextureSurfaceState extends State<_SteamTextureSurface> {
   @override
   void initState() {
     super.initState();
-    _deadline = Timer(const Duration(seconds: 10), () {
-      _expired = true;
-      if (mounted && !widget.session._disposed) widget.session._stateChanged('failed');
-    });
+    widget.session._surfaceAttached = true;
     unawaited(_create());
-  }
-
-  static Future<void> _retire(int id) async {
-    try {
-      await MethodChannel(
-        SteamGameWorkspaceSession.channelNameForViewId(id),
-      ).invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
-    } catch (_) {
-      /* Native teardown continues even after a window is removed. */
-    }
   }
 
   Future<void> _create() async {
     try {
-      final result = await receiver.invokeMapMethod<String, dynamic>('create', widget.session.creationParams);
-      _deadline?.cancel();
-      final id = result?['id'], texture = result?['textureId'];
+      final result = await widget.session.acquireReceiver();
+      final id = result['id'], texture = result['textureId'];
       if (id is! int || id < 1 || texture is! int || texture < 0) throw const FormatException('Invalid receiver');
-      if (!mounted || _expired || widget.session._disposed) {
-        await _retire(id);
-        return;
-      }
+      if (!mounted || widget.session._disposed) return;
       _id = id;
-      _nativePlane = result?['nativePlane'] == true;
-      widget.session.attachPlatformView(id);
+      _nativePlane = result['nativePlane'] == true;
+      await widget.session.setInputEnabled(widget.session._inputEnabled);
+      if (!mounted || widget.session._disposed) return;
       setState(() => _texture = texture);
     } catch (_) {
-      _deadline?.cancel();
       if (mounted && !widget.session._disposed) widget.session._stateChanged('failed');
     }
   }
@@ -569,11 +623,9 @@ class _SteamTextureSurfaceState extends State<_SteamTextureSurface> {
 
   @override
   void dispose() {
-    _expired = true;
-    _deadline?.cancel();
     if (_moveCallback case final callback?) SchedulerBinding.instance.cancelFrameCallbackWithId(callback);
     unawaited(widget.session._invoke('releasePointer'));
-    if (_id case final id?) unawaited(_retire(id));
+    widget.session.detach();
     super.dispose();
   }
 

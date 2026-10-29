@@ -50,6 +50,7 @@ public final class SteamStreamView
   private boolean started, shown, failed, inputEnabled;
   private volatile boolean requestedAudio;
   private boolean displayHdr10;
+  private volatile boolean presentationAvailable;
 
   public SteamStreamView(Context context, Map<?, ?> args) {
     super(context);
@@ -264,7 +265,10 @@ public final class SteamStreamView
 
   @Override
   protected void onDetachedFromWindow() {
-    stop();
+    setInputEnabled(false);
+    presentationAvailable = false;
+    SteamDecoder current = decoder;
+    if (current != null) current.setPresentation(null);
     super.onDetachedFromWindow();
   }
 
@@ -275,9 +279,9 @@ public final class SteamStreamView
 
   @Override
   public void surfaceCreated(SurfaceHolder holder) {
-    if (started || stopping)
-      return;
-    started = true;
+    if (stopping) return;
+    presentationAvailable = true;
+    final boolean previousHdr = displayHdr10;
     Display display = getDisplay();
     displayHdr10 = false;
     if (display != null) {
@@ -286,6 +290,15 @@ public final class SteamStreamView
           displayHdr10 = true;
       }
     }
+    if (started) {
+      SteamDecoder current = decoder;
+      if (current != null) {
+        current.setPresentation(holder);
+        if (previousHdr && !displayHdr10) current.requestPyrowaveFallback();
+      }
+      return;
+    }
+    started = true;
     long created = NativeSteam.create();
     if (created == 0) {
       failOnMain();
@@ -322,6 +335,7 @@ public final class SteamStreamView
         SteamDecoder sink =
             new SteamDecoder(session, holder, decoderEvents(session), pyrowave, options.allowHdr && displayHdr10);
         decoder = sink;
+        if (!presentationAvailable) sink.setPresentation(null);
         sink.setVolume(requestedAudio ? 1.0f : 0.0f);
         if (stopping) {
           sink.close();
@@ -431,7 +445,10 @@ public final class SteamStreamView
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
   @Override
   public void surfaceDestroyed(SurfaceHolder holder) {
-    stop();
+    presentationAvailable = false;
+    setInputEnabled(false);
+    SteamDecoder current = decoder;
+    if (current != null) current.setPresentation(null);
   }
 
   private SteamDecoder.Events decoderEvents(final long source) {

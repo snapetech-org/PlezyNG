@@ -110,6 +110,7 @@ abstract final class SubtitleTextImporter {
     var first = true;
     for (final line in text.split(RegExp(r'\r?\n'))) {
       if (line.trim().isEmpty) continue;
+      if (line.length > 16000) throw const FormatException('MicroDVD source line exceeds the text bound.');
       final match = RegExp(r'^\{(\d+)\}\{(\d+)\}(.*)$').firstMatch(line);
       if (match == null) throw const FormatException('This is not a MicroDVD text SUB file. VobSub bitmap SUB needs OCR.');
       final start = int.parse(match[1]!), end = int.parse(match[2]!);
@@ -123,15 +124,38 @@ abstract final class SubtitleTextImporter {
       if (fps == null || !fps.isFinite || fps < 1 || fps > 240) {
         throw const FormatException('MicroDVD needs an explicit source frame rate (1–240 fps) or its declared FPS header.');
       }
-      final payload = match[3]!.replaceAll(RegExp(r'\{[^}]*\}'), '').replaceAll('|', '\n');
+      final input = match[3]!, plain = StringBuffer();
+      var cursor = 0;
+      while (cursor < input.length) {
+        final startTag = input.indexOf('{', cursor);
+        if (startTag < 0) break;
+        final endTag = input.indexOf('}', startTag + 1);
+        if (endTag < 0) break;
+        plain.write(input.substring(cursor, startTag));
+        cursor = endTag + 1;
+      }
+      plain.write(input.substring(cursor));
+      final payload = plain.toString().replaceAll('|', '\n');
       add((start * 1000 / fps).round(), (end * 1000 / fps).round(), payload);
     }
     warnings.add('MicroDVD uses ${fps?.toStringAsFixed(6)} fps, explicitly selected or declared by the file. Inline MicroDVD style codes are removed; media FPS is not inferred.');
   }
 
   static String _htmlText(String text) {
-    text = text.replaceAll(RegExp(r'<!--.*?-->|<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>', caseSensitive: false, dotAll: true), '');
-    text = text.replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n').replaceAll(RegExp(r'<[^>]*>'), '');
+    final plain = StringBuffer();
+    var cursor = 0;
+    String? hidden;
+    for (final tag in _htmlTags(text)) {
+      if (hidden == null) plain.write(text.substring(cursor, tag.start));
+      final kind = tag.text.substring(1).trimLeft().toLowerCase().split(RegExp(r'[\s/>]')).first;
+      if (hidden != null) {
+        if (tag.text.toLowerCase().startsWith('</$hidden')) hidden = null;
+      } else if (kind == 'script' || kind == 'style') { hidden = kind; }
+      else if (kind == 'br') { plain.write('\n'); }
+      cursor = tag.end;
+    }
+    if (hidden == null) plain.write(text.substring(cursor));
+    text = plain.toString();
     return text.replaceAllMapped(RegExp(r'&(#x[0-9a-f]+|#\d+|nbsp|amp|lt|gt|quot|apos);', caseSensitive: false), (m) {
       final token = m[1]!;
       if (!token.startsWith('#')) return const {'nbsp': ' ', 'amp': '&', 'lt': '<', 'gt': '>', 'quot': '"', 'apos': "'"}[token.toLowerCase()]!;
@@ -141,6 +165,30 @@ abstract final class SubtitleTextImporter {
     });
   }
 
+  /// Deterministic tag scanning avoids repeated regex searches over malformed,
+  /// unterminated HTML. Comments are skipped without allocating their payload.
+  static List<({int start, int end, String text})> _htmlTags(String text) {
+    final tags = <({int start, int end, String text})>[];
+    var cursor = 0;
+    while (cursor < text.length) {
+      final start = text.indexOf('<', cursor);
+      if (start < 0) break;
+      if (text.startsWith('<!--', start)) {
+        final end = text.indexOf('-->', start + 4);
+        if (end < 0) throw const FormatException('SAMI contains an unterminated comment.');
+        tags.add((start: start, end: end + 3, text: '<!comment>'));
+        cursor = end + 3;
+      } else {
+        final end = text.indexOf('>', start + 1), nested = text.indexOf('<', start + 1);
+        if (end < 0 || end - start > 4096 || nested >= 0 && nested < end) throw const FormatException('SAMI has a malformed or oversized HTML tag.');
+        tags.add((start: start, end: end + 1, text: text.substring(start, end + 1)));
+        cursor = end + 1;
+      }
+      if (tags.length > 200000) throw const FormatException('SAMI exceeds the HTML token bound.');
+    }
+    return tags;
+  }
+
   static String? _attribute(String tag, String name) {
     final pattern = RegExp('(?:^|\\s)${RegExp.escape(name)}\\s*=\\s*(?:"([^\"]*)"|\x27([^\x27]*)\x27|([^\\s>]+))', caseSensitive: false);
     final match = pattern.firstMatch(tag);
@@ -148,23 +196,29 @@ abstract final class SubtitleTextImporter {
   }
 
   static void _sami(String text, String? selectedClass, int tail, void Function(int, int, String) add, List<String> warnings) {
-    final matches = RegExp(r'<sync\b[^>]*>', caseSensitive: false).allMatches(text).toList();
+    final tags = _htmlTags(text);
+    if (tags.any((tag) => RegExp(r'^<script\b', caseSensitive: false).hasMatch(tag.text))) {
+      throw const FormatException('Active/scripted SAMI content is not supported for text conversion.');
+    }
+    final syncTag = RegExp(r'^<sync\b', caseSensitive: false), paragraphTag = RegExp(r'^<p\b', caseSensitive: false);
+    final matches = tags.where((tag) => syncTag.hasMatch(tag.text)).toList();
     if (matches.isEmpty || matches.length > 100000) throw const FormatException('SAMI has no sync markers or exceeds the marker bound.');
-    final classes = RegExp(r'<p\b[^>]*>', caseSensitive: false).allMatches(text)
-      .map((m) => _attribute(m[0]!, 'class')).whereType<String>().toSet();
+    final classes = tags.where((tag) => paragraphTag.hasMatch(tag.text))
+      .map((tag) => _attribute(tag.text, 'class')).whereType<String>().toSet();
+    if (classes.length > 128 || classes.any((name) => name.length > 128)) throw const FormatException('SAMI language classes exceed the preview bound.');
     final chosen = selectedClass?.trim().isNotEmpty == true ? selectedClass!.trim() : classes.firstOrNull;
     if (chosen != null && !classes.any((value) => value.toLowerCase() == chosen.toLowerCase())) {
       throw FormatException('Unknown SAMI class. Available: ${classes.take(20).join(', ')}');
     }
     for (var i = 0; i < matches.length; i++) {
-      int startOf(int n) => int.tryParse(_attribute(matches[n][0]!, 'start') ?? '') ?? (throw const FormatException('Invalid SAMI sync start.'));
+      int startOf(int n) => int.tryParse(_attribute(matches[n].text, 'start') ?? '') ?? (throw const FormatException('Invalid SAMI sync start.'));
       final start = startOf(i), end = i + 1 < matches.length ? startOf(i + 1) : startOf(i) + tail;
       if (end <= start) throw const FormatException('SAMI sync starts must increase.');
       final block = text.substring(matches[i].end, i + 1 < matches.length ? matches[i + 1].start : text.length);
-      final paragraphs = RegExp(r'<p\b[^>]*>', caseSensitive: false).allMatches(block).toList();
+      final paragraphs = _htmlTags(block).where((tag) => paragraphTag.hasMatch(tag.text)).toList();
       final parts = <String>[];
       for (var n = 0; n < paragraphs.length; n++) {
-        if (chosen != null && (_attribute(paragraphs[n][0]!, 'class') ?? '').toLowerCase() != chosen.toLowerCase()) continue;
+        if (chosen != null && (_attribute(paragraphs[n].text, 'class') ?? '').toLowerCase() != chosen.toLowerCase()) continue;
         parts.add(_htmlText(block.substring(paragraphs[n].end, n + 1 < paragraphs.length ? paragraphs[n + 1].start : block.length)));
       }
       if (paragraphs.isEmpty && chosen == null) parts.add(_htmlText(block));
@@ -178,6 +232,7 @@ abstract final class SubtitleTextImporter {
     final offsetMatch = RegExp(r'\[offset:([+-]?\d+)\]', caseSensitive: false).firstMatch(text);
     final offset = offsetMatch == null ? 0 : int.parse(offsetMatch[1]!);
     for (final line in text.split(RegExp(r'\r?\n'))) {
+      if (line.length > 16000) throw const FormatException('LRC source line exceeds the text bound.');
       final tags = RegExp(r'\[(\d{1,6}):([0-5]\d)(?:[.:](\d{1,3}))?\]').allMatches(line).toList();
       if (tags.isEmpty) continue;
       final payload = line.substring(tags.last.end).replaceAll(RegExp(r'<\d+:[0-5]\d[.:]\d+>'), '');
@@ -215,7 +270,7 @@ abstract final class SubtitleTextImporter {
     final nominalFps = double.tryParse(attr(root, 'frameRate') ?? '30') ?? 0;
     final subframes = double.tryParse(attr(root, 'subFrameRate') ?? '1') ?? 0;
     final multiplier = (attr(root, 'frameRateMultiplier') ?? '1 1').trim().split(RegExp(r'\s+')).map(double.tryParse).toList();
-    if (nominalFps <= 0 || nominalFps > 240 || subframes <= 0 || subframes > 1000 || multiplier.length != 2 || multiplier.any((n) => n == null || !n.isFinite || n <= 0)) throw const FormatException('Invalid TTML clock parameters.');
+    if (!nominalFps.isFinite || nominalFps <= 0 || nominalFps > 240 || !subframes.isFinite || subframes <= 0 || subframes > 1000 || multiplier.length != 2 || multiplier.any((n) => n == null || !n.isFinite || n <= 0)) throw const FormatException('Invalid TTML clock parameters.');
     final fps = nominalFps * multiplier[0]! / multiplier[1]!;
     final tick = double.tryParse(attr(root, 'tickRate') ?? '${attr(root, 'frameRate') == null ? 1 : fps * subframes}') ?? 0;
     if (!fps.isFinite || fps <= 0 || fps > 240 || !tick.isFinite || tick <= 0) throw const FormatException('Invalid TTML frame/tick rate.');

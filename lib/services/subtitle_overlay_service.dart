@@ -16,7 +16,7 @@ import '../widgets/subtitle_ruby_span.dart';
 class SubtitleOverlayTrack {
   SubtitleOverlayTrack({required List<SubtitleCue> cues, List<SubtitleWordTiming> words = const [],
     required this.title, required this.isCurrent, Map<String, Rect> regions = const {}, this.language,
-    this.profileId, this.positionToSourceMs, Map<String, List<Rect>> avoidRegions = const {}})
+    this.profileId, this.positionToSourceMs, this.reviewed = false, Map<String, List<Rect>> avoidRegions = const {}})
       : cues = List.unmodifiable(List<SubtitleCue>.of(cues)..sort((a, b) => a.startMs.compareTo(b.startMs))),
         words = List.unmodifiable(words), regions = Map.unmodifiable(regions),
         avoidRegions = Map.unmodifiable(avoidRegions.map((key, value) => MapEntry(key, List<Rect>.unmodifiable(value)))) {
@@ -44,6 +44,8 @@ class SubtitleOverlayTrack {
   final String title;
   final String? language;
   final String? profileId;
+  /// Set only after explicit review/acceptance, never by live inference.
+  final bool reviewed;
   final Map<String, List<Rect>> avoidRegions;
   final Map<String, Rect> regions;
   final bool Function() isCurrent;

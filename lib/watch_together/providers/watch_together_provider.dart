@@ -20,6 +20,10 @@ import '../services/media_descriptor.dart';
 import '../services/player_adapter.dart';
 import '../services/recent_rooms_service.dart';
 import '../services/watch_party_relays.dart';
+import '../services/watch_subtitle_sync.dart';
+import '../../mpv/player/player_media_session_identity.dart';
+import '../../sources/source_models.dart' show sourceDigest;
+import '../../sources/sync/sync_document.dart' show canonicalSyncJson;
 
 typedef WatchPartyFactory =
     owp.WatchParty<WatchCopy> Function({
@@ -92,6 +96,27 @@ class WatchTogetherProvider extends ChangeNotifier {
   /// How long a host's share waits for the player's length.
   final Duration shareDurationWait;
   final LibraryResolver _resolver;
+  final captionSync = WatchSubtitleSync();
+
+  /// A caption lease exists only while this exact copy follows the room.
+  /// Room-clock conversion handles the accepted per-copy offset; enabling the
+  /// channel still requires explicit cut/audio confirmation in its controls.
+  WatchSubtitleContext? get captionContext {
+    final active = _player?.adapter, currentRoom = room, currentMedia = media;
+    final profile = profileId;
+    if (_disposed || active == null || active.isReleased || !isFollowing || currentRoom == null ||
+        currentMedia == null || profile == null || _isAway) return null;
+    final player = active.player;
+    final scope = sourceDigest(canonicalSyncJson({'relay': relayScope, 'room': currentRoom.code,
+      'epoch': currentRoom.epoch, 'host': host?.peerId, 'media': currentMedia.toJson()}));
+    final generation = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
+    final token = sourceDigest(canonicalSyncJson({'scope': scope, 'profile': profile,
+      'server': active.copy.serverId, 'item': active.copy.itemId, 'version': active.copy.versionId,
+      'generation': generation, 'audio': player.state.track.audio?.id,
+      'partOffset': player.timelineOffset.inMilliseconds, 'roomOffset': _state.offsetMs}));
+    return WatchSubtitleContext(scope: scope, localToken: token, profileId: profile,
+      player: player, offsetMs: _state.offsetMs, host: isHost);
+  }
 
   owp.WatchParty<WatchCopy>? _party;
   StreamSubscription<owp.PartyState<WatchCopy>>? _stateSubscription;
@@ -589,6 +614,7 @@ class WatchTogetherProvider extends ChangeNotifier {
     final previous = _state;
     final wasFollowing = isFollowing;
     _state = next;
+    captionSync.roomChanged();
     if (next.connection == owp.Connection.ended || next.room?.phase != owp.Phase.playing) _playBlocked = false;
     // The room stopped the media this guest was watching with it.
     if (wasFollowing &&
@@ -710,6 +736,7 @@ class WatchTogetherProvider extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    captionSync.dispose();
     _player?.adapter.release();
     _player = null;
     unawaited(_closeParty());

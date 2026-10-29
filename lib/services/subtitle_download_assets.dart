@@ -157,7 +157,7 @@ abstract final class SubtitleDownloadAssets {
       avoid[e.key as String] = (e.value as List).map(rect).toList();
     }
     final track = SubtitleOverlayTrack(cues: revision.cues, words: revision.wordTimings,
-      title: revision.operation, language: revision.languageCode, profileId: binding.profileId,
+      title: revision.operation, language: revision.languageCode, profileId: binding.profileId, reviewed: true,
       regions: regions, avoidRegions: avoid, isCurrent: isCurrent);
     track.applyAppearance(document['appearance'] as Map<String, dynamic>);
     track.delayMs = document['delayMs'] as int;

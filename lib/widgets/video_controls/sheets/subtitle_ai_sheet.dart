@@ -3572,7 +3572,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           text: word.text, confidence: word.confidence, unit: word.unit, cueIndex: word.cueIndex, cueId: word.cueId,
         )).toList(growable: false);
         final track = SubtitleOverlayTrack(cues: onItemTimeline ? reviewedCues : _fileCuesOnItemTimeline(reviewedCues),
-          words: overlayWords, title: operationLabel,
+          words: overlayWords, title: operationLabel, reviewed: true,
           regions: {for (final r in regions.entries) if (surviving.contains(r.key)) r.key: r.value},
           avoidRegions: {for (final r in avoidRegions.entries) if (unchangedTimes.contains(r.key)) r.key: r.value}, profileId: profileId, language: operationLanguageCode,
           isCurrent: () => profiles.activeId == profileId && isSourceCurrent?.call() != false);

@@ -11,6 +11,7 @@ import '../../widgets/overlay_sheet.dart';
 import '../providers/watch_together_provider.dart';
 import 'watch_labels.dart';
 import 'watch_room_sections.dart';
+import 'watch_subtitle_dialog.dart';
 
 /// Opens the room's session sheet: from the player's header indicator, or
 /// anywhere below an [OverlaySheetHost].
@@ -85,6 +86,13 @@ class WatchSessionSheet extends StatelessWidget {
           subtitle: Text(watchOffsetText(provider.state.offsetMs)),
           trailing: const AppIcon(Symbols.chevron_right_rounded, fill: 1),
           onTap: () => unawaited(showWatchPage<void>(context, (nested) => WatchOffsetPage(nested: nested))),
+        ),
+        FocusableListTile(
+          leading: const Icon(Icons.subtitles_outlined),
+          title: const Text('Shared captions'),
+          subtitle: const Text('Reviewed captions through your paired cloud folder'),
+          onTap: provider.captionContext == null ? null : () => unawaited(showDialog<void>(
+            context: context, builder: (_) => WatchSubtitleDialog(room: provider))),
         ),
         const WatchHostSettingsSection(),
         FocusableListTile(

@@ -11,6 +11,9 @@ import '../../../services/file_picker_service.dart';
 import '../../../services/subtitle_book_timeline.dart';
 import '../../../services/subtitle_revision_service.dart';
 import '../../../services/subtitle_ruby_text.dart';
+import '../../../services/subtitle_analysis_decoder.dart';
+import '../../../services/subtitle_ai_service.dart';
+import 'subtitle_book_generation_dialog.dart';
 
 class SubtitleBookDialog extends StatefulWidget {
   const SubtitleBookDialog({super.key, required this.timeline});
@@ -131,6 +134,10 @@ class _SubtitleBookDialogState extends State<SubtitleBookDialog> {
       content: SizedBox(width: 760, height: (MediaQuery.sizeOf(context).height - 180).clamp(300.0, 700.0).toDouble(),
         child: CustomScrollView(slivers: [SliverToBoxAdapter(child: Column(children: [
           Text(copy.description),
+          if (widget.timeline.openAnalysisSource != null && SubtitleAnalysisDecoder.available && SubtitleAiService.supportedPlatform)
+            TextButton.icon(icon: const Icon(Icons.auto_awesome), label: const Text('Generate the whole book'),
+              onPressed: _busy || !current ? null : () => _run(() => showDialog<void>(context: context,
+                builder: (_) => SubtitleBookGenerationDialog(timeline: widget.timeline)))),
           Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [Text(copy.selectedSummary(
               selected: _selected.length, total: widget.timeline.parts.length, cues: _cues.length)),
             FilterChip(label: Text(copy.hideFutureText), selected: _hideFuture,

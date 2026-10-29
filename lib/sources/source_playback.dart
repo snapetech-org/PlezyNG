@@ -682,6 +682,30 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       offset += durations[i];
     }
     return SubtitleBookTimeline(title: item.displayTitle, parts: parts, isCurrent: current, positionMs: () => positionMs, changes: this,
+      playbackBusy: () => !current() || player?.state.playing == true,
+      openAnalysisSource: (part) async {
+        if (!current() || !parts.contains(part)) throw const SourceException(SourceFailure.cancelled);
+        final file = files[part.fileIndex];
+        if (file.streamOnly || file.sampleOnly) throw const SourceException(SourceFailure.permission);
+        final gateway = SourceStreamGateway(valid: current);
+        try {
+          final override = _localOverrides[file.id];
+          final local = override == null ? await sources.downloads.local(profile, item.sourceId, file) : null;
+          final adapter = sources.adapter(item.sourceId);
+          late final Uri uri;
+          if (override != null) {
+            if (override.scheme == 'file') { uri = override; }
+            else if (const {'http', 'https'}.contains(override.scheme)) {
+              uri = await gateway.registerUri(override, headers: _localOverrideHeaders[file.id] ?? const {});
+            } else { throw const SourceException(SourceFailure.unsupported); }
+          } else { uri = local != null ? local.uri : adapter.source.kind == FileSourceKind.local
+              ? (await adapter.resolve(file)).uri : await gateway.register(adapter, file); }
+          if (!current()) throw const SourceException(SourceFailure.cancelled);
+          return SubtitleAnalysisSource(uri: uri,
+            identity: sourceDigest('$profile:${item.key}:${file.fingerprint}'),
+            durationMs: part.durationMs, isCurrent: current, close: gateway.close);
+        } catch (_) { await gateway.close(); rethrow; }
+      },
       seek: (index, filePositionMs) => _serialize(() async {
         // Recheck inside the command queue so a later book cannot receive a
         // delayed transcript seek from an earlier dialog.

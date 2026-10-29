@@ -34,3 +34,40 @@ coverage is verified. Word timings remain in the original per-file revisions.
 Implementation confidence is moderate. No tests, analyzers, builds, source
 execution, decoder/device qualification or CI ran. Backend seek support and
 timestamp/narration accuracy still require qualification.
+
+## Whole-book generation
+
+The book transcript dialog can explicitly queue every file in the captured
+source order. Each file must have a known duration up to eight hours; a book is
+bounded to 256 files and seven days. The viewer confirms a file-order audio
+ordinal for every file, with optional spoken-language override and local speech
+provider. Stream numbers are not inferred from native track IDs and do not prove
+matching narration across files.
+
+`SubtitleBookGeneration` opens a separate source capability for each file,
+including eligible cached/local/network sources. It does not seek, reload or
+change audible playback. One ordinary source transcription job runs at a time,
+using the existing power, idle, model-admission and thirty-second checkpoint
+policies. Playback can advance within the same book. A different edition, queue
+order, duration, source identity or profile pauses the batch. Leaving the app
+foreground also pauses it; restart and recovery require explicit resume.
+
+Completed files become digest-bound **unaccepted** results in a separate batch
+store. The result and batch cursor are durably written before deleting the file
+job's checkpoints. File clocks and original word timings remain intact. Each
+file is reviewed explicitly before saving an accepted revision to its existing
+history; generation never attaches or selects captions. Empty recognition is
+recorded separately and is not evidence of absent speech.
+
+The store allows four batches per profile, 64 MiB committed results per batch
+and 8 MiB per result, plus one temporary result during commit. Batches consume
+one slot in the twelve-job queue. Source WAV windows remain temporary. A missing,
+cancelled or failed file job pauses progress rather than silently discarding its
+partial work or retrying forever. A crash between job creation and cursor commit
+can leave an independently visible paused job in Transcription jobs; its saved
+windows remain available there. Deleting a batch removes its pending results
+and active job; accepted revision history is separate.
+
+The UI and lifecycle paths were manually reviewed; no runtime, tests, build,
+analyzer, formatter, model or CI execution occurred. Native decoding, language
+quality, restart behavior and storage/power performance remain unqualified.

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import 'subtitle_retimer.dart';
 import 'subtitle_revision_service.dart';
+import 'subtitle_analysis_source.dart';
 
 class SubtitleBookPart {
   const SubtitleBookPart({required this.fileIndex, required this.title, required this.startMs,
@@ -40,7 +41,8 @@ class SubtitleBookException implements Exception {
 /// reinterprets a per-file revision as a book clock without an explicit choice.
 class SubtitleBookTimeline {
   SubtitleBookTimeline({required this.title, required List<SubtitleBookPart> parts,
-    required this.isCurrent, required this.positionMs, required this.seek, required this.changes}) : parts = List.unmodifiable(parts) {
+    required this.isCurrent, required this.positionMs, required this.seek, required this.changes,
+    this.openAnalysisSource, this.playbackBusy}) : parts = List.unmodifiable(parts) {
     if (title.length > 1024 || parts.isEmpty || parts.length > 256 || parts.first.startMs != 0) throw const FormatException('Book part limit');
     var end = 0;
     final indices = <int>{};
@@ -57,6 +59,10 @@ class SubtitleBookTimeline {
   final int Function() positionMs;
   final Future<void> Function(int fileIndex, int filePositionMs) seek;
   final Listenable changes;
+  /// Independent per-file capability. It stays valid across chapter playback
+  /// changes, but never across book/profile/edition/order changes.
+  final Future<SubtitleAnalysisSource> Function(SubtitleBookPart)? openAnalysisSource;
+  final bool Function()? playbackBusy;
 
   List<SubtitleBookCue> useRevision(SubtitleBookPart part, SubtitleRevision revision, {required bool bookClock}) {
     if (!isCurrent() || !parts.contains(part)) throw const SubtitleBookException(SubtitleBookIssue.changed);

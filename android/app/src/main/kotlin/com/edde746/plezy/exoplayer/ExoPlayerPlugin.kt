@@ -276,6 +276,7 @@ open class ExoPlayerPlugin(
       "subtitlePcmCaptureAvailable" -> handleSubtitlePcmCaptureAvailable(result)
       "setSubtitlePcmCaptureEnabled" -> handleSetSubtitlePcmCaptureEnabled(call, result)
       "drainSubtitlePcmCapture" -> handleDrainSubtitlePcmCapture(result)
+      "subtitleLiveClock" -> result.success(if (usingMpvFallback || fallbackInProgress) null else playerCore?.subtitleLiveClock())
       "getStats" -> handleGetStats(result)
       "getPlayerType" -> result.success(if (usingMpvFallback) "mpv" else "exoplayer")
       "setSubtitleStyle" -> handleSetSubtitleStyle(call, result)

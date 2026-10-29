@@ -27,6 +27,7 @@ import '../../utils/formatters.dart';
 import '../../utils/app_logger.dart';
 import '../../services/open_subtitles_client.dart';
 import '../../services/subtitle_revision_service.dart';
+import '../../services/subtitle_live_clock.dart';
 import '../../services/player_sync_offsets.dart';
 import '../../services/subtitle_retimer.dart';
 import '../../services/subtitle_text_importer.dart';
@@ -362,7 +363,9 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
           openAnalysisSource: playback.openSubtitleAnalysisSource,
           openReadAheadSource: !playback.isLiveInput ? null : () async {
             if (!sourceCurrent()) return null;
-            final clock = await showSubtitleLiveClockAnchor(context, player, sourceCurrent);
+            SubtitleLiveClock? clock = await SubtitleBackendLiveClock.open(player, sourceCurrent);
+            if (!sourceCurrent()) { clock?.retire(); return null; }
+            clock ??= await showSubtitleLiveClockAnchor(context, player, sourceCurrent);
             if (clock == null) return null;
             if (!sourceCurrent()) { clock.retire(); return null; }
             try { return await playback.openSubtitleAnalysisSource(liveClock: clock); }

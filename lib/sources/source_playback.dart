@@ -15,7 +15,7 @@ import '../services/media_controls_manager.dart';
 import '../services/playback_coordinator.dart';
 import '../services/settings_service.dart';
 import '../services/subtitle_analysis_source.dart';
-import '../services/subtitle_manual_live_clock.dart';
+import '../services/subtitle_live_clock.dart';
 import '../services/subtitle_book_timeline.dart';
 import '../services/subtitle_revision_service.dart';
 import '../services/subtitle_selection_rules.dart';
@@ -202,7 +202,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       _fileIndex >= 0 && _fileIndex < files.length && _directPlayerAddresses.containsKey(files[_fileIndex].id);
   /// Opens a separate, renewable analysis lease without reusing the audible
   /// player's decoder or giving the inference process provider credentials.
-  Future<SubtitleAnalysisSource> openSubtitleAnalysisSource({SubtitleManualLiveClock? liveClock}) async {
+  Future<SubtitleAnalysisSource> openSubtitleAnalysisSource({SubtitleLiveClock? liveClock}) async {
     if (!_valid || isSamplePreview || isCapturePreview || files.isEmpty || player == null) {
       throw const SourceException(SourceFailure.unsupported);
     }
@@ -216,7 +216,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     }
     final live = _liveInput;
     if (live && (liveClock == null || !identical(liveClock.player, native) || !liveClock.isCurrent)) {
-      throw StateError('Standalone live analysis requires an explicit current program-time anchor.');
+      throw StateError('Standalone live analysis requires a current backend clock or explicit program-time anchor.');
     }
     bool analysisCurrent() => current() && (!live || liveClock?.isCurrent == true);
     final gateway = SourceStreamGateway(valid: analysisCurrent, subtitleLiveAnalysis: live);
@@ -238,10 +238,14 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       }
       if (!analysisCurrent()) throw const SourceException(SourceFailure.cancelled);
       return SubtitleAnalysisSource(uri: uri, identity: sourceDigest('$profile:${item.key}:${file.fingerprint}'),
-        isCurrent: analysisCurrent, close: gateway.close,
+        isCurrent: analysisCurrent, close: () async {
+          liveClock?.retire();
+          await gateway.close();
+        },
         durationMs: live ? null : _durations[index] ?? native.state.duration.inMilliseconds,
-        liveEpochForPosition: live ? liveClock!.epochForPosition : null);
-    } catch (_) { await gateway.close(); rethrow; }
+        liveEpochForPosition: live ? liveClock!.epochForPosition : null,
+        liveSeekableEpochRange: live ? () => liveClock!.seekableEpochRange : null);
+    } catch (_) { liveClock?.retire(); await gateway.close(); rethrow; }
   }
 
   bool get canDiscoverSourceSubtitles => _valid && !_liveInput && !isTransientInput && entry != null &&

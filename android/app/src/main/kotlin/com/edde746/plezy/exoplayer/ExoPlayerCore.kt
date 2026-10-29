@@ -3803,6 +3803,28 @@ class ExoPlayerCore(private val activity: Activity) :
     }
   }
 
+  /** Atomic source-window observation; no wall-clock or playlist-edge inference. */
+  fun subtitleLiveClock(): Map<String, Any>? {
+    val player = exoPlayer ?: return null
+    val timeline = player.currentTimeline
+    val index = player.currentMediaItemIndex
+    if (!currentMediaIsLive || player.isPlayingAd || timeline.isEmpty ||
+      index < 0 || index >= timeline.windowCount || terminalErrorGeneration == currentMediaGeneration) return null
+    val window = timeline.getWindow(index, Timeline.Window())
+    val origin = window.windowStartTimeMs
+    if (!window.isLive || window.isPlaceholder || origin == C.TIME_UNSET ||
+      origin < 946684800000L || origin > 7258118400000L) return null
+    val position = player.currentPosition
+    if (position < 0) return null
+    val result = mutableMapOf<String, Any>("generation" to currentMediaGeneration,
+      "positionMs" to position, "windowStartEpochMs" to origin)
+    val duration = window.durationMs
+    if (window.isSeekable && duration > 0 && duration <= 604800000L) {
+      result["seekableDurationMs"] = duration
+    }
+    return result
+  }
+
   /** Captures only an already-decoded route; never changes audible output. */
   fun subtitlePcmCaptureAvailable(): Boolean {
     val player = exoPlayer ?: return false

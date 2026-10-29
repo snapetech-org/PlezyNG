@@ -13,13 +13,30 @@ to use read-ahead, embedded-font inspection and explicit companion staging.
 The grant requires ephemeral playback with a supplied file/HTTP override for
 every selected file; it is absent for provider streams and capture devices.
 
-Standalone playback exposes no automatic UTC program-clock mapping. Starting
-read-ahead therefore requires an explicit paused-frame anchor: the viewer supplies
+Android ExoPlayer now supplies an atomic Media3 window observation when the
+active live timeline declares a UTC start. Starting read-ahead first requests
+that clock. The lease refreshes twice a second, rejects bridge calls taking more
+than one second and samples whose source position differs from the current app
+position by more than 750 ms, and hides program-clock captions after two seconds
+without a fresh matching observation. Seeking suppresses the previous sample
+until a new observation; source/profile/part/native generation changes retire
+the lease. No wall-clock time or manifest duration is used to invent an origin.
+The asynchronous bridge and timeline remain an estimated alignment.
+
+Only a non-placeholder, seekable backend window with a known duration supplies
+DVR expiry bounds. These bounds do not themselves enable standalone delay hold.
+Ads, backend fallback, terminal playback and missing clocks produce no mapping.
+Other backends still use the manual path. The native clock is independent of
+PCM routing, so using it does not change passthrough, tunneling or the output.
+The API semantics follow [Media3 Timeline.Window](https://developer.android.com/reference/androidx/media3/common/Timeline.Window).
+
+If no usable backend sample is available, read-ahead requires an explicit
+paused-frame anchor: the viewer supplies
 the actual program timestamp of that frame in UTC, with no default derived from
 the current wall clock or playlist edge. Invalid calendar dates are refused.
 The exact paused position must still match when the anchor is accepted.
 
-The mapping is session-only and estimated. It expires after 15 monotonic minutes
+The manual mapping is session-only and estimated. It expires after 15 monotonic minutes
 and is retired after source/profile/media/seek-generation changes, timeline-offset
 changes, invalid rates or detected backward/implausible forward position jumps.
 Paused playback keeps a fixed program time. Normal progress and rate changes use
@@ -28,12 +45,14 @@ check only rejects impossible jumps; it cannot prove correct source timing.
 
 Complete segments near or ahead of that mapped position enter the existing local
 decoder/inference path. The app displays only cues matching the mapping. No DVR
-bounds, rewind support, delay hold or confirmed timing are inferred. Resume
+bounds, rewind support, delay hold or confirmed timing are inferred from a manual anchor. Resume
 playback after starting; re-anchor after expiry or discontinuity. Closing or
-changing a source retires access and stale overlay visibility. Analysis consumes
+changing a source retires access and stale overlay visibility. Stopping the
+analysis lease also stops clock polling and hides its program-clock overlay.
+Analysis consumes
 additional bandwidth and replaces app caption lane 1 after a result is ready.
 
 Source implementation confidence is moderate; anchor accuracy depends on the
 provided reference and the backend timeline. No test, build, analyzer, decoder
-execution, stream/device qualification or CI ran. Automatic clock discovery for
-these standalone inputs remains open.
+execution, stream/device qualification or CI ran. Automatic discovery outside
+the Media3 path remains unavailable.

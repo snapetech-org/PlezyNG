@@ -1,10 +1,11 @@
 import '../mpv/mpv.dart';
 import '../mpv/player/subtitle_pcm_capture_source.dart';
+import 'subtitle_live_clock.dart';
 
 /// An explicit viewer-supplied UTC anchor, never inferred from wall-clock now,
 /// playlist duration, decoder startup or a URL. Valid only on the same player
 /// timeline, with a bounded lifetime and conservative jump detection.
-class SubtitleManualLiveClock {
+class SubtitleManualLiveClock implements SubtitleLiveClock {
   SubtitleManualLiveClock._(this.player, this._capture, this._ownerCurrent, this.epochMs)
       : positionMs = player.currentPosition.inMilliseconds,
         _media = _capture.mediaSessionGeneration,
@@ -14,6 +15,7 @@ class SubtitleManualLiveClock {
         _lastRate = player.state.rate,
         _lastPlaying = player.state.playing;
 
+  @override
   final Player player;
   final SubtitlePcmCaptureSource _capture;
   final bool Function() _ownerCurrent;
@@ -34,6 +36,7 @@ class SubtitleManualLiveClock {
     return SubtitleManualLiveClock._(player, player, isCurrent, utc.millisecondsSinceEpoch);
   }
 
+  @override
   bool get isCurrent {
     if (_retired) return false;
     try {
@@ -54,6 +57,10 @@ class SubtitleManualLiveClock {
     } catch (_) { retire(); return false; }
   }
 
+  @override
   int? epochForPosition(int value) => isCurrent ? epochMs + value - positionMs : null;
+  @override
+  ({int startMs, int endMs})? get seekableEpochRange => null;
+  @override
   void retire() { _retired = true; _age.stop(); }
 }

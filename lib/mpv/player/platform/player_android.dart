@@ -7,10 +7,11 @@ import '../../../services/settings_service.dart';
 import '../../models.dart';
 import '../player_base.dart';
 import '../subtitle_pcm_capture_source.dart';
+import '../subtitle_live_clock_source.dart';
 import '../video_rect_support.dart';
 
 /// Android implementation using ExoPlayer with ASS subtitle support via libass-android.
-class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioFocusControl, SubtitlePcmCaptureSource {
+class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioFocusControl, SubtitlePcmCaptureSource, SubtitleLiveClockSource {
   static const _channelBase = 'com.plezy/exo_player';
 
   PlayerAndroid({bool companionSession = false, super.listenToNativeEvents = true})
@@ -616,6 +617,19 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
     if (disposed) return const [];
     final packets = await methodChannel.invokeMethod<List<dynamic>>('drainSubtitlePcmCapture');
     return subtitlePcmOnItemTimeline(packets ?? const [], timelineOffset);
+  }
+
+  @override
+  Future<SubtitleLiveClockSnapshot?> readSubtitleLiveClock() async {
+    if (disposed || !_isLive || _usingMpvFallback) return null;
+    final generation = _mediaSessionGeneration;
+    final data = await invoke<Map<dynamic, dynamic>>('subtitleLiveClock');
+    if (disposed || generation != _mediaSessionGeneration || _usingMpvFallback || data == null) return null;
+    final nativeGeneration = data['generation'], position = data['positionMs'], origin = data['windowStartEpochMs'];
+    final duration = data['seekableDurationMs'];
+    if (nativeGeneration is! int || position is! int || origin is! int) return null;
+    return SubtitleLiveClockSnapshot(generation: nativeGeneration, positionMs: position,
+      windowStartEpochMs: origin, seekableDurationMs: duration is int && duration > 0 ? duration : null);
   }
 
   @override

@@ -44,34 +44,6 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
 
   Translations get _t => Translations.of(context);
 
-  Map<String, String> _sccMessages() {
-    final c = _t.videoControls;
-    return {
-      'subtitleImportSccChannelRangeError': c.subtitleImportSccChannelRangeError,
-      'subtitleImportSccMissingHeaderError': c.subtitleImportSccMissingHeaderError,
-      'subtitleImportSccLineLimitError': c.subtitleImportSccLineLimitError,
-      'subtitleImportSccMalformedLine': c.subtitleImportSccMalformedLine(line: '{line}'),
-      'subtitleImportSccDropFrameError': c.subtitleImportSccDropFrameError,
-      'subtitleImportSccPacketOrderError': c.subtitleImportSccPacketOrderError,
-      'subtitleImportSccParityError': c.subtitleImportSccParityError(line: '{line}'),
-      'subtitleImportSccTimelineError': c.subtitleImportSccTimelineError,
-      'subtitleImportSccNoPacketsError': c.subtitleImportSccNoPacketsError,
-      'subtitleImportSccColumnLimitError': c.subtitleImportSccColumnLimitError,
-      'subtitleImportSccSnapshotLimitError': c.subtitleImportSccSnapshotLimitError,
-      'subtitleImportSccXdsUnsupportedError': c.subtitleImportSccXdsUnsupportedError,
-      'subtitleImportSccTextUnsupportedError': c.subtitleImportSccTextUnsupportedError,
-      'subtitleImportSccRowAddressError': c.subtitleImportSccRowAddressError,
-      'subtitleImportSccSecondCharacterError': c.subtitleImportSccSecondCharacterError,
-      'subtitleImportSccControlPairError': c.subtitleImportSccControlPairError,
-      'subtitleImportSccDecodedSummary': c.subtitleImportSccDecodedSummary(
-        channel: '{channel}', fps: '{fps}', frameType: '{frameType}', clockOrigin: '{clockOrigin}'),
-      'subtitleImportSccFlattenedWarning': c.subtitleImportSccFlattenedWarning,
-      'subtitleImportSccOpenTailWarning': c.subtitleImportSccOpenTailWarning(duration: '{duration}'),
-      'subtitleImportSccDropFrameLabel': c.subtitleImportSccDropFrameLabel,
-      'subtitleImportSccNonDropFrameLabel': c.subtitleImportSccNonDropFrameLabel,
-    };
-  }
-
   Future<void> _preview() async {
     if (_parsing) return;
     final generation = ++_generation;
@@ -86,7 +58,7 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
       final result = await SubtitleTextImporter.parseAsync(widget.bytes, widget.extension,
         encoding: _encoding, framesPerSecond: fps, finalCueDurationMs: tail, samiClass: _samiClass.text,
         sccChannel: _sccChannel, sccNtsc: _sccNtsc, sccClockOriginMs: origin,
-        localizedMessages: widget.extension.toLowerCase() == '.scc' ? _sccMessages() : null);
+        localizedMessages: SubtitleTextImporter.localizedMessages(_t));
       if (mounted && generation == _generation) setState(() => _result = result);
     } catch (error) {
       if (mounted && generation == _generation) setState(() => _error = error is FormatException ? error.message.toString() : _t.videoControls.subtitleImportDecodeError);

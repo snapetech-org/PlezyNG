@@ -239,7 +239,7 @@ private final class AppleSubtitleInbox {
     let deadline = Date().addingTimeInterval(60)
     while true {
       guard Date() < deadline else { throw CocoaError(.fileReadUnknown) }
-      let count = input.read(&buffer, maxLength: buffer.count)
+      let count = input.read(&buffer, maxLength: 64 * 1024)
       guard count >= 0 else { throw input.streamError ?? CocoaError(.fileReadUnknown) }
       if count == 0 { break }
       copied += count

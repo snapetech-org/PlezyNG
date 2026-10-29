@@ -3562,6 +3562,144 @@ class Translations$videoControls$en {
 	/// en: 'non-drop-frame'
 	String get subtitleImportSccNonDropFrameLabel => 'non-drop-frame';
 
+	/// en: 'Decoded subtitle is binary or exceeds the 5 MiB text bound.'
+	String get subtitleImportBinaryOrOversized => 'Decoded subtitle is binary or exceeds the 5 MiB text bound.';
+
+	/// en: 'The final cue duration must be between 100 and 30000 ms.'
+	String get subtitleImportFinalDurationRange => 'The final cue duration must be between 100 and 30000 ms.';
+
+	/// en: 'Subtitle has invalid times or a cue over 4000 characters.'
+	String get subtitleImportCueInvalid => 'Subtitle has invalid times or a cue over 4000 characters.';
+
+	/// en: 'Subtitle exceeds 50000 cues.'
+	String get subtitleImportCueCountLimit => 'Subtitle exceeds 50000 cues.';
+
+	/// en: 'Editing or translation creates an SRT derivative. Native ASS styling, fonts and animation are not preserved by SRT.'
+	String get subtitleImportAssFlattenWarning => 'Editing or translation creates an SRT derivative. Native ASS styling, fonts and animation are not preserved by SRT.';
+
+	/// en: 'TTML/IMSC text and timed spans are flattened to SRT. Regions, fonts, ruby, styling and writing modes stay only in the original; image profiles and non-media clocks are refused.'
+	String get subtitleImportTtmlFlattenWarning => 'TTML/IMSC text and timed spans are flattened to SRT. Regions, fonts, ruby, styling and writing modes stay only in the original; image profiles and non-media clocks are refused.';
+
+	/// en: 'Invalid SubViewer/SBV cue.'
+	String get subtitleImportSbvCueInvalid => 'Invalid SubViewer/SBV cue.';
+
+	/// en: 'Invalid MPL2 subtitle line.'
+	String get subtitleImportMplLineInvalid => 'Invalid MPL2 subtitle line.';
+
+	/// en: 'This text subtitle format is not supported by the editor.'
+	String get subtitleImportUnsupportedFormat => 'This text subtitle format is not supported by the editor.';
+
+	/// en: 'No non-empty text subtitle cues were found.'
+	String get subtitleImportNoCues => 'No non-empty text subtitle cues were found.';
+
+	/// en: 'Converted subtitle exceeds the 5 MiB text / 4000-character cue bound.'
+	String get subtitleImportOutputLimit => 'Converted subtitle exceeds the 5 MiB text / 4000-character cue bound.';
+
+	/// en: 'Invalid clock timestamp.'
+	String get subtitleImportClockInvalid => 'Invalid clock timestamp.';
+
+	/// en: 'Explicit ${encoding} decoding; derived output is UTF-8. Review names and punctuation.'
+	String subtitleImportEncodingWarning({required Object encoding}) => 'Explicit ${encoding} decoding; derived output is UTF-8. Review names and punctuation.';
+
+	/// en: 'MicroDVD source line exceeds the text bound.'
+	String get subtitleImportMicroDvdLineLimit => 'MicroDVD source line exceeds the text bound.';
+
+	/// en: 'This is not a MicroDVD text SUB file. VobSub bitmap SUB needs OCR.'
+	String get subtitleImportMicroDvdFormatInvalid => 'This is not a MicroDVD text SUB file. VobSub bitmap SUB needs OCR.';
+
+	/// en: 'MicroDVD needs an explicit source frame rate (1–240 fps) or its declared FPS header.'
+	String get subtitleImportMicroDvdFrameRateRequired => 'MicroDVD needs an explicit source frame rate (1–240 fps) or its declared FPS header.';
+
+	/// en: 'MicroDVD uses ${fps} fps, explicitly selected or declared by the file. Inline MicroDVD style codes are removed; media FPS is not inferred.'
+	String subtitleImportMicroDvdWarning({required Object fps}) => 'MicroDVD uses ${fps} fps, explicitly selected or declared by the file. Inline MicroDVD style codes are removed; media FPS is not inferred.';
+
+	/// en: 'Invalid HTML character entity.'
+	String get subtitleImportHtmlEntityInvalid => 'Invalid HTML character entity.';
+
+	/// en: 'SAMI contains an unterminated comment.'
+	String get subtitleImportSamiCommentUnterminated => 'SAMI contains an unterminated comment.';
+
+	/// en: 'SAMI has a malformed or oversized HTML tag.'
+	String get subtitleImportSamiTagInvalid => 'SAMI has a malformed or oversized HTML tag.';
+
+	/// en: 'SAMI exceeds the HTML token bound.'
+	String get subtitleImportSamiTagLimit => 'SAMI exceeds the HTML token bound.';
+
+	/// en: 'Active or scripted SAMI content is not supported for text conversion.'
+	String get subtitleImportSamiActiveContent => 'Active or scripted SAMI content is not supported for text conversion.';
+
+	/// en: 'SAMI has no sync markers or exceeds the marker bound.'
+	String get subtitleImportSamiMarkerLimit => 'SAMI has no sync markers or exceeds the marker bound.';
+
+	/// en: 'SAMI language classes exceed the preview bound.'
+	String get subtitleImportSamiClassLimit => 'SAMI language classes exceed the preview bound.';
+
+	/// en: 'Unknown SAMI class. Available: ${available}'
+	String subtitleImportSamiUnknownClass({required Object available}) => 'Unknown SAMI class. Available: ${available}';
+
+	/// en: 'Invalid SAMI sync start.'
+	String get subtitleImportSamiStartInvalid => 'Invalid SAMI sync start.';
+
+	/// en: 'SAMI sync starts must increase.'
+	String get subtitleImportSamiStartsOrder => 'SAMI sync starts must increase.';
+
+	/// en: 'SAMI class: ${selectedClass}. Available: ${available}. HTML layout is flattened. A final non-empty sync without a following clear uses the selected ${duration} ms duration.'
+	String subtitleImportSamiWarning({required Object selectedClass, required Object available, required Object duration}) => 'SAMI class: ${selectedClass}. Available: ${available}. HTML layout is flattened. A final non-empty sync without a following clear uses the selected ${duration} ms duration.';
+
+	/// en: 'LRC source line exceeds the text bound.'
+	String get subtitleImportLrcLineLimit => 'LRC source line exceeds the text bound.';
+
+	/// en: 'LRC offset moves a cue before zero; correct its offset explicitly.'
+	String get subtitleImportLrcOffsetBeforeZero => 'LRC offset moves a cue before zero; correct its offset explicitly.';
+
+	/// en: 'LRC exceeds the timestamp bound.'
+	String get subtitleImportLrcTimestampLimit => 'LRC exceeds the timestamp bound.';
+
+	/// en: 'LRC uses the next timestamp as each line’s end and the selected ${duration} ms final duration. Enhanced word markers are flattened; these are lyric lines, not verified speech word timings.'
+	String subtitleImportLrcWarning({required Object duration}) => 'LRC uses the next timestamp as each line’s end and the selected ${duration} ms final duration. Enhanced word markers are flattened; these are lyric lines, not verified speech word timings.';
+
+	/// en: 'TTML DTDs and entity declarations are not accepted.'
+	String get subtitleImportTtmlDtdUnsupported => 'TTML DTDs and entity declarations are not accepted.';
+
+	/// en: 'TTML exceeds 200000 XML events.'
+	String get subtitleImportTtmlEventLimit => 'TTML exceeds 200000 XML events.';
+
+	/// en: 'TTML nesting exceeds 64 elements.'
+	String get subtitleImportTtmlNestingLimit => 'TTML nesting exceeds 64 elements.';
+
+	/// en: 'Only TTML text with a media time base can be converted.'
+	String get subtitleImportTtmlMediaClockOnly => 'Only TTML text with a media time base can be converted.';
+
+	/// en: 'Invalid TTML clock parameters.'
+	String get subtitleImportTtmlClockParametersInvalid => 'Invalid TTML clock parameters.';
+
+	/// en: 'Invalid TTML frame/tick rate.'
+	String get subtitleImportTtmlRateInvalid => 'Invalid TTML frame/tick rate.';
+
+	/// en: 'TTML time exceeds the processing bound.'
+	String get subtitleImportTtmlTimeLimit => 'TTML time exceeds the processing bound.';
+
+	/// en: 'Invalid TTML frame/subframe clock.'
+	String get subtitleImportTtmlFrameClockInvalid => 'Invalid TTML frame/subframe clock.';
+
+	/// en: 'Sequential TTML timing needs native rendering; conversion accepts parallel containers only.'
+	String get subtitleImportTtmlParallelOnly => 'Sequential TTML timing needs native rendering; conversion accepts parallel containers only.';
+
+	/// en: 'TTML image/media/animation content cannot be flattened safely.'
+	String get subtitleImportTtmlComplexContentUnsupported => 'TTML image/media/animation content cannot be flattened safely.';
+
+	/// en: 'TTML paragraph has too many text spans.'
+	String get subtitleImportTtmlSpanLimit => 'TTML paragraph has too many text spans.';
+
+	/// en: 'TTML text has no finite end/duration.'
+	String get subtitleImportTtmlFiniteTimingRequired => 'TTML text has no finite end/duration.';
+
+	/// en: 'TTML timed text exceeds the conversion work bound.'
+	String get subtitleImportTtmlConversionWorkLimit => 'TTML timed text exceeds the conversion work bound.';
+
+	/// en: 'unclassified'
+	String get subtitleImportSamiUnclassified => 'unclassified';
+
 }
 
 // Path: messages
@@ -7230,6 +7368,36 @@ class Translations$videoSettings$en {
 
 	/// en: 'Choose increasing anchors at least 60 seconds apart. Corrections are limited to 80%–125% speed and ±60 seconds.'
 	String get subtitleDriftInvalidAnchors => 'Choose increasing anchors at least 60 seconds apart. Corrections are limited to 80%–125% speed and ±60 seconds.';
+
+	/// en: 'Match 2–12 subtitle cue times to the times they should appear in the opened file. Span at least 60 seconds. Every anchor must agree with the correction within 750 ms; no anchor is silently discarded.'
+	String get subtitleMultiAnchorHelp => 'Match 2–12 subtitle cue times to the times they should appear in the opened file. Span at least 60 seconds. Every anchor must agree with the correction within 750 ms; no anchor is silently discarded.';
+
+	/// en: 'Anchor ${number}'
+	String subtitleAnchorNumber({required int number}) => 'Anchor ${number}';
+
+	/// en: 'Original subtitle time'
+	String get subtitleSourceTime => 'Original subtitle time';
+
+	/// en: 'Opened-file playback time'
+	String get subtitlePlaybackTime => 'Opened-file playback time';
+
+	/// en: 'Add anchor'
+	String get subtitleAddAnchor => 'Add anchor';
+
+	/// en: 'Remove anchor'
+	String get subtitleRemoveAnchor => 'Remove anchor';
+
+	/// en: 'Saved calibrations for these tracks'
+	String get subtitleCalibrationHistory => 'Saved calibrations for these tracks';
+
+	/// en: 'Largest mismatch: ${maximum} ms · RMS mismatch: ${rms} ms'
+	String subtitleCalibrationResiduals({required String maximum, required String rms}) => 'Largest mismatch: ${maximum} ms · RMS mismatch: ${rms} ms';
+
+	/// en: 'These anchors do not agree on one speed and delay. Correct or remove mismatched observations, or use cut-aware synchronization.'
+	String get subtitleCalibrationInconsistent => 'These anchors do not agree on one speed and delay. Correct or remove mismatched observations, or use cut-aware synchronization.';
+
+	/// en: 'Timing was applied, but its review history could not be saved.'
+	String get subtitleCalibrationHistoryFailed => 'Timing was applied, but its review history could not be saved.';
 
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
@@ -20885,6 +21053,52 @@ extension on Translations {
 			'videoControls.subtitleImportSccOpenTailWarning' => ({required Object duration}) => 'The final visible SCC screen has no clear command; it uses the selected ${duration} ms tail after the last packet.',
 			'videoControls.subtitleImportSccDropFrameLabel' => 'drop-frame',
 			'videoControls.subtitleImportSccNonDropFrameLabel' => 'non-drop-frame',
+			'videoControls.subtitleImportBinaryOrOversized' => 'Decoded subtitle is binary or exceeds the 5 MiB text bound.',
+			'videoControls.subtitleImportFinalDurationRange' => 'The final cue duration must be between 100 and 30000 ms.',
+			'videoControls.subtitleImportCueInvalid' => 'Subtitle has invalid times or a cue over 4000 characters.',
+			'videoControls.subtitleImportCueCountLimit' => 'Subtitle exceeds 50000 cues.',
+			'videoControls.subtitleImportAssFlattenWarning' => 'Editing or translation creates an SRT derivative. Native ASS styling, fonts and animation are not preserved by SRT.',
+			'videoControls.subtitleImportTtmlFlattenWarning' => 'TTML/IMSC text and timed spans are flattened to SRT. Regions, fonts, ruby, styling and writing modes stay only in the original; image profiles and non-media clocks are refused.',
+			'videoControls.subtitleImportSbvCueInvalid' => 'Invalid SubViewer/SBV cue.',
+			'videoControls.subtitleImportMplLineInvalid' => 'Invalid MPL2 subtitle line.',
+			'videoControls.subtitleImportUnsupportedFormat' => 'This text subtitle format is not supported by the editor.',
+			'videoControls.subtitleImportNoCues' => 'No non-empty text subtitle cues were found.',
+			'videoControls.subtitleImportOutputLimit' => 'Converted subtitle exceeds the 5 MiB text / 4000-character cue bound.',
+			'videoControls.subtitleImportClockInvalid' => 'Invalid clock timestamp.',
+			'videoControls.subtitleImportEncodingWarning' => ({required Object encoding}) => 'Explicit ${encoding} decoding; derived output is UTF-8. Review names and punctuation.',
+			'videoControls.subtitleImportMicroDvdLineLimit' => 'MicroDVD source line exceeds the text bound.',
+			'videoControls.subtitleImportMicroDvdFormatInvalid' => 'This is not a MicroDVD text SUB file. VobSub bitmap SUB needs OCR.',
+			'videoControls.subtitleImportMicroDvdFrameRateRequired' => 'MicroDVD needs an explicit source frame rate (1–240 fps) or its declared FPS header.',
+			'videoControls.subtitleImportMicroDvdWarning' => ({required Object fps}) => 'MicroDVD uses ${fps} fps, explicitly selected or declared by the file. Inline MicroDVD style codes are removed; media FPS is not inferred.',
+			'videoControls.subtitleImportHtmlEntityInvalid' => 'Invalid HTML character entity.',
+			'videoControls.subtitleImportSamiCommentUnterminated' => 'SAMI contains an unterminated comment.',
+			'videoControls.subtitleImportSamiTagInvalid' => 'SAMI has a malformed or oversized HTML tag.',
+			'videoControls.subtitleImportSamiTagLimit' => 'SAMI exceeds the HTML token bound.',
+			'videoControls.subtitleImportSamiActiveContent' => 'Active or scripted SAMI content is not supported for text conversion.',
+			'videoControls.subtitleImportSamiMarkerLimit' => 'SAMI has no sync markers or exceeds the marker bound.',
+			'videoControls.subtitleImportSamiClassLimit' => 'SAMI language classes exceed the preview bound.',
+			'videoControls.subtitleImportSamiUnknownClass' => ({required Object available}) => 'Unknown SAMI class. Available: ${available}',
+			'videoControls.subtitleImportSamiStartInvalid' => 'Invalid SAMI sync start.',
+			'videoControls.subtitleImportSamiStartsOrder' => 'SAMI sync starts must increase.',
+			'videoControls.subtitleImportSamiWarning' => ({required Object selectedClass, required Object available, required Object duration}) => 'SAMI class: ${selectedClass}. Available: ${available}. HTML layout is flattened. A final non-empty sync without a following clear uses the selected ${duration} ms duration.',
+			'videoControls.subtitleImportLrcLineLimit' => 'LRC source line exceeds the text bound.',
+			'videoControls.subtitleImportLrcOffsetBeforeZero' => 'LRC offset moves a cue before zero; correct its offset explicitly.',
+			'videoControls.subtitleImportLrcTimestampLimit' => 'LRC exceeds the timestamp bound.',
+			'videoControls.subtitleImportLrcWarning' => ({required Object duration}) => 'LRC uses the next timestamp as each line’s end and the selected ${duration} ms final duration. Enhanced word markers are flattened; these are lyric lines, not verified speech word timings.',
+			'videoControls.subtitleImportTtmlDtdUnsupported' => 'TTML DTDs and entity declarations are not accepted.',
+			'videoControls.subtitleImportTtmlEventLimit' => 'TTML exceeds 200000 XML events.',
+			'videoControls.subtitleImportTtmlNestingLimit' => 'TTML nesting exceeds 64 elements.',
+			'videoControls.subtitleImportTtmlMediaClockOnly' => 'Only TTML text with a media time base can be converted.',
+			'videoControls.subtitleImportTtmlClockParametersInvalid' => 'Invalid TTML clock parameters.',
+			'videoControls.subtitleImportTtmlRateInvalid' => 'Invalid TTML frame/tick rate.',
+			'videoControls.subtitleImportTtmlTimeLimit' => 'TTML time exceeds the processing bound.',
+			'videoControls.subtitleImportTtmlFrameClockInvalid' => 'Invalid TTML frame/subframe clock.',
+			'videoControls.subtitleImportTtmlParallelOnly' => 'Sequential TTML timing needs native rendering; conversion accepts parallel containers only.',
+			'videoControls.subtitleImportTtmlComplexContentUnsupported' => 'TTML image/media/animation content cannot be flattened safely.',
+			'videoControls.subtitleImportTtmlSpanLimit' => 'TTML paragraph has too many text spans.',
+			'videoControls.subtitleImportTtmlFiniteTimingRequired' => 'TTML text has no finite end/duration.',
+			'videoControls.subtitleImportTtmlConversionWorkLimit' => 'TTML timed text exceeds the conversion work bound.',
+			'videoControls.subtitleImportSamiUnclassified' => 'unclassified',
 			'videoControls.subtitleLanguageAnnotateAction' => 'Annotate the language of selected words',
 			'videoControls.subtitleLanguageDialogTitle' => 'Language of selected words',
 			'videoControls.subtitleLanguageCodeLabel' => 'Language code',
@@ -22632,6 +22846,16 @@ extension on Translations {
 			'videoSettings.subtitleCueTimeAnchor2' => 'Subtitle cue 2 time',
 			'videoSettings.subtitlePlaybackTimeAnchor2' => 'Playback position for cue 2',
 			'videoSettings.subtitleDriftInvalidAnchors' => 'Choose increasing anchors at least 60 seconds apart. Corrections are limited to 80%–125% speed and ±60 seconds.',
+			'videoSettings.subtitleMultiAnchorHelp' => 'Match 2–12 subtitle cue times to the times they should appear in the opened file. Span at least 60 seconds. Every anchor must agree with the correction within 750 ms; no anchor is silently discarded.',
+			'videoSettings.subtitleAnchorNumber' => ({required int number}) => 'Anchor ${number}',
+			'videoSettings.subtitleSourceTime' => 'Original subtitle time',
+			'videoSettings.subtitlePlaybackTime' => 'Opened-file playback time',
+			'videoSettings.subtitleAddAnchor' => 'Add anchor',
+			'videoSettings.subtitleRemoveAnchor' => 'Remove anchor',
+			'videoSettings.subtitleCalibrationHistory' => 'Saved calibrations for these tracks',
+			'videoSettings.subtitleCalibrationResiduals' => ({required String maximum, required String rms}) => 'Largest mismatch: ${maximum} ms · RMS mismatch: ${rms} ms',
+			'videoSettings.subtitleCalibrationInconsistent' => 'These anchors do not agree on one speed and delay. Correct or remove mismatched observations, or use cut-aware synchronization.',
+			'videoSettings.subtitleCalibrationHistoryFailed' => 'Timing was applied, but its review history could not be saved.',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

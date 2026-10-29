@@ -712,6 +712,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
             propertyName: propertyName,
             contentIdentity: correction?.key ?? metadata?.globalKey,
             correction: correction,
+            allowFileTools: !_state.isLive,
             initialOffset: initialOffset,
             sliderFocusNode: sliderFocusNode,
             initialSubtitleRate: offsets.subtitleRate,
@@ -2750,6 +2751,7 @@ class _CompactSyncBar extends StatefulWidget {
   final String propertyName;
   final String? contentIdentity;
   final LibrarySyncBinding? correction;
+  final bool allowFileTools;
   final int initialOffset;
   final double initialSubtitleRate;
   final Future<void> Function(double rate)? onSubtitleRateChanged;
@@ -2763,6 +2765,7 @@ class _CompactSyncBar extends StatefulWidget {
     required this.propertyName,
     required this.contentIdentity,
     this.correction,
+    this.allowFileTools = true,
     required this.initialOffset,
     required this.initialSubtitleRate,
     required this.onSubtitleRateChanged,
@@ -2834,6 +2837,7 @@ class _CompactSyncBarState extends State<_CompactSyncBar> {
                 player: widget.player,
                 propertyName: widget.propertyName,
                 contentIdentity: widget.contentIdentity,
+                allowFileTools: widget.allowFileTools,
                 isCurrent: widget.correction == null ? null : () => widget.correction!.current,
                 initialOffset: _restoredOffset ?? widget.initialOffset,
                 initialSubtitleRate: _restoredRate ?? widget.initialSubtitleRate,

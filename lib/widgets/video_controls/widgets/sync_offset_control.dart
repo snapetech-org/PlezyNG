@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -13,6 +14,15 @@ import '../../../mpv/player/player_media_session_identity.dart';
 import '../../../services/player_sync_offsets.dart';
 import '../../../services/scoped_player_prefs.dart';
 import '../../../services/subtitle_sync_calibration.dart';
+import '../../../services/subtitle_cue_document.dart';
+import '../../../services/subtitle_calibration_history.dart';
+import '../../../services/library_sync_correction.dart';
+import '../../subtitle_calibration_dialog.dart';
+import '../../../services/subtitle_retimer.dart';
+import '../../../services/file_picker_service.dart';
+import '../../subtitle_cue_picker_sheet.dart';
+import '../../../utils/dialogs.dart';
+import '../../../utils/snackbar_helper.dart';
 import '../../../services/subtitle_selection_rules.dart';
 import '../../../theme/mono_tokens.dart';
 import '../../../utils/formatters.dart';
@@ -24,6 +34,7 @@ class SyncOffsetControl extends StatefulWidget {
   final Player player;
   final String propertyName; // 'audio-delay' or 'sub-delay'
   final String? contentIdentity;
+  final bool allowFileTools;
   final bool Function()? isCurrent;
   final int initialOffset;
   final double initialSubtitleRate;
@@ -47,6 +58,7 @@ class SyncOffsetControl extends StatefulWidget {
     required this.player,
     required this.propertyName,
     this.contentIdentity,
+    this.allowFileTools = true,
     this.isCurrent,
     required this.initialOffset,
     this.initialSubtitleRate = 1.0,
@@ -84,6 +96,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
   int _writeGeneration = 0;
   int _bindingGeneration = 0;
   Timer? _longPressTimer;
+  bool _fileToolBusy = false;
   late bool Function() _sourceCurrent;
 
   void _bindSource() {
@@ -91,12 +104,13 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
     final media = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
     final profile = SubtitleSelectionRules.activeProfileId;
     final audio = player.state.track.audio;
+    final timeline = player.timelineOffset;
     final subtitle = property == PlayerSyncOffsets.secondarySubtitleProperty
         ? player.state.track.secondarySubtitle : player.state.track.subtitle;
     final check = widget.isCurrent;
     _sourceCurrent = () => !player.disposed && SubtitleSelectionRules.activeProfileId == profile &&
         (media == null || (player is PlayerMediaSessionIdentity && player.mediaSessionGeneration == media)) &&
-        player.state.track.audio == audio && (property == PlayerSyncOffsets.audioProperty ||
+        player.timelineOffset == timeline && player.state.track.audio == audio && (property == PlayerSyncOffsets.audioProperty ||
         (property == PlayerSyncOffsets.secondarySubtitleProperty
           ? player.state.track.secondarySubtitle : player.state.track.subtitle) == subtitle) &&
         (check?.call() ?? true);
@@ -327,6 +341,75 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
     }());
   }
 
+  SubtitleTrack? get _selectedSubtitle => widget.propertyName == PlayerSyncOffsets.secondarySubtitleProperty
+      ? widget.player.state.track.secondarySubtitle : widget.player.state.track.subtitle;
+
+  bool get _canInspectSubtitle => widget.allowFileTools && widget.player.supportsSubtitleStepSync &&
+      widget.propertyName != PlayerSyncOffsets.audioProperty && SubtitleCueDocument.format(_selectedSubtitle) != null;
+
+  Future<void> _openSelectedSubtitle({bool export = false}) async {
+    if (!_canInspectSubtitle || _fileToolBusy) return;
+    final player = widget.player, generation = _bindingGeneration;
+    final property = widget.propertyName;
+    final track = _selectedSubtitle!;
+    void check() => _checkBinding(generation, player);
+    setState(() => _fileToolBusy = true);
+    try {
+      await playerSyncWrites[player]?.settled(property);
+      check();
+      final document = await SubtitleCueDocument.read(track, checkCurrent: check);
+      check();
+      final rate = _confirmedSubtitleRate, delay = _confirmedOffset.round();
+      if (export) {
+        final result = SubtitleRetimer.retime(sourceBytes: document.bytes,
+          extension: document.extension, delayMs: delay, rate: rate);
+        if (result.clippedCueCount > 0) {
+          final accepted = await showConfirmDialog(context, title: t.videoSettings.subtitleExport,
+            message: t.videoSettings.subtitleExportClipped, confirmText: t.common.confirm);
+          check();
+          if (!accepted) return;
+        }
+        final bytes = document.exportBundle(result, delayMs: delay, rate: rate,
+          itemOffsetMs: player.timelineOffset.inMilliseconds,
+          lane: property == PlayerSyncOffsets.secondarySubtitleProperty ? 'secondary' : 'primary');
+        check();
+        final saved = await FilePickerService.instance.saveFile(dialogTitle: t.videoSettings.subtitleExport,
+          fileName: 'PlezyNG_synchronized_subtitle.zip', bytes: bytes,
+          type: FileType.custom, allowedExtensions: const ['zip']);
+        if (mounted && saved != null) showSnackBar(context, t.videoSettings.subtitleExportSuccess);
+        return;
+      }
+      final selection = await showModalBottomSheet<({SubtitleCue cue, int playbackPositionMs})>(
+        context: context, isScrollControlled: true, useSafeArea: true,
+        builder: (_) => SubtitleCuePickerSheet(cues: document.cues, positions: player.streams.position,
+          currentPositionMs: () => (player.currentPosition - player.timelineOffset).inMilliseconds,
+          isCurrent: () => mounted && generation == _bindingGeneration && _sourceCurrent(),
+          initialDelayMs: delay, initialRate: rate));
+      if (selection == null) return;
+      check();
+      final offset = selection.playbackPositionMs - (selection.cue.startMs * rate).round();
+      if (offset < _absoluteMin || offset > _absoluteMax) throw const FormatException('Cue correction exceeds the timing limit.');
+      if (_canUseSubtitleDriftCorrection) {
+        await _saveSubtitleCalibrationWithUndo(SubtitleSyncCalibration(timestampMultiplier: rate, delayMs: offset),
+          anchors: [SubtitleSyncAnchor(selection.cue.startMs / 1000, selection.playbackPositionMs / 1000)]);
+      } else {
+        setState(() => _currentOffset = offset.toDouble());
+        _applyOffset(offset.toDouble());
+      }
+    } catch (_) {
+      // Transport exceptions can contain signed URLs. Show only bounded, generic
+      // feedback, never the remote location or its credentials.
+      if (mounted) showErrorSnackBar(context,
+        export ? t.videoSettings.subtitleExportFailed : t.videoSettings.subtitleCueUnavailable);
+    } finally { if (mounted) setState(() => _fileToolBusy = false); }
+  }
+
+  Widget _fileToolButton({required bool export}) {
+    final label = export ? t.videoSettings.subtitleExport : t.videoSettings.subtitleUsePlaybackTime;
+    return IconButton(tooltip: label, onPressed: _fileToolBusy ? null : () => _openSelectedSubtitle(export: export),
+      icon: Icon(export ? Icons.file_download_outlined : Icons.playlist_add_check));
+  }
+
   bool get _canUseSubtitleDriftCorrection =>
       widget.player.supportsSubtitleStepSync &&
       widget.propertyName == PlayerSyncOffsets.subtitleProperty &&
@@ -347,168 +430,58 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
     return !imageSubtitle;
   }
 
-  Future<void> _openSubtitleDriftCalibration() async {
-    if (!_supportsSubtitleDriftCalibration) return;
-
-    final subtitleTime1 = TextEditingController();
-    final playbackTime1 = TextEditingController();
-    final subtitleTime2 = TextEditingController();
-    final playbackTime2 = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-    String? failureMessage;
-    var previewing = false;
-    var previewApplied = false;
-    var rollbackStarted = false;
-
-    Future<void> rollbackPreviewOnce() async {
-      if (!previewApplied || rollbackStarted) return;
-      rollbackStarted = true;
-      previewApplied = false;
-      await _rollbackSubtitlePreview();
-    }
-
-    TextFormField numberField(TextEditingController controller, String label, void Function(void Function()) update) {
-      return TextFormField(
-        controller: controller,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        textInputAction: TextInputAction.next,
-        decoration: InputDecoration(labelText: label, suffixText: 's'),
-        validator: (value) {
-          final parsed = double.tryParse(value?.trim() ?? '');
-          if (parsed == null || !parsed.isFinite || parsed < 0) return t.settings.validationErrorEnterNumber;
-          return null;
-        },
-        onChanged: (_) {
-          if (failureMessage != null) update(() => failureMessage = null);
-        },
-      );
-    }
-
-    void capturePlaybackTime(TextEditingController controller) {
-      final seconds = widget.player.state.position.inMicroseconds / Duration.microsecondsPerSecond;
-      controller.text = formatDecimal(seconds, maximumDecimals: 3);
-    }
-
-    SubtitleSyncCalibration? readCalibration(void Function(void Function()) update) {
-      if (!(formKey.currentState?.validate() ?? false)) return null;
-      try {
-        return SubtitleSyncCalibration.fromAnchors(
-          subtitleTime1Seconds: double.parse(subtitleTime1.text.trim()),
-          playbackTime1Seconds: double.parse(playbackTime1.text.trim()),
-          subtitleTime2Seconds: double.parse(subtitleTime2.text.trim()),
-          playbackTime2Seconds: double.parse(playbackTime2.text.trim()),
-        );
-      } catch (_) {
-        update(() => failureMessage = t.videoSettings.subtitleDriftInvalidAnchors);
-        return null;
-      }
-    }
-
-    final calibration = await showDialog<SubtitleSyncCalibration>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, updateDialog) {
-          Future<void> preview() async {
-            final candidate = readCalibration(updateDialog);
-            if (candidate == null) return;
-            updateDialog(() {
-              previewing = true;
-              failureMessage = null;
-            });
-            final succeeded = await _previewSubtitleCalibration(candidate);
-            previewApplied = succeeded;
-            if (!dialogContext.mounted) {
-              await rollbackPreviewOnce();
-              return;
-            }
-            updateDialog(() {
-              previewing = false;
-              if (!succeeded) {
-                failureMessage = t.videoSettings.subtitleDriftPreviewFailed;
-              }
-            });
-          }
-
-          void submit() {
-            final result = readCalibration(updateDialog);
-            if (result != null) Navigator.of(dialogContext).pop(result);
-          }
-
-          return AlertDialog(
-            title: Text(t.videoSettings.subtitleDriftCalibration),
-            content: SingleChildScrollView(
-              child: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(t.videoSettings.subtitleDriftCalibrationHelp),
-                    const SizedBox(height: 12),
-                    numberField(subtitleTime1, t.videoSettings.subtitleCueTimeAnchor1, updateDialog),
-                    numberField(playbackTime1, t.videoSettings.subtitlePlaybackTimeAnchor1, updateDialog),
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: TextButton.icon(
-                        onPressed: previewing ? null : () => capturePlaybackTime(playbackTime1),
-                        icon: const AppIcon(Symbols.my_location_rounded),
-                        label: Text(t.videoSettings.subtitleUsePlaybackTime),
-                      ),
-                    ),
-                    const Divider(),
-                    numberField(subtitleTime2, t.videoSettings.subtitleCueTimeAnchor2, updateDialog),
-                    numberField(playbackTime2, t.videoSettings.subtitlePlaybackTimeAnchor2, updateDialog),
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: TextButton.icon(
-                        onPressed: previewing ? null : () => capturePlaybackTime(playbackTime2),
-                        icon: const AppIcon(Symbols.my_location_rounded),
-                        label: Text(t.videoSettings.subtitleUsePlaybackTime),
-                      ),
-                    ),
-                    if (previewApplied) ...[
-                      const SizedBox(height: 8),
-                      Text(t.videoSettings.subtitleDriftPreviewActive),
-                    ],
-                    if (failureMessage != null) ...[
-                      const SizedBox(height: 8),
-                      Text(failureMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: previewing ? null : () => Navigator.of(dialogContext).pop(),
-                child: Text(t.common.cancel),
-              ),
-              TextButton(onPressed: previewing ? null : preview, child: Text(t.videoSettings.subtitleDriftPreview)),
-              TextButton(onPressed: previewing ? null : submit, child: Text(t.common.save)),
-            ],
-          );
-        },
-      ),
-    );
-
-    subtitleTime1.dispose();
-    playbackTime1.dispose();
-    subtitleTime2.dispose();
-    playbackTime2.dispose();
-    if (!mounted) return;
-    if (calibration == null) {
-      await rollbackPreviewOnce();
-      return;
-    }
-
-    setState(() {
-      _currentOffset = calibration.delayMs.toDouble();
-      _currentSubtitleRate = calibration.timestampMultiplier;
-    });
-    await _saveSubtitleCalibrationWithUndo(calibration);
+  ({String profile, String key})? get _historyScope {
+    final profile = SubtitleSelectionRules.activeProfileId, identity = widget.contentIdentity;
+    if (profile == null || identity == null || identity.isEmpty || !_sourceCurrent()) return null;
+    final player = widget.player;
+    return (profile: profile, key: LibrarySyncSource.digestOf([
+      'native-calibration-v1', identity, player.playerType, widget.propertyName,
+      player.timelineOffset.inMilliseconds, LibrarySyncSource.audio(player.state.track.audio),
+      LibrarySyncSource.subtitle(_selectedSubtitle),
+    ]));
   }
 
-  Future<void> _saveSubtitleCalibrationWithUndo(SubtitleSyncCalibration calibration) async {
+  Future<void> _openSubtitleDriftCalibration() async {
+    if (!_supportsSubtitleDriftCalibration || !_sourceCurrent()) return;
+    final target = widget.player, generation = _bindingGeneration;
+    final scope = _historyScope;
+    var previewApplied = false, rollbackStarted = false, closed = false;
+    Future<void> rollbackOnce() async {
+      if (!previewApplied || rollbackStarted) return;
+      rollbackStarted = true;
+      await _rollbackSubtitlePreview();
+    }
+    final choice = await showDialog<SubtitleCalibrationChoice>(context: context,
+      barrierDismissible: false,
+      builder: (_) => SubtitleCalibrationDialog(
+        history: scope == null ? const [] : SubtitleCalibrationHistory.read(scope.profile, scope.key),
+        currentPositionSeconds: () => (target.currentPosition - target.timelineOffset).inMicroseconds / Duration.microsecondsPerSecond,
+        isCurrent: () => mounted && generation == _bindingGeneration && target == widget.player && _sourceCurrent(),
+        preview: (candidate) async {
+          if (!mounted || generation != _bindingGeneration || target != widget.player || !_sourceCurrent()) return false;
+          final applied = await _previewSubtitleCalibration(candidate);
+          previewApplied = applied;
+          rollbackStarted = false;
+          if (closed) await rollbackOnce();
+          return applied;
+        }, rollback: rollbackOnce));
+    closed = true;
+    if (choice == null) { await rollbackOnce(); return; }
+    if (!mounted || generation != _bindingGeneration || target != widget.player || !_sourceCurrent()) return;
+    setState(() { _currentOffset = choice.value.delayMs.toDouble(); _currentSubtitleRate = choice.value.timestampMultiplier; });
+    await _saveSubtitleCalibrationWithUndo(choice.value, anchors: choice.anchors);
+  }
+
+  Future<void> _saveSubtitleCalibrationWithUndo(SubtitleSyncCalibration calibration,
+      {List<SubtitleSyncAnchor> anchors = const []}) async {
+    final scope = _historyScope;
+    final sourceCurrent = _sourceCurrent;
+    final target = widget.player;
+    final identity = widget.contentIdentity;
+    void checkHistory() {
+      if (!mounted || target != widget.player || identity != widget.contentIdentity || !sourceCurrent() ||
+          scope != _historyScope) throw StateError('Calibration history context changed.');
+    }
     final previous = SubtitleSyncCalibration(
       timestampMultiplier: _confirmedSubtitleRate,
       delayMs: _confirmedOffset.round(),
@@ -522,6 +495,14 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
         _confirmedOffset.round() == calibration.delayMs &&
         (_confirmedSubtitleRate - calibration.timestampMultiplier).abs() <= 0.001;
     setState(() => _undoSubtitleCalibration = changed && applied ? previous : null);
+    if (scope != null && applied && (changed || anchors.isNotEmpty)) {
+      try {
+        await SubtitleCalibrationHistory.append(scope.profile, scope.key, previous, calibration, anchors,
+          checkCurrent: checkHistory);
+      } catch (_) {
+        if (mounted && sourceCurrent()) showErrorSnackBar(context, t.videoSettings.subtitleCalibrationHistoryFailed);
+      }
+    }
   }
 
   Future<void> _undoLastSubtitleCalibration() async {
@@ -1131,6 +1112,8 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
                 children: [
                   _buildSubtitleStepButton(previous: true),
                   _buildSubtitleStepButton(previous: false),
+                  if (_canInspectSubtitle) _fileToolButton(export: false),
+                  if (_canInspectSubtitle) _fileToolButton(export: true),
                   if (_supportsSubtitleDriftCalibration) _buildSubtitleDriftButton(),
                   if (_undoSubtitleCalibration != null) _buildUndoSubtitleDriftButton(),
                 ],

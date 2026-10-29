@@ -425,7 +425,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     }
     SubtitleTextImport? imported;
     if (!preview && SubtitleTextImporter.nativeTextExtensions.contains(extension)) {
-      try { imported = await SubtitleTextImporter.parseAsync(bytes, extension); }
+      try { imported = await SubtitleTextImporter.parseAsync(bytes, extension,
+        localizedMessages: SubtitleTextImporter.localizedMessages(_t)); }
       on FormatException { /* Let the viewer explicitly select and preview an encoding. */ }
     }
     if (!mounted) return null;

@@ -66,6 +66,7 @@ import '../../widgets/video_controls/sheets/subtitle_live_clock_dialog.dart';
 import '../../widgets/video_controls/sheets/subtitle_live_delay_dialog.dart';
 import '../../widgets/video_controls/sheets/subtitle_book_dialog.dart';
 import '../../widgets/subtitle_caption_overlay.dart';
+import '../../widgets/subtitle_cue_picker_sheet.dart';
 import '../../services/pip_service.dart';
 import '../../widgets/video_controls/widgets/sync_offset_control.dart';
 
@@ -796,6 +797,8 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                     player: targetPlayer,
                     propertyName: PlayerSyncOffsets.subtitleProperty,
                     contentIdentity: identity,
+                    // The standalone actions below own the retained import file.
+                    allowFileTools: false,
                     initialOffset: initial.delayMs,
                     initialSubtitleRate: initial.rate,
                     onOffsetChanged: (offset) {
@@ -1086,10 +1089,12 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
         context: context,
         isScrollControlled: true,
         useSafeArea: true,
-        builder: (_) => _SubtitleCuePickerSheet(
+        builder: (_) => SubtitleCuePickerSheet(
           cues: cues,
-          playback: playback,
-          initialPlaybackPositionMs: playback.currentFilePositionMs,
+          positions: targetPlayer.streams.position,
+          currentPositionMs: () => playback.currentFilePositionMs,
+          isCurrent: () => mounted && playback.player == targetPlayer &&
+              playback.activeExternalSubtitleIdentity == identity,
           initialDelayMs: initialSync.delayMs,
           initialRate: initialSync.rate,
         ),
@@ -2240,131 +2245,3 @@ String _plainSubtitleCueText(String value) => value
     .replaceAll('&nbsp;', ' ')
     .trim();
 
-class _SubtitleCuePickerSheet extends StatefulWidget {
-  const _SubtitleCuePickerSheet({
-    required this.cues,
-    required this.playback,
-    required this.initialPlaybackPositionMs,
-    required this.initialDelayMs,
-    required this.initialRate,
-  });
-
-  final List<SubtitleCue> cues;
-  final SourcePlayback playback;
-  final int initialPlaybackPositionMs;
-  final int initialDelayMs;
-  final double initialRate;
-
-  @override
-  State<_SubtitleCuePickerSheet> createState() => _SubtitleCuePickerSheetState();
-}
-
-class _SubtitleCuePickerSheetState extends State<_SubtitleCuePickerSheet> {
-  late final ScrollController _scrollController;
-
-  int _closestCueIndex() {
-    var nearestIndex = 0;
-    var nearestDistance = 1 << 62;
-    for (var index = 0; index < widget.cues.length; index++) {
-      final cue = widget.cues[index];
-      final visibleStartMs = (cue.startMs * widget.initialRate).round() + widget.initialDelayMs;
-      final distance = (visibleStartMs - widget.initialPlaybackPositionMs).abs();
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
-        nearestIndex = index;
-      }
-    }
-    return nearestIndex;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-    final nearestIndex = _closestCueIndex();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _scrollController.hasClients) {
-        _scrollController.jumpTo(
-          (nearestIndex * 76.0).clamp(0.0, _scrollController.position.maxScrollExtent).toDouble(),
-        );
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      top: true,
-      child: SizedBox(
-        height: MediaQuery.sizeOf(context).height * 0.72,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(t.videoSettings.subtitleCueTimeAnchor1, style: Theme.of(context).textTheme.titleMedium),
-                  ),
-                  IconButton(
-                    tooltip: t.common.close,
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const AppIcon(Symbols.close_rounded),
-                  ),
-                ],
-              ),
-              AnimatedBuilder(
-                animation: widget.playback,
-                builder: (context, _) => Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 12, bottom: 8),
-                    child: Text(
-                      '${t.videoSettings.subtitleUsePlaybackTime}: ${sourceTime(widget.playback.currentFilePositionMs)}',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: widget.cues.length,
-                  itemExtent: 76,
-                  itemBuilder: (context, index) {
-                    final cue = widget.cues[index];
-                    final plainText = cue.text
-                        .replaceAll(RegExp(r'<[^>]*>'), '')
-                        .replaceAll(RegExp(r'\s '), ' ')
-                        .trim();
-                    return ListTile(
-                      leading: SizedBox(
-                        width: 72,
-                        child: Text(
-                          sourceTime(cue.startMs),
-                          maxLines: 1,
-                          overflow: TextOverflow.fade,
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                      ),
-                      title: Text(plainText, maxLines: 2, overflow: TextOverflow.ellipsis),
-                      onTap: () => Navigator.of(
-                        context,
-                      ).pop((cue: cue, playbackPositionMs: widget.playback.currentFilePositionMs)),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

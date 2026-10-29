@@ -17,11 +17,12 @@ import '../../services/gamepad_service.dart';
 import '../../services/playback_coordinator.dart';
 
 class RommNativePlayerScreen extends StatefulWidget {
-  const RommNativePlayerScreen({super.key, required this.controller, required this.game, required this.core, this.resume = true});
+  const RommNativePlayerScreen({super.key, required this.controller, required this.game, required this.core, this.resume = true, this.stateId, this.saveId});
   final RommController controller;
   final RommGame game;
   final String core;
   final bool resume;
+  final int? stateId, saveId;
   @override State<RommNativePlayerScreen> createState() => _RommNativePlayerScreenState();
 }
 class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with WidgetsBindingObserver {
@@ -69,7 +70,9 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       if (!live) return;
       await _runtime.start(widget.core, copy.path, firmware.path, directory.path);
       if (!live) { await _runtime.shutdown(); return; }
-      if (widget.resume) {
+      if (widget.resume && (widget.stateId != null || widget.saveId != null)) {
+        await _cloudResume();
+      } else if (widget.resume) {
         final sram = await storage.nativeProgress(widget.game, _runtime.identity);
         final state = await storage.nativeProgress(widget.game, _runtime.identity, state: true);
         if (sram != null) await _runtime.restore(sram);
@@ -86,13 +89,17 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   }
   Future<void> _cloudResume() async {
     RommGame remote;
-    try { remote = await widget.controller.detail(widget.game); } catch (_) { return; } // Offline starts stay available.
+    try { remote = await widget.controller.detail(widget.game); } catch (_) {
+      if (widget.stateId != null || widget.saveId != null) rethrow;
+      return; // Local-first automatic resume remains available offline.
+    }
     if (!live || remote.identity != widget.game.identity) throw const RommFailure('romm.copyMismatch');
     final engine = 'plezy_libretro_${widget.core}';
-    final states = remote.states.where((s) => s.emulator == engine && !s.missing).toList()
+    final states = remote.states.where((s) => widget.saveId == null && (widget.stateId == null || s.id == widget.stateId) && s.emulator == engine && !s.missing).toList()
       ..sort((a,b) => (b.updatedAt ?? DateTime(1970)).compareTo(a.updatedAt ?? DateTime(1970)));
-    final saves = remote.saves.where((s) => s.emulator == engine && !s.missing).toList()
+    final saves = remote.saves.where((s) => (widget.saveId == null || s.id == widget.saveId) && s.emulator == engine && !s.missing).toList()
       ..sort((a,b) => (b.updatedAt ?? DateTime(1970)).compareTo(a.updatedAt ?? DateTime(1970)));
+    if (widget.stateId != null && states.isEmpty || widget.saveId != null && saves.isEmpty) throw const RommFailure('romm.notFound');
     final api = await widget.controller.client(widget.game.connectionId);
     if (states.isNotEmpty) {
       final bytes = await api.saveBytes(states.first);
@@ -178,6 +185,16 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       try { await storage.sync(id); } catch (_) { if (live) setState(() => _error = 'romm.savedLocally'); }
     } finally { _capturing = false; }
   }
+  Future<void> _loadState() async {
+    if (!_ready || _capturing || _closing) return;
+    _release(); _runtime.pause(true);
+    try {
+      final bytes = await widget.controller.storage.nativeProgress(widget.game, _runtime.identity, state: true);
+      if (bytes == null) throw const RommFailure('romm.noLocalSave');
+      if (live) await _runtime.restore(bytes, state: true);
+    } catch (error) { if (live) setState(() => _error = error is RommFailure ? error.code : 'romm.nativeError'); }
+    finally { if (live) _runtime.pause(_paused); }
+  }
   Future<void> _exit(bool save) async {
     if (_closing) return; setState(() => _closing = true);
     _runtime.pause(true); _release();
@@ -218,6 +235,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     appBar: AppBar(title: Text(isolateDisplayText(widget.game.name)), leading: IconButton(onPressed: _askExit, icon: const Icon(Icons.arrow_back)), actions: [
       IconButton(onPressed: _ready ? _pause : null, tooltip: rommText(context, _paused ? 'continue' : 'pause'), icon: Icon(_paused ? Icons.play_arrow : Icons.pause)),
       IconButton(onPressed: () => setState(() => _touch = !_touch), tooltip: rommText(context, 'touchControls'), icon: const Icon(Icons.gamepad)),
+      IconButton(onPressed: !_ready || _closing ? null : _loadState, tooltip: rommText(context, 'loadState'), icon: const Icon(Icons.restore)),
       IconButton(onPressed: !_ready || _closing ? null : () => _save(state: true).catchError((_) { if (live) setState(() => _error = 'romm.saveFailed'); }), tooltip: rommText(context, 'saveState'), icon: const Icon(Icons.save)),
     ]), body: Column(children: [
       if (!_ready || _closing) const LinearProgressIndicator(), if (_error.isNotEmpty) Padding(padding: const EdgeInsets.all(8), child: Text(rommText(context, _error))),

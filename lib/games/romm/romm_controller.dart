@@ -236,6 +236,7 @@ class RommController extends ChangeNotifier {
     });
   }
   @override void dispose() {
+    if (_disposed) return;
     _disposed = true; _queryGeneration++;
     notifyListeners(); // Retire nested player routes before destroying owned clients.
     storage.removeListener(changed); storage.dispose();

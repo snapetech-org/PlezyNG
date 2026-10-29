@@ -141,7 +141,8 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         await romm.load();
         if (romm.current && romm.connections.isNotEmpty) unawaited(romm.refresh());
       } catch (_) {
-        romm.removeListener(_changed); romm.dispose(); _romm = null; _rommLoadError = true;
+        romm.removeListener(_changed); romm.dispose();
+        if (mounted && epoch == _epoch && identical(_romm, romm)) { _romm = null; _rommLoadError = true; }
       }
       if (mounted && controller.current) {
         setState(() {

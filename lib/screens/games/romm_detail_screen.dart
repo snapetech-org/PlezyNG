@@ -46,14 +46,22 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
   });
   Future<void> _play(RommRoute route) async {
     if (!live || !route.available) return;
+    if (route.engine != RommEngine.native && widget.controller.capabilities[_game.connectionId]?.fresh != true) {
+      await _refresh(); return;
+    }
     if (route.engine == RommEngine.native) {
-      final resume = await showDialog<bool>(context: context, builder: (dialog) => SimpleDialog(
+      final resume = await showDialog<String>(context: context, builder: (dialog) => SimpleDialog(
         title: Text(rommText(dialog, 'native')), children: [
-          SimpleDialogOption(onPressed: () => Navigator.pop(dialog, true), child: Text(rommText(dialog, 'nativeCloudResume'))),
-          SimpleDialogOption(onPressed: () => Navigator.pop(dialog, false), child: Text(rommText(dialog, 'startFresh'))),
+          SimpleDialogOption(onPressed: () => Navigator.pop(dialog, 'resume'), child: Text(rommText(dialog, 'nativeCloudResume'))),
+          SimpleDialogOption(onPressed: () => Navigator.pop(dialog, 'fresh'), child: Text(rommText(dialog, 'startFresh'))),
+          for (final save in [..._game.saves, ..._game.states].where((save) => save.emulator == 'plezy_libretro_${route.core}' && !save.missing))
+            SimpleDialogOption(onPressed: () => Navigator.pop(dialog, '${save.state ? 't' : 's'}:${save.id}'),
+              child: Text('${rommText(dialog, save.state ? 'loadState' : 'resume')} · ${isolateDisplayText(save.name)}')),
         ]));
       if (resume == null || !live) return;
-      await rommPush<void>(context, widget.controller, RommNativePlayerScreen(controller: widget.controller, game: _game, core: route.core, resume: resume));
+      await rommPush<void>(context, widget.controller, RommNativePlayerScreen(controller: widget.controller, game: _game, core: route.core, resume: resume != 'fresh',
+        saveId: resume.startsWith('s:') ? int.tryParse(resume.substring(2)) : null,
+        stateId: resume.startsWith('t:') ? int.tryParse(resume.substring(2)) : null));
       if (live) unawaited(_refresh()); return;
     }
     int? stateId, saveId, memoryCardId;

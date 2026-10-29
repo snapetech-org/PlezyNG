@@ -24,6 +24,7 @@ class RommStorage extends ChangeNotifier {
   final failures = <String, String>{};
   final _active = <String, RommClient>{};
   final _syncing = <String>{};
+  final _downloadLocks = <String>{};
   final _uploadedHashes = <String, String>{};
   final browserPorts = <String, int>{};
   Future<void> _writes = Future.value();
@@ -41,7 +42,8 @@ class RommStorage extends ChangeNotifier {
     _root = await Directory('${support.path}/romm/${_key(profileId)}').create(recursive: true);
     try {
       final manifest = File('${_root!.path}/manifest.json');
-      if (await manifest.length() > 8 * 1024 * 1024) return;
+      if (!await manifest.exists()) { changed(); return; }
+      if (await manifest.length() > 16 * 1024 * 1024) throw const RommFailure('romm.responseTooLarge');
       final data = rommMap(jsonDecode(await manifest.readAsString())); check();
       for (final e in rommMap(data['browserPorts']).entries) { final port = rommInt(e.value); if (port >= 1024 && port <= 65535) browserPorts[e.key] = port; }
       _uploadedHashes.addAll(rommMap(data['uploadedHashes']).map((key, value) => MapEntry(key, rommString(value, 128))));
@@ -54,8 +56,7 @@ class RommStorage extends ChangeNotifier {
         final entry = rommMap(row), id = rommString(rommMap(row)['id'], 128);
         if (id.isNotEmpty && await File(_path(id, 'save')).exists()) pending[id] = entry;
       }
-    } on FileSystemException { /* First launch or interrupted manifest. */ }
-      on FormatException { /* Preserve orphan bytes; never guess their owner. */ }
+    } on FormatException { throw const RommFailure('romm.invalidResponse'); }
     changed();
   }
   Future<void> _persist({bool completeOwnedWrite = false}) {
@@ -103,11 +104,12 @@ class RommStorage extends ChangeNotifier {
     if (!await file.exists() || await file.length() != rommInt(downloads[game.key]!['size'])) {
       downloads.remove(game.key); await _persist(); throw const RommFailure('romm.checksumFailed');
     }
-    return file;
+    if ((await sha1.bind(file.openRead()).first).toString() != downloads[game.key]!['sha1']) throw const RommFailure('romm.checksumFailed');
+    check(); return file;
   }
   void cancel(String key) { _active.remove(key)?.close(); }
   Future<void> remove(RommGame game) async {
-    check(); if (_active.containsKey(game.key)) throw const RommFailure('romm.busy');
+    check(); if (_downloadLocks.contains(game.key)) throw const RommFailure('romm.busy');
     downloads.remove(game.key); await _persist();
     for (final suffix in ['rom', 'part', 'resume']) {
       final file = File(_path(game.key, suffix)); if (await file.exists()) await file.delete();
@@ -118,16 +120,25 @@ class RommStorage extends ChangeNotifier {
   /// One exact file, with stable Range validators and server hashes. Multi-file
   /// sets remain playable by the server engines; we never rename a ZIP as a ROM.
   Future<void> download(RommGame game, {RommFile? selected}) async {
-    check(); if (_active.containsKey(game.key)) return;
+    check();
+    if (!_downloadLocks.add(game.key)) throw const RommFailure('romm.busy');
+    try { await _download(game, selected: selected); }
+    finally { _downloadLocks.remove(game.key); _reservations.remove(game.key); }
+  }
+  Future<void> _download(RommGame game, {RommFile? selected}) async {
+    check();
+    if (downloads.length >= 2000 && !downloads.containsKey(game.key)) throw const RommFailure('romm.quotaExceeded');
     if (!game.hasBytes) throw const RommFailure('romm.missing');
     if (selected == null && game.files.length > 1) throw const RommFailure('romm.chooseFile');
     final file = selected ?? game.files.firstOrNull;
     final name = file?.name ?? game.fileName, size = file?.size ?? game.size;
-    final existingSize = rommInt(downloads[game.key]?['size']);
     // Reserve all concurrent transfers in the limit, including resumed bytes.
     final reserved = progress.keys.where((k) => k != game.key).fold<int>(0, (n, k) => n + rommInt(_reservations[k]));
-    if (size <= 0 || used - existingSize + size + reserved > quota) throw const RommFailure('romm.quotaExceeded');
+    if (size <= 0 || used + size + reserved > quota) throw const RommFailure('romm.quotaExceeded');
     final owner = await client(game.connectionId); check();
+    final nowReserved = _reservations.values.fold<int>(0, (n, value) => n + value);
+    if (used + size + nowReserved > quota) throw const RommFailure('romm.quotaExceeded');
+    _reservations[game.key] = size;
     final api = RommClient(owner.base, token: owner.token);
     _active[game.key] = api; _reservations[game.key] = size; failures.remove(game.key); progress[game.key] = 0; changed();
     IOSink? sink;
@@ -176,7 +187,7 @@ class RommStorage extends ChangeNotifier {
       await part.rename(_path(game.key, 'rom'));
       downloads[game.key] = {'key': game.key, 'identity': game.identity, 'size': size, 'name': name,
         'fileId': file?.id, 'sha1': actualSha, 'serverVerified': expectedSha.isNotEmpty || expectedMd5.isNotEmpty,
-        'game': game.toJson(), 'connectionId': game.connectionId};
+        'game': _manifestGame(game), 'connectionId': game.connectionId};
       await _persist(); if (await resume.exists()) await resume.delete();
     } catch (error) {
       failures[game.key] = error is RommFailure ? error.code : 'romm.connectionFailed'; rethrow;
@@ -199,7 +210,7 @@ class RommStorage extends ChangeNotifier {
     final file = File(_path(id, 'save'));
     await file.writeAsBytes(bytes, flush: true);
     pending[id] = {'id': id, 'connectionId': game.connectionId, 'userId': source.userId,
-      'game': game.toJson(), 'identity': game.identity, 'emulator': emulator, 'core': core, 'state': state,
+      'game': _manifestGame(game), 'identity': game.identity, 'emulator': emulator, 'core': core, 'state': state,
       'slot': slot, 'baseHash': _uploadedHashes['${game.key}:$emulator:$slot'] ?? baseHash, 'hash': sha256.convert(bytes).toString(), 'contentHash': bytes.length >= 4 && bytes[0] == 0x50 && bytes[1] == 0x4b ? '' : md5.convert(bytes).toString(), 'size': bytes.length,
       'created': DateTime.now().toUtc().toIso8601String(), 'conflict': false};
     await _persist(completeOwnedWrite: true); changed(); return id;
@@ -239,6 +250,7 @@ class RommStorage extends ChangeNotifier {
         slot: slot, contentHash: rommString(row['contentHash']).isEmpty ? null : row['contentHash'] as String, state: state, overwrite: replace);
       check();
       if (!state) _uploadedHashes['${game.key}:${row['emulator']}:$slot'] = rommString(uploaded['content_hash'], 128);
+      while (_uploadedHashes.length > 4096) { _uploadedHashes.remove(_uploadedHashes.keys.first); }
       pending.remove(id); await _persist(); await File(_path(id, 'save')).delete(); failures.remove(id);
     } catch (error) {
       if (error is RommFailure && error.status == 409 && pending[id] != null) { pending[id]!['conflict'] = true; await _persist(); }
@@ -250,6 +262,15 @@ class RommStorage extends ChangeNotifier {
       check(); try { await sync(id); } catch (_) { /* Each version retains its failure and bytes. */ }
     }
   }
+  // Durable save/download manifests need identity, not artwork, achievement
+  // catalogs or thousands of disc-file rows repeated for every saved version.
+  Map<String, dynamic> _manifestGame(RommGame game) => {
+    'id': game.id, 'platform_id': game.platformId, 'name': game.name,
+    'platform_slug': game.platform, 'platform_display_name': game.platformName,
+    'fs_name': game.fileName, 'fs_extension': game.extension, 'fs_size_bytes': game.size,
+    'sha1_hash': game.sha1, 'md5_hash': game.md5, 'missing_from_fs': game.missing,
+    'is_physical': game.physical, 'igdb_id': game.igdbId,
+  };
   Future<Directory> nativeDirectory(RommGame game) async {
     check(); return Directory('${_root!.path}/native/${_key(game.key)}').create(recursive: true);
   }
@@ -265,6 +286,7 @@ class RommStorage extends ChangeNotifier {
     final bytes = await file.readAsBytes(); check(); return bytes;
   }
   @override void dispose() {
+    if (_disposed) return;
     _disposed = true; for (final api in _active.values) api.close(); _active.clear(); super.dispose();
   }
 }

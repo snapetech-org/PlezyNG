@@ -466,6 +466,7 @@ void Session::start() {
       for (int attempt = 0; attempt < 4 && !closing; ++attempt) {
         active = false;
         auto current = std::make_shared<Runtime>();
+        current->motionControllers(options.motionController);
         std::atomic<bool> audioFailed{false}, videoFailed{false};
         auto decoder = std::make_shared<WindowsSink>(
             [weak, source = std::weak_ptr<Runtime>(current)](DecodedPixels&& pixels) {
@@ -654,6 +655,25 @@ void Session::method(const Call& call, Reply reply) {
     reply->Success(Value(!enable || (live && input.isEnabled() && startMicrophoneCapture(runtime))));
     return;
   }
+  if (method == "readControllerFeedback") {
+    flutter::EncodableList rows;
+    if (live)
+      for (const auto& row : input.feedback(*runtime)) {
+        flutter::EncodableList values;
+        for (auto value : row) values.emplace_back(value);
+        rows.emplace_back(values);
+      }
+    reply->Success(Value(rows));
+    return;
+  }
+  if (method == "setControllerMotion") {
+    std::array<double, 6> values{};
+    const char* keys[] = {"gx", "gy", "gz", "ax", "ay", "az"};
+    for (size_t i = 0; i < 6; ++i) values[i] = real(args, keys[i]);
+    const auto* device = field(args, "deviceId");
+    reply->Success(Value(live && device && input.motion(*runtime, integer(*device), values)));
+    return;
+  }
   if (method == "inputText") {
     const auto* value = field(args, "text");
     const auto* bytes = value ? std::get_if<std::vector<uint8_t>>(value) : nullptr;
@@ -814,6 +834,7 @@ void Manager::method(const Call& call, Reply reply, bool stream) {
     options.fps = number(args, "streamFps", 60, 15, 120);
     options.bitrateKbps = number(args, "streamBitrateKbps", 30000, 1000, 100000);
     options.controllerCount = number(args, "controllerCount", 1, 1, 4);
+    options.motionController = boolean(args, "motionController");
     options.audioChannels = number(args, "audioChannels", 2, 2, 6);
     options.hdr10 = boolean(args, "allowHdr");
     if (!options.valid()) throw std::invalid_argument("Invalid options");

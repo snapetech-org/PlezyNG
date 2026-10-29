@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "visualStudioRange": "[17.14,18.0)",
+  "windowsSdk": "10.0.26100.0",
+  "bootstrapper": {
+    "url": "https://download.visualstudio.microsoft.com/download/pr/4bc08c27-bd31-470c-9a30-3b62707fbf0f/4aad1082e180f558598c346eb105b465b4908148cb9f7f0511aa1105620e0c30/vs_BuildTools.exe",
+    "sha256": "4aad1082e180f558598c346eb105b465b4908148cb9f7f0511aa1105620e0c30",
+    "publisher": "Microsoft Corporation",
+    "source": "https://aka.ms/vs/17/release/vs_BuildTools.exe",
+    "observedChannelVersion": "17.14.37824.6"
+  },
+  "note": "The bootstrapper bytes and required SDK generation are pinned. Visual Studio Installer resolves serviced MSVC components; record their actual versions in the preparation report. This is not a claim of an immutable complete VS package catalog."
+}

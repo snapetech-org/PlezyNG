@@ -85,6 +85,16 @@ jobs:
       - name: Compile both pinned embedded engines, JNI and adapters
         working-directory: android
         run: ./gradlew :moonlight:assembleDebug :steam:assembleDebug :steam:testDebugUnitTest :app:assembleDebug --stacktrace
+      - name: Check every Android receiver ABI and JNI export
+        run: >-
+          python3 scripts/games/build_steam_android.py
+          --report "$RUNNER_TEMP/steam-android-sdk.json"
+      - name: Preserve Android Steam SDK receipt
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: steam-android-sdk
+          path: ${{ runner.temp }}/steam-android-sdk.json
       - name: Run focused game and Multiview regression tests
         run: >-
           flutter test test/games test/multiview

@@ -420,7 +420,19 @@ jobs:
             clang cmake ninja-build pkg-config libgtk-3-dev libsecret-1-dev liblzma-dev \
             libstdc++-12-dev libmpv-dev libepoxy-dev libcurl4-openssl-dev libevdev-dev \
             libwayland-dev libegl-dev libvulkan-dev mesa-vulkan-drivers \
-            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev python3-jinja2 \
+            gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
+            gstreamer1.0-plugins-bad gstreamer1.0-libav
+
+      - name: Verify Linux Steam SDK and codec prerequisites
+        run: python3 scripts/games/check_linux_sdk.py --report "$RUNNER_TEMP/steam-linux-sdk.json"
+
+      - name: Preserve Linux Steam SDK receipt
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: steam-linux-sdk-${{ matrix.sanitizer }}
+          path: ${{ runner.temp }}/steam-linux-sdk.json
 
       - name: Prepare Flutter Linux configuration
         run: |
@@ -522,18 +534,21 @@ jobs:
       matrix:
         include:
           - platform: iOS
+            receiver_sdk: iphonesimulator
             project_directory: ios
             workspace: ios/Runner.xcworkspace
             simulator_runtime: iOS
             simulator_platform: iOS
             static_destination: ""
           - platform: macOS
+            receiver_sdk: macosx
             project_directory: macos
             workspace: macos/Runner.xcworkspace
             simulator_runtime: ""
             simulator_platform: ""
             static_destination: platform=macOS
           - platform: tvOS
+            receiver_sdk: appletvsimulator
             project_directory: tvos
             workspace: tvos/Runner.xcworkspace
             simulator_runtime: tvOS
@@ -557,6 +572,25 @@ jobs:
           export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
           command -v cmake >/dev/null || brew install cmake
           cmake --version
+
+      - name: Prepare selected Apple receiver SDK and Metal tools
+        run: >-
+          python3 scripts/games/prepare_apple_sdk.py prepare
+          --sdk "${{ matrix.receiver_sdk }}" --arch arm64
+          --report "$RUNNER_TEMP/steam-apple-sdk.json"
+
+      - name: Compile Apple receiver and controller source probes
+        run: >-
+          python3 scripts/games/prepare_apple_sdk.py probe
+          --sdk "${{ matrix.receiver_sdk }}" --arch arm64
+          --report "$RUNNER_TEMP/steam-apple-probe.json"
+
+      - name: Preserve Apple Steam SDK receipts
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: steam-apple-sdk-${{ matrix.platform }}
+          path: ${{ runner.temp }}/steam-apple-*.json
 
       - name: Install CocoaPods
         shell: bash
@@ -723,6 +757,20 @@ jobs:
         run: |
           .\windows\tool\prepare-build-toolchain.ps1
           .\windows\tool\prepare-build-toolchain.ps1 -VerifyOnly
+
+      - name: Verify Steam Windows SDK and native compiler
+        shell: pwsh
+        run: >-
+          .\windows\tool\prepare-steam-sdk.ps1
+          -Architectures '${{ matrix.arch }}'
+          -Report "$env:RUNNER_TEMP/steam-windows-sdk.json"
+
+      - name: Preserve Windows Steam SDK receipt
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: steam-windows-sdk-${{ matrix.arch }}
+          path: ${{ runner.temp }}/steam-windows-sdk.json
 
       - name: Verify provisioned ARM64 7-Zip
         if: matrix.arch == 'arm64'
@@ -901,7 +949,10 @@ jobs:
             libharfbuzz-dev libegl-dev libgl-dev libgnutls28-dev libpipewire-0.3-dev \
             libva-dev libxkbcommon-dev libpulse-dev libdbus-1-dev libdrm-dev \
             libdisplay-info-dev libgbm-dev libwayland-dev wayland-protocols liblcms2-dev libmujs-dev \
-            liblua5.2-dev rpm libarchive-tools imagemagick ruby-dev build-essential
+            liblua5.2-dev rpm libarchive-tools imagemagick ruby-dev build-essential \
+            python3-jinja2 libvulkan-dev mesa-vulkan-drivers \
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-tools \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav
           proxy="${HTTPS_PROXY:-${https_proxy:-}}"
           if [[ -z "$proxy" ]]; then
             echo "The private JIT HTTPS proxy is required to install fpm." >&2
@@ -913,6 +964,9 @@ jobs:
             http_proxy="${http_proxy:-${HTTP_PROXY:-$proxy}}" \
             https_proxy="${https_proxy:-$proxy}" \
             gem install fpm --version 1.17.0 --no-document
+
+      - name: Verify Linux packaging receiver prerequisites
+        run: python3 scripts/games/check_linux_sdk.py --report "$RUNNER_TEMP/steam-linux-package-sdk.json"
 
       # Keyed the same way build.yml keys it: the lock names the asset and its
       # checksum, so editing the lock is what invalidates the cache.

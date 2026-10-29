@@ -675,6 +675,61 @@ jobs:
         working-directory: ${{ matrix.project_directory }}
         run: pod install --deployment
 
+      - name: Diagnose iOS torrent CocoaPods integration
+        if: matrix.platform == 'iOS'
+        run: |
+          python3 - <<'PY'
+          import json
+          import plistlib
+          from pathlib import Path
+
+          plugin = Path("ios/.symlinks/plugins/plezy_torrent/ios")
+          framework = Path("packages/plezy_torrent/ios/Frameworks/ios/PlezyTorrent.xcframework")
+          print(f"plugin_path={plugin.resolve(strict=False)} exists={plugin.exists()}")
+          print(f"framework_path={framework.resolve(strict=False)} exists={framework.exists()}")
+          info = framework / "Info.plist"
+          if info.is_file():
+              with info.open("rb") as source:
+                  plist = plistlib.load(source)
+              slices = [
+                  {key: item.get(key) for key in ("LibraryIdentifier", "SupportedPlatform", "SupportedPlatformVariant", "SupportedArchitectures")}
+                  for item in plist.get("AvailableLibraries", [])
+              ]
+              print(f"framework_slices={slices}")
+
+          podspec = Path("ios/Pods/Local Podspecs/plezy_torrent.podspec.json")
+          if podspec.is_file():
+              spec = json.loads(podspec.read_text(encoding="utf-8"))
+              print(f"vendored_frameworks={spec.get('vendored_frameworks')}")
+          else:
+              print(f"local_podspec_missing={podspec}")
+
+          support = Path("ios/Pods/Target Support Files")
+          for path in sorted(support.glob("*plezy_torrent*")):
+              print(f"pod_support_path={path}")
+              if path.is_dir():
+                  for child in sorted(path.rglob("*")):
+                      if child.is_file() and child.suffix in {".sh", ".xcfilelist", ".json"}:
+                          print(f"pod_support_file={child}")
+                          for number, line in enumerate(child.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                              if "PlezyTorrent" in line or "XCFrameworkIntermediates" in line:
+                                  print(f"{child}:{number}:{line[:240]}")
+
+          for path in sorted((support / "Pods-Runner").glob("Pods-Runner-frameworks*")):
+              print(f"runner_framework_support_file={path}")
+              if path.is_file():
+                  for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                      if "plezy_torrent" in line or "PlezyTorrent" in line or "XCFrameworkIntermediates" in line:
+                          print(f"{path}:{number}:{line[:240]}")
+
+          for project_name in ("Runner", "Pods"):
+              project = Path(f"ios/{project_name}.xcodeproj/project.pbxproj")
+              if project.is_file():
+                  for number, line in enumerate(project.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                      if any(token in line for token in ("plezy_torrent", "PlezyTorrent", "Copy XCFrameworks")):
+                          print(f"{project_name}_project:{number}:{line[:240]}")
+          PY
+
       - name: Install tvOS CocoaPods dependencies
         if: matrix.platform == 'tvOS'
         run: tvos/scripts/pod_install.sh

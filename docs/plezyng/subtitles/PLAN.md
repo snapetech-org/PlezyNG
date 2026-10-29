@@ -26,7 +26,7 @@ with `[skip ci]`. Existing native dependency pins were not fabricated or promote
 | Import and attachment | Existing format conversion/archive/drop/share flows; Plex/Jellyfin/Emby upload; managed standalone native text attachment; adapter-owned folder discovery for local/network/cloud sources and DLNA metadata-linked text resources. | Backend format limits still apply. Non-MPV attachment refuses saved affine corrections. Vendor-only DLNA caption tags and catalogue-specific sources without a file listing remain unsupported. |
 | App rendering | Two independent text lanes, per-profile/lane appearance defaults, installed-family/script fallback, original word highlights, fixed authored sign regions, stable optional scene-region avoidance, manual burned-caption cover, focused-pane density limit, horizontal ruby reading aids, spoken subtitles with explicit duck/rate. | App styling is not a replacement for native ASS/bitmap rendering. HDR luminance, font shaping and output paths are unqualified. Centered contain/cover/stretch/zoom geometry and screen/video anchoring are implemented; renderer/output qualification, vertical typography, new closed-caption service semantics and localized new controls remain open. |
 | Ecosystem | Corrected SRT/native snapshot handoff on the opened-part clock; expiring LAN second screen and WebVTT exports; explicit Cast WebVTT loading/restoration; revision/history transfer bundles, explicit encrypted cloud synchronization with causal conflict review, bounded offline font imports and text/font ZIP export, and study tools. | Receiver rendering/native PiP remain capability limited. Automatic Watch Together asset policy, download-item font dependency retention and HDR subtitle screenshot composition remain unfinished. |
-| Research | Bitmap/burned OCR with image review and automatic text-band proposals; positioned signs; second-model disagreements; local speech separation; VAD completeness; single-frame or three-sample scene proposals and bounded temporal region associations; explicitly configured joint audio/image review; conservative lyric word alignment across original/harmonic views; stereo-mix event evidence; licensed generic-voice dubbing/mixing; offline Whisper adaptation with separate holdouts. | These are opt-in, reviewable experimental adapters. Physical sound localization and continuous visual tracking remain unfinished. Lyric CTC word proposals are implemented, while note/syllable timing and singing quality remain unestablished. Joint audio/image provider requests are implemented; actual multimodal use and quality improvements are not established. No adaptation/evaluation run occurred. |
+| Research | Bitmap/burned OCR with image review and automatic text-band proposals; positioned signs; second-model disagreements; local speech separation; VAD completeness; single-frame or three-sample scene proposals, bounded temporal region associations and cue-bounded local optical-flow tracking; explicitly configured joint audio/image review; conservative lyric word alignment across original/harmonic views; stereo-mix event evidence; licensed generic-voice dubbing/mixing; offline Whisper adaptation with separate holdouts. | These are opt-in, reviewable experimental adapters. Physical sound localization, semantic/occlusion recovery and whole-title visual tracking remain unfinished. Lyric CTC word proposals are implemented, while note/syllable timing and singing quality remain unestablished. Joint audio/image provider requests are implemented; actual multimodal use and quality improvements are not established. No adaptation/evaluation run occurred. |
 | MPV packaging | Shared ordered-PCM patch and all platform bridge sources; final archive/native export inspection; per-binary/archive receipts; receipt-aware content keys and manifest freshness; atomic consumer promotion gate. | No new binaries were built/published and no consumer lock was advanced. The private-JIT build/publication and exact-artifact promotion described in `MPV-PACKAGING.md` are still required. |
 
 The appended source updates identify implementation details and bounds. They do
@@ -1182,3 +1182,21 @@ necessary. No tests, builds, decodes, model runs or CI were executed.
 API/format references: [HLS segment and program-time contracts](https://www.rfc-editor.org/rfc/rfc8216),
 [MediaExtractor track/sample access](https://developer.android.com/reference/android/media/MediaExtractor),
 and [AVAssetReader](https://developer.apple.com/documentation/avfoundation/avassetreader).
+
+## Cue-bounded scene motion research
+
+The companion's scene review now has an optional local motion tracker, exposed
+through capability discovery, both SDKs and explicit UI selection. It decodes
+a regular 12 Hz frame grid, follows first-frame proposed regions using bounded
+forward/reverse feature matching and robust partial-affine motion, and retires
+paths on matching, motion, frame-bound or cut/flash failures. Only the existing
+one/three scene samples go to the declared vision destination; additional motion
+frames remain on the companion. Job limits are 12 seconds per cue and two
+minutes combined, with at most twelve initial region proposals per cue.
+
+Outputs retain paths, observation counts, stop reasons, OpenCV revision and the
+resampled frame-clock description. Fixed cue-level envelopes are available to
+the existing review/placement path. Wording and cue timing are unchanged. This
+adds bounded temporal texture tracking, not semantic identities, occlusion
+recovery or whole-title tracking. Thresholds and output quality remain
+unqualified; no model/decoder/tracking execution or CI was performed.

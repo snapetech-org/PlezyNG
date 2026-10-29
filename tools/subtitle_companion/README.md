@@ -410,3 +410,28 @@ views; shared agreement is not a calibrated confidence score. No note/syllable
 timing or uniform word interpolation is invented. CPU and requested CUDA follow
 the existing explicit fallback path, without per-operation placement attestation.
 No model preparation, inference, evaluation, rendering or test was run.
+
+### Cue-bounded local scene motion
+
+`scene_review` accepts `sceneMotionTracking: true` only when the host advertises
+`sceneMotionTracking`. Install the optional research requirements to supply
+OpenCV. The request is capped at 30 cues, 12 seconds per cue and two minutes of
+combined cue duration. It starts the provider's image sampling at the cue start,
+then follows the initial region texture locally on a 640×360, 12 Hz decoded
+frame grid. Extra tracking frames are not forwarded to the configured provider.
+
+The tracker uses bounded feature sets, forward/reverse Lucas–Kanade matching,
+RANSAC partial-affine motion, and explicit roundtrip/inlier/scale/rotation/frame
+bounds. Failed tracks are retired; a cut/flash gate ends remaining paths. There
+is no person identification, embedding, cross-cut matching, occlusion recovery,
+or assumed continuation after a failed observation. Thresholds are uncalibrated.
+Stored quadrilaterals avoid repeatedly inflating a rotated box's envelope.
+
+Results include `sceneMotionEvidence` with observed frame count, decoder-grid
+clock, OpenCV version and stop status, plus sample paths in `sceneRegionTracks`.
+Caption placement uses the bounded fixed envelopes. Original words and timing
+remain unchanged, and alternatives still require explicit image review. This is
+an experimental texture tracker; background drift and false cut gates remain
+possible. No tracking/quality/device run was performed during implementation.
+
+API reference: [OpenCV feature optical flow](https://docs.opencv.org/4.x/dc/d6b/group__video__track.html).

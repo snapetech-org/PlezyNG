@@ -840,6 +840,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var soundStereoEvidence = false;
       var sceneTemporalRegions = false;
       var sceneAudioEvidence = false;
+      var sceneMotionTracking = false;
       var duckRatio = .25;
       var track = 0;
       var subtitleTrack = 0, bitmapTail = 2000;
@@ -905,8 +906,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 value: sceneAudioEvidence, onChanged: (v) => update(() => sceneAudioEvidence = v)),
             if (task == 'scene_review' && capabilities['sceneTemporalRegions'] == true)
               SwitchListTile(title: const Text('Sample scene movement during each cue'),
-                subtitle: const Text('Sends three frames at 10%, 50% and 90% of each cue. Evidence shows chronological panels; sampled region associations remain unverified.'),
+                subtitle: const Text('Sends three frames at 10%, 50% and 90% of each cue (the first is 0% when motion tracking is enabled). Evidence shows chronological panels; sampled region associations remain unverified.'),
                 value: sceneTemporalRegions, onChanged: (v) => update(() => sceneTemporalRegions = v)),
+            if (task == 'scene_review' && capabilities['sceneMotionTracking'] == true)
+              SwitchListTile(title: const Text('Track region motion locally on the companion'),
+                subtitle: const Text('Uses the first cue frame as a seed, then tracks texture at 12 Hz for up to 12 seconds per cue / two minutes total. '
+                  'Extra tracking frames stay on the companion. Paths stop when matching fails; placement uses fixed envelopes. This can drift and needs review.'),
+                value: sceneMotionTracking, onChanged: (v) => update(() => sceneMotionTracking = v)),
             if (task == 'ocr_auto') const Text('Find a repeatedly occupied text band using samples from the first two minutes. '
               'This can select credits or signs; inspect the returned cue images before accepting.'),
             if (task == 'dubbing' || task == 'dub_mix') ...[
@@ -961,7 +967,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
         targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
-        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, sceneAudioEvidence: sceneAudioEvidence, crop: [0, cropTop, 1, 1 - cropTop],
+        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, sceneAudioEvidence: sceneAudioEvidence, sceneMotionTracking: sceneMotionTracking, crop: [0, cropTop, 1, 1 - cropTop],
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         voiceFingerprint: (task == 'dubbing' || task == 'dub_mix') ? (capabilities['synthesisVoice'] as Map?)?['fingerprint'] as String? : null,
         translationMode: translationMode, scriptConversion: scriptConversion, readingMode: readingMode,

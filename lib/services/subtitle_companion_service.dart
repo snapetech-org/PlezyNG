@@ -189,7 +189,7 @@ final class SubtitleCompanionService {
 
   Future<String> submit({required String task, required String identityKey, String? mediaPath,
     List<SubtitleCue> cues = const [], String? language, String? targetLanguage,
-    bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0, int timelineOffsetMs = 0, bool itemTimeline = false, bool soundStereoEvidence = false, bool sceneTemporalRegions = false, bool sceneAudioEvidence = false,
+    bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0, int timelineOffsetMs = 0, bool itemTimeline = false, bool soundStereoEvidence = false, bool sceneTemporalRegions = false, bool sceneAudioEvidence = false, bool sceneMotionTracking = false,
     int finalBitmapDurationMs = 2000, double duckRatio = .25, String? voiceFingerprint,
     String translationMode = 'faithful', String scriptConversion = 's2t', String readingMode = 'hiragana',
     String? translationProviderFingerprint, String? visionProviderFingerprint, Map<String, String> glossary = const {},
@@ -202,6 +202,7 @@ final class SubtitleCompanionService {
     if ((itemTimeline || timelineOffsetMs != 0) && caps['sourceTimelineOffsets'] != true) throw UnsupportedError('Update the companion to preserve source timeline offsets');
     if (sceneTemporalRegions && caps['sceneTemporalRegions'] != true) throw UnsupportedError('Update the companion for temporal scene proposals');
     if (sceneAudioEvidence && caps['sceneAudioEvidence'] != true) throw UnsupportedError('The companion has not declared a joint audio/image provider');
+    if (sceneMotionTracking && caps['sceneMotionTracking'] != true) throw UnsupportedError('The companion has not installed local motion tracking');
     if (task == 'reading' && readingMode == 'ruby' &&
         (caps['readingModes'] is! List || !(caps['readingModes'] as List).contains('ruby'))) throw UnsupportedError('Update the companion for ruby reading output');
     if (soundStereoEvidence && caps['soundStereoEvidence'] != true) throw UnsupportedError('Update the companion for stereo evidence');
@@ -214,7 +215,7 @@ final class SubtitleCompanionService {
     final body = <String, Object?>{
       'task': task, 'identity': identityKey, 'audioDigest': audioDigest, 'audioBytes': length,
       'language': language, 'spokenLanguage': language, 'targetLanguage': targetLanguage,
-      'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop, 'timelineOffsetMs': timelineOffsetMs, 'itemTimeline': itemTimeline, 'soundStereoEvidence': soundStereoEvidence, 'sceneTemporalRegions': sceneTemporalRegions, 'sceneAudioEvidence': sceneAudioEvidence,
+      'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop, 'timelineOffsetMs': timelineOffsetMs, 'itemTimeline': itemTimeline, 'soundStereoEvidence': soundStereoEvidence, 'sceneTemporalRegions': sceneTemporalRegions, 'sceneAudioEvidence': sceneAudioEvidence, 'sceneMotionTracking': sceneMotionTracking,
       'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs, 'duckRatio': duckRatio, 'voiceFingerprint': voiceFingerprint,
       'translationMode': translationMode, 'scriptConversion': scriptConversion, 'readingMode': readingMode,
       'translationProviderFingerprint': translationProviderFingerprint, 'visionProviderFingerprint': visionProviderFingerprint, 'glossary': glossary,

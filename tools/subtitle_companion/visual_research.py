@@ -163,6 +163,9 @@ def scene_review(folder, job, progress):
     if len(cues) > 30 or max(c['endMs'] for c in cues) > 3600000:
         raise ValueError('visual_review_limit_thirty_cues_one_hour')
     temporal = job.get('sceneTemporalRegions') is True
+    motion = job.get('sceneMotionTracking') is True
+    if motion and (any(c['endMs']-c['startMs'] > 12000 for c in cues) or sum(c['endMs']-c['startMs'] for c in cues) > 120000):
+        raise ValueError('scene_motion_duration_limit')
     audio_enabled = job.get('sceneAudioEvidence') is True
     if audio_enabled and (not config['audioEvidence'] or any(c['endMs']-c['startMs'] > 12000 for c in cues) or
             sum(c['endMs']-c['startMs'] for c in cues) > 120000):
@@ -171,10 +174,11 @@ def scene_review(folder, job, progress):
     if len(key) > 4096 or any(ord(c) < 33 or ord(c) > 126 for c in key): raise ValueError('invalid_vision_provider_key')
     opener = build_opener(NoRedirect(), HTTPSHandler(context=ssl.create_default_context()), ProxyHandler({}))
     evidence = folder / 'evidence'; evidence.mkdir(mode=0o700, exist_ok=True)
-    images, alternatives, notes, avoidance, tracks, audio_evidence, total = [], [], [], [], [], [], 0
+    images, alternatives, notes, avoidance, tracks, audio_evidence, motion_evidence, total = [], [], [], [], [], [], [], 0
     for i, cue in enumerate(cues):
         span = cue['endMs'] - cue['startMs']
-        times = [cue['startMs'] + int(span * fraction) for fraction in ((.1, .5, .9) if temporal else (.5,))]
+        fractions = ((0, .5, .9) if temporal else (0,)) if motion else ((.1, .5, .9) if temporal else (.5,))
+        times = [cue['startMs'] + int(span * fraction) for fraction in fractions]
         rgba = [frame_bytes(folder, time_ms / 1000) for time_ms in times]
         frames = [png(640, 360, data, 4) for data in rgba]
         # One evidence image per cue retains compatibility with the review and
@@ -233,6 +237,13 @@ def scene_review(folder, job, progress):
                 raise ValueError('scene_sample_order_mismatch')
             observations.append((times[sample], _scene_boxes(row.get('regions'))))
         associations = _region_tracks(observations)
+        if motion:
+            from scene_motion import track_regions
+            tracked = track_regions(folder, cue, observations[0][1])
+            # Original provider observations remain in the evidence. Motion
+            # envelopes are added only after a second accepted local frame.
+            associations = tracked['tracks'] + associations
+            motion_evidence.append({'cueId': cue['cueId'], **{key: value for key, value in tracked.items() if key != 'tracks'}})
         if associations:
             avoidance.append({'cueId': cue['cueId'], 'regions': [track['envelope'] for track in associations[:12]]})
             tracks.append({'cueId': cue['cueId'], 'tracks': associations, 'renderedEnvelopes': min(12, len(associations))})
@@ -242,12 +253,16 @@ def scene_review(folder, job, progress):
     return {'cues': cues, 'sourceCues': cues, 'wordTimings': [], 'images': images, 'alternatives': alternatives,
         'avoidRegions': avoidance, 'sceneRegionTracks': tracks, 'sceneSampleCount': 3 if temporal else 1,
         'sceneAudioEvidence': audio_evidence,
+        'sceneMotionEvidence': motion_evidence,
         'language': job.get('language') or 'unknown', 'durationMs': max(c['endMs'] for c in cues),
         'model': config['model'], 'providerFingerprint': config['fingerprint'],
-        'warnings': [('Three chronological panels per cue show 10%, 50%, 90% samples. Adjacent-frame IoU links are uncertain proposals; '
+        'warnings': [('Three chronological panels per cue show 10%, 50%, 90% samples (0%, 50%, 90% with motion tracking). Adjacent-frame IoU links are uncertain proposals; '
             'they do not identify people, infer motion between samples, or prove spoken words. Up to 12 stable envelopes are used for placement.' if temporal else
             'Single-frame scene context cannot prove spoken words. Optional placement rectangles are unverified proposals.'),
             'Baseline text is unchanged; alternatives require explicit selection and image review.'] +
             (['Synchronized selected-track audio and scene frames were sent together. The configured model may ignore a modality; '
               'modality use and quality are not attested. Listen to the source before accepting an alternative. No lip-reading or word-timing claim is made.']
-             if audio_enabled else []) + notes}
+             if audio_enabled else []) +
+            (['Local optical flow follows first-frame region texture on a 12 Hz decoded grid, bounded to 12 seconds per cue and two minutes total. '
+              'Paths end on failed forward/reverse matches, large motion, frame departure or cut/flash gates; no identity or occlusion recovery is inferred. '
+              'Paths and confidence gates are unqualified; background texture can drift. Caption placement uses fixed envelopes, not animated paths.'] if motion else []) + notes}

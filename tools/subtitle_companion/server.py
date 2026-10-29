@@ -202,6 +202,12 @@ class Store:
         audio_evidence = value.get("sceneAudioEvidence", False)
         if type(audio_evidence) is not bool or audio_evidence and task != "scene_review":
             raise ValueError("invalid_scene_audio_evidence")
+        motion_tracking = value.get("sceneMotionTracking", False)
+        if type(motion_tracking) is not bool or motion_tracking and task != "scene_review":
+            raise ValueError("invalid_scene_motion_tracking")
+        if motion_tracking and (importlib.util.find_spec("cv2") is None or any(c['endMs']-c['startMs'] > 12000 for c in cues) or
+                sum(c['endMs']-c['startMs'] for c in cues) > 120000):
+            raise ValueError("scene_motion_capability_or_duration_limit")
         vision_fingerprint = None
         if task == "scene_review":
             config = vision_capabilities()
@@ -225,7 +231,7 @@ class Store:
                          "cues": cues, "audioTrack": track, "timelineOffsetMs": timeline_offset, "itemTimeline": item_timeline, "soundStereoEvidence": stereo_evidence, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
-                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions, "sceneAudioEvidence": audio_evidence,
+                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions, "sceneAudioEvidence": audio_evidence, "sceneMotionTracking": motion_tracking,
                          "translateToEnglish": task == "transcribe" and value.get("translateToEnglish") is True,
                          "preprocess": task in {"transcribe", "align", "diarize"} and value.get("preprocess") is True}
             fingerprint = hashlib.sha256(json.dumps(canonical, sort_keys=True).encode()).hexdigest()
@@ -423,6 +429,7 @@ class Handler(BaseHTTPRequestHandler):
                 if vision is not None: tasks.append("scene_review")
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
+                             "sceneMotionTracking": vision is not None and installed("cv2"),
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
                              "visionProvider": vision, "sceneAudioEvidence": vision is not None and vision['audioEvidence'], "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES), "readingModes": ["hiragana", "hepburn", "ruby"],
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})

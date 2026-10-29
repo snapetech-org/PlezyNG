@@ -14,19 +14,23 @@ class GameCover extends StatefulWidget {
     this.host,
     this.steamAppId,
     this.cacheWidth = 360,
+    this.loadCover,
   });
   final StreamGame game;
   final GameArtworkLoader artwork;
   final GameHost? host;
   final int? steamAppId;
   final int cacheWidth;
+  final Future<Uint8List?> Function()? loadCover;
   @override
   State<GameCover> createState() => _GameCoverState();
 }
 
 class _GameCoverState extends State<GameCover> {
   late Future<Uint8List?> _cover = _load();
-  Future<Uint8List?> _load() => widget.steamAppId != null
+  Future<Uint8List?> _load() => widget.loadCover != null
+      ? widget.loadCover!()
+      : widget.steamAppId != null
       ? widget.artwork.loadSteam(widget.steamAppId!)
       : widget.host != null
       ? widget.artwork.load(widget.host!, widget.game)

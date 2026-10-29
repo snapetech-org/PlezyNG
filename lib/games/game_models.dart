@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'romm/romm_models.dart';
 
 enum GameProtocol { gameStream, steam }
 
@@ -446,10 +447,12 @@ class LibraryGame {
     required this.routes,
     this.steamAppId,
     this.inAccountCatalog = false,
+    this.romm,
   });
   final String key, name;
   final int? steamAppId;
   final bool inAccountCatalog;
+  final RommGame? romm;
   final List<GameRoute> routes;
   GameRoute? preferredRoute(GameLibrary library) {
     final selected = library.routeSelections[key] ?? library.preferredRoutes[key];

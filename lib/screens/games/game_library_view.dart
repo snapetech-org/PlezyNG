@@ -33,6 +33,13 @@ class GameLibraryView extends StatefulWidget {
     this.available = true,
     this.canStream = true,
     this.catalogNotices = const [],
+    this.additionalGames = const [],
+    this.includePrimaryGames = true,
+    this.additionalFavorites = const {},
+    this.additionalRecent = const [],
+    this.additionalCardBuilder,
+    this.onSearchChanged,
+    this.sourceFilters,
   });
   final GameLibrary library;
   final GameArtworkLoader artwork;
@@ -42,6 +49,13 @@ class GameLibraryView extends StatefulWidget {
   final void Function(LibraryGame)? onUseAsController;
   final bool loading, busy, available, canStream;
   final List<Widget> catalogNotices;
+  final List<LibraryGame> additionalGames;
+  final bool includePrimaryGames;
+  final Set<String> additionalFavorites;
+  final List<String> additionalRecent;
+  final Widget Function(LibraryGame game, FocusNode? focus)? additionalCardBuilder;
+  final ValueChanged<String>? onSearchChanged;
+  final Widget? sourceFilters;
   @override
   State<GameLibraryView> createState() => _GameLibraryViewState();
 }
@@ -70,6 +84,9 @@ class _GameLibraryViewState extends State<GameLibraryView> {
   Widget _grid(List<LibraryGame> games, {bool first = false}) => GameCardGrid<LibraryGame>(
     games: games,
     builder: (context, game) {
+      if (game.romm != null && widget.additionalCardBuilder != null) {
+        return widget.additionalCardBuilder!(game, first && game == games.first ? widget.firstFocus : null);
+      }
       final route = game.preferredRoute(widget.library);
       final cardGame = StreamGame(
         hostKey: route?.host.key ?? 'catalog',
@@ -118,12 +135,13 @@ class _GameLibraryViewState extends State<GameLibraryView> {
     _searchController.clear();
     _computerFilter = null;
     _installedOnly = false;
+    widget.onSearchChanged?.call('');
   });
 
   @override
   Widget build(BuildContext context) {
     final state = widget.library;
-    final entries = state.entries;
+    final entries = [if (widget.includePrimaryGames) ...state.entries, ...widget.additionalGames];
     final byKey = {for (final game in entries) game.key: game};
     final filtered = entries.where((game) {
       if (!game.name.toLowerCase().contains(_query.trim().toLowerCase())) return false;
@@ -135,10 +153,10 @@ class _GameLibraryViewState extends State<GameLibraryView> {
       );
     }).toList()..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     final recent = _query.isEmpty
-        ? state.recentKeys.map((key) => byKey[key]).whereType<LibraryGame>().where(filtered.contains).take(6).toList()
+        ? [...widget.additionalRecent, ...state.recentKeys].map((key) => byKey[key]).whereType<LibraryGame>().where(filtered.contains).take(6).toList()
         : <LibraryGame>[];
     final favorites = _query.isEmpty
-        ? state.favoriteKeys.map((key) => byKey[key]).whereType<LibraryGame>().where(filtered.contains).toList()
+        ? {...state.favoriteKeys, ...widget.additionalFavorites}.map((key) => byKey[key]).whereType<LibraryGame>().where(filtered.contains).toList()
         : <LibraryGame>[];
     final enabled = !widget.busy && widget.available;
     return FocusedScrollScaffold(
@@ -208,7 +226,8 @@ class _GameLibraryViewState extends State<GameLibraryView> {
               ),
             ),
         ],
-        if (entries.isNotEmpty) ...[
+        if (entries.isNotEmpty || widget.sourceFilters != null) ...[
+          if (widget.sourceFilters != null) SliverToBoxAdapter(child: widget.sourceFilters!),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -219,7 +238,10 @@ class _GameLibraryViewState extends State<GameLibraryView> {
                   labelText: t.games.search,
                   prefixIcon: const AppIcon(Symbols.search_rounded),
                 ),
-                onChanged: (value) => setState(() => _query = value),
+                onChanged: (value) {
+                  setState(() => _query = value);
+                  widget.onSearchChanged?.call(value);
+                },
                 onSubmitted: (_) => widget.firstFocus.requestFocus(),
                 onNavigateDown: widget.firstFocus.requestFocus,
               ),

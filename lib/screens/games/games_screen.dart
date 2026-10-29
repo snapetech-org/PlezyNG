@@ -13,6 +13,15 @@ import '../../games/steam_internet_tunnel.dart';
 import '../../games/steam_input_profile.dart';
 import '../../games/steam_touch_layout.dart';
 import '../../games/game_models.dart';
+import '../../games/romm/romm_controller.dart';
+import '../../games/romm/romm_models.dart';
+import '../../games/romm/romm_link.dart';
+import '../../games/romm/romm_text.dart';
+import '../../focus/focusable_text_field.dart';
+import 'game_card.dart';
+import 'romm_connections_screen.dart';
+import 'romm_detail_screen.dart';
+import 'romm_library_filters.dart';
 import '../../games/steam_inventory_exchange.dart';
 import '../../games/steam_host_actions.dart';
 import '../../providers/companion_remote_provider.dart';
@@ -60,6 +69,8 @@ class GamesScreen extends StatefulWidget {
 
 class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibilityAware {
   GameLibraryController? _controller;
+  RommController? _romm;
+  Timer? _rommSearch;
   MultiviewWorkspaceController? _workspaceController;
   final Map<String, SteamGameWorkspaceSession> _workspaceGameSessions = <String, SteamGameWorkspaceSession>{};
   final _presentationRevision = ValueNotifier<int>(0);
@@ -120,6 +131,11 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       _controller = controller;
       controller.addListener(_changed);
       await controller.load();
+      if (!controller.current) return;
+      final romm = _romm = RommController(repository: sources.repository, profileId: id, sessionCurrent: () => controller.current);
+      romm.addListener(_changed);
+      await romm.load();
+      if (romm.current && romm.connections.isNotEmpty) unawaited(romm.refresh());
       if (mounted && controller.current) {
         setState(() {
           _loading = false;
@@ -168,6 +184,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     }
     _workspaceGameSessions.clear();
     _workspaceController = null;
+    _rommSearch?.cancel(); _rommSearch = null;
+    _romm?.removeListener(_changed);
+    _romm?.dispose(); _romm = null;
     _controller?.removeListener(_changed);
     _controller?.dispose();
     _controller = null;
@@ -481,6 +500,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   }) async {
     final c = _controller;
     if (c == null || !c.current || c.busy) return;
+    if (game.romm != null) { await _details(game); return; }
     if (!PlatformDetector.supportsEmbeddedGameStreaming()) {
       await _details(game);
       return;
@@ -551,6 +571,11 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   }
 
   Future<void> _details(LibraryGame initial) async {
+    if (initial.romm != null) {
+      final romm = _romm;
+      if (romm != null && romm.current) await _page<void>((_) => RommDetailScreen(controller: romm, game: initial.romm!));
+      return;
+    }
     final c = _controller;
     if (c == null || !c.current) return;
     final activityIdentity = c.library.steamAccountId;
@@ -1266,6 +1291,47 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     });
   }
 
+  Future<void> _rommConnections() async {
+    final romm = _romm;
+    if (romm != null && romm.current) await _page<void>((_) => RommConnectionsScreen(controller: romm));
+  }
+  Future<void> _rommLink([RommLink? incoming]) async {
+    final romm = _romm;
+    if (romm == null || !romm.current) return;
+    RommLink? link = incoming;
+    if (link == null) {
+      final text = TextEditingController();
+      try {
+        final raw = await showDialog<String>(context: context, builder: (dialog) => AlertDialog(
+          title: Text(rommText(dialog, 'openLink')), content: FocusableTextField(controller: text,
+            decoration: InputDecoration(labelText: rommText(dialog, 'linkHelp'))),
+          actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'cancel'))),
+            FilledButton(onPressed: () => Navigator.pop(dialog, text.text), child: Text(rommText(dialog, 'openLink')))]));
+        if (raw == null || !romm.current) return;
+        final uri = Uri.tryParse(raw); link = uri == null ? null : RommLink.parse(uri);
+      } finally { text.dispose(); }
+    }
+    try {
+      if (link == null) throw const RommFailure('romm.invalidAddress');
+      final source = romm.connections.where((s) => s.base == link!.server).firstOrNull;
+      if (source == null) throw const RommFailure('romm.notConnected');
+      RommGame? game;
+      if (link.romId > 0) game = await (await romm.client(source.id)).game(source.id, link.romId);
+      else {
+        // Acquisition links without an indexed ROM ID use external identity,
+        // never a fuzzy title match or an arbitrary URL supplied in a link.
+        final api = await romm.client(source.id);
+        final result = await api.getMap('roms', query: {'igdb_id': link.igdbId, 'limit': 100, 'group_by_meta_id': false});
+        final matches = rommList(result['items']).map((v) => RommGame.fromJson(source.id, rommMap(v))).where(link.matches).toList();
+        if (matches.length == 1) game = matches.single;
+        else if (matches.length > 1) throw const RommFailure('romm.copyMismatch');
+      }
+      if (game == null) throw const RommFailure('romm.notIndexed');
+      if (!link.matches(game)) throw const RommFailure('romm.copyMismatch');
+      if (romm.current) await _details(LibraryGame(key: game.key, name: game.name, routes: const [], romm: game));
+    } catch (error) { if (mounted && romm.current) showErrorSnackBar(context, rommText(context, error is RommFailure ? error.code : 'connectionFailed')); }
+  }
+
   Future<void> _settings() async {
     final profile = _profile;
     if (profile == null) return;
@@ -1346,6 +1412,26 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           ? (game) => _openLibraryGame(game, controllerOnly: true)
           : null,
       catalogNotices: _catalogNotices(c.library),
+      includePrimaryGames: _romm?.source.isEmpty ?? true,
+      additionalGames: [for (final game in _romm?.games ?? <RommGame>[])
+        if (_romm!.source.isEmpty || game.connectionId == _romm!.source)
+          LibraryGame(key: game.key, name: game.name, routes: const [], romm: game)],
+      additionalFavorites: _romm?.favorites ?? const {},
+      additionalRecent: _romm?.recent ?? const [],
+      onSearchChanged: (query) {
+        _rommSearch?.cancel();
+        _rommSearch = Timer(const Duration(milliseconds: 350), () {
+          final romm = _romm; if (romm != null && romm.current) unawaited(romm.refresh(search: query));
+        });
+      },
+      sourceFilters: _romm == null ? null : RommLibraryFilters(controller: _romm!, onConnections: _rommConnections, onLink: _rommLink),
+      additionalCardBuilder: (entry, focus) {
+        final romm = _romm!, game = entry.romm!;
+        return GameCard(key: ValueKey(game.key), game: StreamGame(hostKey: game.connectionId, id: '${game.id}', name: game.name),
+          artwork: c.artwork, loadCover: () => romm.cover(game), focusNode: focus, subtitle: game.variant,
+          favorite: romm.favorites.contains(game.key), onPlay: () => _details(entry), onDetails: () => _details(entry),
+          onFavorite: () => romm.favorite(game).catchError((_) { if (mounted && romm.current) showErrorSnackBar(context, rommText(context, 'connectionFailed')); }));
+      },
     );
   }
 }

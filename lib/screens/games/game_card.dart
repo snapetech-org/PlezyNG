@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -82,6 +83,7 @@ class GameCard extends StatefulWidget {
     this.onPlayInWorkspace,
     this.onUseAsController,
     this.focusNode,
+    this.loadCover,
   });
   final StreamGame game;
   final GameHost? host;
@@ -98,6 +100,7 @@ class GameCard extends StatefulWidget {
   final VoidCallback? onPlayInWorkspace;
   final VoidCallback? onUseAsController;
   final FocusNode? focusNode;
+  final Future<Uint8List?> Function()? loadCover;
 
   @override
   State<GameCard> createState() => _GameCardState();
@@ -208,6 +211,7 @@ class _GameCardState extends State<GameCard> {
                             host: widget.host,
                             steamAppId: widget.steamAppId,
                             artwork: widget.artwork,
+                            loadCover: widget.loadCover,
                           ),
                           if (widget.steamAppId != null)
                             const PositionedDirectional(start: 6, top: 6, child: SteamSourceBadge(onArtwork: true)),

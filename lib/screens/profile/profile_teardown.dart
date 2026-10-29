@@ -27,6 +27,7 @@ import '../../services/api_cache.dart';
 import '../../services/hardcover/hardcover_account_store.dart';
 import '../../services/multi_server_manager.dart';
 import '../../services/storage_service.dart';
+import '../../services/subtitle_job_ownership.dart';
 import '../../services/system_shelf_service.dart';
 import '../../sources/source_controller.dart';
 import '../../utils/app_logger.dart';
@@ -204,6 +205,7 @@ Future<void> deleteProfile(BuildContext context, Profile profile) async {
   final scope = SessionTeardownScope.of(context);
   final endedOwner = scope.active.activeId == profile.id ? profile.id : null;
   await withEndedProfileSession(scope, endedOwner, () async {
+    await SubtitleJobActivity.revokeProfile(profile.id);
     await scope.downloads.deleteDownloadsForProfile(profile.id);
     await scope.database.deleteSyncRulesForProfile(profile.id);
     await scope.database.deleteDownloadCollectionsForProfile(profile.id);
@@ -303,6 +305,13 @@ Future<bool> confirmAndSignOutPlexAccount(BuildContext context, {required String
     );
     final endedOwner = await _activeProfileUsingConnection(scope, accountConnectionId);
     final navigatedAway = await withEndedProfileSession(scope, endedOwner, () async {
+      for (final id in {
+        ...removal.removedVirtualProfileIds,
+        ...scope.active.profiles.whereType<PlexHomeProfile>()
+            .where((profile) => profile.parentConnectionId == account.id).map((profile) => profile.id),
+      }) {
+        await SubtitleJobActivity.revokeProfile(id);
+      }
       if (deleteDownloads) {
         // Physical download cleanup can fail. Finish it while the account and
         // every ownership join still exist so a retry can resolve the same

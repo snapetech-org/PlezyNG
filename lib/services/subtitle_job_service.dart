@@ -13,6 +13,8 @@ import 'power_source_service.dart';
 import 'subtitle_ai_service.dart';
 import 'subtitle_analysis_decoder.dart';
 import 'subtitle_job_source.dart';
+import 'subtitle_job_ownership.dart';
+import 'subtitle_job_schedule.dart';
 import 'subtitle_inference_scheduler.dart';
 import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
@@ -60,6 +62,8 @@ final class SubtitleJob {
   final int timelineOffsetMs;
   SubtitleJobSource? _source;
   bool get usesSourceDecoder => sourceBindingKey != null;
+  bool _backgroundAllowed = false;
+  bool get backgroundAllowed => _backgroundAllowed;
   SubtitleJobState _state = SubtitleJobState.queued;
   String? _message;
   final Set<int> _completed = {};
@@ -88,13 +92,15 @@ final class SubtitleJob {
   );
 
   Map<String, Object?> _json() => {
-    'schema': 2, 'id': id, 'identity': identityKey, 'title': title,
+    'schema': 3, 'id': id, 'identity': identityKey, 'title': title,
     'durationMs': durationMs, 'provider': provider.name, 'language': language,
     'translate': translateToEnglish, 'chargingOnly': chargingOnly, 'idleOnly': idleOnly,
+    'backgroundAllowed': backgroundAllowed,
     'audioDigest': audioDigest, 'audioBytes': audioBytes, 'state': state.name,
     'completed': _completed.toList()..sort(), 'outputBytes': _outputBytes,
     'cueCount': _cueCount, 'wordCount': _wordCount, 'runtime': _runtime,
     'fallback': _fallback, 'detectedLanguage': _detectedLanguage,
+    if (_message == 'Install the selected speech model in the foreground first.') 'pausedReason': 'modelMissing',
     if (usesSourceDecoder) 'source': {'binding': sourceBindingKey,
       'audioOrdinal': audioOrdinal, 'timelineOffsetMs': timelineOffsetMs},
   };
@@ -102,10 +108,11 @@ final class SubtitleJob {
 
 /// One bounded inference window at a time, with durable per-window checkpoints.
 /// Pausing/cancelling never starts another window and discards the active one.
-/// Native inference itself is not interruptible; its current window must return.
-/// This is an in-app worker, not an OS background-execution entitlement.
+/// Whisper supports cooperative cancellation; other native windows must return.
+/// Explicitly enabled retained-WAV jobs can also run through the OS worker.
+/// Each engine holds exclusive profile ownership until its last call returns.
 final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserver {
-  SubtitleJobService._();
+  SubtitleJobService._({bool headless = false}) : _headless = headless;
   static final instance = SubtitleJobService._();
   static const chunkMs = 30000;
   static const _overlapMs = 2000;
@@ -122,6 +129,12 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
   bool _pumping = false;
   bool _importing = false;
   bool _foreground = true;
+  final bool _headless;
+  bool Function()? _workerMayRun;
+  SubtitleJobOwnership? _ownership;
+  String? _ownershipDirectory;
+  Completer<void>? _pumpFinished;
+  Completer<void>? _importFinished;
   int _profileEpoch = 0;
   Timer? _retry;
   final _decoder = SubtitleAnalysisDecoder();
@@ -134,7 +147,11 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
   void bindProfile(ActiveProfileProvider profiles) {
     if (identical(_profiles, profiles)) return;
     _profiles?.removeListener(_profileChanged);
-    if (_profiles == null) WidgetsBinding.instance.addObserver(this);
+    if (_profiles == null) {
+      WidgetsBinding.instance.addObserver(this);
+      final state = WidgetsBinding.instance.lifecycleState;
+      _foreground = state == null || state == AppLifecycleState.resumed || state == AppLifecycleState.inactive;
+    }
     _profiles = profiles;
     profiles.addListener(_profileChanged);
     _profileChanged();
@@ -145,20 +162,44 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     final key = id == null ? null : sha256.convert(utf8.encode(id)).toString();
     if (key == _profileKey) return;
     _profileKey = key;
+    _transition(changingProfile: true);
+  }
+
+  void _transition({bool background = false, bool changingProfile = false}) {
     final epoch = ++_profileEpoch;
+    final key = _profileKey;
+    final previous = _ready;
+    final authorization = SubtitleJobActivity.authorize(key).catchError((Object _) {});
+    final schedule = background && _jobs.any((job) => job.backgroundAllowed &&
+        (job.state == SubtitleJobState.running || job.state == SubtitleJobState.queued));
     _retry?.cancel();
+    _root = null;
     for (final job in _jobs) {
       unawaited(_closeSource(job));
+      ++job._generation;
       if (job.state == SubtitleJobState.queued || job.state == SubtitleJobState.running) {
-        ++job._generation;
-        job._state = SubtitleJobState.paused;
+        job._state = !changingProfile && job.backgroundAllowed && !job.usesSourceDecoder
+            ? SubtitleJobState.queued : SubtitleJobState.paused;
         unawaited(_persist(job).catchError((Object _) {}));
       }
     }
-    _jobs.clear();
-    _root = null;
     _loadError = null;
-    _ready = _load(key, epoch);
+    _ready = () async {
+      try { await previous; } on Object { /* A later open may recover. */ }
+      try { await authorization; } on Object { /* No readable authorization means no background work. */ }
+      await _pumpFinished?.future;
+      await _importFinished?.future;
+      await _writes;
+      if (schedule) { try { await SubtitleJobSchedule.schedule(); } on Object { /* Existing periodic work can recover. */ } }
+      _jobs.clear();
+      final ownership = _ownership;
+      _ownership = null;
+      _ownershipDirectory = null;
+      await ownership?.release();
+      if (epoch != _profileEpoch || !_foreground || key == null) return;
+      await _load(key, epoch);
+      if (epoch == _profileEpoch) _wake();
+    }();
     notifyListeners();
   }
 
@@ -168,6 +209,22 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
       final support = await getApplicationSupportDirectory();
       final root = Directory(p.join(support.path, 'subtitle_jobs', key));
       await root.create(recursive: true);
+      while (_ownership == null && epoch == _profileEpoch && (_foreground || _headless)) {
+        final ownership = await SubtitleJobOwnership.acquire(root);
+        if (epoch != _profileEpoch || !_foreground && !_headless) {
+          await ownership?.release();
+          return;
+        }
+        if (ownership != null) { _ownership = ownership; _ownershipDirectory = root.path; break; }
+        if (_headless) return;
+        _loadError = 'Waiting for the background subtitle window to release its checkpoint.';
+        notifyListeners();
+        await Future<void>.delayed(const Duration(seconds: 1));
+      }
+      if (_ownership == null || epoch != _profileEpoch) return;
+      _loadError = null;
+      final revoked = await SubtitleJobActivity.isRevoked(key);
+      if (_headless && revoked) return;
       final loaded = <SubtitleJob>[];
       await for (final entity in root.list(followLinks: false)) {
         if (epoch != _profileEpoch) return;
@@ -191,8 +248,8 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
           final bytes = json['audioBytes'] as int;
           final rawSource = json['source'];
           final source = rawSource is Map<String, dynamic> ? rawSource : null;
-          if (!const [1, 2].contains(json['schema']) || json['id'] != p.basename(entity.path) ||
-              rawSource != null && (json['schema'] != 2 || source == null) ||
+          if (!const [1, 2, 3].contains(json['schema']) || json['id'] != p.basename(entity.path) ||
+              rawSource != null && (!const [2, 3].contains(json['schema']) || source == null) ||
               duration <= 0 || duration > 8 * 3600000 || bytes < (source == null ? 44 : 0) || bytes > _maximumAudioBytes ||
               !RegExp(r'^[0-9a-f]{64}$').hasMatch(json['audioDigest'] as String) ||
               !RegExp(r'^[0-9a-f]{64}$').hasMatch(json['identity'] as String)) continue;
@@ -213,9 +270,10 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
             sourceBindingKey: source?['binding'] as String?, audioOrdinal: source?['audioOrdinal'] as int?,
             timelineOffsetMs: source?['timelineOffsetMs'] as int? ?? 0,
           );
+          job._backgroundAllowed = !revoked && !job.usesSourceDecoder && json['backgroundAllowed'] == true;
           job._state = SubtitleJobState.values.byName(json['state'] as String);
           if (job.state == SubtitleJobState.running || job.state == SubtitleJobState.queued) {
-            job._state = SubtitleJobState.paused;
+            job._state = job.backgroundAllowed ? SubtitleJobState.queued : SubtitleJobState.paused;
           }
           final chunks = (json['completed'] as List).cast<int>();
           if (chunks.length > job.chunkCount || chunks.any((i) => i < 0 || i >= job.chunkCount)) continue;
@@ -228,6 +286,7 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
           job._runtime = json['runtime'] as String;
           job._fallback = json['fallback'] == true;
           job._detectedLanguage = json['detectedLanguage'] as String;
+          if (json['pausedReason'] == 'modelMissing') job._message = 'Install the selected speech model in the foreground first.';
           // Decoded audio is temporary, even if the process exited mid-window.
           final temporary = Directory(p.join(entity.path, 'window'));
           if (await temporary.exists()) await temporary.delete(recursive: true);
@@ -239,10 +298,16 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
       if (epoch != _profileEpoch) return;
       _root = root.path;
       _jobs.addAll(loaded..sort((a, b) => b.id.compareTo(a.id)));
+      if (revoked) { for (final job in loaded) { await _persist(job); } }
       notifyListeners();
     } catch (_) {
       if (epoch == _profileEpoch) {
         _loadError = 'The transcription queue could not be opened.';
+        _root = null;
+        final ownership = _ownership;
+        _ownership = null;
+        _ownershipDirectory = null;
+        await ownership?.release();
         notifyListeners();
       }
     }
@@ -255,12 +320,14 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     int Function()? playheadMs, bool Function()? playbackBusy,
   }) async {
     await ready;
+    _requireOwnership();
     if (_importing) throw StateError('Another audio file is being staged.');
     if (_root == null || !RegExp(r'^[0-9a-f]{64}$').hasMatch(identityKey)) {
       throw StateError('Choose an active profile and a stable media item before queuing transcription.');
     }
     if (_jobs.length >= _maximumJobs) throw StateError('Delete an old job before adding another (12-job limit).');
     _importing = true;
+    _importFinished = Completer<void>();
     final epoch = _profileEpoch;
     Directory? staging;
     try {
@@ -316,8 +383,8 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
       _wake();
       return job;
     } finally {
-      _importing = false;
-      if (staging != null && await staging.exists()) await staging.delete(recursive: true);
+      try { if (staging != null && await staging.exists()) await staging.delete(recursive: true); }
+      finally { _importing = false; _importFinished?.complete(); _importFinished = null; }
     }
   }
 
@@ -333,12 +400,13 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     final epoch = _profileEpoch;
     try {
       await ready;
+      _requireOwnership();
       if (_importing || _root == null || epoch != _profileEpoch ||
           !source.isCurrent || !RegExp(r'^[0-9a-f]{64}$').hasMatch(identityKey)) {
         throw StateError('The source or profile changed, or another job is being created.');
       }
       if (_jobs.length >= _maximumJobs) throw StateError('Delete an old job before adding another (12-job limit).');
-      _importing = true; importing = true;
+      _importing = true; importing = true; _importFinished = Completer<void>();
       final random = math.Random.secure();
       final suffix = List.generate(8, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
       final id = '${DateTime.now().microsecondsSinceEpoch}_$suffix';
@@ -366,9 +434,12 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
       notifyListeners(); _wake();
       return job;
     } finally {
-      if (importing) _importing = false;
-      if (!claimed) await source.close();
-      if (staging != null && await staging.exists()) await staging.delete(recursive: true);
+      try {
+        if (!claimed) await source.close();
+        if (staging != null && await staging.exists()) await staging.delete(recursive: true);
+      } finally {
+        if (importing) { _importing = false; _importFinished?.complete(); _importFinished = null; }
+      }
     }
   }
 
@@ -377,12 +448,46 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     try { await source?.close(); } catch (_) {}
   }
 
+  void _requireOwnership() {
+    if (_ownership == null || _root == null || !_headless && !_foreground) {
+      throw StateError('Wait for the subtitle queue to reopen in the foreground.');
+    }
+  }
+
+  Future<void> allowBackground(SubtitleJob job, bool allowed) async {
+    await ready;
+    _requireOwnership();
+    final epoch = _profileEpoch, key = _profileKey!;
+    bool current() => epoch == _profileEpoch && _foreground && _root != null && _jobs.contains(job);
+    if (!_jobs.contains(job) || job.usesSourceDecoder || job.terminal) {
+      throw StateError('Only a retained-WAV job can be scheduled in the background.');
+    }
+    if (allowed && !await SubtitleAiService.instance.isProviderModelInstalled(job.provider)) {
+      throw StateError('Install the selected speech model in the foreground first.');
+    }
+    if (!current() || job.terminal) throw StateError('The profile changed.');
+    if (allowed) await SubtitleJobActivity.reauthorize(key);
+    if (!current()) throw StateError('The profile changed.');
+    job._backgroundAllowed = allowed;
+    await _persist(job);
+    if (allowed && !await SubtitleJobSchedule.schedule()) {
+      if (!current()) throw StateError('The profile changed.');
+      job._backgroundAllowed = false;
+      await _persist(job);
+      notifyListeners();
+      throw StateError('OS subtitle scheduling is unavailable on this device.');
+    }
+    notifyListeners();
+  }
+
   Future<void> pause(SubtitleJob job) => _setState(job, SubtitleJobState.paused);
   Future<void> cancel(SubtitleJob job) => _setState(job, SubtitleJobState.cancelled);
   Future<void> resume(SubtitleJob job, {int Function()? playheadMs, bool Function()? playbackBusy,
     SubtitleJobSource? source}) async {
     var claimed = false;
     try {
+      await ready;
+      _requireOwnership();
       if (job.terminal || !_jobs.contains(job)) throw StateError('This job is not available to resume.');
       if (job.usesSourceDecoder && (source == null || !source.isCurrent ||
           source.bindingKey != job.sourceBindingKey || source.durationMs != job.durationMs ||
@@ -391,48 +496,66 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
       }
       if (!job.usesSourceDecoder && source != null) throw StateError('This job uses its retained WAV.');
       // Retire the old generation before releasing a possibly active decoder.
+      final epoch = _profileEpoch;
       ++job._generation;
       await _closeSource(job);
-      if (!_jobs.contains(job) || source != null && !source.isCurrent) throw StateError('The source changed.');
+      if (epoch != _profileEpoch || _root == null || !_jobs.contains(job) || source != null && !source.isCurrent) {
+        throw StateError('The source changed.');
+      }
       job._source = source; claimed = true;
       job._playhead = playheadMs;
       job._playbackBusy = playbackBusy;
       await _setState(job, SubtitleJobState.queued);
+      if (job.backgroundAllowed && !await SubtitleJobSchedule.schedule()) {
+        throw StateError('OS subtitle scheduling is unavailable on this device.');
+      }
       _wake();
     } finally { if (!claimed) await source?.close(); }
   }
 
   Future<void> _setState(SubtitleJob job, SubtitleJobState state) async {
+    _requireOwnership();
     if (!_jobs.contains(job)) throw StateError('This job belongs to another profile.');
     if (job.terminal) return;
     ++job._generation;
     job._state = state;
     job._message = null;
-    if (state != SubtitleJobState.queued) await _closeSource(job);
+    final saved = _persist(job);
     notifyListeners();
-    await _persist(job);
+    await Future.wait<void>([saved, if (state != SubtitleJobState.queued) _closeSource(job)]);
   }
 
   Future<void> delete(SubtitleJob job) async {
+    await ready;
+    _requireOwnership();
     if (!_jobs.contains(job)) return;
     ++job._generation;
     job._state = SubtitleJobState.cancelled;
     _jobs.remove(job);
-    await _closeSource(job);
-    notifyListeners();
-    await _serialize(() async {
+    final deletion = _serialize(() async {
       final directory = Directory(job.directory);
       if (await directory.exists()) await directory.delete(recursive: true);
     });
+    notifyListeners();
+    await Future.wait<void>([deletion, _closeSource(job)]);
   }
 
-  Future<void> _serialize(Future<void> Function() operation) {
-    final next = _writes.then((_) => operation());
-    _writes = next.catchError((Object _) {});
+  Future<T> _serialize<T>(Future<T> Function() operation) {
+    final ownership = _ownership;
+    final next = _writes.then((_) {
+      if (ownership == null || !identical(ownership, _ownership)) {
+        throw StateError('Subtitle checkpoint ownership changed.');
+      }
+      return operation();
+    });
+    _writes = next.then<void>((_) {}, onError: (Object _, StackTrace __) {});
     return next;
   }
 
   Future<void> _persist(SubtitleJob job) {
+    if (p.dirname(job.directory) != _ownershipDirectory) {
+      return Future.error(StateError('This checkpoint belongs to another profile owner.'));
+    }
     final data = jsonEncode(job._json());
     return _serialize(() => _atomicWrite(File(p.join(job.directory, 'job.json')), data));
   }
@@ -450,24 +573,20 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    _foreground = state == AppLifecycleState.resumed;
-    if (!_foreground) {
-      for (final job in _jobs.toList()) {
-        if (job.usesSourceDecoder && (job.state == SubtitleJobState.queued || job.state == SubtitleJobState.running)) {
-          unawaited(pause(job).catchError((Object _) {}));
-        }
-      }
-    }
-    if (_foreground) _wake();
+    final foreground = state == AppLifecycleState.resumed || state == AppLifecycleState.inactive;
+    if (_headless || foreground == _foreground) return;
+    _foreground = foreground;
+    _transition(background: !foreground);
   }
 
   void _wake() {
     _retry?.cancel();
-    if (!_pumping) unawaited(_pump());
+    if (!_headless && _foreground && _root != null && _ownership != null && !_pumping) unawaited(_pump());
   }
 
   Future<void> _pump() async {
     _pumping = true;
+    final finished = _pumpFinished = Completer<void>();
     try {
       while (_foreground) {
         final live = SubtitlePlaybackTranscriptionService.instance;
@@ -498,6 +617,8 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
       }
     } finally {
       _pumping = false;
+      finished.complete();
+      if (identical(_pumpFinished, finished)) _pumpFinished = null;
       notifyListeners();
       if (_jobs.any((job) => job.state == SubtitleJobState.queued)) {
         _retry = Timer(const Duration(seconds: 15), _wake);
@@ -508,7 +629,8 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
   Future<void> _step(SubtitleJob job) async {
     final epoch = _profileEpoch;
     final generation = job._generation;
-    bool current() => epoch == _profileEpoch && generation == job._generation && _jobs.contains(job);
+    bool current() => epoch == _profileEpoch && generation == job._generation && _jobs.contains(job) &&
+        _ownership != null && (_headless ? _workerMayRun?.call() == true : _foreground);
     try {
       job._state = SubtitleJobState.running;
       job._message = 'Preparing transcription';
@@ -610,7 +732,7 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     if (!job.usesSourceDecoder) {
       return SubtitleAiService.instance.transcribeWav(audio.path, provider: job.provider,
         languageCode: job.language, priority: SubtitleWorkPriority.background, isCurrent: valid,
-        translateToEnglish: job.translateToEnglish, allowEmpty: true,
+        translateToEnglish: job.translateToEnglish, allowEmpty: true, allowModelDownload: !_headless,
         startMs: first, endMs: last, onProgress: progress);
     }
     if (source == null || !valid()) throw StateError('Reopen this job’s original source.');
@@ -653,7 +775,53 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     }
   }
 
+  static Future<bool> runBackgroundProfile(String key, DateTime deadline, bool Function() mayRun) async {
+    if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(key) || !mayRun()) return false;
+    final service = SubtitleJobService._(headless: true);
+    service._profileKey = key;
+    service._workerMayRun = () => mayRun() && DateTime.now().isBefore(deadline);
+    try {
+      await service._load(key, 0);
+      if (service._ownership == null || service.loadError != null) return false;
+      final queue = service._jobs.where((job) => job.backgroundAllowed &&
+          !job.usesSourceDecoder && job.state == SubtitleJobState.queued).toList();
+      while (queue.isNotEmpty && service._workerMayRun!()) {
+        final job = queue.removeAt(0);
+        // A headless engine cannot establish that every playback owner is idle.
+        // Unknown is never treated as idle, including background audio playback.
+        if (job.idleOnly) continue;
+        if (job.chargingOnly && await PowerSourceService.isConnected().timeout(
+            const Duration(seconds: 5), onTimeout: () => null) != true) continue;
+        if (!service._workerMayRun!()) break;
+        if (!await SubtitleAiService.instance.isProviderModelInstalled(job.provider)) {
+          job._state = SubtitleJobState.paused;
+          job._message = 'Install the selected speech model in the foreground first.';
+          await service._persist(job);
+          continue;
+        }
+        final before = job.completedChunks;
+        await service._step(job);
+        if (job.state == SubtitleJobState.running) {
+          // A foreground request or deadline discarded the unfinished window.
+          job._state = SubtitleJobState.queued;
+          await service._persist(job);
+        }
+        if (job.state == SubtitleJobState.queued && job.completedChunks > before) queue.add(job);
+      }
+      return !service._jobs.any((job) => job.backgroundAllowed && job.state == SubtitleJobState.queued);
+    } finally {
+      ++service._profileEpoch;
+      await service._writes;
+      await service._ownership?.release();
+      service._ownership = null;
+      service.dispose();
+    }
+  }
+
   Future<SubtitleTranscriptionResult> readResult(SubtitleJob job) async {
+    await ready;
+    _requireOwnership();
+    return _serialize(() async {
     if (!_jobs.contains(job)) throw StateError('The active profile changed.');
     final epoch = _profileEpoch;
     final cues = <SubtitleCue>[];
@@ -710,5 +878,6 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
       detectedLanguage: job.translateToEnglish ? 'en' : job._detectedLanguage,
       translatedToEnglish: job.translateToEnglish,
     );
+    });
   }
 }

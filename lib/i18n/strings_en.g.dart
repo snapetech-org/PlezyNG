@@ -7480,6 +7480,30 @@ class Translations$videoSettings$en {
 	/// en: 'Search subtitles again'
 	String get subtitleAutoSearchAgain => 'Search subtitles again';
 
+	/// en: 'Allow OS background transcription'
+	String get subtitleBackgroundJobs => 'Allow OS background transcription';
+
+	/// en: 'Retained WAV jobs can continue while the app is inactive. The OS chooses when they run. The selected speech model must already be installed; the worker never downloads models. Source jobs and jobs requiring confirmed playback idle remain in the foreground.'
+	String get subtitleBackgroundJobsHelp => 'Retained WAV jobs can continue while the app is inactive. The OS chooses when they run. The selected speech model must already be installed; the worker never downloads models. Source jobs and jobs requiring confirmed playback idle remain in the foreground.';
+
+	/// en: 'Completed windows survive restarts and require review before attachment. Normal jobs resume explicitly. Jobs allowed in the background can resume automatically. Pause or cancel retires the current window and preserves completed checkpoints.'
+	String get subtitleBackgroundQueueHelp => 'Completed windows survive restarts and require review before attachment. Normal jobs resume explicitly. Jobs allowed in the background can resume automatically. Pause or cancel retires the current window and preserves completed checkpoints.';
+
+	/// en: 'Waiting for the background subtitle window to release its checkpoint…'
+	String get subtitleBackgroundWaiting => 'Waiting for the background subtitle window to release its checkpoint…';
+
+	/// en: 'Install the selected speech model by generating subtitles in the foreground first.'
+	String get subtitleBackgroundModelRequired => 'Install the selected speech model by generating subtitles in the foreground first.';
+
+	/// en: 'OS subtitle scheduling is unavailable on this device. The job remains available in the app.'
+	String get subtitleBackgroundUnavailable => 'OS subtitle scheduling is unavailable on this device. The job remains available in the app.';
+
+	/// en: 'This source job requires its current file and audio lease and pauses when the app leaves the foreground.'
+	String get subtitleBackgroundSourceNote => 'This source job requires its current file and audio lease and pauses when the app leaves the foreground.';
+
+	/// en: 'This job requires confirmed playback idle. It will wait for the app to reopen instead of assuming that background audio has stopped.'
+	String get subtitleBackgroundIdleNote => 'This job requires confirmed playback idle. It will wait for the app to reopen instead of assuming that background audio has stopped.';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -22964,6 +22988,14 @@ extension on Translations {
 			'videoSettings.subtitleAutoExpired' => 'The 12-second subtitle startup limit was reached. Playback can continue; you can search again.',
 			'videoSettings.subtitleAutoSkip' => 'Skip subtitle retrieval',
 			'videoSettings.subtitleAutoSearchAgain' => 'Search subtitles again',
+			'videoSettings.subtitleBackgroundJobs' => 'Allow OS background transcription',
+			'videoSettings.subtitleBackgroundJobsHelp' => 'Retained WAV jobs can continue while the app is inactive. The OS chooses when they run. The selected speech model must already be installed; the worker never downloads models. Source jobs and jobs requiring confirmed playback idle remain in the foreground.',
+			'videoSettings.subtitleBackgroundQueueHelp' => 'Completed windows survive restarts and require review before attachment. Normal jobs resume explicitly. Jobs allowed in the background can resume automatically. Pause or cancel retires the current window and preserves completed checkpoints.',
+			'videoSettings.subtitleBackgroundWaiting' => 'Waiting for the background subtitle window to release its checkpoint…',
+			'videoSettings.subtitleBackgroundModelRequired' => 'Install the selected speech model by generating subtitles in the foreground first.',
+			'videoSettings.subtitleBackgroundUnavailable' => 'OS subtitle scheduling is unavailable on this device. The job remains available in the app.',
+			'videoSettings.subtitleBackgroundSourceNote' => 'This source job requires its current file and audio lease and pauses when the app leaves the foreground.',
+			'videoSettings.subtitleBackgroundIdleNote' => 'This job requires confirmed playback idle. It will wait for the app to reopen instead of assuming that background audio has stopped.',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

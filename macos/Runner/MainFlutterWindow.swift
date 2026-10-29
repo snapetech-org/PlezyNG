@@ -6,7 +6,8 @@ class MainFlutterWindow: NSWindow {
     let project = FlutterDartProject()
     project.dartEntrypointArguments = Array(CommandLine.arguments.dropFirst())
     let flutterViewController = FlutterViewController(project: project)
-    let preparationWorker = CommandLine.arguments.contains("--plezy-preparation-worker")
+    let preparationWorker = CommandLine.arguments.contains("--plezy-preparation-worker") ||
+      CommandLine.arguments.contains("--plezy-subtitle-worker")
     if preparationWorker {
       NSApp.setActivationPolicy(.prohibited)
       self.orderOut(nil)

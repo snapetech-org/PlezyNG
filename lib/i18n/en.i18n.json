@@ -4561,7 +4561,15 @@
     "subtitleAutoCancelled": "Subtitle retrieval was cancelled. A download already accepted by the server may still finish there.",
     "subtitleAutoExpired": "The 12-second subtitle startup limit was reached. Playback can continue; you can search again.",
     "subtitleAutoSkip": "Skip subtitle retrieval",
-    "subtitleAutoSearchAgain": "Search subtitles again"
+    "subtitleAutoSearchAgain": "Search subtitles again",
+    "subtitleBackgroundJobs": "Allow OS background transcription",
+    "subtitleBackgroundJobsHelp": "Retained WAV jobs can continue while the app is inactive. The OS chooses when they run. The selected speech model must already be installed; the worker never downloads models. Source jobs and jobs requiring confirmed playback idle remain in the foreground.",
+    "subtitleBackgroundQueueHelp": "Completed windows survive restarts and require review before attachment. Normal jobs resume explicitly. Jobs allowed in the background can resume automatically. Pause or cancel retires the current window and preserves completed checkpoints.",
+    "subtitleBackgroundWaiting": "Waiting for the background subtitle window to release its checkpoint…",
+    "subtitleBackgroundModelRequired": "Install the selected speech model by generating subtitles in the foreground first.",
+    "subtitleBackgroundUnavailable": "OS subtitle scheduling is unavailable on this device. The job remains available in the app.",
+    "subtitleBackgroundSourceNote": "This source job requires its current file and audio lease and pauses when the app leaves the foreground.",
+    "subtitleBackgroundIdleNote": "This job requires confirmed playback idle. It will wait for the app to reopen instead of assuming that background audio has stopped."
   },
   "performanceOverlay": {
     "color": "Color",

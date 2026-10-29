@@ -5725,5 +5725,13 @@
   "videoSettings.subtitleAutoCancelled": "f36e509b82f64e75",
   "videoSettings.subtitleAutoExpired": "1cc3243313367558",
   "videoSettings.subtitleAutoSkip": "e7257186d8f7ad32",
-  "videoSettings.subtitleAutoSearchAgain": "e4eaa7c7fc79c8d2"
+  "videoSettings.subtitleAutoSearchAgain": "e4eaa7c7fc79c8d2",
+  "videoSettings.subtitleBackgroundJobs": "b537f2d3a5c76d9c",
+  "videoSettings.subtitleBackgroundJobsHelp": "cd5ddd352a0f37b6",
+  "videoSettings.subtitleBackgroundQueueHelp": "8fe54f2f9be9c70f",
+  "videoSettings.subtitleBackgroundWaiting": "56df5e750d0fc05f",
+  "videoSettings.subtitleBackgroundModelRequired": "028af775870ac74b",
+  "videoSettings.subtitleBackgroundUnavailable": "783738fd127a947f",
+  "videoSettings.subtitleBackgroundSourceNote": "1488048f42ce0c82",
+  "videoSettings.subtitleBackgroundIdleNote": "9a436212b4959ff3"
 }

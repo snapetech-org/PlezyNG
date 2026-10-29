@@ -23,8 +23,15 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
   Future<void> _action(Future<void> Function() action) async {
     if (_working) return;
     setState(() { _working = true; _error = null; });
-    try { await action(); } catch (_) {
-      if (mounted) setState(() => _error = Translations.of(context).videoControls.subtitleJobs.actionFailed);
+    try { await action(); } catch (error) {
+      if (mounted) {
+        final t = Translations.of(context);
+        setState(() => _error = switch (error is StateError ? error.message : null) {
+          'Install the selected speech model in the foreground first.' => t.videoSettings.subtitleBackgroundModelRequired,
+          'OS subtitle scheduling is unavailable on this device.' => t.videoSettings.subtitleBackgroundUnavailable,
+          _ => t.videoControls.subtitleJobs.actionFailed,
+        });
+      }
     } finally { if (mounted) setState(() => _working = false); }
   }
 
@@ -51,6 +58,7 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
   Widget build(BuildContext context) {
     final service = SubtitleJobService.instance;
     final copy = Translations.of(context).videoControls.subtitleJobs;
+    final backgroundCopy = Translations.of(context).videoSettings;
     String stateLabel(SubtitleJobState state) => switch (state) {
       SubtitleJobState.queued => copy.stateQueued,
       SubtitleJobState.running => copy.stateRunning,
@@ -69,6 +77,7 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
         'Waiting for playback to stop (reopen this item to report playback state).' => copy.waitingPlayback,
         'Waiting for confirmed external power.' => copy.waitingPower,
         'Preparing transcription' => copy.preparing,
+        'Install the selected speech model in the foreground first.' => backgroundCopy.subtitleBackgroundModelRequired,
         'All audio windows saved; review before attachment.' => copy.allAudioSaved,
         'This window could not finish. Completed windows are saved; resume to retry.' => copy.windowFailed,
         _ => copy.statusUnavailable,
@@ -77,6 +86,7 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
     String loadMessage(String? message) => switch (message) {
       'A damaged job record was skipped. Other jobs remain available.' => copy.loadDamaged,
       'The transcription queue could not be opened.' => copy.loadFailed,
+      'Waiting for the background subtitle window to release its checkpoint.' => backgroundCopy.subtitleBackgroundWaiting,
       null => '',
       _ => copy.loadFailed,
     };
@@ -89,7 +99,9 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
           animation: service,
           builder: (context, _) => ListView(
             children: [
-              Text(copy.description),
+              Text(backgroundCopy.subtitleBackgroundQueueHelp),
+              const SizedBox(height: 8),
+              Text(backgroundCopy.subtitleBackgroundJobsHelp),
               if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
               if (service.loadError != null) Text(loadMessage(service.loadError)),
               if (service.jobs.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text(copy.noJobs)),
@@ -107,6 +119,14 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
                       if (job.chargingOnly || job.idleOnly)
                         Text([if (job.chargingOnly) copy.externalPowerOnly, if (job.idleOnly) copy.whilePlaybackIdle].join(' · ')),
                       if (job.identityKey != widget.identityKey) Text(copy.openThisMedia),
+                      if (job.usesSourceDecoder) Text(backgroundCopy.subtitleBackgroundSourceNote)
+                      else if (!job.terminal) SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(backgroundCopy.subtitleBackgroundJobs),
+                        subtitle: job.idleOnly ? Text(backgroundCopy.subtitleBackgroundIdleNote) : null,
+                        value: job.backgroundAllowed,
+                        onChanged: _working ? null : (value) => _action(() => service.allowBackground(job, value)),
+                      ),
                       Wrap(spacing: 8, children: [
                         if (job.state == SubtitleJobState.running || job.state == SubtitleJobState.queued)
                           TextButton(onPressed: _working ? null : () => _action(() => service.pause(job)), child: Text(copy.pause)),

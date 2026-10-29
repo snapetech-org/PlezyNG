@@ -306,6 +306,7 @@
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>org.plezy.preparation</string>
+		<string>org.plezy.subtitle.jobs</string>
 	</array>
 </dict>
 </plist>

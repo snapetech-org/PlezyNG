@@ -40,6 +40,9 @@ import 'screens/profile/pin_entry_dialog.dart';
 import 'screens/profile/profile_switch_screen.dart';
 import 'services/storage_service.dart';
 import 'services/remote_streams/remote_preparation_worker.dart';
+import 'services/subtitle_background_worker.dart';
+import 'services/subtitle_job_ownership.dart';
+import 'services/subtitle_job_service.dart';
 import 'services/assistive_technology_service.dart';
 import 'services/device_performance.dart';
 import 'services/cast_media_service.dart';
@@ -162,10 +165,15 @@ void _registerTvosPlatformPlugins() {
 
 void main([List<String> args = const <String>[]]) {
   final binding = PlezyWidgetsBinding.ensureInitialized();
+  if (args.contains('--plezy-subtitle-worker')) {
+    unawaited(runDesktopSubtitleWorker());
+    return;
+  }
   if (args.contains('--plezy-preparation-worker')) {
     unawaited(runDesktopPreparationWorker());
     return;
   }
+  unawaited(SubtitleJobActivity.instance.start().catchError((Object _) {}));
   unawaited(IncomingSubtitleShareService.instance.start());
   for (final argument in args) {
     final normalized = argument.toLowerCase();
@@ -1867,6 +1875,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
               profileConnections: context.read<ProfileConnectionRegistry>(),
               storage: context.read<StorageService>(),
             );
+            SubtitleJobService.instance.bindProfile(provider);
             unawaited(provider.initialize());
             return provider;
           },

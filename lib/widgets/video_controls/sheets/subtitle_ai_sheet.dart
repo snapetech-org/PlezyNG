@@ -78,21 +78,25 @@ class _SubtitleOperationSnapshot {
     required this.player,
     required this.mediaSessionGeneration,
     required this.revisionIdentity,
+    required this.profileId,
     required this.audioId,
   });
 
   final Player player;
   final int? mediaSessionGeneration;
   final SubtitleRevisionIdentity? revisionIdentity;
+  final String? profileId;
   final String? audioId;
 
   bool isCurrent({
     required Player currentPlayer,
     required SubtitleRevisionIdentity? currentRevisionIdentity,
+    required String? currentProfileId,
     required bool Function()? isRevisionIdentityCurrent,
   }) {
     if (!identical(player, currentPlayer)) return false;
     if (currentPlayer.disposed || currentPlayer.state.track.audio?.id != audioId) return false;
+    if (currentProfileId != profileId) return false;
     if (mediaSessionGeneration != null) {
       if (currentPlayer is! PlayerMediaSessionIdentity ||
           currentPlayer.mediaSessionGeneration != mediaSessionGeneration) {
@@ -285,6 +289,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       player: player,
       mediaSessionGeneration: player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null,
       revisionIdentity: _revisionIdentity,
+      profileId: _activeProfileId,
       audioId: player.state.track.audio?.id,
     );
     _operationSnapshot = snapshot;
@@ -296,8 +301,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     });
     try {
       await operation();
+      if (!mounted || !_operationIdentityIsCurrent) return;
     } catch (error) {
-      if (mounted) setState(() => _error = _readableError(error));
+      if (mounted && _operationIdentityIsCurrent) {
+        setState(() => _error = _readableError(error));
+      }
     } finally {
       await _deleteTemporaryWavCopies();
       if (identical(_operationSnapshot, snapshot)) _operationSnapshot = null;
@@ -311,6 +319,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     return snapshot.isCurrent(
       currentPlayer: widget.player,
       currentRevisionIdentity: _revisionIdentity,
+      currentProfileId: _activeProfileId,
       isRevisionIdentityCurrent: widget.isRevisionIdentityCurrent,
     );
   }

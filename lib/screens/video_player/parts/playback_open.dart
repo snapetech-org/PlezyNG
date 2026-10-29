@@ -223,8 +223,6 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
     final attemptKey =
         '${SubtitleSelectionRules.activeProfileId}:${metadata.globalKey}:${source.mediaSourceId ?? result.selectedMediaIndex}:${languagesToSearch.join(',')}';
     if (_autoSubtitleFetchAttempts.contains(attemptKey)) return (result: result, streamId: null);
-    if (_autoSubtitleFetchAttempts.length >= 64) _autoSubtitleFetchAttempts.remove(_autoSubtitleFetchAttempts.first);
-    _autoSubtitleFetchAttempts.add(attemptKey);
 
     final activePlayer = player;
     if (activePlayer == null) return (result: result, streamId: null);
@@ -233,6 +231,8 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
     final timeline = parts == null ? null : MediaPartTimeline.fromParts(parts, currentIndex: partIndex);
     if (partIndex > 0 && timeline == null) return (result: result, streamId: null);
     final discoveryPosition = timeline?.current.start;
+    if (_autoSubtitleFetchAttempts.length >= 64) _autoSubtitleFetchAttempts.remove(_autoSubtitleFetchAttempts.first);
+    _autoSubtitleFetchAttempts.add(attemptKey);
     final generation = _transitionGate.generation;
     final profile = SubtitleSelectionRules.activeProfileId;
     bool sourceCurrent() => mounted && !_shuttingDown && player == activePlayer &&
@@ -273,6 +273,7 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
             .where(
               (candidate) =>
                   candidate.key.isNotEmpty &&
+                  candidate.key.length <= 4096 &&
                   roleRules.acceptsForced(candidate.forced || titleSaysForced(candidate.title) || titleSaysForced(candidate.displayTitle)) &&
                   matchesLanguageFor(searchLanguage, candidate.languageCode, candidate.language) &&
                   !SubtitleRejectionService.isRejected(
@@ -323,7 +324,11 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
             mediaSourceId: source.mediaSourceId ?? result.selectedMediaSourceId,
           )
           .timeout(const Duration(seconds: 5)));
-      if (!downloaded || !isCurrent()) return (result: result, streamId: null);
+      if (!downloaded) {
+        attempt.finish(SubtitleFetchStage.failed);
+        return (result: result, streamId: null);
+      }
+      if (!isCurrent()) return (result: result, streamId: null);
 
       attempt.phase(SubtitleFetchStage.refreshing);
       final expectedStreamId = await attempt.wait(() => client.consumeDownloadedSubtitleStreamId(
@@ -368,7 +373,10 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
         newTrack,
         mediaSourceId: source.mediaSourceId ?? result.selectedMediaSourceId,
       );
-      if (sidecar == null) return (result: result, streamId: null);
+      if (sidecar == null) {
+        attempt.finish(SubtitleFetchStage.failed);
+        return (result: result, streamId: null);
+      }
 
       final mergedTracks = <MediaSubtitleTrack>[
         ...source.subtitleTracks,
@@ -388,10 +396,15 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
         streamId: newTrack.id,
       );
     } catch (_) {
-      attempt.finish(SubtitleFetchStage.failed);
+      attempt.finish(sourceCurrent() ? SubtitleFetchStage.failed : SubtitleFetchStage.cancelled);
       return (result: result, streamId: null);
     } finally {
-      attempt.finish(SubtitleFetchStage.noMatch);
+      if (attempt.current) {
+        attempt.finish(SubtitleFetchStage.noMatch);
+      } else if (!attempt.abort.isAborted) {
+        attempt.finish(DateTime.now().isAfter(attempt.deadline)
+            ? SubtitleFetchStage.expired : SubtitleFetchStage.cancelled);
+      }
     }
   }
 

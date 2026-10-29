@@ -1647,7 +1647,7 @@ class PlexClient
   }) async {
     final response = await _http.put(
       '/library/metadata/$ratingKey/subtitles',
-        abort: abort,
+      abort: abort,
       queryParameters: {
         'key': key,
         if (codec != null && codec.isNotEmpty) 'codec': codec,

@@ -66,7 +66,8 @@ final class SubtitleFetchAttempt {
   void finish(SubtitleFetchStage stage) {
     if (!identical(_owner._active, this)) return;
     _watch?.cancel(); _owner._active = null;
-    _owner._stage = stage == SubtitleFetchStage.failed && DateTime.now().isAfter(deadline)
+    _owner._stage = DateTime.now().isAfter(deadline) &&
+        stage != SubtitleFetchStage.cancelled && stage != SubtitleFetchStage.completed
         ? SubtitleFetchStage.expired : stage;
     abort.abort();
     _owner._changed();

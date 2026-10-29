@@ -92,7 +92,7 @@ corpus qualification, rights decisions and production custody/publication are al
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `597cdfb74090c983191dca0505adb8878152c07d` with C ABI v2:
+- The app pins MilkRust `e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86` with C ABI v2:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -320,7 +320,7 @@ registers the core notices from an app asset.
 This is source integration only. GIF decoding in WASM runs on the calling thread.
 Finite GIF loop counts now repeat each cycle before holding the final frame; a
 missing loop extension plays once and a zero count loops forever. The app pins
-MilkRust `597cdfb74090c983191dca0505adb8878152c07d` with ABI v2. The matching
+MilkRust `e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86` with ABI v2. The matching
 engine source also raises both hosts to the 100-name image-cache limit and uses
 packed 32-bit blend-vertex data with per-fragment 64×48 triangle interpolation.
 Reference compositing, browser CSP/codec behavior, compile/link, GPU, build and
@@ -339,3 +339,18 @@ native/visualizer/sources.lock.json.
 The app behavior remains source-only and unqualified. No build, test, browser,
 GPU or device run was performed for this checkpoint. Renderer pixel parity,
 non-default sprite-field conformance and the other ledger items remain open.
+
+
+## 2026-10-29 saved sprite runtime semantics checkpoint
+
+The paired engine source now uses MilkDrop's saved-sprite defaults and frame
+rules: a missing `SpriteBurn` defaults to always burning, other numeric values
+select the EEL `burn` register, and non-default `SpriteRot` modes apply
+`SpriteSpeed` to absolute host time. Script alpha remains unclamped after
+`SpriteAlpha`; the CPU packs legacy D3D vertex-color bytes once and both native
+GL and WebGL receive the same normalized bytes.
+
+The app lock pins MilkRust
+`e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86`. This closes these source-level sprite semantics within the
+documented compatibility profile. It does not establish reference-renderer
+pixel parity, GPU filtering/layer parity, builds, tests or device qualification.

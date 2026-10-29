@@ -106,7 +106,7 @@ fragments through the existing include directory. Their license/provenance
 remains the vendored MIT notice plus local patch inventory.
 
 
-The current MilkRust pin `597cdfb74090c983191dca0505adb8878152c07d` also
+The current MilkRust pin `e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86` also
 contains bounded function-macro stringification with preserved token-boundary
 whitespace and escaped string tokens, plus worker-based browser raster decoding.
 The WASM package builder stages the decoder worker beside the generated module;
@@ -130,3 +130,10 @@ results. These authored controls are not captures of the MilkDrop3 reference
 renderer.
 The native C++ and Emscripten builders already include the new aggregate headers
 and lowering fragments through their pinned vendored source directory.
+
+
+The current engine revision also closes the saved-sprite source gaps for the
+declared native/WebGL profile: omitted `SpriteBurn` defaults to always-on,
+non-default rotation uses absolute host time, and CPU-side packed D3D vertex
+bytes are shared by both GL hosts. Keep the existing source-only qualification
+boundary; this does not replace reference pixel comparisons or target builds.

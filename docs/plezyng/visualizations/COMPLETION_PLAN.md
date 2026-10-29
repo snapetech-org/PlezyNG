@@ -436,7 +436,7 @@ records the exact engine revision and ABI separately from platform artifacts.
 
 ## 2026-10-29 saved blend and animation source checkpoint
 
-The app now pins MilkRust `597cdfb74090c983191dca0505adb8878152c07d`, C ABI v2.
+The app now pins MilkRust `e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86`, C ABI v2.
 Native GL and WebGL upload a packed 32-bit vertex field and evaluate the saved
 64×48 transition mesh with matching triangle interpolation. Both hosts admit
 the documented 100-name image cache within the existing decoded-pixel budget.
@@ -455,6 +455,21 @@ The current app pin resolves omitted saved .milk2 header values from the
 previous double-preset runtime state. Process-start defaults are an unset
 pattern, progress 1, direction 0 and zero random values. Missing first-load
 patterns fail closed. The source lock records MilkRust commit
-597cdfb74090c983191dca0505adb8878152c07d. This closes the header carry-forward
+e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86. This closes the header carry-forward
 implementation item; it does not establish saved-pair visual parity or a
 qualified app runtime.
+
+
+## 2026-10-29 saved sprite semantics source closure
+
+MilkRust's current source implementation and PlezyNG's engine lock now agree on
+saved sprite semantics in the declared native/WebGL profile. The paired source
+checkpoint fixes the omitted `SpriteBurn` default, numeric static burn modes,
+absolute-time `SpriteRot`, and CPU-side D3D vertex-byte quantization shared by
+both renderers. See [the sprite implementation notes](https://github.com/snapetech-org/MilkRust/blob/e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86/docs/EMBEDDED_SPRITES.md)
+for the implemented rules.
+
+This closes the identified source gaps for saved sprite fields. The compatible
+MIT behavioral reference is the implementation basis; actual MilkDrop 3 image
+comparison, compiler/build checks, and target-device qualification remain
+separate gates. No execution was performed for this checkpoint.

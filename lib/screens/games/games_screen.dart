@@ -1244,6 +1244,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
                       TargetPlatform.iOS,
                       TargetPlatform.macOS,
                       TargetPlatform.linux,
+                      TargetPlatform.windows,
                     }.contains(defaultTargetPlatform))
                   SettingSwitchTile(
                     pref: SettingsService.gamePyrowaveForProfile(_profile!),

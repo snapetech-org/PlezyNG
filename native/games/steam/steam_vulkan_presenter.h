@@ -7,9 +7,9 @@ namespace plezy::steam {
 // Native windows must outlive the presenter. All operations, including destroy,
 // belong to one decoder worker; no Vulkan/WSI work runs on the Flutter thread.
 struct GpuWindow {
-  enum class Kind { android, wayland } kind;
+  enum class Kind { android, wayland, win32 } kind;
   void* display = nullptr;  // wl_display on Wayland
-  void* window = nullptr;   // ANativeWindow or wl_surface
+  void* window = nullptr;   // ANativeWindow, wl_surface or HWND
 };
 
 class VulkanPresenter {

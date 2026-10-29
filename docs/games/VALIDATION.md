@@ -496,3 +496,11 @@ independent cryptographic audit was performed here. Current-head private JIT
 jobs have not been dispatched from this environment; use the commands in
 [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md). Confidence is high in the recorded
 local results and unknown in untested device/service/network behavior.
+
+## Windows/Apple HDR source checkpoint — 2026-10-29
+
+- Windows x64 MinGW build now enables Vulkan/Pyrowave and links all five native test executables. Strict Windows adapter syntax checking passes. These executables were cross-built, not run on Windows.
+- Linux Vulkan/GStreamer rebuild passes; native regression results are recorded with the checkpoint.
+- Seven Steam source-preparation and Apple archive-script tests pass.
+- Apple tests now decode HDR 4:2:0/4:4:4 into RGBA16Half, check actual half-float output and reject unannounced color changes. They require an Apple SDK and compatible GPU; no result is claimed here.
+- MSVC x64/ARM64, Apple SDK builds, Android NDK builds and physical HDR displays remain required. See [DESKTOP_HDR.md](DESKTOP_HDR.md).

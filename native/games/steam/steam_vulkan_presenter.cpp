@@ -7,10 +7,13 @@
 #include <stdexcept>
 #include <utility>
 
-#if PLEZY_STEAM_PYROWAVE && !defined(_WIN32)
+#if PLEZY_STEAM_PYROWAVE
 #define VK_NO_PROTOTYPES
 #include <vulkan/vulkan.h>
-#ifdef __ANDROID__
+#if defined(_WIN32)
+#include <vulkan/vulkan_win32.h>
+#include <windows.h>
+#elif defined(__ANDROID__)
 #include <android/native_window.h>
 #include <vulkan/vulkan_android.h>
 #else
@@ -18,7 +21,9 @@ struct wl_display;
 struct wl_surface;
 #include <vulkan/vulkan_wayland.h>
 #endif
+#ifndef _WIN32
 #include <dlfcn.h>
+#endif
 #include <pyrowave.h>
 
 #include "shaders/steam_video_spirv.h"
@@ -26,30 +31,30 @@ struct wl_surface;
 namespace plezy::steam {
 namespace {
 constexpr uint64_t kGpuTimeout = 250000000;  // 250ms; never block the receiver on a hung frame.
-#define INSTANCE_FUNCTIONS(X)                                                                  \
-  X(DestroyInstance)                                                                           \
-  X(EnumeratePhysicalDevices) X(GetPhysicalDeviceProperties) X(GetPhysicalDeviceFeatures2)     \
-      X(GetPhysicalDeviceQueueFamilyProperties) X(GetPhysicalDeviceMemoryProperties)           \
-          X(GetPhysicalDeviceFormatProperties) X(GetPhysicalDeviceSurfaceSupportKHR)           \
-              X(GetPhysicalDeviceSurfaceCapabilitiesKHR) X(GetPhysicalDeviceSurfaceFormatsKHR) \
-                  X(EnumerateDeviceExtensionProperties) X(CreateDevice) X(GetDeviceProcAddr) X(DestroySurfaceKHR)
-#define DEVICE_FUNCTIONS(X)                                                                                         \
-  X(DestroyDevice)                                                                                                  \
-  X(GetDeviceQueue) X(DeviceWaitIdle) X(CreateSwapchainKHR) X(DestroySwapchainKHR) X(GetSwapchainImagesKHR)         \
-      X(AcquireNextImageKHR) X(QueuePresentKHR) X(QueueSubmit) X(CreateCommandPool) X(DestroyCommandPool)           \
-          X(AllocateCommandBuffers) X(ResetCommandPool) X(BeginCommandBuffer) X(EndCommandBuffer) X(CreateFence)    \
-              X(DestroyFence) X(WaitForFences) X(ResetFences) X(CreateSemaphore) X(DestroySemaphore) X(CreateImage) \
-                  X(DestroyImage) X(GetImageMemoryRequirements) X(AllocateMemory) X(FreeMemory) X(BindImageMemory)  \
-                      X(CreateImageView) X(DestroyImageView) X(CreateSampler) X(DestroySampler)                     \
-                          X(CreateDescriptorSetLayout) X(DestroyDescriptorSetLayout) X(CreateDescriptorPool)        \
-                              X(DestroyDescriptorPool) X(AllocateDescriptorSets) X(UpdateDescriptorSets)            \
-                                  X(CreatePipelineLayout) X(DestroyPipelineLayout) X(CreateShaderModule)            \
-                                      X(DestroyShaderModule) X(CreateRenderPass) X(DestroyRenderPass)               \
-                                          X(CreateGraphicsPipelines) X(DestroyPipeline) X(CreateFramebuffer)        \
-                                              X(DestroyFramebuffer) X(CmdPipelineBarrier) X(CmdBeginRenderPass)     \
-                                                  X(CmdEndRenderPass) X(CmdBindPipeline) X(CmdBindDescriptorSets)   \
-                                                      X(CmdPushConstants) X(CmdSetViewport) X(CmdSetScissor)        \
-                                                          X(CmdDraw)
+#define INSTANCE_FUNCTIONS(X)                                                                                         \
+  X(DestroyInstance)                                                                                                  \
+  X(EnumeratePhysicalDevices)                                                                                         \
+  X(GetPhysicalDeviceProperties) X(GetPhysicalDeviceFeatures2) X(GetPhysicalDeviceQueueFamilyProperties)              \
+      X(GetPhysicalDeviceMemoryProperties) X(GetPhysicalDeviceFormatProperties) X(GetPhysicalDeviceSurfaceSupportKHR) \
+          X(GetPhysicalDeviceSurfaceCapabilitiesKHR) X(GetPhysicalDeviceSurfaceFormatsKHR)                            \
+              X(EnumerateDeviceExtensionProperties) X(CreateDevice) X(GetDeviceProcAddr) X(DestroySurfaceKHR)
+#define DEVICE_FUNCTIONS(X)                                                                                           \
+  X(DestroyDevice)                                                                                                    \
+  X(GetDeviceQueue)                                                                                                   \
+  X(DeviceWaitIdle) X(CreateSwapchainKHR) X(DestroySwapchainKHR) X(GetSwapchainImagesKHR) X(AcquireNextImageKHR)      \
+      X(QueuePresentKHR) X(QueueSubmit) X(CreateCommandPool) X(DestroyCommandPool) X(AllocateCommandBuffers)          \
+          X(ResetCommandPool) X(BeginCommandBuffer) X(EndCommandBuffer) X(CreateFence) X(DestroyFence)                \
+              X(WaitForFences) X(ResetFences) X(CreateSemaphore) X(DestroySemaphore) X(CreateImage) X(DestroyImage)   \
+                  X(GetImageMemoryRequirements) X(AllocateMemory) X(FreeMemory) X(BindImageMemory) X(CreateImageView) \
+                      X(DestroyImageView) X(CreateSampler) X(DestroySampler) X(CreateDescriptorSetLayout)             \
+                          X(DestroyDescriptorSetLayout) X(CreateDescriptorPool) X(DestroyDescriptorPool)              \
+                              X(AllocateDescriptorSets) X(UpdateDescriptorSets) X(CreatePipelineLayout)               \
+                                  X(DestroyPipelineLayout) X(CreateShaderModule) X(DestroyShaderModule)               \
+                                      X(CreateRenderPass) X(DestroyRenderPass) X(CreateGraphicsPipelines)             \
+                                          X(DestroyPipeline) X(CreateFramebuffer) X(DestroyFramebuffer)               \
+                                              X(CmdPipelineBarrier) X(CmdBeginRenderPass) X(CmdEndRenderPass)         \
+                                                  X(CmdBindPipeline) X(CmdBindDescriptorSets) X(CmdPushConstants)     \
+                                                      X(CmdSetViewport) X(CmdSetScissor) X(CmdDraw)
 struct Dispatch {
   PFN_vkGetInstanceProcAddr GetInstanceProcAddr = nullptr;
 #define DECLARE(name) PFN_vk##name name = nullptr;
@@ -183,7 +188,13 @@ struct VulkanPresenter::Impl {
     if (device && vk.DestroyDevice) vk.DestroyDevice(device, nullptr);
     if (surface && vk.DestroySurfaceKHR) vk.DestroySurfaceKHR(instance, surface, nullptr);
     if (instance && vk.DestroyInstance) vk.DestroyInstance(instance, nullptr);
-    if (loader) dlclose(loader);
+    if (loader) {
+#ifdef _WIN32
+      FreeLibrary(static_cast<HMODULE>(loader));
+#else
+      dlclose(loader);
+#endif
+    }
   }
   std::vector<VkSurfaceFormatKHR> formats() {
     uint32_t count = 0;
@@ -196,7 +207,11 @@ struct VulkanPresenter::Impl {
   }
   bool open(GpuWindow window, bool hdr) {
     allowHdr = hdr;
-#ifdef __ANDROID__
+#if defined(_WIN32)
+    if (window.kind != GpuWindow::Kind::win32 || !window.window) return false;
+    loader = LoadLibraryExW(L"vulkan-1.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    const char* platformExtension = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+#elif defined(__ANDROID__)
     if (window.kind != GpuWindow::Kind::android || !window.window) return false;
     loader = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
     const char* platformExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
@@ -206,7 +221,13 @@ struct VulkanPresenter::Impl {
     const char* platformExtension = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
 #endif
     if (!loader) return false;
+#ifdef _WIN32
+    const auto entry = GetProcAddress(static_cast<HMODULE>(loader), "vkGetInstanceProcAddr");
+    static_assert(sizeof(entry) == sizeof(vk.GetInstanceProcAddr));
+    std::memcpy(&vk.GetInstanceProcAddr, &entry, sizeof(entry));
+#else
     vk.GetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(dlsym(loader, "vkGetInstanceProcAddr"));
+#endif
     if (!vk.GetInstanceProcAddr) return false;
     auto enumerate = reinterpret_cast<PFN_vkEnumerateInstanceExtensionProperties>(
         vk.GetInstanceProcAddr(nullptr, "vkEnumerateInstanceExtensionProperties"));
@@ -233,7 +254,13 @@ struct VulkanPresenter::Impl {
   if (!vk.name) return false;
     INSTANCE_FUNCTIONS(LOAD_INSTANCE)
 #undef LOAD_INSTANCE
-#ifdef __ANDROID__
+#if defined(_WIN32)
+    auto createSurface =
+        reinterpret_cast<PFN_vkCreateWin32SurfaceKHR>(vk.GetInstanceProcAddr(instance, "vkCreateWin32SurfaceKHR"));
+    auto surfaceInfo = structure<VkWin32SurfaceCreateInfoKHR>(VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR);
+    surfaceInfo.hinstance = GetModuleHandleW(nullptr);
+    surfaceInfo.hwnd = static_cast<HWND>(window.window);
+#elif defined(__ANDROID__)
     auto createSurface =
         reinterpret_cast<PFN_vkCreateAndroidSurfaceKHR>(vk.GetInstanceProcAddr(instance, "vkCreateAndroidSurfaceKHR"));
     auto surfaceInfo = structure<VkAndroidSurfaceCreateInfoKHR>(VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR);

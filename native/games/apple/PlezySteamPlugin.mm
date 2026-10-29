@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #import "PlezySteamPlugin.h"
 #import <AVFoundation/AVFoundation.h>
+#import <Metal/Metal.h>
 #import <Network/Network.h>
+#import <QuartzCore/QuartzCore.h>
 #import <Security/Security.h>
 #include <arpa/inet.h>
 #include <cstring>
@@ -228,6 +230,174 @@ bool forgetTrust(uint64_t host) {
 
 namespace {
 struct Manager;
+// Main-thread geometry and lifetime; serial decoder-worker presentation. HDR
+// never enters Flutter's BGRA8 texture. The native plane stays under its UI.
+class HdrPlane {
+  CAMetalLayer* layer_ = nil;
+  id<MTLCommandQueue> queue_ = nil;
+  id<MTLRenderPipelineState> pipeline_ = nil;
+  CVMetalTextureCacheRef cache_ = nullptr;
+#if TARGET_OS_OSX
+  __weak NSView* view_;
+#else
+  __weak UIView* view_;
+#endif
+  std::atomic<bool> visible_{false}, supported_{false};
+  bool selected_ = false, sized_ = false;
+
+ public:
+  explicit HdrPlane(id<FlutterPluginRegistrar> registrar) {
+    if (@available(macOS 10.15, iOS 16.0, tvOS 16.0, *)) {
+#if TARGET_OS_OSX
+      view_ = registrar.view;
+#else
+      view_ = registrar.viewController.view;
+#endif
+      refreshDisplay();
+      if (!supported_) return;
+      auto gpu = MTLCreateSystemDefaultDevice();
+      if (!gpu) return;
+      layer_ = [CAMetalLayer layer];
+      layer_.device = gpu;
+      layer_.pixelFormat = MTLPixelFormatBGR10A2Unorm;
+      layer_.wantsExtendedDynamicRangeContent = YES;
+      layer_.framebufferOnly = YES;
+      layer_.maximumDrawableCount = 2;
+      layer_.allowsNextDrawableTimeout = YES;
+      layer_.hidden = YES;
+      auto color = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2100_PQ);
+      if (!color) return;
+      layer_.colorspace = color;
+      CGColorSpaceRelease(color);
+      static NSString* shader = @"#include <metal_stdlib>\nusing namespace metal;\n"
+                                 "struct V { float4 p [[position]]; float2 uv; };\n"
+                                 "vertex V screen(uint i [[vertex_id]]) { float2 p=float2((i<<1)&2,i&2);"
+                                 " return {float4(p.x*2-1,1-p.y*2,0,1),p}; }\n"
+                                 "fragment float4 color(V v [[stage_in]],texture2d<float> s [[texture(0)]]) {"
+                                 " constexpr sampler f(coord::normalized,address::clamp_to_edge,filter::linear);"
+                                 " return s.sample(f,v.uv); }";
+      auto library = [gpu newLibraryWithSource:shader options:nil error:nil];
+      auto spec = [MTLRenderPipelineDescriptor new];
+      spec.vertexFunction = [library newFunctionWithName:@"screen"];
+      spec.fragmentFunction = [library newFunctionWithName:@"color"];
+      spec.colorAttachments[0].pixelFormat = layer_.pixelFormat;
+      if (!spec.vertexFunction || !spec.fragmentFunction) return;
+      pipeline_ = [gpu newRenderPipelineStateWithDescriptor:spec error:nil];
+      queue_ = [gpu newCommandQueue];
+      if (CVMetalTextureCacheCreate(kCFAllocatorDefault, nullptr, gpu, nullptr, &cache_) != kCVReturnSuccess) return;
+    }
+  }
+  ~HdrPlane() {
+    // Session releases this only after the decoder worker joins, on main.
+    [layer_ removeFromSuperlayer];
+    if (cache_) CFRelease(cache_);
+  }
+  bool ready() const { return layer_ && queue_ && pipeline_ && cache_ && supported_; }
+  bool refreshDisplay() {
+    bool supported = false;
+    if (@available(macOS 10.15, iOS 16.0, tvOS 16.0, *)) {
+#if TARGET_OS_OSX
+      supported = view_.window.screen.maximumPotentialExtendedDynamicRangeColorComponentValue > 1.0;
+#else
+      supported = view_.window.screen.potentialEDRHeadroom > 1.0;
+#endif
+    }
+    supported_ = supported;
+    return supported;
+  }
+  void select(bool value) {
+    selected_ = value;
+    visible_ = value && sized_ && ready();
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    layer_.hidden = !visible_;
+    [CATransaction commit];
+  }
+  void rect(int x, int y, int w, int h) {
+    refreshDisplay();
+    auto view = view_;
+    if (!view || !layer_) return;
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+#if TARGET_OS_OSX
+    auto parent = view.window.contentView;
+    parent.wantsLayer = YES;
+    const CGFloat scale = view.window.backingScaleFactor;
+    if (scale <= 0) {
+      [CATransaction commit];
+      sized_ = false;
+      select(selected_);
+      return;
+    }
+    NSRect local = NSMakeRect(x / scale, y / scale, w / scale, h / scale);
+    if (!view.isFlipped) local.origin.y = view.bounds.size.height - NSMaxY(local);
+    auto frame = [view convertRect:local toView:parent];
+    if (parent.layer.geometryFlipped != parent.isFlipped) frame.origin.y = parent.bounds.size.height - NSMaxY(frame);
+    auto parentLayer = parent.layer;
+#else
+    auto parent = view.window;
+    const CGFloat scale = parent.screen.scale;
+    if (scale <= 0) {
+      [CATransaction commit];
+      sized_ = false;
+      select(selected_);
+      return;
+    }
+    auto frame = [view convertRect:CGRectMake(x / scale, y / scale, w / scale, h / scale) toView:parent];
+    auto parentLayer = parent.layer;
+#endif
+    if (scale > 0 && parentLayer) {
+      if (layer_.superlayer != parentLayer) {
+        [layer_ removeFromSuperlayer];
+        [parentLayer insertSublayer:layer_ atIndex:0];
+      }
+      layer_.frame = frame;
+      layer_.contentsScale = scale;
+      layer_.drawableSize = CGSizeMake(MAX(w, 1), MAX(h, 1));
+      sized_ = w > 0 && h > 0;
+    } else
+      sized_ = false;
+    [CATransaction commit];
+    select(selected_);
+  }
+  // Returns false on a rendering failure; a hidden surface drops its frame
+  // without treating navigation/offstage as a decoder failure.
+  bool present(CVPixelBufferRef image, bool& shown) {
+    shown = false;
+    if (!ready() || CVPixelBufferGetPixelFormatType(image) != kCVPixelFormatType_64RGBAHalf) return false;
+    if (!visible_) return true;
+    CVMetalTextureRef texture = nullptr;
+    auto result = CVMetalTextureCacheCreateTextureFromImage(
+        kCFAllocatorDefault, cache_, image, nullptr, MTLPixelFormatRGBA16Float, CVPixelBufferGetWidth(image),
+        CVPixelBufferGetHeight(image), 0, &texture);
+    if (result != kCVReturnSuccess || !texture) return false;
+    auto drawable = [layer_ nextDrawable];
+    auto command = [queue_ commandBuffer];
+    bool ok = false;
+    if (drawable && command) {
+      auto pass = [MTLRenderPassDescriptor renderPassDescriptor];
+      pass.colorAttachments[0].texture = drawable.texture;
+      pass.colorAttachments[0].loadAction = MTLLoadActionDontCare;
+      pass.colorAttachments[0].storeAction = MTLStoreActionStore;
+      auto encoder = [command renderCommandEncoderWithDescriptor:pass];
+      if (encoder) {
+        [encoder setRenderPipelineState:pipeline_];
+        [encoder setFragmentTexture:CVMetalTextureGetTexture(texture) atIndex:0];
+        [encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
+        [encoder endEncoding];
+        [command presentDrawable:drawable];
+        [command commit];
+        [command waitUntilCompleted];
+        ok = command.status == MTLCommandBufferStatusCompleted;
+        shown = ok && visible_;
+      }
+    } else if (!drawable)
+      ok = true;  // Minimized or compositor temporarily busy.
+    CFRelease(texture);
+    CVMetalTextureCacheFlush(cache_, 0);
+    return ok;
+  }
+};
 struct Session : std::enable_shared_from_this<Session> {
   std::weak_ptr<Manager> owner;
   Host host;
@@ -243,6 +413,10 @@ struct Session : std::enable_shared_from_this<Session> {
   std::mutex mutex;
   std::shared_ptr<Runtime> runtime;
   std::shared_ptr<AppleSink> sink;
+  std::unique_ptr<HdrPlane> plane;
+  bool nativeActive = false;
+  std::atomic<bool> nativeRequested{false}, hdrPresented{false}, displayLost{false};
+  dispatch_source_t displayWatch = nil;
   std::atomic<bool> closing{false}, active{false}, notifyPending{false};
   std::atomic<uint64_t> renderedEpoch{0}, renderedSize{0};
   NSString* state = @"connecting";
@@ -271,6 +445,11 @@ struct Session : std::enable_shared_from_this<Session> {
     channel = [FlutterMethodChannel
         methodChannelWithName:[NSString stringWithFormat:@"com.plezy/games/steam_stream/%lld", (long long)sessionId]
               binaryMessenger:[registrar messenger]];
+    if (options.hdr10 && pyrowave) {
+      plane = std::make_unique<HdrPlane>(registrar);
+      if (!plane->ready()) plane.reset();
+    }
+    options.hdr10 = plane != nullptr;
   }
   ~Session() {
     if (worker.joinable()) worker.join();
@@ -286,32 +465,52 @@ struct Session : std::enable_shared_from_this<Session> {
       if (auto s = weak.lock()) s->setState(state);
     });
   }
+  void setNative(bool selected) {
+    nativeActive = selected && plane && !closing;
+    if (plane) plane->select(nativeActive);
+    [channel invokeMethod:@"nativePresentation" arguments:@(nativeActive)];
+  }
   bool present(CVPixelBufferRef buffer, uint32_t frame, std::weak_ptr<Runtime> source) {
     if (closing) return false;
     const size_t width = CVPixelBufferGetWidth(buffer), height = CVPixelBufferGetHeight(buffer);
     auto weak = weak_from_this();
-    [texture
-           install:buffer
-        completion:[weak, source, frame, width, height](bool shown) {
-          if (auto r = source.lock()) {
-            r->frameComplete(frame, shown);
-            if (shown)
-              if (auto s = weak.lock()) {
-                const uint64_t size = (uint64_t(width) << 32) | height;
-                if (s->renderedEpoch != r->metrics().epoch || s->renderedSize != size)
-                  mainQueue([weak, r, width, height, size] {
-                    if (auto s = weak.lock()) {
-                      std::lock_guard<std::mutex> lock(s->mutex);
-                      if (s->closing || !s->active || s->runtime != r) return;
-                      s->renderedEpoch = r->metrics().epoch;
-                      if (s->renderedSize.exchange(size) != size)
-                        [s->channel invokeMethod:@"videoSize" arguments:@{@"width" : @(width), @"height" : @(height)}];
-                      s->setState(@"playing");
-                    }
-                  });
-              }
+    auto complete = [weak, source, frame, width, height](bool shown) {
+      if (auto r = source.lock()) {
+        r->frameComplete(frame, shown);
+        if (shown)
+          if (auto s = weak.lock()) {
+            const uint64_t size = (uint64_t(width) << 32) | height;
+            if (s->renderedEpoch != r->metrics().epoch || s->renderedSize != size)
+              mainQueue([weak, r, width, height, size] {
+                if (auto s = weak.lock()) {
+                  std::lock_guard<std::mutex> lock(s->mutex);
+                  if (s->closing || !s->active || s->runtime != r) return;
+                  s->renderedEpoch = r->metrics().epoch;
+                  if (s->renderedSize.exchange(size) != size)
+                    [s->channel invokeMethod:@"videoSize" arguments:@{@"width" : @(width), @"height" : @(height)}];
+                  s->setState(@"playing");
+                }
+              });
           }
-        }];
+      }
+    };
+    const bool hdr = CVPixelBufferGetPixelFormatType(buffer) == kCVPixelFormatType_64RGBAHalf;
+    if (nativeRequested.exchange(hdr) != hdr)
+      mainQueue([weak, source, hdr] {
+        if (auto s = weak.lock()) {
+          std::lock_guard<std::mutex> lock(s->mutex);
+          if (s->runtime == source.lock()) s->setNative(hdr);
+        }
+      });
+    if (hdr) {
+      bool shown = false;
+      if (!plane || !plane->present(buffer, shown)) return false;
+      hdrPresented = shown;
+      complete(shown);
+      return true;
+    }
+    hdrPresented = false;
+    [texture install:buffer completion:std::move(complete)];
     if (!notifyPending.exchange(true))
       mainQueue([weak] {
         if (auto s = weak.lock()) {
@@ -324,6 +523,21 @@ struct Session : std::enable_shared_from_this<Session> {
   void start() {
     auto self = shared_from_this();
     auto weak = weak_from_this();
+    if (plane) {
+      displayWatch = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+      dispatch_source_set_timer(displayWatch, DISPATCH_TIME_NOW, 250 * NSEC_PER_MSEC, 25 * NSEC_PER_MSEC);
+      dispatch_source_set_event_handler(displayWatch, ^{
+        if (auto s = weak.lock()) {
+          if (s->plane && !s->plane->refreshDisplay() && s->nativeRequested) {
+            s->displayLost = true;
+            s->setNative(false);
+            std::lock_guard<std::mutex> lock(s->mutex);
+            if (s->runtime) s->runtime->cancel();
+          }
+        }
+      });
+      dispatch_resume(displayWatch);
+    }
     [channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult reply) {
       try {
         if (auto s = weak.lock())
@@ -343,6 +557,7 @@ struct Session : std::enable_shared_from_this<Session> {
           bool hevc = self->hevc, pyrowave = self->pyrowave && AppleSink::supportsPyrowave();
           int channels = self->options.audioChannels;
           for (int attempt = 0; attempt < 4 && !self->closing; ++attempt) {
+            self->displayLost = false;
             auto r = std::make_shared<Runtime>();
             struct Failure {
               std::atomic<bool> video{false}, audio{false};
@@ -361,7 +576,8 @@ struct Session : std::enable_shared_from_this<Session> {
                 [source, failure](bool audio) {
                   (audio ? failure->audio : failure->video) = true;
                   if (auto r = source.lock()) r->cancel();
-                });
+                },
+                self->options.hdr10 && pyrowave);
             {
               std::lock_guard<std::mutex> lock(self->mutex);
               self->runtime = r;
@@ -372,6 +588,7 @@ struct Session : std::enable_shared_from_this<Session> {
             }
             auto options = self->options;
             options.audioChannels = channels;
+            options.hdr10 = options.hdr10 && pyrowave;
             int result = r->run(resolved, credentials, self->game, hevc, pyrowave, sink, options);
             {
               std::lock_guard<std::mutex> lock(self->mutex);
@@ -379,6 +596,11 @@ struct Session : std::enable_shared_from_this<Session> {
               self->input.enabled(*r, false);
             }
             sink->close();
+            self->nativeRequested = false;
+            self->hdrPresented = false;
+            mainQueue([weak] {
+              if (auto s = weak.lock()) s->setNative(false);
+            });
             {
               std::lock_guard<std::mutex> lock(self->mutex);
               self->sink.reset();
@@ -386,7 +608,8 @@ struct Session : std::enable_shared_from_this<Session> {
             if (self->closing) break;
             bool stereo = failure->audio && channels > 2;
             bool h264 = (failure->video || result == -4) && hevc && r->metrics().codec == 5;
-            bool conventional = pyrowave && (failure->video || (result != 0 && r->metrics().presentedFrames == 0));
+            bool conventional =
+                pyrowave && (self->displayLost || failure->video || (result != 0 && r->metrics().presentedFrames == 0));
             if (stereo || h264 || conventional) {
               if (stereo) channels = 2;
               if (h264) hevc = false;
@@ -444,6 +667,11 @@ struct Manager : std::enable_shared_from_this<Manager> {
 void Session::close(FlutterResult reply) {
   if (reply) [stopReplies addObject:[reply copy]];
   if (closing.exchange(true)) return;
+  setNative(false);
+  if (displayWatch) {
+    dispatch_source_cancel(displayWatch);
+    displayWatch = nil;
+  }
   active = false;
   {
     std::lock_guard<std::mutex> lock(mutex);
@@ -456,6 +684,7 @@ void Session::close(FlutterResult reply) {
   std::thread([self] {
     if (self->worker.joinable()) self->worker.join();
     mainQueue([self] {
+      self->plane.reset();
       [self->texture retire];
       [self->registry unregisterTexture:self->textureId];
       [self->channel setMethodCallHandler:nil];
@@ -473,6 +702,18 @@ void Session::method(FlutterMethodCall* call, FlutterResult reply) {
   }
   if ([method isEqualToString:@"getSessionState"]) {
     reply(state);
+    return;
+  }
+  if ([method isEqualToString:@"getNativePresentation"]) {
+    reply(@(nativeActive));
+    return;
+  }
+  if ([method isEqualToString:@"setNativeRect"] && plane && !closing) {
+    auto args = arguments(call.arguments);
+    plane->rect(
+        number(args, @"x", 0, -32768, 32768), number(args, @"y", 0, -32768, 32768), number(args, @"width", 0, 0, 16384),
+        number(args, @"height", 0, 0, 16384));
+    reply(nil);
     return;
   }
   if (closing) {
@@ -516,6 +757,7 @@ void Session::method(FlutterMethodCall* call, FlutterResult reply) {
       @"hidPending" : @(m.reliability.hidPending),
       @"hidInFlight" : @(m.reliability.hidInFlight),
       @"decoderKind" : @(sink ? sink->decoderKind() : 0),
+      @"hdr10" : @(hdrPresented.load()),
       @"chromaFormat" : @(sink ? sink->chromaFormat() : 0)
     });
     return;
@@ -617,6 +859,7 @@ void Manager::method(FlutterMethodCall* call, FlutterResult reply, bool create) 
     options.bitrateKbps = number(args, @"streamBitrateKbps", 30000, 1000, 50000);
     options.controllerCount = number(args, @"controllerCount", 1, 1, 4);
     options.audioChannels = number(args, @"audioChannels", 2, 2, 6);
+    options.hdr10 = boolean(args, @"allowHdr");
     if (!options.valid()) throw std::invalid_argument("Invalid stream options");
     auto session = std::make_shared<Session>(
         next++, host, game, options, boolean(args, @"allowHevc", true) && AppleSink::supportsHevc(),
@@ -624,7 +867,11 @@ void Manager::method(FlutterMethodCall* call, FlutterResult reply, bool create) 
     session->owner = shared_from_this();
     sessions.emplace(session->sessionId, session);
     session->start();
-    reply(@{@"id" : @(session->sessionId), @"textureId" : @(session->textureId)});
+    reply(@{
+      @"id" : @(session->sessionId),
+      @"textureId" : @(session->textureId),
+      @"nativePlane" : @(session->plane != nullptr)
+    });
     return;
   }
   if (create || stringValue(args[@"protocol"]) != "steam" ||

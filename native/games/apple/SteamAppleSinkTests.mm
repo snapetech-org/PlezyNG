@@ -81,4 +81,31 @@
     decoder.reset();
   }
 }
+- (void)testMetalHdrRetainsDeepPixelsAndRejectsColorChanges {
+  XCTSkipIf(!plezy::steam::MetalPyrowave::supported(), @"Requires an Apple7-family GPU");
+  for (bool fullChroma : {false, true}) {
+    plezy::steam::MetalPyrowave decoder;
+    XCTAssertTrue(decoder.start(64, 64, nullptr, 0, true));
+    const uint32_t words[] = {63u | (63u << 14) | (1u << 31), (0x38u << 24) | (fullChroma ? (1u << 26) : 0)};
+    uint8_t encoded[8];
+    for (size_t i = 0; i < 8; ++i) encoded[i] = uint8_t(words[i / 4] >> (8 * (i % 4)));
+    CVPixelBufferRef image = nullptr;
+    XCTAssertTrue(decoder.decode(encoded, sizeof(encoded), &image) == plezy::steam::PyrowaveDecodeStatus::frame);
+    XCTAssertTrue(image != nullptr);
+    XCTAssertTrue(decoder.hdr10());
+    if (image) {
+      XCTAssertEqual(CVPixelBufferGetPixelFormatType(image), kCVPixelFormatType_64RGBAHalf);
+      XCTAssertEqual(CVPixelBufferGetBytesPerRow(image) >= 64 * 8, true);
+      XCTAssertEqual(CVPixelBufferLockBaseAddress(image, kCVPixelBufferLock_ReadOnly), kCVReturnSuccess);
+      const auto* pixel = static_cast<const uint16_t*>(CVPixelBufferGetBaseAddress(image));
+      // Half-float gray is approximately 0x3800, alpha is exactly 1.0.
+      XCTAssertTrue(pixel && pixel[0] >= 0x3700 && pixel[0] <= 0x3900 && pixel[3] == 0x3c00);
+      CVPixelBufferUnlockBaseAddress(image, kCVPixelBufferLock_ReadOnly);
+      CVPixelBufferRelease(image);
+    }
+    encoded[7] &= ~0x38u;
+    XCTAssertTrue(decoder.decode(encoded, sizeof(encoded), &image) == plezy::steam::PyrowaveDecodeStatus::invalid);
+    XCTAssertTrue(image == nullptr);
+  }
+}
 @end

@@ -7,12 +7,12 @@
 
 namespace plezy::steam {
 namespace {
-// The color tags are checked by the portable parser. This pipeline only
-// accepts sRGB/BT.709 SDR; HDR requires a different display surface.
+// Preserve PQ code values in a half-float IOSurface for the native HDR plane.
+// SDR retains the existing BGRA8 Flutter texture path.
 constexpr char convertShader[] = R"metal(
 #include <metal_stdlib>
 using namespace metal;
-struct Parameters { uint fullRange; uint chroma444; uint chromaLeft; uint unused; };
+struct Parameters { uint fullRange; uint chroma444; uint chromaLeft; uint hdr; };
 kernel void convert(texture2d<float,access::read> y [[texture(0)]],
                     texture2d<float,access::sample> cb [[texture(1)]],
                     texture2d<float,access::sample> cr [[texture(2)]],
@@ -23,10 +23,14 @@ kernel void convert(texture2d<float,access::read> y [[texture(0)]],
   float2 uv = float2(pos) + .5f;
   if (!p.chroma444) uv = uv * .5f + float2(p.chromaLeft ? .25f : 0.f,0.f);
   float luma = y.read(pos).r;
-  float u = cb.sample(chroma,uv).r - (128.f/255.f);
-  float v = cr.sample(chroma,uv).r - (128.f/255.f);
-  if (!p.fullRange) { luma = (luma - 16.f/255.f) * (255.f/219.f); u *= 255.f/224.f; v *= 255.f/224.f; }
-  float3 value(luma + 1.5748f*v, luma - .187324f*u - .468124f*v, luma + 1.8556f*u);
+  float unit = p.hdr ? 4.f/1023.f : 1.f/255.f;
+  float midpoint = p.hdr ? 512.f/1023.f : 128.f/255.f;
+  float u = cb.sample(chroma,uv).r - midpoint;
+  float v = cr.sample(chroma,uv).r - midpoint;
+  if (!p.fullRange) { luma = (luma - 16.f*unit) / (219.f*unit); u /= 224.f*unit; v /= 224.f*unit; }
+  float3 value = p.hdr
+    ? float3(luma + 1.4746f*v, luma - .164553f*u - .571353f*v, luma + 1.8814f*u)
+    : float3(luma + 1.5748f*v, luma - .187324f*u - .468124f*v, luma + 1.8556f*u);
   rgb.write(float4(clamp(value,0.f,1.f),1.f),pos);
 }
 )metal";
@@ -41,7 +45,7 @@ struct MetalPyrowave::Impl {
   CVMetalTextureCacheRef cache = nullptr;
   CVPixelBufferPoolRef pool = nullptr;
   int width = 0, height = 0;
-  bool chroma444 = false;
+  bool chroma444 = false, allowHdr = false, hdr = false;
   ~Impl() { reset(); }
   void reset() {
     if (decoder) pyrowave_decoder_destroy(decoder);
@@ -57,10 +61,23 @@ struct MetalPyrowave::Impl {
     pool = nullptr;
     cache = nullptr;
     width = height = 0;
+    hdr = allowHdr = false;
   }
   bool configure(const PyrowaveFrameInfo& info) {
-    if (decoder) return chroma444 == info.chroma444;
+    if (decoder) return chroma444 == info.chroma444 && hdr == info.hdr10;
     chroma444 = info.chroma444;
+    hdr = info.hdr10;
+    NSDictionary* attributes = @{
+      (__bridge NSString*)kCVPixelBufferWidthKey : @(width),
+      (__bridge NSString*)kCVPixelBufferHeightKey : @(height),
+      (__bridge NSString*)
+      kCVPixelBufferPixelFormatTypeKey : @(hdr ? kCVPixelFormatType_64RGBAHalf : kCVPixelFormatType_32BGRA),
+      (__bridge NSString*)kCVPixelBufferIOSurfacePropertiesKey : @{},
+      (__bridge NSString*)kCVPixelBufferMetalCompatibilityKey : @YES,
+    };
+    if (CVPixelBufferPoolCreate(kCFAllocatorDefault, nullptr, (__bridge CFDictionaryRef)attributes, &pool) !=
+        kCVReturnSuccess)
+      return false;
     pyrowave_decoder_create_info config{};
     config.device = device;
     config.width = width;
@@ -87,19 +104,21 @@ MetalPyrowave::MetalPyrowave() : impl_(std::make_unique<Impl>()) {}
 MetalPyrowave::~MetalPyrowave() = default;
 void MetalPyrowave::reset() { impl_->reset(); }
 bool MetalPyrowave::chroma444() const { return impl_->chroma444; }
+bool MetalPyrowave::hdr10() const { return impl_->hdr; }
 bool MetalPyrowave::supported() {
   @autoreleasepool {
     auto gpu = MTLCreateSystemDefaultDevice();
     return gpu && pyrowave_device_is_supported((__bridge void*)gpu);
   }
 }
-bool MetalPyrowave::start(int width, int height, const uint8_t* extra, size_t length) {
+bool MetalPyrowave::start(int width, int height, const uint8_t* extra, size_t length, bool allowHdr) {
   reset();
   if (width < 2 || height < 2 || width > 1920 || height > 1080 || (width & 1) || (height & 1) ||
       length > 2 * 1024 * 1024 || (length && !extra))
     return false;
   impl_->width = width;
   impl_->height = height;
+  impl_->allowHdr = allowHdr;
   impl_->gpu = MTLCreateSystemDefaultDevice();
   if (!impl_->gpu || !pyrowave_device_is_supported((__bridge void*)impl_->gpu)) return false;
   pyrowave_device_create_info info{};
@@ -114,19 +133,9 @@ bool MetalPyrowave::start(int width, int height, const uint8_t* extra, size_t le
   if (!impl_->conversion || impl_->conversion.maxTotalThreadsPerThreadgroup < 64) return false;
   if (CVMetalTextureCacheCreate(kCFAllocatorDefault, nullptr, impl_->gpu, nullptr, &impl_->cache) != kCVReturnSuccess)
     return false;
-  NSDictionary* attributes = @{
-    (__bridge NSString*)kCVPixelBufferWidthKey : @(width),
-    (__bridge NSString*)kCVPixelBufferHeightKey : @(height),
-    (__bridge NSString*)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA),
-    (__bridge NSString*)kCVPixelBufferIOSurfacePropertiesKey : @{},
-    (__bridge NSString*)kCVPixelBufferMetalCompatibilityKey : @YES,
-  };
-  if (CVPixelBufferPoolCreate(kCFAllocatorDefault, nullptr, (__bridge CFDictionaryRef)attributes, &impl_->pool) !=
-      kCVReturnSuccess)
-    return false;
   if (length) {
     PyrowaveFrameInfo frame;
-    if (!parsePyrowaveFrame(extra, length, width, height, frame, true) || !impl_->configure(frame) ||
+    if (!parsePyrowaveFrame(extra, length, width, height, frame, true, allowHdr) || !impl_->configure(frame) ||
         pyrowave_decoder_push_packet(impl_->decoder, extra, length) != PYROWAVE_SUCCESS)
       return false;
   }
@@ -136,7 +145,7 @@ PyrowaveDecodeStatus MetalPyrowave::decode(const uint8_t* bytes, size_t length, 
   if (!output) return PyrowaveDecodeStatus::invalid;
   *output = nullptr;
   PyrowaveFrameInfo frame;
-  if (!impl_->device || !impl_->pool || !parsePyrowaveFrame(bytes, length, impl_->width, impl_->height, frame, true) ||
+  if (!impl_->device || !parsePyrowaveFrame(bytes, length, impl_->width, impl_->height, frame, true, impl_->allowHdr) ||
       !impl_->configure(frame) || pyrowave_decoder_push_packet(impl_->decoder, bytes, length) != PYROWAVE_SUCCESS)
     return PyrowaveDecodeStatus::invalid;
   if (!pyrowave_decoder_decode_is_ready(impl_->decoder, false)) return PyrowaveDecodeStatus::pending;
@@ -150,8 +159,8 @@ PyrowaveDecodeStatus MetalPyrowave::decode(const uint8_t* bytes, size_t length, 
   NSDictionary* attributes =
       @{(__bridge NSString*)kCVMetalTextureUsage : @(MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite)};
   result = CVMetalTextureCacheCreateTextureFromImage(
-      kCFAllocatorDefault, impl_->cache, pixel, (__bridge CFDictionaryRef)attributes, MTLPixelFormatBGRA8Unorm,
-      impl_->width, impl_->height, 0, &surface);
+      kCFAllocatorDefault, impl_->cache, pixel, (__bridge CFDictionaryRef)attributes,
+      impl_->hdr ? MTLPixelFormatRGBA16Float : MTLPixelFormatBGRA8Unorm, impl_->width, impl_->height, 0, &surface);
   bool success = false;
   if (result == kCVReturnSuccess && surface) {
     auto command = [impl_->queue commandBuffer];
@@ -164,7 +173,7 @@ PyrowaveDecodeStatus MetalPyrowave::decode(const uint8_t* bytes, size_t length, 
         [convert setComputePipelineState:impl_->conversion];
         for (size_t i = 0; i < 3; ++i) [convert setTexture:impl_->planes[i] atIndex:i];
         [convert setTexture:CVMetalTextureGetTexture(surface) atIndex:3];
-        const uint32_t params[] = {frame.fullRange, frame.chroma444, frame.chromaLeft, 0};
+        const uint32_t params[] = {frame.fullRange, frame.chroma444, frame.chromaLeft, frame.hdr10};
         [convert setBytes:params length:sizeof(params) atIndex:0];
         [convert dispatchThreadgroups:MTLSizeMake((impl_->width + 7) / 8, (impl_->height + 7) / 8, 1)
                 threadsPerThreadgroup:MTLSizeMake(8, 8, 1)];
@@ -184,6 +193,14 @@ PyrowaveDecodeStatus MetalPyrowave::decode(const uint8_t* bytes, size_t length, 
     return PyrowaveDecodeStatus::invalid;
   }
   *output = pixel;
+  if (impl_->hdr) {
+    CVBufferSetAttachment(
+        pixel, kCVImageBufferColorPrimariesKey, kCVImageBufferColorPrimaries_ITU_R_2020,
+        kCVAttachmentMode_ShouldPropagate);
+    CVBufferSetAttachment(
+        pixel, kCVImageBufferTransferFunctionKey, kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
+        kCVAttachmentMode_ShouldPropagate);
+  }
   return PyrowaveDecodeStatus::frame;
 }
 }  // namespace plezy::steam

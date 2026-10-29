@@ -18,9 +18,9 @@ qualify a different commit. Record `git rev-parse HEAD` with every result.
 
 | Area | Implemented behavior to test | Still missing |
 | --- | --- | --- |
-| Windows | Media Foundation H.264/HEVC SDR, retained texture, XAudio2, Credential Manager and input | Current-head MSVC x64/ARM64 builds and device qualification; HDR/Pyrowave presentation |
+| Windows | Media Foundation H.264/HEVC SDR, retained texture, XAudio2, Credential Manager and input | Current-head MSVC x64/ARM64 builds and device qualification; Vulkan HDR/Pyrowave output qualification |
 | Linux/SteamOS | GStreamer H.264/HEVC SDR; opt-in Wayland Vulkan direct GPU Pyrowave 4:2:0/4:4:4 and gated HDR10; libsecret, surround and input | Packaged app, compositor/GPU/HDR and host qualification; X11 keeps the compatible SDR path |
-| macOS/iOS/iPadOS/tvOS | VideoToolbox/Core Audio, Keychain, retained texture; opt-in Metal Pyrowave SDR 4:2:0/4:4:4 on supported GPUs | Current-head Apple SDK builds and device qualification; HDR presentation implementation |
+| macOS/iOS/iPadOS/tvOS | VideoToolbox/Core Audio, Keychain, retained texture; opt-in Metal Pyrowave SDR/HDR 4:2:0/4:4:4 on supported GPUs/displays | Current-head Apple SDK builds and device qualification; native Metal HDR output qualification |
 | Android/Android TV/Fire TV | H.264/HEVC SurfaceView, retained pane/activity, Opus, controller seats; opt-in native Vulkan direct GPU Pyrowave 4:2:0/4:4:4 and gated HDR10 | Current-head Gradle/NDK/release builds, GPU/display/color and host qualification |
 | Connected library | Canonical AppID cards with independent routes from several computers, inventory permissions, favorites and preferred routes | Real-host inventory/availability and large-library qualification |
 | Steam account/host features | Public catalog/achievements/news, optional social context; permissioned host actions; scoped Cloud listing/download/replace/delete; Families destination | Valve-issued Cloud approval/configuration and live qualification; global Cloud settings and programmatic Families mutations |
@@ -183,3 +183,7 @@ operations explicitly authorized. Stop promotion for a crash, credential leak,
 cross-profile disclosure, stuck input, stale callback/action, unbounded resource
 growth, false playback claim, corrupt color/audio or unacknowledged teardown.
 File implementation gaps separately from device failures and skipped tests.
+
+## Windows and Apple HDR source checkpoint (2026-10-29)
+
+See [DESKTOP_HDR.md](DESKTOP_HDR.md) for output gating, lifecycle and the device test matrix. Windows Vulkan-enabled cross-compilation/linking and strict adapter syntax checks pass. Apple HDR code and GPU precision tests are integrated but have not run under an Apple SDK here. Do not promote that to a tested Apple build or measured HDR output.

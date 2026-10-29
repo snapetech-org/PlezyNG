@@ -31,6 +31,7 @@ struct AppleSink::Impl {
   std::condition_variable wake;
   std::thread worker;
   bool stopping = false;
+  const bool allowHdr;
   std::atomic<bool> audible{false};
   std::atomic<int> kind{0};
   std::atomic<int> chroma{0};
@@ -49,7 +50,8 @@ struct AppleSink::Impl {
   std::array<std::atomic<bool>, 4> free{};
   Config current;
   bool decodeSucceeded = false, videoFailed = false, audioFailed = false;
-  Impl(Present p, Complete c, Failed f) : present(std::move(p)), complete(std::move(c)), failed(std::move(f)) {
+  Impl(Present p, Complete c, Failed f, bool hdr)
+      : present(std::move(p)), complete(std::move(c)), failed(std::move(f)), allowHdr(hdr) {
     worker = std::thread([this] { run(); });
   }
   ~Impl() { close(); }
@@ -287,9 +289,10 @@ struct AppleSink::Impl {
         }
         if (configureVideo) {
           closeVideo();
-          bool ready = current.codec == 9
-                           ? pyrowave.start(current.width, current.height, current.extra.data(), current.extra.size())
-                           : parser.configure(current.codec, current.extra.data(), current.extra.size());
+          bool ready =
+              current.codec == 9
+                  ? pyrowave.start(current.width, current.height, current.extra.data(), current.extra.size(), allowHdr)
+                  : parser.configure(current.codec, current.extra.data(), current.extra.size());
           if (!ready) fail(false);
         }
         if (configureAudio && !openAudio(newChannels)) fail(true);
@@ -322,8 +325,8 @@ struct AppleSink::Impl {
     if (worker.joinable()) worker.join();
   }
 };
-AppleSink::AppleSink(Present p, Complete c, Failed f)
-    : impl_(std::make_unique<Impl>(std::move(p), std::move(c), std::move(f))) {}
+AppleSink::AppleSink(Present p, Complete c, Failed f, bool allowHdr)
+    : impl_(std::make_unique<Impl>(std::move(p), std::move(c), std::move(f), allowHdr)) {}
 AppleSink::~AppleSink() = default;
 bool AppleSink::supportsHevc() { return VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC); }
 bool AppleSink::supportsPyrowave() { return MetalPyrowave::supported(); }

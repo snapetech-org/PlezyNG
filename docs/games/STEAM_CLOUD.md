@@ -127,3 +127,55 @@ slot nor adding a disabled adapter would complete the feature. The actual
 account-wide programmatic toggle remains unimplemented pending a verified
 contract. Supported Cloud file operations and explicit host settings assistance
 remain available under the separate permissions described above.
+
+### Additional client-settings contract evidence — 2026-10-29
+
+The broader client-settings path provides a stronger candidate than the old
+unversioned native vtable. It does not yet supply an implemented or live-verified
+PlezyNG write transport:
+
+- Steam's extracted [`CMsgClientSettings` schema at `c0c1e745`](https://github.com/SteamTracking/Protobufs/blob/c0c1e745cdc042dbde122ed31f40ecde28ca534e/steam/steammessages_clientsettings.proto)
+  defines optional boolean `cloud_enabled`, field **10000**, stored in
+  `ConfigStore_UserRoaming` as `Software\\Valve\\Steam\\CloudEnabled`, with
+  `setting_default_bool = true`. This is source evidence of the setting's
+  identity; it is not an instruction to edit a live VDF file.
+- Decky's maintained-at-that-revision [`Settings` interface at `83260002`](https://github.com/SteamDeckHomebrew/decky-frontend-lib/blob/83260002908202586356917f07ec391c5bdea975/src/globals/steam-client/Settings.ts)
+  declares `SteamClient.Settings.SetSetting(base64): Promise<boolean>` for a
+  serialized `CMsgClientSettings`, and
+  `RegisterForSettingsArrayChanges(callback): Unregisterable` for observation.
+  This is a community interface definition for code running inside Steam's UI,
+  not a Valve-supported remote Web API or an OAuth scope.
+- PlezyNG currently has no installed Steam UI extension or authenticated bridge
+  into that JavaScript context. Its Companion pairing and Cloud OAuth grants do
+  not create access to `SteamClient.Settings`. No Steam client executable is
+  available in this development environment for an actual write/readback test.
+
+Confidence is **high** in the pinned declarations, **moderate** that this is a
+viable host-extension route, and **unknown** in its behavior on the user's current
+Steam builds. The previous conclusion that the Cloud service schema offers no
+global-enable RPC still holds for that schema; it must not be generalized to say
+that Steam has no internal setting-write mechanism.
+
+A verified integration needs all of the following evidence, before its UI can
+report a completed change:
+
+1. An explicitly installed host extension can observe the current Steam account
+   and this setting on an identified Steam build. Absent protobuf fields must
+   remain unknown until the client's default/presence behavior is established;
+   absence must not be treated as `false`.
+2. A narrowly scoped, authenticated Companion bridge permits only this setting,
+   binds the selected host and SteamID, checks the reviewed prior value, rejects
+   replay/expired requests and retires access on profile/account changes. It
+   must not expose general JavaScript evaluation or automatically enable CEF
+   remote debugging.
+3. An explicit user-confirmed change sends only field 10000, checks the setter's
+   result, then observes the requested state through the client callback.
+   Timeout is an unknown outcome, not success and not an automatic retry.
+4. A disposable account verifies enable and disable, unchanged unrelated
+   settings, restart persistence, account switching and behavior on another
+   signed-in computer. `UserRoaming` metadata alone does not prove propagation
+   timing or authorize a claim that all computers changed immediately.
+
+No toggle, extension or mock-backed adapter is claimed implemented by this
+research update. Cloud file permissions remain separate from this candidate
+host-client settings capability.

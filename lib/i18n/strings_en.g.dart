@@ -3281,6 +3281,8 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleLive$en subtitleLive = Translations$videoControls$subtitleLive$en.internal(_root);
 	late final Translations$videoControls$subtitleLyrics$en subtitleLyrics = Translations$videoControls$subtitleLyrics$en.internal(_root);
 	late final Translations$videoControls$subtitleJobs$en subtitleJobs = Translations$videoControls$subtitleJobs$en.internal(_root);
+	late final Translations$videoControls$subtitleRoles$en subtitleRoles = Translations$videoControls$subtitleRoles$en.internal(_root);
+	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
 
@@ -13001,6 +13003,98 @@ class Translations$videoControls$subtitleJobs$en {
 	String get originalProfileResume => 'The job was saved under its original profile; switch back to resume it.';
 
 }
+// Path: videoControls.subtitleRoles
+class Translations$videoControls$subtitleRoles$en {
+	Translations$videoControls$subtitleRoles$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Subtitle role preferences'
+	String get title => 'Subtitle role preferences';
+
+	/// en: 'These preferences guide automatic fallback selection and preferred-language downloads the next time a title opens. Explicit Off, carried track choices and server-selected tracks keep priority. Language order stays primary. Forced-only and SDH/CC labels use provider flags or explicit title markers; unmarked captions are not verified full dialogue.'
+	String get description => 'These preferences guide automatic fallback selection and preferred-language downloads the next time a title opens. Explicit Off, carried track choices and server-selected tracks keep priority. Language order stays primary. Forced-only and SDH/CC labels use provider flags or explicit title markers; unmarked captions are not verified full dialogue.';
+
+	/// en: 'The preferences could not be saved. Check the active profile or remove an earlier title override.'
+	String get saveFailed => 'The preferences could not be saved. Check the active profile or remove an earlier title override.';
+
+	/// en: 'Override for this title'
+	String get titleOverride => 'Override for this title';
+
+	/// en: 'When off, edits apply to this profile’s default. A title override can explicitly choose “Any”.'
+	String get titleOverrideHelp => 'When off, edits apply to this profile’s default. A title override can explicitly choose “Any”.';
+
+	/// en: 'Caption role'
+	String get captionRole => 'Caption role';
+
+	/// en: 'Any role'
+	String get anyRole => 'Any role';
+
+	/// en: 'Exclude forced-only tracks'
+	String get excludeForcedOnly => 'Exclude forced-only tracks';
+
+	/// en: 'Forced-only tracks'
+	String get forcedOnly => 'Forced-only tracks';
+
+	/// en: 'SDH / closed captions'
+	String get accessibilityRole => 'SDH / closed captions';
+
+	/// en: 'No preference'
+	String get noPreference => 'No preference';
+
+	/// en: 'Prefer marked SDH / CC'
+	String get preferSdh => 'Prefer marked SDH / CC';
+
+	/// en: 'Prefer captions without SDH / CC markers'
+	String get avoidSdh => 'Prefer captions without SDH / CC markers';
+
+	/// en: 'Up to 200 title overrides per profile. These preferences stay on this device.'
+	String get limitHelp => 'Up to 200 title overrides per profile. These preferences stay on this device.';
+
+	/// en: 'Remove title override'
+	String get removeTitleOverride => 'Remove title override';
+
+	/// en: 'Reset profile default'
+	String get resetProfileDefault => 'Reset profile default';
+
+	/// en: 'Profile defaults and an optional title override'
+	String get titleOverrideTileHelp => 'Profile defaults and an optional title override';
+
+	/// en: 'Profile defaults for forced and SDH / CC fallback selection'
+	String get settingsTileHelp => 'Profile defaults for forced and SDH / CC fallback selection';
+
+}
+
+// Path: videoControls.subtitlePreview
+class Translations$videoControls$subtitlePreview$en {
+	Translations$videoControls$subtitlePreview$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Preview text before downloading'
+	String get buttonTooltip => 'Preview text before downloading';
+
+	/// en: 'Preview provider subtitles'
+	String get title => 'Preview provider subtitles';
+
+	/// en: 'Provider subtitle'
+	String get fallbackTitle => 'Provider subtitle';
+
+	/// en: 'These are the first 12 text cues fetched through the server. No library subtitle has been attached. The provider may count this read against its download quota. Timing and edition match still require review; ASS styling, positions and animation are not shown.'
+	String get description => 'These are the first 12 text cues fetched through the server. No library subtitle has been attached. The provider may count this read against its download quota. Timing and edition match still require review; ASS styling, positions and animation are not shown.';
+
+	/// en: 'Download to library'
+	String get download => 'Download to library';
+
+	/// en: 'This provider result could not be previewed. Its existing download action remains available.'
+	String get failed => 'This provider result could not be previewed. Its existing download action remains available.';
+
+}
+
 // Path: videoControls.subtitleHdr
 class Translations$videoControls$subtitleHdr$en {
 	Translations$videoControls$subtitleHdr$en.internal(this._root);
@@ -16852,6 +16946,30 @@ extension on Translations {
 			'videoControls.subtitleOverlays.exportConfirmNote' => 'The export contains future dialogue from this track.',
 			'videoControls.subtitleOverlays.useNative' => 'Use native subtitles',
 			'videoControls.subtitleOverlays.exportAction' => 'Export',
+			'videoControls.subtitleRoles.title' => 'Subtitle role preferences',
+			'videoControls.subtitleRoles.description' => 'These preferences guide automatic fallback selection and preferred-language downloads the next time a title opens. Explicit Off, carried track choices and server-selected tracks keep priority. Language order stays primary. Forced-only and SDH/CC labels use provider flags or explicit title markers; unmarked captions are not verified full dialogue.',
+			'videoControls.subtitleRoles.saveFailed' => 'The preferences could not be saved. Check the active profile or remove an earlier title override.',
+			'videoControls.subtitleRoles.titleOverride' => 'Override for this title',
+			'videoControls.subtitleRoles.titleOverrideHelp' => 'When off, edits apply to this profile’s default. A title override can explicitly choose “Any”.',
+			'videoControls.subtitleRoles.captionRole' => 'Caption role',
+			'videoControls.subtitleRoles.anyRole' => 'Any role',
+			'videoControls.subtitleRoles.excludeForcedOnly' => 'Exclude forced-only tracks',
+			'videoControls.subtitleRoles.forcedOnly' => 'Forced-only tracks',
+			'videoControls.subtitleRoles.accessibilityRole' => 'SDH / closed captions',
+			'videoControls.subtitleRoles.noPreference' => 'No preference',
+			'videoControls.subtitleRoles.preferSdh' => 'Prefer marked SDH / CC',
+			'videoControls.subtitleRoles.avoidSdh' => 'Prefer captions without SDH / CC markers',
+			'videoControls.subtitleRoles.limitHelp' => 'Up to 200 title overrides per profile. These preferences stay on this device.',
+			'videoControls.subtitleRoles.removeTitleOverride' => 'Remove title override',
+			'videoControls.subtitleRoles.resetProfileDefault' => 'Reset profile default',
+			'videoControls.subtitleRoles.titleOverrideTileHelp' => 'Profile defaults and an optional title override',
+			'videoControls.subtitleRoles.settingsTileHelp' => 'Profile defaults for forced and SDH / CC fallback selection',
+			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
+			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
+			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',
+			'videoControls.subtitlePreview.description' => 'These are the first 12 text cues fetched through the server. No library subtitle has been attached. The provider may count this read against its download quota. Timing and edition match still require review; ASS styling, positions and animation are not shown.',
+			'videoControls.subtitlePreview.download' => 'Download to library',
+			'videoControls.subtitlePreview.failed' => 'This provider result could not be previewed. Its existing download action remains available.',
 			'videoControls.subtitleHdr.close' => 'Close',
 			'videoControls.subtitleHdr.restoreOpening' => 'Restore opening value',
 			'videoControls.subtitleHdr.useVideoMetadata' => 'Use video metadata',

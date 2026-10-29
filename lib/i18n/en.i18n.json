@@ -1516,6 +1516,34 @@
       "supportedTransportRequired": "A source job requires a local file or its owned loopback transport.",
       "originalProfileResume": "The job was saved under its original profile; switch back to resume it."
     },
+    "subtitleRoles": {
+      "title": "Subtitle role preferences",
+      "description": "These preferences guide automatic fallback selection and preferred-language downloads the next time a title opens. Explicit Off, carried track choices and server-selected tracks keep priority. Language order stays primary. Forced-only and SDH/CC labels use provider flags or explicit title markers; unmarked captions are not verified full dialogue.",
+      "saveFailed": "The preferences could not be saved. Check the active profile or remove an earlier title override.",
+      "titleOverride": "Override for this title",
+      "titleOverrideHelp": "When off, edits apply to this profile’s default. A title override can explicitly choose “Any”.",
+      "captionRole": "Caption role",
+      "anyRole": "Any role",
+      "excludeForcedOnly": "Exclude forced-only tracks",
+      "forcedOnly": "Forced-only tracks",
+      "accessibilityRole": "SDH / closed captions",
+      "noPreference": "No preference",
+      "preferSdh": "Prefer marked SDH / CC",
+      "avoidSdh": "Prefer captions without SDH / CC markers",
+      "limitHelp": "Up to 200 title overrides per profile. These preferences stay on this device.",
+      "removeTitleOverride": "Remove title override",
+      "resetProfileDefault": "Reset profile default",
+      "titleOverrideTileHelp": "Profile defaults and an optional title override",
+      "settingsTileHelp": "Profile defaults for forced and SDH / CC fallback selection"
+    },
+    "subtitlePreview": {
+      "buttonTooltip": "Preview text before downloading",
+      "title": "Preview provider subtitles",
+      "fallbackTitle": "Provider subtitle",
+      "description": "These are the first 12 text cues fetched through the server. No library subtitle has been attached. The provider may count this read against its download quota. Timing and edition match still require review; ASS styling, positions and animation are not shown.",
+      "download": "Download to library",
+      "failed": "This provider result could not be previewed. Its existing download action remains available."
+    },
     "subtitleHdr": {
       "open": "Native HDR caption brightness",
       "title": "Native HDR caption brightness",

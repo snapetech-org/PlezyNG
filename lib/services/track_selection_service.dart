@@ -842,9 +842,9 @@ class TrackSelectionService {
     }
 
     final defaultTrack = _findDefaultSubtitleTrack(availableTracks);
-    if (defaultTrack != null && !defaultTrack.isForced) return defaultTrack;
+    if (defaultTrack != null && !defaultTrack.effectiveForced) return defaultTrack;
     for (final track in availableTracks) {
-      if (!track.isForced) return track;
+      if (!track.effectiveForced) return track;
     }
     return availableTracks.firstOrNull;
   }

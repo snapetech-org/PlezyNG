@@ -352,6 +352,8 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
 
   Future<void> _previewSubtitle(SubtitleSearchResult result) async {
     if (_previewingKey != null || _downloadingKey != null) return;
+    final translations = Translations.of(context);
+    final copy = translations.videoControls.subtitlePreview;
     final client = context.tryGetMediaClientForServer(ServerId(widget.serverId));
     if (client == null || !client.supportsRemoteSubtitlePreview) return;
     final profiles = context.read<ActiveProfileProvider>(), profile = context.read<ActiveProfileProvider>().activeId;
@@ -368,21 +370,19 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
       final cues = SubtitleRetimer.parseCues(sourceBytes: bytes, extension: '.$format');
       if (cues.isEmpty) throw const FormatException('No previewable text');
       apply = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
-        title: const Text('Preview provider subtitles'),
+        title: Text(copy.title),
         content: SizedBox(width: 620, height: (MediaQuery.sizeOf(context).height - 180).clamp(240.0, 560.0).toDouble(),
           child: ListView(children: [
-            Text(result.title ?? result.displayTitle ?? 'Provider subtitle'),
-            const Text('These are the first 12 text cues fetched through the server. No library subtitle has been attached. '
-                'The provider may count this read against its download quota. Timing and edition match still require review; '
-                'ASS styling, positions and animation are not shown.'),
+            Text(result.title ?? result.displayTitle ?? copy.fallbackTitle),
+            Text(copy.description),
             for (final cue in cues.take(12)) ListTile(title: SelectableText(cue.text.length > 4000 ? '${cue.text.substring(0, 4000)}…' : cue.text),
               subtitle: Text('${Duration(milliseconds: cue.startMs)} – ${Duration(milliseconds: cue.endMs)}')),
           ])),
-        actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t.common.close)),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Download to library'))],
+        actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(translations.common.close)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(copy.download))],
       )) == true && current();
     } catch (_) {
-      if (current()) showErrorSnackBar(context, 'This provider result could not be previewed. Its existing download action remains available.');
+      if (current()) showErrorSnackBar(context, copy.failed);
     } finally {
       abort.abort();
       if (identical(_previewAbort, abort)) _previewAbort = null;
@@ -579,7 +579,7 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
               final trailingChildren = <Widget>[];
               if (context.tryGetMediaClientForServer(ServerId(widget.serverId))?.supportsRemoteSubtitlePreview == true &&
                   const {'srt', 'vtt', 'ass', 'ssa'}.contains(result.codec?.toLowerCase())) {
-                trailingChildren.add(IconButton(tooltip: 'Preview text before downloading',
+                trailingChildren.add(IconButton(tooltip: Translations.of(context).videoControls.subtitlePreview.buttonTooltip,
                   onPressed: _previewingKey != null || _downloadingKey != null ? null : () => _previewSubtitle(result),
                   icon: _previewingKey == result.key ? const LoadingIndicatorBox(size: 18)
                     : const AppIcon(Symbols.preview_rounded, size: 18)));

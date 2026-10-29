@@ -735,8 +735,8 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
   }
 
   actions.add(FocusableListTile(leading: const AppIcon(Symbols.subtitles_rounded),
-    title: const Text('Subtitle role preferences'),
-    subtitle: const Text('Profile defaults and an optional title override'),
+    title: Text(Translations.of(context).videoControls.subtitleRoles.title),
+    subtitle: Text(Translations.of(context).videoControls.subtitleRoles.titleOverrideTileHelp),
     onTap: () => showSubtitleRoleDialog(context, titleIdentity: state.metadata?.globalKey ??
       (state.serverId != null && state.ratingKey.isNotEmpty ? '${state.serverId}:${state.ratingKey}' : null))));
 

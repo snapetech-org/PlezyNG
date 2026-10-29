@@ -17,7 +17,10 @@ import re
 import statistics
 import unicodedata
 
-from evaluate_diagnostics import DiagnosticBudget, diagnostics
+if __package__:
+    from .evaluate_diagnostics import DiagnosticBudget, diagnostics
+else:
+    from evaluate_diagnostics import DiagnosticBudget, diagnostics
 
 
 MAX_FILE = 8 * 1024**2

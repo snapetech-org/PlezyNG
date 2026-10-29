@@ -3375,6 +3375,72 @@ class Translations$videoControls$en {
 
 	/// en: 'Secondary subtitle'
 	String get secondarySubtitle => 'Secondary subtitle';
+
+	/// en: 'Preview subtitle import'
+	String get subtitleImportTitle => 'Preview subtitle import';
+
+	/// en: 'Source encoding'
+	String get subtitleImportSourceEncoding => 'Source encoding';
+
+	/// en: 'MicroDVD FPS (blank uses the file header)'
+	String get subtitleImportMicroDvdFps => 'MicroDVD FPS (blank uses the file header)';
+
+	/// en: 'For 23.976 film use 23.976023976; variable-frame-rate media does not imply a subtitle FPS.'
+	String get subtitleImportMicroDvdFpsHint => 'For 23.976 film use 23.976023976; variable-frame-rate media does not imply a subtitle FPS.';
+
+	/// en: 'SAMI language class (blank selects first)'
+	String get subtitleImportSamiClass => 'SAMI language class (blank selects first)';
+
+	/// en: 'The preview lists the classes declared in the file.'
+	String get subtitleImportSamiClassHint => 'The preview lists the classes declared in the file.';
+
+	/// en: 'Channel within the supplied SCC field'
+	String get subtitleImportSccChannel => 'Channel within the supplied SCC field';
+
+	/// en: 'Channel 1'
+	String get subtitleImportChannel1 => 'Channel 1';
+
+	/// en: 'Channel 2'
+	String get subtitleImportChannel2 => 'Channel 2';
+
+	/// en: 'SCC frame clock'
+	String get subtitleImportSccFrameClock => 'SCC frame clock';
+
+	/// en: '30000/1001 fps (29.97)'
+	String get subtitleImportNtscRate => '30000/1001 fps (29.97)';
+
+	/// en: '30 fps'
+	String get subtitleImport30Rate => '30 fps';
+
+	/// en: 'SCC clock origin to subtract (ms)'
+	String get subtitleImportSccClockOrigin => 'SCC clock origin to subtract (ms)';
+
+	/// en: '0 preserves its clock. Set a known media origin; the first caption is not assumed to be time zero.'
+	String get subtitleImportSccClockOriginHint => '0 preserves its clock. Set a known media origin; the first caption is not assumed to be time zero.';
+
+	/// en: 'Final cue duration without a closing time (ms)'
+	String get subtitleImportFinalCueDuration => 'Final cue duration without a closing time (ms)';
+
+	/// en: 'Refresh preview'
+	String get subtitleImportRefreshPreview => 'Refresh preview';
+
+	/// en: '${count} cues · separate UTF-8 SRT derivative; original stays unchanged'
+	String subtitleImportCueSummary({required Object count}) => '${count} cues · separate UTF-8 SRT derivative; original stays unchanged';
+
+	/// en: 'Use this decoding'
+	String get subtitleImportUseDecoding => 'Use this decoding';
+
+	/// en: 'Enter a numeric frame rate.'
+	String get subtitleImportFrameRateRequired => 'Enter a numeric frame rate.';
+
+	/// en: 'Enter the final cue duration in whole milliseconds.'
+	String get subtitleImportTailRequired => 'Enter the final cue duration in whole milliseconds.';
+
+	/// en: 'Enter the SCC clock origin in whole milliseconds.'
+	String get subtitleImportClockOriginRequired => 'Enter the SCC clock origin in whole milliseconds.';
+
+	/// en: 'This file could not be decoded. Check its format and encoding.'
+	String get subtitleImportDecodeError => 'This file could not be decoded. Check its format and encoding.';
 }
 
 // Path: messages
@@ -15342,6 +15408,28 @@ extension on Translations {
 			'videoControls.tapToUnlock' => 'Tap to unlock',
 			'videoControls.tapAgainToUnlock' => 'Tap again to unlock',
 			'videoControls.secondarySubtitle' => 'Secondary subtitle',
+			'videoControls.subtitleImportTitle' => 'Preview subtitle import',
+			'videoControls.subtitleImportSourceEncoding' => 'Source encoding',
+			'videoControls.subtitleImportMicroDvdFps' => 'MicroDVD FPS (blank uses the file header)',
+			'videoControls.subtitleImportMicroDvdFpsHint' => 'For 23.976 film use 23.976023976; variable-frame-rate media does not imply a subtitle FPS.',
+			'videoControls.subtitleImportSamiClass' => 'SAMI language class (blank selects first)',
+			'videoControls.subtitleImportSamiClassHint' => 'The preview lists the classes declared in the file.',
+			'videoControls.subtitleImportSccChannel' => 'Channel within the supplied SCC field',
+			'videoControls.subtitleImportChannel1' => 'Channel 1',
+			'videoControls.subtitleImportChannel2' => 'Channel 2',
+			'videoControls.subtitleImportSccFrameClock' => 'SCC frame clock',
+			'videoControls.subtitleImportNtscRate' => '30000/1001 fps (29.97)',
+			'videoControls.subtitleImport30Rate' => '30 fps',
+			'videoControls.subtitleImportSccClockOrigin' => 'SCC clock origin to subtract (ms)',
+			'videoControls.subtitleImportSccClockOriginHint' => '0 preserves its clock. Set a known media origin; the first caption is not assumed to be time zero.',
+			'videoControls.subtitleImportFinalCueDuration' => 'Final cue duration without a closing time (ms)',
+			'videoControls.subtitleImportRefreshPreview' => 'Refresh preview',
+			'videoControls.subtitleImportCueSummary' => ({required Object count}) => '${count} cues · separate UTF-8 SRT derivative; original stays unchanged',
+			'videoControls.subtitleImportUseDecoding' => 'Use this decoding',
+			'videoControls.subtitleImportFrameRateRequired' => 'Enter a numeric frame rate.',
+			'videoControls.subtitleImportTailRequired' => 'Enter the final cue duration in whole milliseconds.',
+			'videoControls.subtitleImportClockOriginRequired' => 'Enter the SCC clock origin in whole milliseconds.',
+			'videoControls.subtitleImportDecodeError' => 'This file could not be decoded. Check its format and encoding.',
 			'messages.markedAsWatched' => 'Marked as watched',
 			'messages.markedAsUnwatched' => 'Marked as unwatched',
 			'messages.markedAsWatchedOffline' => 'Marked as watched (will sync when online)',

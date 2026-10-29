@@ -229,18 +229,24 @@ final class SubtitleAiService {
     }
   }
 
+  /// Checks the chosen installed model without starting a download or inference.
+  Future<bool> isProviderModelInstalled(SubtitleInferenceProvider provider) =>
+      provider == SubtitleInferenceProvider.cpu || provider == SubtitleInferenceProvider.desktopGpu
+          ? SubtitleWhisperCppService.instance.isModelInstalled() : isModelInstalled();
+
   /// Transcribes the half-open [startMs, endMs) media-time range. A null end
   /// transcribes through the end of the file; output cue times stay on the
   /// original WAV timeline so partial results can merge with existing cues.
   Future<SubtitleTranscriptionResult> transcribeWav(String wavPath, {
     SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu,
     int startMs = 0, int? endMs, int numThreads = 2, bool translateToEnglish = false,
-    bool allowEmpty = false, String? languageCode,
+    bool allowEmpty = false, bool allowModelDownload = true, String? languageCode,
     SubtitleWorkPriority priority = SubtitleWorkPriority.foreground, bool Function()? isCurrent,
     void Function(String phase, int received, int total)? onProgress,
   }) => SubtitleInferenceScheduler.instance.run(() => _transcribeWav(wavPath, provider: provider,
     startMs: startMs, endMs: endMs, numThreads: numThreads, translateToEnglish: translateToEnglish,
-    allowEmpty: allowEmpty, languageCode: languageCode, onProgress: onProgress), priority: priority, isCurrent: isCurrent);
+    allowEmpty: allowEmpty, allowModelDownload: allowModelDownload, isCurrent: isCurrent,
+    languageCode: languageCode, onProgress: onProgress), priority: priority, isCurrent: isCurrent);
 
   Future<SubtitleTranscriptionResult> _transcribeWav(
     String wavPath, {
@@ -250,6 +256,8 @@ final class SubtitleAiService {
     int numThreads = 2,
     bool translateToEnglish = false,
     bool allowEmpty = false,
+    bool allowModelDownload = true,
+    bool Function()? isCurrent,
     String? languageCode,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
@@ -275,7 +283,7 @@ final class SubtitleAiService {
         startMs: startMs,
         endMs: rangeEndMs,
         translateToEnglish: translateToEnglish,
-        allowEmpty: allowEmpty,
+        allowEmpty: allowEmpty, allowModelDownload: allowModelDownload, isCurrent: isCurrent,
         numThreads: numThreads,
         languageCode: languageOverride,
         onProgress: onProgress,
@@ -301,9 +309,11 @@ final class SubtitleAiService {
       );
     }
     if (!await isModelInstalled()) {
+      if (!allowModelDownload) throw StateError('Install the selected speech model in the foreground first.');
       await downloadModel(onProgress: onProgress);
     }
     final root = await _modelDirectoryPath();
+    if (isCurrent?.call() == false) throw StateError('Transcription was cancelled.');
     final result = await Isolate.run(
       () => _runSubtitleTranscriptionWorker(
         wavPath: wavPath,
@@ -315,6 +325,7 @@ final class SubtitleAiService {
         allowEmpty: allowEmpty,
       ),
     );
+    if (isCurrent?.call() == false) throw StateError('Transcription was cancelled.');
     final rawCues = result['cues'] as List<dynamic>;
     final cues = rawCues
         .map((value) {

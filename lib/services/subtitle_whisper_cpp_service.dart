@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -104,6 +106,34 @@ final class SubtitleWhisperCppService {
     }
   }
 
+  String? _verifiedInstalledPath;
+  FileStat? _verifiedInstalledStat;
+
+  Future<String> _installedModelPath() async {
+    final model = whisper.WhisperModels.baseQ5_1;
+    final file = File(p.join((await getApplicationSupportDirectory()).path,
+      'subtitle_models', 'whisper_cpp', model.fileName));
+    final stat = await file.stat();
+    if (stat.type != FileSystemEntityType.file || stat.size != model.sizeBytes) {
+      throw StateError('Install the selected speech model in the foreground first.');
+    }
+    final previous = _verifiedInstalledStat;
+    if (_verifiedInstalledPath != file.path || previous?.size != stat.size ||
+        previous?.modified != stat.modified || previous?.changed != stat.changed) {
+      final digest = (await sha256.bind(file.openRead()).first).toString();
+      final after = await file.stat();
+      if (digest != model.sha256 || after.size != stat.size || after.modified != stat.modified ||
+          after.changed != stat.changed) throw StateError('The installed speech model failed verification.');
+      _verifiedInstalledPath = file.path;
+      _verifiedInstalledStat = stat;
+    }
+    return file.path;
+  }
+
+  Future<bool> isModelInstalled() async {
+    try { await _installedModelPath(); return true; } on Object { return false; }
+  }
+
   /// Loads the verified multilingual model for repeated, in-memory player PCM
   /// windows. Desktop GPU is an explicit best-effort request; the caller owns
   /// and disposes the session and receives the runtime/fallback report.
@@ -174,6 +204,8 @@ final class SubtitleWhisperCppService {
     int? endMs,
     bool translateToEnglish = false,
     bool allowEmpty = false,
+    bool allowModelDownload = true,
+    bool Function()? isCurrent,
     int numThreads = 2,
     String? languageCode,
     void Function(String phase, int received, int total)? onProgress,
@@ -196,6 +228,8 @@ final class SubtitleWhisperCppService {
     }
     final modelDirectory = p.join((await getApplicationSupportDirectory()).path, 'subtitle_models', 'whisper_cpp');
     final model = whisper.WhisperModels.baseQ5_1;
+    final installedPath = allowModelDownload ? null : await _installedModelPath();
+    if (isCurrent?.call() == false) throw StateError('Transcription was cancelled.');
     List<whisper.WhisperDevice> devices = [];
     if (requestGpu) {
       try {
@@ -221,6 +255,7 @@ final class SubtitleWhisperCppService {
         languageCode: selectedLanguage,
         allowEmpty: allowEmpty,
         numThreads: numThreads,
+        installedPath: installedPath, isCurrent: isCurrent,
       );
     }
 
@@ -242,9 +277,10 @@ final class SubtitleWhisperCppService {
         languageCode: selectedLanguage,
         allowEmpty: allowEmpty,
         numThreads: numThreads,
+        installedPath: installedPath, isCurrent: isCurrent,
       );
     } catch (error) {
-      if (selectedDevice == null) rethrow;
+      if (selectedDevice == null || isCurrent?.call() == false) rethrow;
       onProgress?.call('GPU inference failed; restarting with CPU', 0, 0);
       return _run(
         wavPath,
@@ -261,6 +297,7 @@ final class SubtitleWhisperCppService {
         languageCode: selectedLanguage,
         allowEmpty: allowEmpty,
         numThreads: numThreads,
+        installedPath: installedPath, isCurrent: isCurrent,
       );
     }
   }
@@ -279,9 +316,14 @@ final class SubtitleWhisperCppService {
     required String languageCode,
     required bool allowEmpty,
     required int numThreads,
+    String? installedPath, bool Function()? isCurrent,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
-    final session = await whisper.FlutterWhisper.loadModel(
+    if (isCurrent?.call() == false) throw StateError('Transcription was cancelled.');
+    final session = installedPath != null
+        ? await whisper.FlutterWhisper.load(modelPath: installedPath, config: config,
+            onModelProgress: (progress) => onProgress?.call('Loading Whisper model', progress, 100))
+        : await whisper.FlutterWhisper.loadModel(
       model: model,
       modelDirectory: modelDirectory,
       config: config,
@@ -290,7 +332,11 @@ final class SubtitleWhisperCppService {
       },
       onModelProgress: (progress) => onProgress?.call('Loading Whisper model', progress, 100),
     );
+    final cancellation = isCurrent == null ? null : Timer.periodic(const Duration(milliseconds: 200), (_) {
+      if (!isCurrent()) session.cancel();
+    });
     try {
+      if (isCurrent?.call() == false) throw StateError('Transcription was cancelled.');
       onProgress?.call(translated ? 'Translating audio to English' : 'Transcribing multilingual audio', 0, 0);
       final boundedWindow = endMs - startMs <= 300000;
       final inferenceConfig = whisper.WhisperTranscribeConfig(
@@ -310,6 +356,7 @@ final class SubtitleWhisperCppService {
           ? await session.transcribe(await _readWindow(wavPath, startMs, endMs), config: inferenceConfig)
           : await session.transcribeFile(wavPath, config: inferenceConfig,
               onProgress: (progress) => onProgress?.call('Whisper inference', progress, 100));
+      if (isCurrent?.call() == false) throw StateError('Transcription was cancelled.');
       final offsetMs = boundedWindow ? startMs : 0;
       final wordTimings = SubtitleWordTimingBuilder.fromWhisperSegments(result.segments, durationMs: endMs, offsetMs: offsetMs);
       final cues = <SubtitleCue>[];
@@ -339,6 +386,7 @@ final class SubtitleWhisperCppService {
         wordTimings: wordTimings,
       );
     } finally {
+      cancellation?.cancel();
       await session.dispose();
     }
   }

@@ -8,6 +8,7 @@ import '../../../mpv/mpv.dart';
 import '../../../services/playback_initialization_types.dart';
 import '../../../services/playback_subtitle_resolver.dart';
 import '../../../services/shader_service.dart';
+import '../../../services/subtitle_analysis_source.dart';
 import '../helpers/track_filter_helper.dart';
 
 enum SubtitleDownloadApplyOutcome { applied, timedOut, busy, superseded, unavailable, failed }
@@ -59,6 +60,7 @@ class TrackControlsState {
   /// player surface so a Watch Together room hears about it; the sheet falls
   /// back to [Player.setRate] when absent.
   final Future<void> Function(double rate)? onRateRequested;
+  final Future<SubtitleAnalysisSource> Function()? openSubtitleAnalysisSource;
   final VoidCallback? onCancelAutoHide;
   final VoidCallback? onStartAutoHide;
   final String? serverId;
@@ -132,6 +134,7 @@ class TrackControlsState {
     this.onSubtitleTrackChanged,
     this.onSecondarySubtitleTrackChanged,
     this.onRateRequested,
+    this.openSubtitleAnalysisSource,
     this.onCancelAutoHide,
     this.onStartAutoHide,
     this.serverId,

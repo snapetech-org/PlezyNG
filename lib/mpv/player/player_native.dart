@@ -1623,8 +1623,7 @@ class PlayerNative extends PlayerBase
       return const [];
     }
     final packets = await invoke<List<dynamic>>('drainSubtitlePcmCapture');
-    return packets?.whereType<Map>().map((packet) => Map<String, Object?>.from(packet)).toList(growable: false) ??
-        const [];
+    return subtitlePcmOnItemTimeline(packets ?? const [], timelineOffset);
   }
 
   /// Describes the runtime libraries and accelerator generation packaged for

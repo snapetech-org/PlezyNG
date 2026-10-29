@@ -676,6 +676,7 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
           onTap: () => OverlaySheetController.of(context).push(
             builder: (_) => SubtitleAiSheet(
               player: player,
+              openAnalysisSource: state.openSubtitleAnalysisSource,
               serverId: state.serverId,
               ratingKey: state.ratingKey.isEmpty ? null : state.ratingKey,
               mediaIndex: state.selectedMediaIndex,

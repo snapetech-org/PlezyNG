@@ -23,3 +23,15 @@ abstract interface class SubtitlePcmCaptureSource implements PlayerMediaSessionI
   Future<bool> setSubtitlePcmCaptureEnabled(bool enabled);
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture();
 }
+
+/// Native capture uses the open file/window clock. App captions and replay use
+/// the item's clock, including a stacked file's offset. Apply exactly once at
+/// the player boundary, never infer an offset from wall time or drain latency.
+List<Map<String, Object?>> subtitlePcmOnItemTimeline(Iterable<dynamic> packets, Duration offset) => [
+  for (final value in packets) if (value is Map) (() {
+    final packet = Map<String, Object?>.from(value);
+    final pts = packet['presentationTimeUs'];
+    if (pts is num && pts.isFinite) packet['presentationTimeUs'] = pts.toInt() + offset.inMicroseconds;
+    return packet;
+  })(),
+];

@@ -21,6 +21,7 @@ import 'package:flutter/services.dart'
 import '../../services/fullscreen_state_manager.dart';
 import '../../services/macos_window_service.dart';
 import '../../services/pip_service.dart';
+import '../../services/subtitle_analysis_source.dart';
 import '../../services/playback_initialization_types.dart';
 import '../../services/playback_subtitle_resolver.dart';
 import 'package:window_manager/window_manager.dart';
@@ -646,6 +647,7 @@ class PlexVideoControls extends StatefulWidget {
   /// shortcuts, long-press 2x) so the owning screen can apply the rate and
   /// declare it to a Watch Together room. Falls back to [Player.setRate].
   final Future<void> Function(double rate)? onRateRequested;
+  final Future<SubtitleAnalysisSource> Function()? openSubtitleAnalysisSource;
 
   /// Called for app-level transport requests so the owning screen can track
   /// user playback intent separately from transient buffering state, and
@@ -786,6 +788,7 @@ class PlexVideoControls extends StatefulWidget {
     this.onSecondarySubtitleTrackChanged,
     this.onSeekRequested,
     this.onRateRequested,
+    this.openSubtitleAnalysisSource,
     this.onPlayPauseRequested,
     this.onSeekCompleted,
     this.onBack,

@@ -9,9 +9,11 @@ import 'subtitle_discovery_service.dart';
 /// cookies, signed upstream URLs or a durable copy of those credentials.
 class SubtitleAnalysisSource {
   const SubtitleAnalysisSource({required this.uri, required this.identity,
-    required this.isCurrent, required this.close});
+    required this.isCurrent, required this.close, this.timelineOffsetMs = 0, this.durationMs});
   final Uri uri;
   final String identity;
+  final int timelineOffsetMs;
+  final int? durationMs;
   final bool Function() isCurrent;
   final Future<void> Function() close;
   static Future<SubtitleAnalysisSource> localPlayer(Player player, bool Function() current) async {
@@ -21,6 +23,7 @@ class SubtitleAnalysisSource {
     final stat = await file.stat();
     if (stat.type != FileSystemEntityType.file || !current()) throw StateError('Media changed or local file unavailable.');
     return SubtitleAnalysisSource(uri: file.uri, identity: '$path:${stat.size}:${stat.modified.microsecondsSinceEpoch}',
-      isCurrent: current, close: () async {});
+      isCurrent: current, close: () async {}, timelineOffsetMs: player.timelineOffset.inMilliseconds,
+      durationMs: player.state.duration.inMilliseconds - player.timelineOffset.inMilliseconds);
   }
 }

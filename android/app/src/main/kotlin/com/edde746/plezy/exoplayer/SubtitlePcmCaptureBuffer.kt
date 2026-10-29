@@ -6,7 +6,7 @@ import java.util.ArrayDeque
 
 /**
  * A bounded, opt-in copy of PCM that has already passed through Media3's
- * playback output path. Capture never advances or mutates the AudioTrack buffer.
+ * timestamped PCM processing path. Capture never advances or mutates the AudioTrack buffer.
  */
 internal class SubtitlePcmCaptureBuffer(
   private val maxBufferedBytes: Int = 8 * 1024 * 1024
@@ -16,7 +16,9 @@ internal class SubtitlePcmCaptureBuffer(
     val presentationTimeUs: Long,
     val sampleRate: Int,
     val channels: Int,
-    val encoding: String
+    val encoding: String,
+    val periodUid: Any?,
+    val periodPositionUs: Long
   )
 
   private val lock = Any()
@@ -34,13 +36,17 @@ internal class SubtitlePcmCaptureBuffer(
     }
   }
 
+  fun clearPackets() = synchronized(lock) { packets.clear(); bufferedBytes = 0 }
+
   fun capture(
     source: ByteBuffer,
     byteCount: Int,
     presentationTimeUs: Long,
     sampleRate: Int,
     channels: Int,
-    encoding: Int
+    encoding: Int,
+    periodUid: Any? = null,
+    periodPositionUs: Long = 0L
   ) {
     if (!enabled || sampleRate !in 8_000..192_000 || channels !in 1..8) return
     val bytesPerSample = when (encoding) {
@@ -60,7 +66,8 @@ internal class SubtitlePcmCaptureBuffer(
       presentationTimeUs = presentationTimeUs,
       sampleRate = sampleRate,
       channels = channels,
-      encoding = if (encoding == C.ENCODING_PCM_FLOAT) "float32" else "pcm16"
+      encoding = if (encoding == C.ENCODING_PCM_FLOAT) "float32" else "pcm16",
+      periodUid = periodUid, periodPositionUs = periodPositionUs
     )
 
     synchronized(lock) {
@@ -73,19 +80,20 @@ internal class SubtitlePcmCaptureBuffer(
     }
   }
 
-  fun drain(): List<Map<String, Any>> = synchronized(lock) {
+  fun drain(clock: (Long, Any?, Long) -> Pair<Long, Long?>?): List<Map<String, Any>> = synchronized(lock) {
     val result = ArrayList<Map<String, Any>>(packets.size)
     while (packets.isNotEmpty()) {
       val packet = packets.removeFirst()
       bufferedBytes -= packet.bytes.size
+      val mapped = clock(packet.presentationTimeUs, packet.periodUid, packet.periodPositionUs) ?: continue
       result.add(
-        hashMapOf(
+        hashMapOf<String, Any>(
           "pcm" to packet.bytes,
-          "presentationTimeUs" to packet.presentationTimeUs,
+          "presentationTimeUs" to mapped.first,
           "sampleRate" to packet.sampleRate,
           "channels" to packet.channels,
           "encoding" to packet.encoding
-        )
+        ).apply { mapped.second?.let { put("clockOriginUs", it) } }
       )
     }
     result

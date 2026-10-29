@@ -95,6 +95,9 @@ import '../services/player_sync_offsets.dart';
 import '../services/preferred_audio_device.dart';
 import '../services/scoped_player_prefs.dart';
 import '../sources/content_access.dart';
+import '../sources/source_models.dart' show sourceDigest;
+import '../services/subtitle_analysis_source.dart';
+import '../mpv/player/player_media_session_identity.dart';
 import '../sources/source_controller.dart';
 import '../services/motion_clarity_service.dart';
 import '../services/motion_processing_service.dart';
@@ -186,6 +189,7 @@ part 'video_player/parts/playback_start.dart';
 part 'video_player/parts/seeking.dart';
 part 'video_player/parts/build.dart';
 part 'video_player/parts/watch_together.dart';
+part 'video_player/parts/subtitle_sources.dart';
 
 final WakelockController _wakelockController = WakelockController();
 

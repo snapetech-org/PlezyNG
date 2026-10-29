@@ -57,6 +57,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   bool _fellBackToCpu = false;
   double? _streamStartMs;
   int? _nextExpectedPtsUs;
+  int? _clockOriginUs;
   int? _lastSampleRate;
   int? _lastChannels;
   String? _lastEncoding;
@@ -139,6 +140,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _wordTimings.clear();
       _streamStartMs = null;
       _nextExpectedPtsUs = null;
+      _clockOriginUs = null;
       _lastSampleRate = null;
       _lastChannels = null;
       _lastEncoding = null;
@@ -331,6 +333,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _wordTimings.clear();
     _streamStartMs = null;
     _nextExpectedPtsUs = null;
+    _clockOriginUs = null;
     _lastSampleRate = null;
     _lastChannels = null;
     _lastEncoding = null;
@@ -426,8 +429,40 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     }
   }
 
+  int _originShiftMs(int? origin) => origin == null || _clockOriginUs == null ? 0 : ((origin - _clockOriginUs!) / 1000).round();
+
+  void _rebaseLiveWindow(int origin) {
+    final previous = _clockOriginUs;
+    _clockOriginUs = origin;
+    if (previous == null || previous == origin) return;
+    final delta = ((previous - origin) / 1000).round();
+    // A sliding DVR window changes the zero point, not the underlying audio.
+    // Preserve stable cue IDs while retiring content outside the new window.
+    final shifted = <SubtitleCue>[];
+    for (final cue in _cues) {
+      if (cue.endMs + delta <= 0) continue;
+      shifted.add(SubtitleCue(index: cue.index, startMs: math.max(0, cue.startMs + delta),
+        endMs: cue.endMs + delta, text: cue.text, cueId: cue.stableId));
+    }
+    _cues..clear()..addAll(shifted);
+    final words = <SubtitleWordTiming>[];
+    for (final word in _wordTimings) {
+      if (word.endMs + delta <= 0) continue;
+      words.add(SubtitleWordTiming(startMs: math.max(0, word.startMs + delta), endMs: word.endMs + delta,
+        text: word.text, confidence: word.confidence, unit: word.unit, cueId: word.cueId, cueIndex: word.cueIndex));
+    }
+    _wordTimings..clear()..addAll(words);
+    if (_streamStartMs != null) _streamStartMs = _streamStartMs! + delta;
+    if (_nextExpectedPtsUs != null) _nextExpectedPtsUs = _nextExpectedPtsUs! + previous - origin;
+    _arrivalCue = null; _arrivalExpires = null; _recentTranscript = null;
+    liveCaption.value = null;
+    _publishTranscript();
+  }
+
   void _appendPackets(List<Map<String, Object?>> packets) {
     for (final packet in packets) {
+      final origin = packet['clockOriginUs'];
+      if (origin is num && origin.isFinite) _rebaseLiveWindow(origin.toInt());
       final raw = packet['pcm'];
       if (raw is! Uint8List) continue;
       final ptsUs = (packet['presentationTimeUs'] as num?)?.toInt();
@@ -455,7 +490,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           (_lastEncoding != null && _lastEncoding != encoding);
       final expected = _nextExpectedPtsUs;
       final gapUs = expected == null ? 0 : ptsUs - expected;
-      if (changedFormat || (expected != null && (gapUs < -150000 || gapUs > 1500000))) {
+      if (changedFormat || (expected != null && (gapUs < -150000 || gapUs > 250000))) {
         // A raw PTS reset without an explicit seek can reuse old timestamps
         // for different live content. Retire the old clock namespace.
         _discontinuities++;
@@ -533,13 +568,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     final consume = finalChunk ? count : math.min(_strideSamples, count).toInt();
     final generation = _audioGeneration;
     final session = _session!;
-    _inferenceFuture = _transcribeWindow(session, samples, startMs, generation)
+    final origin = _clockOriginUs;
+    _inferenceFuture = _transcribeWindow(session, samples, startMs, generation, origin)
         .then<void>((_) {
           if (generation != _audioGeneration) return;
           // The bounded queue may trim samples while native inference is
           // running. Advance to this window's intended stride by media time,
           // not by blindly removing [consume] from the now-shifted queue.
-          final desiredNextStartMs = startMs + consume * 1000.0 / _sampleRate;
+          final desiredNextStartMs = startMs + _originShiftMs(origin) + consume * 1000.0 / _sampleRate;
           final queuedStartMs = _streamStartMs ?? startMs.toDouble();
           final samplesToDrop = ((desiredNextStartMs - queuedStartMs) * _sampleRate / 1000.0)
               .round()
@@ -571,6 +607,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     Float32List samples,
     int startMs,
     int generation,
+    int? origin,
   ) async {
     if (samples.length < _minimumFinalSamples) return;
     dynamic result;
@@ -590,6 +627,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     }
     if (result == null) return;
     if (!_isCurrentInference(generation)) return;
+    startMs += _originShiftMs(origin);
     final language = result.language.trim();
     if (language.isNotEmpty && language.toLowerCase() != 'auto') _detectedLanguage = language;
     for (final word in SubtitleWordTimingBuilder.fromWhisperSegments(

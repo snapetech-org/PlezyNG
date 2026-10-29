@@ -3808,7 +3808,7 @@ class ExoPlayerCore(private val activity: Activity) :
     val player = exoPlayer ?: return false
     val encoding = lastAudioTrackConfig?.encoding ?: return false
     return !currentTunneledPlayback && player.playbackParameters.speed == 1f &&
-      (encoding == C.ENCODING_PCM_16BIT || encoding == C.ENCODING_PCM_FLOAT)
+      encoding == C.ENCODING_PCM_16BIT && renderersFactory?.subtitlePcmProcessor?.ready == true
   }
 
   fun setSubtitlePcmCaptureEnabled(enabled: Boolean): Boolean {
@@ -3824,7 +3824,22 @@ class ExoPlayerCore(private val activity: Activity) :
       setSubtitlePcmCaptureEnabled(false)
       return emptyList()
     }
-    return renderersFactory?.subtitlePcmCaptureBuffer?.drain() ?: emptyList()
+    val player = exoPlayer ?: return emptyList()
+    val timeline = player.currentTimeline
+    return renderersFactory?.subtitlePcmCaptureBuffer?.drain { pts, uid, oldPeriodPosition ->
+      if (uid == null || timeline.isEmpty) {
+        if (player.isCurrentMediaItemLive) null else Pair(pts, null)
+      } else {
+        val index = timeline.getIndexOfPeriod(uid)
+        if (index == C.INDEX_UNSET) null else {
+          val period = timeline.getPeriod(index, Timeline.Period())
+          val window = timeline.getWindow(period.windowIndex, Timeline.Window())
+          val mapped = pts + period.positionInWindowUs - oldPeriodPosition
+          val origin = if (window.isLive && window.windowStartTimeMs != C.TIME_UNSET) window.windowStartTimeMs * 1000L else null
+          Pair(mapped, origin)
+        }
+      }
+    } ?: emptyList()
   }
 
   fun setAudioPassthrough(enabled: Boolean) {

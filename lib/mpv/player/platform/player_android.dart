@@ -611,7 +611,7 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
     if (disposed) return const [];
     final packets = await methodChannel.invokeMethod<List<dynamic>>('drainSubtitlePcmCapture');
-    return packets?.map((packet) => Map<String, Object?>.from(packet as Map)).toList(growable: false) ?? const [];
+    return subtitlePcmOnItemTimeline(packets ?? const [], timelineOffset);
   }
 
   @override

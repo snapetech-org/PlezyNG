@@ -753,3 +753,24 @@ engine request limits. Linux uses explicitly installed espeak-ng. Device speech
 engines determine their own offline/network policy; Tizen, webOS and tvOS do not
 advertise this native path. This is accessible spoken text, not lip-synchronized
 dubbing. Source was reviewed without executing tests, builds, models or CI.
+
+## Source clocks and renewable library analysis
+
+Library VOD now opens a separate analysis lease through the existing server
+client and loopback source gateway, with credential renewal and exact current
+item/version/part/profile guards. The decoder receives no server credentials.
+Stacked file offsets are applied to recognition output and bounded decoding
+stays within the selected part; transcode playback can analyze the original
+selected source with an explicitly chosen source audio ordinal.
+
+Native PCM packets now enter the same item timeline at the player boundary.
+Android capture uses a Media3 identity audio processor and its documented
+StreamMetadata window anchor, before speed/silence processing, instead of the
+output writer's tunneling timestamp. Current period offsets remap buffered
+packets after manifest updates, and explicit live-window origins rebase retained
+cues, queued PCM and in-flight inference. Expired periods are dropped. The
+processor route advertises only decoded PCM16 at normal speed; float-only,
+encoded and tunneled bypass routes stay intact and decline capture. Media3's
+[AudioProcessor contract](https://github.com/androidx/media/blob/release/libraries/common/src/main/java/androidx/media3/common/audio/AudioProcessor.java)
+and [DefaultAudioSink](https://github.com/androidx/media/blob/release/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/audio/DefaultAudioSink.java)
+were inspected. No backend or device execution was performed.

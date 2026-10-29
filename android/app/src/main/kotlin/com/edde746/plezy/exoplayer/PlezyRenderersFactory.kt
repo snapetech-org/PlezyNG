@@ -67,8 +67,9 @@ class PlezyRenderersFactory(context: Context) : DefaultRenderersFactory(context)
     for (matrix in identityChannelMixingMatrices) putChannelMixingMatrix(matrix)
   }
 
-  /** PCM is copied from the output writer only while a user-started transcription session runs. */
+  /** Timestamped PCM is copied only while a user-started transcription session runs. */
   internal val subtitlePcmCaptureBuffer = SubtitlePcmCaptureBuffer()
+  internal val subtitlePcmProcessor = SubtitlePcmAudioProcessor(subtitlePcmCaptureBuffer)
 
   fun identityChannelMixingMatrix(channelCount: Int): ChannelMixingMatrix = identityChannelMixingMatrices[channelCount - 1]
 
@@ -195,8 +196,8 @@ class PlezyRenderersFactory(context: Context) : DefaultRenderersFactory(context)
       .setEnableAudioOutputPlaybackParameters(enableAudioOutputPlaybackParams)
       // Wraps in DefaultAudioProcessorChain, keeping stock silence-skip +
       // Sonic; the downmix runs first and only in the decoded-PCM path.
-      .setAudioProcessors(arrayOf(channelMixProcessor))
-      .setAudioOutputProvider(RawPositionOutputProvider(realProvider, rawPositionUs, audioDiagnosticsLogger, subtitlePcmCapture = subtitlePcmCaptureBuffer))
+      .setAudioProcessors(arrayOf(channelMixProcessor, subtitlePcmProcessor))
+      .setAudioOutputProvider(RawPositionOutputProvider(realProvider, rawPositionUs, audioDiagnosticsLogger))
       .build()
 
     val processedSink = PositionFixAudioSink(
@@ -807,31 +808,6 @@ internal class RawPositionAudioOutput(
       throw e
     }
     val written = buffer.position() - before
-    if (written > 0 && !captureUnavailable && sampleRate > 0 && channelCount > 0) {
-      val bytesPerSample = when (encoding) {
-        C.ENCODING_PCM_16BIT -> 2
-        C.ENCODING_PCM_FLOAT -> 4
-        else -> 0
-      }
-      val bytesPerFrame = bytesPerSample * channelCount
-      if (bytesPerFrame > 0) {
-        val captureBytes = written - written % bytesPerFrame
-        if (captureBytes > 0) {
-          val captureBuffer = buffer.duplicate()
-          captureBuffer.position(before)
-          captureBuffer.limit(before + captureBytes)
-          val frameOffsetUs = (before / bytesPerFrame).toLong() * 1_000_000L / sampleRate
-          subtitlePcmCapture?.capture(
-            captureBuffer.slice(),
-            captureBytes,
-            presentationTimeUs + frameOffsetUs,
-            sampleRate,
-            channelCount,
-            encoding
-          )
-        }
-      }
-    }
     if (written > 0) {
       writeCount++
       writtenBytes += written.toLong()

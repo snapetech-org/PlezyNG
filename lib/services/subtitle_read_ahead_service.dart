@@ -39,10 +39,13 @@ class SubtitleReadAheadService extends ChangeNotifier {
   String status = 'Stopped';
   bool get running => _player != null;
   bool get busy => _busy;
-  bool _current(int epoch) => epoch == _generation && _player != null && !_player!.disposed &&
-      _source?.isCurrent() == true && _valid?.call() == true &&
-      (_mediaGeneration == null || (_player as PlayerMediaSessionIdentity).mediaSessionGeneration == _mediaGeneration) &&
-      _player!.state.track.audio?.id == _audio;
+  bool _current(int epoch) {
+    try { return epoch == _generation && _player != null && !_player!.disposed &&
+        _source?.isCurrent() == true && _valid?.call() == true &&
+        (_mediaGeneration == null || (_player as PlayerMediaSessionIdentity).mediaSessionGeneration == _mediaGeneration) &&
+        _player!.state.track.audio?.id == _audio; }
+    catch (_) { return false; }
+  }
 
   Future<void> start(Player player, {required Future<SubtitleAnalysisSource> Function() open,
     required bool Function() isCurrent, required int audioOrdinal, String? language,
@@ -98,8 +101,9 @@ class SubtitleReadAheadService extends ChangeNotifier {
     final player = _player!;
     final overlay = SubtitleOverlayService.forPlayer(player);
     if (_published != null && !identical(overlay.lanes[0], _published)) { await stop(); return; }
-    final now = player.currentPosition.inMilliseconds;
-    final duration = player.state.duration.inMilliseconds;
+    final offset = _source!.timelineOffsetMs;
+    final now = (player.currentPosition.inMilliseconds - offset).clamp(0, 28800000).toInt();
+    final duration = _source!.durationMs ?? player.state.duration.inMilliseconds - offset;
     if (duration <= 0) return;
     final first = now ~/ 30000;
     int? index;
@@ -145,11 +149,11 @@ class SubtitleReadAheadService extends ChangeNotifier {
         final a = cue.startMs + decodeStart, b = cue.endMs + decodeStart;
         final midpoint = (a + b) ~/ 2;
         if (midpoint < start || midpoint >= start + 30000) continue;
-        cues.add(SubtitleCue(index: cue.index, startMs: a, endMs: b, text: cue.text));
+        cues.add(SubtitleCue(index: cue.index, startMs: a + offset, endMs: b + offset, text: cue.text));
       }
       _windows[index] = cues;
       _words[index] = [for (final word in result.wordTimings) SubtitleWordTiming(
-        startMs: word.startMs + decodeStart, endMs: word.endMs + decodeStart,
+        startMs: word.startMs + decodeStart + offset, endMs: word.endMs + decodeStart + offset,
         text: word.text, confidence: word.confidence, unit: word.unit)];
       // Keep up to 240 windows (2 hours) around current playhead, 8 MiB text.
       while (_windows.length > 240 || _windows.values.expand((v) => v).fold<int>(0, (n, c) => n + c.text.length) > 2 * 1024 * 1024) {
@@ -160,7 +164,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
       final validity = _valid!, source = _source!;
       final track = SubtitleOverlayTrack(cues: all,
         words: SubtitleWordTimingBuilder.attachCueIndices(_words.values.expand((v) => v).toList(), all),
-        title: 'Prepared playback captions', isCurrent: () => validity() && source.isCurrent());
+        title: 'Prepared playback captions', language: result.detectedLanguage, isCurrent: () => validity() && source.isCurrent());
       final previous = _published;
       if (previous != null) {
         track.fontSize = previous.fontSize; track.position = previous.position; track.color = previous.color;
@@ -176,7 +180,8 @@ class SubtitleReadAheadService extends ChangeNotifier {
     } catch (error) {
       if (epoch == _generation) {
         await stop();
-        status = 'Read-ahead stopped: $error';
+        status = error is ProcessException ? 'Read-ahead stopped. Install FFmpeg or configure PLEZY_FFMPEG.'
+            : 'Read-ahead stopped. The decoder, model, or current source could not complete the window.';
       }
     } finally {
       _decoder?.kill(ProcessSignal.sigkill); _decoder = null;

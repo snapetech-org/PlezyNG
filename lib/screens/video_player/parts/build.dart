@@ -339,6 +339,7 @@ extension _VideoPlayerBuildMethods on VideoPlayerScreenState {
                         onSecondarySubtitleTrackChanged: _onSecondarySubtitleTrackChanged,
                         onSeekRequested: _seekPlayback,
                         onRateRequested: _setPlaybackRate,
+                        openSubtitleAnalysisSource: _openSubtitleAnalysisSource,
                         onPlayPauseRequested: _handleControlsTransport,
                         onBack: _handleBackButton,
                         onReachedEnd: ({skipAutoPlayCountdown = false}) =>

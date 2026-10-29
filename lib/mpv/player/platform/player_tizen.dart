@@ -97,7 +97,7 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
     final controller = _controller;
     if (controller == null || !_loaded || _failed) return const [];
-    return controller.drainSubtitlePcmCapture();
+    return subtitlePcmOnItemTimeline(await controller.drainSubtitlePcmCapture(), timelineOffset);
   }
 
   bool _current(int generation) => !disposed && !_closing && generation == _generation;

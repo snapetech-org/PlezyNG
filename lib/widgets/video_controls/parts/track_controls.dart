@@ -175,6 +175,7 @@ extension _PlexVideoControlsTrackMethods on _PlexVideoControlsState {
           : const <PlaybackSubtitleSidecar>[],
       sourcePartId: canSwitchSourceSubtitles ? widget.sourcePartId : null,
       sourceDurationMs: widget.metadata.durationMs,
+      openSubtitleAnalysisSource: widget.openSubtitleAnalysisSource,
       boxFitMode: widget.boxFitMode,
       videoZoomScale: widget.videoZoomScale,
       audioSyncOffset: _audioSyncOffset,

@@ -1,3 +1,5 @@
+import '../../karaoke/karaoke_screen.dart';
+import '../../karaoke/karaoke_strings.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
@@ -638,6 +640,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
                 icon: AppIcon(Symbols.picture_in_picture_alt_rounded, fill: 1, color: tk.text),
               ),
             ),
+            IconButton(tooltip: karaokeText(context, 'sing'),
+              icon: AppIcon(Symbols.mic_rounded, color: tk.text),
+              onPressed: () => unawaited(openKaraoke(context, media: track))),
             _buildOverflowButton(track),
           ],
         ),

@@ -48,6 +48,19 @@ class PlaybackCoordinator {
 
   static final PlaybackCoordinator instance = PlaybackCoordinator._();
 
+  Future<void> Function()? _stopKaraoke;
+  void registerKaraoke(Future<void> Function() stop) => _stopKaraoke = stop;
+  void unregisterKaraoke(Future<void> Function() stop) {
+    if (_stopKaraoke == stop) _stopKaraoke = null;
+  }
+  Future<void> claimKaraoke() async {
+    await _stopNarration?.call();
+    await _stopFileSession?.call();
+    await _stopTheme();
+    await _stopMusicSession?.call();
+    await shutdownVideo();
+  }
+
   Future<void> Function()? _stopMusicSession;
 
   /// A music pane explicitly retained in Plezy's app-owned workspace survives
@@ -115,6 +128,7 @@ class PlaybackCoordinator {
 
   /// File-backed audio, video and narration share the existing native channels.
   Future<void> claimFiles({bool preserveWorkspaceVideo = true, bool preserveWorkspaceMusic = false}) async {
+    await _stopKaraoke?.call();
     await _stopNarration?.call();
     await _stopTheme();
     if (!preserveWorkspaceMusic || !_workspaceRetainsMusic) await _stopMusicSession?.call();
@@ -275,6 +289,7 @@ class PlaybackCoordinator {
   }
 
   Future<void> _claimVideoPlayback({required bool stopFileSession}) async {
+    await _stopKaraoke?.call();
     await _stopNarration?.call();
     if (stopFileSession) await _stopFileSession?.call();
     await _stopTheme();
@@ -306,6 +321,7 @@ class PlaybackCoordinator {
   /// the power to stop music from starting at all, which is the bricking the
   /// per-session native rework exists to prevent.
   Future<void> claimMusic() async {
+    await _stopKaraoke?.call();
     await _stopNarration?.call();
     await _stopFileSession?.call();
     await _stopTheme();

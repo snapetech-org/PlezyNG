@@ -1,3 +1,4 @@
+import '../karaoke/karaoke_session.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -301,6 +302,9 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                       : MusicSessionStore(database: context.read<AppDatabase>(), profileId: activeId),
                 ),
               ),
+              ChangeNotifierProvider(create: (context) => KaraokeSession(
+                music: context.read<MusicPlaybackService>(), profileId: activeId ?? 'local',
+              )),
               // Per profile: a profile switch disposes of it, which leaves the
               // room and closes the party.
               ChangeNotifierProvider(

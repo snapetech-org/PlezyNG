@@ -1,3 +1,5 @@
+import '../../karaoke/karaoke_screen.dart';
+import '../../karaoke/karaoke_strings.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -1002,6 +1004,8 @@ class _LibrariesScreenState extends State<LibrariesScreen>
                 )
               : null,
         ),
+      FocusableAction(icon: Symbols.mic_rounded, tooltip: karaokeText(context, 'title'),
+        onPressed: () => unawaited(openKaraoke(context))),
       FocusableAction(icon: Symbols.refresh_rounded, tooltip: t.common.refresh, onPressed: manualRefresh),
       FocusableAction(
         icon: Symbols.auto_awesome_rounded,

@@ -86,3 +86,13 @@ P0 contracts and package identity; P1 home karaoke; P2 party hosting; P3 audio/m
 - https://support.apple.com/en-ca/guide/tv/atvbd965bc0d/tvos
 - https://moises.ai/products/moises-app/
 - https://smule.zendesk.com/hc/en-us/articles/35739735608852-Pitch-Shifting-Backing-Track
+
+## Implementation batch 1 — source integrated, not runtime qualified
+
+- Added profile-scoped karaoke catalog/session persistence and a serialized command authority with durable receipts.
+- Added Music/Library entry points, host queue, fair rotation, singer preferences, stage, practice loops, key/tempo and explicit resume.
+- Preserved span timing in the shared lyric model and Plex/enhanced-LRC parsers. Added bounded LRC, WebVTT, TTML-subset and absolute UltraStar import plus LRC/VTT export.
+- Added atomic package staging, path/size/digest checks, portable ZIP export, quota checks and explicit eviction protection.
+- Added a source-clock CD+G decoder with palette/scroll/transparency checkpoints; local audio/video/ASS use existing player ownership.
+- Current locale catalog has English fallback and partial German/Spanish/French translations; locale completion remains work in progress.
+- No tests, builds, analyzers or CI executed. Runtime/platform behavior remains unverified.

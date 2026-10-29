@@ -25,7 +25,7 @@ with `[skip ci]`. Existing native dependency pins were not fabricated or promote
 | Playback/source access | Android Media3 pre-speed PCM processor; native MPV bridges; Tizen tap; Android MediaExtractor/MediaCodec and Apple AVAssetReader analysis bridges plus desktop FFmpeg read-ahead via renewable standalone/library source leases; explicit companion staging of eligible current VOD files on IO platforms. | Current locked MPV libraries lack the ordered ABI. webOS NDL has no direct PCM tap; there is no browser Player. Android/Apple native readers and source-built Tizen/webOS audio helpers are implemented. Native format support, TV subprocess policy, shipped helper artifacts and device behavior remain unqualified. Companion staging is limited to complete, accessible files up to 1 GiB/one hour; playlists/live/protected sources are refused. |
 | Import and attachment | Existing format conversion/archive/drop/share flows; Plex/Jellyfin/Emby upload; managed standalone native text attachment; adapter-owned folder discovery for local/network/cloud sources and DLNA metadata-linked text resources. | Backend format limits still apply. Non-MPV attachment refuses saved affine corrections. Vendor-only DLNA caption tags and catalogue-specific sources without a file listing remain unsupported. |
 | App rendering | Two independent text lanes, per-profile/lane appearance defaults, installed-family/script fallback, original word highlights, fixed authored sign regions, stable optional scene-region avoidance, manual burned-caption cover, focused-pane density limit, spoken subtitles with explicit duck/rate. | App styling is not a replacement for native ASS/bitmap rendering. HDR luminance, font shaping and output paths are unqualified. Centered contain/cover/stretch/zoom geometry and screen/video anchoring are implemented; renderer/output qualification, ruby/vertical typography, new closed-caption service semantics and localized new controls remain open. |
-| Ecosystem | Corrected SRT/native snapshot handoff on the opened-part clock; expiring LAN second screen and WebVTT exports; explicit Cast WebVTT loading/restoration; revision/history transfer bundles and study tools. | Receiver rendering/native PiP remain capability limited. Automatic Watch Together asset policy, cross-device conflict sync, font-aware offline packaging/accounting and HDR subtitle screenshot composition remain unfinished. |
+| Ecosystem | Corrected SRT/native snapshot handoff on the opened-part clock; expiring LAN second screen and WebVTT exports; explicit Cast WebVTT loading/restoration; revision/history transfer bundles, explicit encrypted cloud synchronization with causal conflict review, and study tools. | Receiver rendering/native PiP remain capability limited. Automatic Watch Together asset policy, font-aware offline packaging/accounting and HDR subtitle screenshot composition remain unfinished. |
 | Research | Bitmap/burned OCR with image review and automatic text-band proposals; positioned signs; second-model disagreements; local speech separation; VAD completeness; single-frame or three-sample scene proposals and bounded temporal region associations; stereo-mix event evidence; licensed generic-voice dubbing/mixing; offline Whisper adaptation with separate holdouts. | These are opt-in, reviewable experimental adapters. Physical sound localization, true audiovisual speech fusion, singing-specific timing, continuous visual tracking and proven quality improvements are not implemented or established. No adaptation/evaluation run occurred. |
 | MPV packaging | Shared ordered-PCM patch and all platform bridge sources; final archive/native export inspection; per-binary/archive receipts; receipt-aware content keys and manifest freshness; atomic consumer promotion gate. | No new binaries were built/published and no consumer lock was advanced. The private-JIT build/publication and exact-artifact promotion described in `MPV-PACKAGING.md` are still required. |
 
@@ -1037,3 +1037,31 @@ during inference, reindexes cached cues while retaining stable IDs, sorts word
 timings before correspondence, and bounds cue/word/text retention. Evicting a
 live analysis window also evicts its segment completion markers, so seeking
 back into still-available DVR content can prepare that window again.
+
+### Encrypted cross-device revision synchronization
+
+The caption sheet now exposes explicit cloud synchronization using the existing
+Sources cloud account/folder and provider transports (WebDAV, S3, Google Drive,
+OneDrive or Dropbox). Each track has a separately generated 256-bit pairing key
+stored in the profile's private preferences. Pairing is manual: users must check
+the same edition, opened part, selected audio and file/item clock. No title,
+server identifier, credential, URL, video or audio is included in the payload.
+
+Reviewed cue/word content up to 8 MiB is canonicalized and split into 1 MiB
+chunks. AES-GCM binds each immutable chunk to its filename; each chunk and the
+complete revision also have SHA-256 integrity checks. Local timestamps and
+revision creation IDs do not decide equivalence. A causal multi-value register
+retains concurrent versions, with explicit preview, import-to-history and
+choose-shared-winner actions. A winner only covers the exact versions shown;
+unseen offline edits remain concurrent. Neither pulling nor choosing a winner
+automatically changes playback. Normal local history retention still applies.
+
+Metadata publication uses durable sequence reservation and retains a previous
+owned generation for recovery. Chunk uploads finish before a descriptor becomes
+durable; failed uploads are reported and require retry. Metadata/duplicate/device
+and transfer bounds are enforced. Source, profile, item, cloud destination and
+UI lifetime checks guard operations. Disconnect removes the local pairing, not
+cloud content. Immutable content chunks deliberately remain for recovery; no
+unsafe cross-device garbage collection is attempted. This is explicit per-track
+synchronization, not account-wide automatic pairing or a Watch Together relay
+extension. No network synchronization, cryptographic execution or tests were run.

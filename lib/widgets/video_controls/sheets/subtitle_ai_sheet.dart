@@ -51,6 +51,7 @@ import '../../../services/subtitle_read_ahead_service.dart';
 import 'subtitle_import_dialog.dart';
 import 'subtitle_bitmap_review_dialog.dart';
 import 'subtitle_discovery_dialog.dart';
+import 'subtitle_cloud_sync_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -3776,6 +3777,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               subtitle: const Text('Restore, export, or delete reviewed versions stored on this device'),
               onTap: _busy ? null : () => unawaited(_showRevisionHistory()),
             ),
+          if (_revisionIdentity != null)
+            FocusableListTile(leading: const Icon(Icons.cloud_sync), title: const Text('Sync reviewed subtitles across devices'),
+              subtitle: const Text('Encrypted cloud transfer with explicit item pairing and conflict choices'),
+              onTap: _busy ? null : () => unawaited(_run(() async {
+                final identity = _operationRevisionIdentity;
+                if (identity == null) return;
+                await showDialog<void>(context: context, builder: (_) => SubtitleCloudSyncDialog(identity: identity,
+                  isCurrent: () => mounted && _operationIdentityIsCurrent && _operationRevisionIdentity?.storageKey == identity.storageKey));
+              }))),
           const Divider(height: 24),
           Text('Companion processing', style: Theme.of(context).textTheme.titleMedium),
           const Text('Optional processing on a paired host. Each upload requires explicit selection. Results are reviewed before attachment.'),

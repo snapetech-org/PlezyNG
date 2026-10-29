@@ -1,7 +1,8 @@
 # Samsung Exynos LiteCore SDK acquisition — 2026-10-28
 
-This records acquisition and integrity checks for LiteCore 1.2.1. It does not
-record SDK compilation or model conversion.
+This records acquisition and integrity checks for LiteCore 1.2.1, plus a
+follow-up audit of a retained model file. The file's presence does not verify
+that a valid LiteCore conversion took place.
 
 ## Download
 
@@ -21,10 +22,15 @@ record SDK compilation or model conversion.
 
 ## Use status
 
-No LiteCore compiler or model conversion was run. Samsung's download terms make
-software downloads subject to an additional EULA, and the model-development
-license requires prior written consent for the intended model work. That
-consent has not been recorded. The SDK remains preserved for use after the
-authorization condition is resolved; see Samsung's [AI Model & Software License
-Agreement](https://soc-developer.semiconductor.samsung.com/ai1/a3f92273-5709-4559-9ab5-b091d5d801d8)
-and the [Exynos Developer Society terms](https://soc-developer.semiconductor.samsung.com/global/policy/terms/terms-of-use/latest).
+The retained scratch directory contains
+`/var/tmp/plezyng-motion-sdk-acquisition-20261028/samsung-aot-debug-20261028/anvil-s-720p-samsung-E9965.tflite`
+(5,240,080 bytes; SHA-256
+`c5dc82fee3786eec9c8bb7e4400360ad7b271cfd73fad60b35b805f3559ecc87`). No
+model manifest, compiler report, exporter log, or approval record accompanies
+it, so its origin and target validity are unknown. Preserve it as an
+unqualified artifact; it is not a completed model pack or evidence of Exynos
+inference. The repository records do not establish the separate prior written
+consent required for the intended model-development work. Confirm that
+authorization before any new conversion or use of the artifact. See Samsung's
+[AI Model & Software License Agreement](https://soc-developer.semiconductor.samsung.com/ai1/a3f92273-5709-4559-9ab5-b091d5d801d8)
+and [Exynos Developer Society terms](https://soc-developer.semiconductor.samsung.com/global/policy/terms/terms-of-use/latest).

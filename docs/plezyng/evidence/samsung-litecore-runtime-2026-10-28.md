@@ -66,7 +66,11 @@ inference, or visible playback qualification.
 This proves that the Samsung plugins and LiteCore runtime can be staged and
 packaged with the Android app. It does not prove LiteRT session creation,
 NPU partitioning, frame inference, output quality, timing, thermal stability,
-or audio/video sync on an Exynos device. Samsung ANVIL AOT model conversion was
-not run; the separate prior written consent for model development remains
-unrecorded. Samsung E9955/E9965 model selection and visible playback still need
-their exact model pack and physical-device qualification.
+or audio/video sync on an Exynos device. A retained file named
+`anvil-s-720p-samsung-E9965.tflite` was found under the SDK task scratch, but it
+has no manifest, compile report, exporter log, or approval record. Its
+provenance is unknown, so it is not accepted as a valid Samsung AOT pack and
+does not change the qualification status. The separate prior written consent
+for model-development work is not recorded in the repository. Samsung
+E9955/E9965 model selection and visible playback still need an authorized,
+verified model pack and physical-device qualification.

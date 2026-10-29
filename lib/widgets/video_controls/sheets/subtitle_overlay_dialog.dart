@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+import '../../../services/file_picker_service.dart';
+import '../../../services/subtitle_native_handoff_service.dart';
 import '../../../services/subtitle_handoff_service.dart';
 import '../../../mpv/mpv.dart';
 import '../../../services/subtitle_overlay_service.dart';
@@ -23,12 +27,47 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
             if (speech.isSpeaking(track)) { await speech.stop(); } else { await speech.start(player, track); }
             if (context.mounted) update(() {});
           }, child: Text(SubtitleSpeechService.instance.isSpeaking(track) ? 'Stop spoken subtitles' : 'Speak this overlay')),
+          DropdownButton<String>(value: track.fontFamily, isExpanded: true,
+            items: [for (final font in SubtitleOverlayTrack.fonts) DropdownMenuItem(value: font, child: Text(font))],
+            onChanged: (font) { if (font != null) change(() => track.fontFamily = font); }),
+          const Text('Fonts use installed system families and script fallback. A listed family may be unavailable on this device.'),
+          Wrap(spacing: 8, children: [for (final align in [TextAlign.start, TextAlign.center, TextAlign.end])
+            ChoiceChip(label: Text(align.name), selected: track.alignment == align,
+              onSelected: (_) => change(() => track.alignment = align))]),
+          if (track.profileId != null) TextButton(onPressed: () async {
+            try { await track.saveAppearance(index);
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Appearance saved for this profile and lane. Timing and scene placement stay with this track.')));
+            } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not save caption appearance.'))); }
+          }, child: const Text('Use this appearance for future tracks')),
+          Wrap(spacing: 8, children: [TextButton(onPressed: () async {
+            try {
+              final snapshot = SubtitleNativeHandoffService.export(player, track);
+              if (!context.mounted || !await _confirmSnapshot(context, snapshot.clipped, attach: false)) return;
+              final path = await FilePickerService.instance.saveFile(fileName: 'PlezyNG.captions.srt', bytes: snapshot.bytes,
+                type: FileType.custom, allowedExtensions: const ['srt']);
+              if (path != null && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) await File(path).writeAsBytes(snapshot.bytes, flush: true);
+            } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not export this caption snapshot.'))); }
+          }, child: const Text('Export corrected SRT')),
+          if (player.supportedLocalSubtitleExtensions.contains('srt')) TextButton(onPressed: () async {
+            try {
+              final snapshot = SubtitleNativeHandoffService.export(player, track);
+              if (!context.mounted || !await _confirmSnapshot(context, snapshot.clipped, attach: true)) return;
+              await SubtitleNativeHandoffService.attach(player, track, allowClipping: true);
+              if (context.mounted) update(() {});
+            } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('The native renderer could not attach this caption snapshot.'))); }
+          }, child: const Text('Move snapshot to native subtitles'))]),
+          if (track.avoidRegions.isNotEmpty) SwitchListTile(title: const Text('Avoid reviewed scene regions'),
+            subtitle: const Text('Uses single-frame model proposals at cue boundaries. Placement can be wrong; authored signs keep their positions.'),
+            value: track.avoidObjects, onChanged: (value) => change(() => track.avoidObjects = value)),
           Text('Size ${track.fontSize.round()}'), Slider(value: track.fontSize, min: 16, max: 64,
             onChanged: (v) => change(() => track.fontSize = v)),
           Text('Vertical position ${(track.position * 100).round()}%'), Slider(value: track.position, min: .05, max: .95,
             onChanged: (v) => change(() => track.position = v)),
           const Text('Background'), Slider(value: track.backgroundOpacity, min: 0, max: 1,
             onChanged: (v) => change(() => track.backgroundOpacity = v)),
+          Wrap(spacing: 8, children: [for (final background in [Colors.black, const Color(0xff182332), const Color(0xff4a321c)])
+            ChoiceChip(label: Text('Background', style: TextStyle(color: Colors.white, backgroundColor: background)), selected: track.backgroundColor == background,
+              onSelected: (_) => change(() => track.backgroundColor = background))]),
           const Text('Outline'), Slider(value: track.outlineWidth, min: 0, max: 5,
             onChanged: (v) => change(() => track.outlineWidth = v)),
           const Text('Side margin'), Slider(value: track.margin, min: .02, max: .2,
@@ -83,3 +122,13 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
         TextButton(onPressed: () => Navigator.pop(context), child: const Text('Done'))]);
   }));
 }
+
+Future<bool> _confirmSnapshot(BuildContext context, int clipped, {required bool attach}) async =>
+  await showDialog<bool>(context: context, builder: (context) => AlertDialog(
+    title: Text(attach ? 'Use native caption rendering?' : 'Export corrected captions?'),
+    content: Text('This is a plain-text snapshot with the lane delay applied on the opened media part’s clock. '
+      'Fonts, positions, karaoke and future generated cues are not included. '
+      '${clipped > 0 ? "$clipped cues cross or precede this part and will be clipped or omitted. " : ""}'
+      '${attach ? "The native primary track is selected and this app overlay is removed. PiP visibility still depends on the native output path." : "The export contains future dialogue from this track."}'),
+    actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+      FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(attach ? 'Use native subtitles' : 'Export'))])) ?? false;

@@ -853,3 +853,25 @@ again from metadata on acquisition, under the adapter's same-host transport
 policy; query credentials are never copied into file identity. Resource identity
 includes path/MIME and duplicate matches are refused. Servers exposing captions
 only through vendor-specific tags remain outside this standard resource path.
+
+## Caption presentation and native handoff source update
+
+App-overlay appearance can be saved per profile and lane: installed font family,
+script fallback, size, alignment, color/background/outline, margins, position,
+bold/italic and word highlighting. Lane delay and scene avoidance are not saved
+as global appearance. Imported cue/word/region collections are immutable and
+bounded. Missing system fonts use Flutter fallback, not a claimed bundled font.
+
+A reviewed overlay can export a corrected plain SRT or move a snapshot into the
+existing native local-subtitle path. Snapshot time subtracts the opened part
+offset, bakes the lane delay, and resets native primary delay/rate once. The user
+reviews clipping/flattening first; a successful handoff removes the duplicate app
+overlay. Managed native files are retained until the media session retires, with
+eight files / 40 MiB per player session. This is not proof of native PiP visibility.
+
+Scene review optionally returns bounded single-frame object/face rectangles.
+These remain unverified proposals and require image review. An explicit switch
+can use them for stable placement at cue boundaries; authored sign regions stay
+fixed, and retimed cues lose stale scene evidence. The renderer also avoids
+authored signs and other app lanes using bounded layout estimates. No runtime,
+font-shaping, accessibility, HDR or target-output qualification was performed.

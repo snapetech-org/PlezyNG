@@ -14,7 +14,7 @@ import 'subtitle_word_timing.dart';
 
 final class SubtitleCompanionResult {
   const SubtitleCompanionResult({required this.cues, required this.wordTimings, required this.language,
-      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const [], this.alternatives = const {}, this.regions = const {}, this.artifacts = const []});
+      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const [], this.alternatives = const {}, this.regions = const {}, this.artifacts = const [], this.avoidRegions = const {}});
   final List<SubtitleCue> cues;
   final List<SubtitleWordTiming> wordTimings;
   final String language;
@@ -25,6 +25,7 @@ final class SubtitleCompanionResult {
   final List<SubtitleCue> sourceCues;
   final Map<String, String> alternatives;
   final Map<String, Rect> regions;
+  final Map<String, List<Rect>> avoidRegions;
   final List<SubtitleCompanionArtifact> artifacts;
 }
 
@@ -278,6 +279,23 @@ final class SubtitleCompanionService {
       }
       cues.add(SubtitleCue(index: cues.length + 1, startMs: start, endMs: end, text: text, cueId: cueId));
     }
+    final avoidRegions = <String, List<Rect>>{};
+    final avoidance = data['avoidRegions'] ?? const [];
+    if (avoidance is! List || avoidance.length > 30) throw const FormatException('Too many scene regions');
+    for (final row in avoidance) {
+      if (row is! Map || row['cueId'] is! String || !ids.contains(row['cueId']) || avoidRegions.containsKey(row['cueId']) ||
+          row['regions'] is! List || (row['regions'] as List).length > 12) throw const FormatException('Invalid scene region identity');
+      final boxes = <Rect>[];
+      for (final box in row['regions'] as List) {
+        if (box is! List || box.length != 4 || box.any((v) => v is! num || !v.isFinite || v < 0 || v > 1)) {
+          throw const FormatException('Invalid scene rectangle');
+        }
+        final r = box.cast<num>().map((v) => v.toDouble()).toList();
+        if (r[2] <= 0 || r[3] <= 0 || r[0] + r[2] > 1.001 || r[1] + r[3] > 1.001) throw const FormatException('Invalid scene rectangle');
+        boxes.add(Rect.fromLTWH(r[0], r[1], r[2], r[3]));
+      }
+      avoidRegions[row['cueId'] as String] = List.unmodifiable(boxes);
+    }
     final sourceCues = <SubtitleCue>[];
     final source = data['sourceCues'];
     if (source != null) {
@@ -361,7 +379,7 @@ final class SubtitleCompanionService {
       }
       artifacts.add(SubtitleCompanionArtifact('dubbed.wav', rawArtifact['sha256'], rawArtifact['bytes'], 'audio/wav'));
     }
-    return SubtitleCompanionResult(artifacts: List.unmodifiable(artifacts), alternatives: Map.unmodifiable(alternatives), regions: Map.unmodifiable(regions), cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
+    return SubtitleCompanionResult(avoidRegions: Map.unmodifiable(avoidRegions), artifacts: List.unmodifiable(artifacts), alternatives: Map.unmodifiable(alternatives), regions: Map.unmodifiable(regions), cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
       language: label(data['language'], 24, 'unknown'), warnings: warnings,
       runtimeDevice: runtime, cpuFallback: data['cpuFallback'] == true, images: List.unmodifiable(images), sourceCues: List.unmodifiable(sourceCues));
   }

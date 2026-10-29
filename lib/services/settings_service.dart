@@ -1351,6 +1351,11 @@ class SettingsService extends BaseSharedPreferencesService {
     return StringPref(profileScopedPrefsKey(profileId, 'subtitle_speech_language_v1'), defaultValue: 'auto');
   }
 
+  static StringPref subtitleOverlayAppearanceForProfile(String profileId) {
+    if (profileId.trim().isEmpty) throw ArgumentError.value(profileId, 'profileId');
+    return StringPref(profileScopedPrefsKey(profileId, 'subtitle_overlay_appearance_v1'));
+  }
+
   /// Series-specific translation glossary overrides, stored as bounded serialized pair maps.
   static JsonPref<Map<String, String>> subtitleTranslationSeriesGlossariesForProfile(String profileId) {
     if (profileId.trim().isEmpty) {

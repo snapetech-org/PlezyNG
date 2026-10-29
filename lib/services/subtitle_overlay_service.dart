@@ -1,21 +1,34 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../mpv/mpv.dart';
 import '../mpv/player/player_media_session_identity.dart';
 import 'subtitle_retimer.dart';
+import 'settings_service.dart';
 import 'subtitle_word_timing.dart';
 
 /// App-rendered plain text, distinct from native ASS/bitmap tracks. Each lane
 /// owns an immutable source-clock index and independent presentation settings.
 class SubtitleOverlayTrack {
-  SubtitleOverlayTrack({required List<SubtitleCue> cues, this.words = const [],
-    required this.title, required this.isCurrent, this.regions = const {}, this.language})
-      : cues = List.of(cues)..sort((a, b) => a.startMs.compareTo(b.startMs)) {
+  SubtitleOverlayTrack({required List<SubtitleCue> cues, List<SubtitleWordTiming> words = const [],
+    required this.title, required this.isCurrent, Map<String, Rect> regions = const {}, this.language,
+    this.profileId, Map<String, List<Rect>> avoidRegions = const {}})
+      : cues = List.unmodifiable(List<SubtitleCue>.of(cues)..sort((a, b) => a.startMs.compareTo(b.startMs))),
+        words = List.unmodifiable(words), regions = Map.unmodifiable(regions),
+        avoidRegions = Map.unmodifiable(avoidRegions.map((key, value) => MapEntry(key, List<Rect>.unmodifiable(value)))) {
     if (cues.length > 50000 || words.length > 250000) throw ArgumentError('Overlay limit');
+    final ids = <String>{};
     for (final cue in this.cues) {
-      if (cue.startMs < 0 || cue.endMs <= cue.startMs || cue.text.length > 4000) {
+      if (cue.startMs < 0 || cue.endMs <= cue.startMs || cue.text.length > 4000 || !ids.add(cue.stableId)) {
         throw const FormatException('Invalid overlay cue');
       }
+    }
+    bool valid(Rect r) => r.left.isFinite && r.top.isFinite && r.width.isFinite && r.height.isFinite &&
+        r.left >= 0 && r.top >= 0 && r.width > 0 && r.height > 0 && r.right <= 1.001 && r.bottom <= 1.001;
+    if (regions.length > cues.length || avoidRegions.length > cues.length ||
+        regions.entries.any((e) => !ids.contains(e.key) || !valid(e.value)) ||
+        avoidRegions.entries.any((e) => !ids.contains(e.key) || e.value.length > 12 || e.value.any((r) => !valid(r)))) {
+      throw const FormatException('Invalid caption placement evidence');
     }
     if (this.cues.isNotEmpty) _build(1, 0, this.cues.length);
     for (final word in words) {
@@ -26,6 +39,8 @@ class SubtitleOverlayTrack {
   final List<SubtitleWordTiming> words;
   final String title;
   final String? language;
+  final String? profileId;
+  final Map<String, List<Rect>> avoidRegions;
   final Map<String, Rect> regions;
   final bool Function() isCurrent;
   final Map<int, int> _ends = {};
@@ -47,6 +62,65 @@ class SubtitleOverlayTrack {
   bool karaoke = false;
   bool bold = false;
   bool italic = false;
+  bool avoidObjects = false;
+  String fontFamily = 'System';
+  TextAlign alignment = TextAlign.center;
+  Color backgroundColor = Colors.black;
+  static const fonts = ['System', 'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans CJK SC', 'Arial', 'Georgia', 'monospace'];
+
+  Map<String, Object> appearance() => {'fontSize': fontSize, 'position': position,
+    'backgroundOpacity': backgroundOpacity, 'color': color.toARGB32(), 'outline': outline.toARGB32(),
+    'outlineWidth': outlineWidth, 'margin': margin, 'karaoke': karaoke, 'bold': bold, 'italic': italic,
+    'backgroundColor': backgroundColor.toARGB32(), 'fontFamily': fontFamily, 'alignment': alignment.name};
+
+  void applyAppearance(Map<String, dynamic> value) {
+    double number(String key, double fallback, double lo, double hi) {
+      final n = value[key]; return n is num && n.isFinite && n >= lo && n <= hi ? n.toDouble() : fallback;
+    }
+    Color paint(String key, Color fallback) { final n = value[key]; return n is int && n >= 0 && n <= 0xffffffff ? Color(n) : fallback; }
+    fontSize = number('fontSize', fontSize, 16, 64); position = number('position', position, .05, .95);
+    backgroundOpacity = number('backgroundOpacity', backgroundOpacity, 0, 1);
+    outlineWidth = number('outlineWidth', outlineWidth, 0, 5); margin = number('margin', margin, .02, .2);
+    color = paint('color', color); outline = paint('outline', outline); backgroundColor = paint('backgroundColor', backgroundColor);
+    if (fonts.contains(value['fontFamily'])) fontFamily = value['fontFamily'] as String;
+    if (const ['left', 'center', 'right', 'start', 'end'].contains(value['alignment'])) {
+      alignment = TextAlign.values.byName(value['alignment'] as String);
+    }
+    if (value['karaoke'] is bool) karaoke = value['karaoke'] as bool;
+    if (value['bold'] is bool) bold = value['bold'] as bool;
+    if (value['italic'] is bool) italic = value['italic'] as bool;
+  }
+
+  void restoreAppearance(int lane) {
+    if (profileId == null) return;
+    try {
+      final raw = SettingsService.instance.read(SettingsService.subtitleOverlayAppearanceForProfile(profileId!));
+      if (raw.length > 8192) return;
+      final data = jsonDecode(raw);
+      if (data is Map && data['version'] == 1 && data['$lane'] is Map) applyAppearance(Map<String, dynamic>.from(data['$lane'] as Map));
+    } catch (_) { /* A damaged preference never prevents caption attachment. */ }
+  }
+
+  Future<void> saveAppearance(int lane) async {
+    if (profileId == null || !isCurrent()) throw StateError('The subtitle profile changed');
+    final pref = SettingsService.subtitleOverlayAppearanceForProfile(profileId!);
+    Map<String, dynamic> data = {'version': 1};
+    try {
+      final raw = SettingsService.instance.read(pref);
+      if (raw.length <= 8192) {
+        final saved = jsonDecode(raw);
+        if (saved is Map && saved['version'] == 1) data = {'version': 1,
+          for (final key in ['0', '1']) if (saved[key] is Map) key: saved[key]};
+      }
+    } catch (_) {}
+    data['$lane'] = appearance();
+    final encoded = jsonEncode(data);
+    if (encoded.length > 8192) throw const FormatException('Caption preference limit');
+    await SettingsService.instance.write(pref, encoded, checkCurrent: () {
+      if (!isCurrent()) throw StateError('The subtitle profile changed');
+    });
+  }
+
 
   List<SubtitleCue> at(int positionMs) {
     final time = positionMs - delayMs;
@@ -112,9 +186,11 @@ abstract final class SubtitleOverlayService {
     if (old != null && old.current) return old;
     return _sessions[player] = SubtitleOverlaySession(player);
   }
-  static void attach(Player player, int lane, SubtitleOverlayTrack track) {
+  static void attach(Player player, int lane, SubtitleOverlayTrack track, {bool restoreAppearance = true}) {
+    if (lane < 0 || lane > 1) throw RangeError.range(lane, 0, 1);
     final session = forPlayer(player);
     if (!session.current || !track.isCurrent()) throw StateError('Playback identity changed');
+    if (restoreAppearance) track.restoreAppearance(lane);
     session.lanes[lane] = track;
     session.changed();
   }

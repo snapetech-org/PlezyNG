@@ -997,7 +997,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       await _writeAndApply(cues, operationLabel: 'Companion ${job['task']}', operationLanguageCode: result.language,
         sourceCues: result.sourceCues.isEmpty ? null : result.sourceCues,
         wordTimings: result.alternatives.isEmpty ? result.wordTimings : const [],
-        regions: result.regions, reviewWarnings: result.warnings);
+        regions: result.regions, avoidRegions: result.avoidRegions, reviewWarnings: result.warnings);
     } finally { service.close(); }
   });
 
@@ -1290,7 +1290,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         (generation == null || (player as PlayerMediaSessionIdentity).mediaSessionGeneration == generation) &&
         player.state.track.audio?.id == audio;
     await service.start(player, open: widget.openAnalysisSource ?? () => SubtitleAnalysisSource.localPlayer(player, current),
-      isCurrent: current, audioOrdinal: ordinal, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
+      isCurrent: current, audioOrdinal: ordinal, profileId: profile, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       provider: _liveProvider);
   });
 
@@ -2934,6 +2934,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     List<SubtitleCue>? sourceCues,
     List<String> reviewWarnings = const [],
     Map<String, Rect> regions = const {},
+    Map<String, List<Rect>> avoidRegions = const {},
     List<SubtitleWordTiming> wordTimings = const <SubtitleWordTiming>[],
     SubtitleRevisionDraft? resumeDraft,
     SubtitleRevisionIdentity? resumeIdentity,
@@ -3395,7 +3396,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         final profileId = profiles.activeId;
         final isSourceCurrent = widget.isRevisionIdentityCurrent;
         final lane = choice == _SubtitleReviewChoice.overlayPrimary ? 0 : 1;
-        final track = SubtitleOverlayTrack(cues: reviewedCues, words: reviewedWordTimings, title: operationLabel, regions: regions, language: operationLanguageCode,
+        final surviving = reviewedCues.map((c) => c.stableId).toSet();
+        final originalById = {for (final c in cues) c.stableId: c};
+        final unchangedTimes = {for (final c in reviewedCues) if (originalById[c.stableId]?.startMs == c.startMs && originalById[c.stableId]?.endMs == c.endMs) c.stableId};
+        final track = SubtitleOverlayTrack(cues: reviewedCues, words: reviewedWordTimings, title: operationLabel,
+          regions: {for (final r in regions.entries) if (surviving.contains(r.key)) r.key: r.value},
+          avoidRegions: {for (final r in avoidRegions.entries) if (unchangedTimes.contains(r.key)) r.key: r.value}, profileId: profileId, language: operationLanguageCode,
           isCurrent: () => profiles.activeId == profileId && isSourceCurrent?.call() != false);
         track.position = lane == 0 ? .9 : .12;
         SubtitleOverlayService.attach(widget.player, lane, track);

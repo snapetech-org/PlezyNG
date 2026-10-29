@@ -33,6 +33,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
   bool _busy = false;
   int _audioOrdinal = 0;
   String? _language;
+  String? _profileId;
   SubtitleInferenceProvider _provider = SubtitleInferenceProvider.cpu;
   final Map<int, List<SubtitleCue>> _windows = {};
   final Map<int, List<SubtitleWordTiming>> _words = {};
@@ -49,7 +50,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
   }
 
   Future<void> start(Player player, {required Future<SubtitleAnalysisSource> Function() open,
-    required bool Function() isCurrent, required int audioOrdinal, String? language,
+    required bool Function() isCurrent, required int audioOrdinal, String? language, String? profileId,
     SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu}) async {
     if (!available) throw UnsupportedError('Separate FFmpeg analysis is available on desktop builds.');
     if (running || _busy) throw StateError('Stop the current read-ahead job first.');
@@ -62,6 +63,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
     _valid = isCurrent;
     _audioOrdinal = audioOrdinal;
     _language = language;
+    _profileId = profileId;
     _provider = provider;
     _windows.clear(); _words.clear(); _published = SubtitleOverlayService.forPlayer(player).lanes[0];
     try {
@@ -167,18 +169,17 @@ class SubtitleReadAheadService extends ChangeNotifier {
       final validity = _valid!, source = _source!;
       final track = SubtitleOverlayTrack(cues: all,
         words: SubtitleWordTimingBuilder.attachCueIndices(_words.values.expand((v) => v).toList(), all),
-        title: 'Prepared playback captions', language: result.detectedLanguage, isCurrent: () => validity() && source.isCurrent());
+        title: 'Prepared playback captions', profileId: _profileId, language: result.detectedLanguage, isCurrent: () => validity() && source.isCurrent());
       final previous = _published;
       if (previous != null) {
-        track.fontSize = previous.fontSize; track.position = previous.position; track.color = previous.color;
-        track.outline = previous.outline; track.outlineWidth = previous.outlineWidth;
-        track.backgroundOpacity = previous.backgroundOpacity; track.margin = previous.margin;
-        track.delayMs = previous.delayMs; track.karaoke = previous.karaoke; track.bold = previous.bold; track.italic = previous.italic;
+        track.applyAppearance(previous.appearance());
+        track.delayMs = previous.delayMs;
+        track.avoidObjects = previous.avoidObjects;
       }
       // Refuse to overwrite a lane the user edited/replaced during inference.
       if (_published != null && !identical(overlay.lanes[0], _published)) { await stop(); return; }
       _published = track;
-      SubtitleOverlayService.attach(player, 0, track);
+      SubtitleOverlayService.attach(player, 0, track, restoreAppearance: previous == null);
       status = 'Prepared ${_windows.length} windows; ${result.runtimeProvider}. Placement remains unverified.';
     } catch (error) {
       if (epoch == _generation) {

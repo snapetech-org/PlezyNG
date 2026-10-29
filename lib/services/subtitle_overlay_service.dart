@@ -70,6 +70,7 @@ class SubtitleOverlayTrack {
   int delayMs = 0;
   bool karaoke = false;
   bool ruby = true;
+  String writingMode = 'horizontal';
   final Map<String, List<SubtitleRubyRun>?> _rubyRuns = {};
   bool bold = false;
   bool italic = false;
@@ -90,7 +91,7 @@ class SubtitleOverlayTrack {
   Map<String, Object> appearance() => {'fontSize': fontSize, 'position': position,
     'backgroundOpacity': backgroundOpacity, 'color': color.toARGB32(), 'outline': outline.toARGB32(),
     'outlineWidth': outlineWidth, 'margin': margin, 'karaoke': karaoke, 'ruby': ruby, 'bold': bold, 'italic': italic,
-    'videoAnchored': videoAnchored, 'overscan': overscan,
+    'videoAnchored': videoAnchored, 'overscan': overscan, 'writingMode': writingMode,
     'backgroundColor': backgroundColor.toARGB32(), 'fontFamily': fontFamily, 'alignment': alignment.name};
 
   void applyAppearance(Map<String, dynamic> value) {
@@ -113,6 +114,9 @@ class SubtitleOverlayTrack {
     if (value['ruby'] is bool) ruby = value['ruby'] as bool;
     if (value['bold'] is bool) bold = value['bold'] as bool;
     if (value['italic'] is bool) italic = value['italic'] as bool;
+    if (const ['horizontal', 'vertical-rl', 'vertical-lr'].contains(value['writingMode'])) {
+      writingMode = value['writingMode'] as String;
+    }
   }
 
   void restoreAppearance(int lane) {
@@ -167,6 +171,7 @@ class SubtitleOverlayTrack {
 
   List<InlineSpan> spans(SubtitleCue cue, int positionMs) {
     final text = plain(cue.text);
+    if (writingMode != 'horizontal') return [TextSpan(text: text)];
     if (ruby && cue.text.toLowerCase().contains('<ruby')) {
       if (_rubyRuns.length > 128) _rubyRuns.clear();
       final runs = _rubyRuns.putIfAbsent(cue.stableId, () => SubtitleRubyText.parse(cue.text));

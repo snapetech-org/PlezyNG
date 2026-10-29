@@ -6,10 +6,12 @@ import '../mpv/font_loader.dart';
 import '../mpv/player/player_media_session_identity.dart';
 import '../services/subtitle_viewport.dart';
 import 'subtitle_pane_policy.dart';
+import 'subtitle_vertical_text.dart';
 import '../services/settings_service.dart';
 import '../services/subtitle_overlay_service.dart';
 import '../services/subtitle_retimer.dart';
 import '../services/subtitle_playback_transcription_service.dart';
+import '../services/subtitle_frame_export.dart';
 
 /// Screen-safe Flutter overlay. Native PiP/Cast surfaces do not include this
 /// widget; callers hide it while the video is presented on those surfaces.
@@ -25,6 +27,7 @@ class SubtitleCaptionOverlay extends StatefulWidget {
 
 class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
   Timer? _timer;
+  final _captureKey = GlobalKey();
   Size? _displaySize;
   Player? _geometryPlayer;
   int? _geometryGeneration;
@@ -55,6 +58,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
   @override
   void initState() {
     super.initState();
+    _registerCapture();
     _timer = Timer.periodic(const Duration(milliseconds: 100), (_) {
       if (mounted) {
         if (++_geometryTicks % 20 == 0) unawaited(_refreshGeometry());
@@ -66,8 +70,24 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
       if (mounted) { _placementCache.clear(); setState(() {}); }
     }, onError: (Object _) { /* Keep system fallback if an asset is unavailable. */ }));
   }
+  void _registerCapture() {
+    final player = widget.player;
+    SubtitleFrameExport.register(player, _captureKey, () => mounted && identical(widget.player, player) &&
+        SubtitlePanePolicy.of(context)?.visible != false);
+  }
   @override
-  void dispose() { _timer?.cancel(); super.dispose(); }
+  void didUpdateWidget(covariant SubtitleCaptionOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.player, widget.player)) {
+      SubtitleFrameExport.unregister(oldWidget.player, _captureKey);
+      _registerCapture();
+    }
+  }
+  @override
+  void dispose() {
+    SubtitleFrameExport.unregister(widget.player, _captureKey);
+    _timer?.cancel(); super.dispose();
+  }
   Color _color(String text, Color fallback) => RegExp(r'^#[0-9a-fA-F]{6}$').hasMatch(text)
       ? Color(0xff000000 | int.parse(text.substring(1), radix: 16)) : fallback;
   @override
@@ -84,7 +104,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
       try { return session.current && track.isCurrent(); } catch (_) { return false; }
     }).toList();
     if (tracks.isEmpty && caption == null) return const SizedBox.shrink();
-    return IgnorePointer(child: LayoutBuilder(builder: (context, constraints) {
+    return RepaintBoundary(key: _captureKey, child: IgnorePointer(child: LayoutBuilder(builder: (context, constraints) {
       final size = Size(constraints.maxWidth, constraints.maxHeight);
       if (size.isEmpty || !size.width.isFinite || !size.height.isFinite) return const SizedBox.shrink();
       final viewport = SubtitleViewport.layout(size,
@@ -126,7 +146,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
               Positioned.fromRect(rect: mapped, child: ClipRect(child: Center(
                 child: _line(TextSpan(children: track.spans(cue, position)), track.fontSize * scale,
                   track.color, track.outline, track.outlineWidth * scale, track.backgroundOpacity,
-                  bold: track.bold, italic: track.italic, track: track)))),
+                  bold: track.bold, italic: track.italic, track: track, heightLimit: mapped.height)))),
         for (final track in visible) Positioned.fromRect(rect: areas[track]!,
           child: Align(alignment: Alignment(0, laneY[track]! * 2 - 1),
             child: Padding(padding: EdgeInsets.symmetric(horizontal: areas[track]!.width * track.margin),
@@ -136,7 +156,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: _line(TextSpan(children: track.spans(cue, position)), track.fontSize * scale,
                     track.color, track.outline, track.outlineWidth * scale, track.backgroundOpacity,
-                    bold: track.bold, italic: track.italic, track: track),
+                    bold: track.bold, italic: track.italic, track: track, heightLimit: areas[track]!.height * .65),
                 )).toList())))),
         if (caption != null) Positioned.fromRect(rect: safe, child: Align(
           alignment: const Alignment(0, -.75), child: Padding(padding: const EdgeInsets.all(16),
@@ -147,7 +167,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
               settings.read(SettingsService.subtitleBackgroundOpacity) / 100,
               bold: settings.read(SettingsService.subtitleBold), italic: caption.provisional || settings.read(SettingsService.subtitleItalic))))),
       ]));
-    }));
+    })));
   }
 
   double _place(SubtitleOverlayTrack track, List<SubtitleCue> cues, double preferred,
@@ -156,7 +176,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
     final obstacles = blocked;
     if (obstacles.isEmpty) return preferred;
     final key = '${identityHashCode(track)}:${cues.map((c) => c.stableId).join(',')}:$width:$height:$preferred:'
-        '${track.fontSize}:${track.fontFamily}:${track.bold}:${track.italic}:${track.margin}:${track.ruby}:${MediaQuery.textScalerOf(context).scale(1)}:$obstacles';
+        '${track.fontSize}:${track.fontFamily}:${track.bold}:${track.italic}:${track.margin}:${track.ruby}:${track.writingMode}:${MediaQuery.textScalerOf(context).scale(1)}:$obstacles';
     final cached = _placementCache[key];
     if (cached != null) return cached;
     var pixels = 0.0;
@@ -168,7 +188,9 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
         ..layout(maxWidth: (width * (1 - 2 * track.margin) - 16).clamp(1.0, double.infinity).toDouble());
       // Reserve reading-line headroom in the avoidance estimate. Actual ruby
       // pairs are laid out by Flutter inline children at the same text scale.
-      pixels += painter.height * (track.ruby && cue.text.toLowerCase().contains('<ruby') ? 1.65 : 1) + 12;
+      pixels += track.writingMode == 'horizontal'
+          ? painter.height * (track.ruby && cue.text.toLowerCase().contains('<ruby') ? 1.65 : 1) + 12
+          : height * .65;
       painter.dispose();
     }
     final h = (pixels / height).clamp(.04, .85);
@@ -197,10 +219,18 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
   }
 
   Widget _line(InlineSpan content, double size, Color color, Color outline,
-      double border, double opacity, {bool bold = false, bool italic = false, SubtitleOverlayTrack? track}) {
+      double border, double opacity, {bool bold = false, bool italic = false, SubtitleOverlayTrack? track, double? heightLimit}) {
     final direction = _direction(content.toPlainText());
     final style = TextStyle(fontSize: size, fontFamily: track == null ? SubtitleFontLoader.overlayFamily : track.renderedFontFamily, fontFamilyFallback: SubtitleOverlayTrack.fallbackFonts, fontWeight: bold ? FontWeight.bold : FontWeight.w500,
         fontStyle: italic ? FontStyle.italic : FontStyle.normal, color: color, height: 1.25);
+    if (track != null && track.writingMode != 'horizontal') {
+      return DecoratedBox(decoration: BoxDecoration(color: track.backgroundColor.withValues(alpha: opacity),
+        borderRadius: BorderRadius.circular(4)), child: Padding(padding: const EdgeInsets.all(6),
+          child: ConstrainedBox(constraints: BoxConstraints(maxHeight: heightLimit ?? MediaQuery.sizeOf(context).height * .65),
+            child: SubtitleVerticalText(text: content.toPlainText(), style: style,
+              rightToLeft: track.writingMode == 'vertical-rl', outline: outline, outlineWidth: border,
+              maximumColumns: SubtitlePanePolicy.of(context) == null ? 6 : 3))));
+    }
     Widget layer(TextStyle paintStyle) => DefaultTextStyle(style: paintStyle, child: Text.rich(content,
       textDirection: direction, textAlign: track?.alignment ?? TextAlign.center, style: paintStyle,
       maxLines: SubtitlePanePolicy.of(context) == null ? 6 : 3, overflow: TextOverflow.ellipsis));

@@ -12,6 +12,7 @@ import '../../../services/speech_output_service.dart';
 import '../../../services/subtitle_font_store.dart';
 import '../../../services/subtitle_offline_package.dart';
 import '../../../services/subtitle_download_assets.dart';
+import '../../../services/subtitle_frame_export.dart';
 import 'subtitle_fonts_dialog.dart';
 
 Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
@@ -46,6 +47,13 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
             items: [for (final font in SubtitleOverlayTrack.fonts) DropdownMenuItem(value: font, child: Text(SubtitleFontStore.instance.label(font)))],
             onChanged: (font) { if (font != null) change(() => track.fontFamily = font); }),
           const Text('Bundled and imported fonts work offline, including Hangul fallback. System-family choices may be unavailable on this device. Removed imports fall back to the bundled font.'),
+          DropdownButton<String>(value: track.writingMode, isExpanded: true, items: const [
+            DropdownMenuItem(value: 'horizontal', child: Text('Horizontal text')),
+            DropdownMenuItem(value: 'vertical-rl', child: Text('Vertical text, columns right to left')),
+            DropdownMenuItem(value: 'vertical-lr', child: Text('Vertical text, columns left to right')),
+          ], onChanged: (value) { if (value != null) change(() => track.writingMode = value); }),
+          if (track.writingMode != 'horizontal') const Text('Vertical mode preserves grapheme clusters and rotates other-script runs together. '
+            'Ruby and timed-word highlighting use horizontal mode. Authored ASS remains in the native renderer.'),
           SwitchListTile(title: const Text('Show ruby reading aids'),
             subtitle: const Text('Display supplied ruby readings above their base text. Ruby groups wrap together and use base text for speech and plain export. Word highlighting pauses for annotated cues.'),
             value: track.ruby, onChanged: (value) => change(() => track.ruby = value)),
@@ -149,6 +157,26 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
             onChanged: (v) => update(() => SubtitleSpeechService.instance.duck = v)),
         ],
         const Divider(),
+        if (player.playerType == 'mpv') ...[
+          const Text('Pause playback to export the visible native and app captions with the frame. '
+            'Known 8-bit SDR output produces PNG; HDR, wide-gamut, high-bit-depth or unknown color output '
+            'produces a ZIP with the untouched native frame, transparent sRGB caption layer and composition metadata.'),
+          TextButton(onPressed: exportingPackage ? null : () async {
+            update(() => exportingPackage = true);
+            try {
+              final capture = await SubtitleFrameExport.capture(player);
+              if (!context.mounted) return;
+              final path = await FilePickerService.instance.saveFile(fileName: 'PlezyNG.caption-frame.${capture.extension}',
+                bytes: capture.bytes, type: FileType.custom, allowedExtensions: [capture.extension]);
+              if (path != null && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+                await File(path).writeAsBytes(capture.bytes, flush: true);
+              }
+            } catch (_) {
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Could not export the caption frame. Pause playback and use a native output matching the visible caption viewport.')));
+            } finally { if (context.mounted) update(() => exportingPackage = false); }
+          }, child: const Text('Export paused frame with visible captions')),
+        ],
         if (download != null) ...[
           const Text('Saved download captions retain both reviewed lanes and their selected imported fonts in app storage. '
             'They count toward download usage and are removed with your download. Restoring replaces the corresponding app lanes '

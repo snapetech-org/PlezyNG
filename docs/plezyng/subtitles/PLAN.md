@@ -429,7 +429,7 @@ All entries below are target requirements unless explicitly marked Existing. Exi
 | X11 | Workspace app captions belong to each pane player/session and render only in the focused visible pane (audible/first-visible fallback), capped at two cues per lane and three lines per cue. Native subtitle visibility remains backend-owned. | M8 |
 | X12 | Watch Together offers an explicitly paired encrypted cloud caption channel, scoped to room, epoch, host, media descriptor and the current local copy/audio/part. A host can publish a selected reviewed lane automatically; viewers can preview or opt into automatic display of one unambiguous revision. Room offsets are applied once; appearance and subsequent corrections remain local. Conflicts require a local choice. Copy/audio/offset changes, room disconnect and local lane replacement revoke ownership. Pairing requires access to the same configured cloud folder and explicit cut/audio confirmation. No OWP relay extension or sender authentication from the shared group key is claimed; transport/runtime qualification remains open. | M8 |
 | X13 | An explicit expiring LAN second screen follows the guarded player clock, shows current/recent text, clears on disconnect and reconnects with bounded backoff. It carries no media URL, credentials or playback commands. | M8 |
-| X14 | Subtitle screenshots/export include user-selected tracks and preserve HDR handling where supported. | M8 |
+| X14 | Paused MPV frame export captures the actual visible app caption widget plus the selected native tracks. Known 8-bit SDR output is composited as PNG. HDR, wide-gamut, high-bit-depth or unknown output is exported as a layered ZIP with untouched native PNG bytes, a matching transparent sRGB caption layer, hashes and color/composition metadata. Mismatched output geometry and changed playback/selection refuse export. Flattened HDR composition and output qualification remain open. | M8 |
 
 ## Persistence export and operations
 
@@ -1200,3 +1200,25 @@ the existing review/placement path. Wording and cue timing are unchanged. This
 adds bounded temporal texture tracking, not semantic identities, occlusion
 recovery or whole-title tracking. Thresholds and output quality remain
 unqualified; no model/decoder/tracking execution or CI was performed.
+
+## Vertical lanes and caption-frame export
+
+App lanes can use horizontal, vertical right-to-left or vertical left-to-right
+columns. Vertical layout bounds visible clusters/columns, keeps grapheme clusters
+intact, shapes non-CJK runs together before rotation and supports short combined
+numbers. Appearance persistence and download retention include writing mode.
+Ruby and timed-word highlighting remain horizontal; this is not a native ASS
+or complete OpenType vertical-layout engine. Placement is bounded to the pane.
+
+Paused MPV frame export uses the native `screenshot-to-file ... window` command
+and the actual app caption repaint boundary. The output aspect and dimensions
+must agree. Both app lanes, ruby/vertical layout and the optional cover band are
+captured as displayed. Known 8-bit SDR frames can be flattened. Other color
+outputs retain the native PNG unchanged alongside a transparent sRGB layer and
+explicit composition metadata. No HDR reference-white calibration is implied.
+Native screenshot options are not changed, so any native color-conversion policy
+already selected by the viewer remains in effect. Output is capped at 16 million
+pixels and 64 MiB for the native image. The native command, font layout and
+compositor have not been run or device-qualified in this pass.
+
+Reference: [MPV screenshot commands and color options](https://mpv.io/manual/stable/).

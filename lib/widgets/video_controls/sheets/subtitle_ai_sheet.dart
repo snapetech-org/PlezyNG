@@ -678,7 +678,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               ],
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(Translations.of(dialogContext).common.cancel)),
               FilledButton(
                 onPressed: () {
                   final interval = SubtitleAudioInterval.parse(
@@ -687,12 +688,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     durationMs: durationMs,
                   );
                   if (interval == null) {
-                    setDialogState(() => error = 'Enter a valid range inside the WAV duration.');
+                    setDialogState(() => error = copy.invalidAudioInterval);
                     return;
                   }
                   Navigator.of(dialogContext).pop(interval);
                 },
-                child: const Text('Use interval'),
+                child: Text(copy.useAudioInterval),
               ),
             ],
           ),
@@ -705,6 +706,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Future<void> _transformSubtitles() => _run(() async {
+    final copy = Translations.of(context).videoControls.subtitleAiControls;
     final selected = await _pickSubtitleCues();
     if (selected == null || !mounted) return;
     var reflow = false, spacing = false, descriptions = false, songs = false, credits = false;
@@ -716,22 +718,25 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     try {
       options = await showDialog<SubtitleEditOptions>(context: context, builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, update) => AlertDialog(
-          title: const Text('Preview caption transformations'),
+          title: Text(copy.transformPreviewTitle),
           content: SizedBox(width: 600, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Text('All transformations are off by default. The original is retained; review and edit the derived result before saving.'),
-            SwitchListTile(title: const Text('Reflow plain text into up to two lines'), value: reflow, onChanged: (v) => update(() => reflow = v)),
-            Text('Line limit: ${width.round()} characters'),
+            Text(copy.transformPreviewDescription),
+            SwitchListTile(title: Text(copy.reflowPlainText), value: reflow, onChanged: (v) => update(() => reflow = v)),
+            Text(copy.lineLimit(count: width.round())),
             Slider(value: width, min: 24, max: 64, divisions: 40, label: '${width.round()}', onChanged: (v) => update(() => width = v)),
-            Text('Reading-speed warning: ${speed.round()} characters/second'),
+            Text(copy.readingSpeedWarning(count: speed.round())),
             Slider(value: speed, min: 8, max: 40, divisions: 32, label: '${speed.round()}', onChanged: (v) => update(() => speed = v)),
-            SwitchListTile(title: const Text('Normalize spacing'), value: spacing, onChanged: (v) => update(() => spacing = v)),
-            SwitchListTile(title: const Text('Remove bracketed descriptions'), subtitle: const Text('Can remove dialogue in parentheses; review required'), value: descriptions, onChanged: (v) => update(() => descriptions = v)),
-            SwitchListTile(title: const Text('Remove lines marked with musical notes'), value: songs, onChanged: (v) => update(() => songs = v)),
-            SwitchListTile(title: const Text('Remove explicit subtitle-credit/URL lines'), subtitle: const Text('English credit labels and standalone URLs only'), value: credits, onChanged: (v) => update(() => credits = v)),
+            SwitchListTile(title: Text(copy.normalizeSpacing), value: spacing, onChanged: (v) => update(() => spacing = v)),
+            SwitchListTile(title: Text(copy.removeBracketedDescriptions),
+              subtitle: Text(copy.removeBracketedDescriptionsHelp), value: descriptions,
+              onChanged: (v) => update(() => descriptions = v)),
+            SwitchListTile(title: Text(copy.removeMusicalLines), value: songs, onChanged: (v) => update(() => songs = v)),
+            SwitchListTile(title: Text(copy.removeSubtitleCredits), subtitle: Text(copy.removeSubtitleCreditsHelp),
+              value: credits, onChanged: (v) => update(() => credits = v)),
             DropdownButtonFormField<String>(
-              initialValue: fps, decoration: const InputDecoration(labelText: 'Explicit FPS conversion'),
-              items: const [
-                DropdownMenuItem(value: 'none', child: Text('No frame-rate conversion')),
+              initialValue: fps, decoration: InputDecoration(labelText: copy.explicitFpsConversion),
+              items: [
+                DropdownMenuItem(value: 'none', child: Text(copy.noFpsConversion)),
                 DropdownMenuItem(value: '23.976:25', child: Text('23.976 → 25')),
                 DropdownMenuItem(value: '25:23.976', child: Text('25 → 23.976')),
                 DropdownMenuItem(value: '24:25', child: Text('24 → 25')),
@@ -742,11 +747,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ),
             const SizedBox(height: 12),
             TextField(controller: corrections, maxLines: 4, maxLength: 16384,
-                decoration: const InputDecoration(labelText: 'Explicit spelling/term corrections (JSON)', hintText: '{"teh": "the"}')),
+                decoration: InputDecoration(labelText: copy.explicitCorrectionsJson, hintText: '{"teh": "the"}')),
             if (validation != null) Text(validation!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
           ]))),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(dialogContext),
+              child: Text(Translations.of(dialogContext).common.cancel)),
             FilledButton(onPressed: () {
               try {
                 final decoded = jsonDecode(corrections.text);
@@ -761,8 +767,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   replacements: decoded.cast<String, String>(),
                   fpsFrom: rates == null ? null : rate(rates[0]), fpsTo: rates == null ? null : rate(rates[1]),
                 ));
-              } catch (_) { update(() => validation = 'Enter a JSON object with text keys and text values.'); }
-            }, child: const Text('Preview')),
+              } catch (_) { update(() => validation = copy.invalidCorrectionJson); }
+            }, child: Text(copy.previewTransformations)),
           ],
         ),
       ));
@@ -771,12 +777,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final result = SubtitleEditingService.transform(selected.$1, options);
     final retainedIds = result.cues.map((cue) => cue.stableId).toSet();
     await _writeAndApply(result.cues,
-      operationLabel: 'Caption transformations',
+      operationLabel: copy.transformOperationLabel,
       sourceCues: result.removed == 0 ? selected.$1 : null,
       reviewWarnings: [
-        '${result.changed} cues changed; ${result.removed} cues removed. Original: ${selected.$2}.',
+        copy.transformationSummary(changed: result.changed, removed: result.removed, source: selected.$2),
         ...selected.$1.where((cue) => !retainedIds.contains(cue.stableId)).take(20)
-            .map((cue) => 'Removed cue ${cue.index}: ${cue.text}'),
+            .map((cue) => copy.removedCue(index: cue.index, text: cue.text)),
         ...result.warnings,
       ],
     );

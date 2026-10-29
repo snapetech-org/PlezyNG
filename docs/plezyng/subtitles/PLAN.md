@@ -1512,3 +1512,6 @@ registered in the fallback allowlist and source snapshot. Backend diagnostics
 remain available for troubleshooting; this change does not claim translated
 catalog coverage or runtime qualification.
 
+Audio-interval selection and subtitle-transformation preview dialogs also use
+the generated catalog, including their validation and review summaries.
+

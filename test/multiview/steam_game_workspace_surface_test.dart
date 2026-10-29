@@ -41,6 +41,40 @@ void main() {
 
   tearDown(() => messenger.setMockMethodCallHandler(channel, null));
 
+  for (final replaceReceiver in [false, true]) {
+    test('delayed input revocation cannot overwrite a newer grant (replace receiver: $replaceReceiver)', () async {
+      const replacement = MethodChannel('com.plezy/games/steam_stream/100');
+      final reset = Completer<void>();
+      final calls = <MethodCall>[];
+      var delayReset = false;
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        calls.add(call);
+        if (delayReset && call.method == 'resetInput') await reset.future;
+        return null;
+      });
+      messenger.setMockMethodCallHandler(replacement, (call) async {
+        calls.add(call);
+        return null;
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(replacement, null));
+      final stream = session();
+      addTearDown(stream.dispose);
+      stream.attachPlatformView(99);
+      await state('playing');
+      await stream.setInputEnabled(true);
+      delayReset = true;
+      final revoking = stream.setInputEnabled(false);
+      await Future<void>.delayed(Duration.zero);
+      expect(stream.inputAvailable.value, isFalse);
+      if (replaceReceiver) stream.attachPlatformView(100);
+      await stream.setInputEnabled(true);
+      reset.complete();
+      await revoking;
+      expect(stream.inputAvailable.value, isTrue);
+      expect(calls.where((c) => c.method == 'setInputEnabled').last.arguments, {'enabled': true});
+    });
+  }
+
   test('window and keyboard availability release effects and native input until focus returns', () async {
     final calls = <MethodCall>[];
     messenger.setMockMethodCallHandler(channel, (call) async {

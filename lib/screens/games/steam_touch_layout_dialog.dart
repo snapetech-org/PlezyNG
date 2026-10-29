@@ -177,13 +177,20 @@ class _SteamTouchLayoutDialogState extends State<SteamTouchLayoutDialog> {
                   children: [
                     Text(horizontal ? t.games.touchLayoutHorizontal : t.games.touchLayoutVertical),
                     Expanded(
-                      child: Slider(
-                        value: horizontal ? point.dx : point.dy,
-                        divisions: 100,
-                        semanticFormatterCallback: (value) => '${(value * 100).round()}%',
-                        onChanged: !enabled
-                            ? null
-                            : (value) => _move(horizontal ? Offset(value, point.dy) : Offset(point.dx, value)),
+                      child: MergeSemantics(
+                        child: Semantics(
+                          label:
+                              '${steamTouchControlLabel(_selected)}, '
+                              '${horizontal ? t.games.touchLayoutHorizontal : t.games.touchLayoutVertical}',
+                          child: Slider(
+                            value: horizontal ? point.dx : point.dy,
+                            divisions: 100,
+                            semanticFormatterCallback: (value) => '${(value * 100).round()}%',
+                            onChanged: !enabled
+                                ? null
+                                : (value) => _move(horizontal ? Offset(value, point.dy) : Offset(point.dx, value)),
+                          ),
+                        ),
                       ),
                     ),
                   ],

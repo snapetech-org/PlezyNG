@@ -247,6 +247,7 @@ class SteamGameWorkspaceSession {
   bool _inputEnabled = false;
   int _inputSuspensions = 0;
   int _inputRevision = 0;
+  int _nativeInputRevision = 0;
   bool get _canInput =>
       !_disposed &&
       !_restarting &&
@@ -297,14 +298,28 @@ class SteamGameWorkspaceSession {
   Future<void> setInputEnabled(bool enabled) async {
     if (_disposed) return;
     _inputEnabled = enabled;
+    await _refreshInputOwnership(reset: !enabled);
+  }
+
+  Future<void> _refreshInputOwnership({bool reset = false}) async {
+    if (_disposed) return;
+    final revision = ++_nativeInputRevision;
+    final channel = _channel;
     final canInput = _canInput;
-    if (!canInput) muteMicrophone();
+    if (!canInput) {
+      muteMicrophone();
+      _feedback.stop();
+    }
     _inputBinding.setEnabled(canInput);
     inputAvailable.value = canInput;
-    if (!enabled) {
-      await _invoke('resetInput');
-    }
+    // Dispatch the current lease before waiting for any acknowledgement. An
+    // older reset must never send its captured lease to a newer owner/receiver.
     await _invoke('setInputEnabled', {'enabled': canInput});
+    if (_disposed || revision != _nativeInputRevision || _channel != channel) return;
+    if (reset) {
+      await _invoke('resetInput');
+      if (_disposed || revision != _nativeInputRevision || _channel != channel) return;
+    }
     _syncFeedback();
   }
 
@@ -523,22 +538,13 @@ class SteamGameWorkspaceSession {
   /// only its current value, never a captured lease from a different pane.
   Future<void> withInputSuspended(Future<void> Function() action) async {
     if (_disposed) return;
-    muteMicrophone();
     _inputSuspensions++;
-    _feedback.stop();
-    _inputBinding.setEnabled(false);
-    inputAvailable.value = false;
-    await _invoke('setInputEnabled', {'enabled': false});
+    await _refreshInputOwnership();
     try {
       if (!_disposed) await action();
     } finally {
       _inputSuspensions--;
-      if (!_disposed) {
-        _inputBinding.setEnabled(_canInput);
-        inputAvailable.value = _canInput;
-        await _invoke('setInputEnabled', {'enabled': _canInput});
-        _syncFeedback();
-      }
+      await _refreshInputOwnership();
     }
   }
 
@@ -682,7 +688,7 @@ class SteamGameWorkspaceSession {
           .catchError((Object _) {}),
     );
     unawaited(_invoke('setAudioEnabled', {'enabled': _audioEnabled}));
-    unawaited(_invoke('setInputEnabled', {'enabled': _canInput}).then((_) => _syncFeedback()));
+    unawaited(_refreshInputOwnership());
   }
 
   void _stateChanged(Object? state) {
@@ -698,9 +704,7 @@ class SteamGameWorkspaceSession {
     }
     sessionState.value = state;
     if (state == 'playing' && !_mappingReady) unawaited(_restoreMapping());
-    _inputBinding.setEnabled(_canInput);
-    inputAvailable.value = _canInput;
-    unawaited(_invoke('setInputEnabled', {'enabled': _canInput}).then((_) => _syncFeedback()));
+    unawaited(_refreshInputOwnership());
     if (state == 'playing' && !_reportedFirstFrame) {
       _reportedFirstFrame = true;
       onFirstFrame?.call();
@@ -714,8 +718,7 @@ class SteamGameWorkspaceSession {
   Future<void> reconnect() async {
     if (_disposed || _restarting || !{'failed', 'disconnected'}.contains(sessionState.value)) return;
     _restarting = true;
-    inputAvailable.value = false;
-    _inputBinding.setEnabled(false);
+    unawaited(_refreshInputOwnership());
     resetInput();
     nativePresentation.value = false;
     sessionState.value = 'reconnecting';
@@ -745,8 +748,7 @@ class SteamGameWorkspaceSession {
     if (_disposed || _restarting) return;
     resetInput();
     _restarting = true;
-    inputAvailable.value = false;
-    _inputBinding.setEnabled(false);
+    unawaited(_refreshInputOwnership());
     try {
       await _channel?.invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
       if (!_disposed) {
@@ -777,13 +779,12 @@ class SteamGameWorkspaceSession {
     if (_disposed) return;
     _surfaceAttached = false;
     resetInput();
-    _inputBinding.setEnabled(false);
-    inputAvailable.value = false;
-    unawaited(_invoke('setInputEnabled', {'enabled': false}));
+    unawaited(_refreshInputOwnership());
     unawaited(_invoke('setNativeRect', {'x': 0, 'y': 0, 'width': 0, 'height': 0, 'scale': 1}));
   }
 
   void _releaseReceiverIdentity() {
+    _nativeInputRevision++;
     _receiverGeneration++;
     _mappingEpoch++;
     _mappingReady = _inputProfile.isDefault;

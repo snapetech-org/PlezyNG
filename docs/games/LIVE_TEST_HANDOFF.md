@@ -246,6 +246,9 @@ compilation are required gates, not inferred from C++ syntax or Java checks.
 - Exercise one through four controllers, USB/Bluetooth hot-plug and OS ID reuse.
   Rumble must affect the correct physical controller and stop on focus/dialog/
   profile/lease loss. Unsupported controllers still provide buttons/sticks.
+  Rapidly transfer ownership between panes and replace a receiver while input
+  resets are delayed; an older completion must not disable the current owner
+  or resume the retired receiver's effects/microphone.
 - Enable the motion profile before opening the stream; configure a compatible
   game or host Steam Input gyro binding. Verify gyro/acceleration axis orientation,
   neutral input after disconnect/backgrounding and no phone-IMU substitution.
@@ -253,6 +256,8 @@ compilation are required gates, not inferred from C++ syntax or Java checks.
   Cancel/Save/Reset, rotate and resize, and switch profiles or host machines.
   Check large text, RTL, TalkBack/VoiceOver and D-pad navigation. Keep a finger
   held while hiding the overlay or transferring input; every input must release.
+  Each position slider must announce its selected control, axis and percentage;
+  screen-reader increase/decrease must move that control along only that axis.
 - On Android verify the embedded Flutter overlay above both SurfaceView codecs
   and Vulkan output; separately verify legacy standalone native controls.
 - Keep microphone consent off while qualifying controller sensors: gyro is

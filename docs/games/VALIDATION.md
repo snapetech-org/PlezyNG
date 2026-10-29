@@ -690,3 +690,18 @@ Kotlin/Gradle/NDK packaging, MSVC builds/execution, physical controllers and
 motion axes, microphone permission/device paths, actual HDR/chroma presentation,
 Steam host/account interoperability, approved Cloud authority and deployed relay
 NAT/throughput tests. This is a source handoff, not hardware or deployment approval.
+
+## Input ownership and accessible adjustment — 2026-10-29
+
+- **174 distinct Flutter cases pass**: 147 Games/texture/gamepad/wire-format
+  cases from the broad regression run and the final 27-case receiver/touch run.
+  New delayed-reset cases reproduce the old grant overwrite on the previous
+  source, with and without receiver replacement, and pass with the ownership
+  fix. The touch semantics case verifies the merged control/axis/value and
+  invokes screen-reader increase/decrease actions to move only the chosen axis.
+- Standard analyzer passes with zero diagnostics; formatting and diff whitespace
+  checks pass. The existing large-text touch editing case remains green.
+- Native, vendored controller-plugin, transport/server and platform build files
+  are unchanged from the preceding checkpoint. Their recorded source-check
+  results and the outstanding SDK/device/service qualification gates still
+  apply; this follow-up does not claim new platform builds or live testing.

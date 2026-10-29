@@ -41,12 +41,20 @@ Pending request timers are cancelled on retirement. Losing the effects plugin
 does not disable button/stick input. Each native implementation stops outputs
 on device removal or pause as well.
 
+Native input ownership is dispatched before awaiting reset acknowledgements.
+Every update records its revision and receiver identity, so an older completion
+cannot replace a newer grant or restart effects for a retired receiver. Dialog,
+focus, attachment and reconnect updates use the same ownership path; microphone
+and controller effects stop immediately when that path revokes input.
+
 ## Touch layout
 
 Steam controls → Arrange touch controls opens a local editor with game input
 suspended. Each button and stick can be dragged independently. Position controls
 provide a selectable control list and keyboard/screen-reader-operable horizontal
-and vertical sliders. Save commits; Cancel leaves the current layout unchanged;
+and vertical sliders. Each slider announces the selected control, axis and
+percentage, and supports the screen reader's increase/decrease actions.
+Save commits; Cancel leaves the current layout unchanged;
 Reset returns both layout variants to defaults. The editor sends no host input.
 
 Positions are normalized over each control's available travel and stored per

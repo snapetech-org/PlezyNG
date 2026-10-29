@@ -75,6 +75,13 @@ does not replace the SDK build and real-device acceptance cases in
   Flutter editor/overlay; legacy standalone callers retain native controls.
   See [STEAM_CONTROLLERS.md](STEAM_CONTROLLERS.md).
 
+- Native input updates share one revision- and receiver-checked path. Revocation
+  is sent before waiting for reset completion, so a delayed old reset cannot
+  overwrite a newer grant, including after receiver replacement. Controller
+  effects and microphone capture stop immediately when input is revoked.
+  Touch-position sliders expose the selected control, axis, value and semantic
+  increase/decrease actions as one accessible control.
+
 ## Remaining contracts and qualification
 
 - Cloud settings: public Steamworks exposes account-wide read access and an
@@ -129,3 +136,9 @@ Android API 36 Java compilation, **16 JVM tests**, and the expanded native
 runtime checks. The native suite remains **42 passed plus one display skip**;
 Windows runtime/test executable links pass. Current details and SDK/live gates
 are in [VALIDATION.md](VALIDATION.md#controller-and-touch-completion--2026-10-29).
+
+The ownership/accessibility follow-up verifies **174 distinct Flutter tests**,
+including a final 27-case receiver/touch run, and a clean standard analyzer.
+Delayed reset acknowledgements cannot overwrite newer input grants, and the
+touch editor's merged semantics support named, axis-specific adjustment.
+See [the follow-up evidence](VALIDATION.md#input-ownership-and-accessible-adjustment--2026-10-29).

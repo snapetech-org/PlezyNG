@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/games/steam_touch_layout.dart';
+import 'package:plezy/i18n/strings.g.dart';
+import 'package:plezy/screens/games/steam_touch_controls.dart';
 import 'package:plezy/screens/games/steam_touch_layout_dialog.dart';
 import 'package:plezy/theme/mono_theme.dart';
 
@@ -92,5 +95,44 @@ void main() {
     await tester.pumpAndSettle();
     expect(saved, isNotNull);
     expect(saved!.wide, isNotEmpty);
+  });
+
+  testWidgets('position sliders name their control and axis and support semantic adjustment', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(MaterialApp(home: SteamTouchLayoutDialog(initial: SteamTouchLayout())));
+      await tester.tap(find.byTooltip(t.games.touchLayoutPosition));
+      await tester.pumpAndSettle();
+      final horizontal = find.bySemanticsLabel(
+        '${steamTouchControlLabel('leftStick')}, ${t.games.touchLayoutHorizontal}',
+      );
+      final vertical = find.bySemanticsLabel('${steamTouchControlLabel('leftStick')}, ${t.games.touchLayoutVertical}');
+      expect(horizontal, findsOneWidget);
+      expect(vertical, findsOneWidget);
+      final node = tester.getSemantics(horizontal);
+      expect(node.getSemanticsData().hasAction(SemanticsAction.increase), isTrue);
+      final previousValue = node.getSemanticsData().value;
+      expect(previousValue, isNotEmpty);
+      final previous = tester.getTopLeft(find.byKey(const ValueKey('edit-leftStick')));
+      tester.binding.rootPipelineOwner.visitChildren(
+        (owner) => owner.semanticsOwner?.performAction(node.id, SemanticsAction.increase),
+      );
+      await tester.pumpAndSettle();
+      final adjusted = tester.getTopLeft(find.byKey(const ValueKey('edit-leftStick')));
+      expect(adjusted.dx, greaterThan(previous.dx));
+      expect(adjusted.dy, previous.dy);
+      expect(tester.getSemantics(horizontal).getSemanticsData().value, isNot(previousValue));
+      tester.binding.rootPipelineOwner.visitChildren(
+        (owner) => owner.semanticsOwner?.performAction(node.id, SemanticsAction.decrease),
+      );
+      await tester.pumpAndSettle();
+      final decreased = tester.getTopLeft(find.byKey(const ValueKey('edit-leftStick')));
+      expect(decreased.dx, lessThan(adjusted.dx));
+      expect(decreased.dy, previous.dy);
+    } finally {
+      semantics.dispose();
+    }
   });
 }

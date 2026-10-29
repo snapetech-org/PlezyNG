@@ -22,6 +22,12 @@ corrections, so this change does not establish cadence-exact presentation.
   patch 0158.
 - The Linux Vulkan-enabled `mpv` and `libmpv.so.2.5.0` build compiled the PME
   filter with patch 0158.
+- The pinned Ubuntu 24.04 `platforms/linux/container-build.sh` path packaged
+  the Linux x86_64 build with key `aeb29921a7de`. `zstd -t`, the symbols ZIP
+  check, and `scripts/test_build_date.sh` passed; the scan found no build clock
+  in any of 269 package entries or either symbols entry. The build log is
+  retained at
+  `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/build-linux-local-0158-x86_64.log`.
 - Windows x64 and ARM64 were cross-built locally in the retained Ubuntu 24.04
   build container. Both build logs show
   `video_filter_vf_plezy_pme.c` compiled into `libmpv-2.dll`.
@@ -36,13 +42,18 @@ corrections, so this change does not establish cadence-exact presentation.
 | `libmpv-windows-df64efffd436-x86_64-symbols.zip` | 83,663,504 bytes | `0239c6172fc32a4b6de30b6fc465d964073621151cfea7164694f0b7119556ff` |
 | `libmpv-windows-df64efffd436-aarch64.zip` | 35,266,683 bytes | `5e7f0102c615c5b16be8250b30e1e692d2dd45404d3a10055a3baca939433017` |
 | `libmpv-windows-df64efffd436-aarch64-symbols.zip` | 78,081,008 bytes | `ee928dad09c383418cb5c533e97725f0814887da1e585e476511e44e7ec5bba7` |
+| `libmpv-linux-aeb29921a7de-x86_64.tar.zst` | 26,147,234 bytes | `816fbd730efcd15765a157acb1d70abdb412103e29de28b5daf45fcc0c25e5bb` |
+| `libmpv-linux-x86_64-symbols.zip` | 10,736,538 bytes | `2ee8edeb650cb2febdbe261cc566a9afc794510a76c9c6166de9d5224b7ec8e9` |
 
 The packages are retained under
 `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-build-windows-0157-native-20261029/dist/release/`.
 They are local candidates only: no release assets were uploaded, and the
 PlezyNG mpv lock still points to its previous package set. The earlier Linux
-x86_64 package key `b9f611ed45f8` predates patch 0158; a matching Linux ARM64
-build was unavailable, so a new Linux group package was not produced.
+x86_64 key `b9f611ed45f8` predates patch 0158; the new x86_64 candidate is not
+recorded in the Linux artifact manifest because no matching ARM64 package was
+built. Both `kspld0` and `kspls0` are x86_64, and neither host has ARM64
+emulation. The Linux group therefore remains on key `52b991183e5f` and is not
+ready to pin or publish.
 
 ## Qualification limits
 

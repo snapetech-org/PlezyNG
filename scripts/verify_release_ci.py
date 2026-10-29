@@ -69,8 +69,10 @@ def _pages(url: str, token: str, collection: str) -> list[dict]:
 def _manifest_gate() -> dict:
     try:
         data = json.loads(MANIFEST.read_text(encoding="utf-8"))
-        gate = data["releaseGate"]
+        release = data["release"]
+        gate = release["releaseGate"]
         required = gate["requiredJobs"]
+        documented_required = release["requiredCiJobs"]
     except (OSError, json.JSONDecodeError, KeyError, TypeError):
         raise GateError("The capability manifest does not define the release CI contract.") from None
     if (
@@ -81,6 +83,7 @@ def _manifest_gate() -> dict:
         or not required
         or any(not isinstance(name, str) or not name.strip() for name in required)
         or len(required) != len(set(required))
+        or documented_required != required
     ):
         raise GateError("The capability manifest contains an invalid release CI contract.")
     return gate

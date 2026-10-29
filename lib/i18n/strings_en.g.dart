@@ -3284,6 +3284,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleLyrics$en subtitleLyrics = Translations$videoControls$subtitleLyrics$en.internal(_root);
 	late final Translations$videoControls$subtitleJobs$en subtitleJobs = Translations$videoControls$subtitleJobs$en.internal(_root);
 	late final Translations$videoControls$subtitleRoles$en subtitleRoles = Translations$videoControls$subtitleRoles$en.internal(_root);
+	late final Translations$videoControls$subtitleDefaultsCloud$en subtitleDefaultsCloud = Translations$videoControls$subtitleDefaultsCloud$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
@@ -13179,6 +13180,123 @@ class Translations$videoControls$subtitleJobs$en {
 	String get originalProfileResume => 'The job was saved under its original profile; switch back to resume it.';
 
 }
+// Path: videoControls.subtitleDefaultsCloud
+class Translations$videoControls$subtitleDefaultsCloud$en {
+	Translations$videoControls$subtitleDefaultsCloud$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Share through configured cloud'
+	String get shareAction => 'Share through configured cloud';
+
+	/// en: 'Shared defaults loaded for preview. Import each group locally or choose this preset as the shared version.'
+	String get previewLoaded => 'Shared defaults loaded for preview. Import each group locally or choose this preset as the shared version.';
+
+	/// en: 'Use the previewed shared version'
+	String get useSharedAction => 'Use the previewed shared version';
+
+	/// en: 'Use this shared defaults version?'
+	String get useSharedTitle => 'Use this shared defaults version?';
+
+	/// en: 'Publish the entire previewed preset as the choice among the shared versions you saw. This does not apply its groups locally. Later unseen edits can create a new conflict. Local defaults and older cloud copies remain available.'
+	String get useSharedBody => 'Publish the entire previewed preset as the choice among the shared versions you saw. This does not apply its groups locally. Later unseen edits can create a new conflict. Local defaults and older cloud copies remain available.';
+
+	/// en: 'Use shared version'
+	String get useSharedConfirm => 'Use shared version';
+
+	/// en: 'A new concurrent edit arrived. Pull and preview the remaining shared versions.'
+	String get concurrentChanged => 'A new concurrent edit arrived. Pull and preview the remaining shared versions.';
+
+	/// en: 'Shared choice published. Local defaults are unchanged until you import a group.'
+	String get sharedChoicePublished => 'Shared choice published. Local defaults are unchanged until you import a group.';
+
+	/// en: 'Share caption defaults'
+	String get title => 'Share caption defaults';
+
+	/// en: 'Uses the configured Sources cloud account and folder. Defaults have a separate encrypted namespace from subtitle tracks. Pull, publish and import are explicit; local settings never change just because another device publishes.'
+	String get description => 'Uses the configured Sources cloud account and folder. Defaults have a separate encrypted namespace from subtitle tracks. Pull, publish and import are explicit; local settings never change just because another device publishes.';
+
+	/// en: 'Defaults pairing code'
+	String get codeLabel => 'Defaults pairing code';
+
+	/// en: 'New defaults code'
+	String get newCode => 'New defaults code';
+
+	/// en: 'Copy code'
+	String get copyCode => 'Copy code';
+
+	/// en: 'Pairing code copied. Other apps may have clipboard access.'
+	String get codeCopied => 'Pairing code copied. Other apps may have clipboard access.';
+
+	/// en: 'Save pairing'
+	String get savePairing => 'Save pairing';
+
+	/// en: 'Disconnect defaults'
+	String get disconnect => 'Disconnect defaults';
+
+	/// en: 'Pull shared defaults'
+	String get pullShared => 'Pull shared defaults';
+
+	/// en: 'Publish saved defaults'
+	String get publishSaved => 'Publish saved defaults';
+
+	/// en: 'No defaults are shared yet.'
+	String get noShared => 'No defaults are shared yet.';
+
+	/// en: '${count} shared version(s). Open one for field-by-field review.'
+	String sharedCount({required Object count}) => '${count} shared version(s). Open one for field-by-field review.';
+
+	/// en: 'Open for preview'
+	String get openPreview => 'Open for preview';
+
+	/// en: 'Device ${device} · ${size} KiB'
+	String deviceVersion({required Object device, required Object size}) => 'Device ${device} · ${size} KiB';
+
+	/// en: 'Pair caption defaults?'
+	String get pairTitle => 'Pair caption defaults?';
+
+	/// en: 'Use the same defaults code and cloud folder on your other device. Anyone with this code and folder access can read and publish these preferences. Keep a private recovery copy. Saving a code does not upload or apply settings.'
+	String get pairBody => 'Use the same defaults code and cloud folder on your other device. Anyone with this code and folder access can read and publish these preferences. Keep a private recovery copy. Saving a code does not upload or apply settings.';
+
+	/// en: 'Defaults paired. No settings were uploaded or applied.'
+	String get pairedStatus => 'Defaults paired. No settings were uploaded or applied.';
+
+	/// en: 'Publish saved caption defaults?'
+	String get publishTitle => 'Publish saved caption defaults?';
+
+	/// en: 'Write encrypted appearance and role defaults to your configured cloud folder? This includes both saved lanes and the profile’s default forced/SDH preferences. Captions, fonts, accounts, title overrides and timing corrections are excluded. Concurrent versions remain available for explicit choice; older encrypted blobs remain for recovery.'
+	String get publishBody => 'Write encrypted appearance and role defaults to your configured cloud folder? This includes both saved lanes and the profile’s default forced/SDH preferences. Captions, fonts, accounts, title overrides and timing corrections are excluded. Concurrent versions remain available for explicit choice; older encrypted blobs remain for recovery.';
+
+	/// en: 'Publish'
+	String get publishConfirm => 'Publish';
+
+	/// en: 'Disconnected locally. Cloud versions and local settings were retained.'
+	String get disconnectedStatus => 'Disconnected locally. Cloud versions and local settings were retained.';
+
+	/// en: 'The defaults profile changed. Reopen this dialog.'
+	String get profileChanged => 'The defaults profile changed. Reopen this dialog.';
+
+	/// en: 'The defaults sync destination changed.'
+	String get destinationChanged => 'The defaults sync destination changed.';
+
+	/// en: 'The defaults pairing changed. Pull and preview again.'
+	String get pairingChanged => 'The defaults pairing changed. Pull and preview again.';
+
+	/// en: 'Save this profile’s defaults pairing first.'
+	String get codeRequired => 'Save this profile’s defaults pairing first.';
+
+	/// en: 'Configure a cloud sync account and folder in Sources → Sync first.'
+	String get configRequired => 'Configure a cloud sync account and folder in Sources → Sync first.';
+
+	/// en: 'Choose a supported cloud sync source.'
+	String get sourceRequired => 'Choose a supported cloud sync source.';
+
+	/// en: 'Defaults synchronization failed. Check the pairing code, cloud account, folder and network.'
+	String get syncFailed => 'Defaults synchronization failed. Check the pairing code, cloud account, folder and network.';
+}
+
 // Path: videoControls.subtitleRoles
 class Translations$videoControls$subtitleRoles$en {
 	Translations$videoControls$subtitleRoles$en.internal(this._root);
@@ -17152,6 +17270,42 @@ extension on Translations {
 			'videoControls.subtitleRoles.resetProfileDefault' => 'Reset profile default',
 			'videoControls.subtitleRoles.titleOverrideTileHelp' => 'Profile defaults and an optional title override',
 			'videoControls.subtitleRoles.settingsTileHelp' => 'Profile defaults for forced and SDH / CC fallback selection',
+			'videoControls.subtitleDefaultsCloud.shareAction' => 'Share through configured cloud',
+			'videoControls.subtitleDefaultsCloud.previewLoaded' => 'Shared defaults loaded for preview. Import each group locally or choose this preset as the shared version.',
+			'videoControls.subtitleDefaultsCloud.useSharedAction' => 'Use the previewed shared version',
+			'videoControls.subtitleDefaultsCloud.useSharedTitle' => 'Use this shared defaults version?',
+			'videoControls.subtitleDefaultsCloud.useSharedBody' => 'Publish the entire previewed preset as the choice among the shared versions you saw. This does not apply its groups locally. Later unseen edits can create a new conflict. Local defaults and older cloud copies remain available.',
+			'videoControls.subtitleDefaultsCloud.useSharedConfirm' => 'Use shared version',
+			'videoControls.subtitleDefaultsCloud.concurrentChanged' => 'A new concurrent edit arrived. Pull and preview the remaining shared versions.',
+			'videoControls.subtitleDefaultsCloud.sharedChoicePublished' => 'Shared choice published. Local defaults are unchanged until you import a group.',
+			'videoControls.subtitleDefaultsCloud.title' => 'Share caption defaults',
+			'videoControls.subtitleDefaultsCloud.description' => 'Uses the configured Sources cloud account and folder. Defaults have a separate encrypted namespace from subtitle tracks. Pull, publish and import are explicit; local settings never change just because another device publishes.',
+			'videoControls.subtitleDefaultsCloud.codeLabel' => 'Defaults pairing code',
+			'videoControls.subtitleDefaultsCloud.newCode' => 'New defaults code',
+			'videoControls.subtitleDefaultsCloud.copyCode' => 'Copy code',
+			'videoControls.subtitleDefaultsCloud.codeCopied' => 'Pairing code copied. Other apps may have clipboard access.',
+			'videoControls.subtitleDefaultsCloud.savePairing' => 'Save pairing',
+			'videoControls.subtitleDefaultsCloud.disconnect' => 'Disconnect defaults',
+			'videoControls.subtitleDefaultsCloud.pullShared' => 'Pull shared defaults',
+			'videoControls.subtitleDefaultsCloud.publishSaved' => 'Publish saved defaults',
+			'videoControls.subtitleDefaultsCloud.noShared' => 'No defaults are shared yet.',
+			'videoControls.subtitleDefaultsCloud.sharedCount' => ({required Object count}) => '${count} shared version(s). Open one for field-by-field review.',
+			'videoControls.subtitleDefaultsCloud.openPreview' => 'Open for preview',
+			'videoControls.subtitleDefaultsCloud.deviceVersion' => ({required Object device, required Object size}) => 'Device ${device} · ${size} KiB',
+			'videoControls.subtitleDefaultsCloud.pairTitle' => 'Pair caption defaults?',
+			'videoControls.subtitleDefaultsCloud.pairBody' => 'Use the same defaults code and cloud folder on your other device. Anyone with this code and folder access can read and publish these preferences. Keep a private recovery copy. Saving a code does not upload or apply settings.',
+			'videoControls.subtitleDefaultsCloud.pairedStatus' => 'Defaults paired. No settings were uploaded or applied.',
+			'videoControls.subtitleDefaultsCloud.publishTitle' => 'Publish saved caption defaults?',
+			'videoControls.subtitleDefaultsCloud.publishBody' => 'Write encrypted appearance and role defaults to your configured cloud folder? This includes both saved lanes and the profile’s default forced/SDH preferences. Captions, fonts, accounts, title overrides and timing corrections are excluded. Concurrent versions remain available for explicit choice; older encrypted blobs remain for recovery.',
+			'videoControls.subtitleDefaultsCloud.publishConfirm' => 'Publish',
+			'videoControls.subtitleDefaultsCloud.disconnectedStatus' => 'Disconnected locally. Cloud versions and local settings were retained.',
+			'videoControls.subtitleDefaultsCloud.profileChanged' => 'The defaults profile changed. Reopen this dialog.',
+			'videoControls.subtitleDefaultsCloud.destinationChanged' => 'The defaults sync destination changed.',
+			'videoControls.subtitleDefaultsCloud.pairingChanged' => 'The defaults pairing changed. Pull and preview again.',
+			'videoControls.subtitleDefaultsCloud.codeRequired' => 'Save this profile’s defaults pairing first.',
+			'videoControls.subtitleDefaultsCloud.configRequired' => 'Configure a cloud sync account and folder in Sources → Sync first.',
+			'videoControls.subtitleDefaultsCloud.sourceRequired' => 'Choose a supported cloud sync source.',
+			'videoControls.subtitleDefaultsCloud.syncFailed' => 'Defaults synchronization failed. Check the pairing code, cloud account, folder and network.',
 			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
 			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
 			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',

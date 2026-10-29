@@ -12,17 +12,18 @@ import '../../../sources/sync/sync_store.dart';
 
 class SubtitleDefaultsCloudReview {
   SubtitleDefaultsCloudReview({required this.defaults, required this.choice, required List<SubtitleSyncChoice> choices,
-    required this.service, required this.code}) : choices = List.unmodifiable(choices);
+    required this.service, required this.code, required this.pairingChangedMessage}) : choices = List.unmodifiable(choices);
   final SubtitlePortableDefaults defaults;
   final SubtitleSyncChoice choice;
   final List<SubtitleSyncChoice> choices;
   final SubtitleCloudSync service;
   final String code;
+  final String pairingChangedMessage;
 
   Future<List<SubtitleSyncChoice>> chooseShared() async {
     service.check();
     if (await SubtitleCloudSync.pairedCode(service.repository, service.identity) != code) {
-      throw StateError('The defaults pairing changed. Pull and preview again.');
+      throw StateError(pairingChangedMessage);
     }
     service.check();
     return service.resolve(choice, observedChoices: choices);
@@ -47,6 +48,8 @@ class _SubtitleDefaultsCloudDialogState extends State<SubtitleDefaultsCloudDialo
   bool _loaded = false, _busy = true, _reveal = false;
   List<SubtitleSyncChoice> _choices = [];
   SubtitleRevisionIdentity get _identity => SubtitleCloudSync.defaultsIdentity(widget.profileId);
+  Translations$videoControls$subtitleDefaultsCloud$en get _copy =>
+      Translations.of(context).videoControls.subtitleDefaultsCloud;
 
   @override
   void didChangeDependencies() {
@@ -63,7 +66,7 @@ class _SubtitleDefaultsCloudDialogState extends State<SubtitleDefaultsCloudDialo
   void dispose() { _code.dispose(); super.dispose(); }
   void _check() {
     if (!mounted || !widget.isCurrent() || _sources?.profileId != widget.profileId) {
-      throw StateError('The defaults profile changed. Reopen this dialog.');
+      throw StateError(_copy.profileChanged);
     }
     _sources!.requireSession(_generation);
   }
@@ -71,23 +74,23 @@ class _SubtitleDefaultsCloudDialogState extends State<SubtitleDefaultsCloudDialo
     if (mounted) setState(() { _busy = true; _error = null; _message = null; });
     try { await action(); }
     catch (error) {
-      if (mounted) _error = error is StateError ? error.message : error is FormatException ? error.message
-          : 'Defaults synchronization failed. Check the pairing code, cloud account, folder and network.';
+      if (mounted) _error = error is StateError && error.message is String
+          ? error.message as String : _copy.syncFailed;
     } finally { if (mounted) setState(() => _busy = false); }
   }
   SubtitleCloudSync _service() {
     _check();
     final sources = _sources!, config = _sources!.syncConfig, generation = _generation;
-    if (config == null) throw StateError('Configure a cloud sync account and folder in Sources → Sync first.');
+    if (config == null) throw StateError(_copy.configRequired);
     final code = _paired;
-    if (code == null || code != _code.text.trim()) throw StateError('Save this profile’s defaults pairing first.');
+    if (code == null || code != _code.text.trim()) throw StateError(_copy.codeRequired);
     final adapter = sources.adapter(config.sourceId), ownerCurrent = widget.isCurrent, profile = widget.profileId;
-    if (!ProviderSyncStore.supports(adapter.source.kind)) throw StateError('Choose a supported cloud sync source.');
+    if (!ProviderSyncStore.supports(adapter.source.kind)) throw StateError(_copy.sourceRequired);
     // The parent owns the returned review after this picker closes. Capture
     // stable values instead of retaining this disposed dialog as the owner.
     void current() {
       if (!ownerCurrent() || sources.profileId != profile || sources.syncConfig?.sourceId != config.sourceId ||
-          sources.syncConfig?.folder != config.folder) throw StateError('The defaults sync destination changed.');
+          sources.syncConfig?.folder != config.folder) throw StateError(_copy.destinationChanged);
       sources.requireSession(generation);
     }
     return SubtitleCloudSync(repository: sources.repository, identity: _identity, defaults: true,
@@ -101,64 +104,64 @@ class _SubtitleDefaultsCloudDialogState extends State<SubtitleDefaultsCloudDialo
     _check(); return result == true;
   }
   Future<void> _pair() => _run(() async {
+    final copy = _copy;
     _check(); final code = _code.text.trim(); SyncCipher(code);
-    if (!await _confirm('Pair caption defaults?', 'Use the same defaults code and cloud folder on your other device. '
-        'Anyone with this code and folder access can read and publish these preferences. Keep a private recovery copy. '
-        'Saving a code does not upload or apply settings.', 'Save pairing')) return;
+    if (!await _confirm(copy.pairTitle, copy.pairBody, copy.savePairing)) return;
     await SubtitleCloudSync.pair(_sources!.repository, _identity, code); _check();
-    _paired = code; _choices = []; _message = 'Defaults paired. No settings were uploaded or applied.';
+    _paired = code; _choices = []; _message = copy.pairedStatus;
   });
   Future<void> _sync({bool publish = false}) => _run(() async {
+    final copy = _copy;
     final service = _service();
     SubtitlePortableDefaults? defaults;
     if (publish) {
       defaults = SubtitlePortableDefaults.capture(widget.profileId, widget.isCurrent);
-      if (!await _confirm('Publish saved caption defaults?', 'Write encrypted appearance and role defaults to your configured cloud folder? '
-          'This includes both saved lanes and the profile’s default forced/SDH preferences. Captions, fonts, accounts, title overrides and '
-          'timing corrections are excluded. Concurrent versions remain available for explicit choice; older encrypted blobs remain for recovery.', 'Publish')) return;
+      if (!await _confirm(copy.publishTitle, copy.publishBody, copy.publishConfirm)) return;
     }
     _choices = await service.synchronize(publishDefaults: defaults); _check();
-    _message = _choices.isEmpty ? 'No defaults are shared yet.' : '${_choices.length} shared version(s). Open one for field-by-field review.';
+    _message = _choices.isEmpty ? copy.noShared : copy.sharedCount(count: _choices.length);
   });
   Future<void> _preview(SubtitleSyncChoice choice) => _run(() async {
     final service = _service(), code = _paired!;
     final defaults = await service.downloadDefaults(choice); _check();
     Navigator.pop(context, SubtitleDefaultsCloudReview(defaults: defaults, choice: choice,
-      choices: _choices, service: service, code: code));
+      choices: _choices, service: service, code: code, pairingChangedMessage: _copy.pairingChanged));
   });
 
   @override
-  Widget build(BuildContext context) => PopScope(canPop: !_busy, child: AlertDialog(title: const Text('Share caption defaults'),
+  Widget build(BuildContext context) {
+    final copy = _copy;
+    return PopScope(canPop: !_busy, child: AlertDialog(title: Text(copy.title),
     content: SizedBox(width: 580, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      const Text('Uses the configured Sources cloud account and folder. Defaults have a separate encrypted namespace from subtitle tracks. '
-        'Pull, publish and import are explicit; local settings never change just because another device publishes.'),
+      Text(copy.description),
       TextField(controller: _code, enabled: !_busy, obscureText: !_reveal, autocorrect: false, enableSuggestions: false,
-        onChanged: (_) => setState(() {}), decoration: InputDecoration(labelText: 'Defaults pairing code',
+        onChanged: (_) => setState(() {}), decoration: InputDecoration(labelText: copy.codeLabel,
           suffixIcon: IconButton(onPressed: () => setState(() => _reveal = !_reveal),
             icon: Icon(_reveal ? Icons.visibility_off : Icons.visibility)))),
       Wrap(spacing: 8, children: [
-        TextButton(onPressed: _busy ? null : () => setState(() => _code.text = SyncCipher.newCode()), child: const Text('New defaults code')),
+        TextButton(onPressed: _busy ? null : () => setState(() => _code.text = SyncCipher.newCode()), child: Text(copy.newCode)),
         TextButton(onPressed: _busy || _code.text.isEmpty ? null : () => _run(() async {
           _check(); await Clipboard.setData(ClipboardData(text: _code.text.trim()));
-          _message = 'Pairing code copied. Other apps may have clipboard access.';
-        }), child: const Text('Copy code')),
-        TextButton(onPressed: _busy ? null : _pair, child: const Text('Save pairing')),
+          _message = copy.codeCopied;
+        }), child: Text(copy.copyCode)),
+        TextButton(onPressed: _busy ? null : _pair, child: Text(copy.savePairing)),
         TextButton(onPressed: _busy || _paired == null ? null : () => _run(() async {
           _check(); await SubtitleCloudSync.pair(_sources!.repository, _identity, null); _check();
-          _paired = null; _choices = []; _code.clear(); _message = 'Disconnected locally. Cloud versions and local settings were retained.';
-        }), child: const Text('Disconnect defaults')),
+          _paired = null; _choices = []; _code.clear(); _message = copy.disconnectedStatus;
+        }), child: Text(copy.disconnect)),
       ]),
       Wrap(spacing: 8, children: [
-        FilledButton(onPressed: _busy || _paired == null ? null : () => _sync(), child: const Text('Pull shared defaults')),
-        OutlinedButton(onPressed: _busy || _paired == null ? null : () => _sync(publish: true), child: const Text('Publish saved defaults')),
+        FilledButton(onPressed: _busy || _paired == null ? null : () => _sync(), child: Text(copy.pullShared)),
+        OutlinedButton(onPressed: _busy || _paired == null ? null : () => _sync(publish: true), child: Text(copy.publishSaved)),
       ]),
       if (_busy) const LinearProgressIndicator(),
       if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
       if (_message != null) Text(_message!),
-      for (final choice in _choices) ListTile(title: Text('Device ${choice.device} · ${(choice.bytes / 1024).ceil()} KiB'),
+      for (final choice in _choices) ListTile(title: Text(copy.deviceVersion(device: choice.device, size: (choice.bytes / 1024).ceil())),
         subtitle: Text(choice.digest.substring(0, 12)), trailing: TextButton(onPressed: _busy ? null : () => _preview(choice),
-          child: const Text('Open for preview'))),
+          child: Text(copy.openPreview))),
     ]))), actions: [TextButton(onPressed: _busy ? null : () => Navigator.pop(context),
       child: Text(Translations.of(context).common.close))]));
+  }
 }

@@ -48,7 +48,9 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
     if (mounted) setState(() { _busy = true; _error = null; _message = null; });
     try { await action(); }
     catch (error) {
-      if (mounted) _error = error is FormatException ? error.message : error is StateError ? error.message
+      final copy = mounted ? Translations.of(context).videoControls.subtitleDefaultsCloud : null;
+      if (mounted) _error = error is StateError && error.message == 'New subtitle choices arrived; pull and review them before resolving'
+          ? copy!.concurrentChanged : error is FormatException ? error.message : error is StateError ? error.message
           : 'Could not transfer caption defaults. The file or settings storage may be unavailable.';
     } finally { if (mounted) setState(() => _busy = false); }
   }
@@ -92,29 +94,28 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
   });
 
   Future<void> _cloud() => _run(() async {
+    final copy = Translations.of(context).videoControls.subtitleDefaultsCloud;
     _check();
     final review = await showDialog<SubtitleDefaultsCloudReview>(context: context,
       builder: (_) => SubtitleDefaultsCloudDialog(profileId: _profile!, isCurrent: () => _current));
     if (review == null) return;
     _check(); _incoming = review.defaults; _cloudReview = review; _capture();
-    _message = 'Shared defaults loaded for preview. Import each group locally or explicitly choose this whole preset as the shared version.';
+    _message = copy.previewLoaded;
   });
 
   Future<void> _chooseShared() => _run(() async {
+    final copy = Translations.of(context).videoControls.subtitleDefaultsCloud;
     _check(); final review = _cloudReview;
     if (review == null) return;
     final confirmed = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
-      title: const Text('Use this shared defaults version?'),
-      content: const Text('Publish the entire previewed preset as the choice among the shared versions you saw. '
-        'This does not apply its groups locally. Later unseen edits can create a new conflict. '
-        'Local defaults and older cloud blobs remain available.'), actions: [
+      title: Text(copy.useSharedTitle),
+      content: Text(copy.useSharedBody), actions: [
       TextButton(onPressed: () => Navigator.pop(context, false), child: Text(Translations.of(context).common.cancel)),
-      FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Use shared version'))]));
+      FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(copy.useSharedConfirm))]));
     if (confirmed != true) return;
     _check(); final choices = await review.chooseShared();
     _cloudReview = null;
-    _message = choices.length > 1 ? 'A new concurrent edit arrived. Pull and preview the remaining shared versions.'
-        : 'Shared choice published. Local defaults are unchanged until you import a group.';
+    _message = choices.length > 1 ? copy.concurrentChanged : copy.sharedChoicePublished;
   });
 
   Future<void> _import(int? lane) => _run(() async {
@@ -182,7 +183,8 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
         Wrap(spacing: 8, children: [
           TextButton(onPressed: _busy || !_current || current == null ? null : _export, child: const Text('Export saved defaults')),
           TextButton(onPressed: _busy || !_current ? null : _preview, child: const Text('Open defaults for preview')),
-          TextButton(onPressed: _busy || !_current ? null : _cloud, child: const Text('Share through configured cloud')),
+          TextButton(onPressed: _busy || !_current ? null : _cloud,
+            child: Text(Translations.of(context).videoControls.subtitleDefaultsCloud.shareAction)),
           if (incoming != null) TextButton(onPressed: _busy || !_current ? null : () => _run(() async { _capture(); }),
             child: const Text('Refresh current defaults')),
         ]),
@@ -203,7 +205,7 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
             FilledButton(onPressed: _busy || !_current ? null : () => _import(null), child: const Text('Import profile role defaults')),
           ]))),
           if (_cloudReview != null) TextButton(onPressed: _busy || !_current ? null : _chooseShared,
-            child: const Text('Use the previewed shared version')),
+            child: Text(Translations.of(context).videoControls.subtitleDefaultsCloud.useSharedAction)),
         ],
       ]))), actions: [TextButton(onPressed: _busy ? null : () => Navigator.pop(context),
         child: Text(Translations.of(context).common.close))]));

@@ -170,7 +170,7 @@ jobs:
       - name: Run tests
         run: |
           if [ -d "test" ] && [ "$(find test -name '*_test.dart' | wc -l)" -gt 0 ]; then
-            scripts/run_tests.sh
+            scripts/run_tests.sh -j 2
           else
             echo "No tests found, skipping test execution"
           fi
@@ -337,6 +337,23 @@ jobs:
             if [[ "$status" -eq 0 ]]; then
               exit 0
             fi
+            echo "::group::Android Gradle failure resource diagnostics (attempt $attempt)"
+            date --iso-8601=seconds
+            free -h || true
+            df -h "$RUNNER_TEMP" "$GITHUB_WORKSPACE" || true
+            df -i "$RUNNER_TEMP" "$GITHUB_WORKSPACE" || true
+            for file in /proc/pressure/memory /proc/pressure/io \
+                        /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.high \
+                        /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.events; do
+              if [[ -r "$file" ]]; then
+                echo "== $file =="
+                cat "$file"
+              fi
+            done
+            dmesg --time-format=iso 2>/dev/null \
+              | grep -Ei 'out of memory|oom-kill|killed process' \
+              | tail -20 || true
+            echo "::endgroup::"
             if ! grep -Eiq 'Could not (GET|download)|Read timed out|Connection reset|Connection timed out|UnknownHostException|Temporary failure in name resolution|No route to host|ProxyError|tunnel.*failed' "$log_file"; then
               exit "$status"
             fi
@@ -388,12 +405,14 @@ jobs:
 
   linux-native-test:
     name: Linux native reliability (${{ matrix.sanitizer }})
+    needs: [test, android-test]
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-linux-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include:
           - sanitizer: address
@@ -765,6 +784,8 @@ jobs:
       # shared_preferences_windows store write is the fix for #1732, so exercise
       # it here, on a real NTFS volume, against the real backend.
       - name: Run the vendored Windows preference store tests
+        env:
+          no_proxy: localhost,127.0.0.1,::1
         shell: pwsh
         run: flutter test test/services/prefs_store_atomic_write_windows_test.dart
 

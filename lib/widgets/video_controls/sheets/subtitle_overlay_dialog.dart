@@ -17,6 +17,7 @@ import '../../../services/subtitle_frame_export.dart';
 import '../../../services/subtitle_analysis_source.dart';
 import 'subtitle_fonts_dialog.dart';
 import 'subtitle_hdr_dialog.dart';
+import 'subtitle_defaults_dialog.dart';
 
 Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
   SubtitleDownloadBinding? download,
@@ -42,6 +43,8 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
     return AlertDialog(title: Text(copy.title), content: SizedBox(width: 620,
       child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
         Text(copy.description),
+        TextButton(onPressed: () => showDialog<void>(context: context, builder: (_) => const SubtitleDefaultsDialog()),
+          child: const Text('Transfer saved caption defaults')),
         TextButton(onPressed: () async {
           await showDialog<void>(context: context, builder: (_) => SubtitleFontsDialog(
             openSource: openAnalysisSource, isSourceCurrent: isSourceCurrent));

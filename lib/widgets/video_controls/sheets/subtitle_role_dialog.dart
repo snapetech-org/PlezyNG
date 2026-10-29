@@ -5,6 +5,7 @@ import '../../../i18n/strings.g.dart';
 import '../../../profiles/active_profile_provider.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_selection_rules.dart';
+import 'subtitle_defaults_dialog.dart';
 
 Future<void> showSubtitleRoleDialog(BuildContext context, {String? titleIdentity}) async {
   final translations = Translations.of(context);
@@ -52,6 +53,14 @@ Future<void> showSubtitleRoleDialog(BuildContext context, {String? titleIdentity
           onChanged: busy ? null : (value) => update(() => rules = SubtitleRoleRules(
             forced: rules.forced, accessibility: value ?? rules.accessibility))),
         Text(copy.limitHelp),
+        TextButton(onPressed: busy ? null : () async {
+          final before = SubtitleSelectionRules.resolve(titleIdentity: titleOnly ? titleIdentity : null);
+          await showDialog<void>(context: context, builder: (_) => const SubtitleDefaultsDialog());
+          if (context.mounted && profiles.activeId == profile) {
+            final after = SubtitleSelectionRules.resolve(titleIdentity: titleOnly ? titleIdentity : null);
+            if (before.forced != after.forced || before.accessibility != after.accessibility) update(() => rules = after);
+          }
+        }, child: const Text('Transfer saved caption defaults')),
         if (error != null) Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
       ]))), actions: [
         TextButton(onPressed: busy ? null : () => save(reset: true), child: Text(titleOnly ? copy.removeTitleOverride : copy.resetProfileDefault)),

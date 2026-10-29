@@ -80,12 +80,20 @@ abstract final class SubtitleSelectionRules {
     return (_data(profile, settings)['titles'] as Map?)?.containsKey(titleKey(identity)) == true;
   }
 
-  static Future<void> save(SubtitleRoleRules? rules, {required String profileId, String? titleIdentity}) {
+  static Future<void> save(SubtitleRoleRules? rules, {required String profileId, String? titleIdentity,
+      SubtitleRoleRules? expectedRules}) {
     final next = _writes.then((_) async {
       final settings = await SettingsService.getInstance();
       if (activeProfileId != profileId) throw StateError('Profile changed.');
       final data = _data(profileId, settings);
       final titles = Map<String, dynamic>.from(data['titles'] as Map? ?? {});
+      if (expectedRules != null) {
+        final current = SubtitleRoleRules.fromJson(titleIdentity == null ? data['default']
+            : titles[titleKey(titleIdentity)] ?? data['default']);
+        if (current.forced != expectedRules.forced || current.accessibility != expectedRules.accessibility) {
+          throw StateError('The subtitle role preference changed. Preview it again.');
+        }
+      }
       if (titleIdentity == null) { data['default'] = (rules ?? const SubtitleRoleRules()).toJson(); }
       else {
         final key = titleKey(titleIdentity);
@@ -97,7 +105,9 @@ abstract final class SubtitleSelectionRules {
       }
       final text = jsonEncode({'schema': 1, 'default': data['default'], 'titles': titles});
       if (utf8.encode(text).length > 65536) throw StateError('Subtitle preferences exceed their storage limit.');
-      await settings.write(_preference(profileId), text);
+      await settings.write(_preference(profileId), text, checkCurrent: () {
+        if (activeProfileId != profileId) throw StateError('Profile changed.');
+      });
     });
     _writes = next.catchError((Object _) {}); return next;
   }

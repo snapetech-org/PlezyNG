@@ -131,8 +131,24 @@ class SubtitleOverlayTrack {
     } catch (_) { /* A damaged preference never prevents caption attachment. */ }
   }
 
-  Future<void> saveAppearance(int lane) async {
+  static Future<void> _appearanceWrites = Future.value();
+  Future<void> saveAppearance(int lane, {Map<String, Object>? expectedAppearance}) {
+    final saved = Map<String, Object>.of(appearance());
+    final next = _appearanceWrites.then((_) => _saveAppearance(lane, saved, expectedAppearance));
+    _appearanceWrites = next.catchError((Object _) {});
+    return next;
+  }
+
+  Future<void> _saveAppearance(int lane, Map<String, Object> saved, Map<String, Object>? expectedAppearance) async {
+    if (lane < 0 || lane > 1) throw ArgumentError('Unknown caption lane');
     if (profileId == null || !isCurrent()) throw StateError('The subtitle profile changed');
+    if (expectedAppearance != null) {
+      final current = SubtitleOverlayTrack(cues: const [], title: '', isCurrent: isCurrent, profileId: profileId)
+        ..restoreAppearance(lane);
+      if (jsonEncode(current.appearance()) != jsonEncode(expectedAppearance)) {
+        throw StateError('The saved appearance changed. Preview the current defaults again.');
+      }
+    }
     final pref = SettingsService.subtitleOverlayAppearanceForProfile(profileId!);
     Map<String, dynamic> data = {'version': 1};
     try {
@@ -143,7 +159,7 @@ class SubtitleOverlayTrack {
           for (final key in ['0', '1']) if (saved[key] is Map) key: saved[key]};
       }
     } catch (_) {}
-    data['$lane'] = appearance();
+    data['$lane'] = saved;
     final encoded = jsonEncode(data);
     if (encoded.length > 8192) throw const FormatException('Caption preference limit');
     await SettingsService.instance.write(pref, encoded, checkCurrent: () {

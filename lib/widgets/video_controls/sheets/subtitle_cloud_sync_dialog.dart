@@ -65,6 +65,7 @@ class _SubtitleCloudSyncDialogState extends State<SubtitleCloudSyncDialog> {
     try { await action(); }
     catch (error) {
       if (mounted) setState(() => _error = error is _SubtitleCloudSyncDialogError ? error.message
+          : error is SubtitleCloudSyncException ? error.message
           : error is FormatException ? _t.videoControls.subtitleCloudSync.invalidPairingOrCloudData
           : _t.videoControls.subtitleCloudSync.syncFailed);
     } finally { if (mounted) setState(() => _busy = false); }

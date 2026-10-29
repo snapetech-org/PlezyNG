@@ -13937,6 +13937,87 @@ class Translations$videoControls$subtitleCloudSync$en {
 	/// en: '${start}–${end}s  ${text}'
 	String cuePreview({required Object start, required Object end, required Object text}) => '${start}–${end}s  ${text}';
 
+	/// en: 'Subtitle sync is already running for this item.'
+	String get syncOperationInProgress => 'Subtitle sync is already running for this item.';
+
+	/// en: 'Subtitle sync metadata exceeds the supported size.'
+	String get syncMetadataLimit => 'Subtitle sync metadata exceeds the supported size.';
+
+	/// en: 'The saved subtitle sync device identifier is invalid.'
+	String get syncInvalidDevice => 'The saved subtitle sync device identifier is invalid.';
+
+	/// en: 'This cloud data is not a subtitle sync document.'
+	String get syncUnsupportedDocument => 'This cloud data is not a subtitle sync document.';
+
+	/// en: 'The shared subtitle asset details are invalid.'
+	String get syncInvalidAssetDescriptor => 'The shared subtitle asset details are invalid.';
+
+	/// en: 'Subtitle sync content exceeds 8 MiB.'
+	String get syncAssetTooLarge => 'Subtitle sync content exceeds 8 MiB.';
+
+	/// en: 'Subtitle sync content size is outside the supported limits.'
+	String get syncAssetSizeLimit => 'Subtitle sync content size is outside the supported limits.';
+
+	/// en: 'Too many duplicate subtitle chunks were found.'
+	String get syncDuplicateChunks => 'Too many duplicate subtitle chunks were found.';
+
+	/// en: 'A shared subtitle chunk is invalid.'
+	String get syncInvalidChunk => 'A shared subtitle chunk is invalid.';
+
+	/// en: 'A shared subtitle chunk does not match the expected subtitle.'
+	String get syncChunkIdentityMismatch => 'A shared subtitle chunk does not match the expected subtitle.';
+
+	/// en: 'A shared subtitle chunk could not be verified.'
+	String get syncCorruptChunk => 'A shared subtitle chunk could not be verified.';
+
+	/// en: 'This content cannot be sent through this subtitle sync channel.'
+	String get syncChannelMismatch => 'This content cannot be sent through this subtitle sync channel.';
+
+	/// en: 'Too many subtitle sync records were found.'
+	String get syncGenerationLimit => 'Too many subtitle sync records were found.';
+
+	/// en: 'Too many devices are paired to this subtitle track.'
+	String get syncDeviceLimit => 'Too many devices are paired to this subtitle track.';
+
+	/// en: 'Too many duplicate subtitle sync records were found.'
+	String get syncDuplicateMetadataLimit => 'Too many duplicate subtitle sync records were found.';
+
+	/// en: 'Subtitle sync metadata exceeds the transfer size limit.'
+	String get syncTransferLimit => 'Subtitle sync metadata exceeds the transfer size limit.';
+
+	/// en: 'This device has reached its subtitle sync sequence limit.'
+	String get syncSequenceExhausted => 'This device has reached its subtitle sync sequence limit.';
+
+	/// en: 'Too many subtitle content chunks were found.'
+	String get syncChunkGenerationLimit => 'Too many subtitle content chunks were found.';
+
+	/// en: 'A subtitle chunk is missing. Retry publishing from the device that sent it.'
+	String get syncMissingChunk => 'A subtitle chunk is missing. Retry publishing from the device that sent it.';
+
+	/// en: 'Downloaded subtitle data did not match the published checksum.'
+	String get syncDigestMismatch => 'Downloaded subtitle data did not match the published checksum.';
+
+	/// en: 'This channel contains caption defaults.'
+	String get syncWrongDefaultsChannel => 'This channel contains caption defaults.';
+
+	/// en: 'This channel contains subtitle revisions.'
+	String get syncWrongRevisionChannel => 'This channel contains subtitle revisions.';
+
+	/// en: 'Shared subtitle choices changed. Pull them again before choosing.'
+	String get syncChoicesChanged => 'Shared subtitle choices changed. Pull them again before choosing.';
+
+	/// en: 'Reviewed subtitle content changed since it was pulled.'
+	String get syncReviewedContentChanged => 'Reviewed subtitle content changed since it was pulled.';
+
+	/// en: 'New subtitle choices arrived. Pull and review them before resolving.'
+	String get syncNewChoicesArrived => 'New subtitle choices arrived. Pull and review them before resolving.';
+
+	/// en: 'Combined versions'
+	String get combinedDevice => 'Combined versions';
+
+	/// en: 'Imported encrypted subtitle sync'
+	String get importedSyncRevision => 'Imported encrypted subtitle sync';
+
 }
 
 // Path: videoControls.subtitleResearchReview
@@ -19865,6 +19946,33 @@ extension on Translations {
 			'videoControls.subtitleCloudSync.downloadPreview' => 'Download and preview',
 			'videoControls.subtitleCloudSync.importToHistory' => 'Import to history',
 			'videoControls.subtitleCloudSync.cuePreview' => ({required Object start, required Object end, required Object text}) => '${start}–${end}s  ${text}',
+			'videoControls.subtitleCloudSync.syncOperationInProgress' => 'Subtitle sync is already running for this item.',
+			'videoControls.subtitleCloudSync.syncMetadataLimit' => 'Subtitle sync metadata exceeds the supported size.',
+			'videoControls.subtitleCloudSync.syncInvalidDevice' => 'The saved subtitle sync device identifier is invalid.',
+			'videoControls.subtitleCloudSync.syncUnsupportedDocument' => 'This cloud data is not a subtitle sync document.',
+			'videoControls.subtitleCloudSync.syncInvalidAssetDescriptor' => 'The shared subtitle asset details are invalid.',
+			'videoControls.subtitleCloudSync.syncAssetTooLarge' => 'Subtitle sync content exceeds 8 MiB.',
+			'videoControls.subtitleCloudSync.syncAssetSizeLimit' => 'Subtitle sync content size is outside the supported limits.',
+			'videoControls.subtitleCloudSync.syncDuplicateChunks' => 'Too many duplicate subtitle chunks were found.',
+			'videoControls.subtitleCloudSync.syncInvalidChunk' => 'A shared subtitle chunk is invalid.',
+			'videoControls.subtitleCloudSync.syncChunkIdentityMismatch' => 'A shared subtitle chunk does not match the expected subtitle.',
+			'videoControls.subtitleCloudSync.syncCorruptChunk' => 'A shared subtitle chunk could not be verified.',
+			'videoControls.subtitleCloudSync.syncChannelMismatch' => 'This content cannot be sent through this subtitle sync channel.',
+			'videoControls.subtitleCloudSync.syncGenerationLimit' => 'Too many subtitle sync records were found.',
+			'videoControls.subtitleCloudSync.syncDeviceLimit' => 'Too many devices are paired to this subtitle track.',
+			'videoControls.subtitleCloudSync.syncDuplicateMetadataLimit' => 'Too many duplicate subtitle sync records were found.',
+			'videoControls.subtitleCloudSync.syncTransferLimit' => 'Subtitle sync metadata exceeds the transfer size limit.',
+			'videoControls.subtitleCloudSync.syncSequenceExhausted' => 'This device has reached its subtitle sync sequence limit.',
+			'videoControls.subtitleCloudSync.syncChunkGenerationLimit' => 'Too many subtitle content chunks were found.',
+			'videoControls.subtitleCloudSync.syncMissingChunk' => 'A subtitle chunk is missing. Retry publishing from the device that sent it.',
+			'videoControls.subtitleCloudSync.syncDigestMismatch' => 'Downloaded subtitle data did not match the published checksum.',
+			'videoControls.subtitleCloudSync.syncWrongDefaultsChannel' => 'This channel contains caption defaults.',
+			'videoControls.subtitleCloudSync.syncWrongRevisionChannel' => 'This channel contains subtitle revisions.',
+			'videoControls.subtitleCloudSync.syncChoicesChanged' => 'Shared subtitle choices changed. Pull them again before choosing.',
+			'videoControls.subtitleCloudSync.syncReviewedContentChanged' => 'Reviewed subtitle content changed since it was pulled.',
+			'videoControls.subtitleCloudSync.syncNewChoicesArrived' => 'New subtitle choices arrived. Pull and review them before resolving.',
+			'videoControls.subtitleCloudSync.combinedDevice' => 'Combined versions',
+			'videoControls.subtitleCloudSync.importedSyncRevision' => 'Imported encrypted subtitle sync',
 			'videoControls.subtitleResearchReview.title' => 'Review research evidence',
 			'videoControls.subtitleResearchReview.description' => 'These are unqualified model outputs and measurements. Agreement, scores and region paths do not prove accuracy. Continue to review the caption wording and timing separately.',
 			'videoControls.subtitleResearchReview.itemChanged' => 'The playback item changed.',

@@ -74,8 +74,8 @@ class _SubtitleDefaultsCloudDialogState extends State<SubtitleDefaultsCloudDialo
     if (mounted) setState(() { _busy = true; _error = null; _message = null; });
     try { await action(); }
     catch (error) {
-      if (mounted) _error = error is StateError && error.message is String
-          ? error.message as String : _copy.syncFailed;
+      if (mounted) _error = error is SubtitleCloudSyncException ? error.message
+          : error is StateError && error.message is String ? error.message as String : _copy.syncFailed;
     } finally { if (mounted) setState(() => _busy = false); }
   }
   SubtitleCloudSync _service() {

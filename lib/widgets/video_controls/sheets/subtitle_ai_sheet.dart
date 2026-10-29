@@ -60,6 +60,7 @@ import 'subtitle_cloud_sync_dialog.dart';
 import 'subtitle_resource_dialog.dart';
 import 'subtitle_research_review_dialog.dart';
 import 'subtitle_lyric_units_dialog.dart';
+import 'subtitle_dictionary_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -704,6 +705,20 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         ...result.warnings,
       ],
     );
+  });
+
+  Future<void> _reviewDictionarySpelling() => _run(() async {
+    final selected = await _pickSubtitleCues();
+    if (selected == null || !mounted) return;
+    _requireCurrentOperationIdentity();
+    final review = await showDialog<SubtitleDictionaryReview>(context: context, builder: (_) => SubtitleDictionaryDialog(
+      cues: selected.$1, isCurrent: () => mounted && _operationIdentityIsCurrent));
+    if (review == null || !mounted) return;
+    _requireCurrentOperationIdentity();
+    await _writeAndApply(review.cues, operationLabel: 'Reviewed offline dictionary corrections', sourceCues: selected.$1,
+      reviewWarnings: ['${review.changed} explicitly selected word occurrences changed. Source: ${selected.$2}.',
+        'Dictionary: ${review.pack.title} (${review.pack.language}); SHA-256 ${review.pack.digest}.',
+        'Vocabulary misses and one-edit suggestions are not proof of misspelling. Styled cues were left unchanged.']);
   });
 
   Future<void> _editWaveform() => _run(() async {
@@ -4203,6 +4218,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             title: const Text('Reflow, correct, filter, or convert FPS'),
             subtitle: const Text('Preview reading limits, explicit spelling fixes, SDH/song/credit filters, and timing conversion'),
             onTap: _busy ? null : () => unawaited(_transformSubtitles()),
+          ),
+          FocusableListTile(
+            leading: const AppIcon(Symbols.spellcheck_rounded),
+            title: const Text('Review spelling with an offline dictionary'),
+            subtitle: const Text('Choose a language pack and approve individual word occurrences'),
+            onTap: _busy ? null : () => unawaited(_reviewDictionarySpelling()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.subtitles_rounded),

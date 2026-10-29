@@ -13,6 +13,7 @@ import '../../../mpv/player/subtitle_pcm_capture_source.dart';
 import '../../../services/file_picker_service.dart';
 import '../../../services/media_bookmark_service.dart';
 import '../../../services/subtitle_retimer.dart';
+import 'subtitle_dictionary_dialog.dart';
 
 /// Text-backed study controls on the owning player's source clock. Closing the
 /// dialog cancels looping; no timer can resume a replaced player or profile.
@@ -160,6 +161,11 @@ class _SubtitleStudyDialogState extends State<SubtitleStudyDialog> {
           const Text('Opens Wiktionary in your browser and sends only the term you enter. Copying text remains available offline.'),
         ])),
         actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+          TextButton(onPressed: () async {
+            if (!_current) return;
+            await showDialog<void>(context: dialogContext, builder: (_) => SubtitleDictionaryDialog(
+              isCurrent: () => _current, contextText: _plain(cue)));
+          }, child: const Text('Offline dictionaries')),
           FilledButton(onPressed: () {
             final value = query.text.trim();
             if (value.isNotEmpty && value.length <= 128) Navigator.pop(dialogContext, value);

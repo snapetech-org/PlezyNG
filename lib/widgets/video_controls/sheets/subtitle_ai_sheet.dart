@@ -154,6 +154,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   String? _error;
   String? _revisionStatus;
   SubtitleInferenceProvider _provider = SubtitleInferenceProvider.cpu;
+  SubtitleInferenceProvider _liveProvider = SubtitleInferenceProvider.cpu;
   String _speechLanguageCode = 'auto';
   TranslateLanguage _sourceLanguage = TranslateLanguage.english;
   TranslateLanguage _targetLanguage = TranslateLanguage.spanish;
@@ -511,6 +512,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     await service.start(
       captureSource,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
+      provider: _liveProvider,
       onProgress: (phase, received, total) {
         if (!mounted) return;
         final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';
@@ -2261,7 +2263,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   @override
   Widget build(BuildContext context) {
     final providers = SubtitleAiService.availableProviderRequests;
+    final liveProviders = providers
+        .where(
+          (provider) =>
+              provider == SubtitleInferenceProvider.cpu || provider == SubtitleInferenceProvider.desktopGpu,
+        )
+        .toList(growable: false);
     if (!providers.contains(_provider)) _provider = SubtitleInferenceProvider.cpu;
+    if (!liveProviders.contains(_liveProvider)) _liveProvider = SubtitleInferenceProvider.cpu;
     return BaseVideoControlSheet(
       title: 'AI subtitles',
       icon: Symbols.auto_awesome_rounded,
@@ -2337,7 +2346,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             Text('Live captions from playback', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
             Text(
-              'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
+              'The active player copies bounded decoded PCM with media timestamps. '
+              'Live Whisper supports CPU and a best-effort compiled desktop GPU request; '
+              'GPU placement is unverified and inference failures fall back to CPU. '
+              'Audio is not saved, and captions arrive with a short delay.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 6),
@@ -2348,6 +2360,39 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    if (liveProviders.length > 1) ...[
+                      InputDecorator(
+                        decoration: const InputDecoration(
+                          labelText: 'Live captions backend',
+                          border: OutlineInputBorder(),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<SubtitleInferenceProvider>(
+                            value: _liveProvider,
+                            isExpanded: true,
+                            items: liveProviders
+                                .map(
+                                  (provider) => DropdownMenuItem(
+                                    value: provider,
+                                    child: Text(provider.displayName, overflow: TextOverflow.ellipsis),
+                                  ),
+                                )
+                                .toList(growable: false),
+                            onChanged: _busy || service.isRunning || service.hasActiveSession || service.isStarting
+                                ? null
+                                : (value) => setState(() => _liveProvider = value ?? SubtitleInferenceProvider.cpu),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                    ] else
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Text(
+                          'Live captions backend: CPU (multilingual Whisper)',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
                     if (service.status != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),

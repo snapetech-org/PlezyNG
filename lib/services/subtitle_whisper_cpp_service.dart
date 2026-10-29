@@ -33,6 +33,18 @@ final class SubtitleWhisperResult {
   final bool translatedToEnglish;
 }
 
+final class SubtitleLiveWhisperRuntime {
+  const SubtitleLiveWhisperRuntime({
+    required this.session,
+    required this.runtimeProvider,
+    required this.fellBackToCpu,
+  });
+
+  final whisper.FlutterWhisper session;
+  final String runtimeProvider;
+  final bool fellBackToCpu;
+}
+
 /// whisper.cpp provides the multilingual CPU baseline and optional compiled
 /// CUDA/Vulkan devices. GPU use is selected only from devices reported by the
 /// native runtime; a failed GPU load or inference is retried on CPU.
@@ -69,9 +81,11 @@ final class SubtitleWhisperCppService {
     }
   }
 
-  /// Loads the same verified multilingual model used by WAV transcription for
-  /// repeated, in-memory player PCM windows. The caller owns and disposes it.
-  Future<whisper.FlutterWhisper> loadLiveCpuSession({
+  /// Loads the verified multilingual model for repeated, in-memory player PCM
+  /// windows. Desktop GPU is an explicit best-effort request; the caller owns
+  /// and disposes the session and receives the runtime/fallback report.
+  Future<SubtitleLiveWhisperRuntime> loadLiveSession({
+    bool requestGpu = false,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
     if (!supportedPlatform) {
@@ -79,15 +93,55 @@ final class SubtitleWhisperCppService {
     }
     final modelDirectory = p.join((await getApplicationSupportDirectory()).path, 'subtitle_models', 'whisper_cpp');
     final model = whisper.WhisperModels.baseQ5_1;
-    return whisper.FlutterWhisper.loadModel(
+    Future<whisper.FlutterWhisper> load(whisper.WhisperModelConfig config) => whisper.FlutterWhisper.loadModel(
       model: model,
       modelDirectory: modelDirectory,
-      config: const whisper.WhisperModelConfig(useGpu: false),
+      config: config,
       onDownloadProgress: (progress) {
         onProgress?.call('Downloading multilingual ${model.id}', progress.receivedBytes, progress.totalBytes);
       },
       onModelProgress: (progress) => onProgress?.call('Loading Whisper model', progress, 100),
     );
+
+    const cpuConfig = whisper.WhisperModelConfig(useGpu: false);
+    if (!requestGpu) {
+      return SubtitleLiveWhisperRuntime(
+        session: await load(cpuConfig),
+        runtimeProvider: 'CPU',
+        fellBackToCpu: false,
+      );
+    }
+
+    List<whisper.WhisperDevice> devices;
+    try {
+      devices = whisper.FlutterWhisper.availableDevices.where((device) => device.isGpu).toList(growable: false);
+    } on Object {
+      devices = const <whisper.WhisperDevice>[];
+    }
+    if (devices.isEmpty) {
+      onProgress?.call('No compiled Whisper GPU is available; loading CPU', 0, 0);
+      return SubtitleLiveWhisperRuntime(
+        session: await load(cpuConfig),
+        runtimeProvider: 'CPU (no compiled GPU device detected)',
+        fellBackToCpu: true,
+      );
+    }
+
+    final device = devices.first;
+    try {
+      return SubtitleLiveWhisperRuntime(
+        session: await load(whisper.WhisperModelConfig.forDevice(device)),
+        runtimeProvider: device.name,
+        fellBackToCpu: false,
+      );
+    } on Object catch (error) {
+      onProgress?.call('Whisper GPU initialization failed; loading CPU: $error', 0, 0);
+      return SubtitleLiveWhisperRuntime(
+        session: await load(cpuConfig),
+        runtimeProvider: 'CPU (GPU initialization fallback)',
+        fellBackToCpu: true,
+      );
+    }
   }
 
   Future<SubtitleWhisperResult> transcribeWav(

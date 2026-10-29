@@ -6,6 +6,7 @@ import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
 
 import '../mpv/player/subtitle_pcm_capture_source.dart';
 import 'subtitle_ai_service.dart';
+import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_whisper_cpp_service.dart';
 import 'subtitle_word_timing.dart';
@@ -18,8 +19,8 @@ final class SubtitleLiveCaption {
   final String text;
 }
 
-/// Opt-in Android ExoPlayer caption capture. PCM remains in a bounded queue
-/// and is transcribed on-device; no recording file is created.
+/// Opt-in player-owned caption capture. PCM remains in a bounded queue and is
+/// transcribed locally; no recording file is created.
 final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   SubtitlePlaybackTranscriptionService._();
   static final SubtitlePlaybackTranscriptionService instance = SubtitlePlaybackTranscriptionService._();
@@ -49,6 +50,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   Object? _lastError;
   String _detectedLanguage = 'auto';
   String _languageCode = 'auto';
+  SubtitleInferenceProvider _requestedProvider = SubtitleInferenceProvider.cpu;
+  String _runtimeProvider = 'CPU';
+  bool _fellBackToCpu = false;
   double? _streamStartMs;
   int? _nextExpectedPtsUs;
   int? _lastSampleRate;
@@ -66,12 +70,19 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   String? get status => _status;
   SubtitleTranscriptionResult? get recentTranscript => _recentTranscript;
   bool get hasRecentTranscript => _recentTranscript?.cues.isNotEmpty == true;
+  SubtitleInferenceProvider get requestedProvider => _requestedProvider;
+  String get runtimeProvider => _runtimeProvider;
+  bool get fellBackToCpu => _fellBackToCpu;
 
   Future<void> start(
     SubtitlePcmCaptureSource player, {
     String? languageCode,
+    SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
+    if (provider != SubtitleInferenceProvider.cpu && provider != SubtitleInferenceProvider.desktopGpu) {
+      throw UnsupportedError('Playback Whisper captions support CPU or a compiled desktop GPU request.');
+    }
     final requestedLanguage = languageCode?.trim().toLowerCase().split(RegExp(r'[-_]')).first ?? '';
     final selectedLanguage = requestedLanguage.isEmpty ? 'auto' : requestedLanguage;
     if (selectedLanguage != 'auto' && !RegExp(r'^[a-z]{2,3}$').hasMatch(selectedLanguage)) {
@@ -93,13 +104,16 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _starting = true;
     final startGeneration = player.mediaSessionGeneration;
     final startAudioTrackId = player.subtitlePcmAudioTrackId;
-    whisper.FlutterWhisper? loadedSession;
+    SubtitleLiveWhisperRuntime? loadedRuntime;
     var captureEnabled = false;
     try {
       _setStatus('Loading the local Whisper model…');
       _lastError = null;
       _languageCode = selectedLanguage;
       _detectedLanguage = selectedLanguage;
+      _requestedProvider = provider;
+      _runtimeProvider = 'Loading Whisper';
+      _fellBackToCpu = false;
       _samples.clear();
       _cues.clear();
       _wordTimings.clear();
@@ -112,7 +126,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _recentTranscript = null;
       liveCaption.value = null;
 
-      loadedSession = await SubtitleWhisperCppService.instance.loadLiveCpuSession(
+      loadedRuntime = await SubtitleWhisperCppService.instance.loadLiveSession(
+        requestGpu: provider == SubtitleInferenceProvider.desktopGpu,
         onProgress: (phase, received, total) {
           onProgress?.call(phase, received, total);
           _setStatus(phase);
@@ -135,15 +150,17 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         throw StateError('Playback changed while live capture was starting. Start again on the current audio track.');
       }
 
-      _session = loadedSession;
-      loadedSession = null;
+      _session = loadedRuntime.session;
+      _runtimeProvider = loadedRuntime.runtimeProvider;
+      _fellBackToCpu = loadedRuntime.fellBackToCpu;
+      loadedRuntime = null;
       _player = player;
       _playerGeneration = startGeneration;
       _audioTrackId = startAudioTrackId;
       _running = true;
       _startedAt = DateTime.now();
       _lastPacketAt = null;
-      _setStatus('Capturing decoded audio locally; captions appear after a few seconds.');
+      _setStatus('Capturing decoded audio locally with $_runtimeProvider; captions appear after a few seconds.');
       _timer = Timer.periodic(const Duration(milliseconds: 250), (_) {
         _publishCurrentCaption();
         unawaited(_poll());
@@ -154,7 +171,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           await player.setSubtitlePcmCaptureEnabled(false);
         } catch (_) {}
       }
-      await loadedSession?.dispose();
+      await loadedRuntime?.session.dispose();
       _setStatus('Could not start live captions: $error');
       rethrow;
     } finally {
@@ -288,7 +305,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         _appendPackets(packets);
         _packetsReceived += packets.length;
         _lastPacketAt = DateTime.now();
-        _setStatus('Listening locally on CPU; captured $_packetsReceived audio packets.');
+        _setStatus('Listening locally with $_runtimeProvider; captured $_packetsReceived audio packets.');
       } else {
         final started = _startedAt;
         final lastPacket = _lastPacketAt;
@@ -415,9 +432,18 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _inferenceFuture = _transcribeWindow(session, samples, startMs, generation)
         .then<void>((_) {
           if (generation != _audioGeneration) return;
-          if (consume <= _samples.length) {
-            _samples.removeRange(0, consume);
-            _streamStartMs = (_streamStartMs ?? startMs.toDouble()) + consume * 1000.0 / _sampleRate;
+          // The bounded queue may trim samples while native inference is
+          // running. Advance to this window's intended stride by media time,
+          // not by blindly removing [consume] from the now-shifted queue.
+          final desiredNextStartMs = startMs + consume * 1000.0 / _sampleRate;
+          final queuedStartMs = _streamStartMs ?? startMs.toDouble();
+          final samplesToDrop = ((desiredNextStartMs - queuedStartMs) * _sampleRate / 1000.0)
+              .round()
+              .clamp(0, _samples.length)
+              .toInt();
+          if (samplesToDrop > 0) {
+            _samples.removeRange(0, samplesToDrop);
+            _streamStartMs = queuedStartMs + samplesToDrop * 1000.0 / _sampleRate;
           }
         })
         .catchError((Object error) {
@@ -443,16 +469,22 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     int generation,
   ) async {
     if (samples.length < _minimumFinalSamples) return;
-    final result = await session.transcribe(
-      samples,
-      config: whisper.WhisperTranscribeConfig(
-        language: _languageCode,
-        threads: 2,
-        tokenTimestamps: true,
-        splitOnWord: true,
-        noSpeechThreshold: 0.6,
-      ),
-    );
+    dynamic result;
+    try {
+      result = await _transcribeWindowResult(session, samples);
+    } on Object catch (error) {
+      if (!_isCurrentInference(generation)) return;
+      if (_requestedProvider != SubtitleInferenceProvider.desktopGpu ||
+          _fellBackToCpu ||
+          !identical(session, _session)) {
+        rethrow;
+      }
+      await _switchLiveInferenceToCpu(error);
+      final fallbackSession = _session;
+      if (fallbackSession == null || !_isCurrentInference(generation)) return;
+      result = await _transcribeWindowResult(fallbackSession, samples);
+    }
+    if (result == null) return;
     if (!_isCurrentInference(generation)) return;
     final language = result.language.trim();
     if (language.isNotEmpty && language.toLowerCase() != 'auto') _detectedLanguage = language;
@@ -472,6 +504,32 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _mergeCue(SubtitleCue(index: 0, startMs: start, endMs: end, text: text));
     }
   }
+
+  Future<void> _switchLiveInferenceToCpu(Object error) async {
+    final failedSession = _session;
+    _session = null;
+    await failedSession?.dispose();
+    final fallback = await SubtitleWhisperCppService.instance.loadLiveSession();
+    if (_invalidCaptureSessionReason(_player) != null) {
+      await fallback.session.dispose();
+      return;
+    }
+    _session = fallback.session;
+    _runtimeProvider = 'CPU (live GPU inference fallback)';
+    _fellBackToCpu = true;
+    _setStatus('GPU live inference failed; continuing with CPU Whisper: $error');
+  }
+
+  Future<dynamic> _transcribeWindowResult(whisper.FlutterWhisper session, Float32List samples) => session.transcribe(
+    samples,
+    config: whisper.WhisperTranscribeConfig(
+      language: _languageCode,
+      threads: 2,
+      tokenTimestamps: true,
+      splitOnWord: true,
+      noSpeechThreshold: 0.6,
+    ),
+  );
 
   void _mergeWordTiming(SubtitleWordTiming timing) {
     if (timing.text.isEmpty || timing.endMs <= timing.startMs) return;
@@ -537,9 +595,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _recentTranscript = SubtitleTranscriptionResult(
       cues: List.unmodifiable(_cues),
       durationMs: duration.clamp(1, SubtitleRetimer.maximumTimeMs).toInt(),
-      requestedProvider: SubtitleInferenceProvider.cpu,
-      runtimeProvider: 'Android ExoPlayer decoded PCM; whisper.cpp CPU',
-      fellBackToCpu: false,
+      requestedProvider: _requestedProvider,
+      runtimeProvider: 'Player decoded PCM; whisper.cpp $_runtimeProvider',
+      fellBackToCpu: _fellBackToCpu,
+      placementEvidence: _fellBackToCpu
+          ? SubtitlePlacementEvidence.cpuFallbackAfterAcceleratorUnavailable
+          : (_requestedProvider == SubtitleInferenceProvider.cpu
+                ? SubtitlePlacementEvidence.cpuOnlyConfigured
+                : SubtitlePlacementEvidence.acceleratorRequestSucceededButUnverified),
       detectedLanguage: _detectedLanguage,
       translatedToEnglish: false,
       wordTimings: SubtitleWordTimingBuilder.attachCueIndices(_wordTimings, _cues),

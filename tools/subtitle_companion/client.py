@@ -62,6 +62,11 @@ class CompanionClient:
         return f"/v1/jobs/{job_id}" + (f"/{action}" if action else "")
 
     def create(self, *, task, identity, media=None, **options):
+        if options.get('sceneObjectTracking', False):
+            caps = self.capabilities()
+            detector = caps.get('sceneObjectDetector')
+            if caps.get('sceneObjectTracking') is not True or not isinstance(detector, dict) or options.get('sceneDetectorFingerprint') != detector.get('fingerprint'):
+                raise ValueError('companion_scene_detector_changed_resubmit_after_review')
         if task == 'reading' and options.get('readingMode') == 'ruby' and 'ruby' not in self.capabilities().get('readingModes', []):
             raise ValueError('Companion cannot produce ruby reading markup')
         if options.get("lyricSyllables") or options.get("lyricPitchEvidence", False) or options.get("sceneMotionTracking", False) or options.get("sceneAudioEvidence", False) or options.get("sceneTemporalRegions", False) or options.get("timelineOffsetMs", 0) or options.get("itemTimeline", False) or options.get("soundStereoEvidence", False):

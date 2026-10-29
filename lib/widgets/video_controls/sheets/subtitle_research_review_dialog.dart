@@ -31,6 +31,7 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
     'lyricSyllableEvidence': 'Supplied syllable alignment', 'lyricPitchEvidence': 'Mix pitch candidates (unqualified)',
     'uncertainCueIds': 'Cues without an agreed word proposal', 'sceneRegionTracks': 'Sampled region paths',
     'sceneAudioEvidence': 'Audio sent with scene images', 'sceneMotionEvidence': 'Local motion tracking observations',
+    'sceneObjectEvidence': 'Local object classes and short-gap association',
     'synthesisEvidence': 'Synthesized line fitting and omissions',
   };
 

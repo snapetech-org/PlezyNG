@@ -26,6 +26,8 @@ class SubtitleHandoffService {
   bool get running => _server != null;
   List<String> get urls => _server == null ? [] : [for (final address in _addresses)
     Uri(scheme: 'http', host: address, port: _server!.port, path: '/$_token/').toString()];
+  List<({String title, String url})> get trackUrls => [for (final base in urls) for (var i = 0; i < _tracks.length; i++)
+    (title: _tracks[i].title, url: Uri.parse(base).resolve('track/$i.vtt').toString())];
   bool get _current {
     try { return _session?.current == true && _tracks.isNotEmpty && _tracks.every((t) => _session!.lanes.contains(t) && t.isCurrent()); }
     catch (_) { return false; }
@@ -43,9 +45,12 @@ class SubtitleHandoffService {
     _player = player; _session = SubtitleOverlayService.forPlayer(player); _tracks = List.unmodifiable(tracks);
     if (!_current) { await stop(); throw StateError('The selected subtitle session changed.'); }
     // Preflight both derived assets before opening a listener.
-    for (var i = 0; i < tracks.length; i++) { _asset(i); }
-    final server = await HttpServer.bind(InternetAddress.anyIPv4, 0, shared: false);
-    if (epoch != _generation || !_current) { await server.close(force: true); return; }
+    late HttpServer server;
+    try {
+      for (var i = 0; i < tracks.length; i++) { _asset(i); }
+      server = await HttpServer.bind(InternetAddress.anyIPv4, 0, shared: false);
+    } catch (_) { if (epoch == _generation) await stop(); rethrow; }
+    if (epoch != _generation || !_current) { await server.close(force: true); if (epoch == _generation) await stop(); return; }
     _token = base64UrlEncode(List.generate(32, (_) => Random.secure().nextInt(256))).replaceAll('=', '');
     _server = server; expires = DateTime.now().add(const Duration(hours: 1));
     _requests = 0; _rateWindow = DateTime.now();

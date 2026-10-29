@@ -875,3 +875,21 @@ can use them for stable placement at cue boundaries; authored sign regions stay
 fixed, and retimed cues lose stale scene evidence. The renderer also avoids
 authored signs and other app lanes using bounded layout estimates. No runtime,
 font-shaping, accessibility, HDR or target-output qualification was performed.
+
+## Owned-source companion upload and stereo evidence
+
+Companion generation can explicitly stage an eligible currently opened VOD file
+from the existing adapter/server analysis lease on all IO platforms. The transfer
+streams to temporary storage with a 1 GiB / one-hour / ten-minute limit, checks
+media identity and local-file mutation, uses only a local file or owned loopback
+gateway, and closes the lease on all paths. Playlists/live/DRM still need a decoder
+or a supported PCM path. No upstream URL or credentials go to the companion. The
+job binds the opened-part offset; generated cue/word/image times are shifted once
+onto the item clock, including after reconnect. Upload cancellation and normal
+operation cleanup remove the staged copy. Older hosts cannot accept this path.
+
+Sound-event jobs optionally report stereo-mix energy evidence. A rendered stereo
+track must show at least 6 dB side dominance in 80% of four or more half-second
+windows before a candidate says the mix is weighted left/right. This describes
+the entire downmix, not isolated-event location or a physical source direction.
+No sound localization or classifier accuracy has been measured.

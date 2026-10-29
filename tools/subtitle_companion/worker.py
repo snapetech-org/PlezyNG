@@ -336,6 +336,17 @@ def main():
             result = function(folder, job, audio, device)
     if not result["cues"]:
         raise ValueError("no_caption_evidence")
+    offset = job.get("timelineOffsetMs", 0)
+    if offset:
+        # Generation-only complete-part inputs begin at media time zero. The
+        # immutable job binds the item offset across reconnect and review.
+        for collection in ("cues", "wordTimings", "images", "soundEvidence"):
+            for item in result.get(collection, []):
+                for field in ("startMs", "endMs"):
+                    if field in item: item[field] += offset
+        result["durationMs"] += offset
+        result.setdefault("warnings", []).append(f"Generated times include the opened part offset of {offset} ms; output is on the item timeline.")
+    result["timelineOffsetMs"] = offset
     for index, cue in enumerate(result["cues"]):
         cue["index"] = index + 1
     if task in TEXT_TASKS:

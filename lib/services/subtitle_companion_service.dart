@@ -56,6 +56,7 @@ final class SubtitleCompanionService {
   final String scope;
   final Set<http.Client> _requests = {};
   bool _closed = false;
+  bool get isClosed => _closed;
   static final _digest = RegExp(r'^[0-9a-f]{64}$');
   static final _id = RegExp(r'^[0-9a-f]{32}$');
   static const maximumInputBytes = 1024 * 1024 * 1024;
@@ -187,7 +188,7 @@ final class SubtitleCompanionService {
 
   Future<String> submit({required String task, required String identityKey, String? mediaPath,
     List<SubtitleCue> cues = const [], String? language, String? targetLanguage,
-    bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0,
+    bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0, int timelineOffsetMs = 0, bool soundStereoEvidence = false,
     int finalBitmapDurationMs = 2000, double duckRatio = .25, String? voiceFingerprint,
     String translationMode = 'faithful', String scriptConversion = 's2t', String readingMode = 'hiragana',
     String? translationProviderFingerprint, String? visionProviderFingerprint, Map<String, String> glossary = const {},
@@ -197,6 +198,8 @@ final class SubtitleCompanionService {
     if (!_digest.hasMatch(identityKey)) throw const FormatException('A stable item identity is required.');
     final caps = await capabilities();
     if (!(caps['tasks'] as List).contains(task)) throw UnsupportedError('The companion has not installed the $task backend.');
+    if (timelineOffsetMs != 0 && caps['sourceTimelineOffsets'] != true) throw UnsupportedError('Update the companion to preserve source timeline offsets');
+    if (soundStereoEvidence && caps['soundStereoEvidence'] != true) throw UnsupportedError('Update the companion for stereo evidence');
     final input = mediaPath == null ? null : File(mediaPath);
     final length = input == null ? 0 : await input.length();
     if (length > maximumInputBytes || (!textTasks.contains(task) && length <= 0) || (textTasks.contains(task) && length != 0)) {
@@ -206,7 +209,7 @@ final class SubtitleCompanionService {
     final body = <String, Object?>{
       'task': task, 'identity': identityKey, 'audioDigest': audioDigest, 'audioBytes': length,
       'language': language, 'spokenLanguage': language, 'targetLanguage': targetLanguage,
-      'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop,
+      'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop, 'timelineOffsetMs': timelineOffsetMs, 'soundStereoEvidence': soundStereoEvidence,
       'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs, 'duckRatio': duckRatio, 'voiceFingerprint': voiceFingerprint,
       'translationMode': translationMode, 'scriptConversion': scriptConversion, 'readingMode': readingMode,
       'translationProviderFingerprint': translationProviderFingerprint, 'visionProviderFingerprint': visionProviderFingerprint, 'glossary': glossary,

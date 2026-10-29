@@ -324,3 +324,17 @@ happens only after the HF-model gate; exported quantization still needs its own
 quality/hardware qualification. Point `PLEZY_SECOND_WHISPER_MODEL` at a reviewed
 export for independent comparison before any deliberate host-model change.
 No training, model installation or evaluation was run while adding this code.
+
+### Owned-source uploads and source clocks
+
+Clients advertising `sourceTimelineOffsets` accept `timelineOffsetMs` for
+generation-only jobs, bound into the idempotency fingerprint. It represents a
+complete opened media part, not a seek into the uploaded bytes. Cue, word and
+image times in results include it exactly once. The Flutter client can stage
+complete VOD files through its source-owned gateway without sending playback
+URLs or credentials. Limits remain 1 GiB / one hour; playlists require a decoder.
+
+`soundStereoEvidence: true` on a sound-event job requests repeated stereo energy
+measurements. `soundEvidence` records downmix method, window count, median L/R
+dB difference and an explicit `eventLocalized: false`. This is not physical
+sound localization. The Python SDK checks support before using either extension.

@@ -46,6 +46,7 @@ import 'subtitle_study_dialog.dart';
 import 'subtitle_overlay_dialog.dart';
 import '../../../services/subtitle_overlay_service.dart';
 import '../../../services/subtitle_analysis_source.dart';
+import '../../../services/subtitle_source_upload.dart';
 import '../../../services/subtitle_read_ahead_service.dart';
 import 'subtitle_import_dialog.dart';
 import 'subtitle_bitmap_review_dialog.dart';
@@ -792,7 +793,31 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         cues = selected.$1;
       }
       String? path;
-      if (!textTask) {
+      var timelineOffsetMs = 0;
+      var useCurrentSource = false;
+      if (!textTask && cues.isEmpty && widget.openAnalysisSource != null && capabilities['sourceTimelineOffsets'] == true && task != 'bitmap_ocr' && mounted) {
+        final choice = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
+          title: const Text('Choose companion input'),
+          content: const Text('Use the current VOD file through its owning source transport, or choose a matching file. '
+            'The current-file option copies at most 1 GiB / one hour to temporary storage, then uploads after review. '
+            'It may use additional bandwidth and cannot copy a playlist, live stream or protected source.'),
+          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Choose a matching file')),
+            FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Use current source file'))]));
+        if (choice == null || !mounted) return;
+        useCurrentSource = choice;
+      }
+      if (useCurrentSource) {
+        _requireCurrentOperationIdentity();
+        bool current() { try { _requireCurrentOperationIdentity(); return mounted && !service.isClosed; } catch (_) { return false; } }
+        final source = await widget.openAnalysisSource!();
+        final copy = await SubtitleSourceUpload.stage(source, isCurrent: current, onProgress: (bytes, total) {
+          if (mounted) setState(() => _status = 'Preparing source upload: ${total == null ? "${bytes ~/ (1024 * 1024)} MiB" : "${(bytes * 100 / total).round()}%"}');
+        });
+        path = copy.file.path; timelineOffsetMs = copy.timelineOffsetMs;
+        _temporaryWavPaths.add(path);
+      }
+      if (!textTask && !useCurrentSource) {
         if (task == 'bitmap_ocr' && mounted) setState(() => _status = 'Choose PGS SUP, a video container, or a ZIP containing one matching VobSub IDX/SUB pair.');
         final selected = await FilePickerService.instance.pickFiles(type: FileType.any);
         if (selected == null || selected.files.isEmpty || !mounted) return;
@@ -810,6 +835,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       }
       if (!mounted) return;
       var preprocess = false;
+      var soundStereoEvidence = false;
       var duckRatio = .25;
       var track = 0;
       var subtitleTrack = 0, bitmapTail = 2000;
@@ -820,7 +846,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           title: Text('Send $task job to companion'),
           content: SizedBox(width: 560, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
             Text('Destination: ${service.endpoint}\n${path == null ? 'Subtitle text' : 'The selected media file'} will be uploaded and retained on this host until you delete the job. '
-                'No playback URL or media-server credentials are shared.'),
+                'No playback URL or media-server credentials are shared.${useCurrentSource ? " The opened part offset ($timelineOffsetMs ms) will be retained in generated cue times." : ""}'),
             if ({'ensemble', 'separate', 'sound_events', 'completeness', 'signs'}.contains(task))
               const Text('Experimental evidence: model suggestions need review. Separation is limited to five minutes and speaker numbering is local to each window. '
                 'Sound labels do not identify direction or a verified source. Recognition glossary keys are hints, not spelling guarantees.'),
@@ -875,6 +901,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 Slider(value: duckRatio, min: 0, max: 1, onChanged: (v) => update(() => duckRatio = v)),
               ],
             ],
+            if (task == 'sound_events' && capabilities['soundStereoEvidence'] == true) SwitchListTile(
+              title: const Text('Include stereo mix evidence'),
+              subtitle: const Text('Measures repeated left/right energy dominance in a stereo rendering. It cannot identify a sound’s physical direction or isolate it from the rest of the mix.'),
+              value: soundStereoEvidence, onChanged: (v) => update(() => soundStereoEvidence = v)),
             if (task == 'diarize') const Text('Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.'),
             if (path != null && task != 'ocr' && task != 'bitmap_ocr') ...[
               DropdownButtonFormField<int>(initialValue: track, decoration: const InputDecoration(labelText: 'Audio stream (zero based)'),
@@ -914,7 +944,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
         targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
-        preprocess: preprocess, audioTrack: track, crop: [0, cropTop, 1, 1 - cropTop],
+        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, soundStereoEvidence: soundStereoEvidence, crop: [0, cropTop, 1, 1 - cropTop],
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         voiceFingerprint: (task == 'dubbing' || task == 'dub_mix') ? (capabilities['synthesisVoice'] as Map?)?['fingerprint'] as String? : null,
         translationMode: translationMode, scriptConversion: scriptConversion, readingMode: readingMode,

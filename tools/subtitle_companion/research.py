@@ -124,6 +124,47 @@ def separate(folder, job, audio, device, progress, recognize):
                 'Speaker numbering restarts in every 8-second window. Voice identity and separation quality have not been evaluated.']}
 
 
+def stereo_evidence(folder, job, events):
+    """Measure the stereo rendering of the selected audio, never physical origin.
+
+    A classifier observes a mixed signal; energy balance is not event separation
+    or a localization estimate. Require repeated same-side non-silent windows.
+    """
+    from worker import FORMATS
+    import numpy as np
+    target = folder / 'sound_stereo.wav'
+    command = [os.environ.get('PLEZY_FFMPEG', 'ffmpeg'), '-nostdin', '-hide_banner', '-loglevel', 'error', '-y',
+        '-protocol_whitelist', 'file,pipe', '-format_whitelist', FORMATS,
+        '-i', str(folder / 'input.media'), '-map', f'0:a:{job["audioTrack"]}', '-vn', '-sn',
+        '-ac', '2', '-ar', '16000', '-t', '3600.1', '-c:a', 'pcm_s16le', '-f', 'wav', str(target)]
+    try:
+        result = subprocess.run(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL, timeout=1800)
+        if result.returncode: raise ValueError('stereo_evidence_decode_failed')
+        with wave.open(str(target), 'rb') as stream:
+            if stream.getnchannels() != 2 or stream.getsampwidth() != 2 or stream.getframerate() != 16000 or stream.getnframes() > 3600 * 16000:
+                raise ValueError('stereo_evidence_duration_or_layout')
+            for event in events:
+                balances = []
+                for ms in range(event['startMs'], event['endMs'], 500):
+                    frame = ms * 16
+                    if frame >= stream.getnframes(): break
+                    stream.setpos(frame)
+                    data = np.frombuffer(stream.readframes(min(8000, (event['endMs'] - ms) * 16)), dtype='<i2').reshape(-1, 2).astype(np.float64) / 32768
+                    if len(data) < 1600: continue
+                    power = np.mean(data * data, axis=0)
+                    if max(power) < 1e-6: continue
+                    balances.append(10 * math.log10((float(power[0]) + 1e-12) / (float(power[1]) + 1e-12)))
+                if len(balances) < 4: continue
+                left = sum(value >= 6 for value in balances) / len(balances)
+                right = sum(value <= -6 for value in balances) / len(balances)
+                side = 'left' if left >= .8 else 'right' if right >= .8 else 'indeterminate'
+                event['stereoEvidence'] = {'rendering': 'ffmpeg-stereo-downmix', 'halfSecondWindows': len(balances),
+                    'medianLeftMinusRightDb': round(float(np.median(balances)), 2), 'mixSide': side,
+                    'eventLocalized': False, 'qualification': 'unverified'}
+    finally: target.unlink(missing_ok=True)
+
+
 def sound_events(folder, job, audio, device, progress, recognize):
     from transformers import pipeline
     path = model_directory('PLEZY_SOUND_MODEL')
@@ -147,15 +188,17 @@ def sound_events(folder, job, audio, device, progress, recognize):
             active = {'label': label, 'startMs': a, 'endMs': b, 'observations': 1, 'score': score} if label else None
         progress(folder, 'Classifying repeated sound-event candidates', start / len(audio))
     if active and active['observations'] >= 2: events.append(active)
+    if job.get('soundStereoEvidence'): stereo_evidence(folder, job, events)
     cues = []
     for event in events:
-        text = '[Possible sound: ' + event['label'] + ']'
+        side = event.get('stereoEvidence', {}).get('mixSide', 'indeterminate')
+        text = '[Possible sound: ' + event['label'] + (f'; audio mix weighted {side}' if side != 'indeterminate' else '') + ']'
         cue = {**event, 'text': text, 'cueId': hashlib.sha256(f'{job["audioDigest"]}:{event}'.encode()).hexdigest()}
         cues.append(cue)
     return {'cues': cues, 'wordTimings': [], 'language': 'en', 'durationMs': round(len(audio) / 16),
-        'model': 'audio-classification ' + path.name, 'warnings': [
+        'model': 'audio-classification ' + path.name, 'soundEvidence': events, 'warnings': [
             'Experimental sound-event candidates require two overlapping windows at score ≥0.8. Scores are not calibrated accuracy.',
-            'These are separate from spoken dialogue. Mono analysis cannot determine spatial direction or verify a sound source.']}
+            'These are separate from dialogue. Optional stereo evidence describes the complete downmixed audio, not the event’s physical direction or isolated source. Stable 6 dB side dominance in 80% of at least four windows is heuristic, not localization accuracy.']}
 
 
 def extract_text(folder, job, progress):

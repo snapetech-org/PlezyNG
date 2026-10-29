@@ -62,6 +62,12 @@ class CompanionClient:
         return f"/v1/jobs/{job_id}" + (f"/{action}" if action else "")
 
     def create(self, *, task, identity, media=None, **options):
+        if options.get("timelineOffsetMs", 0) or options.get("soundStereoEvidence", False):
+            caps = self.capabilities()
+            if options.get("timelineOffsetMs", 0) and caps.get("sourceTimelineOffsets") is not True:
+                raise ValueError("Companion cannot preserve source timeline offsets")
+            if options.get("soundStereoEvidence", False) and caps.get("soundStereoEvidence") is not True:
+                raise ValueError("Companion cannot return stereo evidence")
         path = None if media is None else Path(media)
         digest = hashlib.sha256()
         size = 0

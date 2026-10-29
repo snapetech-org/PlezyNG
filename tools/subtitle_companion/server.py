@@ -151,6 +151,14 @@ class Store:
                 raise ValueError("voice_changed_resubmit_after_review")
             if len(cues) > 500 or max(c["endMs"] for c in cues) > 600000:
                 raise ValueError("dubbing_limit_ten_minutes_five_hundred_cues")
+        stereo_evidence = value.get("soundStereoEvidence", False)
+        if type(stereo_evidence) is not bool or stereo_evidence and task != "sound_events":
+            raise ValueError("invalid_sound_stereo_evidence")
+        timeline_offset = value.get("timelineOffsetMs", 0)
+        if type(timeline_offset) is not int or not 0 <= timeline_offset <= 7 * 3600000:
+            raise ValueError("invalid_source_time_offset")
+        if timeline_offset and task not in {"transcribe", "diarize", "ensemble", "separate", "sound_events", "extract_text", "ocr", "ocr_auto", "signs", "bitmap_ocr"}:
+            raise ValueError("source_time_offset_requires_generation_task")
         track = value.get("audioTrack", 0)
         if type(track) is not int or not 0 <= track <= 63:
             raise ValueError("invalid_audio_track")
@@ -199,7 +207,7 @@ class Store:
         with self.lock:
             canonical = {"task": task, "identity": value["identity"], "audioDigest": value["audioDigest"],
                          "audioBytes": size, "language": language, "targetLanguage": target,
-                         "cues": cues, "audioTrack": track, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
+                         "cues": cues, "audioTrack": track, "timelineOffsetMs": timeline_offset, "soundStereoEvidence": stereo_evidence, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
                          "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint,
@@ -397,7 +405,7 @@ class Handler(BaseHTTPRequestHandler):
                 tasks.append("extract_text")
                 if vision is not None: tasks.append("scene_review")
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
-                             "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS,
+                             "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True,
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
                              "visionProvider": vision, "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES),
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})

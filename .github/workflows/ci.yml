@@ -696,7 +696,8 @@ jobs:
             -disableAutomaticPackageResolution \
             -resultBundlePath "$result_bundle" \
             CODE_SIGNING_ALLOWED=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            ARCHS=arm64
           test_status=$?
           set -e
           if [ "$test_status" -ne 0 ]; then

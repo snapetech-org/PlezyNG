@@ -33,6 +33,7 @@ import '../../../services/subtitle_text_importer.dart';
 import '../../../services/subtitle_discovery_service.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_playback_transcription_service.dart';
+import '../../../services/subtitle_online_recognizer.dart';
 import '../../../services/subtitle_revision_service.dart';
 import '../../../utils/provider_extensions.dart';
 import '../../../widgets/app_icon.dart';
@@ -218,6 +219,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   String? _revisionStatus;
   SubtitleInferenceProvider _provider = SubtitleInferenceProvider.cpu;
   SubtitleInferenceProvider _liveProvider = SubtitleInferenceProvider.cpu;
+  String? _streamingModelManifest;
   String _speechLanguageCode = 'auto';
   TranslateLanguage _sourceLanguage = TranslateLanguage.english;
   TranslateLanguage _targetLanguage = TranslateLanguage.spanish;
@@ -1397,7 +1399,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     await service.start(
       captureSource,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
-      provider: _liveProvider,
+      provider: _streamingModelManifest == null ? _liveProvider : SubtitleInferenceProvider.cpu,
+      streamingManifest: _streamingModelManifest,
       isProfileIdentityCurrent: () => profiles.activeId == profileId,
       onProgress: (phase, received, total) {
         if (!mounted) return;
@@ -3923,7 +3926,20 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (liveProviders.length > 1) ...[
+                    if (SubtitleOnlineRecognizer.supported) ...[
+                      TextButton(onPressed: _busy || service.isStarting || service.hasActiveSession ? null : () => unawaited(_run(() async {
+                        final result = await FilePickerService.instance.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
+                        final path = result?.files.single.path;
+                        if (mounted && path != null) setState(() => _streamingModelManifest = path);
+                      })), child: const Text('Choose a local streaming-model manifest')),
+                      if (_streamingModelManifest != null) ...[
+                        Text('Streaming CPU model: ${p.basename(_streamingModelManifest!)}. Uses the manifest’s declared language. '
+                          'Partial text can change. Final cue times cover decoder utterance windows; no word alignment is claimed.'),
+                        TextButton(onPressed: _busy || service.isStarting || service.hasActiveSession ? null :
+                          () => setState(() => _streamingModelManifest = null), child: const Text('Use multilingual Whisper')),
+                      ],
+                    ],
+                    if (_streamingModelManifest == null && liveProviders.length > 1) ...[
                       InputDecorator(
                         decoration: const InputDecoration(
                           labelText: 'Live captions backend',
@@ -3948,7 +3964,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                         ),
                       ),
                       const SizedBox(height: 6),
-                    ] else
+                    ] else if (_streamingModelManifest == null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),
                         child: Text(
@@ -3956,7 +3972,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
-                    SwitchListTile(title: const Text('Stabilize live partial captions'),
+                    if (_streamingModelManifest == null) SwitchListTile(title: const Text('Stabilize live partial captions'),
                       subtitle: const Text('Compare overlapping recognition passes before freezing text. Partial text can change and is excluded from history; pause/end and 12-second boundaries may finalize a single pass. Uses more inference work.'),
                       value: service.stableStreaming,
                       onChanged: service.isStarting || service.hasActiveSession ? null : service.setStableStreaming),
@@ -3993,10 +4009,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       ),
                       subtitle: Text(
                         service.isStarting
-                            ? 'Loading the local Whisper model'
+                            ? 'Loading the local recognition model'
                             : (service.isRunning || service.hasActiveSession)
                             ? 'Stop capture and retain the transcript for sync'
-                            : 'This player session; downloads the local Whisper model on first use',
+                            : _streamingModelManifest == null
+                            ? 'This player session; downloads the local Whisper model on first use'
+                            : 'This player session; verifies and loads the selected local streaming model',
                       ),
                       onTap: (_busy || service.isStarting) ? null : () => unawaited(_captureLivePlayback()),
                     ),

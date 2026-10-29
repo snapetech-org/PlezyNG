@@ -12,6 +12,7 @@ import 'subtitle_retimer.dart';
 import 'subtitle_whisper_cpp_service.dart';
 import 'subtitle_word_timing.dart';
 import 'subtitle_stream_stabilizer.dart';
+import 'subtitle_online_recognizer.dart';
 
 @immutable
 final class SubtitleLiveCaption {
@@ -47,6 +48,11 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   String? _audioTrackId;
   bool Function()? _isProfileIdentityCurrent;
   whisper.FlutterWhisper? _session;
+  SubtitleOnlineRecognizer? _online;
+  int _onlineGeneration = -1, _onlineBaseMs = 0;
+  int? _onlineOrigin;
+  bool _onlinePending = false;
+  String? _onlineModelDigest;
   SubtitleModelLease? _modelLease;
   String? _resourceStopReason;
   Future<SubtitleTranscriptionResult?>? _stopping;
@@ -88,12 +94,13 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   bool get stableStreaming => _stableStreaming;
   int get singlePassTails => _singlePassTails;
   void setStableStreaming(bool value) {
-    if (_starting || _running || _session != null) return;
+    if (_starting || _running || hasActiveSession) return;
     _stableStreaming = value; notifyListeners();
   }
   void _resetPartial() {
     _stabilizer.reset(); _lastStreamingEndMs = null;
     _partialCaption = null; _partialExpires = null;
+    _onlinePending = false;
   }
 
   /// A live caption can arrive after its media interval has passed. This is
@@ -113,7 +120,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
   bool get isRunning => _running;
   bool get isStarting => _starting;
-  bool get hasActiveSession => _session != null;
+  bool get hasActiveSession => _session != null || _online != null;
   String? get status => _status;
   SubtitleTranscriptionResult? get recentTranscript => _recentTranscript;
   bool get hasRecentTranscript => _recentTranscript?.cues.isNotEmpty == true;
@@ -127,7 +134,11 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu,
     bool Function()? isProfileIdentityCurrent,
     void Function(String phase, int received, int total)? onProgress,
+    String? streamingManifest,
   }) async {
+    if (streamingManifest != null && provider != SubtitleInferenceProvider.cpu) {
+      throw UnsupportedError('The local streaming recognizer currently uses CPU.');
+    }
     if (provider != SubtitleInferenceProvider.cpu && provider != SubtitleInferenceProvider.desktopGpu) {
       throw UnsupportedError('Playback Whisper captions support CPU or a compiled desktop GPU request.');
     }
@@ -136,13 +147,13 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (selectedLanguage != 'auto' && !RegExp(r'^[a-z]{2,3}$').hasMatch(selectedLanguage)) {
       throw ArgumentError.value(languageCode, 'languageCode', 'Use a two or three letter language code or auto.');
     }
-    if (_starting || _running || _session != null || _stopping != null) {
+    if (_starting || _running || hasActiveSession || _stopping != null) {
       throw StateError('A live subtitle capture session is already active.');
     }
     if (!await player.subtitlePcmCaptureAvailable()) {
       throw UnsupportedError('This player build does not expose decoded PCM to live subtitles.');
     }
-    if (_starting || _running || _session != null || _stopping != null) {
+    if (_starting || _running || hasActiveSession || _stopping != null) {
       throw StateError('A live subtitle capture session is already active.');
     }
 
@@ -153,6 +164,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     final startTimelineGeneration = player.playbackTimelineGeneration;
     final startAudioTrackId = player.subtitlePcmAudioTrackId;
     SubtitleLiveWhisperRuntime? loadedRuntime;
+    SubtitleOnlineRecognizer? loadedOnline;
     var captureEnabled = false;
     try {
       _resourceStopReason = null;
@@ -161,13 +173,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           player.subtitlePcmAudioTrackId == startAudioTrackId && _profileIsCurrent(isProfileIdentityCurrent);
       _modelLease = await SubtitleInferenceScheduler.instance.reserveModel(this,
         isCurrent: current, onReleaseRequested: _releaseForResources);
-      _setStatus('Loading the local Whisper model…');
+      _setStatus(streamingManifest == null ? 'Loading the local Whisper model…' : 'Verifying and loading the local streaming model…');
       _lastError = null;
       _languageCode = selectedLanguage;
       _detectedLanguage = selectedLanguage;
       _requestedProvider = provider;
-      _runtimeProvider = 'Loading Whisper';
+      _runtimeProvider = 'Loading local recognition';
       _fellBackToCpu = false;
+      _onlineGeneration = -1; _onlineModelDigest = null;
       _samples.clear();
       _resetPartial(); _singlePassTails = 0;
       _cues.clear();
@@ -186,23 +199,28 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _recentTranscript = null;
       liveCaption.value = null;
 
-      loadedRuntime = await SubtitleInferenceScheduler.instance.run(() => SubtitleWhisperCppService.instance.loadLiveSession(
+      if (streamingManifest != null) {
+        loadedOnline = await SubtitleInferenceScheduler.instance.run(() => SubtitleOnlineRecognizer.open(streamingManifest),
+          priority: SubtitleWorkPriority.playback, modelOwner: this, isCurrent: current);
+      } else {
+        loadedRuntime = await SubtitleInferenceScheduler.instance.run(() => SubtitleWhisperCppService.instance.loadLiveSession(
         requestGpu: provider == SubtitleInferenceProvider.desktopGpu,
         onProgress: (phase, received, total) {
           onProgress?.call(phase, received, total);
           _setStatus(phase);
         },
       ), priority: SubtitleWorkPriority.playback, modelOwner: this, isCurrent: current);
+      }
       if (_startCancelled) throw StateError('Live subtitle startup was cancelled.');
       if (_modelLease?.revoked == true) throw SubtitleInferenceDeferred(_resourceStopReason ?? 'Model loading was stopped to release resources.');
       if (player.disposed ||
           player.mediaSessionGeneration != startGeneration ||
           player.playbackTimelineGeneration != startTimelineGeneration ||
           player.subtitlePcmAudioTrackId != startAudioTrackId) {
-        throw StateError('Playback changed while Whisper was loading. Start live captions again.');
+        throw StateError('Playback changed while the model was loading. Start live captions again.');
       }
       if (!_profileIsCurrent(isProfileIdentityCurrent)) {
-        throw StateError('The active profile changed while Whisper was loading. Start live captions again.');
+        throw StateError('The active profile changed while the model was loading. Start live captions again.');
       }
       captureEnabled = await player.setSubtitlePcmCaptureEnabled(true);
       if (!captureEnabled) {
@@ -220,10 +238,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
       if (_startCancelled) throw StateError('Live subtitle startup was cancelled.');
       if (_modelLease?.revoked == true) throw SubtitleInferenceDeferred(_resourceStopReason ?? 'Live captions were stopped to release resources.');
-      _session = loadedRuntime.session;
-      _runtimeProvider = loadedRuntime.runtimeProvider;
-      _fellBackToCpu = loadedRuntime.fellBackToCpu;
+      _session = loadedRuntime?.session;
+      _online = loadedOnline;
+      _runtimeProvider = loadedOnline == null ? loadedRuntime!.runtimeProvider : 'Sherpa Zipformer2 streaming CPU';
+      _fellBackToCpu = loadedRuntime?.fellBackToCpu ?? false;
+      _onlineModelDigest = loadedOnline?.modelDigest;
+      if (loadedOnline != null) _detectedLanguage = loadedOnline.language;
       loadedRuntime = null;
+      loadedOnline = null;
       _player = player;
       _playerGeneration = startGeneration;
       _playerTimelineGeneration = startTimelineGeneration;
@@ -243,7 +265,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           await player.setSubtitlePcmCaptureEnabled(false);
         } catch (_) {}
       }
-      try { await loadedRuntime?.session.dispose(); } finally { _modelLease?.release(); _modelLease = null; }
+      try { await loadedRuntime?.session.dispose(); await loadedOnline?.dispose(); }
+      finally { _modelLease?.release(); _modelLease = null; }
       _setStatus('Could not start live captions: $error');
       rethrow;
     } finally {
@@ -306,9 +329,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     while (invalidReason == null &&
         _resourceStopReason == null &&
         _lastError == null &&
-        _samples.length >= _windowSamples &&
+        (_online != null ? _samples.isNotEmpty : _samples.length >= _windowSamples) &&
         _invalidCaptureSessionReason(player) == null) {
-      _startInference(finalChunk: false);
+      _startInference(finalChunk: _online != null && _samples.length < 1600);
       final inference = _inferenceFuture;
       if (inference == null) break;
       await inference;
@@ -318,7 +341,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (invalidReason == null &&
         _resourceStopReason == null &&
         _lastError == null &&
-        _samples.length >= _minimumFinalSamples &&
+        (_online != null ? _samples.isNotEmpty || _onlinePending : _samples.length >= _minimumFinalSamples) &&
         _invalidCaptureSessionReason(player) == null) {
       _startInference(finalChunk: true);
       final inference = _inferenceFuture;
@@ -329,8 +352,11 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
     if (invalidReason == null) _publishTranscript();
     final session = _session;
+    final online = _online;
     _session = null;
-    try { if (session != null) await session.dispose(); } finally { _modelLease?.release(); _modelLease = null; }
+    _online = null;
+    try { if (session != null) await session.dispose(); await online?.dispose(); }
+    finally { _modelLease?.release(); _modelLease = null; }
     _player = null;
     _playerGeneration = null;
     _playerTimelineGeneration = null;
@@ -472,7 +498,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       // submitting the same overlap. Packet age is not a source timestamp.
       if (_lastPacketAt != null &&
           DateTime.now().difference(_lastPacketAt!) > const Duration(seconds: 2) &&
-          _samples.length >= _minimumFinalSamples && (_stableStreaming || _samples.length < _windowSamples)) {
+          (_online != null ? _samples.isNotEmpty || _onlinePending :
+            _samples.length >= _minimumFinalSamples && (_stableStreaming || _samples.length < _windowSamples))) {
         _startInference(finalChunk: true);
       }
     } catch (error) {
@@ -625,6 +652,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   void _startInference({required bool finalChunk}) {
+    if (_online != null) { _startOnlineInference(finalChunk: finalChunk); return; }
     if (_inferenceFuture != null || _session == null || _streamStartMs == null) return;
     final minimum = _stableStreaming ? _sampleRate * 2 : _windowSamples;
     if (_samples.length < minimum && !(finalChunk && _samples.length >= _minimumFinalSamples)) return;
@@ -677,6 +705,52 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           _publishTranscript();
           if (_running && _isCurrentInference(generation)) _startInference(finalChunk: false);
         });
+  }
+
+  void _startOnlineInference({required bool finalChunk}) {
+    final online = _online;
+    if (_inferenceFuture != null || online == null || _streamStartMs == null ||
+        (finalChunk ? _samples.isEmpty && !_onlinePending : _samples.length < 1600)) return;
+    final generation = _audioGeneration;
+    final reset = _onlineGeneration != generation;
+    if (reset) {
+      _onlineGeneration = generation; _onlineBaseMs = _streamStartMs!.round();
+      _onlineOrigin = _clockOriginUs;
+    }
+    final count = math.min(_sampleRate, _samples.length);
+    final samples = Float32List.fromList(_samples.take(count).toList(growable: false));
+    _samples.removeRange(0, count);
+    _streamStartMs = _streamStartMs! + count * 1000 / _sampleRate;
+    final finish = finalChunk && _samples.isEmpty;
+    _inferenceFuture = SubtitleInferenceScheduler.instance.run(
+      () => online.accept(samples, reset: reset, finish: finish),
+      priority: SubtitleWorkPriority.playback, modelOwner: this,
+      isCurrent: () => identical(_online, online) && _isCurrentInference(generation),
+    ).then<void>((result) {
+      if (!_isCurrentInference(generation)) return;
+      final base = _onlineBaseMs + _originShiftMs(_onlineOrigin);
+      _onlinePending = result['pending'] == true;
+      for (final value in result['cues'] as List) {
+        final start = base + (value['startMs'] as int), end = base + (value['endMs'] as int);
+        if (start < 0 || end <= start || end > SubtitleRetimer.maximumTimeMs) continue;
+        _mergeCue(SubtitleCue(index: 0, startMs: start, endMs: end, text: value['text'] as String));
+      }
+      final partial = result['partial'] as String;
+      final start = base + (result['startMs'] as int), end = base + (result['endMs'] as int);
+      _partialCaption = partial.isEmpty || start < 0 || end <= start ? null :
+        SubtitleLiveCaption(startMs: start, endMs: end, text: partial, provisional: true);
+      _partialExpires = DateTime.now().add(const Duration(seconds: 4));
+      _publishCurrentCaption();
+    }).catchError((Object error) {
+      if (!_isCurrentInference(generation) && error is! SubtitleInferenceDeferred) return;
+      if (error is SubtitleInferenceDeferred) { _releaseForResources(error.reason); return; }
+      _lastError = error; _running = false; _timer?.cancel(); _timer = null;
+      _setStatus('Streaming recognition failed: $error');
+      unawaited(stop().then<void>((_) {}, onError: (Object error, StackTrace stack) {}));
+    }).whenComplete(() {
+      _inferenceFuture = null; _publishTranscript();
+      if (_running && _isCurrentInference(generation)) _startInference(finalChunk: false);
+    });
   }
 
   Future<void> _transcribeWindow(
@@ -837,7 +911,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       cues: List.unmodifiable(_cues),
       durationMs: duration.clamp(1, SubtitleRetimer.maximumTimeMs).toInt(),
       requestedProvider: _requestedProvider,
-      runtimeProvider: 'Player decoded PCM; whisper.cpp $_runtimeProvider',
+      runtimeProvider: _onlineModelDigest == null ? 'Player decoded PCM; whisper.cpp $_runtimeProvider' :
+        'Player decoded PCM; $_runtimeProvider; manifest SHA-256 $_onlineModelDigest; endpoint-window timing (no word alignment)',
       fellBackToCpu: _fellBackToCpu,
       placementEvidence: _fellBackToCpu
           ? SubtitlePlacementEvidence.cpuFallbackAfterAcceleratorUnavailable

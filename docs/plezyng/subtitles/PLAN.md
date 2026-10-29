@@ -21,7 +21,7 @@ with `[skip ci]`. Existing native dependency pins were not fabricated or promote
 | Area | Implemented source paths | Remaining boundary |
 | --- | --- | --- |
 | Transcription and translation | Local whisper.cpp CPU/optional compiled desktop CUDA/Vulkan; Sherpa provider requests with fallback; ML Kit and desktop Argos; selected-range work; durable WAV jobs; reviewed glossary/memory/model translation; cross-language sync and word timings. | Runtime/provider reports do not prove per-operation GPU/NPU execution. TV/accelerator packages and language quality need qualification. |
-| Live/DVR | Ordered PCM consumption, seek generation retirement, immutable finalized cues, bounded retained history, ExoPlayer source-frame clocks and moving DVR origin rebasing; late/provisional text, overlapping stable-prefix agreement, backend-grid DVR delay and opt-in delay hold; completed-HLS-segment analysis with desktop/TV playlists and mobile snapshots; bounded reconnect backoff, backward program-time anchoring within a continuity run and expiry against fresh DVR bounds. | No unrestricted future-audio live ingestion or engine-native incremental decoding. HLS requires explicit program timestamps, an active possibly estimated playback epoch and a capable local decoder. Native mobile snapshots accept bounded TS, relative fMP4 and packed AAC; OS codec/container support and clock/output behavior remain unqualified. Delay hold moves the viewer within backend bounds. |
+| Live/DVR | Ordered PCM consumption, seek generation retirement, immutable finalized cues, bounded retained history, ExoPlayer source-frame clocks and moving DVR origin rebasing; late/provisional text, overlapping stable-prefix agreement, backend-grid DVR delay and opt-in delay hold; completed-HLS-segment analysis with desktop/TV playlists and mobile snapshots; bounded reconnect backoff, backward program-time anchoring within a continuity run and expiry against fresh DVR bounds. | Opt-in Sherpa Zipformer2 native streaming CPU recognition now retains state across PCM chunks with endpoint/provisional output. Its user-provided local model pack and runtime behavior need qualification; unrestricted future-audio ingestion remains unavailable. HLS requires explicit program timestamps, an active possibly estimated playback epoch and a capable local decoder. Native mobile snapshots accept bounded TS, relative fMP4 and packed AAC; OS codec/container support and clock/output behavior remain unqualified. Delay hold moves the viewer within backend bounds. |
 | Playback/source access | Android Media3 pre-speed PCM processor; native MPV bridges; Tizen tap; Android MediaExtractor/MediaCodec and Apple AVAssetReader analysis bridges plus desktop FFmpeg read-ahead via renewable standalone/library source leases; explicit companion staging of eligible current VOD files on IO platforms. | Current locked MPV libraries lack the ordered ABI. webOS NDL has no direct PCM tap; there is no browser Player. Android/Apple native readers and source-built Tizen/webOS audio helpers are implemented. Native format support, TV subprocess policy, shipped helper artifacts and device behavior remain unqualified. Companion staging is limited to complete, accessible files up to 1 GiB/one hour; playlists/live/protected sources are refused. |
 | Import and attachment | Existing format conversion/archive/drop/share flows; Plex/Jellyfin/Emby upload; managed standalone native text attachment; adapter-owned folder discovery for local/network/cloud sources; standard DLNA resources and namespaced SEC/PV caption links. | Backend format limits still apply. Non-MPV attachment refuses saved affine corrections. Unlisted catalogue sources, unsupported vendor formats and ambiguous renewed DLNA resource identities remain limited; protocol/device behavior is unqualified. |
 | App rendering | Two independent text lanes, profile/lane appearance defaults, bundled/imported/script fallback fonts, original word highlights, authored signs, optional scene avoidance, manual cover, focused-pane limits, horizontal ruby, bounded vertical left/right columns, and spoken subtitles with explicit duck/rate. Centered contain/cover/stretch/zoom geometry and screen/video anchoring are implemented. | App layout does not implement full native ASS, OpenType vertical shaping or new closed-caption service semantics. Ruby/highlighting remain horizontal. HDR luminance, typography, rotation/output behavior and localized new controls remain unqualified or unfinished. |
@@ -372,7 +372,7 @@ All entries below are target requirements unless explicitly marked Existing. Exi
 | --- | --- | --- |
 | A01 | PR #53 produces timed cues from a matching WAV with multilingual whisper.cpp CPU inference, and supports opt-in rolling Android ExoPlayer VOD capture from decoded PCM. Tizen source cross-compiles the same Whisper bridge for CPU and connects its native decoded-PCM callback; webOS source packages the CPU bridge for WAV-only transcription. Both TV builds and qualification are pending. Whisper can translate WAV speech into English. The English-only Sherpa Moonshine path supports Core ML/QNN/RKNN requests. | M4 |
 | A02 | VOD read-ahead emits a bounded cue stream and reprioritizes after seeks. | M4 |
-| A03 | Android Media3, Tizen and native MPV source bridges expose decoded PCM where the current codec/output route permits it. The shared live service retires seeks/discontinuities, retains bounded finalized history and compares overlapping recognition prefixes for provisional/final display. MPV requires newly built ordered-ABI packages on desktop/Apple/Android. webOS NDL has no direct tap and browser playback is not implemented. Separate source analysis is available on declared paths. True engine-native incremental recognition, performance/latency guarantees and device qualification remain open. | M6 |
+| A03 | Android Media3, Tizen and native MPV source bridges expose decoded PCM where the current codec/output route permits it. The shared live service retires seeks/discontinuities, retains bounded finalized history and compares overlapping recognition prefixes for provisional/final display. MPV requires newly built ordered-ABI packages on desktop/Apple/Android. webOS NDL has no direct tap and browser playback is not implemented. Separate source analysis is available on declared paths. Optional local Zipformer2 engine-native streaming recognition is implemented on Sherpa-packaged platforms; performance/latency guarantees and device qualification remain open. | M6 |
 | A04 | Delayed-live mode holds playback with explicit latency selection and DVR-window handling. | M6 |
 | A05 | Whisper auto-detects by default and now accepts an optional language override for WAV and Android ExoPlayer PCM capture; the requested language is carried into results when recognition does not report one, and the selection is saved per profile. Persistent uncertainty/confidence policy and language-specific model selection remain open. | M4 |
 | A06 | Sherpa's Moonshine path uses Silero VAD; Whisper configures a no-speech threshold. Fixture-based silence/music/repetition qualification remains open. | M4 |
@@ -1303,3 +1303,39 @@ References: [Matroska elements](https://www.matroska.org/technical/elements.html
 Confidence: moderate in the inspected source integration; runtime, malformed
 container handling and native font behavior remain unqualified. No tests,
 analyzers, formatters, builds or CI were run.
+
+## Native incremental streaming recognition
+
+Live-capture controls can select a local Zipformer2 transducer manifest on
+Android, iOS, macOS, Windows and Linux. This optional CPU route uses the pinned
+Sherpa 2.0.1 OnlineRecognizer with one persistent worker isolate. Ordered PCM
+is submitted once in at most one-second requests, decoded in 100 ms increments,
+and finalized at native endpoints. Pause/stop supplies bounded decoder context
+without advancing source time. Provisional text is excluded from saved history.
+Seeks, discontinuities and queue overflow retire the generation; new input uses
+a fresh native stream. Moving DVR origins rebase presentation without replaying
+already-consumed samples. A 60-second stream lifetime bounds feature retention.
+The existing resident-model lease, inference scheduler and resource release
+policy also own this worker. Native calls are synchronous within that worker;
+a step/time budget detects overruns between calls, not a hard preemption guarantee.
+
+Cue boundaries cover actual submitted utterance windows including endpoint
+silence. They are not forced-aligned words. The result records the configured
+CPU route and manifest digest; language comes from the model manifest rather
+than an automatic language detector. Whisper remains the default, separate
+multilingual route. No downloaded pack is silently activated.
+
+Use `tools/subtitle_streaming_manifest.py` with an already obtained 16 kHz
+Sherpa Zipformer2 streaming encoder/decoder/joiner/tokens pack. Its arguments
+are `--directory`, `--language`, `--encoder`, `--decoder`, `--joiner`, `--tokens`
+and optional `--output`. All members must be regular files in that directory;
+the helper exclusively creates `plezy-streaming.json` and hashes each member.
+The app verifies those hashes before loading (1 GiB total, 16 MiB tokens).
+Keep the pack's own license/attribution alongside it. No model, network URL,
+custom module or external provider is selected by a subtitle document.
+
+API evidence: pinned `sherpa_onnx-2.0.1` Dart online recognizer/stream sources and
+[upstream streaming lifecycle](https://k2-fsa.github.io/sherpa/onnx/javascript-api/examples/api_streaming_asr.html).
+Confidence: moderate in the source integration; endpoint accuracy, recognition
+quality, latency, power and platform packaging remain unqualified. Tests,
+analyzers, formatters, builds, model execution and CI were skipped.

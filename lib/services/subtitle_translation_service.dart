@@ -7,6 +7,7 @@ import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 
 import '../utils/platform_detector.dart';
 import 'subtitle_retimer.dart';
+import 'subtitle_language_text.dart';
 import 'settings_service.dart';
 
 /// Subtitle text translated on-device, using ML Kit on mobile or an optional
@@ -460,11 +461,14 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     final translated = <SubtitleCue>[];
     var translatedBytes = 0;
     var protectedInputBytes = 0;
-    final qualityWarnings = <String>[];
+    final qualityWarnings = <String>[
+      if (cues.any((cue) => SubtitleLanguageText.parse(cue.text) != null))
+        'Source-language span labels are removed from translated text. Translation uses the selected source/target pair, not automatic per-span language switching.',
+    ];
     try {
       for (var index = 0; index < cues.length; index++) {
         final source = cues[index];
-        final protected = _protectGlossaryMarkupAware(source.text, normalizedGlossary, source.index);
+        final protected = _protectGlossaryMarkupAware(SubtitleLanguageText.removeTagsForSrt(source.text), normalizedGlossary, source.index);
         protectedInputBytes += utf8.encode(protected.text).length;
         if (protectedInputBytes > SubtitleRetimer.maximumInputBytes) {
           throw const FormatException(
@@ -535,7 +539,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     var protectedInputBytes = 0;
     final markup = _protectedSubtitleSpanPattern;
     for (final cue in cues) {
-      final protected = _protectGlossaryMarkupAware(cue.text, glossary, cue.index);
+      final protected = _protectGlossaryMarkupAware(SubtitleLanguageText.removeTagsForSrt(cue.text), glossary, cue.index);
       protectedInputBytes += utf8.encode(protected.text).length;
       if (protectedInputBytes > SubtitleRetimer.maximumInputBytes) {
         throw const FormatException('Glossary placeholders expand subtitle input beyond the 5 MiB translation bound.');
@@ -596,7 +600,10 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       throw const FormatException('Local translation returned an unexpected number of text segments.');
     }
     final translated = <SubtitleCue>[];
-    final qualityWarnings = <String>[];
+    final qualityWarnings = <String>[
+      if (cues.any((cue) => SubtitleLanguageText.parse(cue.text) != null))
+        'Source-language span labels are removed from translated text. Translation uses the selected source/target pair, not automatic per-span language switching.',
+    ];
     var translatedBytes = 0;
     for (var cueIndex = 0; cueIndex < cues.length; cueIndex++) {
       final source = cues[cueIndex];

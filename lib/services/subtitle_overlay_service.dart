@@ -8,6 +8,7 @@ import 'subtitle_retimer.dart';
 import 'settings_service.dart';
 import 'subtitle_word_timing.dart';
 import 'subtitle_ruby_text.dart';
+import 'subtitle_language_text.dart';
 import 'subtitle_font_store.dart';
 import '../widgets/subtitle_ruby_span.dart';
 
@@ -72,6 +73,7 @@ class SubtitleOverlayTrack {
   bool ruby = true;
   String writingMode = 'horizontal';
   final Map<String, List<SubtitleRubyRun>?> _rubyRuns = {};
+  final Map<String, List<SubtitleLanguageRun>?> _languageRuns = {};
   bool bold = false;
   bool italic = false;
   bool avoidObjects = false;
@@ -172,7 +174,26 @@ class SubtitleOverlayTrack {
   List<InlineSpan> spans(SubtitleCue cue, int positionMs) {
     final text = plain(cue.text);
     if (writingMode != 'horizontal') return [TextSpan(text: text)];
-    if (ruby && cue.text.toLowerCase().contains('<ruby')) {
+    if (_languageRuns.length > 128) _languageRuns.clear();
+    final languages = _languageRuns.putIfAbsent(cue.stableId, () => SubtitleLanguageText.parse(cue.text));
+    List<InlineSpan> slice(int start, int end, {TextStyle? style}) {
+      if (languages == null) return [TextSpan(text: text.substring(start, end), style: style)];
+      final result = <InlineSpan>[];
+      var offset = 0;
+      for (final run in languages) {
+        final lo = start > offset ? start : offset, hi = end < offset + run.text.length ? end : offset + run.text.length;
+        if (hi > lo) {
+          final tag = run.language;
+          final locale = tag == null ? null : Locale.fromSubtags(languageCode: tag.language, scriptCode: tag.script, countryCode: tag.region);
+          result.add(TextSpan(text: run.text.substring(lo - offset, hi - offset), locale: locale,
+            style: (style ?? const TextStyle()).copyWith(locale: locale)));
+        }
+        offset += run.text.length;
+        if (offset >= end) break;
+      }
+      return result;
+    }
+    if (languages == null && ruby && cue.text.toLowerCase().contains('<ruby')) {
       if (_rubyRuns.length > 128) _rubyRuns.clear();
       final runs = _rubyRuns.putIfAbsent(cue.stableId, () => SubtitleRubyText.parse(cue.text));
       if (runs != null) return [for (final run in runs)
@@ -180,7 +201,7 @@ class SubtitleOverlayTrack {
     }
     final sourceMs = positionToSourceMs == null ? positionMs : positionToSourceMs!(positionMs);
     final timing = _words[cue.stableId];
-    if (!karaoke || timing == null) return [TextSpan(text: text)];
+    if (!karaoke || timing == null) return slice(0, text.length);
     // Match the original string in order. A changed/uncertain token cannot
     // rewrite the caption or fabricate evenly-spaced lyric timing.
     final result = <InlineSpan>[];
@@ -188,14 +209,14 @@ class SubtitleOverlayTrack {
     for (final word in timing) {
       if (word.text.isEmpty) continue;
       final found = text.indexOf(word.text, offset);
-      if (found < 0) return [TextSpan(text: text)];
-      result.add(TextSpan(text: text.substring(offset, found)));
+      if (found < 0) return slice(0, text.length);
+      result.addAll(slice(offset, found));
       final active = sourceMs != null && sourceMs - delayMs >= word.startMs && sourceMs - delayMs < word.endMs;
-      result.add(TextSpan(text: word.text, style: active
+      result.addAll(slice(found, found + word.text.length, style: active
           ? const TextStyle(color: Colors.yellow, backgroundColor: Colors.black) : null));
       offset = found + word.text.length;
     }
-    result.add(TextSpan(text: text.substring(offset)));
+    result.addAll(slice(offset, text.length));
     return result;
   }
 

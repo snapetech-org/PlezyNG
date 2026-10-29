@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'subtitle_retimer.dart';
+import 'subtitle_language_text.dart';
 
 /// An unmatched run in its original source clock, never an inferred deletion.
 final class SubtitleUnmatchedSpan {
@@ -422,7 +423,7 @@ abstract final class SubtitleSyncService {
       if (cue.startMs < 0 || cue.endMs <= cue.startMs || cue.endMs > SubtitleRetimer.maximumTimeMs) {
         throw const FormatException('Subtitle output contains an invalid cue time.');
       }
-      final text = cue.text.replaceAll('\u0000', '').trim();
+      final text = SubtitleLanguageText.removeTagsForSrt(cue.text).replaceAll('\u0000', '').trim();
       if (text.isEmpty || text.length > 4000) continue;
       outputIndex++;
       output

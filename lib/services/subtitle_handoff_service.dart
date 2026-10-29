@@ -6,6 +6,7 @@ import 'dart:math';
 import '../mpv/mpv.dart';
 import '../sources/network_media_stream_server.dart';
 import 'subtitle_overlay_service.dart';
+import 'subtitle_language_text.dart';
 
 /// Explicit, expiring, read-only subtitle sharing. No media URL, credentials,
 /// playback command, filesystem path, microphone or automatic room broadcast.
@@ -76,11 +77,11 @@ class SubtitleHandoffService {
     final track = _tracks[index], offset = _player!.timelineOffset.inMilliseconds;
     final cached = _vtt[index];
     if (cached != null && cached.delay == track.delayMs && cached.offset == offset) return cached.bytes;
-    final output = StringBuffer('WEBVTT\n\nNOTE Plain text from a reviewed PlezyNG overlay. Times follow the open file.\n\n');
+    final output = StringBuffer('WEBVTT\n\nNOTE Reviewed PlezyNG overlay with supported language spans. Times follow the open file.\n\n');
     for (final cue in track.cues) {
       final start = cue.startMs + track.delayMs - offset, end = cue.endMs + track.delayMs - offset;
       if (end <= 0) continue;
-      final text = SubtitleOverlayTrack.plain(cue.text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+      final text = SubtitleLanguageText.webVtt(cue.text)
           .replaceAll(RegExp(r'\r\n?'), '\n').replaceAll(RegExp(r'\n\s*\n'), '\n');
       output.write('${cue.stableId}\n${_time(max(0, start))} --> ${_time(end)}\n$text\n\n');
       if (output.length > 5 * 1024 * 1024) throw const FormatException('Shared subtitle exceeds 5 MiB.');

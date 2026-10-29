@@ -61,6 +61,7 @@ import 'subtitle_resource_dialog.dart';
 import 'subtitle_research_review_dialog.dart';
 import 'subtitle_lyric_units_dialog.dart';
 import 'subtitle_dictionary_dialog.dart';
+import 'subtitle_language_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -2924,6 +2925,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       maxLines: 8,
                       decoration: const InputDecoration(labelText: 'Cue text', border: OutlineInputBorder()),
                     ),
+                    TextButton(onPressed: () => tagSubtitleSelection(editorContext, textController),
+                      child: const Text('Annotate the language of selected words')),
                     const SizedBox(height: 10),
                     Row(
                       children: [

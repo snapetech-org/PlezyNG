@@ -25,6 +25,7 @@ abstract final class SubtitleTranslationMemory {
   static String _key(List<SubtitleCue> cues, int index, String namespace) => digest([
     namespace, index == 0 ? null : cues[index - 1].text, cues[index].text,
     index + 1 == cues.length ? null : cues[index + 1].text,
+    if (RegExp(r'<lang[. \t>]', caseSensitive: false).hasMatch(cues[index].text)) 'drop-source-language-spans-v1',
   ]);
 
   static Future<File> _file(String profileId) async {

@@ -179,16 +179,18 @@ def diarize(folder, job, audio, device):
 
 def translate(folder, job):
     from argostranslate import translate as argos
+    from text_adapters import without_source_language_tags
     output = []
     protected = re.compile(r"<[^>]{0,160}>|\{[^}]{0,160}\}|\\[Nnh]|\n|https?://\S+|www\.\S+")
     for index, cue in enumerate(job["cues"]):
         parts, cursor = [], 0
-        for match in protected.finditer(cue["text"]):
-            plain = cue["text"][cursor:match.start()]
+        source_text = without_source_language_tags(cue["text"])
+        for match in protected.finditer(source_text):
+            plain = source_text[cursor:match.start()]
             parts.append(argos.translate(plain, job["language"], job["targetLanguage"]) if plain.strip() else plain)
             parts.append(match.group())
             cursor = match.end()
-        plain = cue["text"][cursor:]
+        plain = source_text[cursor:]
         parts.append(argos.translate(plain, job["language"], job["targetLanguage"]) if plain.strip() else plain)
         text = "".join(parts)
         if not text.strip() or len(text) > 4000:
@@ -196,7 +198,7 @@ def translate(folder, job):
         output.append({**cue, "text": text})
         progress(folder, "Translating installed language pair", (index + 1) / len(job["cues"]))
     return {"cues": output, "wordTimings": [], "language": job["targetLanguage"],
-            "durationMs": max(c["endMs"] for c in output), "warnings": ["Translation preserves cue identity, timing, markup and explicit line breaks; review meaning and terminology."]}
+            "durationMs": max(c["endMs"] for c in output), "warnings": ["Translation preserves cue identity, timing and explicit line breaks. Source-language span labels are removed from translated text; review meaning and terminology."]}
 
 
 def ocr(folder, job):

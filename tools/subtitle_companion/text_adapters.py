@@ -61,7 +61,43 @@ class NoRedirect(HTTPRedirectHandler):
         raise ValueError("translation_redirect_refused")
 
 
+def without_source_language_tags(text):
+    """Do not label translated words with the source span's language.
+
+    Bounded structural subset, matching the app. No registration lookup or
+    automatic language detection is performed. Invalid annotations refuse the
+    translation instead of carrying misleading source labels into the result.
+    """
+    if not re.search(r'<lang[. \t>]', text, re.I):
+        return text
+    depth, count = 0, 0
+    output, cursor = [], 0
+    for match in re.finditer(r'<[^>]*>', text):
+        output.append(text[cursor:match.start()])
+        raw = match.group()
+        opening = re.fullmatch(r'<lang(?:\.[A-Za-z0-9_-]+)*[ \t]+([A-Za-z]{2,3}(?:-[A-Za-z]{4})?(?:-[A-Za-z]{2}|-[0-9]{3})?)>', raw, re.I)
+        if opening:
+            depth += 1
+            count += 1
+            if depth > 8 or count > 64:
+                raise ValueError('language_annotation_bound')
+        elif re.fullmatch(r'</lang>', raw, re.I):
+            depth -= 1
+            if depth < 0:
+                raise ValueError('unbalanced_language_annotation')
+        elif re.match(r'</?lang\b', raw, re.I):
+            raise ValueError('unsupported_language_annotation')
+        else:
+            output.append(raw)
+        cursor = match.end()
+    output.append(text[cursor:])
+    if depth:
+        raise ValueError('unbalanced_language_annotation')
+    return ''.join(output)
+
+
 def protect(text, glossary):
+    text = without_source_language_tags(text)
     markers = {}
     prefix = "__PLZY_" + secrets.token_hex(12) + "_"
     while prefix in text:
@@ -117,7 +153,7 @@ def translate_model(folder, job, progress, atomic_json, read_json):
     for first in range(0, len(job["cues"]), 8):
         batch = job["cues"][first:first + 8]
         checkpoint = cache / f"{first:05d}.json"
-        fingerprint = hashlib.sha256(json.dumps([config["fingerprint"], mode, glossary, batch,
+        fingerprint = hashlib.sha256(json.dumps(["drop-source-language-spans-v1", config["fingerprint"], mode, glossary, batch,
             job["cues"][max(0, first - 1):first], job["cues"][first + len(batch):first + len(batch) + 1]], sort_keys=True).encode()).hexdigest()
         saved = read_json(checkpoint) if checkpoint.is_file() else None
         if saved and saved.get("fingerprint") == fingerprint:
@@ -181,7 +217,7 @@ def translate_model(folder, job, progress, atomic_json, read_json):
             "translationMode": mode, "declaredModelRevision": config["declaredRevision"],
             "glossaryDigest": hashlib.sha256(json.dumps(glossary, sort_keys=True).encode()).hexdigest(),
             "warnings": [f"Model translation mode: {mode}; neighboring cues supplied as context. Meaning, names and terminology still require review.",
-                         "Protected numbers, markup, line breaks, speaker labels and glossary terms were checked structurally. This is not semantic accuracy verification.",
+                         "Protected numbers, markup, line breaks, speaker labels and glossary terms were checked structurally. Source-language span labels are removed from translated text. This is not semantic accuracy verification.",
                          f"Configured model revision: {config['declaredRevision']}. Provider-reported model: {', '.join(sorted(models))[:256]}."]}
 
 
@@ -199,9 +235,9 @@ def derivative(folder, job, progress):
         from opencc import OpenCC
         conversion = job["scriptConversion"]
         converter = OpenCC(conversion)
-        transform = lambda text: map_plain(text, converter.convert)
+        transform = lambda text: map_plain(without_source_language_tags(text), converter.convert)
         language, model = SCRIPT_MODES[conversion], "OpenCC " + conversion
-        warning = "Explicit Chinese script/region conversion, separate from semantic translation. Regional phrase variants can change wording; review before attachment."
+        warning = "Explicit Chinese script/region conversion, separate from semantic translation. Source-language span labels are removed because the output script can differ. Regional phrase variants can change wording; review before attachment."
     else:
         import pykakasi
         converter = pykakasi.kakasi()

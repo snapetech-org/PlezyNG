@@ -37,3 +37,11 @@ receipt, including all four Android ABI paths. The package hash and every
 inspected native member hash are retained. Changes to the inspector move MPV
 content keys, so an archive accepted by an older inspection contract cannot
 reuse an immutable artifact name. This does not constitute runtime qualification.
+
+Inspection schema 2 requires all four public tap exports (`version`, `enable`,
+`read` and `read_next`) in every binary and Apple architecture. Windows PE
+inspection accepts export-table entries, not matching import-table names; ELF
+default symbol versions are accepted. Promotion and immutable-reuse checks reject
+older one-symbol receipts. Inspector changes produce new content keys, so old
+archives cannot be silently relabelled. These are static package requirements;
+the ABI function has not been called and no artifact has been built here.

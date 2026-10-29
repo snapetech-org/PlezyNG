@@ -515,6 +515,9 @@ def require_pcm_receipts(platforms):
         binaries = evidence.get("binaries", [])
         hashes = evidence.get("binarySha256", {})
         if (evidence.get("orderedSubtitlePcmAbi") != 1 or
+                evidence.get("inspectionSchema") != 2 or
+                evidence.get("requiredSymbols") != ["mpv_plezy_audio_tap_version", "mpv_plezy_audio_tap_enable",
+                    "mpv_plezy_audio_tap_read", "mpv_plezy_audio_tap_read_next"] or
                 evidence.get("symbol") != "mpv_plezy_audio_tap_read_next" or
                 evidence.get("artifactSha256") != value.get("checksum") or
                 not isinstance(binaries, list) or not binaries or

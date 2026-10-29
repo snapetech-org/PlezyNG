@@ -30,9 +30,11 @@ MAX_ATTEMPTS = 8
 READ_SIZE = 1024 * 1024
 # The broker requires 40 GiB while the Mac is idle. Keep this per-job SDK
 # cache under RUNNER_TEMP so the worker removes it after each job and restores
-# that idle capacity before it dispatches another Apple job.
+# that idle capacity before it dispatches another Apple job. Flutter 3.47.1's
+# 2.1 GiB archive and extracted SDK fit within 11 GiB of install headroom while
+# retaining the 30 GiB minimum needed during the job.
 MIN_FREE_BYTES = 30 * 1024**3
-INSTALL_HEADROOM_BYTES = 12 * 1024**3
+INSTALL_HEADROOM_BYTES = 11 * 1024**3
 CONTENT_RANGE_RE = re.compile(r"^bytes (\d+)-(\d+)/(\d+)$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
@@ -348,7 +350,7 @@ def ensure_sdk(version: str, cache_root: Path) -> Path:
         cache_path = cache_root / f"stable-{version}-arm64"
         if cache_is_valid(cache_path, version, metadata["sha256"]):
             if shutil.disk_usage(cache_root).free < MIN_FREE_BYTES:
-                raise RuntimeError("Mac JIT APFS free space fell below 40 GiB")
+                raise RuntimeError("Mac JIT APFS free space fell below 30 GiB")
             print(f"Reusing verified Flutter {version} SDK from local APFS cache.", flush=True)
             return cache_path
 
@@ -363,7 +365,7 @@ def ensure_sdk(version: str, cache_root: Path) -> Path:
             if part.is_file() and not part.is_symlink():
                 part.unlink()
         if shutil.disk_usage(cache_root).free < MIN_FREE_BYTES:
-            raise RuntimeError("Mac JIT APFS free space fell below 40 GiB after Flutter SDK installation")
+            raise RuntimeError("Mac JIT APFS free space fell below 30 GiB after Flutter SDK installation")
         print(f"Installed verified Flutter {version} SDK in local APFS cache.", flush=True)
         return cache_path
 

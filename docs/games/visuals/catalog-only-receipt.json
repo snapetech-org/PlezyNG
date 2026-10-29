@@ -1,0 +1,12 @@
+{
+  "code_commit": "54298205c062ee2bf3c26fffbb9413df2584f1d7",
+  "code_tree": "84307dbd6ffd62911a02adbb47b6c014e1f77b5a",
+  "captured_at": "2026-10-29",
+  "evidence": "Production GameLibraryView with canStream=false, deterministic multi-computer fixtures; not a physical TV screenshot",
+  "font": "Roboto with Material Symbols Rounded",
+  "covers": "Public Steam library_600x900.jpg for AppIDs 620, 220, 413150; test inputs only",
+  "file": "catalog-only-tv.png",
+  "width": 1280,
+  "height": 900,
+  "sha256": "157a2717b060af0fd03eee2762f8cbe77cca9e12a9cc927579a5f926618f91ef"
+}

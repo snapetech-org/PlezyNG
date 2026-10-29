@@ -36,7 +36,7 @@ class TranslationsTh extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsTh _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsTh $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsTh(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3857,13 +3857,11 @@ class _Translations$games$th extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3891,10 +3889,8 @@ class _Translations$games$th extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3904,7 +3900,6 @@ class _Translations$games$th extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5381,9 +5376,9 @@ extension on TranslationsTh {
 			'settings.smallSkipDuration' => 'ระยะเวลาสกีขนาดเล็ก',
 			'settings.largeSkipDuration' => 'ระยะเวลา Skip',
 			'settings.rewindOnResume' => 'กลับไปสู่การสรุป',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} วินาที', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} วินาที', ),
 			'settings.defaultSleepTimer' => 'ระยะเวลาการนอนหลับแบบกําหนดเอง',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} นาที', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} นาที', ),
 			'settings.rememberTrackSelections' => 'โปรดจําการเลือกติดตามตามแสดง / ภาพยนตร์',
 			'settings.chooseTracksBeforePlayback' => 'เลือกเสียงและหัวข้อก่อนที่จะเล่น',
 			'settings.chooseTracksBeforePlaybackDescription' => 'เลือกเสียงแหล่งที่มาและติดตามหัวข้อก่อนที่จะเริ่มต้นวิดีโอแต่ละครั้ง',
@@ -5989,9 +5984,9 @@ extension on TranslationsTh {
 			'mediaMenu.deleteAnyway' => 'ลบอย่างไรก็ตาม',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'ลบ ${title} ออกจากเซิร์ฟเวอร์อย่างถาวรหรือไม่',
 			'mediaMenu.deleteMultipleWarning' => 'รวมถึงตอนทั้งหมดและไฟล์ของแต่ละตอน',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: 'นี้ลบทั้งหมด ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes ในมัน, และไฟล์ของพวกเขา.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: 'รายการนี้จะถูกเก็บไว้ผ่านไฟล์ ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} และทั้งหมดจะถูกลบ', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes อื่น ๆ จะถูกบันทึกในไฟล์เดียวกันและจะถูกลบยัง:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: 'นี้ลบทั้งหมด ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes ในมัน, และไฟล์ของพวกเขา.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: 'รายการนี้จะถูกเก็บไว้ผ่านไฟล์ ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} และทั้งหมดจะถูกลบ', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes อื่น ๆ จะถูกบันทึกในไฟล์เดียวกันและจะถูกลบยัง:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG ตรวจสอบไม่ได้ว่าจะลบไฟล์ใดบ้าง จึงอาจลบมากกว่ารายการที่ระบุข้างต้น ยกเลิกแล้วลองอีกครั้ง หรือเลือกที่จะลบต่อไป',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'เซิร์ฟเวอร์ของคุณไม่ให้ข้อมูลไฟล์สําหรับรายการนี้ดังนั้น PlezyNG ไม่สามารถตรวจสอบไฟล์ใดที่จะลบได้ มันอาจลบมากกว่ารายการที่ระบุไว้ข้างต้น',
 			'mediaMenu.mediaDeletedSuccessfully' => 'รายการสื่อลบอย่างประสบความสําเร็จ',
@@ -6180,7 +6175,7 @@ extension on TranslationsTh {
 			'videoControls.osdSubtitlesOff' => 'หัวข้อ: ปิด',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'หัวข้อ: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'เสียง: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} โครง', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} โครง', ),
 			'videoControls.trackSelectionTitle' => 'เลือกแถบก่อน playback',
 			'videoControls.trackSelectionAuto' => 'การเลือกอัตโนมัติ',
 			'videoControls.openMiniPlayer' => 'ผู้เล่นขนาดเล็กเปิด',
@@ -6195,7 +6190,7 @@ extension on TranslationsTh {
 			'messages.markedAsWatchedOffline' => 'บรรทัดตามที่เห็น (จะซิงค์เมื่อออนไลน์)',
 			'messages.markedAsUnwatchedOffline' => 'บัญชีที่ไม่ได้รับการตรวจสอบ (จะซิงค์เมื่อออนไลน์)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'อัตโนมัติ: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: 'อัตโนมัติลบ ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ดาวน์โหลด', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: 'อัตโนมัติลบ ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ดาวน์โหลด', ),
 			'messages.removedFromContinueWatching' => 'ปล่อยออกจาก Continuing Watching',
 			'messages.errorLoading' => ({required Object error}) => 'ความผิดพลาด: ${error}',
 			'messages.searchPartialResults' => 'บางเซิร์ฟเวอร์สื่อไม่สามารถค้นหาได้ แสดงผลที่มีอยู่',
@@ -6566,7 +6561,7 @@ extension on TranslationsTh {
 			'discover.tvShow' => 'แสดงทีวี',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} นาที left',
 			'discover.moreLikeThis' => 'มากกว่าเช่นนี้',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} หัวข้อ', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} หัวข้อ', ),
 			'discover.person.born' => 'เกิด',
 			'discover.person.died' => 'ตาย',
 			'discover.person.birthplace' => 'สถานที่เกิด',
@@ -6811,7 +6806,7 @@ extension on TranslationsTh {
 			'explore.status.ended' => 'จบ',
 			'explore.status.canceled' => 'ปล่อย',
 			'explore.status.upcoming' => 'มาใหม่',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ครั้งที่เข้าดู', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ครั้งที่เข้าดู', ),
 			'explore.cast' => 'คะแนน',
 			'explore.characters' => 'ตัวละคร',
 			'explore.addToWatchlist' => 'เพิ่มเข้าสู่ Watchlist',
@@ -6823,7 +6818,7 @@ extension on TranslationsTh {
 			'explore.notInLibrary' => 'ไม่อยู่ในห้องสมุดของคุณ',
 			'explore.inTheseLibraries' => 'ในห้องสมุดเหล่านี้',
 			'explore.checkingLibrary' => 'ตรวจสอบห้องสมุดของคุณ',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: 'ไม่สามารถตรวจสอบเซิร์ฟเวอร์ ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: 'ไม่สามารถตรวจสอบเซิร์ฟเวอร์ ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ),
 			'explore.emptyTitle' => 'ไม่มีอะไรที่นี่',
 			'explore.emptyMessage' => ({required Object source}) => 'รอบจาก ${source} จะปรากฏที่นี่เมื่อมีเนื้อหา',
 			'explore.searchHint' => ({required Object source}) => 'ค้นหา ${source}',
@@ -6860,7 +6855,7 @@ extension on TranslationsTh {
 			'explore.stats.planning' => ({required Object n}) => '${n} การวางแผนที่จะดู',
 			'explore.stats.favorited' => ({required Object n}) => '${n} ความรัก',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} ลบมัน',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ความคิดเห็น', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ความคิดเห็น', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} วิดีโอ',
 			'explore.stats.watching' => ({required Object n}) => '${n} ดูมัน',
 			'explore.stats.completed' => ({required Object n}) => '${n} ที่เสร็จสิ้น',
@@ -6927,14 +6922,14 @@ extension on TranslationsTh {
 			'explore.detail.crew' => 'พันธมิตร',
 			'explore.detail.ratings' => 'คะแนน',
 			'explore.detail.schedule' => 'ตั้งเวลา',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: 'คําแนะนําโดย ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ผู้ใช้', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: 'คําแนะนําโดย ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ผู้ใช้', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'คําแนะนําโดย ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'มือสมัครเล่นโดย ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} ไม่มีการส่งมา',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'คําแนะนําโดย ${percent} ของผู้ชม',
 			'explore.detail.relatedTitles' => 'ชื่อที่เกี่ยวข้อง',
 			'explore.detail.background' => 'ลักษณะ',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ผล', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ผล', ),
 			'liveTv.title' => 'ทีวีสด',
 			'liveTv.guide' => 'คู่มือ',
 			'liveTv.noChannels' => 'ไม่มีช่องทาง',
@@ -7063,7 +7058,7 @@ extension on TranslationsTh {
 			'playlists.delete' => 'ลบ Playlist',
 			'playlists.removeItem' => 'ลบออกจากเพลย์ลิสต์',
 			'playlists.smartPlaylist' => 'การเล่นสมาร์ท',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} รายการ', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} รายการ', ),
 			'playlists.emptyPlaylist' => 'รายการเล่นนี้ว่างเปล่า',
 			'playlists.deleteConfirm' => 'ลบ Playlist',
 			'playlists.deleteMessage' => ({required Object name}) => 'คุณแน่ใจว่าคุณต้องการลบ "${name}"',
@@ -7085,7 +7080,7 @@ extension on TranslationsTh {
 			'music.playNext' => 'เล่นต่อไป',
 			'music.addToQueue' => 'เพิ่มให้ Queue',
 			'music.discNumber' => ({required Object n}) => 'ดิสก์ ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ล้อ', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ล้อ', ),
 			'music.nowPlaying' => 'ตอนนี้เล่น',
 			'music.playingFrom' => ({required Object title}) => 'เล่นจาก ${title}',
 			'music.queue' => 'สิทธิ',
@@ -7107,7 +7102,7 @@ extension on TranslationsTh {
 			'music.noLyrics' => 'ไม่มีข้อความที่มีอยู่',
 			'music.sleepTimer' => 'เวลานอนหลับ',
 			'music.sleepTimerEndOfTrack' => 'เสร็จสิ้นของเส้นทาง',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} นาที', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} นาที', ),
 			'music.stopPlayback' => 'ปิด Playback',
 			'music.previousTrack' => 'แทร็กก่อนหน้า',
 			'music.nextTrack' => 'แทร็กถัดไป',
@@ -7191,7 +7186,7 @@ extension on TranslationsTh {
 			'watchTogether.offsetPlusTenth' => '+100 มิลลิเมตร',
 			'watchTogether.offsetPlusSecond' => '+ 1 ซ',
 			'watchTogether.participants' => 'ผู้เข้าร่วม',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ผู้เข้าร่วม', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ผู้เข้าร่วม', ),
 			'watchTogether.hostBadge' => 'โฮสต์',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (คุณ)',
 			'watchTogether.playerIdle' => 'นี่คือ',
@@ -7400,10 +7395,10 @@ extension on TranslationsTh {
 			'downloads.unknownAlbum' => 'อัลบั้มที่ไม่รู้จัก',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} เสร็จสิ้น',
 			'downloads.storageUsed' => ({required Object size}) => 'การจัดเก็บข้อมูลที่ใช้: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ดาวน์โหลด', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} แสดง', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ภาพยนตร์', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} อัลบั้ม', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ดาวน์โหลด', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} แสดง', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ภาพยนตร์', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} อัลบั้ม', ),
 			'downloads.errorFileNotFound' => 'ไฟล์ที่ไม่ได้พบ (404)',
 			'downloads.errorDownloadNotAllowed' => 'ดาวน์โหลดที่ไม่ได้รับอนุญาตโดยเซิร์ฟเวอร์ (403)',
 			'downloads.errorDownloadFailed' => 'ดาวน์โหลดล้มเหลว',
@@ -8157,7 +8152,7 @@ extension on TranslationsTh {
 			'universalMedia.saveFavorite' => 'เก็บ Favorite',
 			'universalMedia.playNow' => 'เล่นตอนนี้',
 			'universalMedia.favoriteSaved' => 'Stream Favorite ที่บันทึกไว้ในโปรไฟล์นี้',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} เข้าสู่ระบบรายการเล่นที่ไม่ได้สนับสนุนหรือไม่ปลอดภัย', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} เข้าสู่ระบบรายการเล่นที่ไม่ได้สนับสนุนหรือไม่ปลอดภัย', ),
 			'universalMedia.playlistAddress' => 'ที่อยู่ Playlist',
 			'universalMedia.playlistAddressHelp' => 'เปิดรายการเล่น M3U, M3u8 หรือ PLS จากที่อยู่อาศัยเว็บ เชื่อมโยง Stream Direct ไม่บันทึกรายการเล่น',
 			'universalMedia.choosePlaylist' => 'เลือกไฟล์ Playlist',
@@ -8173,7 +8168,7 @@ extension on TranslationsTh {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'เลือกไฟล์',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่เลือก', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่เลือก', ),
 			'universalMedia.wifiTransfer' => 'ส่งไฟล์ผ่าน Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'การถ่ายโอนไฟล์ที่สนับสนุนจากเบราว์เซอร์บนเครือข่ายที่เชื่อถือได้เดียวกัน',
 			'universalMedia.wifiTransferIntro' => 'เปิดที่อยู่นี้ในเบราว์เซอร์บนอุปกรณ์อื่น เลือกไฟล์เพื่อเพิ่มไปยังห้องสมุดไฟล์และหนังสือของอุปกรณ์นี้',
@@ -8184,7 +8179,7 @@ extension on TranslationsTh {
 			'universalMedia.copyAddress' => 'โพสต์การถ่ายโอน',
 			'universalMedia.addressCopied' => 'ที่อยู่อาศัยการถ่ายโอนคัดลอก',
 			'universalMedia.transferExpires' => ({required Object time}) => 'ที่อยู่นี้หมดอายุใน ${time}',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่ได้รับ', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่ได้รับ', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'รับ ${size}',
 			'universalMedia.stopTransfer' => 'หยุดการถ่ายโอนและยกเลิกที่อยู่อาศัย',
 			'universalMedia.startTransfer' => 'เริ่มต้นการโอน',
@@ -8410,7 +8405,7 @@ extension on TranslationsTh {
 			'fileSources.sleep' => 'เวลานอนหลับ',
 			'fileSources.sleepOff' => 'ปิด',
 			'fileSources.endChapter' => 'ประเภทสุดท้าย',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} นาที', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} นาที', ),
 			'fileSources.skipBack' => 'สกินกลับ',
 			'fileSources.skipForward' => 'ขั้นตอน',
 			'fileSources.smartRewind' => 'สื่อลามกหลังจากการหยุด',
@@ -8749,13 +8744,11 @@ extension on TranslationsTh {
 			'comics.collections' => 'คอลเลกชัน',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8783,10 +8776,8 @@ extension on TranslationsTh {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8796,7 +8787,6 @@ extension on TranslationsTh {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

@@ -36,7 +36,7 @@ class TranslationsUk extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsUk _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsUk $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsUk(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3922,13 +3922,11 @@ class _Translations$games$uk extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3956,10 +3954,8 @@ class _Translations$games$uk extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3969,7 +3965,6 @@ class _Translations$games$uk extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5450,9 +5445,9 @@ extension on TranslationsUk {
 			'settings.smallSkipDuration' => 'Маленький Скіп Тривалість',
 			'settings.largeSkipDuration' => 'Довжина великого стрибка',
 			'settings.rewindOnResume' => 'Повернення на резюме',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунда', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунди', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунд', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунди', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунда', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунди', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунд', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунди', ),
 			'settings.defaultSleepTimer' => 'Заборонений час сну',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} хвилина', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} хвилини', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} хвилин', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} хвилини', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} хвилина', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} хвилини', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} хвилин', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} хвилини', ),
 			'settings.rememberTrackSelections' => 'Зауважимо, що вибір трак за шоу/фільм',
 			'settings.chooseTracksBeforePlayback' => 'Виберіть аудіо та субтитри перед відтворенням',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Виберіть джерело аудіо і субтитри, перш ніж починається кожен відео.',
@@ -6058,9 +6053,9 @@ extension on TranslationsUk {
 			'mediaMenu.deleteAnyway' => 'Зніміть в будь-якому випадку',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'Постійно видаляти ${title} з сервера?',
 			'mediaMenu.deleteMultipleWarning' => 'Це включає в себе всі епізоди і їх файли.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Це видалить ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізод у ньому та його файл.', few: 'Це видалить усі ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізоди в ньому та їхні файли.', many: 'Це видалить усі ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізодів у ньому та їхні файли.', other: 'Буде видалено всі епізоди в цьому елементі (кількість: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) та їхні файли.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Цей елемент зберігається в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлі, який буде видалено.', few: 'Цей елемент зберігається в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлах, і всі вони будуть видалені.', many: 'Цей елемент зберігається в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлах, і всі вони будуть видалені.', other: 'Цей елемент зберігається у файлах (кількість: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}); усі ці файли буде видалено.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'У тому самому файлі зберігається ще ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізод, який також буде видалено:', few: 'У тому самому файлі зберігаються ще ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізоди, які також буде видалено:', many: 'У тому самому файлі зберігається ще ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізодів, які також буде видалено:', other: 'Інші епізоди в тому самому файлі (кількість: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) також буде видалено:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Це видалить ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізод у ньому та його файл.', few: 'Це видалить усі ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізоди в ньому та їхні файли.', many: 'Це видалить усі ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізодів у ньому та їхні файли.', other: 'Буде видалено всі епізоди в цьому елементі (кількість: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) та їхні файли.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Цей елемент зберігається в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлі, який буде видалено.', few: 'Цей елемент зберігається в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлах, і всі вони будуть видалені.', many: 'Цей елемент зберігається в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлах, і всі вони будуть видалені.', other: 'Цей елемент зберігається у файлах (кількість: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}); усі ці файли буде видалено.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'У тому самому файлі зберігається ще ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізод, який також буде видалено:', few: 'У тому самому файлі зберігаються ще ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізоди, які також буде видалено:', many: 'У тому самому файлі зберігається ще ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епізодів, які також буде видалено:', other: 'Інші епізоди в тому самому файлі (кількість: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) також буде видалено:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG не вдалося перевірити, які файли буде видалено, тому може бути видалено більше, ніж зазначений вище елемент. Скасуйте дію та спробуйте знову або видаліть попри це.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Сервер не надав відомостей про файли цього елемента, тому PlezyNG не може перевірити, які файли буде видалено. Може бути видалено більше, ніж зазначений вище елемент.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Медіа-елементи успішно видалені',
@@ -6249,7 +6244,7 @@ extension on TranslationsUk {
 			'videoControls.osdSubtitlesOff' => 'Підзаголовок: Off',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Підзаголовок: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Звук: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кадр', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кадри', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кадрів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кадри', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кадр', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кадри', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кадрів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кадри', ),
 			'videoControls.trackSelectionTitle' => 'Вибирайте сходинки перед відтворенням',
 			'videoControls.trackSelectionAuto' => 'Автоматичний вибір',
 			'videoControls.openMiniPlayer' => 'Відкритий міні-плеєр',
@@ -6264,7 +6259,7 @@ extension on TranslationsUk {
 			'messages.markedAsWatchedOffline' => 'Марковано як спостерігалося (синхровується, коли онлайн)',
 			'messages.markedAsUnwatchedOffline' => 'Ознаковано як невизначено (синхровується, коли онлайн)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Автомобільний відключений: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Авто-усунути ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} переглянуто завантажити', other: 'Авто-усунути ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} переглянуто завантаження', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Авто-усунути ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} переглянуто завантажити', other: 'Авто-усунути ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} переглянуто завантаження', ),
 			'messages.removedFromContinueWatching' => 'Звільнення від продовження спостереження',
 			'messages.errorLoading' => ({required Object error}) => 'Помилка: ${error}',
 			'messages.searchPartialResults' => 'Деякі медіа-сервери не можуть бути пошуковані. показуючи доступні результати.',
@@ -6635,7 +6630,7 @@ extension on TranslationsUk {
 			'discover.tvShow' => 'Телевізійне шоу',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} хвилини',
 			'discover.moreLikeThis' => 'Подібні до цього',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} назва', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} назви', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} назв', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} назви', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} назва', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} назви', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} назв', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} назви', ),
 			'discover.person.born' => 'народжується',
 			'discover.person.died' => 'Смерть',
 			'discover.person.birthplace' => 'Місце народження',
@@ -6880,7 +6875,7 @@ extension on TranslationsUk {
 			'explore.status.ended' => 'Завершено',
 			'explore.status.canceled' => 'скасовано',
 			'explore.status.upcoming' => 'Скоро',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серія', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серії', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серій', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серії', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серія', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серії', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серій', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серії', ),
 			'explore.cast' => 'Каст',
 			'explore.characters' => 'персонажів',
 			'explore.addToWatchlist' => 'Додати до Watchlist',
@@ -6892,7 +6887,7 @@ extension on TranslationsUk {
 			'explore.notInLibrary' => 'Не в бібліотеці',
 			'explore.inTheseLibraries' => 'У цих бібліотеках',
 			'explore.checkingLibrary' => 'Перевірте свою бібліотеку.',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Не можна перевірити сервер ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: 'Не можна перевірити сервери ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Не можна перевірити сервер ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: 'Не можна перевірити сервери ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ),
 			'explore.emptyTitle' => 'Тут ще нічого',
 			'explore.emptyMessage' => ({required Object source}) => 'Повернення з ${source} з\'явиться тут, як тільки вони мають вміст.',
 			'explore.searchHint' => ({required Object source}) => 'Пошук ${source}',
@@ -6929,7 +6924,7 @@ extension on TranslationsUk {
 			'explore.stats.planning' => ({required Object n}) => '${n} Планується переглянути',
 			'explore.stats.favorited' => ({required Object n}) => '${n} улюблених',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} відмінили його',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментар', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментарі', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментарів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментарі', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментар', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментарі', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментарів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментарі', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} голосів',
 			'explore.stats.watching' => ({required Object n}) => '${n} переглянути',
 			'explore.stats.completed' => ({required Object n}) => '${n} Завершено',
@@ -6996,14 +6991,14 @@ extension on TranslationsUk {
 			'explore.detail.crew' => 'Екіпаж',
 			'explore.detail.ratings' => 'Рейтинг',
 			'explore.detail.schedule' => 'Розклад',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Рекомендується користувачем ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: 'Рекомендують користувачі: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Рекомендується користувачем ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: 'Рекомендують користувачі: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'Рекомендується ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'Офіційно ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} не опубліковано',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Рекомендується ${percent} відвідувачів',
 			'explore.detail.relatedTitles' => 'Співвідношення титулів',
 			'explore.detail.background' => 'фонтани',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результат', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результати', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результатів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результати', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результат', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результати', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результатів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результати', ),
 			'liveTv.title' => 'Прямий ефір',
 			'liveTv.guide' => 'Телегід',
 			'liveTv.noChannels' => 'Без каналів',
@@ -7132,7 +7127,7 @@ extension on TranslationsUk {
 			'playlists.delete' => 'Видалити Плейліст',
 			'playlists.removeItem' => 'Видалити з плейлиста',
 			'playlists.smartPlaylist' => 'Розумний Playlist',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елемент', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елементи', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елементів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елемента', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елемент', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елементи', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елементів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елемента', ),
 			'playlists.emptyPlaylist' => 'Цей перелік залишається порожнім',
 			'playlists.deleteConfirm' => 'Використання Playlist?',
 			'playlists.deleteMessage' => ({required Object name}) => 'Ви впевнені, що ви хочете видалити "${name}"?',
@@ -7154,7 +7149,7 @@ extension on TranslationsUk {
 			'music.playNext' => 'Наступне',
 			'music.addToQueue' => 'Додати до ковбасу',
 			'music.discNumber' => ({required Object n}) => 'Диск ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} композиція', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} композиції', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} композицій', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} композиції', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} композиція', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} композиції', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} композицій', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} композиції', ),
 			'music.nowPlaying' => 'Тепер грати',
 			'music.playingFrom' => ({required Object title}) => 'Ігри з ${title}',
 			'music.queue' => 'Квітень',
@@ -7176,7 +7171,7 @@ extension on TranslationsUk {
 			'music.noLyrics' => 'Немає доступних ліриків',
 			'music.sleepTimer' => 'Тимчасовий сон',
 			'music.sleepTimerEndOfTrack' => 'Кінцевий шлях',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} хвилина', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} хвилини', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} хвилин', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} хвилини', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} хвилина', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} хвилини', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} хвилин', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} хвилини', ),
 			'music.stopPlayback' => 'Зупинити відтворення',
 			'music.previousTrack' => 'Попередня доріжка',
 			'music.nextTrack' => 'Наступна доріжка',
@@ -7260,7 +7255,7 @@ extension on TranslationsUk {
 			'watchTogether.offsetPlusTenth' => '+ 100 мс',
 			'watchTogether.offsetPlusSecond' => '1 С',
 			'watchTogether.participants' => 'Учасники',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} учасник', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} учасники', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} учасників', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} учасники', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} учасник', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} учасники', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} учасників', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} учасники', ),
 			'watchTogether.hostBadge' => 'Хост',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (Ви)',
 			'watchTogether.playerIdle' => 'Бездіяльність',
@@ -7469,10 +7464,10 @@ extension on TranslationsUk {
 			'downloads.unknownAlbum' => 'Невідомий альбом',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} завершено',
 			'downloads.storageUsed' => ({required Object size}) => 'Зберігання використовується: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} завантаження', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} завантаження', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} завантажень', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} завантаження', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серіал', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серіали', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серіалів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серіали', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фільм', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фільми', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фільмів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фільми', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбом', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбоми', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбомів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбоми', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} завантаження', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} завантаження', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} завантажень', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} завантаження', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серіал', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серіали', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серіалів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серіали', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фільм', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фільми', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фільмів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фільми', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбом', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбоми', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбомів', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбоми', ),
 			'downloads.errorFileNotFound' => 'Файл не знайдено (404)',
 			'downloads.errorDownloadNotAllowed' => 'Завантаження не дозволено сервером (403)',
 			'downloads.errorDownloadFailed' => 'Завантаження провалилося',
@@ -8226,7 +8221,7 @@ extension on TranslationsUk {
 			'universalMedia.saveFavorite' => 'Зберегти улюблений',
 			'universalMedia.playNow' => 'Грати зараз',
 			'universalMedia.favoriteSaved' => 'Попередня статтяПопулярні потоки збереглися до цього профілю',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Завантажити ${count} непідтримлений або небезпечний вхід списку переглядів.', few: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', many: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', other: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Завантажити ${count} непідтримлений або небезпечний вхід списку переглядів.', few: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', many: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', other: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', ),
 			'universalMedia.playlistAddress' => 'Адреса Playlist',
 			'universalMedia.playlistAddressHelp' => 'Відкрийте перелік M3U, M3u8 або PLS з веб-адреси. прямий потік посилань не зберігає перелік.',
 			'universalMedia.choosePlaylist' => 'Вибір файлу Playlist',
@@ -8242,7 +8237,7 @@ extension on TranslationsUk {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Вибір файлів',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '1 Вибрані файли', few: '${count} вибрані файли', many: '${count} вибрані файли', other: '${count} вибрані файли', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '1 Вибрані файли', few: '${count} вибрані файли', many: '${count} вибрані файли', other: '${count} вибрані файли', ),
 			'universalMedia.wifiTransfer' => 'Завантажити файли через Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Передача підтримуваних файлів з браузера в тій же надійній мережі.',
 			'universalMedia.wifiTransferIntro' => 'Відкрийте цю адресу в браузері на іншому пристрої. Виберіть файли, щоб додати їх до бібліотеки файлів та книг цього пристрою.',
@@ -8253,7 +8248,7 @@ extension on TranslationsUk {
 			'universalMedia.copyAddress' => 'Копія адреси передачі',
 			'universalMedia.addressCopied' => 'Передача адреси копіюється',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Ця адреса закінчується в ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Завантажити файл ${count}', few: 'Файли ${count} отримані', many: 'Файли ${count} отримані', other: 'Файли ${count} отримані', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Завантажити файл ${count}', few: 'Файли ${count} отримані', many: 'Файли ${count} отримані', other: 'Файли ${count} отримані', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'Завантажити ${size}',
 			'universalMedia.stopTransfer' => 'Заборона передачі та недійсний адрес',
 			'universalMedia.startTransfer' => 'Початок трансферу',
@@ -8479,7 +8474,7 @@ extension on TranslationsUk {
 			'fileSources.sleep' => 'Тимчасовий сон',
 			'fileSources.sleepOff' => 'Вимкнути',
 			'fileSources.endChapter' => 'Кінець розділу',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} хвилина', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} хвилини', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} хвилин', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} хвилини', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} хвилина', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} хвилини', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} хвилин', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} хвилини', ),
 			'fileSources.skipBack' => 'Скіп назад',
 			'fileSources.skipForward' => 'Скіп вперед',
 			'fileSources.smartRewind' => 'Смарт-реванш після перерви',
@@ -8818,13 +8813,11 @@ extension on TranslationsUk {
 			'comics.collections' => 'Колекції',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8852,10 +8845,8 @@ extension on TranslationsUk {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8865,7 +8856,6 @@ extension on TranslationsUk {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

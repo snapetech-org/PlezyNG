@@ -1,6 +1,264 @@
 # Games validation and release gates
 
-For current follow-up PR #71 completion status, see
+## Account Cloud host bridge — 2026-10-29
+
+- The Decky extension builds with the locked npm dependencies, passes TypeScript
+  checking, and packages its frontend/backend/license into a local install ZIP.
+- Seven JavaScript contract tests pass, including exact protobuf field encoding,
+  missing/invalid fields, readback requirement, stale review, denied/expired
+  claim, account change and retired controller behavior.
+- Five Companion exchange tests pass under the standalone Dart VM test runner
+  using the committed test bodies with only the test-framework/import paths
+  adapted outside the repo. The production exchange file analyzes cleanly. A
+  separate direct Dart read/write/denial smoke check also passes.
+- Three Python claim/identity/expiry unit tests pass. Six actual Unix-socket tests are
+  explicitly **skipped**: this execution runtime denies `AF_UNIX` creation with
+  EPERM. They must run on the Linux build/test host; they are not counted passed.
+- Localization generation and source tracking pass across 37 locales and 4,420
+  messages. Ten new app messages use tracked English fallback. The separate
+  plugin's small local consent panel currently uses English and Decky's controls.
+- Python modules compile. No workflow was changed or dispatched for this work.
+
+The prior Flutter SDK checkout is no longer populated in this environment, so
+full Flutter/provider/widget analysis and app tests were not executed for this
+checkpoint. Linux/SteamOS is the implemented host transport; Windows/macOS host
+transports remain absent. No Steam client is available here: real setter behavior,
+restart persistence, Steam/Decky compatibility and propagation to another host
+remain **unverified**. The bridge's success contract is implemented, not certified
+by a live Valve write.
+
+
+## Packaging and deployment code closure — 2026-10-29
+
+Added final APK/AAB receiver inspection, minified-app instrumentation and
+embedded-disabled packaging to the existing private build jobs. Release APKs
+are checked before archiving; Play/Amazon copies are checked before attestation.
+The checker verifies the exact receiver/Flutter ABI set, exported JNI contract,
+ELF alignment, runtime dependency presence and APK ZIP alignment. Its receipts
+explicitly do not claim signing, generated-AAB APK checks or device execution.
+
+Requested Steam relay/Families/Cloud features now fail server startup when their
+configuration prevents registration, including an occupied UDP observation port.
+Default-disabled configurations remain valid; diagnostics never echo values.
+
+Validation performed:
+
+- 34 Games preparation/package tests pass, including missing ABI/runtime/JNI,
+  disabled-receiver, duplicate ZIP entry and bad ZIP alignment rejection.
+- The real ARM64 receiver from the earlier four-ABI build passes the checker in
+  a synthetic aligned ZIP fixture with the actual NDK libc++ runtime: 43 JNI
+  exports and real `llvm-readelf`/`zipalign` checks. This fixture is not a Flutter
+  application and is not application-build evidence.
+- 22 build-workflow tests and 24 shrinker-rule tests pass; workflow security and
+  immutable-action-pin checks pass. Existing private runner routing is retained.
+- `go test -race ./...` passes, including real occupied-UDP-port rejection and
+  configured/disabled/incomplete-feature startup cases. The server also compiles
+  with CGO disabled for Linux amd64 and arm64.
+
+The new Android instrumentation harness has not been compiled or executed by
+Gradle here. It must run against the shrunk app on a device. Full Android app
+packaging, Windows/MSVC and Apple SDK builds, signing, public service deployment
+and hardware/network/account acceptance remain qualification gates. No workflow
+was dispatched and no live account was modified. Account-global Cloud writes
+remain outside the established API contract; this change adds no guessed setter.
+
+## Controller-only native build closure — 2026-10-29
+
+Code `605e4059981148ba34c466df8eebe6f2cd517c89` repairs a real source-preparation
+failure: the controller-only negotiation patch had stale context after HDR was
+added. It also retained a pointer to a codec array whose block scope ended before
+protobuf serialization. The corrected patch preserves function-scope storage,
+keeps the HDR integration, and advertises no video codecs/colorspaces or HEVC
+configuration for input-only sessions. Ordinary media defaults remain enabled.
+
+Fresh preparation of all pinned sources and patches now succeeds. Local cached
+Git repositories supplied the pinned objects; no network Git transport was used.
+All four Android Release JNI receivers compile and link with NDK 29 / CMake
+3.22.1 at native API 25. Each passes all **43 JNI export** checks, ELF machine,
+no text relocations/runtime search paths, and 16 KB LOAD alignment for 64-bit
+ABIs. The build started from the clean code commit above; hashes are in
+[the receipt](receipts/android-controller-only.json).
+
+The real module resources compile/link with aapt2; its generated R class and all
+Steam Java sources compile against API 36 with JDK 21 (20 compatibility
+deprecation warnings). All 25 Games SDK/preparation tests pass. Earlier Flutter
+results retain their original code scope. This is not a Gradle/R8 APK/AAB,
+Windows/Apple SDK result or live host/controller-only qualification.
+
+## Catalog and ownership closure — 2026-10-29
+
+Code commit `54298205c062ee2bf3c26fffbb9413df2584f1d7`, tree
+`84307dbd6ffd62911a02adbb47b6c014e1f77b5a`, closes receiver/catalog coupling,
+a Games-screen Provider lifecycle error, exact-dialog ownership, native
+capability timeouts and secure session-only catalog authorization.
+
+- **209 tests pass** in all Games, Steam workspace/texture, shared dialogs and
+  platform-detector suites. One TV-only screen test is explicitly skipped in
+  this ordinary-platform run; it is exercised in the flag-specific runs below.
+- **19 tests pass under each of `PLEZY_WEBOS=true` and `PLEZY_TIZEN=true`.** The
+  production GamesScreen loads a real in-memory database catalog, opens details,
+  persists favorites and retires the old profile's detail route. No native
+  capability/pair/play invocation is made. These are platform-flag fixtures,
+  not TV package or hardware builds.
+- New tests verify session grants never enter preferences; refresh preserves
+  the active grant; unlink/account replacement/profile retirement removes
+  access; failed persistence and invalid credentials cannot publish a grant.
+- A stalled native capability query is bounded; late generation and malformed
+  bridge responses fail closed. Exact-dialog tests preserve newer dialogs and
+  support cancellation before first build or after owner retirement.
+- Standard Dart analysis of every changed source and test reports **zero
+  diagnostics**. Localization integrity passes for **37 locales / 4,410
+  messages / 24,372 explicit English fallback entries**. The strict usage scan
+  reports zero unused keys after removing an obsolete recovery message.
+- A ninth production-widget capture is visually reviewed with real fonts and
+  Steam fixture artwork. The [separate receipt](visuals/catalog-only-receipt.json)
+  binds it to this code; the original eight screenshots retain their provenance.
+
+Reproduce the portable suite:
+
+```sh
+flutter test --concurrency=1 test/games \
+  test/multiview/steam_game_workspace_surface_test.dart \
+  test/multiview/steam_texture_surface_test.dart \
+  test/utils/dialogs_test.dart test/utils/platform_detector_test.dart
+flutter test --dart-define=PLEZY_WEBOS=true \
+  test/games/game_catalog_screen_test.dart test/utils/platform_detector_test.dart
+flutter test --dart-define=PLEZY_TIZEN=true \
+  test/games/game_catalog_screen_test.dart test/utils/platform_detector_test.dart
+python3 scripts/checks/check_localizations.py
+python3 scripts/checks/clean_translations.py --check --unused --strict
+```
+
+No native receiver, server or CI workflow changed in this closure. Their earlier
+receipts remain earlier evidence; SDK packages, real Steam/Cloud/Families,
+physical HDR/input/audio/accessibility and deployed relay qualification remain
+build/live gates. The [source acceptance ledger](CONNECTED_EXPERIENCE.md)
+separates these gates from implemented code and records the still-unimplemented
+account-global Cloud write contract and game-side-only Steam SDK features.
+
+## Steam visual and interaction pass — 2026-10-29
+
+Code commit `db4376768ebf95b0c87afe7e0892fb723a346b74`, tree
+`140515235f462dd4acef360f630ac3e99facfecb`, integrates the visual pass and the
+concurrent controller-only follow-up. [VISUAL_EXPERIENCE.md](VISUAL_EXPERIENCE.md)
+records flows, branding, screenshot provenance and physical-device acceptance.
+
+- **167 Flutter tests pass:** all `test/games`, Steam workspace and texture
+  tests. Includes explicit computer preferences, controller-only action dispatch
+  and microphone refusal, cancellation during reconnect, D-pad, semantics,
+  filter recovery, responsive grid/detail/settings and 2× RTL text.
+- Focused standard Dart analysis of Games screens, models/controller, Steam
+  workspace surface and changed tests reports **zero diagnostics**.
+- Server **`go test -race ./...` passes** after adding the browser Steam sign-in
+  page, including OpenID destination/state, CSP stylesheet and no-credential-
+  collection checks. Official sign-in art is embedded without remote requests.
+- Localization and strict unused-key checks pass: **37 locales, 4,407 messages**,
+  24,264 explicit English fallback entries. These counts do not mean language
+  review. Outdated Games help has an explicit English fallback pending review.
+- Eight actual production-widget screenshots were rendered and visually
+  inspected with real fonts and fixture Steam cover art. Their
+  [receipt](visuals/receipt.json) binds the pixels to this code commit.
+
+This pass does not requalify native SDK builds or hardware. The phone
+controller-only native follow-up remains newer than earlier JNI/native receipts.
+The existing private-JIT, packaging, Apple/Windows, live-host/HDR/accessibility,
+Valve-authority and relay deployment gates remain open. No workflows were
+changed or dispatched for the visual pass.
+
+## Controller-only phone receiver follow-up — 2026-10-29
+
+The implementation now adds an input-only Steam request and session negotiation,
+plus an Android connection-state JNI entry point. It is newer than the Android
+42-export and native-test evidence recorded below. This follow-up has not been
+built or run against a paired Steam host; the earlier counts do not qualify it.
+Run the exact current PR head through the private Android/iOS build gates and
+verify whether the host permits this separate controller session alongside an
+existing play session.
+
+## SDK preparation and real Android compilation — 2026-10-29
+
+[SDK_BUILD_HANDOFF.md](SDK_BUILD_HANDOFF.md) contains the committed platform
+preparation, build commands and agent acceptance criteria. These checks extend
+the earlier source checkpoints below; no full Apple/Windows build or hardware
+result is inferred from them.
+
+- Official Android command-line tools **22.0 / 15859902** were downloaded and
+  checked against Google's published SHA-256. JDK **21.0.12**, build tools
+  **36.1.0**, NDK **29.0.14206865**, CMake **3.22.1/4.1.2** and platform APIs
+  **34, 35, 36, 37.0** were installed and verified. Vendored plugins' older SDK
+  declarations are included. Real installation exposed malformed nested legacy
+  platform directories; the guarded repair and serial installer were exercised.
+- The actual Steam JNI runtime, crypto/transport, Opus, Granite and direct
+  Vulkan/Pyrowave path compile and link in Release for **arm64-v8a,
+  armeabi-v7a, x86 and x86_64** with the pinned NDK/CMake and requested native
+  API 25. Each artifact exports all **42** required JNI entry points, has the
+  correct ELF machine, and has no text relocations or runtime search paths.
+  ARM64 and x86_64 LOAD segments meet **16 KB** alignment; 32-bit targets retain
+  compatible 4 KB alignment. These are standalone JNI builds, not APK/AAB builds.
+- The vendored controller's Java and all Kotlin sources compile against its
+  declared **API 34** and the real Flutter **3.47.1** embedding. The actual
+  `SteamStreamPlatformViewFactory.kt` compiles against **API 37.0**. Kotlin
+  **2.4.10** and JDK 21 were used. The two compatibility vibrator deprecations
+  remain; Kotlin compilation produced no diagnostics. Gradle dependency
+  resolution, app resources, R8, signing and package execution are still gates.
+- Linux SDK preflight passes with GTK **3.24.41**, libsecret **0.21.4**, libevdev
+  **1.13.1**, Wayland **1.22.0**, EGL **1.5**, GStreamer **1.24.2**, Vulkan
+  **1.3.275** and CMake **3.28.3**. Real GStreamer inspection finds all required
+  elements, including H.264/H.265 decoding/parsing, capture/playback endpoints
+  and the OpenH264 test encoder. This does not access a microphone or qualify
+  a display/GPU.
+- The official VS 2022 bootstrapper was downloaded and SHA-256 verified. The
+  Windows script parses under PowerShell **7.4.19**, and its non-Windows refusal
+  executes correctly. Microsoft Windows SDK **10.0.26100.9457** package contents
+  were inspected to confirm receiver import-library names. Actual installation,
+  Windows Authenticode verification, MSVC compilation and execution have not run.
+- **39 Python tests pass**: 14 shared Android SDK tests and 25 Games preparation,
+  archive and artifact checks. Cases include checksum/traversal/link rejection,
+  platform layout identity, partial installs, preserved Apple archives, wrong
+  Xcode selection, bundled/downloaded Metal, failed-receipt invalidation, actual
+  shader extraction, ABI/JNI/alignment rejection and missing Linux codecs.
+- Workflow action-pin, architecture/private-runner and security checks pass.
+  The existing private jobs now invoke SDK preflight/probes and preserve receipts;
+  Linux image dependencies cover the codec and shader tools. Runner routing,
+  trust, manual dispatch and hosted-fallback policy are unchanged. No workflow
+  was dispatched and no runner image/service was deployed by this preparation.
+- After integrating current main, the native build and CTest run pass again:
+  **42 passed, one display-dependent test skipped**. Android Intel targets
+  reconfigure/build/inspect successfully with unchanged binaries. The six Mac
+  Flutter-cache regression tests also pass. Incoming iOS simulator settings had
+  six unquoted conditional keys: their OpenStep parse failure was reproduced,
+  the keys were quoted, and all three Apple project files parse successfully.
+  Apple SDK preflight now invokes native `plutil -lint` before source probes.
+
+Standalone JNI artifact SHA-256 values (unstripped development outputs, not
+release-distribution checksums):
+
+| ABI | SHA-256 |
+| --- | --- |
+| arm64-v8a | `b520538c076840080e2e70b4a3cf06f067344b263f667e5ca16c75de87377c8d` |
+| armeabi-v7a | `b32accda046b515a47136368c36704a5958714ec712c0dee03174e610c17431d` |
+| x86 | `0ade78329a4323bc02b356e843c209eaf670de9eaa0aee9d311b9e363a5dc01b` |
+| x86_64 | `1a9d112634169174ed2d95e7145d1287f4a5b7274476e01fca22220aefd8c03f` |
+
+Application/native feature logic is unchanged from the preceding ownership
+checkpoint. The latest-main integration also preserves Darwin interface-flag
+visibility, parent CTest isolation from Opus, private-JIT memory/disk fixes and
+Apple simulator project changes. Historical Flutter, native runtime and Go
+results below still identify their original checks.
+Apple's real Xcode SDKs must be provisioned on Mac agents; unit-tested command
+construction is not Apple compilation. Full Gradle packages, MSVC, Xcode,
+hardware, live accounts and service deployment remain the handoff gates.
+
+## Earlier source checkpoints
+
+Current source checkpoint is [PR #81](https://github.com/snapetech-org/PlezyNG/pull/81):
+[Vulkan/HDR10](VULKAN_RECEIVER.md), [Cloud files](STEAM_CLOUD.md) and
+[paired internet streaming](STEAM_INTERNET.md), [Windows/Apple HDR](DESKTOP_HDR.md)
+and [Families management](STEAM_FAMILIES.md). Its checkpoint sections
+at the end record local evidence. Older platform milestones below are historical;
+they do not establish hardware HDR, current SDK builds or deployed service support.
+
+For current completion status, see
 [CONNECTED_EXPERIENCE.md](CONNECTED_EXPERIENCE.md#scope-and-acceptance).
 Historical builds below do not validate the current branch.
 Use [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) for the exact-commit build
@@ -148,7 +406,13 @@ The private JIT-routed `android-test` job builds both Android libraries alongsid
 
 New Games messages are seeded with reviewed English fallback copy in non-English base locales; they are **not language-reviewed translations**. Regional locales inherit their parent. Latest-main localization fixes are preserved independently of these new keys.
 
-## Required before Android release
+## Historical Android release checklist (superseded source scope)
+
+This early checkpoint predates the current receivers, direct GPU/HDR, controller,
+microphone and UX work. Its device cases remain useful; implementation status
+and build gates are defined by the newer sections above and LIVE_TEST_HANDOFF.md.
+
+### Required before Android release
 
 1. Build debug and minified release APKs for supported ABIs. Verify manifest merging, app identity, backup exclusions, private components, merged resources and shrinker retention. Test with the embedded module enabled and with `-PplezyGamesEmbedded=false`.
 2. Sunshine stable/current, Apollo, Wolf and representative legacy GameStream hosts: discovery, manual address/custom port, correct/wrong/expired PIN, rejection, certificate change, reconnect and revoked trust. Confirm no host credentials or trust material enter logs, QR codes, profile exports or backups.
@@ -157,7 +421,7 @@ New Games messages are seeded with reviewed English fallback copy in non-English
 5. Missing, malformed, oversized and slow cover art; large libraries; empty app list; offline refresh; multiple computers with duplicate game names. Confirm cards remain usable without artwork.
 6. Package the pinned modified engine's complete corresponding source, build instructions, dependencies and required license notices with each distribution. Review all third-party components and distribution-channel compatibility. The Moonlight and Steam notice assets alone are not a complete corresponding-source release bundle.
 
-## Remaining gates
+### Gates at that historical checkpoint
 
 - **Steam interoperability:** current stable/beta and representative older hosts, correct/wrong/expired PIN, host rejection, revoked trust, selected-game launch, input and decoder behavior. A compiled independent protocol implementation is not host certification.
 - **Steam account and catalog:** browser-based Steam OpenID identity linking and bounded import of public owned-game metadata are implemented. Configure `STEAM_WEB_API_KEY` on the server for catalog retrieval; without it, account identity still links but the catalog is unavailable. The import does not expose private libraries or establish host installation. A catalog tap uses a matching saved Steam host shortcut and requires host-side launch acceptance. Validate public/private profiles, stale refresh retention, account switching, 2,000-item truncation, QR/browser flow, Steam Guard prompts handled by Steam, and the server's configured callback in the current private-JIT run. See [STEAM_LIBRARY.md](STEAM_LIBRARY.md).
@@ -421,3 +685,304 @@ does not validate these sources. No hosted fallback is authorized.
   native checks, preserving x64/ARM64 private JIT routing and manual dispatch.
   Current-head CI, Apple SDK builds, Windows N startup, Windows audio devices,
   actual host playback and GPU/HDR qualification remain open.
+
+### Android/Wayland Vulkan receiver source checkpoint
+
+- 42 native tests pass; the additional hardware Vulkan/Wayland test skips in
+  this container (no qualifying hardware device). The actual software decode
+  attempt failed inside Mesa/LLVM; see [VULKAN_RECEIVER.md](VULKAN_RECEIVER.md).
+- 25 focused Flutter tests pass, including the native-plane/texture switch and
+  retirement channel contract, aperture transparency and narrow RTL diagnostics.
+- Linux plugin/Wayland sources pass strict syntax checks against Flutter/GTK
+  headers. Android Java compiles against API 36; no Android NDK build is claimed.
+- Shader regeneration matches the committed SPIR-V. Nine source/build guard
+  tests and 225 check-script tests pass (the two Dart-dependent checks were
+  rerun with the required toolchain PATH after an initial environment error).
+- Apple SDK, MSVC, full Linux/Android packages and physical HDR output remain
+  unqualified. These checks do not establish a successful real Steam session.
+
+### Scoped Steam Cloud checkpoint (2026-10-28, PR #81)
+
+- `go test -race ./...` passed, including new Cloud OAuth identity/origin/replay,
+  grant expiry/revocation, permission/configuration, bounded transfer deadline,
+  SHA conflict, storage/integrity and mandatory finalization failure tests.
+- 18 focused Flutter tests passed: Cloud client/dialog, existing activity
+  panel/client and OAuth polling/dialog. The Cloud flow uses a 360-pixel RTL
+  viewport at 1.7× text, separate write authorization, a reviewed deletion and an
+  ambiguous-response refresh requirement. No analyzer issues in the six changed
+  Dart source/test files. Locale generation and normalization checks passed.
+- Live Valve OAuth approval/scopes, actual storage endpoints/response schemas,
+  platform pickers and real save changes remain unqualified. See
+  [STEAM_CLOUD.md](STEAM_CLOUD.md) for configuration and a disposable-save handoff.
+  Confidence: high in the recorded local checks; unknown in live Valve/device
+  behavior. Families mutation was not implemented at this checkpoint; the later
+  Families source and qualification are recorded in STEAM_FAMILIES.md.
+
+### Paired internet checkpoint (2026-10-28, PR #81)
+
+- `go test -race ./...` passes, including relay same-account admission,
+  wrong/expired/revoked grants, origin/header checks, third-peer rejection,
+  bounded frames/queues, paired disconnect and disabled/insecure configuration.
+- **43 Flutter tests pass** for the new authenticated packet codec, real
+  localhost TLS/WSS/UDP upgrade/fallback fixture, Companion provider and Games
+  dialogs. The two network tests were rerun after adding retained-workspace
+  identity, loopback mapping, compatible-codec, route-label and retirement
+  assertions; they pass and are included in the 43, not additional tests.
+- **24 existing native-client/workspace/texture/diagnostics Flutter tests pass**
+  after the tunnel lifecycle integration. This is a separate focused set; it
+  does not qualify the full app test suite.
+- The repository's **standard analyzer passes with zero diagnostics**. Slang
+  generation, translation normalization/unused-key checks and locale validation
+  pass: 37 locales, 4,280 messages and 19,512 explicit English fallback entries.
+  The Cloud/internet source hashes record the current reviewed English copy;
+  these fallbacks are not language-reviewed translations.
+- **42 native tests pass; one hardware Vulkan/Wayland test explicitly skips**.
+  Native routing rejects incomplete/duplicate/non-loopback proxy mappings.
+  Linux adapter/Wayland and Windows adapter strict syntax checks pass; Flutter
+  SDK headers are external system includes in the Windows check. The portable
+  Windows runtime/receiver and tests cross-compile/link with MinGW-w64. None of
+  this is MSVC or Windows execution.
+- The Android Steam Java module compiles against API 36 with generated resource
+  symbols and 20 compatibility deprecation warnings. The new JNI entry point
+  preserves all older entry points, but Android NDK/link/minified packages and
+  current Apple SDK builds still require private JIT verification.
+
+See [STEAM_INTERNET.md](STEAM_INTERNET.md) for the disabled-by-default deployment,
+two-device opt-in, same-account admission, fixed-port forwarding, cryptographic
+and resource limits, and real-network test matrix. No real internet relay
+deployment, router traversal, Steam session throughput, hardware HDR output or
+independent cryptographic audit was performed here. Current-head private JIT
+jobs have not been dispatched from this environment; use the commands in
+[LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md). Confidence is high in the recorded
+local results and unknown in untested device/service/network behavior.
+
+## Windows/Apple HDR source checkpoint — 2026-10-29
+
+- Windows x64 MinGW build now enables Vulkan/Pyrowave and links all five native test executables. Strict Windows adapter syntax checking passes. These executables were cross-built, not run on Windows.
+- Linux Vulkan/GStreamer rebuild passes; native regression results are recorded with the checkpoint.
+- Seven Steam source-preparation and Apple archive-script tests pass.
+- Apple tests now decode HDR 4:2:0/4:4:4 into RGBA16Half, check actual half-float output and reject unannounced color changes. They require an Apple SDK and compatible GPU; no result is claimed here.
+- MSVC x64/ARM64, Apple SDK builds, Android NDK builds and physical HDR displays remain required. See [DESKTOP_HDR.md](DESKTOP_HDR.md).
+
+## Families and HDR follow-through — 2026-10-29
+
+- The full server `go test -race ./...` passes, including the new Families
+  policy, QR identity, one-use review, credential/redirect, account isolation,
+  shutdown cancellation and revocation cases.
+- Seven focused Flutter tests pass: four Families client cases, the explicit
+  review/acknowledgement/uncertain-result/retirement flow in normal and narrow
+  2x-text RTL layouts, and the existing Steam activity panel large-text case.
+  Review/editor/error transitions reset the scroll position; the test asserts
+  the actual controls are hit-testable before interacting.
+- Linux native rebuild and strict adapter/Wayland syntax checks pass. The
+  native suite reports 42 passes and one explicit hardware-dependent Vulkan
+  skip, with no failures.
+- The Windows MinGW Vulkan/Pyrowave runtime and five native executables rebuild
+  and link after correcting native Win32/Vulkan include ordering. These are
+  cross-build results, not Windows execution or MSVC validation.
+- Strict Windows adapter syntax checking and the standard Dart analyzer pass
+  with no diagnostics. Localization and strict normalization/usage checks pass:
+  37 locales, 4,309 messages, 20,556 explicit English fallback entries and no
+  unused translation keys. The fallback entries are not reviewed translations.
+- Apple HDR presentation failure now cancels the Pyrowave session so the
+  existing conventional-codec reconnect path can recover. Windows/Linux
+  diagnostics report chroma only after an actual GPU-presented frame.
+
+These tests use controlled Steam API responses and do not claim successful
+Families changes on live accounts. Current private-JIT SDK builds, real HDR
+output, relay deployment and Valve-approved Cloud scopes remain external gates.
+See [STEAM_FAMILIES.md](STEAM_FAMILIES.md) for the broader temporary-session trust
+model, explicit limits and live qualification cases.
+
+## Fixed-base application integration — 2026-10-29
+
+The PR branch incorporates base `ac97859268aeddde1c112628debaac4ccc496c34`.
+Integration repairs keep the newer player-neutral subtitle capture interface
+supplied with position/duration, explicitly narrow optional native audio and
+PCM capabilities, expose the app-owned Tizen native handle without using a
+test-only API, restore the missing base64 import and check widget lifetime after
+asynchronous subtitle validation. Changed Dart sources are formatted with the
+repository toolchain. These changes preserve the source features on that fixed
+base; this checkpoint does not merge or deploy the PR.
+
+The existing playback regression tests also exposed a constant operation ID:
+every seek, relocation and source change reused zero. Restoring monotonic IDs
+allows accepted newer operations to supersede stale completions without letting
+a rejected request take ownership.
+
+- All 88 native-player bridge and Tizen tests pass after this repair, including
+  overlapping, rejected and out-of-order seeks and source retirement.
+- A separate 119-test regression run passes for music playback, music
+  visualization, signed visualization catalogs, subtitle archive imports and
+  source playback.
+- All 29 selected Steam card, Families client/dialog, activity, real localhost
+  internet-tunnel fixture and retained workspace/texture tests pass on the
+  reconciled source. This includes narrow 2x-text RTL confirmation and native
+  plane/texture recovery. Together these three non-overlapping runs contain
+  236 passing Flutter tests; they do not qualify the entire application suite.
+- The standard Dart analyzer passes with zero diagnostics. Localization checks
+  pass for 37 locales, 4,309 messages and 20,556 explicitly recorded English
+  fallbacks; these counts do not imply reviewed translations.
+- Formatting passes for all 51 changed authored Dart files. Earlier interrupted
+  or compiler-memory-limited test attempts are excluded from the passing totals.
+  The successful focused runs used a task-local bounded compiler launcher;
+  shared SDK files and repository checks were not altered.
+
+## Current-main reconciliation — 2026-10-29
+
+The final handoff incorporates actual main tip
+`86c852ee3267c955d557f2e9aa6be1dc8080a2ce`. The PR metadata had still reported the
+older base while the branch reference had advanced by 12 commits. Both semantic
+conflicts are resolved using main's equivalent monotonic playback-operation
+fix and explicit PCM capability cast. Its unified PCM timing and public Tizen
+handle contract replace the duplicate compatibility accessors from the previous
+checkpoint. Steam features and security controls are retained.
+
+Current-main SDK cache, private-runner routing, platform build repairs, database
+generation and test-fixture changes are retained. The workflow architecture
+guard passes, and formatting passes for all 30 authored Dart files that still
+differ from this base. These source checks do not establish a private-JIT build.
+
+- The standard analyzer again passes with zero diagnostics; localization
+  counts and explicit fallback tracking remain unchanged.
+- All 88 native-player bridge/Tizen tests pass again on this combined source.
+  Initial compilation exceeded the earlier compiler heap cap; the
+  successful retry used a larger task-local cap, with the shared SDK unchanged.
+- All 119 music, visualization, subtitle-import and source-playback tests pass
+  again, including main's revised signed-catalog fixtures.
+- All 29 selected Steam UI/client, real TLS/UDP tunnel, workspace and texture
+  tests pass again. These three non-overlapping current-main runs total 236
+  passing Flutter tests. The earlier checkpoint's totals are not additional
+  tests and do not qualify the final source on their own.
+
+Native Steam, server, Games and Steam detail-screen source files are unchanged
+from the preceding implementation checkpoint. Their recorded native/server
+results remain separately identified above; no new SDK build or live deployment
+is claimed. This reconciliation resolves source conflicts without merging the
+PR into main or changing the required private-JIT platform qualification gates.
+
+## Code follow-through — 2026-10-29
+
+Checkpoints `4d8c8add` (session ownership/internet codecs), `1465511c`
+(controller layouts) and `35d7e8bd` (host controls/UHD/relay budgets) are followed
+by committed IME text and touch appearance. All remote writes use the GitHub
+connector; PR #81 targets main `86c852ee`. No workflow trigger, runner pool or
+trust rule changed.
+
+Latest source verification:
+
+- **141 Flutter tests passed**: all `test/games` plus the Steam workspace session
+  and texture suites. Coverage includes local TLS/UDP traversal/fallback,
+  inventory/account isolation, Cloud/Families reviews, mapping rollback/replay,
+  IME commit gating, UTF-8 bounds, touch-side geometry, large text and retirement.
+- Standard analyzer passed with zero allowed info diagnostics. Localization
+  placeholders/source hashes pass with explicit English fallback tracking;
+  this is not a translation review.
+- Linux native build: **42 tests passed; one GPU/display test skipped**.
+  Native text tests reject overlong/truncated/surrogate UTF-8, controls and
+  oversized buffers. Runtime tests cover controller mappings and request bounds.
+- Windows MinGW runtime and five native test executables compile/link. Linux
+  and Windows Flutter adapter syntax checks pass with warnings treated as errors
+  for application source; vendored SDK headers are system includes.
+- Android Java compiles against API 36 with 20 existing deprecation warnings;
+  **16 JVM tests passed**, including updated quality bounds, controller seats,
+  legacy defaults and worker lifecycle. Reflection methods are explicitly kept
+  for shrinking. This is not Kotlin/Gradle/NDK packaging qualification.
+- Full server `go test -race ./...` passed after the relay bandwidth changes;
+  the later input work does not change server source.
+
+No Apple SDK, Android release package, MSVC execution, hardware HDR/chroma,
+production relay deployment or live Valve account mutation is claimed. Follow
+[CODE_COMPLETION.md](CODE_COMPLETION.md) for the remaining contract/code boundaries
+and [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) for exact-commit build cases.
+
+## Microphone source checkpoint — 2026-10-29
+
+- 26 receiver/ownership Flutter tests pass, including late-start revocation,
+  permission/device rejection, explicit opt-in and dialog/lease muting.
+- Standard analyzer passes with zero diagnostics.
+- 42 native tests pass; one independent display test is skipped. Real Opus
+  round trips cover mono/stereo at 8/12/16/24/48 kHz, split frames and buffer
+  clearing. Runtime tests race capture submission against 100 host channel
+  start/stop cycles and reject expired leases and overlapping capture workers.
+- Android Steam Java compiles against API 36 with the same 20 deprecation
+  warnings. Windows MinGW compiles and links the WASAPI implementation into
+  the receiver test executable. Linux adapter syntax checks pass under Werror.
+- Apple capture, microphone entitlements/privacy text and tvOS availability
+  guards are source-integrated; Apple SDK compilation is still required.
+
+Kotlin/Gradle/NDK, MSVC, signed Apple builds and permission/device/Steam-host
+qualification remain handoff checks. No live microphone or user audio was
+accessed during these source tests.
+
+## Controller and touch completion — 2026-10-29
+
+- **171 Flutter tests passed**: all `test/games`, Steam workspace and texture
+  suites, `test/services/gamepad_service_test.dart` and the vendored gamepad wire
+  format suite. New cases cover physical device routing, stale claims/polls,
+  malformed feedback, cancellation of pending timers, window focus loss,
+  touch persistence/collision/resize, drag editing, large text and accessible
+  position controls. The ordinary input wire-format regression cases pass.
+- Standard analyzer passes with zero diagnostics. Localization placeholders,
+  explicit English fallback manifest and source hashes pass; translation review
+  is not implied. The private-JIT workflow architecture guard passes unchanged.
+- **42 native tests passed; one display test skipped**. The extended runtime
+  test also passes after its final feature-report assertions: fragmented/multiple
+  host commands, duration bounds, stale motion, ownership loss, seat reuse,
+  explicit virtual controller identity and zeroed reserved bytes.
+- Windows MinGW runtime and five test executables compile/link. Strict Linux and
+  Windows Steam adapters pass; the Linux gamepad extension and Windows extension
+  compile with warnings treated as errors (upstream unused parameters excluded).
+  Windows checks use real SDL3 3.2.8 headers fetched through the GitHub connector,
+  not local stubs. Flutter's event-channel header requires C++20 for the vendored
+  Windows plugin; the existing Steam runtime remains C++17.
+- Android Steam sources and the controller-effects extension compile against API
+  36, with 22 deprecation warnings (20 existing plus two compatibility vibrator
+  calls). **16 Android JVM tests passed**. Java compilation does not compile the
+  Kotlin bridge or package/link the NDK receiver.
+- No server behavior changed after the previously passing Go race suite. No
+  workflow, JIT policy, trust boundary or runner deployment was changed.
+
+Build/live gates remain: current-head Apple SDK and signed app builds,
+Kotlin/Gradle/NDK packaging, MSVC builds/execution, physical controllers and
+motion axes, microphone permission/device paths, actual HDR/chroma presentation,
+Steam host/account interoperability, approved Cloud authority and deployed relay
+NAT/throughput tests. This is a source handoff, not hardware or deployment approval.
+
+## Input ownership and accessible adjustment — 2026-10-29
+
+- **174 distinct Flutter cases pass**: 147 Games/texture/gamepad/wire-format
+  cases from the broad regression run and the final 27-case receiver/touch run.
+  New delayed-reset cases reproduce the old grant overwrite on the previous
+  source, with and without receiver replacement, and pass with the ownership
+  fix. The touch semantics case verifies the merged control/axis/value and
+  invokes screen-reader increase/decrease actions to move only the chosen axis.
+- Standard analyzer passes with zero diagnostics; formatting and diff whitespace
+  checks pass. The existing large-text touch editing case remains green.
+- Native, vendored controller-plugin, transport/server and platform build files
+  are unchanged from the preceding checkpoint. Their recorded source-check
+  results and the outstanding SDK/device/service qualification gates still
+  apply; this follow-up does not claim new platform builds or live testing.
+
+
+## Desktop Cloud IPC source checkpoint — 2026-10-29
+
+Windows and macOS host transports, permission visibility and Companion capability
+advertisement now join the Linux implementation. Native client bindings have no
+new Dart dependency. The plugin archive includes the Windows backend. A standalone
+`cloud_transport_probe.py`/`.dart` pair is provided for all three desktop build
+agents; it uses real IPC but simulated Steam observations.
+
+Locally: Dart analysis of both transport files and the probe is clean; Python
+compilation succeeds; ten Python unit tests pass and six Unix socket tests skip
+because this execution environment rejects AF_UNIX. The real IPC probe also fails
+with that explicit OS permission error, rather than passing or silently skipping.
+No Windows/macOS runtime result is claimed. The plugin JS tests/build/typecheck
+and the five standalone Dart exchange tests were rerun for this checkpoint.
+Full Flutter validation remains unavailable because the prior Flutter SDK source
+is absent. Desktop SDK builds, cross-user access rejection and live Steam/Decky
+qualification must run on the private platform agents before release.
+
+The existing private Linux, macOS and Windows CI jobs now run the real IPC probe.
+Runner routing, permissions and trust conditions are unchanged; these amended
+jobs have not been dispatched or observed here.

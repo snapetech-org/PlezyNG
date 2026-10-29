@@ -51,6 +51,33 @@ void main() {
     semantics.dispose();
   });
 
+  testWidgets('swapped controller sides preserve actions and minimum targets', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(800, 400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final events = <(String, bool)>[];
+    Widget controls(bool swapped) => MaterialApp(
+      theme: monoTheme(MonoPalette.oled),
+      home: Scaffold(
+        body: SteamTouchControls(
+          key: ValueKey(swapped),
+          swapSides: swapped,
+          onButton: (key, down) => events.add((key, down)),
+          onStick: (_, _) {},
+          onRelease: () {},
+        ),
+      ),
+    );
+    await tester.pumpWidget(controls(false));
+    final a = find.byKey(const ValueKey('a'));
+    expect(tester.getCenter(a).dx, greaterThan(400));
+    await tester.pumpWidget(controls(true));
+    expect(tester.getCenter(a).dx, lessThan(400));
+    expect(tester.getSize(a), const Size(48, 48));
+    final finger = await tester.startGesture(tester.getCenter(a));
+    await finger.up();
+    expect(events, [('a', true), ('a', false)]);
+  });
+
   testWidgets('sticks clamp their travel, neutralize on cancellation, and tiny panes explain resizing', (tester) async {
     await tester.binding.setSurfaceSize(const Size(800, 400));
     addTearDown(() => tester.binding.setSurfaceSize(null));

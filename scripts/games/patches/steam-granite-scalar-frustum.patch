@@ -1,0 +1,23 @@
+diff --git a/math/simd.hpp b/math/simd.hpp
+--- a/math/simd.hpp
++++ b/math/simd.hpp
+@@ -100,7 +100,18 @@
+ 	return vget_lane_f32(merged_half, 0) >= 0.0f;
+ #endif
+ #else
+-#error "Implement me."
++// Native Windows ARM64 does not define GCC's __ARM_NEON macro.
++	// Keep a portable path instead of raising the CPU instruction baseline.
++	for (unsigned i = 0; i < 6; i++)
++	{
++		const auto &p = planes[i];
++		const auto &lo = aabb.get_minimum4();
++		const auto &hi = aabb.get_maximum4();
++		float d = 0.0f;
++		for (unsigned j = 0; j < 4; j++) d += p[j] * (p[j] > 0.0f ? hi[j] : lo[j]);
++		if (d < 0.0f) return false;
++	}
++	return true;
+ #endif
+ }
+ 

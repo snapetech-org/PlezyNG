@@ -1,5 +1,18 @@
 # Connected games implementation ledger
 
+Current source checkpoint: [PR #81](https://github.com/snapetech-org/PlezyNG/pull/81)
+adds [Android/Wayland Vulkan and HDR10](VULKAN_RECEIVER.md),
+[scoped Cloud file actions](STEAM_CLOUD.md) and
+[paired internet traversal/relay](STEAM_INTERNET.md),
+[Windows/Apple HDR](DESKTOP_HDR.md) and [Families management](STEAM_FAMILIES.md).
+The [code follow-through](CODE_COMPLETION.md) adds session-owned receivers,
+controller layouts, committed IME text, touch appearance, host controls, LAN-install assistance and higher-resolution
+requests. Older sections below are historical milestones, not current hardware
+or service qualification.
+The [visual and interaction pass](VISUAL_EXPERIENCE.md) integrates first use,
+dedicated connections/settings, responsive game details, explicit computer
+preferences and consistent Steam attribution with PlezyNG's existing design.
+
 This is the review ledger for the connected Steam / GameStream experience.
 The product remains PlezyNG: existing poster geometry, theme tokens, focus,
 adaptive menus, profile boundaries and Multiview ownership apply to games.
@@ -9,66 +22,89 @@ shortcut establishes entitlement, authentication, reachability or playback.
 
 ## Scope and acceptance
 
-**Overall status: not code complete; draft PR; not ready for all-platform release.**
-The implemented slices below are not substitutes for the remaining scope.
+**Overall status: source checkpoint in draft PR #81; not ready for all-platform release.**
+Windows/Apple HDR and Families mutations now have integrated source paths.
+Current SDK/device/Valve/deployment qualification is still open; source
+implementation must not be reported as successful live operation.
 The [live testing handoff](LIVE_TEST_HANDOFF.md) separates executable test cases,
-platform build prerequisites and features that still require implementation.
+platform build prerequisites and external API contracts that remain unestablished.
 
 | Area | Code on this branch | Outstanding evidence or implementation |
 | --- | --- | --- |
 | Unified account / multi-computer library | Implemented, shared-model tests pass | Actual Windows/macOS/Linux inventory exchange and large-library qualification |
 | Catalog refresh and revocation | Implemented, Go race tests pass | Relay deployment and live account exercise |
-| Grid, details, routes and filtering | Implemented using existing app components | Device accessibility, RTL, controller and visual qualification; new strings currently use the English fallback |
+| Grid, details, routes and filtering | Receiver-independent navigation/catalog; implemented using existing app components; responsive production-widget renders, D-pad/semantics and large-text RTL tests | Physical-device accessibility, controller and visual qualification; reviewed translations beyond explicit English fallback |
 | Android stream preferences / recovery | Implemented through Flutter, Java and JNI | Full Android build/minification, real host reconnect and negotiated-quality measurements |
-| Native Steam transport | Portable Linux build and 41 tests pass locally; Windows runtime and five test executables cross-compile | Current-head sanitizer CI, Android packaging and live transport qualification |
-| View-independent stream lifetime | Retained Android PlatformView and Windows/Linux/Apple texture surfaces | Native session still belongs to its retained surface; surface destruction stops it |
-| Adaptive metrics / advanced codecs | Host-driven feedback, measured diagnostics, request ceilings, one-to-four controller seats, mono/stereo/quad/5.1 mapping; Apple Metal direct GPU SDR 4:2:0/4:4:4 source | Apple SDK/GPU tests; Android/Linux direct GPU Pyrowave, HDR and 4K implementation; real host/audio/controller and adaptation measurements |
+| Native Steam transport | Portable Linux build and 42 tests pass locally; native loopback tunnel mapping integrated in all four platform adapters | Current-head sanitizer CI, SDK builds, Android packaging and live transport qualification |
+| View-independent stream lifetime | Workspace-owned desktop/Apple receivers; Android session registry and replaceable video Surface | Device suspend/rotation/multiview qualification |
+| Adaptive metrics / advanced codecs | Host-driven feedback, measured diagnostics, request ceilings, one-to-four remappable seats, opt-in 4K60/1080p120, mono/stereo/quad/5.1; Apple Metal and Android/Wayland/Windows Vulkan direct GPU 4:2:0/4:4:4 with gated native HDR10 | Actual hardware GPU/HDR/color tests, Apple SDK builds, 4K and Windows/Apple HDR output qualification; audio/controller/adaptation measurements |
 | Other embedded receiver platforms | Linux receiver implemented; Windows Media Foundation/XAudio2 and Apple VideoToolbox/Core Audio/Metal receiver sources integrated; shared texture/touch input and workspace ownership | Full Linux/SteamOS packaging and host qualification; Apple SDK/device qualification; Windows MSVC x64/ARM64 and device qualification |
-| Rich Steam / host features | Achievements/news/optional friends-playing, Input/properties host actions, and confirmed Cloud/Families destinations implemented | Live API qualification, host cloud/family state APIs, live Steam Input configuration, Together and captures |
-| Companion game control / internet transport | Inventory, permissioned host launch/install/views, and active stream audio/fullscreen/disconnect controls implemented | Signaling/NAT/relay, internet connection diagnostics and actual host/device qualification |
+| Rich Steam / host features | Achievements/news/optional friends-playing, Input/properties host actions, overlay/Together and screenshot shortcuts, LAN-install assistance; optional AppID-scoped Cloud listing/download/replace/delete; separately authorized and reviewed Families mutations | Valve Cloud approval/live contracts, Families service/account qualification, account-global Cloud mutation contract; live Input configuration, Together eligibility and host capture qualification |
+| Companion game control / internet transport | Inventory, permissioned host actions and stream controls; paired encrypted WSS relay, authenticated IPv4 hole punching/fallback, same-account admission, existing diagnostics and opt-in settings | Deployment, actual routers/CGNAT, sustained bandwidth and platform/host qualification; opted-in internet Pyrowave/HDR throughput qualification |
 
 No claim of “every Steam API” is made: public catalog APIs, game-side Steamworks
 APIs, private client interfaces and services requiring Valve approval have
 different access contracts. An unavailable API needs an explicit dependency or
 unsupported state; a mock response or a menu item is not completion.
 
-The complete requested scope is tracked below. A checked item means implemented
-and verified by the evidence linked in this document; design, an interface or
-an unavailable capability alone does not count as an implementation.
+### Source acceptance
 
-- [ ] One canonical library for Steam account entries and computer routes;
-      migrate existing favorites/recents without merging unrelated shortcuts.
-- [ ] One accessible poster grid, search, details, actions and connections UI;
-      source attribution, theme inheritance, RTL and controller/keyboard focus.
-- [ ] Profile-scoped preferred routes; explicit availability and action states;
-      host discovery retains useful hints without treating them as trust.
-- [ ] Catalog refresh independently of OpenID; played free games; bounded cache,
-      actionable failure reasons, disconnect and account-switch isolation.
-- [ ] Host inventory through authenticated, capability-negotiated connections;
-      optional desktop library sharing with narrowly scoped permissions.
-- [ ] Steam metadata, achievements and news; privacy-respecting social context;
-      safe community/store/workshop destinations and explicit browser consent.
-- [ ] Session state and first-frame evidence; recents only after connection;
-      reconnect and disconnect distinct from quit; release held input reliably.
-- [ ] Fullscreen and Multiview share session lifetime; independent audio/input
-      ownership; view recreation and profile retirement cancel safely.
-- [ ] Adaptive streaming presets with negotiated metrics; explicit codec,
-      resolution, bitrate and latency preferences; bounded resource budgets.
-- [ ] Direct GPU Pyrowave presentation and measured fallback; capability-gated
-      4:4:4, HDR, higher resolutions, surround and multiple controllers.
-- [ ] Linux / SteamOS, Windows, macOS, iOS / iPadOS / tvOS embedded receivers;
-      safe browsing and capability behavior on webOS / Tizen / other targets.
-- [ ] Steam Input glyphs and remapping, keyboard/IME and accessible touch
-      controls; Together / host overlay affordances without pretending the
-      Steamworks game-side API is a general-purpose receiver API.
-- [ ] Host-authoritative install, cloud conflict and family-availability states;
-      LAN transfer assistance and captures where authenticated host APIs allow.
-- [ ] Versioned companion remote game launch and session actions with explicit
-      permission; high-rate controller input stays on the streaming transport.
-- [ ] Internet connection diagnostics, authenticated signaling, NAT traversal
-      and relay deployment; no dependence on ungranted Valve SDR access.
-- [ ] Threat model, compatibility/migration tests, platform build evidence,
-      performance measurements and real-device accessibility qualification.
+These items describe implemented receiver/client code. The qualification table
+above and the separate release gates below retain the original platform, live
+account and hardware requirements; checking source work does not check those gates.
+
+- [x] Canonical Steam AppID library with independent multi-computer routes;
+      v1/v2 favorites/recents migration preserves unrelated shortcuts.
+- [x] Shared accessible poster grid, search, details, actions and connections;
+      existing themes, source attribution, RTL, keyboard/controller focus.
+- [x] Profile-scoped explicit route preferences, observation-based availability
+      and bounded discovery that never grants trust.
+- [x] Catalog refresh/revocation independent of OpenID, played free games,
+      bounded cache, private/stale states and account-switch isolation.
+- [x] Authenticated, permissioned host inventories and optional desktop sharing.
+- [x] On-demand achievements/news and opt-in friends context, safe destinations
+      and explicit browser consent.
+- [x] Session/first-frame state, recents after connection, reconnect/disconnect,
+      and held-input release on ownership loss.
+- [x] Fullscreen/Multiview session lifetime, independent input/audio ownership,
+      receiver recreation and profile retirement.
+- [x] Stream preferences, negotiated metrics and bounded adaptation resources.
+- [x] Direct GPU Pyrowave, capability-gated 4:4:4/HDR, higher resolutions,
+      surround, multiple controllers, rumble/motion and measured fallback paths.
+- [x] Integrated Android, Linux, Windows and Apple receiver sources; catalog
+      navigation and actions independent of receiver support on webOS/Tizen.
+- [x] Receiver button/axis remapping, keyboard/IME, accessible touch layout,
+      microphone controls, host Steam Input configuration and overlay shortcuts.
+- [x] Permissioned installation, LAN-install assistance, host capture/properties,
+      eligible-AppID Cloud file operations and separately authorized Families.
+- [x] Versioned Companion game/session actions; high-rate input remains on the
+      authenticated streaming transport.
+- [x] Authenticated internet signaling, IPv4 traversal, relay fallback and
+      deployable operator configuration without assumed Valve SDR access.
+- [x] Threat model, compatibility and ownership tests, SDK preparation and
+      reproducible build/live-test handoff.
+
+### Contracts outside implemented scope
+
+- [ ] Account-global Cloud enable/disable: no verified account-wide write
+      contract. The game-scoped setter is not a substitute. See
+      [the re-audit](STEAM_CLOUD.md#global-sync-settings).
+- [ ] Arbitrary game-side Steam Input glyph/action-set APIs or automatic Together
+      invitations: these need the owning game's integration/authority. Receiver
+      mappings, readable controls, host configuration and overlay assistance are
+      implemented without impersonating another AppID.
+
+### Build, deployment and live acceptance
+
+- [ ] Exact-current-head Windows/Apple SDK builds and Android/full-app packages
+      on compatible private ephemeral JIT runners.
+- [ ] Physical GPU/HDR/chroma, surround, controller, microphone and suspend/
+      reconnect qualification on every supported receiver platform.
+- [ ] Real-account metadata, inventory, Families and approved-AppID Cloud tests;
+      Valve authorization/configuration where required.
+- [ ] Relay deployment, real NAT/CGNAT/mobile paths and sustained throughput.
+- [ ] Device screen-reader/TV remote, large-library, reviewed-translation and
+      performance qualification.
 
 ## Architecture
 
@@ -569,3 +605,24 @@ Cross-compilation is evidence of source/link portability only; an actual
 Windows SDK build, real decoder fixture execution, audio/output tests and
 Steam-host qualification remain required. Confidence: high in the recorded
 cross-compilation and portable tests; unknown for Windows device playback.
+
+### Scoped Cloud file actions — PR #81
+
+[Steam Cloud files](STEAM_CLOUD.md) now adds a separate temporary authorization,
+read-only listing/download and explicitly reviewed replacement/deletion. Catalog
+and streaming credentials cannot authorize file mutations. Activation requires a
+Valve-approved client, per-AppID read/write scopes and operator-reviewed storage
+origins. Unconfigured games retain the confirmed browser destination. This does
+not implement global Cloud-sync settings or Steam Families membership changes.
+
+Windows and Apple HDR presentation source is integrated as described in [DESKTOP_HDR.md](DESKTOP_HDR.md). This supersedes earlier SDR-only implementation notes; SDK and real-display evidence is still required.
+
+### Families source checkpoint — 2026-10-29
+
+[STEAM_FAMILIES.md](STEAM_FAMILIES.md) describes the integrated optional family
+management dialog and server adapter. This supersedes historical statements
+that Families was destination-only. Separate QR approval, account binding,
+short-lived in-memory authority, one-use reviewed changes and live role/state
+checks are implemented. New errors/reviews reset their scroll position so
+large-text users reach the current message. Valve service acceptance and
+actual account outcomes remain unqualified; the server feature defaults off.

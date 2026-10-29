@@ -26,8 +26,19 @@ class GameLibraryController extends ChangeNotifier {
   List<GameHost> nearby = const [];
   bool busy = false, scanning = false;
   bool _disposed = false;
+  String? _sessionSteamCredential, _sessionSteamId;
   Future<void> _writes = Future.value();
   bool get current => !_disposed && sessionCurrent();
+
+  /// Session-only grants never enter GameLibrary or the preference database.
+  /// Callers may reveal a vault value; legacy/plain grants are already opaque.
+  String? get catalogCredential => !current
+      ? null
+      : usesSessionSteamCredential
+      ? _sessionSteamCredential
+      : library.steamCatalogCredential;
+  bool get usesSessionSteamCredential =>
+      current && _sessionSteamCredential != null && _sessionSteamId == library.steamAccountId;
 
   void requireCurrent() {
     if (!current) throw const GameClientException(GameClientFailure.cancelled);
@@ -77,13 +88,14 @@ class GameLibraryController extends ChangeNotifier {
     }
   }
 
-  Future<void> _change(GameLibrary Function(GameLibrary) transform) {
+  Future<void> _change(GameLibrary Function(GameLibrary) transform, {VoidCallback? onCommitted}) {
     final next = _writes.then((_) async {
       requireCurrent();
       final value = transform(library);
       await repository.savePreference(profileId, preferenceKey, value.toJson());
       requireCurrent();
       library = value;
+      onCommitted?.call();
       _notify();
     });
     _writes = next.catchError((Object _) {});
@@ -108,6 +120,7 @@ class GameLibraryController extends ChangeNotifier {
       steamCatalogTruncated: state.steamCatalogTruncated,
       steamCatalog: state.steamCatalog,
       preferredRoutes: state.preferredRoutes,
+      routeSelections: state.routeSelections,
       inventories: state.inventories,
     );
   });
@@ -125,6 +138,7 @@ class GameLibraryController extends ChangeNotifier {
         steamCatalogTruncated: state.steamCatalogTruncated,
         steamCatalog: state.steamCatalog,
         preferredRoutes: state.preferredRoutes,
+        routeSelections: state.routeSelections,
         inventories: state.inventories,
       ).toJson(),
     ),
@@ -156,6 +170,7 @@ class GameLibraryController extends ChangeNotifier {
           steamCatalogTruncated: state.steamCatalogTruncated,
           steamCatalog: state.steamCatalog,
           preferredRoutes: state.preferredRoutes,
+          routeSelections: state.routeSelections,
           inventories: state.inventories,
         ).toJson(),
       ),
@@ -176,6 +191,7 @@ class GameLibraryController extends ChangeNotifier {
         steamCatalogTruncated: state.steamCatalogTruncated,
         steamCatalog: state.steamCatalog,
         preferredRoutes: state.preferredRoutes,
+        routeSelections: state.routeSelections,
         inventories: state.inventories,
       ).toJson(),
     ),
@@ -195,6 +211,7 @@ class GameLibraryController extends ChangeNotifier {
       steamCatalogTruncated: state.steamCatalogTruncated,
       steamCatalog: state.steamCatalog,
       preferredRoutes: state.preferredRoutes,
+      routeSelections: state.routeSelections,
       inventories: state.inventories,
     );
   });
@@ -211,6 +228,7 @@ class GameLibraryController extends ChangeNotifier {
       steamCatalogTruncated: state.steamCatalogTruncated,
       steamCatalog: state.steamCatalog,
       preferredRoutes: state.preferredRoutes,
+      routeSelections: state.routeSelections,
       inventories: state.inventories,
     ),
   );
@@ -220,6 +238,17 @@ class GameLibraryController extends ChangeNotifier {
     final favorites = state.favorites.where((key) => state.canonicalKey(key) != game.key).toSet();
     if (!wasFavorite) favorites.add(game.key);
     return state.copyWith(favorites: favorites);
+  });
+
+  Future<void> preferRoute(LibraryGame game, GameRoute? route) => _change((state) {
+    final currentGame = state.entries.where((entry) => entry.key == game.key).firstOrNull;
+    if (currentGame == null ||
+        (route != null &&
+            !currentGame.routes.any((r) => r.key == route.key && r.installation != GameInstallation.notInstalled))) {
+      throw const GameClientException(GameClientFailure.cancelled);
+    }
+    final selections = {...state.routeSelections, game.key: route?.key ?? ''};
+    return state.copyWith(routeSelections: selections);
   });
 
   /// Call only after native connection/first-frame evidence, never on launch acceptance.
@@ -266,32 +295,49 @@ class GameLibraryController extends ChangeNotifier {
     required bool catalogAvailable,
     required bool catalogTruncated,
     String? protectedCredential,
-  }) => _change((state) {
-    if (!RegExp(r'^\d{17}$').hasMatch(steamId)) {
-      throw const GameClientException(GameClientFailure.unavailable);
-    }
-    final sameAccount = state.steamAccountId == steamId;
-    return GameLibrary(
-      hosts: state.hosts,
-      games: state.games,
-      recent: state.recent,
-      favorites: state.favorites,
-      preferredRoutes: sameAccount ? state.preferredRoutes : const {},
-      inventories: state.inventories,
-      steamAccountId: steamId,
-      steamCatalogCredential: protectedCredential ?? (sameAccount ? state.steamCatalogCredential : null),
-      steamCatalogAvailable: catalogAvailable || (sameAccount && state.steamCatalogAvailable),
-      steamCatalogStale: !catalogAvailable && sameAccount && state.steamCatalogAvailable,
-      steamCatalogTruncated: catalogAvailable
-          ? catalogTruncated
-          : sameAccount && state.steamCatalogAvailable && state.steamCatalogTruncated,
-      steamCatalog: catalogAvailable
-          ? games.take(2000).toList()
-          : sameAccount
-          ? state.steamCatalog
-          : const [],
-    );
-  });
+    String? sessionCredential,
+    bool replaceCredential = false,
+  }) => _change(
+    (state) {
+      if (!RegExp(r'^\d{17}$').hasMatch(steamId)) {
+        throw const GameClientException(GameClientFailure.unavailable);
+      }
+      if (sessionCredential != null &&
+          (protectedCredential != null || sessionCredential.isEmpty || sessionCredential.length > 4096)) {
+        throw const GameClientException(GameClientFailure.unavailable);
+      }
+      final sameAccount = state.steamAccountId == steamId;
+      return GameLibrary(
+        hosts: state.hosts,
+        games: state.games,
+        recent: state.recent,
+        favorites: state.favorites,
+        preferredRoutes: sameAccount ? state.preferredRoutes : const {},
+        routeSelections: sameAccount ? state.routeSelections : const {},
+        inventories: state.inventories,
+        steamAccountId: steamId,
+        steamCatalogCredential:
+            protectedCredential ??
+            (sameAccount && !replaceCredential && sessionCredential == null ? state.steamCatalogCredential : null),
+        steamCatalogAvailable: catalogAvailable || (sameAccount && state.steamCatalogAvailable),
+        steamCatalogStale: !catalogAvailable && sameAccount && state.steamCatalogAvailable,
+        steamCatalogTruncated: catalogAvailable
+            ? catalogTruncated
+            : sameAccount && state.steamCatalogAvailable && state.steamCatalogTruncated,
+        steamCatalog: catalogAvailable
+            ? games.take(2000).toList()
+            : sameAccount
+            ? state.steamCatalog
+            : const [],
+      );
+    },
+    onCommitted: () {
+      if (sessionCredential != null || protectedCredential != null || replaceCredential || _sessionSteamId != steamId) {
+        _sessionSteamCredential = sessionCredential;
+        _sessionSteamId = sessionCredential == null ? null : steamId;
+      }
+    },
+  );
 
   Future<void> unlinkSteamAccount() => _change(
     (state) => GameLibrary.fromJson(
@@ -301,14 +347,21 @@ class GameLibraryController extends ChangeNotifier {
         recent: state.recent,
         favorites: state.favorites,
         preferredRoutes: state.preferredRoutes,
+        routeSelections: state.routeSelections,
         inventories: state.inventories,
       ).toJson(),
     ),
+    onCommitted: () {
+      _sessionSteamCredential = null;
+      _sessionSteamId = null;
+    },
   );
 
   @override
   void dispose() {
     _disposed = true;
+    _sessionSteamCredential = null;
+    _sessionSteamId = null;
     discovery.stop();
     artwork.dispose();
     client.cancel();

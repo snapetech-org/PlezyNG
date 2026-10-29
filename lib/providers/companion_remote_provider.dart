@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import '../games/steam_inventory_exchange.dart';
+import '../games/steam_internet_host.dart';
+import '../games/steam_internet_tunnel.dart';
 import '../games/steam_host_actions.dart';
+import '../games/steam_cloud_settings.dart';
 import '../games/game_session_exchange.dart';
 import '../games/workspace_game_session_controls.dart';
 import '../multiview/workspace_controller.dart';
@@ -111,6 +114,59 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   // Crypto context (derived in memory, never persisted)
   List<RemoteAuthContext> _authContexts = const [];
   String? _cryptoProfileId;
+  SteamInternetHost? _steamInternetHost;
+  final _steamInternetReceivers = <SteamInternetTunnel>{};
+  Future<String?> Function(String profileId)? _steamAdmission;
+  void bindSteamAdmission(Future<String?> Function(String profileId) read) => _steamAdmission = read;
+
+  Future<SteamInternetTunnel> openSteamInternet(String peerId, {required bool Function() isCurrent}) async {
+    final profile = _cryptoProfileId;
+    bool allowed() =>
+        !isDisposed &&
+        isCurrent() &&
+        profile != null &&
+        profile == _cryptoProfileId &&
+        SettingsService.instance.read(SettingsService.steamInternetForProfile(profile));
+    if (!allowed() || steamRelayUri() == null) throw StateError('Steam internet unavailable');
+    final code = await RemotePairingStore.remoteCode(profile!, peerId);
+    if (!allowed() || code == null) throw const RemotePairingRequired();
+    final contexts = await _pairedContexts(code);
+    final admission = await _steamAdmission?.call(profile);
+    if (!allowed() || admission == null) throw StateError('Link Steam');
+    contexts.sort(
+      (a, b) => a.id == _lastAuthContextId
+          ? -1
+          : b.id == _lastAuthContextId
+          ? 1
+          : 0,
+    );
+    for (final identity in contexts.take(4)) {
+      if (!allowed()) break;
+      try {
+        final tunnel = await SteamInternetTunnel.connect(identity, host: false, allowed: allowed, admission: admission);
+        if (!allowed()) {
+          tunnel.close();
+          tunnel.path.dispose();
+          break;
+        }
+        _steamInternetReceivers.add(tunnel);
+        unawaited(tunnel.done.then((_) => _steamInternetReceivers.remove(tunnel)));
+        return tunnel;
+      } catch (_) {
+        /* A different profile identity may own this pairing. */
+      }
+    }
+    throw StateError('Steam internet unavailable');
+  }
+
+  void _closeSteamInternet() {
+    _steamInternetHost?.close();
+    _steamInternetHost = null;
+    for (final tunnel in _steamInternetReceivers) {
+      tunnel.close();
+    }
+    _steamInternetReceivers.clear();
+  }
 
   // Profile-scoped services watched so a running host's crypto identity tracks
   // home-user / connection changes (a removed home user or revoked borrowed
@@ -136,6 +192,13 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   StreamSubscription<RemoteSessionStatus>? _statusSubscription;
 
   SteamInventoryExchange? _gameInventory;
+  SteamCloudSettingsExchange? _cloudSettings;
+  bool _cloudSettingsSupported = false;
+  bool get supportsCloudSettings => isRemote && isConnected && _cloudSettingsSupported;
+  Future<SteamCloudSetting> requestCloudSetting(String account, {bool? expected, bool? enabled}) =>
+      supportsCloudSettings && _cloudSettings != null
+      ? _cloudSettings!.request(account, expected: expected, enabled: enabled)
+      : Future.value(const SteamCloudSetting('unavailable'));
   SteamHostActionExchange? _gameActions;
   GameSessionExchange? _gameSessions;
   MultiviewWorkspaceController? _gameWorkspace;
@@ -516,6 +579,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _clearCryptoContext() {
+    _closeSteamInternet();
     _authContexts = const [];
     _cryptoProfileId = null;
     _hostPairingCode = null;
@@ -706,6 +770,20 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
         rethrow;
       }
       _hostServerAddresses = result.addresses;
+      if ((Platform.isLinux || Platform.isWindows || Platform.isMacOS) && steamRelayUri() != null) {
+        _steamInternetHost?.close();
+        _steamInternetHost = SteamInternetHost(
+          contexts,
+          () =>
+              !isDisposed &&
+              _cryptoProfileId == profileId &&
+              (_boundActiveProfile == null || _boundActiveProfile!.active?.id == profileId) &&
+              identical(_peerService, peer) &&
+              peer.isServerRunning &&
+              SettingsService.instance.read(SettingsService.steamInternetForProfile(profileId)),
+          () async => _steamAdmission?.call(profileId),
+        );
+      }
 
       _session = RemoteSession(
         role: RemoteSessionRole.host,
@@ -753,6 +831,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   });
 
   Future<void> _stopHostServerLocked() async {
+    _steamInternetHost?.close();
+    _steamInternetHost = null;
     final stopGeneration = _remoteGeneration;
     final peer = _peerService;
     _markIntentionalDisconnect(peer, stopGeneration);
@@ -998,6 +1078,23 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
         }
       },
     );
+    _cloudSettings = SteamCloudSettingsExchange(
+      isHost: host,
+      allowed: () =>
+          _ownsPeer(peer, generation) &&
+          profileId != null &&
+          profileId == _cryptoProfileId &&
+          supportsLocalSteamCloudSettings &&
+          SettingsService.instance.read(SettingsService.showGamesTabForProfile(profileId)) &&
+          SettingsService.instance.read(SettingsService.allowSteamActionsForProfile(profileId)) &&
+          SettingsService.instance.read(SettingsService.allowSteamCloudSettingsForProfile(profileId)),
+      execute: localSteamCloudSetting,
+      send: (data) {
+        if (_ownsPeer(peer, generation)) {
+          peer.sendCommand(RemoteCommand(type: RemoteCommandType.gameCloudSetting, data: data));
+        }
+      },
+    );
     _gameActions = SteamHostActionExchange(
       isHost: host,
       allowed: (action) =>
@@ -1058,6 +1155,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
         if (command.type == RemoteCommandType.gameSession) {
           _gameSessions?.receive(command.data);
+        } else if (command.type == RemoteCommandType.gameCloudSetting) {
+          _cloudSettings?.receive(command.data);
         } else if (command.type == RemoteCommandType.gameAction) {
           _gameActions?.receive(command.data);
         } else if (command.type == RemoteCommandType.gameInventory) {
@@ -1095,6 +1194,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     _deviceDisconnectedSubscription = peer.onDeviceDisconnected.listen((_) {
       if (!_ownsPeer(peer, generation)) return;
       _gameInventory?.reset();
+      _cloudSettings?.reset();
       _gameActions?.reset();
       _gameSessions?.reset();
       final intentional = _isIntentionalDisconnect(peer, generation);
@@ -1153,6 +1253,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
   void _handleDeviceInfo(RemoteCommand command) {
     _gameSessionVersion = command.data?['gameSessionVersion'] == 1 ? 1 : 0;
+    _cloudSettingsSupported = command.data?['gameCloudSettingVersion'] == 1;
     _gameActionVersion = command.data?['gameActionVersion'] == 1 ? 1 : 0;
     _gameActionKinds = steamHostActionCapabilities(command.data?['gameActionKinds']);
     _gameInventoryVersion = command.data?['gameInventoryVersion'] == 1 ? 1 : 0;
@@ -1183,6 +1284,9 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     _gameSessions?.close();
     _gameSessions = null;
     _gameSessionVersion = 0;
+    _cloudSettings?.close();
+    _cloudSettings = null;
+    _cloudSettingsSupported = false;
     _gameActions?.close();
     _gameActions = null;
     _gameActionVersion = 0;
@@ -1416,6 +1520,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
   @override
   void dispose() {
+    _closeSteamInternet();
     WidgetsBinding.instance.removeObserver(this);
     _remoteGeneration++;
     _reconnectTimer?.cancel();

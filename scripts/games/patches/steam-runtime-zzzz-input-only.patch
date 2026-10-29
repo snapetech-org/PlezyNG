@@ -1,0 +1,113 @@
+diff --git a/include/ihslib/session.h b/include/ihslib/session.h
+--- a/include/ihslib/session.h
++++ b/include/ihslib/session.h
+@@ -52,6 +52,9 @@
+     bool enableAudio;
+     bool enableHevc;
+     bool enablePyrowave;
++    /** Media and input negotiation are independent for controller-only sessions. */
++    bool enableVideo;
++    bool enableInput;
+     /** Cap on the host's encode resolution, framerate and bitrate. 0 = library default. */
+     uint32_t maxWidth;
+     uint32_t maxHeight;
+diff --git a/src/session/channels/ch_control_negotiation.c b/src/session/channels/ch_control_negotiation.c
+--- a/src/session/channels/ch_control_negotiation.c
++++ b/src/session/channels/ch_control_negotiation.c
+@@ -80,6 +80,8 @@
+             .enableAudio = true,
+             .enableHevc = false,
+             .enablePyrowave = false,
++            .enableVideo = true,
++            .enableInput = true,
+             .maxWidth = 1920,
+             .maxHeight = 1080,
+             .maxFps = 60,
+@@ -135,7 +137,7 @@
+             }
+         }
+     }
+-    if (ihsConf.enablePyrowave) {
++    if (ihsConf.enableVideo && ihsConf.enablePyrowave) {
+         for (int i = 0; i < message->n_supported_video_codecs; i++) {
+             EStreamVideoCodec codec = message->supported_video_codecs[i];
+             if (codec == k_EStreamVideoCodecPyrowave) {
+@@ -145,7 +147,7 @@
+             }
+         }
+     }
+-    if (videoCodec == IHS_StreamVideoCodecNone && ihsConf.enableHevc) {
++    if (videoCodec == IHS_StreamVideoCodecNone && ihsConf.enableVideo && ihsConf.enableHevc) {
+         for (int i = 0; i < message->n_supported_video_codecs; i++) {
+             EStreamVideoCodec codec = message->supported_video_codecs[i];
+             if (codec == k_EStreamVideoCodecHEVC) {
+@@ -154,8 +156,8 @@
+             }
+         }
+     }
+-    if (videoCodec == IHS_StreamVideoCodecNone) {
+-        if (ihsConf.enableHevc) {
++    if (videoCodec == IHS_StreamVideoCodecNone && ihsConf.enableVideo) {
++        if (ihsConf.enableVideo && ihsConf.enableHevc) {
+             /* Not a fallback verdict: a Windows host omitting HEVC from this
+              * announcement has been seen encoding HEVC anyway — our streaming
+              * request advertises supports_video_hevc, and the video channel's
+@@ -209,7 +211,7 @@
+ 
+     PROTOBUF_C_SET_VALUE(clientConfig, desired_resolution_x, (int32_t) ihsConf.maxWidth);
+     PROTOBUF_C_SET_VALUE(clientConfig, desired_resolution_y, (int32_t) ihsConf.maxHeight);
+-    PROTOBUF_C_SET_VALUE(clientConfig, enable_input_streaming, true);
++    PROTOBUF_C_SET_VALUE(clientConfig, enable_input_streaming, ihsConf.enableInput);
+     PROTOBUF_C_SET_VALUE(clientConfig, enable_hardware_decoding, true);
+     PROTOBUF_C_SET_VALUE(clientConfig, enable_performance_overlay, true);
+     if (ihsConf.enableAudio) {
+@@ -225,7 +227,7 @@
+     if (session->callbacks.microphone != NULL) {
+         PROTOBUF_C_SET_VALUE(clientConfig, enable_microphone_streaming, true);
+     }
+-    PROTOBUF_C_SET_VALUE(clientConfig, enable_video_streaming, true);
++    PROTOBUF_C_SET_VALUE(clientConfig, enable_video_streaming, ihsConf.enableVideo);
+     if (pyrowaveSelected) {
+         PROTOBUF_C_SET_VALUE(clientConfig, enable_video_pyrowave, true);
+     }
+@@ -233,7 +235,7 @@
+     PROTOBUF_C_SET_VALUE(clientConfig, desired_framerate_denominator, 1);
+     PROTOBUF_C_SET_VALUE(clientConfig, quality, quality);
+     PROTOBUF_C_SET_VALUE(clientConfig, desired_bitrate_kbps, ihsConf.maxBitrateKbps);
+-    if (ihsConf.enableHevc) {
++    if (ihsConf.enableVideo && ihsConf.enableHevc) {
+         PROTOBUF_C_SET_VALUE(clientConfig, enable_video_hevc, true);
+     }
+ 
+@@ -255,11 +257,12 @@
+      * the only thing older hosts look at, so send both. */
+     EStreamVideoCodec supportedCodecs[3];
+     size_t supportedVideoCodecCount = 0;
+-    if (ihsConf.enablePyrowave)
++    if (ihsConf.enableVideo && ihsConf.enablePyrowave)
+         supportedCodecs[supportedVideoCodecCount++] = k_EStreamVideoCodecPyrowave;
+-    if (ihsConf.enableHevc)
++    if (ihsConf.enableVideo && ihsConf.enableHevc)
+         supportedCodecs[supportedVideoCodecCount++] = k_EStreamVideoCodecHEVC;
+-    supportedCodecs[supportedVideoCodecCount++] = k_EStreamVideoCodecH264;
++    if (ihsConf.enableVideo)
++        supportedCodecs[supportedVideoCodecCount++] = k_EStreamVideoCodecH264;
+     clientCaps.supported_video_codecs = supportedCodecs;
+     clientCaps.n_supported_video_codecs = supportedVideoCodecCount;
+     /* HDR is supported by the qualified Pyrowave native plane only. Never
+@@ -267,13 +270,13 @@
+     EStreamColorspace colorspaces[] = {k_EStreamColorspace_BT709, k_EStreamColorspace_BT709_Full,
+                                      k_EStreamColorspace_HDR10};
+     clientCaps.supported_colorspaces = colorspaces;
+-    clientCaps.n_supported_colorspaces = ihsConf.enableHdr10 && pyrowaveSelected ? 3 : 2;
++    clientCaps.n_supported_colorspaces = ihsConf.enableVideo ? (ihsConf.enableHdr10 && pyrowaveSelected ? 3 : 2) : 0;
+     EStreamAudioCodec supportedAudioCodecs[] = {k_EStreamAudioCodecOpus};
+     if (ihsConf.enableAudio) {
+         clientCaps.supported_audio_codecs = supportedAudioCodecs;
+         clientCaps.n_supported_audio_codecs = 1;
+     }
+-    if (ihsConf.enableHevc) {
++    if (ihsConf.enableVideo && ihsConf.enableHevc) {
+         PROTOBUF_C_SET_VALUE(clientCaps, supports_video_hevc_obsolete, true);
+     }
+ 

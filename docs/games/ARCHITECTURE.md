@@ -1,6 +1,11 @@
 # Games: embedded streaming implementation and rollout
 
-Status: implementation in progress, 2026-10-28; follow-up PR #54. **No stream launches another app.**
+Current receiver source update: [Vulkan native video](VULKAN_RECEIVER.md) adds
+Android/Wayland direct GPU Pyrowave and gated HDR10 negotiation/presentation.
+The sections below retain earlier platform milestones; they are not evidence of
+hardware HDR qualification. See that document for current limits and test gates.
+
+Status: source checkpoint, 2026-10-28; follow-up PR #81. **No stream launches another app.**
 
 ## What this change implements
 
@@ -10,9 +15,9 @@ The library stores selected computers, host application IDs, favorites and recen
 
 Android builds include a **source-built Moonlight engine in PlezyNG's APK**. The adapter calls its actual pairing implementation, pins the resulting host certificate, retrieves the authorized application list, and starts its native streaming activity inside PlezyNG. Flutter owns the connection UI; the embedded engine owns low-latency video, audio, controller input and touch controls. Back returns to PlezyNG. It does not install an APK, open a package, launch Steam, invoke a URL scheme, or run a streaming subprocess.
 
-Android also includes an experimental **source-built Steam engine** using pinned ihslib, Mbed TLS, protobuf-C and Opus. It implements local PIN pairing, encrypted host-specific device trust, direct game-ID or Big Picture launch, H.264/HEVC video, selectable stereo/quad/5.1 Opus, one to four physical controller seats, touch assistance and bounded decoder queues. Pyrowave beta support is off by default for every profile. After a profile opts in, Android advertises the codec only if its local Vulkan decoder probe succeeds. It decodes SDR 4:2:0 up to 1080p through synchronous CPU readback and Android Canvas output, and reconnects using a conventional codec if decoding fails. Valve's [beta announcement](https://steamcommunity.com/groups/homestream/discussions/0/564794422009744473/) warns that Pyrowave can use 5–10× the bandwidth of other codecs and recommends gigabit Ethernet; the setting explains this before enabling. The path is experimental and its latency, power use and compatibility have not been device-qualified. The player is a private activity inside PlezyNG. Account linking now uses the server-side Steam OpenID flow; a server-owned Web API key can import visible owned-game metadata into a profile-scoped reference catalog. Private libraries remain unavailable, the catalog is not a host-installed inventory, and its entries use a matching saved Steam host shortcut for launch; account ownership alone supplies no playable route. A server without `STEAM_WEB_API_KEY` still supports identity linking but cannot import the catalog. Steam also exposes a retained `SteamStreamView` to the app-owned Multiview overlay; each surface owns its transport and decoder, while the workspace assigns audio and gamepad input. Full-screen Steam playback uses the same view.
+Android also includes an experimental **source-built Steam engine** using pinned ihslib, Mbed TLS, protobuf-C and Opus. It implements local PIN pairing, encrypted host-specific device trust, direct game-ID or Big Picture launch, H.264/HEVC video, selectable stereo/quad/5.1 Opus, one to four physical controller seats, touch assistance and bounded decoder queues. Pyrowave beta support is off by default for every profile. After a profile opts in, Android advertises the codec only if its local Vulkan decoder probe succeeds. Its native Vulkan surface path decodes 4:2:0/4:4:4 up to 3840×2160 without CPU pixel readback, gates HDR10 on decoder/display/swapchain capabilities, and reconnects using a conventional codec if decoding fails. The older readback path remains a limited compatibility implementation; it never presents HDR. Valve's [beta announcement](https://steamcommunity.com/groups/homestream/discussions/0/564794422009744473/) warns that Pyrowave can use 5–10× the bandwidth of other codecs and recommends gigabit Ethernet; the setting explains this before enabling. The path is experimental and its latency, power use and compatibility have not been device-qualified. The player is a private activity inside PlezyNG. Account linking now uses the server-side Steam OpenID flow; a server-owned Web API key can import visible owned-game metadata into a profile-scoped reference catalog. Private libraries remain unavailable, the catalog is not a host-installed inventory, and its entries use a matching saved Steam host shortcut for launch; account ownership alone supplies no playable route. A server without `STEAM_WEB_API_KEY` still supports identity linking but cannot import the catalog. Steam also exposes a retained `SteamStreamView` to the app-owned Multiview overlay; the workspace session owns transport and decoder independently of replaceable presentation views, and assigns audio and gamepad input. Full-screen Steam playback uses the same view.
 
-The shared Steam core now supports mono/stereo/quad/5.1 Opus and up to four independent controller seats. Linux adds a dedicated GStreamer receiver with a retained SDR CPU texture and OS-keyring trust. Apple targets add VideoToolbox/Core Audio receivers, Keychain trust and a direct Metal Pyrowave path for compatible Apple7-family GPUs. Metal accepts host-selected SDR 4:2:0/4:4:4, with no production pixel readback. Windows adds Media Foundation SDR textures, XAudio2 surround, Credential Manager trust and a Winsock/thread backend. Windows cross-compilation succeeds, while MSVC and Apple SDK builds and hardware behavior remain unverified; true HDR and automatic internet traversal remain unfinished. See [CONNECTED_EXPERIENCE.md](CONNECTED_EXPERIENCE.md) for exact implementation boundaries and [VALIDATION.md](VALIDATION.md) for evidence and release gates.
+The shared Steam core now supports mono/stereo/quad/5.1 Opus and up to four independent controller seats. Linux adds a dedicated GStreamer receiver with a retained SDR CPU texture and OS-keyring trust. Apple targets add VideoToolbox/Core Audio receivers, Keychain trust and a direct Metal Pyrowave path for compatible Apple7-family GPUs. Metal accepts host-selected SDR 4:2:0/4:4:4, with no production pixel readback. Windows adds Media Foundation SDR textures, XAudio2 surround, Credential Manager trust and a Winsock/thread backend. Windows cross-compilation succeeds, while MSVC and Apple SDK builds and hardware behavior remain unverified; Android/Wayland Vulkan HDR10 and paired internet traversal/relay are now implemented, with hardware/network qualification pending. Windows Vulkan and Apple native Metal HDR10 presentation are now source-integrated; SDK and physical output qualification remain gates. See [CONNECTED_EXPERIENCE.md](CONNECTED_EXPERIENCE.md) for exact implementation boundaries and [VALIDATION.md](VALIDATION.md) for evidence and release gates.
 
 ## User flow
 
@@ -55,12 +60,12 @@ Retiring a profile, disabling the category or disposing its controller cancels u
 
 | Platform | Games/library | In-app GameStream in this change | Steam / Pyrowave in this change | Next native integration |
 |---|---|---|---|---|
-| Android phones/tablets | Implemented | Source module, pairing, listing and native activity; no retained GameStream pane | Experimental Steam activity plus retained Multiview surface; PIN, H.264/HEVC/Opus and profile-opt-in, Vulkan-probed Pyrowave SDR 4:2:0 | Build/qualify activity and pane, input/audio handoff, beta codec latency, thermals and power |
+| Android phones/tablets | Implemented | Source module, pairing, listing and native activity; no retained GameStream pane | Experimental Steam activity plus retained Multiview surface; PIN, H.264/HEVC/Opus and profile-opt-in Vulkan direct GPU Pyrowave 4:2:0/4:4:4 and gated HDR10 | Build/qualify activity and pane, input/audio handoff, beta codec latency, thermals and power |
 | Android TV / Fire TV | Implemented | Same source engine; physical input; touch overlay off by default on TV | Same experimental Steam activity and retained pane; Pyrowave requires profile opt-in and Vulkan decoder support | D-pad, Back, pane focus, beta codec performance, 4K/refresh-rate and controller qualification |
-| Windows | Implemented | Unavailable | Media Foundation H.264/HEVC SDR, XAudio2 mono/stereo/quad/5.1, Credential Manager pairing and retained workspace/input source | MSVC x64/ARM64 builds, codec/output/device tests; HDR/Pyrowave presentation |
-| Linux / SteamOS | Implemented | Unavailable | Retained H.264/HEVC SDR receiver, mapped Opus audio, controller seats and touch assistance | Full runner/package build and host tests; direct GPU/Pyrowave output |
-| macOS | Implemented | Unavailable | VideoToolbox/Core Audio and Keychain receiver source; direct Metal SDR Pyrowave 4:2:0/4:4:4 on compatible Apple Silicon | Apple SDK build, GPU/host tests; Intel conventional-codec fallback and HDR presentation |
-| iOS / iPadOS | Implemented | Unavailable | Shared Apple receiver source, LAN permission, touch assistance and Metal capability gating | Apple SDK build, touch/audio/background/host qualification; HDR presentation |
+| Windows | Implemented | Unavailable | Media Foundation H.264/HEVC SDR, XAudio2 mono/stereo/quad/5.1, Credential Manager pairing and retained workspace/input source | MSVC x64/ARM64 builds, codec/output/device tests; HDR/Pyrowave output qualification |
+| Linux / SteamOS | Implemented | Unavailable | Retained H.264/HEVC SDR receiver; Wayland Vulkan direct GPU Pyrowave 4:2:0/4:4:4/HDR10; mapped Opus and input | Full runner/package, real GPU/Wayland/HDR and host qualification; X11 uses compatible SDR |
+| macOS | Implemented | Unavailable | VideoToolbox/Core Audio and Keychain receiver source; direct Metal SDR Pyrowave 4:2:0/4:4:4 on compatible Apple Silicon | Apple SDK build, GPU/host tests; Intel conventional-codec fallback and HDR output qualification |
+| iOS / iPadOS | Implemented | Unavailable | Shared Apple receiver source, LAN permission, touch assistance and Metal capability gating | Apple SDK build, touch/audio/background/host and HDR qualification |
 | tvOS | Implemented | Unavailable | Shared Apple receiver source and controller/remote input integration | Apple SDK build; focus/remote/gamepad, HDMI audio and host qualification |
 | webOS | Implemented | Unavailable | Playback unavailable | Evaluate native Moonlight-webOS decoder/input components against supported TV APIs |
 | Browser | Not a shipping PlezyNG target here | No raw GameStream/UDP engine | Unavailable | Explicit paired WebRTC gateway, if this becomes a product target |
@@ -101,17 +106,41 @@ The current observed protocol definitions contain:
 
 The pinned decoder accepts concatenated codec packets in a single `push_packet` call. The v1 bitstream document is frozen at 2026-10-03; source remains authoritative. Aurora/Solarflare provide a separate GameStream integration, which does not establish compatibility with Steam's framing or codec fork.
 
-These definitions establish identifiers, not Steam interoperability. The Android adapter advertises codec 9 only when the profile-scoped opt-in is enabled and a local Vulkan decoder probe succeeds; it prefers Pyrowave only when the host offers it. It appends bounded codec blocks without H.264/HEVC start-code rewriting and validates bitstream lengths, dimensions and SDR 4:2:0 color metadata before decode. The preference defaults off, following Valve's default-off guidance for a codec that can use 5–10 times the bandwidth of other streaming codecs. Negotiation has a protocol regression fixture. If initialization, frame validation, decode or Canvas presentation fails after negotiation, the client cancels that session and reconnects with H.264/HEVC.
+These definitions establish identifiers, not Steam interoperability. The Android adapter advertises codec 9 only when the profile-scoped opt-in is enabled and a local Vulkan decoder probe succeeds; it prefers Pyrowave only when the host offers it. It appends bounded codec blocks without H.264/HEVC start-code rewriting and validates bitstream lengths, dimensions, chroma and negotiated color metadata before decode. The preference defaults off, following Valve's default-off guidance for a codec that can use 5–10 times the bandwidth of other streaming codecs. Negotiation has a protocol regression fixture. If initialization, frame validation, decode or presentation fails after negotiation, the client cancels that session and reconnects with H.264/HEVC.
 
-The Android path remains limited to BT.709 SDR 4:2:0, even dimensions, and 1920x1080. It uses Pyrowave's synchronous CPU readback, converts to an Android bitmap, and submits it through a `SurfaceView` Canvas. This may cost substantial latency, CPU, memory bandwidth and battery; the Vulkan probe proves decoder creation only, not sustained performance. The Apple Metal wrapper instead decodes and converts on the GPU into an IOSurface-backed BGRA texture, with opt-in 4:4:4 parsing and observed chroma diagnostics. Both paths reject HDR/BT.2020 and retain conventional-codec fallback. Android GPU-to-surface output, true HDR and real Steam-host/GPU qualification remain unfinished. The presence of the Apple source does not establish an Apple build or measured playback.
+The Android and Wayland direct path samples decoded R16 planes into a native Vulkan swapchain. It accepts BT.709 SDR and, only after capability-gated negotiation, BT.2020/PQ HDR10 on a 10-bit ST2084 surface. Both 4:2:0 and 4:4:4 are bounded to 1920x1080. See [VULKAN_RECEIVER.md](VULKAN_RECEIVER.md) for synchronization, color validation, surface lifetime and the unresolved software-driver failure. The older CPU readback implementation accepts SDR only. Apple Metal decodes and converts on the GPU into an IOSurface-backed BGRA texture with observed chroma diagnostics; HDR uses a separate half-float IOSurface and native 10-bit BT.2020/PQ Metal plane, gated by OS version, GPU and display headroom. All paths retain conventional-codec fallback. Source integration and capability probes do not establish a successful real host/GPU session or an Apple SDK build.
+
+## Internet transport and Cloud authority
+
+[STEAM_INTERNET.md](STEAM_INTERNET.md) documents the opt-in relay deployment and
+client flow. Same-account catalog admission and existing Companion pairing
+establish an encrypted packet tunnel. The selected computer's Steam ID and
+native pairing remain authoritative. Native adapters accept six validated,
+ephemeral loopback ports, so the receiver keeps its existing launch, decoder,
+workspace, input and recovery paths. Authenticated public-IPv4 hole punching
+upgrades the route automatically; a short lease falls back to WSS when UDP is
+lost. Internet sessions currently use H.264/HEVC SDR. All four adapter families
+advertise the optional capability; older adapters retain their direct LAN flow.
+
+[STEAM_CLOUD.md](STEAM_CLOUD.md) documents separate, temporary OAuth authority for
+AppID-scoped Cloud files. Catalog identity admits a request but does not grant
+save access. The app reviews replacement/deletion, checks stale-file fingerprints
+and requires a refresh after ambiguous outcomes. Server configuration, Valve
+approval and live response/storage qualification remain prerequisites.
+[STEAM_FAMILIES.md](STEAM_FAMILIES.md) documents separately authorized family
+membership/invitation changes and preferred game copies, with temporary QR
+authority, single-use reviews and live permission checks. This optional Steam
+client-service adapter is disabled by default pending live service qualification.
+Global Cloud settings have no implemented mutation contract; confirmed Steam
+account destinations remain available.
 
 ## Mobile controls and session quality
 
 The GameStream Android module reuses Moonlight's actual controller implementation rather than drawing buttons that never send input. It supports simultaneous touches, sticks/buttons/triggers, configurable layout/opacity, touchpad input and physical controllers. The PlezyNG profile setting controls whether that overlay is shown. TV devices default to physical input. The native controller owns neutralization and input teardown.
 
-Steam offers one to four physical controller seats. Android retains its native simultaneous-touch overlay; Windows/Apple/Linux share a themed Flutter overlay with dual sticks, D-pad, face/shoulder/trigger buttons, labeled 48-pixel targets and resizing guidance. Touch assistance shares player one without reserving a physical seat. The texture receiver forwards full physical USB-HID keyboard usages, normalized pointer input and wheel directions. Shift+Escape returns input to workspace controls. Input releases on menu/background/disconnect, lease transfer, device removal and late touch cancellation. Layout/opacity customization, rumble, gyro, microphone and full IME remain unfinished.
+Steam offers one to four physical controller seats. Embedded Android and Windows/Apple/Linux share a themed Flutter overlay (standalone legacy Android callers retain native controls) with dual sticks, D-pad, face/shoulder/trigger buttons, labeled 48-pixel targets and resizing guidance. Touch assistance shares player one without reserving a physical seat. The texture receiver forwards full physical USB-HID keyboard usages, normalized pointer input and wheel directions. Shift+Escape returns input to workspace controls. Input releases on menu/background/disconnect, lease transfer, device removal and late touch cancellation. Per-game button/axis layouts and deadzones are configurable in-app, with host Steam Input configuration available separately. Profile-scoped touch opacity and side swapping preserve labels/actions and minimum hit targets. The Steam controls dialog accepts committed local IME text through bounded UTF-8; it does not mirror remote pre-edit state. Explicit, per-session microphone forwarding is available on Android, Windows, Linux and iOS/macOS with native permission/capture gates and automatic mute on ownership loss; tvOS reports unavailable. See [STEAM_MICROPHONE.md](STEAM_MICROPHONE.md). Controller rumble/trigger feedback, opt-in gyro/accelerometer forwarding and per-game touch positioning are integrated; see [STEAM_CONTROLLERS.md](STEAM_CONTROLLERS.md).
 
-For subsequent ports, keep pointer IDs stable, release every button/axis on cancellation/focus loss, support simultaneous stick + button + trigger input, safe areas, handedness, scalable controls, and physical-controller hot-plug. Do not expose a generic overlay until its input backend actually works. Rumble, gyro, microphone, keyboard/IME and multi-controller seats need separate capability flags and tests.
+For subsequent ports, keep pointer IDs stable, release every button/axis on cancellation/focus loss, support simultaneous stick + button + trigger input, safe areas, handedness, scalable controls, and physical-controller hot-plug. Do not expose a generic overlay until its input backend actually works. Rumble and gyro are gated by actual device capability, explicit input ownership and the motion preference; microphone, committed IME text and controller seats have independent ownership checks and regression coverage.
 
 Session statistics should report actual codec, hardware/software decode, resolution, FPS, bitrate, loss, RTT and frame timings from the engine. Do not fabricate them from a preset. Start from conservative H.264 1080p60/stereo and let measured capabilities unlock HEVC, AV1, HDR, higher refresh rates or Pyrowave. Never change the user's host DPI, desktop layout, audio sink, UPnP or firewall settings as an incidental connection step.
 
@@ -121,11 +150,35 @@ Session statistics should report actual codec, hardware/software decode, resolut
 2. Extract reusable native session interfaces and bring up desktop GameStream adapters, preserving the existing UI and state model.
 3. Bring up Apple GameStream and webOS native adapters with platform-specific decoder/input tests.
 4. Qualify and harden the implemented ihslib adapter against legacy/current local Steam pairing and conventional-codec sessions.
-5. Compile and qualify the Apple Metal path, implement Android direct GPU and true HDR presentation, measure power/latency and validate Steam framing against real hosts before widening codec defaults.
-6. Qualify the Windows embedded receiver and implement authenticated internet signaling/traversal/relay, with a deployed relay/trust model and platform-specific decoder/input qualification. Extend host artwork and integrated session diagnostics across engines.
+5. Compile and qualify the Apple Metal and Android/Wayland Vulkan paths, qualify Windows/Apple HDR, measure power/latency and validate Steam framing against real hosts before widening codec defaults.
+6. Qualify the Windows embedded receiver and deploy/test the implemented paired internet relay/traversal, including restrictive NAT, load, revocation and platform-specific decoder/input qualification. Extend host artwork and integrated session diagnostics across engines.
 
 No platform is marked ready simply because its library compiles. There is no external-app fallback hidden behind these stages.
 
 ## Steam library and research evidence
 
 See [STEAM_LIBRARY.md](STEAM_LIBRARY.md) for host inventory versus cloud ownership, authenticated direct game-ID launch, and the compiled native Steam adapter. See [SOURCES.md](SOURCES.md) for the primary-source trail.
+
+## Session and host controls — 2026-10-29
+
+[CODE_COMPLETION.md](CODE_COMPLETION.md) records the current follow-through.
+Receiver creation, transport, audio and route ownership survive presentation
+unmount/remount. Detachment neutralizes input and hides the native plane.
+Android replaces only its video output when a Surface changes. Explicit session
+close/profile retirement, including a late native-create result, still releases
+all owned resources.
+
+Receiver layouts apply to physical and touch controllers before Steam Input.
+Custom mappings must acknowledge before input is enabled and replay after codec
+fallback. Persistence is per PlezyNG profile and Steam AppID across computers.
+Held controls are released before changes; failure rolls back or pauses input.
+The existing toolbar offers explicit Shift+Tab and F12 shortcuts, with host
+requirements explained. These acknowledge submission only. Install confirmation
+shows other installed snapshots as potential LAN donors without claiming LAN
+proximity, online status or Steam's choice of source.
+
+Quality requests now include optional 4K60/80 Mbps and 1080p120/50 Mbps ceilings.
+The default remains 1080p60/30 Mbps. Native decoders reject dimensions outside the
+requested size and cap encoded access units at 8 MiB. Linux/Windows texture
+buffers are allocated to the request ceiling before registration and stay stable
+until unregister. No preset establishes actual resolution, frame rate or HDR.

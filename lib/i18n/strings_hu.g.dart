@@ -36,7 +36,7 @@ class TranslationsHu extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsHu _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsHu $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsHu(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3880,13 +3880,11 @@ class _Translations$games$hu extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3914,10 +3912,8 @@ class _Translations$games$hu extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3927,7 +3923,6 @@ class _Translations$games$hu extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5406,9 +5401,9 @@ extension on TranslationsHu {
 			'settings.smallSkipDuration' => 'Kis ugrás időtartama',
 			'settings.largeSkipDuration' => 'Nagy ugrás időtartama',
 			'settings.rewindOnResume' => 'Visszatekerés folytatáskor',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} másodperc', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} másodperc', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} másodperc', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} másodperc', ),
 			'settings.defaultSleepTimer' => 'Alapértelmezett elalvási időzítő',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} perc', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} perc', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} perc', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} perc', ),
 			'settings.rememberTrackSelections' => 'Sávválasztások megjegyzése sorozatonként/filmenként',
 			'settings.chooseTracksBeforePlayback' => 'Válassza ki a hangokat és altitkolatokat a playback előtt',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Válassza ki a forrás hang és altitkos nyomokat, mielőtt minden videó elindul.',
@@ -6014,9 +6009,9 @@ extension on TranslationsHu {
 			'mediaMenu.deleteAnyway' => 'Törlés mindenképp',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'Véglegesen töröljük a(z) ${title} elemet a szerverről?',
 			'mediaMenu.deleteMultipleWarning' => 'Ez magában foglalja az összes epizódot és azok fájljait.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'Ez törli az összes (${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) epizódot benne és a hozzá tartozó fájlt.', other: 'Ez törli az összes (${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) epizódot benne és a fájljaikat.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'Ez az elem ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} fájlban van tárolva, amely törlésre kerül.', other: 'Ez az elem ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} fájlban van tárolva, és mindegyik törlésre kerül.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'További ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód is ugyanabban a fájlban van, és szintén törlésre kerül:', other: 'További ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód is ugyanabban a fájlban van, és szintén törlésre kerül:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'Ez törli az összes (${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) epizódot benne és a hozzá tartozó fájlt.', other: 'Ez törli az összes (${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) epizódot benne és a fájljaikat.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'Ez az elem ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} fájlban van tárolva, amely törlésre kerül.', other: 'Ez az elem ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} fájlban van tárolva, és mindegyik törlésre kerül.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'További ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód is ugyanabban a fájlban van, és szintén törlésre kerül:', other: 'További ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód is ugyanabban a fájlban van, és szintén törlésre kerül:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'A PlezyNG nem tudta ellenőrizni, mely fájlokat távolítja el ez, ezért a fent nevezett elemnél többet is törölhet. Szakítsa meg és próbálja újra, vagy töröljön mindenképp.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'A szerver nem szolgáltatott fájladatokat ehhez az elemhez, ezért a PlezyNG nem tudja ellenőrizni, mely fájlokat távolít el. A fent nevezett elemnél többet is törölhet.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Médiaelem sikeresen törölve',
@@ -6205,7 +6200,7 @@ extension on TranslationsHu {
 			'videoControls.osdSubtitlesOff' => 'Feliratok: ki',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Feliratok: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Hang: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} keretrendszer', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} keretek', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} keretrendszer', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} keretek', ),
 			'videoControls.trackSelectionTitle' => 'Válassza ki a játékot a playback előtt',
 			'videoControls.trackSelectionAuto' => 'Automatikus kiválasztás',
 			'videoControls.openMiniPlayer' => 'Nyitott mini játékos',
@@ -6220,7 +6215,7 @@ extension on TranslationsHu {
 			'messages.markedAsWatchedOffline' => 'Megjelölve megtekintettként (szinkronizálás online állapotban)',
 			'messages.markedAsUnwatchedOffline' => 'Megjelölve nem megtekintettként (szinkronizálás online állapotban)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Automatikusan eltávolítva: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} megtekintett letöltés automatikusan eltávolítva', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} megtekintett letöltés automatikusan eltávolítva', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} megtekintett letöltés automatikusan eltávolítva', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} megtekintett letöltés automatikusan eltávolítva', ),
 			'messages.removedFromContinueWatching' => 'Eltávolítva a folytatásból',
 			'messages.errorLoading' => ({required Object error}) => 'Hiba: ${error}',
 			'messages.searchPartialResults' => 'Néhány médiaszervert nem sikerült keresni. Az elérhető találatok megjelenítése.',
@@ -6591,7 +6586,7 @@ extension on TranslationsHu {
 			'discover.tvShow' => 'TV-sorozat',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} perc van hátra',
 			'discover.moreLikeThis' => 'Hasonló tartalmak',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} cím', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} cím', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} cím', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} cím', ),
 			'discover.person.born' => 'Született',
 			'discover.person.died' => 'Elhunyt',
 			'discover.person.birthplace' => 'Születési hely',
@@ -6836,7 +6831,7 @@ extension on TranslationsHu {
 			'explore.status.ended' => 'Befejeződött',
 			'explore.status.canceled' => 'Törölve',
 			'explore.status.upcoming' => 'Közelgő',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód', ),
 			'explore.cast' => 'Szereplők',
 			'explore.characters' => 'Karakterek',
 			'explore.addToWatchlist' => 'Hozzáadás a Néznivalókhoz',
@@ -6848,7 +6843,7 @@ extension on TranslationsHu {
 			'explore.notInLibrary' => 'Nincs a könyvtáradban',
 			'explore.inTheseLibraries' => 'Ezekben a könyvtárakban',
 			'explore.checkingLibrary' => 'Könyvtár ellenőrzése...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'Nem sikerült ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} szervert ellenőrizni', other: 'Nem sikerült ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} szervert ellenőrizni', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'Nem sikerült ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} szervert ellenőrizni', other: 'Nem sikerült ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} szervert ellenőrizni', ),
 			'explore.emptyTitle' => 'Még nincs itt semmi',
 			'explore.emptyMessage' => ({required Object source}) => 'A(z) ${source} forrásból származó sorok itt fognak megjelenni, amint van tartalmuk.',
 			'explore.searchHint' => ({required Object source}) => 'Keresés itt: ${source}',
@@ -6885,7 +6880,7 @@ extension on TranslationsHu {
 			'explore.stats.planning' => ({required Object n}) => '${n} tervezi megnézni',
 			'explore.stats.favorited' => ({required Object n}) => '${n} kedvenc',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} felhagyott vele',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} hozzászólás', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} hozzászólás', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} hozzászólás', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} hozzászólás', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} szavazat',
 			'explore.stats.watching' => ({required Object n}) => '${n} nézi',
 			'explore.stats.completed' => ({required Object n}) => '${n} befejezte',
@@ -6952,14 +6947,14 @@ extension on TranslationsHu {
 			'explore.detail.crew' => 'Stáb',
 			'explore.detail.ratings' => 'Értékelések',
 			'explore.detail.schedule' => 'Műsorrend',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} felhasználó ajánlja', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} felhasználó ajánlja', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} felhasználó ajánlja', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} felhasználó ajánlja', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'Ajánlotta: ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'Kedvencek közt: ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} még nem került adásba',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'A nézők ${percent}-a ajánlja',
 			'explore.detail.relatedTitles' => 'Kapcsolódó címek',
 			'explore.detail.background' => 'Háttér',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} találat', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} találat', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} találat', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} találat', ),
 			'liveTv.title' => 'Élő TV',
 			'liveTv.guide' => 'Műsorújság',
 			'liveTv.noChannels' => 'Nincsenek elérhető csatornák',
@@ -7088,7 +7083,7 @@ extension on TranslationsHu {
 			'playlists.delete' => 'Lejátszási lista törlése',
 			'playlists.removeItem' => 'Eltávolítás a lejátszási listáról',
 			'playlists.smartPlaylist' => 'Okos lejátszási lista',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} elem', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} elem', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} elem', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} elem', ),
 			'playlists.emptyPlaylist' => 'Ez a lejátszási lista üres',
 			'playlists.deleteConfirm' => 'Törlöd a lejátszási listát?',
 			'playlists.deleteMessage' => ({required Object name}) => 'Biztosan törölni szeretnéd a következőt: "${name}"?',
@@ -7110,7 +7105,7 @@ extension on TranslationsHu {
 			'music.playNext' => 'Következő lejátszása',
 			'music.addToQueue' => 'Hozzáadás a lejátszási sorhoz',
 			'music.discNumber' => ({required Object n}) => '${n}. lemez',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} zeneszám', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} zeneszám', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} zeneszám', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} zeneszám', ),
 			'music.nowPlaying' => 'Most szól',
 			'music.playingFrom' => ({required Object title}) => 'Lejátszás innen: ${title}',
 			'music.queue' => 'Lejátszási sor',
@@ -7132,7 +7127,7 @@ extension on TranslationsHu {
 			'music.noLyrics' => 'Nincs elérhető dalszöveg',
 			'music.sleepTimer' => 'Elalvási időzítő',
 			'music.sleepTimerEndOfTrack' => 'Zeneszám vége',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} perc', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} perc', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} perc', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} perc', ),
 			'music.stopPlayback' => 'Lejátszás leállítása',
 			'music.previousTrack' => 'Előző szám',
 			'music.nextTrack' => 'Következő szám',
@@ -7216,7 +7211,7 @@ extension on TranslationsHu {
 			'watchTogether.offsetPlusTenth' => '+100 ms',
 			'watchTogether.offsetPlusSecond' => '+1 mp',
 			'watchTogether.participants' => 'Résztvevők',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} résztvevő', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} résztvevő', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} résztvevő', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} résztvevő', ),
 			'watchTogether.hostBadge' => 'HÁZIGAZDA',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (te)',
 			'watchTogether.playerIdle' => 'Tétlen',
@@ -7425,10 +7420,10 @@ extension on TranslationsHu {
 			'downloads.unknownAlbum' => 'Ismeretlen album',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} kész',
 			'downloads.storageUsed' => ({required Object size}) => 'Használt tároló: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} letöltés', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} letöltés', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} bemutató', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} megtekintés', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmek', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmek', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} letöltés', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} letöltés', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} bemutató', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} megtekintés', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmek', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmek', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', ),
 			'downloads.errorFileNotFound' => 'A fájl nem található (404)',
 			'downloads.errorDownloadNotAllowed' => 'A szerver nem engedélyezi a letöltést (403)',
 			'downloads.errorDownloadFailed' => 'A letöltés nem sikerült',
@@ -8182,7 +8177,7 @@ extension on TranslationsHu {
 			'universalMedia.saveFavorite' => 'Megmentse kedvencét',
 			'universalMedia.playNow' => 'Játssz most',
 			'universalMedia.favoriteSaved' => 'Stream kedvenc mentett erre a profilra',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'A ${count} nem támogatott vagy biztonságos lejátszási lista bejárata.', other: 'A ${count} nem támogatott vagy biztonságos lejátszási listájának bejegyzései.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'A ${count} nem támogatott vagy biztonságos lejátszási lista bejárata.', other: 'A ${count} nem támogatott vagy biztonságos lejátszási listájának bejegyzései.', ),
 			'universalMedia.playlistAddress' => 'Playlist címek',
 			'universalMedia.playlistAddressHelp' => 'Nyissa meg a M3U, M3u8 vagy PLS lejátszási listát egy webcímről. közvetlen áramlás linkek nem menthetik meg a lejátszó listát.',
 			'universalMedia.choosePlaylist' => 'Válassza ki a Playlist fájlt',
@@ -8198,7 +8193,7 @@ extension on TranslationsHu {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Válasszon fájlokat',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '1 kiválasztott fájl', other: '${count} kiválasztott fájlok', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '1 kiválasztott fájl', other: '${count} kiválasztott fájlok', ),
 			'universalMedia.wifiTransfer' => 'Fájlok küldése Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Támogatott fájlok átadása egy böngészőről ugyanazon megbízható hálózaton.',
 			'universalMedia.wifiTransferIntro' => 'Nyissa meg ezt a címet egy böngészőben egy másik eszközön. Válassza ki a fájlokat, hogy hozzáadják őket a készülék Fájlok és könyvek könyvtárába.',
@@ -8209,7 +8204,7 @@ extension on TranslationsHu {
 			'universalMedia.copyAddress' => 'átviteli cím másolása',
 			'universalMedia.addressCopied' => 'átutalási cím másolva',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Ez a cím az ${time}-ben lejár.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${count} fájl kapott', other: '${count} fájlok kaptak', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '${count} fájl kapott', other: '${count} fájlok kaptak', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'Megérkezett ${size}',
 			'universalMedia.stopTransfer' => 'Megállapodás átadásáról és cím megsemmisítéséről',
 			'universalMedia.startTransfer' => 'Kezdődik a transzfer',
@@ -8435,7 +8430,7 @@ extension on TranslationsHu {
 			'fileSources.sleep' => 'Elalvási időzítő',
 			'fileSources.sleepOff' => 'Ki',
 			'fileSources.endChapter' => 'fejezet vége',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} perc', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} perc', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} perc', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} perc', ),
 			'fileSources.skipBack' => 'Vissza a Skip',
 			'fileSources.skipForward' => 'Skip előre',
 			'fileSources.smartRewind' => 'Intelligens visszacsatolás a szünet után',
@@ -8774,13 +8769,11 @@ extension on TranslationsHu {
 			'comics.collections' => 'Gyűjtemények',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8808,10 +8801,8 @@ extension on TranslationsHu {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8821,7 +8812,6 @@ extension on TranslationsHu {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

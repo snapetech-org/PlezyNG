@@ -36,7 +36,7 @@ class TranslationsUz extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsUz _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsUz $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsUz(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3880,13 +3880,11 @@ class _Translations$games$uz extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3914,10 +3912,8 @@ class _Translations$games$uz extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3927,7 +3923,6 @@ class _Translations$games$uz extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5406,9 +5401,9 @@ extension on TranslationsUz {
 			'settings.smallSkipDuration' => 'Kichik oʻtkazish vaqti',
 			'settings.largeSkipDuration' => 'Katta oʻtkazish vaqti',
 			'settings.rewindOnResume' => 'Davom ettirganda orqaga qaytarish',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} soniya', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} soniya', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} soniya', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} soniya', ),
 			'settings.defaultSleepTimer' => 'Standart uyqu taymeri',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} daqiqa', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} daqiqa', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} daqiqa', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} daqiqa', ),
 			'settings.rememberTrackSelections' => 'Har bir film/serial uchun ovoz/subtitr tanlovini eslab qolish',
 			'settings.chooseTracksBeforePlayback' => 'Playback-dan əvvəl audio-dan subtitles seçin.',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Har bir video boshlanishidan oldin manbadagi audio va subtitr yo‘laklarini tanlang.',
@@ -6014,9 +6009,9 @@ extension on TranslationsUz {
 			'mediaMenu.deleteAnyway' => 'Baribir oʻchirish',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => '${title} serveringizdan butunlay oʻchirilsinmi?',
 			'mediaMenu.deleteMultipleWarning' => 'Bu barcha qismlar va fayllarga taʼsir qiladi.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Bu undagi ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qismni va uning faylini o‘chiradi.', other: 'Bu undagi barcha ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qismni va ularning fayllarini oʻchiradi.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Bu element ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} fayl shaklida saqlanadi va u oʻchiriladi.', other: 'Bu element ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} faylda saqlanadi va ularning barchasi oʻchiriladi.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Xuddi shu faylda yana ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism saqlanadi va u ham oʻchiriladi:', other: 'Xuddi shu faylda yana ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism saqlanadi va ular ham oʻchiriladi:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Bu undagi ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qismni va uning faylini o‘chiradi.', other: 'Bu undagi barcha ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qismni va ularning fayllarini oʻchiradi.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Bu element ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} fayl shaklida saqlanadi va u oʻchiriladi.', other: 'Bu element ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} faylda saqlanadi va ularning barchasi oʻchiriladi.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Xuddi shu faylda yana ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism saqlanadi va u ham oʻchiriladi:', other: 'Xuddi shu faylda yana ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism saqlanadi va ular ham oʻchiriladi:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG qaysi fayllar olib tashlanishini tekshira olmadi, shuning uchun u yuqorida koʻrsatilgan elementdan koʻproq narsani oʻchirishi mumkin. Bekor qilib qaytadan urining yoki baribir oʻchiring.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Serveringiz ushbu element uchun fayl tafsilotlarini taqdim etmadi, shuning uchun PlezyNG qaysi fayllar olib tashlanishini tekshira olmaydi. U yuqorida koʻrsatilgan elementdan koʻproq narsani oʻchirishi mumkin.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media elementi muvaffaqiyatli oʻchirildi',
@@ -6205,7 +6200,7 @@ extension on TranslationsUz {
 			'videoControls.osdSubtitlesOff' => 'Subtitr: Oʻchirilgan',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Subtitr: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Ovoz: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qiziziziz', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qiziziziz', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qiziziziz', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qiziziziz', ),
 			'videoControls.trackSelectionTitle' => 'Playback\'dan əvvəl birimimiz.',
 			'videoControls.trackSelectionAuto' => 'Automatizasyon',
 			'videoControls.openMiniPlayer' => 'Mini oyunlar',
@@ -6220,7 +6215,7 @@ extension on TranslationsUz {
 			'messages.markedAsWatchedOffline' => 'Koʻrilgan deb belgilandi (tarmoqqa ulanganda sinxronlanadi)',
 			'messages.markedAsUnwatchedOffline' => 'Koʻrilmagan deb belgilandi (tarmoqqa ulanganda sinxronlanadi)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Avtomatik oʻchirildi: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Koʻrilgan ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} yuklama avtomatik oʻchirildi', other: 'Koʻrilgan ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} yuklama avtomatik oʻchirildi', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Koʻrilgan ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} yuklama avtomatik oʻchirildi', other: 'Koʻrilgan ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} yuklama avtomatik oʻchirildi', ),
 			'messages.removedFromContinueWatching' => '"Tomoshani davom ettirish"dan oʻchirildi',
 			'messages.errorLoading' => ({required Object error}) => 'Xatolik: ${error}',
 			'messages.searchPartialResults' => 'Baʼzi media serverlarda qidiruv amalga oshmadi. Mavjud natijalar koʻrsatilmoqda.',
@@ -6591,7 +6586,7 @@ extension on TranslationsUz {
 			'discover.tvShow' => 'TV Shou',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} daq qoldi',
 			'discover.moreLikeThis' => 'Oʻxshashlar',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta nom', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta nom', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta nom', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta nom', ),
 			'discover.person.born' => 'Tugʻilgan',
 			'discover.person.died' => 'Vafot etgan',
 			'discover.person.birthplace' => 'Tugʻilgan joyi',
@@ -6836,7 +6831,7 @@ extension on TranslationsUz {
 			'explore.status.ended' => 'Tugallandi',
 			'explore.status.canceled' => 'Bekor qilindi',
 			'explore.status.upcoming' => 'Kutilmoqda',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism', ),
 			'explore.cast' => 'Aktyorlar',
 			'explore.characters' => 'Qahramonlar',
 			'explore.addToWatchlist' => 'Tomosha roʻyxatiga qoʻshish',
@@ -6848,7 +6843,7 @@ extension on TranslationsUz {
 			'explore.notInLibrary' => 'Kutubxonangizda yoʻq',
 			'explore.inTheseLibraries' => 'Ushbu kutubxonalarda bor',
 			'explore.checkingLibrary' => 'Kutubxona tekshirilmoqda...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} serverni tekshirib boʻlmadi', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} serverni tekshirib boʻlmadi', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} serverni tekshirib boʻlmadi', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} serverni tekshirib boʻlmadi', ),
 			'explore.emptyTitle' => 'Hali bu yerda hech narsa yoʻq',
 			'explore.emptyMessage' => ({required Object source}) => '${source} manbasidan olingan qatorlar bu yerda koʻrinadi.',
 			'explore.searchHint' => ({required Object source}) => '${source} ichidan qidirish',
@@ -6885,7 +6880,7 @@ extension on TranslationsUz {
 			'explore.stats.planning' => ({required Object n}) => '${n} kishi tomosha qilishni rejalashtirmoqda',
 			'explore.stats.favorited' => ({required Object n}) => '${n} ta tanlangan',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} tomosha qilishni toʻxtatgan',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta izoh', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta izoh', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta izoh', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta izoh', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} ta ovoz',
 			'explore.stats.watching' => ({required Object n}) => '${n} kishi tomosha qilmoqda',
 			'explore.stats.completed' => ({required Object n}) => '${n} kishi yakunlagan',
@@ -6952,14 +6947,14 @@ extension on TranslationsUz {
 			'explore.detail.crew' => 'Jamoa',
 			'explore.detail.ratings' => 'Baholar',
 			'explore.detail.schedule' => 'Jadval',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} foydalanuvchi tavsiya qilgan', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} foydalanuvchi tavsiya qilgan', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} foydalanuvchi tavsiya qilgan', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} foydalanuvchi tavsiya qilgan', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => '${who} tavsiya qilgan',
 			'explore.detail.favoritedBy' => ({required Object who}) => '${who} tanlanganlarga qoʻshgan',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} hali efirga chiqmagan',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Tomoshabinlarning ${percent} tavsiya qilgan',
 			'explore.detail.relatedTitles' => 'Bogʻliq nomlar',
 			'explore.detail.background' => 'Orqa fon',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta natija', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta natija', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta natija', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ta natija', ),
 			'liveTv.title' => 'Jonli TV',
 			'liveTv.guide' => 'Dasturlar jadvali',
 			'liveTv.noChannels' => 'Mavjud kanallar yoʻq',
@@ -7088,7 +7083,7 @@ extension on TranslationsUz {
 			'playlists.delete' => 'Ijro roʻyxatini oʻchirish',
 			'playlists.removeItem' => 'Roʻyxatdan oʻchirish',
 			'playlists.smartPlaylist' => 'Aqlli ijro roʻyxati',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} element', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} element', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} element', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} element', ),
 			'playlists.emptyPlaylist' => 'Ushbu roʻyxat boʻsh',
 			'playlists.deleteConfirm' => 'Ijro roʻyxati oʻchirilsinmi?',
 			'playlists.deleteMessage' => ({required Object name}) => '"${name}" oʻchirilsinmi?',
@@ -7110,7 +7105,7 @@ extension on TranslationsUz {
 			'music.playNext' => 'Keyingisini ijro etish',
 			'music.addToQueue' => 'Navbatga qoʻshish',
 			'music.discNumber' => ({required Object n}) => '${n}-disk',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tarona', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tarona', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tarona', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tarona', ),
 			'music.nowPlaying' => 'Hozir ijro etilmoqda',
 			'music.playingFrom' => ({required Object title}) => '${title} manbasidan',
 			'music.queue' => 'Navbat',
@@ -7132,7 +7127,7 @@ extension on TranslationsUz {
 			'music.noLyrics' => 'Musiqa matni yoʻq',
 			'music.sleepTimer' => 'Uyqu taymeri',
 			'music.sleepTimerEndOfTrack' => 'Taronaning oxiri',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} daqiqa', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} daqiqa', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} daqiqa', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} daqiqa', ),
 			'music.stopPlayback' => 'Ijroni toʻxtatish',
 			'music.previousTrack' => 'Oldingi tarona',
 			'music.nextTrack' => 'Keyingi tarona',
@@ -7216,7 +7211,7 @@ extension on TranslationsUz {
 			'watchTogether.offsetPlusTenth' => '+100 ms',
 			'watchTogether.offsetPlusSecond' => '+1 s',
 			'watchTogether.participants' => 'Ishtirokchilar',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ishtirokchi', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ishtirokchi', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ishtirokchi', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ishtirokchi', ),
 			'watchTogether.hostBadge' => 'TASHKILOTCHI',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (Siz)',
 			'watchTogether.playerIdle' => 'Nofaol',
@@ -7425,10 +7420,10 @@ extension on TranslationsUz {
 			'downloads.unknownAlbum' => 'Nomaʼlum albom',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} ta yakunlandi',
 			'downloads.storageUsed' => ({required Object size}) => 'U‘zizga: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} yuklab olish', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} yuklab olish', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} kino', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} kino', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} film', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmlar', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albom', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albom', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} yuklab olish', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} yuklab olish', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} kino', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} kino', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} film', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmlar', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albom', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albom', ),
 			'downloads.errorFileNotFound' => 'Fayl topilmadi (404)',
 			'downloads.errorDownloadNotAllowed' => 'Server yuklab olishga ruxsat bermaydi (403)',
 			'downloads.errorDownloadFailed' => 'Yuklab boʻlmadi',
@@ -8182,7 +8177,7 @@ extension on TranslationsUz {
 			'universalMedia.saveFavorite' => 'Favoritini salama',
 			'universalMedia.playNow' => 'O‘zadi',
 			'universalMedia.favoriteSaved' => 'Bu profili yo‘zadi bu profilga salaydi.',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${count}\'dan kaygan oʻshayni oʻsayni playlist entry.', other: '${count}\'dan kaygan oʻshaydi oʻsayan playlist entradi.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${count}\'dan kaygan oʻshayni oʻsayni playlist entry.', other: '${count}\'dan kaygan oʻshaydi oʻsayan playlist entradi.', ),
 			'universalMedia.playlistAddress' => 'Playlist adresi',
 			'universalMedia.playlistAddressHelp' => 'M3U, m3U8 ya PLS playlist o‘z web adresi. Direct stream link ko‘z bu playlist.',
 			'universalMedia.choosePlaylist' => 'Playlist fildi seçin',
@@ -8198,7 +8193,7 @@ extension on TranslationsUz {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Filmi seçin',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '1 seçkin fildi', other: '${count} seçkin fillar', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '1 seçkin fildi', other: '${count} seçkin fillar', ),
 			'universalMedia.wifiTransfer' => 'Filmi Wi-Fi-dan qaytadi',
 			'universalMedia.wifiTransferHelp' => 'Transfer supported files from a browser on the same trusted network.',
 			'universalMedia.wifiTransferIntro' => 'Bu adresi başka bir cihazda bir browser\'da açın. Fillar seçin bu cihazın Fillar və kitaplar kütüphanaya eklemek.',
@@ -8209,7 +8204,7 @@ extension on TranslationsUz {
 			'universalMedia.copyAddress' => 'Transfer adresi kopyadi',
 			'universalMedia.addressCopied' => 'Transfer adresi kopyadi',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Bu adres ${time}\'da boʻyadi.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${count} faili qaytadi', other: '${count} faili qaytadi', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${count} faili qaytadi', other: '${count} faili qaytadi', ),
 			'universalMedia.uploadedData' => ({required Object size}) => '${size} qaytadi',
 			'universalMedia.stopTransfer' => 'Transfer o‘yadi, adresi boʻyadi.',
 			'universalMedia.startTransfer' => 'Transfer başlar',
@@ -8435,7 +8430,7 @@ extension on TranslationsUz {
 			'fileSources.sleep' => 'Uyqu taymeri',
 			'fileSources.sleepOff' => 'Oʻchirilgan',
 			'fileSources.endChapter' => 'Kapitalni bilan',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} daqiqa', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} daqiqa', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} daqiqa', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} daqiqa', ),
 			'fileSources.skipBack' => 'Tadiq qaytadi',
 			'fileSources.skipForward' => 'Tadiqadi',
 			'fileSources.smartRewind' => 'U\'qimni qaytarga bir pauzdan sonra',
@@ -8774,13 +8769,11 @@ extension on TranslationsUz {
 			'comics.collections' => 'To‘plamlar',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8808,10 +8801,8 @@ extension on TranslationsUz {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8821,7 +8812,6 @@ extension on TranslationsUz {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

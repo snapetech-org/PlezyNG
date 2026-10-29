@@ -7,12 +7,16 @@
 #include <cerrno>
 #include <cstring>
 #include <functional>
+#include <future>
 #include <map>
 #include <stdexcept>
 #include <thread>
 
+#include "../mpv/wayland_video_surface.h"
 #include "steam_gstreamer.h"
 #include "steam_input.h"
+#include "steam_microphone_capture.h"
+#include "steam_vulkan_sink.h"
 
 using namespace plezy::steam;
 namespace {
@@ -66,7 +70,10 @@ double real(FlValue* map, const char* key) {
   return fl_value_get_float(value);
 }
 Host hostFrom(FlValue* args) {
-  return {text(args, "address"), uint16_t(number(args, "port", 27036, 1, 65535)), identifier(text(args, "hostId"))};
+  Host host{text(args, "address"), uint16_t(number(args, "port", 27036, 1, 65535)), identifier(text(args, "hostId"))};
+  for (int i = 0; i < 6; ++i) host.relayPorts[i] = number(args, ("relayPort" + std::to_string(i)).c_str(), 0, 1, 65535);
+  if (!host.validRelay()) throw std::invalid_argument("Invalid relay route");
+  return host;
 }
 Host resolve(Host host, GCancellable* cancel) {
   g_autoptr(GResolver) resolver = g_resolver_get_default();
@@ -192,7 +199,7 @@ struct PixelsData {
   std::unique_ptr<PendingPixels> pending;
   // Flutter owns the read buffer until the texture is unregistered. Network
   // and decoder threads never mutate it; only copy_pixels does.
-  std::vector<uint8_t> output = std::vector<uint8_t>(1920 * 1080 * 4);
+  std::vector<uint8_t> output = std::vector<uint8_t>(4);
   uint32_t width = 1, height = 1;
   ~PixelsData() {
     if (pending) pending->complete(false);
@@ -246,6 +253,9 @@ struct Session : std::enable_shared_from_this<Session> {
   uint64_t game;
   StreamOptions options;
   bool hevc, audible = false;
+  bool usePyrowave = false, nativeActive = false;
+  std::unique_ptr<mpv::WaylandVideoSurface> plane;
+  std::shared_ptr<VulkanSink> gpuSink;
   InputState input;
   FlBinaryMessenger* messenger;
   FlTextureRegistrar* registrar;
@@ -272,6 +282,7 @@ struct Session : std::enable_shared_from_this<Session> {
         registrar(FL_TEXTURE_REGISTRAR(g_object_ref(fl_plugin_registrar_get_texture_registrar(plugin)))),
         texture(reinterpret_cast<SteamPixels*>(g_object_new(steam_pixels_get_type(), nullptr))),
         channel(nullptr) {
+    texture->data->output.resize(size_t(o.width) * o.height * 4);
     channelName = "com.plezy/games/steam_stream/" + std::to_string(id);
     g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
     channel = fl_method_channel_new(messenger, channelName.c_str(), FL_METHOD_CODEC(codec));
@@ -297,7 +308,9 @@ struct Session : std::enable_shared_from_this<Session> {
     });
   }
   bool pixels(DecodedPixels&& pixels, std::weak_ptr<Runtime> source) {
-    if (closing) return false;
+    if (closing || !pixels.width || !pixels.height || pixels.width > unsigned(options.width) ||
+        pixels.height > unsigned(options.height) || pixels.rgba.size() != size_t(pixels.width) * pixels.height * 4)
+      return false;
     const auto frame = pixels.id;
     const auto frameWidth = pixels.width, frameHeight = pixels.height;
     auto pending = std::make_unique<PendingPixels>(PendingPixels{
@@ -347,6 +360,85 @@ struct Session : std::enable_shared_from_this<Session> {
     }
     return true;
   }
+  VulkanSink::Target prepareGpu(std::weak_ptr<Runtime> source, const PyrowaveFrameInfo& info) {
+    struct Ticket {
+      std::mutex mutex;
+      bool cancelled = false;
+      std::promise<VulkanSink::Target> value;
+    };
+    auto ticket = std::make_shared<Ticket>();
+    auto future = ticket->value.get_future();
+    onMain([weak = weak_from_this(), source, ticket, info] {
+      std::lock_guard<std::mutex> guard(ticket->mutex);
+      if (ticket->cancelled) return;
+      VulkanSink::Target result;
+      if (auto self = weak.lock(); self && !self->closing && self->nativeActive && self->plane) {
+        {
+          std::lock_guard<std::mutex> guard(self->mutex);
+          if (self->runtime != source.lock()) {
+            ticket->value.set_value(result);
+            return;
+          }
+        }
+        auto& p = *self->plane;
+        mpv::HdrMetadata metadata;
+        if (info.hdr10) {
+          metadata.transfer = mpv::SourceTransfer::kPq;
+          metadata.primaries = mpv::SourcePrimaries::kBt2020;
+        }
+        if (info.hdr10 && (!p.output_is_hdr() || !p.CanDescribeSource(metadata))) {
+          result.valid = false;
+        } else if (p.PreparePresent()) {
+          result.width = p.width();
+          result.height = p.height();
+          result.permitted = true;
+        }
+      }
+      ticket->value.set_value(result);
+    });
+    if (future.wait_for(std::chrono::milliseconds(500)) != std::future_status::ready) {
+      std::lock_guard<std::mutex> guard(ticket->mutex);
+      ticket->cancelled = true;
+      if (future.wait_for(std::chrono::milliseconds(0)) != std::future_status::ready) return {};
+    }
+    return future.get();
+  }
+  void setNative(bool selected) {
+    nativeActive = selected && plane && !closing;
+    if (plane) plane->SetVisible(nativeActive);
+    g_autoptr(FlValue) value = fl_value_new_bool(nativeActive);
+    fl_method_channel_invoke_method(channel, "nativePresentation", value, nullptr, nullptr, nullptr);
+  }
+  void completeGpu(std::weak_ptr<Runtime> source, uint32_t frame, int width, int height, bool shown, bool prepared) {
+    onMain([weak = weak_from_this(), source, frame, width, height, shown, prepared] {
+      auto self = weak.lock();
+      auto r = source.lock();
+      if (!r) return;
+      bool current = false;
+      if (self) {
+        std::lock_guard<std::mutex> guard(self->mutex);
+        current = self->runtime == r;
+      }
+      bool displayed = false;
+      if (current && prepared && self->plane) displayed = self->plane->CompletePresent(shown);
+      r->frameComplete(frame, displayed);
+      if (!self || !displayed || !self->active || self->closing) return;
+      {
+        std::lock_guard<std::mutex> guard(self->mutex);
+        if (self->runtime != r) return;
+      }
+      const auto epoch = r->metrics().epoch;
+      const auto size = (uint64_t(width) << 32) | uint32_t(height);
+      const bool first = self->renderedEpoch.exchange(epoch) != epoch;
+      if (self->renderedSize.exchange(size) != size || first) {
+        g_autoptr(FlValue) dimensions = fl_value_new_map();
+        put(dimensions, "width", width);
+        put(dimensions, "height", height);
+        fl_method_channel_invoke_method(self->channel, "videoSize", dimensions, nullptr, nullptr, nullptr);
+        self->setState("playing");
+      }
+    });
+  }
   void start();
   void close(FlMethodCall* reply = nullptr);
   void method(FlMethodCall* call);
@@ -387,9 +479,11 @@ void Session::start() {
       auto target = resolve(host, cancellable);
       int channels = options.audioChannels;
       bool allowHevc = hevc;
-      for (int attempt = 0; attempt < 3 && !closing; ++attempt) {
+      bool allowPyrowave = usePyrowave;
+      for (int attempt = 0; attempt < 4 && !closing; ++attempt) {
         active = false;
         auto current = std::make_shared<Runtime>();
+        current->motionControllers(options.motionController);
         std::atomic<bool> audioFailed{false}, videoFailed{false};
         auto decoder = std::make_shared<GStreamerSink>(
             [weak, source = std::weak_ptr<Runtime>(current)](DecodedPixels&& pixels) {
@@ -406,8 +500,40 @@ void Session::start() {
                 videoFailed = true;
               if (auto r = source.lock()) r->cancel();
             });
+        std::shared_ptr<VulkanSink> gpu;
+        if (allowPyrowave && plane) {
+          gpu = std::make_shared<VulkanSink>(
+              decoder, GpuWindow{GpuWindow::Kind::wayland, plane->native_display(), plane->native_surface()},
+              options.hdr10,
+              [weak, source = std::weak_ptr<Runtime>(current)](const PyrowaveFrameInfo& info) {
+                auto self = weak.lock();
+                return self ? self->prepareGpu(source, info) : VulkanSink::Target{};
+              },
+              [weak, source = std::weak_ptr<Runtime>(current)](
+                  uint32_t frame, int w, int h, bool shown, bool prepared) {
+                if (auto self = weak.lock()) self->completeGpu(source, frame, w, h, shown, prepared);
+              },
+              [weak, source = std::weak_ptr<Runtime>(current)](bool selected) {
+                onMain([weak, source, selected] {
+                  if (auto self = weak.lock()) {
+                    std::lock_guard<std::mutex> guard(self->mutex);
+                    if (self->runtime == source.lock()) self->setNative(selected);
+                  }
+                });
+              },
+              [source = std::weak_ptr<Runtime>(current), &videoFailed] {
+                videoFailed = true;
+                if (auto r = source.lock()) r->cancel();
+              });
+          if (!gpu->ready()) {
+            gpu->close();
+            gpu.reset();
+            allowPyrowave = false;
+          }
+        }
         {
           std::lock_guard<std::mutex> lock(mutex);
+          gpuSink = gpu;
           runtime = current;
           sink = decoder;
           active = true;
@@ -417,18 +543,27 @@ void Session::start() {
         }
         auto request = options;
         request.audioChannels = channels;
-        int result = current->run(target, credentials, game, allowHevc, false, decoder, request);
+        request.hdr10 = gpu && gpu->supportsHdr10();
+        std::shared_ptr<Sink> receiver = gpu ? std::static_pointer_cast<Sink>(gpu) : decoder;
+        int result = current->run(target, credentials, game, allowHevc, allowPyrowave, receiver, request);
         active = false;
+        if (gpu) gpu->close();
+        onMain([weak] {
+          if (auto self = weak.lock()) self->setNative(false);
+        });
         decoder->close();
         // No callback may retain references to these attempt-local flags.
         {
           std::lock_guard<std::mutex> lock(mutex);
           sink.reset();
+          gpuSink.reset();
         }
         if (closing) break;
         const bool dropSurround = audioFailed && channels > 2;
         const bool dropHevc = (videoFailed || result == -4) && allowHevc && current->metrics().codec == 5;
-        if (dropSurround || dropHevc) {
+        const bool dropPyrowave = allowPyrowave && (videoFailed || result == -4) && current->metrics().codec == 9;
+        if (dropSurround || dropHevc || dropPyrowave) {
+          if (dropPyrowave) allowPyrowave = false;
           if (dropSurround) channels = 2;
           if (dropHevc) allowHevc = false;
           notifyState("reconnecting");
@@ -446,6 +581,7 @@ void Session::close(FlMethodCall* reply) {
   if (reply) stopReplies.push_back(FL_METHOD_CALL(g_object_ref(reply)));
   if (closing.exchange(true)) return;
   active = false;
+  setNative(false);
   g_cancellable_cancel(cancellable);
   {
     std::lock_guard<std::mutex> lock(mutex);
@@ -459,6 +595,7 @@ void Session::close(FlMethodCall* reply) {
     if (self->worker.joinable()) self->worker.join();
     onMain([self] {
       // Acknowledgement follows transport AND decoder termination.
+      self->plane.reset();
       fl_texture_registrar_unregister_texture(self->registrar, FL_TEXTURE(self->texture));
       fl_binary_messenger_set_message_handler_on_channel(
           self->messenger, self->channelName.c_str(), nullptr, nullptr, nullptr);
@@ -483,11 +620,92 @@ void Session::method(FlMethodCall* call) {
     ok(call, value);
     return;
   }
+  if (method == "getNativePresentation") {
+    g_autoptr(FlValue) value = fl_value_new_bool(nativeActive);
+    ok(call, value);
+    return;
+  }
+  if (method == "setNativeRect" && plane) {
+    plane->SetRect(
+        number(args, "x", 0, -32768, 32768), number(args, "y", 0, -32768, 32768), number(args, "width", 0, 0, 16384),
+        number(args, "height", 0, 0, 16384), number(args, "scale", 1, 1, 8));
+    ok(call);
+    return;
+  }
   if (closing) {
     error(call);
     return;
   }
   std::lock_guard<std::mutex> lock(mutex);
+  if (method == "requestMicrophonePermission") {
+    g_autoptr(FlValue) result = fl_value_new_bool(true);  // OS/device access is checked when opening the source.
+    ok(call, result);
+    return;
+  }
+  if (method == "getMicrophoneState") {
+    g_autoptr(FlValue) result = fl_value_new_int(runtime ? runtime->microphoneState() : 0);
+    ok(call, result);
+    return;
+  }
+  if (method == "setMicrophoneEnabled") {
+    const bool enable = boolean(args, "enabled");
+    if (!enable && runtime) runtime->muteMicrophone();
+    const bool accepted = !enable || (runtime && active && runtime->metrics().epoch == renderedEpoch &&
+                                      input.isEnabled() && startMicrophoneCapture(runtime));
+    g_autoptr(FlValue) result = fl_value_new_bool(accepted);
+    ok(call, result);
+    return;
+  }
+  if (method == "readControllerFeedback") {
+    g_autoptr(FlValue) rows = fl_value_new_list();
+    if (runtime && active && runtime->metrics().epoch == renderedEpoch)
+      for (const auto& row : input.feedback(*runtime)) {
+        auto* values = fl_value_new_list();
+        for (auto value : row) fl_value_append_take(values, fl_value_new_int(value));
+        fl_value_append_take(rows, values);
+      }
+    ok(call, rows);
+    return;
+  }
+  if (method == "setControllerMotion") {
+    std::array<double, 6> values{};
+    const char* keys[] = {"gx", "gy", "gz", "ax", "ay", "az"};
+    for (size_t i = 0; i < 6; ++i) values[i] = real(args, keys[i]);
+    auto* device = field(args, "deviceId");
+    g_autoptr(FlValue) result = fl_value_new_bool(
+        runtime && active && runtime->metrics().epoch == renderedEpoch && device &&
+        fl_value_get_type(device) == FL_VALUE_TYPE_INT && input.motion(*runtime, fl_value_get_int(device), values));
+    ok(call, result);
+    return;
+  }
+  if (method == "inputText") {
+    auto* value = field(args, "text");
+    if (!value || fl_value_get_type(value) != FL_VALUE_TYPE_UINT8_LIST || fl_value_get_length(value) > 512)
+      throw std::invalid_argument("Invalid text");
+    const auto* bytes = fl_value_get_uint8_list(value);
+    const auto length = fl_value_get_length(value);
+    g_autoptr(FlValue) result = fl_value_new_bool(
+        length && runtime && active && runtime->metrics().epoch == renderedEpoch &&
+        input.text(*runtime, std::string(reinterpret_cast<const char*>(bytes), length)));
+    ok(call, result);
+    return;
+  }
+  if (method == "setControllerMapping") {
+    auto* encoded = field(args, "mapping");
+    if (!encoded || fl_value_get_type(encoded) != FL_VALUE_TYPE_LIST || fl_value_get_length(encoded) != 19)
+      throw std::invalid_argument("Invalid controller mapping");
+    std::vector<int64_t> mapping;
+    for (size_t i = 0; i < 19; ++i) {
+      auto* value = fl_value_get_list_value(encoded, i);
+      if (fl_value_get_type(value) != FL_VALUE_TYPE_INT) throw std::invalid_argument("Invalid controller mapping");
+      mapping.push_back(fl_value_get_int(value));
+    }
+    if (runtime) input.reset(*runtime);
+    g_autoptr(FlValue) result =
+        fl_value_new_bool(runtime && runtime->controllerMapping(number(args, "seat", 0, 0, 3), mapping));
+    ok(call, result);
+    return;
+  }
   if (method == "setAudioEnabled") {
     audible = boolean(args, "enabled");
     if (sink) sink->volume(audible);
@@ -575,7 +793,9 @@ void Session::method(FlMethodCall* call) {
     put(v, "maxAckLatencyMs", m.reliability.reliableMaxAckLatencyMs);
     put(v, "hidPending", m.reliability.hidPending);
     put(v, "hidInFlight", m.reliability.hidInFlight);
-    put(v, "decoderKind", 2);
+    put(v, "decoderKind", nativeActive ? 5 : 2);
+    put(v, "hdr10", gpuSink && gpuSink->hdr10Active() ? 1 : 0);
+    put(v, "chromaFormat", gpuSink && m.codec == 9 ? gpuSink->chromaFormat() : 0);
     ok(call, v);
     return;
   } else {
@@ -606,7 +826,7 @@ void Manager::method(FlMethodCall* call, bool receiver) {
   if (!receiver && name == "capabilities") {
     const bool available = text(args, "protocol") == "steam" && GStreamerSink::supported();
     g_autoptr(FlValue) result = fl_value_new_map();
-    for (const char* key : {"available", "inlinePairing", "library", "embeddedSurface"})
+    for (const char* key : {"available", "inlinePairing", "library", "embeddedSurface", "internetTunnel"})
       fl_value_set_string_take(result, key, fl_value_new_bool(available));
     ok(call, result);
     return;
@@ -619,16 +839,29 @@ void Manager::method(FlMethodCall* call, bool receiver) {
     auto host = hostFrom(args);
     auto game = identifier(text(args, "appId"), true);
     StreamOptions options;
-    options.width = number(args, "streamWidth", 1920, 640, 1920);
-    options.height = number(args, "streamHeight", 1080, 360, 1080);
-    options.fps = number(args, "streamFps", 60, 15, 60);
-    options.bitrateKbps = number(args, "streamBitrateKbps", 30000, 1000, 50000);
+    options.width = number(args, "streamWidth", 1920, 640, 3840);
+    options.height = number(args, "streamHeight", 1080, 360, 2160);
+    options.fps = number(args, "streamFps", 60, 15, 120);
+    options.bitrateKbps = number(args, "streamBitrateKbps", 30000, 1000, 100000);
     options.controllerCount = number(args, "controllerCount", 1, 1, 4);
+    options.motionController = boolean(args, "motionController");
     options.audioChannels = number(args, "audioChannels", 2, 2, 6);
     if (!options.valid()) throw std::invalid_argument("Invalid options");
     auto session = std::make_shared<Session>(
         next++, host, game, options, boolean(args, "allowHevc", true) && GStreamerSink::supported(true), registrar);
     session->owner = shared_from_this();
+    if (boolean(args, "pyrowave")) {
+      auto* view = fl_plugin_registrar_get_view(registrar);
+      if (view && mpv::WaylandVideoSurface::IsSupported(gtk_widget_get_display(GTK_WIDGET(view)))) {
+        auto plane = std::make_unique<mpv::WaylandVideoSurface>();
+        std::string failure;
+        if (plane->Create(GTK_WIDGET(view), &failure, true)) {
+          session->options.hdr10 = boolean(args, "allowHdr") && plane->supports_hdr() && plane->output_is_hdr();
+          session->plane = std::move(plane);
+          session->usePyrowave = true;
+        }
+      }
+    }
     if (!fl_texture_registrar_register_texture(session->registrar, FL_TEXTURE(session->texture))) {
       fl_binary_messenger_set_message_handler_on_channel(
           session->messenger, session->channelName.c_str(), nullptr, nullptr, nullptr);
@@ -653,6 +886,7 @@ void Manager::method(FlMethodCall* call, bool receiver) {
     g_autoptr(FlValue) result = fl_value_new_map();
     put(result, "id", session->id);
     put(result, "textureId", fl_texture_get_id(FL_TEXTURE(session->texture)));
+    fl_value_set_string_take(result, "nativePlane", fl_value_new_bool(session->plane != nullptr));
     session->start();
     ok(call, result);
     return;

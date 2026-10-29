@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -18,6 +17,8 @@ import '../../widgets/app_menu.dart';
 import '../../widgets/media_grid_delegate.dart';
 import '../../widgets/sliver_cross_axis_layout_builder.dart';
 import '../external_access_screen.dart';
+import 'game_cover.dart';
+import 'game_presentation.dart';
 
 /// Games share the media browser's packing, gutters and poster focus treatment.
 /// They keep their own model and actions instead of masquerading as films.
@@ -41,12 +42,20 @@ class GameCardGrid<T> extends StatelessWidget {
         final theme = Theme.of(context).textTheme;
         final titleHeight = scaler.scale(theme.bodyMedium?.fontSize ?? 14) * 1.4;
         final hostHeight = scaler.scale(theme.bodySmall?.fontSize ?? 12) * 1.4;
+        // Keep at least 6.5 scaled caption ems; large text should reduce the
+        // column count instead of leaving every availability label truncated.
+        final captionWidth = scaler.scale(theme.bodySmall?.fontSize ?? 12) * 6.5;
+        final columns = ((width + geometry.spacing) / (captionWidth + geometry.spacing)).floor().clamp(
+          1,
+          geometry.columnCount,
+        );
+        final itemWidth = (width - (columns - 1) * geometry.spacing) / columns;
         return SliverGrid.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: geometry.columnCount,
+            crossAxisCount: columns,
             crossAxisSpacing: geometry.spacing,
             mainAxisSpacing: geometry.spacing,
-            mainAxisExtent: (geometry.itemWidth - 12) * 1.5 + titleHeight + hostHeight + 22,
+            mainAxisExtent: (itemWidth - 12) * 1.5 + titleHeight * 2 + hostHeight * 2 + 22,
           ),
           itemCount: games.length,
           itemBuilder: (context, index) => builder(context, games[index]),
@@ -68,8 +77,10 @@ class GameCard extends StatefulWidget {
     required this.artwork,
     required this.favorite,
     required this.onPlay,
+    this.onActivate,
     required this.onFavorite,
     this.onPlayInWorkspace,
+    this.onUseAsController,
     this.focusNode,
   });
   final StreamGame game;
@@ -80,8 +91,12 @@ class GameCard extends StatefulWidget {
   final GameArtworkLoader artwork;
   final bool favorite;
   final VoidCallback? onPlay;
+
+  /// Browse-only devices activate details while retaining a distinct Play menu.
+  final VoidCallback? onActivate;
   final VoidCallback? onFavorite;
   final VoidCallback? onPlayInWorkspace;
+  final VoidCallback? onUseAsController;
   final FocusNode? focusNode;
 
   @override
@@ -89,32 +104,6 @@ class GameCard extends StatefulWidget {
 }
 
 class _GameCardState extends State<GameCard> {
-  late Future<Uint8List?> _cover;
-
-  @override
-  void initState() {
-    super.initState();
-    _cover = _loadCover();
-  }
-
-  @override
-  void didUpdateWidget(GameCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.game.key != widget.game.key ||
-        oldWidget.host?.address != widget.host?.address ||
-        oldWidget.host?.port != widget.host?.port ||
-        oldWidget.steamAppId != widget.steamAppId ||
-        oldWidget.artwork != widget.artwork) {
-      _cover = _loadCover();
-    }
-  }
-
-  Future<Uint8List?> _loadCover() => widget.steamAppId != null
-      ? widget.artwork.loadSteam(widget.steamAppId!)
-      : widget.host != null
-      ? widget.artwork.load(widget.host!, widget.game)
-      : Future.value();
-
   String get _subtitle => widget.subtitle ?? widget.host?.name ?? t.games.steamLibrary;
 
   Future<void> _menu() async {
@@ -136,6 +125,8 @@ class _GameCardState extends State<GameCard> {
             label: t.videoControls.openMiniPlayer,
             icon: Symbols.picture_in_picture_alt_rounded,
           ),
+        if (widget.onUseAsController != null)
+          AppMenuItem(value: 'use_as_controller', label: t.games.useAsController, icon: Symbols.sports_esports_rounded),
         if (widget.onFavorite != null)
           AppMenuItem(
             value: 'favorite',
@@ -149,6 +140,7 @@ class _GameCardState extends State<GameCard> {
     if (action == 'details') widget.onDetails?.call();
     if (action == 'play') widget.onPlay?.call();
     if (action == 'play_in_workspace') widget.onPlayInWorkspace?.call();
+    if (action == 'use_as_controller') widget.onUseAsController?.call();
     if (action == 'favorite') widget.onFavorite?.call();
     if (action == 'storefronts') {
       unawaited(
@@ -178,13 +170,6 @@ class _GameCardState extends State<GameCard> {
     return appId != null && appId <= 0xffffffff ? appId : null;
   }
 
-  Widget _placeholder(BuildContext context) => ColoredBox(
-    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-    child: Center(
-      child: AppIcon(Symbols.sports_esports_rounded, size: 40, color: Theme.of(context).colorScheme.onSurfaceVariant),
-    ),
-  );
-
   @override
   Widget build(BuildContext context) {
     final radius = tokens(context).radiusSm;
@@ -197,80 +182,63 @@ class _GameCardState extends State<GameCard> {
         descendantsAreFocusable: true,
         semanticLabel: '${isolateDisplayText(widget.game.name)}, ${isolateDisplayText(_subtitle)}',
         semanticValue: widget.favorite ? t.games.favorites : null,
-        onSelect: widget.onPlay,
+        onSelect: widget.onActivate ?? widget.onPlay,
         onLongPress: _menu,
         enableLongPress: true,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: widget.onPlay,
+          onTap: widget.onActivate ?? widget.onPlay,
           onLongPress: _menu,
           onSecondaryTap: _menu,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CardFocusBorder(
-                borderRadius: radius,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(radius),
-                  child: AspectRatio(
-                    aspectRatio: 2 / 3,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        FutureBuilder<Uint8List?>(
-                          future: _cover,
-                          builder: (context, snapshot) => snapshot.data == null
-                              ? _placeholder(context)
-                              : Image.memory(
-                                  snapshot.data!,
-                                  fit: BoxFit.cover,
-                                  cacheWidth: 360,
-                                  excludeFromSemantics: true,
-                                  errorBuilder: (context, _, _) => _placeholder(context),
+              Flexible(
+                child: CardFocusBorder(
+                  borderRadius: radius,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(radius),
+                    child: AspectRatio(
+                      aspectRatio: 2 / 3,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          GameCover(
+                            game: widget.game,
+                            host: widget.host,
+                            steamAppId: widget.steamAppId,
+                            artwork: widget.artwork,
+                          ),
+                          if (widget.steamAppId != null)
+                            const PositionedDirectional(start: 6, top: 6, child: SteamSourceBadge(onArtwork: true)),
+                          if (widget.onDetails != null)
+                            PositionedDirectional(
+                              end: 0,
+                              bottom: 0,
+                              child: IconButton.filledTonal(
+                                tooltip: t.games.gameOptions(game: isolateDisplayText(widget.game.name)),
+                                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                                icon: const AppIcon(Symbols.more_horiz_rounded),
+                                onPressed: _menu,
+                              ),
+                            ),
+                          if (widget.favorite)
+                            PositionedDirectional(
+                              start: 6,
+                              bottom: 6,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.72),
+                                  borderRadius: BorderRadius.circular(radius),
                                 ),
-                        ),
-                        if (widget.steamAppId != null)
-                          PositionedDirectional(
-                            start: 6,
-                            bottom: 6,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.8),
-                                borderRadius: BorderRadius.circular(radius),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                child: Text(t.games.steamSource, style: TextStyle(color: Colors.white, fontSize: 12)),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: AppIcon(Symbols.favorite_rounded, size: 16, color: Colors.white),
+                                ),
                               ),
                             ),
-                          ),
-                        if (widget.onDetails != null)
-                          PositionedDirectional(
-                            end: 0,
-                            bottom: 0,
-                            child: IconButton.filledTonal(
-                              tooltip: t.games.gameDetails,
-                              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-                              icon: const AppIcon(Symbols.more_horiz_rounded),
-                              onPressed: _menu,
-                            ),
-                          ),
-                        if (widget.favorite)
-                          PositionedDirectional(
-                            end: 6,
-                            top: 6,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.72),
-                                borderRadius: BorderRadius.circular(radius),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(5),
-                                child: AppIcon(Symbols.favorite_rounded, size: 16, color: Colors.white),
-                              ),
-                            ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -278,13 +246,13 @@ class _GameCardState extends State<GameCard> {
               const SizedBox(height: 8),
               Text(
                 isolateDisplayText(widget.game.name),
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.4),
               ),
               Text(
                 isolateDisplayText(_subtitle),
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(
                   context,

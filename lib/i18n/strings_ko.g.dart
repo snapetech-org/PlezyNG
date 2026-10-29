@@ -36,7 +36,7 @@ class TranslationsKo extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsKo _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsKo $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsKo(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3875,13 +3875,11 @@ class _Translations$games$ko extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3909,10 +3907,8 @@ class _Translations$games$ko extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3922,7 +3918,6 @@ class _Translations$games$ko extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5401,9 +5396,9 @@ extension on TranslationsKo {
 			'settings.smallSkipDuration' => '짧은 건너뛰기 시간',
 			'settings.largeSkipDuration' => '긴 건너뛰기 시간',
 			'settings.rewindOnResume' => '재개 시 되감기',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)}초', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)}초', ),
 			'settings.defaultSleepTimer' => '기본 취침 타이머',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)}분', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)}분', ),
 			'settings.rememberTrackSelections' => '시리즈/영화별 트랙 선택 기억',
 			'settings.chooseTracksBeforePlayback' => '재생 전에 오디오 및 하위 제목을 선택합니다.',
 			'settings.chooseTracksBeforePlaybackDescription' => '각 비디오가 시작되기 전에 소스 오디오 및 하위 제목 트랙을 선택합니다.',
@@ -6009,9 +6004,9 @@ extension on TranslationsKo {
 			'mediaMenu.deleteAnyway' => '그래도 삭제',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => '서버에서 ${title}을(를) 영구 삭제할까요?',
 			'mediaMenu.deleteMultipleWarning' => '모든 에피소드와 파일이 포함됩니다.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '포함된 에피소드 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개와 해당 파일이 삭제됩니다.', other: '포함된 에피소드 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개와 해당 파일이 모두 삭제됩니다.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '이 항목은 파일 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개에 저장되어 있으며, 해당 파일이 삭제됩니다.', other: '이 항목은 파일 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개에 걸쳐 저장되어 있으며, 모든 파일이 삭제됩니다.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '같은 파일에 저장된 다른 에피소드 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개도 함께 삭제됩니다:', other: '같은 파일에 저장된 다른 에피소드 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개도 함께 삭제됩니다:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '포함된 에피소드 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개와 해당 파일이 삭제됩니다.', other: '포함된 에피소드 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개와 해당 파일이 모두 삭제됩니다.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '이 항목은 파일 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개에 저장되어 있으며, 해당 파일이 삭제됩니다.', other: '이 항목은 파일 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개에 걸쳐 저장되어 있으며, 모든 파일이 삭제됩니다.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '같은 파일에 저장된 다른 에피소드 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개도 함께 삭제됩니다:', other: '같은 파일에 저장된 다른 에피소드 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개도 함께 삭제됩니다:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Plezy가 어떤 파일이 삭제될지 확인하지 못해 위 항목보다 더 많은 파일이 삭제될 수 있습니다. 취소하고 다시 시도하거나 그래도 삭제하세요.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => '서버가 이 항목의 파일 정보를 제공하지 않아 Plezy가 어떤 파일이 삭제될지 확인할 수 없습니다. 위 항목보다 더 많은 파일이 삭제될 수 있습니다.',
 			'mediaMenu.mediaDeletedSuccessfully' => '미디어 항목이 성공적으로 삭제되었습니다',
@@ -6200,7 +6195,7 @@ extension on TranslationsKo {
 			'videoControls.osdSubtitlesOff' => '자막: 꺼짐',
 			'videoControls.osdSubtitles' => ({required Object track}) => '자막: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => '오디오: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 프레임', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 프레임', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 프레임', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 프레임', ),
 			'videoControls.trackSelectionTitle' => '플레이백 전에 트랙을 선택합니다.',
 			'videoControls.trackSelectionAuto' => '자동 선택',
 			'videoControls.openMiniPlayer' => '오픈 미니 플레이어',
@@ -6215,7 +6210,7 @@ extension on TranslationsKo {
 			'messages.markedAsWatchedOffline' => '시청 완료로 표시됨 (연결 시 동기화됨)',
 			'messages.markedAsUnwatchedOffline' => '미시청으로 표시됨 (연결 시 동기화됨)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => '자동 삭제됨: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '자동 삭제 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 다운로드 보기', other: '시청한 다운로드 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개를 자동 삭제했습니다', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '자동 삭제 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 다운로드 보기', other: '시청한 다운로드 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개를 자동 삭제했습니다', ),
 			'messages.removedFromContinueWatching' => '계속 시청 목록에서 제거됨',
 			'messages.errorLoading' => ({required Object error}) => '오류: ${error}',
 			'messages.searchPartialResults' => '일부 미디어 서버를 검색하지 못했습니다. 사용 가능한 결과만 표시합니다.',
@@ -6586,7 +6581,7 @@ extension on TranslationsKo {
 			'discover.tvShow' => 'TV 시리즈',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes}분 남음',
 			'discover.moreLikeThis' => '비슷한 콘텐츠',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 제목', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개 타이틀', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 제목', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개 타이틀', ),
 			'discover.person.born' => '출생',
 			'discover.person.died' => '사망',
 			'discover.person.birthplace' => '출생지',
@@ -6831,7 +6826,7 @@ extension on TranslationsKo {
 			'explore.status.ended' => '종영',
 			'explore.status.canceled' => '취소됨',
 			'explore.status.upcoming' => '방영 예정',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 에피소드', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}화', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 에피소드', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}화', ),
 			'explore.cast' => '출연진',
 			'explore.characters' => '캐릭터',
 			'explore.addToWatchlist' => '관심 목록에 추가',
@@ -6843,7 +6838,7 @@ extension on TranslationsKo {
 			'explore.notInLibrary' => '라이브러리에 없음',
 			'explore.inTheseLibraries' => '이 라이브러리에 있음',
 			'explore.checkingLibrary' => '라이브러리 확인 중...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 서버를 확인할 수 없음', other: '서버 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개를 확인할 수 없습니다', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 서버를 확인할 수 없음', other: '서버 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개를 확인할 수 없습니다', ),
 			'explore.emptyTitle' => '아직 아무것도 없습니다',
 			'explore.emptyMessage' => ({required Object source}) => '${source}에 콘텐츠가 추가되면 여기에 표시됩니다.',
 			'explore.searchHint' => ({required Object source}) => '${source}에서 검색',
@@ -6880,7 +6875,7 @@ extension on TranslationsKo {
 			'explore.stats.planning' => ({required Object n}) => '${n}명 볼 예정',
 			'explore.stats.favorited' => ({required Object n}) => '즐겨찾기 ${n}명',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} 하차',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 댓글', other: '댓글 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 댓글', other: '댓글 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개', ),
 			'explore.stats.votes' => ({required Object n}) => '투표 ${n}개',
 			'explore.stats.watching' => ({required Object n}) => '시청 중 ${n}명',
 			'explore.stats.completed' => ({required Object n}) => '완료 ${n}명',
@@ -6947,14 +6942,14 @@ extension on TranslationsKo {
 			'explore.detail.crew' => '제작진',
 			'explore.detail.ratings' => '평점',
 			'explore.detail.schedule' => '방영 일정',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '사용자에 의해 권장 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: '사용자 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}명이 추천', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '사용자에 의해 권장 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: '사용자 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}명이 추천', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => '${who} 추천',
 			'explore.detail.favoritedBy' => ({required Object who}) => '${who} 즐겨찾기',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '미방영 ${n}개',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => '시청자의 ${percent} 추천',
 			'explore.detail.relatedTitles' => '관련 작품',
 			'explore.detail.background' => '배경',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 결과', other: '결과 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 결과', other: '결과 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개', ),
 			'liveTv.title' => '실시간 TV',
 			'liveTv.guide' => '편성표',
 			'liveTv.noChannels' => '사용 가능한 채널이 없습니다',
@@ -7083,7 +7078,7 @@ extension on TranslationsKo {
 			'playlists.delete' => '재생 목록 삭제',
 			'playlists.removeItem' => '재생 목록에서 항목 제거',
 			'playlists.smartPlaylist' => '스마트 재생 목록',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}개 항목', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}개 항목', ),
 			'playlists.emptyPlaylist' => '이 재생 목록은 비어 있습니다',
 			'playlists.deleteConfirm' => '재생 목록을 삭제하시겠습니까?',
 			'playlists.deleteMessage' => ({required Object name}) => '"${name}"을(를) 삭제하시겠습니까?',
@@ -7105,7 +7100,7 @@ extension on TranslationsKo {
 			'music.playNext' => '다음에 재생',
 			'music.addToQueue' => '대기열에 추가',
 			'music.discNumber' => ({required Object n}) => '디스크 ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 트랙', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}곡', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 트랙', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}곡', ),
 			'music.nowPlaying' => '재생 중',
 			'music.playingFrom' => ({required Object title}) => '${title}에서 재생 중',
 			'music.queue' => '재생 대기열',
@@ -7127,7 +7122,7 @@ extension on TranslationsKo {
 			'music.noLyrics' => '가사 없음',
 			'music.sleepTimer' => '취침 타이머',
 			'music.sleepTimerEndOfTrack' => '곡 종료 시',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}분', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}분', ),
 			'music.stopPlayback' => '재생 중지',
 			'music.previousTrack' => '이전 곡',
 			'music.nextTrack' => '다음 곡',
@@ -7211,7 +7206,7 @@ extension on TranslationsKo {
 			'watchTogether.offsetPlusTenth' => '+100ms',
 			'watchTogether.offsetPlusSecond' => '+1초',
 			'watchTogether.participants' => '참가자',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 참가자', other: '참가자 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}명', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 참가자', other: '참가자 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}명', ),
 			'watchTogether.hostBadge' => '호스트',
 			'watchTogether.nameYou' => ({required Object name}) => '${name}(나)',
 			'watchTogether.playerIdle' => '대기 중',
@@ -7420,10 +7415,10 @@ extension on TranslationsKo {
 			'downloads.unknownAlbum' => '알 수 없는 앨범',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} 완료',
 			'downloads.storageUsed' => ({required Object size}) => '사용된 저장소: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개 다운로드', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개 다운로드', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 쇼', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 표시', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 영화', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 영화', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개 앨범', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개 앨범', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개 다운로드', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개 다운로드', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 쇼', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 표시', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 영화', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 영화', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개 앨범', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}개 앨범', ),
 			'downloads.errorFileNotFound' => '파일을 찾을 수 없음(404)',
 			'downloads.errorDownloadNotAllowed' => '서버에서 다운로드를 허용하지 않음(403)',
 			'downloads.errorDownloadFailed' => '다운로드 실패',
@@ -8177,7 +8172,7 @@ extension on TranslationsKo {
 			'universalMedia.saveFavorite' => '좋아하는 저장',
 			'universalMedia.playNow' => '지금 플레이',
 			'universalMedia.favoriteSaved' => 'Stream Favorite 이 프로필에 저장',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '스키피드 ${count} 지원되지 않거나 불안정한 플레이리스트 입력.', other: '${count} 지원되지 않거나 불안정한 플레이리스트 입력을 벗어났습니다.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '스키피드 ${count} 지원되지 않거나 불안정한 플레이리스트 입력.', other: '${count} 지원되지 않거나 불안정한 플레이리스트 입력을 벗어났습니다.', ),
 			'universalMedia.playlistAddress' => '플레이리스트 주소',
 			'universalMedia.playlistAddressHelp' => '웹 주소에서 M3U, M3u8 또는 PLS 플레이리스트를 열 수 있습니다.Direct stream 링크는 플레이 리스트를 저장하지 않습니다.',
 			'universalMedia.choosePlaylist' => '플레이리스트 파일 선택',
@@ -8193,7 +8188,7 @@ extension on TranslationsKo {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => '파일 선택',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '1 선택된 파일', other: '${count} 선택된 파일', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '1 선택된 파일', other: '${count} 선택된 파일', ),
 			'universalMedia.wifiTransfer' => 'Wi-Fi를 통해 파일을 보내기',
 			'universalMedia.wifiTransferHelp' => '동일한 신뢰할 수 있는 네트워크에서 브라우저에서 지원된 파일을 전송합니다.',
 			'universalMedia.wifiTransferIntro' => '다른 장치에서 브라우저에서 이 주소를 열어 파일을 선택하여 이 장치의 파일 및 책 라이브러리에 추가합니다.',
@@ -8204,7 +8199,7 @@ extension on TranslationsKo {
 			'universalMedia.copyAddress' => '전송 주소 복사',
 			'universalMedia.addressCopied' => '전송 주소 복사',
 			'universalMedia.transferExpires' => ({required Object time}) => '이 주소는 ${time}에서 만료됩니다.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${count} 파일 수신', other: '${count} 파일 수신', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '${count} 파일 수신', other: '${count} 파일 수신', ),
 			'universalMedia.uploadedData' => ({required Object size}) => '수신 ${size}',
 			'universalMedia.stopTransfer' => '전송 중지 및 주소 취소',
 			'universalMedia.startTransfer' => '전송 시작',
@@ -8430,7 +8425,7 @@ extension on TranslationsKo {
 			'fileSources.sleep' => '취침 타이머',
 			'fileSources.sleepOff' => '꺼짐',
 			'fileSources.endChapter' => '장의 끝',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}분', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}분', ),
 			'fileSources.skipBack' => '다시 스키',
 			'fileSources.skipForward' => '앞으로 스키',
 			'fileSources.smartRewind' => '휴식 후 똑똑한 회복',
@@ -8769,13 +8764,11 @@ extension on TranslationsKo {
 			'comics.collections' => '컬렉션',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8803,10 +8796,8 @@ extension on TranslationsKo {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8816,7 +8807,6 @@ extension on TranslationsKo {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

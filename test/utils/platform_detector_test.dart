@@ -42,6 +42,16 @@ void main() {
     expect(PlatformDetector.usesTvHomeLayout(), isTrue);
   });
 
+  test('catalog eligibility does not require an embedded receiver on TV ports', () {
+    expect(PlatformDetector.supportsGameLibrary(), isTrue);
+    if (PlatformDetector.isWebOSBuild() || PlatformDetector.isTizenBuild()) {
+      expect(PlatformDetector.supportsEmbeddedGameStreaming(), isFalse);
+    }
+    TvDetectionService.debugSetAutomotiveOverride(true);
+    expect(PlatformDetector.supportsGameLibrary(), isFalse);
+    expect(PlatformDetector.supportsEmbeddedGameStreaming(), isFalse);
+  });
+
   group('detectAndroidTvFromSystemFeatures', () {
     test('detects leanback devices', () {
       final detection = detectAndroidTvFromSystemFeatures([

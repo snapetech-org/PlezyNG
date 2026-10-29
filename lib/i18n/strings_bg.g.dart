@@ -36,7 +36,7 @@ class TranslationsBg extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsBg _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsBg $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsBg(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3880,13 +3880,11 @@ class _Translations$games$bg extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3914,10 +3912,8 @@ class _Translations$games$bg extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3927,7 +3923,6 @@ class _Translations$games$bg extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5406,9 +5401,9 @@ extension on TranslationsBg {
 			'settings.smallSkipDuration' => 'Малко прескачане',
 			'settings.largeSkipDuration' => 'Голямо прескачане',
 			'settings.rewindOnResume' => 'Връщане назад при продължаване',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунда', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунди', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунда', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунди', ),
 			'settings.defaultSleepTimer' => 'Таймер за заспиване по подразбиране',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минута', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минути', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минута', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минути', ),
 			'settings.rememberTrackSelections' => 'Запомняй избора на аудио и субтитри за всеки сериал или филм',
 			'settings.chooseTracksBeforePlayback' => 'Изберете аудио и подзаглавия преди възпроизвеждане',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Изберете източника на аудио и подзаглавието, преди всяко видео да започне.',
@@ -6014,9 +6009,9 @@ extension on TranslationsBg {
 			'mediaMenu.deleteAnyway' => 'Изтрий въпреки това',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'Завинаги да изтрия ли ${title} от сървъра ви?',
 			'mediaMenu.deleteMultipleWarning' => 'Това включва всички епизоди и техните файлове.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Това изтрива съдържащия се в него ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епизод и файла му.', other: 'Това изтрива всичките ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епизода в него, както и техните файлове.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Този елемент се съхранява като ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файл, който ще бъде изтрит.', other: 'Този елемент се съхранява в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файла и всички те ще бъдат изтрити.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} друг епизод се съхранява в същия файл и също ще бъде изтрит:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} други епизода се съхраняват в същия файл и също ще бъдат изтрити:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Това изтрива съдържащия се в него ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епизод и файла му.', other: 'Това изтрива всичките ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епизода в него, както и техните файлове.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Този елемент се съхранява като ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файл, който ще бъде изтрит.', other: 'Този елемент се съхранява в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файла и всички те ще бъдат изтрити.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} друг епизод се съхранява в същия файл и също ще бъде изтрит:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} други епизода се съхраняват в същия файл и също ще бъдат изтрити:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG не успя да провери кои файлове ще бъдат премахнати, така че може да изтрие повече от посочения по-горе елемент. Откажете и опитайте отново, или изтрийте въпреки това.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Сървърът ви не предостави данни за файловете на този елемент, така че PlezyNG не може да провери кои файлове ще бъдат премахнати. Може да изтрие повече от посочения по-горе елемент.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Елементът е изтрит успешно',
@@ -6205,7 +6200,7 @@ extension on TranslationsBg {
 			'videoControls.osdSubtitlesOff' => 'Субтитри: изкл.',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Субтитри: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Аудио: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} рамка', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} рамки', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} рамка', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} рамки', ),
 			'videoControls.trackSelectionTitle' => 'Изберете тракери преди игра',
 			'videoControls.trackSelectionAuto' => 'Автоматичен избор',
 			'videoControls.openMiniPlayer' => 'Отворени мини играчи',
@@ -6220,7 +6215,7 @@ extension on TranslationsBg {
 			'messages.markedAsWatchedOffline' => 'Маркирано като гледано (ще се синхронизира, когато сте онлайн)',
 			'messages.markedAsUnwatchedOffline' => 'Маркирано като негледано (ще се синхронизира, когато сте онлайн)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Автоматично премахнато: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Автоматично премахнато ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} гледано изтегляне', other: 'Автоматично премахнати ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} гледани изтегляния', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Автоматично премахнато ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} гледано изтегляне', other: 'Автоматично премахнати ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} гледани изтегляния', ),
 			'messages.removedFromContinueWatching' => 'Премахнато от продължаване на гледането',
 			'messages.errorLoading' => ({required Object error}) => 'Грешка: ${error}',
 			'messages.searchPartialResults' => 'Някои медийни сървъри не можаха да бъдат претърсени. Показват се наличните резултати.',
@@ -6591,7 +6586,7 @@ extension on TranslationsBg {
 			'discover.tvShow' => 'ТВ сериал',
 			'discover.minutesLeft' => ({required Object minutes}) => 'Остават ${minutes} мин',
 			'discover.moreLikeThis' => 'Подобно на това',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} заглавие', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} заглавия', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} заглавие', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} заглавия', ),
 			'discover.person.born' => 'Дата на раждане',
 			'discover.person.died' => 'Дата на смърт',
 			'discover.person.birthplace' => 'Място на раждане',
@@ -6836,7 +6831,7 @@ extension on TranslationsBg {
 			'explore.status.ended' => 'Приключил',
 			'explore.status.canceled' => 'Отменен',
 			'explore.status.upcoming' => 'Предстоящ',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епизод', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епизода', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епизод', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} епизода', ),
 			'explore.cast' => 'Актьори',
 			'explore.characters' => 'Герои',
 			'explore.addToWatchlist' => 'Добави в списъка за гледане',
@@ -6848,7 +6843,7 @@ extension on TranslationsBg {
 			'explore.notInLibrary' => 'Не е в твоята библиотека',
 			'explore.inTheseLibraries' => 'В тези библиотеки',
 			'explore.checkingLibrary' => 'Проверка на твоята библиотека...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Неуспешна проверка на ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сървър', other: 'Неуспешна проверка на ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сървъра', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Неуспешна проверка на ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сървър', other: 'Неуспешна проверка на ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сървъра', ),
 			'explore.emptyTitle' => 'Тук все още няма нищо',
 			'explore.emptyMessage' => ({required Object source}) => 'Редовете от ${source} ще се появят тук, когато има съдържание.',
 			'explore.searchHint' => ({required Object source}) => 'Търсене в ${source}',
@@ -6885,7 +6880,7 @@ extension on TranslationsBg {
 			'explore.stats.planning' => ({required Object n}) => '${n} планират да гледат',
 			'explore.stats.favorited' => ({required Object n}) => '${n} в любими',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} го изоставиха',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментар', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментара', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментар', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} коментара', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} гласа',
 			'explore.stats.watching' => ({required Object n}) => '${n} го гледат',
 			'explore.stats.completed' => ({required Object n}) => '${n} завършили',
@@ -6952,14 +6947,14 @@ extension on TranslationsBg {
 			'explore.detail.crew' => 'Екип',
 			'explore.detail.ratings' => 'Оценки',
 			'explore.detail.schedule' => 'Програма',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Препоръчан от ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} потребител', other: 'Препоръчан от ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} потребители', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Препоръчан от ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} потребител', other: 'Препоръчан от ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} потребители', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'Препоръчан от ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'В любими от ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} все още не са излъчени',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Препоръчан от ${percent} от зрителите',
 			'explore.detail.relatedTitles' => 'Свързани заглавия',
 			'explore.detail.background' => 'Фон',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} резултат', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} резултата', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} резултат', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} резултата', ),
 			'liveTv.title' => 'Телевизия на живо',
 			'liveTv.guide' => 'ТВ програма',
 			'liveTv.noChannels' => 'Няма налични канали',
@@ -7088,7 +7083,7 @@ extension on TranslationsBg {
 			'playlists.delete' => 'Изтрий плейлист',
 			'playlists.removeItem' => 'Премахни от плейлист',
 			'playlists.smartPlaylist' => 'Умен плейлист',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елемент', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елемента', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елемент', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} елемента', ),
 			'playlists.emptyPlaylist' => 'Този плейлист е празен',
 			'playlists.deleteConfirm' => 'Да се изтрие ли плейлистът?',
 			'playlists.deleteMessage' => ({required Object name}) => 'Сигурни ли сте, че искате да изтриете "${name}"?',
@@ -7110,7 +7105,7 @@ extension on TranslationsBg {
 			'music.playNext' => 'Пусни следващото',
 			'music.addToQueue' => 'Добави към опашката',
 			'music.discNumber' => ({required Object n}) => 'Диск ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} песен', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} песни', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} песен', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} песни', ),
 			'music.nowPlaying' => 'Сега се възпроизвежда',
 			'music.playingFrom' => ({required Object title}) => 'Възпроизвеждане от ${title}',
 			'music.queue' => 'Опашка',
@@ -7132,7 +7127,7 @@ extension on TranslationsBg {
 			'music.noLyrics' => 'Няма наличен текст на песента',
 			'music.sleepTimer' => 'Таймер за заспиване',
 			'music.sleepTimerEndOfTrack' => 'Край на песента',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минута', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минути', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минута', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минути', ),
 			'music.stopPlayback' => 'Спри възпроизвеждането',
 			'music.previousTrack' => 'Предишна песен',
 			'music.nextTrack' => 'Следваща песен',
@@ -7216,7 +7211,7 @@ extension on TranslationsBg {
 			'watchTogether.offsetPlusTenth' => '+100 мс',
 			'watchTogether.offsetPlusSecond' => '+1 с',
 			'watchTogether.participants' => 'Участници',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участник', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участници', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участник', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участници', ),
 			'watchTogether.hostBadge' => 'ОРГАНИЗАТОР',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (Вие)',
 			'watchTogether.playerIdle' => 'Неактивен',
@@ -7425,10 +7420,10 @@ extension on TranslationsBg {
 			'downloads.unknownAlbum' => 'Неизвестен албум',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => 'Завършени: ${completed}/${total}',
 			'downloads.storageUsed' => ({required Object size}) => 'Използвано съхранение: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} изтегляне', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} изтегляния', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} излъчване', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} показват', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} филми', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} филми', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} албум', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} албума', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} изтегляне', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} изтегляния', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} излъчване', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} показват', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} филми', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} филми', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} албум', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} албума', ),
 			'downloads.errorFileNotFound' => 'Файлът не е намерен (404)',
 			'downloads.errorDownloadNotAllowed' => 'Сървърът не разрешава изтеглянето (403)',
 			'downloads.errorDownloadFailed' => 'Изтеглянето е неуспешно',
@@ -8182,7 +8177,7 @@ extension on TranslationsBg {
 			'universalMedia.saveFavorite' => 'Спасете любимите',
 			'universalMedia.playNow' => 'Играй сега',
 			'universalMedia.favoriteSaved' => 'Любимият поток е спасен до този профил',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Скъп ${count} неподходящ или несигурен вход на списъка с играчки.', other: 'Изтеглени ${count} неподходящи или несигурни влизания в списъка на играчите.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: 'Скъп ${count} неподходящ или несигурен вход на списъка с играчки.', other: 'Изтеглени ${count} неподходящи или несигурни влизания в списъка на играчите.', ),
 			'universalMedia.playlistAddress' => 'Адрес на Playlist',
 			'universalMedia.playlistAddressHelp' => 'Отворете списък на M3U, M3u8 или PLS от уеб адрес. директни връзки не съхраняват списъка.',
 			'universalMedia.choosePlaylist' => 'Изберете Playlist файлове',
@@ -8198,7 +8193,7 @@ extension on TranslationsBg {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Изберете файлове',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '1 Избрани файлове', other: '${count} избрани файлове', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '1 Избрани файлове', other: '${count} избрани файлове', ),
 			'universalMedia.wifiTransfer' => 'Изпращане на файлове чрез Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Прехвърляне на поддържани файлове от браузър в една и съща надеждна мрежа.',
 			'universalMedia.wifiTransferIntro' => 'Отворете този адрес в браузър на друго устройство. Изберете файлове, за да ги добавите към библиотеката с файлове и книги на това устройство.',
@@ -8209,7 +8204,7 @@ extension on TranslationsBg {
 			'universalMedia.copyAddress' => 'Копиране на адреса за трансфер',
 			'universalMedia.addressCopied' => 'Прехвърляне на адрес копиране',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Този адрес изтича в ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${count} файлове, получени', other: '${count} файлове, получени', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '${count} файлове, получени', other: '${count} файлове, получени', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'Получаване на ${size}',
 			'universalMedia.stopTransfer' => 'Прекъсване на прехвърлянето и невалидиране на адреса',
 			'universalMedia.startTransfer' => 'Започнете трансфера',
@@ -8435,7 +8430,7 @@ extension on TranslationsBg {
 			'fileSources.sleep' => 'Таймер за заспиване',
 			'fileSources.sleepOff' => 'Изкл.',
 			'fileSources.endChapter' => 'Краят на глава',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минута', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минути', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минута', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минути', ),
 			'fileSources.skipBack' => 'Скип назад',
 			'fileSources.skipForward' => 'Скип напред',
 			'fileSources.smartRewind' => 'Умният възвръщаемост след почивка',
@@ -8774,13 +8769,11 @@ extension on TranslationsBg {
 			'comics.collections' => 'Колекции',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8808,10 +8801,8 @@ extension on TranslationsBg {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8821,7 +8812,6 @@ extension on TranslationsBg {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

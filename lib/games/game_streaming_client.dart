@@ -18,8 +18,9 @@ class GameClientCapabilities {
     this.inlinePairing = false,
     this.library = false,
     this.embeddedSurface = false,
+    this.internetTunnel = false,
   });
-  final bool available, inlinePairing, library, embeddedSurface;
+  final bool available, inlinePairing, library, embeddedSurface, internetTunnel;
 }
 
 /// Native engines run inside PlezyNG. Missing engines never launch another app.
@@ -45,17 +46,26 @@ class NativeGameStreamingClient implements GameStreamingClient {
 
   @override
   Future<GameClientCapabilities> capabilities(GameHost host) async {
+    final generation = _generation;
     try {
-      final result = await channel.invokeMapMethod<String, dynamic>('capabilities', _host(host));
+      final result = await channel
+          .invokeMapMethod<String, dynamic>('capabilities', _host(host))
+          .timeout(const Duration(seconds: 5));
+      if (generation != _generation) return const GameClientCapabilities(available: false);
       return GameClientCapabilities(
         available: result?['available'] == true,
         inlinePairing: result?['inlinePairing'] == true,
         library: result?['library'] == true,
         embeddedSurface: result?['embeddedSurface'] == true,
+        internetTunnel: result?['internetTunnel'] == true,
       );
     } on PlatformException {
       return const GameClientCapabilities(available: false);
     } on MissingPluginException {
+      return const GameClientCapabilities(available: false);
+    } on TimeoutException {
+      return const GameClientCapabilities(available: false);
+    } on TypeError {
       return const GameClientCapabilities(available: false);
     }
   }

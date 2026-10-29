@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -45,8 +46,9 @@ final class SteamDecoder implements AutoCloseable {
     }
   }
   private final long handle;
-  private final Surface surface;
-  private final SurfaceHolder surfaceHolder;
+  private volatile SurfaceHolder presentation;
+  private volatile long presentationRevision;
+  private volatile Video lastConfiguration;
   private final Events events;
   private final ArrayBlockingQueue<Video> video = new ArrayBlockingQueue<>(4);
   private final ArrayBlockingQueue<Audio> audio = new ArrayBlockingQueue<>(8);
@@ -62,18 +64,34 @@ final class SteamDecoder implements AutoCloseable {
   private boolean shown;
   private volatile boolean pyrowaveActive;
   private volatile int videoCodec;
-  private volatile int decoderKind; // 0 unknown, 1 hardware, 2 software, 3 Vulkan readback.
+  private volatile int decoderKind; // 0 unknown, 1 hardware, 2 software, 3 readback, 5 Vulkan surface.
+  private final CountDownLatch gpuReady = new CountDownLatch(1);
+  private final boolean requestGpu, allowHdr;
+  private volatile boolean gpuHdrSupported, hdrActive;
+  private long gpu; // Video worker only.
   private Bitmap pyrowaveBitmap;
   private final Paint pyrowavePaint = new Paint(Paint.FILTER_BITMAP_FLAG);
   SteamDecoder(long handle, SurfaceHolder surfaceHolder, Events events) {
+    this(handle, surfaceHolder, events, false, false);
+  }
+  SteamDecoder(long handle, SurfaceHolder surfaceHolder, Events events, boolean requestGpu, boolean allowHdr) {
     this.handle = handle;
-    this.surfaceHolder = surfaceHolder;
-    this.surface = surfaceHolder.getSurface();
+    this.presentation = surfaceHolder;
     this.events = events;
-    videoThread = new Thread(this::videoLoop, "PlezySteamVideo");
+    this.requestGpu = requestGpu;
+    this.allowHdr = allowHdr;
+    videoThread = new Thread(this::presentationLoop, "PlezySteamVideo");
     audioThread = new Thread(this::audioLoop, "PlezySteamAudio");
     videoThread.start();
     audioThread.start();
+  }
+  boolean awaitHdrCapability() throws InterruptedException {
+    return gpuReady.await(5, TimeUnit.SECONDS) && gpuHdrSupported;
+  }
+  /** Presentation is replaceable; transport, audio and trust remain session-owned. */
+  synchronized void setPresentation(SurfaceHolder holder) {
+    presentation = holder;
+    presentationRevision++;
   }
   static boolean supportsHevc() {
     MediaFormat format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_HEVC, 1920, 1080);
@@ -83,11 +101,12 @@ final class SteamDecoder implements AutoCloseable {
     metrics.put("decoderKind", decoderKind);
     metrics.put("videoQueue", video.size());
     metrics.put("audioQueue", audio.size());
+    metrics.put("hdr10", hdrActive ? 1 : 0);
   }
-  public boolean onVideo(int codec, int width, int height, byte[] extra) {
+  public synchronized boolean onVideo(int codec, int width, int height, byte[] extra) {
     if (closed)
       return false;
-    if ((codec != 4 && codec != 5 && codec != 9) || width < 1 || height < 1 || width > 1920 || height > 1080
+    if ((codec != 4 && codec != 5 && codec != 9) || width < 1 || height < 1 || width > 3840 || height > 2160
         || extra == null || extra.length > 65536) {
       if (codec == 9)
         rejectPyrowave();
@@ -98,6 +117,7 @@ final class SteamDecoder implements AutoCloseable {
     config.width = width;
     config.height = height;
     config.bytes = extra;
+    lastConfiguration = config;
     discardQueuedVideo();
     lost.set(false);
     boolean accepted = video.offer(config);
@@ -105,8 +125,8 @@ final class SteamDecoder implements AutoCloseable {
       rejectPyrowave();
     return accepted;
   }
-  public boolean onFrame(byte[] bytes, int id, boolean key) {
-    if (closed || bytes.length > 2 * 1024 * 1024 || lost.getAndSet(false))
+  public synchronized boolean onFrame(byte[] bytes, int id, boolean key) {
+    if (closed || presentation == null || bytes.length > 8 * 1024 * 1024 || lost.getAndSet(false))
       return false;
     Video frame = new Video();
     frame.bytes = bytes;
@@ -237,13 +257,48 @@ final class SteamDecoder implements AutoCloseable {
       }
     }
   }
-  private void videoLoop() {
+  private void presentationLoop() {
+    boolean first = true;
+    while (!closed) {
+      final long revision = presentationRevision;
+      final SurfaceHolder holder = presentation;
+      if (holder == null) {
+        try {
+          Thread.sleep(10);
+        } catch (InterruptedException ignored) {
+          Thread.currentThread().interrupt();
+          return;
+        }
+        continue;
+      }
+      if (!first) {
+        synchronized (this) {
+          discardQueuedVideo();
+          Video config = lastConfiguration;
+          if (config != null) video.offer(config);
+          // Request recovery from the transport after the decoder was rebuilt.
+          lost.set(true);
+        }
+      }
+      first = false;
+      videoLoop(holder, revision);
+      if (revision == presentationRevision) return;
+    }
+  }
+
+  private void videoLoop(SurfaceHolder surfaceHolder, long revision) {
+    final Surface surface = surfaceHolder.getSurface();
     MediaCodec decoder = null;
     Map<Long, Integer> pending = new HashMap<>();
     long sequence = 1;
     MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
     try {
-      while (!closed) {
+      if (requestGpu) {
+        gpu = NativeSteam.gpuCreate(surface, allowHdr);
+        gpuHdrSupported = gpu != 0 && NativeSteam.gpuHdrSupported(gpu);
+      }
+      gpuReady.countDown();
+      while (!closed && revision == presentationRevision) {
         Video item = video.poll(3, TimeUnit.MILLISECONDS);
         if (item != null && item.codec != 0) {
           videoCodec = item.codec;
@@ -264,6 +319,13 @@ final class SteamDecoder implements AutoCloseable {
           }
           if (item.codec == 9) {
             pyrowaveActive = true;
+            if (gpu != 0) {
+              if (!NativeSteam.gpuConfigure(gpu, item.width, item.height, item.bytes))
+                throw new IllegalStateException("GPU decoder initialization failed");
+              decoderKind = 5;
+              events.size(item.width, item.height);
+              continue;
+            }
             if (!NativeSteam.pyrowaveStart(handle, item.width, item.height, item.bytes))
               throw new IllegalStateException("Pyrowave decoder initialization failed");
             pyrowaveBitmap = Bitmap.createBitmap(item.width, item.height, Bitmap.Config.ARGB_8888);
@@ -271,11 +333,18 @@ final class SteamDecoder implements AutoCloseable {
             events.size(item.width, item.height);
             continue;
           }
+          // A Surface has one producer. Release the Vulkan WSI connection
+          // before attaching MediaCodec when the host selected another codec.
+          if (gpu != 0) {
+            NativeSteam.gpuDestroy(gpu);
+            gpu = 0;
+            hdrActive = false;
+          }
           String mime = item.codec == 5 ? MediaFormat.MIMETYPE_VIDEO_HEVC : MediaFormat.MIMETYPE_VIDEO_AVC;
           MediaFormat format = MediaFormat.createVideoFormat(mime, item.width, item.height);
-          format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, 2 * 1024 * 1024);
-          format.setInteger(MediaFormat.KEY_MAX_WIDTH, 1920);
-          format.setInteger(MediaFormat.KEY_MAX_HEIGHT, 1080);
+          format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, 8 * 1024 * 1024);
+          format.setInteger(MediaFormat.KEY_MAX_WIDTH, item.width);
+          format.setInteger(MediaFormat.KEY_MAX_HEIGHT, item.height);
           if (Build.VERSION.SDK_INT >= 30)
             format.setInteger(MediaFormat.KEY_LOW_LATENCY, 1);
           byte[][] parameters = NativeSteam.h26xStart(handle, item.codec, item.bytes);
@@ -302,6 +371,19 @@ final class SteamDecoder implements AutoCloseable {
           decoderKind = Build.VERSION.SDK_INT >= 29 ? (decoder.getCodecInfo().isHardwareAccelerated() ? 1 : 2) : 0;
           events.size(item.width, item.height);
         } else if (item != null && pyrowaveActive) {
+          if (gpu != 0) {
+            int result = NativeSteam.gpuPresent(gpu, item.bytes);
+            if (result < 0) throw new IllegalStateException("GPU presentation failed");
+            NativeSteam.frameComplete(handle, item.id, result == 1);
+            if (result == 1) {
+              hdrActive = NativeSteam.gpuHdrActive(gpu);
+              if (!shown) {
+                shown = true;
+                events.firstFrame();
+              }
+            }
+            continue;
+          }
           byte[] argb = NativeSteam.pyrowaveDecode(handle, item.bytes);
           if (argb == null)
             throw new IllegalStateException("Pyrowave frame decode failed");
@@ -368,7 +450,7 @@ final class SteamDecoder implements AutoCloseable {
             MediaFormat actual = decoder.getOutputFormat();
             int width = actual.getInteger(MediaFormat.KEY_WIDTH);
             int height = actual.getInteger(MediaFormat.KEY_HEIGHT);
-            if (width < 1 || width > 1920 || height < 1 || height > 1088)
+            if (width < 1 || width > 3840 || height < 1 || height > 2176)
               throw new IllegalStateException("Decoder dimensions exceed the receiver limit");
             if (Build.VERSION.SDK_INT >= 24) {
               int transfer = actual.containsKey(MediaFormat.KEY_COLOR_TRANSFER)
@@ -389,8 +471,16 @@ final class SteamDecoder implements AutoCloseable {
     } catch (OutOfMemoryError e) {
       videoFailure();
     } catch (Exception e) {
-      videoFailure();
+      // Android can invalidate a Surface while its worker is presenting. A
+      // changed attachment restarts only video output, not the Steam session.
+      if (revision == presentationRevision) videoFailure();
     } finally {
+      gpuReady.countDown();
+      if (gpu != 0) {
+        NativeSteam.gpuDestroy(gpu);
+        gpu = 0;
+      }
+      hdrActive = false;
       if (decoder != null) {
         try {
           decoder.stop();

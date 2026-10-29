@@ -358,8 +358,7 @@ class VideoPlayerTizen extends VideoPlayerPlatform {
   }
 
   @override
-  Future<bool> subtitlePcmCaptureAvailable(int playerId) async =>
-      _ffiApi.subtitlePcmCaptureAvailable(playerId);
+  Future<bool> subtitlePcmCaptureAvailable(int playerId) async => _ffiApi.subtitlePcmCaptureAvailable(playerId);
 
   @override
   Future<bool> setSubtitlePcmCaptureEnabled(int playerId, bool enabled) async =>
@@ -392,8 +391,7 @@ class VideoPlayerTizen extends VideoPlayerPlatform {
 
   RawReceivePort? _eventPort;
 
-  final Map<int, StreamController<VideoEvent>> _eventControllers =
-      <int, StreamController<VideoEvent>>{};
+  final Map<int, StreamController<VideoEvent>> _eventControllers = <int, StreamController<VideoEvent>>{};
 
   final Map<int, _SeekOperation> _activeSeeks = <int, _SeekOperation>{};
   final Map<int, _SeekOperation> _pendingSeeks = <int, _SeekOperation>{};
@@ -402,9 +400,7 @@ class VideoPlayerTizen extends VideoPlayerPlatform {
   Stream<VideoEvent> videoEventsFor(int playerId) {
     _ensureEventPortRegistered();
 
-    return _eventControllers
-        .putIfAbsent(playerId, () => StreamController<VideoEvent>.broadcast())
-        .stream;
+    return _eventControllers.putIfAbsent(playerId, () => StreamController<VideoEvent>.broadcast()).stream;
   }
 
   VideoEvent _parseVideoEventFromMap(Map<String, dynamic> map) {

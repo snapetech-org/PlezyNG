@@ -7,6 +7,16 @@
 - Stabilize Android and Windows validation on private CI runners, retry the pinned FFmpeg header download, and bypass the proxy for loopback tests.
 - Fix Android Kotlin compilation by correcting a duplicate visibility modifier and implementing the shared video-surface method.
 - Restore Apple CI by quoting simulator-only Xcode project settings and keeping the macOS test plugin current with its shared protocol.
+- Prepare Steam platform SDKs and build-agent receipts, including all four Android JNI ABIs, real Apple shader probes, and Windows/Linux SDK checks.
+
+- Complete embedded Steam controller rumble/motion forwarding with ownership and capability gates, and per-game accessible touch layout editing across receivers.
+
+- Steam: explicit microphone forwarding on Android, Windows, Linux and iOS/macOS, with visible mute state, native permission checks, bounded Opus encoding, ownership-based automatic mute and safe concurrent transport teardown.
+
+- Steam: per-game controller layouts, committed IME text and touch appearance across receivers, session-owned presentation, host overlay/capture controls, LAN-install guidance, opt-in 4K60/1080p120, and configurable relay bandwidth with conservative video ceilings.
+
+- Keep Steam transports alive across receiver-widget recreation, reattach Android video output to replacement Surfaces, and allow opted-in GPU/HDR negotiation over authenticated internet tunnels.
+
 - Bound Android Gradle and Kotlin daemon memory so private CI runners can complete Android tests and release builds.
 - Fix Android private-JIT builds for the sharing plugin and pinned LiteRT OpenVINO runtime downloads.
 - Keep Apple native tests on the simulator's native architecture and preserve the 30 GiB Mac JIT disk floor during Flutter setup.
@@ -43,6 +53,12 @@
 - Add a Watchmode title-availability adapter behind server-side credentials and an explicit commercial-approval gate, plus an iOS-only Apple MusicKit catalog/playback pilot behind a build flag; provider, account and device qualification remains open.
 
 - Clear Watchmode availability rows and loading state when the title Links screen changes profiles.
+
+- Add optional Steam Families management with separate temporary QR authorization, reviewed membership/invitation changes, preferred game copies, live permission rechecks, single-use confirmation and profile/session retirement. Keep older servers on the confirmed Steam destination; live service qualification remains required.
+- Add opt-in direct Vulkan Pyrowave output on Android, Wayland and Windows, plus native Apple Metal HDR output. Gate HDR10 on actual decoder/surface/display capabilities, retain conventional-codec fallback and report observed chroma; SDK and physical display qualification remain required.
+- Add paired encrypted Steam internet traversal with WSS relay fallback, and separately authorized AppID-scoped Cloud file operations. Relay deployment and Valve-approved Cloud configuration are required before activation.
+- Keep the combined Steam branch compatible with current playback changes: expose player-neutral PCM timing, fix optional audio-capability access and Tizen native bindings, and preserve mounted-context checks during subtitle imports.
+- Restore unique playback operation IDs so late seek results cannot overwrite newer seeks, relocations or source changes.
 
 - Bound Steam startup and first-frame waits; retry unsupported HEVC with H.264, normalize Android/Linux codec framing, and wait for decoder shutdown before reconnecting. Serialize native source preparation and include transitive crypto archives in Apple builds.
 

@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../connection/connection_registry.dart';
 import '../focus/covered_route_focus_boundary.dart';
 import '../focus/navigator_back_handler.dart';
+import '../games/game_library_controller.dart';
+import '../games/game_models.dart';
 import '../media/ids.dart';
 import '../media/media_server_client.dart';
 import '../profiles/active_profile_provider.dart';
@@ -23,6 +25,8 @@ import '../providers/playback_state_provider.dart';
 import '../providers/seerr_account_provider.dart';
 import '../providers/trackers_provider.dart';
 import '../providers/watch_state_store.dart';
+import '../services/credential_vault.dart';
+import '../sources/source_controller.dart';
 import '../database/app_database.dart';
 import '../multiview/workspace_controller.dart';
 import '../multiview/workspace_overlay.dart';
@@ -318,6 +322,20 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
               ChangeNotifierProvider(
                 create: (context) {
                   final provider = CompanionRemoteProvider();
+                  provider.bindSteamAdmission((profileId) async {
+                    if (!context.mounted) return null;
+                    final sources = context.read<SourceController>();
+                    await sources.ready;
+                    if (!context.mounted || sources.profileId != profileId) return null;
+                    final generation = sources.generation;
+                    final data = await sources.repository.preference(profileId, GameLibraryController.preferenceKey);
+                    final credential = GameLibrary.fromJson(data).steamCatalogCredential;
+                    if (credential == null || !context.mounted || sources.generation != generation) return null;
+                    final clear = await CredentialVault.reveal(credential);
+                    return context.mounted && sources.generation == generation && sources.profileId == profileId
+                        ? clear
+                        : null;
+                  });
                   provider.bindGameWorkspace(context.read<MultiviewWorkspaceController>());
                   // Keep a running host's crypto identity live: a home user
                   // removed or a borrowed connection revoked mid-session must

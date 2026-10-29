@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' show Platform;
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,34 +11,67 @@ import 'package:universal_gamepad/universal_gamepad.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../games/game_models.dart';
+import '../games/steam_internet_tunnel.dart';
+import '../games/steam_input_profile.dart';
+import '../games/steam_touch_layout.dart';
+import '../screens/games/steam_touch_layout_dialog.dart';
+import '../games/steam_controller_feedback.dart';
+import '../games/steam_text.dart';
+import '../screens/games/steam_text_input_dialog.dart';
+import '../screens/games/steam_input_dialog.dart';
+import '../games/steam_native_plane.dart';
 import '../games/steam_stream_preferences.dart';
 import '../games/steam_stream_metrics.dart';
 import '../services/gamepad_service.dart';
 import '../screens/games/steam_stream_diagnostics.dart';
 import '../screens/games/steam_touch_controls.dart';
+import '../screens/games/game_stream_status.dart';
 import '../utils/dialogs.dart';
 import '../widgets/app_icon.dart';
+import '../widgets/focusable_list_tile.dart';
+import '../widgets/dialog_action_button.dart';
+import '../utils/snackbar_helper.dart';
 import '../focus/focusable_button.dart';
 import '../i18n/strings.g.dart';
 import 'workspace_game_input.dart';
 
+enum SteamStreamShortcut { overlay, screenshot }
+
 const steamGamePlatformViewType = 'com.plezy/games/steam_stream';
 
-/// One retained Steam session. The workspace owns audio/input leases; the
-/// native surface owns the decoder and acknowledges teardown before reconnect.
+/// The workspace owns the native receiver, audio/input leases and transport.
+/// Presentation widgets may disappear and reattach without retiring the stream.
 class SteamGameWorkspaceSession {
   SteamGameWorkspaceSession({
     required this.host,
     required this.game,
     required this.touchControls,
+    this.controllerOnly = false,
+    this.touchOpacity = 100,
+    this.swapTouchSides = false,
+    this.controllerRumble = true,
+    this.motionController = false,
     this.pyrowave = false,
+    this.allowHdr = false,
     this.quality = SteamStreamQuality.balanced,
     this.codec = SteamStreamCodec.automatic,
     this.controllerCount = 1,
     this.audio = SteamStreamAudio.stereo,
     this.onFirstFrame,
+    SteamInternetTunnel? internetTunnel,
+    this.connectInternet,
+    SteamInputProfile? inputProfile,
+    this.persistInputProfile,
+    SteamTouchLayout? touchLayout,
+    this.persistTouchLayout,
   }) {
+    _inputProfile = inputProfile ?? SteamInputProfile.defaults();
+    _touchLayout = touchLayout ?? SteamTouchLayout();
+    _mappingReady = _inputProfile.isDefault;
+    _setTunnel(internetTunnel);
+    if (![50, 65, 85, 100].contains(touchOpacity)) throw ArgumentError.value(touchOpacity, 'touchOpacity');
     if (controllerCount < 1 || controllerCount > 4) throw ArgumentError.value(controllerCount, 'controllerCount');
+    GamepadService.instance.workspaceInputAvailable.addListener(_inputAvailabilityChanged);
     _inputBinding = WorkspaceGameInputBinding(
       onEvent: handleInput,
       onNativeKeyEvent: handleNativeKey,
@@ -51,43 +86,205 @@ class SteamGameWorkspaceSession {
   final GameHost host;
   final StreamGame game;
   final bool touchControls;
+  final bool controllerOnly;
+  final int touchOpacity;
+  final bool swapTouchSides;
+  final bool controllerRumble, motionController;
+  late final _feedback = SteamControllerFeedbackSession(
+    owner: _nativeOwner,
+    rumble: controllerRumble,
+    motion: motionController,
+  );
+  void _inputAvailabilityChanged() => unawaited(setInputEnabled(_inputEnabled));
+  void _syncFeedback() => _feedback.update(_channel, _canInput);
   final bool pyrowave;
+  final bool allowHdr;
   final SteamStreamQuality quality;
   final SteamStreamCodec codec;
   final int controllerCount;
   final SteamStreamAudio audio;
   final VoidCallback? onFirstFrame;
+  final Future<SteamInternetTunnel?> Function()? connectInternet;
+  SteamInternetTunnel? _tunnel;
+  VoidCallback? _tunnelListener;
+  final internetPath = ValueNotifier<SteamInternetPath?>(null);
+  void _setTunnel(SteamInternetTunnel? tunnel) {
+    final old = _tunnel;
+    if (_tunnelListener != null) old?.path.removeListener(_tunnelListener!);
+    old?.close();
+    old?.path.dispose();
+    _tunnel = tunnel;
+    _tunnelListener = () {
+      if (!_disposed) internetPath.value = tunnel?.path.value;
+    };
+    tunnel?.path.addListener(_tunnelListener!);
+    internetPath.value = tunnel?.path.value;
+    if (tunnel != null) {
+      unawaited(
+        tunnel.done.then((_) {
+          if (!_disposed && !_restarting && identical(_tunnel, tunnel)) {
+            unawaited(_invoke('disconnect'));
+            _stateChanged('failed');
+          }
+        }),
+      );
+    }
+  }
+
+  final Future<void> Function(SteamTouchLayout)? persistTouchLayout;
+  late SteamTouchLayout _touchLayout;
+  SteamTouchLayout get touchLayout => _touchLayout;
+  Future<void> applyTouchLayout(SteamTouchLayout value) async {
+    if (!current) throw StateError('Steam session retired');
+    await persistTouchLayout?.call(value);
+    if (!current) throw StateError('Steam session retired');
+    _touchLayout = value;
+    releaseTouchControls();
+  }
+
+  final Future<void> Function(SteamInputProfile)? persistInputProfile;
+  late SteamInputProfile _inputProfile;
+  SteamInputProfile get inputProfile => _inputProfile;
+  bool get current => !_disposed && !_restarting;
+  bool _mappingReady = false, _mappingBusy = false;
+  int _mappingEpoch = 0;
+  final mappingFailed = ValueNotifier(false);
+
+  void _requireMappingCurrent(MethodChannel channel, int epoch) {
+    if (!current || _channel != channel || _mappingEpoch != epoch || sessionState.value != 'playing') {
+      throw StateError('Steam receiver changed');
+    }
+  }
+
+  Future<void> _writeMapping(MethodChannel channel, int epoch, SteamInputProfile profile) async {
+    for (var seat = 0; seat < controllerCount; seat++) {
+      _requireMappingCurrent(channel, epoch);
+      final accepted = await channel
+          .invokeMethod<bool>('setControllerMapping', {'seat': seat, 'mapping': profile.seats[seat]})
+          .timeout(const Duration(seconds: 3));
+      _requireMappingCurrent(channel, epoch);
+      if (accepted != true) throw StateError('Steam mapping rejected');
+    }
+  }
+
+  /// All seats acknowledge before saving. Partial failures restore the previous
+  /// mapping, and input stays disabled if its state cannot be established.
+  Future<void> applyInputProfile(SteamInputProfile profile) async {
+    final channel = _channel;
+    if (_mappingBusy || channel == null) throw StateError('Steam mapping unavailable');
+    final epoch = _mappingEpoch;
+    _requireMappingCurrent(channel, epoch);
+    _mappingBusy = true;
+    final previous = _inputProfile;
+    try {
+      await withInputSuspended(() async {
+        _mappingReady = false;
+        try {
+          await _writeMapping(channel, epoch, profile);
+          await persistInputProfile?.call(profile);
+          _requireMappingCurrent(channel, epoch);
+          _inputProfile = profile;
+          _mappingReady = true;
+          mappingFailed.value = false;
+        } catch (_) {
+          try {
+            await _writeMapping(channel, epoch, previous);
+            _mappingReady = true;
+          } catch (_) {
+            if (current && _mappingEpoch == epoch) mappingFailed.value = true;
+          }
+          rethrow;
+        }
+      });
+    } finally {
+      _mappingBusy = false;
+      if (current && _mappingEpoch != epoch && sessionState.value == 'playing') unawaited(_restoreMapping());
+    }
+  }
+
+  Future<void> _restoreMapping() async {
+    final channel = _channel;
+    if (_mappingBusy || channel == null || _mappingReady) return;
+    _mappingBusy = true;
+    final epoch = _mappingEpoch;
+    try {
+      await _writeMapping(channel, epoch, _inputProfile);
+      _mappingReady = true;
+      mappingFailed.value = false;
+    } catch (_) {
+      if (current && _mappingEpoch == epoch) mappingFailed.value = true;
+    } finally {
+      _mappingBusy = false;
+      if (current && _mappingEpoch == epoch) await setInputEnabled(_inputEnabled);
+      if (current && _mappingEpoch != epoch && sessionState.value == 'playing') unawaited(_restoreMapping());
+    }
+  }
+
   bool _reportedFirstFrame = false;
+  bool _surfaceAttached = false;
+  int _receiverGeneration = 0;
+  final String _nativeOwner = List.generate(
+    16,
+    (_) => Random.secure().nextInt(256).toRadixString(16).padLeft(2, '0'),
+  ).join();
+  Future<Map<String, dynamic>>? _receiver;
+  static const _receiverChannel = MethodChannel('com.plezy/games/steam_receiver');
   bool _disposed = false;
   bool _restarting = false;
   int _stateRevision = 0;
   final ValueNotifier<int> surfaceGeneration = ValueNotifier(0);
   final ValueNotifier<double> streamAspectRatio = ValueNotifier(16 / 9);
+  final ValueNotifier<bool> nativePresentation = ValueNotifier(false);
   final ValueNotifier<String> sessionState = ValueNotifier('connecting');
   final ValueNotifier<bool> inputAvailable = ValueNotifier(false);
   final ValueNotifier<int> inputResets = ValueNotifier(0);
+  // Native state: unavailable, muted, starting, actively sending. Consent is
+  // deliberately per-session and is never written to preferences.
+  final ValueNotifier<int> microphoneState = ValueNotifier(1);
+  Timer? _microphoneTimer;
+  int _microphoneRevision = 0;
+  bool _microphonePolling = false;
+  bool _microphoneStarting = false;
   MethodChannel? _channel;
   bool _audioEnabled = false;
   bool _inputEnabled = false;
   int _inputSuspensions = 0;
   int _inputRevision = 0;
+  int _nativeInputRevision = 0;
   bool get _canInput =>
-      !_disposed && !_restarting && _inputEnabled && _inputSuspensions == 0 && sessionState.value == 'playing';
+      !_disposed &&
+      !_restarting &&
+      _surfaceAttached &&
+      GamepadService.instance.workspaceInputAvailable.value &&
+      _mappingReady &&
+      _inputEnabled &&
+      _inputSuspensions == 0 &&
+      sessionState.value == 'playing';
   late final WorkspaceGameInputBinding _inputBinding;
   final GlobalKey _surfaceKey = GlobalKey();
 
   static String channelNameForViewId(int viewId) => 'com.plezy/games/steam_stream/$viewId';
 
   Map<String, Object?> get creationParams => {
+    'sessionKey': '$_nativeOwner-$_receiverGeneration',
     'hostId': host.id,
     'hostKey': 'steam:${host.id}',
-    'address': host.address,
-    'port': host.port,
+    'address': _tunnel == null ? host.address : '127.0.0.1',
+    'port': _tunnel == null ? host.port : _tunnel!.ports[5],
+    if (_tunnel != null)
+      for (var i = 0; i < 6; i++) 'relayPort$i': _tunnel!.ports[i],
     'appId': game.id,
     'appName': game.name,
-    'touchControls': touchControls,
-    'pyrowave': pyrowave,
+    'touchControls': controllerOnly || touchControls,
+    'flutterTouchControls': true,
+    'controllerOnly': controllerOnly,
+    'touchOpacity': touchOpacity,
+    'swapTouchSides': swapTouchSides,
+    'motionController': motionController,
+    'pyrowave': controllerOnly ? false : pyrowave,
+    'allowHdr': controllerOnly ? false : allowHdr,
     ...quality.nativeArguments,
+    if (_tunnel != null) 'streamBitrateKbps': min(quality.bitrateKbps, _tunnel!.relayBitrateCeilingKbps),
     'allowHevc': codec == SteamStreamCodec.automatic,
     'controllerCount': controllerCount,
     'audioChannels': audio.channels,
@@ -105,13 +302,106 @@ class SteamGameWorkspaceSession {
   Future<void> setInputEnabled(bool enabled) async {
     if (_disposed) return;
     _inputEnabled = enabled;
+    await _refreshInputOwnership(reset: !enabled);
+  }
+
+  Future<void> _refreshInputOwnership({bool reset = false}) async {
+    if (_disposed) return;
+    final revision = ++_nativeInputRevision;
+    final channel = _channel;
     final canInput = _canInput;
+    if (!canInput) {
+      muteMicrophone();
+      _feedback.stop();
+    }
     _inputBinding.setEnabled(canInput);
     inputAvailable.value = canInput;
-    if (!enabled) {
-      await _invoke('resetInput');
-    }
+    // Dispatch the current lease before waiting for any acknowledgement. An
+    // older reset must never send its captured lease to a newer owner/receiver.
     await _invoke('setInputEnabled', {'enabled': canInput});
+    if (_disposed || revision != _nativeInputRevision || _channel != channel) return;
+    if (reset) {
+      await _invoke('resetInput');
+      if (_disposed || revision != _nativeInputRevision || _channel != channel) return;
+    }
+    _syncFeedback();
+  }
+
+  Future<bool> requestMicrophonePermission() async {
+    final channel = _channel;
+    if (!current || controllerOnly || channel == null) return false;
+    try {
+      final granted = await channel.invokeMethod<bool>('requestMicrophonePermission');
+      return granted == true && current && _channel == channel;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void muteMicrophone() {
+    _microphoneRevision++;
+    _microphoneTimer?.cancel();
+    _microphoneTimer = null;
+    if (!_disposed) microphoneState.value = 1;
+    unawaited(_invoke('setMicrophoneEnabled', {'enabled': false}));
+  }
+
+  Future<bool> enableMicrophone() async {
+    if (controllerOnly || _microphoneStarting) return false;
+    _microphoneStarting = true;
+    try {
+      return await _enableMicrophone();
+    } finally {
+      _microphoneStarting = false;
+    }
+  }
+
+  Future<bool> _enableMicrophone() async {
+    final channel = _channel, revision = ++_microphoneRevision;
+    if (!_canInput || channel == null) return false;
+    bool live() => _canInput && _channel == channel && revision == _microphoneRevision;
+    try {
+      final accepted = await channel
+          .invokeMethod<bool>('setMicrophoneEnabled', {'enabled': true})
+          .timeout(const Duration(seconds: 3));
+      if (accepted != true || !live()) {
+        await channel
+            .invokeMethod<bool>('setMicrophoneEnabled', {'enabled': false})
+            .timeout(const Duration(seconds: 2));
+        return false;
+      }
+      microphoneState.value = 2;
+      for (var attempt = 0; attempt < 40 && live(); attempt++) {
+        final state = await channel.invokeMethod<int>('getMicrophoneState').timeout(const Duration(seconds: 2));
+        if (!live()) break;
+        if (state == 3) {
+          microphoneState.value = 3;
+          _microphoneTimer?.cancel();
+          _microphoneTimer = Timer.periodic(const Duration(milliseconds: 500), (_) async {
+            if (_microphonePolling || !live()) return;
+            _microphonePolling = true;
+            try {
+              final state = await channel.invokeMethod<int>('getMicrophoneState').timeout(const Duration(seconds: 2));
+              if (live() && state != 3) muteMicrophone();
+            } catch (_) {
+              if (live()) muteMicrophone();
+            } finally {
+              _microphonePolling = false;
+            }
+          });
+          return true;
+        }
+        if (state != 2) break;
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+    } catch (_) {
+      // Recording is never retried automatically after uncertain delivery.
+    }
+    if (live()) muteMicrophone();
+    try {
+      await channel.invokeMethod<bool>('setMicrophoneEnabled', {'enabled': false}).timeout(const Duration(seconds: 2));
+    } catch (_) {}
+    return false;
   }
 
   void handleInput(GamepadEvent event) {
@@ -133,6 +423,59 @@ class SteamGameWorkspaceSession {
       );
     } else if (event is GamepadConnectionEvent && !event.connected) {
       unawaited(_invoke('disconnectController', {'deviceId': event.gamepadId}));
+    }
+  }
+
+  Future<bool> sendComposedText(String text) async {
+    final channel = _channel, epoch = _mappingEpoch;
+    if (!_canInput || channel == null || !validSteamInputText(text)) return false;
+    try {
+      resetInput();
+      final sent = await channel
+          .invokeMethod<bool>('inputText', {'text': Uint8List.fromList(utf8.encode(text))})
+          .timeout(const Duration(seconds: 3));
+      return sent == true && _canInput && _channel == channel && _mappingEpoch == epoch;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  bool _shortcutBusy = false;
+
+  /// Fixed, user-initiated host shortcuts. Acknowledgement means key submission,
+  /// not that Steam opened its overlay, invited a guest or saved a screenshot.
+  Future<bool> sendShortcut(SteamStreamShortcut shortcut) async {
+    final channel = _channel;
+    if (!_canInput || _shortcutBusy || channel == null) return false;
+    _shortcutBusy = true;
+    final epoch = _mappingEpoch;
+    final keys = shortcut == SteamStreamShortcut.overlay ? [(225, 'Shift Left'), (43, 'Tab')] : [(69, 'F12')];
+    final pressed = <(int, String)>[];
+    try {
+      resetInput();
+      for (final key in keys) {
+        if (!_canInput || _channel != channel || epoch != _mappingEpoch) return false;
+        // Record before awaiting: even a failed/late acknowledgement needs key-up.
+        pressed.add(key);
+        await channel
+            .invokeMethod<void>('inputKey', {'usage': key.$1, 'key': key.$2, 'down': true})
+            .timeout(const Duration(seconds: 2));
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+      return _canInput && _channel == channel && epoch == _mappingEpoch;
+    } catch (_) {
+      return false;
+    } finally {
+      for (final key in pressed.reversed) {
+        try {
+          await channel
+              .invokeMethod<void>('inputKey', {'usage': key.$1, 'key': key.$2, 'down': false})
+              .timeout(const Duration(seconds: 2));
+        } catch (_) {
+          /* Native teardown/reset also releases every held key. */
+        }
+      }
+      _shortcutBusy = false;
     }
   }
 
@@ -188,9 +531,11 @@ class SteamGameWorkspaceSession {
   void releaseTouchControls() => unawaited(_invoke('releaseTouchControls'));
 
   void resetInput() {
+    _feedback.stop();
+    muteMicrophone();
     _inputRevision++;
     inputResets.value = _inputRevision;
-    unawaited(_invoke('resetInput'));
+    unawaited(_invoke('resetInput').then((_) => _syncFeedback()));
   }
 
   /// The desired workspace lease may change while a dialog is open. Restore
@@ -198,18 +543,12 @@ class SteamGameWorkspaceSession {
   Future<void> withInputSuspended(Future<void> Function() action) async {
     if (_disposed) return;
     _inputSuspensions++;
-    _inputBinding.setEnabled(false);
-    inputAvailable.value = false;
-    await _invoke('setInputEnabled', {'enabled': false});
+    await _refreshInputOwnership();
     try {
       if (!_disposed) await action();
     } finally {
       _inputSuspensions--;
-      if (!_disposed) {
-        _inputBinding.setEnabled(_canInput);
-        inputAvailable.value = _canInput;
-        await _invoke('setInputEnabled', {'enabled': _canInput});
-      }
+      await _refreshInputOwnership();
     }
   }
 
@@ -254,19 +593,73 @@ class SteamGameWorkspaceSession {
   /// pane and the retained offstage slot without disposing the native stream.
   Widget workspaceSurface() => SteamGameWorkspaceSurface(key: _surfaceKey, session: this);
 
-  void attachPlatformView(int viewId) {
-    if (_disposed) return;
+  /// A single in-flight creation belongs to the session, never to a widget.
+  Future<Map<String, dynamic>> acquireReceiver() => _receiver ??= _createReceiver(_receiverGeneration);
+
+  static Future<void> _retireReceiver(int id) async {
+    try {
+      await MethodChannel(
+        channelNameForViewId(id),
+      ).invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
+    } catch (_) {
+      // Native shutdown continues; this ID is never reused by this owner.
+    }
+  }
+
+  Future<Map<String, dynamic>> _createReceiver(int generation) async {
+    if (_disposed) throw StateError('Retired Steam session');
+    var expired = false;
+    final pending = _receiverChannel.invokeMapMethod<String, dynamic>('create', creationParams);
+    unawaited(
+      pending
+          .then((result) {
+            final id = result?['id'];
+            if ((expired || _disposed || generation != _receiverGeneration) && id is int && id > 0) {
+              unawaited(_retireReceiver(id));
+            }
+          })
+          .catchError((Object _) {}),
+    );
+    try {
+      final result = await pending.timeout(const Duration(seconds: 10));
+      if (_disposed || generation != _receiverGeneration) throw StateError('Retired Steam receiver');
+      final id = result?['id'], texture = result?['textureId'];
+      if (id is! int || id < 1 || texture is! int || texture < 0) {
+        if (id is int && id > 0) unawaited(_retireReceiver(id));
+        throw const FormatException('Invalid Steam receiver');
+      }
+      attachPlatformView(id, attachSurface: false);
+      return result!;
+    } catch (_) {
+      expired = true;
+      if (!_disposed && generation == _receiverGeneration) _stateChanged('failed');
+      rethrow;
+    }
+  }
+
+  void attachPlatformView(int viewId, {bool attachSurface = true}) {
+    if (_disposed) {
+      unawaited(_retireReceiver(viewId));
+      return;
+    }
+    if (attachSurface) _surfaceAttached = true;
     _channel?.setMethodCallHandler(null);
     final channel = MethodChannel(channelNameForViewId(viewId));
     _channel = channel;
+    _mappingEpoch++;
+    _mappingReady = _inputProfile.isDefault;
     final replayRevision = _stateRevision;
     channel.setMethodCallHandler((call) async {
       if (_disposed || _channel != channel || _restarting) return null;
+      if (call.method == 'nativePresentation' && call.arguments is bool) {
+        nativePresentation.value = call.arguments as bool;
+        return null;
+      }
       if (call.method == 'videoSize') {
         final args = call.arguments;
         if (args is Map && args['width'] is int && args['height'] is int) {
           final width = args['width'] as int, height = args['height'] as int;
-          if (width > 0 && height > 0 && width <= 1920 && height <= 1080) streamAspectRatio.value = width / height;
+          if (width > 0 && height > 0 && width <= 3840 && height <= 2160) streamAspectRatio.value = width / height;
         }
         return null;
       }
@@ -290,41 +683,71 @@ class SteamGameWorkspaceSession {
           })
           .catchError((Object _) {}),
     );
+    unawaited(
+      channel
+          .invokeMethod<bool>('getNativePresentation')
+          .then((value) {
+            if (!_disposed && !_restarting && _channel == channel && value != null) nativePresentation.value = value;
+          })
+          .catchError((Object _) {}),
+    );
     unawaited(_invoke('setAudioEnabled', {'enabled': _audioEnabled}));
-    unawaited(_invoke('setInputEnabled', {'enabled': _canInput}));
+    unawaited(_refreshInputOwnership());
   }
 
   void _stateChanged(Object? state) {
     if (_disposed ||
+        _restarting ||
         state is! String ||
         !{'connecting', 'playing', 'reconnecting', 'disconnected', 'failed'}.contains(state)) {
       return;
     }
+    if (state != 'playing') {
+      muteMicrophone();
+      _mappingEpoch++;
+      _mappingReady = _inputProfile.isDefault;
+    }
     sessionState.value = state;
-    _inputBinding.setEnabled(_canInput);
-    inputAvailable.value = _canInput;
-    unawaited(_invoke('setInputEnabled', {'enabled': _canInput}));
+    if (state == 'playing' && !_mappingReady) unawaited(_restoreMapping());
+    unawaited(_refreshInputOwnership());
     if (state == 'playing' && !_reportedFirstFrame) {
       _reportedFirstFrame = true;
       onFirstFrame?.call();
     }
     if (state == 'failed' || state == 'disconnected' || state == 'reconnecting') resetInput();
+    if (state == 'failed' || state == 'disconnected') _setTunnel(null);
   }
 
   /// A replacement surface may only start after native teardown acknowledges
   /// termination. Retired profiles and repeated taps cannot restart a stream.
+  bool _cancelRestart = false;
+
   Future<void> reconnect() async {
     if (_disposed || _restarting || !{'failed', 'disconnected'}.contains(sessionState.value)) return;
     _restarting = true;
-    inputAvailable.value = false;
-    _inputBinding.setEnabled(false);
+    unawaited(_refreshInputOwnership());
     resetInput();
+    nativePresentation.value = false;
     sessionState.value = 'reconnecting';
+    _cancelRestart = false;
     try {
       final channel = _channel;
       if (channel != null) await channel.invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
       if (_disposed) return;
-      detach();
+      _releaseReceiverIdentity();
+      _setTunnel(null);
+      if (_cancelRestart) {
+        sessionState.value = 'disconnected';
+        return;
+      }
+      final route = await connectInternet?.call();
+      if (_disposed || _cancelRestart) {
+        route?.close();
+        route?.path.dispose();
+        if (!_disposed) sessionState.value = 'disconnected';
+        return;
+      }
+      _setTunnel(route);
       sessionState.value = 'connecting';
       surfaceGeneration.value++;
     } catch (_) {
@@ -335,20 +758,28 @@ class SteamGameWorkspaceSession {
   }
 
   Future<void> disconnect() async {
-    if (_disposed || _restarting) return;
+    if (_disposed) return;
+    if (_restarting) {
+      if (sessionState.value == 'reconnecting') {
+        _cancelRestart = true;
+        resetInput();
+        sessionState.value = 'disconnecting';
+      }
+      return;
+    }
     resetInput();
     _restarting = true;
-    inputAvailable.value = false;
-    _inputBinding.setEnabled(false);
+    unawaited(_refreshInputOwnership());
     try {
       await _channel?.invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
       if (!_disposed) {
-        detach(); // Texture adapters retire their channel after acknowledging.
+        _releaseReceiverIdentity(); // Native teardown acknowledged.
         sessionState.value = 'disconnected';
       }
     } catch (_) {
       if (!_disposed) sessionState.value = 'failed';
     } finally {
+      if (!_disposed) _setTunnel(null);
       _restarting = false;
     }
   }
@@ -366,27 +797,47 @@ class SteamGameWorkspaceSession {
   }
 
   void detach() {
+    if (_disposed) return;
+    _surfaceAttached = false;
+    resetInput();
+    unawaited(_refreshInputOwnership());
+    unawaited(_invoke('setNativeRect', {'x': 0, 'y': 0, 'width': 0, 'height': 0, 'scale': 1}));
+  }
+
+  void _releaseReceiverIdentity() {
+    _nativeInputRevision++;
+    _receiverGeneration++;
+    _mappingEpoch++;
+    _mappingReady = _inputProfile.isDefault;
+    _receiver = null;
     _channel?.setMethodCallHandler(null);
     _channel = null;
   }
 
   void dispose() {
     if (_disposed) return;
+    _setTunnel(null);
     resetInput();
     unawaited(_invoke('disconnect'));
     _disposed = true;
+    _feedback.stop();
+    GamepadService.instance.workspaceInputAvailable.removeListener(_inputAvailabilityChanged);
     _inputBinding.dispose();
-    detach();
+    _releaseReceiverIdentity();
+    nativePresentation.dispose();
     sessionState.dispose();
     surfaceGeneration.dispose();
     streamAspectRatio.dispose();
     inputAvailable.dispose();
     inputResets.dispose();
+    _microphoneTimer?.cancel();
+    microphoneState.dispose();
+    internetPath.dispose();
+    mappingFailed.dispose();
   }
 }
 
-/// Native texture ownership stays with this retained workspace surface. Late
-/// creation responses are explicitly retired after disposal or startup timeout.
+/// A presentation attachment to a session-owned native receiver.
 class _SteamTextureSurface extends StatefulWidget {
   const _SteamTextureSurface({super.key, required this.session});
   final SteamGameWorkspaceSession session;
@@ -395,10 +846,9 @@ class _SteamTextureSurface extends StatefulWidget {
 }
 
 class _SteamTextureSurfaceState extends State<_SteamTextureSurface> {
-  static const receiver = MethodChannel('com.plezy/games/steam_receiver');
   int? _id, _texture;
-  Timer? _deadline;
-  bool _expired = false;
+  bool _nativePlane = false;
+  Map<String, int>? _sentNativeRect;
   int _buttons = 0;
   int? _touchPointer;
   Offset? _pendingMove;
@@ -450,49 +900,45 @@ class _SteamTextureSurfaceState extends State<_SteamTextureSurface> {
   @override
   void initState() {
     super.initState();
-    _deadline = Timer(const Duration(seconds: 10), () {
-      _expired = true;
-      if (mounted && !widget.session._disposed) widget.session._stateChanged('failed');
-    });
+    widget.session._surfaceAttached = true;
     unawaited(_create());
-  }
-
-  static Future<void> _retire(int id) async {
-    try {
-      await MethodChannel(
-        SteamGameWorkspaceSession.channelNameForViewId(id),
-      ).invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
-    } catch (_) {
-      /* Native teardown continues even after a window is removed. */
-    }
   }
 
   Future<void> _create() async {
     try {
-      final result = await receiver.invokeMapMethod<String, dynamic>('create', widget.session.creationParams);
-      _deadline?.cancel();
-      final id = result?['id'], texture = result?['textureId'];
+      final result = await widget.session.acquireReceiver();
+      final id = result['id'], texture = result['textureId'];
       if (id is! int || id < 1 || texture is! int || texture < 0) throw const FormatException('Invalid receiver');
-      if (!mounted || _expired || widget.session._disposed) {
-        await _retire(id);
-        return;
-      }
+      if (!mounted || widget.session._disposed) return;
       _id = id;
-      widget.session.attachPlatformView(id);
+      _nativePlane = result['nativePlane'] == true;
+      await widget.session.setInputEnabled(widget.session._inputEnabled);
+      if (!mounted || widget.session._disposed) return;
       setState(() => _texture = texture);
     } catch (_) {
-      _deadline?.cancel();
       if (mounted && !widget.session._disposed) widget.session._stateChanged('failed');
     }
   }
 
+  void _nativeRect(Map<String, int> rect) {
+    if (_id == null || (_sentNativeRect != null && rect.entries.every((e) => _sentNativeRect![e.key] == e.value))) {
+      return;
+    }
+    _sentNativeRect = rect;
+    unawaited(
+      MethodChannel(
+        SteamGameWorkspaceSession.channelNameForViewId(_id!),
+      ).invokeMethod<void>('setNativeRect', rect).catchError((Object _) {
+        if (identical(_sentNativeRect, rect)) _sentNativeRect = null;
+      }),
+    );
+  }
+
   @override
   void dispose() {
-    _expired = true;
-    _deadline?.cancel();
     if (_moveCallback case final callback?) SchedulerBinding.instance.cancelFrameCallbackWithId(callback);
     unawaited(widget.session._invoke('releasePointer'));
-    if (_id case final id?) unawaited(_retire(id));
+    widget.session.detach();
     super.dispose();
   }
 
@@ -524,7 +970,18 @@ class _SteamTextureSurfaceState extends State<_SteamTextureSurface> {
                         });
                       }
                     },
-                    child: Texture(textureId: _texture!),
+                    child: !_nativePlane
+                        ? Texture(textureId: _texture!)
+                        : ValueListenableBuilder<bool>(
+                            valueListenable: widget.session.nativePresentation,
+                            builder: (_, native, _) => Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                if (!native) Texture(textureId: _texture!),
+                                SteamNativePlane(enabled: native, onRect: _nativeRect),
+                              ],
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -544,7 +1001,8 @@ class SteamGameWorkspaceSurface extends StatefulWidget {
 
 class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
   bool _detailsOpen = false;
-  late bool _touchVisible = widget.session.touchControls && Platform.isIOS;
+  late bool _touchVisible =
+      (widget.session.controllerOnly || widget.session.touchControls) && (Platform.isIOS || Platform.isAndroid);
 
   Future<void> _showDetails() async {
     if (_detailsOpen) return;
@@ -554,9 +1012,156 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
         if (!mounted) return;
         await showScopedDialog<void>(
           context: context,
-          builder: (_) => SteamStreamDiagnostics(readMetrics: widget.session.readMetrics),
+          builder: (_) => SteamStreamDiagnostics(
+            readMetrics: widget.session.readMetrics,
+            internetPath: widget.session.internetPath,
+          ),
         );
       });
+    } finally {
+      if (mounted) setState(() => _detailsOpen = false);
+    }
+  }
+
+  Future<void> _showInputLayout() async {
+    if (_detailsOpen) return;
+    setState(() => _detailsOpen = true);
+    final session = widget.session;
+    try {
+      await session.withInputSuspended(() async {
+        if (!mounted) return;
+        await showScopedDialog<void>(
+          context: context,
+          builder: (_) => SteamInputDialog(
+            initial: session.inputProfile,
+            players: session.controllerCount,
+            apply: session.applyInputProfile,
+            isCurrent: () => session.current,
+          ),
+        );
+      });
+    } finally {
+      if (mounted) setState(() => _detailsOpen = false);
+    }
+  }
+
+  Future<void> _showSteamTools() async {
+    if (_detailsOpen) return;
+    setState(() => _detailsOpen = true);
+    final session = widget.session;
+    String? selected;
+    String? composed;
+    SteamTouchLayout? touchLayout;
+    try {
+      await session.withInputSuspended(() async {
+        if (!mounted) return;
+        selected = await showScopedDialog<String>(
+          context: context,
+          builder: (dialog) => AlertDialog(
+            title: Text(t.games.steamTools),
+            scrollable: true,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FocusableListTile(
+                  leading: const AppIcon(Symbols.drag_pan_rounded),
+                  title: Text(t.games.touchLayout),
+                  subtitle: Text(t.games.touchLayoutHelp),
+                  onTap: () => Navigator.pop(dialog, 'touchLayout'),
+                ),
+                FocusableListTile(
+                  leading: const AppIcon(Symbols.group_rounded),
+                  title: Text(t.games.steamOverlay),
+                  subtitle: Text(t.games.steamOverlayHelp),
+                  onTap: () => Navigator.pop(dialog, 'overlay'),
+                ),
+                FocusableListTile(
+                  leading: const AppIcon(Symbols.keyboard_rounded),
+                  title: Text(t.games.textInput),
+                  subtitle: Text(t.games.textInputHelp),
+                  onTap: () => Navigator.pop(dialog, 'text'),
+                ),
+                FocusableListTile(
+                  leading: const AppIcon(Symbols.screenshot_monitor_rounded),
+                  title: Text(t.games.steamScreenshot),
+                  subtitle: Text(t.games.steamScreenshotHelp),
+                  onTap: () => Navigator.pop(dialog, 'screenshot'),
+                ),
+              ],
+            ),
+            actions: [DialogActionButton(label: t.common.close, onPressed: () => Navigator.pop(dialog))],
+          ),
+        );
+        if (selected == 'touchLayout' && mounted && session.current) {
+          touchLayout = await showScopedDialog<SteamTouchLayout>(
+            context: context,
+            builder: (_) => SteamTouchLayoutDialog(initial: session.touchLayout, swapSides: session.swapTouchSides),
+          );
+          if (touchLayout != null) await session.applyTouchLayout(touchLayout!);
+        }
+        if (selected == 'text' && mounted && session.current) {
+          composed = await showScopedDialog<String>(context: context, builder: (_) => const SteamTextInputDialog());
+        }
+      });
+      if (selected == 'touchLayout') {
+        if (mounted && touchLayout != null) setState(() => _touchVisible = true);
+        return;
+      }
+      if (selected != null && mounted && session.current && (selected != 'text' || composed != null)) {
+        final sent = selected == 'text'
+            ? await session.sendComposedText(composed!)
+            : await session.sendShortcut(
+                selected == 'overlay' ? SteamStreamShortcut.overlay : SteamStreamShortcut.screenshot,
+              );
+        if (mounted && session.current) {
+          if (sent) {
+            showSuccessSnackBar(context, selected == 'text' ? t.games.textInputSent : t.games.steamShortcutSent);
+          } else {
+            showErrorSnackBar(context, t.games.steamShortcutFailed);
+          }
+        }
+      }
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context, t.games.touchLayoutFailed);
+    } finally {
+      if (mounted) setState(() => _detailsOpen = false);
+    }
+  }
+
+  Future<void> _toggleMicrophone() async {
+    final session = widget.session;
+    if (session.controllerOnly) return;
+    if (session.microphoneState.value >= 2) {
+      session.muteMicrophone();
+      return;
+    }
+    if (_detailsOpen) return;
+    setState(() => _detailsOpen = true);
+    var allowed = false;
+    var requested = false;
+    try {
+      await session.withInputSuspended(() async {
+        if (!mounted) return;
+        final confirmed = await showScopedDialog<bool>(
+          context: context,
+          builder: (dialog) => AlertDialog(
+            title: Text(t.games.microphoneEnable),
+            scrollable: true,
+            content: Text(t.games.microphoneHelp),
+            actions: [
+              DialogActionButton(label: t.common.cancel, onPressed: () => Navigator.pop(dialog, false)),
+              DialogActionButton(label: t.games.microphoneEnable, onPressed: () => Navigator.pop(dialog, true)),
+            ],
+          ),
+        );
+        if (confirmed == true && mounted && session.current) {
+          requested = true;
+          allowed = await session.requestMicrophonePermission();
+        }
+      });
+      if (requested && mounted && session.current && (!allowed || !await session.enableMicrophone()) && mounted) {
+        showErrorSnackBar(context, t.games.microphoneFailed);
+      }
     } finally {
       if (mounted) setState(() => _detailsOpen = false);
     }
@@ -586,18 +1191,23 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
       fit: StackFit.expand,
       children: [
         session.build(),
-        if (!Platform.isAndroid && _touchVisible)
+        if (_touchVisible)
           ValueListenableBuilder<bool>(
             valueListenable: session.inputAvailable,
             builder: (_, enabled, _) => !enabled
                 ? const SizedBox.shrink()
                 : ValueListenableBuilder<int>(
                     valueListenable: session.inputResets,
-                    builder: (_, revision, _) => SteamTouchControls(
-                      key: ValueKey(revision),
-                      onButton: session.handleTouchButton,
-                      onStick: session.handleTouchStick,
-                      onRelease: session.releaseTouchControls,
+                    builder: (_, revision, _) => Opacity(
+                      opacity: session.touchOpacity / 100,
+                      child: SteamTouchControls(
+                        key: ValueKey(revision),
+                        swapSides: session.swapTouchSides,
+                        layout: session.touchLayout,
+                        onButton: session.handleTouchButton,
+                        onStick: session.handleTouchStick,
+                        onRelease: session.releaseTouchControls,
+                      ),
                     ),
                   ),
           ),
@@ -605,44 +1215,40 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
           valueListenable: session.sessionState,
           builder: (context, state, _) {
             if (state == 'playing') return const SizedBox.shrink();
-            final recoverable = state == 'failed' || state == 'disconnected';
-            return ColoredBox(
-              color: Theme.of(context).colorScheme.surface,
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Semantics(
-                        liveRegion: true,
-                        child: Text(switch (state) {
-                          'failed' => t.games.streamFailed,
-                          'disconnected' => t.games.disconnected,
-                          'reconnecting' => t.games.reconnecting,
-                          _ => t.games.connecting,
-                        }, textAlign: TextAlign.center),
-                      ),
-                      const SizedBox(height: 12),
-                      if (recoverable)
-                        FocusableButton(
-                          onPressed: session.reconnect,
-                          child: FilledButton(onPressed: session.reconnect, child: Text(t.games.reconnect)),
-                        )
-                      else if (state == 'connecting')
-                        FocusableButton(
-                          onPressed: session.disconnect,
-                          child: TextButton(onPressed: session.disconnect, child: Text(t.games.disconnect)),
-                        ),
-                      const SizedBox(height: 8),
-                      Text(t.games.disconnectHelp, textAlign: TextAlign.center),
-                    ],
-                  ),
-                ),
-              ),
+            return GameStreamStatus(
+              state: state,
+              gameName: session.game.name,
+              computerName: session.host.name,
+              onReconnect: session.reconnect,
+              onDisconnect: session.disconnect,
             );
           },
         ),
+        if (session.controllerOnly)
+          PositionedDirectional(
+            top: 8,
+            start: 8,
+            child: ValueListenableBuilder<String>(
+              valueListenable: session.sessionState,
+              builder: (context, state, _) => state != 'playing'
+                  ? const SizedBox.shrink()
+                  : Material(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.92),
+                      borderRadius: BorderRadius.circular(20),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const AppIcon(Symbols.sports_esports_rounded, size: 18),
+                            const SizedBox(width: 8),
+                            Text(t.games.touchControls, style: Theme.of(context).textTheme.labelMedium),
+                          ],
+                        ),
+                      ),
+                    ),
+            ),
+          ),
         PositionedDirectional(
           top: 8,
           end: 8,
@@ -653,16 +1259,59 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
                 : Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (!Platform.isAndroid)
-                        FocusableButton(
-                          onPressed: () => setState(() => _touchVisible = !_touchVisible),
+                      if (!session.controllerOnly)
+                        ValueListenableBuilder<int>(
+                          valueListenable: session.microphoneState,
+                          builder: (_, microphone, _) {
+                            final active = microphone >= 2;
+                            final label = switch (microphone) {
+                              2 => t.games.microphoneStarting,
+                              3 => t.games.microphoneActive,
+                              _ => t.games.microphoneMuted,
+                            };
+                            final callback = active || !_detailsOpen ? _toggleMicrophone : null;
+                            return Semantics(
+                              liveRegion: true,
+                              child: FocusableButton(
+                                onPressed: callback,
+                                child: IconButton.filledTonal(
+                                  tooltip: '$label\n${active ? t.games.microphoneMute : t.games.microphoneEnable}',
+                                  isSelected: active,
+                                  onPressed: callback,
+                                  icon: AppIcon(active ? Symbols.mic_rounded : Symbols.mic_off_rounded),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      FocusableButton(
+                        onPressed: _detailsOpen ? null : _showSteamTools,
+                        child: IconButton.filledTonal(
+                          tooltip: t.games.steamTools,
+                          onPressed: _detailsOpen ? null : _showSteamTools,
+                          icon: const AppIcon(Symbols.more_horiz_rounded),
+                        ),
+                      ),
+                      ValueListenableBuilder<bool>(
+                        valueListenable: session.mappingFailed,
+                        builder: (_, failed, _) => FocusableButton(
+                          onPressed: _detailsOpen ? null : _showInputLayout,
                           child: IconButton.filledTonal(
-                            tooltip: t.games.touchControls,
-                            isSelected: _touchVisible,
-                            onPressed: () => setState(() => _touchVisible = !_touchVisible),
-                            icon: const AppIcon(Symbols.sports_esports_rounded),
+                            tooltip: failed ? t.games.controllerLayoutFailed : t.games.controllerLayout,
+                            onPressed: _detailsOpen ? null : _showInputLayout,
+                            icon: AppIcon(failed ? Symbols.warning_rounded : Symbols.tune_rounded),
                           ),
                         ),
+                      ),
+                      FocusableButton(
+                        onPressed: () => setState(() => _touchVisible = !_touchVisible),
+                        child: IconButton.filledTonal(
+                          tooltip: t.games.touchControls,
+                          isSelected: _touchVisible,
+                          onPressed: () => setState(() => _touchVisible = !_touchVisible),
+                          icon: const AppIcon(Symbols.sports_esports_rounded),
+                        ),
+                      ),
                       FocusableButton(
                         onPressed: _detailsOpen ? null : _showDetails,
                         child: IconButton.filledTonal(

@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/games/game_models.dart';
+import 'package:plezy/games/steam_input_profile.dart';
 import 'package:plezy/multiview/steam_game_workspace_surface.dart';
 import 'package:plezy/services/gamepad_service.dart';
 import 'package:universal_gamepad/universal_gamepad.dart';
@@ -21,17 +23,310 @@ void main() {
     return done.future;
   }
 
-  SteamGameWorkspaceSession session({void Function()? onFirstFrame}) {
+  SteamGameWorkspaceSession session({
+    bool controllerOnly = false,
+    void Function()? onFirstFrame,
+    SteamInputProfile? inputProfile,
+    Future<void> Function(SteamInputProfile)? persist,
+  }) {
     final host = GameHost(id: '123', name: 'Desktop', address: 'desktop.local', protocol: GameProtocol.steam);
     return SteamGameWorkspaceSession(
       host: host,
       game: StreamGame(hostKey: host.key, id: '620', name: 'Portal 2'),
       touchControls: false,
+      controllerOnly: controllerOnly,
       onFirstFrame: onFirstFrame,
+      inputProfile: inputProfile,
+      persistInputProfile: persist,
     );
   }
 
   tearDown(() => messenger.setMockMethodCallHandler(channel, null));
+
+  test('controller-only sessions keep touch input and never request microphone access', () async {
+    final calls = <String>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call.method);
+      return call.method == 'getSessionState' ? 'playing' : null;
+    });
+    final stream = session(controllerOnly: true);
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await state('playing');
+    expect(stream.creationParams, containsPair('controllerOnly', true));
+    expect(stream.creationParams, containsPair('touchControls', true));
+    expect(stream.creationParams, containsPair('pyrowave', false));
+    expect(stream.creationParams, containsPair('allowHdr', false));
+    expect(await stream.requestMicrophonePermission(), isFalse);
+    expect(await stream.enableMicrophone(), isFalse);
+    expect(calls, isNot(contains('requestMicrophonePermission')));
+    expect(calls, isNot(contains('startMicrophone')));
+  });
+
+  for (final replaceReceiver in [false, true]) {
+    test('delayed input revocation cannot overwrite a newer grant (replace receiver: $replaceReceiver)', () async {
+      const replacement = MethodChannel('com.plezy/games/steam_stream/100');
+      final reset = Completer<void>();
+      final calls = <MethodCall>[];
+      var delayReset = false;
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        calls.add(call);
+        if (delayReset && call.method == 'resetInput') await reset.future;
+        return null;
+      });
+      messenger.setMockMethodCallHandler(replacement, (call) async {
+        calls.add(call);
+        return null;
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(replacement, null));
+      final stream = session();
+      addTearDown(stream.dispose);
+      stream.attachPlatformView(99);
+      await state('playing');
+      await stream.setInputEnabled(true);
+      delayReset = true;
+      final revoking = stream.setInputEnabled(false);
+      await Future<void>.delayed(Duration.zero);
+      expect(stream.inputAvailable.value, isFalse);
+      if (replaceReceiver) stream.attachPlatformView(100);
+      await stream.setInputEnabled(true);
+      reset.complete();
+      await revoking;
+      expect(stream.inputAvailable.value, isTrue);
+      expect(calls.where((c) => c.method == 'setInputEnabled').last.arguments, {'enabled': true});
+    });
+  }
+
+  test('window and keyboard availability release effects and native input until focus returns', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      return null;
+    });
+    final gamepads = GamepadService.instance;
+    gamepads.debugSetWindowFocused(true);
+    final stream = session();
+    addTearDown(() {
+      stream.dispose();
+      gamepads.debugSetWindowFocused(true);
+    });
+    stream.attachPlatformView(99);
+    await state('playing');
+    await stream.setInputEnabled(true);
+    expect(stream.inputAvailable.value, isTrue);
+    gamepads.debugSetWindowFocused(false);
+    await Future<void>.delayed(Duration.zero);
+    expect(stream.inputAvailable.value, isFalse);
+    expect(calls.where((c) => c.method == 'setInputEnabled').last.arguments['enabled'], isFalse);
+    gamepads.debugSetWindowFocused(true);
+    await Future<void>.delayed(Duration.zero);
+    expect(stream.inputAvailable.value, isTrue);
+    expect(stream.microphoneState.value, 1);
+  });
+
+  test('microphone stays opt-in and mutes on lease loss and dialog suspension', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      if (call.method == 'setMicrophoneEnabled') return true;
+      if (call.method == 'getMicrophoneState') return 3;
+      if (call.method == 'requestMicrophonePermission') return true;
+      return null;
+    });
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await stream.setInputEnabled(true);
+    await state('playing');
+    expect(calls.where((c) => c.method == 'setMicrophoneEnabled' && (c.arguments as Map)['enabled'] == true), isEmpty);
+    expect(await stream.requestMicrophonePermission(), isTrue);
+    expect(await stream.enableMicrophone(), isTrue);
+    expect(stream.microphoneState.value, 3);
+    await stream.setInputEnabled(false);
+    expect(stream.microphoneState.value, 1);
+    await stream.setInputEnabled(true);
+    expect(stream.microphoneState.value, 1);
+    expect(await stream.enableMicrophone(), isTrue);
+    await stream.withInputSuspended(() async {
+      expect(stream.microphoneState.value, 1);
+    });
+    expect(stream.microphoneState.value, 1);
+    expect(
+      calls.where((c) => c.method == 'setMicrophoneEnabled' && (c.arguments as Map)['enabled'] == true),
+      hasLength(2),
+    );
+  });
+
+  test('late microphone start is revoked after the presentation loses ownership', () async {
+    final accepted = Completer<bool>();
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      if (call.method == 'setMicrophoneEnabled') {
+        if ((call.arguments as Map)['enabled'] == true) return accepted.future;
+        return true;
+      }
+      return null;
+    });
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await stream.setInputEnabled(true);
+    await state('playing');
+    final starting = stream.enableMicrophone();
+    stream.detach();
+    accepted.complete(true);
+    expect(await starting, isFalse);
+    expect(stream.microphoneState.value, 1);
+    expect(calls.lastWhere((c) => c.method == 'setMicrophoneEnabled').arguments, {'enabled': false});
+  });
+
+  test('microphone permission and device rejection do not report recording', () async {
+    messenger.setMockMethodCallHandler(channel, (call) async => call.method == 'getMicrophoneState' ? 1 : false);
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await stream.setInputEnabled(true);
+    await state('playing');
+    expect(await stream.requestMicrophonePermission(), isFalse);
+    expect(await stream.enableMicrophone(), isFalse);
+    expect(stream.microphoneState.value, 1);
+  });
+
+  test('custom mapping gates input until acknowledgement and replays after fallback', () async {
+    final commands = <MethodCall>[];
+    var gate = Completer<bool>();
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      commands.add(call);
+      if (call.method == 'setControllerMapping') return gate.future;
+      return null;
+    });
+    final stream = session(inputProfile: SteamInputProfile.defaults().change(0, 1, 1));
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await stream.setInputEnabled(true);
+    await state('playing');
+    expect(stream.inputAvailable.value, isFalse);
+    gate.complete(true);
+    await Future<void>.delayed(Duration.zero);
+    expect(stream.inputAvailable.value, isTrue);
+    gate = Completer<bool>();
+    await state('reconnecting');
+    await state('playing');
+    expect(stream.inputAvailable.value, isFalse);
+    gate.complete(true);
+    await Future<void>.delayed(Duration.zero);
+    expect(stream.inputAvailable.value, isTrue);
+    expect(commands.where((c) => c.method == 'setControllerMapping'), hasLength(2));
+  });
+
+  test('rejected mapping is not saved and failed rollback holds input', () async {
+    var saved = false;
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'setControllerMapping') return false;
+      return null;
+    });
+    final stream = session(
+      persist: (_) async {
+        saved = true;
+      },
+    );
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await state('playing');
+    await stream.setInputEnabled(true);
+    await expectLater(stream.applyInputProfile(SteamInputProfile.defaults().change(0, 1, 1)), throwsStateError);
+    expect(saved, isFalse);
+    expect(stream.inputProfile.isDefault, isTrue);
+    expect(stream.inputAvailable.value, isFalse);
+    expect(stream.mappingFailed.value, isTrue);
+  });
+
+  test('retired receiver cannot finish saving a mapping', () async {
+    final gate = Completer<bool>();
+    var saved = false;
+    messenger.setMockMethodCallHandler(
+      channel,
+      (call) async => call.method == 'setControllerMapping' ? gate.future : null,
+    );
+    final stream = session(
+      persist: (_) async {
+        saved = true;
+      },
+    );
+    stream.attachPlatformView(99);
+    await state('playing');
+    final applied = stream.applyInputProfile(SteamInputProfile.defaults().change(0, 1, 1));
+    final rejected = expectLater(applied, throwsStateError);
+    await Future<void>.delayed(Duration.zero);
+    stream.dispose();
+    gate.complete(true);
+    await rejected;
+    expect(saved, isFalse);
+  });
+
+  test('host shortcuts require the live input lease and always release modifiers', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      return null;
+    });
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await state('playing');
+    expect(await stream.sendShortcut(SteamStreamShortcut.overlay), isFalse);
+    expect(calls.where((c) => c.method == 'inputKey'), isEmpty);
+    await stream.setInputEnabled(true);
+    expect(await stream.sendShortcut(SteamStreamShortcut.overlay), isTrue);
+    expect(calls.where((c) => c.method == 'inputKey').map((c) => c.arguments), [
+      {'usage': 225, 'key': 'Shift Left', 'down': true},
+      {'usage': 43, 'key': 'Tab', 'down': true},
+      {'usage': 43, 'key': 'Tab', 'down': false},
+      {'usage': 225, 'key': 'Shift Left', 'down': false},
+    ]);
+  });
+
+  test('host shortcut stops on lease loss and releases an acknowledged key', () async {
+    final calls = <MethodCall>[];
+    final stream = session();
+    addTearDown(stream.dispose);
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      if (call.method == 'inputKey' && (call.arguments as Map)['down'] == true) await stream.setInputEnabled(false);
+      return null;
+    });
+    stream.attachPlatformView(99);
+    await state('playing');
+    await stream.setInputEnabled(true);
+    expect(await stream.sendShortcut(SteamStreamShortcut.overlay), isFalse);
+    expect(calls.where((c) => c.method == 'inputKey').map((c) => c.arguments), [
+      {'usage': 225, 'key': 'Shift Left', 'down': true},
+      {'usage': 225, 'key': 'Shift Left', 'down': false},
+    ]);
+  });
+
+  test('composed text uses bounded UTF-8 only with a live input lease', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      return call.method == 'inputText' ? true : null;
+    });
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await state('playing');
+    expect(await stream.sendComposedText('hello'), isFalse);
+    await stream.setInputEnabled(true);
+    expect(await stream.sendComposedText('日本語 🙂'), isTrue);
+    expect((calls.where((c) => c.method == 'inputText').single.arguments as Map)['text'], utf8.encode('日本語 🙂'));
+    for (final invalid in ['', '🙂' * 129, '\u0000', '\u001b', '\u0085']) {
+      expect(await stream.sendComposedText(invalid), isFalse);
+    }
+    expect(calls.where((c) => c.method == 'inputText'), hasLength(1));
+    stream.detach();
+    expect(await stream.sendComposedText('late'), isFalse);
+  });
 
   test('disconnect acknowledgement permits reconnect after a texture channel retires', () async {
     var stops = 0;
@@ -250,6 +545,28 @@ void main() {
     await pending;
     expect(stream.surfaceGeneration.value, 1);
     expect(stream.sessionState.value, 'connecting');
+  });
+
+  test('cancel during reconnect prevents a replacement receiver after teardown', () async {
+    final stopped = Completer<void>();
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'getSessionState') return 'disconnected';
+      if (call.method == 'disconnect') await stopped.future;
+      return null;
+    });
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await state('disconnected');
+    final pending = stream.reconnect();
+    await stream.disconnect();
+    expect(stream.sessionState.value, 'disconnecting');
+    await state('playing');
+    expect(stream.sessionState.value, 'disconnecting');
+    stopped.complete();
+    await pending;
+    expect(stream.sessionState.value, 'disconnected');
+    expect(stream.surfaceGeneration.value, 0);
   });
 
   test('failed teardown does not create an overlapping session', () async {

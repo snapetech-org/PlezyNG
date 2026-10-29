@@ -85,7 +85,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>PlezyNG can use a camera as an optional source for a local recording.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>PlezyNG can include a selected microphone in a local recording.</string>
+	<string>PlezyNG can include a selected microphone in a local recording or share it with your paired Steam computer when you turn it on during a game stream.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSLocalNetworkUsageDescription</key>

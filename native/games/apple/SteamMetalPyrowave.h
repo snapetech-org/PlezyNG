@@ -12,11 +12,12 @@ class MetalPyrowave {
   MetalPyrowave();
   ~MetalPyrowave();
   static bool supported();
-  bool start(int width, int height, const uint8_t* extra, size_t length);
+  bool start(int width, int height, const uint8_t* extra, size_t length, bool allowHdr = false);
   // On frame, caller owns the returned pixel buffer reference.
   PyrowaveDecodeStatus decode(const uint8_t*, size_t, CVPixelBufferRef*);
   void reset();
   bool chroma444() const;
+  bool hdr10() const;
 
  private:
   struct Impl;

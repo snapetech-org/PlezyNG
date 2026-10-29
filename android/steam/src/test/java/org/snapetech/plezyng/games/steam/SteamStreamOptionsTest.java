@@ -2,11 +2,13 @@
 package org.snapetech.plezyng.games.steam;
 
 import static org.junit.Assert.*;
+
 import java.util.Map;
 import org.junit.Test;
 
 public final class SteamStreamOptionsTest {
-  @Test public void oldCallersKeepDefaults() {
+  @Test
+  public void oldCallersKeepDefaults() {
     SteamStreamOptions options = SteamStreamOptions.from(Map.of());
     assertEquals(1920, options.width);
     assertEquals(1080, options.height);
@@ -17,10 +19,11 @@ public final class SteamStreamOptionsTest {
     assertTrue(options.allowHevc);
   }
 
-  @Test public void newLimitsAndCompatibilityCodecArePreserved() {
+  @Test
+  public void newLimitsAndCompatibilityCodecArePreserved() {
     SteamStreamOptions options = SteamStreamOptions.from(Map.of(
-        "streamWidth", 1280L, "streamHeight", 720, "streamFps", 30,
-        "streamBitrateKbps", 12000, "allowHevc", false, "controllerCount", 4, "audioChannels", 6));
+        "streamWidth", 1280L, "streamHeight", 720, "streamFps", 30, "streamBitrateKbps", 12000, "allowHevc", false,
+        "controllerCount", 4, "audioChannels", 6));
     assertEquals(1280, options.width);
     assertEquals(720, options.height);
     assertEquals(30, options.fps);
@@ -30,16 +33,30 @@ public final class SteamStreamOptionsTest {
     assertEquals(6, options.audioChannels);
   }
 
-  @Test public void malformedOrExcessiveLimitsAreRejected() {
+  @Test
+  public void uhdAndTouchPreferencesAreBounded() {
+    SteamStreamOptions options = SteamStreamOptions.from(Map.of(
+        "streamWidth", 3840, "streamHeight", 2160, "streamFps", 120, "streamBitrateKbps", 100000, "touchOpacity", 65,
+        "swapTouchSides", true));
+    assertEquals(3840, options.width);
+    assertEquals(2160, options.height);
+    assertEquals(120, options.fps);
+    assertEquals(65, options.touchOpacity);
+    assertTrue(options.swapTouchSides);
+    assertEquals(100, SteamStreamOptions.from(Map.of()).touchOpacity);
+    assertFalse(SteamStreamOptions.from(Map.of()).swapTouchSides);
+  }
+  @Test
+  public void malformedOrExcessiveLimitsAreRejected() {
     for (Object value : new Object[] {Long.MAX_VALUE, -1, 1921, 1920.5, "1920", true}) {
       assertThrows(IllegalArgumentException.class, () -> SteamStreamOptions.from(Map.of("streamWidth", value)));
     }
     for (Map<?, ?> values : new Map<?, ?>[] {
-        Map.of("streamHeight", 721), Map.of("streamFps", 120),
-        Map.of("streamBitrateKbps", 50001), Map.of("allowHevc", "false"),
-        Map.of("controllerCount", 0), Map.of("controllerCount", 5), Map.of("controllerCount", 1.0),
-        Map.of("audioChannels", 3), Map.of("audioChannels", 5), Map.of("audioChannels", 8),
-        Map.of("audioChannels", 6.0), Map.of("audioChannels", "6")}) {
+             Map.of("streamHeight", 721), Map.of("streamFps", 121), Map.of("streamBitrateKbps", 100001),
+             Map.of("allowHevc", "false"), Map.of("controllerCount", 0), Map.of("controllerCount", 5),
+             Map.of("controllerCount", 1.0), Map.of("audioChannels", 3), Map.of("audioChannels", 5),
+             Map.of("audioChannels", 8), Map.of("audioChannels", 6.0), Map.of("audioChannels", "6"),
+             Map.of("touchOpacity", 0), Map.of("swapTouchSides", "true")}) {
       assertThrows(IllegalArgumentException.class, () -> SteamStreamOptions.from(values));
     }
   }

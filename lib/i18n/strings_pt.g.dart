@@ -36,7 +36,7 @@ class TranslationsPt extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsPt _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsPt $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsPt(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3887,13 +3887,11 @@ class Translations$games$pt extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3921,10 +3919,8 @@ class Translations$games$pt extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3934,7 +3930,6 @@ class Translations$games$pt extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5413,9 +5408,9 @@ extension on TranslationsPt {
 			'settings.smallSkipDuration' => 'Duração do Avanço Curto',
 			'settings.largeSkipDuration' => 'Duração do Avanço Longo',
 			'settings.rewindOnResume' => 'Rebobinar ao retomar',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundo', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundos', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundos', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundo', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundos', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundos', ),
 			'settings.defaultSleepTimer' => 'Temporizador de suspensão padrão',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutos', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutos', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutos', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutos', ),
 			'settings.rememberTrackSelections' => 'Lembrar seleção de faixas por série/filme',
 			'settings.chooseTracksBeforePlayback' => 'Escolha áudio e subtitulos antes de reproduzir',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Selecione a fonte de áudio e subtítulos antes de cada vídeo começar.',
@@ -6021,9 +6016,9 @@ extension on TranslationsPt {
 			'mediaMenu.deleteAnyway' => 'Excluir mesmo assim',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'Excluir permanentemente ${title} do seu servidor?',
 			'mediaMenu.deleteMultipleWarning' => 'Isso inclui todos os episódios e seus arquivos.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Isso exclui o ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódio e o arquivo dele.', other: 'Isso exclui todos os ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódios e os arquivos deles.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Este item está armazenado como ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} arquivo, que será excluído.', other: 'Este item está armazenado em ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} arquivos, e todos eles serão excluídos.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Mais ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódio está armazenado no mesmo arquivo e também será excluído:', other: 'Mais ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódios estão armazenados no mesmo arquivo e também serão excluídos:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Isso exclui o ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódio e o arquivo dele.', other: 'Isso exclui todos os ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódios e os arquivos deles.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Este item está armazenado como ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} arquivo, que será excluído.', other: 'Este item está armazenado em ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} arquivos, e todos eles serão excluídos.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Mais ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódio está armazenado no mesmo arquivo e também será excluído:', other: 'Mais ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódios estão armazenados no mesmo arquivo e também serão excluídos:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'O PlezyNG não conseguiu verificar quais arquivos serão removidos, então pode excluir mais do que o item acima. Cancele e tente novamente, ou exclua mesmo assim.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Seu servidor não forneceu detalhes do arquivo para este item, então o PlezyNG não pode verificar quais arquivos serão removidos. Pode excluir mais do que o item acima.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Item de mídia excluído com sucesso',
@@ -6212,7 +6207,7 @@ extension on TranslationsPt {
 			'videoControls.osdSubtitlesOff' => 'Legendas: desativadas',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Legendas: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Áudio: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} Conexão', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} quadros', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} Conexão', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} quadros', ),
 			'videoControls.trackSelectionTitle' => 'Escolha as faixas antes do playback',
 			'videoControls.trackSelectionAuto' => 'Seleção automática',
 			'videoControls.openMiniPlayer' => 'Descrição do Mini Player',
@@ -6227,7 +6222,7 @@ extension on TranslationsPt {
 			'messages.markedAsWatchedOffline' => 'Marcado como assistido (será sincronizado quando online)',
 			'messages.markedAsUnwatchedOffline' => 'Marcado como não assistido (será sincronizado quando online)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Removido automaticamente: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Removido automaticamente ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} download assistido', other: 'Removidos automaticamente ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} downloads assistidos', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Removido automaticamente ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} download assistido', other: 'Removidos automaticamente ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} downloads assistidos', ),
 			'messages.removedFromContinueWatching' => 'Removido de Continuar assistindo',
 			'messages.errorLoading' => ({required Object error}) => 'Erro: ${error}',
 			'messages.searchPartialResults' => 'Alguns servidores de mídia não puderam ser pesquisados. Exibindo os resultados disponíveis.',
@@ -6598,7 +6593,7 @@ extension on TranslationsPt {
 			'discover.tvShow' => 'Série de TV',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} min restantes',
 			'discover.moreLikeThis' => 'Títulos semelhantes',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} título', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} títulos', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} título', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} títulos', ),
 			'discover.person.born' => 'Nascimento',
 			'discover.person.died' => 'Falecimento',
 			'discover.person.birthplace' => 'Local de nascimento',
@@ -6843,7 +6838,7 @@ extension on TranslationsPt {
 			'explore.status.ended' => 'Finalizada',
 			'explore.status.canceled' => 'Cancelada',
 			'explore.status.upcoming' => 'Em breve',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódio', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódios', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódio', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episódios', ),
 			'explore.cast' => 'Elenco',
 			'explore.characters' => 'Personagens',
 			'explore.addToWatchlist' => 'Adicionar à lista para assistir',
@@ -6855,7 +6850,7 @@ extension on TranslationsPt {
 			'explore.notInLibrary' => 'Não está na sua biblioteca',
 			'explore.inTheseLibraries' => 'Nestas bibliotecas',
 			'explore.checkingLibrary' => 'Verificando sua biblioteca...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Não foi possível verificar ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} servidor', other: 'Não foi possível verificar ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} servidores', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Não foi possível verificar ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} servidor', other: 'Não foi possível verificar ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} servidores', ),
 			'explore.emptyTitle' => 'Ainda não há nada aqui',
 			'explore.emptyMessage' => ({required Object source}) => 'As linhas de ${source} aparecerão aqui quando tiverem conteúdo.',
 			'explore.searchHint' => ({required Object source}) => 'Buscar em ${source}',
@@ -6892,7 +6887,7 @@ extension on TranslationsPt {
 			'explore.stats.planning' => ({required Object n}) => '${n} pretendem assistir',
 			'explore.stats.favorited' => ({required Object n}) => '${n} favoritos',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} abandonaram',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comentário', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comentários', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comentário', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comentários', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} votos',
 			'explore.stats.watching' => ({required Object n}) => '${n} assistindo',
 			'explore.stats.completed' => ({required Object n}) => '${n} concluíram',
@@ -6959,14 +6954,14 @@ extension on TranslationsPt {
 			'explore.detail.crew' => 'Equipe',
 			'explore.detail.ratings' => 'Avaliações',
 			'explore.detail.schedule' => 'Programação',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Recomendado por ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} usuário', other: 'Recomendado por ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} usuários', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Recomendado por ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} usuário', other: 'Recomendado por ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} usuários', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'Recomendado por ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'Favoritado por ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} ainda não exibidos',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Recomendado por ${percent} dos espectadores',
 			'explore.detail.relatedTitles' => 'Títulos relacionados',
 			'explore.detail.background' => 'Contexto',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} resultado', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} resultados', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} resultado', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} resultados', ),
 			'liveTv.title' => 'TV ao Vivo',
 			'liveTv.guide' => 'Guia',
 			'liveTv.noChannels' => 'Nenhum canal disponível',
@@ -7095,7 +7090,7 @@ extension on TranslationsPt {
 			'playlists.delete' => 'Excluir Playlist',
 			'playlists.removeItem' => 'Remover da Playlist',
 			'playlists.smartPlaylist' => 'Playlist Inteligente',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} item', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} itens', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} item', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} itens', ),
 			'playlists.emptyPlaylist' => 'Esta playlist está vazia',
 			'playlists.deleteConfirm' => 'Excluir Playlist?',
 			'playlists.deleteMessage' => ({required Object name}) => 'Tem certeza de que deseja excluir "${name}"?',
@@ -7117,7 +7112,7 @@ extension on TranslationsPt {
 			'music.playNext' => 'Reproduzir a seguir',
 			'music.addToQueue' => 'Adicionar à fila',
 			'music.discNumber' => ({required Object n}) => 'Disco ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} faixa', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} faixas', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} faixa', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} faixas', ),
 			'music.nowPlaying' => 'Reproduzindo agora',
 			'music.playingFrom' => ({required Object title}) => 'Reproduzindo de ${title}',
 			'music.queue' => 'Fila',
@@ -7139,7 +7134,7 @@ extension on TranslationsPt {
 			'music.noLyrics' => 'Nenhuma letra disponível',
 			'music.sleepTimer' => 'Temporizador de suspensão',
 			'music.sleepTimerEndOfTrack' => 'Fim da faixa',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', ),
 			'music.stopPlayback' => 'Parar reprodução',
 			'music.previousTrack' => 'Faixa anterior',
 			'music.nextTrack' => 'Próxima faixa',
@@ -7223,7 +7218,7 @@ extension on TranslationsPt {
 			'watchTogether.offsetPlusTenth' => '+100 ms',
 			'watchTogether.offsetPlusSecond' => '+1 s',
 			'watchTogether.participants' => 'Participantes',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participante', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participantes', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participante', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participantes', ),
 			'watchTogether.hostBadge' => 'ANFITRIÃO',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (você)',
 			'watchTogether.playerIdle' => 'Ocioso',
@@ -7432,10 +7427,10 @@ extension on TranslationsPt {
 			'downloads.unknownAlbum' => 'Álbum desconhecido',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} concluídos',
 			'downloads.storageUsed' => ({required Object size}) => 'Armazém utilizado: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} transferência', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} transferências', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} apresentação', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} apresentações', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filme', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmes', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} álbum', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} álbuns', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} transferência', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} transferências', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} apresentação', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} apresentações', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filme', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmes', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} álbum', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} álbuns', ),
 			'downloads.errorFileNotFound' => 'Arquivo não encontrado (404)',
 			'downloads.errorDownloadNotAllowed' => 'Download não permitido pelo servidor (403)',
 			'downloads.errorDownloadFailed' => 'Falha no download',
@@ -8189,7 +8184,7 @@ extension on TranslationsPt {
 			'universalMedia.saveFavorite' => 'Salve o favorito',
 			'universalMedia.playNow' => 'Jogue agora',
 			'universalMedia.favoriteSaved' => 'Stream favorito salvo para este perfil',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Escapou ${count} entrada de playlist não suportada ou insegura.', many: 'Escapou ${count} entradas de lista de reprodução não suportadas ou inseguras.', other: 'Escapou ${count} entradas de lista de reprodução não suportadas ou inseguras.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Escapou ${count} entrada de playlist não suportada ou insegura.', many: 'Escapou ${count} entradas de lista de reprodução não suportadas ou inseguras.', other: 'Escapou ${count} entradas de lista de reprodução não suportadas ou inseguras.', ),
 			'universalMedia.playlistAddress' => 'Endereço Playlist',
 			'universalMedia.playlistAddressHelp' => 'Abra uma lista de reprodução M3U, M3u8, ou PLS a partir de um endereço web. links de streaming direto não salvam a lista.',
 			'universalMedia.choosePlaylist' => 'Escolha o arquivo de playlist',
@@ -8205,7 +8200,7 @@ extension on TranslationsPt {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Escolha arquivos',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '1 arquivo selecionado', many: '${count} arquivos selecionados', other: '${count} arquivos selecionados', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '1 arquivo selecionado', many: '${count} arquivos selecionados', other: '${count} arquivos selecionados', ),
 			'universalMedia.wifiTransfer' => 'Enviar arquivos por Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Transferir arquivos suportados de um navegador na mesma rede confiável.',
 			'universalMedia.wifiTransferIntro' => 'Abra este endereço num navegador em outro dispositivo. selecione arquivos para adicioná-los à biblioteca de Arquivos e Livros deste dispositivo.',
@@ -8216,7 +8211,7 @@ extension on TranslationsPt {
 			'universalMedia.copyAddress' => 'Cópia do endereço de transferência',
 			'universalMedia.addressCopied' => 'Endereço de transferência copiado',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Este endereço expira em ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'arquivo ${count} recebido', many: 'arquivos ${count} recebidos', other: 'arquivos ${count} recebidos', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'arquivo ${count} recebido', many: 'arquivos ${count} recebidos', other: 'arquivos ${count} recebidos', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'Recebido ${size}',
 			'universalMedia.stopTransfer' => 'Cessar transferência e invalidar endereço',
 			'universalMedia.startTransfer' => 'Início Transferência',
@@ -8442,7 +8437,7 @@ extension on TranslationsPt {
 			'fileSources.sleep' => 'Temporizador de suspensão',
 			'fileSources.sleepOff' => 'Desativado',
 			'fileSources.endChapter' => 'Fim do capítulo',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutos', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutos', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutos', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutos', ),
 			'fileSources.skipBack' => 'Escape de volta',
 			'fileSources.skipForward' => 'Escape em frente',
 			'fileSources.smartRewind' => 'Atualidade após uma pausa',
@@ -8781,13 +8776,11 @@ extension on TranslationsPt {
 			'comics.collections' => 'Coleções',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8815,10 +8808,8 @@ extension on TranslationsPt {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8828,7 +8819,6 @@ extension on TranslationsPt {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

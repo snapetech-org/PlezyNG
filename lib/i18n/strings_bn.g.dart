@@ -36,7 +36,7 @@ class TranslationsBn extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsBn _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsBn $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsBn(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3880,13 +3880,11 @@ class _Translations$games$bn extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3914,10 +3912,8 @@ class _Translations$games$bn extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3927,7 +3923,6 @@ class _Translations$games$bn extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5406,9 +5401,9 @@ extension on TranslationsBn {
 			'settings.smallSkipDuration' => 'ছোট স্কিপ দীর্ঘদিন',
 			'settings.largeSkipDuration' => 'দীর্ঘ স্কাইপ',
 			'settings.rewindOnResume' => 'সুনির্দিষ্ট সমাধান',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} সেকেন্ড', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} সেকেন্ড', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} সেকেন্ড', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} সেকেন্ড', ),
 			'settings.defaultSleepTimer' => 'ডিফল্ট ঘুম টাইম',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} মিনিট', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} মিনিট', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} মিনিট', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} মিনিট', ),
 			'settings.rememberTrackSelections' => 'সিনেমা / সিনেমা / সিনেমা / সিনেমা / সিনেমা',
 			'settings.chooseTracksBeforePlayback' => 'Playback এর আগে অডিও এবং সাব্টিটিস নির্বাচন করুন',
 			'settings.chooseTracksBeforePlaybackDescription' => 'প্রত্যেক ভিডিও শুরু করার আগে উৎস অডিও এবং সাব্টিট ট্র্যাক নির্বাচন করুন।',
@@ -6014,9 +6009,9 @@ extension on TranslationsBn {
 			'mediaMenu.deleteAnyway' => 'যদিও মুছে ফেলুন',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'আপনার সার্ভার থেকে স্থায়ীভাবে ${title} মুছে ফেলুন?',
 			'mediaMenu.deleteMultipleWarning' => 'এতে সব পর্ব এবং সেগুলির ফাইল অন্তর্ভুক্ত রয়েছে।',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'এতে থাকা ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব এবং তার ফাইল মুছে যাবে।', other: 'এতে থাকা সব ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব এবং সেগুলির ফাইল মুছে যাবে।', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'এই আইটেমটি ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি ফাইলে সংরক্ষিত আছে, যা মুছে যাবে।', other: 'এই আইটেমটি ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি ফাইল জুড়ে সংরক্ষিত আছে এবং সবগুলি মুছে যাবে।', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'একই ফাইলে আরও ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব সংরক্ষিত আছে এবং সেটিও মুছে যাবে:', other: 'একই ফাইলে আরও ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব সংরক্ষিত আছে এবং সেগুলিও মুছে যাবে:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'এতে থাকা ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব এবং তার ফাইল মুছে যাবে।', other: 'এতে থাকা সব ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব এবং সেগুলির ফাইল মুছে যাবে।', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'এই আইটেমটি ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি ফাইলে সংরক্ষিত আছে, যা মুছে যাবে।', other: 'এই আইটেমটি ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি ফাইল জুড়ে সংরক্ষিত আছে এবং সবগুলি মুছে যাবে।', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'একই ফাইলে আরও ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব সংরক্ষিত আছে এবং সেটিও মুছে যাবে:', other: 'একই ফাইলে আরও ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব সংরক্ষিত আছে এবং সেগুলিও মুছে যাবে:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG কোন ফাইলটি মুছে ফেলবে তা নিশ্চিত করতে পারেন না, তাই এটি উপরে নামিত পণ্যের চেয়ে বেশি মুছে ফেলতে পারে. বাতিল করুন এবং আবারও চেষ্টা করুন, অথবা কোনওভাবে মুছে ফেলুন।',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'আপনার সার্ভার এই আইটেমের ফাইলের বিবরণ দেয়নি, তাই PlezyNG কোন ফাইলগুলি মুছে যাবে তা পরীক্ষা করতে পারছে না। উপরে উল্লেখ করা আইটেম ছাড়াও আরও কিছু মুছে যেতে পারে।',
 			'mediaMenu.mediaDeletedSuccessfully' => 'সফলভাবে মুছে ফেলেন মিডিয়া',
@@ -6205,7 +6200,7 @@ extension on TranslationsBn {
 			'videoControls.osdSubtitlesOff' => 'টাইপ: বেরিয়ে',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'সংখ্যা: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'অডিও: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ফ্রেম', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ফ্রেম', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ফ্রেম', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ফ্রেম', ),
 			'videoControls.trackSelectionTitle' => 'Playback এর আগে ট্র্যাক নির্বাচন করুন',
 			'videoControls.trackSelectionAuto' => 'স্বয়ংক্রিয় নির্বাচন',
 			'videoControls.openMiniPlayer' => 'খোলা মিনি খেলোয়াড়',
@@ -6220,7 +6215,7 @@ extension on TranslationsBn {
 			'messages.markedAsWatchedOffline' => 'দেখানো হিসাবে মার্কিত (এখন অনলাইনে সনাক্ত করা হবে)',
 			'messages.markedAsUnwatchedOffline' => 'নজরদারি হিসাবে চিহ্নিত (এখন অনলাইনে সিন্ক করা হবে)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'স্বয়ংক্রিয় ড্রাইভ: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'গাড়ি-অটোমোড ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} দেখানো ডাউনলোড', other: 'Auto-remote ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} দেখানো ডাউনলোড', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'গাড়ি-অটোমোড ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} দেখানো ডাউনলোড', other: 'Auto-remote ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} দেখানো ডাউনলোড', ),
 			'messages.removedFromContinueWatching' => 'চলুন দেখার থেকে বের করা',
 			'messages.errorLoading' => ({required Object error}) => 'ভুল: ${error}',
 			'messages.searchPartialResults' => 'কিছু মিডিয়া সার্ভারগুলি অনুসন্ধান করা যাবে না. उपलब्ध ফলাফল দেখানোর জন্য।',
@@ -6591,7 +6586,7 @@ extension on TranslationsBn {
 			'discover.tvShow' => 'টেলিভিশন প্রদর্শন',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} মিনিট left',
 			'discover.moreLikeThis' => 'এ ধরনের আরও',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} নাম', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} টাইম', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} নাম', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} টাইম', ),
 			'discover.person.born' => 'জন্ম',
 			'discover.person.died' => 'মৃত্যুর',
 			'discover.person.birthplace' => 'জন্মস্থান',
@@ -6836,7 +6831,7 @@ extension on TranslationsBn {
 			'explore.status.ended' => 'শেষ হয়েছে',
 			'explore.status.canceled' => 'বাতিল',
 			'explore.status.upcoming' => 'আসছে',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} আয়াত', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} প্রদর্শন', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} আয়াত', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} প্রদর্শন', ),
 			'explore.cast' => 'কাস্ট',
 			'explore.characters' => 'চরিত্র',
 			'explore.addToWatchlist' => 'Watchlist এ যোগ করুন',
@@ -6848,7 +6843,7 @@ extension on TranslationsBn {
 			'explore.notInLibrary' => 'আপনার লাইব্রেরিতে নয়',
 			'explore.inTheseLibraries' => 'এই লাইব্রেরিতে',
 			'explore.checkingLibrary' => 'আপনার লাইব্রেরি চেক করুন',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} সার্ভার চেক করতে পারবেন না', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} সার্ভারগুলি চেক করতে পারেনি', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} সার্ভার চেক করতে পারবেন না', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} সার্ভারগুলি চেক করতে পারেনি', ),
 			'explore.emptyTitle' => 'এখনো এখানে কিছু নেই',
 			'explore.emptyMessage' => ({required Object source}) => '${source} এর রুটিগুলি একবার এখানে প্রদর্শন করা হবে।',
 			'explore.searchHint' => ({required Object source}) => 'খুঁজে পেতে ${source}',
@@ -6885,7 +6880,7 @@ extension on TranslationsBn {
 			'explore.stats.planning' => ({required Object n}) => '${n} দেখতে চান',
 			'explore.stats.favorited' => ({required Object n}) => '${n} পছন্দ',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} একেবারে ফেরত',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} মন্তব্য', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} মন্তব্য', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} মন্তব্য', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} মন্তব্য', ),
 			'explore.stats.votes' => ({required Object n}) => '${n}টি ভোট',
 			'explore.stats.watching' => ({required Object n}) => '${n} দেখুন',
 			'explore.stats.completed' => ({required Object n}) => '${n} সম্পন্ন',
@@ -6952,14 +6947,14 @@ extension on TranslationsBn {
 			'explore.detail.crew' => 'ক্লাব',
 			'explore.detail.ratings' => 'রেটিং',
 			'explore.detail.schedule' => 'পরিকল্পনা',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'ব্যবহারকারী ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} দ্বারা পরামর্শ', other: 'সংশোধন করা হয়েছে ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ব্যবহারকারীদের', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'ব্যবহারকারী ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} দ্বারা পরামর্শ', other: 'সংশোধন করা হয়েছে ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ব্যবহারকারীদের', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'সংখ্যা: ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'পছন্দ করা হয়েছে ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} এখনো প্রদর্শিত হয়নি',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'সংশোধন করা হয়েছে ${percent} জনের জন্য',
 			'explore.detail.relatedTitles' => 'সম্পর্কিত টাইম',
 			'explore.detail.background' => 'ফাউন্ডেশন',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ফলাফল', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ফলাফল', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ফলাফল', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ফলাফল', ),
 			'liveTv.title' => 'লাইভ টিভি',
 			'liveTv.guide' => 'গাইড',
 			'liveTv.noChannels' => 'কোন চ্যানেল পাওয়া যায় না',
@@ -7088,7 +7083,7 @@ extension on TranslationsBn {
 			'playlists.delete' => 'Playlist খেলা',
 			'playlists.removeItem' => 'Playlist থেকে মুছে ফেলুন',
 			'playlists.smartPlaylist' => 'স্মার্ট Playlist',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}টি আইটেম', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}টি আইটেম', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}টি আইটেম', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}টি আইটেম', ),
 			'playlists.emptyPlaylist' => 'এই খেলাটি खाली',
 			'playlists.deleteConfirm' => 'Playlist খেলা?',
 			'playlists.deleteMessage' => ({required Object name}) => 'আপনি কি নিশ্চিত যে আপনি "${name}" মুছে ফেলতে চান?',
@@ -7110,7 +7105,7 @@ extension on TranslationsBn {
 			'music.playNext' => 'Next খেলুন',
 			'music.addToQueue' => 'কুকুরে যোগ করুন',
 			'music.discNumber' => ({required Object n}) => 'ডিজিটাল ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ট্র্যাক', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} পাসপোর্ট', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ট্র্যাক', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} পাসপোর্ট', ),
 			'music.nowPlaying' => 'এখন খেলতে',
 			'music.playingFrom' => ({required Object title}) => 'খেলা ${title} থেকে',
 			'music.queue' => 'কুরআন',
@@ -7132,7 +7127,7 @@ extension on TranslationsBn {
 			'music.noLyrics' => 'কোন পাঠ্য নেই',
 			'music.sleepTimer' => 'ঘুমের টাইম',
 			'music.sleepTimerEndOfTrack' => 'ট্র্যাকের শেষ',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} মিনিট', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} মিনিট', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} মিনিট', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} মিনিট', ),
 			'music.stopPlayback' => 'Playback বন্ধ করুন',
 			'music.previousTrack' => 'পূর্ববর্তী ট্র্যাক',
 			'music.nextTrack' => 'পরবর্তী ট্র্যাক',
@@ -7216,7 +7211,7 @@ extension on TranslationsBn {
 			'watchTogether.offsetPlusTenth' => '+100 মিসি',
 			'watchTogether.offsetPlusSecond' => '+1 স',
 			'watchTogether.participants' => 'অংশগ্রহণকারী',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} অংশগ্রহণকারী', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} অংশগ্রহণকারী', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} অংশগ্রহণকারী', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} অংশগ্রহণকারী', ),
 			'watchTogether.hostBadge' => 'হেস্ট',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (আপনি)',
 			'watchTogether.playerIdle' => 'আইডেল',
@@ -7425,10 +7420,10 @@ extension on TranslationsBn {
 			'downloads.unknownAlbum' => 'অজ্ঞাত অ্যালবাম',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} সম্পন্ন',
 			'downloads.storageUsed' => ({required Object size}) => 'ব্যবহৃত স্টোরেজ: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ডাউনলোড', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ডাউনলোড', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} প্রদর্শন', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} দেখুন', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} সিনেমা', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} চলচ্চিত্র', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} অ্যালবাম', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} অ্যালবাম', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ডাউনলোড', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ডাউনলোড', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} প্রদর্শন', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} দেখুন', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} সিনেমা', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} চলচ্চিত্র', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} অ্যালবাম', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} অ্যালবাম', ),
 			'downloads.errorFileNotFound' => 'ফাইল পাওয়া যায় না (404)',
 			'downloads.errorDownloadNotAllowed' => 'ডাউনলোড সার্ভার দ্বারা অনুমোদিত নয় (403)',
 			'downloads.errorDownloadFailed' => 'ডাউনলোড ভুল',
@@ -8182,7 +8177,7 @@ extension on TranslationsBn {
 			'universalMedia.saveFavorite' => 'পছন্দ সংরক্ষণ',
 			'universalMedia.playNow' => 'এখন খেলুন',
 			'universalMedia.favoriteSaved' => 'এই প্রোফাইলে সুরক্ষিত পছন্দ স্ট্রিম',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${count} অসহায় বা নিরাপদ Playlist প্রবেশ।', other: '${count} সমর্থিত বা নিরাপদ Playlist অন্তর্ভুক্ত।', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${count} অসহায় বা নিরাপদ Playlist প্রবেশ।', other: '${count} সমর্থিত বা নিরাপদ Playlist অন্তর্ভুক্ত।', ),
 			'universalMedia.playlistAddress' => 'Playlist ঠিকানা',
 			'universalMedia.playlistAddressHelp' => 'একটি ওয়েব ঠিকানা থেকে একটি M3U, M3u8, বা PLS প্লেলিস্ট খোঁজ করুন. সরাসরি প্রদর্শন লিঙ্কগুলি প্লেলেস্ট সংরক্ষণ করে না।',
 			'universalMedia.choosePlaylist' => 'Playlist ফাইল নির্বাচন করুন',
@@ -8198,7 +8193,7 @@ extension on TranslationsBn {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ),
 			'universalMedia.wifiTransfer' => 'Wi-Fi এর মাধ্যমে ফাইল পাঠান',
 			'universalMedia.wifiTransferHelp' => 'সমর্থিত ফাইলগুলি এক ব্রাউজার থেকে একই বিশ্বাসযোগ্য নেটওয়ার্কে স্থানান্তর করুন।',
 			'universalMedia.wifiTransferIntro' => 'অন্য ডিভাইসের একটি ব্রাউজারে এই ঠিকানা খোঁজ করুন. ফাইলগুলি নির্বাচন করে এই ডিভিশনের ফাইল এবং বই লাইব্রিয়ামে যোগ করুন.',
@@ -8209,7 +8204,7 @@ extension on TranslationsBn {
 			'universalMedia.copyAddress' => 'কপি Transfer Address',
 			'universalMedia.addressCopied' => 'প্রদর্শন ঠিকানা কপি',
 			'universalMedia.transferExpires' => ({required Object time}) => 'এই ঠিকানাটি ${time} এর মধ্যে শেষ হয়।',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${count} ফাইল গ্রহণ', other: '${count} ফাইল গ্রহণ', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${count} ফাইল গ্রহণ', other: '${count} ফাইল গ্রহণ', ),
 			'universalMedia.uploadedData' => ({required Object size}) => '${size} পেয়েছেন',
 			'universalMedia.stopTransfer' => 'স্থানান্তর বন্ধ করুন এবং ঠিকানা বাতিল করুন',
 			'universalMedia.startTransfer' => 'ট্রেডিং শুরু',
@@ -8435,7 +8430,7 @@ extension on TranslationsBn {
 			'fileSources.sleep' => 'ঘুমের টাইম',
 			'fileSources.sleepOff' => 'বন্ধ',
 			'fileSources.endChapter' => 'চাবার শেষ',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} মিনিট', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} মিনিট', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} মিনিট', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} মিনিট', ),
 			'fileSources.skipBack' => 'ফিরে আসুন',
 			'fileSources.skipForward' => 'এগিয়ে যান',
 			'fileSources.smartRewind' => 'একটি পাসের পর স্মার্ট ফেরত',
@@ -8774,13 +8769,11 @@ extension on TranslationsBn {
 			'comics.collections' => 'সংগ্রহ',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8808,10 +8801,8 @@ extension on TranslationsBn {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8821,7 +8812,6 @@ extension on TranslationsBn {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

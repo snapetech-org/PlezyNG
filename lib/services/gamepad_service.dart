@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:universal_gamepad/universal_gamepad.dart';
@@ -247,6 +248,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
   final Set<GamepadButton> _pressedButtons = {};
   final Set<GamepadButton> _suppressedButtons = {};
   bool _windowFocused = true;
+  final _workspaceInputAvailable = ValueNotifier(true);
+  ValueListenable<bool> get workspaceInputAvailable => _workspaceInputAvailable;
+  void _publishWorkspaceAvailability() => _workspaceInputAvailable.value = _windowFocused && !_nativeTextInputFocused;
   bool _nativeKeyHandlerRegistered = false;
   bool _appLifecycleObserverRegistered = false;
   bool _nativeTextInputFocused = false;
@@ -386,6 +390,7 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
   }) {
     if (_windowFocused == focused) return;
     _windowFocused = focused;
+    _publishWorkspaceAvailability();
     if (!focused) {
       final owner = _workspaceInputOwner;
       if (owner != null) _notifyWorkspaceInputReset(owner, resetReason);
@@ -440,6 +445,7 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
     if (_isDesktop) {
       windowManager.addListener(this);
       _windowFocused = await windowManager.isFocused();
+      _publishWorkspaceAvailability();
     }
     if (!_appLifecycleObserverRegistered) {
       WidgetsBinding.instance.addObserver(this);
@@ -572,6 +578,7 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
       return;
     }
     _nativeTextInputFocused = focused;
+    if (focused) _publishWorkspaceAvailability();
 
     if (focused) {
       if (TextInputDiagnostics.enabled) {
@@ -590,6 +597,7 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
         _logGamepadDiag('setNativeTextInputFocused using debug handler focused=$focused');
       }
       await debugHandler(focused);
+      _publishWorkspaceAvailability();
       return;
     }
 
@@ -605,6 +613,8 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
       }
     } catch (e) {
       appLogger.e('GamepadService: Failed to ${focused ? "pause" : "resume"} for native text input', error: e);
+    } finally {
+      _publishWorkspaceAvailability();
     }
   }
 

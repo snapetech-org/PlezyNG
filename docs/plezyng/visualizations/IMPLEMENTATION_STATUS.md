@@ -92,7 +92,7 @@ corpus qualification, rights decisions and production custody/publication are al
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86` with C ABI v2:
+- The app pins MilkRust `03c975eae4eeb39d5e26eef7ff63b6f06177571b` with C ABI v2:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -320,7 +320,7 @@ registers the core notices from an app asset.
 This is source integration only. GIF decoding in WASM runs on the calling thread.
 Finite GIF loop counts now repeat each cycle before holding the final frame; a
 missing loop extension plays once and a zero count loops forever. The app pins
-MilkRust `e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86` with ABI v2. The matching
+MilkRust `03c975eae4eeb39d5e26eef7ff63b6f06177571b` with ABI v2. The matching
 engine source also raises both hosts to the 100-name image-cache limit and uses
 packed 32-bit blend-vertex data with per-fragment 64×48 triangle interpolation.
 Reference compositing, browser CSP/codec behavior, compile/link, GPU, build and
@@ -351,6 +351,20 @@ select the EEL `burn` register, and non-default `SpriteRot` modes apply
 GL and WebGL receive the same normalized bytes.
 
 The app lock pins MilkRust
-`e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86`. This closes these source-level sprite semantics within the
+`03c975eae4eeb39d5e26eef7ff63b6f06177571b`. This closes these source-level sprite semantics within the
 documented compatibility profile. It does not establish reference-renderer
 pixel parity, GPU filtering/layer parity, builds, tests or device qualification.
+
+
+## 2026-10-29 saved sprite feedback-layer checkpoint
+
+The paired MilkRust source now inserts saved sprite layers 1–4 at their classic
+feedback stages: after warp/blur, after shapes, after custom waves, and after
+the main wave and borders. Both GL hosts consume the same scene markers.
+Layers 1–4 are drawn once into feedback when non-burning and twice when burning;
+they are presented through their owner's composite. Layer 0 alone gets the
+separate screen overlay, and its burn copy enters feedback after composite.
+
+The app lock pins MilkRust `03c975eae4eeb39d5e26eef7ff63b6f06177571b`. Sprite source behavior is implemented
+against the compatible MIT behavioral reference; rendered layer/filter
+parity and target qualification remain unverified. No build or test was run.

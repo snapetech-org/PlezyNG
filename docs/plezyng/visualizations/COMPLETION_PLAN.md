@@ -436,7 +436,7 @@ records the exact engine revision and ABI separately from platform artifacts.
 
 ## 2026-10-29 saved blend and animation source checkpoint
 
-The app now pins MilkRust `e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86`, C ABI v2.
+The app now pins MilkRust `03c975eae4eeb39d5e26eef7ff63b6f06177571b`, C ABI v2.
 Native GL and WebGL upload a packed 32-bit vertex field and evaluate the saved
 64×48 transition mesh with matching triangle interpolation. Both hosts admit
 the documented 100-name image cache within the existing decoded-pixel budget.
@@ -455,7 +455,7 @@ The current app pin resolves omitted saved .milk2 header values from the
 previous double-preset runtime state. Process-start defaults are an unset
 pattern, progress 1, direction 0 and zero random values. Missing first-load
 patterns fail closed. The source lock records MilkRust commit
-e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86. This closes the header carry-forward
+03c975eae4eeb39d5e26eef7ff63b6f06177571b. This closes the header carry-forward
 implementation item; it does not establish saved-pair visual parity or a
 qualified app runtime.
 
@@ -466,10 +466,24 @@ MilkRust's current source implementation and PlezyNG's engine lock now agree on
 saved sprite semantics in the declared native/WebGL profile. The paired source
 checkpoint fixes the omitted `SpriteBurn` default, numeric static burn modes,
 absolute-time `SpriteRot`, and CPU-side D3D vertex-byte quantization shared by
-both renderers. See [the sprite implementation notes](https://github.com/snapetech-org/MilkRust/blob/e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86/docs/EMBEDDED_SPRITES.md)
+both renderers. See [the sprite implementation notes](https://github.com/snapetech-org/MilkRust/blob/03c975eae4eeb39d5e26eef7ff63b6f06177571b/docs/EMBEDDED_SPRITES.md)
 for the implemented rules.
 
 This closes the identified source gaps for saved sprite fields. The compatible
 MIT behavioral reference is the implementation basis; actual MilkDrop 3 image
 comparison, compiler/build checks, and target-device qualification remain
 separate gates. No execution was performed for this checkpoint.
+
+
+## 2026-10-29 saved sprite feedback-layer source closure
+
+The current MilkRust engine checkpoint and PlezyNG source lock include shared
+scene-order markers for saved sprite layers. Native GL and WebGL insert feedback
+layers 1–4 after warp/blur, shapes, custom waves, and the main wave/borders.
+Burning sprites in those layers draw twice into feedback; non-burning sprites
+draw once. Layer 0 alone gets a separate screen overlay, with its optional
+feedback burn after the composite.
+
+This closes the identified saved-sprite source-order and burn-count gaps within
+the declared profile. MilkDrop 3 reference captures, pixel filtering/layer
+parity, build checks and device qualification are separate open gates.

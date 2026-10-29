@@ -106,7 +106,7 @@ fragments through the existing include directory. Their license/provenance
 remains the vendored MIT notice plus local patch inventory.
 
 
-The current MilkRust pin `e3f5f7bd18c6ec178c9bf8701b5c86a63bef0f86` also
+The current MilkRust pin `03c975eae4eeb39d5e26eef7ff63b6f06177571b` also
 contains bounded function-macro stringification with preserved token-boundary
 whitespace and escaped string tokens, plus worker-based browser raster decoding.
 The WASM package builder stages the decoder worker beside the generated module;
@@ -137,3 +137,10 @@ declared native/WebGL profile: omitted `SpriteBurn` defaults to always-on,
 non-default rotation uses absolute host time, and CPU-side packed D3D vertex
 bytes are shared by both GL hosts. Keep the existing source-only qualification
 boundary; this does not replace reference pixel comparisons or target builds.
+
+
+The engine lock also includes saved-sprite feedback stage markers shared by
+native GL and WebGL. Layers 1–4 enter their owner's feedback at documented
+scene boundaries; burning sprites there draw twice into feedback, while
+layer 0 alone has the separate display overlay. This remains source-only until
+the private reference, build and device gates run.

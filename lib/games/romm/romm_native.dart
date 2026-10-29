@@ -96,6 +96,9 @@ class RommNative extends ChangeNotifier {
     if (_leased) throw const RommFailure('romm.busy');
     _leased = true; _ownsLease = true;
     final ready = Completer<void>();
+    // A worker can report a load error before Isolate.spawn's future returns.
+    // Observe it immediately; the awaited future still delivers that failure.
+    unawaited(ready.future.then<void>((_) {}, onError: (Object _, StackTrace __) {}));
     _events.listen((event) {
       final row = rommMap(event);
       if (row['port'] is SendPort) { _commands = row['port'] as SendPort; if (_retired) _requestClose(); }

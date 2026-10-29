@@ -143,6 +143,12 @@ class RommStorage extends ChangeNotifier {
       pending..clear()..addEntries(ordered);
       for (final entry in pending.entries) {
         final file = File(_path(entry.key, 'save'));
+        final next = File(_path(entry.key, 'save.next')), size = rommInt(entry.value['size']);
+        // The journal is written before the bytes. A fully flushed temporary
+        // payload can be promoted after an interrupted atomic rename.
+        if (!await file.exists() && size > 0 && size <= 128 * 1024 * 1024 &&
+            await next.exists() && await next.length() == size &&
+            (await sha256.bind(next.openRead()).first).toString() == entry.value['hash']) await next.rename(file.path);
         if (!await file.exists() || await file.length() != rommInt(entry.value['size'])) failures[entry.key] = 'romm.checksumFailed';
       }
       check();
@@ -258,10 +264,12 @@ class RommStorage extends ChangeNotifier {
   Future<void> _remove(RommGame game) async {
     check(); if (!_downloadLocks.add(game.key)) throw const RommFailure('romm.busy');
     try {
-    downloads.remove(game.key); await _persist();
-    for (final suffix in ['rom', 'part', 'resume']) {
+    // Remove recovery metadata first, then bytes, then the manifest row. An
+    // interrupted removal must not re-import a completed download journal.
+    for (final suffix in ['resume', 'rom', 'part']) {
       final file = File(_path(game.key, suffix)); if (await file.exists()) await file.delete();
     }
+    downloads.remove(game.key); await _persist();
     _partialSizes.remove(_key(game.key)); _partialGames.remove(_key(game.key));
     changed();
     } finally { _downloadLocks.remove(game.key); }
@@ -404,15 +412,15 @@ class RommStorage extends ChangeNotifier {
     final source = connection(game.connectionId), id = const Uuid().v4(), created = DateTime.now().toUtc().toIso8601String();
     _saveReservations[id] = bytes.length;
     try {
-    final file = File(_path(id, 'save.next'));
-    await file.writeAsBytes(bytes, flush: true);
-    await file.rename(_path(id, 'save'));
     final row = <String, dynamic>{'id': id, 'connectionId': game.connectionId, 'userId': source.userId,
       'game': _manifestGame(game), 'identity': game.identity, 'emulator': emulator, 'core': core, 'state': state,
       if (nativeFileHash.isNotEmpty) 'nativeFileHash': nativeFileHash,
       'slot': slot, 'baseHash': _uploadedHashes['${game.key}:$emulator:$slot'] ?? baseHash, 'hash': sha256.convert(bytes).toString(), 'contentHash': bytes.length >= 4 && bytes[0] == 0x50 && bytes[1] == 0x4b ? '' : md5.convert(bytes).toString(), 'size': bytes.length,
       'created': created, 'conflict': false};
     await _journalPending(id, row);
+    final file = File(_path(id, 'save.next'));
+    await file.writeAsBytes(bytes, flush: true);
+    await file.rename(_path(id, 'save'));
     pending[id] = row;
     _saveReservations.remove(id);
     await _persist(completeOwnedWrite: true); changed(); return id;

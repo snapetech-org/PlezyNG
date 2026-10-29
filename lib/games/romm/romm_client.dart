@@ -165,9 +165,14 @@ class RommClient {
     return RommCollection.fromJson(rommMap(jsonDecode(utf8.decode(bytes))), 'collection');
     } catch (_) { request.abort(); rethrow; }
   }
-  Future<void> collectionMembership(RommCollection collection, int romId, bool add) async {
+  Future<RommCollection> collectionMembership(RommCollection collection, int romId, bool add) async {
     if (collection.kind != 'collection' || int.tryParse(collection.id) == null) throw const RommFailure('romm.permissionDenied');
-    await json(add ? 'POST' : 'DELETE', 'collections/${collection.id}/roms', body: {'rom_ids': [romId]});
+    final value = await json(add ? 'POST' : 'DELETE', 'collections/${collection.id}/roms', body: {'rom_ids': [romId]});
+    final updated = RommCollection.fromJson(rommMap(value), 'collection');
+    if (updated.id != collection.id || updated.userId != collection.userId || updated.romIds.contains(romId) != add) {
+      throw const RommFailure('romm.invalidResponse');
+    }
+    return updated;
   }
   Future<void> setProgress(RommGame game, Map<String, dynamic> props, {bool played = false}) async {
     await json('PUT', 'roms/${game.id}/props', query: {if (played) 'update_last_played': true}, body: props);

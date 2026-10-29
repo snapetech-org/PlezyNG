@@ -42,15 +42,19 @@ class RommController extends ChangeNotifier {
   bool get current => !_disposed && sessionCurrent();
   bool get hasMore => _next.entries.any((e) => (source.isEmpty || e.key == source) && e.value != null);
   List<RommGame> get visibleGames {
-    final result = <String, RommGame>{for (final game in games) game.key: game};
+    bool matches(RommGame game) => game.id > 0 && hasConnection(game.connectionId) &&
+        (source.isEmpty || source == game.connectionId) && (platformId == null || game.platformId == platformId) &&
+        (collection == null || collection!.romIds.contains(game.id));
+    // Failed refreshes retain cached rows, but a changed filter must still hide
+    // games from a different platform or collection while the server is down.
+    final result = <String, RommGame>{for (final game in games.where(matches)) game.key: game};
     // A refreshed first page is not the entire library. Keep downloads,
     // interrupted transfers and unsynced progress reachable after a refresh.
     for (final row in [...storage.downloads.values, ...storage.partialGames, ...storage.pending.values]) {
       final id = rommString(row['connectionId'], 128);
       if (!hasConnection(id) || source.isNotEmpty && source != id) continue;
       final game = RommGame.fromJson(id, rommMap(row['game']));
-      if (game.id <= 0 || platformId != null && game.platformId != platformId ||
-          collection != null && !collection!.romIds.contains(game.id) ||
+      if (!matches(game) ||
           query.isNotEmpty && !game.name.toLowerCase().contains(query.toLowerCase())) continue;
       result.putIfAbsent(game.key, () => game);
     }
@@ -204,14 +208,16 @@ class RommController extends ChangeNotifier {
     final platforms = await api.platforms();
     final lists = await api.collections();
     requireCurrent();
-    if (!identical(original, connection(id)) || _capabilityRequests[id] != revision) return;
+    if (!identical(original, connection(id)) || _capabilityRequests[id] != revision || _favoriteChanges.contains(id)) return;
     achievementProgress[id] = rommMap(me['ra_progression']);
     capabilities[id] = RommCapabilities(version: rommString(rommMap(beat['SYSTEM'])['VERSION'], 64),
       emulation: rommMap(beat['EMULATION']), config: config,
       streams: stream['enabled'] == true ? rommList(stream['containers']).take(500).map(rommMap).toList() : [],
       platforms: platforms, scopes: rommStrings(me['oauth_scopes']), observedAt: DateTime.now());
     collections[id] = lists;
-    if (source == id && collection != null && !lists.any((list) => list.kind == collection!.kind && list.id == collection!.id)) collection = null;
+    if (source == id && collection != null) {
+      collection = lists.where((list) => list.kind == collection!.kind && list.id == collection!.id).firstOrNull;
+    }
     final ownFavorites = lists.where((list) => list.favorite && list.userId == connection(id).userId);
     favorites.removeWhere((key) => key.startsWith('romm:$id:'));
     for (final list in ownFavorites) { favorites.addAll(list.romIds.map((romId) => 'romm:$id:$romId')); }
@@ -270,8 +276,16 @@ class RommController extends ChangeNotifier {
     var list = collections[source.id]?.where((list) => list.favorite && list.userId == source.userId).firstOrNull;
     if (list == null) { list = await api.createFavorites(); collections.putIfAbsent(source.id, () => []).add(list); }
     final add = !favorites.contains(game.key);
-    await api.collectionMembership(list, game.id, add); requireCurrent();
-    if (add) favorites.add(game.key); else favorites.remove(game.key);
+    final updated = await api.collectionMembership(list, game.id, add); requireCurrent();
+    if (!identical(source, connection(source.id))) throw const RommFailure('romm.cancelled');
+    final sourceLists = collections.putIfAbsent(source.id, () => []);
+    final index = sourceLists.indexWhere((row) => row.kind == updated.kind && row.id == updated.id);
+    if (index >= 0) sourceLists[index] = updated; else sourceLists.add(updated);
+    if (this.source == source.id && collection?.kind == updated.kind && collection?.id == updated.id) collection = updated;
+    favorites.removeWhere((key) => key.startsWith('romm:${source.id}:'));
+    for (final row in sourceLists.where((row) => row.favorite && row.userId == source.userId)) {
+      favorites.addAll(row.romIds.map((id) => 'romm:${source.id}:$id'));
+    }
     await persist(); changed();
     } finally {
       _favoriteChanges.remove(game.connectionId);

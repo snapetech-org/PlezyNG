@@ -76,7 +76,7 @@
 # back to an unpinned source.
 #
 # Usage:
-#   scripts/set_native_revision.sh <full-40-char-commit-sha> [--repo <path-or-url>]
+#   scripts/set_native_revision.sh <full-40-char-commit-sha> [--repo <path-or-url>] [--require-subtitle-pcm]
 #
 # The commit's artifacts.json and versions.json are read from, in order: the
 # --repo override (a local checkout or an https URL), a local checkout at
@@ -112,14 +112,19 @@ ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT"
 
 usage() {
-  echo "usage: scripts/set_native_revision.sh <full-40-char-commit-sha> [--repo <path-or-url>]" >&2
+  echo "usage: scripts/set_native_revision.sh <full-40-char-commit-sha> [--repo <path-or-url>] [--require-subtitle-pcm]" >&2
   exit 2
 }
 
 REVISION=""
 REPO_ARG=""
+REQUIRE_PCM="0"
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    --require-subtitle-pcm)
+      REQUIRE_PCM="1"
+      shift
+      ;;
     --repo)
       [ "$#" -ge 2 ] || usage
       REPO_ARG="$2"
@@ -280,7 +285,7 @@ if [ "${#MISSING[@]}" -gt 0 ]; then
   exit 1
 fi
 
-MPV_BUILD_REVISION="$REVISION" MPV_BUILD_MANIFEST_DIR="$MANIFEST_DIR" MPV_BUILD_REPO="$TARGET_REPO" \
+MPV_REQUIRE_PCM="$REQUIRE_PCM" MPV_BUILD_REVISION="$REVISION" MPV_BUILD_MANIFEST_DIR="$MANIFEST_DIR" MPV_BUILD_REPO="$TARGET_REPO" \
   python3 - "${#PROJECTS[@]}" "${PROJECTS[@]}" "${LOCKS[@]}" <<'PY'
 """Rewrite the native requirement, SwiftPM pins, mpv-build.lock.json and
 Gradle's verification metadata.
@@ -500,6 +505,40 @@ def library_symbols(label: str, group: str, library: str, entry: dict) -> dict |
     return copied if len(copied) == len(symbols) else None
 
 
+def require_pcm_receipts(platforms):
+    """Require package-inspected receipts, never an assumed source capability."""
+    expected = {"android": ("mpv-android", {"arm64-v8a", "armeabi-v7a", "x86", "x86_64"}),
+                "linux": ("libmpv-linux", {"x86_64", "aarch64"}),
+                "windows": ("libmpv-windows", {"x86_64", "aarch64"})}
+    def receipt(value, label, count=None):
+        evidence = value.get("capabilities", {})
+        binaries = evidence.get("binaries", [])
+        if (evidence.get("orderedSubtitlePcmAbi") != 1 or
+                evidence.get("symbol") != "mpv_plezy_audio_tap_read_next" or
+                evidence.get("artifactSha256") != value.get("checksum") or
+                not isinstance(binaries, list) or not binaries or
+                count is not None and len(binaries) != count):
+            errors.append(f"{label}: missing or mismatched packaged ordered-PCM ABI receipt")
+        return binaries
+    for group, (library, variants) in expected.items():
+        entry = platforms.get(group, {}).get("libraries", {}).get(library, {})
+        if group == "android":
+            binaries = receipt(entry, group, 4)
+            if {name.split('/')[1] for name in binaries if isinstance(name, str) and name.startswith('jni/') and len(name.split('/')) == 3} != variants:
+                errors.append("android: the ordered-PCM AAR must include all four ABI slices")
+        else:
+            prebuilt = entry.get("prebuilt", {})
+            if set(prebuilt) != variants:
+                errors.append(f"{group}: incomplete ordered-PCM platform variants")
+            for variant, value in prebuilt.items():
+                receipt(value, f"{group}/{variant}", 1)
+    frameworks = platforms.get("apple", {}).get("libraries", {}).get("libmpv", {}).get("frameworks", {})
+    if not frameworks:
+        errors.append("apple: missing packaged libmpv frameworks")
+    for name, value in frameworks.items():
+        receipt(value, f"apple/{name}")
+
+
 def build_lock() -> dict | None:
     """The lock for this commit, or None with errors recorded.
 
@@ -528,6 +567,10 @@ def build_lock() -> dict | None:
         errors.append(f"artifacts.json at {revision[:12]}: no platforms object")
         return None
 
+    previous = json.loads(Path(LOCK_PATH).read_text()) if Path(LOCK_PATH).exists() else {}
+    require_pcm = os.environ.get("MPV_REQUIRE_PCM") == "1" or previous.get("requiresOrderedSubtitlePcm") is True
+    if require_pcm:
+        require_pcm_receipts(platforms)
     artifacts: dict[str, dict] = {}
     for group in sorted(platforms):
         if group == "apple":
@@ -635,6 +678,13 @@ def build_lock() -> dict | None:
         "formatVersion": 1,
         "repo": LOCK_REPO,
     }
+    if require_pcm:
+        lock["requiresOrderedSubtitlePcm"] = True
+        lock["subtitlePcmReceipts"] = {
+            group: {name: entry for name, entry in section.get("libraries", {}).items()
+                    if name in {"mpv-android", "libmpv-linux", "libmpv-windows", "libmpv"}}
+            for group, section in platforms.items()
+        }
     return lock
 
 

@@ -64,6 +64,17 @@ access, server loss, missing firmware, occupied stream host, disc change,
 profile retirement, incompatible state, offline changes on two devices and
 large-text/RTL/TV focus. Device results are not implied by source review.
 
+The continued source pass repaired pairing scopes, stable/nightly eligibility,
+bearer/cookie account isolation, stale async results, durable per-save journals,
+partial-download recovery/quota accounting, stream retirement, Linux load-error
+callbacks, native audio/aspect/pause/history handling and the pinned mGBA build
+recipe. Native progress now includes exposed cartridge RTC memory, with readers
+for older snapshot formats. Follow-up validation must exercise interrupted
+payload and manifest writes, quick A→B→A profile switching, end-of-claim
+heartbeats, two accounts on one server, paused play history and clock-enabled
+cartridges across local and cloud resume. These are source changes, not results
+from a build or device run.
+
 ## Primary references
 
 - https://docs.romm.app/5.4.0/developers/client-api-tokens/

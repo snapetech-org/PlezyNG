@@ -16,12 +16,13 @@ class SubtitleLiveReadUnavailable implements Exception {
 class SubtitleHlsSegment {
   const SubtitleHlsSegment({required this.uri, required this.sequence,
     required this.discontinuity, required this.startMs, required this.durationMs,
-    this.range, this.initialization, this.initializationRange, this.gap = false});
+    this.range, this.initialization, this.initializationRange, this.gap = false, this.renditionIdentity});
   final Uri uri;
   final int sequence, discontinuity, startMs, durationMs;
   final ({int offset, int length})? range, initializationRange;
   final Uri? initialization;
   final bool gap;
+  final String? renditionIdentity;
   int get endMs => startMs + durationMs;
   String get key => '$discontinuity:$sequence:$startMs:$durationMs';
 }
@@ -39,6 +40,10 @@ class SubtitleHlsAnalysis {
   final int rendition;
   final _client = HttpClient()..connectionTimeout = const Duration(seconds: 10);
   bool _closed = false;
+  bool isDash = false;
+  bool _hasHls = false;
+  int? _dashAvailability, _dashPublished;
+  int minimumPollMs = 3000;
   static bool _owned(Uri uri) => uri.scheme == 'http' && uri.host == '127.0.0.1' &&
       uri.userInfo.isEmpty && !uri.hasFragment;
   void close() { _closed = true; _client.close(force: true); }
@@ -62,6 +67,7 @@ class SubtitleHlsAnalysis {
     try {
       deadline = Timer(const Duration(seconds: 20), () => request.abort(const HttpException('HLS analysis read timed out')));
       final response = await request.close();
+      if (response.statusCode == 422) throw UnsupportedError('The live manifest uses an unsupported or ambiguous analysis timeline.');
       if (const {404, 408, 410, 429, 500, 502, 503, 504}.contains(response.statusCode)) {
         final retry = int.tryParse(response.headers.value(HttpHeaders.retryAfterHeader) ?? '') ?? 0;
         throw SubtitleLiveReadUnavailable(retryAfterSeconds: retry.clamp(0, 120).toInt());
@@ -102,9 +108,15 @@ class SubtitleHlsAnalysis {
     final visited = <Uri>{};
     for (var level = 0; level < 3; level++) {
       if (!visited.add(uri)) throw const FormatException('Cyclic HLS playlist');
-      final text = utf8.decode(await _read(uri, 1024 * 1024), allowMalformed: false);
+      final text = utf8.decode(await _read(uri, 2 * 1024 * 1024), allowMalformed: false);
+      if (level == 0 && text.trimLeft().startsWith('{')) {
+        if (_hasHls) throw const FormatException('The live analysis protocol changed.');
+        return _dash(text);
+      }
+      if (isDash) throw const FormatException('The live analysis protocol changed.');
       final lines = text.replaceAll('\r\n', '\n').split('\n').map((v) => v.trim()).toList();
       if (lines.first != '#EXTM3U' || lines.length > 20000) throw const FormatException('Expected a bounded HLS playlist');
+      _hasHls = true;
       final audio = <Uri>[], variants = <Uri>[];
       var nextVariant = false;
       for (final line in lines) {
@@ -127,6 +139,38 @@ class SubtitleHlsAnalysis {
       return _media(lines, uri);
     }
     throw const FormatException('HLS playlist nesting exceeds the analysis bound');
+  }
+
+  List<SubtitleHlsSegment> _dash(String text) {
+    final data = jsonDecode(text);
+    if (data is! Map || data['schema'] != 1 || data['kind'] != 'plezy-dash-audio' ||
+        data['renditions'] is! List || data['renditions'].length > 64 || rendition >= data['renditions'].length ||
+        data['publishedMs'] is! int || data['availabilityMs'] is! int || data['availabilityMs'] < 0 ||
+        data['publishedMs'] < data['availabilityMs'] || data['publishedMs'] > 8640000000000000 || data['minimumUpdateMs'] is! int ||
+        data['minimumUpdateMs'] < 3000 || data['minimumUpdateMs'] > 300000) {
+      throw const FormatException('Expected an owned, bounded DASH audio manifest.');
+    }
+    if (_dashAvailability != null && _dashAvailability != data['availabilityMs'] ||
+        _dashPublished != null && data['publishedMs'] < _dashPublished) throw const FormatException('DASH availability clock changed or publication moved backwards.');
+    _dashAvailability = data['availabilityMs']; _dashPublished = data['publishedMs'];
+    isDash = true; minimumPollMs = data['minimumUpdateMs'];
+    final rows = data['renditions'][rendition];
+    if (rows is! List || rows.length > 2000) throw const FormatException('DASH segment count exceeds its bound.');
+    final output = <SubtitleHlsSegment>[];
+    for (final row in rows) {
+      if (row is! Map || row['uri'] is! String || row['initialization'] is! String ||
+          row['representation'] is! String || !RegExp(r'^[a-f0-9]{64}$').hasMatch(row['representation']) ||
+          ['sequence', 'discontinuity', 'startMs', 'durationMs'].any((key) => row[key] is! int || row[key] < 0 || row[key] > 9007199254740991) ||
+          row['durationMs'] < 1 || row['durationMs'] > 60000 || row['startMs'] + row['durationMs'] > data['publishedMs']) {
+        throw const FormatException('Invalid complete DASH segment.');
+      }
+      final segment = SubtitleHlsSegment(uri: _child(root, row['uri']), initialization: _child(root, row['initialization']),
+        sequence: row['sequence'], discontinuity: row['discontinuity'], startMs: row['startMs'], durationMs: row['durationMs'],
+        renditionIdentity: row['representation']);
+      if (output.isNotEmpty && segment.startMs < output.last.endMs) throw const FormatException('DASH timeline overlaps or is unordered.');
+      output.add(segment);
+    }
+    return output;
   }
 
   List<SubtitleHlsSegment> _media(List<String> lines, Uri base) {
@@ -236,6 +280,7 @@ class SubtitleHlsAnalysis {
       final mapKey = '${segment.initialization}:${segment.initializationRange}';
       if (segment.initialization != null && mapKey != lastMap) {
         final bytes = await _read(segment.initialization!, 4 * 1024 * 1024, range: segment.initializationRange);
+        if (segment.renditionIdentity != null) _fragmentBoxes(bytes, initialization: true);
         total += bytes.length;
         if (total > 128 * 1024 * 1024) throw const FormatException('Live analysis staging exceeds 128 MiB');
         await File('${directory.path}/init$index.mp4').writeAsBytes(bytes, flush: true);
@@ -244,6 +289,7 @@ class SubtitleHlsAnalysis {
       final remaining = 128 * 1024 * 1024 - total;
       if (remaining < 1) throw const FormatException('Live analysis staging exceeds 128 MiB');
       final bytes = await _read(segment.uri, remaining < 32 * 1024 * 1024 ? remaining : 32 * 1024 * 1024, range: segment.range);
+      if (segment.renditionIdentity != null) _fragmentBoxes(bytes, initialization: false);
       total += bytes.length;
       if (total > 128 * 1024 * 1024) throw const FormatException('Live analysis staging exceeds 128 MiB');
       final name = 'segment$index.${segment.initialization == null ? 'ts' : 'm4s'}';
@@ -355,6 +401,9 @@ class SubtitleHlsAnalysis {
         if (length < header || length > end-start) throw const FormatException('Invalid MP4 box length');
         final body = start+header, stop = start+length;
         types.add(type);
+        if (const {'pssh', 'sinf', 'tenc', 'senc', 'saio', 'saiz', 'enca', 'encv'}.contains(type)) {
+          throw const FormatException('Protected MP4 snapshots are refused');
+        }
         if (type == 'mfra' || type == 'tfra') throw const FormatException('Absolute MP4 fragment indexes cannot be relocated');
         if (type == 'tfhd') {
           if (stop-body < 8 || (data.getUint32(body) & 1) != 0) throw const FormatException('MP4 fragments require relative data addressing');
@@ -369,7 +418,13 @@ class SubtitleHlsAnalysis {
             offset += 12;
           }
           if (offset != stop) throw const FormatException('Invalid MP4 reference table');
-        } else if (const {'moov','trak','mdia','minf','dinf','stbl','mvex','moof','traf'}.contains(type)) {
+        } else if (type == 'stsd') {
+          if (stop-body < 8 || data.getUint32(body+4) > 16) throw const FormatException('Invalid MP4 sample descriptions');
+          walk(body+8, stop, depth+1);
+        } else if (const {'mp4a', 'Opus', 'ac-3', 'ec-3', 'alac', 'fLaC'}.contains(type)) {
+          if (stop-body < 28 || data.getUint16(body+8) != 0) throw const FormatException('Unsupported MP4 audio sample description');
+          walk(body+28, stop, depth+1);
+        } else if (const {'moov','trak','mdia','minf','dinf','stbl','mvex','moof','traf','wave'}.contains(type)) {
           final children = walk(body, stop, depth+1);
           if (type == 'traf' && !children.containsAll({'tfhd','tfdt'})) throw const FormatException('Fragment timing is missing');
         }

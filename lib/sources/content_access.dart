@@ -15,6 +15,7 @@ import 'offline_readiness.dart';
 import 'adapters/s3_source.dart';
 import 'source_oauth.dart';
 import 'source_transport.dart';
+import 'subtitle_dash_manifest.dart';
 
 const _encryptedLeaseTaskUrl = 'https://plezyng.invalid/native-download';
 
@@ -2024,8 +2025,11 @@ class _DownloadTask {
 typedef SourceUriRenewal = Future<({Uri uri, Map<String, String> headers})> Function();
 
 class SourceStreamGateway {
-  SourceStreamGateway({required this.valid});
+  SourceStreamGateway({required this.valid, this.subtitleLiveAnalysis = false});
   final bool Function() valid;
+  /// Only an independently owned analysis lease normalizes DASH. Native
+  /// playback continues to receive its original transport format.
+  final bool subtitleLiveAnalysis;
   HttpServer? _server;
   final _secret = SourceOAuthService.randomSecret();
   final Map<String, ({SourceAdapter adapter, PublicationFile file})> _files = {};
@@ -2034,6 +2038,10 @@ class SourceStreamGateway {
   _directUris = LinkedHashMap();
   final Map<String, String> _directIdsByUri = {};
   final Set<String> _nonDeduplicatedDirectIds = {};
+  // Owning source registrations outlive rolling manifest references. Evicting
+  // a root playlist after 4,096 child requests breaks every later live refresh.
+  final Set<String> _directManifestIds = {};
+  final Map<String, DateTime> _recentPlaylists = {};
   final Map<String, Future<({Uri uri, Map<String, String> headers})>> _directRenewals = {};
   var _directCounter = 0;
   final _abort = Completer<void>();
@@ -2052,6 +2060,32 @@ class SourceStreamGateway {
     return Uri.parse('http://127.0.0.1:${_server!.port}/$_secret/$id');
   }
 
+  void _removeDirectUri(String id) {
+    final removed = _directUris.remove(id);
+    _directManifestIds.remove(id);
+    _recentPlaylists.remove(id);
+    _nonDeduplicatedDirectIds.remove(id);
+    if (removed != null && _directIdsByUri[removed.cacheKey] == id) {
+      _directIdsByUri.remove(removed.cacheKey);
+    }
+  }
+
+  bool _makeDirectUriRoom() {
+    while (_directUris.length >= 4096) {
+      final threshold = DateTime.now().subtract(const Duration(minutes: 2));
+      String? oldestExpiredReference;
+      for (final key in _directUris.keys) {
+        if (_directManifestIds.contains(key) && _recentPlaylists[key]?.isAfter(threshold) != true) {
+          oldestExpiredReference = key;
+          break;
+        }
+      }
+      if (oldestExpiredReference == null) return false;
+      _removeDirectUri(oldestExpiredReference);
+    }
+    return true;
+  }
+
   /// Registers a user-entered HTTP(S) address behind this session's loopback
   /// capability. The native player sees only localhost; credentials and
   /// signed query strings stay in this in-memory proxy and are never logged by
@@ -2061,6 +2095,7 @@ class SourceStreamGateway {
     Map<String, String> headers = const {},
     SourceUriRenewal? renew,
     bool deduplicate = true,
+    bool manifestReference = false,
   }) async {
     if (!valid()) throw const SourceException(SourceFailure.cancelled);
     if (uri.hasFragment || uri.userInfo.isNotEmpty || !const {'http', 'https'}.contains(uri.scheme)) {
@@ -2072,7 +2107,17 @@ class SourceStreamGateway {
     final uriText = _directCacheKey(uri, safeHeaders);
     final existing = deduplicate ? _directIdsByUri[uriText] : null;
     if (existing != null) {
+      if (!manifestReference && _directManifestIds.contains(existing)) {
+        if (_directUris.length - _directManifestIds.length >= 64) throw const SourceException(SourceFailure.invalidData);
+        _directManifestIds.remove(existing);
+      }
       final registered = _directUris[existing];
+      if (registered != null) {
+        // A reused initialization/segment reference belongs to the newest
+        // manifest too; move it behind older references before later admission.
+        _directUris.remove(existing);
+        _directUris[existing] = registered;
+      }
       if (registered != null && registered.renew == null && renew != null) {
         _directUris[existing] = (
           uri: registered.uri,
@@ -2083,20 +2128,20 @@ class SourceStreamGateway {
       }
       return Uri.parse('http://127.0.0.1:${_server!.port}/$_secret/$existing');
     }
+    if (!manifestReference && _directUris.length - _directManifestIds.length >= 64) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
+    // Owner registrations outlive rolling playlist references. Evict only an
+    // expired child reference before insertion; reject full active sets without
+    // leaving a partial entry in the gateway maps.
+    if (!_makeDirectUriRoom()) throw const SourceException(SourceFailure.invalidData);
     final id = sourceDigest('direct:$_secret:${_directCounter++}');
     _directUris[id] = (uri: uri, headers: safeHeaders, cacheKey: uriText, renew: renew);
+    if (manifestReference) _directManifestIds.add(id);
     if (deduplicate) {
       _directIdsByUri[uriText] = id;
     } else {
       _nonDeduplicatedDirectIds.add(id);
-    }
-    while (_directUris.length > 4096) {
-      final oldest = _directUris.keys.first;
-      final removed = _directUris.remove(oldest);
-      _nonDeduplicatedDirectIds.remove(oldest);
-      if (removed != null && _directIdsByUri[removed.cacheKey] == oldest) {
-        _directIdsByUri.remove(removed.cacheKey);
-      }
     }
     return Uri.parse('http://127.0.0.1:${_server!.port}/$_secret/$id');
   }
@@ -2306,9 +2351,10 @@ class SourceStreamGateway {
           return bytes;
         }),
       );
-    } catch (_) {
+    } catch (error) {
       try {
-        request.response.statusCode = 502;
+        request.response.statusCode = subtitleLiveAnalysis && error is FormatException ? 422 : 502;
+        request.response.contentLength = 0;
       } catch (_) {}
     } finally {
       try {
@@ -2349,7 +2395,7 @@ class SourceStreamGateway {
     // Each manifest reference keeps its own renewal ordinal. Reusing an
     // identical URI for two playlist slots would otherwise bind both slots to
     // whichever callback registered first.
-    final local = await registerUri(uri, headers: childHeaders, renew: childRenew, deduplicate: false);
+    final local = await registerUri(uri, headers: childHeaders, renew: childRenew, deduplicate: false, manifestReference: true);
     return local.toString();
   }
 
@@ -2569,7 +2615,11 @@ class SourceStreamGateway {
 
       final contentType = upstream.headers[HttpHeaders.contentTypeHeader]?.toLowerCase() ?? '';
       final isHls = currentUri.path.toLowerCase().endsWith('.m3u8') || contentType.contains('mpegurl');
-      if (!isHls || upstream.statusCode < 200 || upstream.statusCode >= 300) {
+      final isDash = subtitleLiveAnalysis && (currentUri.path.toLowerCase().endsWith('.mpd') || contentType.contains('dash+xml'));
+      if ((isHls || isDash) && upstream.statusCode >= 200 && upstream.statusCode < 300 && _directUris.containsKey(id)) {
+        _recentPlaylists[id] = DateTime.now();
+      }
+      if ((!isHls && !isDash) || upstream.statusCode < 200 || upstream.statusCode >= 300) {
         await request.response.addStream(
           upstream.stream.timeout(const Duration(seconds: 45)).map((bytes) {
             if (!valid()) throw const SourceException(SourceFailure.cancelled);
@@ -2585,12 +2635,21 @@ class SourceStreamGateway {
         if (bytes.length + chunk.length > maxManifestBytes) throw const SourceException(SourceFailure.invalidData);
         bytes.addAll(chunk);
       }
-      final manifest = utf8.decode(bytes, allowMalformed: true);
+      final manifest = utf8.decode(bytes, allowMalformed: !isDash);
       final manifestBase = upstream.request?.url ?? currentUri;
       final manifestHeaders = sameSourceOrigin(currentUri, manifestBase) ? currentHeaders : const <String, String>{};
-      final rewritten = utf8.encode(
-        await _rewriteHlsManifest(manifest, manifestBase, manifestHeaders, parentId: id, parentRenew: renew),
-      );
+      late final List<int> rewritten;
+      if (isDash) {
+        // A refreshed MPD supplies newly signed child references. Never renew a
+        // segment by ordinal against a rolling manifest and splice other bytes.
+        final normalized = await SubtitleDashManifest.rewrite(manifest, manifestBase, (child) => registerUri(child,
+          headers: sameSourceOrigin(manifestBase, child) ? manifestHeaders : const {}, manifestReference: true));
+        rewritten = utf8.encode(jsonEncode(normalized));
+        request.response.headers.set(HttpHeaders.contentTypeHeader, 'application/json; charset=utf-8');
+      } else {
+        rewritten = utf8.encode(await _rewriteHlsManifest(manifest, manifestBase, manifestHeaders, parentId: id, parentRenew: renew));
+      }
+      if (!valid() || rewritten.length > 2 * 1024 * 1024) throw const SourceException(SourceFailure.invalidData);
       request.response.headers.set(HttpHeaders.contentLengthHeader, rewritten.length);
       await request.response.addStream(Stream<List<int>>.value(rewritten));
     } finally {
@@ -2604,6 +2663,8 @@ class SourceStreamGateway {
     _directUris.clear();
     _directIdsByUri.clear();
     _nonDeduplicatedDirectIds.clear();
+    _directManifestIds.clear();
+    _recentPlaylists.clear();
     _directRenewals.clear();
     if (!_abort.isCompleted) _abort.complete();
     await _server?.close(force: true);

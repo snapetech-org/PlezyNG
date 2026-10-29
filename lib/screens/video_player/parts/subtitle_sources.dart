@@ -18,9 +18,9 @@ extension _VideoPlayerSubtitleSources on VideoPlayerScreenState {
           streamGeneration == _live.streamGeneration;
       final opened = Uri.tryParse(await core.getProperty('path') ?? '');
       if (!liveCurrent() || opened == null || !const {'http', 'https'}.contains(opened.scheme)) {
-        throw UnsupportedError('This live player does not expose an owned HLS source');
+        throw UnsupportedError('This live player does not expose an owned HTTP live source');
       }
-      final gateway = SourceStreamGateway(valid: liveCurrent);
+      final gateway = SourceStreamGateway(valid: liveCurrent, subtitleLiveAnalysis: true);
       try {
         final uri = await gateway.registerUri(opened, headers: liveSession is IptvLiveTvPlaybackSession
             ? liveSession.streamHeaders : const <String, String>{});

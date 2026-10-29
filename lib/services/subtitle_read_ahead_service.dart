@@ -40,6 +40,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
   final Map<int, List<SubtitleWordTiming>> _words = {};
   SubtitleOverlayTrack? _published;
   SubtitleHlsAnalysis? _hls;
+  String? _liveRendition;
   final Map<String, int> _completedSegments = {};
   DateTime _lastLivePoll = DateTime.fromMillisecondsSinceEpoch(0);
   DateTime _nextLivePoll = DateTime.fromMillisecondsSinceEpoch(0);
@@ -75,7 +76,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
     _profileId = profileId;
     _provider = provider;
     _windows.clear(); _words.clear(); _published = SubtitleOverlayService.forPlayer(player).lanes[0];
-    _completedSegments.clear(); _lastLivePoll = DateTime.fromMillisecondsSinceEpoch(0);
+    _completedSegments.clear(); _liveRendition = null; _lastLivePoll = DateTime.fromMillisecondsSinceEpoch(0);
     _nextLivePoll = DateTime.fromMillisecondsSinceEpoch(0); _liveFailureStarted = null; _liveFailures = 0;
     try {
       final source = await open();
@@ -87,7 +88,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
         throw UnsupportedError('Decoder access must be through the owning local transport.');
       }
       if (source.liveEpochForPosition != null) {
-        if (!SubtitleAnalysisDecoder.hlsAvailable) throw UnsupportedError('Live HLS analysis requires a separate local audio decoder');
+        if (!SubtitleAnalysisDecoder.hlsAvailable) throw UnsupportedError('Live segment analysis requires a separate local audio decoder');
         _hls = SubtitleHlsAnalysis(uri, () => _current(epoch), rendition: hlsRendition);
       } else if (live) { throw UnsupportedError('This live source does not provide program-clock analysis access'); }
       status = 'Preparing captions ahead of the playhead. Initial speech may finish late.';
@@ -183,7 +184,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
   }
 
   Future<void> _tickLive(int epoch) async {
-    if (DateTime.now().difference(_lastLivePoll).inSeconds < 3 || DateTime.now().isBefore(_nextLivePoll)) return;
+    if (DateTime.now().difference(_lastLivePoll).inMilliseconds < (_hls?.minimumPollMs ?? 3000) || DateTime.now().isBefore(_nextLivePoll)) return;
     _lastLivePoll = DateTime.now();
     final player = _player!, source = _source!, hls = _hls!;
     final now = source.liveEpochForPosition!(player.currentPosition.inMilliseconds);
@@ -195,6 +196,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
     try {
       final segments = await hls.segments();
       if (!current()) return;
+      if (hls.isDash && _audioOrdinal != 0) throw const FormatException('DASH analysis selects one audio representation; use audio stream ordinal 0.');
       final dvr = source.liveSeekableEpochRange?.call();
       if (dvr != null && dvr.endMs >= dvr.startMs) {
         // Evict only against fresh backend bounds, never against a shortened
@@ -209,7 +211,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
           segment.startMs < now + 120000 && !_completedSegments.containsKey(segment.key));
       if (first < 0) {
         _liveFailures = 0; _liveFailureStarted = null;
-        status = 'Waiting for complete HLS audio near or ahead of playback. Program-clock alignment is estimated.';
+        status = 'Waiting for complete ${hls.isDash ? 'DASH' : 'HLS'} audio near or ahead of playback. Program-clock alignment is estimated.';
         return;
       }
       final selected = <SubtitleHlsSegment>[];
@@ -223,6 +225,9 @@ class SubtitleReadAheadService extends ChangeNotifier {
         selected.add(segment); duration += segment.durationMs;
       }
       if (selected.isEmpty || duration < 1000) return;
+      final rendition = selected.first.renditionIdentity;
+      if (_liveRendition != null && _liveRendition != rendition) throw const FormatException('The selected DASH audio representation changed. Choose the current language again.');
+      _liveRendition = rendition;
       await SubtitleInferenceScheduler.instance.run(() async {}, priority: SubtitleWorkPriority.readAhead, isCurrent: current);
       temporary = await (await getTemporaryDirectory()).createTemp('subtitle_live_analysis_');
       status = 'Reading ${selected.length} completed live segments through the source transport'; notifyListeners();
@@ -248,7 +253,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
       for (final segment in selected) { _completedSegments[segment.key] = anchor; }
       await _publish(epoch, now, result.detectedLanguage);
       _liveFailures = 0; _liveFailureStarted = null;
-      status = 'Prepared live/DVR captions from complete HLS segments; ${result.runtimeProvider}. '
+      status = 'Prepared live/DVR captions from complete ${hls.isDash ? 'DASH' : 'HLS'} segments; ${result.runtimeProvider}. '
           'Program-clock alignment remains estimated; protected or untimestamped streams are refused.';
     } on SubtitleInferenceDeferred catch (error) {
       if (_current(epoch)) status = error.reason;

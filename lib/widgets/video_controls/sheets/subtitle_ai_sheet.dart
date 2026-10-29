@@ -1388,10 +1388,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final ordinal = await showDialog<int>(context: context, builder: (context) => AlertDialog(
       title: const Text('Prepare captions ahead of playback'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text(live ? 'Live analysis uses native Android/Apple readers for local segment snapshots, or the packaged TV/desktop FFmpeg decoder, to read completed HLS segments. '
+        Text(live ? 'Live analysis uses native Android/Apple readers for local segment snapshots, or the packaged TV/desktop FFmpeg decoder, to read completed HLS or eligible DASH audio segments. '
           'It requires program timestamps and an active live-clock mapping, which remains an estimate. '
           'It can prepare captions ahead when you watch behind the live edge; it does not predict future speech. '
-          'Protected, untimestamped and non-HLS sources are refused. Mobile snapshots accept TS, relative fMP4 and packed AAC only when the OS decoder supports them. '
+          'DASH requires clear audio/mp4, explicit SegmentTimeline, UTC availability/publication clocks and audio stream ordinal 0. Protected, partial and unsupported manifests are refused. Mobile snapshots accept TS, relative fMP4 and packed AAC only when the OS decoder supports them. '
           'This uses additional bandwidth and replaces app overlay 1.'
           : 'A separate native decoder on Android/Apple, packaged audio decoder on TVs, or installed FFmpeg on desktop reads the current source through its owning transport. '
           'This may use additional bandwidth. It prepares about two minutes ahead and replaces app overlay 1. '
@@ -1399,7 +1399,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         TextField(controller: input, keyboardType: TextInputType.number,
           decoration: const InputDecoration(labelText: 'Audio stream ordinal (0–63)')),
         if (live) TextField(controller: rendition, keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'HLS audio rendition / variant ordinal (0–63)',
+          decoration: const InputDecoration(labelText: 'Live audio rendition / representation ordinal (0–63)',
             helperText: 'Playlist order, independent of player IDs. Verify the spoken language.')),
       ]), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
         FilledButton(onPressed: () {

@@ -21,7 +21,7 @@ with `[skip ci]`. Existing native dependency pins were not fabricated or promote
 | Area | Implemented source paths | Remaining boundary |
 | --- | --- | --- |
 | Transcription and translation | Local whisper.cpp CPU/optional compiled desktop CUDA/Vulkan; Sherpa provider requests with fallback; ML Kit and desktop Argos; selected-range work; durable WAV jobs; reviewed glossary/memory/model translation; cross-language sync and word timings. | Runtime/provider reports do not prove per-operation GPU/NPU execution. TV/accelerator packages and language quality need qualification. |
-| Live/DVR | Ordered PCM consumption, seek generation retirement, immutable finalized cues, bounded retained history, ExoPlayer source-frame clocks and moving DVR origin rebasing; late/provisional text, overlapping stable-prefix agreement, backend-grid DVR delay and opt-in delay hold; completed-HLS-segment analysis with desktop/TV playlists and mobile snapshots; bounded reconnect backoff, backward program-time anchoring within a continuity run and expiry against fresh DVR bounds. | Opt-in Sherpa Zipformer2 native streaming CPU recognition now retains state across PCM chunks with endpoint/provisional output. Its user-provided local model pack and runtime behavior need qualification; unrestricted future-audio ingestion remains unavailable. HLS requires explicit program timestamps, an active possibly estimated playback epoch and a capable local decoder. Native mobile snapshots accept bounded TS, relative fMP4 and packed AAC; OS codec/container support and clock/output behavior remain unqualified. Delay hold moves the viewer within backend bounds. |
+| Live/DVR | Ordered PCM consumption, seek generation retirement, immutable finalized cues, bounded retained history, ExoPlayer source-frame clocks and moving DVR origin rebasing; late/provisional text, overlapping stable-prefix agreement, backend-grid DVR delay and opt-in delay hold; completed-HLS-segment and explicit-timeline DASH audio analysis with desktop/TV playlists and mobile snapshots; bounded reconnect backoff, backward program-time anchoring within a continuity run and expiry against fresh DVR bounds. | Opt-in Sherpa Zipformer2 native streaming CPU recognition now retains state across PCM chunks with endpoint/provisional output. Its user-provided local model pack and runtime behavior need qualification; unrestricted future-audio ingestion remains unavailable. HLS requires explicit program timestamps; DASH requires clear audio/mp4, explicit segment timelines and UTC availability/publication clocks. Both need an active possibly estimated playback epoch and a capable local decoder. Native mobile snapshots accept bounded TS, relative fMP4 and packed AAC; OS codec/container support and clock/output behavior remain unqualified. Delay hold moves the viewer within backend bounds. |
 | Playback/source access | Android Media3 pre-speed PCM processor; native MPV bridges; Tizen tap; Android MediaExtractor/MediaCodec and Apple AVAssetReader analysis bridges plus desktop FFmpeg read-ahead via renewable standalone/library source leases; explicit companion staging of eligible current VOD files on IO platforms. | Current locked MPV libraries lack the ordered ABI. webOS NDL has no direct PCM tap; there is no browser Player. Android/Apple native readers and source-built Tizen/webOS audio helpers are implemented. Native format support, TV subprocess policy, shipped helper artifacts and device behavior remain unqualified. Companion staging is limited to complete, accessible files up to 1 GiB/one hour; playlists/live/protected sources are refused. |
 | Import and attachment | Existing format conversion/archive/drop/share flows; Plex/Jellyfin/Emby upload; managed standalone native text attachment; adapter-owned folder discovery for local/network/cloud sources; standard DLNA resources and namespaced SEC/PV caption links. | Backend format limits still apply. Non-MPV attachment refuses saved affine corrections. Unlisted catalogue sources, unsupported vendor formats and ambiguous renewed DLNA resource identities remain limited; protocol/device behavior is unqualified. |
 | App rendering | Two independent text lanes, profile/lane appearance defaults, bundled/imported/script fallback fonts, original word highlights, authored signs, optional scene avoidance, manual cover, focused-pane limits, horizontal ruby, bounded vertical left/right columns, and spoken subtitles with explicit duck/rate. Centered contain/cover/stretch/zoom geometry and screen/video anchoring are implemented. | App layout does not implement full native ASS, OpenType vertical shaping or complete closed-caption services; SCC import now preserves 608 text-memory changes in an explicit flattened derivative. Ruby/highlighting remain horizontal. HDR luminance, typography, rotation/output behavior and localized new controls remain unqualified or unfinished. |
@@ -1044,6 +1044,24 @@ only reads audio already present in the playlist. Source program timestamps are
 kept on cues; a live overlay maps the active player clock to that source clock
 for each display lookup. Stale/opening clock mappings suppress the overlay.
 
+The loopback URL gateway keeps owner registrations separate from rolling
+playlist references. It caps all direct registrations at 4,096 and owner
+registrations at 64; an expired playlist reference is evicted before admission,
+while successfully fetched child playlists stay protected for two minutes.
+If every bounded slot is still active, registration fails before changing the
+gateway maps. This prevents repeated manifest refreshes from evicting the
+owner's live root URL or leaving a partial cache entry. Source behavior remains
+unexecuted.
+
+Live analysis also has a DASH path that normalizes dynamic MPDs only on the
+independent subtitle-analysis lease; native playback still receives its source
+manifest. It accepts clear `audio/mp4` representations with explicit
+`SegmentTemplate` timelines/timescales, complete fMP4 fragments and explicit
+UTC availability/publication clocks. Up to 64 representations and 2,000 recent
+segment references are bounded; protected, partial, indexed, static and
+ambiguous timelines are refused. The existing local snapshot/decoder path reads
+these fragments. Language selection and platform decoding remain unqualified.
+
 This allows a delayed DVR viewer to receive prepared captions without an
 additional audible player. It does not establish a confirmed video-to-epoch
 mapping: the UI labels alignment as estimated, and fixed-clock native/Cast/VTT
@@ -1387,3 +1405,16 @@ limits are disclosed, and no network lookup or correction happens implicitly.
 See [OFFLINE-DICTIONARIES.md](OFFLINE-DICTIONARIES.md) for the schema, limits and
 language boundaries. Confidence: moderate in source integration, unknown in
 runtime behavior and supplied dictionary coverage. No execution or CI occurred.
+
+
+## Live DASH source update — October 29, 2026
+
+Owned live-TV analysis leases now normalize a bounded dynamic DASH audio subset
+into complete local fMP4 references. SegmentTimeline clocks include explicit
+period starts and presentation offsets; only intervals completed by the MPD
+publication clock are considered. A changed representation/availability clock
+stops analysis. XML, expansion, storage and polling bounds are documented in
+[LIVE-DASH.md](LIVE-DASH.md), including refused addressing/low-latency forms.
+Source-root registrations now survive rolling child-reference eviction, with
+bounded protection for recently used child playlists. No runtime or device
+qualification occurred; source integration confidence is moderate.

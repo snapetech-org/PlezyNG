@@ -944,7 +944,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
         targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
-        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, soundStereoEvidence: soundStereoEvidence, crop: [0, cropTop, 1, 1 - cropTop],
+        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, crop: [0, cropTop, 1, 1 - cropTop],
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         voiceFingerprint: (task == 'dubbing' || task == 'dub_mix') ? (capabilities['synthesisVoice'] as Map?)?['fingerprint'] as String? : null,
         translationMode: translationMode, scriptConversion: scriptConversion, readingMode: readingMode,
@@ -1027,7 +1027,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       await _writeAndApply(cues, operationLabel: 'Companion ${job['task']}', operationLanguageCode: result.language,
         sourceCues: result.sourceCues.isEmpty ? null : result.sourceCues,
         wordTimings: result.alternatives.isEmpty ? result.wordTimings : const [],
-        regions: result.regions, avoidRegions: result.avoidRegions, reviewWarnings: result.warnings);
+        onItemTimeline: result.itemTimeline, regions: result.regions, avoidRegions: result.avoidRegions, reviewWarnings: result.warnings);
     } finally { service.close(); }
   });
 
@@ -1192,6 +1192,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final saved = await SubtitleRevisionService.saveRevision(
       identity: identity,
       operation: 'Captured playback transcript',
+      onItemTimeline: true,
       languageCode: detectedLanguage.isEmpty || detectedLanguage.toLowerCase() == 'auto'
           ? null
           : detectedLanguage,
@@ -1471,6 +1472,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     required List<SubtitleCue> transcriptCues,
     required String? transcriptLanguageCode,
     required String transcriptDescription,
+    required bool onItemTimeline,
   }) async {
     if (!_translationSupported) {
       throw UnsupportedError('Transcript translation needs a supported local subtitle translator.');
@@ -1510,6 +1512,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (!await _writeAndApply(
       translated.cues,
       operationLabel: 'Translated speech transcript',
+      onItemTimeline: onItemTimeline,
       operationLanguageCode: targetLanguage.bcpCode,
       sourceCues: transcriptCues,
       reviewWarnings: translated.qualityWarnings,
@@ -1531,6 +1534,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       transcriptCues: transcript.loadedRevision.cues,
       transcriptLanguageCode: transcript.loadedRevision.languageCode,
       transcriptDescription: 'the saved transcript from ${transcript.mediaTitle} (${transcript.sourceLabel})',
+      onItemTimeline: transcript.loadedRevision.onItemTimeline,
     );
   });
 
@@ -1543,6 +1547,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       transcriptCues: transcript.cues,
       transcriptLanguageCode: transcript.detectedLanguage,
       transcriptDescription: 'captured speech',
+      onItemTimeline: true,
     );
   });
 
@@ -1684,7 +1689,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final durationMs = playerDuration > 0 ? playerDuration : transcript.durationMs;
     setState(() => _status = 'Matching the captured speech against subtitle text…');
     final aligned = SubtitleSyncService.synchronize(
-      subtitleCues: selected.$1,
+      subtitleCues: _fileCuesOnItemTimeline(selected.$1),
       speechCues: transcript.cues,
       mediaDurationMs: durationMs,
       repairCuts: repairCuts,
@@ -1696,6 +1701,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       operationLabel: repairCuts ? 'Captured-playback cut repair' : 'Captured-playback sync',
       operationLanguageCode: transcript.detectedLanguage,
       wordTimings: transcript.wordTimings,
+      onItemTimeline: true,
     )) {
       return;
     }
@@ -1722,7 +1728,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final durationMs = playerDuration > 0 ? playerDuration : transcriptDuration;
     setState(() => _status = 'Matching the saved transcript against subtitle text…');
     final aligned = SubtitleSyncService.synchronize(
-      subtitleCues: selected.$1,
+      subtitleCues: revision.onItemTimeline ? _fileCuesOnItemTimeline(selected.$1) : selected.$1,
       speechCues: revision.cues,
       mediaDurationMs: durationMs,
       repairCuts: repairCuts,
@@ -1734,6 +1740,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       operationLabel: repairCuts ? 'Saved-transcript cut repair' : 'Saved-transcript sync',
       operationLanguageCode: revision.languageCode,
       wordTimings: revision.wordTimings,
+      onItemTimeline: revision.onItemTimeline,
     )) return;
     if (!mounted) return;
     final percent = (aligned.meanMatchConfidence * 100).round();
@@ -1753,6 +1760,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     required String? transcriptLanguageCode,
     required String transcriptDescription,
     required bool repairCuts,
+    required bool onItemTimeline,
   }) async {
     if (!_translationSupported) {
       throw UnsupportedError('Cross-language transcript matching needs a supported local subtitle translator.');
@@ -1792,7 +1800,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
     setState(() => _status = 'Matching translated subtitle text against $transcriptDescription…');
     final aligned = SubtitleSyncService.synchronize(
-      subtitleCues: translated.cues,
+      subtitleCues: onItemTimeline ? _fileCuesOnItemTimeline(translated.cues) : translated.cues,
       speechCues: transcriptCues,
       mediaDurationMs: durationMs,
       repairCuts: repairCuts,
@@ -1804,6 +1812,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       reviewWarnings: aligned.reviewWarnings,
       operationLabel: repairCuts ? 'Cross-language transcript cut repair' : 'Cross-language transcript sync',
       operationLanguageCode: sourceLanguage.bcpCode,
+      onItemTimeline: onItemTimeline,
     )) return;
     if (!mounted) return;
     final percent = (aligned.meanMatchConfidence * 100).round();
@@ -1827,6 +1836,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       transcriptCues: revision.cues,
       transcriptLanguageCode: revision.languageCode,
       transcriptDescription: 'the saved transcript from ${transcript.mediaTitle} (${transcript.sourceLabel})',
+      onItemTimeline: transcript.loadedRevision.onItemTimeline,
       repairCuts: repairCuts,
     );
   });
@@ -1840,6 +1850,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       transcriptCues: transcript.cues,
       transcriptLanguageCode: transcript.detectedLanguage,
       transcriptDescription: 'captured playback speech',
+      onItemTimeline: true,
       repairCuts: repairCuts,
     );
   });
@@ -1900,6 +1911,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     String? languageCode,
     required List<SubtitleWordTiming> wordTimings,
     required SubtitleRevisionIdentity? identity,
+    bool onItemTimeline = false,
   }) async {
     if (identity == null) {
       if (mounted) setState(() => _revisionStatus = 'Revision history needs an active profile and media item.');
@@ -1908,6 +1920,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     try {
       final revision = await SubtitleRevisionService.saveRevision(
         identity: identity,
+        onItemTimeline: onItemTimeline,
         operation: operation,
         languageCode: languageCode,
         cues: cues,
@@ -1970,6 +1983,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     String? languageCode,
     required List<SubtitleWordTiming> wordTimings,
     required SubtitleRevisionIdentity? identity,
+    bool onItemTimeline = false,
   }) async {
     if (identity == null) {
       if (mounted) {
@@ -1984,6 +1998,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       final checkpointOperation = '$_subtitleUndoCheckpointPrefix${operation.trim()}';
       await SubtitleRevisionService.saveRevision(
         identity: identity,
+        onItemTimeline: onItemTimeline,
         operation: checkpointOperation.length <= 120 ? checkpointOperation : checkpointOperation.substring(0, 120),
         languageCode: languageCode,
         cues: cues,
@@ -2008,6 +2023,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     String? languageCode,
     required List<SubtitleWordTiming> wordTimings,
     required SubtitleRevisionIdentity? identity,
+    bool onItemTimeline = false,
   }) async {
     if (identity == null || undoHistory.isEmpty) return;
 
@@ -2035,17 +2051,48 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: languageCode,
         wordTimings: wordTimings,
         identity: identity,
+        onItemTimeline: onItemTimeline,
       );
       if (!persisted) return;
       saved++;
     }
   }
 
+  List<SubtitleCue> _fileCuesOnItemTimeline(List<SubtitleCue> cues) {
+    final offset = widget.player.timelineOffset.inMilliseconds;
+    if (offset == 0) return cues;
+    return cues.map((cue) {
+      if (cue.endMs + offset > SubtitleRetimer.maximumTimeMs) {
+        throw const FormatException('The item subtitle clock exceeds the supported range');
+      }
+      return SubtitleCue(index: cue.index, startMs: cue.startMs + offset,
+        endMs: cue.endMs + offset, text: cue.text, cueId: cue.stableId);
+    }).toList(growable: false);
+  }
+
+  Future<Uint8List> _bytesForNativeTimeline(List<SubtitleCue> cues, bool onItemTimeline) async {
+    if (!onItemTimeline) return SubtitleSyncService.writeSrt(cues);
+    final offset = widget.player.timelineOffset.inMilliseconds;
+    final output = SubtitleSyncService.writeSrtForPart(cues, offset);
+    if (output.clipped > 0) {
+      if (!mounted) throw StateError('Playback closed');
+      final accepted = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
+        title: const Text('Clip captions at this media part?'),
+        content: Text('${output.clipped} cues begin before the opened part. They will be clipped or omitted in the native sidecar; saved history and exports keep item times.'),
+        actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Attach this part'))]));
+      if (accepted != true) throw StateError('Native caption attachment cancelled');
+    }
+    _requireCurrentOperationIdentity();
+    if (widget.player.timelineOffset.inMilliseconds != offset) throw StateError('The opened media part changed');
+    return output.bytes;
+  }
+
   Future<void> _restoreSubtitleRevision(SubtitleRevision revision, SubtitleRevisionIdentity expectedIdentity) async {
     if (_operationRevisionIdentity?.storageKey != expectedIdentity.storageKey) {
       throw StateError('The selected subtitle revision belongs to a different media item or profile.');
     }
-    final bytes = SubtitleSyncService.writeSrt(revision.cues);
+    final bytes = await _bytesForNativeTimeline(revision.cues, revision.onItemTimeline);
     final directory = await getTemporaryDirectory();
     final path = p.join(directory.path, 'plezyng_revision_${revision.id}.srt');
     await File(path).writeAsBytes(bytes, flush: true);
@@ -2152,6 +2199,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           languageCode: imported.languageCode,
           cues: imported.cues,
           wordTimings: imported.wordTimings,
+          onItemTimeline: imported.onItemTimeline,
         ),
       );
     }
@@ -2227,6 +2275,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       'createdAt': value['createdAt'],
       'operation': value['operation'],
       'languageCode': value['language'],
+      'onItemTimeline': value['onItemTimeline'] ?? false,
       'cues': value['cues'],
       'wordTimings': wordTimings,
     };
@@ -2322,6 +2371,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                                   sourceCues: pendingDraft.sourceCues,
                                                   wordTimings: pendingDraft.wordTimings,
                                                   resumeDraft: pendingDraft,
+                                                  onItemTimeline: pendingDraft.onItemTimeline,
                                                   resumeIdentity: identity,
                                                 );
                                               }),
@@ -2964,6 +3014,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     List<SubtitleCue>? sourceCues,
     List<String> reviewWarnings = const [],
     Map<String, Rect> regions = const {},
+    bool onItemTimeline = false,
     Map<String, List<Rect>> avoidRegions = const {},
     List<SubtitleWordTiming> wordTimings = const <SubtitleWordTiming>[],
     SubtitleRevisionDraft? resumeDraft,
@@ -2997,7 +3048,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           draftIdentity.storageKey != resumeIdentity.storageKey ||
           (snapshot != null && snapshot.revisionIdentity?.storageKey != resumeIdentity.storageKey) ||
           resumeDraft.sourceFingerprint != sourceFingerprint ||
-          resumeDraft.operation != operationLabel) {
+          resumeDraft.operation != operationLabel || resumeDraft.onItemTimeline != onItemTimeline) {
         throw StateError('This subtitle review draft no longer matches the active item or cue set.');
       }
       reviewedCues = List<SubtitleCue>.from(resumeDraft.cues);
@@ -3006,7 +3057,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     } else if (draftIdentity != null) {
       final draft = await SubtitleRevisionService.loadDraftForIdentity(draftIdentity);
       if (draft != null && mounted) {
-        if (draft.sourceFingerprint == sourceFingerprint && draft.operation == operationLabel) {
+        if (draft.sourceFingerprint == sourceFingerprint && draft.operation == operationLabel && draft.onItemTimeline == onItemTimeline) {
           final recovery = await _askToRecoverSubtitleDraft(draft);
           if (recovery == null) {
             setState(() => _revisionStatus = 'The saved review draft is still available to resume later.');
@@ -3035,6 +3086,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         await SubtitleRevisionService.saveDraft(
           identity: draftIdentity,
           draft: SubtitleRevisionDraft(
+            onItemTimeline: onItemTimeline,
             sourceFingerprint: sourceFingerprint,
             savedAt: DateTime.now().toUtc(),
             operation: operationLabel,
@@ -3064,7 +3116,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     _lastResultSavedToSource = false;
     final uploadLanguage = _normalizedUploadLanguage(operationLanguageCode);
     final canUploadToServer =
-        uploadLanguage != null && widget.serverId?.isNotEmpty == true && widget.ratingKey?.isNotEmpty == true;
+        !onItemTimeline && uploadLanguage != null && widget.serverId?.isNotEmpty == true && widget.ratingKey?.isNotEmpty == true;
     final canSaveToSource = widget.onSaveToSource != null;
     final List<int> previewIndexes;
     if (cues.length <= 12) {
@@ -3089,6 +3141,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text('${cues.length} cues are ready. Review this sample before attaching the generated SRT.'),
+                if (onItemTimeline) const Text('These cues use the complete item timeline. Native/local sidecar attachment converts to the opened part; multipart server upload is unavailable without an explicit server part contract.'),
                 if (reviewWarnings.isNotEmpty)
                   Container(
                     margin: const EdgeInsets.only(top: 8),
@@ -3328,6 +3381,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
         identity: draftIdentity,
+        onItemTimeline: onItemTimeline,
       );
       final revisionSaved = await _storeReviewedRevision(
         cues: reviewedCues,
@@ -3335,6 +3389,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
         identity: draftIdentity,
+        onItemTimeline: onItemTimeline,
       );
       if (revisionSaved) await clearReviewDraft();
       await rememberAcceptedReview();
@@ -3346,6 +3401,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         utf8.encode(
           JsonEncoder.withIndent('  ').convert({
             'schema': 'plezyng.subtitle-cues.v3',
+            'onItemTimeline': onItemTimeline,
             'generatedBy': 'PlezyNG',
             'operation': operationLabel,
             'language': operationLanguageCode,
@@ -3401,6 +3457,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
         identity: draftIdentity,
+        onItemTimeline: onItemTimeline,
       );
       final revisionSaved = await _storeReviewedRevision(
         cues: reviewedCues,
@@ -3408,12 +3465,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
         identity: draftIdentity,
+        onItemTimeline: onItemTimeline,
       );
       if (revisionSaved) await clearReviewDraft();
       await rememberAcceptedReview();
       if (mounted) setState(() => _status = 'Reviewed subtitle exported as versioned cue JSON.');
       return false;
     }
+    final nativeBytes = choice == _SubtitleReviewChoice.overlayPrimary || choice == _SubtitleReviewChoice.overlaySecondary
+        ? bytes : await _bytesForNativeTimeline(reviewedCues, onItemTimeline);
     if (choice == _SubtitleReviewChoice.serverAndPlayer) {
       final languageCode = uploadLanguage;
       if (languageCode == null) throw StateError('The result language could not be identified for server upload.');
@@ -3429,7 +3489,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         final surviving = reviewedCues.map((c) => c.stableId).toSet();
         final originalById = {for (final c in cues) c.stableId: c};
         final unchangedTimes = {for (final c in reviewedCues) if (originalById[c.stableId]?.startMs == c.startMs && originalById[c.stableId]?.endMs == c.endMs) c.stableId};
-        final track = SubtitleOverlayTrack(cues: reviewedCues, words: reviewedWordTimings, title: operationLabel,
+        final overlayOffset = onItemTimeline ? 0 : widget.player.timelineOffset.inMilliseconds;
+        final overlayWords = overlayOffset == 0 ? reviewedWordTimings : reviewedWordTimings.map((word) => SubtitleWordTiming(
+          startMs: word.startMs + overlayOffset, endMs: word.endMs + overlayOffset,
+          text: word.text, confidence: word.confidence, unit: word.unit, cueIndex: word.cueIndex, cueId: word.cueId,
+        )).toList(growable: false);
+        final track = SubtitleOverlayTrack(cues: onItemTimeline ? reviewedCues : _fileCuesOnItemTimeline(reviewedCues),
+          words: overlayWords, title: operationLabel,
           regions: {for (final r in regions.entries) if (surviving.contains(r.key)) r.key: r.value},
           avoidRegions: {for (final r in avoidRegions.entries) if (unchangedTimes.contains(r.key)) r.key: r.value}, profileId: profileId, language: operationLanguageCode,
           isCurrent: () => profiles.activeId == profileId && isSourceCurrent?.call() != false);
@@ -3439,7 +3505,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         final saveToSource = widget.onSaveToSource;
         if (saveToSource == null) throw StateError('This item cannot store a standalone subtitle sidecar.');
         _requireCurrentOperationIdentity();
-        await saveToSource('PlezyNG.$originToken.srt', bytes, operationLanguageCode?.trim() ?? '');
+        await saveToSource('PlezyNG.$originToken.srt', nativeBytes, operationLanguageCode?.trim() ?? '');
         _lastResultSavedToSource = true;
       } else {
         final directory = await getTemporaryDirectory();
@@ -3447,7 +3513,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           directory.path,
           'plezyng_ai_${originToken}_${DateTime.now().microsecondsSinceEpoch}.srt',
         );
-        await File(path).writeAsBytes(bytes, flush: true);
+        await File(path).writeAsBytes(nativeBytes, flush: true);
         _requireCurrentOperationIdentity();
         await widget.player.command(['sub-add', path, 'select']);
       }
@@ -3460,6 +3526,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           languageCode: operationLanguageCode,
           wordTimings: reviewedWordTimings,
           identity: draftIdentity,
+          onItemTimeline: onItemTimeline,
         );
         await _storeReviewedRevision(
           cues: reviewedCues,
@@ -3467,6 +3534,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           languageCode: operationLanguageCode,
           wordTimings: reviewedWordTimings,
           identity: draftIdentity,
+          onItemTimeline: onItemTimeline,
         );
         throw StateError('Uploaded to the server library, but could not attach the local copy: $error');
       }
@@ -3479,6 +3547,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       languageCode: operationLanguageCode,
       wordTimings: reviewedWordTimings,
       identity: draftIdentity,
+      onItemTimeline: onItemTimeline,
     );
     final revisionSaved = await _storeReviewedRevision(
       cues: reviewedCues,
@@ -3486,6 +3555,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       languageCode: operationLanguageCode,
       wordTimings: reviewedWordTimings,
       identity: draftIdentity,
+      onItemTimeline: onItemTimeline,
     );
     if (revisionSaved) await clearReviewDraft();
     await rememberAcceptedReview();

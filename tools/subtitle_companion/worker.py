@@ -347,6 +347,7 @@ def main():
         result["durationMs"] += offset
         result.setdefault("warnings", []).append(f"Generated times include the opened part offset of {offset} ms; output is on the item timeline.")
     result["timelineOffsetMs"] = offset
+    result["itemTimeline"] = job.get("itemTimeline", offset != 0)
     for index, cue in enumerate(result["cues"]):
         cue["index"] = index + 1
     if task in TEXT_TASKS:

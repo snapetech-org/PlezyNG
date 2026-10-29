@@ -81,8 +81,10 @@ final class SubtitleRevision {
     required this.languageCode,
     required this.cues,
     required this.wordTimings,
+    this.onItemTimeline = false,
   });
 
+  final bool onItemTimeline;
   final String id;
   final DateTime createdAt;
   final String operation;
@@ -96,6 +98,7 @@ final class SubtitleRevision {
     'createdAt': createdAt.toUtc().toIso8601String(),
     'operation': operation,
     'languageCode': languageCode,
+    'onItemTimeline': onItemTimeline,
     'cues': cues
         .map(
           (cue) => {
@@ -126,6 +129,7 @@ final class SubtitleRevision {
     if (value is! Map<String, dynamic> || value['schema'] != 'plezyng.subtitle-revision.v1') {
       throw const FormatException('Unsupported subtitle revision record.');
     }
+    if (value['onItemTimeline'] != null && value['onItemTimeline'] is! bool) throw const FormatException('Invalid revision clock basis');
     final id = value['id'];
     final createdAt = DateTime.tryParse(value['createdAt'] as String? ?? '');
     final operation = value['operation'];
@@ -236,6 +240,7 @@ final class SubtitleRevision {
     }
 
     return SubtitleRevision(
+      onItemTimeline: value['onItemTimeline'] == true,
       id: id,
       createdAt: createdAt.toUtc(),
       operation: operation,
@@ -260,8 +265,10 @@ final class SubtitleRevisionDraft {
     required this.cues,
     required this.wordTimings,
     required this.undoHistory,
+    this.onItemTimeline = false,
   });
 
+  final bool onItemTimeline;
   final String sourceFingerprint;
   final DateTime savedAt;
   final String operation;
@@ -274,6 +281,7 @@ final class SubtitleRevisionDraft {
 
   Map<String, Object?> toJson() {
     SubtitleRevision snapshot(String id, List<SubtitleCue> snapshotCues) => SubtitleRevision(
+      onItemTimeline: onItemTimeline,
       id: id,
       createdAt: savedAt.toUtc(),
       operation: operation,
@@ -283,6 +291,7 @@ final class SubtitleRevisionDraft {
     );
 
     final revision = SubtitleRevision(
+      onItemTimeline: onItemTimeline,
       id: '0_0',
       createdAt: savedAt.toUtc(),
       operation: operation,
@@ -331,6 +340,8 @@ final class SubtitleRevisionDraft {
         savedAt == null ||
         rawUndoHistory is! List ||
         rawUndoHistory.length > 100 ||
+        revision.onItemTimeline != baseRevision.onItemTimeline ||
+        sourceRevision != null && sourceRevision.onItemTimeline != revision.onItemTimeline ||
         revision.cues.length != baseRevision.cues.length ||
         (sourceRevision != null && sourceRevision.cues.length != baseRevision.cues.length) ||
         SubtitleRevisionService.reviewFingerprint(baseRevision.cues, sourceCues: sourceRevision?.cues) !=
@@ -361,6 +372,7 @@ final class SubtitleRevisionDraft {
       undoHistory.add((cuePosition, cue));
     }
     return SubtitleRevisionDraft(
+      onItemTimeline: revision.onItemTimeline,
       sourceFingerprint: sourceFingerprint,
       savedAt: savedAt.toUtc(),
       operation: revision.operation,
@@ -490,6 +502,7 @@ abstract final class SubtitleRevisionService {
     required String? languageCode,
     required List<SubtitleCue> cues,
     required List<SubtitleWordTiming> wordTimings,
+    bool onItemTimeline = false,
   }) async {
     late SubtitleRevision revision;
     await _exclusive(() async {
@@ -558,6 +571,7 @@ abstract final class SubtitleRevisionService {
         idTimestamp++;
       } while (true);
       revision = SubtitleRevision(
+        onItemTimeline: onItemTimeline,
         id: id,
         createdAt: now,
         operation: operation.trim(),

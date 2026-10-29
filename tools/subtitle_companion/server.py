@@ -157,7 +157,10 @@ class Store:
         timeline_offset = value.get("timelineOffsetMs", 0)
         if type(timeline_offset) is not int or not 0 <= timeline_offset <= 7 * 3600000:
             raise ValueError("invalid_source_time_offset")
-        if timeline_offset and task not in {"transcribe", "diarize", "ensemble", "separate", "sound_events", "extract_text", "ocr", "ocr_auto", "signs", "bitmap_ocr"}:
+        item_timeline = value.get("itemTimeline", timeline_offset != 0)
+        if type(item_timeline) is not bool or timeline_offset and not item_timeline:
+            raise ValueError("invalid_source_clock")
+        if item_timeline and task not in {"transcribe", "diarize", "ensemble", "separate", "sound_events", "extract_text", "ocr", "ocr_auto", "signs", "bitmap_ocr"}:
             raise ValueError("source_time_offset_requires_generation_task")
         track = value.get("audioTrack", 0)
         if type(track) is not int or not 0 <= track <= 63:
@@ -207,7 +210,7 @@ class Store:
         with self.lock:
             canonical = {"task": task, "identity": value["identity"], "audioDigest": value["audioDigest"],
                          "audioBytes": size, "language": language, "targetLanguage": target,
-                         "cues": cues, "audioTrack": track, "timelineOffsetMs": timeline_offset, "soundStereoEvidence": stereo_evidence, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
+                         "cues": cues, "audioTrack": track, "timelineOffsetMs": timeline_offset, "itemTimeline": item_timeline, "soundStereoEvidence": stereo_evidence, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
                          "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint,

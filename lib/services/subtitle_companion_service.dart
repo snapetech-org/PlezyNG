@@ -14,7 +14,7 @@ import 'subtitle_word_timing.dart';
 
 final class SubtitleCompanionResult {
   const SubtitleCompanionResult({required this.cues, required this.wordTimings, required this.language,
-      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const [], this.alternatives = const {}, this.regions = const {}, this.artifacts = const [], this.avoidRegions = const {}});
+      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const [], this.alternatives = const {}, this.regions = const {}, this.artifacts = const [], this.avoidRegions = const {}, this.itemTimeline = false});
   final List<SubtitleCue> cues;
   final List<SubtitleWordTiming> wordTimings;
   final String language;
@@ -27,6 +27,7 @@ final class SubtitleCompanionResult {
   final Map<String, Rect> regions;
   final Map<String, List<Rect>> avoidRegions;
   final List<SubtitleCompanionArtifact> artifacts;
+  final bool itemTimeline;
 }
 
 final class SubtitleCompanionArtifact {
@@ -188,7 +189,7 @@ final class SubtitleCompanionService {
 
   Future<String> submit({required String task, required String identityKey, String? mediaPath,
     List<SubtitleCue> cues = const [], String? language, String? targetLanguage,
-    bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0, int timelineOffsetMs = 0, bool soundStereoEvidence = false,
+    bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0, int timelineOffsetMs = 0, bool itemTimeline = false, bool soundStereoEvidence = false,
     int finalBitmapDurationMs = 2000, double duckRatio = .25, String? voiceFingerprint,
     String translationMode = 'faithful', String scriptConversion = 's2t', String readingMode = 'hiragana',
     String? translationProviderFingerprint, String? visionProviderFingerprint, Map<String, String> glossary = const {},
@@ -198,7 +199,7 @@ final class SubtitleCompanionService {
     if (!_digest.hasMatch(identityKey)) throw const FormatException('A stable item identity is required.');
     final caps = await capabilities();
     if (!(caps['tasks'] as List).contains(task)) throw UnsupportedError('The companion has not installed the $task backend.');
-    if (timelineOffsetMs != 0 && caps['sourceTimelineOffsets'] != true) throw UnsupportedError('Update the companion to preserve source timeline offsets');
+    if ((itemTimeline || timelineOffsetMs != 0) && caps['sourceTimelineOffsets'] != true) throw UnsupportedError('Update the companion to preserve source timeline offsets');
     if (soundStereoEvidence && caps['soundStereoEvidence'] != true) throw UnsupportedError('Update the companion for stereo evidence');
     final input = mediaPath == null ? null : File(mediaPath);
     final length = input == null ? 0 : await input.length();
@@ -209,7 +210,7 @@ final class SubtitleCompanionService {
     final body = <String, Object?>{
       'task': task, 'identity': identityKey, 'audioDigest': audioDigest, 'audioBytes': length,
       'language': language, 'spokenLanguage': language, 'targetLanguage': targetLanguage,
-      'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop, 'timelineOffsetMs': timelineOffsetMs, 'soundStereoEvidence': soundStereoEvidence,
+      'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop, 'timelineOffsetMs': timelineOffsetMs, 'itemTimeline': itemTimeline, 'soundStereoEvidence': soundStereoEvidence,
       'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs, 'duckRatio': duckRatio, 'voiceFingerprint': voiceFingerprint,
       'translationMode': translationMode, 'scriptConversion': scriptConversion, 'readingMode': readingMode,
       'translationProviderFingerprint': translationProviderFingerprint, 'visionProviderFingerprint': visionProviderFingerprint, 'glossary': glossary,
@@ -382,7 +383,8 @@ final class SubtitleCompanionService {
       }
       artifacts.add(SubtitleCompanionArtifact('dubbed.wav', rawArtifact['sha256'], rawArtifact['bytes'], 'audio/wav'));
     }
-    return SubtitleCompanionResult(avoidRegions: Map.unmodifiable(avoidRegions), artifacts: List.unmodifiable(artifacts), alternatives: Map.unmodifiable(alternatives), regions: Map.unmodifiable(regions), cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
+    if (data['itemTimeline'] != null && data['itemTimeline'] is! bool) throw const FormatException('Invalid companion clock basis');
+    return SubtitleCompanionResult(itemTimeline: data['itemTimeline'] == true, avoidRegions: Map.unmodifiable(avoidRegions), artifacts: List.unmodifiable(artifacts), alternatives: Map.unmodifiable(alternatives), regions: Map.unmodifiable(regions), cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
       language: label(data['language'], 24, 'unknown'), warnings: warnings,
       runtimeDevice: runtime, cpuFallback: data['cpuFallback'] == true, images: List.unmodifiable(images), sourceCues: List.unmodifiable(sourceCues));
   }

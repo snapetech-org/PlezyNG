@@ -397,6 +397,19 @@ abstract final class SubtitleSyncService {
   }
 
   /// Writes an independent UTF-8 SRT asset without changing source files.
+  static ({Uint8List bytes, int clipped}) writeSrtForPart(List<SubtitleCue> cues, int offsetMs) {
+    if (offsetMs < 0 || offsetMs > SubtitleRetimer.maximumTimeMs) throw const FormatException('Invalid media part offset');
+    var clipped = 0;
+    final result = <SubtitleCue>[];
+    for (final cue in cues) {
+      final start = cue.startMs - offsetMs, end = cue.endMs - offsetMs;
+      if (start < 0) clipped++;
+      if (end <= 0) continue;
+      result.add(SubtitleCue(index: cue.index, startMs: start < 0 ? 0 : start, endMs: end, text: cue.text, cueId: cue.stableId));
+    }
+    return (bytes: writeSrt(result), clipped: clipped);
+  }
+
   static Uint8List writeSrt(List<SubtitleCue> cues) {
     if (cues.isEmpty || cues.length > SubtitleRetimer.maximumCueCount) {
       throw const FormatException('Subtitle output is empty or exceeds the cue processing bound.');

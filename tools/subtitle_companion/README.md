@@ -330,7 +330,14 @@ No training, model installation or evaluation was run while adding this code.
 Clients advertising `sourceTimelineOffsets` accept `timelineOffsetMs` for
 generation-only jobs, bound into the idempotency fingerprint. It represents a
 complete opened media part, not a seek into the uploaded bytes. Cue, word and
-image times in results include it exactly once. The Flutter client can stage
+image times in results include it exactly once. `itemTimeline: true` also marks
+zero-offset first parts; a nonzero offset implies it for legacy SDK clients.
+The result echoes the flag. Native attachment subtracts the currently opened
+part offset once, with explicit review for clipped cues. Overlays, revision
+history, drafts, undo checkpoints and JSON exports preserve the item clock.
+SRT exports contain the shown times without clock metadata. Server attachment
+requires an explicit part contract and is disabled for item-clock results.
+The Flutter client can stage
 complete VOD files through its source-owned gateway without sending playback
 URLs or credentials. Limits remain 1 GiB / one hour; playlists require a decoder.
 

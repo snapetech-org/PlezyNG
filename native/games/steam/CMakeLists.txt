@@ -87,6 +87,10 @@ if(WIN32)
   endif()
 else()
   target_compile_definitions(plezy_ihs PRIVATE _POSIX_C_SOURCE=200809L _DEFAULT_SOURCE)
+  if(APPLE)
+    # Darwin hides BSD interface flags in POSIX mode unless its extensions are enabled.
+    target_compile_definitions(plezy_ihs PRIVATE _DARWIN_C_SOURCE)
+  endif()
   target_link_libraries(plezy_ihs PUBLIC m)
 endif()
 

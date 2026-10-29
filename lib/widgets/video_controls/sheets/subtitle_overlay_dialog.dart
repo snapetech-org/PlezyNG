@@ -15,6 +15,7 @@ import '../../../services/subtitle_download_assets.dart';
 import '../../../services/subtitle_frame_export.dart';
 import '../../../services/subtitle_analysis_source.dart';
 import 'subtitle_fonts_dialog.dart';
+import 'subtitle_hdr_dialog.dart';
 
 Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
   SubtitleDownloadBinding? download,
@@ -162,6 +163,9 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
         ],
         const Divider(),
         if (player.playerType == 'mpv') ...[
+          TextButton(onPressed: () => showSubtitleHdrControls(context, player,
+            () => session.current && isSourceCurrent?.call() != false),
+            child: const Text('Native HDR caption brightness')),
           const Text('Pause playback to export the visible native and app captions with the frame. '
             'Known 8-bit SDR output produces PNG; HDR, wide-gamut, high-bit-depth or unknown color output '
             'produces a ZIP with the untouched native frame, transparent sRGB caption layer and composition metadata.'),

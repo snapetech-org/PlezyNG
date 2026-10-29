@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show compute;
 
+import '../../../i18n/strings.g.dart';
 import '../../../services/file_picker_service.dart';
 import '../../../services/subtitle_companion_service.dart';
 import '../../../services/subtitle_overlay_service.dart';
@@ -25,20 +26,33 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
   bool _saving = false;
   String? _status;
   late final _cues = {for (final cue in widget.result.cues) cue.stableId: cue};
-  static const _labels = {
-    'coverageEvidence': 'Possible uncovered speech', 'ensembleEvidence': 'Recognition comparison',
-    'soundEvidence': 'Possible sound events and mix balance', 'lyricTimingEvidence': 'Lyric boundary agreement',
-    'lyricSyllableEvidence': 'Supplied syllable alignment', 'lyricPitchEvidence': 'Mix pitch candidates (unqualified)',
-    'uncertainCueIds': 'Cues without an agreed word proposal', 'sceneRegionTracks': 'Sampled region paths',
-    'sceneAudioEvidence': 'Audio sent with scene images', 'sceneMotionEvidence': 'Local motion tracking observations',
-    'sceneObjectEvidence': 'Local object classes and short-gap association',
-    'synthesisEvidence': 'Synthesized line fitting and omissions',
-  };
+
+  Translations get _t => Translations.of(context);
+
+  String _sectionLabel(String key) {
+    final copy = _t.videoControls.subtitleResearchReview;
+    return switch (key) {
+      'coverageEvidence' => copy.possibleUncoveredSpeech,
+      'ensembleEvidence' => copy.recognitionComparison,
+      'soundEvidence' => copy.soundEventsAndMix,
+      'lyricTimingEvidence' => copy.lyricBoundaryAgreement,
+      'lyricSyllableEvidence' => copy.suppliedSyllableAlignment,
+      'lyricPitchEvidence' => copy.pitchCandidates,
+      'uncertainCueIds' => copy.noAgreedWordProposal,
+      'sceneRegionTracks' => copy.sampledRegionPaths,
+      'sceneAudioEvidence' => copy.sceneAudioEvidence,
+      'sceneMotionEvidence' => copy.sceneMotionObservations,
+      'sceneObjectEvidence' => copy.sceneObjectObservations,
+      'synthesisEvidence' => copy.synthesizedLineFit,
+      _ => copy.unknownSection(name: key.replaceAllMapped(RegExp(r'([A-Z])'), (m) => ' ${m[1]}')),
+    };
+  }
 
   Future<void> _export() async {
+    final copy = _t.videoControls.subtitleResearchReview;
     setState(() { _saving = true; _status = null; });
     try {
-      if (!widget.isCurrent()) throw StateError('The playback item changed');
+      if (!widget.isCurrent()) throw StateError(copy.itemChanged);
       final result = widget.result;
       final report = <String, Object?>{'schema': 'plezyng.subtitle-research-review.v1', 'jobId': widget.jobId,
         'inputSha256': widget.inputDigest, 'itemTimeline': result.itemTimeline,
@@ -57,13 +71,14 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
       // Compact JSON leaves room for large, bounded motion observations. Image
       // descriptors are included; image pixels use the existing image export.
       final bytes = await compute(_encode, report);
-      if (!widget.isCurrent()) throw StateError('The playback item changed');
-      final saved = await FilePickerService.instance.saveFile(dialogTitle: 'Export research evidence',
+      if (!widget.isCurrent()) throw StateError(copy.itemChanged);
+      final saved = await FilePickerService.instance.saveFile(dialogTitle: copy.exportTitle,
         fileName: 'subtitle-research-${widget.jobId.substring(0, 8)}.json', bytes: bytes,
         type: FileType.custom, allowedExtensions: const ['json']);
-      if (mounted) setState(() => _status = saved == null ? 'Export cancelled' : 'Research evidence exported');
+      if (mounted) setState(() => _status = saved == null ? copy.exportCancelled : copy.exported);
     } catch (error) {
-      if (mounted) setState(() => _status = error is FormatException ? error.message : 'Could not export this evidence');
+      if (mounted) setState(() => _status = error is FormatException ? copy.reportTooLarge
+          : error is StateError ? copy.itemChanged : copy.exportFailed);
     } finally { if (mounted) setState(() => _saving = false); }
   }
 
@@ -74,34 +89,36 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
   }
 
   Widget _observation(Object? value, int index) {
+    final copy = _t.videoControls.subtitleResearchReview;
     final id = value is Map ? value['cueId'] : value is String ? value : null;
     final cue = id is String ? _cues[id] : null;
     final detail = const JsonEncoder.withIndent('  ').convert(value);
-    return ExpansionTile(key: ValueKey(index), title: Text(cue == null ? 'Observation ${index + 1}' : 'Cue ${cue.index}'),
+    return ExpansionTile(key: ValueKey(index), title: Text(cue == null
+        ? copy.observation(index: index + 1) : copy.cue(index: cue.index)),
       subtitle: cue == null ? null : Text(SubtitleOverlayTrack.plain(cue.text), maxLines: 2, overflow: TextOverflow.ellipsis),
       children: [Padding(padding: const EdgeInsets.all(12), child: SelectableText(
-        detail.length <= 12000 ? detail : '${detail.substring(0, 12000)}\n… Export JSON to read the complete observation.'))]);
+        detail.length <= 12000 ? detail : '${detail.substring(0, 12000)}\n${copy.truncatedObservation}'))]);
   }
 
   @override
   Widget build(BuildContext context) {
+    final copy = _t.videoControls.subtitleResearchReview;
     final result = widget.result, sections = result.researchEvidence.entries.toList();
-    return AlertDialog(title: const Text('Review research evidence'), content: SizedBox(width: 760,
+    return AlertDialog(title: Text(copy.title), content: SizedBox(width: 760,
       height: (MediaQuery.sizeOf(context).height * .55).clamp(140.0, 520.0).toDouble(),
       child: ListView(children: [
-        const Text('These are unqualified model outputs and measurements. Agreement, scores and region paths do not prove accuracy. '
-          'Continue to review the caption wording and timing separately.'),
+        Text(copy.description),
         const SizedBox(height: 12),
-        Text('Clock: ${result.itemTimeline ? 'item timeline' : 'uploaded file timeline'}. '
-          'Input SHA-256: ${widget.inputDigest}'),
-        ExpansionTile(title: const Text('Model and processing provenance'), children: [
+        Text(copy.clockSummary(clock: result.itemTimeline ? copy.itemTimeline : copy.uploadedFileTimeline,
+          digest: widget.inputDigest)),
+        ExpansionTile(title: Text(copy.provenance), children: [
           Padding(padding: const EdgeInsets.all(12), child: SelectableText(const JsonEncoder.withIndent('  ').convert(result.provenance))),
         ]),
-        ExpansionTile(title: Text('Review notes (${result.warnings.length})'), children: [
+        ExpansionTile(title: Text(copy.reviewNotes(count: result.warnings.length)), children: [
           for (final warning in result.warnings) Padding(padding: const EdgeInsets.all(8), child: Text(warning)),
         ]),
-        for (final section in sections) ExpansionTile(title: Text(_labels[section.key] ?? section.key),
-          subtitle: Text(section.value is List ? '${(section.value as List).length} observations' : 'Job-level measurements'),
+        for (final section in sections) ExpansionTile(title: Text(_sectionLabel(section.key)),
+          subtitle: Text(section.value is List ? copy.observationsCount(count: (section.value as List).length) : copy.jobMeasurements),
           children: [SizedBox(height: 300, child: section.value is List
             ? ListView.builder(itemCount: (section.value as List).length,
                 itemBuilder: (_, index) => _observation((section.value as List)[index], index))
@@ -109,12 +126,12 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
         if (_status != null) Text(_status!),
         if (_saving) const LinearProgressIndicator(),
       ])), actions: [
-        TextButton(onPressed: _saving ? null : () => Navigator.pop(context, false), child: const Text('Close')),
-        TextButton(onPressed: _saving ? null : _export, child: const Text('Export evidence JSON')),
+        TextButton(onPressed: _saving ? null : () => Navigator.pop(context, false), child: Text(_t.common.close)),
+        TextButton(onPressed: _saving ? null : _export, child: Text(copy.exportAction)),
         FilledButton(onPressed: _saving ? null : () {
           if (widget.isCurrent()) Navigator.pop(context, true);
-          else setState(() => _status = 'The playback item changed');
-        }, child: const Text('Continue to caption review')),
+          else setState(() => _status = copy.itemChanged);
+        }, child: Text(copy.continueReview)),
       ]);
   }
 }

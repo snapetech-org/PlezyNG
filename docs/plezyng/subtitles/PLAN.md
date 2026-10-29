@@ -1488,3 +1488,10 @@ generated Slang catalog. Cloud destination and pairing checks remain explicit;
 the dialog does not attach imported text automatically. English base-locale
 fallbacks are registered while translations remain pending.
 
+## Research evidence review localization — October 29, 2026
+
+The evidence review now localizes section labels, clock/provenance context,
+observation counts, export actions and bounded-export status. Model provenance
+and host warning details remain data supplied by the companion so diagnostic
+content is preserved for review.
+

@@ -3290,6 +3290,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleCompanionJobs$en subtitleCompanionJobs = Translations$videoControls$subtitleCompanionJobs$en.internal(_root);
 	late final Translations$videoControls$subtitleStudy$en subtitleStudy = Translations$videoControls$subtitleStudy$en.internal(_root);
 	late final Translations$videoControls$subtitleCloudSync$en subtitleCloudSync = Translations$videoControls$subtitleCloudSync$en.internal(_root);
+	late final Translations$videoControls$subtitleResearchReview$en subtitleResearchReview = Translations$videoControls$subtitleResearchReview$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
@@ -13934,6 +13935,115 @@ class Translations$videoControls$subtitleCloudSync$en {
 
 }
 
+// Path: videoControls.subtitleResearchReview
+class Translations$videoControls$subtitleResearchReview$en {
+	Translations$videoControls$subtitleResearchReview$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Review research evidence'
+	String get title => 'Review research evidence';
+
+	/// en: 'These are unqualified model outputs and measurements. Agreement, scores and region paths do not prove accuracy. Continue to review the caption wording and timing separately.'
+	String get description => 'These are unqualified model outputs and measurements. Agreement, scores and region paths do not prove accuracy. Continue to review the caption wording and timing separately.';
+
+	/// en: 'The playback item changed.'
+	String get itemChanged => 'The playback item changed.';
+
+	/// en: 'Export research evidence'
+	String get exportTitle => 'Export research evidence';
+
+	/// en: 'Export cancelled'
+	String get exportCancelled => 'Export cancelled';
+
+	/// en: 'Research evidence exported'
+	String get exported => 'Research evidence exported';
+
+	/// en: 'Research report exceeds 24 MiB.'
+	String get reportTooLarge => 'Research report exceeds 24 MiB.';
+
+	/// en: 'Could not export this evidence.'
+	String get exportFailed => 'Could not export this evidence.';
+
+	/// en: 'Observation ${index}'
+	String observation({required Object index}) => 'Observation ${index}';
+
+	/// en: 'Cue ${index}'
+	String cue({required Object index}) => 'Cue ${index}';
+
+	/// en: '… Export JSON to read the complete observation.'
+	String get truncatedObservation => '… Export JSON to read the complete observation.';
+
+	/// en: 'Clock: ${clock}. Input SHA-256: ${digest}'
+	String clockSummary({required Object clock, required Object digest}) => 'Clock: ${clock}. Input SHA-256: ${digest}';
+
+	/// en: 'item timeline'
+	String get itemTimeline => 'item timeline';
+
+	/// en: 'uploaded file timeline'
+	String get uploadedFileTimeline => 'uploaded file timeline';
+
+	/// en: 'Model and processing provenance'
+	String get provenance => 'Model and processing provenance';
+
+	/// en: 'Review notes (${count})'
+	String reviewNotes({required Object count}) => 'Review notes (${count})';
+
+	/// en: 'Possible uncovered speech'
+	String get possibleUncoveredSpeech => 'Possible uncovered speech';
+
+	/// en: 'Recognition comparison'
+	String get recognitionComparison => 'Recognition comparison';
+
+	/// en: 'Possible sound events and mix balance'
+	String get soundEventsAndMix => 'Possible sound events and mix balance';
+
+	/// en: 'Lyric boundary agreement'
+	String get lyricBoundaryAgreement => 'Lyric boundary agreement';
+
+	/// en: 'Supplied syllable alignment'
+	String get suppliedSyllableAlignment => 'Supplied syllable alignment';
+
+	/// en: 'Mix pitch candidates (unqualified)'
+	String get pitchCandidates => 'Mix pitch candidates (unqualified)';
+
+	/// en: 'Cues without an agreed word proposal'
+	String get noAgreedWordProposal => 'Cues without an agreed word proposal';
+
+	/// en: 'Sampled region paths'
+	String get sampledRegionPaths => 'Sampled region paths';
+
+	/// en: 'Audio sent with scene images'
+	String get sceneAudioEvidence => 'Audio sent with scene images';
+
+	/// en: 'Local motion tracking observations'
+	String get sceneMotionObservations => 'Local motion tracking observations';
+
+	/// en: 'Local object classes and short-gap association'
+	String get sceneObjectObservations => 'Local object classes and short-gap association';
+
+	/// en: 'Synthesized line fitting and omissions'
+	String get synthesizedLineFit => 'Synthesized line fitting and omissions';
+
+	/// en: '${name}'
+	String unknownSection({required Object name}) => '${name}';
+
+	/// en: '${count} observations'
+	String observationsCount({required Object count}) => '${count} observations';
+
+	/// en: 'Job-level measurements'
+	String get jobMeasurements => 'Job-level measurements';
+
+	/// en: 'Export evidence JSON'
+	String get exportAction => 'Export evidence JSON';
+
+	/// en: 'Continue to caption review'
+	String get continueReview => 'Continue to caption review';
+
+}
+
 // Path: videoControls.subtitleRoles
 class Translations$videoControls$subtitleRoles$en {
 	Translations$videoControls$subtitleRoles$en.internal(this._root);
@@ -18137,6 +18247,39 @@ extension on Translations {
 			'videoControls.subtitleCloudSync.downloadPreview' => 'Download and preview',
 			'videoControls.subtitleCloudSync.importToHistory' => 'Import to history',
 			'videoControls.subtitleCloudSync.cuePreview' => ({required Object start, required Object end, required Object text}) => '${start}–${end}s  ${text}',
+			'videoControls.subtitleResearchReview.title' => 'Review research evidence',
+			'videoControls.subtitleResearchReview.description' => 'These are unqualified model outputs and measurements. Agreement, scores and region paths do not prove accuracy. Continue to review the caption wording and timing separately.',
+			'videoControls.subtitleResearchReview.itemChanged' => 'The playback item changed.',
+			'videoControls.subtitleResearchReview.exportTitle' => 'Export research evidence',
+			'videoControls.subtitleResearchReview.exportCancelled' => 'Export cancelled',
+			'videoControls.subtitleResearchReview.exported' => 'Research evidence exported',
+			'videoControls.subtitleResearchReview.reportTooLarge' => 'Research report exceeds 24 MiB.',
+			'videoControls.subtitleResearchReview.exportFailed' => 'Could not export this evidence.',
+			'videoControls.subtitleResearchReview.observation' => ({required Object index}) => 'Observation ${index}',
+			'videoControls.subtitleResearchReview.cue' => ({required Object index}) => 'Cue ${index}',
+			'videoControls.subtitleResearchReview.truncatedObservation' => '… Export JSON to read the complete observation.',
+			'videoControls.subtitleResearchReview.clockSummary' => ({required Object clock, required Object digest}) => 'Clock: ${clock}. Input SHA-256: ${digest}',
+			'videoControls.subtitleResearchReview.itemTimeline' => 'item timeline',
+			'videoControls.subtitleResearchReview.uploadedFileTimeline' => 'uploaded file timeline',
+			'videoControls.subtitleResearchReview.provenance' => 'Model and processing provenance',
+			'videoControls.subtitleResearchReview.reviewNotes' => ({required Object count}) => 'Review notes (${count})',
+			'videoControls.subtitleResearchReview.possibleUncoveredSpeech' => 'Possible uncovered speech',
+			'videoControls.subtitleResearchReview.recognitionComparison' => 'Recognition comparison',
+			'videoControls.subtitleResearchReview.soundEventsAndMix' => 'Possible sound events and mix balance',
+			'videoControls.subtitleResearchReview.lyricBoundaryAgreement' => 'Lyric boundary agreement',
+			'videoControls.subtitleResearchReview.suppliedSyllableAlignment' => 'Supplied syllable alignment',
+			'videoControls.subtitleResearchReview.pitchCandidates' => 'Mix pitch candidates (unqualified)',
+			'videoControls.subtitleResearchReview.noAgreedWordProposal' => 'Cues without an agreed word proposal',
+			'videoControls.subtitleResearchReview.sampledRegionPaths' => 'Sampled region paths',
+			'videoControls.subtitleResearchReview.sceneAudioEvidence' => 'Audio sent with scene images',
+			'videoControls.subtitleResearchReview.sceneMotionObservations' => 'Local motion tracking observations',
+			'videoControls.subtitleResearchReview.sceneObjectObservations' => 'Local object classes and short-gap association',
+			'videoControls.subtitleResearchReview.synthesizedLineFit' => 'Synthesized line fitting and omissions',
+			'videoControls.subtitleResearchReview.unknownSection' => ({required Object name}) => '${name}',
+			'videoControls.subtitleResearchReview.observationsCount' => ({required Object count}) => '${count} observations',
+			'videoControls.subtitleResearchReview.jobMeasurements' => 'Job-level measurements',
+			'videoControls.subtitleResearchReview.exportAction' => 'Export evidence JSON',
+			'videoControls.subtitleResearchReview.continueReview' => 'Continue to caption review',
 			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
 			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
 			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',

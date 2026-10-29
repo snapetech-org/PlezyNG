@@ -3,7 +3,8 @@
 ## [Unreleased]
 
 - Fetch checksum-locked Windows native archives through verified Schannel curl on private JIT builds.
-- Resolve tvOS CocoaPods plugins from Flutter's resolved package paths without relying on iOS symlinks.
+- Materialize tvOS CocoaPods plugin symlinks from Flutter's resolved metadata so private runners use stable lockfile paths.
+- Create the Windows Vulkan runtime output directory before downloading the checksum-pinned runtime through verified Schannel curl.
 - Stabilize Android and Windows validation on private CI runners, retry the pinned FFmpeg header download, and bypass the proxy for loopback tests.
 - Fix Android Kotlin compilation by correcting a duplicate visibility modifier and implementing the shared video-surface method.
 - Restore Apple CI by quoting simulator-only Xcode project settings and keeping the macOS test plugin current with its shared protocol.

@@ -111,6 +111,7 @@ else()
 endif()
 set(VULKAN_RT_DIR "${CMAKE_BINARY_DIR}/vulkan-runtime")
 if(NOT EXISTS "${VULKAN_RT_DIR}/vulkan-1.dll" OR NOT EXISTS "${VULKAN_RT_DIR}/VulkanRT-License.txt")
+  file(MAKE_DIRECTORY "${VULKAN_RT_DIR}")
   set(VULKAN_RT_ZIP "${VULKAN_RT_DIR}/vulkan-runtime-components.zip")
   message(STATUS "Downloading Vulkan runtime (${VULKAN_RT_SLUG} ${VULKAN_RT_VERSION})...")
   set(VULKAN_RT_URL

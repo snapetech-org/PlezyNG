@@ -313,3 +313,14 @@ IMPLEMENTATION_STATUS.md records the source features and remaining conformance
 boundaries. These changes have source regression cases but no executed build,
 test or device evidence. Qualification, historical rights decisions, immutable
 mpv artifact promotion and owner-held catalog custody remain separate gates.
+
+## 2026-10-29 stereo and scene-state source checkpoint
+
+The continuation adds shared stereo PCM analysis, all nine classic waveform
+geometries, bounded/custom point semantics and color, portable dots/thick lines,
+private object/frame/point state, shape instancing, textured gradients and ordered
+scene commands. Motion vectors follow the evaluated feedback grid before warp.
+Saved sprite speed/key filtering and the neutral rotation field are corrected.
+The app's source lock points at the published MilkRust PR revision. See the
+current ledger and build handoff for exact status; this appended checkpoint does
+not rewrite the original completion contract or turn unrun gates into passes.

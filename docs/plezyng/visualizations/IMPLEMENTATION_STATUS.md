@@ -2,7 +2,7 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `3ae8fcbc40ea0153adca56bd6fb42c199332109d`; the exact dependency
+pins MilkRust `ff9af9b510179a6c3ba2fb616a3c0396ed38d1b2`; the exact dependency
 contract is in `native/visualizer/sources.lock.json`. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
@@ -89,7 +89,7 @@ qualification, rights decisions and production custody/publication are also open
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `3ae8fcbc40ea0153adca56bd6fb42c199332109d`:
+- The app pins MilkRust `ff9af9b510179a6c3ba2fb616a3c0396ed38d1b2`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -173,6 +173,33 @@ claims, fabricated checksums, invented rights approvals or an empty trust root.
 - Fixed an undefined renderer flag in the engine compatibility-report builder.
   Core and browser regression sources cover the added behavior. No builds/tests,
   CI dispatch, captures, pack generation or physical qualification ran.
-- Reference parity, waveform modes/stereo and thin/thick geometry still require
-  code review and conformance. This source pin must not be called universal
+- Reference parity for the implemented geometry and audio behavior still requires
+  executable conformance checks. This source pin must not be called universal
   community-preset compatibility or a working installed release.
+
+## Stereo, custom state and draw-order closure
+
+- Native and browser rendering now share a bounded stereo PCM analyzer. The
+  energy detector preserves anti-phase channels. All nine classic wave modes,
+  spectrum selection, alpha modulation, color normalization and stereo strips
+  have implementation paths. The browser analysis branch preserves audio graph
+  ownership and supplies normalized 44.1 kHz stereo to the shared analyzer.
+- Custom waves now receive normalized sample position and left/right value1/value2,
+  retain point color/alpha, apply scaling/separation/smoothing and cap sample
+  allocation at 512. Pixel-sized dot quads and offset thick strokes work in both
+  GPU hosts. Errors and non-finite geometry reach checked frame diagnostics.
+- Custom objects retain private frame and point variables independently, restore
+  init t1–t8 at the correct boundary, isolate q writes and propagate explicit
+  global-memory writes. Shape instances receive instance indices; both solid and
+  textured fills retain gradients, coordinate orientation, angular offset and
+  aspect. Draw commands interleave fills/outlines before waves and later overlays.
+- Motion trails interpolate the evaluated feedback grid and enter previous
+  feedback before warping. Pixel equations are not rerun to construct the trails.
+  WebGL position-buffer rebinding is explicit between colored draws.
+- Saved sprites apply color keys to texels before linear filtering, accumulate
+  speed once per frame, and recognize the neutral saved SpriteRot=1 value.
+  Non-default rotation controls and exact saved-pair masks remain reference work.
+- Regression source covers these paths, including actual browser shader/shape
+  probes, but remains unrun. Only source review, whitespace checks and JavaScript
+  syntax parsing were performed. No compiler/link, build, test or device result
+  is implied by this updated engine pin.

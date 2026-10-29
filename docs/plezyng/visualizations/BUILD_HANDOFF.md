@@ -48,7 +48,7 @@ mpv extension, but still need their own SDK and physical audio qualification.
    JIT. The browser `test:hlsl` corpus exercises typed helpers, loops, arrays,
    matrices, writable globals, entry semantics, blur/noise resources, legacy TGA
    uploads, all eleven sprite blend modes, one-frame sprite loading, classic
-   gamma/invert, WebGL context restoration and rejected inputs. It emits
+   gamma/invert, ordered textured-shape gradients, WebGL context restoration and rejected inputs. It emits
    compiler/driver evidence only, not a visual fidelity certification.
 2. Build the app packages using the paths above and the promoted PCM artifacts.
    Verify installed runtime/notices/source, actual PCM, preset import/download,
@@ -79,3 +79,10 @@ runtime before configuring the app runner. MilkRust's candidate job now prepares
 55 explicitly CC BY 4.0 CaYaDev presets with immutable provenance, in addition to
 the original studies and separately unresolved historical candidates. These
 entrypoints have not been executed in this source-only continuation.
+
+The updated core regression sources also cover stereo phase preservation, all
+classic waveform modes, bounded custom point inputs/colors, portable thick/dot
+geometry, isolated object/point state, shape instances, global memory and motion
+vectors sampled from the evaluated warp grid. Run them with the pinned engine's
+crate checks. The browser SDK mock suite covers stereo ordering and disconnecting
+only its owned analysis branch. These sources were reviewed, not executed.

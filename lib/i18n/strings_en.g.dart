@@ -3291,6 +3291,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleStudy$en subtitleStudy = Translations$videoControls$subtitleStudy$en.internal(_root);
 	late final Translations$videoControls$subtitleCloudSync$en subtitleCloudSync = Translations$videoControls$subtitleCloudSync$en.internal(_root);
 	late final Translations$videoControls$subtitleResearchReview$en subtitleResearchReview = Translations$videoControls$subtitleResearchReview$en.internal(_root);
+	late final Translations$videoControls$subtitleReviewFlow$en subtitleReviewFlow = Translations$videoControls$subtitleReviewFlow$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
@@ -14044,6 +14045,265 @@ class Translations$videoControls$subtitleResearchReview$en {
 
 }
 
+// Path: videoControls.subtitleReviewFlow
+class Translations$videoControls$subtitleReviewFlow$en {
+	Translations$videoControls$subtitleReviewFlow$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Revision history needs an active profile and media item.'
+	String get revisionIdentityRequired => 'Revision history needs an active profile and media item.';
+
+	/// en: 'Saved revision ${id} to this device for this profile and media item.'
+	String revisionSaved({required Object id}) => 'Saved revision ${id} to this device for this profile and media item.';
+
+	/// en: 'Could not save this revision locally: ${error}'
+	String revisionSaveFailed({required Object error}) => 'Could not save this revision locally: ${error}';
+
+	/// en: 'one undo step'
+	String get oneUndoStep => 'one undo step';
+
+	/// en: '${count} undo steps'
+	String undoSteps({required Object count}) => '${count} undo steps';
+
+	/// en: 'Resume subtitle review?'
+	String get resumeDraftTitle => 'Resume subtitle review?';
+
+	/// en: 'An in-progress ${operation} review from ${date} matches this exact subtitle result. Resume ${steps}?'
+	String resumeDraftDescription({required Object operation, required Object date, required Object steps}) => 'An in-progress ${operation} review from ${date} matches this exact subtitle result. Resume ${steps}?';
+
+	/// en: 'Discard draft'
+	String get discardDraft => 'Discard draft';
+
+	/// en: 'Resume review'
+	String get resumeReview => 'Resume review';
+
+	/// en: 'Keep the saved review?'
+	String get keepDraftTitle => 'Keep the saved review?';
+
+	/// en: 'This item already has an unfinished ${operation} review from ${date}. Resume or delete it from subtitle history before starting a different review.'
+	String keepDraftDescription({required Object operation, required Object date}) => 'This item already has an unfinished ${operation} review from ${date}. Resume or delete it from subtitle history before starting a different review.';
+
+	/// en: 'Keep saved draft'
+	String get keepSavedDraft => 'Keep saved draft';
+
+	/// en: 'Delete and continue'
+	String get deleteAndContinue => 'Delete and continue';
+
+	/// en: 'Could not clear the saved subtitle review draft: ${error}'
+	String draftDeleteFailed({required Object error}) => 'Could not clear the saved subtitle review draft: ${error}';
+
+	/// en: 'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.'
+	String get undoIdentityHelp => 'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.';
+
+	/// en: 'Saved an undo checkpoint to this device for this item.'
+	String get undoCheckpointSaved => 'Saved an undo checkpoint to this device for this item.';
+
+	/// en: 'Could not save an undo checkpoint; the accepted revision remains available: ${error}'
+	String undoCheckpointSaveFailed({required Object error}) => 'Could not save an undo checkpoint; the accepted revision remains available: ${error}';
+
+	/// en: 'Edit subtitle cue'
+	String get editCueTitle => 'Edit subtitle cue';
+
+	/// en: 'Cue text'
+	String get cueText => 'Cue text';
+
+	/// en: 'Start (ms)'
+	String get startMs => 'Start (ms)';
+
+	/// en: 'End (ms)'
+	String get endMs => 'End (ms)';
+
+	/// en: 'Use non-empty text up to 4000 characters and valid millisecond times.'
+	String get invalidCue => 'Use non-empty text up to 4000 characters and valid millisecond times.';
+
+	/// en: 'Save cue'
+	String get saveCue => 'Save cue';
+
+	/// en: 'Edit all ${count} cues'
+	String editAllCues({required Object count}) => 'Edit all ${count} cues';
+
+	/// en: 'Review or edit any output cue. Changes stay in this result until you attach it.'
+	String get editAllDescription => 'Review or edit any output cue. Changes stay in this result until you attach it.';
+
+	/// en: 'Find in source or output cues'
+	String get findCues => 'Find in source or output cues';
+
+	/// en: 'Showing ${visible} of ${total} cues.'
+	String showingCues({required Object visible, required Object total}) => 'Showing ${visible} of ${total} cues.';
+
+	/// en: 'No cues match this search.'
+	String get noMatchingCues => 'No cues match this search.';
+
+	/// en: 'Cue ${index} · ${start} – ${end}'
+	String cueSummary({required Object index, required Object start, required Object end}) => 'Cue ${index} · ${start} – ${end}';
+
+	/// en: 'Original'
+	String get original => 'Original';
+
+	/// en: 'Output'
+	String get output => 'Output';
+
+	/// en: 'Edit cue'
+	String get editCueTooltip => 'Edit cue';
+
+	/// en: 'Undo (${count})'
+	String undo({required Object count}) => 'Undo (${count})';
+
+	/// en: 'Clip captions at this media part?'
+	String get clipPartTitle => 'Clip captions at this media part?';
+
+	/// en: '${count} cues begin before the opened part. They will be clipped or omitted in the native sidecar; saved history and exports keep item times.'
+	String clipPartDescription({required Object count}) => '${count} cues begin before the opened part. They will be clipped or omitted in the native sidecar; saved history and exports keep item times.';
+
+	/// en: 'Attach this part'
+	String get attachThisPart => 'Attach this part';
+
+	/// en: 'Native caption attachment cancelled.'
+	String get attachmentCancelled => 'Native caption attachment cancelled.';
+
+	/// en: 'Subtitle result has no cues or exceeds the 50000 cue processing bound.'
+	String get resultCueLimit => 'Subtitle result has no cues or exceeds the 50000 cue processing bound.';
+
+	/// en: 'Source and output cue counts do not match; no subtitle was attached.'
+	String get cueCountsMismatch => 'Source and output cue counts do not match; no subtitle was attached.';
+
+	/// en: 'The subtitle was saved, but translation memory could not be updated.'
+	String get memoryUpdateFailed => 'The subtitle was saved, but translation memory could not be updated.';
+
+	/// en: 'This subtitle review draft no longer matches the active item or cue set.'
+	String get reviewDraftMismatch => 'This subtitle review draft no longer matches the active item or cue set.';
+
+	/// en: 'The saved review draft is still available to resume later.'
+	String get savedDraftAvailable => 'The saved review draft is still available to resume later.';
+
+	/// en: 'The earlier review draft was kept; resume it from subtitle history.'
+	String get earlierDraftKept => 'The earlier review draft was kept; resume it from subtitle history.';
+
+	/// en: 'Saved this subtitle review and its undo steps on this device.'
+	String get reviewDraftSaved => 'Saved this subtitle review and its undo steps on this device.';
+
+	/// en: 'Could not save the subtitle review draft: ${error}'
+	String reviewDraftSaveFailed({required Object error}) => 'Could not save the subtitle review draft: ${error}';
+
+	/// en: 'Review ${operation}'
+	String reviewTitle({required Object operation}) => 'Review ${operation}';
+
+	/// en: '${count} cues are ready. Review this sample before attaching the generated SRT.'
+	String readyCues({required Object count}) => '${count} cues are ready. Review this sample before attaching the generated SRT.';
+
+	/// en: 'These cues use the complete item timeline. Native/local sidecar attachment converts to the opened part; multipart server upload is unavailable without an explicit server part contract.'
+	String get itemTimelineNote => 'These cues use the complete item timeline. Native/local sidecar attachment converts to the opened part; multipart server upload is unavailable without an explicit server part contract.';
+
+	/// en: 'Glossary or number differences flagged: ${count}. Review these cues before attaching.'
+	String translationWarnings({required Object count}) => 'Glossary or number differences flagged: ${count}. Review these cues before attaching.';
+
+	/// en: 'And ${count} more.'
+	String warningMore({required Object count}) => 'And ${count} more.';
+
+	/// en: 'Edits and undo stay in this review session. Save SRT or JSON exports a separate result without changing the source subtitle.'
+	String get sessionEditHelp => 'Edits and undo stay in this review session. Save SRT or JSON exports a separate result without changing the source subtitle.';
+
+	/// en: 'Edits and undo steps auto-save to this device for this item. Save SRT or JSON exports a separate result without changing the source subtitle.'
+	String get persistentEditHelp => 'Edits and undo steps auto-save to this device for this item. Save SRT or JSON exports a separate result without changing the source subtitle.';
+
+	/// en: 'This backend did not return token timestamps; cue timing remains available.'
+	String get noTokenTimings => 'This backend did not return token timestamps; cue timing remains available.';
+
+	/// en: 'JSON includes ${count} token-derived word timings. Editing a cue omits its linked spans so timings cannot become stale. Whisper token confidence is not calibrated.'
+	String wordTimingHelp({required Object count}) => 'JSON includes ${count} token-derived word timings. Editing a cue omits its linked spans so timings cannot become stale. Whisper token confidence is not calibrated.';
+
+	/// en: 'Edit all cues'
+	String get editAllCuesButton => 'Edit all cues';
+
+	/// en: 'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.'
+	String get burnedInWarning => 'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.';
+
+	/// en: 'Upload + attach stores this SRT on the active library item when the server allows it.'
+	String get serverUploadInfo => 'Upload + attach stores this SRT on the active library item when the server allows it.';
+
+	/// en: 'This SRT can be stored with the active standalone source item and attached to this player.'
+	String get sourceSaveInfo => 'This SRT can be stored with the active standalone source item and attached to this player.';
+
+	/// en: 'Server upload is unavailable because this result has no known subtitle language. You can still attach it to the current player.'
+	String get serverUnavailableLanguage => 'Server upload is unavailable because this result has no known subtitle language. You can still attach it to the current player.';
+
+	/// en: 'Server upload is unavailable because this is not an active server library item. You can still attach it to the current player.'
+	String get serverUnavailableItem => 'Server upload is unavailable because this is not an active server library item. You can still attach it to the current player.';
+
+	/// en: '${start} – ${end}'
+	String cueTime({required Object start, required Object end}) => '${start} – ${end}';
+
+	/// en: 'Edit sample cue'
+	String get editSampleCue => 'Edit sample cue';
+
+	/// en: 'Save SRT'
+	String get saveSrt => 'Save SRT';
+
+	/// en: 'Save JSON'
+	String get saveJson => 'Save JSON';
+
+	/// en: 'Discard'
+	String get discard => 'Discard';
+
+	/// en: 'Upload + attach'
+	String get uploadAndAttach => 'Upload + attach';
+
+	/// en: 'Save to source + attach'
+	String get saveToSourceAndAttach => 'Save to source + attach';
+
+	/// en: 'App overlay 1'
+	String get appOverlayOne => 'App overlay 1';
+
+	/// en: 'App overlay 2'
+	String get appOverlayTwo => 'App overlay 2';
+
+	/// en: 'Attach to player'
+	String get attachToPlayer => 'Attach to player';
+
+	/// en: 'Subtitle result discarded; the current track and source file are unchanged.'
+	String get resultDiscarded => 'Subtitle result discarded; the current track and source file are unchanged.';
+
+	/// en: 'Save reviewed subtitle'
+	String get saveSrtTitle => 'Save reviewed subtitle';
+
+	/// en: 'SRT export was cancelled; the active track and source subtitle are unchanged.'
+	String get srtExportCancelled => 'SRT export was cancelled; the active track and source subtitle are unchanged.';
+
+	/// en: 'Reviewed subtitle exported as SRT.'
+	String get srtExported => 'Reviewed subtitle exported as SRT.';
+
+	/// en: 'Save reviewed subtitle cue JSON'
+	String get saveJsonTitle => 'Save reviewed subtitle cue JSON';
+
+	/// en: 'JSON export was cancelled; the active track and source subtitle are unchanged.'
+	String get jsonExportCancelled => 'JSON export was cancelled; the active track and source subtitle are unchanged.';
+
+	/// en: 'Reviewed subtitle exported as versioned cue JSON.'
+	String get jsonExported => 'Reviewed subtitle exported as versioned cue JSON.';
+
+	/// en: 'The result language could not be identified for server upload.'
+	String get serverLanguageUnknown => 'The result language could not be identified for server upload.';
+
+	/// en: 'This item cannot store a standalone subtitle sidecar.'
+	String get noStandaloneSidecar => 'This item cannot store a standalone subtitle sidecar.';
+
+	/// en: 'Uploaded to the server library, but could not attach the local copy: ${error}'
+	String uploadedButLocalAttachFailed({required Object error}) => 'Uploaded to the server library, but could not attach the local copy: ${error}';
+
+	/// en: 'This playback item is not linked to a server library entry.'
+	String get notServerItem => 'This playback item is not linked to a server library entry.';
+
+	/// en: 'The media server is offline or unavailable.'
+	String get serverOffline => 'The media server is offline or unavailable.';
+
+	/// en: 'The server refused this subtitle upload or does not support library attachment.'
+	String get serverRefusedUpload => 'The server refused this subtitle upload or does not support library attachment.';
+
+}
+
 // Path: videoControls.subtitleRoles
 class Translations$videoControls$subtitleRoles$en {
 	Translations$videoControls$subtitleRoles$en.internal(this._root);
@@ -18280,6 +18540,89 @@ extension on Translations {
 			'videoControls.subtitleResearchReview.jobMeasurements' => 'Job-level measurements',
 			'videoControls.subtitleResearchReview.exportAction' => 'Export evidence JSON',
 			'videoControls.subtitleResearchReview.continueReview' => 'Continue to caption review',
+			'videoControls.subtitleReviewFlow.revisionIdentityRequired' => 'Revision history needs an active profile and media item.',
+			'videoControls.subtitleReviewFlow.revisionSaved' => ({required Object id}) => 'Saved revision ${id} to this device for this profile and media item.',
+			'videoControls.subtitleReviewFlow.revisionSaveFailed' => ({required Object error}) => 'Could not save this revision locally: ${error}',
+			'videoControls.subtitleReviewFlow.oneUndoStep' => 'one undo step',
+			'videoControls.subtitleReviewFlow.undoSteps' => ({required Object count}) => '${count} undo steps',
+			'videoControls.subtitleReviewFlow.resumeDraftTitle' => 'Resume subtitle review?',
+			'videoControls.subtitleReviewFlow.resumeDraftDescription' => ({required Object operation, required Object date, required Object steps}) => 'An in-progress ${operation} review from ${date} matches this exact subtitle result. Resume ${steps}?',
+			'videoControls.subtitleReviewFlow.discardDraft' => 'Discard draft',
+			'videoControls.subtitleReviewFlow.resumeReview' => 'Resume review',
+			'videoControls.subtitleReviewFlow.keepDraftTitle' => 'Keep the saved review?',
+			'videoControls.subtitleReviewFlow.keepDraftDescription' => ({required Object operation, required Object date}) => 'This item already has an unfinished ${operation} review from ${date}. Resume or delete it from subtitle history before starting a different review.',
+			'videoControls.subtitleReviewFlow.keepSavedDraft' => 'Keep saved draft',
+			'videoControls.subtitleReviewFlow.deleteAndContinue' => 'Delete and continue',
+			'videoControls.subtitleReviewFlow.draftDeleteFailed' => ({required Object error}) => 'Could not clear the saved subtitle review draft: ${error}',
+			'videoControls.subtitleReviewFlow.undoIdentityHelp' => 'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.',
+			'videoControls.subtitleReviewFlow.undoCheckpointSaved' => 'Saved an undo checkpoint to this device for this item.',
+			'videoControls.subtitleReviewFlow.undoCheckpointSaveFailed' => ({required Object error}) => 'Could not save an undo checkpoint; the accepted revision remains available: ${error}',
+			'videoControls.subtitleReviewFlow.editCueTitle' => 'Edit subtitle cue',
+			'videoControls.subtitleReviewFlow.cueText' => 'Cue text',
+			'videoControls.subtitleReviewFlow.startMs' => 'Start (ms)',
+			'videoControls.subtitleReviewFlow.endMs' => 'End (ms)',
+			'videoControls.subtitleReviewFlow.invalidCue' => 'Use non-empty text up to 4000 characters and valid millisecond times.',
+			'videoControls.subtitleReviewFlow.saveCue' => 'Save cue',
+			'videoControls.subtitleReviewFlow.editAllCues' => ({required Object count}) => 'Edit all ${count} cues',
+			'videoControls.subtitleReviewFlow.editAllDescription' => 'Review or edit any output cue. Changes stay in this result until you attach it.',
+			'videoControls.subtitleReviewFlow.findCues' => 'Find in source or output cues',
+			'videoControls.subtitleReviewFlow.showingCues' => ({required Object visible, required Object total}) => 'Showing ${visible} of ${total} cues.',
+			'videoControls.subtitleReviewFlow.noMatchingCues' => 'No cues match this search.',
+			'videoControls.subtitleReviewFlow.cueSummary' => ({required Object index, required Object start, required Object end}) => 'Cue ${index} · ${start} – ${end}',
+			'videoControls.subtitleReviewFlow.original' => 'Original',
+			'videoControls.subtitleReviewFlow.output' => 'Output',
+			'videoControls.subtitleReviewFlow.editCueTooltip' => 'Edit cue',
+			'videoControls.subtitleReviewFlow.undo' => ({required Object count}) => 'Undo (${count})',
+			'videoControls.subtitleReviewFlow.clipPartTitle' => 'Clip captions at this media part?',
+			'videoControls.subtitleReviewFlow.clipPartDescription' => ({required Object count}) => '${count} cues begin before the opened part. They will be clipped or omitted in the native sidecar; saved history and exports keep item times.',
+			'videoControls.subtitleReviewFlow.attachThisPart' => 'Attach this part',
+			'videoControls.subtitleReviewFlow.attachmentCancelled' => 'Native caption attachment cancelled.',
+			'videoControls.subtitleReviewFlow.resultCueLimit' => 'Subtitle result has no cues or exceeds the 50000 cue processing bound.',
+			'videoControls.subtitleReviewFlow.cueCountsMismatch' => 'Source and output cue counts do not match; no subtitle was attached.',
+			'videoControls.subtitleReviewFlow.memoryUpdateFailed' => 'The subtitle was saved, but translation memory could not be updated.',
+			'videoControls.subtitleReviewFlow.reviewDraftMismatch' => 'This subtitle review draft no longer matches the active item or cue set.',
+			'videoControls.subtitleReviewFlow.savedDraftAvailable' => 'The saved review draft is still available to resume later.',
+			'videoControls.subtitleReviewFlow.earlierDraftKept' => 'The earlier review draft was kept; resume it from subtitle history.',
+			'videoControls.subtitleReviewFlow.reviewDraftSaved' => 'Saved this subtitle review and its undo steps on this device.',
+			'videoControls.subtitleReviewFlow.reviewDraftSaveFailed' => ({required Object error}) => 'Could not save the subtitle review draft: ${error}',
+			'videoControls.subtitleReviewFlow.reviewTitle' => ({required Object operation}) => 'Review ${operation}',
+			'videoControls.subtitleReviewFlow.readyCues' => ({required Object count}) => '${count} cues are ready. Review this sample before attaching the generated SRT.',
+			'videoControls.subtitleReviewFlow.itemTimelineNote' => 'These cues use the complete item timeline. Native/local sidecar attachment converts to the opened part; multipart server upload is unavailable without an explicit server part contract.',
+			'videoControls.subtitleReviewFlow.translationWarnings' => ({required Object count}) => 'Glossary or number differences flagged: ${count}. Review these cues before attaching.',
+			'videoControls.subtitleReviewFlow.warningMore' => ({required Object count}) => 'And ${count} more.',
+			'videoControls.subtitleReviewFlow.sessionEditHelp' => 'Edits and undo stay in this review session. Save SRT or JSON exports a separate result without changing the source subtitle.',
+			'videoControls.subtitleReviewFlow.persistentEditHelp' => 'Edits and undo steps auto-save to this device for this item. Save SRT or JSON exports a separate result without changing the source subtitle.',
+			'videoControls.subtitleReviewFlow.noTokenTimings' => 'This backend did not return token timestamps; cue timing remains available.',
+			'videoControls.subtitleReviewFlow.wordTimingHelp' => ({required Object count}) => 'JSON includes ${count} token-derived word timings. Editing a cue omits its linked spans so timings cannot become stale. Whisper token confidence is not calibrated.',
+			'videoControls.subtitleReviewFlow.editAllCuesButton' => 'Edit all cues',
+			'videoControls.subtitleReviewFlow.burnedInWarning' => 'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.',
+			'videoControls.subtitleReviewFlow.serverUploadInfo' => 'Upload + attach stores this SRT on the active library item when the server allows it.',
+			'videoControls.subtitleReviewFlow.sourceSaveInfo' => 'This SRT can be stored with the active standalone source item and attached to this player.',
+			'videoControls.subtitleReviewFlow.serverUnavailableLanguage' => 'Server upload is unavailable because this result has no known subtitle language. You can still attach it to the current player.',
+			'videoControls.subtitleReviewFlow.serverUnavailableItem' => 'Server upload is unavailable because this is not an active server library item. You can still attach it to the current player.',
+			'videoControls.subtitleReviewFlow.cueTime' => ({required Object start, required Object end}) => '${start} – ${end}',
+			'videoControls.subtitleReviewFlow.editSampleCue' => 'Edit sample cue',
+			'videoControls.subtitleReviewFlow.saveSrt' => 'Save SRT',
+			'videoControls.subtitleReviewFlow.saveJson' => 'Save JSON',
+			'videoControls.subtitleReviewFlow.discard' => 'Discard',
+			'videoControls.subtitleReviewFlow.uploadAndAttach' => 'Upload + attach',
+			'videoControls.subtitleReviewFlow.saveToSourceAndAttach' => 'Save to source + attach',
+			'videoControls.subtitleReviewFlow.appOverlayOne' => 'App overlay 1',
+			'videoControls.subtitleReviewFlow.appOverlayTwo' => 'App overlay 2',
+			'videoControls.subtitleReviewFlow.attachToPlayer' => 'Attach to player',
+			'videoControls.subtitleReviewFlow.resultDiscarded' => 'Subtitle result discarded; the current track and source file are unchanged.',
+			'videoControls.subtitleReviewFlow.saveSrtTitle' => 'Save reviewed subtitle',
+			'videoControls.subtitleReviewFlow.srtExportCancelled' => 'SRT export was cancelled; the active track and source subtitle are unchanged.',
+			'videoControls.subtitleReviewFlow.srtExported' => 'Reviewed subtitle exported as SRT.',
+			'videoControls.subtitleReviewFlow.saveJsonTitle' => 'Save reviewed subtitle cue JSON',
+			'videoControls.subtitleReviewFlow.jsonExportCancelled' => 'JSON export was cancelled; the active track and source subtitle are unchanged.',
+			'videoControls.subtitleReviewFlow.jsonExported' => 'Reviewed subtitle exported as versioned cue JSON.',
+			'videoControls.subtitleReviewFlow.serverLanguageUnknown' => 'The result language could not be identified for server upload.',
+			'videoControls.subtitleReviewFlow.noStandaloneSidecar' => 'This item cannot store a standalone subtitle sidecar.',
+			'videoControls.subtitleReviewFlow.uploadedButLocalAttachFailed' => ({required Object error}) => 'Uploaded to the server library, but could not attach the local copy: ${error}',
+			'videoControls.subtitleReviewFlow.notServerItem' => 'This playback item is not linked to a server library entry.',
+			'videoControls.subtitleReviewFlow.serverOffline' => 'The media server is offline or unavailable.',
+			'videoControls.subtitleReviewFlow.serverRefusedUpload' => 'The server refused this subtitle upload or does not support library attachment.',
 			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
 			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
 			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',

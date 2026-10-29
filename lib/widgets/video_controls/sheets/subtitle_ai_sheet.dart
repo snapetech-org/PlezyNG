@@ -240,6 +240,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   TranslateLanguage _sourceLanguage = TranslateLanguage.english;
   TranslateLanguage _targetLanguage = TranslateLanguage.spanish;
 
+  Translations get _t => Translations.of(context);
+
   @override
   void dispose() {
     _activeCompanion?.close();
@@ -2127,7 +2129,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     bool onItemTimeline = false,
   }) async {
     if (identity == null) {
-      if (mounted) setState(() => _revisionStatus = 'Revision history needs an active profile and media item.');
+      if (mounted) setState(() => _revisionStatus = _t.videoControls.subtitleReviewFlow.revisionIdentityRequired);
       return false;
     }
     try {
@@ -2141,52 +2143,55 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       );
       if (mounted) {
         setState(
-          () => _revisionStatus = 'Saved revision ${revision.id} to this device for this profile and media item.',
+          () => _revisionStatus = _t.videoControls.subtitleReviewFlow.revisionSaved(id: revision.id),
         );
       }
       return true;
     } catch (error) {
-      if (mounted) setState(() => _revisionStatus = 'Could not save this revision locally: $error');
+      if (mounted) setState(() => _revisionStatus = _t.videoControls.subtitleReviewFlow.revisionSaveFailed(error: error));
       return false;
     }
   }
 
-  Future<bool?> _askToRecoverSubtitleDraft(SubtitleRevisionDraft draft) => showDialog<bool>(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: const Text('Resume subtitle review?'),
-      content: Text(
-        'An in-progress ${draft.operation.toLowerCase()} review from ${_formatRevisionDate(draft.savedAt)} '
-        'matches this exact subtitle result. Resume ${draft.undoHistory.length} undo step${draft.undoHistory.length == 1 ? '' : 's'}?',
+  Future<bool?> _askToRecoverSubtitleDraft(SubtitleRevisionDraft draft) {
+    final copy = _t.videoControls.subtitleReviewFlow;
+    final undoSteps = draft.undoHistory.length == 1 ? copy.oneUndoStep : copy.undoSteps(count: draft.undoHistory.length);
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(copy.resumeDraftTitle),
+        content: Text(copy.resumeDraftDescription(operation: draft.operation.toLowerCase(),
+          date: _formatRevisionDate(draft.savedAt), steps: undoSteps)),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(copy.discardDraft)),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(copy.resumeReview)),
+        ],
       ),
-      actions: [
-        TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Discard draft')),
-        FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Resume review')),
-      ],
-    ),
-  );
+    );
+  }
 
-  Future<bool?> _askToReplaceSubtitleDraft(SubtitleRevisionDraft draft) => showDialog<bool>(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: const Text('Keep the saved review?'),
-      content: Text(
-        'This item already has an unfinished ${draft.operation.toLowerCase()} review from '
-        '${_formatRevisionDate(draft.savedAt)}. Resume or delete it from subtitle history before starting a different review.',
+  Future<bool?> _askToReplaceSubtitleDraft(SubtitleRevisionDraft draft) {
+    final copy = _t.videoControls.subtitleReviewFlow;
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(copy.keepDraftTitle),
+        content: Text(copy.keepDraftDescription(operation: draft.operation.toLowerCase(),
+          date: _formatRevisionDate(draft.savedAt))),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(copy.keepSavedDraft)),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(copy.deleteAndContinue)),
+        ],
       ),
-      actions: [
-        TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Keep saved draft')),
-        FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Delete and continue')),
-      ],
-    ),
-  );
+    );
+  }
 
   Future<void> _deleteSubtitleDraft(SubtitleRevisionIdentity? identity) async {
     if (identity == null) return;
     try {
       await SubtitleRevisionService.deleteDraft(identity);
     } catch (error) {
-      if (mounted) setState(() => _revisionStatus = 'Could not clear the saved subtitle review draft: $error');
+      if (mounted) setState(() => _revisionStatus = _t.videoControls.subtitleReviewFlow.draftDeleteFailed(error: error));
     }
   }
 
@@ -2202,7 +2207,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (mounted) {
         setState(
           () => _revisionStatus =
-              'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.',
+              _t.videoControls.subtitleReviewFlow.undoIdentityHelp,
         );
       }
       return true;
@@ -2217,12 +2222,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         cues: cues,
         wordTimings: wordTimings,
       );
-      if (mounted) setState(() => _revisionStatus = 'Saved an undo checkpoint to this device for this item.');
+      if (mounted) setState(() => _revisionStatus = _t.videoControls.subtitleReviewFlow.undoCheckpointSaved);
       return true;
     } catch (error) {
       if (mounted) {
         setState(
-          () => _revisionStatus = 'Could not save an undo checkpoint; the accepted revision remains available: $error',
+          () => _revisionStatus = _t.videoControls.subtitleReviewFlow.undoCheckpointSaveFailed(error: error),
         );
       }
       return false;
@@ -2289,12 +2294,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final output = SubtitleSyncService.writeSrtForPart(cues, offset);
     if (output.clipped > 0) {
       if (!mounted) throw StateError('Playback closed');
+      final copy = _t.videoControls.subtitleReviewFlow;
       final accepted = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
-        title: const Text('Clip captions at this media part?'),
-        content: Text('${output.clipped} cues begin before the opened part. They will be clipped or omitted in the native sidecar; saved history and exports keep item times.'),
-        actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Attach this part'))]));
-      if (accepted != true) throw StateError('Native caption attachment cancelled');
+        title: Text(copy.clipPartTitle),
+        content: Text(copy.clipPartDescription(count: output.clipped)),
+        actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(_t.common.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(copy.attachThisPart))]));
+      if (accepted != true) throw StateError(copy.attachmentCancelled);
     }
     _requireCurrentOperationIdentity();
     if (widget.player.timelineOffset.inMilliseconds != offset) throw StateError('The opened media part changed');
@@ -2959,6 +2965,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   });
 
   Future<SubtitleCue?> _editCueForReview(BuildContext dialogContext, SubtitleCue cue) async {
+    final copy = Translations.of(dialogContext).videoControls.subtitleReviewFlow;
     final textController = TextEditingController(text: cue.text);
     final startController = TextEditingController(text: cue.startMs.toString());
     final endController = TextEditingController(text: cue.endMs.toString());
@@ -2969,7 +2976,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         context: dialogContext,
         builder: (editorContext) => StatefulBuilder(
           builder: (context, setEditorState) => AlertDialog(
-            title: const Text('Edit subtitle cue'),
+            title: Text(copy.editCueTitle),
             content: SizedBox(
               width: 480,
               child: SingleChildScrollView(
@@ -2981,7 +2988,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       controller: textController,
                       minLines: 3,
                       maxLines: 8,
-                      decoration: const InputDecoration(labelText: 'Cue text', border: OutlineInputBorder()),
+                      decoration: InputDecoration(labelText: copy.cueText, border: const OutlineInputBorder()),
                     ),
                     TextButton(onPressed: () => tagSubtitleSelection(editorContext, textController),
                       child: Text(Translations.of(editorContext).videoControls.subtitleLanguageAnnotateAction)),
@@ -2992,7 +2999,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                           child: TextField(
                             controller: startController,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'Start (ms)', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: copy.startMs, border: const OutlineInputBorder()),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -3000,7 +3007,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                           child: TextField(
                             controller: endController,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'End (ms)', border: OutlineInputBorder()),
+                            decoration: InputDecoration(labelText: copy.endMs, border: const OutlineInputBorder()),
                           ),
                         ),
                       ],
@@ -3014,7 +3021,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.of(editorContext).pop(false), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.of(editorContext).pop(false), child: Text(Translations.of(editorContext).common.cancel)),
               FilledButton(
                 onPressed: () {
                   final startMs = int.tryParse(startController.text.trim());
@@ -3028,7 +3035,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       text.trim().isEmpty ||
                       text.length > 4000) {
                     setEditorState(() {
-                      validationError = 'Use non-empty text up to 4000 characters and valid millisecond times.';
+                      validationError = copy.invalidCue;
                     });
                     return;
                   }
@@ -3041,7 +3048,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   );
                   Navigator.of(editorContext).pop(true);
                 },
-                child: const Text('Save cue'),
+                child: Text(copy.saveCue),
               ),
             ],
           ),
@@ -3067,6 +3074,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     required List<(int, SubtitleCue)> undoHistory,
     VoidCallback? onChanged,
   }) async {
+    final copy = Translations.of(dialogContext).videoControls.subtitleReviewFlow;
     final searchController = TextEditingController();
     var query = '';
     try {
@@ -3086,32 +3094,32 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 })
                 .toList(growable: false);
             return AlertDialog(
-              title: Text('Edit all ${cues.length} cues'),
+              title: Text(copy.editAllCues(count: cues.length)),
               content: SizedBox(
                 width: 720,
                 height: (MediaQuery.sizeOf(editorContext).height - 220).clamp(280.0, 560.0).toDouble(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text('Review or edit any output cue. Changes stay in this result until you attach it.'),
+                    Text(copy.editAllDescription),
                     const SizedBox(height: 8),
                     TextField(
                       controller: searchController,
                       maxLength: 128,
-                      decoration: const InputDecoration(
-                        labelText: 'Find in source or output cues',
-                        prefixIcon: AppIcon(Symbols.search_rounded),
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: copy.findCues,
+                        prefixIcon: const AppIcon(Symbols.search_rounded),
+                        border: const OutlineInputBorder(),
                         counterText: '',
                       ),
                       onChanged: (value) => setEditorState(() => query = value),
                     ),
                     const SizedBox(height: 4),
-                    Text('Showing ${visibleIndexes.length} of ${cues.length} cues.'),
+                    Text(copy.showingCues(visible: visibleIndexes.length, total: cues.length)),
                     const SizedBox(height: 6),
                     Expanded(
                       child: visibleIndexes.isEmpty
-                          ? const Center(child: Text('No cues match this search.'))
+                          ? Center(child: Text(copy.noMatchingCues))
                           : ListView.builder(
                               itemCount: visibleIndexes.length,
                               itemBuilder: (context, visibleIndex) {
@@ -3132,22 +3140,22 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                 return ListTile(
                                   contentPadding: EdgeInsets.zero,
                                   title: Text(
-                                    'Cue ${cue.index} · ${_formatCueTime(cue.startMs)} – ${_formatCueTime(cue.endMs)}',
+                                    copy.cueSummary(index: cue.index, start: _formatCueTime(cue.startMs), end: _formatCueTime(cue.endMs)),
                                   ),
                                   subtitle: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       if (original != null) ...[
-                                        Text('Original', style: Theme.of(context).textTheme.labelSmall),
+                                        Text(copy.original, style: Theme.of(context).textTheme.labelSmall),
                                         SelectableText(original),
                                         const SizedBox(height: 4),
                                       ],
-                                      Text('Output', style: Theme.of(context).textTheme.labelSmall),
+                                      Text(copy.output, style: Theme.of(context).textTheme.labelSmall),
                                       SelectableText(cue.text),
                                     ],
                                   ),
                                   trailing: IconButton(
-                                    tooltip: 'Edit cue',
+                                    tooltip: copy.editCueTooltip,
                                     onPressed: editCue,
                                     icon: const AppIcon(Symbols.edit_rounded),
                                   ),
@@ -3168,9 +3176,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       onChanged?.call();
                     },
                     icon: const AppIcon(Symbols.undo_rounded),
-                    label: Text('Undo (${undoHistory.length})'),
+                    label: Text(copy.undo(count: undoHistory.length)),
                   ),
-                TextButton(onPressed: () => Navigator.of(editorContext).pop(), child: const Text('Done')),
+                TextButton(onPressed: () => Navigator.of(editorContext).pop(), child: Text(Translations.of(editorContext).common.done)),
               ],
             );
           },
@@ -3194,13 +3202,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
 
   Future<void> _uploadSubtitleToServer(Uint8List bytes, String languageCode, String originToken) async {
+    final copy = _t.videoControls.subtitleReviewFlow;
     final serverId = widget.serverId;
     final ratingKey = widget.ratingKey;
     if (serverId == null || serverId.isEmpty || ratingKey == null || ratingKey.isEmpty) {
-      throw StateError('This playback item is not linked to a server library entry.');
+      throw StateError(copy.notServerItem);
     }
     final client = context.tryGetMediaClientForServer(ServerId(serverId));
-    if (client == null) throw StateError('The media server is offline or unavailable.');
+    if (client == null) throw StateError(copy.serverOffline);
     final uploaded = await client.attachSubtitle(
       ratingKey,
       bytes: bytes,
@@ -3210,7 +3219,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       mediaIndex: widget.mediaIndex,
     );
     if (!uploaded) {
-      throw UnsupportedError('The server refused this subtitle upload or does not support library attachment.');
+      throw UnsupportedError(copy.serverRefusedUpload);
     }
   }
 
@@ -3236,18 +3245,20 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     SubtitleRevisionIdentity? resumeIdentity,
     Future<void> Function(List<SubtitleCue>)? onAcceptedReview,
   }) async {
+    if (!mounted) return false;
+    final copy = _t.videoControls.subtitleReviewFlow;
     if (cues.isEmpty || cues.length > SubtitleRetimer.maximumCueCount) {
-      throw const FormatException('Subtitle result has no cues or exceeds the 50000 cue processing bound.');
+      throw FormatException(copy.resultCueLimit);
     }
     if (sourceCues != null && sourceCues.length != cues.length) {
-      throw StateError('Source and output cue counts do not match; no subtitle was attached.');
+      throw StateError(copy.cueCountsMismatch);
     }
     var reviewedCues = List<SubtitleCue>.from(cues);
     Future<void> rememberAcceptedReview() async {
       if (onAcceptedReview == null) return;
       try { await onAcceptedReview(List<SubtitleCue>.unmodifiable(reviewedCues)); }
       catch (_) {
-        if (mounted) setState(() => _revisionStatus = 'The subtitle was saved, but translation memory could not be updated.');
+        if (mounted) setState(() => _revisionStatus = copy.memoryUpdateFailed);
       }
     }
     final originalCuesById = <String, SubtitleCue>{for (final cue in cues) cue.stableId: cue};
@@ -3264,7 +3275,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           (snapshot != null && snapshot.revisionIdentity?.storageKey != resumeIdentity.storageKey) ||
           resumeDraft.sourceFingerprint != sourceFingerprint ||
           resumeDraft.operation != operationLabel || resumeDraft.onItemTimeline != onItemTimeline) {
-        throw StateError('This subtitle review draft no longer matches the active item or cue set.');
+        throw StateError(copy.reviewDraftMismatch);
       }
       reviewedCues = List<SubtitleCue>.from(resumeDraft.cues);
       reviewedWordTimings = List<SubtitleWordTiming>.from(resumeDraft.wordTimings);
@@ -3275,7 +3286,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         if (draft.sourceFingerprint == sourceFingerprint && draft.operation == operationLabel && draft.onItemTimeline == onItemTimeline) {
           final recovery = await _askToRecoverSubtitleDraft(draft);
           if (recovery == null) {
-            setState(() => _revisionStatus = 'The saved review draft is still available to resume later.');
+            setState(() => _revisionStatus = copy.savedDraftAvailable);
             return false;
           }
           if (recovery) {
@@ -3288,7 +3299,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         } else {
           final discardPriorDraft = await _askToReplaceSubtitleDraft(draft);
           if (discardPriorDraft != true) {
-            setState(() => _revisionStatus = 'The earlier review draft was kept; resume it from subtitle history.');
+            setState(() => _revisionStatus = copy.earlierDraftKept);
             return false;
           }
           await _deleteSubtitleDraft(draftIdentity);
@@ -3313,9 +3324,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             undoHistory: List<(int, SubtitleCue)>.unmodifiable(undoHistory),
           ),
         );
-        if (mounted) setState(() => _revisionStatus = 'Saved this subtitle review and its undo steps on this device.');
+        if (mounted) setState(() => _revisionStatus = copy.reviewDraftSaved);
       } catch (error) {
-        if (mounted) setState(() => _revisionStatus = 'Could not save the subtitle review draft: $error');
+        if (mounted) setState(() => _revisionStatus = copy.reviewDraftSaveFailed(error: error));
       }
     }
     var pendingDraftWrite = Future<void>.value();
@@ -3348,15 +3359,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: Text('Review $operationLabel'),
+          title: Text(copy.reviewTitle(operation: operationLabel)),
           content: SizedBox(
             width: 560,
             height: (MediaQuery.sizeOf(dialogContext).height - 220).clamp(240.0, 420.0).toDouble(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('${cues.length} cues are ready. Review this sample before attaching the generated SRT.'),
-                if (onItemTimeline) const Text('These cues use the complete item timeline. Native/local sidecar attachment converts to the opened part; multipart server upload is unavailable without an explicit server part contract.'),
+                Text(copy.readyCues(count: cues.length)),
+                if (onItemTimeline) Text(copy.itemTimelineNote),
                 if (reviewWarnings.isNotEmpty)
                   Container(
                     margin: const EdgeInsets.only(top: 8),
@@ -3369,7 +3380,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Translation review found ${reviewWarnings.length} possible mismatch${reviewWarnings.length == 1 ? '' : 'es'} in glossary terms or numbers. Review these cues before attaching.',
+                          copy.translationWarnings(count: reviewWarnings.length),
                           style: Theme.of(context).textTheme.labelMedium,
                         ),
                         const SizedBox(height: 4),
@@ -3387,20 +3398,20 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                               ),
                             ),
                         if (reviewWarnings.length > 3)
-                          Text('And ${reviewWarnings.length - 3} more.', style: Theme.of(context).textTheme.bodySmall),
+                          Text(copy.warningMore(count: reviewWarnings.length - 3), style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                   ),
                 Text(
                   draftIdentity == null
-                      ? 'Edits and undo stay in this review session. Save SRT or JSON exports a separate result without changing the source subtitle.'
-                      : 'Edits and undo steps auto-save to this device for this item. Save SRT or JSON exports a separate result without changing the source subtitle.',
+                      ? copy.sessionEditHelp
+                      : copy.persistentEditHelp,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 Text(
                   reviewedWordTimings.isEmpty
-                      ? 'This backend did not return token timestamps; cue timing remains available.'
-                      : 'JSON includes ${reviewedWordTimings.length} token-derived word timings. Editing a cue omits its linked spans so timings cannot become stale. Whisper token confidence is not calibrated.',
+                      ? copy.noTokenTimings
+                      : copy.wordTimingHelp(count: reviewedWordTimings.length),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 TextButton.icon(
@@ -3417,13 +3428,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     ),
                   ),
                   icon: const AppIcon(Symbols.edit_rounded),
-                  label: const Text('Edit all cues'),
+                  label: Text(copy.editAllCuesButton),
                 ),
                 if (widget.selectedSubtitleBurnedIn)
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.',
+                      copy.burnedInWarning,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
@@ -3431,7 +3442,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      'Upload + attach stores this SRT on the active library item when the server allows it.',
+                      copy.serverUploadInfo,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   )
@@ -3439,7 +3450,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      'This SRT can be stored with the active standalone source item and attached to this player.',
+                      copy.sourceSaveInfo,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   )
@@ -3448,8 +3459,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
                       uploadLanguage == null
-                          ? 'Server upload is unavailable because this result has no known subtitle language. You can still attach it to the current player.'
-                          : 'Server upload is unavailable because this is not an active server library item. You can still attach it to the current player.',
+                          ? copy.serverUnavailableLanguage
+                          : copy.serverUnavailableItem,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
@@ -3466,12 +3477,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${_formatCueTime(cue.startMs)} – ${_formatCueTime(cue.endMs)}',
+                              copy.cueTime(start: _formatCueTime(cue.startMs), end: _formatCueTime(cue.endMs)),
                               style: Theme.of(context).textTheme.labelMedium,
                             ),
                             const SizedBox(height: 2),
                             if (sourceCues != null && cueIndex < sourceCues.length) ...[
-                              Text('Original', style: Theme.of(context).textTheme.labelSmall),
+                              Text(copy.original, style: Theme.of(context).textTheme.labelSmall),
                               SelectableText(sourceCues[cueIndex].text),
                               const SizedBox(height: 2),
                             ],
@@ -3490,7 +3501,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                   }
                                 },
                                 icon: const AppIcon(Symbols.edit_rounded),
-                                label: const Text('Edit sample cue'),
+                                label: Text(copy.editSampleCue),
                               ),
                             ),
                           ],
@@ -3511,39 +3522,39 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   scheduleDraftPersistence();
                 },
                 icon: const AppIcon(Symbols.undo_rounded),
-                label: Text('Undo (${undoHistory.length})'),
+                label: Text(copy.undo(count: undoHistory.length)),
               ),
             OutlinedButton.icon(
               onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.exportSrt),
               icon: const AppIcon(Symbols.save_alt_rounded),
-              label: const Text('Save SRT'),
+              label: Text(copy.saveSrt),
             ),
             OutlinedButton.icon(
               onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.exportJson),
               icon: const AppIcon(Symbols.data_object_rounded),
-              label: const Text('Save JSON'),
+              label: Text(copy.saveJson),
             ),
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.discard),
-              child: const Text('Discard'),
+              child: Text(copy.discard),
             ),
             if (canUploadToServer)
               OutlinedButton(
                 onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.serverAndPlayer),
-                child: const Text('Upload + attach'),
+                child: Text(copy.uploadAndAttach),
               ),
             if (canSaveToSource)
               OutlinedButton(
                 onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.sourceAndPlayer),
-                child: const Text('Save to source + attach'),
+                child: Text(copy.saveToSourceAndAttach),
               ),
             for (final lane in [_SubtitleReviewChoice.overlayPrimary, _SubtitleReviewChoice.overlaySecondary])
               OutlinedButton(onPressed: () => Navigator.of(dialogContext).pop(lane),
-                child: Text(lane == _SubtitleReviewChoice.overlayPrimary ? 'App overlay 1' : 'App overlay 2')),
+                child: Text(lane == _SubtitleReviewChoice.overlayPrimary ? copy.appOverlayOne : copy.appOverlayTwo)),
             FilledButton(
               onPressed: widget.player.supportedLocalSubtitleExtensions.contains('srt')
                   ? () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.player) : null,
-              child: const Text('Attach to player'),
+              child: Text(copy.attachToPlayer),
             ),
           ],
         ),
@@ -3551,7 +3562,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     );
     if (!mounted || choice == null || choice == _SubtitleReviewChoice.discard) {
       if (mounted) {
-        setState(() => _status = 'Subtitle result discarded; the current track and source file are unchanged.');
+        setState(() => _status = copy.resultDiscarded);
       }
       await clearReviewDraft();
       return false;
@@ -3579,7 +3590,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final originToken = _originTokenForOperation(operationLabel);
     if (choice == _SubtitleReviewChoice.exportSrt) {
       final exportPath = await FilePickerService.instance.saveFile(
-        dialogTitle: 'Save reviewed subtitle',
+        dialogTitle: copy.saveSrtTitle,
         fileName: 'PlezyNG_${originToken}_${DateTime.now().microsecondsSinceEpoch}.srt',
         bytes: bytes,
         type: FileType.custom,
@@ -3587,7 +3598,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       );
       if (!mounted) return false;
       if (exportPath == null) {
-        setState(() => _status = 'SRT export was cancelled; the active track and source subtitle are unchanged.');
+        setState(() => _status = copy.srtExportCancelled);
         return false;
       }
       await _storeUndoHistory(
@@ -3609,7 +3620,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       );
       if (revisionSaved) await clearReviewDraft();
       await rememberAcceptedReview();
-      if (mounted) setState(() => _status = 'Reviewed subtitle exported as SRT.');
+      if (mounted) setState(() => _status = copy.srtExported);
       return false;
     }
     if (choice == _SubtitleReviewChoice.exportJson) {
@@ -3655,7 +3666,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         ),
       );
       final exportPath = await FilePickerService.instance.saveFile(
-        dialogTitle: 'Save reviewed subtitle cue JSON',
+        dialogTitle: copy.saveJsonTitle,
         fileName: 'PlezyNG_${originToken}_${DateTime.now().microsecondsSinceEpoch}.json',
         bytes: jsonBytes,
         type: FileType.custom,
@@ -3663,7 +3674,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       );
       if (!mounted) return false;
       if (exportPath == null) {
-        setState(() => _status = 'JSON export was cancelled; the active track and source subtitle are unchanged.');
+        setState(() => _status = copy.jsonExportCancelled);
         return false;
       }
       await _storeUndoHistory(
@@ -3685,14 +3696,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       );
       if (revisionSaved) await clearReviewDraft();
       await rememberAcceptedReview();
-      if (mounted) setState(() => _status = 'Reviewed subtitle exported as versioned cue JSON.');
+      if (mounted) setState(() => _status = copy.jsonExported);
       return false;
     }
     final nativeBytes = choice == _SubtitleReviewChoice.overlayPrimary || choice == _SubtitleReviewChoice.overlaySecondary
         ? bytes : await _bytesForNativeTimeline(reviewedCues, onItemTimeline);
     if (choice == _SubtitleReviewChoice.serverAndPlayer) {
       final languageCode = uploadLanguage;
-      if (languageCode == null) throw StateError('The result language could not be identified for server upload.');
+      if (languageCode == null) throw StateError(copy.serverLanguageUnknown);
       await _uploadSubtitleToServer(bytes, languageCode, originToken);
       _lastResultUploadedToServer = true;
     }
@@ -3719,7 +3730,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         SubtitleOverlayService.attach(widget.player, lane, track);
       } else if (choice == _SubtitleReviewChoice.sourceAndPlayer) {
         final saveToSource = widget.onSaveToSource;
-        if (saveToSource == null) throw StateError('This item cannot store a standalone subtitle sidecar.');
+        if (saveToSource == null) throw StateError(copy.noStandaloneSidecar);
         _requireCurrentOperationIdentity();
         await saveToSource('PlezyNG.$originToken.srt', nativeBytes, operationLanguageCode?.trim() ?? '');
         _lastResultSavedToSource = true;
@@ -3752,7 +3763,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           identity: draftIdentity,
           onItemTimeline: onItemTimeline,
         );
-        throw StateError('Uploaded to the server library, but could not attach the local copy: $error');
+        throw StateError(copy.uploadedButLocalAttachFailed(error: error));
       }
       rethrow;
     }

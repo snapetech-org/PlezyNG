@@ -67,3 +67,7 @@ Do not populate this report from provider enumeration alone. Device-specific res
 ## Resumable WAV jobs
 
 The source now includes a profile-scoped queue with owned audio copies, SHA-256 integrity verification, atomic manifest recovery, 30-second overlapping inference windows, explicit restart recovery, playhead priority, pause/cancel, and external-power/playback-idle policies. Completed or partial results enter the existing review flow for the same item. Native calls finish their current window before cancellation can release resources. This is in-app scheduling, not guaranteed OS background execution. No tests, analyzer, builds, or CI were run for this addition, per owner instruction.
+
+## Editing and alignment diagnostics
+
+Added bounded waveform/spectrogram interval editing, explicit FPS conversion, opt-in text reflow/corrections/filtering, and sync coverage/residual/unmatched-span review. Analysis uses a shared streaming reader supporting integer PCM and IEEE-float WAV. No tests, analyzer, builds, or CI were run. Timing and linguistic quality remain unqualified.

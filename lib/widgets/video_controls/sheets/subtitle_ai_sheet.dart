@@ -24,6 +24,8 @@ import '../../../services/subtitle_word_timing.dart';
 import '../../../services/subtitle_sync_service.dart';
 import '../../../services/subtitle_interval_service.dart';
 import '../../../services/subtitle_job_service.dart';
+import '../../../services/subtitle_editing_service.dart';
+import '../../../services/subtitle_waveform_service.dart';
 import '../../../services/subtitle_translation_service.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_playback_transcription_service.dart';
@@ -34,6 +36,7 @@ import '../../../widgets/focusable_list_tile.dart';
 import '../../../widgets/overlay_sheet.dart';
 import 'base_video_control_sheet.dart';
 import 'subtitle_jobs_dialog.dart';
+import 'subtitle_waveform_editor.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -500,12 +503,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         context: context,
         builder: (dialogContext) => StatefulBuilder(
           builder: (dialogContext, setDialogState) => AlertDialog(
-            title: const Text('Choose transcription interval'),
+            title: const Text('Choose audio interval'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('Audio outside this range is not transcribed. Existing subtitle cues outside it are preserved.'),
+                const Text('Only this audio range is analyzed. Existing subtitle cues outside it are preserved.'),
                 const SizedBox(height: 12),
                 TextField(
                   controller: startController,
@@ -549,6 +552,102 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       endController.dispose();
     }
   }
+
+  Future<void> _transformSubtitles() => _run(() async {
+    final selected = await _pickSubtitleCues();
+    if (selected == null || !mounted) return;
+    var reflow = false, spacing = false, descriptions = false, songs = false, credits = false;
+    var width = 42.0, speed = 20.0;
+    var fps = 'none';
+    String? validation;
+    final corrections = TextEditingController(text: '{}');
+    SubtitleEditOptions? options;
+    try {
+      options = await showDialog<SubtitleEditOptions>(context: context, builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, update) => AlertDialog(
+          title: const Text('Preview caption transformations'),
+          content: SizedBox(width: 600, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const Text('All transformations are off by default. The original is retained; review and edit the derived result before saving.'),
+            SwitchListTile(title: const Text('Reflow plain text into up to two lines'), value: reflow, onChanged: (v) => update(() => reflow = v)),
+            Text('Line limit: ${width.round()} characters'),
+            Slider(value: width, min: 24, max: 64, divisions: 40, label: '${width.round()}', onChanged: (v) => update(() => width = v)),
+            Text('Reading-speed warning: ${speed.round()} characters/second'),
+            Slider(value: speed, min: 8, max: 40, divisions: 32, label: '${speed.round()}', onChanged: (v) => update(() => speed = v)),
+            SwitchListTile(title: const Text('Normalize spacing'), value: spacing, onChanged: (v) => update(() => spacing = v)),
+            SwitchListTile(title: const Text('Remove bracketed descriptions'), subtitle: const Text('Can remove dialogue in parentheses; review required'), value: descriptions, onChanged: (v) => update(() => descriptions = v)),
+            SwitchListTile(title: const Text('Remove lines marked with musical notes'), value: songs, onChanged: (v) => update(() => songs = v)),
+            SwitchListTile(title: const Text('Remove explicit subtitle-credit/URL lines'), subtitle: const Text('English credit labels and standalone URLs only'), value: credits, onChanged: (v) => update(() => credits = v)),
+            DropdownButtonFormField<String>(
+              initialValue: fps, decoration: const InputDecoration(labelText: 'Explicit FPS conversion'),
+              items: const [
+                DropdownMenuItem(value: 'none', child: Text('No frame-rate conversion')),
+                DropdownMenuItem(value: '23.976:25', child: Text('23.976 → 25')),
+                DropdownMenuItem(value: '25:23.976', child: Text('25 → 23.976')),
+                DropdownMenuItem(value: '24:25', child: Text('24 → 25')),
+                DropdownMenuItem(value: '25:24', child: Text('25 → 24')),
+                DropdownMenuItem(value: '23.976:24', child: Text('23.976 → 24')),
+                DropdownMenuItem(value: '24:23.976', child: Text('24 → 23.976')),
+              ], onChanged: (v) => update(() => fps = v ?? 'none'),
+            ),
+            const SizedBox(height: 12),
+            TextField(controller: corrections, maxLines: 4, maxLength: 16384,
+                decoration: const InputDecoration(labelText: 'Explicit spelling/term corrections (JSON)', hintText: '{"teh": "the"}')),
+            if (validation != null) Text(validation!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+          ]))),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            FilledButton(onPressed: () {
+              try {
+                final decoded = jsonDecode(corrections.text);
+                if (decoded is! Map<String, dynamic> || decoded.length > 256 || decoded.values.any((v) => v is! String)) {
+                  throw const FormatException('Use up to 256 text-to-text corrections.');
+                }
+                double rate(String value) => value == '23.976' ? 24000 / 1001 : double.parse(value);
+                final rates = fps == 'none' ? null : fps.split(':');
+                Navigator.pop(dialogContext, SubtitleEditOptions(
+                  reflow: reflow, charactersPerLine: width.round(), charactersPerSecond: speed.round(),
+                  normalizeSpacing: spacing, removeDescriptions: descriptions, removeSongs: songs, removeCredits: credits,
+                  replacements: decoded.cast<String, String>(),
+                  fpsFrom: rates == null ? null : rate(rates[0]), fpsTo: rates == null ? null : rate(rates[1]),
+                ));
+              } catch (_) { update(() => validation = 'Enter a JSON object with text keys and text values.'); }
+            }, child: const Text('Preview')),
+          ],
+        ),
+      ));
+    } finally { corrections.dispose(); }
+    if (options == null || !mounted) return;
+    final result = SubtitleEditingService.transform(selected.$1, options);
+    final retainedIds = result.cues.map((cue) => cue.stableId).toSet();
+    await _writeAndApply(result.cues,
+      operationLabel: 'Caption transformations',
+      sourceCues: result.removed == 0 ? selected.$1 : null,
+      reviewWarnings: [
+        '${result.changed} cues changed; ${result.removed} cues removed. Original: ${selected.$2}.',
+        ...selected.$1.where((cue) => !retainedIds.contains(cue.stableId)).take(20)
+            .map((cue) => 'Removed cue ${cue.index}: ${cue.text}'),
+        ...result.warnings,
+      ],
+    );
+  });
+
+  Future<void> _editWaveform() => _run(() async {
+    final selected = await _pickSubtitleCues();
+    if (selected == null || !mounted) return;
+    final path = await _pickWav();
+    if (path == null || !mounted) return;
+    final duration = await SubtitleAiService.instance.readWavDurationMs(path);
+    final interval = await _chooseAudioInterval(duration);
+    if (interval == null || !mounted) return;
+    setState(() => _status = 'Computing the waveform and spectrogram locally…');
+    final waveform = await SubtitleWaveformService.analyze(path, startMs: interval.startMs, endMs: interval.endMs);
+    if (!mounted) return;
+    final cues = await showDialog<List<SubtitleCue>>(context: context,
+      builder: (_) => SubtitleWaveformEditor(waveform: waveform, cues: selected.$1));
+    if (cues == null || !mounted) return;
+    await _writeAndApply(cues, operationLabel: 'Waveform timing edit', sourceCues: selected.$1,
+      reviewWarnings: const ['Cue boundaries were edited against audio energy; no automatic word alignment was inferred.']);
+  });
 
   Future<void> _generateInterval({required bool fillSpeechGaps}) => _run(() async {
     final selected = await _pickSubtitleCues();
@@ -641,6 +740,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     );
     if (!await _writeAndApply(
       aligned.cues,
+      reviewWarnings: aligned.reviewWarnings,
       operationLabel: repairCuts ? 'Cut repair' : 'Automatic sync',
       operationLanguageCode: transcription.detectedLanguage,
       wordTimings: transcription.wordTimings,
@@ -1065,6 +1165,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final retimedOriginal = _restoreOriginalCueTextWithAlignedTimes(target.$1, aligned.cues);
     if (!await _writeAndApply(
       retimedOriginal,
+      reviewWarnings: aligned.reviewWarnings,
       operationLabel: repairCuts ? 'Cross-language reference cut repair' : 'Cross-language subtitle sync',
       operationLanguageCode: sourceLanguage.bcpCode,
     )) {
@@ -1114,6 +1215,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     );
     if (!await _writeAndApply(
       aligned.cues,
+      reviewWarnings: aligned.reviewWarnings,
       operationLabel: repairCuts ? 'Reference cut repair' : 'Subtitle-reference sync',
     )) {
       return;
@@ -1150,6 +1252,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     );
     if (!await _writeAndApply(
       aligned.cues,
+      reviewWarnings: aligned.reviewWarnings,
       operationLabel: repairCuts ? 'Captured-playback cut repair' : 'Captured-playback sync',
       operationLanguageCode: transcript.detectedLanguage,
       wordTimings: transcript.wordTimings,
@@ -1187,6 +1290,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     );
     if (!await _writeAndApply(
       aligned.cues,
+      reviewWarnings: aligned.reviewWarnings,
       operationLabel: repairCuts ? 'Saved-transcript cut repair' : 'Saved-transcript sync',
       operationLanguageCode: revision.languageCode,
       wordTimings: revision.wordTimings,
@@ -1257,6 +1361,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final retimedOriginal = _restoreOriginalCueTextWithAlignedTimes(selected.$1, aligned.cues);
     if (!await _writeAndApply(
       retimedOriginal,
+      reviewWarnings: aligned.reviewWarnings,
       operationLabel: repairCuts ? 'Cross-language transcript cut repair' : 'Cross-language transcript sync',
       operationLanguageCode: sourceLanguage.bcpCode,
     )) return;
@@ -3300,6 +3405,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             title: const Text('Automatically sync an existing subtitle'),
             subtitle: const Text('Aligns SRT, VTT, ASS, or SSA text against local speech recognition'),
             onTap: _busy ? null : () => unawaited(_synchronize(repairCuts: false)),
+          ),
+          FocusableListTile(
+            leading: const AppIcon(Symbols.edit_rounded),
+            title: const Text('Reflow, correct, filter, or convert FPS'),
+            subtitle: const Text('Preview reading limits, explicit spelling fixes, SDH/song/credit filters, and timing conversion'),
+            onTap: _busy ? null : () => unawaited(_transformSubtitles()),
+          ),
+          FocusableListTile(
+            leading: const AppIcon(Symbols.graphic_eq_rounded),
+            title: const Text('Waveform and spectrogram editor'),
+            subtitle: const Text('Edit cue anchors against a matching WAV interval up to five minutes'),
+            onTap: _busy ? null : () => unawaited(_editWaveform()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.content_cut_rounded),

@@ -15,6 +15,7 @@ import '../utils/app_logger.dart';
 import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
+import 'subtitle_wav_reader.dart';
 import 'subtitle_whisper_cpp_service.dart';
 
 enum SubtitleInferenceProvider { cpu, desktopGpu, coreMl, qnn, rknn }
@@ -410,7 +411,7 @@ Future<Map<String, Object?>> _runSubtitleTranscriptionWorker({
   }
 
   Future<Map<String, Object?>> run(String requestedProvider, {required bool fellBackToCpu}) async {
-    final wav = await _PcmWavReader.open(wavPath);
+    final wav = await SubtitleWavReader.open(wavPath);
     sherpa.OfflineRecognizer? recognizer;
     sherpa.VoiceActivityDetector? vad;
     try {
@@ -486,157 +487,4 @@ Future<Map<String, Object?>> _runSubtitleTranscriptionWorker({
     appLogger.i('Subtitle inference provider $provider failed; retrying the selected WAV interval with CPU: $error');
     return run('cpu', fellBackToCpu: true);
   }
-}
-
-final class _PcmWavReader {
-  _PcmWavReader._({
-    required this.file,
-    required this.dataOffset,
-    required this.dataBytes,
-    required this.sampleRate,
-    required this.channels,
-    required this.blockAlign,
-  });
-
-  final RandomAccessFile file;
-  final int dataOffset;
-  final int dataBytes;
-  final int sampleRate;
-  final int channels;
-  final int blockAlign;
-
-  int get sourceFrames => dataBytes ~/ blockAlign;
-  int get outputFrames => (sourceFrames * SubtitleAiService._sampleRate) ~/ sampleRate;
-  int get durationMs => (sourceFrames * 1000) ~/ sampleRate;
-
-  static Future<_PcmWavReader> open(String path) async {
-    final file = await File(path).open(mode: FileMode.read);
-    try {
-      final fileLength = await file.length();
-      final header = await _readExact(file, 12);
-      if (ascii.decode(header.sublist(0, 4), allowInvalid: true) != 'RIFF' ||
-          ascii.decode(header.sublist(8, 12), allowInvalid: true) != 'WAVE') {
-        throw const FormatException('Choose a standard RIFF/WAVE audio file.');
-      }
-
-      var sampleRate = 0;
-      var channels = 0;
-      var blockAlign = 0;
-      var bitsPerSample = 0;
-      var format = 0;
-      var dataOffset = -1;
-      var dataBytes = -1;
-
-      while (await file.position() + 8 <= fileLength) {
-        final chunkHeader = await _readExact(file, 8);
-        final chunkName = ascii.decode(chunkHeader.sublist(0, 4), allowInvalid: true);
-        final chunkSize = ByteData.sublistView(chunkHeader).getUint32(4, Endian.little);
-        final contentStart = await file.position();
-        if (chunkSize > fileLength || contentStart + chunkSize > fileLength) {
-          throw const FormatException('WAV contains an invalid chunk length.');
-        }
-
-        if (chunkName == 'fmt ') {
-          if (chunkSize < 16 || chunkSize > 4096) throw const FormatException('WAV format chunk is invalid.');
-          final fmt = await _readExact(file, chunkSize);
-          final data = ByteData.sublistView(fmt);
-          format = data.getUint16(0, Endian.little);
-          channels = data.getUint16(2, Endian.little);
-          sampleRate = data.getUint32(4, Endian.little);
-          blockAlign = data.getUint16(12, Endian.little);
-          bitsPerSample = data.getUint16(14, Endian.little);
-        } else if (chunkName == 'data') {
-          dataOffset = contentStart;
-          dataBytes = chunkSize;
-        }
-
-        final next = contentStart + chunkSize + (chunkSize.isOdd ? 1 : 0);
-        if (await file.position() != next) await file.setPosition(next);
-        if (sampleRate != 0 && dataOffset >= 0) break;
-      }
-
-      if (format != 1 || bitsPerSample != 16 || (channels != 1 && channels != 2)) {
-        throw const FormatException('Use uncompressed 16-bit PCM WAV audio with one or two channels.');
-      }
-      if (sampleRate < 8000 || sampleRate > 96000 || blockAlign != channels * 2 || dataBytes <= 0) {
-        throw const FormatException('WAV sample rate or audio data is invalid.');
-      }
-
-      final reader = _PcmWavReader._(
-        file: file,
-        dataOffset: dataOffset,
-        dataBytes: dataBytes - (dataBytes % blockAlign),
-        sampleRate: sampleRate,
-        channels: channels,
-        blockAlign: blockAlign,
-      );
-      final totalMs = reader.durationMs;
-      if (totalMs <= 0 || totalMs > SubtitleAiService._maximumAudioHours * 60 * 60 * 1000) {
-        throw const FormatException('WAV duration must be between one millisecond and eight hours.');
-      }
-      return reader;
-    } catch (_) {
-      await file.close();
-      rethrow;
-    }
-  }
-
-  Future<void> forEachMono16kChunk(
-    Future<void> Function(Float32List samples) callback, {
-    required int startMs,
-    required int endMs,
-  }) async {
-    const outputChunkFrames = 16000;
-    final firstOutputFrame = ((startMs * SubtitleAiService._sampleRate) ~/ 1000)
-        .clamp(0, outputFrames)
-        .toInt();
-    final endOutputFrame = ((endMs * SubtitleAiService._sampleRate + 999) ~/ 1000)
-        .clamp(firstOutputFrame, outputFrames)
-        .toInt();
-    for (var outputStart = firstOutputFrame; outputStart < endOutputFrame; outputStart += outputChunkFrames) {
-      final count = (endOutputFrame - outputStart).clamp(0, outputChunkFrames).toInt();
-      if (count == 0) break;
-      final sourceStart = (outputStart * sampleRate) ~/ SubtitleAiService._sampleRate;
-      final lastPosition = ((outputStart + count - 1) * sampleRate) / SubtitleAiService._sampleRate;
-      final sourceEnd = (lastPosition.floor() + 2).clamp(sourceStart + 1, sourceFrames).toInt();
-      final frameCount = sourceEnd - sourceStart;
-
-      await file.setPosition(dataOffset + sourceStart * blockAlign);
-      final bytes = await _readExact(file, frameCount * blockAlign);
-      final view = ByteData.sublistView(bytes);
-      double monoAt(int frame) {
-        var total = 0.0;
-        for (var channel = 0; channel < channels; channel++) {
-          total += view.getInt16(frame * blockAlign + channel * 2, Endian.little) / 32768.0;
-        }
-        return total / channels;
-      }
-
-      final output = Float32List(count);
-      for (var index = 0; index < count; index++) {
-        final sourcePosition = ((outputStart + index) * sampleRate / SubtitleAiService._sampleRate) - sourceStart;
-        final lower = sourcePosition.floor().clamp(0, frameCount - 1).toInt();
-        final upper = (lower + 1).clamp(0, frameCount - 1).toInt();
-        final fraction = (sourcePosition - lower).clamp(0.0, 1.0);
-        final first = monoAt(lower);
-        final second = monoAt(upper);
-        output[index] = (first + (second - first) * fraction).clamp(-1.0, 1.0);
-      }
-      await callback(output);
-    }
-  }
-
-  Future<void> close() => file.close();
-}
-
-Future<Uint8List> _readExact(RandomAccessFile file, int count) async {
-  final bytes = BytesBuilder(copy: false);
-  var read = 0;
-  while (read < count) {
-    final chunk = await file.read(count - read);
-    if (chunk.isEmpty) throw const FormatException('WAV ended unexpectedly.');
-    bytes.add(chunk);
-    read += chunk.length;
-  }
-  return bytes.takeBytes();
 }

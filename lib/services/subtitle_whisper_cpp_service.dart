@@ -387,7 +387,7 @@ abstract final class _WavDurationReader {
       if (sampleRate < 8000 || sampleRate > 192000 || blockAlign <= 0 || dataBytes <= 0) {
         throw const FormatException('WAV sample rate or audio data is invalid.');
       }
-      return ((dataBytes ~/ blockAlign) * 1000 / sampleRate).round();
+      return ((dataBytes ~/ blockAlign) * 1000) ~/ sampleRate;
     } finally {
       await file.close();
     }

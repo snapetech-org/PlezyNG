@@ -3,6 +3,14 @@ import 'dart:typed_data';
 
 import 'subtitle_retimer.dart';
 
+/// An unmatched run in its original source clock, never an inferred deletion.
+final class SubtitleUnmatchedSpan {
+  const SubtitleUnmatchedSpan({required this.startMs, required this.endMs, required this.cueCount});
+  final int startMs;
+  final int endMs;
+  final int cueCount;
+}
+
 final class SubtitleSyncResult {
   const SubtitleSyncResult({
     required this.cues,
@@ -12,6 +20,12 @@ final class SubtitleSyncResult {
     required this.meanMatchConfidence,
     required this.appliedRate,
     required this.globalOffsetMs,
+    this.unmatchedSubtitleSpans = const [],
+    this.unmatchedReferenceSpans = const [],
+    this.medianAffineResidualMs = 0,
+    this.p95AffineResidualMs = 0,
+    this.evidenceCoverageMs = 0,
+    this.referenceDurationMs = 0,
   });
 
   final List<SubtitleCue> cues;
@@ -21,6 +35,27 @@ final class SubtitleSyncResult {
   final double meanMatchConfidence;
   final double appliedRate;
   final int globalOffsetMs;
+  final List<SubtitleUnmatchedSpan> unmatchedSubtitleSpans;
+  final List<SubtitleUnmatchedSpan> unmatchedReferenceSpans;
+  final int medianAffineResidualMs;
+  final int p95AffineResidualMs;
+  final int evidenceCoverageMs;
+  final int referenceDurationMs;
+
+  List<String> get reviewWarnings => [
+    'Text anchors match $matchedCueCount/$totalCueCount cues (${(matchedFraction * 100).round()}%). '
+        'They cover ${(evidenceCoverageMs / 1000).round()} seconds of reference speech; this is evidence coverage, not accuracy.',
+    'Affine anchor residual: median $medianAffineResidualMs ms, 95th percentile $p95AffineResidualMs ms. '
+        'Residuals are measured on matched anchors, not independently verified ground truth.',
+    if (p95AffineResidualMs > 1500 || matchedFraction < 0.25)
+      'Uncertain timing: sparse evidence or large residuals. Review across the whole title before attachment.',
+    '${unmatchedSubtitleSpans.length} unmatched subtitle ranges and ${unmatchedReferenceSpans.length} '
+        'unmatched reference ranges. Missing text matches do not prove inserted or deleted scenes.',
+    ...unmatchedSubtitleSpans.take(8).map((span) =>
+        'Unmatched original subtitle ${span.startMs}–${span.endMs} ms (${span.cueCount} cues).'),
+    ...unmatchedReferenceSpans.take(8).map((span) =>
+        'Unmatched reference ${span.startMs}–${span.endMs} ms (${span.cueCount} cues).'),
+  ];
 
   double get matchedFraction => totalCueCount == 0 ? 0 : matchedCueCount / totalCueCount;
 }
@@ -228,6 +263,22 @@ abstract final class SubtitleSyncService {
           .toList(),
     );
     final discontinuities = repairCuts ? _countDiscontinuities(anchors, orderedSubtitles, orderedSpeech) : 0;
+    // Evaluate the global affine fit even for a piecewise result. Measuring the
+    // anchors after snapping each to itself would misleadingly report zero error.
+    final diagnosticRate = repairCuts ? _robustRate(anchors, orderedSubtitles, orderedSpeech) : rate;
+    final diagnosticOffset = _median(anchors.map((anchor) =>
+        orderedSpeech[anchor.speechIndex].startMs -
+        (orderedSubtitles[anchor.subtitleIndex].startMs * diagnosticRate).round()).toList());
+    final residuals = anchors.map((anchor) => (orderedSpeech[anchor.speechIndex].startMs -
+        (orderedSubtitles[anchor.subtitleIndex].startMs * diagnosticRate).round() - diagnosticOffset).abs()).toList()..sort();
+    var coverageMs = 0;
+    var coveredUntil = 0;
+    for (final anchor in anchors) {
+      final cue = orderedSpeech[anchor.speechIndex];
+      final start = cue.startMs > coveredUntil ? cue.startMs : coveredUntil;
+      if (cue.endMs > start) coverageMs += cue.endMs - start;
+      if (cue.endMs > coveredUntil) coveredUntil = cue.endMs;
+    }
 
     int offsetAt(int sourceTimeMs) {
       if (!repairCuts) return globalOffset;
@@ -314,7 +365,35 @@ abstract final class SubtitleSyncService {
       meanMatchConfidence: meanConfidence,
       appliedRate: rate,
       globalOffsetMs: globalOffset,
+      unmatchedSubtitleSpans: _unmatchedSpans(orderedSubtitles, matchedBySubtitle.keys.toSet()),
+      unmatchedReferenceSpans: _unmatchedSpans(orderedSpeech, anchors.map((anchor) => anchor.speechIndex).toSet()),
+      medianAffineResidualMs: _median(residuals),
+      p95AffineResidualMs: residuals[((residuals.length - 1) * 0.95).ceil()],
+      evidenceCoverageMs: coverageMs,
+      referenceDurationMs: mediaDurationMs,
     );
+  }
+
+  static List<SubtitleUnmatchedSpan> _unmatchedSpans(List<SubtitleCue> cues, Set<int> matched) {
+    final spans = <SubtitleUnmatchedSpan>[];
+    int? start;
+    var end = 0, count = 0;
+    void flush() {
+      if (start == null) return;
+      spans.add(SubtitleUnmatchedSpan(startMs: start!, endMs: end, cueCount: count));
+      start = null;
+      count = 0;
+    }
+    for (var i = 0; i < cues.length; i++) {
+      if (matched.contains(i)) { flush(); continue; }
+      final cue = cues[i];
+      if (start != null && cue.startMs - end > 10000) flush();
+      start ??= cue.startMs;
+      if (cue.endMs > end) end = cue.endMs;
+      ++count;
+    }
+    flush();
+    return List.unmodifiable(spans);
   }
 
   /// Writes an independent UTF-8 SRT asset without changing source files.

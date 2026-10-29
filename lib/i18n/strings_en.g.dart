@@ -3287,6 +3287,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleDefaultsCloud$en subtitleDefaultsCloud = Translations$videoControls$subtitleDefaultsCloud$en.internal(_root);
 	late final Translations$videoControls$subtitleDefaultsTransfer$en subtitleDefaultsTransfer = Translations$videoControls$subtitleDefaultsTransfer$en.internal(_root);
 	late final Translations$videoControls$subtitleDiscovery$en subtitleDiscovery = Translations$videoControls$subtitleDiscovery$en.internal(_root);
+	late final Translations$videoControls$subtitleCompanionJobs$en subtitleCompanionJobs = Translations$videoControls$subtitleCompanionJobs$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
@@ -13526,6 +13527,112 @@ class Translations$videoControls$subtitleDiscovery$en {
 
 }
 
+// Path: videoControls.subtitleCompanionJobs
+class Translations$videoControls$subtitleCompanionJobs$en {
+	Translations$videoControls$subtitleCompanionJobs$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Companion jobs'
+	String get title => 'Companion jobs';
+
+	/// en: 'The host keeps uploaded media until you delete its job. Resume after a host restart is explicit. Pause/cancel terminates the worker; resume reruns that job.'
+	String get description => 'The host keeps uploaded media until you delete its job. Resume after a host restart is explicit. Pause/cancel terminates the worker; resume reruns that job.';
+
+	/// en: 'Companion unavailable. The host retains submitted jobs.'
+	String get unavailable => 'Companion unavailable. The host retains submitted jobs.';
+
+	/// en: 'No submitted companion jobs.'
+	String get noJobs => 'No submitted companion jobs.';
+
+	/// en: 'Open the original media item to review this result.'
+	String get openOriginal => 'Open the original media item to review this result.';
+
+	/// en: 'Delete media and result'
+	String get deleteMediaAndResult => 'Delete media and result';
+
+	/// en: '${task} · ${state}'
+	String taskAndState({required Object task, required Object state}) => '${task} · ${state}';
+
+	/// en: 'Host error: ${code}'
+	String jobError({required Object code}) => 'Host error: ${code}';
+
+	/// en: 'Host status: ${value}'
+	String phase({required Object value}) => 'Host status: ${value}';
+
+	/// en: 'Ready'
+	String get ready => 'Ready';
+
+	/// en: 'Waiting for audio upload'
+	String get awaitingAudio => 'Waiting for audio upload';
+
+	/// en: 'Uploading'
+	String get uploading => 'Uploading';
+
+	/// en: 'Transcribe audio'
+	String get transcribe => 'Transcribe audio';
+
+	/// en: 'Align text to audio'
+	String get align => 'Align text to audio';
+
+	/// en: 'Label speaker turns'
+	String get diarize => 'Label speaker turns';
+
+	/// en: 'Recognize burned-in subtitles'
+	String get ocr => 'Recognize burned-in subtitles';
+
+	/// en: 'Recognize bitmap subtitles'
+	String get bitmapOcr => 'Recognize bitmap subtitles';
+
+	/// en: 'Translate subtitles'
+	String get translate => 'Translate subtitles';
+
+	/// en: 'Translate with configured model'
+	String get translateModel => 'Translate with configured model';
+
+	/// en: 'Convert writing system'
+	String get scriptConvert => 'Convert writing system';
+
+	/// en: 'Add reading guides'
+	String get reading => 'Add reading guides';
+
+	/// en: 'Synthesize dubbed speech'
+	String get dubbing => 'Synthesize dubbed speech';
+
+	/// en: 'Compare speech recognition'
+	String get ensemble => 'Compare speech recognition';
+
+	/// en: 'Separate voice sources'
+	String get separate => 'Separate voice sources';
+
+	/// en: 'Describe non-speech audio'
+	String get soundEvents => 'Describe non-speech audio';
+
+	/// en: 'Check dialogue coverage'
+	String get completeness => 'Check dialogue coverage';
+
+	/// en: 'Extract visible text'
+	String get extractText => 'Extract visible text';
+
+	/// en: 'Review signs and on-screen text'
+	String get signs => 'Review signs and on-screen text';
+
+	/// en: 'Generate dubbed audio mix'
+	String get dubMix => 'Generate dubbed audio mix';
+
+	/// en: 'Detect caption text regions'
+	String get ocrAuto => 'Detect caption text regions';
+
+	/// en: 'Review audiovisual context'
+	String get sceneReview => 'Review audiovisual context';
+
+	/// en: 'Align lyrics to singing'
+	String get singingAlign => 'Align lyrics to singing';
+
+}
+
 // Path: videoControls.subtitleRoles
 class Translations$videoControls$subtitleRoles$en {
 	Translations$videoControls$subtitleRoles$en.internal(this._root);
@@ -17604,6 +17711,38 @@ extension on Translations {
 			'videoControls.subtitleDiscovery.permissionExpired' => ({required Object folder}) => 'Folder permission is missing or expired: ${folder}. Pick it again or use file import.',
 			'videoControls.subtitleDiscovery.unreadableFolder' => ({required Object folder}) => 'Could not read folder: ${folder}.',
 			'videoControls.subtitleDiscovery.folderTimedOut' => ({required Object folder}) => 'Folder access timed out: ${folder}.',
+			'videoControls.subtitleCompanionJobs.title' => 'Companion jobs',
+			'videoControls.subtitleCompanionJobs.description' => 'The host keeps uploaded media until you delete its job. Resume after a host restart is explicit. Pause/cancel terminates the worker; resume reruns that job.',
+			'videoControls.subtitleCompanionJobs.unavailable' => 'Companion unavailable. The host retains submitted jobs.',
+			'videoControls.subtitleCompanionJobs.noJobs' => 'No submitted companion jobs.',
+			'videoControls.subtitleCompanionJobs.openOriginal' => 'Open the original media item to review this result.',
+			'videoControls.subtitleCompanionJobs.deleteMediaAndResult' => 'Delete media and result',
+			'videoControls.subtitleCompanionJobs.taskAndState' => ({required Object task, required Object state}) => '${task} · ${state}',
+			'videoControls.subtitleCompanionJobs.jobError' => ({required Object code}) => 'Host error: ${code}',
+			'videoControls.subtitleCompanionJobs.phase' => ({required Object value}) => 'Host status: ${value}',
+			'videoControls.subtitleCompanionJobs.ready' => 'Ready',
+			'videoControls.subtitleCompanionJobs.awaitingAudio' => 'Waiting for audio upload',
+			'videoControls.subtitleCompanionJobs.uploading' => 'Uploading',
+			'videoControls.subtitleCompanionJobs.transcribe' => 'Transcribe audio',
+			'videoControls.subtitleCompanionJobs.align' => 'Align text to audio',
+			'videoControls.subtitleCompanionJobs.diarize' => 'Label speaker turns',
+			'videoControls.subtitleCompanionJobs.ocr' => 'Recognize burned-in subtitles',
+			'videoControls.subtitleCompanionJobs.bitmapOcr' => 'Recognize bitmap subtitles',
+			'videoControls.subtitleCompanionJobs.translate' => 'Translate subtitles',
+			'videoControls.subtitleCompanionJobs.translateModel' => 'Translate with configured model',
+			'videoControls.subtitleCompanionJobs.scriptConvert' => 'Convert writing system',
+			'videoControls.subtitleCompanionJobs.reading' => 'Add reading guides',
+			'videoControls.subtitleCompanionJobs.dubbing' => 'Synthesize dubbed speech',
+			'videoControls.subtitleCompanionJobs.ensemble' => 'Compare speech recognition',
+			'videoControls.subtitleCompanionJobs.separate' => 'Separate voice sources',
+			'videoControls.subtitleCompanionJobs.soundEvents' => 'Describe non-speech audio',
+			'videoControls.subtitleCompanionJobs.completeness' => 'Check dialogue coverage',
+			'videoControls.subtitleCompanionJobs.extractText' => 'Extract visible text',
+			'videoControls.subtitleCompanionJobs.signs' => 'Review signs and on-screen text',
+			'videoControls.subtitleCompanionJobs.dubMix' => 'Generate dubbed audio mix',
+			'videoControls.subtitleCompanionJobs.ocrAuto' => 'Detect caption text regions',
+			'videoControls.subtitleCompanionJobs.sceneReview' => 'Review audiovisual context',
+			'videoControls.subtitleCompanionJobs.singingAlign' => 'Align lyrics to singing',
 			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
 			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
 			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',

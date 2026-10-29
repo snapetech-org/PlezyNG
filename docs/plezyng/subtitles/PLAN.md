@@ -1390,6 +1390,16 @@ refusal rules and setup are in the companion README. All paths remain opt-in.
 Confidence: moderate in source wiring; singing accuracy is low-confidence and
 unmeasured. No tests, analyzers, formatters, models, builds or CI were run.
 
+## Isolated solo-vocal note proposals — October 29, 2026
+
+An optional companion task now analyzes only an explicitly declared, original-
+clock mono vocal WAV. Bounded pYIN/YIN agreement proposes separate pitch notes;
+the app keeps all proposals unselected until an individual note is reviewed,
+corrected or omitted. A separate digest-bound JSON export records the viewer's
+source-comparison declaration. The 20 ms output grid is not a boundary-error
+claim, and isolation, note accuracy and runtime behavior remain unqualified.
+See VOCAL-NOTES.md for limits and remaining evidence needs.
+
 ## SCC and broader source-folder text import
 
 The shared importer now decodes bounded SCC channel text with explicit frame
@@ -1494,7 +1504,8 @@ fallbacks are registered while translations remain pending.
 The evidence review now localizes section labels, clock/provenance context,
 observation counts, export actions and bounded-export status. Model provenance
 and host warning details remain data supplied by the companion so diagnostic
-content is preserved for review.
+content is preserved for review. Microphone-array evidence now has a specific
+section label, and solo-vocal proposals open an individual note-review action.
 
 ## Generated subtitle review localization — October 29, 2026
 

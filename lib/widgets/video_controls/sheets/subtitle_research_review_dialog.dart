@@ -45,6 +45,7 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
       'sceneMotionEvidence' => copy.sceneMotionObservations,
       'sceneObjectEvidence' => copy.sceneObjectObservations,
       'soundLocalizationEvidence' => copy.soundLocalizationEvidence,
+      'vocalNoteEvidence' => copy.vocalNoteEvidenceSection,
       'synthesisEvidence' => copy.synthesizedLineFit,
       _ => copy.unknownSection(name: key.replaceAllMapped(RegExp(r'([A-Z])'), (m) => ' ${m[1]}')),
     };
@@ -113,7 +114,7 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
         if (result.researchEvidence.containsKey('vocalNoteEvidence')) TextButton(onPressed: _saving ? null : () async {
           await showSubtitleVocalNoteReview(context, result: result, jobId: widget.jobId,
             inputDigest: widget.inputDigest, isCurrent: widget.isCurrent);
-        }, child: const Text('Select, correct and export solo-vocal notes')),
+        }, child: Text(copy.vocalNoteReviewAction)),
         const SizedBox(height: 12),
         Text(copy.clockSummary(clock: result.itemTimeline ? copy.itemTimeline : copy.uploadedFileTimeline,
           digest: widget.inputDigest)),

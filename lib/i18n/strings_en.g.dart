@@ -14045,9 +14045,14 @@ class Translations$videoControls$subtitleResearchReview$en {
 	/// en: 'Continue to caption review'
 	String get continueReview => 'Continue to caption review';
 
+	/// en: 'Microphone-array direction candidates'
+	String get soundLocalizationEvidence => 'Microphone-array direction candidates';
 
-  /// en: 'Microphone-array direction candidates'
-  String get soundLocalizationEvidence => 'Microphone-array direction candidates';
+	/// en: 'Select, correct and export solo-vocal notes'
+	String get vocalNoteReviewAction => 'Select, correct and export solo-vocal notes';
+
+	/// en: 'Solo-vocal note candidates'
+	String get vocalNoteEvidenceSection => 'Solo-vocal note candidates';
 }
 
 // Path: videoControls.subtitleReviewFlow
@@ -14722,72 +14727,179 @@ class Translations$videoControls$subtitleAiControls$en {
 	/// en: 'Removed cue ${index}: ${text}'
 	String removedCue({required Object index, required Object text}) => 'Removed cue ${index}: ${text}';
 
+	/// en: 'Review microphone-array calibration'
+	String get arrayCalibrationTitle => 'Review microphone-array calibration';
 
-  /// en: 'Review microphone-array calibration'
-  String get arrayCalibrationTitle => 'Review microphone-array calibration';
+	/// en: 'Use an original synchronized 4–8 channel PCM WAV, up to two minutes. Microphones must form a noncoplanar array, with measured positions, latency and polarity. Mixed, downmixed, denoised or independently recorded audio cannot establish physical direction here.'
+	String get arrayCalibrationInstructions => 'Use an original synchronized 4–8 channel PCM WAV, up to two minutes. Microphones must form a noncoplanar array, with measured positions, latency and polarity. Mixed, downmixed, denoised or independently recorded audio cannot establish physical direction here.';
 
-  /// en: 'Use an original synchronized 4–8 channel PCM WAV, up to two minutes. Microphones must form a noncoplanar array, with measured positions, latency and polarity. Mixed, downmixed, denoised or independently recorded audio cannot establish physical direction here.'
-  String get arrayCalibrationInstructions => 'Use an original synchronized 4–8 channel PCM WAV, up to two minutes. Microphones must form a noncoplanar array, with measured positions, latency and polarity. Mixed, downmixed, denoised or independently recorded audio cannot establish physical direction here.';
+	/// en: 'Choose a PlezyNG array calibration with right/forward/up axes.'
+	String get arrayCalibrationSchemaError => 'Choose a PlezyNG array calibration with right/forward/up axes.';
 
-  /// en: 'Choose a PlezyNG array calibration with right/forward/up axes.'
-  String get arrayCalibrationSchemaError => 'Choose a PlezyNG array calibration with right/forward/up axes.';
+	/// en: 'Calibration requires 4–8 microphones and a sound speed of 300–380 m/s.'
+	String get arrayCalibrationGeometryError => 'Calibration requires 4–8 microphones and a sound speed of 300–380 m/s.';
 
-  /// en: 'Calibration requires 4–8 microphones and a sound speed of 300–380 m/s.'
-  String get arrayCalibrationGeometryError => 'Calibration requires 4–8 microphones and a sound speed of 300–380 m/s.';
+	/// en: 'Invalid microphone calibration.'
+	String get arrayCalibrationChannelError => 'Invalid microphone calibration.';
 
-  /// en: 'Invalid microphone calibration.'
-  String get arrayCalibrationChannelError => 'Invalid microphone calibration.';
+	/// en: 'Each microphone needs three meter coordinates, latency within ±5000 µs, and polarity +1 or −1.'
+	String get arrayCalibrationPositionError => 'Each microphone needs three meter coordinates, latency within ±5000 µs, and polarity +1 or −1.';
 
-  /// en: 'Each microphone needs three meter coordinates, latency within ±5000 µs, and polarity +1 or −1.'
-  String get arrayCalibrationPositionError => 'Each microphone needs three meter coordinates, latency within ±5000 µs, and polarity +1 or −1.';
+	/// en: 'Choose a calibration file no larger than 16 KiB.'
+	String get arrayCalibrationFileSizeError => 'Choose a calibration file no larger than 16 KiB.';
 
-  /// en: 'Choose a calibration file no larger than 16 KiB.'
-  String get arrayCalibrationFileSizeError => 'Choose a calibration file no larger than 16 KiB.';
+	/// en: 'Calibration file changed while it was being opened.'
+	String get arrayCalibrationFileChangedError => 'Calibration file changed while it was being opened.';
 
-  /// en: 'Calibration file changed while it was being opened.'
-  String get arrayCalibrationFileChangedError => 'Calibration file changed while it was being opened.';
+	/// en: 'Calibration bytes are unavailable or too large.'
+	String get arrayCalibrationFileBytesError => 'Calibration bytes are unavailable or too large.';
 
-  /// en: 'Calibration bytes are unavailable or too large.'
-  String get arrayCalibrationFileBytesError => 'Calibration bytes are unavailable or too large.';
+	/// en: 'The calibration file is not valid JSON.'
+	String get arrayCalibrationInvalidJsonError => 'The calibration file is not valid JSON.';
 
-  /// en: 'The calibration file is not valid JSON.'
-  String get arrayCalibrationInvalidJsonError => 'The calibration file is not valid JSON.';
+	/// en: 'Could not read this calibration file.'
+	String get arrayCalibrationReadError => 'Could not read this calibration file.';
 
-  /// en: 'Could not read this calibration file.'
-  String get arrayCalibrationReadError => 'Could not read this calibration file.';
+	/// en: 'Opening calibration…'
+	String get arrayCalibrationOpening => 'Opening calibration…';
 
-  /// en: 'Opening calibration…'
-  String get arrayCalibrationOpening => 'Opening calibration…';
+	/// en: 'Import calibration file'
+	String get arrayCalibrationImport => 'Import calibration file';
 
-  /// en: 'Import calibration file'
-  String get arrayCalibrationImport => 'Import calibration file';
+	/// en: 'Sound speed: ${speed} m/s. Coordinates: x right, y forward, z up.'
+	String arraySoundSpeed({required Object speed}) => 'Sound speed: ${speed} m/s. Coordinates: x right, y forward, z up.';
 
-  /// en: 'Sound speed: ${speed} m/s. Coordinates: x right, y forward, z up.'
-  String arraySoundSpeed({required Object speed}) => 'Sound speed: ${speed} m/s. Coordinates: x right, y forward, z up.';
+	/// en: 'Channel'
+	String get arrayChannel => 'Channel';
 
-  /// en: 'Channel'
-  String get arrayChannel => 'Channel';
+	/// en: 'Position (m)'
+	String get arrayPosition => 'Position (m)';
 
-  /// en: 'Position (m)'
-  String get arrayPosition => 'Position (m)';
+	/// en: 'Latency (µs)'
+	String get arrayLatency => 'Latency (µs)';
 
-  /// en: 'Latency (µs)'
-  String get arrayLatency => 'Latency (µs)';
+	/// en: 'Polarity'
+	String get arrayPolarity => 'Polarity';
 
-  /// en: 'Polarity'
-  String get arrayPolarity => 'Polarity';
+	/// en: 'These channels are the original synchronized capture in the listed order.'
+	String get arrayRawOrderDeclaration => 'These channels are the original synchronized capture in the listed order.';
 
-  /// en: 'These channels are the original synchronized capture in the listed order.'
-  String get arrayRawOrderDeclaration => 'These channels are the original synchronized capture in the listed order.';
+	/// en: 'I have checked this calibration and the cue times against the uploaded WAV.'
+	String get arrayReviewDeclaration => 'I have checked this calibration and the cue times against the uploaded WAV.';
 
-  /// en: 'I have checked this calibration and the cue times against the uploaded WAV.'
-  String get arrayReviewDeclaration => 'I have checked this calibration and the cue times against the uploaded WAV.';
+	/// en: 'Results are unqualified array-relative direction candidates. They do not identify a person, a visible object or a world location. Cue text and timing remain unchanged.'
+	String get arrayResultCaveat => 'Results are unqualified array-relative direction candidates. They do not identify a person, a visible object or a world location. Cue text and timing remain unchanged.';
 
-  /// en: 'Results are unqualified array-relative direction candidates. They do not identify a person, a visible object or a world location. Cue text and timing remain unchanged.'
-  String get arrayResultCaveat => 'Results are unqualified array-relative direction candidates. They do not identify a person, a visible object or a world location. Cue text and timing remain unchanged.';
+	/// en: 'Use reviewed calibration'
+	String get arrayUseCalibration => 'Use reviewed calibration';
 
-  /// en: 'Use reviewed calibration'
-  String get arrayUseCalibration => 'Use reviewed calibration';
+	/// en: 'Review calibrated microphone-array directions (experimental)'
+	String get companionSoundLocalization => 'Review calibrated microphone-array directions (experimental)';
+
+	/// en: 'Review isolated solo-vocal notes (experimental)'
+	String get companionVocalNotes => 'Review isolated solo-vocal notes (experimental)';
+
+	/// en: 'Review calibrated-array directions with the companion'
+	String get sendArrayLocalizationTitle => 'Review calibrated-array directions with the companion';
+
+	/// en: 'Choose an original multichannel WAV no larger than 100 MiB.'
+	String get microphoneArrayFileError => 'Choose an original multichannel WAV no larger than 100 MiB.';
+
+	/// en: 'Send solo-vocal notes to the companion'
+	String get sendVocalNotesTitle => 'Send solo-vocal notes to the companion';
+
+	/// en: 'Choose an isolated mono vocal WAV no larger than 4 MiB.'
+	String get vocalNoteFileError => 'Choose an isolated mono vocal WAV no larger than 4 MiB.';
+
+	/// en: 'I confirm this is an isolated lead vocal on its original file clock.'
+	String get vocalNoteTaskDeclarationTitle => 'I confirm this is an isolated lead vocal on its original file clock.';
+
+	/// en: 'Choose mono 16 kHz PCM16 WAV, up to two minutes, with matching file-clock cues no longer than 12 seconds each. Do not include accompaniment or harmonies, time-stretch, or substitute another source. The host cannot verify isolation or alignment; note proposals need individual review and export. Lyrics stay unchanged.'
+	String get vocalNoteTaskDeclarationDescription => 'Choose mono 16 kHz PCM16 WAV, up to two minutes, with matching file-clock cues no longer than 12 seconds each. Do not include accompaniment or harmonies, time-stretch, or substitute another source. The host cannot verify isolation or alignment; note proposals need individual review and export. Lyrics stay unchanged.';
+
+	/// en: 'Cue ${index}: enter ordered times inside the cue and a MIDI pitch from 0 to 127.'
+	String vocalNoteInvalidRange({required Object index}) => 'Cue ${index}: enter ordered times inside the cue and a MIDI pitch from 0 to 127.';
+
+	/// en: 'This result does not contain a matching solo-vocal note proposal.'
+	String get vocalNoteResultMissing => 'This result does not contain a matching solo-vocal note proposal.';
+
+	/// en: 'Invalid cue identity in note evidence.'
+	String get vocalNoteCueIdentityInvalid => 'Invalid cue identity in note evidence.';
+
+	/// en: 'Invalid or excessive note candidates.'
+	String get vocalNoteCandidateInvalid => 'Invalid or excessive note candidates.';
+
+	/// en: 'Select at least one checked note.'
+	String get vocalNoteSelectAtLeastOne => 'Select at least one checked note.';
+
+	/// en: 'Selected solo-vocal notes overlap. Adjust their boundaries or deselect a duplicate.'
+	String get vocalNoteOverlap => 'Selected solo-vocal notes overlap. Adjust their boundaries or deselect a duplicate.';
+
+	/// en: 'Export reviewed solo-vocal notes'
+	String get vocalNoteExportTitle => 'Export reviewed solo-vocal notes';
+
+	/// en: 'Export cancelled.'
+	String get vocalNoteExportCancelled => 'Export cancelled.';
+
+	/// en: 'Reviewed notes exported; captions are unchanged.'
+	String get vocalNoteExported => 'Reviewed notes exported; captions are unchanged.';
+
+	/// en: 'Could not export reviewed notes.'
+	String get vocalNoteExportFailed => 'Could not export reviewed notes.';
+
+	/// en: 'Note report exceeds 8 MiB.'
+	String get vocalNoteReportLimit => 'Note report exceeds 8 MiB.';
+
+	/// en: 'Review solo-vocal notes'
+	String get vocalNoteDialogTitle => 'Review solo-vocal notes';
+
+	/// en: 'Compare each selected note against the uploaded isolated vocal. Correct its pitch and file-clock times, or add a missing note. No proposal is selected automatically. A viewer review does not qualify the model.'
+	String get vocalNoteReviewDescription => 'Compare each selected note against the uploaded isolated vocal. Correct its pitch and file-clock times, or add a missing note. No proposal is selected automatically. A viewer review does not qualify the model.';
+
+	/// en: 'The 20 ms output grid comes from 128 ms analysis windows; it is not a measured boundary-error limit.'
+	String get vocalNoteBoundaryCaveat => 'The 20 ms output grid comes from 128 ms analysis windows; it is not a measured boundary-error limit.';
+
+	/// en: 'Add a note inside a cue'
+	String get vocalNoteAddTitle => 'Add a note inside a cue';
+
+	/// en: 'Cue ${index}: ${text}'
+	String vocalNoteCueOption({required Object index, required Object text}) => 'Cue ${index}: ${text}';
+
+	/// en: 'Add and edit'
+	String get vocalNoteAddAndEdit => 'Add and edit';
+
+	/// en: 'Unset pitch'
+	String get vocalNoteUnsetPitch => 'Unset pitch';
+
+	/// en: 'Cue ${index} · ${pitch} · ${start}–${end} ms'
+	String vocalNoteCueTitle({required Object index, required Object pitch, required Object start, required Object end}) => 'Cue ${index} · ${pitch} · ${start}–${end} ms';
+
+	/// en: 'Start ms'
+	String get vocalNoteStart => 'Start ms';
+
+	/// en: 'End ms'
+	String get vocalNoteEnd => 'End ms';
+
+	/// en: 'MIDI pitch'
+	String get vocalNoteMidiPitch => 'MIDI pitch';
+
+	/// en: 'Original proposal: ${start}–${end} ms, MIDI ${midi}; minimum voiced score ${score} (uncalibrated).'
+	String vocalNoteOriginalProposal({required Object start, required Object end, required Object midi, required Object score}) => 'Original proposal: ${start}–${end} ms, MIDI ${midi}; minimum voiced score ${score} (uncalibrated).';
+
+	/// en: 'I checked the selected notes against the isolated source.'
+	String get vocalNoteSourceCheck => 'I checked the selected notes against the isolated source.';
+
+	/// en: '${count} selected; exports are separate from lyric captions.'
+	String vocalNoteSelectedSummary({required Object count}) => '${count} selected; exports are separate from lyric captions.';
+
+	/// en: 'Add missing note'
+	String get vocalNoteAddMissing => 'Add missing note';
+
+	/// en: 'Export selected reviewed notes'
+	String get vocalNoteExportSelected => 'Export selected reviewed notes';
+
+	/// en: 'All original WAV channels are analyzed together, without resampling or preprocessing. At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback.'
+	String get microphoneArrayTaskDescription => 'All original WAV channels are analyzed together, without resampling or preprocessing. At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback.';
 }
 
 // Path: videoControls.subtitleLiveCapture
@@ -19204,6 +19316,8 @@ extension on Translations {
 			'videoControls.subtitleResearchReview.exportAction' => 'Export evidence JSON',
 			'videoControls.subtitleResearchReview.continueReview' => 'Continue to caption review',
 			'videoControls.subtitleResearchReview.soundLocalizationEvidence' => 'Microphone-array direction candidates',
+			'videoControls.subtitleResearchReview.vocalNoteReviewAction' => 'Select, correct and export solo-vocal notes',
+			'videoControls.subtitleResearchReview.vocalNoteEvidenceSection' => 'Solo-vocal note candidates',
 			'videoControls.subtitleReviewFlow.revisionIdentityRequired' => 'Revision history needs an active profile and media item.',
 			'videoControls.subtitleReviewFlow.revisionSaved' => ({required Object id}) => 'Saved revision ${id} to this device for this profile and media item.',
 			'videoControls.subtitleReviewFlow.revisionSaveFailed' => ({required Object error}) => 'Could not save this revision locally: ${error}',
@@ -19444,6 +19558,42 @@ extension on Translations {
 			'videoControls.subtitleAiControls.arrayReviewDeclaration' => 'I have checked this calibration and the cue times against the uploaded WAV.',
 			'videoControls.subtitleAiControls.arrayResultCaveat' => 'Results are unqualified array-relative direction candidates. They do not identify a person, a visible object or a world location. Cue text and timing remain unchanged.',
 			'videoControls.subtitleAiControls.arrayUseCalibration' => 'Use reviewed calibration',
+			'videoControls.subtitleAiControls.companionSoundLocalization' => 'Review calibrated microphone-array directions (experimental)',
+			'videoControls.subtitleAiControls.companionVocalNotes' => 'Review isolated solo-vocal notes (experimental)',
+			'videoControls.subtitleAiControls.sendArrayLocalizationTitle' => 'Review calibrated-array directions with the companion',
+			'videoControls.subtitleAiControls.microphoneArrayFileError' => 'Choose an original multichannel WAV no larger than 100 MiB.',
+			'videoControls.subtitleAiControls.sendVocalNotesTitle' => 'Send solo-vocal notes to the companion',
+			'videoControls.subtitleAiControls.vocalNoteFileError' => 'Choose an isolated mono vocal WAV no larger than 4 MiB.',
+			'videoControls.subtitleAiControls.vocalNoteTaskDeclarationTitle' => 'I confirm this is an isolated lead vocal on its original file clock.',
+			'videoControls.subtitleAiControls.vocalNoteTaskDeclarationDescription' => 'Choose mono 16 kHz PCM16 WAV, up to two minutes, with matching file-clock cues no longer than 12 seconds each. Do not include accompaniment or harmonies, time-stretch, or substitute another source. The host cannot verify isolation or alignment; note proposals need individual review and export. Lyrics stay unchanged.',
+			'videoControls.subtitleAiControls.vocalNoteInvalidRange' => ({required Object index}) => 'Cue ${index}: enter ordered times inside the cue and a MIDI pitch from 0 to 127.',
+			'videoControls.subtitleAiControls.vocalNoteResultMissing' => 'This result does not contain a matching solo-vocal note proposal.',
+			'videoControls.subtitleAiControls.vocalNoteCueIdentityInvalid' => 'Invalid cue identity in note evidence.',
+			'videoControls.subtitleAiControls.vocalNoteCandidateInvalid' => 'Invalid or excessive note candidates.',
+			'videoControls.subtitleAiControls.vocalNoteSelectAtLeastOne' => 'Select at least one checked note.',
+			'videoControls.subtitleAiControls.vocalNoteOverlap' => 'Selected solo-vocal notes overlap. Adjust their boundaries or deselect a duplicate.',
+			'videoControls.subtitleAiControls.vocalNoteExportTitle' => 'Export reviewed solo-vocal notes',
+			'videoControls.subtitleAiControls.vocalNoteExportCancelled' => 'Export cancelled.',
+			'videoControls.subtitleAiControls.vocalNoteExported' => 'Reviewed notes exported; captions are unchanged.',
+			'videoControls.subtitleAiControls.vocalNoteExportFailed' => 'Could not export reviewed notes.',
+			'videoControls.subtitleAiControls.vocalNoteReportLimit' => 'Note report exceeds 8 MiB.',
+			'videoControls.subtitleAiControls.vocalNoteDialogTitle' => 'Review solo-vocal notes',
+			'videoControls.subtitleAiControls.vocalNoteReviewDescription' => 'Compare each selected note against the uploaded isolated vocal. Correct its pitch and file-clock times, or add a missing note. No proposal is selected automatically. A viewer review does not qualify the model.',
+			'videoControls.subtitleAiControls.vocalNoteBoundaryCaveat' => 'The 20 ms output grid comes from 128 ms analysis windows; it is not a measured boundary-error limit.',
+			'videoControls.subtitleAiControls.vocalNoteAddTitle' => 'Add a note inside a cue',
+			'videoControls.subtitleAiControls.vocalNoteCueOption' => ({required Object index, required Object text}) => 'Cue ${index}: ${text}',
+			'videoControls.subtitleAiControls.vocalNoteAddAndEdit' => 'Add and edit',
+			'videoControls.subtitleAiControls.vocalNoteUnsetPitch' => 'Unset pitch',
+			'videoControls.subtitleAiControls.vocalNoteCueTitle' => ({required Object index, required Object pitch, required Object start, required Object end}) => 'Cue ${index} · ${pitch} · ${start}–${end} ms',
+			'videoControls.subtitleAiControls.vocalNoteStart' => 'Start ms',
+			'videoControls.subtitleAiControls.vocalNoteEnd' => 'End ms',
+			'videoControls.subtitleAiControls.vocalNoteMidiPitch' => 'MIDI pitch',
+			'videoControls.subtitleAiControls.vocalNoteOriginalProposal' => ({required Object start, required Object end, required Object midi, required Object score}) => 'Original proposal: ${start}–${end} ms, MIDI ${midi}; minimum voiced score ${score} (uncalibrated).',
+			'videoControls.subtitleAiControls.vocalNoteSourceCheck' => 'I checked the selected notes against the isolated source.',
+			'videoControls.subtitleAiControls.vocalNoteSelectedSummary' => ({required Object count}) => '${count} selected; exports are separate from lyric captions.',
+			'videoControls.subtitleAiControls.vocalNoteAddMissing' => 'Add missing note',
+			'videoControls.subtitleAiControls.vocalNoteExportSelected' => 'Export selected reviewed notes',
+			'videoControls.subtitleAiControls.microphoneArrayTaskDescription' => 'All original WAV channels are analyzed together, without resampling or preprocessing. At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback.',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',

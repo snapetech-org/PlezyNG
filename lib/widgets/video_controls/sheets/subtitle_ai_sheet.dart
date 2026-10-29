@@ -879,6 +879,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Future<void> _submitCompanion(String task) => _run(() async {
+    final aiCopy = Translations.of(context).videoControls.subtitleAiControls;
     final identity = _operationRevisionIdentity;
     if (identity == null) throw StateError('Open a stable library item or local file before submitting a job.');
     final service = await _pairedCompanion();
@@ -935,8 +936,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ? SubtitleCompanionService.maximumMicrophoneArrayBytes
             : task == 'vocal_notes' ? SubtitleCompanionService.maximumVocalNoteBytes : SubtitleCompanionService.maximumInputBytes;
         if (file.size <= 0 || file.size > maximumInputBytes) throw FormatException(task == 'sound_localize'
-            ? 'Choose an original multichannel WAV no larger than 100 MiB.'
-            : task == 'vocal_notes' ? 'Choose an isolated mono vocal WAV no larger than 4 MiB.'
+            ? aiCopy.microphoneArrayFileError
+            : task == 'vocal_notes' ? aiCopy.vocalNoteFileError
             : 'Choose media up to 1 GiB and within the task duration limit.');
         path = file.path;
         if (path == null) {
@@ -967,7 +968,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var cropTop = 0.65;
       final accepted = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, update) => AlertDialog(
-          title: Text('Send $task job to companion'),
+          title: Text(task == 'vocal_notes' ? aiCopy.sendVocalNotesTitle
+            : task == 'sound_localize' ? aiCopy.sendArrayLocalizationTitle : 'Send $task job to companion'),
           content: SizedBox(width: 560, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
             Text('Destination: ${service.endpoint}\n${path == null ? 'Subtitle text' : 'The selected media file'} will be uploaded and retained on this host until you delete the job. '
                 'No playback URL or media-server credentials are shared.${useCurrentSource ? " The opened part offset ($timelineOffsetMs ms) will be retained in generated cue times." : ""}'),
@@ -1075,13 +1077,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               subtitle: const Text('Measures repeated left/right energy dominance in a stereo rendering. It cannot identify a sound’s physical direction or isolate it from the rest of the mix.'),
               value: soundStereoEvidence, onChanged: (v) => update(() => soundStereoEvidence = v)),
             if (task == 'diarize') const Text('Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.'),
-            if (task == 'sound_localize') const Text('All original WAV channels are analyzed together, without resampling or preprocessing. '
-              'At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback.'),
+            if (task == 'sound_localize') Text(aiCopy.microphoneArrayTaskDescription),
             if (task == 'vocal_notes') CheckboxListTile(value: isolatedLeadVocal,
               onChanged: (v) => update(() => isolatedLeadVocal = v == true),
-              title: const Text('This is an isolated solo vocal on its original file clock.'),
-              subtitle: const Text('Mono 16 kHz PCM16 WAV, up to two minutes; matching file-clock cues, at most 12 seconds each. '
-                'No accompaniment, harmony, time stretching or automatic source substitution. Note proposals need individual review and export; lyrics stay unchanged.')),
+              title: Text(aiCopy.vocalNoteTaskDeclarationTitle),
+              subtitle: Text(aiCopy.vocalNoteTaskDeclarationDescription)),
             if (path != null && task != 'ocr' && task != 'bitmap_ocr' && task != 'sound_localize' && task != 'vocal_notes') ...[
               DropdownButtonFormField<int>(initialValue: track, decoration: const InputDecoration(labelText: 'Audio stream (zero based)'),
                 items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text('Audio stream $i'))),
@@ -4093,13 +4093,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('ensemble', aiCopy.companionEnsemble),
             ('separate', aiCopy.companionSeparate),
             ('sound_events', aiCopy.companionSoundEvents),
-            ('sound_localize', 'Review calibrated microphone-array directions (experimental)'),
+            ('sound_localize', aiCopy.companionSoundLocalization),
             ('completeness', aiCopy.companionCompleteness),
             ('extract_text', aiCopy.companionExtractText),
             ('signs', aiCopy.companionSigns),
             ('align', aiCopy.companionAlign),
             ('singing_align', aiCopy.companionSingingAlign),
-            ('vocal_notes', 'Review isolated solo-vocal notes (experimental)'),
+            ('vocal_notes', aiCopy.companionVocalNotes),
             ('diarize', aiCopy.companionDiarize),
             ('translate', aiCopy.companionTranslate),
             ('translate_model', aiCopy.companionTranslateModel),

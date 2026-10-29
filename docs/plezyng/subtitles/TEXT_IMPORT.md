@@ -18,6 +18,10 @@ original.
 | MPL2 | Decisecond start/end, line separators and per-line italic markers. |
 | SCC | Explicit channel within the supplied field, 30000/1001 or 30 fps, validated drop/non-drop timecode and optional clock-origin subtraction. Odd parity, frame-ordered byte pairs, pop-on memory swaps, paint-on updates and 2/3/4-row roll-up produce text-screen snapshots. Positions/styles are flattened; XDS, TEXT and 708 are refused. |
 
+SCC's generated SRT keeps literal caption characters entity-escaped so they are
+not interpreted as authored subtitle markup. The review preview decodes those
+entities for display; the original SCC remains unchanged.
+
 SAMI/LRC without a final closing timestamp use the visible, editable final-cue
 duration (100–30000 ms, initial value 2000 ms). The preview explains this
 assumption. Sparse cues and overlaps are preserved; no missing speech is inferred.

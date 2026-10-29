@@ -103,7 +103,9 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
             Text('$count cues · separate UTF-8 SRT derivative; original stays unchanged'),
             for (final warning in result.warnings) Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(warning)),
             for (final index in sample) ListTile(dense: true,
-              title: SelectableText(result.cues[index].text),
+              title: SelectableText(widget.extension.toLowerCase() == '.scc'
+                  ? SubtitleTextImporter.decodeHtmlEntities(result.cues[index].text)
+                  : result.cues[index].text),
               subtitle: Text('${Duration(milliseconds: result.cues[index].startMs)} → ${Duration(milliseconds: result.cues[index].endMs)}')),
           ],
         ])),

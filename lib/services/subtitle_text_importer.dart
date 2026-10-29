@@ -162,8 +162,14 @@ abstract final class SubtitleTextImporter {
       cursor = tag.end;
     }
     if (hidden == null) plain.write(text.substring(cursor));
-    text = plain.toString();
-    return text.replaceAllMapped(RegExp(r'&(#x[0-9a-f]+|#\d+|nbsp|amp|lt|gt|quot|apos);', caseSensitive: false), (m) {
+    return decodeHtmlEntities(plain.toString());
+  }
+
+  /// Decodes the bounded HTML entity subset used by SAMI and SCC previews.
+  /// SCC cues retain their escaped form in the generated SRT so literal
+  /// caption characters cannot be mistaken for authored markup.
+  static String decodeHtmlEntities(String text) => text.replaceAllMapped(
+      RegExp(r'&(#x[0-9a-f]+|#\d+|nbsp|amp|lt|gt|quot|apos);', caseSensitive: false), (m) {
       final token = m[1]!;
       if (!token.startsWith('#')) return const {'nbsp': ' ', 'amp': '&', 'lt': '<', 'gt': '>', 'quot': '"', 'apos': "'"}[token.toLowerCase()]!;
       final scalar = token.toLowerCase().startsWith('#x') ? int.tryParse(token.substring(2), radix: 16) : int.tryParse(token.substring(1));

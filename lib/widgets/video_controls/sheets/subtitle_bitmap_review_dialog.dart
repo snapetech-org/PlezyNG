@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show compute;
 
 import '../../../services/file_picker_service.dart';
 import '../../../services/subtitle_companion_service.dart';
@@ -98,7 +99,7 @@ class _SubtitleBitmapReviewDialogState extends State<SubtitleBitmapReviewDialog>
     if (_loading || _exporting || !_save()) return;
     setState(() { _exporting = true; _error = null; });
     try {
-      final archive = Archive();
+      final parts = <(String, List<int>)>[];
       final included = <String>{};
       var bytes = 0;
       for (final image in widget.result.images) {
@@ -107,7 +108,7 @@ class _SubtitleBitmapReviewDialogState extends State<SubtitleBitmapReviewDialog>
         final png = await widget.service.evidenceImage(widget.jobId, image);
         bytes += png.length;
         if (bytes > 32 * 1024 * 1024) throw const FormatException('Evidence exceeds the 32 MiB bound.');
-        archive.addFile(ArchiveFile('images/${image.digest}.png', png.length, png));
+        parts.add(('images/${image.digest}.png', png));
       }
       Map<String, Object> cue(SubtitleCue c) => {'cueId': c.stableId, 'startMs': c.startMs, 'endMs': c.endMs, 'text': c.text};
       final manifest = utf8.encode(jsonEncode({'schema': 1, 'jobId': widget.jobId, 'mediaDigest': widget.mediaDigest,
@@ -115,14 +116,20 @@ class _SubtitleBitmapReviewDialogState extends State<SubtitleBitmapReviewDialog>
         'originalOcrCues': widget.result.cues.map(cue).toList(), 'reviewedCues': _cues.map(cue).toList(),
         'excludedCueIds': _excluded.toList(), 'imageReviewedCueIds': _reviewed.toList(), 'warnings': widget.result.warnings}));
       if (manifest.length > 24 * 1024 * 1024) throw const FormatException('Evidence manifest exceeds 24 MiB.');
-      archive.addFile(ArchiveFile('manifest.json', manifest.length, manifest));
-      final encoded = ZipEncoder().encode(archive);
+      parts.add(('manifest.json', manifest));
+      final encoded = await compute(_encodeEvidence, parts);
       if (!_current) return;
       await FilePickerService.instance.saveFile(dialogTitle: 'Save bitmap images and OCR provenance', fileName: 'subtitle_ocr_evidence.zip',
         type: FileType.custom, allowedExtensions: const ['zip'], bytes: Uint8List.fromList(encoded));
       if (mounted) setState(() => _message = 'Evidence export prepared with original images and review annotations.');
     } catch (_) { if (mounted) setState(() => _error = 'The evidence archive could not be exported. Original images remain with the companion job.'); }
     finally { if (mounted) setState(() => _exporting = false); }
+  }
+
+  static Uint8List _encodeEvidence(List<(String, List<int>)> parts) {
+    final archive = Archive();
+    for (final part in parts) { archive.addFile(ArchiveFile(part.$1, part.$2.length, part.$2)); }
+    return Uint8List.fromList(ZipEncoder().encode(archive));
   }
 
   @override

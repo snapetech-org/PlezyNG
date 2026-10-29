@@ -1,0 +1,3 @@
+# Optional host-only script and reading adapters; no models install automatically.
+opencc-python-reimplemented==0.1.7
+pykakasi==2.3.0

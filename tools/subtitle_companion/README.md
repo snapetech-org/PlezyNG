@@ -15,6 +15,9 @@ Implemented adapters:
 | `align` | FFmpeg, WhisperX, a matching-language CTC model | Align supplied text within plausible cue windows; uncertain cues retain original times |
 | `diarize` | FFmpeg, faster-whisper, WhisperX/pyannote model | Anonymous numbered speakers; no names or identity recognition |
 | `translate` | Argos Translate and an installed pair | Separate timed cues with source IDs, markup and line breaks preserved |
+| `translate_model` | Explicit compatible chat-completions endpoint, model and optional host API key | Faithful/natural/literal modes, neighboring-cue context, protected structural/glossary markers and durable eight-cue checkpoints |
+| `script_convert` | OpenCC | Explicit Chinese script/region/phrase conversion, separate from translation |
+| `reading` | pykakasi | Japanese inline kana annotations or original + Hepburn romanization, as a separate SRT |
 | `ocr` | FFmpeg, Tesseract language data | Burned-caption crop sampled at 2 Hz with temporal deduplication and OCR-score metadata |
 | `bitmap_ocr` | Native helper below, FFmpeg development SDK, Tesseract language data | PGS/VobSub display decoding, original RGBA PNG evidence, cue image/text correction and evidence ZIP export |
 
@@ -40,7 +43,49 @@ python -m venv .venv
 python -m pip install -r requirements-inference.txt
 # Optional text translation; install its language-pair packages separately.
 python -m pip install -r requirements-translation.txt
+# Optional Chinese script conversion and Japanese reading dictionaries.
+python -m pip install -r requirements-text-extras.txt
 ```
+
+### Configured model translation
+
+`translate_model` is disabled until the host sets `PLEZY_TRANSLATION_URL` to a
+full compatible `/v1/chat/completions` URL and `PLEZY_TRANSLATION_MODEL` to its
+model ID. A local llama.cpp server is one option; an authenticated provider is
+another. HTTP is accepted only for loopback; other hosts require HTTPS. Set an
+optional `PLEZY_TRANSLATION_API_KEY` on the companion, never in app preferences.
+Set `PLEZY_TRANSLATION_REVISION` to the exact model revision when available and
+`PLEZY_TRANSLATION_LANGUAGES` to a comma-separated declared language catalogue.
+An empty catalogue means unreported coverage, not a claim of all languages.
+
+The app displays the full destination/model/revision before the explicit
+**Forward text and translate** action. This task forwards subtitle text and
+neighboring context to that endpoint; the file-only privacy description for
+other tasks does not imply model translation stays on the companion. Provider
+charges/retention are governed by that separately configured service. The
+endpoint receives no audio, playback URL or media-server credentials. Host API
+credentials stay on the host. Redirects and environment proxy routing are
+disabled. No model endpoint or provider account is configured by installation.
+
+Jobs bind to the shown endpoint/model/revision fingerprint. Configuration
+changes refuse resume rather than sending an old job to a new destination.
+Eight-cue batches include adjacent dialogue context and preserve cue IDs/times;
+whole-track sentence redistribution is not performed. Protected numbers,
+speaker labels, markup, line breaks, URLs and glossary markers must occur
+exactly once in their original cue. Missing/duplicate IDs, truncated results or
+broken markers fail the operation. These checks cannot prove semantic accuracy.
+Completed batches persist under the job and are reused on resume. Cancelling
+terminates the local worker and connection; an upstream provider may already
+have processed/billed the in-flight request. There is no automatic API retry.
+
+OpenCC modes include Simplified/Traditional, Taiwan/Hong Kong variants and
+explicit Taiwan phrase conversion. pykakasi modes create inline kana after
+kanji or a separate romanization line; native ruby typography and other reading
+languages are not claimed. Model mode, package/revision information and glossary
+digest are included in companion result provenance; all text tasks return
+original cues for paired before/after review. Local revision files currently
+retain the operation/language and reviewed cues, not the complete host manifest.
+Retain/export host results when full adapter provenance is required.
 
 Optional PGS/VobSub helper (source is included; no build has been run): install
 the FFmpeg 6–8 development headers/libraries and pkg-config for the host's
@@ -112,6 +157,8 @@ Environment configuration:
 - `PLEZY_FFMPEG`: executable path, default `ffmpeg`; no shell interpolation.
 - `PLEZY_TESSERACT_LANGUAGE`: installed Tesseract language code(s), default `eng`.
 - `PLEZY_SUBTITLE_DECODER`: optional native PGS/VobSub helper executable; no shell interpolation.
+- `PLEZY_TRANSLATION_URL`, `PLEZY_TRANSLATION_MODEL`, `PLEZY_TRANSLATION_REVISION`,
+  `PLEZY_TRANSLATION_LANGUAGES`, `PLEZY_TRANSLATION_API_KEY`: optional model translation configuration described above.
 
 Start on localhost with `python server.py`. For another device, supply
 `--host 0.0.0.0 --cert /path/cert.pem --key /path/key.pem`. The certificate must

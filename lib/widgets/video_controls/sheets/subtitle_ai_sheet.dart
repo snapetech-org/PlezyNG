@@ -742,14 +742,19 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     try {
       final capabilities = await service.capabilities();
       if (!(capabilities['tasks'] as List).contains(task)) throw UnsupportedError('Install the $task backend on the companion first.');
+      final textTask = SubtitleCompanionService.textTasks.contains(task);
+      final modelProvider = capabilities['translationProvider'];
+      if (task == 'translate_model' && (modelProvider is! Map || modelProvider['fingerprint'] is! String || modelProvider['destination'] is! String)) {
+        throw const FormatException('The companion did not declare its translation destination.');
+      }
       List<SubtitleCue> cues = const [];
-      if (task == 'align' || task == 'translate') {
+      if (task == 'align' || textTask) {
         final selected = await _pickSubtitleCues();
         if (selected == null || !mounted) return;
         cues = selected.$1;
       }
       String? path;
-      if (task != 'translate') {
+      if (!textTask) {
         if (task == 'bitmap_ocr' && mounted) setState(() => _status = 'Choose PGS SUP, a video container, or a ZIP containing one matching VobSub IDX/SUB pair.');
         final selected = await FilePickerService.instance.pickFiles(type: FileType.any);
         if (selected == null || selected.files.isEmpty || !mounted) return;
@@ -769,6 +774,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var preprocess = false;
       var track = 0;
       var subtitleTrack = 0, bitmapTail = 2000;
+      var translationMode = 'faithful', scriptConversion = 's2t', readingMode = 'hiragana';
       var cropTop = 0.65;
       final accepted = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, update) => AlertDialog(
@@ -779,6 +785,40 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             if (task == 'align') Text('Only use text matching the spoken ${SubtitleTranslationService.languageLabel(_sourceLanguage)} audio, '
                 'with approximate cue intervals no longer than 60 seconds. Unsupported/uncertain cues keep their original timing.'),
             if (task == 'translate') Text('Translate ${SubtitleTranslationService.languageLabel(_sourceLanguage)} to ${SubtitleTranslationService.languageLabel(_targetLanguage)} using an installed host language pair.'),
+            if (task == 'translate_model') ...[
+              Text('The companion will forward subtitle text, neighboring dialogue and protected glossary markers to:\n'
+                  '${(modelProvider as Map)['destination']}\nModel: ${modelProvider['model']}\n'
+                  'Revision declared by the host: ${modelProvider['declaredRevision']}. Provider retention and charges apply if configured. No media audio or playback credentials are forwarded.'),
+              Text('Translate ${SubtitleTranslationService.languageLabel(_sourceLanguage)} to ${SubtitleTranslationService.languageLabel(_targetLanguage)}. '
+                  'The model’s actual language quality is not qualified by this app.'),
+              DropdownButtonFormField<String>(initialValue: translationMode, decoration: const InputDecoration(labelText: 'Translation mode'),
+                items: const [DropdownMenuItem(value: 'faithful', child: Text('Faithful · retain meaning and tone')),
+                  DropdownMenuItem(value: 'natural', child: Text('Natural · idiomatic subtitle wording')),
+                  DropdownMenuItem(value: 'literal', child: Text('Literal · language-learning correspondence'))],
+                onChanged: (value) => update(() => translationMode = value ?? 'faithful')),
+              TextField(controller: _glossaryController, maxLines: 4, maxLength: 65536,
+                decoration: const InputDecoration(labelText: 'Protected glossary (JSON source → target pairs)',
+                  helperText: 'Up to 200 plain-text terms, 128 characters each. This job records its glossary digest.')),
+            ],
+            if (task == 'script_convert') ...[
+              const Text('Convert Chinese script/region conventions as a separate track. This is not semantic translation. Native layout remains in the original.'),
+              DropdownButtonFormField<String>(initialValue: scriptConversion, isExpanded: true,
+                decoration: const InputDecoration(labelText: 'Explicit script/region conversion'),
+                items: (const <String, String>{'s2t': 'Simplified → Traditional', 't2s': 'Traditional → Simplified',
+                  's2tw': 'Simplified → Taiwan characters', 'tw2s': 'Taiwan → Simplified',
+                  's2hk': 'Simplified → Hong Kong', 'hk2s': 'Hong Kong → Simplified',
+                  't2tw': 'Traditional → Taiwan characters', 't2hk': 'Traditional → Hong Kong',
+                  's2twp': 'Simplified → Taiwan characters and phrases', 'tw2sp': 'Taiwan phrases → Simplified'}).entries
+                    .map((entry) => DropdownMenuItem(value: entry.key, child: Text(entry.value, overflow: TextOverflow.ellipsis))).toList(),
+                onChanged: (value) => update(() => scriptConversion = value ?? 's2t')),
+            ],
+            if (task == 'reading') ...[
+              const Text('Add dictionary-derived Japanese reading aids to a separate SRT. Names and ambiguous readings need review; the original is unchanged.'),
+              DropdownButtonFormField<String>(initialValue: readingMode, decoration: const InputDecoration(labelText: 'Reading display'),
+                items: const [DropdownMenuItem(value: 'hiragana', child: Text('Inline kana after kanji')),
+                  DropdownMenuItem(value: 'hepburn', child: Text('Original + Hepburn romanization line'))],
+                onChanged: (value) => update(() => readingMode = value ?? 'hiragana')),
+            ],
             if (task == 'diarize') const Text('Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.'),
             if (path != null && task != 'ocr' && task != 'bitmap_ocr') ...[
               DropdownButtonFormField<int>(initialValue: track, decoration: const InputDecoration(labelText: 'Audio stream (zero based)'),
@@ -806,18 +846,22 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             Text('Host backends: ${(capabilities['tasks'] as List).join(', ')}. Hardware placement is unverified.'),
           ]))),
           actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Upload and process'))],
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(task == 'translate_model' ? 'Forward text and translate' : 'Send and process'))],
         ),
       ));
       if (accepted != true || !mounted) return;
       _requireCurrentOperationIdentity();
       final id = await service.submit(task: task, identityKey: identity.storageKey, mediaPath: path, cues: cues,
-        language: task == 'align' || task == 'translate' || task == 'bitmap_ocr' ? _sourceLanguage.bcpCode.split('-').first
+        language: task == 'script_convert' ? 'zh' : task == 'reading' ? 'ja'
+            : task == 'align' || textTask || task == 'bitmap_ocr' ? _sourceLanguage.bcpCode.split('-').first
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
-        targetLanguage: task == 'translate' ? _targetLanguage.bcpCode.split('-').first : null,
+        targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
         preprocess: preprocess, audioTrack: track, crop: [0, cropTop, 1, 1 - cropTop],
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail,
+        translationMode: translationMode, scriptConversion: scriptConversion, readingMode: readingMode,
+        translationProviderFingerprint: task == 'translate_model' ? (modelProvider as Map)['fingerprint'] as String : null,
+        glossary: task == 'translate_model' ? _parseGlossary() : const {},
         onCreated: (id) { if (mounted) setState(() => _activeCompanionJob = id); },
         onUpload: (sent, total) { if (mounted) setState(() => _status = 'Uploading chosen media: ${(sent * 100 / total).round()}%'); },
       );
@@ -858,6 +902,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         cues = reviewed;
       }
       await _writeAndApply(cues, operationLabel: 'Companion ${job['task']}', operationLanguageCode: result.language,
+        sourceCues: result.sourceCues.isEmpty ? null : result.sourceCues,
         wordTimings: result.wordTimings, reviewWarnings: result.warnings);
     } finally { service.close(); }
   });
@@ -3485,6 +3530,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('align', 'Force-align a matching-language transcript'),
             ('diarize', 'Transcribe with anonymous speaker labels'),
             ('translate', 'Translate subtitles on the companion'),
+            ('translate_model', 'Translate with faithful, natural, or literal wording'),
+            ('script_convert', 'Convert Chinese script or region variants'),
+            ('reading', 'Add Japanese kana or romanization readings'),
             ('ocr', 'Extract burned captions from a video crop'),
             ('bitmap_ocr', 'Read PGS/VobSub images and correct OCR'),
           ]) FocusableListTile(leading: const AppIcon(Symbols.auto_awesome_rounded), title: Text(entry.$2),

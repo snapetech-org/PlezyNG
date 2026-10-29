@@ -15,6 +15,7 @@ import sys
 import wave
 
 from server import MAX_RESULT, atomic_json, read_json
+from text_adapters import TEXT_TASKS, translate_model, derivative
 
 MAX_SECONDS = 3600
 FORMATS = "matroska,webm,mov,avi,mp3,wav,flac,ogg,aac,ac3,eac3,mpegts,mpeg"
@@ -248,8 +249,8 @@ def ocr(folder, job):
 
 def main():
     folder = Path(sys.argv[1]).resolve()
-    job = read_json(folder / "job.json")
-    if job["task"] != "translate":
+    job = read_json(folder / "job.json", MAX_RESULT)
+    if job["task"] not in TEXT_TASKS:
         digest = hashlib.sha256()
         with (folder / "input.media").open("rb") as stream:
             for block in iter(lambda: stream.read(1024 * 1024), b""):
@@ -268,6 +269,12 @@ def main():
     if task == "translate":
         result = translate(folder, job)
         device = "argos-runtime-unreported"
+    elif task == "translate_model":
+        result = translate_model(folder, job, progress, atomic_json, read_json)
+        device = "configured-model-provider-unreported"
+    elif task in {"script_convert", "reading"}:
+        result = derivative(folder, job, progress)
+        device = "host-text-cpu"
     elif task == "ocr":
         result = ocr(folder, job)
         device = "tesseract-cpu"
@@ -290,10 +297,12 @@ def main():
         raise ValueError("no_caption_evidence")
     for index, cue in enumerate(result["cues"]):
         cue["index"] = index + 1
+    if task in TEXT_TASKS:
+        result["sourceCues"] = job["cues"]
     result.update({"schema": 1, "identity": job["identity"], "audioDigest": job["audioDigest"],
                    "jobId": job["id"], "task": task, "requestedDevice": requested, "runtimeDevice": device,
                    "cpuFallback": fallback, "placementEvidence": "unverified",
-                   "model": os.environ.get("PLEZY_WHISPER_MODEL", "base"),
+                   "model": result.get("model", os.environ.get("PLEZY_WHISPER_MODEL", "base") if task in {"transcribe", "diarize"} else "not-reported"),
                    "preprocessing": "80Hz-highpass-and-FFT-denoise" if job.get("preprocess") else "none"})
     atomic_json(folder / "result.json", result)
     progress(folder, "Complete; review before attachment", 1)

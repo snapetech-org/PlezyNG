@@ -25,6 +25,8 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
+from text_adapters import TEXT_TASKS, SCRIPT_MODES, MODES, capabilities as translation_capabilities, provider_config
+
 MAX_INPUT = 1024**3
 MAX_JSON = 5 * 1024**2
 MAX_RESULT = 24 * 1024**2
@@ -68,11 +70,11 @@ class Store:
             if not folder.is_dir() or folder.is_symlink() or not JOB_ID.fullmatch(folder.name):
                 continue
             try:
-                job = read_json(folder / "job.json")
+                job = read_json(folder / "job.json", MAX_RESULT)
                 if job["id"] != folder.name or not HEX.fullmatch(job["scope"]):
                     continue
                 if job["state"] in {"queued", "running", "uploading"}:
-                    job["state"] = "paused" if job.get("task") == "translate" or (folder / "input.media").is_file() else "awaiting_audio"
+                    job["state"] = "paused" if job.get("task") in TEXT_TASKS or (folder / "input.media").is_file() else "awaiting_audio"
                 self.jobs[job["id"]] = job
                 self.save(job)
                 (folder / "audio.part").unlink(missing_ok=True)
@@ -104,26 +106,26 @@ class Store:
 
     def create(self, scope, value):
         task = value.get("task")
-        if task not in {"transcribe", "align", "diarize", "translate", "ocr", "bitmap_ocr"}:
+        if task not in {"transcribe", "align", "diarize", "ocr", "bitmap_ocr"} | TEXT_TASKS:
             raise ValueError("unsupported_task")
         for key in ("identity", "audioDigest", "requestId"):
             if not isinstance(value.get(key), str) or not HEX.fullmatch(value[key]):
                 raise ValueError("invalid_identity")
         size = value.get("audioBytes", 0)
-        if type(size) is not int or size < 0 or size > MAX_INPUT or (task != "translate" and size < 1):
+        if type(size) is not int or size < 0 or size > MAX_INPUT or (task not in TEXT_TASKS and size < 1) or (task in TEXT_TASKS and size != 0):
             raise ValueError("input_limit")
         language = value.get("language")
         if language is not None and (not isinstance(language, str) or not re.fullmatch(r"[a-z]{2,3}", language)):
             raise ValueError("invalid_language")
-        if task in {"align", "translate"} and not language:
+        if task in {"align"} | TEXT_TASKS and not language:
             raise ValueError("language_required")
         target = value.get("targetLanguage")
-        if task == "translate" and (not isinstance(target, str) or not re.fullmatch(r"[a-z]{2,3}", target) or target == language):
+        if task in {"translate", "translate_model"} and (not isinstance(target, str) or not re.fullmatch(r"[a-z]{2,3}", target) or target == language):
             raise ValueError("target_language_required")
         if task == "align" and value.get("spokenLanguage") != language:
             raise ValueError("alignment_requires_matching_spoken_language")
         cues = value.get("cues", [])
-        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "translate"} and not cues):
+        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align"} | TEXT_TASKS and not cues):
             raise ValueError("cue_limit")
         ids = set()
         for cue in cues:
@@ -144,6 +146,28 @@ class Store:
         bitmap_tail = value.get("finalBitmapDurationMs", 2000)
         if type(bitmap_tail) is not int or not 100 <= bitmap_tail <= 30000:
             raise ValueError("invalid_final_bitmap_duration")
+        mode = value.get("translationMode", "faithful")
+        conversion = value.get("scriptConversion", "s2t")
+        reading = value.get("readingMode", "hiragana")
+        if not isinstance(mode, str) or mode not in MODES or not isinstance(conversion, str) or conversion not in SCRIPT_MODES or not isinstance(reading, str) or reading not in {"hiragana", "hepburn"}:
+            raise ValueError("invalid_text_derivative_mode")
+        if task == "script_convert" and language != "zh" or task == "reading" and language != "ja":
+            raise ValueError("text_derivative_language_mismatch")
+        glossary = value.get("glossary", {})
+        if not isinstance(glossary, dict) or len(glossary) > 200:
+            raise ValueError("invalid_glossary")
+        folded = set()
+        for key, term in glossary.items():
+            if (not isinstance(key, str) or not isinstance(term, str) or not 0 < len(key.strip()) <= 128 or not 0 < len(term.strip()) <= 128 or
+                    any(c in key + term for c in "\r\n<>\0") or key.casefold() in folded):
+                raise ValueError("invalid_glossary_term")
+            folded.add(key.casefold())
+        provider_fingerprint = None
+        if task == "translate_model":
+            config = provider_config()
+            provider_fingerprint = config["fingerprint"]
+            if value.get("translationProviderFingerprint") != provider_fingerprint:
+                raise ValueError("translation_provider_changed_resubmit_after_review")
         crop = value.get("crop", [0, 0.65, 1, 0.35])
         if not isinstance(crop, list) or len(crop) != 4 or any(type(n) not in (int, float) or not 0 <= n <= 1 for n in crop):
             raise ValueError("invalid_crop")
@@ -155,8 +179,10 @@ class Store:
                          "audioBytes": size, "language": language, "targetLanguage": target,
                          "cues": cues, "audioTrack": track, "crop": crop,
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
-                         "translateToEnglish": value.get("translateToEnglish") is True,
-                         "preprocess": value.get("preprocess") is True}
+                         "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
+                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint,
+                         "translateToEnglish": task == "transcribe" and value.get("translateToEnglish") is True,
+                         "preprocess": task in {"transcribe", "align", "diarize"} and value.get("preprocess") is True}
             fingerprint = hashlib.sha256(json.dumps(canonical, sort_keys=True).encode()).hexdigest()
             for old in self.jobs.values():
                 if old["scope"] == scope and old["requestId"] == value["requestId"]:
@@ -169,7 +195,7 @@ class Store:
             folder = self.root / identifier
             folder.mkdir(mode=0o700)
             job = {**canonical, "id": identifier, "scope": scope, "requestId": value["requestId"],
-                   "fingerprint": fingerprint, "created": time.time(), "state": "ready" if task == "translate" else "awaiting_audio"}
+                   "fingerprint": fingerprint, "created": time.time(), "state": "ready" if task in TEXT_TASKS else "awaiting_audio"}
             self.save(job)
             self.jobs[identifier] = job
             return job
@@ -320,6 +346,13 @@ class Handler(BaseHTTPRequestHandler):
                     tasks.extend(["align", "diarize"])
             if installed("argostranslate"):
                 tasks.append("translate")
+            translation = translation_capabilities()
+            if translation is not None:
+                tasks.append("translate_model")
+            if installed("opencc"):
+                tasks.append("script_convert")
+            if installed("pykakasi"):
+                tasks.append("reading")
             if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
                 tasks.append("ocr")
             if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_SUBTITLE_DECODER", "plezy-subtitle-decode")):
@@ -327,6 +360,7 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS,
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
+                             "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES),
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})
             return
         image_match = re.fullmatch(r"/v1/jobs/([0-9a-f]{32})/evidence/([0-9a-f]{64})", path)
@@ -388,7 +422,7 @@ class Handler(BaseHTTPRequestHandler):
                         raise ValueError("worker_stopping_retry")
                     if job["state"] not in {"ready", "paused", "failed"}:
                         raise ValueError("job_not_resumable")
-                    if job["task"] != "translate" and not (folder / "input.media").is_file():
+                    if job["task"] not in TEXT_TASKS and not (folder / "input.media").is_file():
                         raise ValueError("audio_required")
                     job["state"] = "queued"
                     store.save(job)

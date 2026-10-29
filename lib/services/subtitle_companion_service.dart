@@ -13,7 +13,7 @@ import 'subtitle_word_timing.dart';
 
 final class SubtitleCompanionResult {
   const SubtitleCompanionResult({required this.cues, required this.wordTimings, required this.language,
-      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const []});
+      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const []});
   final List<SubtitleCue> cues;
   final List<SubtitleWordTiming> wordTimings;
   final String language;
@@ -21,6 +21,7 @@ final class SubtitleCompanionResult {
   final String runtimeDevice;
   final bool cpuFallback;
   final List<SubtitleCompanionImage> images;
+  final List<SubtitleCue> sourceCues;
 }
 
 final class SubtitleCompanionImage {
@@ -47,6 +48,7 @@ final class SubtitleCompanionService {
   static final _digest = RegExp(r'^[0-9a-f]{64}$');
   static final _id = RegExp(r'^[0-9a-f]{32}$');
   static const maximumInputBytes = 1024 * 1024 * 1024;
+  static const textTasks = {'translate', 'translate_model', 'script_convert', 'reading'};
   static final Map<String, (Uri, String)> _sessionPairings = {};
 
   static String _scope(String profileId) => sha256.convert(utf8.encode(profileId)).toString();
@@ -176,6 +178,8 @@ final class SubtitleCompanionService {
     List<SubtitleCue> cues = const [], String? language, String? targetLanguage,
     bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0,
     int finalBitmapDurationMs = 2000,
+    String translationMode = 'faithful', String scriptConversion = 's2t', String readingMode = 'hiragana',
+    String? translationProviderFingerprint, Map<String, String> glossary = const {},
     List<double> crop = const [0, 0.65, 1, 0.35],
     void Function(String jobId)? onCreated, void Function(int sent, int total)? onUpload,
   }) async {
@@ -184,7 +188,7 @@ final class SubtitleCompanionService {
     if (!(caps['tasks'] as List).contains(task)) throw UnsupportedError('The companion has not installed the $task backend.');
     final input = mediaPath == null ? null : File(mediaPath);
     final length = input == null ? 0 : await input.length();
-    if (length > maximumInputBytes || (task != 'translate' && length <= 0)) {
+    if (length > maximumInputBytes || (!textTasks.contains(task) && length <= 0) || (textTasks.contains(task) && length != 0)) {
       throw const FormatException('Choose a media file up to 1 GiB. The companion limits analysis to one hour.');
     }
     final audioDigest = input == null ? sha256.convert(const <int>[]).toString() : (await sha256.bind(input.openRead()).first).toString();
@@ -193,6 +197,8 @@ final class SubtitleCompanionService {
       'language': language, 'spokenLanguage': language, 'targetLanguage': targetLanguage,
       'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop,
       'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs,
+      'translationMode': translationMode, 'scriptConversion': scriptConversion, 'readingMode': readingMode,
+      'translationProviderFingerprint': translationProviderFingerprint, 'glossary': glossary,
       'cues': cues.map((cue) => {'cueId': cue.stableId, 'index': cue.index, 'startMs': cue.startMs,
         'endMs': cue.endMs, 'text': cue.text}).toList(),
     };
@@ -252,6 +258,22 @@ final class SubtitleCompanionService {
       }
       cues.add(SubtitleCue(index: cues.length + 1, startMs: start, endMs: end, text: text, cueId: cueId));
     }
+    final sourceCues = <SubtitleCue>[];
+    final source = data['sourceCues'];
+    if (source != null) {
+      if (source is! List || source.length != cues.length) throw const FormatException('Companion changed the source cue count.');
+      var sourceBytes = 0;
+      for (var i = 0; i < source.length; i++) {
+        final original = source[i] as Map<String, dynamic>, output = cues[i];
+        final text = original['text'] as String;
+        sourceBytes += utf8.encode(text).length;
+        if (original['cueId'] != output.stableId || original['startMs'] != output.startMs || original['endMs'] != output.endMs ||
+            text.trim().isEmpty || text.length > 4000 || sourceBytes > SubtitleRetimer.maximumInputBytes) {
+          throw const FormatException('Companion changed a source cue’s identity/timing or exceeded text limits.');
+        }
+        sourceCues.add(SubtitleCue(index: i + 1, startMs: output.startMs, endMs: output.endMs, text: text, cueId: output.stableId));
+      }
+    }
     final words = <SubtitleWordTiming>[];
     for (final value in rawWords) {
       final w = value as Map<String, dynamic>;
@@ -297,7 +319,7 @@ final class SubtitleCompanionService {
     }
     return SubtitleCompanionResult(cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
       language: label(data['language'], 24, 'unknown'), warnings: warnings,
-      runtimeDevice: runtime, cpuFallback: data['cpuFallback'] == true, images: List.unmodifiable(images));
+      runtimeDevice: runtime, cpuFallback: data['cpuFallback'] == true, images: List.unmodifiable(images), sourceCues: List.unmodifiable(sourceCues));
   }
 
   Future<Uint8List> evidenceImage(String jobId, SubtitleCompanionImage image) async {

@@ -13,6 +13,7 @@ CHECKER = ROOT / "scripts/checks/check_build_workflow.py"
 WORKFLOW = ROOT / ".github/workflows/build.yml"
 SETUP_FLUTTER_GIT = ROOT / ".github/actions/setup-flutter-git/action.yml"
 WINDOWS_CMAKE = ROOT / "windows/CMakeLists.txt"
+WINDOWS_MPV_DOWNLOADER = ROOT / "windows/tool/download-pinned-mpv.ps1"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
@@ -36,6 +37,12 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             cmake_fixture = Path(directory) / "windows/CMakeLists.txt"
             cmake_fixture.parent.mkdir(parents=True)
             cmake_fixture.write_text(cmake if cmake is not None else self._cmake(), encoding="utf-8")
+            downloader_fixture = Path(directory) / "windows/tool/download-pinned-mpv.ps1"
+            downloader_fixture.parent.mkdir(parents=True)
+            downloader_fixture.write_text(
+                WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
             return subprocess.run(
                 [sys.executable, str(CHECKER), str(fixture)],
                 cwd=ROOT,

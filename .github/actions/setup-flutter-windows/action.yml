@@ -11,6 +11,10 @@ inputs:
     description: Flutter release channel.
     required: false
     default: stable
+outputs:
+  windows_curl_path:
+    description: Absolute Windows path to the validated Schannel curl executable.
+    value: ${{ steps.windows_curl.outputs.windows_curl_path }}
 runs:
   using: composite
   steps:
@@ -36,6 +40,11 @@ runs:
           echo "The private Windows runner curl lacks --ssl-revoke-best-effort." >&2
           exit 1
         fi
+        curl_windows_path="$(readlink -f "$curl_path" 2>/dev/null || printf '%s' "$curl_path")"
+        if [[ "$curl_windows_path" != *.exe && -f "${curl_windows_path}.exe" ]]; then
+          curl_windows_path="${curl_windows_path}.exe"
+        fi
+        curl_windows_path="$(cygpath -aw "$curl_windows_path")"
         wrapper_dir="$(cygpath -u "$RUNNER_TEMP")/plezy-curl-wrapper"
         bash_env="$wrapper_dir/curl-best-effort.sh"
         mkdir -p "$wrapper_dir"
@@ -44,6 +53,7 @@ runs:
           '  "$PLEZY_REAL_CURL" --ssl-revoke-best-effort "$@"' \
           '}' > "$bash_env"
         printf 'curl_path=%s\n' "$curl_path" >> "$GITHUB_OUTPUT"
+        printf 'windows_curl_path=%s\n' "$curl_windows_path" >> "$GITHUB_OUTPUT"
         printf 'bash_env=%s\n' "$bash_env" >> "$GITHUB_OUTPUT"
 
     - name: Verify best-effort curl wrapper for Flutter setup

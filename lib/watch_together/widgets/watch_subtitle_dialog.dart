@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/strings.g.dart';
 import '../../services/subtitle_overlay_service.dart';
 import '../../services/subtitle_caption_relay.dart';
 import '../../services/subtitle_companion_service.dart';
@@ -35,27 +36,37 @@ class _WatchSubtitleDialogState extends State<WatchSubtitleDialog> {
   void dispose() { _code.dispose(); super.dispose(); }
 
   Future<void> _start() async {
+    final captions = t.watchTogether.captions;
     setState(() { _starting = true; _error = null; });
     try {
-      if (!_confirmedEdition) throw StateError('Confirm the same cut, part and audio before starting');
+      if (!_confirmedEdition) throw StateError(captions.confirmEditionRequired);
       final relay = _companion ? SubtitleCaptionRelayInvite.decode(_code.text.trim()) : null;
       await widget.room.captionSync.start(sources: context.read<SourceController>(),
         context: () => widget.room.captionContext, code: _code.text.trim(), lane: _lane,
         publish: widget.room.isHost, automatic: _automatic, relay: relay);
     } catch (error) {
-      if (mounted) setState(() => _error = error is StateError ? error.message.toString()
-          : error is FormatException ? error.message : 'Could not start caption sharing. Check the code and selected transport.');
+      final message = error is StateError ? error.message.toString() : null;
+      if (mounted) setState(() => _error = message != null && {
+        captions.confirmEditionRequired,
+        captions.joinPlaybackFirst,
+        captions.activeProfileChanged,
+        captions.chooseTransport,
+        captions.codeWrongRoom,
+        captions.roomSessionChanged,
+        captions.cloudNotSupported,
+      }.contains(message) ? message : error is FormatException ? captions.invalidCaptionCode : captions.couldNotStart);
     } finally { if (mounted) setState(() => _starting = false); }
   }
 
   Future<void> _channel({bool revoke = false}) async {
+    final captions = t.watchTogether.captions;
     setState(() { _starting = true; _error = null; });
     SubtitleCompanionService? service;
     try {
       final sync = widget.room.captionSync, initial = widget.room.captionContext;
-      if (!revoke && (initial == null || !initial.host)) throw StateError('Join room playback as host first.');
+      if (!revoke && (initial == null || !initial.host)) throw StateError(captions.hostRequired);
       final profileId = revoke ? sync.relayOwnerProfileId ?? initial?.profileId : initial!.profileId;
-      if (profileId == null) throw StateError('The profile that created this channel is unavailable.');
+      if (profileId == null) throw StateError(captions.profileUnavailable);
       bool current() {
         if (!mounted) return false;
         final now = widget.room.captionContext;
@@ -63,54 +74,63 @@ class _WatchSubtitleDialogState extends State<WatchSubtitleDialog> {
             : now?.localToken == initial?.localToken && widget.room.isHost;
       }
       service = await SubtitleCompanionService.load(profileId);
-      if (service == null) throw StateError('Pair your companion in Subtitle tools before creating a caption channel.');
-      if (!current()) throw StateError('The room changed.');
+      if (service == null) throw StateError(captions.companionPairingRequired);
+      if (!current()) throw StateError(captions.roomChanged);
       if (revoke) {
         final invite = SubtitleCaptionRelayInvite.decode(_code.text.trim());
-        if (invite.endpoint != service.endpoint) throw StateError('Pair the original companion before revoking this channel.');
+        if (invite.endpoint != service.endpoint) throw StateError(captions.originalCompanionRequired);
         final accepted = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
-          title: const Text('Revoke this caption channel?'),
-          content: const Text('Delete its encrypted captions from the companion and disconnect participants using this code.'),
-          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Revoke'))]));
+          title: Text(captions.confirmRevokeTitle),
+          content: Text(captions.confirmRevokeBody),
+          actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(captions.cancel)),
+            FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(captions.revoke))]));
         if (accepted != true || !current()) return;
         await service.revokeCaptionChannel(invite.channel);
-        if (sync.relayChannel == invite.channel) sync.stop(reason: 'Caption channel revoked');
+        if (sync.relayChannel == invite.channel) sync.stop(reason: captions.channelRevoked);
         sync.clearRelayInvite(invite.channel);
         if (mounted) setState(() => _code.clear());
       } else {
         final invite = await SubtitleCaptionRelayInvite.create(service, initial!.scope);
         if (!current()) {
           try { await service.revokeCaptionChannel(invite.channel); } catch (_) { /* The six-hour expiry still applies. */ }
-          throw StateError('The room changed before the channel was ready.');
+          throw StateError(captions.channelNotReady);
         }
         sync.rememberRelayInvite(invite, ownerProfileId: profileId);
         setState(() => _code.text = invite.encode());
       }
     } catch (error) {
-      if (mounted) setState(() => _error = error is StateError ? error.message.toString()
-          : error is FormatException ? error.message : 'The companion channel operation failed.');
+      final message = error is StateError ? error.message.toString() : null;
+      if (mounted) setState(() => _error = message != null && {
+        captions.hostRequired,
+        captions.profileUnavailable,
+        captions.companionPairingRequired,
+        captions.roomChanged,
+        captions.originalCompanionRequired,
+        captions.channelNotReady,
+      }.contains(message) ? message : error is FormatException ? captions.invalidCompanionCode : captions.channelOperationFailed);
     } finally { service?.close(); if (mounted) setState(() => _starting = false); }
   }
 
   String? get _destination {
     if (!_companion || _code.text.trim().isEmpty) return null;
+    final captions = t.watchTogether.captions;
     try {
       final invite = SubtitleCaptionRelayInvite.decode(_code.text.trim());
-      return 'Companion: ${invite.endpoint}\nExpires: ${invite.expires.toUtc()}';
-    } catch (_) { return 'Paste a valid, unexpired companion caption code.'; }
+      return captions.destination(endpoint: invite.endpoint, expires: invite.expires.toUtc());
+    } catch (_) { return captions.invalidCompanionCode; }
   }
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(animation: widget.room.captionSync, builder: (context, _) {
     final sync = widget.room.captionSync;
+    final captions = t.watchTogether.captions;
     final blocked = _starting || sync.busy;
-    return AlertDialog(title: const Text('Watch Together captions'), content: SizedBox(width: 620,
+    return AlertDialog(title: Text(captions.title), content: SizedBox(width: 620,
       child: SingleChildScrollView(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min, children: [
-          DropdownButton<bool>(value: _companion, isExpanded: true, items: const [
-            DropdownMenuItem(value: false, child: Text('Shared cloud folder')),
-            DropdownMenuItem(value: true, child: Text('Expiring companion channel')),
+          DropdownButton<bool>(value: _companion, isExpanded: true, items: [
+            DropdownMenuItem(value: false, child: Text(captions.sharedFolder)),
+            DropdownMenuItem(value: true, child: Text(captions.companionChannel)),
           ], onChanged: sync.running || blocked ? null : (value) {
             if (value != null) setState(() {
               _companion = value;
@@ -119,79 +139,71 @@ class _WatchSubtitleDialogState extends State<WatchSubtitleDialog> {
               _confirmedEdition = false;
             });
           }),
-          Text(_companion ? 'The host creates a channel on its paired companion and shares the caption code explicitly. '
-            'Every participant must be able to reach the displayed HTTPS host. No shared cloud folder is required. '
-            'The code grants read/write access to this encrypted channel, without the companion administration token. '
-            'It does not authenticate a sender. Video, account credentials, fonts and appearance are not shared.'
-            : 'Use the same caption code and shared cloud folder on participating devices. '
-            'The host publishes a reviewed app lane; viewers can preview or opt into automatic display. '
-            'The code grants read and write access to the encrypted captions. It does not authenticate a sender. '
-            'Video, account credentials, fonts and appearance are not shared.'),
+          Text(_companion ? captions.companionDescription : captions.cloudDescription),
           const SizedBox(height: 12),
           TextField(controller: _code, enabled: !sync.running && !blocked, obscureText: !_reveal,
             autocorrect: false, enableSuggestions: false, maxLength: _companion ? 4096 : 128,
             onChanged: (_) => setState(() {}),
-            decoration: InputDecoration(labelText: 'Caption pairing code', suffixIcon: IconButton(
-              tooltip: _reveal ? 'Hide caption code' : 'Show caption code',
+            decoration: InputDecoration(labelText: captions.captionPairingCode, suffixIcon: IconButton(
+              tooltip: _reveal ? captions.hideCaptionCode : captions.showCaptionCode,
               onPressed: () => setState(() => _reveal = !_reveal), icon: Icon(_reveal ? Icons.visibility_off : Icons.visibility)))),
           Wrap(spacing: 8, children: [
             if (!_companion) TextButton(onPressed: sync.running || blocked ? null : () => setState(() => _code.text = SyncCipher.newCode()),
-              child: const Text('New caption code')),
+              child: Text(captions.newCaptionCode)),
             if (_companion && widget.room.isHost) ...[
               TextButton(onPressed: sync.running || blocked || _code.text.isNotEmpty ? null : () => _channel(),
-                child: const Text('Create 6-hour channel')),
+                child: Text(captions.createChannel)),
             ],
             if (_companion && (widget.room.isHost || sync.relayOwnerProfileId != null)) ...[
               TextButton(onPressed: blocked || _code.text.isEmpty ? null : () => _channel(revoke: true),
-                child: const Text('Revoke companion channel')),
+                child: Text(captions.revokeChannel)),
             ],
             TextButton(onPressed: _code.text.isEmpty ? null : () => Clipboard.setData(ClipboardData(text: _code.text.trim())),
-              child: const Text('Copy caption code')),
+              child: Text(captions.copyCaptionCode)),
           ]),
           if (_destination case final destination?) Text(destination),
-          DropdownButton<int>(value: _lane, isExpanded: true, items: const [
-            DropdownMenuItem(value: 0, child: Text('Primary app lane')),
-            DropdownMenuItem(value: 1, child: Text('Secondary app lane')),
+          DropdownButton<int>(value: _lane, isExpanded: true, items: [
+            DropdownMenuItem(value: 0, child: Text(captions.primaryLane)),
+            DropdownMenuItem(value: 1, child: Text(captions.secondaryLane)),
           ], onChanged: sync.running || blocked ? null : (value) { if (value != null) setState(() => _lane = value); }),
           CheckboxListTile(value: _confirmedEdition, onChanged: sync.running || blocked ? null
             : (value) => setState(() => _confirmedEdition = value == true),
-            title: const Text('We checked the cut, part and audio language'),
-            subtitle: const Text('Matching titles or durations alone do not prove identical dialogue. Room offsets are applied once.')),
+            title: Text(captions.confirmEditionTitle),
+            subtitle: Text(captions.confirmEditionDescription)),
           if (!widget.room.isHost) SwitchListTile(value: _automatic, onChanged: sync.running || blocked ? null
-            : (value) => setState(() => _automatic = value), title: const Text('Automatically display one unambiguous shared revision'),
-            subtitle: const Text('Replaces the chosen app lane while connected. Conflicts wait for your choice. Native tracks remain under your control.')),
-          Text('Sharing stops on room/copy/audio/part/offset changes, disconnect, backgrounding or a local lane replacement. '
-            '${_companion ? 'Channel access expires after six hours, revocation, or server restart. Expired data is cleared from companion memory within 30 seconds.' : 'Cloud revisions remain in the shared folder after stopping.'} '
-            'Polling starts at 30 seconds and backs off after failures.'),
+            : (value) => setState(() => _automatic = value), title: Text(captions.automaticDisplay),
+            subtitle: Text(captions.automaticDisplayDescription)),
+          Text('${captions.sharingStops} ${_companion ? captions.channelExpires : captions.cloudPersists} ${captions.pollingDetails}'),
           if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
           Text(sync.status),
           if (blocked) const LinearProgressIndicator(),
           Wrap(spacing: 8, children: [
             FilledButton(onPressed: blocked || sync.running || !_confirmedEdition ? null : _start,
-              child: Text(widget.room.isHost ? 'Share reviewed lane for this room' : 'Receive captions for this room')),
-            TextButton(onPressed: sync.running ? () => sync.stop() : null, child: const Text('Stop sharing')),
+              child: Text(widget.room.isHost ? captions.shareReviewedLane : captions.receiveCaptions)),
+            TextButton(onPressed: sync.running ? () => sync.stop() : null, child: Text(captions.stopSharing)),
           ]),
           if (!sync.publishing) for (final choice in sync.choices) Card(child: Padding(padding: const EdgeInsets.all(12),
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               Text('${choice.digest.substring(0, 12)} · ${(choice.bytes / 1024).ceil()} KiB'),
               if (sync.previews[choice.digest] case final revision?) ...[
-                Text('${revision.languageCode ?? 'Unknown language'} · ${revision.cues.length} cues'),
+                Text('${revision.languageCode ?? captions.unknownLanguage} · ${captions.captionCueCount(count: revision.cues.length)}'),
                 SizedBox(height: 180, child: ListView.builder(itemCount: revision.cues.length, itemBuilder: (_, index) {
                   final cue = revision.cues[index];
-                  return Text('${cue.startMs / 1000}–${cue.endMs / 1000}s  ${SubtitleOverlayTrack.plain(cue.text)}');
+                  return Text(captions.captionCueSummary(start: cue.startMs / 1000, end: cue.endMs / 1000,
+                    text: SubtitleOverlayTrack.plain(cue.text)));
                 })),
               ],
               Wrap(spacing: 8, children: [
                 TextButton(onPressed: blocked ? null : () async {
                   try { await sync.preview(choice); }
-                  catch (_) { if (mounted) setState(() => _error = 'Could not download this caption revision.'); }
-                }, child: const Text('Download and preview')),
+                  catch (_) { if (mounted) setState(() => _error = captions.couldNotDownload); }
+                }, child: Text(captions.downloadAndPreview)),
                 TextButton(onPressed: blocked || !sync.previews.containsKey(choice.digest) ? null : () {
                   try { sync.accept(choice); }
-                  catch (_) { if (mounted) setState(() => _error = 'The room or caption revision changed.'); }
-                }, child: const Text('Use this revision locally')),
+                  catch (_) { if (mounted) setState(() => _error = captions.revisionChanged); }
+                }, child: Text(captions.useRevisionLocally)),
               ]),
             ]))),
-        ]))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))]);
+        ]))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(captions.close))]);
   });
 }

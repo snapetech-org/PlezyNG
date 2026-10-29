@@ -6220,6 +6220,7 @@ class Translations$watchTogether$en {
 	/// en: 'Press play to start watching with the room.'
 	String get playBlockedDescription => 'Press play to start watching with the room.';
 
+	late final Translations$watchTogether$captions$en captions = Translations$watchTogether$captions$en.internal(_root);
 	late final Translations$watchTogether$notices$en notices = Translations$watchTogether$notices$en.internal(_root);
 	late final Translations$watchTogether$ended$en ended = Translations$watchTogether$ended$en.internal(_root);
 	late final Translations$watchTogether$errors$en errors = Translations$watchTogether$errors$en.internal(_root);
@@ -13752,6 +13753,239 @@ class Translations$watchTogether$errors$en {
 	String get generic => 'Something went wrong. Try again.';
 }
 
+// Path: watchTogether.captions
+class Translations$watchTogether$captions$en {
+	Translations$watchTogether$captions$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Watch Together captions'
+	String get title => 'Watch Together captions';
+
+	/// en: 'Shared cloud folder'
+	String get sharedFolder => 'Shared cloud folder';
+
+	/// en: 'Expiring companion channel'
+	String get companionChannel => 'Expiring companion channel';
+
+	/// en: 'The host creates a channel on its paired companion and shares the caption code explicitly. Every participant must be able to reach the displayed HTTPS host. No shared cloud folder is required. The code grants read/write access to this encrypted channel, without the companion administration token. It does not authenticate a sender. Video, account credentials, fonts and appearance are not shared.'
+	String get companionDescription => 'The host creates a channel on its paired companion and shares the caption code explicitly. Every participant must be able to reach the displayed HTTPS host. No shared cloud folder is required. The code grants read/write access to this encrypted channel, without the companion administration token. It does not authenticate a sender. Video, account credentials, fonts and appearance are not shared.';
+
+	/// en: 'Use the same caption code and shared cloud folder on participating devices. The host publishes a reviewed app lane; viewers can preview or opt into automatic display. The code grants read and write access to the encrypted captions. It does not authenticate a sender. Video, account credentials, fonts and appearance are not shared.'
+	String get cloudDescription => 'Use the same caption code and shared cloud folder on participating devices. The host publishes a reviewed app lane; viewers can preview or opt into automatic display. The code grants read and write access to the encrypted captions. It does not authenticate a sender. Video, account credentials, fonts and appearance are not shared.';
+
+	/// en: 'Caption pairing code'
+	String get captionPairingCode => 'Caption pairing code';
+
+	/// en: 'Hide caption code'
+	String get hideCaptionCode => 'Hide caption code';
+
+	/// en: 'Show caption code'
+	String get showCaptionCode => 'Show caption code';
+
+	/// en: 'New caption code'
+	String get newCaptionCode => 'New caption code';
+
+	/// en: 'Create 6-hour channel'
+	String get createChannel => 'Create 6-hour channel';
+
+	/// en: 'Revoke companion channel'
+	String get revokeChannel => 'Revoke companion channel';
+
+	/// en: 'Copy caption code'
+	String get copyCaptionCode => 'Copy caption code';
+
+	/// en: 'Revoke this caption channel?'
+	String get confirmRevokeTitle => 'Revoke this caption channel?';
+
+	/// en: 'Delete its encrypted captions from the companion and disconnect participants using this code.'
+	String get confirmRevokeBody => 'Delete its encrypted captions from the companion and disconnect participants using this code.';
+
+	/// en: 'Cancel'
+	String get cancel => 'Cancel';
+
+	/// en: 'Revoke'
+	String get revoke => 'Revoke';
+
+	/// en: 'Companion: ${endpoint}\nExpires: ${expires}'
+	String destination({required Object endpoint, required Object expires}) => 'Companion: ${endpoint}\nExpires: ${expires}';
+
+	/// en: 'Paste a valid, unexpired companion caption code.'
+	String get invalidCompanionCode => 'Paste a valid, unexpired companion caption code.';
+
+	/// en: 'Confirm the same cut, part and audio before starting'
+	String get confirmEditionRequired => 'Confirm the same cut, part and audio before starting';
+
+	/// en: 'Could not start caption sharing. Check the code and selected transport.'
+	String get couldNotStart => 'Could not start caption sharing. Check the code and selected transport.';
+
+	/// en: 'Join room playback as host first.'
+	String get hostRequired => 'Join room playback as host first.';
+
+	/// en: 'The profile that created this channel is unavailable.'
+	String get profileUnavailable => 'The profile that created this channel is unavailable.';
+
+	/// en: 'Pair your companion in Subtitle tools before creating a caption channel.'
+	String get companionPairingRequired => 'Pair your companion in Subtitle tools before creating a caption channel.';
+
+	/// en: 'The room changed.'
+	String get roomChanged => 'The room changed.';
+
+	/// en: 'Pair the original companion before revoking this channel.'
+	String get originalCompanionRequired => 'Pair the original companion before revoking this channel.';
+
+	/// en: 'The room changed before the channel was ready.'
+	String get channelNotReady => 'The room changed before the channel was ready.';
+
+	/// en: 'The companion channel operation failed.'
+	String get channelOperationFailed => 'The companion channel operation failed.';
+
+	/// en: 'Primary app lane'
+	String get primaryLane => 'Primary app lane';
+
+	/// en: 'Secondary app lane'
+	String get secondaryLane => 'Secondary app lane';
+
+	/// en: 'We checked the cut, part and audio language'
+	String get confirmEditionTitle => 'We checked the cut, part and audio language';
+
+	/// en: 'Matching titles or durations alone do not prove identical dialogue. Room offsets are applied once.'
+	String get confirmEditionDescription => 'Matching titles or durations alone do not prove identical dialogue. Room offsets are applied once.';
+
+	/// en: 'Automatically display one unambiguous shared revision'
+	String get automaticDisplay => 'Automatically display one unambiguous shared revision';
+
+	/// en: 'Replaces the chosen app lane while connected. Conflicts wait for your choice. Native tracks remain under your control.'
+	String get automaticDisplayDescription => 'Replaces the chosen app lane while connected. Conflicts wait for your choice. Native tracks remain under your control.';
+
+	/// en: 'Sharing stops on room/copy/audio/part/offset changes, disconnect, backgrounding or a local lane replacement.'
+	String get sharingStops => 'Sharing stops on room/copy/audio/part/offset changes, disconnect, backgrounding or a local lane replacement.';
+
+	/// en: 'Channel access expires after six hours, revocation, or server restart. Expired data is cleared from companion memory within 30 seconds.'
+	String get channelExpires => 'Channel access expires after six hours, revocation, or server restart. Expired data is cleared from companion memory within 30 seconds.';
+
+	/// en: 'Cloud revisions remain in the shared folder after stopping.'
+	String get cloudPersists => 'Cloud revisions remain in the shared folder after stopping.';
+
+	/// en: 'Polling starts at 30 seconds and backs off after failures.'
+	String get pollingDetails => 'Polling starts at 30 seconds and backs off after failures.';
+
+	/// en: 'Could not download this caption revision.'
+	String get couldNotDownload => 'Could not download this caption revision.';
+
+	/// en: 'The room or caption revision changed.'
+	String get revisionChanged => 'The room or caption revision changed.';
+
+	/// en: 'Unknown language'
+	String get unknownLanguage => 'Unknown language';
+
+	/// en: 'Caption sharing is off'
+	String get captionSharingOff => 'Caption sharing is off';
+
+	/// en: 'Sharing reviewed captions in the room clock'
+	String get sharingRoomClock => 'Sharing reviewed captions in the room clock';
+
+	/// en: 'Checking for shared room captions'
+	String get checkingForCaptions => 'Checking for shared room captions';
+
+	/// en: 'Concurrent caption versions need an explicit local choice'
+	String get concurrentVersions => 'Concurrent caption versions need an explicit local choice';
+
+	/// en: 'Reviewed room captions shared'
+	String get reviewedCaptionsShared => 'Reviewed room captions shared';
+
+	/// en: 'Waiting for reviewed room captions'
+	String get waitingForCaptions => 'Waiting for reviewed room captions';
+
+	/// en: 'Shared captions active; your appearance stays local'
+	String get captionsActiveLocalAppearance => 'Shared captions active; your appearance stays local';
+
+	/// en: 'Shared captions are available to preview'
+	String get captionsAvailableToPreview => 'Shared captions are available to preview';
+
+	/// en: 'Room caption transfer failed; retrying with bounded backoff'
+	String get transferRetry => 'Room caption transfer failed; retrying with bounded backoff';
+
+	/// en: 'Selected shared captions applied locally; other viewers keep their choices'
+	String get captionsAppliedLocally => 'Selected shared captions applied locally; other viewers keep their choices';
+
+	/// en: 'Caption channel revoked'
+	String get channelRevoked => 'Caption channel revoked';
+
+	/// en: 'The companion caption channel expired'
+	String get channelExpired => 'The companion caption channel expired';
+
+	/// en: 'Caption sharing stopped because the room, copy, audio or offset changed'
+	String get sharingStoppedRoomChanged => 'Caption sharing stopped because the room, copy, audio or offset changed';
+
+	/// en: 'Caption sharing stopped because its transport, expiry or profile changed'
+	String get sharingStoppedTransportChanged => 'Caption sharing stopped because its transport, expiry or profile changed';
+
+	/// en: 'Caption sharing stopped after a local lane change'
+	String get sharingStoppedLaneChanged => 'Caption sharing stopped after a local lane change';
+
+	/// en: 'No reviewed caption lane is selected'
+	String get noReviewedLane => 'No reviewed caption lane is selected';
+
+	/// en: 'Select a reviewed, fixed-timeline app caption lane'
+	String get reviewedLaneRequired => 'Select a reviewed, fixed-timeline app caption lane';
+
+	/// en: 'The room caption session changed'
+	String get roomSessionChanged => 'The room caption session changed';
+
+	/// en: 'This cloud source does not support caption sharing'
+	String get cloudNotSupported => 'This cloud source does not support caption sharing';
+
+	/// en: 'Choose one of the two caption lanes'
+	String get chooseCaptionLane => 'Choose one of the two caption lanes';
+
+	/// en: 'Join room playback before starting caption sharing'
+	String get joinPlaybackFirst => 'Join room playback before starting caption sharing';
+
+	/// en: 'The active profile changed.'
+	String get activeProfileChanged => 'The active profile changed.';
+
+	/// en: 'Configure a shared cloud folder or choose a companion caption channel.'
+	String get chooseTransport => 'Configure a shared cloud folder or choose a companion caption channel.';
+
+	/// en: 'This caption code belongs to another room, host, media selection or room epoch.'
+	String get codeWrongRoom => 'This caption code belongs to another room, host, media selection or room epoch.';
+
+	/// en: 'Preview the current shared revision first'
+	String get previewCurrentRevisionFirst => 'Preview the current shared revision first';
+
+	/// en: 'The viewer changed this caption lane'
+	String get viewerLaneChanged => 'The viewer changed this caption lane';
+
+	/// en: 'Share reviewed lane for this room'
+	String get shareReviewedLane => 'Share reviewed lane for this room';
+
+	/// en: 'Receive captions for this room'
+	String get receiveCaptions => 'Receive captions for this room';
+
+	/// en: 'Stop sharing'
+	String get stopSharing => 'Stop sharing';
+
+	/// en: 'Download and preview'
+	String get downloadAndPreview => 'Download and preview';
+
+	/// en: 'Use this revision locally'
+	String get useRevisionLocally => 'Use this revision locally';
+
+	/// en: 'Close'
+	String get close => 'Close';
+
+	/// en: '${count} cues'
+	String captionCueCount({required Object count}) => '${count} cues';
+	/// en: '${start}–${end}s  ${text}'
+	String captionCueSummary({required Object start, required Object end, required Object text}) => '${start}–${end}s  ${text}';
+
+	/// en: 'Enter a valid caption code for the selected transport.'
+	String get invalidCaptionCode => 'Enter a valid caption code for the selected transport.';
+}
+
 // Path: downloads.backgroundWarning
 class Translations$downloads$backgroundWarning$en {
 	Translations$downloads$backgroundWarning$en.internal(this._root);
@@ -16570,6 +16804,81 @@ extension on Translations {
 			'music.discography.live' => 'Live',
 			'music.discography.compilations' => 'Compilations',
 			'watchTogether.title' => 'Watch Together',
+			'watchTogether.captions.invalidCaptionCode' => 'Enter a valid caption code for the selected transport.',
+			'watchTogether.captions.captionCueSummary' => ({required Object start, required Object end, required Object text}) => '${start}–${end}s  ${text}',
+			'watchTogether.captions.captionCueCount' => ({required Object count}) => '${count} cues',
+			'watchTogether.captions.title' => 'Watch Together captions',
+			'watchTogether.captions.sharedFolder' => 'Shared cloud folder',
+			'watchTogether.captions.companionChannel' => 'Expiring companion channel',
+			'watchTogether.captions.companionDescription' => 'The host creates a channel on its paired companion and shares the caption code explicitly. Every participant must be able to reach the displayed HTTPS host. No shared cloud folder is required. The code grants read/write access to this encrypted channel, without the companion administration token. It does not authenticate a sender. Video, account credentials, fonts and appearance are not shared.',
+			'watchTogether.captions.cloudDescription' => 'Use the same caption code and shared cloud folder on participating devices. The host publishes a reviewed app lane; viewers can preview or opt into automatic display. The code grants read and write access to the encrypted captions. It does not authenticate a sender. Video, account credentials, fonts and appearance are not shared.',
+			'watchTogether.captions.captionPairingCode' => 'Caption pairing code',
+			'watchTogether.captions.hideCaptionCode' => 'Hide caption code',
+			'watchTogether.captions.showCaptionCode' => 'Show caption code',
+			'watchTogether.captions.newCaptionCode' => 'New caption code',
+			'watchTogether.captions.createChannel' => 'Create 6-hour channel',
+			'watchTogether.captions.revokeChannel' => 'Revoke companion channel',
+			'watchTogether.captions.copyCaptionCode' => 'Copy caption code',
+			'watchTogether.captions.confirmRevokeTitle' => 'Revoke this caption channel?',
+			'watchTogether.captions.confirmRevokeBody' => 'Delete its encrypted captions from the companion and disconnect participants using this code.',
+			'watchTogether.captions.cancel' => 'Cancel',
+			'watchTogether.captions.revoke' => 'Revoke',
+			'watchTogether.captions.destination' => ({required Object endpoint, required Object expires}) => 'Companion: ${endpoint}\nExpires: ${expires}',
+			'watchTogether.captions.invalidCompanionCode' => 'Paste a valid, unexpired companion caption code.',
+			'watchTogether.captions.confirmEditionRequired' => 'Confirm the same cut, part and audio before starting',
+			'watchTogether.captions.couldNotStart' => 'Could not start caption sharing. Check the code and selected transport.',
+			'watchTogether.captions.hostRequired' => 'Join room playback as host first.',
+			'watchTogether.captions.profileUnavailable' => 'The profile that created this channel is unavailable.',
+			'watchTogether.captions.companionPairingRequired' => 'Pair your companion in Subtitle tools before creating a caption channel.',
+			'watchTogether.captions.roomChanged' => 'The room changed.',
+			'watchTogether.captions.originalCompanionRequired' => 'Pair the original companion before revoking this channel.',
+			'watchTogether.captions.channelNotReady' => 'The room changed before the channel was ready.',
+			'watchTogether.captions.channelOperationFailed' => 'The companion channel operation failed.',
+			'watchTogether.captions.primaryLane' => 'Primary app lane',
+			'watchTogether.captions.secondaryLane' => 'Secondary app lane',
+			'watchTogether.captions.confirmEditionTitle' => 'We checked the cut, part and audio language',
+			'watchTogether.captions.confirmEditionDescription' => 'Matching titles or durations alone do not prove identical dialogue. Room offsets are applied once.',
+			'watchTogether.captions.automaticDisplay' => 'Automatically display one unambiguous shared revision',
+			'watchTogether.captions.automaticDisplayDescription' => 'Replaces the chosen app lane while connected. Conflicts wait for your choice. Native tracks remain under your control.',
+			'watchTogether.captions.sharingStops' => 'Sharing stops on room/copy/audio/part/offset changes, disconnect, backgrounding or a local lane replacement.',
+			'watchTogether.captions.channelExpires' => 'Channel access expires after six hours, revocation, or server restart. Expired data is cleared from companion memory within 30 seconds.',
+			'watchTogether.captions.cloudPersists' => 'Cloud revisions remain in the shared folder after stopping.',
+			'watchTogether.captions.pollingDetails' => 'Polling starts at 30 seconds and backs off after failures.',
+			'watchTogether.captions.couldNotDownload' => 'Could not download this caption revision.',
+			'watchTogether.captions.revisionChanged' => 'The room or caption revision changed.',
+			'watchTogether.captions.unknownLanguage' => 'Unknown language',
+			'watchTogether.captions.captionSharingOff' => 'Caption sharing is off',
+			'watchTogether.captions.sharingRoomClock' => 'Sharing reviewed captions in the room clock',
+			'watchTogether.captions.checkingForCaptions' => 'Checking for shared room captions',
+			'watchTogether.captions.concurrentVersions' => 'Concurrent caption versions need an explicit local choice',
+			'watchTogether.captions.reviewedCaptionsShared' => 'Reviewed room captions shared',
+			'watchTogether.captions.waitingForCaptions' => 'Waiting for reviewed room captions',
+			'watchTogether.captions.captionsActiveLocalAppearance' => 'Shared captions active; your appearance stays local',
+			'watchTogether.captions.captionsAvailableToPreview' => 'Shared captions are available to preview',
+			'watchTogether.captions.transferRetry' => 'Room caption transfer failed; retrying with bounded backoff',
+			'watchTogether.captions.captionsAppliedLocally' => 'Selected shared captions applied locally; other viewers keep their choices',
+			'watchTogether.captions.channelRevoked' => 'Caption channel revoked',
+			'watchTogether.captions.channelExpired' => 'The companion caption channel expired',
+			'watchTogether.captions.sharingStoppedRoomChanged' => 'Caption sharing stopped because the room, copy, audio or offset changed',
+			'watchTogether.captions.sharingStoppedTransportChanged' => 'Caption sharing stopped because its transport, expiry or profile changed',
+			'watchTogether.captions.sharingStoppedLaneChanged' => 'Caption sharing stopped after a local lane change',
+			'watchTogether.captions.noReviewedLane' => 'No reviewed caption lane is selected',
+			'watchTogether.captions.reviewedLaneRequired' => 'Select a reviewed, fixed-timeline app caption lane',
+			'watchTogether.captions.roomSessionChanged' => 'The room caption session changed',
+			'watchTogether.captions.cloudNotSupported' => 'This cloud source does not support caption sharing',
+			'watchTogether.captions.chooseCaptionLane' => 'Choose one of the two caption lanes',
+			'watchTogether.captions.joinPlaybackFirst' => 'Join room playback before starting caption sharing',
+			'watchTogether.captions.activeProfileChanged' => 'The active profile changed.',
+			'watchTogether.captions.chooseTransport' => 'Configure a shared cloud folder or choose a companion caption channel.',
+			'watchTogether.captions.codeWrongRoom' => 'This caption code belongs to another room, host, media selection or room epoch.',
+			'watchTogether.captions.previewCurrentRevisionFirst' => 'Preview the current shared revision first',
+			'watchTogether.captions.viewerLaneChanged' => 'The viewer changed this caption lane',
+			'watchTogether.captions.shareReviewedLane' => 'Share reviewed lane for this room',
+			'watchTogether.captions.receiveCaptions' => 'Receive captions for this room',
+			'watchTogether.captions.stopSharing' => 'Stop sharing',
+			'watchTogether.captions.downloadAndPreview' => 'Download and preview',
+			'watchTogether.captions.useRevisionLocally' => 'Use this revision locally',
+			'watchTogether.captions.close' => 'Close',
 			'watchTogether.description' => 'Watch content in sync with friends and family',
 			'watchTogether.createRoom' => 'Create Room',
 			'watchTogether.creatingRoom' => 'Creating room...',

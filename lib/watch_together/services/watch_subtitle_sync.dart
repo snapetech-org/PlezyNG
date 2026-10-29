@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../i18n/strings.g.dart';
 import '../../mpv/mpv.dart';
 import '../../services/subtitle_cloud_sync.dart';
 import '../../services/subtitle_caption_relay.dart';
@@ -46,7 +47,7 @@ class WatchSubtitleSync extends ChangeNotifier {
   bool _publishing = false, _automatic = false, _busy = false, _disposed = false;
   String? _published, _applied;
   DateTime _next = DateTime.fromMillisecondsSinceEpoch(0);
-  String status = 'Caption sharing is off';
+  String status = t.watchTogether.captions.captionSharingOff;
   List<SubtitleSyncChoice> choices = const [];
   final Map<String, SubtitleRevision> previews = {};
   bool get running => _sync != null;
@@ -79,24 +80,26 @@ class WatchSubtitleSync extends ChangeNotifier {
         identical(now.player, initial.player) && now.profileId == initial.profileId && now.offsetMs == initial.offsetMs;
   }
   void roomChanged() {
-    if (running && _relayStore?.invite.expired == true) { stop(reason: 'The companion caption channel expired'); return; }
-    if (running && !_current(_generation)) stop(reason: 'Caption sharing stopped because the room, copy, audio or offset changed');
+    final captions = t.watchTogether.captions;
+    if (running && _relayStore?.invite.expired == true) { stop(reason: captions.channelExpired); return; }
+    if (running && !_current(_generation)) stop(reason: captions.sharingStoppedRoomChanged);
   }
 
   Future<void> start({required SourceController sources, required WatchSubtitleContext? Function() context,
     required String code, required int lane, required bool publish, required bool automatic,
     SubtitleCaptionRelayInvite? relay}) async {
+    final captions = t.watchTogether.captions;
     stop();
-    if (lane < 0 || lane > 1) throw ArgumentError('Choose one of the two caption lanes');
+    if (lane < 0 || lane > 1) throw ArgumentError(captions.chooseCaptionLane);
     final initial = context();
-    if (initial == null || publish && !initial.host) throw StateError('Join room playback before starting caption sharing');
+    if (initial == null || publish && !initial.host) throw StateError(captions.joinPlaybackFirst);
     final generation = ++_generation;
     await sources.ready;
     if (generation != _generation || _disposed) return;
     final config = sources.syncConfig;
-    if (sources.profileId != initial.profileId) throw StateError('The active profile changed.');
-    if (relay == null && config == null) throw StateError('Configure a shared cloud folder or choose a companion caption channel.');
-    if (relay != null && (relay.expired || relay.scope != initial.scope)) throw StateError('This caption code belongs to another room, host, media selection or room epoch.');
+    if (sources.profileId != initial.profileId) throw StateError(captions.activeProfileChanged);
+    if (relay == null && config == null) throw StateError(captions.chooseTransport);
+    if (relay != null && (relay.expired || relay.scope != initial.scope)) throw StateError(captions.codeWrongRoom);
     if (relay != null) rememberRelayInvite(relay);
     final sourceGeneration = sources.generation;
     // Domain-separated key for this room epoch, host and canonical descriptor.
@@ -112,7 +115,7 @@ class WatchSubtitleSync extends ChangeNotifier {
       final active = sources.syncConfig;
       if (!_current(generation) || relay?.expired == true ||
           relay == null && (active?.sourceId != config?.sourceId || active?.folder != config?.folder)) {
-        throw StateError('The room caption session changed');
+        throw StateError(captions.roomSessionChanged);
       }
     }
     try {
@@ -123,7 +126,7 @@ class WatchSubtitleSync extends ChangeNotifier {
       } else {
         final cloud = config!;
         final adapter = sources.adapter(cloud.sourceId);
-        if (!ProviderSyncStore.supports(adapter.source.kind)) throw StateError('This cloud source does not support caption sharing');
+        if (!ProviderSyncStore.supports(adapter.source.kind)) throw StateError(captions.cloudNotSupported);
         transport = ProviderSyncStore(adapter, folder: cloud.folder, check: check);
       }
       _sync = SubtitleCloudSync(repository: sources.repository,
@@ -133,7 +136,8 @@ class WatchSubtitleSync extends ChangeNotifier {
       sources.addListener(_sourceChanged);
       _session!.addListener(_laneChanged);
       _next = DateTime.fromMillisecondsSinceEpoch(0);
-      status = publish ? 'Sharing reviewed captions in the room clock' : 'Checking for shared room captions';
+      final captions = t.watchTogether.captions;
+      status = publish ? captions.sharingRoomClock : captions.checkingForCaptions;
       _timer = Timer.periodic(const Duration(seconds: 1), (_) {
         roomChanged();
         if (running && !_busy && !DateTime.now().isBefore(_next)) unawaited(_poll(generation));
@@ -144,16 +148,17 @@ class WatchSubtitleSync extends ChangeNotifier {
   }
   void _sourceChanged() {
     if (!running) return;
-    try { _sync!.check(); } catch (_) { stop(reason: 'Caption sharing stopped because its transport, expiry or profile changed'); }
+    try { _sync!.check(); } catch (_) { stop(reason: t.watchTogether.captions.sharingStoppedTransportChanged); }
   }
   void _laneChanged() {
     if (!running || _publishing) return;
-    if (!identical(_session!.lanes[_lane], _ownedLane)) stop(reason: 'Caption sharing stopped after a local lane change');
+    if (!identical(_session!.lanes[_lane], _ownedLane)) stop(reason: t.watchTogether.captions.sharingStoppedLaneChanged);
   }
 
   SubtitleRevision _inRoomClock(SubtitleOverlayTrack track) {
+    final captions = t.watchTogether.captions;
     if (!track.reviewed || track.positionToSourceMs != null || !track.isCurrent() ||
-        track.profileId != _context!.profileId) throw StateError('Select a reviewed, fixed-timeline app caption lane');
+        track.profileId != _context!.profileId) throw StateError(captions.reviewedLaneRequired);
     final revision = SubtitleRevision(id: '0_0', createdAt: DateTime.utc(2000), operation: 'Room captions',
       languageCode: track.language, cues: track.cues, wordTimings: track.words, onItemTimeline: true);
     return _shift(revision, track.delayMs - _context!.offsetMs);
@@ -190,7 +195,7 @@ class WatchSubtitleSync extends ChangeNotifier {
       String? digest;
       if (_publishing) {
         final track = _session!.lanes[_lane];
-        if (track == null) throw StateError('No reviewed caption lane is selected');
+        if (track == null) throw StateError(t.watchTogether.captions.noReviewedLane);
         publish = _inRoomClock(track);
         digest = sha256.convert(utf8.encode(canonicalSyncJson(publish.toJson()))).toString();
         if (digest == _published) publish = null;
@@ -207,14 +212,18 @@ class WatchSubtitleSync extends ChangeNotifier {
         previews[choice.digest] = revision;
         _apply(choice, revision);
       }
-      status = choices.length > 1 ? 'Concurrent caption versions need an explicit local choice'
-          : _publishing ? 'Reviewed room captions shared' : choices.isEmpty ? 'Waiting for reviewed room captions'
-          : _automatic ? 'Shared captions active; your appearance stays local' : 'Shared captions are available to preview';
+      final captions = t.watchTogether.captions;
+      status = choices.length > 1 ? captions.concurrentVersions
+          : _publishing ? captions.reviewedCaptionsShared : choices.isEmpty ? captions.waitingForCaptions
+          : _automatic ? captions.captionsActiveLocalAppearance : captions.captionsAvailableToPreview;
       _failures = 0;
     } catch (error) {
       if (!_current(generation)) { if (generation == _generation) stop(); return; }
       _failures = (_failures + 1).clamp(1, 4).toInt();
-      status = error is StateError ? error.message.toString() : 'Room caption transfer failed; retrying with bounded backoff';
+      final captions = t.watchTogether.captions;
+      final message = error is StateError ? error.message.toString() : null;
+      status = message == captions.noReviewedLane || message == captions.reviewedLaneRequired
+          ? message! : captions.transferRetry;
     } finally {
       if (generation == _generation) {
         _busy = false;
@@ -236,15 +245,15 @@ class WatchSubtitleSync extends ChangeNotifier {
   void accept(SubtitleSyncChoice choice) {
     final revision = previews[choice.digest];
     if (_publishing || _busy || revision == null || !_current(_generation) ||
-        !choices.any((c) => c.digest == choice.digest)) throw StateError('Preview the current shared revision first');
+        !choices.any((c) => c.digest == choice.digest)) throw StateError(t.watchTogether.captions.previewCurrentRevisionFirst);
     _apply(choice, revision);
-    status = 'Selected shared captions applied locally; other viewers keep their choices'; _notify();
+    status = t.watchTogether.captions.captionsAppliedLocally; _notify();
   }
   void _apply(SubtitleSyncChoice choice, SubtitleRevision revision) {
-    if (!identical(_session!.lanes[_lane], _ownedLane)) throw StateError('The viewer changed this caption lane');
+    if (!identical(_session!.lanes[_lane], _ownedLane)) throw StateError(t.watchTogether.captions.viewerLaneChanged);
     final local = _shift(revision, _context!.offsetMs), generation = _generation;
     final track = SubtitleOverlayTrack(cues: local.cues, words: local.wordTimings,
-      title: 'Watch Together captions', profileId: _context!.profileId, language: local.languageCode,
+      title: t.watchTogether.captions.title, profileId: _context!.profileId, language: local.languageCode,
       reviewed: true, isCurrent: () => _current(generation));
     final prior = _ownedLane;
     if (prior != null) track.applyAppearance(prior.appearance());
@@ -255,7 +264,7 @@ class WatchSubtitleSync extends ChangeNotifier {
     SubtitleOverlayService.attach(_context!.player, _lane, track, restoreAppearance: prior == null);
   }
 
-  void stop({String reason = 'Caption sharing is off'}) {
+  void stop({String? reason}) {
     ++_generation; _timer?.cancel(); _timer = null;
     _relayStore?.close(); _relayStore = null;
     _sources?.removeListener(_sourceChanged);
@@ -268,7 +277,8 @@ class WatchSubtitleSync extends ChangeNotifier {
     }
     _sync = null; _sources = null; _context = null; _readContext = null; _session = null;
     _installed = null; _previous = null; _ownedLane = null; _published = null; _applied = null;
-    choices = const []; previews.clear(); _busy = false; _failures = 0; status = reason;
+    choices = const []; previews.clear(); _busy = false; _failures = 0;
+    status = reason ?? t.watchTogether.captions.captionSharingOff;
     _notify();
   }
   void _notify() { if (!_disposed) notifyListeners(); }

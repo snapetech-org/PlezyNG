@@ -115,7 +115,11 @@ class _SccChannel {
   void accept(int a, int b, int at) {
     if (a == 0 && b == 0) return;
     if (a > 0 && a < 0x10) throw const FormatException('XDS/non-caption data is not supported by this SCC text conversion.');
-    if (a >= 0x10 && a <= 0x1f) {
+    final isControl = (a & 0xf6) == 0x14 && b >= 0x20 && b <= 0x2f;
+    if (isControl) {
+      // The channel bit is meaningful on a CEA-608 control pair. PAC/address
+      // and character pairs reuse the same byte bits for their own payload;
+      // interpreting those as a channel change can discard valid captions.
       _channel = ((a >> 3) & 1) + 1;
       final pair = (a << 8) | b;
       if (_lastPair == pair) { _lastPair = -1; return; }
@@ -123,7 +127,7 @@ class _SccChannel {
     } else { _lastPair = -1; }
     if (_channel != selected) return;
     final control = a & 0xf7;
-    if ((a & 0xf6) == 0x14 && b >= 0x20 && b <= 0x2f) {
+    if (isControl) {
       switch (b) {
         case 0x20: _mode = 'pop';
         case 0x21: if (_mode != 'unknown') _backspace();

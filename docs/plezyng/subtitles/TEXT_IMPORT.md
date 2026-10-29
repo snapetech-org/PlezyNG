@@ -60,8 +60,10 @@ Negative-origin preroll updates memory but only visible time at/after zero is
 exported. Final visible text without a clear uses the selected tail duration.
 
 Two 15x32 memories and their cursors retain loading/displayed state. Repeated
-control transmissions are suppressed; non-caption services and unsupported
-pairs fail explicitly. The conversion bounds packets (500000), source lines
+control transmissions are suppressed. CC1/CC2 selection changes only on a
+recognized control pair; PAC/address and character bytes cannot switch the
+active channel. Non-caption services and unsupported pairs fail explicitly.
+The conversion bounds packets (500000), source lines
 (32768 characters), resulting text (5 MiB), and snapshots (50000). Rapid paint-on
 updates can therefore reach the output limit before a long program ends. This
 editable text derivative preserves display changes but is not a native caption

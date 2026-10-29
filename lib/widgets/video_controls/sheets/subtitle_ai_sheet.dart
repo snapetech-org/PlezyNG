@@ -4635,18 +4635,20 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
   }
 
   Future<void> _seekToCue(SubtitleCue cue) async {
+    final copy = Translations.of(context).videoControls.subtitleLiveCapture;
     try {
       await widget.player.seek(Duration(milliseconds: cue.startMs));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.maybeOf(
         context,
-      )?.showSnackBar(const SnackBar(content: Text('Could not seek to this transcript cue.')));
+      )?.showSnackBar(SnackBar(content: Text(copy.seekFailed)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final copy = Translations.of(context).videoControls.subtitleLiveCapture;
     return AnimatedBuilder(
       animation: widget.service,
       builder: (context, _) {
@@ -4661,14 +4663,14 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
             final canSeek = widget.player.state.seekable && !widget.player.disposed;
             final height = (MediaQuery.of(context).size.height * 0.68).clamp(260.0, 560.0).toDouble();
             return AlertDialog(
-              title: const Text('Captured transcript'),
+              title: Text(copy.dialogTitle),
               content: SizedBox(
                 width: 620,
                 height: height,
                 child: Column(
                   children: [
                     Text(
-                      'Only watched portions are included. Selecting a cue seeks to its start.',
+                      copy.watchedPortionOnly,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 10),
@@ -4677,12 +4679,12 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
                         prefixIcon: const AppIcon(Symbols.search_rounded),
-                        labelText: 'Search transcript',
+                        labelText: copy.searchTranscript,
                         border: const OutlineInputBorder(),
                         suffixIcon: _searchController.text.isEmpty
                             ? null
                             : IconButton(
-                                tooltip: 'Clear search',
+                                tooltip: copy.clearSearch,
                                 onPressed: () {
                                   _searchController.clear();
                                   setState(() {});
@@ -4693,16 +4695,15 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
                     ),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Hide future dialogue'),
-                      subtitle: const Text('Show cues from the current playhead and earlier'),
+                      title: Text(copy.hideFuture),
+                      subtitle: Text(copy.hideFutureDescription),
                       value: _hideFutureDialogue,
                       onChanged: (value) => setState(() => _hideFutureDialogue = value),
                     ),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        '${filtered.length} of ${cues.length} cues'
-                        '${canSeek ? '' : ' · seeking unavailable'}',
+                        '${copy.cueCountSummary(visible: filtered.length, total: cues.length)}${canSeek ? '' : ' · ${copy.seekingUnavailable}'}',
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
                     ),
@@ -4712,8 +4713,8 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
                           ? Center(
                               child: Text(
                                 cues.isEmpty
-                                    ? 'No speech cues yet. Keep capture running or stop it after speech is recognized.'
-                                    : 'No cues match this view.',
+                                    ? copy.noSpeechCues
+                                    : copy.noMatchingCues,
                                 textAlign: TextAlign.center,
                               ),
                             )
@@ -4740,7 +4741,7 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
                   ],
                 ),
               ),
-              actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Close'))],
+              actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(copy.close))],
             );
           },
         );

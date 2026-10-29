@@ -3292,6 +3292,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleCloudSync$en subtitleCloudSync = Translations$videoControls$subtitleCloudSync$en.internal(_root);
 	late final Translations$videoControls$subtitleResearchReview$en subtitleResearchReview = Translations$videoControls$subtitleResearchReview$en.internal(_root);
 	late final Translations$videoControls$subtitleReviewFlow$en subtitleReviewFlow = Translations$videoControls$subtitleReviewFlow$en.internal(_root);
+	late final Translations$videoControls$subtitleLiveCapture$en subtitleLiveCapture = Translations$videoControls$subtitleLiveCapture$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
@@ -14304,6 +14305,51 @@ class Translations$videoControls$subtitleReviewFlow$en {
 
 }
 
+// Path: videoControls.subtitleLiveCapture
+class Translations$videoControls$subtitleLiveCapture$en {
+	Translations$videoControls$subtitleLiveCapture$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Captured transcript'
+	String get dialogTitle => 'Captured transcript';
+
+	/// en: 'Only watched portions are included. Selecting a cue seeks to its start.'
+	String get watchedPortionOnly => 'Only watched portions are included. Selecting a cue seeks to its start.';
+
+	/// en: 'Search transcript'
+	String get searchTranscript => 'Search transcript';
+
+	/// en: 'Clear search'
+	String get clearSearch => 'Clear search';
+
+	/// en: 'Hide future dialogue'
+	String get hideFuture => 'Hide future dialogue';
+
+	/// en: 'Show cues from the current playhead and earlier'
+	String get hideFutureDescription => 'Show cues from the current playhead and earlier';
+
+	/// en: '${visible} of ${total} cues'
+	String cueCountSummary({required Object visible, required Object total}) => '${visible} of ${total} cues';
+
+	/// en: 'seeking unavailable'
+	String get seekingUnavailable => 'seeking unavailable';
+
+	/// en: 'No speech cues yet. Keep capture running or stop it after speech is recognized.'
+	String get noSpeechCues => 'No speech cues yet. Keep capture running or stop it after speech is recognized.';
+
+	/// en: 'No cues match this view.'
+	String get noMatchingCues => 'No cues match this view.';
+
+	/// en: 'Close'
+	String get close => 'Close';
+
+	/// en: 'Could not seek to this transcript cue.'
+	String get seekFailed => 'Could not seek to this transcript cue.';
+
+}
 // Path: videoControls.subtitleRoles
 class Translations$videoControls$subtitleRoles$en {
 	Translations$videoControls$subtitleRoles$en.internal(this._root);
@@ -18623,6 +18669,18 @@ extension on Translations {
 			'videoControls.subtitleReviewFlow.notServerItem' => 'This playback item is not linked to a server library entry.',
 			'videoControls.subtitleReviewFlow.serverOffline' => 'The media server is offline or unavailable.',
 			'videoControls.subtitleReviewFlow.serverRefusedUpload' => 'The server refused this subtitle upload or does not support library attachment.',
+			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
+			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
+			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',
+			'videoControls.subtitleLiveCapture.clearSearch' => 'Clear search',
+			'videoControls.subtitleLiveCapture.hideFuture' => 'Hide future dialogue',
+			'videoControls.subtitleLiveCapture.hideFutureDescription' => 'Show cues from the current playhead and earlier',
+			'videoControls.subtitleLiveCapture.cueCountSummary' => ({required Object visible, required Object total}) => '${visible} of ${total} cues',
+			'videoControls.subtitleLiveCapture.seekingUnavailable' => 'seeking unavailable',
+			'videoControls.subtitleLiveCapture.noSpeechCues' => 'No speech cues yet. Keep capture running or stop it after speech is recognized.',
+			'videoControls.subtitleLiveCapture.noMatchingCues' => 'No cues match this view.',
+			'videoControls.subtitleLiveCapture.close' => 'Close',
+			'videoControls.subtitleLiveCapture.seekFailed' => 'Could not seek to this transcript cue.',
 			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
 			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
 			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',

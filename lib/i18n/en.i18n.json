@@ -1987,6 +1987,20 @@
       "useVideoMetadata": "Use video metadata",
       "restoreOpening": "Restore opening value",
       "close": "Close"
+    },
+    "subtitleLiveCapture": {
+      "dialogTitle": "Captured transcript",
+      "watchedPortionOnly": "Only watched portions are included. Selecting a cue seeks to its start.",
+      "searchTranscript": "Search transcript",
+      "clearSearch": "Clear search",
+      "hideFuture": "Hide future dialogue",
+      "hideFutureDescription": "Show cues from the current playhead and earlier",
+      "cueCountSummary": "${visible} of ${total} cues",
+      "seekingUnavailable": "seeking unavailable",
+      "noSpeechCues": "No speech cues yet. Keep capture running or stop it after speech is recognized.",
+      "noMatchingCues": "No cues match this view.",
+      "close": "Close",
+      "seekFailed": "Could not seek to this transcript cue."
     }
   },
   "userStatus": {},

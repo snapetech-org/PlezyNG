@@ -5072,5 +5072,17 @@
   "videoControls.subtitleReviewFlow.uploadedButLocalAttachFailed": "560c82e489198459",
   "videoControls.subtitleReviewFlow.notServerItem": "36d7d5786022934c",
   "videoControls.subtitleReviewFlow.serverOffline": "633491b6efefa963",
-  "videoControls.subtitleReviewFlow.serverRefusedUpload": "0e3985693d6d116f"
+  "videoControls.subtitleReviewFlow.serverRefusedUpload": "0e3985693d6d116f",
+  "videoControls.subtitleLiveCapture.dialogTitle": "f799e183f9d3a23d",
+  "videoControls.subtitleLiveCapture.watchedPortionOnly": "a3c6042c9e66bed6",
+  "videoControls.subtitleLiveCapture.searchTranscript": "c2d35c4ef0e08a81",
+  "videoControls.subtitleLiveCapture.clearSearch": "e7be977660715266",
+  "videoControls.subtitleLiveCapture.hideFuture": "189499d8b32278fb",
+  "videoControls.subtitleLiveCapture.hideFutureDescription": "104afe523f37fd11",
+  "videoControls.subtitleLiveCapture.cueCountSummary": "7f31c87d00addb0f",
+  "videoControls.subtitleLiveCapture.seekingUnavailable": "4019810004ab3f25",
+  "videoControls.subtitleLiveCapture.noSpeechCues": "d79978e04fcd6b9f",
+  "videoControls.subtitleLiveCapture.noMatchingCues": "2c1477db802c045f",
+  "videoControls.subtitleLiveCapture.close": "d7cf5045c01b2eb9",
+  "videoControls.subtitleLiveCapture.seekFailed": "7cde8e1ee79b8e99"
 }

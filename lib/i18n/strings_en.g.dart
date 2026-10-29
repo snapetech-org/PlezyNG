@@ -3277,6 +3277,7 @@ class Translations$videoControls$en {
 
 	late final Translations$videoControls$subtitleBook$en subtitleBook = Translations$videoControls$subtitleBook$en.internal(_root);
 	late final Translations$videoControls$subtitleFonts$en subtitleFonts = Translations$videoControls$subtitleFonts$en.internal(_root);
+	late final Translations$videoControls$subtitleOverlays$en subtitleOverlays = Translations$videoControls$subtitleOverlays$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
 
@@ -12315,6 +12316,256 @@ class Translations$videoControls$subtitleFonts$en {
 
 }
 
+// Path: videoControls.subtitleOverlays
+class Translations$videoControls$subtitleOverlays$en {
+	Translations$videoControls$subtitleOverlays$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'App caption overlays'
+	String get title => 'App caption overlays';
+
+	/// en: 'Plain-text overlays are local to this player. Native ASS/bitmap tracks retain their own rendering. Native PiP, Cast and external players require a compatible exported subtitle; app overlays are not sent. Color brightness is an SDR UI value, not calibrated HDR luminance.'
+	String get description => 'Plain-text overlays are local to this player. Native ASS/bitmap tracks retain their own rendering. Native PiP, Cast and external players require a compatible exported subtitle; app overlays are not sent. Color brightness is an SDR UI value, not calibrated HDR luminance.';
+
+	/// en: 'Manage offline fonts'
+	String get manageFonts => 'Manage offline fonts';
+
+	/// en: 'Lane ${lane}: ${title}'
+	String laneTitle({required Object lane, required Object title}) => 'Lane ${lane}: ${title}';
+
+	/// en: 'Remove overlay'
+	String get removeOverlay => 'Remove overlay';
+
+	/// en: 'Speak this overlay'
+	String get speakOverlay => 'Speak this overlay';
+
+	/// en: 'Stop spoken subtitles'
+	String get stopSpeaking => 'Stop spoken subtitles';
+
+	/// en: 'Bundled multilingual'
+	String get bundledFont => 'Bundled multilingual';
+
+	/// en: 'Bundled and imported fonts work offline, including Hangul fallback. System-family choices may be unavailable on this device. Removed imports fall back to the bundled font.'
+	String get fontHelp => 'Bundled and imported fonts work offline, including Hangul fallback. System-family choices may be unavailable on this device. Removed imports fall back to the bundled font.';
+
+	/// en: 'Horizontal text'
+	String get horizontalText => 'Horizontal text';
+
+	/// en: 'Vertical text, columns right to left'
+	String get verticalRightToLeft => 'Vertical text, columns right to left';
+
+	/// en: 'Vertical text, columns left to right'
+	String get verticalLeftToRight => 'Vertical text, columns left to right';
+
+	/// en: 'Vertical mode preserves grapheme clusters and rotates other-script runs together. Ruby and timed-word highlighting use horizontal mode. Authored ASS remains in the native renderer.'
+	String get verticalHelp => 'Vertical mode preserves grapheme clusters and rotates other-script runs together. Ruby and timed-word highlighting use horizontal mode. Authored ASS remains in the native renderer.';
+
+	/// en: 'Show ruby reading aids'
+	String get rubyTitle => 'Show ruby reading aids';
+
+	/// en: 'Display supplied ruby readings above their base text. Ruby groups wrap together and use base text for speech and plain export. Word highlighting pauses for annotated cues.'
+	String get rubyHelp => 'Display supplied ruby readings above their base text. Ruby groups wrap together and use base text for speech and plain export. Word highlighting pauses for annotated cues.';
+
+	/// en: 'Start'
+	String get alignmentStart => 'Start';
+
+	/// en: 'Center'
+	String get alignmentCenter => 'Center';
+
+	/// en: 'End'
+	String get alignmentEnd => 'End';
+
+	/// en: 'Use this appearance for future tracks'
+	String get saveAppearance => 'Use this appearance for future tracks';
+
+	/// en: 'Appearance saved for this profile and lane. Timing and scene placement stay with this track.'
+	String get appearanceSaved => 'Appearance saved for this profile and lane. Timing and scene placement stay with this track.';
+
+	/// en: 'Could not save caption appearance.'
+	String get appearanceSaveFailed => 'Could not save caption appearance.';
+
+	/// en: 'This live overlay follows the moving program clock. Fixed-file export, Cast and native snapshot attachment are unavailable.'
+	String get liveOverlayLimits => 'This live overlay follows the moving program clock. Fixed-file export, Cast and native snapshot attachment are unavailable.';
+
+	/// en: 'Captions, appearance and selected imported font retained for this downloaded part.'
+	String get retainedMessage => 'Captions, appearance and selected imported font retained for this downloaded part.';
+
+	/// en: 'Could not retain captions. Check the download, available font and caption storage quota.'
+	String get retentionFailed => 'Could not retain captions. Check the download, available font and caption storage quota.';
+
+	/// en: 'Keep this lane with the downloaded video'
+	String get keepLane => 'Keep this lane with the downloaded video';
+
+	/// en: 'Could not export the subtitle and font package.'
+	String get exportPackageFailed => 'Could not export the subtitle and font package.';
+
+	/// en: 'Preparing offline package…'
+	String get preparingPackage => 'Preparing offline package…';
+
+	/// en: 'Export SRT + selected imported font'
+	String get exportPackage => 'Export SRT + selected imported font';
+
+	/// en: 'Could not export this caption snapshot.'
+	String get exportSrtFailed => 'Could not export this caption snapshot.';
+
+	/// en: 'Export corrected SRT'
+	String get exportSrt => 'Export corrected SRT';
+
+	/// en: 'The native renderer could not attach this caption snapshot.'
+	String get nativeAttachFailed => 'The native renderer could not attach this caption snapshot.';
+
+	/// en: 'Move snapshot to native subtitles'
+	String get moveSnapshotNative => 'Move snapshot to native subtitles';
+
+	/// en: 'Avoid reviewed scene regions'
+	String get avoidRegions => 'Avoid reviewed scene regions';
+
+	/// en: 'Uses reviewed single-frame or sampled temporal proposals at cue boundaries. Placement can be wrong; authored signs keep their positions.'
+	String get avoidRegionsHelp => 'Uses reviewed single-frame or sampled temporal proposals at cue boundaries. Placement can be wrong; authored signs keep their positions.';
+
+	/// en: 'Size ${size}'
+	String fontSizeValue({required Object size}) => 'Size ${size}';
+
+	/// en: 'Anchor dialogue inside the video'
+	String get anchorDialogue => 'Anchor dialogue inside the video';
+
+	/// en: 'Otherwise dialogue uses the screen and letterbox. Signs and the burned-caption cover follow the video. Unknown video size falls back to screen placement.'
+	String get anchorHelp => 'Otherwise dialogue uses the screen and letterbox. Signs and the burned-caption cover follow the video. Unknown video size falls back to screen placement.';
+
+	/// en: 'Safe inset / TV overscan ${percent}%'
+	String safeInsetValue({required Object percent}) => 'Safe inset / TV overscan ${percent}%';
+
+	/// en: 'Vertical position ${percent}%'
+	String verticalPositionValue({required Object percent}) => 'Vertical position ${percent}%';
+
+	/// en: 'Background'
+	String get background => 'Background';
+
+	/// en: 'Outline'
+	String get outline => 'Outline';
+
+	/// en: 'Side margin'
+	String get sideMargin => 'Side margin';
+
+	/// en: 'Bold'
+	String get bold => 'Bold';
+
+	/// en: 'Italic'
+	String get italic => 'Italic';
+
+	/// en: 'Lane delay (signed ms)'
+	String get laneDelay => 'Lane delay (signed ms)';
+
+	/// en: 'Highlight timed words'
+	String get highlightWords => 'Highlight timed words';
+
+	/// en: 'Requires original word/token timings; singing accuracy is not assumed.'
+	String get wordTimingHelp => 'Requires original word/token timings; singing accuracy is not assumed.';
+
+	/// en: 'Speech uses the device engine (or installed espeak-ng on Linux). Its network policy is controlled by that engine. Speech stops at cue boundaries and may truncate lines that cannot fit; it does not change playback speed.'
+	String get speechHelp => 'Speech uses the device engine (or installed espeak-ng on Linux). Its network policy is controlled by that engine. Speech stops at cue boundaries and may truncate lines that cannot fit; it does not change playback speed.';
+
+	/// en: 'Speech rate ${percent}%'
+	String speechRateValue({required Object percent}) => 'Speech rate ${percent}%';
+
+	/// en: 'Keep ${percent}% of original audio while speaking'
+	String audioDuckValue({required Object percent}) => 'Keep ${percent}% of original audio while speaking';
+
+	/// en: 'Pause playback to export the visible native and app captions with the frame. Known 8-bit SDR output produces PNG; HDR, wide-gamut, high-bit-depth or unknown color output produces a ZIP with the untouched native frame, transparent sRGB caption layer and composition metadata.'
+	String get exportFrameHelp => 'Pause playback to export the visible native and app captions with the frame. Known 8-bit SDR output produces PNG; HDR, wide-gamut, high-bit-depth or unknown color output produces a ZIP with the untouched native frame, transparent sRGB caption layer and composition metadata.';
+
+	/// en: 'Could not export the caption frame. Pause playback and use a native output matching the visible caption viewport.'
+	String get exportFrameFailed => 'Could not export the caption frame. Pause playback and use a native output matching the visible caption viewport.';
+
+	/// en: 'Export paused frame with visible captions'
+	String get exportFrame => 'Export paused frame with visible captions';
+
+	/// en: 'Saved download captions retain both reviewed lanes and their selected imported fonts in app storage. They count toward download usage and are removed with your download. Restoring replaces the corresponding app lanes and registers only fonts you previously chose. Native tracks stay selected until you turn them off.'
+	String get savedDownloadHelp => 'Saved download captions retain both reviewed lanes and their selected imported fonts in app storage. They count toward download usage and are removed with your download. Restoring replaces the corresponding app lanes and registers only fonts you previously chose. Native tracks stay selected until you turn them off.';
+
+	/// en: 'No captions were retained for this downloaded version and part.'
+	String get noRetainedCaptions => 'No captions were retained for this downloaded version and part.';
+
+	/// en: 'Saved download captions restored.'
+	String get restoredCaptions => 'Saved download captions restored.';
+
+	/// en: 'Could not restore captions or their font. The saved copy has been retained.'
+	String get restoreFailed => 'Could not restore captions or their font. The saved copy has been retained.';
+
+	/// en: 'Restore saved download captions'
+	String get restoreDownload => 'Restore saved download captions';
+
+	/// en: 'Remove saved captions from this download'
+	String get removeSavedCaptions => 'Remove saved captions from this download';
+
+	/// en: 'Removed your saved captions for this download. Current playback is unchanged.'
+	String get removedSavedCaptions => 'Removed your saved captions for this download. Current playback is unchanged.';
+
+	/// en: 'Could not remove the saved captions. Retry from this download.'
+	String get removeSavedFailed => 'Could not remove the saved captions. Retry from this download.';
+
+	/// en: 'Share the reviewed app overlays as a read-only second screen and receiver-compatible WebVTT links. Only private-network peers with the secret link can read them. HTTP is unencrypted; use a trusted local network. Playback URLs and credentials are never shared. App styling and authored layouts are flattened.'
+	String get shareHelp => 'Share the reviewed app overlays as a read-only second screen and receiver-compatible WebVTT links. Only private-network peers with the secret link can read them. HTTP is unencrypted; use a trusted local network. Playback URLs and credentials are never shared. App styling and authored layouts are flattened.';
+
+	/// en: 'Subtitle sharing could not start on this network.'
+	String get shareFailed => 'Subtitle sharing could not start on this network.';
+
+	/// en: 'Stop sharing and revoke links'
+	String get stopShare => 'Stop sharing and revoke links';
+
+	/// en: 'Share both reviewed overlays on this network'
+	String get startShare => 'Share both reviewed overlays on this network';
+
+	/// en: 'Copy private subtitle link'
+	String get copyPrivateLink => 'Copy private subtitle link';
+
+	/// en: 'WebVTT: ${title}'
+	String webVttTitle({required Object title}) => 'WebVTT: ${title}';
+
+	/// en: 'Copy receiver subtitle URL'
+	String get copyReceiverUrl => 'Copy receiver subtitle URL';
+
+	/// en: 'Cover burned captions in a bottom band'
+	String get coverTitle => 'Cover burned captions in a bottom band';
+
+	/// en: 'Opaque cover on this screen only. It hides picture detail; it does not reconstruct the background or edit the video.'
+	String get coverHelp => 'Opaque cover on this screen only. It hides picture detail; it does not reconstruct the background or edit the video.';
+
+	/// en: 'Clear all'
+	String get clearAll => 'Clear all';
+
+	/// en: 'Done'
+	String get done => 'Done';
+
+	/// en: 'Use native caption rendering?'
+	String get nativeConfirmTitle => 'Use native caption rendering?';
+
+	/// en: 'Export corrected captions?'
+	String get exportConfirmTitle => 'Export corrected captions?';
+
+	/// en: 'This is a plain-text snapshot with the lane delay applied on the opened media part’s clock. Fonts, positions, karaoke and future generated cues are not included.'
+	String get snapshotConfirmBody => 'This is a plain-text snapshot with the lane delay applied on the opened media part’s clock. Fonts, positions, karaoke and future generated cues are not included.';
+
+	/// en: '${count} cues cross or precede this part and will be clipped or omitted.'
+	String clippingWarning({required Object count}) => '${count} cues cross or precede this part and will be clipped or omitted.';
+
+	/// en: 'The native primary track is selected and this app overlay is removed. PiP visibility still depends on the native output path.'
+	String get nativeConfirmNote => 'The native primary track is selected and this app overlay is removed. PiP visibility still depends on the native output path.';
+
+	/// en: 'The export contains future dialogue from this track.'
+	String get exportConfirmNote => 'The export contains future dialogue from this track.';
+
+	/// en: 'Use native subtitles'
+	String get useNative => 'Use native subtitles';
+
+	/// en: 'Export'
+	String get exportAction => 'Export';
+
+}
+
 // Path: videoControls.subtitleHdr
 class Translations$videoControls$subtitleHdr$en {
 	Translations$videoControls$subtitleHdr$en.internal(this._root);
@@ -16051,6 +16302,86 @@ extension on Translations {
 			'videoControls.subtitleFonts.retainedOffline' => ({required Object count}) => '${count} selected fonts retained offline.',
 			'videoControls.subtitleFonts.partialImport' => ({required Object count}) => '${count} fonts were retained before import stopped. Retry the remaining fonts.',
 			'videoControls.subtitleFonts.actionFailed' => 'Could not update offline fonts.',
+			'videoControls.subtitleOverlays.title' => 'App caption overlays',
+			'videoControls.subtitleOverlays.description' => 'Plain-text overlays are local to this player. Native ASS/bitmap tracks retain their own rendering. Native PiP, Cast and external players require a compatible exported subtitle; app overlays are not sent. Color brightness is an SDR UI value, not calibrated HDR luminance.',
+			'videoControls.subtitleOverlays.manageFonts' => 'Manage offline fonts',
+			'videoControls.subtitleOverlays.laneTitle' => ({required Object lane, required Object title}) => 'Lane ${lane}: ${title}',
+			'videoControls.subtitleOverlays.removeOverlay' => 'Remove overlay',
+			'videoControls.subtitleOverlays.speakOverlay' => 'Speak this overlay',
+			'videoControls.subtitleOverlays.stopSpeaking' => 'Stop spoken subtitles',
+			'videoControls.subtitleOverlays.bundledFont' => 'Bundled multilingual',
+			'videoControls.subtitleOverlays.fontHelp' => 'Bundled and imported fonts work offline, including Hangul fallback. System-family choices may be unavailable on this device. Removed imports fall back to the bundled font.',
+			'videoControls.subtitleOverlays.horizontalText' => 'Horizontal text',
+			'videoControls.subtitleOverlays.verticalRightToLeft' => 'Vertical text, columns right to left',
+			'videoControls.subtitleOverlays.verticalLeftToRight' => 'Vertical text, columns left to right',
+			'videoControls.subtitleOverlays.verticalHelp' => 'Vertical mode preserves grapheme clusters and rotates other-script runs together. Ruby and timed-word highlighting use horizontal mode. Authored ASS remains in the native renderer.',
+			'videoControls.subtitleOverlays.rubyTitle' => 'Show ruby reading aids',
+			'videoControls.subtitleOverlays.rubyHelp' => 'Display supplied ruby readings above their base text. Ruby groups wrap together and use base text for speech and plain export. Word highlighting pauses for annotated cues.',
+			'videoControls.subtitleOverlays.alignmentStart' => 'Start',
+			'videoControls.subtitleOverlays.alignmentCenter' => 'Center',
+			'videoControls.subtitleOverlays.alignmentEnd' => 'End',
+			'videoControls.subtitleOverlays.saveAppearance' => 'Use this appearance for future tracks',
+			'videoControls.subtitleOverlays.appearanceSaved' => 'Appearance saved for this profile and lane. Timing and scene placement stay with this track.',
+			'videoControls.subtitleOverlays.appearanceSaveFailed' => 'Could not save caption appearance.',
+			'videoControls.subtitleOverlays.liveOverlayLimits' => 'This live overlay follows the moving program clock. Fixed-file export, Cast and native snapshot attachment are unavailable.',
+			'videoControls.subtitleOverlays.retainedMessage' => 'Captions, appearance and selected imported font retained for this downloaded part.',
+			'videoControls.subtitleOverlays.retentionFailed' => 'Could not retain captions. Check the download, available font and caption storage quota.',
+			'videoControls.subtitleOverlays.keepLane' => 'Keep this lane with the downloaded video',
+			'videoControls.subtitleOverlays.exportPackageFailed' => 'Could not export the subtitle and font package.',
+			'videoControls.subtitleOverlays.preparingPackage' => 'Preparing offline package…',
+			'videoControls.subtitleOverlays.exportPackage' => 'Export SRT + selected imported font',
+			'videoControls.subtitleOverlays.exportSrtFailed' => 'Could not export this caption snapshot.',
+			'videoControls.subtitleOverlays.exportSrt' => 'Export corrected SRT',
+			'videoControls.subtitleOverlays.nativeAttachFailed' => 'The native renderer could not attach this caption snapshot.',
+			'videoControls.subtitleOverlays.moveSnapshotNative' => 'Move snapshot to native subtitles',
+			'videoControls.subtitleOverlays.avoidRegions' => 'Avoid reviewed scene regions',
+			'videoControls.subtitleOverlays.avoidRegionsHelp' => 'Uses reviewed single-frame or sampled temporal proposals at cue boundaries. Placement can be wrong; authored signs keep their positions.',
+			'videoControls.subtitleOverlays.fontSizeValue' => ({required Object size}) => 'Size ${size}',
+			'videoControls.subtitleOverlays.anchorDialogue' => 'Anchor dialogue inside the video',
+			'videoControls.subtitleOverlays.anchorHelp' => 'Otherwise dialogue uses the screen and letterbox. Signs and the burned-caption cover follow the video. Unknown video size falls back to screen placement.',
+			'videoControls.subtitleOverlays.safeInsetValue' => ({required Object percent}) => 'Safe inset / TV overscan ${percent}%',
+			'videoControls.subtitleOverlays.verticalPositionValue' => ({required Object percent}) => 'Vertical position ${percent}%',
+			'videoControls.subtitleOverlays.background' => 'Background',
+			'videoControls.subtitleOverlays.outline' => 'Outline',
+			'videoControls.subtitleOverlays.sideMargin' => 'Side margin',
+			'videoControls.subtitleOverlays.bold' => 'Bold',
+			'videoControls.subtitleOverlays.italic' => 'Italic',
+			'videoControls.subtitleOverlays.laneDelay' => 'Lane delay (signed ms)',
+			'videoControls.subtitleOverlays.highlightWords' => 'Highlight timed words',
+			'videoControls.subtitleOverlays.wordTimingHelp' => 'Requires original word/token timings; singing accuracy is not assumed.',
+			'videoControls.subtitleOverlays.speechHelp' => 'Speech uses the device engine (or installed espeak-ng on Linux). Its network policy is controlled by that engine. Speech stops at cue boundaries and may truncate lines that cannot fit; it does not change playback speed.',
+			'videoControls.subtitleOverlays.speechRateValue' => ({required Object percent}) => 'Speech rate ${percent}%',
+			'videoControls.subtitleOverlays.audioDuckValue' => ({required Object percent}) => 'Keep ${percent}% of original audio while speaking',
+			'videoControls.subtitleOverlays.exportFrameHelp' => 'Pause playback to export the visible native and app captions with the frame. Known 8-bit SDR output produces PNG; HDR, wide-gamut, high-bit-depth or unknown color output produces a ZIP with the untouched native frame, transparent sRGB caption layer and composition metadata.',
+			'videoControls.subtitleOverlays.exportFrameFailed' => 'Could not export the caption frame. Pause playback and use a native output matching the visible caption viewport.',
+			'videoControls.subtitleOverlays.exportFrame' => 'Export paused frame with visible captions',
+			'videoControls.subtitleOverlays.savedDownloadHelp' => 'Saved download captions retain both reviewed lanes and their selected imported fonts in app storage. They count toward download usage and are removed with your download. Restoring replaces the corresponding app lanes and registers only fonts you previously chose. Native tracks stay selected until you turn them off.',
+			'videoControls.subtitleOverlays.noRetainedCaptions' => 'No captions were retained for this downloaded version and part.',
+			'videoControls.subtitleOverlays.restoredCaptions' => 'Saved download captions restored.',
+			'videoControls.subtitleOverlays.restoreFailed' => 'Could not restore captions or their font. The saved copy has been retained.',
+			'videoControls.subtitleOverlays.restoreDownload' => 'Restore saved download captions',
+			'videoControls.subtitleOverlays.removeSavedCaptions' => 'Remove saved captions from this download',
+			'videoControls.subtitleOverlays.removedSavedCaptions' => 'Removed your saved captions for this download. Current playback is unchanged.',
+			'videoControls.subtitleOverlays.removeSavedFailed' => 'Could not remove the saved captions. Retry from this download.',
+			'videoControls.subtitleOverlays.shareHelp' => 'Share the reviewed app overlays as a read-only second screen and receiver-compatible WebVTT links. Only private-network peers with the secret link can read them. HTTP is unencrypted; use a trusted local network. Playback URLs and credentials are never shared. App styling and authored layouts are flattened.',
+			'videoControls.subtitleOverlays.shareFailed' => 'Subtitle sharing could not start on this network.',
+			'videoControls.subtitleOverlays.stopShare' => 'Stop sharing and revoke links',
+			'videoControls.subtitleOverlays.startShare' => 'Share both reviewed overlays on this network',
+			'videoControls.subtitleOverlays.copyPrivateLink' => 'Copy private subtitle link',
+			'videoControls.subtitleOverlays.webVttTitle' => ({required Object title}) => 'WebVTT: ${title}',
+			'videoControls.subtitleOverlays.copyReceiverUrl' => 'Copy receiver subtitle URL',
+			'videoControls.subtitleOverlays.coverTitle' => 'Cover burned captions in a bottom band',
+			'videoControls.subtitleOverlays.coverHelp' => 'Opaque cover on this screen only. It hides picture detail; it does not reconstruct the background or edit the video.',
+			'videoControls.subtitleOverlays.clearAll' => 'Clear all',
+			'videoControls.subtitleOverlays.done' => 'Done',
+			'videoControls.subtitleOverlays.nativeConfirmTitle' => 'Use native caption rendering?',
+			'videoControls.subtitleOverlays.exportConfirmTitle' => 'Export corrected captions?',
+			'videoControls.subtitleOverlays.snapshotConfirmBody' => 'This is a plain-text snapshot with the lane delay applied on the opened media part’s clock. Fonts, positions, karaoke and future generated cues are not included.',
+			'videoControls.subtitleOverlays.clippingWarning' => ({required Object count}) => '${count} cues cross or precede this part and will be clipped or omitted.',
+			'videoControls.subtitleOverlays.nativeConfirmNote' => 'The native primary track is selected and this app overlay is removed. PiP visibility still depends on the native output path.',
+			'videoControls.subtitleOverlays.exportConfirmNote' => 'The export contains future dialogue from this track.',
+			'videoControls.subtitleOverlays.useNative' => 'Use native subtitles',
+			'videoControls.subtitleOverlays.exportAction' => 'Export',
 			'videoControls.subtitleHdr.close' => 'Close',
 			'videoControls.subtitleHdr.restoreOpening' => 'Restore opening value',
 			'videoControls.subtitleHdr.useVideoMetadata' => 'Use video metadata',

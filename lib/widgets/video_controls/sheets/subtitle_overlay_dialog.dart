@@ -30,48 +30,54 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
   final session = SubtitleOverlayService.forPlayer(player);
   var exportingPackage = false;
   await showDialog<void>(context: context, builder: (context) => StatefulBuilder(builder: (context, update) {
+    final t = Translations.of(context);
+    final copy = t.videoControls.subtitleOverlays;
     void change(VoidCallback action) { update(action); session.changed(); }
-    return AlertDialog(title: const Text('App caption overlays'), content: SizedBox(width: 620,
+    String alignmentLabel(TextAlign alignment) => switch (alignment) {
+      TextAlign.start => copy.alignmentStart,
+      TextAlign.center => copy.alignmentCenter,
+      TextAlign.end => copy.alignmentEnd,
+      _ => copy.alignmentStart,
+    };
+    return AlertDialog(title: Text(copy.title), content: SizedBox(width: 620,
       child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const Text('Plain-text overlays are local to this player. Native ASS/bitmap tracks retain their own rendering. '
-          'Native PiP, Cast and external players require a compatible exported subtitle; app overlays are not sent. '
-          'Color brightness is an SDR UI value, not calibrated HDR luminance.'),
+        Text(copy.description),
         TextButton(onPressed: () async {
           await showDialog<void>(context: context, builder: (_) => SubtitleFontsDialog(
             openSource: openAnalysisSource, isSourceCurrent: isSourceCurrent));
           if (context.mounted) { update(() {}); session.changed(); }
-        }, child: const Text('Manage offline fonts')),
+        }, child: Text(copy.manageFonts)),
         for (var index = 0; index < 2; index++) if (session.lanes[index] case final SubtitleOverlayTrack track) ...[
-          ListTile(title: Text('${index + 1}: ${track.title}'), trailing: IconButton(tooltip: 'Remove overlay',
+          ListTile(title: Text(copy.laneTitle(lane: index + 1, title: track.title)), trailing: IconButton(tooltip: copy.removeOverlay,
             onPressed: () => change(() => session.lanes[index] = null), icon: const Icon(Icons.close))),
           if (SpeechOutputService.supported) TextButton(onPressed: () async {
             final speech = SubtitleSpeechService.instance;
             if (speech.isSpeaking(track)) { await speech.stop(); } else { await speech.start(player, track); }
             if (context.mounted) update(() {});
-          }, child: Text(SubtitleSpeechService.instance.isSpeaking(track) ? 'Stop spoken subtitles' : 'Speak this overlay')),
+          }, child: Text(SubtitleSpeechService.instance.isSpeaking(track) ? copy.stopSpeaking : copy.speakOverlay)),
           DropdownButton<String>(value: SubtitleOverlayTrack.fonts.contains(track.fontFamily) ? track.fontFamily : 'Bundled multilingual', isExpanded: true,
-            items: [for (final font in SubtitleOverlayTrack.fonts) DropdownMenuItem(value: font, child: Text(SubtitleFontStore.instance.label(font)))],
+            items: [for (final font in SubtitleOverlayTrack.fonts) DropdownMenuItem(value: font,
+              child: Text(font == 'Bundled multilingual' ? copy.bundledFont : SubtitleFontStore.instance.label(font)))],
             onChanged: (font) { if (font != null) change(() => track.fontFamily = font); }),
-          const Text('Bundled and imported fonts work offline, including Hangul fallback. System-family choices may be unavailable on this device. Removed imports fall back to the bundled font.'),
-          DropdownButton<String>(value: track.writingMode, isExpanded: true, items: const [
-            DropdownMenuItem(value: 'horizontal', child: Text('Horizontal text')),
-            DropdownMenuItem(value: 'vertical-rl', child: Text('Vertical text, columns right to left')),
-            DropdownMenuItem(value: 'vertical-lr', child: Text('Vertical text, columns left to right')),
+          Text(copy.fontHelp),
+          DropdownButton<String>(value: track.writingMode, isExpanded: true, items: [
+            DropdownMenuItem(value: 'horizontal', child: Text(copy.horizontalText)),
+            DropdownMenuItem(value: 'vertical-rl', child: Text(copy.verticalRightToLeft)),
+            DropdownMenuItem(value: 'vertical-lr', child: Text(copy.verticalLeftToRight)),
           ], onChanged: (value) { if (value != null) change(() => track.writingMode = value); }),
-          if (track.writingMode != 'horizontal') const Text('Vertical mode preserves grapheme clusters and rotates other-script runs together. '
-            'Ruby and timed-word highlighting use horizontal mode. Authored ASS remains in the native renderer.'),
-          SwitchListTile(title: const Text('Show ruby reading aids'),
-            subtitle: const Text('Display supplied ruby readings above their base text. Ruby groups wrap together and use base text for speech and plain export. Word highlighting pauses for annotated cues.'),
+          if (track.writingMode != 'horizontal') Text(copy.verticalHelp),
+          SwitchListTile(title: Text(copy.rubyTitle),
+            subtitle: Text(copy.rubyHelp),
             value: track.ruby, onChanged: (value) => change(() => track.ruby = value)),
           Wrap(spacing: 8, children: [for (final align in [TextAlign.start, TextAlign.center, TextAlign.end])
-            ChoiceChip(label: Text(align.name), selected: track.alignment == align,
+            ChoiceChip(label: Text(alignmentLabel(align)), selected: track.alignment == align,
               onSelected: (_) => change(() => track.alignment = align))]),
           if (track.profileId != null) TextButton(onPressed: () async {
             try { await track.saveAppearance(index);
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Appearance saved for this profile and lane. Timing and scene placement stay with this track.')));
-            } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not save caption appearance.'))); }
-          }, child: const Text('Use this appearance for future tracks')),
-          if (track.positionToSourceMs != null) const Text('This live overlay follows the moving program clock. Fixed-file export, Cast and native snapshot attachment are unavailable.'),
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.appearanceSaved)));
+            } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.appearanceSaveFailed))); }
+          }, child: Text(copy.saveAppearance)),
+          if (track.positionToSourceMs != null) Text(copy.liveOverlayLimits),
           if (download != null && track.positionToSourceMs == null) TextButton(
             onPressed: exportingPackage ? null : () async {
               update(() => exportingPackage = true);
@@ -79,13 +85,11 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
                 if (!session.current || !session.lanes.contains(track)) throw StateError('Playback changed');
                 await SubtitleDownloadAssets.save(download, index, track);
                 await onDownloadChanged?.call();
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Captions, appearance and selected imported font retained for this downloaded part.')));
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.retainedMessage)));
               } catch (_) {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Could not retain captions. Check the download, available font and caption storage quota.')));
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.retentionFailed)));
               } finally { if (context.mounted) update(() => exportingPackage = false); }
-            }, child: const Text('Keep this lane with the downloaded video')),
+            }, child: Text(copy.keepLane)),
           if (track.positionToSourceMs == null) TextButton(onPressed: exportingPackage ? null : () async {
             update(() => exportingPackage = true);
             try {
@@ -97,9 +101,9 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
                 type: FileType.custom, allowedExtensions: ['zip']);
               if (path != null && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) await File(path).writeAsBytes(package.bytes, flush: true);
             } catch (_) {
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not export the subtitle and font package.')));
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.exportPackageFailed)));
             } finally { if (context.mounted) update(() => exportingPackage = false); }
-          }, child: Text(exportingPackage ? 'Preparing offline package…' : 'Export SRT + selected imported font')),
+          }, child: Text(exportingPackage ? copy.preparingPackage : copy.exportPackage)),
           if (track.positionToSourceMs == null) Wrap(spacing: 8, children: [TextButton(onPressed: () async {
             try {
               final snapshot = SubtitleNativeHandoffService.export(player, track);
@@ -107,58 +111,57 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
               final path = await FilePickerService.instance.saveFile(fileName: 'PlezyNG.captions.srt', bytes: snapshot.bytes,
                 type: FileType.custom, allowedExtensions: const ['srt']);
               if (path != null && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) await File(path).writeAsBytes(snapshot.bytes, flush: true);
-            } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not export this caption snapshot.'))); }
-          }, child: const Text('Export corrected SRT')),
+            } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.exportSrtFailed))); }
+          }, child: Text(copy.exportSrt)),
           if (player.supportedLocalSubtitleExtensions.contains('srt')) TextButton(onPressed: () async {
             try {
               final snapshot = SubtitleNativeHandoffService.export(player, track);
               if (!context.mounted || !await _confirmSnapshot(context, snapshot.clipped, attach: true)) return;
               await SubtitleNativeHandoffService.attach(player, track, allowClipping: true);
               if (context.mounted) update(() {});
-            } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('The native renderer could not attach this caption snapshot.'))); }
-          }, child: const Text('Move snapshot to native subtitles'))]),
-          if (track.avoidRegions.isNotEmpty) SwitchListTile(title: const Text('Avoid reviewed scene regions'),
-            subtitle: const Text('Uses reviewed single-frame or sampled temporal proposals at cue boundaries. Placement can be wrong; authored signs keep their positions.'),
+            } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.nativeAttachFailed))); }
+          }, child: Text(copy.moveSnapshotNative))]),
+          if (track.avoidRegions.isNotEmpty) SwitchListTile(title: Text(copy.avoidRegions),
+            subtitle: Text(copy.avoidRegionsHelp),
             value: track.avoidObjects, onChanged: (value) => change(() => track.avoidObjects = value)),
-          Text('Size ${track.fontSize.round()}'), Slider(value: track.fontSize, min: 16, max: 64,
+          Text(copy.fontSizeValue(size: track.fontSize.round())), Slider(value: track.fontSize, min: 16, max: 64,
             onChanged: (v) => change(() => track.fontSize = v)),
-          SwitchListTile(title: const Text('Anchor dialogue inside the video'),
-            subtitle: const Text('Otherwise dialogue uses the screen and letterbox. Signs and the burned-caption cover follow the video. Unknown video size falls back to screen placement.'),
+          SwitchListTile(title: Text(copy.anchorDialogue),
+            subtitle: Text(copy.anchorHelp),
             value: track.videoAnchored, onChanged: (v) => change(() => track.videoAnchored = v)),
-          Text('Safe inset / TV overscan ${(track.overscan * 100).round()}%'),
+          Text(copy.safeInsetValue(percent: (track.overscan * 100).round())),
           Slider(value: track.overscan, min: 0, max: .15, onChanged: (v) => change(() => track.overscan = v)),
-          Text('Vertical position ${(track.position * 100).round()}%'), Slider(value: track.position, min: .05, max: .95,
+          Text(copy.verticalPositionValue(percent: (track.position * 100).round())), Slider(value: track.position, min: .05, max: .95,
             onChanged: (v) => change(() => track.position = v)),
-          const Text('Background'), Slider(value: track.backgroundOpacity, min: 0, max: 1,
+          Text(copy.background), Slider(value: track.backgroundOpacity, min: 0, max: 1,
             onChanged: (v) => change(() => track.backgroundOpacity = v)),
           Wrap(spacing: 8, children: [for (final background in [Colors.black, const Color(0xff182332), const Color(0xff4a321c)])
-            ChoiceChip(label: Text('Background', style: TextStyle(color: Colors.white, backgroundColor: background)), selected: track.backgroundColor == background,
+            ChoiceChip(label: Text(copy.background, style: TextStyle(color: Colors.white, backgroundColor: background)), selected: track.backgroundColor == background,
               onSelected: (_) => change(() => track.backgroundColor = background))]),
-          const Text('Outline'), Slider(value: track.outlineWidth, min: 0, max: 5,
+          Text(copy.outline), Slider(value: track.outlineWidth, min: 0, max: 5,
             onChanged: (v) => change(() => track.outlineWidth = v)),
-          const Text('Side margin'), Slider(value: track.margin, min: .02, max: .2,
+          Text(copy.sideMargin), Slider(value: track.margin, min: .02, max: .2,
             onChanged: (v) => change(() => track.margin = v)),
           Wrap(spacing: 8, children: [
             for (final color in [Colors.white, Colors.grey, Colors.amber, Colors.lightBlue, Colors.lightGreen])
               ChoiceChip(label: Text('Aa', style: TextStyle(color: color)), selected: track.color == color,
                 onSelected: (_) => change(() => track.color = color)),
-            FilterChip(label: const Text('Bold'), selected: track.bold, onSelected: (v) => change(() => track.bold = v)),
-            FilterChip(label: const Text('Italic'), selected: track.italic, onSelected: (v) => change(() => track.italic = v)),
+            FilterChip(label: Text(copy.bold), selected: track.bold, onSelected: (v) => change(() => track.bold = v)),
+            FilterChip(label: Text(copy.italic), selected: track.italic, onSelected: (v) => change(() => track.italic = v)),
           ]),
-          TextFormField(initialValue: '${track.delayMs}', decoration: const InputDecoration(labelText: 'Lane delay (signed ms)'),
+          TextFormField(initialValue: '${track.delayMs}', decoration: InputDecoration(labelText: copy.laneDelay),
             keyboardType: const TextInputType.numberWithOptions(signed: true), onChanged: (v) {
               final delay = int.tryParse(v); if (delay != null && delay.abs() <= 3600000) change(() => track.delayMs = delay);
             }),
-          SwitchListTile(title: const Text('Highlight timed words'), subtitle: const Text('Requires original word/token timings; singing accuracy is not assumed.'),
+          SwitchListTile(title: Text(copy.highlightWords), subtitle: Text(copy.wordTimingHelp),
             value: track.karaoke, onChanged: track.words.isEmpty ? null : (v) => change(() => track.karaoke = v)),
         ],
         if (SpeechOutputService.supported) ...[
-          const Text('Speech uses the device engine (or installed espeak-ng on Linux). Its network policy is controlled by that engine. '
-            'Speech stops at cue boundaries and may truncate lines that cannot fit; it does not change playback speed.'),
-          Text('Speech rate ${(SubtitleSpeechService.instance.rate * 100).round()}%'),
+          Text(copy.speechHelp),
+          Text(copy.speechRateValue(percent: (SubtitleSpeechService.instance.rate * 100).round())),
           Slider(value: SubtitleSpeechService.instance.rate, min: .1, max: 1,
             onChanged: (v) => update(() => SubtitleSpeechService.instance.rate = v)),
-          Text('Keep ${(SubtitleSpeechService.instance.duck * 100).round()}% of original audio while speaking'),
+          Text(copy.audioDuckValue(percent: (SubtitleSpeechService.instance.duck * 100).round())),
           Slider(value: SubtitleSpeechService.instance.duck, min: 0, max: 1,
             onChanged: (v) => update(() => SubtitleSpeechService.instance.duck = v)),
         ],
@@ -167,9 +170,7 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
           TextButton(onPressed: () => showSubtitleHdrControls(context, player,
             () => session.current && isSourceCurrent?.call() != false),
             child: Text(t.videoControls.subtitleHdr.open)),
-          const Text('Pause playback to export the visible native and app captions with the frame. '
-            'Known 8-bit SDR output produces PNG; HDR, wide-gamut, high-bit-depth or unknown color output '
-            'produces a ZIP with the untouched native frame, transparent sRGB caption layer and composition metadata.'),
+          Text(copy.exportFrameHelp),
           TextButton(onPressed: exportingPackage ? null : () async {
             update(() => exportingPackage = true);
             try {
@@ -181,15 +182,13 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
                 await File(path).writeAsBytes(capture.bytes, flush: true);
               }
             } catch (_) {
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Could not export the caption frame. Pause playback and use a native output matching the visible caption viewport.')));
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(copy.exportFrameFailed)));
             } finally { if (context.mounted) update(() => exportingPackage = false); }
-          }, child: const Text('Export paused frame with visible captions')),
+          }, child: Text(copy.exportFrame)),
         ],
         if (download != null) ...[
-          const Text('Saved download captions retain both reviewed lanes and their selected imported fonts in app storage. '
-            'They count toward download usage and are removed with your download. Restoring replaces the corresponding app lanes '
-            'and registers only fonts you previously chose. Native tracks stay selected until you turn them off.'),
+          Text(copy.savedDownloadHelp),
           TextButton(onPressed: exportingPackage ? null : () async {
             update(() => exportingPackage = true);
             try {
@@ -205,60 +204,59 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
                 if (track != null) SubtitleOverlayService.attach(player, lane, track, restoreAppearance: false);
               }
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(restored.every((track) => track == null)
-                  ? 'No captions were retained for this downloaded version and part.' : 'Saved download captions restored.')));
+                  ? copy.noRetainedCaptions : copy.restoredCaptions)));
             } catch (_) {
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Could not restore captions or their font. The saved copy has been retained.')));
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(copy.restoreFailed)));
             } finally { if (context.mounted) update(() => exportingPackage = false); }
-          }, child: const Text('Restore saved download captions')),
+          }, child: Text(copy.restoreDownload)),
           TextButton(onPressed: exportingPackage ? null : () async {
             update(() => exportingPackage = true);
             try {
               await SubtitleDownloadAssets.remove(download.globalKey, profileId: download.profileId);
               await onDownloadChanged?.call();
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Removed your saved captions for this download. Current playback is unchanged.')));
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.removedSavedCaptions)));
             } catch (_) {
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Could not remove the saved captions. Retry from this download.')));
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.removeSavedFailed)));
             } finally { if (context.mounted) update(() => exportingPackage = false); }
-          }, child: const Text('Remove saved captions from this download')),
+          }, child: Text(copy.removeSavedCaptions)),
         ],
-        const Text('Share the reviewed app overlays as a read-only second screen and receiver-compatible WebVTT links. '
-          'Only private-network peers with the secret link can read them. HTTP is unencrypted; use a trusted local network. '
-          'Playback URLs and credentials are never shared. App styling and authored layouts are flattened.'),
+        Text(copy.shareHelp),
         TextButton(onPressed: () async {
           final sharing = SubtitleHandoffService.instance;
           try {
             if (sharing.running) { await sharing.stop(); }
             else { await sharing.start(player, session.lanes.whereType<SubtitleOverlayTrack>().toList()); }
           } catch (_) {
-            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Subtitle sharing could not start on this network.')));
+            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.shareFailed)));
           }
           if (context.mounted) update(() {});
-        }, child: Text(SubtitleHandoffService.instance.running ? 'Stop sharing and revoke links' : 'Share both reviewed overlays on this network')),
+        }, child: Text(SubtitleHandoffService.instance.running ? copy.stopShare : copy.startShare)),
         for (final url in SubtitleHandoffService.instance.urls) ListTile(title: SelectableText(url),
-          trailing: IconButton(tooltip: 'Copy private subtitle link', icon: const Icon(Icons.copy),
+          trailing: IconButton(tooltip: copy.copyPrivateLink, icon: const Icon(Icons.copy),
             onPressed: () => Clipboard.setData(ClipboardData(text: url)))),
-        for (final track in SubtitleHandoffService.instance.trackUrls) ListTile(title: Text('WebVTT: ${track.title}'),
-          subtitle: SelectableText(track.url), trailing: IconButton(tooltip: 'Copy receiver subtitle URL', icon: const Icon(Icons.copy),
+        for (final track in SubtitleHandoffService.instance.trackUrls) ListTile(title: Text(copy.webVttTitle(title: track.title)),
+          subtitle: SelectableText(track.url), trailing: IconButton(tooltip: copy.copyReceiverUrl, icon: const Icon(Icons.copy),
             onPressed: () => Clipboard.setData(ClipboardData(text: track.url)))),
-        SwitchListTile(title: const Text('Cover burned captions in a bottom band'),
-          subtitle: const Text('Opaque cover on this screen only. It hides picture detail; it does not reconstruct the background or edit the video.'),
+        SwitchListTile(title: Text(copy.coverTitle),
+          subtitle: Text(copy.coverHelp),
           value: session.coverRegion != null, onChanged: (v) => change(() => session.coverRegion = v ? const Rect.fromLTWH(0, .8, 1, .2) : null)),
         if (session.coverRegion != null) Slider(value: session.coverRegion!.height, min: .05, max: .4,
           label: '${(session.coverRegion!.height * 100).round()}%', onChanged: (v) => change(() => session.coverRegion = Rect.fromLTWH(0, 1 - v, 1, v))),
-      ]))), actions: [TextButton(onPressed: () { change(() { session.lanes.fillRange(0, 2, null); session.coverRegion = null; }); }, child: const Text('Clear all')),
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Done'))]);
+      ]))), actions: [TextButton(onPressed: () { change(() { session.lanes.fillRange(0, 2, null); session.coverRegion = null; }); }, child: Text(copy.clearAll)),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(copy.done))]);
   }));
 }
 
 Future<bool> _confirmSnapshot(BuildContext context, int clipped, {required bool attach}) async =>
-  await showDialog<bool>(context: context, builder: (context) => AlertDialog(
-    title: Text(attach ? 'Use native caption rendering?' : 'Export corrected captions?'),
-    content: Text('This is a plain-text snapshot with the lane delay applied on the opened media part’s clock. '
-      'Fonts, positions, karaoke and future generated cues are not included. '
-      '${clipped > 0 ? "$clipped cues cross or precede this part and will be clipped or omitted. " : ""}'
-      '${attach ? "The native primary track is selected and this app overlay is removed. PiP visibility still depends on the native output path." : "The export contains future dialogue from this track."}'),
-    actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-      FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(attach ? 'Use native subtitles' : 'Export'))])) ?? false;
+  await showDialog<bool>(context: context, builder: (context) {
+    final t = Translations.of(context);
+    final copy = t.videoControls.subtitleOverlays;
+    return AlertDialog(
+      title: Text(attach ? copy.nativeConfirmTitle : copy.exportConfirmTitle),
+      content: Text('${copy.snapshotConfirmBody} '
+        '${clipped > 0 ? copy.clippingWarning(count: clipped) : ""} '
+        '${attach ? copy.nativeConfirmNote : copy.exportConfirmNote}'),
+      actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t.common.cancel)),
+        FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(attach ? copy.useNative : copy.exportAction))]);
+  }) ?? false;

@@ -1,12 +1,14 @@
 # TV visualization integration
 
-Status: Tizen PCM, EGL/texture host and optional artifact packaging source from
+Status: Tizen PCM, EGL/texture host and the initial artifact packaging source from
 closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) were merged
 through [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78). Those
 sources have not been compiled or run. webOS now has a separate, bounded
 SoLoud-owned audio route and native PCM/texture host source; the standard
 candidate-build source path builds and requires its MilkRust runtime bundle.
-Neither platform is release-qualified.
+The current continuation also builds and requires Tizen’s runtime bundle in the
+regular package workflow. Both cross-builds include target C++ for the vendored
+HLSL compiler. Neither platform is release-qualified.
 
 ## Tizen source implementation
 
@@ -60,9 +62,11 @@ in the app's license registry and corresponding source.
 
 ## Tizen artifact packaging
 
-`scripts/tizen/package.py build` accepts an optional `--visualizer-native`
-directory together with `--visualizer-manifest-sha256`. There is no default
-renderer download or implicit library discovery. The directory must contain:
+`scripts/tizen/package.py build` requires `--visualizer-native` together with
+`--visualizer-manifest-sha256`. The regular Tizen workflow first invokes
+`scripts/tizen/build_milkrust.py` using the selected Samsung CMake cross toolchain
+and its explicit C/C++/archive tools, sysroot and ABI flags. There is no implicit
+library discovery. The generated directory must contain:
 
 - `libmilkrust_native.so` for the selected TV ARM or emulator x64 target.
 - `milkrust-source.tar.gz` with its exact corresponding source.
@@ -70,10 +74,10 @@ renderer download or implicit library discovery. The directory must contain:
 - `milkrust-native.json` with `schemaVersion: 1`, `abi: 1`, `sourceRevision`
   matching `native/visualizer/sources.lock.json`, `target: tizen-arm` or
   `tizen-x64`, `librarySha256`, `sourceArchiveSha256`, `noticesSha256`,
-  `runnerPolicy: private-ephemeral-jit`, and the reviewed MilkRust Actions
-  `buildRun` URL.
+  `runnerPolicy: private-ephemeral-jit`, and a PlezyNG or MilkRust Actions `buildRun` URL.
 
-The manifest digest must come from independent artifact review. Staging checks
+The regular workflow passes the just-built manifest digest directly to staging;
+externally supplied bundles require independent artifact review. Staging checks
 all file digests, bounds and ELF architecture before copying. The package
 inspector rejects partial bundles, duplicate runtime locations and changed
 payloads. Source and notices accompany the runtime inside the TPK. These are

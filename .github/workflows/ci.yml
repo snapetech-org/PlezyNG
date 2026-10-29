@@ -715,11 +715,19 @@ jobs:
                               if "PlezyTorrent" in line or "XCFrameworkIntermediates" in line:
                                   print(f"{child}:{number}:{line[:240]}")
 
-          project = Path("ios/Pods/Pods.xcodeproj/project.pbxproj")
-          if project.is_file():
-              for number, line in enumerate(project.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
-                  if any(token in line for token in ("plezy_torrent", "PlezyTorrent", "Copy XCFrameworks")):
-                      print(f"pods_project:{number}:{line[:240]}")
+          for path in sorted((support / "Pods-Runner").glob("Pods-Runner-frameworks*")):
+              print(f"runner_framework_support_file={path}")
+              if path.is_file():
+                  for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                      if "plezy_torrent" in line or "PlezyTorrent" in line or "XCFrameworkIntermediates" in line:
+                          print(f"{path}:{number}:{line[:240]}")
+
+          for project_name in ("Runner", "Pods"):
+              project = Path(f"ios/{project_name}.xcodeproj/project.pbxproj")
+              if project.is_file():
+                  for number, line in enumerate(project.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                      if any(token in line for token in ("plezy_torrent", "PlezyTorrent", "Copy XCFrameworks")):
+                          print(f"{project_name}_project:{number}:{line[:240]}")
           PY
 
       - name: Install tvOS CocoaPods dependencies

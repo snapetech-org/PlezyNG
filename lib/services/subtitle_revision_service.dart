@@ -164,6 +164,7 @@ final class SubtitleRevision {
           (cueId != null && (cueId is! String || !RegExp(r'^[0-9a-f]{64}$').hasMatch(cueId))) ||
           text.length > SubtitleRetimer.maximumInputBytes ||
           index < 1 ||
+          index > SubtitleRetimer.maximumCueCount ||
           start < 0 ||
           end <= start ||
           end > SubtitleRetimer.maximumTimeMs) {
@@ -203,7 +204,7 @@ final class SubtitleRevision {
           text.length > 4096 ||
           confidence < 0 ||
           confidence > 1 ||
-          (cueIndex != null && ((cueIndex as int) < 1 || cueIndex > cues.length))) {
+          (cueIndex != null && (cueIndex as int) < 1)) {
         throw const FormatException('Subtitle revision word timing fields are invalid.');
       }
       final unit = SubtitleWordTimingUnit.values.where((candidate) => candidate.name == unitName);

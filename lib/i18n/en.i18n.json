@@ -1414,6 +1414,7 @@
       "playbackEnded": "Playback ended.",
       "title": "Delayed live / DVR playback",
       "description": "Choose how far behind the backend’s live edge to watch. This uses the available DVR buffer and its seek grid. It does not make future audio available to playback capture or guarantee captions arrive before dialogue.",
+      "readAheadClockHelp": "A fresh backend program clock is used when available. Otherwise, pause on a live frame with a known UTC program time; the next dialog records your anchor. Program alignment remains estimated.",
       "holdTitle": "Hold the requested DVR delay",
       "holdHelp": "May seek at most once every 30 seconds when drift exceeds the backend grid. Stops on manual seek, pause, speed, media, audio or profile changes. It does not decode future audio.",
       "holdingStatus": "Holding ${seconds} seconds behind live",

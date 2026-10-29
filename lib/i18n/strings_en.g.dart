@@ -12693,6 +12693,9 @@ class Translations$videoControls$subtitleLive$en {
 	/// en: 'Choose how far behind the backend’s live edge to watch. This uses the available DVR buffer and its seek grid. It does not make future audio available to playback capture or guarantee captions arrive before dialogue.'
 	String get description => 'Choose how far behind the backend’s live edge to watch. This uses the available DVR buffer and its seek grid. It does not make future audio available to playback capture or guarantee captions arrive before dialogue.';
 
+	/// en: 'A fresh backend program clock is used when available. Otherwise, pause on a live frame with a known UTC program time; the next dialog records your anchor. Program alignment remains estimated.'
+	String get readAheadClockHelp => 'A fresh backend program clock is used when available. Otherwise, pause on a live frame with a known UTC program time; the next dialog records your anchor. Program alignment remains estimated.';
+
 	/// en: 'Hold the requested DVR delay'
 	String get holdTitle => 'Hold the requested DVR delay';
 
@@ -16996,6 +16999,7 @@ extension on Translations {
 			'videoControls.subtitleLive.playbackEnded' => 'Playback ended.',
 			'videoControls.subtitleLive.title' => 'Delayed live / DVR playback',
 			'videoControls.subtitleLive.description' => 'Choose how far behind the backend’s live edge to watch. This uses the available DVR buffer and its seek grid. It does not make future audio available to playback capture or guarantee captions arrive before dialogue.',
+			'videoControls.subtitleLive.readAheadClockHelp' => 'A fresh backend program clock is used when available. Otherwise, pause on a live frame with a known UTC program time; the next dialog records your anchor. Program alignment remains estimated.',
 			'videoControls.subtitleLive.holdTitle' => 'Hold the requested DVR delay',
 			'videoControls.subtitleLive.holdHelp' => 'May seek at most once every 30 seconds when drift exceeds the backend grid. Stops on manual seek, pause, speed, media, audio or profile changes. It does not decode future audio.',
 			'videoControls.subtitleLive.holdingStatus' => ({required Object seconds}) => 'Holding ${seconds} seconds behind live',

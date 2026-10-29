@@ -661,6 +661,7 @@
     "videoControls.subtitleLive.pausedPosition",
     "videoControls.subtitleLive.playbackChanged",
     "videoControls.subtitleLive.playbackEnded",
+    "videoControls.subtitleLive.readAheadClockHelp",
     "videoControls.subtitleLive.requestedDelay",
     "videoControls.subtitleLive.returnLive",
     "videoControls.subtitleLive.stoppedClockUnavailable",

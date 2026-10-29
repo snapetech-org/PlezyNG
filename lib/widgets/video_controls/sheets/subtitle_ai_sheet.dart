@@ -1439,6 +1439,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _preparePlaybackCaptions() => _run(() async {
     final service = SubtitleReadAheadService.instance;
+    final liveCopy = Translations.of(context).videoControls.subtitleLive;
     if (service.running) { await service.stop(); return; }
     final input = TextEditingController(text: '0');
     final rendition = TextEditingController(text: '0');
@@ -1460,8 +1461,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         if (live) TextField(controller: rendition, keyboardType: TextInputType.number,
           decoration: const InputDecoration(labelText: 'Live audio rendition / representation ordinal (0–63)',
             helperText: 'Playlist order, independent of player IDs. Verify the spoken language.')),
-        if (live && widget.openReadAheadSource != null) const Text('Standalone analysis requires a paused frame '
-          'with a known UTC program time. The next dialog records that explicit anchor; it is not automatic clock detection.'),
+        if (live && widget.openReadAheadSource != null) Text(liveCopy.readAheadClockHelp),
       ]), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
         FilledButton(onPressed: () {
           final value = int.tryParse(input.text), variant = int.tryParse(rendition.text);

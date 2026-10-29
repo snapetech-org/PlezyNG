@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Ensure the vendored iOS, tvOS, and macOS torrent XCFrameworks have concrete CocoaPods targets, and inspect the generated iOS Pods project in CI diagnostics.
 - Fetch checksum-locked Windows native archives through verified Schannel curl on private JIT builds.
 - Materialize tvOS CocoaPods plugin symlinks from Flutter's resolved metadata so private runners use stable lockfile paths.
 - Create the Windows Vulkan runtime output directory before downloading the checksum-pinned runtime through verified Schannel curl.

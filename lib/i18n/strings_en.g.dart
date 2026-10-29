@@ -14045,6 +14045,9 @@ class Translations$videoControls$subtitleResearchReview$en {
 	/// en: 'Continue to caption review'
 	String get continueReview => 'Continue to caption review';
 
+
+  /// en: 'Microphone-array direction candidates'
+  String get soundLocalizationEvidence => 'Microphone-array direction candidates';
 }
 
 // Path: videoControls.subtitleReviewFlow
@@ -14719,6 +14722,72 @@ class Translations$videoControls$subtitleAiControls$en {
 	/// en: 'Removed cue ${index}: ${text}'
 	String removedCue({required Object index, required Object text}) => 'Removed cue ${index}: ${text}';
 
+
+  /// en: 'Review microphone-array calibration'
+  String get arrayCalibrationTitle => 'Review microphone-array calibration';
+
+  /// en: 'Use an original synchronized 4–8 channel PCM WAV, up to two minutes. Microphones must form a noncoplanar array, with measured positions, latency and polarity. Mixed, downmixed, denoised or independently recorded audio cannot establish physical direction here.'
+  String get arrayCalibrationInstructions => 'Use an original synchronized 4–8 channel PCM WAV, up to two minutes. Microphones must form a noncoplanar array, with measured positions, latency and polarity. Mixed, downmixed, denoised or independently recorded audio cannot establish physical direction here.';
+
+  /// en: 'Choose a PlezyNG array calibration with right/forward/up axes.'
+  String get arrayCalibrationSchemaError => 'Choose a PlezyNG array calibration with right/forward/up axes.';
+
+  /// en: 'Calibration requires 4–8 microphones and a sound speed of 300–380 m/s.'
+  String get arrayCalibrationGeometryError => 'Calibration requires 4–8 microphones and a sound speed of 300–380 m/s.';
+
+  /// en: 'Invalid microphone calibration.'
+  String get arrayCalibrationChannelError => 'Invalid microphone calibration.';
+
+  /// en: 'Each microphone needs three meter coordinates, latency within ±5000 µs, and polarity +1 or −1.'
+  String get arrayCalibrationPositionError => 'Each microphone needs three meter coordinates, latency within ±5000 µs, and polarity +1 or −1.';
+
+  /// en: 'Choose a calibration file no larger than 16 KiB.'
+  String get arrayCalibrationFileSizeError => 'Choose a calibration file no larger than 16 KiB.';
+
+  /// en: 'Calibration file changed while it was being opened.'
+  String get arrayCalibrationFileChangedError => 'Calibration file changed while it was being opened.';
+
+  /// en: 'Calibration bytes are unavailable or too large.'
+  String get arrayCalibrationFileBytesError => 'Calibration bytes are unavailable or too large.';
+
+  /// en: 'The calibration file is not valid JSON.'
+  String get arrayCalibrationInvalidJsonError => 'The calibration file is not valid JSON.';
+
+  /// en: 'Could not read this calibration file.'
+  String get arrayCalibrationReadError => 'Could not read this calibration file.';
+
+  /// en: 'Opening calibration…'
+  String get arrayCalibrationOpening => 'Opening calibration…';
+
+  /// en: 'Import calibration file'
+  String get arrayCalibrationImport => 'Import calibration file';
+
+  /// en: 'Sound speed: ${speed} m/s. Coordinates: x right, y forward, z up.'
+  String arraySoundSpeed({required Object speed}) => 'Sound speed: ${speed} m/s. Coordinates: x right, y forward, z up.';
+
+  /// en: 'Channel'
+  String get arrayChannel => 'Channel';
+
+  /// en: 'Position (m)'
+  String get arrayPosition => 'Position (m)';
+
+  /// en: 'Latency (µs)'
+  String get arrayLatency => 'Latency (µs)';
+
+  /// en: 'Polarity'
+  String get arrayPolarity => 'Polarity';
+
+  /// en: 'These channels are the original synchronized capture in the listed order.'
+  String get arrayRawOrderDeclaration => 'These channels are the original synchronized capture in the listed order.';
+
+  /// en: 'I have checked this calibration and the cue times against the uploaded WAV.'
+  String get arrayReviewDeclaration => 'I have checked this calibration and the cue times against the uploaded WAV.';
+
+  /// en: 'Results are unqualified array-relative direction candidates. They do not identify a person, a visible object or a world location. Cue text and timing remain unchanged.'
+  String get arrayResultCaveat => 'Results are unqualified array-relative direction candidates. They do not identify a person, a visible object or a world location. Cue text and timing remain unchanged.';
+
+  /// en: 'Use reviewed calibration'
+  String get arrayUseCalibration => 'Use reviewed calibration';
 }
 
 // Path: videoControls.subtitleLiveCapture
@@ -19134,6 +19203,7 @@ extension on Translations {
 			'videoControls.subtitleResearchReview.jobMeasurements' => 'Job-level measurements',
 			'videoControls.subtitleResearchReview.exportAction' => 'Export evidence JSON',
 			'videoControls.subtitleResearchReview.continueReview' => 'Continue to caption review',
+			'videoControls.subtitleResearchReview.soundLocalizationEvidence' => 'Microphone-array direction candidates',
 			'videoControls.subtitleReviewFlow.revisionIdentityRequired' => 'Revision history needs an active profile and media item.',
 			'videoControls.subtitleReviewFlow.revisionSaved' => ({required Object id}) => 'Saved revision ${id} to this device for this profile and media item.',
 			'videoControls.subtitleReviewFlow.revisionSaveFailed' => ({required Object error}) => 'Could not save this revision locally: ${error}',
@@ -19352,6 +19422,28 @@ extension on Translations {
 			'videoControls.subtitleAiControls.transformOperationLabel' => 'Caption transformations',
 			'videoControls.subtitleAiControls.transformationSummary' => ({required Object changed, required Object removed, required Object source}) => '${changed} cues changed; ${removed} cues removed. Original: ${source}.',
 			'videoControls.subtitleAiControls.removedCue' => ({required Object index, required Object text}) => 'Removed cue ${index}: ${text}',
+			'videoControls.subtitleAiControls.arrayCalibrationTitle' => 'Review microphone-array calibration',
+			'videoControls.subtitleAiControls.arrayCalibrationInstructions' => 'Use an original synchronized 4–8 channel PCM WAV, up to two minutes. Microphones must form a noncoplanar array, with measured positions, latency and polarity. Mixed, downmixed, denoised or independently recorded audio cannot establish physical direction here.',
+			'videoControls.subtitleAiControls.arrayCalibrationSchemaError' => 'Choose a PlezyNG array calibration with right/forward/up axes.',
+			'videoControls.subtitleAiControls.arrayCalibrationGeometryError' => 'Calibration requires 4–8 microphones and a sound speed of 300–380 m/s.',
+			'videoControls.subtitleAiControls.arrayCalibrationChannelError' => 'Invalid microphone calibration.',
+			'videoControls.subtitleAiControls.arrayCalibrationPositionError' => 'Each microphone needs three meter coordinates, latency within ±5000 µs, and polarity +1 or −1.',
+			'videoControls.subtitleAiControls.arrayCalibrationFileSizeError' => 'Choose a calibration file no larger than 16 KiB.',
+			'videoControls.subtitleAiControls.arrayCalibrationFileChangedError' => 'Calibration file changed while it was being opened.',
+			'videoControls.subtitleAiControls.arrayCalibrationFileBytesError' => 'Calibration bytes are unavailable or too large.',
+			'videoControls.subtitleAiControls.arrayCalibrationInvalidJsonError' => 'The calibration file is not valid JSON.',
+			'videoControls.subtitleAiControls.arrayCalibrationReadError' => 'Could not read this calibration file.',
+			'videoControls.subtitleAiControls.arrayCalibrationOpening' => 'Opening calibration…',
+			'videoControls.subtitleAiControls.arrayCalibrationImport' => 'Import calibration file',
+			'videoControls.subtitleAiControls.arraySoundSpeed' => ({required Object speed}) => 'Sound speed: ${speed} m/s. Coordinates: x right, y forward, z up.',
+			'videoControls.subtitleAiControls.arrayChannel' => 'Channel',
+			'videoControls.subtitleAiControls.arrayPosition' => 'Position (m)',
+			'videoControls.subtitleAiControls.arrayLatency' => 'Latency (µs)',
+			'videoControls.subtitleAiControls.arrayPolarity' => 'Polarity',
+			'videoControls.subtitleAiControls.arrayRawOrderDeclaration' => 'These channels are the original synchronized capture in the listed order.',
+			'videoControls.subtitleAiControls.arrayReviewDeclaration' => 'I have checked this calibration and the cue times against the uploaded WAV.',
+			'videoControls.subtitleAiControls.arrayResultCaveat' => 'Results are unqualified array-relative direction candidates. They do not identify a person, a visible object or a world location. Cue text and timing remain unchanged.',
+			'videoControls.subtitleAiControls.arrayUseCalibration' => 'Use reviewed calibration',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',

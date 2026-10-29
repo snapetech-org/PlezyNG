@@ -1867,7 +1867,8 @@
       "observationsCount": "${count} observations",
       "jobMeasurements": "Job-level measurements",
       "exportAction": "Export evidence JSON",
-      "continueReview": "Continue to caption review"
+      "continueReview": "Continue to caption review",
+      "soundLocalizationEvidence": "Microphone-array direction candidates"
     },
     "subtitleReviewFlow": {
       "revisionIdentityRequired": "Revision history needs an active profile and media item.",
@@ -2181,7 +2182,29 @@
       "previewTransformations": "Preview",
       "transformOperationLabel": "Caption transformations",
       "transformationSummary": "${changed} cues changed; ${removed} cues removed. Original: ${source}.",
-      "removedCue": "Removed cue ${index}: ${text}"
+      "removedCue": "Removed cue ${index}: ${text}",
+      "arrayCalibrationTitle": "Review microphone-array calibration",
+      "arrayCalibrationInstructions": "Use an original synchronized 4–8 channel PCM WAV, up to two minutes. Microphones must form a noncoplanar array, with measured positions, latency and polarity. Mixed, downmixed, denoised or independently recorded audio cannot establish physical direction here.",
+      "arrayCalibrationSchemaError": "Choose a PlezyNG array calibration with right/forward/up axes.",
+      "arrayCalibrationGeometryError": "Calibration requires 4–8 microphones and a sound speed of 300–380 m/s.",
+      "arrayCalibrationChannelError": "Invalid microphone calibration.",
+      "arrayCalibrationPositionError": "Each microphone needs three meter coordinates, latency within ±5000 µs, and polarity +1 or −1.",
+      "arrayCalibrationFileSizeError": "Choose a calibration file no larger than 16 KiB.",
+      "arrayCalibrationFileChangedError": "Calibration file changed while it was being opened.",
+      "arrayCalibrationFileBytesError": "Calibration bytes are unavailable or too large.",
+      "arrayCalibrationInvalidJsonError": "The calibration file is not valid JSON.",
+      "arrayCalibrationReadError": "Could not read this calibration file.",
+      "arrayCalibrationOpening": "Opening calibration…",
+      "arrayCalibrationImport": "Import calibration file",
+      "arraySoundSpeed": "Sound speed: ${speed} m/s. Coordinates: x right, y forward, z up.",
+      "arrayChannel": "Channel",
+      "arrayPosition": "Position (m)",
+      "arrayLatency": "Latency (µs)",
+      "arrayPolarity": "Polarity",
+      "arrayRawOrderDeclaration": "These channels are the original synchronized capture in the listed order.",
+      "arrayReviewDeclaration": "I have checked this calibration and the cue times against the uploaded WAV.",
+      "arrayResultCaveat": "Results are unqualified array-relative direction candidates. They do not identify a person, a visible object or a world location. Cue text and timing remain unchanged.",
+      "arrayUseCalibration": "Use reviewed calibration"
     }
   },
   "userStatus": {},

@@ -10,6 +10,7 @@ abstract interface class FilePickerDelegate {
     List<String>? allowedExtensions,
     bool allowMultiple = false,
     bool withData = false,
+    bool withReadStream = false,
   });
 
   Future<String?> getDirectoryPath({String? dialogTitle});
@@ -32,12 +33,14 @@ class _PluginFilePickerDelegate implements FilePickerDelegate {
     List<String>? allowedExtensions,
     bool allowMultiple = false,
     bool withData = false,
+    bool withReadStream = false,
   }) {
     return FilePicker.pickFiles(
       type: type,
       allowedExtensions: allowedExtensions,
       allowMultiple: allowMultiple,
       withData: withData,
+      withReadStream: withReadStream,
     );
   }
 
@@ -100,6 +103,7 @@ class FilePickerService {
     List<String>? allowedExtensions,
     bool allowMultiple = false,
     bool withData = false,
+    bool withReadStream = false,
   }) {
     return _guard(
       'pickFiles',
@@ -108,6 +112,7 @@ class FilePickerService {
         allowedExtensions: allowedExtensions,
         allowMultiple: allowMultiple,
         withData: withData,
+        withReadStream: withReadStream,
       ),
     );
   }

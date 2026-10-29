@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 30005)
+Total output lines: 689
+
 # PlezyNG subtitle implementation plan
 
 Prepared for Keith on October 28, 2026, UTC. The initial source audit is pinned to `snapetech-org/PlezyNG` main at `7c27c543aacd988258d6964c4b2046707a5b737c`; PR #53 opened against `8e24382c96deca0cd13e762e021ab80b95173fe8`. The implementation and requirements are updated against the live PR branch, which has merged main through `d6e5dad2dffa0c7fce351641972e62ffeb07fd83`. Source links preserve the initial audit context. Source presence is not device qualification; performance targets below are proposed acceptance gates, not measured results.
@@ -176,238 +179,11 @@ Cache keys include audio identity, source representation, model checksum, task/l
 | Live/DVR timestamp jumps | Segment-aware PTS mapping and epoch resets | A discontinuity is not a gradual drift to smooth over |
 | Audio device/render latency | Existing audio delay and presentation calibration | Never bake a Bluetooth/output-specific delay into a portable subtitle asset |
 
-Canonical timestamp mapping is `t_media = a × t_subtitle + b`. One anchor determines `b` with `a = 1`; two distinct anchors determine `a` and `b`. For example, if subtitle time 60 seconds belongs at media time 62 seconds and subtitle time 660 belongs at 662.6, then `a = 1.001` and `b = 1.94`. Transform both cue boundaries. Positive `b` delays display. Test actual mpv option composition before mapping this directly to `sub-speed` and `sub-delay`; exporting transformed timestamps is the portable reference implementation.
-
-Automatic procedure: validate track and audio identities; obtain bounded speech activity windows; remove obvious nonspeech subtitle events from the alignment signal without deleting them from the asset; fit global offset; inspect residuals across independent windows; try affine mapping; escalate to piecewise matching; optionally use ASR/forced alignment for ambiguous same-language sections. Evaluate a held-out window before proposing a correction. Do not treat a correlation coefficient as a calibrated probability.
-
-Use robust estimation, monotonic constraints, minimum anchor spacing, rate-change limits, and explicit unmapped spans. Permit discontinuous jumps for edited cuts, but prevent time reversal. Avoid forcing continuity across content that was removed. Keep a correction undo stack, user anchors, and a reset-to-original action. A low-confidence result must leave playback unchanged and offer manual anchoring or another subtitle release.
-
-For ASS, shifting event boundaries is straightforward; changing event duration can also affect karaoke syllables, animated transforms, fades, and movement timing. An affine or piecewise repair must transform relevant internal timing consistently, or mark that track as unsupported for full-fidelity retiming. For bitmap tracks, shift presentation events; font and wording changes require OCR or another source. Never convert a complex ASS script to SRT as a silent repair.
-
-# 6 Subtitle generation during and before playback
-
-**Yes: generate on the CPU, GPU, or a supported NPU.** The useful distinction is whether analysis has access to future audio.
-
-| Mode | Behavior | Product contract |
-| --- | --- | --- |
-| Prepare entire title | Background ASR, alignment, segmentation, optional translation and review | Most stable output; resumable; exported and reusable |
-| VOD read-ahead | Decode ahead of the playhead and maintain a caption buffer | Can display captions on time after a startup buffer if sustained throughput is sufficient |
-| True live | Consume only audio that has arrived | Captions necessarily trail speech; show provisional text only in the selected low-latency mode |
-| Delayed live | Hold video/audio playback behind the live edge by a user-selected amount | Trades live latency for stable, synchronized captions |
-| Companion processing | Stream bounded audio windows or grant narrow source access to a configured machine | Enables TV/low-power clients; includes network and queue latency |
-| On-demand repair | Regenerate a selected interval or fill a verified gap | Preserve existing human/edited lines outside that range |
-
-Whisper is a strong baseline, but its translation task is into English; it is not arbitrary language-to-language subtitle translation. `turbo` is not trained for translation. Use a separate translation stage for arbitrary targets. Streaming wrappers need overlap handling, context management, and stable-prefix commitment; WhisperStreaming is a useful design reference but its maintainers point to SimulStreaming as the successor. [W23] [W24]
-
-PR #53 integrates whisper.cpp through flutter_whisper_ggml for multilingual CPU transcription and optional desktop CUDA/Vulkan devices when the packaged native runtime includes them. CPU is the package default; explicit opt-in native build commands are in [BUILD-ACCELERATORS.md](BUILD-ACCELERATORS.md). It also integrates sherpa-onnx with an English Moonshine model for Core ML/QNN/RKNN provider requests and CPU retry. This is file-based processing only; a versioned native PCM streaming API, resource broker, measured execution placement, VOD read-ahead, and companion jobs remain follow-up engineering. Do not make a Python environment a mandatory mobile-client dependency. [W25] [W26] [W27]
-
-Generation stages: decode/resample; VAD; language detection with a user override; ASR; timestamp reconciliation; punctuation/casing; cue segmentation; optional word alignment; optional diarization; validation; renderer publication. Keep verbatim recognition separate from optional cleanup. A text model must not invent missing dialogue to improve fluency.
-
-Use overlapping audio windows and stable token/cue IDs. Distinguish partial, stable, and finalized results. Commit stable prefixes rather than replacing the whole screen on every decode. Finalized cues cannot change while being read without an explicit correction policy. Cancel obsolete windows on seek, prioritize the new playhead, and reuse valid cached ranges. On EOS, flush the trailing speech segment. On pause, allow bounded read-ahead or background completion according to policy.
-
-Control common failures: silence/music hallucination, repeated phrases, phantom credit lines, wrong language after a long silent intro, timestamp drift, duplicate overlap text, clipped last words, code-switching, profanity/name corruption, and speech drowned by effects. VAD plus language/task constraints and repetition checks reduce errors, but VAD is not proof of correctness. Low-confidence speech should be marked or left uncertain, not silently replaced with plausible dialogue.
-
-**ASR is not complete SDH.** Speaker names, sound descriptions, music identity, tone, and offscreen events require separate evidence. Anonymous diarization labels may be useful; do not infer a character's name solely from voice clustering. Existing authored SDH remains preferable when it is correct. Optional sound-event captions and visual speaker association belong in later, separately evaluated stages.
-
-## Proposed performance targets
-
-Targets have **moderate confidence as engineering goals** and **unknown confidence on unmeasured devices**. Measure warm and cold operation, not just a model's isolated throughput.
-
-| Metric | Initial acceptance target |
-| --- | --- |
-| VOD throughput | Sustained real-time factor no worse than 0.5 on a qualified 1× playback tier, leaving room for decoding and translation |
-| Faster playback | Require `RTF × playbackSpeed < 1`; target 0.5 or less for headroom, so 2× playback targets RTF ≤0.25 |
-| Caption buffer | Start with configurable 20–60 seconds read-ahead; bounded growth; never unbounded whole-file PCM storage |
-| Live draft | Aim for first useful partial text within 1.5–3 seconds of speech onset on a qualified streaming model/device |
-| Live finalization | Aim for p95 finalization within 5 seconds after utterance end for the declared language/content profile |
-| Synchronization repair | For accepted global-offset fixtures, recover injected offset within 100 ms; for realistic accepted dialogue anchors, target p95 error ≤250 ms and publish coverage/refusal rate |
-| Playback interference | No analysis-induced audio underruns in qualification runs; compare dropped frames against analysis-off baseline |
-| Backpressure | Never grow queues indefinitely; reduce work, switch to prepared mode, or report that the chosen quality cannot keep up |
-| Quality | Publish WER/CER, name/number errors, timing error, omissions, hallucinations, and language-specific results; no universal accuracy percentage |
-
-FFmpeg now documents a Whisper audio filter with GPU, queue, VAD, and structured-output options. It is a useful prototype/batch adapter, but its existence does not mean PlezyNG's pinned builds enable it. Do not put a blocking ASR filter in the audible playback chain. Prefer a separate worker and structured output; inspect the actual packaged build. [W28]
-
-# 7 Localization and translation
-
-Treat these as separate tasks: translate subtitle content, adapt writing for a region, render its script correctly, and localize PlezyNG's controls. Slang UI translation is already part of the application; it does not translate the video.
-
-Translate a trustworthy existing subtitle before generating a new transcript. Preserve source cue IDs, speakers, emphasis, forced/sign roles, names, numbers, and uncertainty. Join adjacent fragments into sentences for translation, then resegment using source timing and target-language reading limits. Do not demand one translated sentence per original cue when the language order makes that unnatural. Every derivative retains many-to-many source correspondence.
-
-Provide faithful/natural/literal-learning presets with conservative defaults. Optional regional vocabulary, spelling, formality, honorific handling, name transliteration, units, and glossaries should be explicit choices. Never silently change quantities, currency, plot details, speaker identity, or the censorship level. Keep a series glossary and translation memory keyed by language pair and revision; distinguish a user's correction from a model suggestion.
-
-Protect ASS tags, drawing commands, timestamps, placeholders, and markup from translation. Parse them structurally; do not rely on a regex that assumes every brace means plain text. Reject output with missing cue IDs, malformed structure, altered protected tokens, missing dialogue, or implausible expansion. Treat subtitle/model text as data, never executable tool instructions. A translation failure leaves the source track available.
-
-For local engines, evaluate packaged translation pairs such as Argos-compatible models and suitable multilingual text models. Choose a model only after per-pair quality and redistribution review; architecture and model-weight permissions are distinct. NLLB-200 is a useful research comparator, but its model card uses CC-BY-NC and describes research rather than production deployment, so it is not the default distributable choice. User-configured remote providers are optional adapters with explicit text/audio boundaries, quotas, cancellation, and caching. [W29] [W30]
-
-Implement Unicode shaping, bidirectional layout, combining marks, CJK line breaking, Thai segmentation, Arabic/Hebrew punctuation, font fallback, ruby/furigana where the format supports it, and script variants such as Simplified/Traditional Chinese. Reading-speed policies should be configurable by language and audience; an English characters-per-second rule is not universal. Dual-language alignment is temporal, not necessarily one row for one row.
-
-# 8 CPU GPU and NPU execution plan
-
-**Hardware priority — confidence high:** start with Keith's 9950X3D CPU and RX 9070 XT/RX 7900 XT GPUs, plus the M4 Mac as a separate Apple qualification target. The 9950X3D's CPU/iGPU capabilities must not be treated as a Ryzen AI NPU. AMD's current Radeon documentation covers both Radeon cards, but EndeavourOS is outside the cited official Radeon OS matrix; Vulkan is a sensible portable first target, with HIP separately qualified on the installed driver stack. [W31] [W32]
-
-| Work | CPU role | GPU role | NPU role |
-| --- | --- | --- | --- |
-| Parsing, selection, timing transforms | Preferred; cheap, deterministic | Usually unnecessary | Unnecessary |
-| Speech activity and coarse sync | Preferred baseline | Optional batch acceleration | Optional low-power VAD only when worth integration cost |
-| ASR | Quantized/native fallback and a useful desktop tier | Larger models and read-ahead throughput | Qualified encoder/full-pipeline portions depending on runtime |
-| Forced alignment and diarization | Small models, fallback | Higher throughput | Only after model/operator support is verified |
-| Translation | Small pair-specific models; orchestration | Larger contextual translation models | Fixed supported graphs; decoder loops may remain elsewhere |
-| Bitmap subtitle OCR | Small crops, Tesseract-style baseline | Batched OCR and preprocessing | Mobile OCR models where available |
-| Dialogue separation | Limited/slow fallback | Primary candidate for demanding separation | Model-specific experimental path |
-| Text rendering | Shape/layout and cue scheduling | Existing glyph/bitmap composition | No useful default role |
-| Scene-aware placement | Lightweight rules | Object/text/face detection | Efficient detector on supported devices |
-
-| Backend | Proposed use | Qualification requirements |
-| --- | --- | --- |
-| CPU native | Mandatory baseline; whisper.cpp, optimized resampling, VAD | Runtime-dispatched SIMD, bounded threads, no illegal instructions on older CPUs |
-| Vulkan | First portable Radeon route; also candidate on Intel/Android | Actual inference test, memory headroom, shader support, device loss, packaging |
-| HIP/ROCm | Optional Radeon high-performance route | Pin runtime/build/architecture; verify gfx1100 and gfx1201 targets; measure on actual OS |
-| CUDA | Optional NVIDIA and LAN RTX 3060 backend | Separate dependency package; faster-whisper or whisper.cpp; exact model/precision measured |
-| Metal | Apple GPU baseline | Unified-memory pressure, thermal behavior, foreground playback coexistence |
-| Core ML/ANE | Apple-specific acceleration | Determine actual execution placement; unsupported operations may fall back. Evaluate WhisperKit/Argmax separately from whisper.cpp's encoder route. [W33] |
-| OpenVINO | Intel CPU/GPU/NPU adapter | Current GenAI docs include Whisper NPU support; pin model export/runtime/driver and test actual device. [W34] |
-| QNN/HTP | Qualcomm Android and Windows ARM NPU | Compatible SoC, quantized graph, supported operators, context binaries, and measured partitioning. [W35] |
-| AMD Ryzen AI | Future supported Ryzen AI devices | AMD documents Windows encoder offload for Ryzen AI 300; do not claim Linux Whisper NPU support from unrelated Linux runtime support. [W36] |
-| DirectML or platform ML dispatch | Optional Windows GPU/platform adapter | Do not label DirectML as universal NPU access; select an actual execution provider |
-| Other vendor NPUs | Rockchip/Ascend/MediaTek/Samsung and similar experimental adapters | Vendor SDK, exact models/operators, packaging, and on-device measurements required |
-| Companion service | Weak TVs, handhelds, remote sources, large offline jobs | Authenticated pairing, bounded data transfer, job isolation, resumability, latency and availability |
-| Browser WebGPU/WASM | Future web-client or standalone-tool path | Separate platform project; not implied by current native Flutter support |
-
-The resource broker chooses by measured end-to-end latency, quality, power, and available memory. Do not rank NPU above GPU above CPU by name. Record actual device placement, including mixed execution. A model that loads on an NPU but spends its decoder on CPU is a mixed backend.
-
-For Keith's two-Radeon desktop, benchmark one card for playback and the other for ASR/translation. Small PCM transfers make independent workers more practical than splitting a small speech model across two GPUs. Assign by stable device identity, not a driver enumeration index. On the M4, compare CPU, Metal, and Core ML under simultaneous playback. On Steam Deck and mobile, favor battery-aware small models or companion/prepared output. No device-specific speedup is claimed before measurement.
-
-Budget priorities: audio/video deadlines first; subtitle display next; live ASR and necessary translation next; look-ahead and offline work last. If overloaded, reduce background concurrency/look-ahead, then select a smaller qualified model or companion, and finally offer preparation before playback. Do not silently disable existing motion/DV features or lower caption quality; show the effective state and allow preference-based tradeoffs.
-
-# 9 Full feature catalogue
-
-All entries below are target requirements unless explicitly marked Existing. Existing behavior still needs regression coverage. M0–M9 identify the dependency-aware work packages in section 11. Each row is a bounded requirement that Luna can track independently.
-
-## Selection discovery and everyday controls
-
-| ID | Requirement and acceptance condition | Work package |
-| --- | --- | --- |
-| Q01 | Existing primary/secondary selection survives migration, including explicit Off and episode transitions. | M0 |
-| Q02 | MPV-capable track sheets now show a per-row secondary subtitle action with accessible tooltips; the existing long-press/right-click shortcut remains. Selecting the primary track as secondary is disabled, and Off exposes a direct secondary-clear action. Other backends still hide the action. | M1 |
-| Q03 | Server and standalone provider result rows now show mapped language/script where available, format, provider, and forced/SDH role beside the display title. Playback labels recognize explicit SDH/CC/HoH title markers; app-generated, translated, and synchronized tracks now carry descriptive names. Other provider/native tracks still lack structured origin metadata in some contracts, and full-vs-forced labels remain open. | M1 |
-| Q04 | Standalone OpenSubtitles SRT/VTT/ASS/SSA downloads now show a bounded preview of up to 12 actual cue start times and text lines before apply. Non-text/bitmap candidates and server-library downloads remain unpreviewed; they need format-aware previews and server-side asset access. This code is not test-verified or device-qualified. | M2 |
-| Q05 | Rank exact content/release matches, language and role correctly; distinguish a provider score from verified sync quality. PR #53 uses a size-verified local/cached OpenSubtitles moviehash when available and ranks provider hash matches first; filename-only and remote-source results remain less certain. | M2 |
-| Q06 | PR #53 remembers up to 256 rejected provider-revision fingerprints for 180 days on this device, scoped to the server item/media index or standalone movie hash/title identifiers. Server and standalone search can hide or restore results; automatic preferred-language downloads skip rejected server revisions. Cross-device sync remains open. | M2 |
-| Q07 | Existing automatic preferred-language download honors explicit Off and server intent; add cancel/retry and bounded startup behavior. | M1 |
-| Q08 | Import through the existing picker on every player platform; accept drag/drop on Windows, Linux, macOS, and Android; receive Android SEND/SEND_MULTIPLE subtitle and ZIP/TAR shares into a bounded app-managed pending queue; stage dropped files before granting access expires; offer pending shares in the track sheet. Shared/drop files are filtered by the active backend, and IDX/SUB pairs are selected together. iOS, tvOS, Tizen, webOS, and browser use the existing in-app picker; direct OS share targets are not wired there. This path is not device-qualified. | M2 |
-| Q09 | Support separate subtitle roots and source-relative discovery without moving originals. | M2 |
-| Q10 | PR #53 adds bounded ZIP, plain TAR, and gzip-compressed TAR scanning for backend-supported subtitle entries. ZIP rejects symlinks, absolute/traversal/duplicate paths and caps compressed input at 50 MiB, member data at 64 MiB, entries at 4096, and each member at 32 MiB. Gzip TAR expansion is capped at 64 MiB of member data plus bounded TAR headers/padding. TAR verifies checksums and two-block termination, rejects links, special files, PAX/GNU extensions, base-256 numbers, unsafe/duplicate paths, and applies the same entry and expanded-data limits. Only the chosen entry (paired IDX/SUB as a set) is materialized under a generated temporary path. Direct IDX import now requires a non-empty matching SUB in the same folder and enforces the existing per-file and combined size limits before MPV load; native path access is still device-dependent. 7z support, test verification, and device qualification remain open; parse/import failures surface the existing subtitle-load error. | M2 |
-| Q11 | The bounded cue parser and corrected export now read UTF-8, UTF-8 BOM, and BOM-marked UTF-16LE/BE, preserving the detected encoding/BOM and line endings in exported copies. Legacy code pages still need an explicit encoding-preview choice; imported originals remain unchanged. | M1 |
-| Q12 | Refresh/retry missing or expired sidecars through the owning source transport. | M2 |
-| Q13 | Library episode navigation preserves the selected subtitle's language, forced status, and explicit SDH/CC title-marker class; unmatched caption classes decline to the existing server fallback, and older saved show preferences infer the class from their title. Cross-item intents reject conflicting BCP-47 script subtags when both tracks declare one. A device-local ordered language list (up to 12 languages) now follows the server profile language during automatic selection, always-show fallback, and preferred subtitle downloads (an existing match is used when present; otherwise the top three ordered languages are searched in parallel under an eight-second per-language cap, and the highest-priority language with a valid non-rejected result is fetched). Explicit role toggles and per-title exceptions remain open. | M1 |
-| Q14 | Keep secondary choices local when servers expose only one selected subtitle; no accidental server overwrite. | M1 |
-| Q15 | Standalone MPV VOD with a persistent SRT/VTT/ASS/SSA subtitle supports copying visible cue text, previous/next cue seeks, and adjustable replay preroll. Main-library primary/secondary cue replay now uses a persisted 0–2500 ms lead-in. Non-seekable/live sources remain capability-limited. This code is not test-verified or device-qualified. | M3 |
-| Q16 | Offer subtitle-on-mute and temporary replay captions with reliable restoration of the previous selection. The main library player adds an opt-in mute setting: it resolves a subtitle through the existing selection policy, then current profile/audio language, default, or first available non-forced track; the opt-in temporarily overrides the prior Off choice without changing the saved show/server preference, while server-burned captions are left untouched. It restores the prior native selection only while the same item/player remains active and the viewer has not changed tracks. Hidden-state changes restore on unmute, and selection retries when native tracks arrive after the initial mute event. Standalone source video now has a mute control using the same opt-in; it first follows the ordered device subtitle languages with ISO/region-aware matching, then selects a default, first non-forced, then first available track and restores only when the player, file, and temporary selection still match. Source playback has no server profile language or current audio-language resolver. Replay for persistent standalone MPV text files is covered under Q15. TrackSheet now offers replay for the active embedded or server-library text cue when the MPV backend exposes sub-text/sub-start/sub-end (and secondary-sub-* properties); it seeks to cue start with a 500 ms preroll without changing selection or play/pause state. Bitmap cues and ExoPlayer/Tizen/webOS paths that do not expose cue timing remain unavailable. These additions are not test-verified or device-qualified. | M3 |
-| Q17 | The player exposes configurable subtitle visibility and next-track shortcuts with feedback, plus 50 ms timing steps and a focusable reset in the sync control. This branch adds a configurable reset shortcut (Ctrl+Alt+Z by default) that records zero through the existing scoped persistence and feedback path. Keyboard reset is covered; a dedicated D-pad shortcut or quick tile remains open. | M1 |
-| Q18 | The AI review explains whether server upload is unavailable because output language is unknown or the result is not tied to an active library item. It now also explains that burned-in captions remain part of the video image and a generated track cannot erase them. On backends without local SRT attachment, the subtitle sheet explains why AI output cannot be attached and which capability is needed. | M1 |
-
-## Timing and repair
-
-| ID | Requirement and acceptance condition | Work package |
-| --- | --- | --- |
-| S01 | Existing manual delay retains 50 ms granularity, scope behavior, rollback on failed writes, and correct displayed value. | M0 |
-| S02 | Primary and secondary delays are independent; changing one leaves the other unchanged. | M1 |
-| S03 | Extend timing range through deliberate advanced entry; no arbitrary short slider becomes the data-model limit. Exact signed millisecond entry and MPV cue-step correction are implemented in this branch. The player applies bounded two-anchor text-subtitle rate/delay calibration with current-playhead capture, scoped persistence, noncommitting preview, cancel rollback, and one-step undo. Standalone MPV OpenSubtitles assets also retain that correction per selected audio stream. | M1 |
-| S04 | The branch adds bounded SRT/VTT/ASS/SSA cue parsing and a standalone MPV VOD one-anchor align-this-line-now picker. It scrolls to the cue nearest the current corrected playhead; selecting a cue binds its start to the playback position at selection and persists the resulting delay for that audio and subtitle asset. This code has not been test-verified or device-qualified; main-library playback and other backends remain open. | M2 |
-| S05 | MPV text subtitles support bounded two-anchor affine calibration with scoped persistence, live preview, cancel rollback, and one-step undo. Standalone MPV VOD also supports a one-cue correction and corrected SRT/VTT copies. Piecewise cut mapping and persistent calibration history remain. | M2 |
-| S06 | PR #53 aligns a selected same-language subtitle against ASR cues from a user-selected WAV, using bounded monotonic text matching and confidence refusal. It does not capture or extract the active player's selected audio. | M3 |
-| S07 | Automatic drift detection compares multiple windows before applying a rate correction. | M3 |
-| S08 | PR #53 estimates piecewise timing offsets from ASR/text-match discontinuities and reports match/discontinuity counts. It does not guarantee edit detection, identify release fingerprints, or yet return unmatched-span maps. | M7 |
-| S09 | The AI subtitle sheet can synchronize or repair cuts in a target SRT/VTT/ASS/SSA against a same- or cross-language reference without transcribing audio. Cross-language matching locally translates the target cue text into the selected reference language, then preserves the original wording while applying bounded matched timing. Match confidence is shown; translation quality and reference suitability remain viewer responsibilities. Source imports and cue matching stay bounded, and output is a separate SRT derivative. Automatic release-cut identification remains open. | M3 |
-| S10 | Forced alignment is restricted to matching spoken-language transcripts and returns unsupported/uncertain regions. | M5 |
-| S11 | Standalone MPV OpenSubtitles corrections persist by profile, edition, source-file fingerprint, subtitle digest, and selected audio descriptor; v1 manifests migrate with neutral timing. Main-library corrections remain title-scoped pending edition/audio/subtitle identity support. | M2 |
-| S12 | Preview, undo, reset, one-cue alignment, two-anchor calibration, and corrected SRT/VTT plus simple ASS/SSA export are implemented for standalone MPV VOD imported assets. Export applies the active per-audio delay/rate; cues wholly before time zero require confirmation before omission. ASS/SSA timed karaoke, animation tags, and non-empty Effect fields are refused instead of damaged; ASS event times quantize to centiseconds. Bitmap export, structured provenance, and broader server-library export remain. Original imported assets remain immutable. | M2 |
-| S13 | Explicit FPS conversion is tested with 23.976/24/25 cases and does not treat VFR as a blanket error. | M2 |
-| S14 | Multipart, transcode starts, ads, discontinuities, and DVR seeks retain correct source-time mapping. | M3 |
-| S15 | Sparse forced/sign tracks are not forcibly matched to every spoken segment. | M3 |
-| S16 | Output-device latency remains a device/session correction rather than a subtitle-file edit. | M1 |
-| S17 | Standalone MPV export retimes simple ASS/SSA Dialogue start/end values while preserving other fields and payload. It explicitly refuses timed karaoke/animation tags and non-empty Effect fields; centisecond timestamp precision may round millisecond corrections. Bitmap export remains unsupported. This code has not been test-verified or device-qualified. | M7 |
-| S18 | Show correction quality as measured coverage and residuals, with an understandable uncertain-result state. | M3 |
-
-## Translation and localization
-
-| ID | Requirement and acceptance condition | Work package |
-| --- | --- | --- |
-| L01 | PR #53 translates existing SRT/VTT/ASS/SSA cues through on-device ML Kit on eligible Android/iOS phones/tablets or optional local Argos Translate on desktop. It preserves timing/markup in a separate SRT; spoken-audio-to-English is available through Whisper. Profile and optional series-scoped glossaries plus bilingual output are available. The review pairs original/output text, validates cue count/times, and supports searchable full-track edits. Revision JSON now keeps stable SHA-256 cue IDs through translation and retiming; plain SRT cannot carry them. Independent track appearance and provider placement remain open. | M5 |
-| L02 | Generate or capture a source transcript once, then translate its timed cues into multiple subtitle languages without rerunning ASR; each derived track preserves speech timing, goes through the normal review flow, and remains a separate revision. Transcript-language uncertainty or unsupported translation pairs are reported before attachment. | M5 |
-| L03 | Optional bilingual SRT output places source and translation on separate lines within each cue, sharing timing; independent track appearance remains open. | M5 |
-| L04 | Support faithful, natural, and literal-learning modes with explicit selection. | M5 |
-| L05 | The translation sheet loads and saves a bounded glossary per profile and language pair (up to 16 pairs per profile); optional series overrides inherit the profile glossary, save independently per series, and are bounded to 32 series / 16 pairs per series within a 1 MiB profile cap. Markup placeholders protect whole terms in both translation backends, are capped at 5 MiB expansion, and reject missing or duplicated markers. Changed non-empty glossary versions are retained in a separate 1 MiB history (10 revisions per scope, 128 scopes); viewers can load an older version into the editor before choosing to save or translate with it. | M5 |
-| L06 | Region/script conversion is explicit and separately recorded from semantic translation. | M5 |
-| L07 | Preserve quantities, names, speaker cues, tags, and intentional profanity unless a chosen transformation says otherwise. | M5 |
-| L08 | Reconstruct sentence context and resegment translated output to target-language reading limits. | M5 |
-| L09 | Translation outputs are separate SRT derivatives; protected glossary markers must survive exactly once or the operation fails without replacing the source, and generated placeholder expansion is capped at 5 MiB. Translation verifies cue identity, count, and exact start/end timing against the source before review, then presents original/output text by cue position. Cross-language sync maps aligned times back by stable cue ID, so a sort cannot assign another cue's time. Revision JSON retains cue IDs and word-timing references; importing a plain SRT derives new IDs because SRT has no standard persistent cue identifier. Full semantic correspondence validation remains open. | M5 |
-| L10 | Support code-switching and per-span language labels without repeatedly flipping the whole track's language. | M6 |
-| L11 | Make dub-matched captions a separate choice from translated original dialogue. | M5 |
-| L12 | Store corrections and translation memory with model/glossary/revision identity. | M5 |
-| L13 | Translate forced signs separately and preserve their screen roles/positions where supported. | M7 |
-| L14 | Support local models, configured companion models, and optional authenticated remote providers. | M5 |
-| L15 | Provide per-language font fallback, bidi shaping, line breaking, punctuation, and script QA. | M1–M6 |
-| L16 | Before attachment, generated/translated/synchronized SRT results show a bounded first/middle/end cue sample; viewers can edit any cue in a searchable full-track editor, including cue text and millisecond times, save the reviewed result as a separate SRT or versioned cue JSON without attaching it or changing the source, or discard without replacing the active track. Translations show the original/output text pair and reject changed cue identity, cue count, or timestamps. Versioned cue JSON v3 carries stable cue IDs and cue-linked word timings; editing a cue omits its stale word spans and marks timing availability as partial or omitted. A bounded 100-edit undo stack works across the sample and full editors. Translation review flags up to 100 cue-specific glossary or source-number mismatches before attachment; broader terminology QA and multi-revision export remain open. | M7 |
-| L17 | Supported mobile ML Kit source/target models can be explicitly prepared for offline translation before choosing a subtitle; the same pair downloads on demand during translation. Desktop Argos packages and available language pairs remain user-installed and externally managed. | M5 |
-| L18 | UI copy uses existing Slang conventions and accessible labels; content translation does not change interface locale. | M1 |
-
-## Speech generation and analysis
-
-| ID | Requirement and acceptance condition | Work package |
-| --- | --- | --- |
-| A01 | PR #53 produces timed cues from a matching WAV with multilingual whisper.cpp CPU inference, and supports opt-in rolling Android ExoPlayer VOD capture from decoded PCM. Tizen source cross-compiles the same Whisper bridge for CPU and connects its native decoded-PCM callback; webOS source packages the CPU bridge for WAV-only transcription. Both TV builds and qualification are pending. Whisper can translate WAV speech into English. The English-only Sherpa Moonshine path supports Core ML/QNN/RKNN requests. | M4 |
-| A02 | VOD read-ahead emits a bounded cue stream and reprioritizes after seeks. | M4 |
-| A03 | Android ExoPlayer VOD and Tizen native C player builds expose rolling, delayed CPU captions from decoded PCM where their export APIs accept the active codec and route. Windows/Linux MPV source can request a compiled desktop GPU for rolling Whisper windows with CPU fallback, but the packaged MPV libraries still need the ordered-read extension. Tizen PCM and both TV Whisper package paths are in source but not built or TV-qualified. True-live broadcast generation with draft/stable/final states and latency guarantees remains open; Apple and webOS playback do not expose audio to this workflow, and browser playback is not implemented. | M6 |
-| A04 | Delayed-live mode holds playback with explicit latency selection and DVR-window handling. | M6 |
-| A05 | Whisper auto-detects by default and now accepts an optional language override for WAV and Android ExoPlayer PCM capture; the requested language is carried into results when recognition does not report one, and the selection is saved per profile. Persistent uncertainty/confidence policy and language-specific model selection remain open. | M4 |
-| A06 | Sherpa's Moonshine path uses Silero VAD; Whisper configures a no-speech threshold. Fixture-based silence/music/repetition qualification remains open. | M4 |
-| A07 | Chunk overlap deduplicates words/cues and flushes final speech at EOS. | M4 |
-| A08 | Apply punctuation/casing and readable segmentation without unmarked content rewriting. | M4 |
-| A09 | Whisper CPU/desktop GPU WAV transcription and Android ExoPlayer live capture request token timestamps and export cue-linked word/token records with mean token probability. Whitespace-delimited language segments are grouped into words; segments without reliable separators retain token spans instead of invented word boundaries. Moonshine accelerator requests do not return word timings. Whisper probabilities are not calibrated confidence. | M4–M6 |
-| A10 | Optional anonymous diarization is evaluated for overlap and speaker changes; names require evidence/user mapping. | M7 |
-| A11 | Alternate audio tracks have distinct analysis identities; no transcript from the previous dub leaks through. | M4 |
-| A12 | Keep passthrough playback intact while using a separate analysis decoder when necessary. | M4 |
-| A13 | Generate only a selected interval or fill confirmed missing-caption gaps. | M7 |
-| A14 | Audio-only media/audiobooks can expose a transcript using the same source clock and asset store. | M8 |
-| A15 | Background queue supports pause/resume/checkpoints, idle/charging policy, and useful cancellation. | M4 |
-| A16 | Improve noisy speech with optional preprocessing/separation and show the selected method. | M7 |
-| A17 | Context vocabulary/name hints are bounded and tested for hallucination amplification. | M5 |
-| A18 | Models expose real language/task/precision/backend support, not a generic all-languages label. | M4 |
-| A19 | Human/edited captions retain preference over generated replacements unless explicitly changed. | M4 |
-| A20 | Generated sound/music captions are separate from dialogue ASR and retain uncertainty/provenance. | M9 |
-
-## Rendering formats and accessibility
-
-| ID | Requirement and acceptance condition | Work package |
-| --- | --- | --- |
-| R01 | Preserve SRT/VTT/ASS/SSA and embedded/sidecar paths already supported by each engine. | M0 |
-| R02 | Qualify mov_text, TTML/DFXP/IMSC, SAMI, MicroDVD, DVB, teletext, CEA-608/708 and other formats individually; convert when appropriate. | M8 |
-| R03 | Preserve simultaneous cues, layers, positions, signs, and dialogue overlap. | M1 |
-| R04 | Keep authored ASS drawings, fonts, karaoke, animation, and typesetting in the native renderer. | M1 |
-| R05 | Distinguish PGS/VobSub bitmap movement/scaling from text font styling. | M1 |
-| R06 | Offer independent primary/secondary font, color, outline, background, margins, alignment, and position where supported. | M6 |
-| R07 | Share all appearance settings with the in-player preview rather than duplicating preference logic. | M1 |
-| R08 | Provide screen/video anchoring, safe area, zoom/crop, letterbox, and overscan-aware placement. | M1 |
-| R09 | Subtitle luminance remains readable in SDR/HDR without searing white; qualify actual output paths. | M6 |
-| R10 | Avoid collisions between tracks, player chrome, and authored signs without continuously jumping text. | M6 |
-| R11 | Dynamic face/object-aware placement is optional, stable, reversible, and never overrides authored layouts silently. | M9 |
-| R12 | PiP preserves supported caption paths and clearly identifies unsupported overlay modes. | M6 |
-| R13 | Screen-reader controls, D-pad focus, keyboard actions, large text, contrast, and reduced motion all work. | M1 |
-| R14 | Closed-caption services and roll-up/pop-on/paint-on behavior are preserved when those formats are supported. | M8 |
-| R15 | Hot reload/import errors cannot corrupt selection or leave duplicate rendered tracks. | M2 |
-| R16 | Caption rendering remains correct during speed changes, frame stepping, rotation, window resize, and video-output changes. | M6 |
-
-## Learning editing and personal viewing
-
-| ID | Requirement and acceptance condition | Work package |
-| --- | --- | --- |
-| X01 | Android ExoPlayer watched-portion transcripts are searchable and virtualized; selecting a cue seeks to its source start, and an optional filter hides dialogue after the current playhead. Captured portions remain session-only until explicitly saved; saved transcript cues and available word timings enter the bounded, device-local revision history for stable server-library or standalone-source identities and can be selected for later same-item or cross-provider sync, cross-language alignment, cut repair, or translation into multiple subtitle languages when the transcript language is known. A profile-scoped local index lists up to 100 recent transcript revisions across 2000 scanned items, supports title/source/language search, and stores no raw provider or item IDs in its index. | M3 |
-| X02 | Copy/select text and dictionary lookup operate on text-backed cues; bitmap tracks offer OCR explicitly. | M7 |
+Canonical timestamp mapping is `t_media = a × t_subtitle + b`. One anchor determines `b` with `a = 1`; two distinct anchors determine `a` and `b`. For example, if subtitle time 60 seconds belongs at media time 62 seconds and subtitle time 660 belongs at 662.6, then `a = 1.001` and `b = 1.94`. Transform both cue boundaries. Positive `b` delays display. Test actual mpv option composition before mapping this directly to `sub-speed` and `sub-delay`; exporting transformed timestamps is the portable reference imple…10005 tokens truncated…offer OCR explicitly. | M7 |
 | X03 | Replay current line, auto-pause, sentence loops, and adjustable gaps work with remote and keyboard. | M7 |
 | X04 | Save vocabulary/bookmarks with source attribution and optional flashcard export. | M8 |
 | X05 | Optional transliteration/ruby/furigana is a distinct derived display, not a rewritten original. | M8 |
-| X06 | The full-track cue editor validates text/time changes and keeps a bounded 100-edit undo stack for the active review dialog. When a reviewed result is exported or attached, up to the 11 most recent pre-edit snapshots are saved as device-local checkpoints alongside the final revision; checkpoints and accepted revisions share a 12-entry, 24 MiB per-item, 256 MiB/1000-file global bound and can be restored, exported, or deleted from revision history. Revision JSON stores stable cue IDs and cue-linked word timings. Server-library history uses profile/item identity; standalone MPV source history uses source-profile/item/file-fingerprint identity. Discarded drafts are not persisted. Draft command stacks remain session-only and history does not sync across devices; plain SRT export cannot carry cue IDs, and restoring a checkpoint adds an external track without replacing the source subtitle. | M7 |
+| X06 | The full-track cue editor validates text/time changes and keeps a bounded 100-edit undo stack for the active review dialog. When a reviewed result is exported or attached, up to the 11 most recent pre-edit snapshots are saved as device-local checkpoints alongside the final revision; checkpoints and accepted revisions share a 12-entry, 24 MiB per-item, 256 MiB/1000-file global bound and can be restored, exported, or deleted from revision history. Versioned revision JSON can be exported and imported across devices with stable cue IDs and cue-linked word timings retained; imports are size-bounded and saved under the current local item identity. Server-library history uses profile/item identity; standalone MPV source history uses source-profile/item/file-fingerprint identity. Discarded drafts are not persisted. Draft command stacks remain session-only and history does not sync across devices; plain SRT export cannot carry cue IDs, and restoring a checkpoint adds an external track without replacing the source subtitle. | M7 |
 | X07 | Waveform/spectrogram and anchor editing are available in an advanced editor. | M7 |
 | X08 | Reflow, line breaks, spell checks, and common-error repair are previewable operations. | M7 |
 | X09 | Optional removal of SDH descriptions, song lines, or identifiable subtitle ads never mutates the original or defaults on for accessibility users. | M7 |
@@ -423,7 +199,7 @@ All entries below are target requirements unless explicitly marked Existing. Exi
 | --- | --- | --- |
 | O01 | Imported OpenSubtitles originals are immutable and content-addressed; manifests use staged replacement and backup recovery. Corrected SRT/VTT and safe simple ASS/SSA copies are exportable; richer derived revisions remain open. | M2 |
 | O02 | Upload bounded user-selected SRT/VTT/ASS/SSA files to Plex, Jellyfin, and Emby library items; MediaBrowser metadata is explicit while Plex uses its supported title/format upload fields. AI-generated, translated, and audio-aligned SRT results offer server upload when the active library item and a validated language code are known, then attach locally; persistent standalone MPV source items can save a local sidecar and attach it to playback. Server permissions control library writes. Provider-side source uploads and cross-device distribution remain open. This path is not test-verified or device-qualified. | M2 |
-| O03 | Standalone MPV VOD exports corrected SRT/VTT and simple ASS/SSA copies with clipping confirmation. AI-reviewed generated/translated/synchronized cues and explicitly saved watched-portion transcripts can be retained in device-local history for active server library items and persistent standalone source items. Source histories are keyed by source profile, item, and media-file fingerprint. Up to 12 checkpoints/revisions per item are kept within a 24 MiB per-item and 256 MiB/1000-file global bound; history can be restored, re-attached, exported, or deleted and does not sync across devices. Revision JSON retains stable cue IDs, cue indices, times, operation/language, and available Whisper timings linked to their cue IDs. Draft command undo remains session-only; plain SRT exports cannot preserve IDs, and timed ASS/SSA effects, bitmap formats, and cross-platform server-library export remain unsupported. | M4 |
+| O03 | Standalone MPV VOD exports corrected SRT/VTT and simple ASS/SSA copies with clipping confirmation. AI-reviewed generated/translated/synchronized cues and explicitly saved watched-portion transcripts can be retained in device-local history for active server library items and persistent standalone source items. Source histories are keyed by source profile, item, and media-file fingerprint. Up to 12 checkpoints/revisions per item are kept within a 24 MiB per-item and 256 MiB/1000-file global bound; history can be restored, re-attached, exported, imported from versioned JSON, or deleted and does not sync across devices. Revision JSON retains stable cue IDs, cue indices, times, operation/language, and available Whisper timings linked to their cue IDs; bounded streaming import avoids unbounded file buffering and stores the imported revision under the current local identity. Draft command undo remains session-only; plain SRT exports cannot preserve IDs, and timed ASS/SSA effects, bitmap formats, and cross-platform server-library export remain unsupported. | M4 |
 | O04 | Include selected subtitle assets and required fonts in offline downloads with quota accounting. | M6 |
 | O05 | Cross-device sync transfers manifests, corrections, preferences, and selected assets with conflict handling. | M8 |
 | O06 | Model packages have hashes, sizes, task/language metadata, compatibility, update rollback, and licenses. | M4 |

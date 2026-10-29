@@ -133,7 +133,7 @@ class Store:
         if task in {"align", "singing_align"} and value.get("spokenLanguage") != language:
             raise ValueError("alignment_requires_matching_spoken_language")
         cues = value.get("cues", [])
-        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "singing_align", "completeness", "dub_mix", "scene_review"} | TEXT_TASKS and not cues):
+        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "singing_align", "completeness", "dub_mix", "scene_review", "scene_track"} | TEXT_TASKS and not cues):
             raise ValueError("cue_limit")
         ids = set()
         for cue in cues:
@@ -224,13 +224,15 @@ class Store:
         object_fingerprint = None
         if type(object_tracking) is not bool or object_tracking and task != 'scene_review':
             raise ValueError('invalid_scene_object_tracking')
-        if object_tracking:
+        if object_tracking or task == 'scene_track':
             detector = scene_object_capabilities()
             if detector is None or value.get('sceneDetectorFingerprint') != detector['fingerprint']:
                 raise ValueError('scene_detector_changed_resubmit_after_review')
-            if any(c['endMs']-c['startMs'] > 12000 for c in cues) or sum(c['endMs']-c['startMs'] for c in cues) > 120000:
+            if object_tracking and (any(c['endMs']-c['startMs'] > 12000 for c in cues) or sum(c['endMs']-c['startMs'] for c in cues) > 120000):
                 raise ValueError('scene_object_duration_limit')
             object_fingerprint = detector['fingerprint']
+        if task == 'scene_track' and (len(cues) > 5000 or not shutil.which(os.environ.get('PLEZY_FFPROBE', 'ffprobe'))):
+            raise ValueError('scene_title_cue_limit_or_probe_unavailable')
         vision_fingerprint = None
         if task == "scene_review":
             config = vision_capabilities()
@@ -472,14 +474,19 @@ class Handler(BaseHTTPRequestHandler):
             if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_SUBTITLE_DECODER", "plezy-subtitle-decode")):
                 tasks.append("bitmap_ocr")
             vision = vision_capabilities()
-            scene_detector = scene_object_capabilities() if vision is not None else None
+            scene_detector = scene_object_capabilities()
             if shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
                 tasks.append("extract_text")
                 if vision is not None: tasks.append("scene_review")
+                if scene_detector is not None and shutil.which(os.environ.get('PLEZY_FFPROBE', 'ffprobe')):
+                    tasks.append('scene_track')
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT, "captionRelay": 1,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
                              "sceneMotionTracking": vision is not None and installed("cv2"),
                              "sceneObjectTracking": scene_detector is not None, "sceneObjectDetector": scene_detector,
+                             "sceneTitleTracking": 'scene_track' in tasks,
+                             "sceneTitleMaximumDurationSeconds": 8 * 3600,
+                             "sceneTitleMaximumCues": 5000,
                              "lyricSyllables": 'singing_align' in tasks,
                              "lyricPitchEvidence": 'singing_align' in tasks and installed('librosa'),
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
@@ -495,16 +502,18 @@ class Handler(BaseHTTPRequestHandler):
                     self.reply(404, {"error": "not_found"}); return
                 folder = store.root / identifier
                 result = read_json(folder / "result.json", MAX_RESULT)
-                artifact = next((a for a in result.get("artifacts", []) if a.get("sha256") == digest and a.get("name") == "dubbed.wav"), None)
-                if artifact is None or not 44 < artifact.get("bytes", 0) <= 32 * 1024**2:
+                kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson'}
+                artifact = next((a for a in result.get("artifacts", []) if a.get("sha256") == digest and
+                    a.get("name") in kinds and a.get('mime') == kinds[a['name']]), None)
+                if artifact is None or not 0 < artifact.get("bytes", 0) <= 32 * 1024**2:
                     self.reply(404, {"error": "not_found"}); return
-                target = folder / "dubbed.wav"
-                if target.is_symlink(): raise ValueError("invalid_audio_artifact")
+                target = folder / artifact['name']
+                if target.is_symlink(): raise ValueError("invalid_result_artifact")
                 with target.open("rb") as stream: data = stream.read(32 * 1024**2 + 1)
                 if len(data) != artifact["bytes"] or hashlib.sha256(data).hexdigest() != digest:
-                    raise ValueError("invalid_audio_artifact")
+                    raise ValueError("invalid_result_artifact")
             self.send_response(200)
-            self.send_header("Content-Type", "audio/wav")
+            self.send_header("Content-Type", artifact['mime'])
             self.send_header("Content-Length", str(len(data)))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")

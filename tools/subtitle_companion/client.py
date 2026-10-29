@@ -77,11 +77,13 @@ class CompanionClient:
         return f"/v1/jobs/{job_id}" + (f"/{action}" if action else "")
 
     def create(self, *, task, identity, media=None, **options):
-        if options.get('sceneObjectTracking', False):
+        if options.get('sceneObjectTracking', False) or task == 'scene_track':
             caps = self.capabilities()
             detector = caps.get('sceneObjectDetector')
             if caps.get('sceneObjectTracking') is not True or not isinstance(detector, dict) or options.get('sceneDetectorFingerprint') != detector.get('fingerprint'):
                 raise ValueError('companion_scene_detector_changed_resubmit_after_review')
+            if task == 'scene_track' and caps.get('sceneTitleTracking') is not True:
+                raise ValueError('companion_whole_title_tracker_unavailable')
         if task == 'reading' and options.get('readingMode') == 'ruby' and 'ruby' not in self.capabilities().get('readingModes', []):
             raise ValueError('Companion cannot produce ruby reading markup')
         if options.get("lyricSyllables") or options.get("lyricPitchEvidence", False) or options.get("sceneMotionTracking", False) or options.get("sceneAudioEvidence", False) or options.get("sceneTemporalRegions", False) or options.get("timelineOffsetMs", 0) or options.get("itemTimeline", False) or options.get("soundStereoEvidence", False):
@@ -164,16 +166,23 @@ class CompanionClient:
             connection.close()
 
     def audio_artifact(self, job_id, artifact):
+        if artifact.get('name') != 'dubbed.wav' or artifact.get('mime') != 'audio/wav':
+            raise ValueError('Invalid audio artifact metadata')
+        return self.artifact(job_id, artifact)
+
+    def artifact(self, job_id, artifact):
         digest, size = artifact.get("sha256"), artifact.get("bytes")
-        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest) or type(size) is not int or not 44 < size <= 32 * 1024**2:
-            raise ValueError("Invalid audio artifact metadata")
+        kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson'}
+        if (artifact.get('name') not in kinds or artifact.get('mime') != kinds[artifact['name']] or
+                not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest) or type(size) is not int or not 0 < size <= 32 * 1024**2):
+            raise ValueError("Invalid artifact metadata")
         connection = self._connection()
         try:
             connection.request("GET", self.route(job_id, f"artifacts/{digest}"), headers=self.headers)
             response = connection.getresponse()
             data = response.read(size + 1)
-            if response.status != 200 or len(data) != size or hashlib.sha256(data).hexdigest() != digest:
-                raise ValueError("Audio artifact failed integrity verification")
+            if response.status != 200 or response.getheader('Content-Type') != artifact['mime'] or len(data) != size or hashlib.sha256(data).hexdigest() != digest:
+                raise ValueError("Artifact failed integrity verification")
             return data
         finally:
             connection.close()

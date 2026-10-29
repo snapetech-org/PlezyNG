@@ -598,3 +598,17 @@ remain visible; incomplete comparisons return exit status 2 after saving a
 report. Reports never declare device or research qualification and never
 activate a candidate. See [input format and limits](../../docs/plezyng/subtitles/RESULT-EVALUATION.md).
 The tool was not executed during this code-only implementation pass.
+
+
+### Whole-file local scene tracking
+
+`scene_track` accepts a chosen video (1 GiB, declared duration up to eight hours)
+and 1–5000 matching file-clock cues. It requires the prepared local DETR pack,
+FFmpeg and FFprobe, and the advertised `sceneDetectorFingerprint`. It does not
+require a configured remote vision provider. The task streams a 1 Hz frame grid,
+retains verified minute checkpoints for pause/resume, returns unchanged captions
+with bounded cue-local placement proposals, and offers `scene-tracks.jsonl` as a
+32 MiB maximum digest-checked artifact. `client.artifact` handles this JSONL type;
+`audio_artifact` still accepts WAV only. See
+[whole-file scene bounds](../../docs/plezyng/subtitles/WHOLE-FILE-SCENES.md).
+No scene-quality or runtime qualification has been performed.

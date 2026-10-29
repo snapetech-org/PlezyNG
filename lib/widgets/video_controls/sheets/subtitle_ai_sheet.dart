@@ -882,10 +882,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         throw const FormatException('The companion did not declare its translation destination.');
       }
       List<SubtitleCue> cues = const [];
-      if (task == 'align' || task == 'singing_align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || textTask) {
+      if (task == 'align' || task == 'singing_align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || task == 'scene_track' || textTask) {
         final selected = await _pickSubtitleCues();
         if (selected == null || !mounted) return;
         cues = selected.$1;
+        if (task == 'scene_track' && cues.length > 5000) throw const FormatException('Whole-file tracking accepts at most 5000 cues.');
       }
       String? path;
       var timelineOffsetMs = 0;
@@ -917,7 +918,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         final selected = await FilePickerService.instance.pickFiles(type: FileType.any);
         if (selected == null || selected.files.isEmpty || !mounted) return;
         final file = selected.files.first;
-        if (file.size <= 0 || file.size > SubtitleCompanionService.maximumInputBytes) throw const FormatException('Choose media up to 1 GiB and one hour.');
+        if (file.size <= 0 || file.size > SubtitleCompanionService.maximumInputBytes) throw const FormatException('Choose media up to 1 GiB and within the task duration limit.');
         path = file.path;
         if (path == null) {
           final bytes = file.bytes;
@@ -953,6 +954,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 'Sound labels do not identify direction or a verified source. Recognition glossary keys are hints, not spelling guarantees.'),
             if (task == 'align') Text('Only use text matching the spoken ${SubtitleTranslationService.languageLabel(_sourceLanguage)} audio, '
                 'with approximate cue intervals no longer than 60 seconds. Unsupported/uncertain cues keep their original timing.'),
+            if (task == 'scene_track') const Text('Analyze the whole chosen video with the host’s local object detector: '
+                'up to eight hours / 1 GiB, one frame per second and 5000 supplied cues. Captions must use this file’s clock. '
+                'Anonymous paths stop at cuts or uncertain matches; short occlusions may be associated without inventing hidden positions. '
+                'The host retains resumable minute checkpoints and a bounded downloadable frame log. Placement proposals require review. '
+                'No images are sent to a separate vision provider; wording stays unchanged.'),
             if (task == 'singing_align') Text('Use lyrics matching the sung ${SubtitleTranslationService.languageLabel(_sourceLanguage)} audio. '
                 'Maximum five minutes, 120 cues, 30 seconds per cue. A configured local CTC model compares original and percussive-suppressed audio. '
                 'Only agreeing word boundaries are proposed; lyric text and cue bounds stay unchanged. This is experimental, not verified singing alignment.'),
@@ -1089,7 +1095,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         lyricSyllables: lyricSyllables, lyricPitchEvidence: lyricPitchEvidence,
         sceneObjectTracking: sceneObjectTracking,
-        sceneDetectorFingerprint: sceneObjectTracking ? (capabilities['sceneObjectDetector'] as Map?)?['fingerprint'] as String? : null,
+        sceneDetectorFingerprint: sceneObjectTracking || task == 'scene_track'
+            ? (capabilities['sceneObjectDetector'] as Map?)?['fingerprint'] as String? : null,
         voiceFingerprint: (task == 'dubbing' || task == 'dub_mix') ? (capabilities['synthesisVoice'] as Map?)?['fingerprint'] as String? : null,
         translationMode: translationMode, scriptConversion: scriptConversion, readingMode: readingMode,
         visionProviderFingerprint: task == 'scene_review' ? (capabilities['visionProvider'] as Map?)?['fingerprint'] as String? : null,
@@ -1133,7 +1140,25 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         if (reviewed != true || !mounted) return;
         _requireCurrentOperationIdentity();
       }
-      if (result.artifacts.isNotEmpty) {
+      if (result.artifacts.isNotEmpty && result.artifacts.single.name == 'scene-tracks.jsonl') {
+        final artifact = result.artifacts.single;
+        final export = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
+          title: const Text('Review whole-file scene paths'),
+          content: const Text('Export the digest-checked frame observations for independent review, or continue to the caption and placement preview. '
+            'Anonymous track IDs and detector scores are unverified proposals. Missing observations have no inferred position.'),
+          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Continue to preview')),
+            FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Export frame log and continue'))]));
+        if (export == null || !mounted) return;
+        if (export) {
+          _requireCurrentOperationIdentity();
+          final bytes = await service.artifactBytes(job['id'] as String, artifact);
+          _requireCurrentOperationIdentity();
+          await FilePickerService.instance.saveFile(dialogTitle: 'Export scene observations', fileName: artifact.name,
+            bytes: bytes, type: FileType.custom, allowedExtensions: const ['jsonl']);
+          _requireCurrentOperationIdentity();
+        }
+      } else if (result.artifacts.isNotEmpty) {
         final artifact = result.artifacts.single;
         final export = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
           title: const Text('Review synthesized audio result'),
@@ -4039,6 +4064,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('dubbing', 'Synthesize a timed subtitle voice track'),
             ('dub_mix', 'Mix synthesized subtitles with explicitly uploaded audio'),
             ('scene_review', 'Review uncertain captions against scene images'),
+            ('scene_track', 'Track scene objects across a chosen video (experimental)'),
             ('ocr_auto', 'Find a burned-caption region and read it'),
             ('ocr', 'Extract burned captions from a video crop'),
             ('bitmap_ocr', 'Read PGS/VobSub images and correct OCR'),

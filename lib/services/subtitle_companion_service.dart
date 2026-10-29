@@ -220,9 +220,12 @@ final class SubtitleCompanionService {
     if (sceneMotionTracking && caps['sceneMotionTracking'] != true) throw UnsupportedError('The companion has not installed local motion tracking');
     if (lyricSyllables.isNotEmpty && caps['lyricSyllables'] != true) throw UnsupportedError('Update the companion for supplied lyric syllables');
     if (lyricPitchEvidence && caps['lyricPitchEvidence'] != true) throw UnsupportedError('The companion has not installed lyric pitch analysis');
-    if (sceneObjectTracking && (caps['sceneObjectTracking'] != true || caps['sceneObjectDetector'] is! Map ||
+    if ((sceneObjectTracking || task == 'scene_track') && (caps['sceneObjectTracking'] != true || caps['sceneObjectDetector'] is! Map ||
         sceneDetectorFingerprint == null || (caps['sceneObjectDetector'] as Map)['fingerprint'] != sceneDetectorFingerprint)) {
       throw UnsupportedError('The companion object detector changed or is unavailable; review its configuration again');
+    }
+    if (task == 'scene_track' && (caps['sceneTitleTracking'] != true || cues.isEmpty || cues.length > 5000)) {
+      throw UnsupportedError('Whole-file tracking requires an installed tracker and 1–5000 file-clock cues.');
     }
     if (task == 'reading' && readingMode == 'ruby' &&
         (caps['readingModes'] is! List || !(caps['readingModes'] as List).contains('ruby'))) throw UnsupportedError('Update the companion for ruby reading output');
@@ -230,7 +233,7 @@ final class SubtitleCompanionService {
     final input = mediaPath == null ? null : File(mediaPath);
     final length = input == null ? 0 : await input.length();
     if (length > maximumInputBytes || (!textTasks.contains(task) && length <= 0) || (textTasks.contains(task) && length != 0)) {
-      throw const FormatException('Choose a media file up to 1 GiB. The companion limits analysis to one hour.');
+      throw const FormatException('Choose a media file up to 1 GiB and within the task duration limit.');
     }
     final audioDigest = input == null ? sha256.convert(const <int>[]).toString() : (await sha256.bind(input.openRead()).first).toString();
     final body = <String, Object?>{
@@ -285,7 +288,7 @@ final class SubtitleCompanionService {
     }
     final evidence = <String, Object?>{
       for (final key in const ['coverageEvidence', 'ensembleEvidence', 'soundEvidence', 'lyricTimingEvidence', 'lyricSyllableEvidence', 'lyricPitchEvidence',
-        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'sceneObjectEvidence', 'synthesisEvidence'])
+        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'synthesisEvidence'])
         if (data[key] != null) key: data[key],
     };
     final provenance = <String, Object?>{
@@ -341,7 +344,9 @@ final class SubtitleCompanionService {
     }
     final avoidRegions = <String, List<Rect>>{};
     final avoidance = data['avoidRegions'] ?? const [];
-    if (avoidance is! List || avoidance.length > 30) throw const FormatException('Too many scene regions');
+    if (avoidance is! List || avoidance.length > (data['task'] == 'scene_track' ? 5000 : 30)) {
+      throw const FormatException('Too many scene regions');
+    }
     for (final row in avoidance) {
       if (row is! Map || row['cueId'] is! String || !ids.contains(row['cueId']) || avoidRegions.containsKey(row['cueId']) ||
           row['regions'] is! List || (row['regions'] as List).length > 12) throw const FormatException('Invalid scene region identity');
@@ -432,12 +437,13 @@ final class SubtitleCompanionService {
     final rawArtifacts = data['artifacts'] ?? const [];
     if (rawArtifacts is! List || rawArtifacts.length > 1) throw const FormatException('Invalid companion artifacts.');
     for (final rawArtifact in rawArtifacts) {
-      if (rawArtifact is! Map || rawArtifact['name'] != 'dubbed.wav' || rawArtifact['mime'] != 'audio/wav' ||
-          rawArtifact['bytes'] is! int || rawArtifact['bytes'] <= 44 || rawArtifact['bytes'] > 32 * 1024 * 1024 ||
+      const kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson'};
+      if (rawArtifact is! Map || !kinds.containsKey(rawArtifact['name']) || rawArtifact['mime'] != kinds[rawArtifact['name']] ||
+          rawArtifact['bytes'] is! int || rawArtifact['bytes'] <= 0 || rawArtifact['bytes'] > 32 * 1024 * 1024 ||
           rawArtifact['sha256'] is! String || !_digest.hasMatch(rawArtifact['sha256'])) {
-        throw const FormatException('The companion returned invalid audio artifact metadata.');
+        throw const FormatException('The companion returned invalid artifact metadata.');
       }
-      artifacts.add(SubtitleCompanionArtifact('dubbed.wav', rawArtifact['sha256'], rawArtifact['bytes'], 'audio/wav'));
+      artifacts.add(SubtitleCompanionArtifact(rawArtifact['name'], rawArtifact['sha256'], rawArtifact['bytes'], rawArtifact['mime']));
     }
     if (data['itemTimeline'] != null && data['itemTimeline'] is! bool) throw const FormatException('Invalid companion clock basis');
     return SubtitleCompanionResult(researchEvidence: safeEvidence, provenance: safeProvenance, itemTimeline: data['itemTimeline'] == true, avoidRegions: Map.unmodifiable(avoidRegions), artifacts: List.unmodifiable(artifacts), alternatives: Map.unmodifiable(alternatives), regions: Map.unmodifiable(regions), cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
@@ -446,21 +452,30 @@ final class SubtitleCompanionService {
   }
 
   Future<Uint8List> audioArtifact(String jobId, SubtitleCompanionArtifact artifact) async {
-    if (_closed || !_digest.hasMatch(artifact.digest) || artifact.bytes > 32 * 1024 * 1024) throw StateError('Audio artifact unavailable.');
+    if (artifact.name != 'dubbed.wav' || artifact.mime != 'audio/wav') throw const FormatException('Invalid audio artifact.');
+    return artifactBytes(jobId, artifact);
+  }
+
+  Future<Uint8List> artifactBytes(String jobId, SubtitleCompanionArtifact artifact) async {
+    const kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson'};
+    if (_closed || kinds[artifact.name] != artifact.mime || !kinds.containsKey(artifact.name) ||
+        !_digest.hasMatch(artifact.digest) || artifact.bytes <= 0 || artifact.bytes > 32 * 1024 * 1024) {
+      throw StateError('Companion artifact unavailable.');
+    }
     final client = http.Client(); _requests.add(client);
     try {
       final request = http.Request('GET', endpoint.replace(path: '${_route(jobId)}/artifacts/${artifact.digest}'))..followRedirects = false;
       request.headers.addAll(_headers);
       final response = await client.send(request).timeout(const Duration(seconds: 30));
-      if (response.statusCode != 200 || response.headers['content-type'] != 'audio/wav' ||
-          response.contentLength != artifact.bytes) throw const FormatException('Invalid companion audio download.');
+      if (response.statusCode != 200 || response.headers['content-type'] != artifact.mime ||
+          response.contentLength != artifact.bytes) throw const FormatException('Invalid companion artifact download.');
       final builder = BytesBuilder(copy: false);
       await for (final chunk in response.stream.timeout(const Duration(seconds: 30))) {
-        if (_closed || builder.length + chunk.length > artifact.bytes) throw const FormatException('Audio download exceeds its declared length.');
+        if (_closed || builder.length + chunk.length > artifact.bytes) throw const FormatException('Artifact download exceeds its declared length.');
         builder.add(chunk);
       }
       final bytes = builder.takeBytes();
-      if (bytes.length != artifact.bytes || sha256.convert(bytes).toString() != artifact.digest) throw const FormatException('Audio artifact integrity failed.');
+      if (bytes.length != artifact.bytes || sha256.convert(bytes).toString() != artifact.digest) throw const FormatException('Artifact integrity failed.');
       return bytes;
     } finally { _requests.remove(client); client.close(); }
   }

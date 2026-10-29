@@ -333,6 +333,10 @@ def main():
         from visual_research import scene_review
         result = scene_review(folder, job, progress)
         device = "configured-vision-provider-unreported"
+    elif task == "scene_track":
+        from scene_title import run
+        result = run(folder, job, progress, atomic_json, read_json)
+        device = "local-DETR-CPU"
     elif task in {"ocr", "ocr_auto", "signs"}:
         result = ocr(folder, job)
         device = "tesseract-cpu"

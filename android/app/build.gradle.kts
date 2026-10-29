@@ -1,5 +1,6 @@
 import java.io.FileInputStream
 import java.net.URL
+import java.security.MessageDigest
 import java.util.Properties
 import java.util.UUID
 import java.util.zip.ZipFile
@@ -505,9 +506,12 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
       include("jni/**/*.so")
       exclude("jni/**/libc++_shared.so")
       eachFile {
-        relativePath = RelativePath(true, *relativePath.segments.drop(1).toTypedArray())
+        val abiAndName = relativePath.segments.takeLast(2)
+        if (abiAndName.size != 2 || abiAndName[0] !in allMpvAbis) {
+          throw GradleException("LiteRT AAR contains an unexpected JNI library path: $relativePath")
+        }
+        relativePath = RelativePath(true, "jniLibs", *abiAndName.toTypedArray())
       }
-      into("jniLibs")
     }
   }
   from(
@@ -522,8 +526,7 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
       "$openVinoAndroidRoot/runtime/lib/intel64/libopenvino_tensorflow_lite_frontend.so",
       "$openVinoAndroidRoot/runtime/3rdparty/tbb/lib/libtbb.so"
     )
-    eachFile { relativePath = RelativePath(true, "x86_64", name) }
-    into("jniLibs")
+    eachFile { relativePath = RelativePath(true, "jniLibs", "x86_64", name) }
   }
   androidLiteRtSamsungRuntimeRoot?.let { runtimeRoot ->
     inputs.file(runtimeRoot.resolve("BUILD_INFO.txt"))
@@ -584,6 +587,35 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
           ?: throw GradleException("Samsung runtime SHA256SUMS has no entry for $relativePath")
         verifySha256(library, expectedHash, "Samsung runtime $relativePath")
       }
+    }
+  }
+  doLast {
+    val requiredRuntimeFiles = listOf(
+      "arm64-v8a/libLiteRt.so",
+      "arm64-v8a/libLiteRtClGlAccelerator.so",
+      "arm64-v8a/libLiteRtCompilerPlugin_Qualcomm.so",
+      "arm64-v8a/libLiteRtDispatch_Qualcomm.so",
+      "arm64-v8a/libLiteRtCompilerPlugin_MediaTek.so",
+      "arm64-v8a/libLiteRtDispatch_MediaTek.so",
+      "arm64-v8a/libLiteRtCompilerPlugin_google_tensor.so",
+      "arm64-v8a/libLiteRtDispatch_GoogleTensor.so",
+      "armeabi-v7a/libLiteRt.so",
+      "armeabi-v7a/libLiteRtClGlAccelerator.so",
+      "x86_64/libLiteRt.so",
+      "x86_64/libLiteRtClGlAccelerator.so",
+      "x86_64/libLiteRtCompilerPlugin_IntelOpenvino.so",
+      "x86_64/libLiteRtDispatch_IntelOpenvino.so",
+      "x86_64/libopenvino.so",
+      "x86_64/libopenvino_intel_npu_plugin.so",
+      "x86_64/libopenvino_ir_frontend.so",
+      "x86_64/libopenvino_tensorflow_lite_frontend.so",
+      "x86_64/libtbb.so"
+    ).map { File(androidLiteRtRuntimeDir, "jniLibs/$it") }
+    val missing = requiredRuntimeFiles.filterNot(File::isFile)
+    if (missing.isNotEmpty()) {
+      throw GradleException(
+        "LiteRT provider files were not staged under jniLibs for APK packaging: ${missing.joinToString()}"
+      )
     }
   }
 }
@@ -657,12 +689,16 @@ val media3Version = "1.11.0"
 val mpvFfmpegVersion = "8.0.1"
 val mpvFfmpegSourceSha256 = "05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41"
 val mpvFfmpegSourceUrl = "https://ffmpeg.org/releases/ffmpeg-$mpvFfmpegVersion.tar.xz"
+val experimentalMpvFfmpegSourceRoot = providers.gradleProperty("plezyExperimentalMpvFfmpegSourceRoot")
+  .orNull?.let { project.file(it).canonicalFile }
 val mpvFfmpegDevelopmentDir = layout.buildDirectory.dir("libmpv-ffmpeg-development").get().asFile
 
 // Build the Media3 JNI adapter against the same shared FFmpeg libraries that
 // libmpv packages. Headers are pinned to libmpv's FFmpeg version and remain
 // build-only; the APK contains one FFmpeg implementation for both players.
-// The AAR carries no headers, so they come from FFmpeg's release source: the
+// The normal pinned AAR uses the matching FFmpeg release archive. A local
+// experimental AAR may come from a newer mpv-build revision, so allow that
+// build's checked-out FFmpeg headers to be supplied explicitly as well. The
 // Media3 adapter uses none of the declarations mpv-build's patches change
 // (libavcodec/mediacodec.h, libavcodec/jni.h).
 val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") {
@@ -670,7 +706,15 @@ val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") 
   val manifest = File(mpvFfmpegDevelopmentDir, ".manifest")
   val libraries = listOf("avcodec", "avutil", "swresample")
   inputs.dir(mpvFfmpegJniDir)
-  if (felAarFile != null) {
+  if (experimentalMpvFfmpegSourceRoot != null) {
+    val headerFiles = listOf("libavcodec", "libavutil", "libswresample").flatMap { library ->
+      File(experimentalMpvFfmpegSourceRoot, library).listFiles()
+        ?.filter { it.isFile && it.extension == "h" }
+        .orEmpty()
+    }
+    inputs.files(headerFiles).withPropertyName("experimentalMpvFfmpegHeaders")
+    inputs.property("experimentalMpvFfmpegSourceRoot", experimentalMpvFfmpegSourceRoot.absolutePath)
+  } else if (felAarFile != null) {
     inputs.file(felAarFile)
   } else {
     inputs.property("ffmpegVersion", mpvFfmpegVersion)
@@ -698,7 +742,77 @@ val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") 
       val nativeDir = File(staging, "native")
       staging.mkdirs()
       val ffmpegIdentity: String
-      if (felAarFile != null) {
+      if (experimentalMpvFfmpegSourceRoot != null) {
+        val sourceRoot = experimentalMpvFfmpegSourceRoot
+        val requiredSourceFiles = listOf(
+          "configure",
+          "libavcodec/avcodec.h",
+          "libavutil/version.h",
+          "libswresample/swresample.h"
+        ).map { File(sourceRoot, it) }
+        val missingSourceFiles = requiredSourceFiles.filterNot(File::isFile)
+        if (missingSourceFiles.isNotEmpty()) {
+          throw GradleException(
+            "Experimental mpv FFmpeg source is incomplete: ${missingSourceFiles.joinToString()}"
+          )
+        }
+
+        fun sourceGitOutput(vararg args: String): String {
+          val process = ProcessBuilder(listOf("git", "-C", sourceRoot.absolutePath) + args)
+            .redirectErrorStream(true)
+            .start()
+          val output = process.inputStream.bufferedReader().use { it.readText() }
+          if (process.waitFor() != 0) {
+            throw GradleException("Could not identify experimental mpv FFmpeg source: $output")
+          }
+          return output.trim()
+        }
+
+        val sourceTag = sourceGitOutput("describe", "--tags", "--exact-match", "HEAD")
+        val sourceRevision = sourceGitOutput("rev-parse", "HEAD")
+        if (!sourceTag.matches(Regex("n[0-9]+\\.[0-9]+\\.[0-9]+")) ||
+          !sourceRevision.matches(Regex("[0-9a-f]{40}"))
+        ) {
+          throw GradleException(
+            "Experimental mpv FFmpeg source must be pinned at an exact release tag; found $sourceTag ($sourceRevision)"
+          )
+        }
+
+        val sourceHeaders = listOf("libavcodec", "libavutil", "libswresample").flatMap { library ->
+          File(sourceRoot, library).listFiles()
+            ?.filter { it.isFile && it.extension == "h" }
+            .orEmpty()
+        }.sortedBy { it.relativeTo(sourceRoot).invariantSeparatorsPath }
+        val headerDigest = MessageDigest.getInstance("SHA-256")
+        sourceHeaders.forEach { header ->
+          headerDigest.update(header.relativeTo(sourceRoot).invariantSeparatorsPath.toByteArray(Charsets.UTF_8))
+          headerDigest.update(0.toByte())
+          header.inputStream().use { input ->
+            val buffer = ByteArray(16 * 1024)
+            while (true) {
+              val count = input.read(buffer)
+              if (count < 0) break
+              headerDigest.update(buffer, 0, count)
+            }
+          }
+          val destination = File(includeDir, header.relativeTo(sourceRoot).invariantSeparatorsPath)
+          destination.parentFile.mkdirs()
+          header.copyTo(destination, overwrite = true)
+        }
+        File(includeDir, "libavutil/avconfig.h").writeText(
+          """
+          |/* Generated for Plezy's little-endian Android ABIs. */
+          |#ifndef AVUTIL_AVCONFIG_H
+          |#define AVUTIL_AVCONFIG_H
+          |#define AV_HAVE_BIGENDIAN 0
+          |#define AV_HAVE_FAST_UNALIGNED 0
+          |#endif /* AVUTIL_AVCONFIG_H */
+          |
+          """.trimMargin()
+        )
+        val headerHash = headerDigest.digest().joinToString("") { byte -> "%02x".format(byte.toInt() and 0xff) }
+        ffmpegIdentity = "$sourceTag:$sourceRevision:headers-sha256=$headerHash"
+      } else if (felAarFile != null) {
         val headerPrefix = "META-INF/plezyng-dv/ffmpeg-headers/"
         val sourceCommit = ZipFile(felAarFile).use { archive ->
           val metadata = archive.getInputStream(archive.getEntry("META-INF/plezyng-dv-engine.json")).bufferedReader().use {

@@ -70,6 +70,9 @@ abstract final class NeuralModelPackService {
   static Future<File> ensureInstalled(NeuralInterpolationPreset preset) =>
       _ensureInstalledMemoized(_modelForPreset(preset));
 
+  /// Return the stable model-pack ID selected for a neural preset.
+  static String modelIdForPreset(NeuralInterpolationPreset preset) => _modelForPreset(preset).id;
+
   /// Return an already verified pack, or begin installing it without holding
   /// the playback startup path. Neural playback can take effect on the next
   /// open after this background download completes.

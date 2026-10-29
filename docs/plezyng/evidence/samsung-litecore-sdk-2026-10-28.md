@@ -19,6 +19,9 @@ that a valid LiteCore conversion took place.
 - `gzip -t` succeeded. The archive listing includes LiteCore headers and the
   `x86_64-linux` and `arm64-v8a` graph libraries required by the Android build
   script. Samsung did not display a vendor checksum on the release page.
+- The user Downloads folder currently contains six copies with this same SHA-256.
+  They are duplicate copies of the Exynos LiteCore archive, not the separate
+  Google Tensor SDK Beta compiler archive.
 
 ## Use status
 

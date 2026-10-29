@@ -17,6 +17,25 @@ recorded, while the archive's path, integrity, and availability to the build
 environment remain unverified. No Tensor AOT model pack is in the retained
 task evidence.
 
+Follow-up after the user reported the response and download had arrived:
+`/home/keith/Downloads` contains six byte-identical copies of
+`ai-litecore-ubuntu2404-v1.2.1.tar.gz`, each SHA-256
+`89d1c2c52c2fefa06c4b5ee641a19edf670ce73883994ce132dc3f7e1eb00816`. This is
+Samsung Exynos AI LiteCore, not the separate Google Tensor Beta compiler
+archive. Google's [compiler setup guide](https://developers.google.com/edge/tensor-sdk/slm-compilation)
+requires the approved compiler archive and the companion
+`ai-edge-litert-sdk-google-tensor-nightly` package. The local APK now includes
+the Google Tensor LiteRT runtime plugin, but no Tensor_G5 or Tensor_G6 AOT
+model record is present. No new beta request was submitted.
+
+The same Downloads directory also contains `v2.44.0.260225.zip` and
+`v2.51.200.261021.zip`. Their ZIP directory entries start at
+`qairt/2.44.0.260225/` and `qairt/2.51.200.261021/`, respectively; these are
+Qualcomm QAIRT packages, not the Google Tensor SDK. The active system
+`python3` environment also reports that
+`ai-edge-litert-sdk-google-tensor-nightly` is not installed. These checks do
+not inspect private browser history or an unprovided download path.
+
 The exporter now checks for the companion SDK package and compiler shared
 libraries before it starts a Tensor model export, so LiteRT's public backend
 alone cannot appear ready for AOT compilation.
@@ -38,7 +57,7 @@ the published terms, not legal advice.
 ## Remaining gate
 
 - Locate and verify the user-reported compiler archive and install its
-  companion package in the private JIT build lane. Do not treat the public
+  companion package in the local model-build environment. Do not treat the public
   LiteRT runtime AAR or plugin as the separate beta compiler toolchain.
 - Obtain written authorization covering distribution of the compiled ANVIL
   model in PlezyNG before packaging or publishing it.

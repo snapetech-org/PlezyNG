@@ -985,7 +985,7 @@ abstract final class MotionProcessingService {
       }.entries.map((entry) => '${entry.key}=${_escapeMpvFilterValue(entry.value)}').join(':');
       await player.command(['vf', 'add', '@plezy-pme:plezy-pme=$filterOptions']);
       _desktopPmeActive[player] = true;
-      _configuredNeuralModelId[player] = model.id;
+      _configuredNeuralModelId[player] = NeuralModelPackService.modelIdForPreset(neuralPreset);
       return true;
     } catch (error, stackTrace) {
       appLogger.w(

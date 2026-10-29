@@ -101,7 +101,7 @@ void main() {
   });
 
   test('no usable container rate yields no rate target', () async {
-    for (final raw in [null, '0', '-1', 'nan-ish']) {
+    for (final raw in [null, '0', '-1', 'NaN', 'Infinity', '-Infinity', 'nan-ish']) {
       final output = await PlayerOutputFormat.read(
         _PropertyPlayer({'container-fps': ?raw, 'deinterlace-active': 'yes'}),
       );

@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 - Quote the Windows Flutter cache key so GitHub can parse and dispatch CI workflows.
-- Cache the checksum-verified Flutter SDK in the Mac JIT user's local APFS cache with resumable parallel downloads.
+- Prepare the checksum-verified Flutter SDK in each Mac JIT job's temporary APFS workspace with resumable parallel downloads.
 - Retry transient Flutter SDK setup failures on Windows x64 JIT runners.
 - Stabilize player startup assertions, install FFmpeg for unit tests, and retry transient Android Gradle fetch failures.
 - Fix Apple native configuration to use Boost headers from CMake's extracted source root.

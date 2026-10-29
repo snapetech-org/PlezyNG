@@ -66,6 +66,7 @@ import 'subtitle_lyric_units_dialog.dart';
 import 'subtitle_array_dialog.dart';
 import 'subtitle_dictionary_dialog.dart';
 import 'subtitle_language_dialog.dart';
+import 'subtitle_archive_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -2602,6 +2603,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               title: Row(
                 children: [
                   const Expanded(child: Text('Subtitle revision history')),
+                  IconButton(
+                    tooltip: t.videoControls.subtitleArchive.title,
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                      unawaited(_run(() => showSubtitleArchiveDialog(context,
+                        identity: identity, isCurrent: () => mounted && _operationIdentityIsCurrent &&
+                            _revisionIdentity?.storageKey == identity.storageKey)));
+                    },
+                    icon: const AppIcon(Symbols.folder_open_rounded),
+                  ),
                   IconButton(
                     tooltip: 'Export history bundle',
                     onPressed: () {

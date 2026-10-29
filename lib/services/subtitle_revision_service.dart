@@ -503,9 +503,11 @@ abstract final class SubtitleRevisionService {
     required List<SubtitleCue> cues,
     required List<SubtitleWordTiming> wordTimings,
     bool onItemTimeline = false,
+    bool Function()? isCurrent,
   }) async {
     late SubtitleRevision revision;
     await _exclusive(() async {
+      if (isCurrent?.call() == false) throw StateError('Subtitle revision owner changed.');
       if (identity.profileId.trim().isEmpty ||
           identity.serverId.trim().isEmpty ||
           identity.ratingKey.trim().isEmpty ||
@@ -586,6 +588,7 @@ abstract final class SubtitleRevisionService {
       final temporary = File(p.join(directory.path, '.tmp-$id'));
       try {
         await temporary.writeAsBytes(bytes, flush: true);
+        if (isCurrent?.call() == false) throw StateError('Subtitle revision owner changed.');
         await temporary.rename(target.path);
         await _writeItemMetadata(
           directory,

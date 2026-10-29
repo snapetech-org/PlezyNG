@@ -3296,6 +3296,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleLiveCapture$en subtitleLiveCapture = Translations$videoControls$subtitleLiveCapture$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
+	late final Translations$videoControls$subtitleArchive$en subtitleArchive = Translations$videoControls$subtitleArchive$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
 
 	/// en: 'Chapters'
@@ -19733,6 +19734,32 @@ extension on Translations {
 			'videoControls.subtitleHdr.playbackChanged' => 'Playback changed. Reopen HDR controls for the current player.',
 			'videoControls.subtitleHdr.optionsUnavailable' => 'This MPV package exposes no native HDR caption options.',
 			'videoControls.subtitleHdr.unavailablePlayer' => 'Native HDR controls are unavailable for this player.',
+			'videoControls.subtitleArchive.title' => 'External subtitle archive',
+			'videoControls.subtitleArchive.description' => 'Save reviewed history in a folder you choose. Snapshots contain caption text and the media title in plain text. Originals stay in place. Each save creates a new snapshot; nothing is deleted automatically.',
+			'videoControls.subtitleArchive.chooseFolder' => 'Choose archive folder',
+			'videoControls.subtitleArchive.forgetFolder' => 'Forget folder',
+			'videoControls.subtitleArchive.noFolder' => 'No archive folder selected.',
+			'videoControls.subtitleArchive.saveHistory' => 'Save this item’s reviewed history',
+			'videoControls.subtitleArchive.saved' => 'History snapshot saved. Existing snapshots were preserved.',
+			'videoControls.subtitleArchive.snapshotsTitle' => 'Snapshots for this profile and item',
+			'videoControls.subtitleArchive.noSnapshots' => 'No snapshots for this item in the selected folder.',
+			'videoControls.subtitleArchive.untitled' => 'Untitled media',
+			'videoControls.subtitleArchive.snapshotSummary' => ({required Object date, required Object count, required Object size}) => '${date} · ${count} revisions · ${size} MiB',
+			'videoControls.subtitleArchive.reviewTitle' => 'Review archived revisions',
+			'videoControls.subtitleArchive.importDescription' => 'Choose one revision to copy into local history. Import does not attach captions. This item keeps up to 12 revisions and 24 MiB, so its oldest local entries may be removed.',
+			'videoControls.subtitleArchive.confirmCopy' => 'I checked that these captions match this media cut and selected audio.',
+			'videoControls.subtitleArchive.revisionSummary' => ({required Object count, required Object language, required Object clock}) => '${count} cues · ${language} · ${clock}',
+			'videoControls.subtitleArchive.unknownLanguage' => 'Unknown language',
+			'videoControls.subtitleArchive.itemClock' => 'item timeline',
+			'videoControls.subtitleArchive.fileClock' => 'opened-file timeline',
+			'videoControls.subtitleArchive.importRevision' => 'Import this revision into history',
+			'videoControls.subtitleArchive.imported' => 'Revision copied to local history. Reopen history to review or attach it.',
+			'videoControls.subtitleArchive.changed' => 'The archive changed or a checksum did not match. Reopen the folder before trying again.',
+			'videoControls.subtitleArchive.limit' => 'Archive limit reached: 24 snapshots per item, 256 MiB per profile, or a file or directory scan limit. Manage the archived files outside the app or choose another folder.',
+			'videoControls.subtitleArchive.emptyHistory' => 'Save a reviewed revision to this item’s history before archiving it.',
+			'videoControls.subtitleArchive.stale' => 'Playback or profile changed. Reopen subtitle tools for the current item.',
+			'videoControls.subtitleArchive.invalid' => 'This archive is incomplete or has invalid metadata. No revision was imported.',
+			'videoControls.subtitleArchive.unavailable' => 'The archive folder could not be accessed. Choose a readable local folder and grant write access to save snapshots.',
 			'videoControls.subtitleHdr.title' => 'Native HDR caption brightness',
 			'videoControls.subtitleLive.playbackEnded' => 'Playback ended.',
 			'videoControls.subtitleLive.title' => 'Delayed live / DVR playback',
@@ -23135,4 +23162,36 @@ extension on Translations {
 			_ => null,
 		};
 	}
+}
+
+// Path: videoControls.subtitleArchive
+class Translations$videoControls$subtitleArchive$en {
+	Translations$videoControls$subtitleArchive$en.internal(this._root);
+	final Translations _root; // ignore: unused_field
+	String get title => 'External subtitle archive';
+	String get description => 'Save reviewed history in a folder you choose. Snapshots contain caption text and the media title in plain text. Originals stay in place. Each save creates a new snapshot; nothing is deleted automatically.';
+	String get chooseFolder => 'Choose archive folder';
+	String get forgetFolder => 'Forget folder';
+	String get noFolder => 'No archive folder selected.';
+	String get saveHistory => 'Save this item’s reviewed history';
+	String get saved => 'History snapshot saved. Existing snapshots were preserved.';
+	String get snapshotsTitle => 'Snapshots for this profile and item';
+	String get noSnapshots => 'No snapshots for this item in the selected folder.';
+	String get untitled => 'Untitled media';
+	String snapshotSummary({required Object date, required Object count, required Object size}) => '${date} · ${count} revisions · ${size} MiB';
+	String get reviewTitle => 'Review archived revisions';
+	String get importDescription => 'Choose one revision to copy into local history. Import does not attach captions. This item keeps up to 12 revisions and 24 MiB, so its oldest local entries may be removed.';
+	String get confirmCopy => 'I checked that these captions match this media cut and selected audio.';
+	String revisionSummary({required Object count, required Object language, required Object clock}) => '${count} cues · ${language} · ${clock}';
+	String get unknownLanguage => 'Unknown language';
+	String get itemClock => 'item timeline';
+	String get fileClock => 'opened-file timeline';
+	String get importRevision => 'Import this revision into history';
+	String get imported => 'Revision copied to local history. Reopen history to review or attach it.';
+	String get changed => 'The archive changed or a checksum did not match. Reopen the folder before trying again.';
+	String get limit => 'Archive limit reached: 24 snapshots per item, 256 MiB per profile, or a file or directory scan limit. Manage the archived files outside the app or choose another folder.';
+	String get emptyHistory => 'Save a reviewed revision to this item’s history before archiving it.';
+	String get stale => 'Playback or profile changed. Reopen subtitle tools for the current item.';
+	String get invalid => 'This archive is incomplete or has invalid metadata. No revision was imported.';
+	String get unavailable => 'The archive folder could not be accessed. Choose a readable local folder and grant write access to save snapshots.';
 }

@@ -3275,6 +3275,7 @@ class Translations$videoControls$en {
 	/// en: 'Volume ${percent}%'
 	String volumePercent({required Object percent}) => 'Volume ${percent}%';
 
+	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
 
 	/// en: 'Chapters'
@@ -12073,6 +12074,111 @@ class Translations$hotkeys$actions$en {
 	String get subtitleDelayReset => 'Reset Subtitle Timing';
 }
 
+// Path: videoControls.subtitleHdr
+class Translations$videoControls$subtitleHdr$en {
+	Translations$videoControls$subtitleHdr$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Native HDR caption brightness'
+
+	String get open => 'Native HDR caption brightness';
+
+	/// en: 'Native HDR caption brightness'
+
+	String get title => 'Native HDR caption brightness';
+
+	/// en: 'Native HDR controls are unavailable for this player.'
+
+	String get unavailablePlayer => 'Native HDR controls are unavailable for this player.';
+
+	/// en: 'This MPV package exposes no native HDR caption options.'
+
+	String get optionsUnavailable => 'This MPV package exposes no native HDR caption options.';
+
+	/// en: 'Playback changed. Reopen HDR controls for the current player.'
+
+	String get playbackChanged => 'Playback changed. Reopen HDR controls for the current player.';
+
+	/// en: 'Native HDR caption control requires an active MPV gpu-next output.'
+
+	String get requiresOutput => 'Native HDR caption control requires an active MPV gpu-next output.';
+
+	/// en: 'HDR control is busy or unavailable.'
+
+	String get busyUnavailable => 'HDR control is busy or unavailable.';
+
+	/// en: 'Use 10–10000 nits, sdr, or video for bitmap subtitles.'
+
+	String get invalidNits => 'Use 10–10000 nits, sdr, or video for bitmap subtitles.';
+
+	/// en: 'Another control changed this value. Close and reopen before applying.'
+
+	String get externalChange => 'Another control changed this value. Close and reopen before applying.';
+
+	/// en: 'MPV did not confirm the requested value. The current value is shown.'
+
+	String get unconfirmed => 'MPV did not confirm the requested value. The current value is shown.';
+
+	/// en: 'Could not read native HDR caption controls.'
+
+	String get readFailed => 'Could not read native HDR caption controls.';
+
+	/// en: 'MPV rejected the change. Reopen to check its current value.'
+
+	String get rejected => 'MPV rejected the change. Reopen to check its current value.';
+
+	/// en: 'These controls set diffuse-white luminance for the active MPV gpu-next renderer. Their visible effect depends on the output, tone mapping and display. Values are not a display measurement. Text brightness also changes native on-screen messages (OSD). App caption overlays keep their SDR colors.'
+
+	String get description => 'These controls set diffuse-white luminance for the active MPV gpu-next renderer. Their visible effect depends on the output, tone mapping and display. Values are not a display measurement. Text brightness also changes native on-screen messages (OSD). App caption overlays keep their SDR colors.';
+
+	/// en: 'Changes stay with this player until it closes. Restore returns one option to its value when this dialog opened. Each change is read back from MPV before it is reported as accepted.'
+
+	String get lifetime => 'Changes stay with this player until it closes. Restore returns one option to its value when this dialog opened. Each change is read back from MPV before it is reported as accepted.';
+
+	/// en: 'Native text subtitles and OSD'
+
+	String get textChannel => 'Native text subtitles and OSD';
+
+	/// en: 'Native bitmap subtitles'
+
+	String get bitmapChannel => 'Native bitmap subtitles';
+
+	/// en: 'Current: ${current} · Opening value: ${opening}'
+
+	String currentAndOpening({required Object current, required Object opening}) => 'Current: ${current} · Opening value: ${opening}';
+
+	/// en: 'Diffuse white (10–10000 nits)'
+
+	String get luminanceLabel => 'Diffuse white (10–10000 nits)';
+
+	/// en: 'Enter a numeric luminance, or use a preset below.'
+
+	String get luminanceHint => 'Enter a numeric luminance, or use a preset below.';
+
+	/// en: 'Apply'
+
+	String get apply => 'Apply';
+
+	/// en: 'SDR reference (203 nits)'
+
+	String get sdrReference => 'SDR reference (203 nits)';
+
+	/// en: 'Use video metadata'
+
+	String get useVideoMetadata => 'Use video metadata';
+
+	/// en: 'Restore opening value'
+
+	String get restoreOpening => 'Restore opening value';
+
+	/// en: 'Close'
+
+	String get close => 'Close';
+}
+
 // Path: videoControls.pipErrors
 class Translations$videoControls$pipErrors$en {
 	Translations$videoControls$pipErrors$en.internal(this._root);
@@ -15643,6 +15749,30 @@ extension on Translations {
 			'videoControls.tapAgainToUnlock' => 'Tap again to unlock',
 			'videoControls.secondarySubtitle' => 'Secondary subtitle',
 			'videoControls.subtitleImportTitle' => 'Preview subtitle import',
+			'videoControls.subtitleHdr.close' => 'Close',
+			'videoControls.subtitleHdr.restoreOpening' => 'Restore opening value',
+			'videoControls.subtitleHdr.useVideoMetadata' => 'Use video metadata',
+			'videoControls.subtitleHdr.sdrReference' => 'SDR reference (203 nits)',
+			'videoControls.subtitleHdr.apply' => 'Apply',
+			'videoControls.subtitleHdr.luminanceHint' => 'Enter a numeric luminance, or use a preset below.',
+			'videoControls.subtitleHdr.luminanceLabel' => 'Diffuse white (10–10000 nits)',
+			'videoControls.subtitleHdr.currentAndOpening' => ({required Object current, required Object opening}) => 'Current: ${current} · Opening value: ${opening}',
+			'videoControls.subtitleHdr.bitmapChannel' => 'Native bitmap subtitles',
+			'videoControls.subtitleHdr.textChannel' => 'Native text subtitles and OSD',
+			'videoControls.subtitleHdr.lifetime' => 'Changes stay with this player until it closes. Restore returns one option to its value when this dialog opened. Each change is read back from MPV before it is reported as accepted.',
+			'videoControls.subtitleHdr.description' => 'These controls set diffuse-white luminance for the active MPV gpu-next renderer. Their visible effect depends on the output, tone mapping and display. Values are not a display measurement. Text brightness also changes native on-screen messages (OSD). App caption overlays keep their SDR colors.',
+			'videoControls.subtitleHdr.rejected' => 'MPV rejected the change. Reopen to check its current value.',
+			'videoControls.subtitleHdr.readFailed' => 'Could not read native HDR caption controls.',
+			'videoControls.subtitleHdr.unconfirmed' => 'MPV did not confirm the requested value. The current value is shown.',
+			'videoControls.subtitleHdr.externalChange' => 'Another control changed this value. Close and reopen before applying.',
+			'videoControls.subtitleHdr.invalidNits' => 'Use 10–10000 nits, sdr, or video for bitmap subtitles.',
+			'videoControls.subtitleHdr.busyUnavailable' => 'HDR control is busy or unavailable.',
+			'videoControls.subtitleHdr.requiresOutput' => 'Native HDR caption control requires an active MPV gpu-next output.',
+			'videoControls.subtitleHdr.playbackChanged' => 'Playback changed. Reopen HDR controls for the current player.',
+			'videoControls.subtitleHdr.optionsUnavailable' => 'This MPV package exposes no native HDR caption options.',
+			'videoControls.subtitleHdr.unavailablePlayer' => 'Native HDR controls are unavailable for this player.',
+			'videoControls.subtitleHdr.title' => 'Native HDR caption brightness',
+			'videoControls.subtitleHdr.open' => 'Native HDR caption brightness',
 			'videoControls.subtitleImportSourceEncoding' => 'Source encoding',
 			'videoControls.subtitleImportMicroDvdFps' => 'MicroDVD FPS (blank uses the file header)',
 			'videoControls.subtitleImportMicroDvdFpsHint' => 'For 23.976 film use 23.976023976; variable-frame-rate media does not imply a subtitle FPS.',

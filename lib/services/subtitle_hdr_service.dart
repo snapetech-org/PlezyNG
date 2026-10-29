@@ -1,5 +1,6 @@
 import '../mpv/mpv.dart';
 import '../mpv/player/player_media_session_identity.dart';
+import '../i18n/strings.g.dart';
 
 enum SubtitleHdrChannel {
   text('sub-hdr-peak'),
@@ -30,7 +31,7 @@ class SubtitleHdrSession {
 
   static Future<SubtitleHdrSession> open(Player player, bool Function() isCurrent) async {
     if (player.playerType != 'mpv' || player.disposed || _owners[player] != null) {
-      throw StateError('Native HDR controls are unavailable for this player.');
+      throw StateError(t.videoControls.subtitleHdr.unavailablePlayer);
     }
     final session = SubtitleHdrSession._(player, isCurrent);
     _owners[player] = session;
@@ -46,7 +47,7 @@ class SubtitleHdrSession {
         }
       }
       await session._checkOutput();
-      if (session._values.isEmpty) throw StateError('This MPV package exposes no native HDR caption options.');
+      if (session._values.isEmpty) throw StateError(t.videoControls.subtitleHdr.optionsUnavailable);
       return session;
     } catch (_) {
       session.close();
@@ -58,7 +59,7 @@ class SubtitleHdrSession {
     final source = player;
     if (_closed || source.disposed || !identical(_owners[source], this) || !isCurrent() ||
         (_generation != null && (source is! PlayerMediaSessionIdentity || source.mediaSessionGeneration != _generation))) {
-      throw StateError('Playback changed. Reopen HDR controls for the current player.');
+      throw StateError(t.videoControls.subtitleHdr.playbackChanged);
     }
   }
 
@@ -66,7 +67,7 @@ class SubtitleHdrSession {
     _checkCurrent();
     final output = await player.getProperty('current-vo');
     _checkCurrent();
-    if (output != 'gpu-next') throw StateError('Native HDR caption control requires an active MPV gpu-next output.');
+    if (output != 'gpu-next') throw StateError(t.videoControls.subtitleHdr.requiresOutput);
   }
 
   static bool _equivalent(String? a, String b) {
@@ -76,13 +77,13 @@ class SubtitleHdrSession {
   }
 
   Future<void> apply(SubtitleHdrChannel channel, String value, {bool restore = false}) async {
-    if (_busy || !_values.containsKey(channel)) throw StateError('HDR control is busy or unavailable.');
+    if (_busy || !_values.containsKey(channel)) throw StateError(t.videoControls.subtitleHdr.busyUnavailable);
     final requested = restore ? original(channel) : value.trim();
     if (!restore) {
       final nits = double.tryParse(requested);
       if (requested != 'sdr' && !(channel == SubtitleHdrChannel.bitmap && requested == 'video') &&
           (nits == null || !nits.isFinite || nits < 10 || nits > 10000)) {
-        throw const FormatException('Use 10–10000 nits, sdr, or video for bitmap subtitles.');
+        throw FormatException(t.videoControls.subtitleHdr.invalidNits);
       }
     }
     _busy = true;
@@ -91,7 +92,7 @@ class SubtitleHdrSession {
       final before = await player.getProperty('options/${channel.option}');
       _checkCurrent();
       if (!_equivalent(before, this.value(channel))) {
-        throw StateError('Another control changed this value. Close and reopen before applying.');
+        throw StateError(t.videoControls.subtitleHdr.externalChange);
       }
       await _checkOutput();
       await player.setProperty('options/${channel.option}', requested);
@@ -100,7 +101,7 @@ class SubtitleHdrSession {
       await _checkOutput();
       if (accepted != null && accepted.isNotEmpty && accepted.length <= 80) _values[channel] = accepted;
       if (!_equivalent(accepted, requested)) {
-        throw StateError('MPV did not confirm the requested value. The current value is shown.');
+        throw StateError(t.videoControls.subtitleHdr.unconfirmed);
       }
     } finally { _busy = false; }
   }

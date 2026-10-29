@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
+import '../../../i18n/strings.g.dart';
 import '../../../services/file_picker_service.dart';
 import '../../../services/subtitle_native_handoff_service.dart';
 import '../../../services/subtitle_handoff_service.dart';
@@ -165,7 +166,7 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
         if (player.playerType == 'mpv') ...[
           TextButton(onPressed: () => showSubtitleHdrControls(context, player,
             () => session.current && isSourceCurrent?.call() != false),
-            child: const Text('Native HDR caption brightness')),
+            child: Text(t.videoControls.subtitleHdr.open)),
           const Text('Pause playback to export the visible native and app captions with the frame. '
             'Known 8-bit SDR output produces PNG; HDR, wide-gamut, high-bit-depth or unknown color output '
             'produces a ZIP with the untouched native frame, transparent sRGB caption layer and composition metadata.'),

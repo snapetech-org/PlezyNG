@@ -7399,6 +7399,54 @@ class Translations$videoSettings$en {
 	/// en: 'Timing was applied, but its review history could not be saved.'
 	String get subtitleCalibrationHistoryFailed => 'Timing was applied, but its review history could not be saved.';
 
+	/// en: 'Transfer reviewed subtitle data'
+	String get subtitleReviewData => 'Transfer reviewed subtitle data';
+
+	/// en: 'Transfer reviewed translation suggestions and hidden provider revisions between profiles or devices. The file contains translated dialogue in plaintext. Existing translations stay unless you choose incoming text for each conflict. Imports do not attach subtitles; reused translations still need review. Hidden revisions require matching server and item identities.'
+	String get subtitleReviewDataHelp => 'Transfer reviewed translation suggestions and hidden provider revisions between profiles or devices. The file contains translated dialogue in plaintext. Existing translations stay unless you choose incoming text for each conflict. Imports do not attach subtitles; reused translations still need review. Hidden revisions require matching server and item identities.';
+
+	/// en: 'Transfer could not be completed. Check the file, active profile and storage limits, then refresh the preview if local data changed.'
+	String get subtitleReviewTransferFailed => 'Transfer could not be completed. Check the file, active profile and storage limits, then refresh the preview if local data changed.';
+
+	/// en: 'Export this profile'
+	String get subtitleReviewExport => 'Export this profile';
+
+	/// en: 'Open transfer for review'
+	String get subtitleReviewOpen => 'Open transfer for review';
+
+	/// en: 'Preview old device-wide hidden revisions'
+	String get subtitleReviewLegacy => 'Preview old device-wide hidden revisions';
+
+	/// en: 'Reviewed subtitle data exported.'
+	String get subtitleReviewExported => 'Reviewed subtitle data exported.';
+
+	/// en: 'Translation suggestions imported. They remain subject to review before use.'
+	String get subtitleReviewMemoryImported => 'Translation suggestions imported. They remain subject to review before use.';
+
+	/// en: 'Hidden subtitle revisions imported into this profile.'
+	String get subtitleReviewRejectionsImported => 'Hidden subtitle revisions imported into this profile.';
+
+	/// en: 'Incoming: ${memory} translation entries, ${rejected} hidden revisions, ${conflicts} text conflicts.'
+	String subtitleReviewCounts({required int memory, required int rejected, required int conflicts}) => 'Incoming: ${memory} translation entries, ${rejected} hidden revisions, ${conflicts} text conflicts.';
+
+	/// en: 'Show only text conflicts'
+	String get subtitleReviewOnlyConflicts => 'Show only text conflicts';
+
+	/// en: 'Current: ${text}'
+	String subtitleReviewLocal({required String text}) => 'Current: ${text}';
+
+	/// en: 'Incoming: ${text}'
+	String subtitleReviewIncoming({required String text}) => 'Incoming: ${text}';
+
+	/// en: 'Use this incoming translation'
+	String get subtitleReviewReplace => 'Use this incoming translation';
+
+	/// en: 'Import translation suggestions'
+	String get subtitleReviewImportMemory => 'Import translation suggestions';
+
+	/// en: 'Import hidden revisions'
+	String get subtitleReviewImportRejections => 'Import hidden revisions';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -22856,6 +22904,22 @@ extension on Translations {
 			'videoSettings.subtitleCalibrationResiduals' => ({required String maximum, required String rms}) => 'Largest mismatch: ${maximum} ms · RMS mismatch: ${rms} ms',
 			'videoSettings.subtitleCalibrationInconsistent' => 'These anchors do not agree on one speed and delay. Correct or remove mismatched observations, or use cut-aware synchronization.',
 			'videoSettings.subtitleCalibrationHistoryFailed' => 'Timing was applied, but its review history could not be saved.',
+			'videoSettings.subtitleReviewData' => 'Transfer reviewed subtitle data',
+			'videoSettings.subtitleReviewDataHelp' => 'Transfer reviewed translation suggestions and hidden provider revisions between profiles or devices. The file contains translated dialogue in plaintext. Existing translations stay unless you choose incoming text for each conflict. Imports do not attach subtitles; reused translations still need review. Hidden revisions require matching server and item identities.',
+			'videoSettings.subtitleReviewTransferFailed' => 'Transfer could not be completed. Check the file, active profile and storage limits, then refresh the preview if local data changed.',
+			'videoSettings.subtitleReviewExport' => 'Export this profile',
+			'videoSettings.subtitleReviewOpen' => 'Open transfer for review',
+			'videoSettings.subtitleReviewLegacy' => 'Preview old device-wide hidden revisions',
+			'videoSettings.subtitleReviewExported' => 'Reviewed subtitle data exported.',
+			'videoSettings.subtitleReviewMemoryImported' => 'Translation suggestions imported. They remain subject to review before use.',
+			'videoSettings.subtitleReviewRejectionsImported' => 'Hidden subtitle revisions imported into this profile.',
+			'videoSettings.subtitleReviewCounts' => ({required int memory, required int rejected, required int conflicts}) => 'Incoming: ${memory} translation entries, ${rejected} hidden revisions, ${conflicts} text conflicts.',
+			'videoSettings.subtitleReviewOnlyConflicts' => 'Show only text conflicts',
+			'videoSettings.subtitleReviewLocal' => ({required String text}) => 'Current: ${text}',
+			'videoSettings.subtitleReviewIncoming' => ({required String text}) => 'Incoming: ${text}',
+			'videoSettings.subtitleReviewReplace' => 'Use this incoming translation',
+			'videoSettings.subtitleReviewImportMemory' => 'Import translation suggestions',
+			'videoSettings.subtitleReviewImportRejections' => 'Import hidden revisions',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

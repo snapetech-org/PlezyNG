@@ -5697,5 +5697,21 @@
   "videoSettings.subtitleCalibrationHistory": "227d09241e7ff521",
   "videoSettings.subtitleCalibrationResiduals": "371aa4766b587608",
   "videoSettings.subtitleCalibrationInconsistent": "7dd864deaae030c4",
-  "videoSettings.subtitleCalibrationHistoryFailed": "ee3a99f671827e79"
+  "videoSettings.subtitleCalibrationHistoryFailed": "ee3a99f671827e79",
+  "videoSettings.subtitleReviewData": "0fdf7a9e3ef605b7",
+  "videoSettings.subtitleReviewDataHelp": "df0cf93dcc952586",
+  "videoSettings.subtitleReviewTransferFailed": "add23834e1ff0301",
+  "videoSettings.subtitleReviewExport": "6c7c653e62d95d77",
+  "videoSettings.subtitleReviewOpen": "9805fcc0b75ecff8",
+  "videoSettings.subtitleReviewLegacy": "075b866e708995f1",
+  "videoSettings.subtitleReviewExported": "3b59fe30d96963eb",
+  "videoSettings.subtitleReviewMemoryImported": "f5330cc79ac5a441",
+  "videoSettings.subtitleReviewRejectionsImported": "1e864fd1ef4564be",
+  "videoSettings.subtitleReviewCounts": "887beb060063a4cf",
+  "videoSettings.subtitleReviewOnlyConflicts": "07e786ec2b3171ec",
+  "videoSettings.subtitleReviewLocal": "bfbffc28777b76b7",
+  "videoSettings.subtitleReviewIncoming": "796bc62677575839",
+  "videoSettings.subtitleReviewReplace": "60e48ee5e54918f0",
+  "videoSettings.subtitleReviewImportMemory": "78a5fc7aea6ecf09",
+  "videoSettings.subtitleReviewImportRejections": "7e1a56672083b857"
 }

@@ -376,6 +376,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
         final saved = await FilePickerService.instance.saveFile(dialogTitle: t.videoSettings.subtitleExport,
           fileName: 'PlezyNG_synchronized_subtitle.zip', bytes: bytes,
           type: FileType.custom, allowedExtensions: const ['zip']);
+        if (saved != null) await SubtitleCueDocument.finishExport(saved, bytes);
         if (mounted && saved != null) showSnackBar(context, t.videoSettings.subtitleExportSuccess);
         return;
       }

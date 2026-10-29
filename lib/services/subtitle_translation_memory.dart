@@ -61,6 +61,86 @@ abstract final class SubtitleTranslationMemory {
     return output;
   }
 
+  /// Portable entries remain suggestions: the normal translation review still
+  /// precedes attachment. No model, language qualification or source URL travels.
+  static Map<String, Map<String, Object?>> validatePortable(Object? raw) {
+    if (raw is! Map || raw.length > _maximumEntries) throw const FormatException('Translation memory entry limit.');
+    final output = <String, Map<String, Object?>>{};
+    final hex = RegExp(r'^[0-9a-f]{64}$');
+    final keys = raw.keys.whereType<String>().toList()..sort();
+    if (keys.length != raw.length) throw const FormatException('Invalid memory key.');
+    for (final key in keys) {
+      final value = raw[key];
+      const fields = {'text', 'sourceFingerprint', 'namespace', 'reviewRevision', 'itemIdentity',
+        'cueId', 'backend', 'modelRevision', 'reviewedAt'};
+      if (!hex.hasMatch(key) || value is! Map || value.length != fields.length ||
+          value.keys.any((field) => !fields.contains(field))) throw const FormatException('Invalid memory entry.');
+      final text = value['text'], source = value['sourceFingerprint'], namespace = value['namespace'];
+      final revision = value['reviewRevision'], reviewed = value['reviewedAt'];
+      if (text is! String || text.trim().isEmpty || text.length > 4000 ||
+          source is! String || !hex.hasMatch(source) || namespace is! String || !hex.hasMatch(namespace) ||
+          revision is! String || !hex.hasMatch(revision) || reviewed is! String || reviewed.length > 64 ||
+          DateTime.tryParse(reviewed) == null) throw const FormatException('Invalid reviewed translation.');
+      String bounded(String name, int maximum) {
+        final item = value[name];
+        if (item is! String || item.length > maximum) throw const FormatException('Invalid memory provenance.');
+        return item;
+      }
+      output[key] = Map.unmodifiable({'text': text, 'sourceFingerprint': source, 'namespace': namespace,
+        'reviewRevision': revision, 'itemIdentity': bounded('itemIdentity', 256),
+        'cueId': bounded('cueId', 256), 'backend': bounded('backend', 256),
+        'modelRevision': bounded('modelRevision', 256), 'reviewedAt': reviewed});
+    }
+    if (utf8.encode(jsonEncode({'schema': 1, 'entries': output})).length > _maximumBytes) {
+      throw const FormatException('Translation memory size limit.');
+    }
+    return Map.unmodifiable(output);
+  }
+
+  static Future<Map<String, Map<String, Object?>>> portable(String profileId) async {
+    await _writes;
+    return validatePortable(await _read(await _file(profileId)));
+  }
+
+  static Future<void> mergePortable(String profileId, Map<String, Map<String, Object?>> incoming,
+      {required String expectedDigest, required Set<String> replaceKeys, required void Function() checkCurrent}) {
+    final validated = validatePortable(incoming);
+    if (!replaceKeys.every(validated.containsKey)) throw const FormatException('Invalid conflict choice.');
+    final replacements = Set<String>.unmodifiable(replaceKeys);
+    final next = _writes.then((_) async {
+      checkCurrent();
+      final file = await _file(profileId);
+      final current = validatePortable(await _read(file));
+      if (digest(current) != expectedDigest) throw StateError('Translation memory changed. Preview it again.');
+      final merged = <String, dynamic>{...current};
+      for (final entry in validated.entries) {
+        if (!merged.containsKey(entry.key) || replacements.contains(entry.key)) merged[entry.key] = entry.value;
+      }
+      // An import never silently discards unrelated accepted translations.
+      final checked = validatePortable(merged);
+      checkCurrent();
+      await _save(file, jsonEncode({'schema': 1, 'entries': checked}), checkCurrent: checkCurrent);
+    });
+    _writes = next.catchError((Object _) {});
+    return next;
+  }
+
+  static Future<void> _save(File file, String encoded, {void Function()? checkCurrent}) async {
+    final temporary = File('${file.path}.tmp'), backup = File('${file.path}.bak');
+    var backedUp = false;
+    try {
+      await temporary.writeAsString(encoded, flush: true);
+      checkCurrent?.call();
+      if (await file.exists()) {
+        if (await backup.exists()) await backup.delete();
+        checkCurrent?.call();
+        await file.rename(backup.path); backedUp = true;
+      }
+      try { checkCurrent?.call(); await temporary.rename(file.path); }
+      catch (_) { if (backedUp && await backup.exists()) await backup.rename(file.path); rethrow; }
+    } finally { if (await temporary.exists()) await temporary.delete(); }
+  }
+
   static Future<void> remember({required String profileId, required String namespace,
     required List<SubtitleCue> source, required List<SubtitleCue> reviewed,
     required String backendLabel, required String itemIdentity}) {
@@ -86,13 +166,7 @@ abstract final class SubtitleTranslationMemory {
         for (final key in entries.keys.take(100).toList()) { entries.remove(key); }
         encoded = jsonEncode({'schema': 1, 'entries': entries});
       }
-      final temporary = File('${file.path}.tmp'), backup = File('${file.path}.bak');
-      await temporary.writeAsString(encoded, flush: true);
-      if (await file.exists()) {
-        if (await backup.exists()) await backup.delete();
-        await file.rename(backup.path);
-      }
-      await temporary.rename(file.path);
+      await _save(file, encoded);
     });
     _writes = next.catchError((Object _) {});
     return next;

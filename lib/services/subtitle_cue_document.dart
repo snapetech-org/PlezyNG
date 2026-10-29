@@ -133,4 +133,21 @@ final class SubtitleCueDocument {
       ..addFile(ArchiveFile('provenance.json', manifest.length, manifest));
     return Uint8List.fromList(ZipEncoder().encode(archive));
   }
+
+  /// Mobile document pickers consume bytes themselves; desktop pickers return
+  /// a destination. Commit that destination through a recoverable replacement.
+  static Future<void> finishExport(String path, Uint8List bytes) async {
+    if (!(Platform.isLinux || Platform.isMacOS || Platform.isWindows)) return;
+    if (p.extension(path).toLowerCase() != '.zip') throw const FormatException('A ZIP destination is required.');
+    final target = File(path), nonce = DateTime.now().microsecondsSinceEpoch;
+    final partial = File('$path.$nonce.pending'), backup = File('$path.$nonce.backup');
+    var backedUp = false;
+    try {
+      await partial.writeAsBytes(bytes, flush: true);
+      if (await target.exists()) { await target.rename(backup.path); backedUp = true; }
+      try { await partial.rename(path); }
+      catch (_) { if (backedUp && await backup.exists()) await backup.rename(path); rethrow; }
+      if (backedUp) { try { await backup.delete(); } catch (_) {} }
+    } finally { if (await partial.exists()) await partial.delete(); }
+  }
 }

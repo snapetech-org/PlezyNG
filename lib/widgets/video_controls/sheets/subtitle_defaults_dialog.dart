@@ -13,6 +13,7 @@ import '../../../services/subtitle_font_store.dart';
 import '../../../services/subtitle_portable_defaults.dart';
 import '../../../services/subtitle_selection_rules.dart';
 import 'subtitle_defaults_cloud_dialog.dart';
+import 'subtitle_review_data_dialog.dart';
 
 class SubtitleDefaultsDialog extends StatefulWidget {
   const SubtitleDefaultsDialog({super.key});
@@ -192,6 +193,8 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
         crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(copy.description),
         Text(copy.privacy),
+        TextButton(onPressed: _busy || !_current ? null : () => showDialog<void>(context: context,
+          builder: (_) => const SubtitleReviewDataDialog()), child: Text(t.videoSettings.subtitleReviewData)),
         Wrap(spacing: 8, children: [
           TextButton(onPressed: _busy || !_current || current == null ? null : _export, child: Text(copy.exportAction)),
           TextButton(onPressed: _busy || !_current ? null : _preview, child: Text(copy.openPreview)),

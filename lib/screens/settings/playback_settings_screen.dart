@@ -33,6 +33,7 @@ import '../../utils/snackbar_helper.dart';
 import '../../widgets/dialog_action_button.dart';
 import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/setting_tile.dart';
+import '../../widgets/video_controls/sheets/subtitle_review_data_dialog.dart';
 import '../../widgets/settings_builder.dart';
 import '../../widgets/settings_page.dart';
 import '../../widgets/settings_section.dart';
@@ -276,6 +277,11 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
                   icon: Symbols.download_rounded,
                   title: t.settings.autoDownloadPreferredSubtitle,
                   subtitle: t.settings.autoDownloadPreferredSubtitleDescription,
+                ),
+                FocusableListTile(
+                  leading: const Icon(Icons.import_export),
+                  title: Text(t.videoSettings.subtitleReviewData),
+                  onTap: () => showDialog<void>(context: context, builder: (_) => const SubtitleReviewDataDialog()),
                 ),
                 SettingNavigationTile(
                   icon: Symbols.subtitles_rounded,

@@ -478,3 +478,21 @@ forms and historical text/image formats outside the declared profile still fail
 closed and remain compatibility work. OS-level isolation for a wedged GPU driver,
 browser-process OOM containment, verified mpv binaries, pack qualification and
 production signing remain separate open tasks.
+
+## 2026-10-29 saved header carry completion
+
+MilkRust now carries valid `blending_pattern`, `blending_progress`,
+`blending_direction` and `random_1..5` writes from ordinary single-preset
+frames into later `.milk2` loads. Native and WebAssembly preset loaders keep
+that process state when recreating per-preset renderer/equation state; their
+import/inspect gates resolve omitted fields against the retained header. Hosts
+that recreate the core runtime can snapshot/restore a validated header state.
+The PlezyNG lock pins MilkRust `150cbf48c3d017978d3f692d31fd7f2eb0634132`.
+
+This closes the identified source-level carry and host-reset gaps. Builds,
+tests, reference captures and device qualification remain unrun because the
+repository requires private ephemeral JIT runners and no dispatch control is
+available here. The declared HLSL/resource and image-format profile still
+rejects unsupported constructs explicitly; they are not claimed to have
+universal MilkDrop compatibility. Runtime artifacts, GPU-driver process
+isolation, pack rights/qualification and production signing remain open.

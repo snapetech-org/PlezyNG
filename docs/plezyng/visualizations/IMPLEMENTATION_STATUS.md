@@ -20,7 +20,7 @@ unknown.
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
 | HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/one-dimensional arrays/all numeric matrix shapes/control flow, bounded errors; unsupported ESSL profile constructs fail closed | Compiler/corpus execution and reference fidelity; nested/resource-array forms remain outside the declared profile, and ESSL 3.00 forbids arrays of arrays |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
-| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, default-on trailing sprites (`sprite=0` disables), saved progress/direction/randoms, sprite flips/alpha/rotation/offset/repeat fields, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
+| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, default-on trailing sprites (`sprite=0` disables), saved progress/direction/randoms carried across `.milk2` loads and ordinary single-preset soft cuts, sprite flips/alpha/rotation/offset/repeat fields, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
 | Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
@@ -403,3 +403,20 @@ equation-backed custom shapes/waves beyond MilkDrop's four slots while
 preserving inert out-of-range fields. PlezyNG now pins the corresponding
 MilkRust commit. These are source changes only; no
 workflow, build, test or device job has run.
+
+## 2026-10-29 process header carry integration
+
+MilkRust now captures valid shared `blending_*` and `random_1..5` writes after
+ordinary single-preset frame equations, seeds those registers in the next
+source's scope, and preserves them when native or WebAssembly preset loading
+recreates renderer/equation state. The Rust runtime exposes validated
+snapshot/restore for hosts that recreate the runtime itself. Failed frame
+evaluation rolls the carried header state back with the other partial runtime
+state. Stateful native and WebAssembly import/inspect validation resolves
+omitted wrapper fields against that carried state; stateless pack validation
+still fails closed without prior history. PlezyNG now pins MilkRust
+`150cbf48c3d017978d3f692d31fd7f2eb0634132` in `sources.lock.json`.
+
+This closes the identified source-level carry gap. Compiled behavior and
+reference rendering remain unverified; private JIT runner dispatch is not
+available in this workspace.

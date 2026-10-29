@@ -112,6 +112,23 @@ The focused and platform-specific verification is recorded at the top of
   Touch-position sliders expose the selected control, axis, value and semantic
   increase/decrease actions as one accessible control.
 
+## Account-wide Cloud host implementation — 2026-10-29
+
+An opt-in Decky extension, same-user Unix socket and authenticated Companion
+exchange now connect the source-defined Steam client settings setter to the
+existing computer menu. Linux/SteamOS hosts are implemented; all supported
+Companion receiver platforms can request changes. The action requires a linked,
+matching Steam account, inventory-bound computer, default-off profile permission,
+local extension consent, observed prior state and explicit confirmation. Success
+requires setter acceptance plus a later matching-account settings observation.
+There are no VDF writes, automatic retries, general script execution or exposed
+TCP/debug listeners. See [Cloud scope](STEAM_CLOUD.md) and the
+[extension handoff](../../integrations/steam-cloud-decky/README.md).
+
+This closes the Linux host implementation gap. Windows/macOS host extension
+transports and actual Steam write/readback/propagation verification remain open;
+source declarations and simulated callbacks are not a verified live contract.
+
 ## Remaining contracts and qualification
 
 - Final-package verification and a shrunk-app Android device harness are now

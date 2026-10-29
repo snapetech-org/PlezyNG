@@ -12001,6 +12001,36 @@ class Translations$games$en {
 
 	/// en: 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.'
 	String get steamSessionSignIn => 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.';
+
+	/// en: 'Allow Steam Cloud settings changes'
+	String get allowCloudSettings => 'Allow Steam Cloud settings changes';
+
+	/// en: 'Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.'
+	String get allowCloudSettingsHelp => 'Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.';
+
+	/// en: 'Steam Cloud on computer'
+	String get cloudAccountSetting => 'Steam Cloud on computer';
+
+	/// en: 'Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.'
+	String get cloudBridgeUnavailable => 'Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.';
+
+	/// en: 'Enable Steam Cloud'
+	String get enableAccountCloud => 'Enable Steam Cloud';
+
+	/// en: 'Disable Steam Cloud'
+	String get disableAccountCloud => 'Disable Steam Cloud';
+
+	/// en: 'Change Steam Cloud for all games in the signed-in Steam account on $computer? Close games and let syncing finish first. Other computers may apply this setting later. This does not delete Cloud saves.'
+	String cloudAccountConfirm({required Object computer}) => 'Change Steam Cloud for all games in the signed-in Steam account on ${computer}? Close games and let syncing finish first. Other computers may apply this setting later. This does not delete Cloud saves.';
+
+	/// en: 'Steam confirmed the Cloud setting on this computer.'
+	String get cloudAccountObserved => 'Steam confirmed the Cloud setting on this computer.';
+
+	/// en: 'The setting changed since you reviewed it. Open it again to review the current state.'
+	String get cloudAccountStale => 'The setting changed since you reviewed it. Open it again to review the current state.';
+
+	/// en: 'The change could not be confirmed. It may have applied. Check Steam before trying again.'
+	String get cloudAccountUnknown => 'The change could not be confirmed. It may have applied. Check Steam before trying again.';
 }
 
 // Path: deepLinks
@@ -19054,6 +19084,16 @@ extension on Translations {
 			'games.browseOnlyHelp' => 'Browse games, manage favorites and view Steam activity on this device. Playing here needs a compatible streaming receiver.',
 			'games.browseComputersHelp' => 'Save your computers and import their installed games through Companion Remote. Streaming and Steam pairing are unavailable on this device.',
 			'games.steamSessionSignIn' => 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.',
+			'games.allowCloudSettings' => 'Allow Steam Cloud settings changes',
+			'games.allowCloudSettingsHelp' => 'Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.',
+			'games.cloudAccountSetting' => 'Steam Cloud on computer',
+			'games.cloudBridgeUnavailable' => 'Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.',
+			'games.enableAccountCloud' => 'Enable Steam Cloud',
+			'games.disableAccountCloud' => 'Disable Steam Cloud',
+			'games.cloudAccountConfirm' => ({required Object computer}) => 'Change Steam Cloud for all games in the signed-in Steam account on ${computer}? Close games and let syncing finish first. Other computers may apply this setting later. This does not delete Cloud saves.',
+			'games.cloudAccountObserved' => 'Steam confirmed the Cloud setting on this computer.',
+			'games.cloudAccountStale' => 'The setting changed since you reviewed it. Open it again to review the current state.',
+			'games.cloudAccountUnknown' => 'The change could not be confirmed. It may have applied. Check Steam before trying again.',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

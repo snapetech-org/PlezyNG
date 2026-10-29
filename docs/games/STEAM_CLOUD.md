@@ -105,6 +105,37 @@ Primary references checked 2026-10-28:
 - [ICloudService](https://partner.steamgames.com/doc/webapi/ICloudService)
 - [Steam Families](https://partner.steamgames.com/doc/features/families)
 
+## Account-wide setting: implemented host extension
+
+The optional [PlezyNG Steam Cloud Decky extension](../../integrations/steam-cloud-decky/README.md)
+now implements the source-defined client-settings route below. Its current host
+transport supports **Linux/SteamOS**, including a Decky-equipped Steambox, desktop
+or BC250. Receiving PlezyNG clients use the existing authenticated Companion
+connection; they do not require Decky or a Steam client themselves. Windows/macOS
+host transports are not implemented. This is not a Valve Web API or Cloud OAuth
+operation and does not inherit Cloud-file grants.
+
+The existing per-computer game menu offers **Steam Cloud on computer** only for
+new-capability peers and a linked Steam account. It reads the signed-in host's
+state before displaying a localized explicit enable/disable confirmation. The
+review identifies the computer and explains account scope and propagation limits.
+Only a matching-account observed result is reported as success. Unknown outcomes
+and stale review receive distinct messages; neither triggers a retry.
+
+Both the profile's existing host-action permission and a new default-off Cloud
+settings permission are required. The installed host extension has a separate
+consent switch that resets on reload. Its mode-0600 same-user Unix socket exposes
+no TCP port or general command execution. Requests are schema/bounds checked,
+serialized and one-use, with fresh frontend-session binding, expiring claims and
+connection/profile retirement. Steam identity/settings changes invalidate old
+observations. The implementation never edits VDF or enables CEF debugging.
+
+**Source implementation is present; a live-verified Valve write contract is not
+claimed.** The packaged extension must still be tested against the user's actual
+Steam/Decky versions and both toggle directions before enabling it for routine
+use. Build/install commands and exact trust boundaries are in the extension
+README. The research notes below retain the evidence that led to this route.
+
 ## Global sync settings
 
 The authenticated host's **Cloud and game settings on computer** action opens
@@ -112,8 +143,8 @@ Steam's game properties after confirmation. Account-wide sync is changed in
 Steam Settings → Cloud. This is a host-assisted workflow, not a programmatic
 account-global mutation. `ISteamRemoteStorage::SetCloudEnabledForApp` belongs to
 the calling game's AppID; `IsCloudEnabledForAccount` is read-only. PlezyNG does not
-impersonate other AppIDs or modify guessed private VDF keys. A general programmatic
-account toggle remains blocked on a legitimate Valve/host-client write contract.
+impersonate other AppIDs or modify guessed private VDF keys. The public API does not provide an account toggle. The optional host extension
+above uses the separately sourced client-settings interface instead.
 
 
 Re-audited 2026-10-29: the Steam client's published protobuf mirror
@@ -123,16 +154,15 @@ An [unversioned reverse-engineered IClientRemoteStorage header](https://github.c
 does name `SetCloudEnabledForAccount(bool)`, with `unknown_ret`. This means an
 internal method has been observed; it does **not** establish a versioned ABI,
 authorization model or safe public third-party call. Neither guessing its vtable
-slot nor adding a disabled adapter would complete the feature. The actual
-account-wide programmatic toggle remains unimplemented pending a verified
-contract. Supported Cloud file operations and explicit host settings assistance
+slot nor adding a disabled adapter would complete the feature. At that research checkpoint the account-wide toggle was unimplemented. The
+source-defined client-settings extension above supersedes that implementation
+status; actual Steam write/readback verification remains outstanding. Supported Cloud file operations and explicit host settings assistance
 remain available under the separate permissions described above.
 
-### Additional client-settings contract evidence — 2026-10-29
+### Client-settings research checkpoint — 2026-10-29
 
-The broader client-settings path provides a stronger candidate than the old
-unversioned native vtable. It does not yet supply an implemented or live-verified
-PlezyNG write transport:
+The research checkpoint identified a stronger candidate than the old unversioned
+native vtable. These findings preceded the implementation above:
 
 - Steam's extracted [`CMsgClientSettings` schema at `c0c1e745`](https://github.com/SteamTracking/Protobufs/blob/c0c1e745cdc042dbde122ed31f40ecde28ca534e/steam/steammessages_clientsettings.proto)
   defines optional boolean `cloud_enabled`, field **10000**, stored in
@@ -145,7 +175,7 @@ PlezyNG write transport:
   `RegisterForSettingsArrayChanges(callback): Unregisterable` for observation.
   This is a community interface definition for code running inside Steam's UI,
   not a Valve-supported remote Web API or an OAuth scope.
-- PlezyNG currently has no installed Steam UI extension or authenticated bridge
+- At this research checkpoint PlezyNG had no Steam UI extension or authenticated bridge
   into that JavaScript context. Its Companion pairing and Cloud OAuth grants do
   not create access to `SteamClient.Settings`. No Steam client executable is
   available in this development environment for an actual write/readback test.
@@ -176,6 +206,6 @@ report a completed change:
    signed-in computer. `UserRoaming` metadata alone does not prove propagation
    timing or authorize a claim that all computers changed immediately.
 
-No toggle, extension or mock-backed adapter is claimed implemented by this
-research update. Cloud file permissions remain separate from this candidate
-host-client settings capability.
+The subsequent implementation above supplies the extension and Companion bridge.
+The listed live acceptance requirements remain open. Cloud file permissions stay
+separate from this host-client settings capability.

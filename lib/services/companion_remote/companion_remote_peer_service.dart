@@ -1389,6 +1389,7 @@ class CompanionRemotePeerService with KeepaliveMixin {
           'gameActionVersion': 1,
           'gameActionKinds': SteamHostAction.values.map((action) => action.name).toList(growable: false),
           'gameSessionVersion': 1,
+          if (Platform.isLinux) 'gameCloudSettingVersion': 1,
         },
       ),
     );

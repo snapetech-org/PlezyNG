@@ -803,6 +803,8 @@ class SettingsService extends BaseSharedPreferencesService {
       BoolPref(profileScopedPrefsKey(profileId, 'steam_internet'), defaultValue: false);
   static BoolPref allowSteamActionsForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'allow_steam_actions'), defaultValue: false);
+  static BoolPref allowSteamCloudSettingsForProfile(String profileId) =>
+      BoolPref(profileScopedPrefsKey(profileId, 'allow_steam_cloud_settings'), defaultValue: false);
   static BoolPref allowGameSessionControlForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'allow_game_session_control'), defaultValue: false);
   static BoolPref allowSteamInstallForProfile(String profileId) =>

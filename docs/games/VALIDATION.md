@@ -1,5 +1,33 @@
 # Games validation and release gates
 
+## Account Cloud host bridge — 2026-10-29
+
+- The Decky extension builds with the locked npm dependencies, passes TypeScript
+  checking, and packages its frontend/backend/license into a local install ZIP.
+- Seven JavaScript contract tests pass, including exact protobuf field encoding,
+  missing/invalid fields, readback requirement, stale review, denied/expired
+  claim, account change and retired controller behavior.
+- Five Companion exchange tests pass under the standalone Dart VM test runner
+  using the committed test bodies with only the test-framework/import paths
+  adapted outside the repo. The production exchange file analyzes cleanly. A
+  separate direct Dart read/write/denial smoke check also passes.
+- Three Python claim/identity/expiry unit tests pass. Six actual Unix-socket tests are
+  explicitly **skipped**: this execution runtime denies `AF_UNIX` creation with
+  EPERM. They must run on the Linux build/test host; they are not counted passed.
+- Localization generation and source tracking pass across 37 locales and 4,420
+  messages. Ten new app messages use tracked English fallback. The separate
+  plugin's small local consent panel currently uses English and Decky's controls.
+- Python modules compile. No workflow was changed or dispatched for this work.
+
+The prior Flutter SDK checkout is no longer populated in this environment, so
+full Flutter/provider/widget analysis and app tests were not executed for this
+checkpoint. Linux/SteamOS is the implemented host transport; Windows/macOS host
+transports remain absent. No Steam client is available here: real setter behavior,
+restart persistence, Steam/Decky compatibility and propagation to another host
+remain **unverified**. The bridge's success contract is implemented, not certified
+by a live Valve write.
+
+
 ## Packaging and deployment code closure — 2026-10-29
 
 Added final APK/AAB receiver inspection, minified-app instrumentation and

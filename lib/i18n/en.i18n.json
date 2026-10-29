@@ -4712,7 +4712,17 @@
     "browseOnlyTitle": "Your library is available here",
     "browseOnlyHelp": "Browse games, manage favorites and view Steam activity on this device. Playing here needs a compatible streaming receiver.",
     "browseComputersHelp": "Save your computers and import their installed games through Companion Remote. Streaming and Steam pairing are unavailable on this device.",
-    "steamSessionSignIn": "Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG."
+    "steamSessionSignIn": "Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.",
+    "allowCloudSettings": "Allow Steam Cloud settings changes",
+    "allowCloudSettingsHelp": "Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.",
+    "cloudAccountSetting": "Steam Cloud on computer",
+    "cloudBridgeUnavailable": "Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.",
+    "enableAccountCloud": "Enable Steam Cloud",
+    "disableAccountCloud": "Disable Steam Cloud",
+    "cloudAccountConfirm": "Change Steam Cloud for all games in the signed-in Steam account on $computer? Close games and let syncing finish first. Other computers may apply this setting later. This does not delete Cloud saves.",
+    "cloudAccountObserved": "Steam confirmed the Cloud setting on this computer.",
+    "cloudAccountStale": "The setting changed since you reviewed it. Open it again to review the current state.",
+    "cloudAccountUnknown": "The change could not be confirmed. It may have applied. Check Steam before trying again."
   },
   "deepLinks": {
     "invalid": "This Plezy link isn't valid.",

@@ -667,13 +667,17 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           AppMenuItem(value: 'install', label: t.games.installOnComputer, icon: Symbols.download_rounded),
           if (context.read<CompanionRemoteProvider>().supportsGameAction(SteamHostAction.inputConfiguration))
             AppMenuItem(value: 'input', label: t.games.inputOnComputer, icon: Symbols.sports_esports_rounded),
+          if (c.library.steamAccountId != null && context.read<CompanionRemoteProvider>().supportsCloudSettings)
+            AppMenuItem(value: 'cloudSetting', label: t.games.cloudAccountSetting, icon: Symbols.cloud_sync_rounded),
           if (context.read<CompanionRemoteProvider>().supportsGameAction(SteamHostAction.properties))
             AppMenuItem(value: 'properties', label: t.games.propertiesOnComputer, icon: Symbols.settings_rounded),
         ],
       ],
       onSelected: (action) async {
         if (!c.current || c != _controller) return;
-        if (action == 'prefer') {
+        if (action == 'cloudSetting') {
+          await _cloudAccountSetting(route.host);
+        } else if (action == 'prefer') {
           await _run((c) => c.preferRoute(game, preferred ? null : route));
         } else {
           await _remoteHostAction(route.host, switch (action) {
@@ -898,6 +902,50 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       checkCurrent: c.requireCurrent,
     );
     if (mounted && c.current) _changed();
+  }
+
+  Future<void> _cloudAccountSetting(GameHost host) async {
+    final c = _controller;
+    if (c == null || !c.current || c.busy) return;
+    final remote = context.read<CompanionRemoteProvider>();
+    final account = c.library.steamAccountId;
+    final peer = remote.gameActionPeerId;
+    final snapshot = c.library.inventories.where((i) => i.hostKey == host.key).firstOrNull;
+    bool current() =>
+        mounted &&
+        c.current &&
+        c == _controller &&
+        c.library.steamAccountId == account &&
+        remote.gameActionPeerId == peer &&
+        remote.supportsCloudSettings;
+    if (account == null || peer == null || snapshot?.peerId != peer || !current()) {
+      showErrorSnackBar(context, t.games.hostActionPairingHelp);
+      return;
+    }
+    await _run((_) async {
+      final before = await remote.requestCloudSetting(account);
+      if (!current()) return;
+      if (before.status != 'observed' || before.enabled == null) {
+        showErrorSnackBar(context, t.games.cloudBridgeUnavailable);
+        return;
+      }
+      final desired = !before.enabled!;
+      final label = desired ? t.games.enableAccountCloud : t.games.disableAccountCloud;
+      final confirmed = await showConfirmDialog(
+        _actionContext,
+        title: label,
+        message: t.games.cloudAccountConfirm(computer: isolateDisplayText(host.name)),
+        confirmText: label,
+      );
+      if (!confirmed || !current()) return;
+      final result = await remote.requestCloudSetting(account, expected: before.enabled, enabled: desired);
+      if (!current()) return;
+      if (result.status == 'observed' && result.enabled == desired) {
+        showSuccessSnackBar(context, t.games.cloudAccountObserved);
+      } else {
+        showErrorSnackBar(context, result.status == 'stale' ? t.games.cloudAccountStale : t.games.cloudAccountUnknown);
+      }
+    });
   }
 
   Future<void> _remoteHostAction(GameHost host, SteamHostAction action, {int? appId}) async {

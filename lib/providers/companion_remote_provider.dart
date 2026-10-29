@@ -5,6 +5,7 @@ import '../games/steam_inventory_exchange.dart';
 import '../games/steam_internet_host.dart';
 import '../games/steam_internet_tunnel.dart';
 import '../games/steam_host_actions.dart';
+import '../games/steam_cloud_settings.dart';
 import '../games/game_session_exchange.dart';
 import '../games/workspace_game_session_controls.dart';
 import '../multiview/workspace_controller.dart';
@@ -191,6 +192,13 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   StreamSubscription<RemoteSessionStatus>? _statusSubscription;
 
   SteamInventoryExchange? _gameInventory;
+  SteamCloudSettingsExchange? _cloudSettings;
+  bool _cloudSettingsSupported = false;
+  bool get supportsCloudSettings => isRemote && isConnected && _cloudSettingsSupported;
+  Future<SteamCloudSetting> requestCloudSetting(String account, {bool? expected, bool? enabled}) =>
+      supportsCloudSettings && _cloudSettings != null
+      ? _cloudSettings!.request(account, expected: expected, enabled: enabled)
+      : Future.value(const SteamCloudSetting('unavailable'));
   SteamHostActionExchange? _gameActions;
   GameSessionExchange? _gameSessions;
   MultiviewWorkspaceController? _gameWorkspace;
@@ -1070,6 +1078,23 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
         }
       },
     );
+    _cloudSettings = SteamCloudSettingsExchange(
+      isHost: host,
+      allowed: () =>
+          _ownsPeer(peer, generation) &&
+          profileId != null &&
+          profileId == _cryptoProfileId &&
+          Platform.isLinux &&
+          SettingsService.instance.read(SettingsService.showGamesTabForProfile(profileId)) &&
+          SettingsService.instance.read(SettingsService.allowSteamActionsForProfile(profileId)) &&
+          SettingsService.instance.read(SettingsService.allowSteamCloudSettingsForProfile(profileId)),
+      execute: localSteamCloudSetting,
+      send: (data) {
+        if (_ownsPeer(peer, generation)) {
+          peer.sendCommand(RemoteCommand(type: RemoteCommandType.gameCloudSetting, data: data));
+        }
+      },
+    );
     _gameActions = SteamHostActionExchange(
       isHost: host,
       allowed: (action) =>
@@ -1130,6 +1155,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
         if (command.type == RemoteCommandType.gameSession) {
           _gameSessions?.receive(command.data);
+        } else if (command.type == RemoteCommandType.gameCloudSetting) {
+          _cloudSettings?.receive(command.data);
         } else if (command.type == RemoteCommandType.gameAction) {
           _gameActions?.receive(command.data);
         } else if (command.type == RemoteCommandType.gameInventory) {
@@ -1167,6 +1194,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     _deviceDisconnectedSubscription = peer.onDeviceDisconnected.listen((_) {
       if (!_ownsPeer(peer, generation)) return;
       _gameInventory?.reset();
+      _cloudSettings?.reset();
       _gameActions?.reset();
       _gameSessions?.reset();
       final intentional = _isIntentionalDisconnect(peer, generation);
@@ -1225,6 +1253,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
   void _handleDeviceInfo(RemoteCommand command) {
     _gameSessionVersion = command.data?['gameSessionVersion'] == 1 ? 1 : 0;
+    _cloudSettingsSupported = command.data?['gameCloudSettingVersion'] == 1;
     _gameActionVersion = command.data?['gameActionVersion'] == 1 ? 1 : 0;
     _gameActionKinds = steamHostActionCapabilities(command.data?['gameActionKinds']);
     _gameInventoryVersion = command.data?['gameInventoryVersion'] == 1 ? 1 : 0;
@@ -1255,6 +1284,9 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     _gameSessions?.close();
     _gameSessions = null;
     _gameSessionVersion = 0;
+    _cloudSettings?.close();
+    _cloudSettings = null;
+    _cloudSettingsSupported = false;
     _gameActions?.close();
     _gameActions = null;
     _gameActionVersion = 0;

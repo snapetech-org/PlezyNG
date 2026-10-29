@@ -86,3 +86,11 @@ geometry, isolated object/point state, shape instances, global memory and motion
 vectors sampled from the evaluated warp grid. Run them with the pinned engine's
 crate checks. The browser SDK mock suite covers stereo ordering and disconnecting
 only its owned analysis branch. These sources were reviewed, not executed.
+
+The numeric compiler continuation adds
+`crates/milkrust-hlsl/tests/fixtures/numeric.hlsl` to the engine's browser
+integration inputs. Its expected pixel checks matrix orientation, component
+multiplication, transpose/rectangular multiplication, writable selectors,
+single-evaluation indices and function output conversion. Compile acceptance
+alone is insufficient; retain its actual pixel assertion when executing the
+private-JIT integration gate. This source-only continuation has not run it.

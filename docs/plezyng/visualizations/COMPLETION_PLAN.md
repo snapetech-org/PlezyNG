@@ -324,3 +324,12 @@ Saved sprite speed/key filtering and the neutral rotation field are corrected.
 The app's source lock points at the published MilkRust PR revision. See the
 current ledger and build handoff for exact status; this appended checkpoint does
 not rewrite the original completion contract or turn unrun gates into passes.
+
+## 2026-10-29 typed numeric source checkpoint
+
+MilkRust PR #20 now carries explicit HLSL numeric lowering for vectors and all
+2–4 dimensional float/half matrices, including row-order construction,
+component versus linear-algebra multiplication, writable masks/rows and
+converting function outputs. The app lock selects the published engine revision.
+A numerical shader control is wired into the private browser integration suite;
+it has not been executed. The original completion gates remain unchanged.

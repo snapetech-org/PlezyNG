@@ -2,7 +2,7 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `b44720c104754cc70e3a3c5d2f31a24c3171cd4a`; the exact dependency
+pins MilkRust `cef6fa7fdf570ff5b0686da605cc71578d932319`; the exact dependency
 contract is in `native/visualizer/sources.lock.json`. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
@@ -89,7 +89,7 @@ qualification, rights decisions and production custody/publication are also open
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `b44720c104754cc70e3a3c5d2f31a24c3171cd4a`:
+- The app pins MilkRust `cef6fa7fdf570ff5b0686da605cc71578d932319`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -203,3 +203,18 @@ claims, fabricated checksums, invented rights approvals or an empty trust root.
   probes, but remains unrun. Only source review, whitespace checks and JavaScript
   syntax parsing were performed. No compiler/link, build, test or device result
   is implied by this updated engine pin.
+
+## Typed numeric compiler checkpoint, 2026-10-29
+
+The current engine pin adds shared numeric shape/conversion rules, all float/half
+matrix shapes with 2–4 rows/columns, row-order constructors, full-component
+scalar splats, component multiplication and dimension-compatible linear
+algebra. Matrix masks/indexed rows support writes and increments. Function
+output arguments preserve indices and copy converted values back without losing
+disjoint writes into the same matrix. Typed vector comparisons, logical
+operations, ternaries and bitwise complement share the native/browser compiler.
+
+An authored numerical-result shader and rejection cases accompany the change.
+JavaScript syntax and whitespace checks passed. Compiler/driver execution is
+still unknown; this source checkpoint does not establish universal HLSL or
+MilkDrop3 conformance, nor does it promote unqualified catalog entries.

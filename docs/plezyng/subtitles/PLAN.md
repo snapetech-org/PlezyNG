@@ -450,7 +450,7 @@ All entries below are target requirements unless explicitly marked Existing. Exi
 | O13 | App overlays export corrected SRT or expiring WebVTT. Cast controls explicitly load a compatible reviewed VTT link into the current receiver item while preserving playback state and offering restoration. Receiver retrieval/rendering is unqualified; server burn-in is not added. | M8 |
 | O14 | Provider APIs respect quotas, retries, cancellation, and account boundaries; no executable provider scripts from subtitles. | M2 |
 | O15 | Standalone and server-library VOD analysis uses separate owned renewable leases with source/profile/part guards. Directly opened file/HTTP inputs have an explicit transient-analysis grant distinct from provider stream-only restrictions. Standalone HTTP live analysis can use a viewer-supplied paused-frame UTC anchor, expiring after 15 minutes and retiring on clock/source changes; no automatic DVR bounds are inferred. Folder imports acquire through the owning source adapter. One-shot/protected transports and unlisted catalogue sources remain limited. | M4 |
-| O16 | Benchmarks record ASR accuracy, timing, stability, end-to-end latency, frame drops, memory, power, and fallback behavior. | M0–M9 |
+| O16 | A bounded offline supplied-result tool compares paired baseline/candidate word/character errors, explicit cue-timing correspondences and supplied inference wall times. Missing/failed cases remain visible and no model is run or promoted. Confidence calibration, streaming stability/latency, independently collected playback/frame-drop/memory/power telemetry, holdout quality and device acceptance still require evidence. | M0–M9 |
 
 ## Advanced research and optional features
 

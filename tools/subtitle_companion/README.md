@@ -587,3 +587,14 @@ See [the caption relay contract](../../docs/plezyng/subtitles/WATCH-CAPTION-RELA
 for routes, app setup, cancellation and limits. Python SDK create/revoke methods
 manage transport capabilities only. Confidence: moderate in source integration;
 runtime behavior is unknown. No execution, tests, builds or CI occurred.
+
+### Offline supplied-result comparison
+
+`evaluate_results.py` compares explicit reference/baseline/candidate JSON files
+without executing models or contacting a provider. It reports paired word and
+character errors, explicitly paired cue boundary errors and supplied inference
+wall-time ratios. Missing cases, empty references and bounded-work refusals
+remain visible; incomplete comparisons return exit status 2 after saving a
+report. Reports never declare device or research qualification and never
+activate a candidate. See [input format and limits](../../docs/plezyng/subtitles/RESULT-EVALUATION.md).
+The tool was not executed during this code-only implementation pass.

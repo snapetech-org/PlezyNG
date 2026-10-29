@@ -7,10 +7,11 @@ const karaokeGuestHtml=r'''<!doctype html>
 </style><header><h1>PlezyNG Karaoke</h1></header>
 <p id="message" role="status" aria-live="polite"></p>
 <section id="join"><p>Join this karaoke room. Microphone access is optional and separate.</p><form id="joinForm"><label>Your name <input id="name" maxlength="80" autocomplete="nickname" required></label><button>Join room</button></form></section>
-<main id="room" hidden><nav aria-label="Karaoke views"><button data-view="book">Songbook</button><button data-view="waiting">Queue</button><button data-view="stage">Stage</button><button id="leave">Leave</button></nav>
+<main id="room" hidden><nav aria-label="Karaoke views"><button data-view="book">Songbook</button><button data-view="waiting">Queue</button><button data-view="stage">Stage</button><button data-view="input">Microphone</button><button id="leave">Leave</button></nav>
 <section id="book"><h2>Choose a song</h2><form id="search" class="row"><input id="query" aria-label="Search songs" placeholder="Title or artist" maxlength="200"><button>Search</button></form><label>Key <select id="key" aria-label="Key in semitones"></select></label><div id="songs"></div><button id="more" hidden>More songs</button></section>
 <section id="waiting" hidden><div id="quiz"></div><h2>Singer rotation</h2><div id="queue"></div><div id="host" class="row" hidden><button data-command="pause">Pause</button><button data-command="resume">Resume</button><button data-command="restart">Restart</button><button data-command="finish">Finish song</button><button data-command="end">End performance</button></div></section>
 <section id="stage" hidden><p id="banner"></p><p id="title" class="muted"></p><div id="lyric" dir="auto"></div><p id="next" dir="auto"></p><small id="translation"></small><progress id="progress" value="0" max="1" aria-label="Song progress"></progress><p><button id="fullscreen">Full screen</button></p></section>
+<section id="input" hidden><h2>Phone pitch and private recording</h2><p>Use headphones. This input provides pitch feedback and an optional private dry recording on the host. It does not amplify your voice through the stage speakers.</p><p id="inputReason"></p><label><input id="recordPhone" type="checkbox"> Send raw vocal audio to save a private take on the host</label><button id="microphone">Enable phone microphone</button><p id="pitch" role="status"></p><progress id="meter" max="1" value="0" aria-label="Microphone level"></progress></section>
 <button id="retry" hidden>Retry last action</button></main>
 <script>
 'use strict';
@@ -25,7 +26,7 @@ async function api(path,body){const started=performance.now();const controller=n
 }finally{clearTimeout(timeout);}}
 function node(tag,text){const el=document.createElement(tag);if(text!=null)el.textContent=text;return el;}
 function button(text,click){const b=node('button',text);b.onclick=click;return b;}
-function selectView(name){view=name;for(const id of ['book','waiting','stage'])$(id).hidden=id!==name;}
+function selectView(name){view=name;for(const id of ['book','waiting','stage','input'])$(id).hidden=id!==name;}
 for(const b of document.querySelectorAll('[data-view]'))b.onclick=()=>selectView(b.dataset.view);
 for(let i=-12;i<=12;i++){const o=node('option',(i>0?'+':'')+i);o.value=i;o.selected=i===0;$('key').append(o);}
 async function pair(event){event.preventDefault();if(busy)return;busy=true;try{
@@ -51,7 +52,9 @@ async function search(reset){try{if(reset){offset=0;$('songs').replaceChildren()
  row.append(actions);$('songs').append(row);}offset+=result.songs.length;$('more').hidden=offset>=result.total;
 }catch(e){message(e.message,true);}}
 $('search').onsubmit=e=>{e.preventDefault();search(true);};$('more').onclick=()=>search(false);
-async function refresh(){if(!credentials)return;try{const result=await api('/api/state');state=result.data;anchor=performance.now();anchorPosition=state.positionMs+(state.playing?result.rtt*.5*state.tempo:0);
+async function refresh(){if(!credentials)return;try{const result=await api('/api/state');state=result.data;if(mic && (!state.playing || state.epoch!==mic.epoch || !state.phoneInput.activeSinger))await stopMic();
+ $('inputReason').textContent=!window.isSecureContext || !state.phoneInput.available?'Phone capture requires the host HTTPS room with a certificate trusted by this phone. The ordinary LAN songbook remains available.':!state.phoneInput.activeSinger?'The host must start a request assigned to your singer before you enable input.':'Phone timing is uncalibrated. Feedback is for practice and does not enter competitive leaderboards.';
+ $('microphone').disabled=!mic && (!window.isSecureContext || !state.phoneInput.available || !state.phoneInput.activeSinger);anchor=performance.now();anchorPosition=state.positionMs+(state.playing?result.rtt*.5*state.tempo:0);
  $('title').textContent=state.track?state.track.title+' · '+state.track.artist:'Waiting for the next singer';$('banner').textContent=state.banner;
  const key=(state.track?.id||'')+':'+state.revision;if(key!==lyricKey){lyricKey=key;lyrics=state.track?(await api('/api/lyrics')).data.lines:[];}
  $('quiz').replaceChildren();const question=state.party?.question;if(question){$('quiz').append(node('h2',question.prompt));
@@ -63,8 +66,45 @@ async function refresh(){if(!credentials)return;try{const result=await api('/api
  if(credentials.role==='host'&&['pending','ready'].includes(r.state)){row.append(button(r.state==='pending'?'Approve':'Start',()=>command(r.state==='pending'?'approve':'start',{requestId:r.id})),button('Reject',()=>command('cancel',{requestId:r.id})));}$('queue').append(row);}
  }catch(e){message(e.message,true);if(e.status===401){credentials=null;sessionStorage.removeItem('plezy-room');$('join').hidden=false;$('room').hidden=true;}}}
 for(const b of document.querySelectorAll('[data-command]'))b.onclick=()=>command(b.dataset.command,{});
-$('leave').onclick=()=>{credentials=null;sessionStorage.removeItem('plezy-room');sessionStorage.removeItem('plezy-pending');location.reload();};
+$('leave').onclick=async()=>{await stopMic();credentials=null;sessionStorage.removeItem('plezy-room');sessionStorage.removeItem('plezy-pending');location.reload();};
 $('fullscreen').onclick=async()=>{try{await $('stage').requestFullscreen();}catch(e){message('Full screen is unavailable on this display.',true);}};
+
+let mic=null,micStarting=false;
+function estimate(samples){let mean=0,energy=0;for(const v of samples)mean+=v;mean/=samples.length;
+ const s=Float32Array.from(samples,v=>v-mean);for(const v of s)energy+=v*v;const rms=Math.sqrt(energy/s.length);
+ if(rms<.008)return {rms,midi:null,confidence:0};const c=new Float32Array(248);let best=0;
+ for(let lag=13;lag<247;lag++){let xy=0,x2=0,y2=0;for(let i=0;i<s.length-lag;i++){xy+=s[i]*s[i+lag];x2+=s[i]*s[i];y2+=s[i+lag]*s[i+lag];}c[lag]=xy/Math.sqrt(Math.max(1e-20,x2*y2));best=Math.max(best,c[lag]);}
+ for(let lag=14;lag<246;lag++){if(c[lag]>=Math.max(.78,best*.95)&&c[lag]>c[lag-1]&&c[lag]>=c[lag+1])return {rms,midi:69+12*Math.log2(16000/lag/440),confidence:Math.min(1,c[lag])};}
+ return {rms,midi:null,confidence:Math.max(0,Math.min(1,best))};
+}
+async function stopMic(){const active=mic;mic=null;if(active){active.stopping=true;active.stream.getTracks().forEach(t=>t.stop());active.node.port.onmessage=null;active.node.port.close();active.source.disconnect();active.node.disconnect();await active.context.close().catch(()=>{});
+ try{await active.sending;}catch{}try{await api('/api/microphone',{operation:'stop'});}catch{} }
+ $('microphone').textContent='Enable phone microphone';$('recordPhone').disabled=false;$('meter').value=0;}
+async function sendFrames(active){if(active.sendingNow)return;active.sendingNow=true;try{while((mic===active||active.stopping)&&active.queue.length){const frame=active.queue.shift();
+ try{await api('/api/microphone',frame);}catch(first){if(first.status)throw first;await api('/api/microphone',frame);} }}
+ catch(e){message('Phone input stopped: '+e.message,true);setTimeout(()=>stopMic(),0);}finally{active.sendingNow=false;}}
+$('microphone').onclick=async()=>{if(mic){await stopMic();return;}if(micStarting)return;micStarting=true;let stream=null,context=null;
+ try{if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia)throw new Error('A trusted HTTPS connection is required.');
+ stream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false});
+ context=new AudioContext({sampleRate:16000});if(context.sampleRate!==16000||!context.audioWorklet)throw new Error('This browser cannot supply the required 16 kHz capture path.');
+ await context.audioWorklet.addModule('/capture-worklet.js');await context.resume();
+ if(document.hidden||!state?.playing)throw new Error('Return to an active performance before enabling capture.');
+ const record=$('recordPhone').checked,lease=(await api('/api/microphone',{operation:'start',record})).data;
+ const source=context.createMediaStreamSource(stream),node=new AudioWorkletNode(context,'plezy-capture'),active={stream,context,source,node,id:lease.lease,sequence:lease.nextSequence,epoch:state.epoch,record,queue:[],sendingNow:false,sending:Promise.resolve()};mic=active;
+ node.port.onmessage=e=>{if(mic!==active)return;if(active.queue.length>=4){message('Phone input stopped because the network fell behind.',true);stopMic();return;}
+  const samples=e.data,pitch=estimate(samples.subarray(samples.length-2048)),sourceMs=Math.round(anchorPosition+(performance.now()-anchor)*state.tempo);
+  const frame={operation:'frame',lease:active.id,sequence:active.sequence++,epoch:active.epoch,sourceMs,...pitch};
+  if(record){const bytes=new Uint8Array(samples.length*2),view=new DataView(bytes.buffer);for(let i=0;i<samples.length;i++)view.setInt16(i*2,Math.round(Math.max(-1,Math.min(1,samples[i]))*32767),true);frame.pcm=btoa(String.fromCharCode(...bytes));}
+  $('meter').value=Math.min(1,pitch.rms*4);$('pitch').textContent=pitch.midi===null?'No confident pitch':'Pitch MIDI '+pitch.midi.toFixed(1)+' · practice only';
+  active.queue.push(frame);if(!active.sendingNow)active.sending=sendFrames(active);
+ };
+ stream.getAudioTracks()[0].onended=()=>stopMic();context.onstatechange=()=>{if(context.state!=='running'&&mic===active)stopMic();};
+ source.connect(node);node.connect(context.destination);$('microphone').textContent='Mute and save';$('recordPhone').disabled=true;
+ }catch(e){stream?.getTracks().forEach(t=>t.stop());if(context)await context.close().catch(()=>{});message(e.message,true);try{await api('/api/microphone',{operation:'stop'});}catch{}}
+ finally{micStarting=false;}
+};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopMic();});window.addEventListener('pagehide',()=>{if(mic)mic.stream.getTracks().forEach(t=>t.stop());});
+
 let lastFrame=0;function draw(now){requestAnimationFrame(draw);if(view!=='stage'||!state||now-lastFrame<80)return;lastFrame=now;
  const pos=Math.min(state.durationMs||Infinity,anchorPosition+(state.playing?(now-anchor)*state.tempo:0)),time=pos+(state.track?.offsetMs||0);
  $('progress').value=state.durationMs>0?pos/state.durationMs:0;let active=[],next=[];
@@ -77,3 +117,17 @@ let lastFrame=0;function draw(now){requestAnimationFrame(draw);if(view!=='stage'
 requestAnimationFrame(draw);setInterval(()=>{if(!busy)refresh();},1000);
 if(credentials)enter().catch(e=>message(e.message,true));else if(!invite)message('Scan the QR invitation on the host.',true);
 </script></html>''';
+
+/// Fixed 16 kHz context: the browser resamples native input before the worklet.
+/// Zero output prevents feedback. Raw data only leaves after explicit opt-in.
+const karaokeCaptureWorklet=r'''
+class PlezyCapture extends AudioWorkletProcessor {
+ constructor(){super();this.samples=new Float32Array(2400);this.at=0;}
+ process(inputs,outputs){for(const output of outputs)for(const channel of output)channel.fill(0);
+  const input=inputs[0]?.[0];if(!input)return true;
+  for(const sample of input){this.samples[this.at++]=sample;if(this.at===2400){const copy=this.samples;this.port.postMessage(copy,[copy.buffer]);this.samples=new Float32Array(2400);this.at=0;}}
+  return true;
+ }
+}
+registerProcessor('plezy-capture',PlezyCapture);
+''';

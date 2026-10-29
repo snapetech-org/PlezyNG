@@ -69,8 +69,8 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
       if(_disposed || generation!=_generation) { await _recorder?.stop(); return; }
       capturing=true;_lastPacket=DateTime.now().millisecondsSinceEpoch;_window.clear();trace.clear();rangeSamples.clear();
       final song=session.track!;
-      score=song.canScore && session.party.game!='no-score' ? KaraokeScore(track:song,part:session.current?.part ?? song.parts.firstOrNull ?? '1',
-        key:session.current!.key,tempo:session.current!.tempo,calibration:{'device':deviceId,'inputOffsetMs':inputOffsetMs,'calibrated':calibrated}) : null;
+      score=song.canScore && session.party.game!='no-score' ? KaraokeScore(track:song,part:session.current?.parts[singer] ?? session.current?.part ?? song.parts.firstOrNull ?? '1',
+        key:session.current!.key,tempo:session.current!.tempo,assisted:session.current!.clipEndMs!=null,calibration:{'device':deviceId,'inputOffsetMs':inputOffsetMs,'calibrated':calibrated}) : null;
       _samples=stream.listen((bytes)=>_receive(bytes,generation),onError:(Object e){session.report(e);unawaited(stop());},onDone:()=>unawaited(stop()));
       _state=_capture.onStateChanged().listen((state){ if(state!=RecordState.record && capturing)unawaited(stop()); });
       _watchdog=Timer.periodic(const Duration(seconds:1),(_) {
@@ -137,7 +137,8 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
       'key':session.current!.key,'tempo':session.current!.tempo,'sourceStartMs':session.positionMs.value,
       'epoch':session.epoch,'inputOffsetMs':inputOffsetMs,'calibrated':calibrated,'sampleRate':48000,'channels':1,
       'created':DateTime.now().toUtc().toIso8601String(),'private':true,'complete':false,'dryFile':'dry.wav',
-      'scoreRules':KaraokeScore.rulesVersion,'timeline':<Map<String,dynamic>>[]};
+      'scoreRules':KaraokeScore.rulesVersion,'timeline':<Map<String,dynamic>>[],
+      if(session.duetInvitation?['renditionId']==session.track!.id)...{'invitationId':session.duetInvitation!['id'],'part':session.duetInvitation!['part'],'digests':session.duetInvitation!['digests']}};
     await File(p.join(dir.path,'take.json')).writeAsString(jsonEncode(metadata),flush:true);
     final file=await File(p.join(dir.path,'dry.wav')).open(mode:FileMode.write);
     await file.writeFrom(_wavHeader(0));

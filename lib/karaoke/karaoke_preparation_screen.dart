@@ -83,6 +83,7 @@ class _KaraokePreparationScreenState extends State<KaraokePreparationScreen> {
       Wrap(spacing:8,children:[
         if({'queued','running'}.contains(job['status']))TextButton(onPressed:_busy ? null : ()=>run(()=>widget.client.cancel((job['request'] as Map)['id'] as String)),child:const Text('Cancel')),
         if({'failed','canceled','interrupted','submitting'}.contains(job['status']))TextButton(onPressed:_busy ? null : ()=>run(()=>widget.client.retry(job)),child:const Text('Retry / reconnect')),
+        if({'completed','failed','canceled','interrupted'}.contains(job['status']))TextButton(onPressed:_busy ? null : ()=>run(()=>widget.client.remove((job['request'] as Map)['id'] as String)),child:const Text('Remove companion job')),
         if(job['status']=='completed')TextButton(onPressed:_busy ? null : ()=>run(() async {
           await widget.client.apply(widget.session.catalog[widget.track.id] ?? widget.track,Map<String,dynamic>.from(job['result'] as Map));
         }),child:const Text('Download / apply for review')),

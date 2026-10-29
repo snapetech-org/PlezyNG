@@ -20,6 +20,7 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
   late final _library=KaraokeTakes(widget.session);
   List<KaraokeTake> _takes=[];
   Player? _preview;
+  StreamSubscription<bool>? _previewCompleted;
   bool _busy=false;
   String? _error;
   @override void initState(){super.initState();unawaited(run(()async{await widget.client.restore();}));}
@@ -28,16 +29,17 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
     try {await action();final takes=await _library.list();if(mounted)setState(()=>_takes=takes);}
     catch(e){if(mounted)setState(()=>_error=e.toString());}finally{if(mounted)setState(()=>_busy=false);}
   }
-  Future<void> stopPreview() async {PlaybackCoordinator.instance.unregisterKaraoke(stopPreview);final player=_preview;_preview=null;await player?.dispose();}
+  Future<void> stopPreview() async {PlaybackCoordinator.instance.unregisterKaraoke(stopPreview);final sub=_previewCompleted;_previewCompleted=null;await sub?.cancel();final player=_preview;_preview=null;await player?.dispose();}
   Future<void> play(KaraokeTake take)=>run(()async{
     await stopPreview();await widget.session.stopPlayback();await PlaybackCoordinator.instance.claimKaraoke();
     final player=Player.audio();_preview=player;PlaybackCoordinator.instance.registerKaraoke(stopPreview);
+    _previewCompleted=player.streams.completed.listen((done){if(done){unawaited(_library.markListened(take).then((_) {if(mounted)setState((){});}));}});
     await player.open(Media(take.dry.uri.toString()));
   });
   Future<void> produce(KaraokeTake take) async {
     var backing=.7,vocal=1.0,echo=0.0,gate=0.0;
-    final trim=TextEditingController(text:'0'),duration=TextEditingController(text:((take.metadata['frames'] as int? ?? 0)/48).round().toString());
-    var includeVideo=false;
+    final trim=TextEditingController(text:'0'),duration=TextEditingController(text:((take.metadata['frames'] as int? ?? 0)*1000/(take.metadata['sampleRate'] as int? ?? 48000)).round().toString());
+    var includeVideo=false,lyricOverlay=true;final selected=<String>{};final candidates=_takes.where((t)=>t.id!=take.id && t.metadata['mergeApproved']==true && t.metadata['renditionId']==take.metadata['renditionId']).toList();
     final save=await showDialog<bool>(context:context,builder:(context)=>StatefulBuilder(builder:(context,update)=>AlertDialog(title:const Text('Mix and export privately'),
       content:SizedBox(width:500,child:SingleChildScrollView(child:Column(children:[
         const Text('The dry vocal stays unchanged. Choose gains, effects and trim for a new render.'),
@@ -47,7 +49,9 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
         const Text('Noise gate'),Slider(min:0,max:.2,value:gate,onChanged:(v)=>update(()=>gate=v)),
         TextField(controller:trim,decoration:const InputDecoration(labelText:'Trim start (ms)'),keyboardType:TextInputType.number),
         TextField(controller:duration,decoration:const InputDecoration(labelText:'Output duration (ms)'),keyboardType:TextInputType.number),
+        for(final partner in candidates)CheckboxListTile(title:Text('Mix approved response ${partner.id}'),value:selected.contains(partner.id),onChanged:(v)=>update(()=>v! ? selected.add(partner.id) : selected.remove(partner.id))),
         CheckboxListTile(title:const Text('Include a camera/video file I choose'),value:includeVideo,onChanged:(v)=>update(()=>includeVideo=v!)),
+        if(includeVideo)CheckboxListTile(title:const Text('Overlay timed lyrics'),value:lyricOverlay,onChanged:(v)=>update(()=>lyricOverlay=v!)),
       ]))),actions:[TextButton(onPressed:()=>Navigator.pop(context,false),child:const Text('Cancel')),
         FilledButton(onPressed:()=>Navigator.pop(context,true),child:const Text('Render'))])));
     try {
@@ -56,7 +60,7 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
         await stopPreview();File? camera;
         if(includeVideo){final selected=await FilePicker.platform.pickFiles(type:FileType.video);final path=selected?.files.single.path;if(path==null)return;camera=File(path);}
         await _library.render(take,widget.client,{'backingGain':backing,'vocalGain':vocal,'echoWet':echo,'gate':gate,
-          'trimStartMs':int.parse(trim.text),'durationMs':int.parse(duration.text)},camera:camera);
+          'lyricOverlay':lyricOverlay,'trimStartMs':int.parse(trim.text),'durationMs':int.parse(duration.text)},camera:camera,partners:candidates.where((t)=>selected.contains(t.id)).toList());
       });
     }finally{trim.dispose();duration.dispose();}
   }
@@ -71,10 +75,13 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
     IconButton(tooltip:'Refresh',onPressed:()=>run(()async{}),icon:const Icon(Icons.refresh)),
   ]),body:ListView(padding:const EdgeInsets.all(16),children:[
     if(_busy)const LinearProgressIndicator(),if(_error!=null)Text(_error!,style:TextStyle(color:Theme.of(context).colorScheme.error)),
+    Wrap(spacing:12,children:[OutlinedButton(onPressed:_busy ? null : ()=>run(()async{final pick=await FilePicker.platform.pickFiles(type:FileType.custom,allowedExtensions:['plezyduet']);final path=pick?.files.single.path;if(path!=null)await _library.acceptInvitation(path);}),child:const Text('Accept duet invitation')),
+      OutlinedButton(onPressed:_busy ? null : ()=>run(()async{final pick=await FilePicker.platform.pickFiles(type:FileType.custom,allowedExtensions:['plezytake']);final path=pick?.files.single.path;if(path!=null)await _library.importResponse(path);}),child:const Text('Import duet response'))]),
+    if(widget.session.duetInvitation case final invitation?)Text('Accepted: ${invitation['title']}. Start this song in the songbook and record your assigned part. Export the take to return it.'),
     const Text('Recordings remain private. Export creates a file you can choose to share. Rendering uses your configured preparation companion.'),
     for(final take in _takes)Card(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
       Text(widget.session.catalog[take.metadata['renditionId']]?.title ?? take.id,style:Theme.of(context).textTheme.titleLarge),
-      Text('${take.metadata['created']} · key ${take.metadata['key']} · tempo ${take.metadata['tempo']} · ${take.complete ? 'Saved' : 'Interrupted'}'),
+      Text('${take.metadata['created']} · ${take.metadata['listened']==true ? 'Listened' : 'Unreviewed'} · key ${take.metadata['key']} · tempo ${take.metadata['tempo']} · ${take.complete ? 'Saved' : 'Interrupted'}'),
       Wrap(spacing:10,runSpacing:8,children:[
         if(!take.complete)TextButton(onPressed:_busy ? null : ()=>run(()=>_library.recover(take)),child:const Text('Recover recording')),
         TextButton(onPressed:_busy || !take.complete ? null : ()=>play(take),child:const Text('Listen to dry take')),

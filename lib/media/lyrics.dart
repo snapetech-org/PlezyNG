@@ -8,17 +8,18 @@ class LyricSpan {
   final int? endMs;
   final LyricUnit unit;
   final String? part;
+  final double? confidence;
 
-  const LyricSpan({required this.text, required this.startMs, this.endMs, this.unit = LyricUnit.word, this.part});
+  const LyricSpan({required this.text, required this.startMs, this.endMs, this.unit = LyricUnit.word, this.part, this.confidence});
 
   Map<String, dynamic> toJson() => {
     'text': text, 'startMs': startMs, if (endMs != null) 'endMs': endMs,
-    'unit': unit.name, if (part != null) 'part': part,
+    'unit': unit.name, if (part != null) 'part': part, if(confidence!=null)'confidence':confidence,
   };
 
   factory LyricSpan.fromJson(Map<String, dynamic> json) => LyricSpan(
     text: json['text'] as String, startMs: json['startMs'] as int,
-    endMs: json['endMs'] as int?, part: json['part'] as String?,
+    endMs: json['endMs'] as int?, part: json['part'] as String?, confidence:(json['confidence'] as num?)?.toDouble(),
     unit: LyricUnit.values.firstWhere((u) => u.name == json['unit'], orElse: () => LyricUnit.word),
   );
 }

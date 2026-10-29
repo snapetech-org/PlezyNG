@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +8,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../media/media_item.dart';
 import '../media/media_kind.dart';
 import '../providers/multi_server_provider.dart';
+import '../providers/hidden_libraries_provider.dart';
+import 'karaoke_venue_screen.dart';
 import 'karaoke_models.dart';
 import 'karaoke_editor.dart';
 import 'karaoke_party_screen.dart';
@@ -24,6 +27,8 @@ import 'karaoke_strings.dart';
 Future<void> openKaraoke(BuildContext context,{MediaItem? media}) async {
   final session=context.read<KaraokeSession>();
   final servers=context.read<MultiServerProvider>().serverManager;
+  final hidden=context.read<HiddenLibrariesProvider>();
+  await hidden.ensureInitialized();
   await session.ready;
   if(!context.mounted)return;
   if(media!=null) {
@@ -33,7 +38,7 @@ Future<void> openKaraoke(BuildContext context,{MediaItem? media}) async {
   await Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>KaraokeScreen(session:session,
     searchRemote:(query) async {
       final results=await Future.wait(servers.visibleOnlineClients.values.map((c)=>c.searchItems(query,limit:30)));
-      for(final item in results.expand((r)=>r).where((t)=>t.kind==MediaKind.track).take(100)) { await session.addMedia(item); }
+      for(final item in results.expand((r)=>r).where((t)=>t.kind==MediaKind.track && (t.libraryGlobalKey==null || !hidden.isLibraryHidden(t.libraryGlobalKey!))).take(100)) { await session.addMedia(item); }
     })));
 }
 
@@ -57,7 +62,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
   Future<void> _initialize() async { await s.ready; if(mounted)setState(()=>_singer=s.singers.firstOrNull?.id); }
   @override void dispose() {
     _query.dispose(); _room.dispose(); _audio.dispose(); _preparation.dispose();
-    unawaited(s.stopPlayback().then((_)=>s.save()).catchError(s.report));
+    unawaited(s.stopPlayback().then((_)async{await s.save();await s.restoreMusic();}).catchError(s.report));
     super.dispose();
   }
   Future<void> _run(Future<void> Function() action) async {
@@ -85,13 +90,27 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
     await s.addTrack(result.track);
     if(result.warnings.isNotEmpty) s.report(result.warnings.join('\n'));
   });
-  Future<void> _request(KaraokeTrack track,{bool start=false}) async {
+  Future<void> _request(KaraokeTrack track,{bool start=false,bool group=false}) async {
     if(_singer==null) await _addSinger();
     if(_singer==null || !mounted)return;
+    final people=<String>{_singer!},parts=<String,String>{};
+    if(group || track.parts.length>1){
+      final choices=track.parts.toList();if(choices.isNotEmpty)parts[_singer!]=choices.first;
+      final accepted=await showDialog<bool>(context:context,builder:(context)=>StatefulBuilder(builder:(context,update)=>AlertDialog(
+        title:const Text('Assign singers and parts'),content:SizedBox(width:500,height:400,child:ListView(children:[
+          for(final singer in s.singers.where((s)=>!s.absent))Column(children:[CheckboxListTile(title:Text(singer.name),value:people.contains(singer.id),
+            onChanged:(v)=>update((){if(v==true && people.length<4){people.add(singer.id);if(choices.isNotEmpty)parts[singer.id]=choices[(people.length-1)%choices.length];}else if(v==false){people.remove(singer.id);parts.remove(singer.id);}})),
+            if(people.contains(singer.id) && choices.isNotEmpty)DropdownButton<String>(value:parts[singer.id],items:choices.map((p)=>DropdownMenuItem(value:p,child:Text('Part $p'))).toList(),onChanged:(v)=>update(()=>parts[singer.id]=v!)),
+          ]),
+        ])),actions:[TextButton(onPressed:()=>Navigator.pop(context,false),child:const Text('Cancel')),
+          FilledButton(onPressed:people.isEmpty ? null : ()=>Navigator.pop(context,true),child:const Text('Queue assigned singers'))])));
+      if(accepted!=true)return;
+    }
     await _run(() async {
       final singer=s.singers.firstWhere((p)=>p.id==_singer);
-      final result=await s.host('request',{'trackId':track.id,'singers':[_singer],
-        'key':singer.keys[track.id] ?? 0,'tempo':singer.tempos[track.id] ?? 1});
+      final invite=s.duetInvitation?['renditionId']==track.id ? s.duetInvitation : null;
+      final result=await s.host('request',{'trackId':track.id,'singers':people.toList(),'parts':parts,
+        'key':invite?['key'] ?? singer.keys[track.id] ?? 0,'tempo':invite?['tempo'] ?? singer.tempos[track.id] ?? 1,'part':invite?['part']});
       if(start) { await s.host('start',{'requestId':result['requestId']}); if(mounted)setState(()=>_tab=2); }
     });
   }
@@ -103,7 +122,17 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
       final address=await showDialog<String>(context:context,builder:(context)=>SimpleDialog(title:Text(tr('guest')),
         children:addresses.map((a)=>SimpleDialogOption(onPressed:()=>Navigator.pop(context,a),child:Text(a))).toList()));
       if(address==null)return;
-      await _room.start(address);
+      SecurityContext? security;
+      if(!mounted)return;
+      final secure=await showDialog<bool>(context:context,builder:(context)=>AlertDialog(title:const Text('Room connection'),
+        content:const Text('Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.'),actions:[
+          TextButton(onPressed:()=>Navigator.pop(context,false),child:const Text('LAN songbook only')),
+          FilledButton(onPressed:()=>Navigator.pop(context,true),child:const Text('Configure HTTPS'))]));
+      if(secure==null)return;
+      if(secure){final cert=await FilePicker.platform.pickFiles(dialogTitle:'Select trusted PEM certificate');final certPath=cert?.files.single.path;if(certPath==null)return;
+        final key=await FilePicker.platform.pickFiles(dialogTitle:'Select private PEM key');final keyPath=key?.files.single.path;if(keyPath==null)return;
+        security=SecurityContext()..useCertificateChain(certPath)..usePrivateKey(keyPath);}
+      await _room.start(address,security:security);
     }
     var link=_room.invitation(KaraokeRoomRole.singer);
     if(!mounted)return;
@@ -127,8 +156,14 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
     SingleActivator(LogicalKeyboardKey.escape):DismissIntent(),
   },child:Scaffold(appBar:AppBar(title:Text(tr('title')),actions:[
     IconButton(tooltip:tr('import'),onPressed:_busy ? null : _import,icon:const Icon(Icons.file_open)),
-    IconButton(tooltip:'Private takes',onPressed:()=>Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokeTakesScreen(session:s,client:_preparation))),icon:const Icon(Icons.mic_external_on)),
-    IconButton(tooltip:'Party rounds',onPressed:()=>Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokePartyScreen(session:s))),icon:const Icon(Icons.celebration)),
+    PopupMenuButton<String>(tooltip:'Karaoke tools',onSelected:(value) async {
+      final page=switch(value){
+        'takes'=>KaraokeTakesScreen(session:s,client:_preparation),
+        'party'=>KaraokePartyScreen(session:s),
+        _=>KaraokeVenueScreen(session:s),
+      };await Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>page));
+    },itemBuilder:(_)=>const [PopupMenuItem(value:'takes',child:Text('Private takes')),PopupMenuItem(value:'party',child:Text('Party rounds')),
+      PopupMenuItem(value:'venue',child:Text('Venue, collections and readiness'))]),
     IconButton(tooltip:tr('guest'),onPressed:_busy ? null : _guestRoom,icon:const Icon(Icons.qr_code)),
     IconButton(tooltip:tr('stage'),onPressed:_stage,icon:const Icon(Icons.fullscreen)),
     IconButton(tooltip:tr('stop'),onPressed:_busy ? null : ()=>_command('end'),icon:const Icon(Icons.stop_circle_outlined)),
@@ -167,6 +202,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
           onTap:_busy ? null : ()=>_request(track,start:!s.hasPerformance),trailing:PopupMenuButton<String>(onSelected:(action) async {
             switch(action) {
               case 'request': await _request(track);
+              case 'group': await _request(track,group:true);
               case 'invite': await _run(()async{final file=await FilePicker.platform.saveFile(fileName:'${track.id}.plezyduet');if(file!=null)await KaraokeTakes(s).createInvitation(track,file,key:0,tempo:1,part:track.parts.lastOrNull ?? '2');});
               case 'prepare': if(mounted)await Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokePreparationScreen(session:s,track:track,client:_preparation)));
               case 'editor': if(mounted)await Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokeEditor(session:s,track:track)));
@@ -175,6 +211,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
             }
           },itemBuilder:(_)=>[
             PopupMenuItem(value:'request',child:Text(tr('request'))),
+            const PopupMenuItem(value:'group',child:Text('Request duet / group')),
             PopupMenuItem(value:'editor',child:Text(tr('editor'))),
             const PopupMenuItem(value:'prepare',child:Text('Prepare backing, timing and guidance')),
             const PopupMenuItem(value:'invite',child:Text('Export private duet invitation')),
@@ -229,8 +266,8 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
           IconButton(tooltip:'Mute stem',onPressed:()=>_run(() async { await s.changeStems({...mixer.levels,stem.key:0});setState((){}); }),icon:const Icon(Icons.volume_off)),
           SizedBox(width:160,child:Slider(min:0,max:2,value:stem.value,onChanged:_busy ? null : (v)=>_run(() async { await s.changeStems({...mixer.levels,stem.key:v});setState((){}); }))),
         ]),
-        Wrap(spacing:12,children:[TextButton(onPressed:()=>_run(() async { await s.changeStems({for(final e in mixer.levels.entries)e.key:e.key.startsWith('leadVocal') ? 1.0 : e.value});setState((){}); }),child:const Text('Guide vocals')),
-          TextButton(onPressed:()=>_run(() async { await s.changeStems({for(final e in mixer.levels.entries)e.key:e.key.startsWith('leadVocal') ? 0.0 : e.value});setState((){}); }),child:const Text('Instrumental'))]),
+        Wrap(spacing:12,children:[TextButton(onPressed:()=>_run(() async { await s.changeStems({for(final a in s.track!.assets)if(mixer.levels.containsKey(a.path))a.path:{KaraokeAssetKind.leadVocal,KaraokeAssetKind.duetVocal}.contains(a.kind) ? .6 : 1.0});setState((){}); }),child:const Text('Guide vocals')),
+          TextButton(onPressed:()=>_run(() async { await s.changeStems({for(final a in s.track!.assets)if(mixer.levels.containsKey(a.path))a.path:{KaraokeAssetKind.leadVocal,KaraokeAssetKind.duetVocal}.contains(a.kind) ? 0.0 : 1.0});setState((){}); }),child:const Text('Instrumental'))]),
       ],
       KaraokeAudioPanel(session:s,audio:_audio,singer:_singer),
       Wrap(spacing:12,children:[

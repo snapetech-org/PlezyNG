@@ -46,7 +46,7 @@ class Jobs:
         self.root, self.models, self.model_revision, self.soundfont, self.timeout = root, models, model_revision, soundfont, timeout
         self.assets = root / "assets"; self.assets.mkdir(parents=True, exist_ok=True)
         self.jobs = root / "jobs"; self.jobs.mkdir(exist_ok=True)
-        self.lock = threading.RLock(); self.states = {}; self.processes = {}; self.canceled = set()
+        self.lock = threading.RLock(); self.states = {}; self.processes = {}; self.canceled = set(); self.upload_reserved = 0
         self.pool = concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="karaoke-prep")
         for file in self.jobs.glob("*/state.json"):
             try:
@@ -58,6 +58,16 @@ class Jobs:
 
     def usage(self):
         return sum(f.stat().st_size for f in self.root.rglob("*") if f.is_file() and not f.is_symlink())
+
+    def reserved_work(self):
+        limit = 4 * MAX_ASSET
+        reserved = 0
+        for job_id, state in self.states.items():
+            if state.get("status") not in {"queued", "running"}: continue
+            directory = self.jobs / job_id
+            used = sum(f.stat().st_size for f in directory.rglob("*") if f.is_file() and not f.is_symlink()) if directory.exists() else 0
+            reserved += max(0, limit - used)
+        return reserved
 
     def capabilities(self):
         ffmpeg = bool(shutil.which("ffmpeg") and shutil.which("ffprobe"))
@@ -86,18 +96,45 @@ class Jobs:
                 if old["fingerprint"] != fingerprint: raise ValueError("Job ID reused for different inputs")
                 return old
             if sum(s["status"] in {"queued", "running"} for s in self.states.values()) >= 8: raise ValueError("Preparation queue is full")
-            if len(self.states) >= 1024 or self.usage() >= MAX_WORK: raise ValueError("Companion quota reached; remove completed jobs/assets")
+            copy_bytes = sum((self.assets / asset).stat().st_size for asset in assets)
+            if copy_bytes > 4*MAX_ASSET: raise ValueError("Job inputs exceed the 2 GiB work-directory limit")
+            if len(self.states) >= 1024 or self.usage()+self.upload_reserved+self.reserved_work()+4*MAX_ASSET > MAX_WORK:
+                raise ValueError("Companion quota reached; remove completed jobs/assets")
             if not self.capabilities()["capabilities"][kind]: raise ValueError("This companion lacks the configured dependencies for this operation")
             directory = self.jobs / request_id; directory.mkdir()
-            atomic_json(directory / "request.json", request)
-            for index, asset in enumerate(assets):
-                # Copies prevent jobs mutating the content-addressed input cache.
-                shutil.copyfile(self.assets / asset, directory / f"input-{index}")
-            state = {"schema": 1, "id": request_id, "status": "queued", "kind": kind, "fingerprint": fingerprint,
-                     "createdMs": round(time.time()*1000), "modelRevision": self.model_revision}
-            self.states[request_id] = state; atomic_json(directory / "state.json", state)
-            self.pool.submit(self.execute, request_id)
-            return dict(state)
+            try:
+                atomic_json(directory / "request.json", request)
+                for index, asset in enumerate(assets):
+                    # Copies prevent jobs mutating the content-addressed input cache.
+                    shutil.copyfile(self.assets / asset, directory / f"input-{index}")
+                state = {"schema": 1, "id": request_id, "status": "queued", "kind": kind, "fingerprint": fingerprint,
+                         "createdMs": round(time.time()*1000), "modelRevision": self.model_revision}
+                self.states[request_id] = state; atomic_json(directory / "state.json", state)
+                self.pool.submit(self.execute, request_id)
+                return dict(state)
+            except Exception:
+                self.states.pop(request_id, None)
+                shutil.rmtree(directory, ignore_errors=True)
+                raise
+
+    def remove(self, job_id):
+        with self.lock:
+            state = self.states.get(job_id)
+            if state is None: raise KeyError(job_id)
+            if state["status"] in {"queued", "running"}: raise ValueError("Cancel and wait for a job before removing it")
+            request_path = self.jobs / job_id / "request.json"
+            try: assets = json.loads(request_path.read_text()).get("assets", [])
+            except (OSError, ValueError): assets = []
+            shutil.rmtree(self.jobs / job_id, ignore_errors=False)
+            self.states.pop(job_id, None)
+            used = {asset for state in self.states.values() for asset in state.get("result", {}).get("inputAssets", [])}
+            # Request inputs remain in per-job snapshots; retain any digest still referenced by a job.
+            for directory in self.jobs.iterdir():
+                try: used.update(json.loads((directory / "request.json").read_text()).get("assets", []))
+                except (OSError, ValueError): pass
+            for asset in assets:
+                if asset not in used and IDENTITY.fullmatch(asset): (self.assets / asset).unlink(missing_ok=True)
+            return {"id": job_id, "status": "removed"}
 
     def execute(self, job_id):
         directory = self.jobs / job_id
@@ -191,7 +228,9 @@ class Handler(BaseHTTPRequestHandler):
             if path == ["v1", "capabilities"] and method == "GET": return self.reply(200, jobs.capabilities())
             if path == ["v1", "assets"] and method == "POST":
                 length = self.body(MAX_ASSET)
-                if jobs.usage()+length > MAX_WORK: raise ValueError("Companion storage quota exceeded")
+                with jobs.lock:
+                    if jobs.usage()+jobs.upload_reserved+jobs.reserved_work()+length > MAX_WORK: raise ValueError("Companion storage quota exceeded")
+                    jobs.upload_reserved += length
                 temp = jobs.assets / ("upload-" + secrets.token_hex(16)); digest = hashlib.sha256()
                 try:
                     with temp.open("xb") as output:
@@ -206,7 +245,9 @@ class Handler(BaseHTTPRequestHandler):
                     if target.exists(): temp.unlink()
                     else: temp.replace(target)
                     return self.reply(201, {"id": identity, "bytes": length})
-                finally: temp.unlink(missing_ok=True)
+                finally:
+                    temp.unlink(missing_ok=True)
+                    with jobs.lock: jobs.upload_reserved -= length
             if path == ["v1", "jobs"] and method == "POST":
                 size = self.body(128*1024); body = self.rfile.read(size)
                 if len(body) != size: raise ValueError("Truncated request")
@@ -214,7 +255,9 @@ class Handler(BaseHTTPRequestHandler):
             if len(path) >= 3 and path[:2] == ["v1", "jobs"] and JOB_ID.fullmatch(path[2]):
                 job_id = path[2]
                 if len(path) == 3:
-                    if method == "DELETE": return self.reply(200, jobs.cancel(job_id))
+                    if method == "DELETE":
+                        if urlsplit(self.path).query == 'delete=1': return self.reply(200, jobs.remove(job_id))
+                        return self.reply(200, jobs.cancel(job_id))
                     if method == "GET":
                         with jobs.lock: state = dict(jobs.states[job_id])
                         return self.reply(200, state)

@@ -43,9 +43,9 @@ class KaraokePreparation {
     final settings=await session.store.read('preparation') ?? <String,dynamic>{};settings['endpoint']=endpoint.toString();
     await session.store.write('preparation',settings);
   }
-  Future<HttpClientRequest> _request(String method,String path) async {
+  Future<HttpClientRequest> _request(String method,String path,{Map<String,String>? queryParameters}) async {
     if(endpoint==null || _token==null)throw StateError('Configure a karaoke companion first');
-    final request=await _client.openUrl(method,endpoint!.replace(path:path));
+    final request=await _client.openUrl(method,endpoint!.replace(path:path,queryParameters:queryParameters));
     request.followRedirects=false;request.headers.set(HttpHeaders.authorizationHeader,'Bearer $_token');return request;
   }
   Future<Map<String,dynamic>> _json(HttpClientResponse response) async {
@@ -57,8 +57,8 @@ class KaraokePreparation {
     if(response.statusCode<200 || response.statusCode>=300)throw StateError(value['error'] as String? ?? 'Companion request failed');
     return value;
   }
-  Future<Map<String,dynamic>> jsonRequest(String method,String path,[Map<String,dynamic>? body]) async {
-    final r=await _request(method,path);
+  Future<Map<String,dynamic>> jsonRequest(String method,String path,[Map<String,dynamic>? body,Map<String,String>? queryParameters]) async {
+    final r=await _request(method,path,queryParameters:queryParameters);
     if(body!=null) { final data=utf8.encode(jsonEncode(body));r.headers.contentType=ContentType.json;r.contentLength=data.length;r.add(data); }
     return _json(await r.close().timeout(const Duration(seconds:30)));
   }
@@ -71,14 +71,15 @@ class KaraokePreparation {
   }
   Future<Map<String,dynamic>> submit(String kind,List<File> inputs,Map<String,dynamic> params,{String? renditionId}) async {
     if(session.hasPerformance)throw StateError('Prepare audio between performances');
+    final settings=await session.store.read('preparation') ?? <String,dynamic>{};
+    final jobs=List<Map<String,dynamic>>.from((settings['jobs'] as List? ?? []).map((j)=>Map<String,dynamic>.from(j as Map)));
+    if(jobs.length>=100)throw StateError('Remove old companion jobs before submitting more preparation');
     final assets=<String>[];for(final file in inputs) { assets.add(await upload(file)); }
     final id=const Uuid().v4();
     final request={'id':id,'kind':kind,'assets':assets,'params':params};
     // Save the exact request before submission, so reconnect retries reuse it.
-    final settings=await session.store.read('preparation') ?? <String,dynamic>{};
-    final jobs=List<Map<String,dynamic>>.from((settings['jobs'] as List? ?? []).map((j)=>Map<String,dynamic>.from(j as Map)));
     jobs.add({'request':request,'renditionId':renditionId,'endpoint':endpoint.toString(),'status':'submitting'});
-    if(jobs.length>100)jobs.removeAt(0);settings['jobs']=jobs;await session.store.write('preparation',settings);
+    settings['jobs']=jobs;await session.store.write('preparation',settings);
     final result=await jsonRequest('POST','/v1/jobs',request);await remember(result);return result;
   }
   Future<void> remember(Map<String,dynamic> result) async {
@@ -91,13 +92,24 @@ class KaraokePreparation {
   Future<List<Map<String,dynamic>>> jobs() async => [for(final j in (await session.store.read('preparation'))?['jobs'] as List? ?? [])Map<String,dynamic>.from(j as Map)];
   Future<Map<String,dynamic>> refresh(String id) async { final result=await jsonRequest('GET','/v1/jobs/$id');await remember(result);return result; }
   Future<void> cancel(String id) async { await remember(await jsonRequest('DELETE','/v1/jobs/$id')); }
+  Future<void> remove(String id) async {
+    final settings=await session.store.read('preparation') ?? <String,dynamic>{};
+    final values=List<Map<String,dynamic>>.from((settings['jobs'] as List? ?? []).map((j)=>Map<String,dynamic>.from(j as Map)));
+    final index=values.indexWhere((job)=>(job['request'] as Map?)?['id']==id);
+    if(index<0)throw StateError('Companion job not found');
+    final job=values[index];
+    if(job['endpoint']!=endpoint.toString())throw StateError('Reconnect to the companion that created this job before removing it');
+    await jsonRequest('DELETE','/v1/jobs/$id',null,const {'delete':'1'});
+    values.removeAt(index);settings['jobs']=values;await session.store.write('preparation',settings);
+  }
   Future<void> retry(Map<String,dynamic> job) async {
     if(job['endpoint']!=endpoint.toString())throw StateError('Restore this job’s original companion connection');
     final request=Map<String,dynamic>.from(job['request'] as Map);
     if({'failed','canceled','interrupted'}.contains(job['status']))request['id']=const Uuid().v4();
-    final result=await jsonRequest('POST','/v1/jobs',request);
     final settings=await session.store.read('preparation') ?? <String,dynamic>{};
-    final values=settings['jobs'] as List? ?? [];values.add({...job,'request':request,'status':result['status'],'result':result});settings['jobs']=values;
+    final values=settings['jobs'] as List? ?? [];if(values.length>=100)throw StateError('Remove old companion jobs before retrying this preparation');
+    final result=await jsonRequest('POST','/v1/jobs',request);
+    values.add({...job,'request':request,'status':result['status'],'result':result});settings['jobs']=values;
     await session.store.write('preparation',settings);
   }
   Future<Directory> download(Map<String,dynamic> result) async {
@@ -127,9 +139,20 @@ class KaraokePreparation {
   }
   Future<KaraokeTrack> apply(KaraokeTrack track,Map<String,dynamic> result) async {
     final dir=await download(result),kind=result['kind'];
+    if(kind=='analyze' || kind=='waveform') {
+      final name=kind=='analyze' ? 'analysis.json' : 'waveform.json',file=File(p.join(dir.path,name));
+      if(await file.length()>8*1024*1024)throw const FormatException('Analysis artifact too large');
+      final value=jsonDecode(await file.readAsString()) as Map<String,dynamic>;
+      if(kind=='analyze'){await session.saveAnalysis(track.id,value);}
+      else{await session.store.write('waveform-${sha256.convert(utf8.encode(track.id))}',{'schema':1,'renditionId':track.id,'waveform':value});}
+      return track;
+    }
     if(kind=='align') {
       final lyrics=Lyrics.fromJson(jsonDecode(await File(p.join(dir.path,'lyrics.json')).readAsString()) as Map<String,dynamic>);
-      final value=track.withLyrics(lyrics,reviewed:false);await session.addTrack(value);return value;
+      final value=track.withLyrics(lyrics,reviewed:false);
+      final review=File(p.join(dir.path,'review.json'));
+      if(await review.exists() && await review.length()<=1024*1024){final id='alignment-${sha256.convert(utf8.encode(track.id))}';await session.store.write(id,{'schema':1,'renditionId':track.id,'review':jsonDecode(await review.readAsString())});}
+      await session.addTrack(value);return value;
     }
     if(kind=='reference') {
       final j=jsonDecode(await File(p.join(dir.path,'notes.json')).readAsString()) as Map<String,dynamic>;

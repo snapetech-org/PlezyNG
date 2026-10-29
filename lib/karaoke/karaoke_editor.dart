@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:crypto/crypto.dart';
+import 'package:path/path.dart' as p;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../media/lyrics.dart';
@@ -94,12 +96,29 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
     }
     _edit(_track.withLyrics(Lyrics(synced:true,lines:lines),reviewed:false));_tap++;
   }
+  Future<void> _section(int? index) async {
+    final old=index==null ? null : _track.sections[index];final name=TextEditingController(text:old?.name ?? 'Verse'),start=TextEditingController(text:'${old?.startMs ?? widget.session.positionMs.value}'),end=TextEditingController(text:'${old?.endMs ?? widget.session.positionMs.value+30000}');var instrumental=old?.instrumental ?? false;
+    final save=await showDialog<bool>(context:context,builder:(context)=>StatefulBuilder(builder:(context,update)=>AlertDialog(title:const Text('Section timing'),content:Column(mainAxisSize:MainAxisSize.min,children:[
+      TextField(controller:name,maxLength:80,decoration:const InputDecoration(labelText:'Name')),TextField(controller:start,keyboardType:TextInputType.number,decoration:const InputDecoration(labelText:'Start (ms)')),
+      TextField(controller:end,keyboardType:TextInputType.number,decoration:const InputDecoration(labelText:'End (ms)')),CheckboxListTile(title:const Text('Instrumental / intro'),value:instrumental,onChanged:(v)=>update(()=>instrumental=v!)),
+    ]),actions:[TextButton(onPressed:()=>Navigator.pop(context,false),child:const Text('Cancel')),FilledButton(onPressed:()=>Navigator.pop(context,true),child:const Text('Save'))])));
+    try{if(save!=true)return;final section=KaraokeSection.fromJson({'name':name.text,'startMs':int.parse(start.text),'endMs':int.parse(end.text),'instrumental':instrumental});
+      final sections=_track.sections.toList();if(index==null)sections.add(section);else sections[index]=section;sections.sort((a,b)=>a.startMs.compareTo(b.startMs));
+      _edit(KaraokeTrack.fromJson(_track.toJson()..['sections']=sections.map((v)=>v.toJson()).toList()..['chartReviewed']=false));
+    }finally{name.dispose();start.dispose();end.dispose();}
+  }
   Future<void> _importLyrics() => _run(() async {
     final choice=await FilePicker.platform.pickFiles(type:FileType.custom,allowedExtensions:['txt','lrc','vtt','ttml']);
     final path=choice?.files.single.path;if(path==null)return;
     final file=File(path);if(await file.length()>8*1024*1024)throw const FormatException('Lyric import too large');
     final ext=path.substring(path.lastIndexOf('.'));
     final result=KaraokeFormats.parse(await file.readAsString(),ext);
+    final digest=(await sha256.bind(file.openRead()).first).toString(),assetPath='originals/$digest${ext.toLowerCase()}';
+    if(!_track.assets.any((a)=>a.sha256==digest)){
+      final destination=await widget.session.store.asset(_track.id,assetPath);await destination.parent.create(recursive:true);await file.copy(destination.path);
+      final asset=KaraokeAsset(path:assetPath,sha256:digest,bytes:await destination.length(),kind:KaraokeAssetKind.original);
+      _track=KaraokeTrack.fromJson(_track.toJson()..['assets']=[..._track.assets.map((a)=>a.toJson()),asset.toJson()]);
+    }
     _edit(_track.withLyrics(result.lyrics,chart:result.notes.isEmpty ? null : result.notes,reviewed:false));
     if(result.warnings.isNotEmpty && mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(result.warnings.join('\n'))));
   });
@@ -117,7 +136,7 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
             confidence:0,unit:SubtitleWordTimingUnit.word,cueIndex:i+1)],
       );
       await widget.session.addTrack(_track);
-      await widget.session.store.write('edit-${_track.id.substring(0,_track.id.length.clamp(0,100))}',
+      await widget.session.store.write('edit-${sha256.convert(utf8.encode(_track.id)).toString()}',
         {'schema':1,'renditionId':_track.id,'revisions':_undo,'current':_track.toJson()});
       if(context.mounted)Navigator.pop(context);
     }),child:const Text('Save')),
@@ -141,6 +160,10 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
       subtitle:const Text('Enables reference-based scoring for this local revision.'),value:_track.chartReviewed,
       onChanged:_track.notes.isEmpty ? null : (v)=>_edit(_track.withLyrics(_track.lyrics,reviewed:v))),
     if(_track.notes.isNotEmpty) SizedBox(height:180,child:CustomPaint(painter:_NoteLane(_track.notes))),
+    Text('Sections and medley cues',style:Theme.of(context).textTheme.titleLarge),
+    OutlinedButton(onPressed:()=>_section(null),child:const Text('Add section from current playback times')),
+    for(var i=0;i<_track.sections.length;i++)ListTile(title:Text(_track.sections[i].name),subtitle:Text('${_track.sections[i].startMs}–${_track.sections[i].endMs} ms · ${_track.sections[i].instrumental ? 'instrumental' : 'sung'}'),
+      onTap:()=>_section(i),trailing:IconButton(onPressed:(){final sections=_track.sections.toList()..removeAt(i);_edit(KaraokeTrack.fromJson(_track.toJson()..['sections']=sections.map((v)=>v.toJson()).toList()));},icon:const Icon(Icons.delete_outline))),
     Text('Lyrics',style:Theme.of(context).textTheme.titleLarge),
     for(var i=0;i<_track.lyrics.lines.length;i++)ListTile(title:Text(_track.lyrics.lines[i].text),
       subtitle:Text('${_track.lyrics.lines[i].startMs ?? 'untimed'} – ${_track.lyrics.lines[i].endMs ?? '?'} ms · ${_track.lyrics.lines[i].part ?? 'all'}'),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../media/lyrics.dart';
@@ -34,6 +35,9 @@ class _KaraokeStageState extends State<KaraokeStage> {
     final s=widget.session, song=s.track;
     return ColoredBox(color:Color(s.stageColor),child:ValueListenableBuilder<int>(valueListenable:s.positionMs,builder:(context,position,_) {
       final time=position+(song?.lyricOffsetMs ?? 0)+s.displayOffsetMs;
+      if(song!=null)unawaited(s.loadAnalysis(song.id));
+      final analysis=s.analysis[song?.id];
+      final chord=(analysis?['chords'] as List? ?? const []).whereType<Map>().where((c)=>(c['startMs'] as int? ?? 1<<30)<=position).lastOrNull;
       return LayoutBuilder(builder:(context,constraints) {
         final font=(constraints.maxWidth/23).clamp(22.0,64.0)*s.stageTextScale;
         final lyrics=song?.lyrics;
@@ -57,7 +61,7 @@ class _KaraokeStageState extends State<KaraokeStage> {
             Text(song==null ? karaokeText(context,'upNext') : '${song.title} · ${song.artist}',
               style:TextStyle(color:Colors.white70,fontSize:font*.42),maxLines:2,textAlign:TextAlign.center),
             Expanded(child:Center(child:SingleChildScrollView(child:Column(mainAxisSize:MainAxisSize.min,children:[
-              if(song==null) Text(s.rotation.isEmpty ? karaokeText(context,'noQueue') : s.catalog[s.rotation.first.trackId]?.title ?? '',
+              if(song==null) Text(s.playing ? 'Instrumental interlude' : s.rotation.isEmpty ? karaokeText(context,'noQueue') : s.catalog[s.rotation.first.trackId]?.title ?? '',
                 style:TextStyle(color:Colors.white,fontSize:font),textAlign:TextAlign.center),
               if(song!=null && lyrics?.isEmpty==true && _cdg==null && s.videoPlayer==null)
                 Text(karaokeText(context,'noLyrics'),style:TextStyle(color:Colors.white70,fontSize:font*.65),textAlign:TextAlign.center),
@@ -73,6 +77,7 @@ class _KaraokeStageState extends State<KaraokeStage> {
                 '${line.part==null ? '' : '${line.part} · '}${line.text}',textAlign:TextAlign.center,
                 style:TextStyle(color:Colors.white60,fontSize:font*.65))),
             ])))),
+            if(song!=null && analysis!=null)Text('${analysis['key'] ?? 'Key estimate'} · ${(analysis['bpm'] as num?)?.round() ?? '—'} BPM · ${chord?['chord'] ?? ''} · estimated',style:const TextStyle(color:Colors.white70)),
             if(song!=null && s.durationMs>0) Semantics(label:'${position~/1000} / ${s.durationMs~/1000}',
               child:LinearProgressIndicator(value:(position/s.durationMs).clamp(0,1),color:Colors.amber,backgroundColor:Colors.white24)),
           ]))),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'karaoke_session.dart';
+import 'karaoke_scoring.dart';
 
 class KaraokePartyScreen extends StatefulWidget {
   const KaraokePartyScreen({super.key,required this.session});
@@ -35,13 +36,25 @@ class _KaraokePartyScreenState extends State<KaraokePartyScreen> {
       DropdownButton<String>(value:s.party.game,items:const ['no-score','solo','duet','teams','cooperative','battle','tournament','medley','quiz']
         .map((v)=>DropdownMenuItem(value:v,child:Text(v))).toList(),onChanged:_busy ? null : (v)=>command('mode',{'game':v})),
       OutlinedButton(onPressed:_busy || s.singers.where((p)=>!p.absent).length<2 ? null : ()=>command('tournament',
-        {'singers':s.singers.where((p)=>!p.absent).map((p)=>p.id).toList()}),child:const Text('Seed a tournament with present singers')),
+        {'singers':s.singers.where((p)=>!p.absent).map((p)=>p.id).toList()}),child:const Text('Start a round-robin tournament with present singers')),
       if(s.party.matches.isNotEmpty)Text('Round ${s.party.round}',style:Theme.of(context).textTheme.titleLarge),
-      for(var i=0;i<s.party.matches.length;i++)Card(child:Padding(padding:const EdgeInsets.all(12),child:Wrap(spacing:12,children:[
-        const Text('Select the reviewed winner:'),for(final id in s.party.matches[i])TextButton(onPressed:_busy ? null :
-          ()=>command('winner',{'match':i,'singerId':id}),child:Text(s.singers.where((p)=>p.id==id).firstOrNull?.name ?? id)),
+      for(var i=0;i<s.party.matches.length;i++)Card(child:Padding(padding:const EdgeInsets.all(12),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+        Text('Match ${i+1}: ${s.party.matches[i].map((id)=>s.singers.where((p)=>p.id==id).firstOrNull?.name ?? id).join(' vs ')}'),
+        if(s.party.matchScores(s.party.matches[i]) case final scores?)Text('Verified eligible scores · ${scores.values.join(' – ')}'),
+        if(s.party.matchScores(s.party.matches[i])==null)const Text('Each singer needs a calibrated, unassisted result on the same reviewed rendition and settings before this match can be resolved.'),
+        Wrap(spacing:12,children:[for(final id in s.party.matches[i])TextButton(onPressed:_busy || s.party.matchScores(s.party.matches[i])==null ? null :
+          ()=>command('winner',{'match':i,'singerId':id}),child:Text('Winner: ${s.singers.where((p)=>p.id==id).firstOrNull?.name ?? id}'))]),
       ]))),
-      if(s.party.matches.isEmpty && s.party.winners.length==1)Text('Winner: ${s.singers.where((p)=>p.id==s.party.winners.single).firstOrNull?.name ?? ''}'),
+      if(!s.party.roundRobin && s.party.matches.isEmpty && s.party.winners.length==1)Text('Winner: ${s.singers.where((p)=>p.id==s.party.winners.single).firstOrNull?.name ?? ''}'),
+      if(s.party.roundRobin)for(final e in (s.party.wins.entries.toList()..sort((a,b)=>b.value.compareTo(a.value))))ListTile(
+        title:Text(s.singers.where((p)=>p.id==e.key).firstOrNull?.name ?? e.key),trailing:Text('${e.value} wins')),
+      if(s.party.game=='teams')for(final singer in s.singers)ListTile(title:Text(singer.name),trailing:DropdownButton<String>(value:s.party.teams[singer.id],
+        hint:const Text('Choose team'),items:const ['Team A','Team B','Team C','Team D'].map((v)=>DropdownMenuItem(value:v,child:Text(v))).toList(),
+        onChanged:_busy ? null : (v)=>command('team',{'singerId':singer.id,'team':v}))),
+      if(s.track!=null && s.current!=null)for(final e in s.party.standings(s.track!.id,KaraokeScore.rulesVersion,s.current!.key,s.current!.tempo).entries)
+        ListTile(title:Text(s.singers.where((p)=>p.id==e.key).firstOrNull?.name ?? e.key),trailing:Text('${e.value.round()} average')),
+      if(s.party.game!='tournament')TextButton(onPressed:_busy ? null : ()=>command('nextRound'),child:const Text('Begin a fresh score round')),
+      if(s.party.game=='medley')FilledButton(onPressed:_busy || s.hasPerformance ? null : ()async{try{await s.host('medley');}catch(e){if(mounted)setState(()=>_error=e.toString());}},child:const Text('Start sections from the next queued songs')),
       const Divider(),Text('Quiz interludes',style:Theme.of(context).textTheme.titleLarge),
       Wrap(spacing:12,children:[OutlinedButton(onPressed:_busy ? null : question,child:const Text('Add question')),
         TextButton(onPressed:_busy ? null : ()=>command('reveal'),child:const Text('Close and reveal answer')),

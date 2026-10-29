@@ -14,26 +14,40 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import threading
 import wave
 
 VERSION = "plezy-karaoke-worker-1"
 MEDIA_FORMATS = "aac,flac,mp3,mov,matroska,webm,ogg,wav"
 
 
-def run(args: list[str], *, capture=False):
-    result = subprocess.run(args, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE if capture else subprocess.DEVNULL,
-                            stderr=subprocess.PIPE, check=False)
-    if result.returncode:
-        raise RuntimeError(f"{Path(args[0]).name} failed: {result.stderr[-3000:].decode(errors='replace')}")
-    return result.stdout if capture else None
+def run(args: list[str], *, capture=False, cwd=None):
+    process = subprocess.Popen(args, cwd=cwd, stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE if capture else subprocess.DEVNULL, stderr=subprocess.PIPE)
+    errors, output = bytearray(), bytearray()
+    overflow = threading.Event()
+    def drain(stream, buffer, maximum):
+        while data := stream.read(4096):
+            buffer.extend(data)
+            if len(buffer) > maximum:
+                if buffer is output: overflow.set(); process.kill()
+                del buffer[:-maximum]
+    threads = [threading.Thread(target=drain, args=(process.stderr, errors, 16384), daemon=True)]
+    if capture: threads.append(threading.Thread(target=drain, args=(process.stdout, output, 1024*1024), daemon=True))
+    for thread in threads: thread.start()
+    process.wait()
+    for thread in threads: thread.join(timeout=2)
+    if process.returncode or overflow.is_set():
+        raise RuntimeError(f"{Path(args[0]).name} failed: {errors[-3000:].decode(errors='replace')}")
+    return bytes(output) if capture else None
 
 
-def ffmpeg(inputs, filters, output, extra=()):
+def ffmpeg(inputs, filters, output, extra=(), cwd=None):
     args = ["ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "error", "-y", "-threads", "2"]
     for source in inputs:
-        args += ["-protocol_whitelist", "file,pipe", "-format_whitelist", MEDIA_FORMATS, "-i", str(source)]
-    args += list(filters) + list(extra) + [str(output)]
-    run(args)
+        args += ["-protocol_whitelist", "file,pipe", "-format_whitelist", MEDIA_FORMATS, "-i", str(source.resolve())]
+    args += list(filters) + list(extra) + [str(output.resolve())]
+    run(args, cwd=cwd)
 
 
 def duration(source: Path) -> float:
@@ -105,9 +119,10 @@ def align(source, out, params, models):
                 warnings.append(f"Unaligned token: {token}")
                 continue
             spans.append({"text": token + " ", "startMs": round(word["start"] * 1000), "endMs": round(word["end"] * 1000),
-                          "unit": "word", "confidence": word.get("score")})
-        line = {"text": raw, "spans": spans}
+                          "unit": "word", "confidence": word.get("score") if isinstance(word.get("score"), (int, float)) and math.isfinite(word["score"]) else None})
+        line = {"text": raw, "spans": spans if spans and "".join(s["text"] for s in spans).strip() == raw.strip() else []}
         if spans: line.update(startMs=spans[0]["startMs"], endMs=spans[-1]["endMs"])
+        if not line["spans"] and spans: warnings.append(f"Partial alignment retained only at line level: {raw[:100]}")
         lines.append(line)
     write_json(out / "lyrics.json", {"synced": any("startMs" in l for l in lines), "lines": lines})
     write_json(out / "review.json", {"reviewRequired": True, "warnings": warnings,
@@ -182,7 +197,7 @@ def render(inputs, out, params):
     if wet > 0: voice_filters += f",aecho=0.8:0.9:120:{wet:.4f}"
     timeline = params.get("timeline", [])
     if not isinstance(timeline, list) or len(timeline) > 200: raise ValueError("Take timeline exceeds segment limit")
-    sample_rate = number(params, "sampleRate", 48000, 48000, 48000)
+    sample_rate = number(params, "sampleRate", 48000, 16000, 48000)
     take_duration = duration(inputs[1])
     length = min(length, take_duration-trim)
     if length <= 0: raise ValueError("Trim starts after the take ends")
@@ -209,17 +224,65 @@ def render(inputs, out, params):
                       f"rubberband=tempo={speed:.6f}:pitch={2**(transposition/12):.8f},apad,atrim=duration={seconds:.6f},"
                       f"afade=t=in:d=0.015,afade=t=out:st={max(0,seconds-.015):.6f}:d=0.015[segment{i}]")
     chains.append("".join(f"[segment{i}]" for i in range(len(segments)))+f"concat=n={len(segments)}:v=0:a=1,volume={backing:.5f}[back]")
-    chains += [f"[1:a]{voice_filters}[voice]", "[back][voice]amix=inputs=2:duration=shortest:normalize=0,alimiter=limit=0.95:level=0[mix]"]
+    chains.append(f"[1:a]{voice_filters},apad,atrim=duration={length:.6f}[voice]")
+    partners = params.get("partners", [])
+    if not isinstance(partners, list) or len(partners) > 3 or len(inputs) < 2+len(partners): raise ValueError("Invalid group take inputs")
+    if partners and timeline: raise ValueError("Group mixing requires uninterrupted takes")
+    voices = ["[back]", "[voice]"]
+    for i, partner in enumerate(partners):
+        partner_start = number(partner, "sourceStartMs", 0, 0, 1800000)/1000
+        partner_offset = number(partner, "inputOffsetMs", 0, -2000, 2000)/1000
+        gain = number(partner, "gain", 1, 0, 2)
+        take_at = (start-partner_start)/tempo+trim+partner_offset
+        chain = f"[{i+2}:a]atrim=start={max(0,take_at):.6f},asetpts=PTS-STARTPTS"
+        if take_at < 0: chain += f",adelay={round(-take_at*1000)}:all=1"
+        chains.append(chain+f",volume={gain:.5f},apad,atrim=duration={length:.6f}[partner{i}]")
+        voices.append(f"[partner{i}]")
+    chains.append("".join(voices)+f"amix=inputs={len(voices)}:duration=longest:normalize=0,volume={1/(1+len(partners)*.35):.6f},alimiter=limit=0.95:level=0[mix]")
     graph = ";".join(chains)
     video = params.get("video") is True
     filters = ["-filter_complex", graph, "-map", "[mix]", "-t", str(length)]
     if video:
-        if len(inputs) < 3: raise ValueError("Video export needs an approved camera/video asset")
-        filters += ["-map", "2:v:0", "-vf", f"trim=start={trim:.6f},setpts=PTS-STARTPTS,scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2",
+        camera_index = int(number(params, "cameraIndex", 2, 2, 7))
+        if camera_index != 2+len(partners) or len(inputs) <= camera_index: raise ValueError("Video export needs an approved camera/video asset")
+        layout = f"trim=start={trim:.6f},setpts=PTS-STARTPTS,scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2"
+        if params.get("lyricOverlay") is True:
+            lyric_overlay(out, params.get("lyrics", {}), segments, trim, length, params.get("lyricOffsetMs", 0))
+            layout += ",subtitles=filename=lyrics.ass"
+        filters += ["-map", f"{camera_index}:v:0", "-vf", layout,
                     "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", "-movflags", "+faststart"]
     else: filters += ["-c:a", "pcm_s24le"]
-    ffmpeg(inputs, filters, out / ("performance.mp4" if video else "performance.wav"))
+    ffmpeg(inputs, filters, out / ("performance.mp4" if video else "performance.wav"), cwd=out)
     write_json(out / "recipe.json", {"schema": 1, "recipe": params, "dryPreserved": True, "assisted": wet > 0})
+
+
+def lyric_overlay(out, lyrics, segments, trim, length, offset_ms):
+    lines = lyrics.get("lines", [])
+    if len(lines) > 20000: raise ValueError("Lyric overlay limit exceeded")
+    offset = number({"offset": offset_ms}, "offset", 0, -600000, 600000)/1000
+    def stamp(seconds):
+        hundredths = max(0, round(seconds*100))
+        return f"{hundredths//360000}:{hundredths//6000%60:02}:{hundredths//100%60:02}.{hundredths%100:02}"
+    def escape(text):
+        # Generated ASS never contains user-authored override tags or commands.
+        return str(text).replace("\\", "\uFF3C").replace("{", "\uFF5B").replace("}", "\uFF5D").replace("\r", "").replace("\n", r"\N")
+    rows = ["[Script Info]", "ScriptType: v4.00+", "PlayResX: 1280", "PlayResY: 720", "[V4+ Styles]",
+        "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
+        "Style: Default,Noto Sans,38,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,2,1,2,40,40,45,1",
+        "[Events]", "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"]
+    for i, line in enumerate(lines):
+        if line.get("startMs") is None: continue
+        begin = number(line, "startMs", 0, 0, 86400000)/1000-offset
+        following = next((l["startMs"] for l in lines[i+1:] if l.get("part")==line.get("part") and l.get("startMs") is not None), None)
+        end_ms = line.get("endMs") if line.get("endMs") is not None else following
+        if end_ms is None: continue
+        end = float(end_ms)/1000-offset
+        for left, right, source, speed, _ in segments:
+            a = max(0, left-trim+(begin-source)/speed, left-trim)
+            b = min(length, left-trim+(end-source)/speed, right-trim)
+            if b > a:
+                rows.append(f"Dialogue: 0,{stamp(a)},{stamp(b)},Default,,0,0,0,,{escape(line.get('text',''))}")
+    (out / "lyrics.ass").write_text("\n".join(rows), encoding="utf-8")
 
 
 def main():
@@ -249,7 +312,7 @@ def main():
     files = []
     for file in out.iterdir():
         if file.is_file():
-            digest = hashlib.file_digest(file.open("rb"), "sha256").hexdigest()
+            with file.open("rb") as stream: digest = hashlib.file_digest(stream, "sha256").hexdigest()
             files.append({"name": file.name, "bytes": file.stat().st_size, "sha256": digest})
     versions = {}
     for name in ["demucs", "whisperx", "librosa", "torch"]:

@@ -160,14 +160,17 @@ class KaraokeRequest {
   final int createdMs;
   double key, tempo;
   KaraokeRequestState state;
-  String? part;
+  String? part,medleyGroup;
+  final Map<String,String> parts;
+  int? clipStartMs,clipEndMs;
   KaraokeRequest({required this.id, required this.trackId, required this.singers, required this.createdMs,
-    this.key = 0, this.tempo = 1, this.state = KaraokeRequestState.ready, this.part});
+    this.key = 0, this.tempo = 1, this.state = KaraokeRequestState.ready, this.part,Map<String,String>? parts,this.clipStartMs,this.clipEndMs,this.medleyGroup}) : parts=parts ?? {};
   Map<String, dynamic> toJson() => {'id': id, 'trackId': trackId, 'singers': singers, 'createdMs': createdMs,
-    'key': key, 'tempo': tempo, 'state': state.name, 'part': part};
+    'key': key, 'tempo': tempo, 'state': state.name, 'part': part,'parts':parts,'clipStartMs':clipStartMs,'clipEndMs':clipEndMs,'medleyGroup':medleyGroup};
   factory KaraokeRequest.fromJson(Map<String, dynamic> j) => KaraokeRequest(id: j['id'] as String,
     trackId: j['trackId'] as String, singers: List<String>.from(j['singers'] as List), createdMs: j['createdMs'] as int,
     key: ((j['key'] as num?)?.toDouble() ?? 0).clamp(-12,12),
     tempo: ((j['tempo'] as num?)?.toDouble() ?? 1).clamp(.5,2),
-    state: KaraokeRequestState.values.byName(j['state'] as String), part: j['part'] as String?);
+    state: KaraokeRequestState.values.byName(j['state'] as String), part: j['part'] as String?,parts:Map<String,String>.from(j['parts'] as Map? ?? {}),
+    clipStartMs:j['clipStartMs'] as int?,clipEndMs:j['clipEndMs'] as int?,medleyGroup:j['medleyGroup'] as String?);
 }

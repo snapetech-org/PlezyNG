@@ -403,7 +403,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
     if (session == null) throw StateError(Translations.of(context).videoControls.subtitleLive.noSeekableWindow);
     try {
       await showDialog<void>(context: context, builder: (_) => SubtitleLiveDelayDialog(player: player,
-        timeline: session.timeline, seek: session.seek, isCurrent: () => session.isCurrent));
+        timeline: session.timeline, seek: session.seek, isCurrent: () => session.isCurrent, seekKeepsPlaybackState: true));
     } finally { session.closeDialog(); }
   }
 

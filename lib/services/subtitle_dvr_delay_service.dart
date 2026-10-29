@@ -21,16 +21,18 @@ class SubtitleDvrDelayService extends ChangeNotifier {
   bool Function()? _isCurrent;
   int? _media, _seekGeneration;
   String? _audio;
+  bool _seekKeepsPlaybackState = false;
   DateTime? _requestAt, _lastSeekAt, _unavailableAt;
   double delaySeconds = 15;
   String status = 'Delay hold is off';
   bool get running => _timer != null;
 
   void start({required double seconds, required LiveTvTimeline Function(Duration) timeline,
-      required ValueChanged<double> seek, required bool Function() isCurrent}) {
+      required ValueChanged<double> seek, required bool Function() isCurrent, bool seekKeepsPlaybackState = false}) {
     if (!seconds.isFinite || seconds < 5 || seconds > 120) throw ArgumentError('Choose a delay between 5 and 120 seconds');
     stop();
     _timeline = timeline; _seek = seek; _isCurrent = isCurrent; delaySeconds = seconds;
+    _seekKeepsPlaybackState = seekKeepsPlaybackState;
     _media = player is PlayerMediaSessionIdentity ? (player as PlayerMediaSessionIdentity).mediaSessionGeneration : null;
     _seekGeneration = player is SubtitlePcmCaptureSource ? (player as SubtitlePcmCaptureSource).playbackTimelineGeneration : null;
     _audio = player.state.track.audio?.id;
@@ -55,9 +57,12 @@ class SubtitleDvrDelayService extends ChangeNotifier {
       if (timeline.seekStatus == LiveTvSeekStatus.failed) { stop('Delay hold stopped: the backend seek failed'); return; }
       final seekGeneration = player is SubtitlePcmCaptureSource ? (player as SubtitlePcmCaptureSource).playbackTimelineGeneration : null;
       final ownSeek = _requestAt != null;
-      if (!player.state.playing || (player.state.rate - 1).abs() > .001 ||
-          !ownSeek && (seekGeneration != _seekGeneration || timeline.seekStatus == LiveTvSeekStatus.pending ||
-          timeline.seekStatus == LiveTvSeekStatus.opening)) {
+      // A native in-place seek keeps play/pause intent. A server DVR seek may
+      // reopen a source and temporarily report paused while opening; preserve
+      // its existing ownership path until the timeline settles.
+      if (ownSeek && _seekKeepsPlaybackState && (!player.state.playing || (player.state.rate - 1).abs() > .001) ||
+          !ownSeek && (seekGeneration != _seekGeneration || !player.state.playing || (player.state.rate - 1).abs() > .001 ||
+          timeline.seekStatus == LiveTvSeekStatus.pending || timeline.seekStatus == LiveTvSeekStatus.opening)) {
         stop('Delay hold stopped: viewer playback control takes precedence'); return;
       }
       final window = timeline.seekable, edge = timeline.liveEdgeEpoch, playback = timeline.playback;

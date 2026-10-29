@@ -10,12 +10,14 @@ import '../../../services/subtitle_dvr_delay_service.dart';
 /// An explicit DVR seek on the backend's epoch/grid, never a fabricated wall
 /// clock or a change to playback speed. It does not promise future audio access.
 class SubtitleLiveDelayDialog extends StatefulWidget {
-  const SubtitleLiveDelayDialog({super.key, required this.player, required this.timeline, required this.seek, this.goLive, this.isCurrent});
+  const SubtitleLiveDelayDialog({super.key, required this.player, required this.timeline, required this.seek,
+    this.goLive, this.isCurrent, this.seekKeepsPlaybackState = false});
   final Player player;
   final LiveTvTimeline Function(Duration) timeline;
   final ValueChanged<double> seek;
   final VoidCallback? goLive;
   final bool Function()? isCurrent;
+  final bool seekKeepsPlaybackState;
   @override
   State<SubtitleLiveDelayDialog> createState() => _SubtitleLiveDelayDialogState();
 }
@@ -69,7 +71,8 @@ class _SubtitleLiveDelayDialogState extends State<SubtitleLiveDelayDialog> {
             if (!enabled) { hold.stop(); } else {
               final profiles = context.read<ActiveProfileProvider>(), profile = context.read<ActiveProfileProvider>().activeId;
               hold.start(seconds: _delay, timeline: widget.timeline, seek: widget.seek,
-                isCurrent: () => profiles.activeId == profile && (widget.isCurrent?.call() ?? true));
+                isCurrent: () => profiles.activeId == profile && (widget.isCurrent?.call() ?? true),
+                seekKeepsPlaybackState: widget.seekKeepsPlaybackState);
             }
             setState(() {});
           }),

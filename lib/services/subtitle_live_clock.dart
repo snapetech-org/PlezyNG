@@ -37,7 +37,7 @@ class SubtitleBackendLiveClock implements SubtitleLiveClock {
 
   static Future<SubtitleBackendLiveClock?> open(Player player, bool Function() isCurrent) async {
     if (player is! SubtitleLiveClockSource || player is! SubtitlePcmCaptureSource ||
-        player.disposed || !player.isLivePlayback || !isCurrent()) return null;
+        player.disposed || !player.canReadSubtitleLiveClock || !player.isLivePlayback || !isCurrent()) return null;
     final clock = SubtitleBackendLiveClock._(player, player, player, isCurrent);
     await clock._refresh();
     if (clock._fresh == null) { clock.retire(); return null; }
@@ -49,7 +49,7 @@ class SubtitleBackendLiveClock implements SubtitleLiveClock {
   bool get isCurrent {
     if (_retired) return false;
     try {
-      if (!player.disposed && _capture.isLivePlayback && _ownerCurrent() &&
+      if (!player.disposed && _backend.canReadSubtitleLiveClock && _capture.isLivePlayback && _ownerCurrent() &&
           _capture.mediaSessionGeneration == _media && player.timelineOffset == _offset) return true;
     } catch (_) { /* The owner disappeared. */ }
     retire(); return false;

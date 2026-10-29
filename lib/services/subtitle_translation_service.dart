@@ -37,8 +37,8 @@ abstract final class SubtitleTranslationService {
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
   static final RegExp _numericTokenPattern = RegExp(r'\d+(?:[.,:/-]\d+)*');
   static final RegExp _protectedSubtitleSpanPattern = RegExp(
-    r'<[^>]{0,160}>|\{[^}]{0,160}\}|\\[Nnh]|(?:https?://|www\.|mailto:)[^\s<>{}]+',
-    caseSensitive: false,
+    r'(?m)^[ \t]*(?:[-–—][ \t]*)?\p{Lu}[\p{Lu}\p{N}_. \x27-]{0,31}:(?=[ \t])|<[^>]{0,160}>|\{[^}]{0,160}\}|\\[Nnh]|(?:[Hh][Tt][Tt][Pp][Ss]?://|[Ww][Ww][Ww]\.|[Mm][Aa][Ii][Ll][Tt][Oo]:)[^\s<>{}]+',
+    unicode: true,
   );
 
   static bool get mobilePlatformSupported => !kIsWeb && !_tvOsBuild && (Platform.isAndroid || Platform.isIOS);

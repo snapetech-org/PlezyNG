@@ -36,7 +36,7 @@ class TranslationsJa extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsJa _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsJa $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsJa(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3875,13 +3875,11 @@ class _Translations$games$ja extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3909,10 +3907,8 @@ class _Translations$games$ja extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3922,7 +3918,6 @@ class _Translations$games$ja extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5401,9 +5396,9 @@ extension on TranslationsJa {
 			'settings.smallSkipDuration' => '短いスキップ時間',
 			'settings.largeSkipDuration' => '長いスキップ時間',
 			'settings.rewindOnResume' => '再開時に巻き戻し',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} 秒', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} 秒', ),
 			'settings.defaultSleepTimer' => 'デフォルトスリープタイマー',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} 分', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} 分', ),
 			'settings.rememberTrackSelections' => '番組/映画ごとにトラック選択を記憶',
 			'settings.chooseTracksBeforePlayback' => 'プレイバック前にオーディオとサブタイトルを選択する',
 			'settings.chooseTracksBeforePlaybackDescription' => '各ビデオが始まる前にソースオーディオとサブタイトルのトラックを選択します。',
@@ -6009,9 +6004,9 @@ extension on TranslationsJa {
 			'mediaMenu.deleteAnyway' => 'それでも削除',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'サーバーから「${title}」を完全に削除しますか？',
 			'mediaMenu.deleteMultipleWarning' => 'すべてのエピソードとそのファイルが含まれます。',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '含まれる${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件のエピソードとそのファイルが削除されます。', other: '中の全${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}エピソードとそのファイルが削除されます。', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: 'このアイテムは${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}個のファイルに保存されており、そのファイルが削除されます。', other: 'このアイテムは${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}個のファイルにまたがって保存されており、すべて削除されます。', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '同じファイルに保存されている他の${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件のエピソードも削除されます：', other: '同じファイルに保存されている他の${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}エピソードも削除されます：', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '含まれる${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件のエピソードとそのファイルが削除されます。', other: '中の全${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}エピソードとそのファイルが削除されます。', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: 'このアイテムは${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}個のファイルに保存されており、そのファイルが削除されます。', other: 'このアイテムは${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}個のファイルにまたがって保存されており、すべて削除されます。', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '同じファイルに保存されている他の${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件のエピソードも削除されます：', other: '同じファイルに保存されている他の${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}エピソードも削除されます：', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Plezyは削除対象のファイルを確認できなかったため、上記のアイテム以上に削除される可能性があります。キャンセルして再試行するか、それでも削除してください。',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'サーバーがこのアイテムのファイル情報を提供しなかったため、Plezyは削除対象のファイルを確認できません。上記のアイテム以上に削除される可能性があります。',
 			'mediaMenu.mediaDeletedSuccessfully' => 'メディアアイテムを正常に削除しました',
@@ -6200,7 +6195,7 @@ extension on TranslationsJa {
 			'videoControls.osdSubtitlesOff' => '字幕: オフ',
 			'videoControls.osdSubtitles' => ({required Object track}) => '字幕: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => '音声: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} フレーム', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} フレーム', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} フレーム', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} フレーム', ),
 			'videoControls.trackSelectionTitle' => 'プレイバック前にトラックを選択する',
 			'videoControls.trackSelectionAuto' => '自動選択',
 			'videoControls.openMiniPlayer' => 'オープンミニプレーヤー',
@@ -6215,7 +6210,7 @@ extension on TranslationsJa {
 			'messages.markedAsWatchedOffline' => '視聴済みにしました（オンライン時に同期）',
 			'messages.markedAsUnwatchedOffline' => '未視聴にしました（オンライン時に同期）',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => '自動削除: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '自動削除 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ダウンロード', other: '視聴済みダウンロードを${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件自動削除しました', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '自動削除 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ダウンロード', other: '視聴済みダウンロードを${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件自動削除しました', ),
 			'messages.removedFromContinueWatching' => '視聴中から削除しました',
 			'messages.errorLoading' => ({required Object error}) => 'エラー: ${error}',
 			'messages.searchPartialResults' => '一部のメディアサーバーを検索できませんでした。利用可能な結果を表示しています。',
@@ -6586,7 +6581,7 @@ extension on TranslationsJa {
 			'discover.tvShow' => 'テレビ番組',
 			'discover.minutesLeft' => ({required Object minutes}) => '残り${minutes}分',
 			'discover.moreLikeThis' => '似ている作品',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} タイトル', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}作品', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} タイトル', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}作品', ),
 			'discover.person.born' => '生年月日',
 			'discover.person.died' => '没年月日',
 			'discover.person.birthplace' => '出生地',
@@ -6831,7 +6826,7 @@ extension on TranslationsJa {
 			'explore.status.ended' => '放送終了',
 			'explore.status.canceled' => '打ち切り',
 			'explore.status.upcoming' => '放送予定',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} エピソード', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}話', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} エピソード', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}話', ),
 			'explore.cast' => 'キャスト',
 			'explore.characters' => 'キャラクター',
 			'explore.addToWatchlist' => 'ウォッチリストに追加',
@@ -6843,7 +6838,7 @@ extension on TranslationsJa {
 			'explore.notInLibrary' => 'ライブラリにありません',
 			'explore.inTheseLibraries' => 'これらのライブラリにあります',
 			'explore.checkingLibrary' => 'ライブラリを確認中…',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: 'サーバーをチェックできない ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}台のサーバーを確認できませんでした', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: 'サーバーをチェックできない ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}台のサーバーを確認できませんでした', ),
 			'explore.emptyTitle' => 'まだ何もありません',
 			'explore.emptyMessage' => ({required Object source}) => '${source}にコンテンツが追加されると、ここに表示されます。',
 			'explore.searchHint' => ({required Object source}) => '${source}を検索',
@@ -6880,7 +6875,7 @@ extension on TranslationsJa {
 			'explore.stats.planning' => ({required Object n}) => '${n}人が視聴予定',
 			'explore.stats.favorited' => ({required Object n}) => 'お気に入り ${n}件',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent}が視聴中止',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} コメント', other: 'コメント ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} コメント', other: 'コメント ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件', ),
 			'explore.stats.votes' => ({required Object n}) => '投票 ${n}件',
 			'explore.stats.watching' => ({required Object n}) => '${n}人が視聴中',
 			'explore.stats.completed' => ({required Object n}) => '${n}人が視聴済み',
@@ -6947,14 +6942,14 @@ extension on TranslationsJa {
 			'explore.detail.crew' => 'スタッフ',
 			'explore.detail.ratings' => '評価',
 			'explore.detail.schedule' => '放送予定',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: 'ユーザー数: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ユーザー数', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}人のユーザーがおすすめ', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: 'ユーザー数: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ユーザー数', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}人のユーザーがおすすめ', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => '${who}がおすすめ',
 			'explore.detail.favoritedBy' => ({required Object who}) => '${who}がお気に入り登録',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '未放送 ${n}話',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => '視聴者の${percent}がおすすめ',
 			'explore.detail.relatedTitles' => '関連作品',
 			'explore.detail.background' => '背景',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 結果', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件の結果', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 結果', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件の結果', ),
 			'liveTv.title' => 'ライブTV',
 			'liveTv.guide' => '番組表',
 			'liveTv.noChannels' => 'チャンネルがありません',
@@ -7083,7 +7078,7 @@ extension on TranslationsJa {
 			'playlists.delete' => 'プレイリストを削除',
 			'playlists.removeItem' => 'プレイリストから削除',
 			'playlists.smartPlaylist' => 'スマートプレイリスト',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}件', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}件', ),
 			'playlists.emptyPlaylist' => 'このプレイリストは空です',
 			'playlists.deleteConfirm' => 'プレイリストを削除しますか？',
 			'playlists.deleteMessage' => ({required Object name}) => '「${name}」を削除しますか？',
@@ -7105,7 +7100,7 @@ extension on TranslationsJa {
 			'music.playNext' => '次に再生',
 			'music.addToQueue' => 'キューに追加',
 			'music.discNumber' => ({required Object n}) => 'ディスク ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} トラック', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}曲', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} トラック', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}曲', ),
 			'music.nowPlaying' => '再生中',
 			'music.playingFrom' => ({required Object title}) => '${title}から再生',
 			'music.queue' => '再生キュー',
@@ -7127,7 +7122,7 @@ extension on TranslationsJa {
 			'music.noLyrics' => '歌詞がありません',
 			'music.sleepTimer' => 'スリープタイマー',
 			'music.sleepTimerEndOfTrack' => '曲の終わり',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 分', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 分', ),
 			'music.stopPlayback' => '再生を停止',
 			'music.previousTrack' => '前の曲',
 			'music.nextTrack' => '次の曲',
@@ -7211,7 +7206,7 @@ extension on TranslationsJa {
 			'watchTogether.offsetPlusTenth' => '+100ms',
 			'watchTogether.offsetPlusSecond' => '+1秒',
 			'watchTogether.participants' => '参加者',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 参加者', other: '参加者${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}人', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 参加者', other: '参加者${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}人', ),
 			'watchTogether.hostBadge' => 'ホスト',
 			'watchTogether.nameYou' => ({required Object name}) => '${name}（あなた）',
 			'watchTogether.playerIdle' => '待機中',
@@ -7420,10 +7415,10 @@ extension on TranslationsJa {
 			'downloads.unknownAlbum' => '不明なアルバム',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total}完了',
 			'downloads.storageUsed' => ({required Object size}) => '使用済みのストレージ: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件のダウンロード', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件のダウンロード', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 表示', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 表示', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 映画', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 映画', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}枚のアルバム', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}枚のアルバム', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件のダウンロード', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}件のダウンロード', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 表示', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 表示', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 映画', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 映画', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}枚のアルバム', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}枚のアルバム', ),
 			'downloads.errorFileNotFound' => 'ファイルが見つかりません（404）',
 			'downloads.errorDownloadNotAllowed' => 'サーバーがダウンロードを許可していません（403）',
 			'downloads.errorDownloadFailed' => 'ダウンロードに失敗しました',
@@ -8177,7 +8172,7 @@ extension on TranslationsJa {
 			'universalMedia.saveFavorite' => 'お気に入り保存',
 			'universalMedia.playNow' => 'プレー今',
 			'universalMedia.favoriteSaved' => 'ストリーム お気に入り このプロフィールに保存',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${count} 未サポートまたは不安全なプレイリストの入力。', other: '${count} 未サポートまたは不安全なプレイリストのエントリーを削除しました。', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${count} 未サポートまたは不安全なプレイリストの入力。', other: '${count} 未サポートまたは不安全なプレイリストのエントリーを削除しました。', ),
 			'universalMedia.playlistAddress' => 'Playlist アドレス',
 			'universalMedia.playlistAddressHelp' => 'ウェブアドレスから M3U、M3U8 または PLS プレーリストを開きます。',
 			'universalMedia.choosePlaylist' => 'プレイリストファイルを選択',
@@ -8193,7 +8188,7 @@ extension on TranslationsJa {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'ファイルを選択',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ),
 			'universalMedia.wifiTransfer' => 'ファイルをWi-Fiで送信',
 			'universalMedia.wifiTransferHelp' => '同じ信頼できるネットワーク上のブラウザからサポートされたファイルを転送します。',
 			'universalMedia.wifiTransferIntro' => 'このアドレスを別のデバイスでブラウザで開きます. ファイルを選択して、このデバイスのファイルと本の図書館に追加します。',
@@ -8204,7 +8199,7 @@ extension on TranslationsJa {
 			'universalMedia.copyAddress' => '転送アドレスコピー',
 			'universalMedia.addressCopied' => '転送アドレスコピー',
 			'universalMedia.transferExpires' => ({required Object time}) => 'このアドレスは ${time} で終了します。',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${count} ファイルを受け取った', other: '${count} ファイルを受け取った', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${count} ファイルを受け取った', other: '${count} ファイルを受け取った', ),
 			'universalMedia.uploadedData' => ({required Object size}) => '受信 ${size}',
 			'universalMedia.stopTransfer' => '転送を停止し、住所を無効にする',
 			'universalMedia.startTransfer' => '転送開始',
@@ -8430,7 +8425,7 @@ extension on TranslationsJa {
 			'fileSources.sleep' => 'スリープタイマー',
 			'fileSources.sleepOff' => 'オフ',
 			'fileSources.endChapter' => '章の終わり',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} 分', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} 分', ),
 			'fileSources.skipBack' => 'スキーバック',
 			'fileSources.skipForward' => 'スキー前進',
 			'fileSources.smartRewind' => '休憩後のスマートな回復',
@@ -8769,13 +8764,11 @@ extension on TranslationsJa {
 			'comics.collections' => 'コレクション',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8803,10 +8796,8 @@ extension on TranslationsJa {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8816,7 +8807,6 @@ extension on TranslationsJa {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

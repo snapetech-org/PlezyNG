@@ -36,7 +36,7 @@ class TranslationsFa extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsFa _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsFa $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsFa(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3880,13 +3880,11 @@ class _Translations$games$fa extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3914,10 +3912,8 @@ class _Translations$games$fa extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3927,7 +3923,6 @@ class _Translations$games$fa extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5406,9 +5401,9 @@ extension on TranslationsFa {
 			'settings.smallSkipDuration' => 'مدت زمان اسکایک',
 			'settings.largeSkipDuration' => 'مدت زمان اسکایپ',
 			'settings.rewindOnResume' => 'بازگشت به خلاصه',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثانیه', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثانیه', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثانیه', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثانیه', ),
 			'settings.defaultSleepTimer' => 'زمان خواب پیش فرض',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقیقه', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقیقه', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقیقه', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقیقه', ),
 			'settings.rememberTrackSelections' => 'به یاد داشته باشید انتخاب مسیر در هر نمایش / فیلم',
 			'settings.chooseTracksBeforePlayback' => 'صدا و زیرنویس ها را قبل از پخش انتخاب کنید.',
 			'settings.chooseTracksBeforePlaybackDescription' => 'صدا منبع و زیرنویس را قبل از شروع هر ویدئو انتخاب کنید.',
@@ -6014,9 +6009,9 @@ extension on TranslationsFa {
 			'mediaMenu.deleteAnyway' => 'حذف به هر حال',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => '«${title}» برای همیشه از سرور شما حذف شود؟',
 			'mediaMenu.deleteMultipleWarning' => 'این شامل تمام قسمت ها و فایل های آنها است.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: 'با این کار، ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت موجود در آن و فایل آن حذف می‌شود.', other: 'با این کار، همهٔ ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت موجود در آن و فایل‌های آن‌ها حذف می‌شوند.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: 'این مورد در ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فایل ذخیره شده است و آن فایل حذف خواهد شد.', other: 'این مورد در ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فایل ذخیره شده است و همهٔ آن‌ها حذف خواهند شد.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت دیگر در همین فایل ذخیره شده است و آن هم حذف خواهد شد:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت دیگر در همین فایل ذخیره شده‌اند و آن‌ها هم حذف خواهند شد:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: 'با این کار، ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت موجود در آن و فایل آن حذف می‌شود.', other: 'با این کار، همهٔ ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت موجود در آن و فایل‌های آن‌ها حذف می‌شوند.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: 'این مورد در ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فایل ذخیره شده است و آن فایل حذف خواهد شد.', other: 'این مورد در ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فایل ذخیره شده است و همهٔ آن‌ها حذف خواهند شد.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت دیگر در همین فایل ذخیره شده است و آن هم حذف خواهد شد:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت دیگر در همین فایل ذخیره شده‌اند و آن‌ها هم حذف خواهند شد:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG نتوانست بررسی کند کدام فایل‌ها حذف می‌شوند؛ بنابراین ممکن است مواردی بیش از مورد بالا حذف شوند. لغو کنید و دوباره تلاش کنید، یا در هر صورت حذف کنید.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'سرور شما جزئیات فایل‌های این مورد را ارائه نکرده است، بنابراین PlezyNG نمی‌تواند بررسی کند کدام فایل‌ها حذف می‌شوند. ممکن است مواردی بیش از مورد بالا حذف شوند.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'موضوع رسانه ها با موفقیت حذف شد',
@@ -6205,7 +6200,7 @@ extension on TranslationsFa {
 			'videoControls.osdSubtitlesOff' => 'بایگانی برچسب ها: Off',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'برچسب ها: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'صدا : ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فریم', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فریم', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فریم', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فریم', ),
 			'videoControls.trackSelectionTitle' => 'انتخاب مسیر قبل از بازی',
 			'videoControls.trackSelectionAuto' => 'انتخاب اتوماتیک',
 			'videoControls.openMiniPlayer' => 'باز کردن مینی بازیکن',
@@ -6220,7 +6215,7 @@ extension on TranslationsFa {
 			'messages.markedAsWatchedOffline' => 'برچسب گذاری شده به عنوان مشاهده شده (در هنگام همگام سازی آنلاین)',
 			'messages.markedAsUnwatchedOffline' => 'علامت گذاری شده به عنوان ناشناخته (در هنگام آنلاین همگام می شود)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'اتوماتیک حذف: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دانلود تماشاشده به‌طور خودکار حذف شد', other: 'دانلود رایگان دانلود رایگان دانلود رایگان دانلود رایگان ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دانلود تماشاشده به‌طور خودکار حذف شد', other: 'دانلود رایگان دانلود رایگان دانلود رایگان دانلود رایگان ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ),
 			'messages.removedFromContinueWatching' => 'حذف از ادامه مشاهده',
 			'messages.errorLoading' => ({required Object error}) => 'خطا : ${error}',
 			'messages.searchPartialResults' => 'برخی از سرورهای رسانه ای نمی توانستند جستجو شوند نمایش نتایج در دسترس.',
@@ -6591,7 +6586,7 @@ extension on TranslationsFa {
 			'discover.tvShow' => 'نمایش تلویزیونی',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} دقیقه باقی مانده',
 			'discover.moreLikeThis' => 'موارد مشابه با این',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عنوان', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عنوان ها', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عنوان', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عنوان ها', ),
 			'discover.person.born' => 'متولد شد',
 			'discover.person.died' => 'مرده',
 			'discover.person.birthplace' => 'محل تولد',
@@ -6836,7 +6831,7 @@ extension on TranslationsFa {
 			'explore.status.ended' => 'تمام شده',
 			'explore.status.canceled' => 'لغو',
 			'explore.status.upcoming' => 'بزودی',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت ها', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} قسمت ها', ),
 			'explore.cast' => 'کاست',
 			'explore.characters' => 'شخصیت ها',
 			'explore.addToWatchlist' => 'اضافه کردن به Watchlist',
@@ -6848,7 +6843,7 @@ extension on TranslationsFa {
 			'explore.notInLibrary' => 'نه در کتابخانه شما',
 			'explore.inTheseLibraries' => 'در این کتابخانه ها',
 			'explore.checkingLibrary' => 'کتابخانه خود را بررسی کنید.',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: 'نمی توانم سرور ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} را چک کنم', other: 'نمی توانم ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} سرورها را چک کنم', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: 'نمی توانم سرور ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} را چک کنم', other: 'نمی توانم ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} سرورها را چک کنم', ),
 			'explore.emptyTitle' => 'هنوز چیزی در اینجا نیست',
 			'explore.emptyMessage' => ({required Object source}) => 'خطوط از ${source} در اینجا ظاهر خواهد شد هنگامی که آنها محتوا دارند.',
 			'explore.searchHint' => ({required Object source}) => 'جستجو ${source}',
@@ -6885,7 +6880,7 @@ extension on TranslationsFa {
 			'explore.stats.planning' => ({required Object n}) => '${n} برنامه ریزی برای مشاهده',
 			'explore.stats.favorited' => ({required Object n}) => '${n} مورد علاقه',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} آن را از دست داد',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دیدگاه ها', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دیدگاه ها', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دیدگاه ها', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دیدگاه ها', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} رای',
 			'explore.stats.watching' => ({required Object n}) => '${n} بازدید',
 			'explore.stats.completed' => ({required Object n}) => '${n} تکمیل شده',
@@ -6952,14 +6947,14 @@ extension on TranslationsFa {
 			'explore.detail.crew' => 'خدمه',
 			'explore.detail.ratings' => 'رتبه بندی',
 			'explore.detail.schedule' => 'برنامه زمانی',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: 'توصیه شده توسط ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} کاربر', other: 'توصیه شده توسط ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} کاربران', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: 'توصیه شده توسط ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} کاربر', other: 'توصیه شده توسط ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} کاربران', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'توصیه شده توسط ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'محبوب شده توسط ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} هنوز ارسال نشده',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'توصیه شده توسط ${percent} بازدید کنندگان',
 			'explore.detail.relatedTitles' => 'عنوان های مرتبط',
 			'explore.detail.background' => 'پس زمینه',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتیجه', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتایج', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتیجه', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتایج', ),
 			'liveTv.title' => 'تلویزیون زنده',
 			'liveTv.guide' => 'راهنما',
 			'liveTv.noChannels' => 'هیچ کانال در دسترس',
@@ -7088,7 +7083,7 @@ extension on TranslationsFa {
 			'playlists.delete' => 'حذف Playlist',
 			'playlists.removeItem' => 'حذف از فهرست پخش',
 			'playlists.smartPlaylist' => 'بازی هوشمند',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} مورد', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} مورد', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} مورد', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} مورد', ),
 			'playlists.emptyPlaylist' => 'این لیست خالی است',
 			'playlists.deleteConfirm' => 'لیست بازی را حذف کنید؟',
 			'playlists.deleteMessage' => ({required Object name}) => 'آیا مطمئن هستید که می خواهید "${name}" را حذف کنید؟',
@@ -7110,7 +7105,7 @@ extension on TranslationsFa {
 			'music.playNext' => 'بعدی را اجرا کن',
 			'music.addToQueue' => 'اضافه کردن به Queue',
 			'music.discNumber' => ({required Object n}) => 'دیسک ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مسیر', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ردیف ها', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مسیر', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ردیف ها', ),
 			'music.nowPlaying' => 'اکنون بازی',
 			'music.playingFrom' => ({required Object title}) => 'بازی از ${title}',
 			'music.queue' => 'کوی',
@@ -7132,7 +7127,7 @@ extension on TranslationsFa {
 			'music.noLyrics' => 'هیچ آلبوم در دسترس نیست',
 			'music.sleepTimer' => 'زمان خواب',
 			'music.sleepTimerEndOfTrack' => 'پایان مسیر',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقیقه', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقیقه', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقیقه', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقیقه', ),
 			'music.stopPlayback' => 'پخش را متوقف کنید',
 			'music.previousTrack' => 'ترانه پیشین',
 			'music.nextTrack' => 'ترانه پسین',
@@ -7216,7 +7211,7 @@ extension on TranslationsFa {
 			'watchTogether.offsetPlusTenth' => '+ 100 مگابایت',
 			'watchTogether.offsetPlusSecond' => '+ 1 S',
 			'watchTogether.participants' => 'شرکت کنندگان',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} شرکت کنندگان', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} شرکت کنندگان', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} شرکت کنندگان', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} شرکت کنندگان', ),
 			'watchTogether.hostBadge' => 'میزبان',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (شما)',
 			'watchTogether.playerIdle' => 'ایدل',
@@ -7425,10 +7420,10 @@ extension on TranslationsFa {
 			'downloads.unknownAlbum' => 'آلبوم ناشناخته',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} تکمیل شده',
 			'downloads.storageUsed' => ({required Object size}) => 'ذخیره سازی مورد استفاده: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دانلود', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دانلود', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نمایش', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نمایش', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فیلم', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فیلم ها', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} آلبوم', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} آلبوم', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دانلود', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دانلود', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نمایش', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نمایش', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فیلم', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فیلم ها', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} آلبوم', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} آلبوم', ),
 			'downloads.errorFileNotFound' => 'فایلهای یافت نشد (404)',
 			'downloads.errorDownloadNotAllowed' => 'دانلود غیر مجاز توسط سرور (403)',
 			'downloads.errorDownloadFailed' => 'دانلود شکست خورد',
@@ -8182,7 +8177,7 @@ extension on TranslationsFa {
 			'universalMedia.saveFavorite' => 'ذخیره محبوب',
 			'universalMedia.playNow' => 'اکنون بازی کنید',
 			'universalMedia.favoriteSaved' => 'جریان محبوب به این پروفایل ذخیره شده است',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${count} بدون پشتیبانی یا ورود نامناسب به لیست پخش.', other: '${count} بدون پشتیبانی و یا ورود نامناسب به لیست پخش.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${count} بدون پشتیبانی یا ورود نامناسب به لیست پخش.', other: '${count} بدون پشتیبانی و یا ورود نامناسب به لیست پخش.', ),
 			'universalMedia.playlistAddress' => 'آدرس Playlist',
 			'universalMedia.playlistAddressHelp' => 'یک لیست پخش M3U، M3u8 یا PLS را از یک آدرس وب باز کنید لینک های جریان مستقیم لیست پخش را ذخیره نمی کنند.',
 			'universalMedia.choosePlaylist' => 'انتخاب فایل playlist',
@@ -8198,7 +8193,7 @@ extension on TranslationsFa {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'انتخاب فایل ها',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '1 فایل انتخاب شده', other: '${count} فایل های انتخاب شده', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '1 فایل انتخاب شده', other: '${count} فایل های انتخاب شده', ),
 			'universalMedia.wifiTransfer' => 'ارسال فایل ها از طریق Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'انتقال فایل های پشتیبانی شده از یک مرورگر در همان شبکه قابل اعتماد.',
 			'universalMedia.wifiTransferIntro' => 'این آدرس را در یک مرورگر در دستگاه دیگری باز کنید فایل ها را انتخاب کنید تا آنها را به کتابخانه فایل ها و کتاب های این دستگاه اضافه کنید.',
@@ -8209,7 +8204,7 @@ extension on TranslationsFa {
 			'universalMedia.copyAddress' => 'کپی آدرس انتقال',
 			'universalMedia.addressCopied' => 'آدرس انتقال کپی شده',
 			'universalMedia.transferExpires' => ({required Object time}) => 'این آدرس در ${time} به پایان می رسد.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${count} فایل دریافت شده', other: 'فایل های ${count} دریافت شده', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${count} فایل دریافت شده', other: 'فایل های ${count} دریافت شده', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'دانلود ${size}',
 			'universalMedia.stopTransfer' => 'توقف انتقال و نامناسب کردن آدرس',
 			'universalMedia.startTransfer' => 'شروع انتقال',
@@ -8435,7 +8430,7 @@ extension on TranslationsFa {
 			'fileSources.sleep' => 'زمان خواب',
 			'fileSources.sleepOff' => 'خاموش',
 			'fileSources.endChapter' => 'پایان فصل',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقیقه', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقیقه', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقیقه', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقیقه', ),
 			'fileSources.skipBack' => 'بازگشت به Sk',
 			'fileSources.skipForward' => 'کشتی جلو',
 			'fileSources.smartRewind' => 'بازگشت هوشمند پس از استراحت',
@@ -8774,13 +8769,11 @@ extension on TranslationsFa {
 			'comics.collections' => 'مجموعه‌ها',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8808,10 +8801,8 @@ extension on TranslationsFa {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8821,7 +8812,6 @@ extension on TranslationsFa {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

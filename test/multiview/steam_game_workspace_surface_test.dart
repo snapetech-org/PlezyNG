@@ -24,6 +24,7 @@ void main() {
   }
 
   SteamGameWorkspaceSession session({
+    bool controllerOnly = false,
     void Function()? onFirstFrame,
     SteamInputProfile? inputProfile,
     Future<void> Function(SteamInputProfile)? persist,
@@ -33,6 +34,7 @@ void main() {
       host: host,
       game: StreamGame(hostKey: host.key, id: '620', name: 'Portal 2'),
       touchControls: false,
+      controllerOnly: controllerOnly,
       onFirstFrame: onFirstFrame,
       inputProfile: inputProfile,
       persistInputProfile: persist,
@@ -40,6 +42,26 @@ void main() {
   }
 
   tearDown(() => messenger.setMockMethodCallHandler(channel, null));
+
+  test('controller-only sessions keep touch input and never request microphone access', () async {
+    final calls = <String>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call.method);
+      return call.method == 'getSessionState' ? 'playing' : null;
+    });
+    final stream = session(controllerOnly: true);
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await state('playing');
+    expect(stream.creationParams, containsPair('controllerOnly', true));
+    expect(stream.creationParams, containsPair('touchControls', true));
+    expect(stream.creationParams, containsPair('pyrowave', false));
+    expect(stream.creationParams, containsPair('allowHdr', false));
+    expect(await stream.requestMicrophonePermission(), isFalse);
+    expect(await stream.enableMicrophone(), isFalse);
+    expect(calls, isNot(contains('requestMicrophonePermission')));
+    expect(calls, isNot(contains('startMicrophone')));
+  });
 
   for (final replaceReceiver in [false, true]) {
     test('delayed input revocation cannot overwrite a newer grant (replace receiver: $replaceReceiver)', () async {
@@ -523,6 +545,28 @@ void main() {
     await pending;
     expect(stream.surfaceGeneration.value, 1);
     expect(stream.sessionState.value, 'connecting');
+  });
+
+  test('cancel during reconnect prevents a replacement receiver after teardown', () async {
+    final stopped = Completer<void>();
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'getSessionState') return 'disconnected';
+      if (call.method == 'disconnect') await stopped.future;
+      return null;
+    });
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await state('disconnected');
+    final pending = stream.reconnect();
+    await stream.disconnect();
+    expect(stream.sessionState.value, 'disconnecting');
+    await state('playing');
+    expect(stream.sessionState.value, 'disconnecting');
+    stopped.complete();
+    await pending;
+    expect(stream.sessionState.value, 'disconnected');
+    expect(stream.surfaceGeneration.value, 0);
   });
 
   test('failed teardown does not create an overlapping session', () async {

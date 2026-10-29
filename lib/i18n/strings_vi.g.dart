@@ -36,7 +36,7 @@ class TranslationsVi extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsVi _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsVi $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsVi(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3857,13 +3857,11 @@ class _Translations$games$vi extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3891,10 +3889,8 @@ class _Translations$games$vi extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3904,7 +3900,6 @@ class _Translations$games$vi extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5381,9 +5376,9 @@ extension on TranslationsVi {
 			'settings.smallSkipDuration' => 'Lớn Skip Thời gian',
 			'settings.largeSkipDuration' => 'Lớn Skip Thời gian',
 			'settings.rewindOnResume' => 'Rewind trên Resume',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} giây', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} giây', ),
 			'settings.defaultSleepTimer' => 'Thời gian giấc ngủ mặc định',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} phút', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} phút', ),
 			'settings.rememberTrackSelections' => 'Hãy nhớ các lựa chọn theo show/movie',
 			'settings.chooseTracksBeforePlayback' => 'Chọn âm thanh và subtitles trước khi playback',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Chọn nguồn âm thanh và theo dõi subtitle trước khi mỗi video bắt đầu.',
@@ -5989,9 +5984,9 @@ extension on TranslationsVi {
 			'mediaMenu.deleteAnyway' => 'xóa bất cứ',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'Xóa vĩnh viễn ${title} khỏi máy chủ của bạn?',
 			'mediaMenu.deleteMultipleWarning' => 'Bao gồm tất cả các tập phim và tệp của chúng.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Thao tác này xóa tất cả ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tập phim trong mục này cùng các tệp của chúng.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Mục này được lưu trong ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tệp và tất cả các tệp đó sẽ bị xóa.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Có ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tập phim khác được lưu trong cùng tệp và cũng sẽ bị xóa:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Thao tác này xóa tất cả ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tập phim trong mục này cùng các tệp của chúng.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Mục này được lưu trong ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tệp và tất cả các tệp đó sẽ bị xóa.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Có ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tập phim khác được lưu trong cùng tệp và cũng sẽ bị xóa:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG không thể xác định những tệp sẽ bị xóa, nên có thể xóa nhiều hơn mục nêu trên. Hãy hủy và thử lại, hoặc vẫn xóa.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Máy chủ không cung cấp thông tin tệp cho mục này, nên PlezyNG không thể xác định những tệp sẽ bị xóa. Có thể xóa nhiều hơn mục nêu trên.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media item đã bị xóa thành công',
@@ -6180,7 +6175,7 @@ extension on TranslationsVi {
 			'videoControls.osdSubtitlesOff' => 'Chủ đề: Off',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Đánh giá: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Âm thanh: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} khung', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} khung', ),
 			'videoControls.trackSelectionTitle' => 'Lựa chọn đường trước khi playback',
 			'videoControls.trackSelectionAuto' => 'Tự động Selection',
 			'videoControls.openMiniPlayer' => 'Trò chơi Mini Open',
@@ -6195,7 +6190,7 @@ extension on TranslationsVi {
 			'messages.markedAsWatchedOffline' => 'Đánh dấu như đã được xem (sẽ đồng bộ khi trực tuyến)',
 			'messages.markedAsUnwatchedOffline' => 'Đánh dấu như không được xem (sẽ đồng bộ khi trực tuyến)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Tự động xóa: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Tự động xóa ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} xem tải xuống', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Tự động xóa ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} xem tải xuống', ),
 			'messages.removedFromContinueWatching' => 'Xóa khỏi tiếp tục xem',
 			'messages.errorLoading' => ({required Object error}) => 'Lỗi: ${error}',
 			'messages.searchPartialResults' => 'Một số máy chủ truyền thông không thể được tìm kiếm. hiển thị kết quả có sẵn.',
@@ -6566,7 +6561,7 @@ extension on TranslationsVi {
 			'discover.tvShow' => 'chương trình TV',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} phút left',
 			'discover.moreLikeThis' => 'Nội Dung Tương Tự',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} danh sách', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} danh sách', ),
 			'discover.person.born' => 'Sinh ra',
 			'discover.person.died' => 'chết',
 			'discover.person.birthplace' => 'Địa điểm sinh',
@@ -6811,7 +6806,7 @@ extension on TranslationsVi {
 			'explore.status.ended' => 'Đã Kết Thúc',
 			'explore.status.canceled' => 'hủy',
 			'explore.status.upcoming' => 'Sắp Công Chiếu',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} Phản ứng', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} Phản ứng', ),
 			'explore.cast' => 'Diễn viên',
 			'explore.characters' => 'nhân vật',
 			'explore.addToWatchlist' => 'Thêm vào Watchlist',
@@ -6823,7 +6818,7 @@ extension on TranslationsVi {
 			'explore.notInLibrary' => 'Không phải trong thư viện',
 			'explore.inTheseLibraries' => 'Trong các thư viện này',
 			'explore.checkingLibrary' => 'Kiểm tra thư viện của bạn...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Không thể kiểm tra ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} máy chủ', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Không thể kiểm tra ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} máy chủ', ),
 			'explore.emptyTitle' => 'Chưa có gì ở đây',
 			'explore.emptyMessage' => ({required Object source}) => 'Các dòng từ ${source} sẽ xuất hiện ở đây một khi họ có nội dung.',
 			'explore.searchHint' => ({required Object source}) => 'Tìm kiếm ${source}',
@@ -6860,7 +6855,7 @@ extension on TranslationsVi {
 			'explore.stats.planning' => ({required Object n}) => '${n} kế hoạch để xem',
 			'explore.stats.favorited' => ({required Object n}) => '${n} yêu thích',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} đã bỏ qua nó',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} bình luận', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} bình luận', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} phiếu bầu',
 			'explore.stats.watching' => ({required Object n}) => '${n} xem nó',
 			'explore.stats.completed' => ({required Object n}) => '${n} hoàn thành',
@@ -6927,14 +6922,14 @@ extension on TranslationsVi {
 			'explore.detail.crew' => 'phi hành đoàn',
 			'explore.detail.ratings' => 'Đánh giá',
 			'explore.detail.schedule' => 'Lên lịch',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Đề nghị bởi ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} người dùng', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Đề nghị bởi ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} người dùng', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'Đề nghị bởi ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'Ưu đãi của ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} chưa được trình bày',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Đề nghị bởi ${percent} người xem',
 			'explore.detail.relatedTitles' => 'Các tiêu đề liên quan',
 			'explore.detail.background' => 'nền',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} kết quả', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} kết quả', ),
 			'liveTv.title' => 'Truyền hình trực tiếp',
 			'liveTv.guide' => 'Lịch phát sóng',
 			'liveTv.noChannels' => 'Không có kênh',
@@ -7063,7 +7058,7 @@ extension on TranslationsVi {
 			'playlists.delete' => 'Xóa Danh Sách Phát',
 			'playlists.removeItem' => 'Xóa khỏi danh sách phát',
 			'playlists.smartPlaylist' => 'Đồ chơi thông minh',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} mục', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} mục', ),
 			'playlists.emptyPlaylist' => 'Danh sách game này trống',
 			'playlists.deleteConfirm' => 'xóa playlist?',
 			'playlists.deleteMessage' => ({required Object name}) => 'Bạn có chắc chắn bạn muốn xóa "${name}" không?',
@@ -7085,7 +7080,7 @@ extension on TranslationsVi {
 			'music.playNext' => 'Phát kế tiếp',
 			'music.addToQueue' => 'Thêm vào Queue',
 			'music.discNumber' => ({required Object n}) => 'Đĩa ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} đường dẫn', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} đường dẫn', ),
 			'music.nowPlaying' => 'Bây giờ chơi',
 			'music.playingFrom' => ({required Object title}) => 'Chơi từ ${title}',
 			'music.queue' => 'Quay',
@@ -7107,7 +7102,7 @@ extension on TranslationsVi {
 			'music.noLyrics' => 'Không có Lyrics',
 			'music.sleepTimer' => 'Giấc ngủ Timer',
 			'music.sleepTimerEndOfTrack' => 'Kết thúc track',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} phút', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} phút', ),
 			'music.stopPlayback' => 'Dừng Phát',
 			'music.previousTrack' => 'Bản ghi trước',
 			'music.nextTrack' => 'Bản ghi tiếp theo',
@@ -7191,7 +7186,7 @@ extension on TranslationsVi {
 			'watchTogether.offsetPlusTenth' => '+ 100 ms',
 			'watchTogether.offsetPlusSecond' => '+ 1 s',
 			'watchTogether.participants' => 'người tham gia',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} người tham gia', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} người tham gia', ),
 			'watchTogether.hostBadge' => 'Máy chủ',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (Các bạn)',
 			'watchTogether.playerIdle' => 'Nhàn rỗi',
@@ -7400,10 +7395,10 @@ extension on TranslationsVi {
 			'downloads.unknownAlbum' => 'Album chưa biết',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} hoàn thành',
 			'downloads.storageUsed' => ({required Object size}) => 'Lưu trữ sử dụng: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tải về', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} hiển thị', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} phim ảnh', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tải về', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} hiển thị', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} phim ảnh', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', ),
 			'downloads.errorFileNotFound' => 'file chưa tìm thấy (404)',
 			'downloads.errorDownloadNotAllowed' => 'Tải xuống không được phép bởi máy chủ (403)',
 			'downloads.errorDownloadFailed' => 'Download thất bại',
@@ -8157,7 +8152,7 @@ extension on TranslationsVi {
 			'universalMedia.saveFavorite' => 'Giữ yêu thích',
 			'universalMedia.playNow' => 'Chơi bây giờ',
 			'universalMedia.favoriteSaved' => 'Stream Favorite được tiết kiệm đến hồ sơ này',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Tắt ${count} không được hỗ trợ hoặc không an toàn danh sách đăng nhập.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Tắt ${count} không được hỗ trợ hoặc không an toàn danh sách đăng nhập.', ),
 			'universalMedia.playlistAddress' => 'Địa chỉ Playlist',
 			'universalMedia.playlistAddressHelp' => 'Mở một danh sách chơi M3U, M3u8, hoặc PLS từ địa chỉ web. liên kết trực tiếp không lưu danh sách playlist.',
 			'universalMedia.choosePlaylist' => 'Chọn playlist file',
@@ -8173,7 +8168,7 @@ extension on TranslationsVi {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Chọn file',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} tập tin được chọn', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} tập tin được chọn', ),
 			'universalMedia.wifiTransfer' => 'Gửi file qua Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Chuyển các tập tin được hỗ trợ từ một trình duyệt trên cùng một mạng đáng tin cậy.',
 			'universalMedia.wifiTransferIntro' => 'Mở địa chỉ này trong một trình duyệt trên thiết bị khác.Chọn các tệp để thêm chúng vào thư viện tệp và sách của thiết bị này.',
@@ -8184,7 +8179,7 @@ extension on TranslationsVi {
 			'universalMedia.copyAddress' => 'Bản sao địa chỉ chuyển đổi',
 			'universalMedia.addressCopied' => 'Địa chỉ chuyển đổi sao chép',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Địa chỉ này hết hạn trong ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} file nhận được', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} file nhận được', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'Nhận ${size}',
 			'universalMedia.stopTransfer' => 'Ngừng chuyển giao và vô hiệu hóa địa chỉ',
 			'universalMedia.startTransfer' => 'Bắt đầu chuyển giao',
@@ -8410,7 +8405,7 @@ extension on TranslationsVi {
 			'fileSources.sleep' => 'Giấc ngủ Timer',
 			'fileSources.sleepOff' => 'Tắt',
 			'fileSources.endChapter' => 'Cuối chương',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} phút', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} phút', ),
 			'fileSources.skipBack' => 'Skip trở lại',
 			'fileSources.skipForward' => 'Skip đi trước',
 			'fileSources.smartRewind' => 'Lợi ích của Smart Revenue sau một nghỉ ngơi',
@@ -8749,13 +8744,11 @@ extension on TranslationsVi {
 			'comics.collections' => 'Bộ sưu tập',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8783,10 +8776,8 @@ extension on TranslationsVi {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8796,7 +8787,6 @@ extension on TranslationsVi {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

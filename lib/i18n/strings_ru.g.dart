@@ -36,7 +36,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsRu _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsRu $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsRu(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3926,13 +3926,11 @@ class _Translations$games$ru extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3960,10 +3958,8 @@ class _Translations$games$ru extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3973,7 +3969,6 @@ class _Translations$games$ru extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5456,9 +5451,9 @@ extension on TranslationsRu {
 			'settings.smallSkipDuration' => 'Малая перемотка',
 			'settings.largeSkipDuration' => 'Большая перемотка',
 			'settings.rewindOnResume' => 'Перемотка при возобновлении',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунда', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунды', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунд', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунды', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунда', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунды', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунд', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунды', ),
 			'settings.defaultSleepTimer' => 'Таймер сна по умолчанию',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минута', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минуты', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минуты', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минута', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минуты', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минуты', ),
 			'settings.rememberTrackSelections' => 'Запоминать выбор дорожек для каждого сериала/фильма',
 			'settings.chooseTracksBeforePlayback' => 'Выберите аудио и субтитры перед воспроизведением',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Выбирайте аудио- и субтитристые отслеживания источника до начала каждого видео.',
@@ -6064,9 +6059,9 @@ extension on TranslationsRu {
 			'mediaMenu.deleteAnyway' => 'Всё равно удалить',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'Навсегда удалить ${title} с вашего сервера?',
 			'mediaMenu.deleteMultipleWarning' => 'Это включает все эпизоды и их файлы.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Это удалит содержащийся в нём ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизод и его файл.', few: 'Это удалит содержащиеся в нём ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизода и их файлы.', many: 'Это удалит содержащиеся в нём ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизодов и их файлы.', other: 'Это удалит содержащиеся в нём ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизодов и их файлы.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Этот элемент хранится как ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файл, который будет удалён.', few: 'Этот элемент хранится в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлах, и все они будут удалены.', many: 'Этот элемент хранится в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлах, и все они будут удалены.', other: 'Этот элемент хранится в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлах, и все они будут удалены.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'В этом же файле хранится ещё ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизод, и он тоже будет удалён:', few: 'В этом же файле хранятся ещё ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизода, и они тоже будут удалены:', many: 'В этом же файле хранятся ещё ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизодов, и они тоже будут удалены:', other: 'В этом же файле хранятся ещё ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизодов, и они тоже будут удалены:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Это удалит содержащийся в нём ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизод и его файл.', few: 'Это удалит содержащиеся в нём ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизода и их файлы.', many: 'Это удалит содержащиеся в нём ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизодов и их файлы.', other: 'Это удалит содержащиеся в нём ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизодов и их файлы.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Этот элемент хранится как ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файл, который будет удалён.', few: 'Этот элемент хранится в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлах, и все они будут удалены.', many: 'Этот элемент хранится в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлах, и все они будут удалены.', other: 'Этот элемент хранится в ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлах, и все они будут удалены.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'В этом же файле хранится ещё ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизод, и он тоже будет удалён:', few: 'В этом же файле хранятся ещё ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизода, и они тоже будут удалены:', many: 'В этом же файле хранятся ещё ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизодов, и они тоже будут удалены:', other: 'В этом же файле хранятся ещё ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизодов, и они тоже будут удалены:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG не смог проверить, какие файлы будут удалены, поэтому может быть удалено больше, чем указанный выше элемент. Отмените и попробуйте снова либо удалите в любом случае.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Ваш сервер не предоставил сведения о файлах для этого элемента, поэтому PlezyNG не может проверить, какие файлы будут удалены. Может быть удалено больше, чем указанный выше элемент.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Медиаэлемент успешно удалён',
@@ -6255,7 +6250,7 @@ extension on TranslationsRu {
 			'videoControls.osdSubtitlesOff' => 'Субтитры: выкл.',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Субтитры: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Аудио: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фрейм', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} видео рамки', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} видео кадров', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фремы', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фрейм', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} видео рамки', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} видео кадров', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фремы', ),
 			'videoControls.trackSelectionTitle' => 'Выбирайте тракты перед репетицией',
 			'videoControls.trackSelectionAuto' => 'Автоматический выбор',
 			'videoControls.openMiniPlayer' => 'Открытый мини-игратель',
@@ -6270,7 +6265,7 @@ extension on TranslationsRu {
 			'messages.markedAsWatchedOffline' => 'Отмечено как просмотренное (синхронизируется при подключении)',
 			'messages.markedAsUnwatchedOffline' => 'Отмечено как непросмотренное (синхронизируется при подключении)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Автоудалено: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Автоматически удалена ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} просмотренная загрузка', few: 'Автоматически удалены ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} просмотренные загрузки', many: 'Автоматически удалено ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} просмотренных загрузок', other: 'Автоматически удалено ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} просмотренной загрузки', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Автоматически удалена ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} просмотренная загрузка', few: 'Автоматически удалены ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} просмотренные загрузки', many: 'Автоматически удалено ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} просмотренных загрузок', other: 'Автоматически удалено ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} просмотренной загрузки', ),
 			'messages.removedFromContinueWatching' => 'Удалено из «Продолжить просмотр»',
 			'messages.errorLoading' => ({required Object error}) => 'Ошибка: ${error}',
 			'messages.searchPartialResults' => 'Поиск по некоторым медиасерверам не удался. Показываем доступные результаты.',
@@ -6641,7 +6636,7 @@ extension on TranslationsRu {
 			'discover.tvShow' => 'Сериал',
 			'discover.minutesLeft' => ({required Object minutes}) => 'Осталось ${minutes} мин',
 			'discover.moreLikeThis' => 'Похожее',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} название', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} названия', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} названий', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} названия', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} название', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} названия', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} названий', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} названия', ),
 			'discover.person.born' => 'Дата рождения',
 			'discover.person.died' => 'Дата смерти',
 			'discover.person.birthplace' => 'Место рождения',
@@ -6886,7 +6881,7 @@ extension on TranslationsRu {
 			'explore.status.ended' => 'Завершён',
 			'explore.status.canceled' => 'Отменён',
 			'explore.status.upcoming' => 'Скоро',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизод', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизода', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизодов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизода', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизод', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизода', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизодов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} эпизода', ),
 			'explore.cast' => 'В ролях',
 			'explore.characters' => 'Персонажи',
 			'explore.addToWatchlist' => 'Добавить в список для просмотра',
@@ -6898,7 +6893,7 @@ extension on TranslationsRu {
 			'explore.notInLibrary' => 'Нет в вашей библиотеке',
 			'explore.inTheseLibraries' => 'В этих библиотеках',
 			'explore.checkingLibrary' => 'Проверка вашей библиотеки...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Не удалось проверить ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сервер', few: 'Не удалось проверить ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сервера', many: 'Не удалось проверить ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серверов', other: 'Не удалось проверить ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сервера', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Не удалось проверить ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сервер', few: 'Не удалось проверить ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сервера', many: 'Не удалось проверить ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серверов', other: 'Не удалось проверить ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сервера', ),
 			'explore.emptyTitle' => 'Здесь пока ничего нет',
 			'explore.emptyMessage' => ({required Object source}) => 'Разделы из ${source} появятся здесь, когда в них появится контент.',
 			'explore.searchHint' => ({required Object source}) => 'Поиск в ${source}',
@@ -6935,7 +6930,7 @@ extension on TranslationsRu {
 			'explore.stats.planning' => ({required Object n}) => '${n} планируют посмотреть',
 			'explore.stats.favorited' => ({required Object n}) => '${n} в избранном',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} бросили',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} комментарий', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} комментария', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} комментариев', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} комментариев', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} комментарий', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} комментария', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} комментариев', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} комментариев', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} голосов',
 			'explore.stats.watching' => ({required Object n}) => '${n} смотрят',
 			'explore.stats.completed' => ({required Object n}) => '${n} завершили',
@@ -7002,14 +6997,14 @@ extension on TranslationsRu {
 			'explore.detail.crew' => 'Съёмочная группа',
 			'explore.detail.ratings' => 'Рейтинги',
 			'explore.detail.schedule' => 'Расписание',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Рекомендуют ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пользователь', few: 'Рекомендуют ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пользователя', many: 'Рекомендуют ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пользователей', other: 'Рекомендуют ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пользователей', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Рекомендуют ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пользователь', few: 'Рекомендуют ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пользователя', many: 'Рекомендуют ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пользователей', other: 'Рекомендуют ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пользователей', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'Рекомендовано: ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'В избранном у ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} ещё не вышли',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Рекомендуют ${percent} зрителей',
 			'explore.detail.relatedTitles' => 'Связанные названия',
 			'explore.detail.background' => 'Фон',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результат', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результата', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результатов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результатов', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результат', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результата', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результатов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} результатов', ),
 			'liveTv.title' => 'ТВ в прямом эфире',
 			'liveTv.guide' => 'Программа',
 			'liveTv.noChannels' => 'Нет доступных каналов',
@@ -7138,7 +7133,7 @@ extension on TranslationsRu {
 			'playlists.delete' => 'Удалить плейлист',
 			'playlists.removeItem' => 'Удалить из плейлиста',
 			'playlists.smartPlaylist' => 'Умный плейлист',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элемент', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элемента', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элементов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элемента', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элемент', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элемента', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элементов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элемента', ),
 			'playlists.emptyPlaylist' => 'Этот плейлист пуст',
 			'playlists.deleteConfirm' => 'Удалить плейлист?',
 			'playlists.deleteMessage' => ({required Object name}) => 'Вы уверены, что хотите удалить "${name}"?',
@@ -7160,7 +7155,7 @@ extension on TranslationsRu {
 			'music.playNext' => 'Воспроизвести следующим',
 			'music.addToQueue' => 'Добавить в очередь',
 			'music.discNumber' => ({required Object n}) => 'Диск ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} трек', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} трека', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} треков', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} трека', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} трек', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} трека', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} треков', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} трека', ),
 			'music.nowPlaying' => 'Сейчас играет',
 			'music.playingFrom' => ({required Object title}) => 'Воспроизведение из ${title}',
 			'music.queue' => 'Очередь',
@@ -7182,7 +7177,7 @@ extension on TranslationsRu {
 			'music.noLyrics' => 'Текст песни недоступен',
 			'music.sleepTimer' => 'Таймер сна',
 			'music.sleepTimerEndOfTrack' => 'Конец трека',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минута', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минуты', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минуты', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минута', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минуты', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минуты', ),
 			'music.stopPlayback' => 'Остановить воспроизведение',
 			'music.previousTrack' => 'Предыдущий трек',
 			'music.nextTrack' => 'Следующий трек',
@@ -7266,7 +7261,7 @@ extension on TranslationsRu {
 			'watchTogether.offsetPlusTenth' => '+100 мс',
 			'watchTogether.offsetPlusSecond' => '+1 с',
 			'watchTogether.participants' => 'Участники',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участник', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участника', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участников', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участника', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участник', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участника', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участников', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} участника', ),
 			'watchTogether.hostBadge' => 'ОРГАНИЗАТОР',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (вы)',
 			'watchTogether.playerIdle' => 'Бездействует',
@@ -7475,10 +7470,10 @@ extension on TranslationsRu {
 			'downloads.unknownAlbum' => 'Неизвестный альбом',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => 'Завершено: ${completed}/${total}',
 			'downloads.storageUsed' => ({required Object size}) => 'Употребляемое хранилище: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} загрузка', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} загрузки', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} загрузок', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} загрузки', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериал', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериала', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериалов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериала', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фильм', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фильма', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фильмов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фильма', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбом', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбома', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбомов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбома', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} загрузка', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} загрузки', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} загрузок', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} загрузки', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериал', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериала', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериалов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериала', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фильм', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фильма', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фильмов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} фильма', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбом', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбома', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбомов', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбома', ),
 			'downloads.errorFileNotFound' => 'Файл не найден (404)',
 			'downloads.errorDownloadNotAllowed' => 'Сервер не разрешает загрузку (403)',
 			'downloads.errorDownloadFailed' => 'Не удалось выполнить загрузку',
@@ -8232,7 +8227,7 @@ extension on TranslationsRu {
 			'universalMedia.saveFavorite' => 'Спасти любимый',
 			'universalMedia.playNow' => 'Играть сейчас',
 			'universalMedia.favoriteSaved' => 'Любимые потоки сохранились в этом профиле',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Скинутый ${count} не поддерживаемый или безопасный вход списка игр.', few: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', many: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', other: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Скинутый ${count} не поддерживаемый или безопасный вход списка игр.', few: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', many: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', other: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', ),
 			'universalMedia.playlistAddress' => 'Адрес Playlist',
 			'universalMedia.playlistAddressHelp' => 'Откройте перечень M3U, М3U8 или PLS с веб-адреса. прямые ссылки потока не сохраняют перечень просмотров.',
 			'universalMedia.choosePlaylist' => 'Выберите файл playlist',
@@ -8248,7 +8243,7 @@ extension on TranslationsRu {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Выберите файлы',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '1 Выбранный файл', few: '${count} выбранные файлы', many: '${count} выбранные файлы', other: '${count} выбранные файлы', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '1 Выбранный файл', few: '${count} выбранные файлы', many: '${count} выбранные файлы', other: '${count} выбранные файлы', ),
 			'universalMedia.wifiTransfer' => 'Передача файлов через Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Передача поддерживаемых файлов из браузера в той же надежной сети.',
 			'universalMedia.wifiTransferIntro' => 'Откройте этот адрес в браузере на другом устройстве.Выберите файлы, чтобы добавить их в библиотеку файлов и книг этого устройства.',
@@ -8259,7 +8254,7 @@ extension on TranslationsRu {
 			'universalMedia.copyAddress' => 'Копирование адреса передачи',
 			'universalMedia.addressCopied' => 'Передача адреса копирована',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Этот адрес истекает в ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${count} файл получен', few: '${count} файлы получены', many: '${count} файлы получены', other: '${count} файлы получены', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${count} файл получен', few: '${count} файлы получены', many: '${count} файлы получены', other: '${count} файлы получены', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'Полученный ${size}',
 			'universalMedia.stopTransfer' => 'Прекращение передачи и недействительность адреса',
 			'universalMedia.startTransfer' => 'Начало перевода',
@@ -8485,7 +8480,7 @@ extension on TranslationsRu {
 			'fileSources.sleep' => 'Таймер сна',
 			'fileSources.sleepOff' => 'Выкл.',
 			'fileSources.endChapter' => 'К концу главы',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минута', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минуты', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минуты', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минута', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минуты', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минуты', ),
 			'fileSources.skipBack' => 'Скип назад',
 			'fileSources.skipForward' => 'Скип вперед',
 			'fileSources.smartRewind' => 'Умный перерыв после перерыва',
@@ -8824,13 +8819,11 @@ extension on TranslationsRu {
 			'comics.collections' => 'Коллекции',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8858,10 +8851,8 @@ extension on TranslationsRu {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8871,7 +8862,6 @@ extension on TranslationsRu {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

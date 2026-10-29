@@ -25,6 +25,7 @@ import '../games/steam_stream_metrics.dart';
 import '../services/gamepad_service.dart';
 import '../screens/games/steam_stream_diagnostics.dart';
 import '../screens/games/steam_touch_controls.dart';
+import '../screens/games/game_stream_status.dart';
 import '../utils/dialogs.dart';
 import '../widgets/app_icon.dart';
 import '../widgets/focusable_list_tile.dart';
@@ -696,6 +697,7 @@ class SteamGameWorkspaceSession {
 
   void _stateChanged(Object? state) {
     if (_disposed ||
+        _restarting ||
         state is! String ||
         !{'connecting', 'playing', 'reconnecting', 'disconnected', 'failed'}.contains(state)) {
       return;
@@ -718,6 +720,8 @@ class SteamGameWorkspaceSession {
 
   /// A replacement surface may only start after native teardown acknowledges
   /// termination. Retired profiles and repeated taps cannot restart a stream.
+  bool _cancelRestart = false;
+
   Future<void> reconnect() async {
     if (_disposed || _restarting || !{'failed', 'disconnected'}.contains(sessionState.value)) return;
     _restarting = true;
@@ -725,16 +729,22 @@ class SteamGameWorkspaceSession {
     resetInput();
     nativePresentation.value = false;
     sessionState.value = 'reconnecting';
+    _cancelRestart = false;
     try {
       final channel = _channel;
       if (channel != null) await channel.invokeMethod<void>('disconnect').timeout(const Duration(seconds: 6));
       if (_disposed) return;
       _releaseReceiverIdentity();
       _setTunnel(null);
+      if (_cancelRestart) {
+        sessionState.value = 'disconnected';
+        return;
+      }
       final route = await connectInternet?.call();
-      if (_disposed) {
+      if (_disposed || _cancelRestart) {
         route?.close();
         route?.path.dispose();
+        if (!_disposed) sessionState.value = 'disconnected';
         return;
       }
       _setTunnel(route);
@@ -748,7 +758,15 @@ class SteamGameWorkspaceSession {
   }
 
   Future<void> disconnect() async {
-    if (_disposed || _restarting) return;
+    if (_disposed) return;
+    if (_restarting) {
+      if (sessionState.value == 'reconnecting') {
+        _cancelRestart = true;
+        resetInput();
+        sessionState.value = 'disconnecting';
+      }
+      return;
+    }
     resetInput();
     _restarting = true;
     unawaited(_refreshInputOwnership());
@@ -983,8 +1001,8 @@ class SteamGameWorkspaceSurface extends StatefulWidget {
 
 class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
   bool _detailsOpen = false;
-  late bool _touchVisible = (widget.session.controllerOnly || widget.session.touchControls) &&
-      (Platform.isIOS || Platform.isAndroid);
+  late bool _touchVisible =
+      (widget.session.controllerOnly || widget.session.touchControls) && (Platform.isIOS || Platform.isAndroid);
 
   Future<void> _showDetails() async {
     if (_detailsOpen) return;
@@ -1197,41 +1215,12 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
           valueListenable: session.sessionState,
           builder: (context, state, _) {
             if (state == 'playing') return const SizedBox.shrink();
-            final recoverable = state == 'failed' || state == 'disconnected';
-            return ColoredBox(
-              color: Theme.of(context).colorScheme.surface,
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Semantics(
-                        liveRegion: true,
-                        child: Text(switch (state) {
-                          'failed' => t.games.streamFailed,
-                          'disconnected' => t.games.disconnected,
-                          'reconnecting' => t.games.reconnecting,
-                          _ => t.games.connecting,
-                        }, textAlign: TextAlign.center),
-                      ),
-                      const SizedBox(height: 12),
-                      if (recoverable)
-                        FocusableButton(
-                          onPressed: session.reconnect,
-                          child: FilledButton(onPressed: session.reconnect, child: Text(t.games.reconnect)),
-                        )
-                      else if (state == 'connecting')
-                        FocusableButton(
-                          onPressed: session.disconnect,
-                          child: TextButton(onPressed: session.disconnect, child: Text(t.games.disconnect)),
-                        ),
-                      const SizedBox(height: 8),
-                      Text(t.games.disconnectHelp, textAlign: TextAlign.center),
-                    ],
-                  ),
-                ),
-              ),
+            return GameStreamStatus(
+              state: state,
+              gameName: session.game.name,
+              computerName: session.host.name,
+              onReconnect: session.reconnect,
+              onDisconnect: session.disconnect,
             );
           },
         ),

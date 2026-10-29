@@ -10913,9 +10913,6 @@ class Translations$games$en {
 	/// en: 'Browse your games and connect gaming computers. In-app playback depends on this device’s streaming support.'
 	String get enableDescription => 'Browse your games and connect gaming computers. In-app playback depends on this device’s streaming support.';
 
-	/// en: 'Your games, from your computers.'
-	String get subtitle => 'Your games, from your computers.';
-
 	/// en: 'Your computers'
 	String get computers => 'Your computers';
 
@@ -10930,9 +10927,6 @@ class Translations$games$en {
 
 	/// en: 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.'
 	String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-
-	/// en: 'Add your gaming computer to get started.'
-	String get empty => 'Add your gaming computer to get started.';
 
 	/// en: 'No computers found on this network. You can enter an address manually.'
 	String get noNearby => 'No computers found on this network. You can enter an address manually.';
@@ -11018,9 +11012,6 @@ class Translations$games$en {
 	/// en: 'Connection timed out. Check the computer, pairing code and network before trying again.'
 	String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
 
-	/// en: 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.'
-	String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
-
 	/// en: 'On-screen controller'
 	String get touchControls => 'On-screen controller';
 
@@ -11038,9 +11029,6 @@ class Translations$games$en {
 
 	/// en: 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.'
 	String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-
-	/// en: 'On-screen controls'
-	String get touchSetup => 'On-screen controls';
 
 	/// en: 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.'
 	String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
@@ -11069,8 +11057,8 @@ class Translations$games$en {
 	/// en: 'Games help'
 	String get help => 'Games help';
 
-	/// en: 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library. Steam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network. Pairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network. Disconnecting leaves the game running on the computer.'
-	String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
+	/// en: 'Your library brings Steam games from your account and paired computers together. Link Steam to browse your account catalog; pair a computer to play from it. These are separate connections. In Connections, find computers on your local network or add an address manually. Each computer must approve its first pairing. Open game details to choose a computer, set a preferred route or see the last reported installation status. An installed game may still need its computer to be switched on and reachable. Achievements, news and friends information load only when you request them. Streaming settings apply to new sessions. Extra picture, sound and input features depend on the receiver, host and display. Away-from-home Steam play requires the optional internet service to be configured and enabled, or a reachable VPN address. Local discovery does not search the internet. On supported phones and tablets, Use as controller sends your input while the game stays on the computer. Disconnecting a stream leaves the game running there.'
+	String get helpBody => 'Your library brings Steam games from your account and paired computers together. Link Steam to browse your account catalog; pair a computer to play from it. These are separate connections. In Connections, find computers on your local network or add an address manually. Each computer must approve its first pairing.\n\nOpen game details to choose a computer, set a preferred route or see the last reported installation status. An installed game may still need its computer to be switched on and reachable. Achievements, news and friends information load only when you request them.\n\nStreaming settings apply to new sessions. Extra picture, sound and input features depend on the receiver, host and display. Away-from-home Steam play requires the optional internet service to be configured and enabled, or a reachable VPN address. Local discovery does not search the internet.\n\nOn supported phones and tablets, Use as controller sends your input while the game stays on the computer. Disconnecting a stream leaves the game running there.';
 
 	/// en: 'Cancel'
 	String get cancel => 'Cancel';
@@ -11149,9 +11137,6 @@ class Translations$games$en {
 
 	/// en: 'Connect a gaming computer to play this game inside PlezyNG.'
 	String get connectToPlay => 'Connect a gaming computer to play this game inside PlezyNG.';
-
-	/// en: 'Steam on your computer checks installation, access and cloud saves when you connect. A saved game or computer does not mean it is available now.'
-	String get availabilityHint => 'Steam on your computer checks installation, access and cloud saves when you connect. A saved game or computer does not mean it is available now.';
 
 	/// en: 'From Steam'
 	String get steamSource => 'From Steam';
@@ -11381,9 +11366,6 @@ class Translations$games$en {
 	/// en: 'Steam activity'
 	String get steamActivity => 'Steam activity';
 
-	/// en: 'Load news and achievements for your linked account. Activity is kept only while these details are open.'
-	String get steamActivityHelp => 'Load news and achievements for your linked account. Activity is kept only while these details are open.';
-
 	/// en: 'Include friends playing'
 	String get includeFriends => 'Include friends playing';
 
@@ -11452,9 +11434,6 @@ class Translations$games$en {
 
 	/// en: 'Open this game’s Steam page in your browser? Your browser’s Steam sign-in and privacy settings apply.'
 	String get openSteamPageHelp => 'Open this game’s Steam page in your browser? Your browser’s Steam sign-in and privacy settings apply.';
-
-	/// en: 'Computer actions'
-	String get hostActions => 'Computer actions';
 
 	/// en: 'Launch on computer'
 	String get launchOnComputer => 'Launch on computer';
@@ -11789,9 +11768,6 @@ class Translations$games$en {
 	/// en: 'The streaming computer could not accept the shortcut. Focus this game and try again.'
 	String get steamShortcutFailed => 'The streaming computer could not accept the shortcut. Focus this game and try again.';
 
-	/// en: 'Send shortcut'
-	String get sendShortcut => 'Send shortcut';
-
 	/// en: 'Install with a nearby computer'
 	String get lanInstallTitle => 'Install with a nearby computer';
 
@@ -11899,6 +11875,123 @@ class Translations$games$en {
 
 	/// en: 'Position controls'
 	String get touchLayoutPosition => 'Position controls';
+
+	/// en: 'Game connections'
+	String get connections => 'Game connections';
+
+	/// en: 'Streaming settings'
+	String get streamSettings => 'Streaming settings';
+
+	/// en: 'Bring your games together'
+	String get setupTitle => 'Bring your games together';
+
+	/// en: 'Browse one library across your computers. Choose either connection to get started.'
+	String get setupHelp => 'Browse one library across your computers. Choose either connection to get started.';
+
+	/// en: 'Your Steam library'
+	String get accountSetupTitle => 'Your Steam library';
+
+	/// en: 'Link Steam to see your account’s games. Playing also needs a connected computer.'
+	String get accountSetupHelp => 'Link Steam to see your account’s games. Playing also needs a connected computer.';
+
+	/// en: 'Play from a computer'
+	String get computerSetupTitle => 'Play from a computer';
+
+	/// en: 'Connect Steam Remote Play or Sunshine on your network. You can play without linking a Steam account.'
+	String get computerSetupHelp => 'Connect Steam Remote Play or Sunshine on your network. You can play without linking a Steam account.';
+
+	/// en: 'Steam account linked'
+	String get accountLinked => 'Steam account linked';
+
+	/// en: 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.'
+	String get computerSetupHint => 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.';
+
+	/// en: 'Manage connections'
+	String get manageConnections => 'Manage connections';
+
+	/// en: 'Library status'
+	String get accountStatus => 'Library status';
+
+	/// en: 'Clear search and filters'
+	String get clearGameFilters => 'Clear search and filters';
+
+	/// en: 'Your games will appear here'
+	String get emptyLibraryTitle => 'Your games will appear here';
+
+	/// en: 'Connect a computer to load its games, or link Steam to browse your account’s library.'
+	String get emptyLibraryHelp => 'Connect a computer to load its games, or link Steam to browse your account’s library.';
+
+	/// en: 'Select a computer in Game connections to pair and refresh its games. Steam account libraries may also need public game details.'
+	String get emptyConnectedHelp => 'Select a computer in Game connections to pair and refresh its games. Steam account libraries may also need public game details.';
+
+	/// en: 'Try another computer, include games that are not installed, or clear your search.'
+	String get filterEmptyHelp => 'Try another computer, include games that are not installed, or clear your search.';
+
+	/// en: 'Installed on ${computer}'
+	String installedOn({required Object computer}) => 'Installed on ${computer}';
+
+	/// en: '(one) {Installed on ${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} computer} (other) {Installed on ${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} computers}'
+	String installedComputers({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: 'Installed on ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} computer',
+		other: 'Installed on ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} computers',
+	);
+
+	/// en: '(one) {${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} saved computer} (other) {${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} saved computers}'
+	String savedComputers({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} saved computer',
+		other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} saved computers',
+	);
+
+	/// en: 'Connect a computer to play'
+	String get connectToPlayShort => 'Connect a computer to play';
+
+	/// en: 'Preferred computer'
+	String get preferredComputer => 'Preferred computer';
+
+	/// en: 'Prefer this computer'
+	String get preferComputer => 'Prefer this computer';
+
+	/// en: 'Choose automatically'
+	String get automaticComputer => 'Choose automatically';
+
+	/// en: 'Installation comes from the last library check. Your computer confirms availability when you connect.'
+	String get inventorySnapshotHelp => 'Installation comes from the last library check. Your computer confirms availability when you connect.';
+
+	/// en: 'Picture and sound'
+	String get streamingGroup => 'Picture and sound';
+
+	/// en: 'Advanced streaming'
+	String get advancedStreaming => 'Advanced streaming';
+
+	/// en: 'Optional codecs and internet connectivity. Compatible defaults stay enabled.'
+	String get advancedStreamingHelp => 'Optional codecs and internet connectivity. Compatible defaults stay enabled.';
+
+	/// en: 'Controllers'
+	String get controllerSettings => 'Controllers';
+
+	/// en: 'Options for ${game}'
+	String gameOptions({required Object game}) => 'Options for ${game}';
+
+	/// en: 'Keep this computer awake. Pairing and network access are checked as the stream starts.'
+	String get streamConnectHelp => 'Keep this computer awake. Pairing and network access are checked as the stream starts.';
+
+	/// en: 'Check the computer and connection, then reconnect. Disconnecting here leaves the game running on the computer.'
+	String get streamRecoveryHelp => 'Check the computer and connection, then reconnect. Disconnecting here leaves the game running on the computer.';
+
+	/// en: 'Steam is a trademark of Valve Corporation. PlezyNG is an independent application.'
+	String get steamAttribution => 'Steam is a trademark of Valve Corporation. PlezyNG is an independent application.';
+
+	/// en: 'News and achievements load when requested. Friends activity is optional.'
+	String get steamActivityPrivacy => 'News and achievements load when requested. Friends activity is optional.';
+
+	/// en: 'Disconnecting…'
+	String get disconnecting => 'Disconnecting…';
+
+	/// en: 'Use as controller'
+	String get useAsController => 'Use as controller';
+
+	/// en: 'Use this phone or tablet for controls while you watch and hear the game on the computer. Requires a paired Steam computer.'
+	String get controllerOnlyHelp => 'Use this phone or tablet for controls while you watch and hear the game on the computer. Requires a paired Steam computer.';
 }
 
 // Path: deepLinks
@@ -14845,9 +14938,9 @@ extension on Translations {
 			'settings.smallSkipDuration' => 'Small Skip Duration',
 			'settings.largeSkipDuration' => 'Large Skip Duration',
 			'settings.rewindOnResume' => 'Rewind on Resume',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} seconds', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} second', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} seconds', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} second', ),
 			'settings.defaultSleepTimer' => 'Default Sleep Timer',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minute', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minute', ),
 			'settings.rememberTrackSelections' => 'Remember track selections per show/movie',
 			'settings.chooseTracksBeforePlayback' => 'Choose audio and subtitles before playback',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Pick the source audio and subtitle tracks before each video starts.',
@@ -15479,9 +15572,9 @@ extension on Translations {
 			'mediaMenu.deleteAnyway' => 'Delete anyway',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'Permanently delete ${title} from your server?',
 			'mediaMenu.deleteMultipleWarning' => 'This includes all episodes and their files.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'This deletes the ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episode it contains and its file.', other: 'This deletes all ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes in it, and their files.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'This item is stored as ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} file, which will be deleted.', other: 'This item is stored across ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} files, and all of them will be deleted.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episode is stored in the same file and will be deleted too:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episodes are stored in the same file and will be deleted too:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'This deletes the ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episode it contains and its file.', other: 'This deletes all ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes in it, and their files.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'This item is stored as ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} file, which will be deleted.', other: 'This item is stored across ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} files, and all of them will be deleted.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episode is stored in the same file and will be deleted too:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episodes are stored in the same file and will be deleted too:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG could not check which files this will remove, so it may delete more than the item named above. Cancel and try again, or delete anyway.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Your server did not provide file details for this item, so PlezyNG cannot check which files this will remove. It may delete more than the item named above.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media item deleted successfully',
@@ -15670,7 +15763,7 @@ extension on Translations {
 			'videoControls.osdSubtitlesOff' => 'Subtitles: Off',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Subtitles: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Audio: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} frame', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} frames', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} frame', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} frames', ),
 			'videoControls.trackSelectionTitle' => 'Choose tracks before playback',
 			'videoControls.trackSelectionAuto' => 'Automatic selection',
 			'videoControls.openMiniPlayer' => 'Open mini player',
@@ -15686,7 +15779,7 @@ extension on Translations {
 			'messages.markedAsWatchedOffline' => 'Marked as watched (will sync when online)',
 			'messages.markedAsUnwatchedOffline' => 'Marked as unwatched (will sync when online)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Auto-removed: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} watched download', other: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} watched downloads', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} watched download', other: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} watched downloads', ),
 			'messages.removedFromContinueWatching' => 'Removed from Continue Watching',
 			'messages.errorLoading' => ({required Object error}) => 'Error: ${error}',
 			'messages.searchPartialResults' => 'Some media servers could not be searched. Showing available results.',
@@ -16263,7 +16356,7 @@ extension on Translations {
 			'discover.tvShow' => 'TV Show',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} min left',
 			'discover.moreLikeThis' => 'More Like This',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} title', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} titles', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} title', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} titles', ),
 			'discover.person.born' => 'Born',
 			'discover.person.died' => 'Died',
 			'discover.person.birthplace' => 'Birthplace',
@@ -16508,7 +16601,7 @@ extension on Translations {
 			'explore.status.ended' => 'Ended',
 			'explore.status.canceled' => 'Canceled',
 			'explore.status.upcoming' => 'Upcoming',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episode', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episode', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes', ),
 			'explore.cast' => 'Cast',
 			'explore.characters' => 'Characters',
 			'explore.addToWatchlist' => 'Add to Watchlist',
@@ -16520,7 +16613,7 @@ extension on Translations {
 			'explore.notInLibrary' => 'Not in your library',
 			'explore.inTheseLibraries' => 'In these libraries',
 			'explore.checkingLibrary' => 'Checking your library...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Couldn\'t check ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} server', other: 'Couldn\'t check ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} servers', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Couldn\'t check ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} server', other: 'Couldn\'t check ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} servers', ),
 			'explore.emptyTitle' => 'Nothing here yet',
 			'explore.emptyMessage' => ({required Object source}) => 'Rows from ${source} will appear here once they have content.',
 			'explore.searchHint' => ({required Object source}) => 'Search ${source}',
@@ -16557,7 +16650,7 @@ extension on Translations {
 			'explore.stats.planning' => ({required Object n}) => '${n} planning to watch',
 			'explore.stats.favorited' => ({required Object n}) => '${n} favorites',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} dropped it',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comment', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comments', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comment', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comments', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} votes',
 			'explore.stats.watching' => ({required Object n}) => '${n} watching it',
 			'explore.stats.completed' => ({required Object n}) => '${n} completed',
@@ -16626,14 +16719,14 @@ extension on Translations {
 			'explore.detail.crew' => 'Crew',
 			'explore.detail.ratings' => 'Ratings',
 			'explore.detail.schedule' => 'Schedule',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Recommended by ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} user', other: 'Recommended by ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} users', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Recommended by ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} user', other: 'Recommended by ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} users', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'Recommended by ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'Favorited by ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} not aired yet',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Recommended by ${percent} of viewers',
 			'explore.detail.relatedTitles' => 'Related titles',
 			'explore.detail.background' => 'Background',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} result', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} results', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} result', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} results', ),
 			'liveTv.title' => 'Live TV',
 			'liveTv.guide' => 'Guide',
 			'liveTv.noChannels' => 'No channels available',
@@ -16762,7 +16855,7 @@ extension on Translations {
 			'playlists.delete' => 'Delete Playlist',
 			'playlists.removeItem' => 'Remove from Playlist',
 			'playlists.smartPlaylist' => 'Smart Playlist',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} item', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} items', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} item', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} items', ),
 			'playlists.emptyPlaylist' => 'This playlist is empty',
 			'playlists.deleteConfirm' => 'Delete Playlist?',
 			'playlists.deleteMessage' => ({required Object name}) => 'Are you sure you want to delete "${name}"?',
@@ -16784,7 +16877,7 @@ extension on Translations {
 			'music.playNext' => 'Play next',
 			'music.addToQueue' => 'Add to queue',
 			'music.discNumber' => ({required Object n}) => 'Disc ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} track', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tracks', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} track', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tracks', ),
 			'music.nowPlaying' => 'Now Playing',
 			'music.playingFrom' => ({required Object title}) => 'Playing from ${title}',
 			'music.queue' => 'Queue',
@@ -16806,7 +16899,7 @@ extension on Translations {
 			'music.noLyrics' => 'No lyrics available',
 			'music.sleepTimer' => 'Sleep timer',
 			'music.sleepTimerEndOfTrack' => 'End of track',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minute', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minute', ),
 			'music.stopPlayback' => 'Stop playback',
 			'music.previousTrack' => 'Previous track',
 			'music.nextTrack' => 'Next track',
@@ -16888,7 +16981,7 @@ extension on Translations {
 			'watchTogether.offsetPlusTenth' => '+100 ms',
 			'watchTogether.offsetPlusSecond' => '+1 s',
 			'watchTogether.participants' => 'Participants',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participant', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participants', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participant', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participants', ),
 			'watchTogether.hostBadge' => 'HOST',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (You)',
 			'watchTogether.playerIdle' => 'Idle',
@@ -17097,10 +17190,10 @@ extension on Translations {
 			'downloads.unknownAlbum' => 'Unknown Album',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} completed',
 			'downloads.storageUsed' => ({required Object size}) => 'Storage used: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} download', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} downloads', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} show', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} shows', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} download', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} downloads', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} show', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} shows', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ),
 			'downloads.errorFileNotFound' => 'File not found (404)',
 			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
 			'downloads.errorDownloadFailed' => 'Download failed',
@@ -17995,7 +18088,7 @@ extension on Translations {
 			'universalMedia.saveFavorite' => 'Save favorite',
 			'universalMedia.playNow' => 'Play now',
 			'universalMedia.favoriteSaved' => 'Stream favorite saved to this profile',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ),
 			'universalMedia.playlistAddress' => 'Playlist address',
 			'universalMedia.playlistAddressHelp' => 'Open an M3U, M3U8, or PLS playlist from a web address. Direct stream links do not save the playlist.',
 			'universalMedia.choosePlaylist' => 'Choose playlist file',
@@ -18009,7 +18102,7 @@ extension on Translations {
 			'universalMedia.removeFavorite' => 'Remove stream favorite',
 			'universalMedia.filesHelp' => 'Choose audio, video, or ISO files for a temporary queue. Files and URLs are not added to library history.',
 			'universalMedia.chooseFiles' => 'Choose files',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 selected file', other: '${count} selected files', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 selected file', other: '${count} selected files', ),
 			'universalMedia.wifiTransfer' => 'Send files over Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Transfer supported files from a browser on the same trusted network.',
 			'universalMedia.wifiTransferIntro' => 'Open this address in a browser on another device. Choose files to add them to this device’s Files and books library.',
@@ -18020,7 +18113,7 @@ extension on Translations {
 			'universalMedia.copyAddress' => 'Copy transfer address',
 			'universalMedia.addressCopied' => 'Transfer address copied',
 			'universalMedia.transferExpires' => ({required Object time}) => 'This address expires in ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${count} file received', other: '${count} files received', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${count} file received', other: '${count} files received', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'Received ${size}',
 			'universalMedia.stopTransfer' => 'Stop transfer and invalidate address',
 			'universalMedia.startTransfer' => 'Start transfer',
@@ -18248,7 +18341,7 @@ extension on Translations {
 			'fileSources.sleep' => 'Sleep timer',
 			'fileSources.sleepOff' => 'Off',
 			'fileSources.endChapter' => 'End of chapter',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minute', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minute', ),
 			'fileSources.skipBack' => 'Skip back',
 			'fileSources.skipForward' => 'Skip forward',
 			'fileSources.smartRewind' => 'Smart rewind after a pause',
@@ -18589,13 +18682,11 @@ extension on Translations {
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
 			'games.enableDescription' => 'Browse your games and connect gaming computers. In-app playback depends on this device’s streaming support.',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -18624,14 +18715,12 @@ extension on Translations {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.inputReleaseHint' => 'Press Shift+Escape to release game input and return to the workspace controls.',
 			'games.leftStick' => 'Left stick',
 			'games.rightStick' => 'Right stick',
 			'games.touchResizeHint' => 'Enlarge this game window or use full screen to show the controller.',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -18641,7 +18730,7 @@ extension on Translations {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
+			'games.helpBody' => 'Your library brings Steam games from your account and paired computers together. Link Steam to browse your account catalog; pair a computer to play from it. These are separate connections. In Connections, find computers on your local network or add an address manually. Each computer must approve its first pairing.\n\nOpen game details to choose a computer, set a preferred route or see the last reported installation status. An installed game may still need its computer to be switched on and reachable. Achievements, news and friends information load only when you request them.\n\nStreaming settings apply to new sessions. Extra picture, sound and input features depend on the receiver, host and display. Away-from-home Steam play requires the optional internet service to be configured and enabled, or a reachable VPN address. Local discovery does not search the internet.\n\nOn supported phones and tablets, Use as controller sends your input while the game stays on the computer. Disconnecting a stream leaves the game running there.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',
@@ -18659,18 +18748,17 @@ extension on Translations {
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
 			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
-			_ => null,
-		} ?? switch (path) {
 			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'games.connecting' => 'Connecting…',
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
+			_ => null,
+		} ?? switch (path) {
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
 			'games.gameDetails' => 'Game details',
 			'games.chooseComputer' => 'Choose computer',
 			'games.connectComputer' => 'Connect a computer',
 			'games.connectToPlay' => 'Connect a gaming computer to play this game inside PlezyNG.',
-			'games.availabilityHint' => 'Steam on your computer checks installation, access and cloud saves when you connect. A saved game or computer does not mean it is available now.',
 			'games.steamSource' => 'From Steam',
 			'games.disconnected' => 'Disconnected',
 			'games.installed' => 'Installed',
@@ -18747,7 +18835,6 @@ extension on Translations {
 			'games.disconnectHelp' => 'Disconnecting leaves the game running on the computer.',
 			'games.streamFailed' => 'The stream stopped. Check that the computer is reachable and Steam Remote Play is enabled.',
 			'games.steamActivity' => 'Steam activity',
-			'games.steamActivityHelp' => 'Load news and achievements for your linked account. Activity is kept only while these details are open.',
 			'games.includeFriends' => 'Include friends playing',
 			'games.includeFriendsHelp' => 'Also ask Steam which friends are playing this game. Respects Steam privacy settings. Off by default.',
 			'games.loadSteamActivity' => 'Load Steam activity',
@@ -18771,7 +18858,6 @@ extension on Translations {
 			'games.steamWorkshop' => 'Workshop',
 			'games.openSteamPage' => 'Open Steam page',
 			'games.openSteamPageHelp' => 'Open this game’s Steam page in your browser? Your browser’s Steam sign-in and privacy settings apply.',
-			'games.hostActions' => 'Computer actions',
 			'games.launchOnComputer' => 'Launch on computer',
 			'games.installOnComputer' => 'Install on computer',
 			'games.hostLibrary' => 'Open Steam on computer',
@@ -18883,7 +18969,6 @@ extension on Translations {
 			'games.steamScreenshotHelp' => 'Send F12 to capture a screenshot on the streaming computer. Steam must have that shortcut enabled. Captures remain in Steam on that computer; this does not upload or share them.',
 			'games.steamShortcutSent' => 'Shortcut sent to the streaming computer',
 			'games.steamShortcutFailed' => 'The streaming computer could not accept the shortcut. Focus this game and try again.',
-			'games.sendShortcut' => 'Send shortcut',
 			'games.lanInstallTitle' => 'Install with a nearby computer',
 			'games.lanInstallHelp' => 'Steam can copy game files from another computer on the same local network when you start an installation. Both Steam clients must be online, allow local transfers, and have compatible current game files. Steam chooses the source and verifies the files; saves and Cloud files are not transferred.',
 			'games.lanInstallCandidates' => 'These computers last reported the game installed. This does not confirm they are online, nearby or eligible to transfer:',
@@ -18920,6 +19005,43 @@ extension on Translations {
 			'games.touchLayoutVertical' => 'Vertical',
 			'games.touchLayoutFailed' => 'Could not save the touch layout. Your previous layout is still available.',
 			'games.touchLayoutPosition' => 'Position controls',
+			'games.connections' => 'Game connections',
+			'games.streamSettings' => 'Streaming settings',
+			'games.setupTitle' => 'Bring your games together',
+			'games.setupHelp' => 'Browse one library across your computers. Choose either connection to get started.',
+			'games.accountSetupTitle' => 'Your Steam library',
+			'games.accountSetupHelp' => 'Link Steam to see your account’s games. Playing also needs a connected computer.',
+			'games.computerSetupTitle' => 'Play from a computer',
+			'games.computerSetupHelp' => 'Connect Steam Remote Play or Sunshine on your network. You can play without linking a Steam account.',
+			'games.accountLinked' => 'Steam account linked',
+			'games.computerSetupHint' => 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.',
+			'games.manageConnections' => 'Manage connections',
+			'games.accountStatus' => 'Library status',
+			'games.clearGameFilters' => 'Clear search and filters',
+			'games.emptyLibraryTitle' => 'Your games will appear here',
+			'games.emptyLibraryHelp' => 'Connect a computer to load its games, or link Steam to browse your account’s library.',
+			'games.emptyConnectedHelp' => 'Select a computer in Game connections to pair and refresh its games. Steam account libraries may also need public game details.',
+			'games.filterEmptyHelp' => 'Try another computer, include games that are not installed, or clear your search.',
+			'games.installedOn' => ({required Object computer}) => 'Installed on ${computer}',
+			'games.installedComputers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Installed on ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} computer', other: 'Installed on ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} computers', ),
+			'games.savedComputers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} saved computer', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} saved computers', ),
+			'games.connectToPlayShort' => 'Connect a computer to play',
+			'games.preferredComputer' => 'Preferred computer',
+			'games.preferComputer' => 'Prefer this computer',
+			'games.automaticComputer' => 'Choose automatically',
+			'games.inventorySnapshotHelp' => 'Installation comes from the last library check. Your computer confirms availability when you connect.',
+			'games.streamingGroup' => 'Picture and sound',
+			'games.advancedStreaming' => 'Advanced streaming',
+			'games.advancedStreamingHelp' => 'Optional codecs and internet connectivity. Compatible defaults stay enabled.',
+			'games.controllerSettings' => 'Controllers',
+			'games.gameOptions' => ({required Object game}) => 'Options for ${game}',
+			'games.streamConnectHelp' => 'Keep this computer awake. Pairing and network access are checked as the stream starts.',
+			'games.streamRecoveryHelp' => 'Check the computer and connection, then reconnect. Disconnecting here leaves the game running on the computer.',
+			'games.steamAttribution' => 'Steam is a trademark of Valve Corporation. PlezyNG is an independent application.',
+			'games.steamActivityPrivacy' => 'News and achievements load when requested. Friends activity is optional.',
+			'games.disconnecting' => 'Disconnecting…',
+			'games.useAsController' => 'Use as controller',
+			'games.controllerOnlyHelp' => 'Use this phone or tablet for controls while you watch and hear the game on the computer. Requires a paired Steam computer.',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

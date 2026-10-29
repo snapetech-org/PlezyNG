@@ -36,7 +36,7 @@ class TranslationsCs extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsCs _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsCs $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsCs(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3922,13 +3922,11 @@ class _Translations$games$cs extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3956,10 +3954,8 @@ class _Translations$games$cs extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3969,7 +3965,6 @@ class _Translations$games$cs extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5450,9 +5445,9 @@ extension on TranslationsCs {
 			'settings.smallSkipDuration' => 'Malý skok trvání',
 			'settings.largeSkipDuration' => 'Velký skok trvání',
 			'settings.rewindOnResume' => 'Zpět na přehled',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} sekunda', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} sekundy', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} sekundy', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} sekund', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} sekunda', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} sekundy', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} sekundy', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} sekund', ),
 			'settings.defaultSleepTimer' => 'Default spánkový čas',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minuta', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minuty', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minuty', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minut', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minuta', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minuty', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minuty', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minut', ),
 			'settings.rememberTrackSelections' => 'Pamatujte si výběr tracků podle show/film',
 			'settings.chooseTracksBeforePlayback' => 'Vyberte audio a subtituly před přehráváním',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Vyberte zdrojový zvuk a podtitulové stopy před zahájením každého videa.',
@@ -6058,9 +6053,9 @@ extension on TranslationsCs {
 			'mediaMenu.deleteAnyway' => 'Odstranit v každém',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'Trvale smazat ${title} ze serveru?',
 			'mediaMenu.deleteMultipleWarning' => 'To zahrnuje všechny epizody a jejich soubory.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Tím se smaže ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizoda v této položce i její soubor.', few: 'Tím se smažou všechny ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizody v této položce i jejich soubory.', many: 'Tím se smažou všechny epizody v této položce (počet: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) i jejich soubory.', other: 'Tím se smaže všech ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizod v této položce i jejich soubory.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Tato položka je uložena v ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} souboru, který bude smazán.', few: 'Tato položka je uložena ve ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} souborech a všechny budou smazány.', many: 'Tato položka je uložena v souborech (počet: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}), které budou všechny smazány.', other: 'Tato položka je uložena v ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} souborech a všechny budou smazány.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Ve stejném souboru je uložena ještě ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizoda, která bude také smazána:', few: 'Ve stejném souboru jsou uloženy ještě ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizody, které budou také smazány:', many: 'Další epizody ve stejném souboru (počet: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) budou také smazány:', other: 'Ve stejném souboru je uloženo dalších ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizod, které budou také smazány:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Tím se smaže ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizoda v této položce i její soubor.', few: 'Tím se smažou všechny ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizody v této položce i jejich soubory.', many: 'Tím se smažou všechny epizody v této položce (počet: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) i jejich soubory.', other: 'Tím se smaže všech ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizod v této položce i jejich soubory.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Tato položka je uložena v ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} souboru, který bude smazán.', few: 'Tato položka je uložena ve ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} souborech a všechny budou smazány.', many: 'Tato položka je uložena v souborech (počet: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}), které budou všechny smazány.', other: 'Tato položka je uložena v ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} souborech a všechny budou smazány.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Ve stejném souboru je uložena ještě ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizoda, která bude také smazána:', few: 'Ve stejném souboru jsou uloženy ještě ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizody, které budou také smazány:', many: 'Další epizody ve stejném souboru (počet: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) budou také smazány:', other: 'Ve stejném souboru je uloženo dalších ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizod, které budou také smazány:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG nedokázalo ověřit, které soubory budou odstraněny, takže může smazat více než výše uvedenou položku. Akci zrušte a zkuste to znovu, nebo pokračujte ve smazání.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Server neposkytl podrobnosti o souborech této položky, takže PlezyNG nemůže ověřit, které soubory budou odstraněny. Může být smazáno více než výše uvedená položka.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media objekt byl úspěšně odstraněn',
@@ -6249,7 +6244,7 @@ extension on TranslationsCs {
 			'videoControls.osdSubtitlesOff' => 'Název titulu: Off',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Články v kategorii: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Audio číslo: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} snímek', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} snímky', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} snímku', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} snímků', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} snímek', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} snímky', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} snímku', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} snímků', ),
 			'videoControls.trackSelectionTitle' => 'Zvolte stopy před playbackem',
 			'videoControls.trackSelectionAuto' => 'Automatické výběr',
 			'videoControls.openMiniPlayer' => 'Otevřený mini hráč',
@@ -6264,7 +6259,7 @@ extension on TranslationsCs {
 			'messages.markedAsWatchedOffline' => 'Zaznamenáno jako sledované (synchronizuje se, když je online)',
 			'messages.markedAsUnwatchedOffline' => 'Označen jako nepozorovaný (synchronizuje se, když je online)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Automatické odstranění: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} sledované ke stažení', other: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} sledované stahování', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} sledované ke stažení', other: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} sledované stahování', ),
 			'messages.removedFromContinueWatching' => 'Odstranění z pokračování sledování',
 			'messages.errorLoading' => ({required Object error}) => 'Chyba: ${error}',
 			'messages.searchPartialResults' => 'Některé mediální servery nemohou být vyhledávány. zobrazování dostupných výsledků.',
@@ -6635,7 +6630,7 @@ extension on TranslationsCs {
 			'discover.tvShow' => 'TV show',
 			'discover.minutesLeft' => ({required Object minutes}) => 'Zbývá ${minutes} min',
 			'discover.moreLikeThis' => 'Podobné položky',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} titul', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tituly', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} titulu', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} titulů', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} titul', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tituly', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} titulu', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} titulů', ),
 			'discover.person.born' => 'narození',
 			'discover.person.died' => 'Zemřel',
 			'discover.person.birthplace' => 'Místo narození',
@@ -6880,7 +6875,7 @@ extension on TranslationsCs {
 			'explore.status.ended' => 'Ukončeno',
 			'explore.status.canceled' => 'Zrušený',
 			'explore.status.upcoming' => 'Nadcházející',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizoda', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizody', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizody', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizod', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizoda', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizody', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizody', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizod', ),
 			'explore.cast' => 'Castová',
 			'explore.characters' => 'Charaktery',
 			'explore.addToWatchlist' => 'Přidejte na Watchlist',
@@ -6892,7 +6887,7 @@ extension on TranslationsCs {
 			'explore.notInLibrary' => 'Ne v knihovně',
 			'explore.inTheseLibraries' => 'V těchto knihovnách',
 			'explore.checkingLibrary' => 'Zkontrolujte svou knihovnu...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Nemůžu ověřit server ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: 'Nemohla jsem ověřit servery ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Nemůžu ověřit server ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: 'Nemohla jsem ověřit servery ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ),
 			'explore.emptyTitle' => 'Nic zde zatím',
 			'explore.emptyMessage' => ({required Object source}) => 'Čerpadla z ${source} se zde objeví, jakmile mají obsah.',
 			'explore.searchHint' => ({required Object source}) => 'Vyhledávání ${source}',
@@ -6929,7 +6924,7 @@ extension on TranslationsCs {
 			'explore.stats.planning' => ({required Object n}) => '${n} Plánování sledovat',
 			'explore.stats.favorited' => ({required Object n}) => '${n} oblíbené',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} se to podařilo',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} komentář', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} komentáře', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} komentáře', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} komentářů', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} komentář', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} komentáře', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} komentáře', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} komentářů', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} hlasů',
 			'explore.stats.watching' => ({required Object n}) => 'Právě sleduje: ${n}',
 			'explore.stats.completed' => ({required Object n}) => '${n} dokončeno',
@@ -6996,14 +6991,14 @@ extension on TranslationsCs {
 			'explore.detail.crew' => 'Posádka',
 			'explore.detail.ratings' => 'Hodnocení',
 			'explore.detail.schedule' => 'Plánované nahrávání',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Doporučeno uživatelem ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: 'Doporučená ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} uživatelů', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Doporučeno uživatelem ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: 'Doporučená ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} uživatelů', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'Doporučeno od ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'Oblíbeno ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} ještě není zobrazeno',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Doporučeno ${percent} diváků',
 			'explore.detail.relatedTitles' => 'Související tituly',
 			'explore.detail.background' => 'pozadí',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} výsledek', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} výsledky', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} výsledku', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} výsledků', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} výsledek', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} výsledky', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} výsledku', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} výsledků', ),
 			'liveTv.title' => 'Živé vysílání',
 			'liveTv.guide' => 'Programový průvodce',
 			'liveTv.noChannels' => 'Žádné dostupné kanály',
@@ -7132,7 +7127,7 @@ extension on TranslationsCs {
 			'playlists.delete' => 'Odstranit seznam skladeb',
 			'playlists.removeItem' => 'Odebrat ze seznam skladeb',
 			'playlists.smartPlaylist' => 'Inteligentní playlist',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} položka', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} položky', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} položky', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} položek', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} položka', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} položky', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} položky', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} položek', ),
 			'playlists.emptyPlaylist' => 'Tento playlist je prázdný',
 			'playlists.deleteConfirm' => 'Vymažte si playlist?',
 			'playlists.deleteMessage' => ({required Object name}) => 'Jste si jisti, že chcete odstranit „${name}“?',
@@ -7154,7 +7149,7 @@ extension on TranslationsCs {
 			'music.playNext' => 'Přehrát jako další',
 			'music.addToQueue' => 'Přidejte na kousek',
 			'music.discNumber' => ({required Object n}) => 'Disk ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} skladba', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} skladby', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} skladby', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} skladeb', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} skladba', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} skladby', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} skladby', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} skladeb', ),
 			'music.nowPlaying' => 'Nyní hrát',
 			'music.playingFrom' => ({required Object title}) => 'Hraje se z ${title}',
 			'music.queue' => 'Kouč',
@@ -7176,7 +7171,7 @@ extension on TranslationsCs {
 			'music.noLyrics' => 'Žádné texty k dispozici',
 			'music.sleepTimer' => 'Časový spánek',
 			'music.sleepTimerEndOfTrack' => 'Konec trasy',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuta', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuty', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuty', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minut', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuta', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuty', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuty', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minut', ),
 			'music.stopPlayback' => 'Zastavit přehrávání',
 			'music.previousTrack' => 'Předchozí stopa',
 			'music.nextTrack' => 'Následující stopa',
@@ -7260,7 +7255,7 @@ extension on TranslationsCs {
 			'watchTogether.offsetPlusTenth' => '+ 100 ms',
 			'watchTogether.offsetPlusSecond' => '+ 1 s',
 			'watchTogether.participants' => 'Účastníci',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} účastník', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} účastníci', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} účastníka', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} účastníků', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} účastník', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} účastníci', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} účastníka', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} účastníků', ),
 			'watchTogether.hostBadge' => 'Host',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (vy jste)',
 			'watchTogether.playerIdle' => 'Při neaktivitě',
@@ -7469,10 +7464,10 @@ extension on TranslationsCs {
 			'downloads.unknownAlbum' => 'Neznámý album',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} dokončeno',
 			'downloads.storageUsed' => ({required Object size}) => 'Použité skladování: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} stažený soubor', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} stažené soubory', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} staženého souboru', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} stažených souborů', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} seriál', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} seriály', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} seriálu', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} seriálů', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} film', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmy', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmu', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmů', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} alba', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} alba', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} alb', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} stažený soubor', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} stažené soubory', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} staženého souboru', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} stažených souborů', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} seriál', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} seriály', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} seriálu', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} seriálů', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} film', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmy', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmu', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filmů', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} alba', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} alba', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} alb', ),
 			'downloads.errorFileNotFound' => 'Soubor nenajdený (404)',
 			'downloads.errorDownloadNotAllowed' => 'Stáhnout není povoleno serverem (403)',
 			'downloads.errorDownloadFailed' => 'Download neúspěch',
@@ -8226,7 +8221,7 @@ extension on TranslationsCs {
 			'universalMedia.saveFavorite' => 'Zachraňte oblíbené',
 			'universalMedia.playNow' => 'Hrajte nyní',
 			'universalMedia.favoriteSaved' => 'Stream oblíbené uložené do tohoto profilu',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Přepadl ${count} nepodporovaný nebo nebezpečný playlist vstup.', few: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', many: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', other: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Přepadl ${count} nepodporovaný nebo nebezpečný playlist vstup.', few: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', many: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', other: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', ),
 			'universalMedia.playlistAddress' => 'Playlistová adresa',
 			'universalMedia.playlistAddressHelp' => 'Otevřete playlist M3U, M3u8 nebo PLS z webové adresy. Přímé streamovací odkazy nezachovávají playlist.',
 			'universalMedia.choosePlaylist' => 'Vyberte soubor playlist',
@@ -8242,7 +8237,7 @@ extension on TranslationsCs {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Vyberte soubory',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ),
 			'universalMedia.wifiTransfer' => 'Odesílání souborů přes Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Přenos podporovaných souborů z prohlížeče na stejnou důvěryhodnou síť.',
 			'universalMedia.wifiTransferIntro' => 'Otevřete tuto adresu v prohlížeči na jiném zařízení. Vyberte soubory, abyste je přidali do knihovny souborů a knih tohoto zařízení.',
@@ -8253,7 +8248,7 @@ extension on TranslationsCs {
 			'universalMedia.copyAddress' => 'Kopírování transferové adresy',
 			'universalMedia.addressCopied' => 'Přenosová adresa kopírovaná',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Tato adresa vyprší v ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${count} soubor přijatý', few: '${count} soubory obdržené', many: '${count} soubory obdržené', other: '${count} soubory obdržené', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '${count} soubor přijatý', few: '${count} soubory obdržené', many: '${count} soubory obdržené', other: '${count} soubory obdržené', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'Obdržel ${size}',
 			'universalMedia.stopTransfer' => 'Zastavení přenosu a zrušení adresy',
 			'universalMedia.startTransfer' => 'Začátek transferu',
@@ -8479,7 +8474,7 @@ extension on TranslationsCs {
 			'fileSources.sleep' => 'Časový spánek',
 			'fileSources.sleepOff' => 'Vypnuto',
 			'fileSources.endChapter' => 'Konec kapitoly',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minuta', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minuty', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minuty', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minut', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minuta', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minuty', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minuty', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minut', ),
 			'fileSources.skipBack' => 'Skok zpět',
 			'fileSources.skipForward' => 'Skok dopředu',
 			'fileSources.smartRewind' => 'Inteligentní zpět po přestávce',
@@ -8818,13 +8813,11 @@ extension on TranslationsCs {
 			'comics.collections' => 'Kolekce',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8852,10 +8845,8 @@ extension on TranslationsCs {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8865,7 +8856,6 @@ extension on TranslationsCs {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

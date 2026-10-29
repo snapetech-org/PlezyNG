@@ -45,7 +45,7 @@ func (p *oauthProxy) handleSteamAuthorize(w http.ResponseWriter, r *http.Request
 		renderErrorPage(w, http.StatusInternalServerError, "Steam sign-in is not configured.")
 		return
 	}
-	http.Redirect(w, r, target, http.StatusFound)
+	renderSteamSignIn(w, target)
 }
 
 func steamAuthorizeURL(baseURL, endpoint, state string) (string, error) {

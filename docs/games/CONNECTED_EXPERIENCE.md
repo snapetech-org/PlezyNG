@@ -9,6 +9,9 @@ The [code follow-through](CODE_COMPLETION.md) adds session-owned receivers,
 controller layouts, committed IME text, touch appearance, host controls, LAN-install assistance and higher-resolution
 requests. Older sections below are historical milestones, not current hardware
 or service qualification.
+The [visual and interaction pass](VISUAL_EXPERIENCE.md) integrates first use,
+dedicated connections/settings, responsive game details, explicit computer
+preferences and consistent Steam attribution with PlezyNG's existing design.
 
 This is the review ledger for the connected Steam / GameStream experience.
 The product remains PlezyNG: existing poster geometry, theme tokens, focus,
@@ -30,7 +33,7 @@ platform build prerequisites and features that still require implementation.
 | --- | --- | --- |
 | Unified account / multi-computer library | Implemented, shared-model tests pass | Actual Windows/macOS/Linux inventory exchange and large-library qualification |
 | Catalog refresh and revocation | Implemented, Go race tests pass | Relay deployment and live account exercise |
-| Grid, details, routes and filtering | Implemented using existing app components | Device accessibility, RTL, controller and visual qualification; new strings currently use the English fallback |
+| Grid, details, routes and filtering | Implemented using existing app components; responsive production-widget renders, D-pad/semantics and large-text RTL tests | Physical-device accessibility, controller and visual qualification; reviewed translations beyond explicit English fallback |
 | Android stream preferences / recovery | Implemented through Flutter, Java and JNI | Full Android build/minification, real host reconnect and negotiated-quality measurements |
 | Native Steam transport | Portable Linux build and 42 tests pass locally; native loopback tunnel mapping integrated in all four platform adapters | Current-head sanitizer CI, SDK builds, Android packaging and live transport qualification |
 | View-independent stream lifetime | Workspace-owned desktop/Apple receivers; Android session registry and replaceable video Surface | Device suspend/rotation/multiview qualification |

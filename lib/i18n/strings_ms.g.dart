@@ -36,7 +36,7 @@ class TranslationsMs extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsMs _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsMs $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsMs(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3857,13 +3857,11 @@ class _Translations$games$ms extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3891,10 +3889,8 @@ class _Translations$games$ms extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3904,7 +3900,6 @@ class _Translations$games$ms extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5381,9 +5376,9 @@ extension on TranslationsMs {
 			'settings.smallSkipDuration' => 'Tempoh Skik Kecil',
 			'settings.largeSkipDuration' => 'Jangka Panjang Skik',
 			'settings.rewindOnResume' => 'Kembali ke Resume',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} saat', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} saat', ),
 			'settings.defaultSleepTimer' => 'Tempoh Tidur Default',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minit', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minit', ),
 			'settings.rememberTrackSelections' => 'Ingat pilihan trek per persembahan/filem',
 			'settings.chooseTracksBeforePlayback' => 'Pilih audio dan subtitle sebelum playback',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Pilih sumber audio dan subtitle trek sebelum setiap video bermula.',
@@ -5989,9 +5984,9 @@ extension on TranslationsMs {
 			'mediaMenu.deleteAnyway' => 'Menghapuskan bagaimanapun',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'Permanen menghapuskan ${title} daripada pelayan anda?',
 			'mediaMenu.deleteMultipleWarning' => 'Ini termasuk semua episod dan fail mereka.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Ini memadamkan semua ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episod di dalamnya, dan fail mereka.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Item ini disimpan melalui fail ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} dan semua akan dipadamkan.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episod lain disimpan dalam fail yang sama dan juga akan dipadamkan:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Ini memadamkan semua ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episod di dalamnya, dan fail mereka.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Item ini disimpan melalui fail ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} dan semua akan dipadamkan.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episod lain disimpan dalam fail yang sama dan juga akan dipadamkan:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG tidak dapat memeriksa fail yang akan dipadamkan, jadi lebih daripada item yang dinyatakan di atas mungkin dipadamkan. Batalkan dan cuba lagi, atau padamkan juga.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Pelayan anda tidak memberikan butiran fail untuk item ini, jadi PlezyNG tidak dapat memeriksa fail yang akan dipadamkan. Lebih daripada item yang dinyatakan di atas mungkin dipadamkan.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media item dihapuskan dengan berjaya',
@@ -6180,7 +6175,7 @@ extension on TranslationsMs {
 			'videoControls.osdSubtitlesOff' => 'Tajuk : Off',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Tajuk : ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Perbincangan : ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} penghalang', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} penghalang', ),
 			'videoControls.trackSelectionTitle' => 'Pilih trek sebelum playback',
 			'videoControls.trackSelectionAuto' => 'Pemilihan automatik',
 			'videoControls.openMiniPlayer' => 'Permainan Mini Terbuka',
@@ -6195,7 +6190,7 @@ extension on TranslationsMs {
 			'messages.markedAsWatchedOffline' => 'Menandakan seperti yang dilihat (sinkronkan apabila dalam talian)',
 			'messages.markedAsUnwatchedOffline' => 'Ditandakan sebagai tidak dipantau (sinkronkan apabila dalam talian)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Pengeluaran : ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} dilihat muat turun', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} dilihat muat turun', ),
 			'messages.removedFromContinueWatching' => 'Menghapus daripada terus menonton',
 			'messages.errorLoading' => ({required Object error}) => 'Kesilapan : ${error}',
 			'messages.searchPartialResults' => 'Sesetengah pelayan media tidak boleh dicari. menunjukkan hasil yang tersedia.',
@@ -6566,7 +6561,7 @@ extension on TranslationsMs {
 			'discover.tvShow' => 'Persembahan TV',
 			'discover.minutesLeft' => ({required Object minutes}) => 'Baki ${minutes} min',
 			'discover.moreLikeThis' => 'lebih seperti ini',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tajuk', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tajuk', ),
 			'discover.person.born' => 'dilahirkan',
 			'discover.person.died' => 'Kematian',
 			'discover.person.birthplace' => 'tempat kelahiran',
@@ -6811,7 +6806,7 @@ extension on TranslationsMs {
 			'explore.status.ended' => 'Tamat',
 			'explore.status.canceled' => 'Pembatalan',
 			'explore.status.upcoming' => 'yang akan datang',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episod', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episod', ),
 			'explore.cast' => 'Tembakan',
 			'explore.characters' => 'watak',
 			'explore.addToWatchlist' => 'Tambah ke Watchlist',
@@ -6823,7 +6818,7 @@ extension on TranslationsMs {
 			'explore.notInLibrary' => 'Bukan di perpustakaan anda',
 			'explore.inTheseLibraries' => 'Di dalam perpustakaan ini',
 			'explore.checkingLibrary' => 'Periksa perpustakaan anda.',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Tidak boleh memeriksa ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} pelayan', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Tidak boleh memeriksa ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} pelayan', ),
 			'explore.emptyTitle' => 'Tiada apa-apa di sini',
 			'explore.emptyMessage' => ({required Object source}) => 'Roda daripada ${source} akan muncul di sini sebaik sahaja mereka mempunyai kandungan.',
 			'explore.searchHint' => ({required Object source}) => 'Pencarian untuk ${source}',
@@ -6860,7 +6855,7 @@ extension on TranslationsMs {
 			'explore.stats.planning' => ({required Object n}) => '${n} rancangan untuk menonton',
 			'explore.stats.favorited' => ({required Object n}) => '${n} kegemaran',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} telah meletakkannya',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} komen', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} komen', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} undian',
 			'explore.stats.watching' => ({required Object n}) => '${n} menonton',
 			'explore.stats.completed' => ({required Object n}) => '${n} telah selesai',
@@ -6927,14 +6922,14 @@ extension on TranslationsMs {
 			'explore.detail.crew' => 'Pasukan',
 			'explore.detail.ratings' => 'Penilaian',
 			'explore.detail.schedule' => 'Jadual',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Disyorkan oleh ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} pengguna', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Disyorkan oleh ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} pengguna', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'disyorkan oleh ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'disukai oleh ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} belum diakses',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'disyorkan oleh ${percent} penonton',
 			'explore.detail.relatedTitles' => 'Tajuk yang berkaitan',
 			'explore.detail.background' => 'latar belakang',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} hasil', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} hasil', ),
 			'liveTv.title' => 'TV Langsung',
 			'liveTv.guide' => 'Panduan',
 			'liveTv.noChannels' => 'Tiada saluran yang tersedia',
@@ -7063,7 +7058,7 @@ extension on TranslationsMs {
 			'playlists.delete' => 'Menghapuskan Playlist',
 			'playlists.removeItem' => 'Menghapus daripada Playlist',
 			'playlists.smartPlaylist' => 'Senarai Pemain Pintar',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} item', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} item', ),
 			'playlists.emptyPlaylist' => 'Senarai permainan ini kosong',
 			'playlists.deleteConfirm' => 'Menghapuskan Playlist?',
 			'playlists.deleteMessage' => ({required Object name}) => 'Adakah anda pasti anda mahu memadamkan "${name}"?',
@@ -7085,7 +7080,7 @@ extension on TranslationsMs {
 			'music.playNext' => 'Bermain selanjutnya',
 			'music.addToQueue' => 'Tambah kepada Queue',
 			'music.discNumber' => ({required Object n}) => 'Perbincangan:Disk ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} laluan', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} laluan', ),
 			'music.nowPlaying' => 'Bermain sekarang',
 			'music.playingFrom' => ({required Object title}) => 'Bermain daripada ${title}',
 			'music.queue' => 'Perbincangan',
@@ -7107,7 +7102,7 @@ extension on TranslationsMs {
 			'music.noLyrics' => 'Tiada lyrics boleh didapati',
 			'music.sleepTimer' => 'Waktu Tidur',
 			'music.sleepTimerEndOfTrack' => 'Akhir daripada trek',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minit', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minit', ),
 			'music.stopPlayback' => 'Berhenti bermain',
 			'music.previousTrack' => 'Trek sebelumnya',
 			'music.nextTrack' => 'Trek seterusnya',
@@ -7191,7 +7186,7 @@ extension on TranslationsMs {
 			'watchTogether.offsetPlusTenth' => '+ 100 ms',
 			'watchTogether.offsetPlusSecond' => '+ 1 s',
 			'watchTogether.participants' => 'peserta',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} peserta', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} peserta', ),
 			'watchTogether.hostBadge' => 'tetamu',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (Anda)',
 			'watchTogether.playerIdle' => 'Idol',
@@ -7400,10 +7395,10 @@ extension on TranslationsMs {
 			'downloads.unknownAlbum' => 'Album yang tidak diketahui',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} selesai',
 			'downloads.storageUsed' => ({required Object size}) => 'Penyimpanan yang digunakan: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} muat turun', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} menunjukkan', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filem-filem', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} buah buku', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} muat turun', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} menunjukkan', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filem-filem', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} buah buku', ),
 			'downloads.errorFileNotFound' => 'Fail yang tidak ditemui (404)',
 			'downloads.errorDownloadNotAllowed' => 'Muat turun tidak dibenarkan oleh pelayan (403)',
 			'downloads.errorDownloadFailed' => 'Download gagal',
@@ -8157,7 +8152,7 @@ extension on TranslationsMs {
 			'universalMedia.saveFavorite' => 'Selamatkan kegemaran',
 			'universalMedia.playNow' => 'Bermain sekarang',
 			'universalMedia.favoriteSaved' => 'Stream favorit disimpan ke profil ini',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} masuk senarai main yang tidak disokong atau tidak selamat.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} masuk senarai main yang tidak disokong atau tidak selamat.', ),
 			'universalMedia.playlistAddress' => 'Alamat Playlist',
 			'universalMedia.playlistAddressHelp' => 'Buka senarai m3U, M3U8, atau PLS daripada alamat web. pautan siaran langsung tidak menyimpan senarai main.',
 			'universalMedia.choosePlaylist' => 'Pilih fail playlist',
@@ -8173,7 +8168,7 @@ extension on TranslationsMs {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Pilih fail',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang dipilih', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang dipilih', ),
 			'universalMedia.wifiTransfer' => 'Hantar fail melalui Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Memindahkan fail yang disokong daripada pelayar pada rangkaian yang sama dipercayai.',
 			'universalMedia.wifiTransferIntro' => 'Buka alamat ini dalam pelayar pada peranti lain. pilih fail untuk menambahnya ke perpustakaan Fail dan buku peranti ini.',
@@ -8184,7 +8179,7 @@ extension on TranslationsMs {
 			'universalMedia.copyAddress' => 'Menyalin alamat pemindahan',
 			'universalMedia.addressCopied' => 'Alamat pemindahan disalin',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Alamat ini tamat tempoh dalam ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang diterima', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang diterima', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'Pengenalan kepada ${size}',
 			'universalMedia.stopTransfer' => 'Hentikan pemindahan dan membatalkan alamat',
 			'universalMedia.startTransfer' => 'Mulakan pemindahan',
@@ -8410,7 +8405,7 @@ extension on TranslationsMs {
 			'fileSources.sleep' => 'Waktu Tidur',
 			'fileSources.sleepOff' => 'keluar',
 			'fileSources.endChapter' => 'Akhir daripada bab',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minit', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minit', ),
 			'fileSources.skipBack' => 'Kembali ke Sk',
 			'fileSources.skipForward' => 'melompat ke hadapan',
 			'fileSources.smartRewind' => 'Kembali ke Smart selepas istirahat',
@@ -8749,13 +8744,11 @@ extension on TranslationsMs {
 			'comics.collections' => 'Koleksi',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8783,10 +8776,8 @@ extension on TranslationsMs {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8796,7 +8787,6 @@ extension on TranslationsMs {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

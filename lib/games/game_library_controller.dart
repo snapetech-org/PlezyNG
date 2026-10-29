@@ -108,6 +108,7 @@ class GameLibraryController extends ChangeNotifier {
       steamCatalogTruncated: state.steamCatalogTruncated,
       steamCatalog: state.steamCatalog,
       preferredRoutes: state.preferredRoutes,
+      routeSelections: state.routeSelections,
       inventories: state.inventories,
     );
   });
@@ -125,6 +126,7 @@ class GameLibraryController extends ChangeNotifier {
         steamCatalogTruncated: state.steamCatalogTruncated,
         steamCatalog: state.steamCatalog,
         preferredRoutes: state.preferredRoutes,
+        routeSelections: state.routeSelections,
         inventories: state.inventories,
       ).toJson(),
     ),
@@ -156,6 +158,7 @@ class GameLibraryController extends ChangeNotifier {
           steamCatalogTruncated: state.steamCatalogTruncated,
           steamCatalog: state.steamCatalog,
           preferredRoutes: state.preferredRoutes,
+          routeSelections: state.routeSelections,
           inventories: state.inventories,
         ).toJson(),
       ),
@@ -176,6 +179,7 @@ class GameLibraryController extends ChangeNotifier {
         steamCatalogTruncated: state.steamCatalogTruncated,
         steamCatalog: state.steamCatalog,
         preferredRoutes: state.preferredRoutes,
+        routeSelections: state.routeSelections,
         inventories: state.inventories,
       ).toJson(),
     ),
@@ -195,6 +199,7 @@ class GameLibraryController extends ChangeNotifier {
       steamCatalogTruncated: state.steamCatalogTruncated,
       steamCatalog: state.steamCatalog,
       preferredRoutes: state.preferredRoutes,
+      routeSelections: state.routeSelections,
       inventories: state.inventories,
     );
   });
@@ -211,6 +216,7 @@ class GameLibraryController extends ChangeNotifier {
       steamCatalogTruncated: state.steamCatalogTruncated,
       steamCatalog: state.steamCatalog,
       preferredRoutes: state.preferredRoutes,
+      routeSelections: state.routeSelections,
       inventories: state.inventories,
     ),
   );
@@ -220,6 +226,17 @@ class GameLibraryController extends ChangeNotifier {
     final favorites = state.favorites.where((key) => state.canonicalKey(key) != game.key).toSet();
     if (!wasFavorite) favorites.add(game.key);
     return state.copyWith(favorites: favorites);
+  });
+
+  Future<void> preferRoute(LibraryGame game, GameRoute? route) => _change((state) {
+    final currentGame = state.entries.where((entry) => entry.key == game.key).firstOrNull;
+    if (currentGame == null ||
+        (route != null &&
+            !currentGame.routes.any((r) => r.key == route.key && r.installation != GameInstallation.notInstalled))) {
+      throw const GameClientException(GameClientFailure.cancelled);
+    }
+    final selections = {...state.routeSelections, game.key: route?.key ?? ''};
+    return state.copyWith(routeSelections: selections);
   });
 
   /// Call only after native connection/first-frame evidence, never on launch acceptance.
@@ -277,6 +294,7 @@ class GameLibraryController extends ChangeNotifier {
       recent: state.recent,
       favorites: state.favorites,
       preferredRoutes: sameAccount ? state.preferredRoutes : const {},
+      routeSelections: sameAccount ? state.routeSelections : const {},
       inventories: state.inventories,
       steamAccountId: steamId,
       steamCatalogCredential: protectedCredential ?? (sameAccount ? state.steamCatalogCredential : null),
@@ -301,6 +319,7 @@ class GameLibraryController extends ChangeNotifier {
         recent: state.recent,
         favorites: state.favorites,
         preferredRoutes: state.preferredRoutes,
+        routeSelections: state.routeSelections,
         inventories: state.inventories,
       ).toJson(),
     ),

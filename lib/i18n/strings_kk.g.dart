@@ -36,7 +36,7 @@ class TranslationsKk extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsKk _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsKk $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsKk(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3880,13 +3880,11 @@ class _Translations$games$kk extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3914,10 +3912,8 @@ class _Translations$games$kk extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3927,7 +3923,6 @@ class _Translations$games$kk extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5406,9 +5401,9 @@ extension on TranslationsKk {
 			'settings.smallSkipDuration' => 'Шағын өткізіп жіберу уақыты',
 			'settings.largeSkipDuration' => 'Үлкен өткізіп жіберу уақыты',
 			'settings.rewindOnResume' => 'Жалғастырғанда артқа айналдыру',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунд', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунд', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунд', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} секунд', ),
 			'settings.defaultSleepTimer' => 'Әдепкі ұйқы таймері',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минут', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} минут', ),
 			'settings.rememberTrackSelections' => 'Әр фильм/сериал үшін дыбыс/субтитр таңдауын есте сақтау',
 			'settings.chooseTracksBeforePlayback' => 'Аудиолық және субтитрикалық қазалықты қазалықтары',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Бұл үшін, бізге көшіру үшін, біздің видеодан көшіруге болады.',
@@ -6014,9 +6009,9 @@ extension on TranslationsKk {
 			'mediaMenu.deleteAnyway' => 'Бәрібір өшіру',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => '${title} серверіңізден толық өшірілсін бе?',
 			'mediaMenu.deleteMultipleWarning' => 'Бұл барлық бөлімдер мен файлдарға әсер етеді.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Бұл ондағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлімді және оның файлын өшіреді.', other: 'Бұл ондағы барлық ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлімді және олардың файлдарын өшіреді.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Бұл элемент ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файл ретінде сақталған, ол өшіріледі.', other: 'Бұл элемент ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлда сақталған, олардың барлығы өшіріледі.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Сол файлда тағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім сақталған, ол да өшіріледі:', other: 'Сол файлда тағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім сақталған, олар да өшіріледі:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Бұл ондағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлімді және оның файлын өшіреді.', other: 'Бұл ондағы барлық ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлімді және олардың файлдарын өшіреді.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Бұл элемент ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файл ретінде сақталған, ол өшіріледі.', other: 'Бұл элемент ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлда сақталған, олардың барлығы өшіріледі.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Сол файлда тағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім сақталған, ол да өшіріледі:', other: 'Сол файлда тағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім сақталған, олар да өшіріледі:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG қандай файлдар өшірілетінін тексере алмады, сондықтан ол жоғарыда аталған элементтен артық өшіруі мүмкін. Бас тартып, қайталап көріңіз немесе бәрібір өшіріңіз.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Серверіңіз бұл элемент үшін файл мәліметтерін ұсынбады, сондықтан PlezyNG қандай файлдар өшірілетінін тексере алмайды. Ол жоғарыда аталған элементтен артық өшіруі мүмкін.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Медиа элементі сәтті өшірілді',
@@ -6205,7 +6200,7 @@ extension on TranslationsKk {
 			'videoControls.osdSubtitlesOff' => 'Субтитр: өшірулі',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Субтитр: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Дыбыс: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кадр', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} қақтар', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кадр', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} қақтар', ),
 			'videoControls.trackSelectionTitle' => 'Жарықтың да көптеген жылдар бойы жарықтың',
 			'videoControls.trackSelectionAuto' => 'Автоматдық селекциясы',
 			'videoControls.openMiniPlayer' => 'Өткен Mini Player',
@@ -6220,7 +6215,7 @@ extension on TranslationsKk {
 			'messages.markedAsWatchedOffline' => 'Көрілді деп белгіленді (онлайн болғанда синхрондалады)',
 			'messages.markedAsUnwatchedOffline' => 'Көрілмеді деп белгіленді (онлайн болғанда синхрондалады)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Автоматты түрде өшірілді: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Көрілген ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} жүктеу автоматты өшірілді', other: 'Көрілген ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} жүктеу автоматты өшірілді', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Көрілген ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} жүктеу автоматты өшірілді', other: 'Көрілген ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} жүктеу автоматты өшірілді', ),
 			'messages.removedFromContinueWatching' => '"Көруді жалғастыру" тізімінен өшірілді',
 			'messages.errorLoading' => ({required Object error}) => 'Қате: ${error}',
 			'messages.searchPartialResults' => 'Кейбір медиа серверлерінде іздеу орындалмады. Қолжетімді нәтижелер көрсетілуде.',
@@ -6591,7 +6586,7 @@ extension on TranslationsKk {
 			'discover.tvShow' => 'TV Шоу',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} мин қалды',
 			'discover.moreLikeThis' => 'Ұқсастар',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} атау', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} атау', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} атау', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} атау', ),
 			'discover.person.born' => 'Туған күні',
 			'discover.person.died' => 'Қайтыс болған күні',
 			'discover.person.birthplace' => 'Туған жері',
@@ -6836,7 +6831,7 @@ extension on TranslationsKk {
 			'explore.status.ended' => 'Аяқталды',
 			'explore.status.canceled' => 'Тоқтатылды',
 			'explore.status.upcoming' => 'Күтілуде',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім', ),
 			'explore.cast' => 'Актерлер',
 			'explore.characters' => 'Кейіпкерлер',
 			'explore.addToWatchlist' => 'Көру тізіміне қосу',
@@ -6848,7 +6843,7 @@ extension on TranslationsKk {
 			'explore.notInLibrary' => 'Кітапханаңызда жоқ',
 			'explore.inTheseLibraries' => 'Осы кітапханаларда бар',
 			'explore.checkingLibrary' => 'Кітапхана тексерілуде...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серверді тексеру мүмкін болмады', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серверді тексеру мүмкін болмады', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серверді тексеру мүмкін болмады', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} серверді тексеру мүмкін болмады', ),
 			'explore.emptyTitle' => 'Әлі де мұнда ештеңе жоқ',
 			'explore.emptyMessage' => ({required Object source}) => '${source} дереккөзінің қатарлары мазмұны болған кезде осында көрсетіледі.',
 			'explore.searchHint' => ({required Object source}) => '${source} ішінен іздеу',
@@ -6885,7 +6880,7 @@ extension on TranslationsKk {
 			'explore.stats.planning' => ({required Object n}) => '${n} көруді жоспарлауда',
 			'explore.stats.favorited' => ({required Object n}) => '${n} таңдаулы',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} тастап кетті',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пікір', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пікір', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пікір', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пікір', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} дауыс',
 			'explore.stats.watching' => ({required Object n}) => '${n} қарап жатыр',
 			'explore.stats.completed' => ({required Object n}) => '${n} аяқтады',
@@ -6952,14 +6947,14 @@ extension on TranslationsKk {
 			'explore.detail.crew' => 'Ұжым',
 			'explore.detail.ratings' => 'Бағалаулар',
 			'explore.detail.schedule' => 'Кесте',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пайдаланушы ұсынды', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пайдаланушы ұсынды', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пайдаланушы ұсынды', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} пайдаланушы ұсынды', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => '${who} ұсынды',
 			'explore.detail.favoritedBy' => ({required Object who}) => '${who} таңдаулыға қосты',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} әлі көрсетілмеген',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Көрермендердің ${percent} ұсынады',
 			'explore.detail.relatedTitles' => 'Қатысты атаулар',
 			'explore.detail.background' => 'Фон',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} нәтиже', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} нәтиже', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} нәтиже', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} нәтиже', ),
 			'liveTv.title' => 'Тікелей TV',
 			'liveTv.guide' => 'Телебағдарлама',
 			'liveTv.noChannels' => 'Қолжетімді арналар жоқ',
@@ -7088,7 +7083,7 @@ extension on TranslationsKk {
 			'playlists.delete' => 'Ойнату тізімін өшіру',
 			'playlists.removeItem' => 'Тізімнен өшіру',
 			'playlists.smartPlaylist' => 'Ақылды ойнату тізімі',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элемент', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элемент', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элемент', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} элемент', ),
 			'playlists.emptyPlaylist' => 'Бұл ойнату тізімі бос',
 			'playlists.deleteConfirm' => 'Ойнату тізімі өшірілсін бе?',
 			'playlists.deleteMessage' => ({required Object name}) => '"${name}" өшірілсін бе?',
@@ -7110,7 +7105,7 @@ extension on TranslationsKk {
 			'music.playNext' => 'Келесіні ойнату',
 			'music.addToQueue' => 'Кезекке қосу',
 			'music.discNumber' => ({required Object n}) => '${n}-диск',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ән', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ән', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ән', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ән', ),
 			'music.nowPlaying' => 'Қазір ойнатылуда',
 			'music.playingFrom' => ({required Object title}) => '${title} дереккөзінен',
 			'music.queue' => 'Кезек',
@@ -7132,7 +7127,7 @@ extension on TranslationsKk {
 			'music.noLyrics' => 'Ән мәтіні жоқ',
 			'music.sleepTimer' => 'Ұйқы таймері',
 			'music.sleepTimerEndOfTrack' => 'Әннің соңы',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минут', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} минут', ),
 			'music.stopPlayback' => 'Ойнатуды тоқтату',
 			'music.previousTrack' => 'Алдыңғы ән',
 			'music.nextTrack' => 'Келесі ән',
@@ -7216,7 +7211,7 @@ extension on TranslationsKk {
 			'watchTogether.offsetPlusTenth' => '+100 мс',
 			'watchTogether.offsetPlusSecond' => '+1 сек',
 			'watchTogether.participants' => 'Қатысушылар',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} қатысушы', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} қатысушы', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} қатысушы', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} қатысушы', ),
 			'watchTogether.hostBadge' => 'ҰЙЫМДАСТЫРУШЫ',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (Сіз)',
 			'watchTogether.playerIdle' => 'Әрекетсіз',
@@ -7425,10 +7420,10 @@ extension on TranslationsKk {
 			'downloads.unknownAlbum' => 'Белгісіз альбом',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} аяқталды',
 			'downloads.storageUsed' => ({required Object size}) => 'Қатысушылардың: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} жүктеу', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} жүктеу', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериал', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериал', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кино', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кино', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбом', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбом', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} жүктеу', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} жүктеу', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериал', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} сериал', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кино', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} кино', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбом', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} альбом', ),
 			'downloads.errorFileNotFound' => 'Файл табылмады (404)',
 			'downloads.errorDownloadNotAllowed' => 'Сервер жүктеп алуға рұқсат бермейді (403)',
 			'downloads.errorDownloadFailed' => 'Жүктеу сәтсіз аяқталды',
@@ -8182,7 +8177,7 @@ extension on TranslationsKk {
 			'universalMedia.saveFavorite' => 'Алдыңғы фаворит',
 			'universalMedia.playNow' => 'Қазіргі уақытта',
 			'universalMedia.favoriteSaved' => 'Бұл профильде көшіру керек.',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ),
 			'universalMedia.playlistAddress' => 'Жабдықтау адресы',
 			'universalMedia.playlistAddressHelp' => 'Қаланың тұрақты тұрғындарының саны 3 адамды құрайды, 1 адамды қағидасы, 2 адамды жабдықтар, 4 адамды салыстырды.',
 			'universalMedia.choosePlaylist' => 'Серіктің қағидалары',
@@ -8198,7 +8193,7 @@ extension on TranslationsKk {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Серіктің файл',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '1 Жылдық артықшылығы', other: '${count} жабдықтау файлы', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '1 Жылдық артықшылығы', other: '${count} жабдықтау файлы', ),
 			'universalMedia.wifiTransfer' => 'Wi-Fi қосылу үшін дағдарысты',
 			'universalMedia.wifiTransferHelp' => 'Біздің веб-сайты мен электрондық пошталардан басқа да сіздің сайын өздерінің бір-бірімен танымал.',
 			'universalMedia.wifiTransferIntro' => 'Осылайша «Барселона» АҚ-ның «Аль-Каида» бағдарламасын көшіруге, «Файлы» және «Книги» библиотекасы бар.',
@@ -8209,7 +8204,7 @@ extension on TranslationsKk {
 			'universalMedia.copyAddress' => 'Трансфер адресы',
 			'universalMedia.addressCopied' => 'Ауызды және копиясы',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Қазіргі уақытта қаңтарда ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${count} файлды қарастырылған', other: '${count} файлы бар.', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '${count} файлды қарастырылған', other: '${count} файлы бар.', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'Қазіргі уақытта ${size}',
 			'universalMedia.stopTransfer' => 'Ауыз ішінен қайтадан қайтарып',
 			'universalMedia.startTransfer' => 'Трансферы',
@@ -8435,7 +8430,7 @@ extension on TranslationsKk {
 			'fileSources.sleep' => 'Ұйқы таймері',
 			'fileSources.sleepOff' => 'Өшірулі',
 			'fileSources.endChapter' => 'Керіктің қабығы',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минут', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минут', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} минут', ),
 			'fileSources.skipBack' => 'Сүттің қайта',
 			'fileSources.skipForward' => 'Есімдіктің',
 			'fileSources.smartRewind' => 'Өздіктер өңдеуге дейін өңдеу',
@@ -8774,13 +8769,11 @@ extension on TranslationsKk {
 			'comics.collections' => 'Жинақтар',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8808,10 +8801,8 @@ extension on TranslationsKk {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8821,7 +8812,6 @@ extension on TranslationsKk {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

@@ -36,7 +36,7 @@ class TranslationsHe extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsHe _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsHe $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsHe(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3888,13 +3888,11 @@ class _Translations$games$he extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3922,10 +3920,8 @@ class _Translations$games$he extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3935,7 +3931,6 @@ class _Translations$games$he extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5414,9 +5409,9 @@ extension on TranslationsHe {
 			'settings.smallSkipDuration' => 'קפיצה קצרה',
 			'settings.largeSkipDuration' => 'תקופת הנחיתה הגדולה',
 			'settings.rewindOnResume' => 'מחדש על סיכום',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} שניה', two: 'שתי שניות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} שניות', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(seconds, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} שניה', two: 'שתי שניות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} שניות', ),
 			'settings.defaultSleepTimer' => 'זמן שינה מוגדר',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} דקה', two: 'שתי דקות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} דקות', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(minutes, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} דקה', two: 'שתי דקות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} דקות', ),
 			'settings.rememberTrackSelections' => 'זכרו את הבחירה של שורות לפי הצגה/סרט',
 			'settings.chooseTracksBeforePlayback' => 'בחר את האודיו ואת התת-כותרות לפני המשחק',
 			'settings.chooseTracksBeforePlaybackDescription' => 'בחר את המקור של אודיו ותת-תגית רצועות לפני כל וידאו מתחיל.',
@@ -6022,9 +6017,9 @@ extension on TranslationsHe {
 			'mediaMenu.deleteAnyway' => 'שחרור בכל מקרה',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'האם יש למחוק באופן קבוע את ${title} מהשרת שלך?',
 			'mediaMenu.deleteMultipleWarning' => 'זה כולל את כל הפרקים ואת הקבצים שלהם.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'פעולה זו תמחק ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרק מתוכו ואת הקובץ שלו.', other: 'פעולה זו תמחק את כל ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} הפרקים שבתוכו ואת הקבצים שלהם.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'פריט זה מאוחסן ב־${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} קובץ, שיימחק.', other: 'פריט זה מאוחסן ב־${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} קבצים, וכולם יימחקו.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'באותו קובץ מאוחסן ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרק נוסף, שגם הוא יימחק:', other: 'באותו קובץ מאוחסנים ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרקים נוספים, שגם הם יימחקו:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'פעולה זו תמחק ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרק מתוכו ואת הקובץ שלו.', other: 'פעולה זו תמחק את כל ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} הפרקים שבתוכו ואת הקבצים שלהם.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'פריט זה מאוחסן ב־${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} קובץ, שיימחק.', other: 'פריט זה מאוחסן ב־${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} קבצים, וכולם יימחקו.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'באותו קובץ מאוחסן ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרק נוסף, שגם הוא יימחק:', other: 'באותו קובץ מאוחסנים ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרקים נוספים, שגם הם יימחקו:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG לא הצליח לבדוק אילו קבצים יימחקו, ולכן ייתכן שיימחקו קבצים נוספים מעבר לפריט שצוין למעלה. אפשר לבטל ולנסות שוב, או למחוק בכל זאת.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'השרת לא סיפק פרטי קבצים עבור הפריט הזה, ולכן PlezyNG לא יכול לבדוק אילו קבצים יימחקו. ייתכן שיימחקו קבצים נוספים מעבר לפריט שצוין למעלה.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'התקשורת הוסרה בהצלחה',
@@ -6213,7 +6208,7 @@ extension on TranslationsHe {
 			'videoControls.osdSubtitlesOff' => 'תגית: Off',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'תגית: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'אודיו: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} מסגרת', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרמטרים', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} מסגרת', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרמטרים', ),
 			'videoControls.trackSelectionTitle' => 'בחר רצועות לפני המשחק',
 			'videoControls.trackSelectionAuto' => 'בחירה אוטומטית',
 			'videoControls.openMiniPlayer' => 'שחקן מיני פתוח',
@@ -6228,7 +6223,7 @@ extension on TranslationsHe {
 			'messages.markedAsWatchedOffline' => 'מסומן כפי שנצפה (סנכרן כאשר באינטרנט)',
 			'messages.markedAsUnwatchedOffline' => 'מסומן כבלתי צפוי (סנכרן כאשר באינטרנט)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'מנעול אוטומטי: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'הורד את ה- ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} צפיות', other: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} צפיות הורדות', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'הורד את ה- ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} צפיות', other: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} צפיות הורדות', ),
 			'messages.removedFromContinueWatching' => 'הוסרה ממשיכה לצפות',
 			'messages.errorLoading' => ({required Object error}) => 'שגיאה: ${error}',
 			'messages.searchPartialResults' => 'כמה שרתים מדיה לא יכול להיות מחפש. מציג תוצאות זמינות.',
@@ -6599,7 +6594,7 @@ extension on TranslationsHe {
 			'discover.tvShow' => 'תוכנית טלוויזיה',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} דקות נותרה',
 			'discover.moreLikeThis' => 'עוד כמו זה',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} כותרת', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} כותרות', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} כותרת', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} כותרות', ),
 			'discover.person.born' => 'נולד',
 			'discover.person.died' => 'מת',
 			'discover.person.birthplace' => 'מקום לידה',
@@ -6844,7 +6839,7 @@ extension on TranslationsHe {
 			'explore.status.ended' => 'הסתיים',
 			'explore.status.canceled' => 'ביטול',
 			'explore.status.upcoming' => 'בקרוב',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרק', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרקים', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרק', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} פרקים', ),
 			'explore.cast' => 'קסט',
 			'explore.characters' => 'דמויות',
 			'explore.addToWatchlist' => 'הוסף ל Watchlist',
@@ -6856,7 +6851,7 @@ extension on TranslationsHe {
 			'explore.notInLibrary' => 'לא בספריה שלך',
 			'explore.inTheseLibraries' => 'בספריות אלה',
 			'explore.checkingLibrary' => 'בדוק את הספרייה שלך',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'לא ניתן לבדוק את השרת ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: 'לא ניתן לבדוק את השרתים ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'לא ניתן לבדוק את השרת ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', other: 'לא ניתן לבדוק את השרתים ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}', ),
 			'explore.emptyTitle' => 'שום דבר כאן עדיין',
 			'explore.emptyMessage' => ({required Object source}) => 'שורות מ- ${source} יופיעו כאן ברגע שיש להם תוכן.',
 			'explore.searchHint' => ({required Object source}) => 'חיפוש ${source}',
@@ -6893,7 +6888,7 @@ extension on TranslationsHe {
 			'explore.stats.planning' => ({required Object n}) => '${n} תכנון לצפות',
 			'explore.stats.favorited' => ({required Object n}) => '${n} אהובים',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} הורידו את זה',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תגובות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תגובות', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תגובות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תגובות', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} הצבעה',
 			'explore.stats.watching' => ({required Object n}) => '${n} צפו בו',
 			'explore.stats.completed' => ({required Object n}) => '${n} הושלמה',
@@ -6960,14 +6955,14 @@ extension on TranslationsHe {
 			'explore.detail.crew' => 'צוות',
 			'explore.detail.ratings' => 'דירוג',
 			'explore.detail.schedule' => 'לו״ז',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'מומלץ על ידי ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} משתמשים', other: 'הומלץ על ידי ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} משתמשים', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'מומלץ על ידי ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} משתמשים', other: 'הומלץ על ידי ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} משתמשים', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'הוצג על ידי ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'אהוב על ידי ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} עדיין לא פורסם',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'מומלץ על ידי ${percent} צופים',
 			'explore.detail.relatedTitles' => 'כותרות קשורות',
 			'explore.detail.background' => 'רקע',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תוצאות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תוצאות', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תוצאות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תוצאות', ),
 			'liveTv.title' => 'טלוויזיה בשידור חי',
 			'liveTv.guide' => 'מדריך',
 			'liveTv.noChannels' => 'אין ערוצים זמינים',
@@ -7096,7 +7091,7 @@ extension on TranslationsHe {
 			'playlists.delete' => 'מחיקת רשימת השמעה',
 			'playlists.removeItem' => 'הסר מרשימת הניגון',
 			'playlists.smartPlaylist' => 'חכמה Playlist',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} פריט', two: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} פריטים', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} פריטים', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} פריט', two: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} פריטים', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} פריטים', ),
 			'playlists.emptyPlaylist' => 'רשימת המשחקים הזאת ריקה',
 			'playlists.deleteConfirm' => 'לשחרר את Playlist?',
 			'playlists.deleteMessage' => ({required Object name}) => 'האם אתה בטוח שאתה רוצה למחוק את "${name}"?',
@@ -7118,7 +7113,7 @@ extension on TranslationsHe {
 			'music.playNext' => 'נגן את הבא',
 			'music.addToQueue' => 'הוסף ל- Queue',
 			'music.discNumber' => ({required Object n}) => 'דיסק ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} מסלול', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} רצועות', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} מסלול', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} רצועות', ),
 			'music.nowPlaying' => 'משחק עכשיו',
 			'music.playingFrom' => ({required Object title}) => 'משחקים מתוך ${title}',
 			'music.queue' => 'קווי',
@@ -7140,7 +7135,7 @@ extension on TranslationsHe {
 			'music.noLyrics' => 'אין מילים זמינות',
 			'music.sleepTimer' => 'שעות שינה',
 			'music.sleepTimerEndOfTrack' => 'סוף מסלול',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} דקה', two: 'שתי דקות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} דקות', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} דקה', two: 'שתי דקות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} דקות', ),
 			'music.stopPlayback' => 'הפסק הפעלה',
 			'music.previousTrack' => 'הרצועה הקודמת',
 			'music.nextTrack' => 'הרצועה הבאה',
@@ -7224,7 +7219,7 @@ extension on TranslationsHe {
 			'watchTogether.offsetPlusTenth' => '+ 100 מ"ס',
 			'watchTogether.offsetPlusSecond' => '+1 ס',
 			'watchTogether.participants' => 'משתתפים',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} משתתפים', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} משתתפים', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} משתתפים', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} משתתפים', ),
 			'watchTogether.hostBadge' => 'מארח',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (אתה)',
 			'watchTogether.playerIdle' => 'זמן פנוי',
@@ -7433,10 +7428,10 @@ extension on TranslationsHe {
 			'downloads.unknownAlbum' => 'אלבום לא ידוע',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} הושלמה',
 			'downloads.storageUsed' => ({required Object size}) => 'אחסון משתמש: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} להורדה', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} הורדות', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תצוגה', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תצוגה', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} סרטים', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} סרטים', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} אלבום', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} אלבומים', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} להורדה', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} הורדות', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תצוגה', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} תצוגה', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} סרטים', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} סרטים', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} אלבום', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} אלבומים', ),
 			'downloads.errorFileNotFound' => 'קובץ לא נמצא (404)',
 			'downloads.errorDownloadNotAllowed' => 'הורדות שאינן מותרות על ידי השרת (403)',
 			'downloads.errorDownloadFailed' => 'הורדה נכשלה',
@@ -8190,7 +8185,7 @@ extension on TranslationsHe {
 			'universalMedia.saveFavorite' => 'הציל את האהוב',
 			'universalMedia.playNow' => 'לשחק עכשיו',
 			'universalMedia.favoriteSaved' => 'זרם אהוב נשמר לפרופיל זה',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'כניסה לא תומכת או לא בטוחה של רשימת המשחקים של ${count}.', two: 'הפסד ${count} כניסות רשימת משחקים לא נתמכים או לא בטוחים.', other: 'הפסד ${count} כניסות רשימת משחקים לא נתמכים או לא בטוחים.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'כניסה לא תומכת או לא בטוחה של רשימת המשחקים של ${count}.', two: 'הפסד ${count} כניסות רשימת משחקים לא נתמכים או לא בטוחים.', other: 'הפסד ${count} כניסות רשימת משחקים לא נתמכים או לא בטוחים.', ),
 			'universalMedia.playlistAddress' => 'כתובת Playlist',
 			'universalMedia.playlistAddressHelp' => 'פתח רשימת משחקים M3U, M3u8 או PLS מכתובת אינטרנט.קישורים זרימה ישירה אינם מאוחסנים את רשימת המשחקים.',
 			'universalMedia.choosePlaylist' => 'בחר קובץ playlist',
@@ -8206,7 +8201,7 @@ extension on TranslationsHe {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'בחירת קבצים',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '1 קובץ שנבחר', two: '${count} קבצים שנבחרו', other: '${count} קבצים שנבחרו', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '1 קובץ שנבחר', two: '${count} קבצים שנבחרו', other: '${count} קבצים שנבחרו', ),
 			'universalMedia.wifiTransfer' => 'שליחת קבצים דרך Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'העברת קבצים תומכים מתוך דפדפן באותו רשת מאובטחת.',
 			'universalMedia.wifiTransferIntro' => 'פתח את כתובת זו בדפדפן במכשיר אחר. בחר קבצים כדי להוסיף אותם לספריה של קבצי מכשיר זה וספרים.',
@@ -8217,7 +8212,7 @@ extension on TranslationsHe {
 			'universalMedia.copyAddress' => 'עותק של כתובת העברה',
 			'universalMedia.addressCopied' => 'כתובת העברת עותקים',
 			'universalMedia.transferExpires' => ({required Object time}) => 'כתובת זו נגמרת ב- ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'קובץ ${count} מקבל', two: '${count} קבצים מקבלים', other: '${count} קבצים מקבלים', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'קובץ ${count} מקבל', two: '${count} קבצים מקבלים', other: '${count} קבצים מקבלים', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'קבלת ${size}',
 			'universalMedia.stopTransfer' => 'הפסקת העברה ושינוי כתובת',
 			'universalMedia.startTransfer' => 'התחלת העברה',
@@ -8443,7 +8438,7 @@ extension on TranslationsHe {
 			'fileSources.sleep' => 'שעות שינה',
 			'fileSources.sleepOff' => 'כבוי',
 			'fileSources.endChapter' => 'סוף פרק',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} דקה', two: 'שתי דקות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} דקות', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} דקה', two: 'שתי דקות', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} דקות', ),
 			'fileSources.skipBack' => 'סקי בחזרה',
 			'fileSources.skipForward' => 'קפיצה קדימה',
 			'fileSources.smartRewind' => 'חכמה לאחר הפסקה',
@@ -8782,13 +8777,11 @@ extension on TranslationsHe {
 			'comics.collections' => 'אוספים',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8816,10 +8809,8 @@ extension on TranslationsHe {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8829,7 +8820,6 @@ extension on TranslationsHe {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

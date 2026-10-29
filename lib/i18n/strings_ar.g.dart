@@ -36,7 +36,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsAr _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsAr $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsAr(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3972,13 +3972,11 @@ class _Translations$games$ar extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -4006,10 +4004,8 @@ class _Translations$games$ar extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -4019,7 +4015,6 @@ class _Translations$games$ar extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5506,9 +5501,9 @@ extension on TranslationsAr {
 			'settings.smallSkipDuration' => 'قصة قصيرة طويلة',
 			'settings.largeSkipDuration' => 'طوله طوله طوله',
 			'settings.rewindOnResume' => 'عودة على المجلد',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(seconds, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثانية', one: 'ثانية', two: 'ثانيتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثوان', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثانية', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثانية', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(seconds, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثانية', one: 'ثانية', two: 'ثانيتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثوان', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثانية', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} ثانية', ),
 			'settings.defaultSleepTimer' => 'أوقات النوم الافتراضية',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(minutes, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقيقة', one: 'دقيقة', two: 'دقيقتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقائق', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقيقة', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقيقة', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(minutes, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقيقة', one: 'دقيقة', two: 'دقيقتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقائق', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقيقة', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} دقيقة', ),
 			'settings.rememberTrackSelections' => 'تذكر اختيارات المسارات حسب عرض/فيلم',
 			'settings.chooseTracksBeforePlayback' => 'اختيار الأصوات والأسماء الفرعية قبل تشغيل',
 			'settings.chooseTracksBeforePlaybackDescription' => 'اقرأ الصوت المصدر ومتابعة العناوين الفرعية قبل أن يبدأ كل مقطع فيديو.',
@@ -6114,9 +6109,9 @@ extension on TranslationsAr {
 			'mediaMenu.deleteAnyway' => 'إزالة على أي حال',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'إزالة ${title} بشكل دائم من خادمك؟',
 			'mediaMenu.deleteMultipleWarning' => 'هذا يشمل جميع الحلقات وملفاتها.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لن تُحذف أي حلقات.', one: 'سيُحذف جميع محتواها: حلقة واحدة وملفها.', two: 'سيُحذف جميع محتواها: حلقتان وملفاهما.', few: 'ستُحذف جميع الحلقات الموجودة فيها وعددها ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقات، مع ملفاتها.', many: 'ستُحذف جميع الحلقات الموجودة فيها وعددها ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة، مع ملفاتها.', other: 'ستُحذف جميع الحلقات الموجودة فيها وعددها ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة، مع ملفاتها.', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا توجد ملفات لهذا العنصر.', one: 'هذا العنصر محفوظ في ملف واحد سيُحذف.', two: 'هذا العنصر محفوظ في ملفين سيُحذفان.', few: 'هذا العنصر موزّع على ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ملفات، وستُحذف كلها.', many: 'هذا العنصر موزّع على ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ملفًا، وستُحذف كلها.', other: 'هذا العنصر موزّع على ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ملف، وستُحذف كلها.', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا توجد حلقات أخرى في الملف نفسه.', one: 'توجد حلقة أخرى في الملف نفسه وستُحذف أيضًا:', two: 'توجد حلقتان أخريان في الملف نفسه وستُحذفان أيضًا:', few: 'توجد ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقات أخرى في الملف نفسه وستُحذف أيضًا:', many: 'توجد ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة أخرى في الملف نفسه وستُحذف أيضًا:', other: 'توجد ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة أخرى في الملف نفسه وستُحذف أيضًا:', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لن تُحذف أي حلقات.', one: 'سيُحذف جميع محتواها: حلقة واحدة وملفها.', two: 'سيُحذف جميع محتواها: حلقتان وملفاهما.', few: 'ستُحذف جميع الحلقات الموجودة فيها وعددها ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقات، مع ملفاتها.', many: 'ستُحذف جميع الحلقات الموجودة فيها وعددها ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة، مع ملفاتها.', other: 'ستُحذف جميع الحلقات الموجودة فيها وعددها ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة، مع ملفاتها.', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا توجد ملفات لهذا العنصر.', one: 'هذا العنصر محفوظ في ملف واحد سيُحذف.', two: 'هذا العنصر محفوظ في ملفين سيُحذفان.', few: 'هذا العنصر موزّع على ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ملفات، وستُحذف كلها.', many: 'هذا العنصر موزّع على ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ملفًا، وستُحذف كلها.', other: 'هذا العنصر موزّع على ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ملف، وستُحذف كلها.', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا توجد حلقات أخرى في الملف نفسه.', one: 'توجد حلقة أخرى في الملف نفسه وستُحذف أيضًا:', two: 'توجد حلقتان أخريان في الملف نفسه وستُحذفان أيضًا:', few: 'توجد ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقات أخرى في الملف نفسه وستُحذف أيضًا:', many: 'توجد ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة أخرى في الملف نفسه وستُحذف أيضًا:', other: 'توجد ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة أخرى في الملف نفسه وستُحذف أيضًا:', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'تعذّر على PlezyNG التحقق من الملفات التي سيحذفها هذا الإجراء، لذلك قد يحذف أكثر من العنصر المذكور أعلاه. ألغِ الإجراء وحاول مجددًا، أو اختر الحذف على أي حال.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'لم يقدّم خادمك تفاصيل ملفات هذا العنصر، لذلك لا يستطيع PlezyNG التحقق من الملفات التي سيحذفها هذا الإجراء. قد تُحذف ملفات تتجاوز العنصر المذكور أعلاه.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'تم حذف منتجات وسائل الإعلام بنجاح',
@@ -6305,7 +6300,7 @@ extension on TranslationsAr {
 			'videoControls.osdSubtitlesOff' => 'العنوان الأصلي: Off',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'الأرقام التالية: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'الصوت: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} إطار', one: 'إطار واحد', two: 'إطاران', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} إطارات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} إطار', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} إطار', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} إطار', one: 'إطار واحد', two: 'إطاران', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} إطارات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} إطار', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} إطار', ),
 			'videoControls.trackSelectionTitle' => 'اختيار المسارات قبل اللعب',
 			'videoControls.trackSelectionAuto' => 'الاختيار التلقائي',
 			'videoControls.openMiniPlayer' => 'مفتوحة ميني لاعب',
@@ -6320,7 +6315,7 @@ extension on TranslationsAr {
 			'messages.markedAsWatchedOffline' => 'علامة كما تم مشاهدتها (سيتم مزامنة عند الإنترنت)',
 			'messages.markedAsUnwatchedOffline' => 'علامة غير مسبوقة (سيتم مزامنة عند الانترنت)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'إزالة السيارة: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لم تُزل أي تنزيلات تمت مشاهدتها', one: 'أُزيل تنزيل واحد تمت مشاهدته تلقائيًا', two: 'أُزيل تنزيلان تمت مشاهدتهما تلقائيًا', few: 'أُزيلت ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيلات تمت مشاهدتها تلقائيًا', many: 'أُزيل ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيلًا تمت مشاهدته تلقائيًا', other: 'أُزيل ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيل تمت مشاهدته تلقائيًا', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لم تُزل أي تنزيلات تمت مشاهدتها', one: 'أُزيل تنزيل واحد تمت مشاهدته تلقائيًا', two: 'أُزيل تنزيلان تمت مشاهدتهما تلقائيًا', few: 'أُزيلت ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيلات تمت مشاهدتها تلقائيًا', many: 'أُزيل ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيلًا تمت مشاهدته تلقائيًا', other: 'أُزيل ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيل تمت مشاهدته تلقائيًا', ),
 			'messages.removedFromContinueWatching' => 'إزالة من مواصلة مراقبة',
 			'messages.errorLoading' => ({required Object error}) => 'الخطأ: ${error}',
 			'messages.searchPartialResults' => 'بعض خوادم الوسائط لا يمكن البحث عنها.عرض النتائج المتاحة.',
@@ -6691,7 +6686,7 @@ extension on TranslationsAr {
 			'discover.tvShow' => 'عرض التلفزيون',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} دقيقة متبقية',
 			'discover.moreLikeThis' => 'مشابه لهذا',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عنوان', one: 'عنوان واحد', two: 'عنوانان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عناوين', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عنوان', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عنوان', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عنوان', one: 'عنوان واحد', two: 'عنوانان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عناوين', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عنوان', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} عنوان', ),
 			'discover.person.born' => 'ولدت',
 			'discover.person.died' => 'الموت',
 			'discover.person.birthplace' => 'مكان الميلاد',
@@ -6936,7 +6931,7 @@ extension on TranslationsAr {
 			'explore.status.ended' => 'انتهى',
 			'explore.status.canceled' => 'إلغاء',
 			'explore.status.upcoming' => 'التالي',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة', one: 'حلقة واحدة', two: 'حلقتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة', one: 'حلقة واحدة', two: 'حلقتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} حلقة', ),
 			'explore.cast' => 'كاست',
 			'explore.characters' => 'شخصيات',
 			'explore.addToWatchlist' => 'إضافة إلى Watchlist',
@@ -6948,7 +6943,7 @@ extension on TranslationsAr {
 			'explore.notInLibrary' => 'لا في مكتبتك',
 			'explore.inTheseLibraries' => 'في هذه المكتبات',
 			'explore.checkingLibrary' => 'فحص مكتبتك ..',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'تعذر فحص أي خادم', one: 'تعذر فحص خادم واحد', two: 'تعذر فحص خادمين', few: 'تعذر فحص ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} خوادم', many: 'تعذر فحص ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} خادمًا', other: 'تعذر فحص ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} خادم', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'تعذر فحص أي خادم', one: 'تعذر فحص خادم واحد', two: 'تعذر فحص خادمين', few: 'تعذر فحص ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} خوادم', many: 'تعذر فحص ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} خادمًا', other: 'تعذر فحص ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} خادم', ),
 			'explore.emptyTitle' => 'لا شيء هنا حتى الآن',
 			'explore.emptyMessage' => ({required Object source}) => 'سيتم عرض الأقواس من ${source} هنا بمجرد أن يكون لديهم محتوى.',
 			'explore.searchHint' => ({required Object source}) => 'البحث ${source}',
@@ -6985,7 +6980,7 @@ extension on TranslationsAr {
 			'explore.stats.planning' => ({required Object n}) => '${n} التخطيط لمشاهدة',
 			'explore.stats.favorited' => ({required Object n}) => '${n} المفضلة',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} ألغيت',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تعليق', one: 'تعليق واحد', two: 'تعليقان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تعليقات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تعليق', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تعليق', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تعليق', one: 'تعليق واحد', two: 'تعليقان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تعليقات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تعليق', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تعليق', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} صوت',
 			'explore.stats.watching' => ({required Object n}) => '${n} مشاهدة',
 			'explore.stats.completed' => ({required Object n}) => '${n} إكمال',
@@ -7052,14 +7047,14 @@ extension on TranslationsAr {
 			'explore.detail.crew' => 'الطاقم',
 			'explore.detail.ratings' => 'تصنيف',
 			'explore.detail.schedule' => 'جدولة',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا توجد توصيات من المستخدمين', one: 'أوصى به مستخدم واحد', two: 'أوصى به مستخدمان', few: 'أوصى به ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مستخدمين', many: 'أوصى به ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مستخدمًا', other: 'أوصى به ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مستخدم', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا توجد توصيات من المستخدمين', one: 'أوصى به مستخدم واحد', two: 'أوصى به مستخدمان', few: 'أوصى به ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مستخدمين', many: 'أوصى به ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مستخدمًا', other: 'أوصى به ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مستخدم', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => 'الموصى بها من قبل ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'المفضلة بواسطة ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} لم يتم نشره بعد',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'الموصى بها من قبل ${percent} من المشاهدين',
 			'explore.detail.relatedTitles' => 'العناوين ذات الصلة',
 			'explore.detail.background' => 'الخلفية',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتيجة', one: 'نتيجة واحدة', two: 'نتيجتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتائج', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتيجة', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتيجة', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتيجة', one: 'نتيجة واحدة', two: 'نتيجتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتائج', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتيجة', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} نتيجة', ),
 			'liveTv.title' => 'البث التلفزيوني المباشر',
 			'liveTv.guide' => 'الدليل',
 			'liveTv.noChannels' => 'لا توجد قنوات متاحة',
@@ -7188,7 +7183,7 @@ extension on TranslationsAr {
 			'playlists.delete' => 'حذف قائمة التشغيل',
 			'playlists.removeItem' => 'إزالة من قائمة التشغيل',
 			'playlists.smartPlaylist' => 'لعبة ذكية',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} عنصر', one: 'عنصر واحد', two: 'عنصران', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} عناصر', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} عنصرًا', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} عنصر', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} عنصر', one: 'عنصر واحد', two: 'عنصران', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} عناصر', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} عنصرًا', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} عنصر', ),
 			'playlists.emptyPlaylist' => 'هذه القائمة فارغة',
 			'playlists.deleteConfirm' => 'إلغاء اللعب؟',
 			'playlists.deleteMessage' => ({required Object name}) => 'هل أنت متأكد من أنك تريد إزالة "${name}"؟',
@@ -7210,7 +7205,7 @@ extension on TranslationsAr {
 			'music.playNext' => 'تشغيل التالي',
 			'music.addToQueue' => 'إضافة إلى كوشنر',
 			'music.discNumber' => ({required Object n}) => 'القرص ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مقطع', one: 'مقطع واحد', two: 'مقطعان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مقاطع', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مقطع', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مقطع', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مقطع', one: 'مقطع واحد', two: 'مقطعان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مقاطع', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مقطع', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مقطع', ),
 			'music.nowPlaying' => 'اللعب الآن',
 			'music.playingFrom' => ({required Object title}) => 'اللعب من ${title}',
 			'music.queue' => 'كوي',
@@ -7232,7 +7227,7 @@ extension on TranslationsAr {
 			'music.noLyrics' => 'لا توجد أغاني متوفرة',
 			'music.sleepTimer' => 'ساعات النوم',
 			'music.sleepTimerEndOfTrack' => 'نهاية المسار',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقيقة', one: 'دقيقة', two: 'دقيقتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقائق', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقيقة', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقيقة', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقيقة', one: 'دقيقة', two: 'دقيقتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقائق', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقيقة', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} دقيقة', ),
 			'music.stopPlayback' => 'إيقاف التشغيل',
 			'music.previousTrack' => 'المسار السابق',
 			'music.nextTrack' => 'المسار التالي',
@@ -7316,7 +7311,7 @@ extension on TranslationsAr {
 			'watchTogether.offsetPlusTenth' => '+ 100 ميغاواط',
 			'watchTogether.offsetPlusSecond' => '+1 س',
 			'watchTogether.participants' => 'المشاركين',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مشارك', one: 'مشارك واحد', two: 'مشاركان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مشاركين', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مشارك', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مشارك', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مشارك', one: 'مشارك واحد', two: 'مشاركان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مشاركين', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مشارك', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مشارك', ),
 			'watchTogether.hostBadge' => 'المضيف',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (أنت)',
 			'watchTogether.playerIdle' => 'خاملة',
@@ -7525,10 +7520,10 @@ extension on TranslationsAr {
 			'downloads.unknownAlbum' => 'ألبوم غير معروف',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} تم الانتهاء منه',
 			'downloads.storageUsed' => ({required Object size}) => 'التخزين المستخدم: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيل', one: 'تنزيل واحد', two: 'تنزيلان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيلات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيل', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيل', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مسلسل', one: 'مسلسل واحد', two: 'مسلسلان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مسلسلات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مسلسل', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مسلسل', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فيلم', one: 'فيلم واحد', two: 'فيلمان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} أفلام', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فيلم', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فيلم', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ألبوم', one: 'ألبوم واحد', two: 'ألبومان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ألبومات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ألبوم', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ألبوم', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيل', one: 'تنزيل واحد', two: 'تنزيلان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيلات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيل', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} تنزيل', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مسلسل', one: 'مسلسل واحد', two: 'مسلسلان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مسلسلات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مسلسل', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} مسلسل', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فيلم', one: 'فيلم واحد', two: 'فيلمان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} أفلام', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فيلم', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} فيلم', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ألبوم', one: 'ألبوم واحد', two: 'ألبومان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ألبومات', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ألبوم', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} ألبوم', ),
 			'downloads.errorFileNotFound' => 'ملف غير موجود (404)',
 			'downloads.errorDownloadNotAllowed' => 'تنزيل غير مسموح به الخادم (403)',
 			'downloads.errorDownloadFailed' => 'تحميل فشل',
@@ -8282,7 +8277,7 @@ extension on TranslationsAr {
 			'universalMedia.saveFavorite' => 'حفظ المفضلة',
 			'universalMedia.playNow' => 'اللعب الآن',
 			'universalMedia.favoriteSaved' => 'Stream Favorite تم حفظه إلى هذا الملف الشخصي',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', one: 'إدخال ${count} غير مدعوم أو غير آمن.', two: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', few: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', many: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', other: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', one: 'إدخال ${count} غير مدعوم أو غير آمن.', two: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', few: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', many: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', other: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', ),
 			'universalMedia.playlistAddress' => 'العنوان Playlist',
 			'universalMedia.playlistAddressHelp' => 'افتح قائمة تشغيل M3U أو M3 U8 أو PLS من عنوان ويب. لنقرات البث المباشر لا تخزن قائمة التشغيل.',
 			'universalMedia.choosePlaylist' => 'اختيار ملف Playlist',
@@ -8298,7 +8293,7 @@ extension on TranslationsAr {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'اختيار الملفات',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات المختارة', one: '1 الملفات المختارة', two: '${count} الملفات المختارة', few: '${count} الملفات المختارة', many: '${count} الملفات المختارة', other: '${count} الملفات المختارة', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات المختارة', one: '1 الملفات المختارة', two: '${count} الملفات المختارة', few: '${count} الملفات المختارة', many: '${count} الملفات المختارة', other: '${count} الملفات المختارة', ),
 			'universalMedia.wifiTransfer' => 'إرسال الملفات عبر Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'نقل الملفات المدعومة من متصفح على نفس الشبكة الموثوقة.',
 			'universalMedia.wifiTransferIntro' => 'افتح هذا العنوان في متصفح على جهاز آخر.اختر الملفات لإضافتها إلى مكتبة الملفين والكتب لهذا الجهاز.',
@@ -8309,7 +8304,7 @@ extension on TranslationsAr {
 			'universalMedia.copyAddress' => 'نسخ عنوان التحويل',
 			'universalMedia.addressCopied' => 'عناوين النقل نسخة',
 			'universalMedia.transferExpires' => ({required Object time}) => 'هذا العنوان ينتهي في ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات التي تم استلامها', one: '${count} الملفات التي تم الحصول عليها', two: '${count} الملفات التي تم استلامها', few: '${count} الملفات التي تم استلامها', many: '${count} الملفات التي تم استلامها', other: '${count} الملفات التي تم استلامها', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات التي تم استلامها', one: '${count} الملفات التي تم الحصول عليها', two: '${count} الملفات التي تم استلامها', few: '${count} الملفات التي تم استلامها', many: '${count} الملفات التي تم استلامها', other: '${count} الملفات التي تم استلامها', ),
 			'universalMedia.uploadedData' => ({required Object size}) => 'حصلت ${size}',
 			'universalMedia.stopTransfer' => 'إيقاف التحويل وإلغاء العنوان',
 			'universalMedia.startTransfer' => 'بدء التحويل',
@@ -8535,7 +8530,7 @@ extension on TranslationsAr {
 			'fileSources.sleep' => 'مؤقّت النوم',
 			'fileSources.sleepOff' => 'إيقاف',
 			'fileSources.endChapter' => 'نهاية الفصل',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقيقة', one: 'دقيقة', two: 'دقيقتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقائق', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقيقة', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقيقة', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count, zero: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقيقة', one: 'دقيقة', two: 'دقيقتان', few: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقائق', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقيقة', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} دقيقة', ),
 			'fileSources.skipBack' => 'رجوع للخلف',
 			'fileSources.skipForward' => 'تقديم للأمام',
 			'fileSources.smartRewind' => 'الرجوع الذكي بعد الإيقاف المؤقت',
@@ -8874,13 +8869,11 @@ extension on TranslationsAr {
 			'comics.collections' => 'مجموعات',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8908,10 +8901,8 @@ extension on TranslationsAr {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8921,7 +8912,6 @@ extension on TranslationsAr {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

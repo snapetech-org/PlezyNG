@@ -152,6 +152,7 @@ class GameLibrary {
     this.steamCatalogTruncated = false,
     this.steamCatalog = const [],
     this.preferredRoutes = const {},
+    this.routeSelections = const {},
     this.inventories = const [],
   });
   final List<GameHost> hosts;
@@ -171,6 +172,10 @@ class GameLibrary {
 
   /// Successful route preferences, scoped to this profile. Not online state.
   final Map<String, String> preferredRoutes;
+
+  /// Explicit user choices override remembered successful routes. An empty
+  /// value means automatic selection; older clients safely ignore this field.
+  final Map<String, String> routeSelections;
   final List<SteamHostInventory> inventories;
 
   String identityOf(StreamGame game) {
@@ -282,6 +287,7 @@ class GameLibrary {
     List<String>? recent,
     Set<String>? favorites,
     Map<String, String>? preferredRoutes,
+    Map<String, String>? routeSelections,
     List<SteamHostInventory>? inventories,
   }) => GameLibrary(
     hosts: hosts ?? this.hosts,
@@ -289,6 +295,7 @@ class GameLibrary {
     recent: recent ?? this.recent,
     favorites: favorites ?? this.favorites,
     preferredRoutes: preferredRoutes ?? this.preferredRoutes,
+    routeSelections: routeSelections ?? this.routeSelections,
     inventories: inventories ?? this.inventories,
     steamAccountId: steamAccountId,
     steamCatalogCredential: steamCatalogCredential,
@@ -310,6 +317,7 @@ class GameLibrary {
     'steamCatalogTruncated': steamCatalogTruncated,
     'steamCatalog': steamCatalog.take(2000).map((v) => v.toJson()).toList(),
     'preferredRoutes': Map.fromEntries(preferredRoutes.entries.take(2000)),
+    'routeSelections': Map.fromEntries(routeSelections.entries.take(2000)),
     'inventories': inventories.take(32).map((i) => i.toJson()).toList(),
   };
   factory GameLibrary.fromJson(Map<String, dynamic> data) {
@@ -381,12 +389,25 @@ class GameLibrary {
         }
       }
     }
+    final selections = <String, String>{};
+    final projected = {for (final game in projection.entries) game.key: game};
+    if (data['routeSelections'] case final Map values) {
+      for (final entry in values.entries.take(2000)) {
+        if (entry.key is String &&
+            entry.value is String &&
+            projected.containsKey(entry.key) &&
+            (entry.value == '' || projected[entry.key]!.routes.any((r) => r.key == entry.value))) {
+          selections[entry.key as String] = entry.value as String;
+        }
+      }
+    }
     return GameLibrary(
       hosts: hosts.values.toList(),
       games: games.values.toList(),
       recent: _rows(data['recent']).whereType<String>().where(validKey).toSet().take(30).toList(),
       favorites: _rows(data['favorites']).whereType<String>().where(validKey).take(500).toSet(),
       preferredRoutes: routes,
+      routeSelections: selections,
       steamCatalogCredential: steamAccountId == null ? null : credential,
       steamAccountId: steamAccountId,
       steamCatalogAvailable: steamAccountId != null && data['steamCatalogAvailable'] == true,
@@ -431,7 +452,8 @@ class LibraryGame {
   final bool inAccountCatalog;
   final List<GameRoute> routes;
   GameRoute? preferredRoute(GameLibrary library) {
-    final preferred = routes.where((r) => r.key == library.preferredRoutes[key]).firstOrNull;
+    final selected = library.routeSelections[key] ?? library.preferredRoutes[key];
+    final preferred = routes.where((r) => r.key == selected).firstOrNull;
     if (preferred != null && preferred.installation != GameInstallation.notInstalled) return preferred;
     final installed = routes.where((r) => r.installation == GameInstallation.installed).toList();
     if (installed.length == 1) return installed.single;

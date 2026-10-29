@@ -121,4 +121,26 @@ void main() {
     expect(controller.library.favorites, contains(shortcut.key));
     expect(controller.library.recent, contains(shortcut.key));
   });
+  test('explicit computer selection survives playing elsewhere and persists without marking play', () async {
+    final otherHost = GameHost(id: 'other', name: 'BC250', address: '192.168.1.3', protocol: GameProtocol.gameStream);
+    await controller.saveHost(host);
+    await controller.saveHost(otherHost);
+    await controller.saveGame(StreamGame(hostKey: host.key, id: '1', name: 'Portal', steamAppId: 620));
+    await controller.saveGame(StreamGame(hostKey: otherHost.key, id: '2', name: 'Portal', steamAppId: 620));
+    var entry = controller.library.entries.single;
+    final preferred = entry.routes.first;
+    await controller.preferRoute(entry, preferred);
+    expect(controller.library.recent, isEmpty);
+    await controller.connected(entry.routes.last);
+    await controller.load();
+    entry = controller.library.entries.single;
+    expect(entry.preferredRoute(controller.library)?.key, preferred.key);
+    await controller.preferRoute(entry, null);
+    await controller.load();
+    expect(controller.library.entries.single.preferredRoute(controller.library), isNull);
+    final before = controller.library.toJson();
+    current = false;
+    await expectLater(controller.preferRoute(entry, preferred), throwsA(isA<GameClientException>()));
+    expect(controller.library.toJson(), before);
+  });
 }

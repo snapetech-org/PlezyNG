@@ -9,6 +9,11 @@ platform preparation, reproducible native build commands and build-agent
 receipts. Android JNI builds now pass for all four ABIs and the Kotlin bridge
 compiles against real SDK APIs; full application packaging remains a gate.
 
+The [visual and interaction pass](VISUAL_EXPERIENCE.md) adds focused library,
+Connections and streaming-settings routes, responsive game details, explicit
+computer preferences and consistent Steam attribution. Its widget evidence
+and physical accessibility checks are recorded separately from receiver builds.
+
 ## What this handoff covers
 
 PRs #54 and #71 have merged. This follow-up adds native Vulkan/HDR10 reception,

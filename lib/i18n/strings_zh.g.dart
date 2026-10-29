@@ -36,7 +36,7 @@ class TranslationsZh extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsZh _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsZh $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsZh(meta: meta ?? this.$meta);
 
 	// Translations
@@ -3875,13 +3875,11 @@ class Translations$games$zh extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
 	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
@@ -3909,10 +3907,8 @@ class Translations$games$zh extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3922,7 +3918,6 @@ class Translations$games$zh extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -5401,9 +5396,9 @@ extension on TranslationsZh {
 			'settings.smallSkipDuration' => '短跳过时长',
 			'settings.largeSkipDuration' => '长跳过时长',
 			'settings.rewindOnResume' => '恢复时回退',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)}秒钟', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)}秒钟', ),
 			'settings.defaultSleepTimer' => '默认睡眠定时器',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)}分钟', ), 
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)}分钟', ),
 			'settings.rememberTrackSelections' => '记住每部剧集或电影的音轨选择',
 			'settings.chooseTracksBeforePlayback' => '选择音频和字幕在播放前',
 			'settings.chooseTracksBeforePlaybackDescription' => '在每个视频开始之前,选择源音频和子标题跟踪。',
@@ -6009,9 +6004,9 @@ extension on TranslationsZh {
 			'mediaMenu.deleteAnyway' => '仍然删除',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => '从你的服务器永久删除 ${title}？',
 			'mediaMenu.deleteMultipleWarning' => '这包括所有剧集及其文件。',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '这将删除其中的 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集及其文件。', other: '这将删除其中全部 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集以及它们的文件。', ), 
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '此项目存储在 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 个文件中，该文件将被删除。', other: '此项目存储在 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 个文件中，所有这些文件都会被删除。', ), 
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '另有 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集存储在同一个文件中，也会一并删除：', other: '另外 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集存储在同一个文件中，也会一并删除：', ), 
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '这将删除其中的 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集及其文件。', other: '这将删除其中全部 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集以及它们的文件。', ),
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '此项目存储在 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 个文件中，该文件将被删除。', other: '此项目存储在 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 个文件中，所有这些文件都会被删除。', ),
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '另有 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集存储在同一个文件中，也会一并删除：', other: '另外 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集存储在同一个文件中，也会一并删除：', ),
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG 无法确认此操作会删除哪些文件，因此删除范围可能超出上面提到的项目。请取消后重试，或仍然删除。',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => '你的服务器没有提供此项目的文件详情，因此 PlezyNG 无法确认此操作会删除哪些文件。删除范围可能超出上面提到的项目。',
 			'mediaMenu.mediaDeletedSuccessfully' => '媒体项已成功删除',
@@ -6200,7 +6195,7 @@ extension on TranslationsZh {
 			'videoControls.osdSubtitlesOff' => '字幕：关闭',
 			'videoControls.osdSubtitles' => ({required Object track}) => '字幕：${track}',
 			'videoControls.osdAudio' => ({required Object track}) => '音频：${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 框架', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 框架', ), 
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 框架', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 框架', ),
 			'videoControls.trackSelectionTitle' => '选择游戏前的游戏',
 			'videoControls.trackSelectionAuto' => '自动选择',
 			'videoControls.openMiniPlayer' => '開放小型玩家',
@@ -6215,7 +6210,7 @@ extension on TranslationsZh {
 			'messages.markedAsWatchedOffline' => '已标记为已观看（将在联网时同步）',
 			'messages.markedAsUnwatchedOffline' => '已标记为未观看（将在联网时同步）',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => '已自动移除：${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '自动移除 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 观看下载', other: '已自动移除 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 个看过的下载', ), 
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '自动移除 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 观看下载', other: '已自动移除 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 个看过的下载', ),
 			'messages.removedFromContinueWatching' => '已从继续观看中移除',
 			'messages.errorLoading' => ({required Object error}) => '出错：${error}',
 			'messages.searchPartialResults' => '部分媒体服务器无法搜索。正在显示可用的结果。',
@@ -6586,7 +6581,7 @@ extension on TranslationsZh {
 			'discover.tvShow' => '电视剧',
 			'discover.minutesLeft' => ({required Object minutes}) => '剩余 ${minutes} 分钟',
 			'discover.moreLikeThis' => '更多类似内容',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '第${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}章', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 个标题', ), 
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '第${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}章', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 个标题', ),
 			'discover.person.born' => '出生',
 			'discover.person.died' => '逝世',
 			'discover.person.birthplace' => '出生地',
@@ -6831,7 +6826,7 @@ extension on TranslationsZh {
 			'explore.status.ended' => '已完结',
 			'explore.status.canceled' => '已取消',
 			'explore.status.upcoming' => '即将上线',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集', ), 
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集', ),
 			'explore.cast' => '演员表',
 			'explore.characters' => '角色',
 			'explore.addToWatchlist' => '添加到想看列表',
@@ -6843,7 +6838,7 @@ extension on TranslationsZh {
 			'explore.notInLibrary' => '不在你的媒体库中',
 			'explore.inTheseLibraries' => '在这些媒体库中',
 			'explore.checkingLibrary' => '正在检查你的媒体库…',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '无法查看 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 服务器', other: '无法检查 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 台服务器', ), 
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '无法查看 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 服务器', other: '无法检查 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 台服务器', ),
 			'explore.emptyTitle' => '这里还什么都没有',
 			'explore.emptyMessage' => ({required Object source}) => '当 ${source} 有内容时，相关内容将显示在这里。',
 			'explore.searchHint' => ({required Object source}) => '搜索 ${source}',
@@ -6880,7 +6875,7 @@ extension on TranslationsZh {
 			'explore.stats.planning' => ({required Object n}) => '${n} 人想看',
 			'explore.stats.favorited' => ({required Object n}) => '${n} 人收藏',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} 弃番',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 评论', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 条评论', ), 
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 评论', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 条评论', ),
 			'explore.stats.votes' => ({required Object n}) => '${n} 票',
 			'explore.stats.watching' => ({required Object n}) => '${n} 人正在观看',
 			'explore.stats.completed' => ({required Object n}) => '${n} 人已看完',
@@ -6947,14 +6942,14 @@ extension on TranslationsZh {
 			'explore.detail.crew' => '演职人员',
 			'explore.detail.ratings' => '评分',
 			'explore.detail.schedule' => '播出时间',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '由 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 用户推荐', other: '由 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 位用户推荐', ), 
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '由 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 用户推荐', other: '由 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 位用户推荐', ),
 			'explore.detail.recommendedBy' => ({required Object who}) => '由 ${who} 推荐',
 			'explore.detail.favoritedBy' => ({required Object who}) => '由 ${who} 收藏',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '还有 ${n} 集未播出',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => '${percent} 的观众推荐',
 			'explore.detail.relatedTitles' => '相关作品',
 			'explore.detail.background' => '背景',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 结果', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 条结果', ), 
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 结果', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 条结果', ),
 			'liveTv.title' => '直播电视',
 			'liveTv.guide' => '节目指南',
 			'liveTv.noChannels' => '没有可用的频道',
@@ -7083,7 +7078,7 @@ extension on TranslationsZh {
 			'playlists.delete' => '删除播放列表',
 			'playlists.removeItem' => '从播放列表中移除',
 			'playlists.smartPlaylist' => '智能播放列表',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}个项目', ), 
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}个项目', ),
 			'playlists.emptyPlaylist' => '此播放列表为空',
 			'playlists.deleteConfirm' => '删除播放列表？',
 			'playlists.deleteMessage' => ({required Object name}) => '确定要删除“${name}”吗？',
@@ -7105,7 +7100,7 @@ extension on TranslationsZh {
 			'music.playNext' => '下一首播放',
 			'music.addToQueue' => '添加到队列',
 			'music.discNumber' => ({required Object n}) => '碟片 ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 路径', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 首', ), 
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 路径', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 首', ),
 			'music.nowPlaying' => '正在播放',
 			'music.playingFrom' => ({required Object title}) => '播放来源：${title}',
 			'music.queue' => '播放队列',
@@ -7127,7 +7122,7 @@ extension on TranslationsZh {
 			'music.noLyrics' => '暂无歌词',
 			'music.sleepTimer' => '睡眠定时器',
 			'music.sleepTimerEndOfTrack' => '当前曲目结束时',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}分钟', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}分钟', ),
 			'music.stopPlayback' => '停止播放',
 			'music.previousTrack' => '上一首',
 			'music.nextTrack' => '下一首',
@@ -7211,7 +7206,7 @@ extension on TranslationsZh {
 			'watchTogether.offsetPlusTenth' => '+100 毫秒',
 			'watchTogether.offsetPlusSecond' => '+1 秒',
 			'watchTogether.participants' => '参与者',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 參與者', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 位参与者', ), 
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 參與者', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 位参与者', ),
 			'watchTogether.hostBadge' => '主持人',
 			'watchTogether.nameYou' => ({required Object name}) => '${name}（你）',
 			'watchTogether.playerIdle' => '空闲',
@@ -7420,10 +7415,10 @@ extension on TranslationsZh {
 			'downloads.unknownAlbum' => '未知专辑',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '已完成 ${completed}/${total}',
 			'downloads.storageUsed' => ({required Object size}) => '使用的存储: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}个下载', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}个下载', ), 
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 展览', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 显示', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 電影', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 電影', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}张专辑', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}张专辑', ), 
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}个下载', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}个下载', ),
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 展览', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 显示', ),
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 電影', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 電影', ),
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}张专辑', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}张专辑', ),
 			'downloads.errorFileNotFound' => '未找到文件（404）',
 			'downloads.errorDownloadNotAllowed' => '服务器不允许下载（403）',
 			'downloads.errorDownloadFailed' => '下载失败',
@@ -8177,7 +8172,7 @@ extension on TranslationsZh {
 			'universalMedia.saveFavorite' => '保存最喜欢',
 			'universalMedia.playNow' => '现在玩',
 			'universalMedia.favoriteSaved' => '流喜爱保存到此个人资料',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 不受支持或不安全的播放列表输入。', other: '${count} 不受支持或不安全的播放列表输入。', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 不受支持或不安全的播放列表输入。', other: '${count} 不受支持或不安全的播放列表输入。', ),
 			'universalMedia.playlistAddress' => 'Playlist 地址',
 			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會保存播放名單。',
 			'universalMedia.choosePlaylist' => '选择 Playlist 文件',
@@ -8193,7 +8188,7 @@ extension on TranslationsZh {
 			_ => null,
 		} ?? switch (path) {
 			'universalMedia.chooseFiles' => '选择文件',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 选择的文件', other: '${count} 已选择的文件', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 选择的文件', other: '${count} 已选择的文件', ),
 			'universalMedia.wifiTransfer' => '通过 Wi-Fi 发送文件',
 			'universalMedia.wifiTransferHelp' => '从同一信任网络的浏览器传输支持的文件。',
 			'universalMedia.wifiTransferIntro' => '在另一个设备上的浏览器中打开此地址. 选择文件以将其添加到该设备的文件和书籍图书馆。',
@@ -8204,7 +8199,7 @@ extension on TranslationsZh {
 			'universalMedia.copyAddress' => '传输地址复制',
 			'universalMedia.addressCopied' => '传输地址复制',
 			'universalMedia.transferExpires' => ({required Object time}) => '此地址在 ${time} 中终止。',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 获取文件', other: '${count} 收到的文件', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 获取文件', other: '${count} 收到的文件', ),
 			'universalMedia.uploadedData' => ({required Object size}) => '接收 ${size}',
 			'universalMedia.stopTransfer' => '停止转让和取消地址',
 			'universalMedia.startTransfer' => '转移开始',
@@ -8430,7 +8425,7 @@ extension on TranslationsZh {
 			'fileSources.sleep' => '睡眠定时器',
 			'fileSources.sleepOff' => '关闭',
 			'fileSources.endChapter' => '章节的结尾',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}分钟', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)}分钟', ),
 			'fileSources.skipBack' => '滑落回',
 			'fileSources.skipForward' => '滑向前',
 			'fileSources.smartRewind' => '休假后智能回归',
@@ -8769,13 +8764,11 @@ extension on TranslationsZh {
 			'comics.collections' => '合集',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
 			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
@@ -8803,10 +8796,8 @@ extension on TranslationsZh {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -8816,7 +8807,6 @@ extension on TranslationsZh {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',

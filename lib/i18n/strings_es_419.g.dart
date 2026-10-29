@@ -37,7 +37,7 @@ class TranslationsEs419 extends TranslationsEs with BaseTranslations<AppLocale, 
 
 	late final TranslationsEs419 _root = this; // ignore: unused_field
 
-	@override 
+	@override
 	TranslationsEs419 $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsEs419(meta: meta ?? this.$meta);
 
 	// Translations
@@ -1183,8 +1183,8 @@ extension on TranslationsEs419 {
 			'settings.controls' => 'Controles',
 			'settings.scopePlaybackSpeed' => 'Tasa de reproducción',
 			'settings.scopeAspectRatio' => 'Relación de aspecto',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundos', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundo', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundos', ), 
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutos', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutos', ), 
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundos', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundo', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} segundos', ),
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutos', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutos', ),
 			'themeEditor.custom' => 'Personalizado',
 			'themeEditor.preview' => 'Vista previa',
 			'themeEditor.slots.text' => 'Texto',
@@ -1384,7 +1384,7 @@ extension on TranslationsEs419 {
 			'music.repeatAll' => 'Repetir todos',
 			'music.repeatOne' => 'Repetir uno',
 			'music.discography.live' => 'En vivo',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', ), 
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', ),
 			'watchTogether.removeRoom' => 'Remover',
 			'watchTogether.hostBadge' => 'Servidor',
 			'watchTogether.playerIdle' => 'Inactiva',
@@ -1490,7 +1490,7 @@ extension on TranslationsEs419 {
 			'fileSources.audiobooks' => 'Audiolibros',
 			'fileSources.leftToRight' => 'De izquierda a derecha',
 			'fileSources.rightToLeft' => 'De derecha a izquierda',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutos', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutos', ), 
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutos', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutos', ),
 			'fileSources.googleDrive' => 'Google Drive',
 			'lending.cancel' => 'Cancelar',
 			'householdSetup.title' => 'Configuración del hogar',

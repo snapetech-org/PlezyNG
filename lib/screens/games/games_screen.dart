@@ -1,13 +1,11 @@
+import 'dart:io';
 import 'dart:async';
-import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../focus/focusable_button.dart';
-import '../../focus/focusable_text_field.dart';
 import '../../focus/input_mode_tracker.dart';
 import '../../games/game_discovery.dart';
 import '../../games/game_library_controller.dart';
@@ -15,7 +13,6 @@ import '../../games/steam_internet_tunnel.dart';
 import '../../games/steam_input_profile.dart';
 import '../../games/steam_touch_layout.dart';
 import '../../games/game_models.dart';
-import '../../games/steam_stream_preferences.dart';
 import '../../games/steam_inventory_exchange.dart';
 import '../../games/steam_host_actions.dart';
 import '../../providers/companion_remote_provider.dart';
@@ -44,15 +41,16 @@ import '../../widgets/dialog_action_button.dart';
 import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/focused_scroll_scaffold.dart';
 import '../../widgets/settings_section.dart';
-import '../../widgets/setting_tile.dart';
 import '../libraries/state_messages.dart';
 import 'game_connection_dialogs.dart';
 import '../../widgets/oauth_proxy_dialog.dart';
-import 'game_card.dart';
+import 'game_library_view.dart';
+import 'game_detail_screen.dart';
+import 'game_presentation.dart';
+import 'game_settings_screen.dart';
 import 'steam_game_activity_panel.dart';
 import 'steam_stream_diagnostics.dart';
 import 'steam_lan_install_dialog.dart';
-import '../settings/settings_utils.dart' show DialogOption;
 
 class GamesScreen extends StatefulWidget {
   const GamesScreen({super.key});
@@ -64,18 +62,18 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   GameLibraryController? _controller;
   MultiviewWorkspaceController? _workspaceController;
   final Map<String, SteamGameWorkspaceSession> _workspaceGameSessions = <String, SteamGameWorkspaceSession>{};
+  final _presentationRevision = ValueNotifier<int>(0);
+  final _pages = <Route<dynamic>>{};
+  final _pageContexts = <Route<dynamic>, BuildContext>{};
+  BuildContext get _actionContext => _pageContexts.values.lastOrNull ?? context;
   final _firstFocus = FocusNode(debugLabel: 'First Games action');
   final _addFocus = FocusNode(debugLabel: 'Add gaming computer');
   final _scanFocus = FocusNode(debugLabel: 'Find gaming computers');
-  final _searchController = TextEditingController();
   String? _profile;
   int? _sourceGeneration;
   int _epoch = 0;
   bool _loading = true;
   bool _loadFailed = false;
-  String _query = '';
-  String? _computerFilter;
-  bool _installedOnly = false;
 
   @override
   void didChangeDependencies() {
@@ -83,12 +81,6 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     final id = context.watch<ActiveProfileProvider>().activeId;
     final generation = context.select<SourceController, int>((s) => s.generation);
     if (id == _profile && generation == _sourceGeneration && _controller != null) return;
-    if (id != _profile) {
-      _searchController.clear();
-      _query = '';
-      _computerFilter = null;
-      _installedOnly = false;
-    }
     _profile = id;
     _sourceGeneration = generation;
     _retire();
@@ -142,10 +134,24 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   }
 
   void _changed() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+      _presentationRevision.value++;
+    }
   }
 
   void _retire() {
+    final retiring = _pages.toList();
+    _pages.clear();
+    _pageContexts.clear();
+    if (retiring.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        for (final route in retiring.reversed) {
+          dismissDialogsOwnedBy(route);
+          if (route.isActive) route.navigator?.removeRoute(route);
+        }
+      });
+    }
     final workspace = _workspaceController;
     for (final entry in _workspaceGameSessions.entries.toList()) {
       workspace?.unregister(entry.key);
@@ -179,7 +185,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     _firstFocus.dispose();
     _addFocus.dispose();
     _scanFocus.dispose();
-    _searchController.dispose();
+    _presentationRevision.dispose();
     super.dispose();
   }
 
@@ -231,7 +237,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       var dialogClosedByFlow = false;
       var dialogOpen = true;
       final dialog = showDialog<void>(
-        context: context,
+        context: _actionContext,
         barrierDismissible: false,
         builder: (_) => OAuthProxyDialog(
           start: start,
@@ -324,7 +330,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     final c = _controller;
     if (c == null || !c.current || c.busy) return;
     final confirmed = await showConfirmDialog(
-      context,
+      _actionContext,
       title: t.games.unlinkSteamAccount,
       message: t.games.unlinkSteamAccountConfirm,
       confirmText: t.games.unlinkSteamAccount,
@@ -362,7 +368,10 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
 
   Future<void> _add() async {
     final c = _controller;
-    final host = await showScopedDialog<GameHost>(context: context, builder: (_) => const AddGameComputerDialog());
+    final host = await showScopedDialog<GameHost>(
+      context: _actionContext,
+      builder: (_) => const AddGameComputerDialog(),
+    );
     if (host == null || !mounted || c != _controller) return;
     if (!await _run((c) => c.saveHost(host))) return;
     if (mounted && c == _controller) await _connect(host);
@@ -394,7 +403,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     c.requireCurrent();
     if (!mounted) return;
     final paired = await showScopedDialog<bool>(
-      context: context,
+      context: _actionContext,
       barrierDismissible: false,
       builder: (_) => PairGameComputerDialog(host: selected, client: c.client, isCurrent: () => c.current),
     );
@@ -450,22 +459,19 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         ? (routes.length == 1 ? routes.first : null)
         : (choose ? null : game.preferredRoute(c.library));
     route ??= await showScopedDialog<GameRoute>(
-      context: context,
+      context: _actionContext,
       builder: (dialogContext) => SimpleDialog(
         title: Text(t.games.chooseComputer),
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: Text(t.games.availabilityHint),
+            child: Text(t.games.inventorySnapshotHelp),
           ),
           for (final choice in routes)
-            FocusableListTile(
-              leading: const AppIcon(Symbols.computer_rounded),
-              title: Text(isolateDisplayText(choice.host.name)),
-              subtitle: Text(
-                '${_installationLabel(choice)} · ${choice.host.protocol == GameProtocol.steam ? t.games.steam : t.games.moonlight}',
-              ),
-              onTap: () => Navigator.pop(dialogContext, choice),
+            GameComputerTile(
+              route: choice,
+              preferred: (c.library.routeSelections[game.key] ?? c.library.preferredRoutes[game.key]) == choice.key,
+              onPlay: () => Navigator.pop(dialogContext, choice),
             ),
         ],
       ),
@@ -480,76 +486,77 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     }
   }
 
-  Future<void> _details(LibraryGame game) async {
+  Future<T?> _page<T>(WidgetBuilder builder) async {
+    final c = _controller;
+    if (c == null || !c.current) return null;
+    final ownership = Listenable.merge([
+      _presentationRevision,
+      context.read<ActiveProfileProvider>(),
+      context.read<SourceController>(),
+    ]);
+    late MaterialPageRoute<T> route;
+    route = MaterialPageRoute<T>(
+      builder: (pageContext) {
+        _pageContexts[route] = pageContext;
+        return ListenableBuilder(
+          listenable: ownership,
+          builder: (_, _) => c.current ? builder(pageContext) : const SizedBox.shrink(),
+        );
+      },
+    );
+    _pages.add(route);
+    try {
+      return await Navigator.of(context).push(route);
+    } finally {
+      _pages.remove(route);
+      _pageContexts.remove(route);
+    }
+  }
+
+  Future<void> _details(LibraryGame initial) async {
     final c = _controller;
     if (c == null || !c.current) return;
     final activityIdentity = c.library.steamAccountId;
     final activityCredential = c.library.steamCatalogCredential;
-    final choice = await showScopedDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(isolateDisplayText(game.name)),
-        scrollable: true,
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (game.steamAppId != null) Text(t.games.steamSource),
-            const SizedBox(height: 12),
-            Text(game.routes.isEmpty ? t.games.connectToPlay : t.games.availabilityHint),
-            if (!PlatformDetector.supportsEmbeddedGameStreaming()) ...[
-              const SizedBox(height: 12),
-              Text(t.games.nativeEnginePending),
-            ],
-            for (final route in game.routes)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const AppIcon(Symbols.computer_rounded),
-                title: Text(isolateDisplayText(route.host.name)),
-                subtitle: Text(
-                  '${_installationLabel(route)} · ${route.host.protocol == GameProtocol.steam ? t.games.steam : t.games.moonlight}'
-                  '${route.observedAt == null ? '' : '\n${t.games.inventoryChecked(date: MaterialLocalizations.of(context).formatCompactDate(route.observedAt!))}'}',
-                ),
-                trailing: game.steamAppId != null && route.host.protocol == GameProtocol.steam
-                    ? AppMenuButton<SteamHostAction>(
-                        tooltip: t.games.hostActions,
-                        adaptiveSheet: true,
-                        icon: const AppIcon(Symbols.more_vert_rounded),
-                        entriesBuilder: (_) => [
-                          AppMenuItem(
-                            value: SteamHostAction.launch,
-                            label: t.games.launchOnComputer,
-                            icon: Symbols.play_arrow_rounded,
-                          ),
-                          AppMenuItem(
-                            value: SteamHostAction.install,
-                            label: t.games.installOnComputer,
-                            icon: Symbols.download_rounded,
-                          ),
-                          if (context.read<CompanionRemoteProvider>().supportsGameAction(
-                            SteamHostAction.inputConfiguration,
-                          ))
-                            AppMenuItem(
-                              value: SteamHostAction.inputConfiguration,
-                              label: t.games.inputOnComputer,
-                              icon: Symbols.sports_esports_rounded,
-                            ),
-                          if (context.read<CompanionRemoteProvider>().supportsGameAction(SteamHostAction.properties))
-                            AppMenuItem(
-                              value: SteamHostAction.properties,
-                              label: t.games.propertiesOnComputer,
-                              icon: Symbols.settings_rounded,
-                            ),
-                        ],
-                        onSelected: (action) async {
-                          Navigator.pop(dialogContext);
-                          await _remoteHostAction(route.host, action, appId: game.steamAppId);
-                        },
-                      )
-                    : null,
-              ),
-            if (game.steamAppId != null)
-              SteamGameActivityPanel(
+    final choice = await _page<Object>((pageContext) {
+      final game = c.library.entries.where((g) => g.key == initial.key).firstOrNull;
+      if (game == null) {
+        return FocusedScrollScaffold(
+          title: Text(t.games.gameDetails),
+          slivers: [
+            SliverToBoxAdapter(
+              child: GameNotice(title: t.games.emptyLibraryTitle, message: t.games.emptyLibraryHelp),
+            ),
+          ],
+        );
+      }
+      final enabled = !c.busy;
+      return GameDetailScreen(
+        game: game,
+        artwork: c.artwork,
+        favorite: c.library.favoriteKeys.contains(game.key),
+        preferredRouteKey: (c.library.routeSelections[game.key] ?? c.library.preferredRoutes[game.key]),
+        onFavorite: enabled ? () => _run((c) => c.toggleLibraryFavorite(game)) : null,
+        onPlay: enabled ? () => Navigator.pop(pageContext, game.routes.isEmpty ? 'add' : 'play') : null,
+        onChooseComputer: enabled ? () => Navigator.pop(pageContext, 'choose') : null,
+        onPlayRoute: enabled ? (route) => Navigator.pop(pageContext, route) : null,
+        onMiniPlayer:
+            enabled &&
+                PlatformDetector.supportsEmbeddedGameStreaming() &&
+                game.routes.any((r) => r.host.protocol == GameProtocol.steam)
+            ? () => Navigator.pop(pageContext, 'mini')
+            : null,
+        onUseAsController:
+            enabled &&
+                (Platform.isAndroid || Platform.isIOS) &&
+                !PlatformDetector.isTV() &&
+                game.routes.any((r) => r.host.protocol == GameProtocol.steam)
+            ? () => Navigator.pop(pageContext, 'controller')
+            : null,
+        routeActions: (route) => _routeActions(game, route),
+        activity: game.steamAppId == null
+            ? null
+            : SteamGameActivityPanel(
                 appId: game.steamAppId!,
                 steamId: activityIdentity,
                 protectedCredential: activityCredential,
@@ -557,52 +564,83 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
                     c.current &&
                     c.library.steamAccountId == activityIdentity &&
                     c.library.steamCatalogCredential == activityCredential,
-                onLink: () => Navigator.pop(dialogContext, 'link'),
+                onLink: () => Navigator.pop(pageContext, 'link'),
               ),
-            for (final entry in _workspaceGameSessions.entries.where(
-              (entry) => game.routes.any((route) => route.game.key == entry.value.game.key),
-            ))
-              FocusableListTile(
-                leading: const AppIcon(Symbols.monitoring_rounded),
-                title: Text(t.games.streamDetails),
-                subtitle: Text(isolateDisplayText(entry.value.host.name)),
-                onTap: () => Navigator.pop(dialogContext, 'metrics:${entry.key}'),
-              ),
-          ],
-        ),
-        actions: [
-          DialogActionButton(label: t.common.close, onPressed: () => Navigator.pop(dialogContext)),
-          DialogActionButton(
-            label: c.library.favoriteKeys.contains(game.key) ? t.games.unfavorite : t.games.favorite,
-            onPressed: () => Navigator.pop(dialogContext, 'favorite'),
-          ),
-          DialogActionButton(
-            label: game.routes.isEmpty ? t.games.addComputer : t.games.chooseComputer,
-            onPressed: () => Navigator.pop(dialogContext, 'route'),
-          ),
+        sessions: [
+          for (final entry in _workspaceGameSessions.entries.where(
+            (entry) => game.routes.any((route) => route.game.key == entry.value.game.key),
+          ))
+            FocusableListTile(
+              leading: const AppIcon(Symbols.monitoring_rounded),
+              title: Text(t.games.streamDetails),
+              subtitle: Text(isolateDisplayText(entry.value.host.name)),
+              onTap: () => Navigator.pop(pageContext, 'metrics:${entry.key}'),
+            ),
         ],
-      ),
-    );
+      );
+    });
     if (!mounted || !c.current) return;
-    if (choice?.startsWith('metrics:') == true) {
-      final session = _workspaceGameSessions[choice!.substring(8)];
+    final game = c.library.entries.where((g) => g.key == initial.key).firstOrNull;
+    if (game == null) return;
+    if (choice is GameRoute && game.routes.any((r) => r.key == choice.key)) await _open(choice.host, choice.game);
+    if (choice == 'play' || choice == 'choose' || choice == 'mini') {
+      await _openLibraryGame(game, choose: choice == 'choose', mini: choice == 'mini');
+    }
+    if (choice == 'controller') await _openLibraryGame(game, controllerOnly: true);
+    if (choice == 'link') await _linkSteamAccount();
+    if (choice == 'add') await _connections();
+    if (choice is String && choice.startsWith('metrics:')) {
+      final session = _workspaceGameSessions[choice.substring(8)];
       await session?.withInputSuspended(() async {
         if (!mounted || !c.current) return;
         await showScopedDialog<void>(
-          context: context,
+          context: _actionContext,
           builder: (_) => SteamStreamDiagnostics(readMetrics: session.readMetrics, internetPath: session.internetPath),
         );
       });
     }
-    if (choice == 'favorite') await _run((c) => c.toggleLibraryFavorite(game));
-    if (choice == 'link') await _linkSteamAccount();
-    if (choice == 'route') {
-      if (game.routes.isEmpty) {
-        await _add();
-      } else {
-        await _openLibraryGame(game, choose: true);
-      }
-    }
+  }
+
+  Widget _routeActions(LibraryGame game, GameRoute route) {
+    final c = _controller!;
+    final preferred = (c.library.routeSelections[game.key] ?? c.library.preferredRoutes[game.key]) == route.key;
+    return AppMenuButton<String>(
+      tooltip: t.games.gameOptions(game: isolateDisplayText(route.host.name)),
+      adaptiveSheet: true,
+      enabled: !c.busy,
+      icon: const AppIcon(Symbols.more_vert_rounded),
+      entriesBuilder: (_) => [
+        AppMenuItem(
+          value: 'prefer',
+          label: preferred ? t.games.automaticComputer : t.games.preferComputer,
+          icon: Symbols.star_rounded,
+          selected: preferred,
+          enabled: preferred || route.installation != GameInstallation.notInstalled,
+        ),
+        if (game.steamAppId != null && route.host.protocol == GameProtocol.steam) ...[
+          const AppMenuDivider(),
+          AppMenuItem(value: 'launch', label: t.games.launchOnComputer, icon: Symbols.play_arrow_rounded),
+          AppMenuItem(value: 'install', label: t.games.installOnComputer, icon: Symbols.download_rounded),
+          if (context.read<CompanionRemoteProvider>().supportsGameAction(SteamHostAction.inputConfiguration))
+            AppMenuItem(value: 'input', label: t.games.inputOnComputer, icon: Symbols.sports_esports_rounded),
+          if (context.read<CompanionRemoteProvider>().supportsGameAction(SteamHostAction.properties))
+            AppMenuItem(value: 'properties', label: t.games.propertiesOnComputer, icon: Symbols.settings_rounded),
+        ],
+      ],
+      onSelected: (action) async {
+        if (!c.current || c != _controller) return;
+        if (action == 'prefer') {
+          await _run((c) => c.preferRoute(game, preferred ? null : route));
+        } else {
+          await _remoteHostAction(route.host, switch (action) {
+            'launch' => SteamHostAction.launch,
+            'install' => SteamHostAction.install,
+            'input' => SteamHostAction.inputConfiguration,
+            _ => SteamHostAction.properties,
+          }, appId: game.steamAppId);
+        }
+      },
+    );
   }
 
   Future<void> _openInWorkspace(
@@ -736,7 +774,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   Future<void> _engineUnavailable(GameHost host) async {
     if (!mounted) return;
     await showScopedDialog<void>(
-      context: context,
+      context: _actionContext,
       builder: (dialogContext) => AlertDialog(
         title: Text(t.games.engineUnavailable),
         scrollable: true,
@@ -753,7 +791,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   }
 
   Future<void> _showHelp() => showScopedDialog<void>(
-    context: context,
+    context: _actionContext,
     builder: (dialogContext) => AlertDialog(
       title: Text(t.games.help),
       scrollable: true,
@@ -768,13 +806,6 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     ),
   );
 
-  String _installationLabel(GameRoute route) => switch (route.installation) {
-    GameInstallation.installed => t.games.installed,
-    GameInstallation.incomplete => t.games.installationIncomplete,
-    GameInstallation.notInstalled => t.games.notInstalled,
-    GameInstallation.unknown => t.games.installationUnknown,
-  };
-
   Future<void> _importInventory(GameHost host) async {
     final c = _controller;
     if (c == null || !c.current) return;
@@ -785,7 +816,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       return;
     }
     final confirmed = await showConfirmDialog(
-      context,
+      _actionContext,
       title: t.games.importInstalledGames,
       confirmText: t.games.importInstalledGames,
       message: t.games.inventoryConfirm(peer: remote.connectedDevice?.name ?? t.games.computers, computer: host.name),
@@ -822,7 +853,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       path,
       checkCurrent: c.requireCurrent,
     );
-    if (mounted && c.current) setState(() {});
+    if (mounted && c.current) _changed();
   }
 
   Future<void> _remoteHostAction(GameHost host, SteamHostAction action, {int? appId}) async {
@@ -846,7 +877,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     };
     final confirmed = action == SteamHostAction.install
         ? await showScopedDialog<bool>(
-                context: context,
+                context: _actionContext,
                 builder: (_) => SteamLanInstallDialog(
                   target: host,
                   game: c.library.entries.where((g) => g.steamAppId == appId).firstOrNull,
@@ -901,7 +932,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       case 'forget':
         final c = _controller;
         if (await showConfirmDialog(
-              context,
+              _actionContext,
               title: t.games.forget,
               message: t.games.forgetDescription,
               confirmText: t.games.forget,
@@ -914,7 +945,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       case 'add':
         final c = _controller;
         final game = await showScopedDialog<StreamGame>(
-          context: context,
+          context: _actionContext,
           builder: (_) => AddGameShortcutDialog(host: host),
         );
         if (game != null && mounted && c == _controller) await _run((c) => c.saveGame(game));
@@ -922,9 +953,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   }
 
   Widget _host(GameHost host) => FocusableListTile(
-    leading: AppIcon(
-      host.protocol == GameProtocol.steam ? Symbols.sports_esports_rounded : Symbols.desktop_windows_rounded,
-    ),
+    leading: const AppIcon(Symbols.computer_rounded),
     title: Text(isolateDisplayText(host.name)),
     subtitle: Text(
       '${isolateDisplayText(host.address)} · ${host.protocol == GameProtocol.steam ? t.games.steam : t.games.moonlight}',
@@ -953,47 +982,211 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       onSelected: (value) => _hostAction(value, host),
     ),
   );
-  Widget _heading(String label) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-    child: Text(label, style: Theme.of(context).textTheme.titleLarge),
-  );
-  Widget _grid(List<LibraryGame> games, {bool first = false}) => GameCardGrid<LibraryGame>(
-    games: games,
-    builder: (context, game) {
+  Future<void> _connections() async {
+    unawaited(_scan());
+    await _page<void>((pageContext) {
       final c = _controller!;
-      final route = game.preferredRoute(c.library);
-      final cardGame = StreamGame(
-        hostKey: route?.host.key ?? 'catalog',
-        id: route?.game.id ?? game.key,
-        name: game.name,
+      final state = c.library;
+      final enabled = c.current && !c.busy;
+      final nearby = c.nearby
+          .where(
+            (host) => !state.hosts.any(
+              (saved) => saved.protocol == host.protocol && saved.address == host.address && saved.port == host.port,
+            ),
+          )
+          .toList();
+      return FocusedScrollScaffold(
+        title: Text(t.games.connections),
+        focusableAppBarActions: true,
+        actions: [
+          if (state.entries.isNotEmpty)
+            FocusableButton(
+              autoScroll: false,
+              onPressed: () => Navigator.pop(pageContext),
+              child: TextButton.icon(
+                onPressed: () => Navigator.pop(pageContext),
+                icon: const AppIcon(Symbols.apps_rounded),
+                label: Text(t.games.allGames),
+              ),
+            ),
+        ],
+        slivers: [
+          SliverToBoxAdapter(
+            child: SettingsGroup(
+              title: t.games.accountSetupTitle,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SteamSourceBadge(),
+                      const SizedBox(height: 12),
+                      Text(
+                        state.steamAccountId == null ? t.games.accountSetupHelp : t.games.accountLinked,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      if (state.steamAccountId != null) ...[const SizedBox(height: 8), Text(t.games.accountSetupHelp)],
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 8,
+                        children: [
+                          FocusableButton(
+                            onPressed: enabled
+                                ? (state.steamAccountId == null ? _linkSteamAccount : _refreshSteamAccount)
+                                : null,
+                            child: OutlinedButton.icon(
+                              onPressed: enabled
+                                  ? (state.steamAccountId == null ? _linkSteamAccount : _refreshSteamAccount)
+                                  : null,
+                              icon: AppIcon(
+                                state.steamAccountId == null ? Symbols.link_rounded : Symbols.refresh_rounded,
+                              ),
+                              label: Text(
+                                state.steamAccountId == null ? t.games.linkSteamAccount : t.games.refreshSteamAccount,
+                              ),
+                            ),
+                          ),
+                          if (state.steamAccountId != null)
+                            FocusableButton(
+                              onPressed: enabled ? _unlinkSteamAccount : null,
+                              child: TextButton.icon(
+                                onPressed: enabled ? _unlinkSteamAccount : null,
+                                icon: const AppIcon(Symbols.link_off_rounded),
+                                label: Text(t.games.unlinkSteamAccount),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ..._catalogNotices(state, actions: false),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Semantics(
+                    header: true,
+                    child: Text(t.games.computers, style: Theme.of(context).textTheme.titleLarge),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(t.games.computerSetupHint),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 8,
+                    children: [
+                      FocusableButton(
+                        focusNode: _scanFocus,
+                        onPressed: enabled && !c.scanning ? _scan : null,
+                        useBackgroundFocus: true,
+                        child: FilledButton.icon(
+                          onPressed: enabled && !c.scanning ? _scan : null,
+                          icon: const AppIcon(Symbols.radar_rounded),
+                          label: Text(c.scanning ? t.games.scanning : t.games.findComputers),
+                        ),
+                      ),
+                      FocusableButton(
+                        focusNode: _addFocus,
+                        onPressed: enabled ? _add : null,
+                        child: OutlinedButton.icon(
+                          onPressed: enabled ? _add : null,
+                          icon: const AppIcon(Symbols.add_rounded),
+                          label: Text(t.games.addComputer),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (c.busy || c.scanning)
+            SliverToBoxAdapter(
+              child: Semantics(
+                liveRegion: true,
+                label: c.scanning ? t.games.scanning : t.games.connecting,
+                child: const LinearProgressIndicator(),
+              ),
+            ),
+          if (state.hosts.isNotEmpty)
+            SliverToBoxAdapter(child: SettingsGroup(children: state.hosts.map(_host).toList())),
+          if (nearby.isNotEmpty)
+            SliverToBoxAdapter(
+              child: SettingsGroup(
+                title: t.games.nearby,
+                children: [
+                  for (final host in nearby)
+                    FocusableListTile(
+                      dense: false,
+                      title: Text(isolateDisplayText(host.name)),
+                      subtitle: Text(
+                        '${isolateDisplayText(host.address)} · ${host.protocol == GameProtocol.steam ? t.games.steamSource : t.games.moonlight}',
+                      ),
+                      leading: const AppIcon(Symbols.computer_rounded),
+                      onTap: enabled
+                          ? () async {
+                              final saved = await _run((c) => c.saveHost(host));
+                              if (saved && mounted && c.current) await _connect(host);
+                            }
+                          : null,
+                    ),
+                ],
+              ),
+            )
+          else if (!c.scanning && state.hosts.isEmpty)
+            SliverToBoxAdapter(
+              child: GameNotice(
+                title: t.games.noNearby,
+                message: t.games.scanHint,
+                icon: Symbols.radar_rounded,
+                actionLabel: t.games.addComputer,
+                onAction: enabled ? _add : null,
+              ),
+            ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(t.games.steamAttribution, style: Theme.of(context).textTheme.bodySmall),
+            ),
+          ),
+        ],
       );
-      return GameCard(
-        key: ValueKey(game.key),
-        game: cardGame,
-        host: route?.host,
-        steamAppId: game.steamAppId,
-        artwork: c.artwork,
-        subtitle: route?.host.name ?? (game.routes.isEmpty ? t.games.connectComputer : t.games.chooseComputer),
-        favorite: c.library.favoriteKeys.contains(game.key),
-        focusNode: first && game == games.first ? _firstFocus : null,
-        playLabel: game.routes.isEmpty ? t.games.gameDetails : t.games.play,
-        onPlay: c.busy ? null : () => _openLibraryGame(game),
-        onDetails: c.busy ? null : () => _details(game),
-        onPlayInWorkspace:
-            c.busy || !Platform.isAndroid || !game.routes.any((r) => r.host.protocol == GameProtocol.steam)
-            ? null
-            : () => _openLibraryGame(game, mini: true),
-        onUseAsController:
-            c.busy ||
-                (!Platform.isAndroid && !Platform.isIOS) ||
-                PlatformDetector.isTV() ||
-                !game.routes.any((r) => r.host.protocol == GameProtocol.steam)
-            ? null
-            : () => _openLibraryGame(game, controllerOnly: true),
-        onFavorite: c.busy ? null : () => _run((c) => c.toggleLibraryFavorite(game)),
-      );
-    },
-  );
+    });
+  }
+
+  Future<void> _settings() async {
+    final profile = _profile;
+    if (profile == null) return;
+    await _page<void>((_) => GameSettingsScreen(profileId: profile, onChooseFolder: _chooseSteamFolder));
+  }
+
+  List<Widget> _catalogNotices(GameLibrary state, {bool actions = true}) {
+    if (state.steamAccountId == null) return [];
+    return [
+      if (!state.steamCatalogAvailable || state.steamCatalogStale || state.steamCatalogTruncated)
+        SliverToBoxAdapter(
+          child: GameNotice(
+            title: t.games.accountStatus,
+            live: true,
+            message: [
+              if (!state.steamCatalogAvailable) t.games.steamLibraryPrivate,
+              if (state.steamCatalogStale) t.games.steamLibraryStale,
+              if (state.steamCatalogTruncated) t.games.steamLibraryTruncated,
+            ].join('\n'),
+            actionLabel: actions ? t.games.manageConnections : null,
+            onAction: actions ? _connections : null,
+          ),
+        ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1014,422 +1207,40 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       );
     }
     final c = _controller;
-    final state = c?.library ?? const GameLibrary();
-    final entries = state.entries;
-    final byKey = {for (final game in entries) game.key: game};
-    final filtered =
-        entries
-            .where(
-              (game) =>
-                  game.name.toLowerCase().contains(_query.trim().toLowerCase()) &&
-                      game.routes
-                          .where((route) => _computerFilter == null || route.host.key == _computerFilter)
-                          .any((route) => !_installedOnly || route.installation == GameInstallation.installed) ||
-                  (_computerFilter == null &&
-                      !_installedOnly &&
-                      game.routes.isEmpty &&
-                      game.name.toLowerCase().contains(_query.trim().toLowerCase())),
-            )
-            .toList()
-          ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-    final recent = _query.isEmpty
-        ? state.recentKeys.map((key) => byKey[key]).whereType<LibraryGame>().where(filtered.contains).take(6).toList()
-        : <LibraryGame>[];
-    final favorites = _query.isEmpty
-        ? state.favoriteKeys.map((key) => byKey[key]).whereType<LibraryGame>().where(filtered.contains).toList()
-        : <LibraryGame>[];
-    final nearby =
-        c?.nearby
-            .where(
-              (host) => !state.hosts.any(
-                (saved) => saved.protocol == host.protocol && saved.address == host.address && saved.port == host.port,
-              ),
-            )
-            .toList() ??
-        <GameHost>[];
-    final enabled = c?.current == true && c?.busy == false;
-    return FocusedScrollScaffold(
-      title: Text(t.games.title),
-      automaticallyImplyLeading: false,
-      focusableAppBarActions: true,
-      actions: [
-        FocusableButton(
-          autoScroll: false,
-          onPressed: _showHelp,
-          child: IconButton(
-            tooltip: t.games.help,
-            icon: const AppIcon(Symbols.help_outline_rounded),
-            onPressed: _showHelp,
-          ),
-        ),
-      ],
-      slivers: [
-        SliverList(
-          delegate: SliverChildListDelegate([
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(t.games.subtitle, style: Theme.of(context).textTheme.headlineSmall),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 8,
-                    children: [
-                      FocusableButton(
-                        focusNode: filtered.isEmpty ? _firstFocus : _addFocus,
-                        onPressed: enabled ? _add : null,
-                        useBackgroundFocus: true,
-                        onNavigateRight: enabled && c?.scanning == false ? _scanFocus.requestFocus : null,
-                        child: FilledButton.icon(
-                          onPressed: enabled ? _add : null,
-                          icon: const AppIcon(Symbols.add_rounded),
-                          label: Text(t.games.addComputer),
-                        ),
-                      ),
-                      FocusableButton(
-                        focusNode: _scanFocus,
-                        onPressed: enabled && c?.scanning == false ? _scan : null,
-                        onNavigateLeft: () => (filtered.isEmpty ? _firstFocus : _addFocus).requestFocus(),
-                        child: OutlinedButton.icon(
-                          onPressed: enabled && c?.scanning == false ? _scan : null,
-                          icon: const AppIcon(Symbols.radar_rounded),
-                          label: Text(c?.scanning == true ? t.games.scanning : t.games.findComputers),
-                        ),
-                      ),
-                      OutlinedButton.icon(
-                        onPressed: enabled
-                            ? (state.steamAccountId == null ? _linkSteamAccount : _refreshSteamAccount)
-                            : null,
-                        icon: const AppIcon(Symbols.link_rounded),
-                        label: Text(
-                          state.steamAccountId == null ? t.games.linkSteamAccount : t.games.refreshSteamAccount,
-                        ),
-                      ),
-                      if (state.steamAccountId != null)
-                        TextButton.icon(
-                          onPressed: enabled ? _unlinkSteamAccount : null,
-                          icon: const AppIcon(Symbols.link_off_rounded),
-                          label: Text(t.games.unlinkSteamAccount),
-                        ),
-                    ],
-                  ),
-                  if (state.games.isEmpty && state.steamAccountId == null) ...[
-                    const SizedBox(height: 12),
-                    Text(t.games.scanHint),
-                  ],
-                  if (_loading || c?.busy == true)
-                    const Padding(padding: EdgeInsets.only(top: 16), child: LinearProgressIndicator()),
-                ],
-              ),
-            ),
-            if (state.games.isNotEmpty || state.steamCatalog.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: FocusableTextField(
-                  controller: _searchController,
-                  textInputAction: TextInputAction.search,
-                  decoration: InputDecoration(
-                    labelText: t.games.search,
-                    prefixIcon: const AppIcon(Symbols.search_rounded),
-                  ),
-                  onChanged: (value) => setState(() => _query = value),
-                  onSubmitted: (_) => _firstFocus.requestFocus(),
-                  onNavigateDown: _firstFocus.requestFocus,
-                ),
-              ),
-          ]),
-        ),
-        if (state.hosts.isNotEmpty)
+    if (c == null) {
+      return FocusedScrollScaffold(
+        title: Text(t.games.title),
+        automaticallyImplyLeading: false,
+        slivers: [
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  FilterChip(
-                    label: Text(t.games.installed),
-                    selected: _installedOnly,
-                    onSelected: (selected) => setState(() => _installedOnly = selected),
-                  ),
-                  ChoiceChip(
-                    label: Text(t.games.allComputers),
-                    selected: _computerFilter == null,
-                    onSelected: (_) => setState(() => _computerFilter = null),
-                  ),
-                  for (final host in state.hosts)
-                    ChoiceChip(
-                      label: Text(isolateDisplayText(host.name)),
-                      selected: _computerFilter == host.key,
-                      onSelected: (_) => setState(() => _computerFilter = host.key),
-                    ),
-                ],
-              ),
-            ),
+            child: _loading
+                ? Semantics(label: t.games.connecting, liveRegion: true, child: const LinearProgressIndicator())
+                : GameNotice(title: t.games.title, message: t.games.nativeEnginePending),
           ),
-        if (!_loadFailed && recent.isNotEmpty) ...[
-          SliverToBoxAdapter(child: _heading(t.games.recent)),
-          _grid(recent, first: true),
         ],
-        if (!_loadFailed && favorites.isNotEmpty) ...[
-          SliverToBoxAdapter(child: _heading(t.games.favorites)),
-          _grid(favorites, first: recent.isEmpty),
-        ],
-        if (!_loadFailed && filtered.isNotEmpty) ...[
-          SliverToBoxAdapter(child: _heading(t.games.allGames)),
-          _grid(filtered, first: recent.isEmpty && favorites.isEmpty),
-        ] else if (entries.isNotEmpty && filtered.isEmpty)
-          SliverToBoxAdapter(
-            child: Padding(padding: const EdgeInsets.all(16), child: Text(t.games.noMatches)),
-          ),
-        if (state.steamAccountId != null) ...[
-          SliverToBoxAdapter(child: _heading(t.games.steamLibrary)),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(t.games.availabilityHint),
-            ),
-          ),
-          if (!state.steamCatalogAvailable)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Text(t.games.steamLibraryPrivate),
-              ),
-            ),
-          if (state.steamCatalogStale)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Text(t.games.steamLibraryStale),
-              ),
-            ),
-          if (state.steamCatalogTruncated)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Text(t.games.steamLibraryTruncated),
-              ),
-            ),
-        ],
-        SliverList(
-          delegate: SliverChildListDelegate([
-            if (!_loading && state.hosts.isEmpty)
-              Padding(padding: const EdgeInsets.all(16), child: Text(t.games.empty)),
-            if (state.hosts.isNotEmpty) ...[
-              _heading(t.games.computers),
-              SettingsGroup(children: state.hosts.map(_host).toList()),
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text(t.games.libraryHint)),
-            ],
-            if (c != null && nearby.isNotEmpty) ...[
-              _heading(t.games.nearby),
-              SettingsGroup(
-                children: nearby
-                    .map(
-                      (host) => FocusableListTile(
-                        title: Text(isolateDisplayText(host.name)),
-                        subtitle: Text(
-                          '${isolateDisplayText(host.address)} · ${host.protocol == GameProtocol.steam ? t.games.steam : t.games.moonlight}',
-                        ),
-                        leading: const AppIcon(Symbols.computer_rounded),
-                        onTap: enabled
-                            ? () async {
-                                final saved = await _run((c) => c.saveHost(host));
-                                if (saved && mounted && c.current) await _connect(host);
-                              }
-                            : null,
-                      ),
-                    )
-                    .toList(),
-              ),
-            ] else if (!_loading && c?.scanning == false && state.hosts.isEmpty)
-              Padding(padding: const EdgeInsets.all(16), child: Text(t.games.noNearby)),
-          ]),
-        ),
-        if (!_loadFailed)
-          SliverToBoxAdapter(
-            child: SettingsGroup(
-              children: [
-                Padding(padding: const EdgeInsets.all(16), child: Text(t.games.availabilityHint)),
-                if (_profile != null && steamRelayUri() != null)
-                  SettingSwitchTile(
-                    pref: SettingsService.steamInternetForProfile(_profile!),
-                    icon: Symbols.public_rounded,
-                    title: t.games.internetStreaming,
-                    subtitle: t.games.internetStreamingHelp,
-                  ),
-                if (_profile != null && PlatformDetector.supportsEmbeddedGameStreaming()) ...[
-                  SettingSelectionTile<SteamStreamQuality>(
-                    pref: SettingsService.steamQualityForProfile(_profile!),
-                    icon: Symbols.tune_rounded,
-                    title: t.games.streamQuality,
-                    subtitleBuilder: _qualityLabel,
-                    description: t.games.streamQualityHelp,
-                    options: [
-                      for (final quality in SteamStreamQuality.values)
-                        DialogOption(
-                          value: quality,
-                          title: _qualityLabel(quality),
-                          subtitle: '${quality.height}p · ${quality.fps} fps · ${quality.bitrateKbps ~/ 1000} Mbps',
-                        ),
-                    ],
-                  ),
-                  SettingSelectionTile<SteamStreamCodec>(
-                    pref: SettingsService.steamCodecForProfile(_profile!),
-                    icon: Symbols.movie_rounded,
-                    title: t.games.streamCodec,
-                    subtitleBuilder: (codec) => codec == SteamStreamCodec.automatic ? t.games.codecAutomatic : 'H.264',
-                    description: t.games.streamCodecHelp,
-                    options: [
-                      DialogOption(value: SteamStreamCodec.automatic, title: t.games.codecAutomatic),
-                      const DialogOption(value: SteamStreamCodec.h264, title: 'H.264'),
-                    ],
-                  ),
-                  SettingSelectionTile<SteamStreamAudio>(
-                    pref: SettingsService.steamAudioForProfile(_profile!),
-                    icon: Symbols.surround_sound_rounded,
-                    title: t.games.streamAudio,
-                    subtitleBuilder: _audioLabel,
-                    description: t.games.streamAudioHelp,
-                    options: [
-                      for (final audio in SteamStreamAudio.values)
-                        DialogOption(value: audio, title: _audioLabel(audio)),
-                    ],
-                  ),
-                  SettingSelectionTile<int>(
-                    pref: SettingsService.steamControllerCountForProfile(_profile!),
-                    icon: Symbols.sports_esports_rounded,
-                    title: t.games.controllerSeats,
-                    subtitleBuilder: (count) => '$count',
-                    description: t.games.controllerSeatsHelp,
-                    options: [for (var count = 1; count <= 4; count++) DialogOption(value: count, title: '$count')],
-                  ),
-                ],
-                if (_profile != null &&
-                    {
-                      TargetPlatform.android,
-                      TargetPlatform.iOS,
-                      TargetPlatform.macOS,
-                      TargetPlatform.linux,
-                      TargetPlatform.windows,
-                    }.contains(defaultTargetPlatform))
-                  SettingSwitchTile(
-                    pref: SettingsService.gamePyrowaveForProfile(_profile!),
-                    icon: Symbols.speed_rounded,
-                    title: t.games.steamBetaTitle,
-                    subtitle: t.games.steamBetaDescription,
-                  )
-                else
-                  Padding(padding: const EdgeInsets.all(16), child: Text(t.games.steamBetaDescription)),
-              ],
-            ),
-          ),
-        if (!_loadFailed && _profile != null)
-          SliverToBoxAdapter(
-            child: SettingsGroup(
-              title: t.games.touchSetup,
-              children: [
-                SettingSwitchTile(
-                  pref: SettingsService.gameTouchControlsForProfile(_profile!),
-                  icon: Symbols.touch_app_rounded,
-                  title: t.games.touchControls,
-                  subtitle: t.games.touchDescription,
-                ),
-                if (PlatformDetector.supportsEmbeddedGameStreaming()) ...[
-                  SettingSwitchTile(
-                    pref: SettingsService.steamControllerRumbleForProfile(_profile!),
-                    icon: Symbols.vibration_rounded,
-                    title: t.games.controllerRumble,
-                    subtitle: t.games.controllerRumbleHelp,
-                  ),
-                  SettingSwitchTile(
-                    pref: SettingsService.steamMotionControllerForProfile(_profile!),
-                    icon: Symbols.screen_rotation_rounded,
-                    title: t.games.motionController,
-                    subtitle: t.games.motionControllerHelp,
-                  ),
-                  SettingSelectionTile<int>(
-                    pref: SettingsService.steamTouchOpacityForProfile(_profile!),
-                    icon: Symbols.opacity_rounded,
-                    title: t.games.touchOpacity,
-                    subtitleBuilder: (value) => '$value%',
-                    description: t.games.touchAppearanceHelp,
-                    options: [
-                      for (final value in [50, 65, 85, 100]) DialogOption(value: value, title: '$value%'),
-                    ],
-                  ),
-                  SettingSwitchTile(
-                    pref: SettingsService.steamSwapTouchSidesForProfile(_profile!),
-                    icon: Symbols.swap_horiz_rounded,
-                    title: t.games.swapTouchSides,
-                    subtitle: t.games.touchAppearanceHelp,
-                  ),
-                ],
-                Padding(padding: const EdgeInsets.all(16), child: Text(t.games.touchSetupHint)),
-                if (PlatformDetector.supportsEmbeddedGameStreaming())
-                  SettingSwitchTile(
-                    pref: SettingsService.allowGameSessionControlForProfile(_profile!),
-                    icon: Symbols.phonelink_rounded,
-                    title: t.games.allowSessionControl,
-                    subtitle: t.games.allowSessionControlHelp,
-                  ),
-              ],
-            ),
-          ),
-        if (_profile != null && PlatformDetector.isDesktopOS())
-          SliverToBoxAdapter(
-            child: SettingsGroup(
-              title: t.games.shareLibrary,
-              children: [
-                SettingSwitchTile(
-                  pref: SettingsService.shareSteamInventoryForProfile(_profile!),
-                  icon: Symbols.library_books_rounded,
-                  title: t.games.shareLibrary,
-                  subtitle: t.games.shareLibraryHelp,
-                ),
-                SettingSwitchTile(
-                  pref: SettingsService.allowSteamActionsForProfile(_profile!),
-                  icon: Symbols.security_rounded,
-                  title: t.games.allowHostActions,
-                  subtitle: t.games.allowHostActionsHelp,
-                ),
-                SettingSwitchTile(
-                  pref: SettingsService.allowSteamInstallForProfile(_profile!),
-                  icon: Symbols.download_rounded,
-                  title: t.games.allowHostInstall,
-                  subtitle: t.games.allowHostInstallHelp,
-                ),
-                FocusableListTile(
-                  leading: const AppIcon(Symbols.folder_rounded),
-                  title: Text(t.games.steamInstallFolder),
-                  subtitle: Text(
-                    SettingsService.instance.read(SettingsService.steamInstallRootForProfile(_profile!)) ??
-                        t.games.automaticFolder,
-                  ),
-                  onTap: _chooseSteamFolder,
-                ),
-              ],
-            ),
-          ),
-        if (!_loadFailed) const SliverToBoxAdapter(child: SizedBox(height: 32)),
-      ],
+      );
+    }
+    return GameLibraryView(
+      key: ValueKey('games:$_profile:$_sourceGeneration'),
+      library: c.library,
+      artwork: c.artwork,
+      loading: _loading,
+      busy: c.busy,
+      available: c.current && PlatformDetector.supportsEmbeddedGameStreaming(),
+      firstFocus: _firstFocus,
+      onConnections: _connections,
+      onSettings: _settings,
+      onHelp: _showHelp,
+      onLink: _linkSteamAccount,
+      onRefresh: _refreshSteamAccount,
+      onPlay: _openLibraryGame,
+      onDetails: _details,
+      onFavorite: (game) => _run((c) => c.toggleLibraryFavorite(game)),
+      onMiniPlayer: (game) => _openLibraryGame(game, mini: true),
+      onUseAsController: (Platform.isAndroid || Platform.isIOS) && !PlatformDetector.isTV()
+          ? (game) => _openLibraryGame(game, controllerOnly: true)
+          : null,
+      catalogNotices: _catalogNotices(c.library),
     );
   }
-
-  String _audioLabel(SteamStreamAudio audio) => switch (audio) {
-    SteamStreamAudio.stereo => t.games.audioStereo,
-    SteamStreamAudio.quad => t.games.audioQuad,
-    SteamStreamAudio.surround51 => t.games.audioSurround51,
-  };
-
-  String _qualityLabel(SteamStreamQuality quality) => switch (quality) {
-    SteamStreamQuality.balanced => t.games.qualityBalanced,
-    SteamStreamQuality.reducedBandwidth => t.games.qualityReducedBandwidth,
-    SteamStreamQuality.sharperPicture => t.games.qualitySharperPicture,
-    SteamStreamQuality.reducedFrameRate => t.games.qualityReducedFrameRate,
-    SteamStreamQuality.ultraHd => t.games.qualityUltraHd,
-    SteamStreamQuality.highRefresh => t.games.qualityHighRefresh,
-  };
 }

@@ -26,7 +26,7 @@ with `[skip ci]`. Existing native dependency pins were not fabricated or promote
 | Import and attachment | Existing format conversion/archive/drop/share flows; Plex/Jellyfin/Emby upload; managed standalone native text attachment; adapter-owned folder discovery for local/network/cloud sources and DLNA metadata-linked text resources. | Backend format limits still apply. Non-MPV attachment refuses saved affine corrections. Vendor-only DLNA caption tags and catalogue-specific sources without a file listing remain unsupported. |
 | App rendering | Two independent text lanes, per-profile/lane appearance defaults, installed-family/script fallback, original word highlights, fixed authored sign regions, stable optional scene-region avoidance, manual burned-caption cover, focused-pane density limit, spoken subtitles with explicit duck/rate. | App styling is not a replacement for native ASS/bitmap rendering. HDR luminance, font shaping and output paths are unqualified. Centered contain/cover/stretch/zoom geometry and screen/video anchoring are implemented; renderer/output qualification, ruby/vertical typography, new closed-caption service semantics and localized new controls remain open. |
 | Ecosystem | Corrected SRT/native snapshot handoff on the opened-part clock; expiring LAN second screen and WebVTT exports; explicit Cast WebVTT loading/restoration; revision/history transfer bundles, explicit encrypted cloud synchronization with causal conflict review, and study tools. | Receiver rendering/native PiP remain capability limited. Automatic Watch Together asset policy, font-aware offline packaging/accounting and HDR subtitle screenshot composition remain unfinished. |
-| Research | Bitmap/burned OCR with image review and automatic text-band proposals; positioned signs; second-model disagreements; local speech separation; VAD completeness; single-frame or three-sample scene proposals and bounded temporal region associations; stereo-mix event evidence; licensed generic-voice dubbing/mixing; offline Whisper adaptation with separate holdouts. | These are opt-in, reviewable experimental adapters. Physical sound localization, true audiovisual speech fusion, singing-specific timing, continuous visual tracking and proven quality improvements are not implemented or established. No adaptation/evaluation run occurred. |
+| Research | Bitmap/burned OCR with image review and automatic text-band proposals; positioned signs; second-model disagreements; local speech separation; VAD completeness; single-frame or three-sample scene proposals and bounded temporal region associations; explicitly configured joint audio/image review; stereo-mix event evidence; licensed generic-voice dubbing/mixing; offline Whisper adaptation with separate holdouts. | These are opt-in, reviewable experimental adapters. Physical sound localization, singing-specific timing and continuous visual tracking remain unfinished. Joint audio/image provider requests are implemented; actual multimodal use and quality improvements are not established. No adaptation/evaluation run occurred. |
 | MPV packaging | Shared ordered-PCM patch and all platform bridge sources; final archive/native export inspection; per-binary/archive receipts; receipt-aware content keys and manifest freshness; atomic consumer promotion gate. | No new binaries were built/published and no consumer lock was advanced. The private-JIT build/publication and exact-artifact promotion described in `MPV-PACKAGING.md` are still required. |
 
 The appended source updates identify implementation details and bounds. They do
@@ -1065,3 +1065,19 @@ cloud content. Immutable content chunks deliberately remain for recovery; no
 unsafe cross-device garbage collection is attempted. This is explicit per-track
 synchronization, not account-wide automatic pairing or a Watch Together relay
 extension. No network synchronization, cryptographic execution or tests were run.
+
+### Joint audiovisual review adapter
+
+Scene review can now include the explicitly selected audio track for each chosen
+cue, alongside its sampled frames. The capability is off by default and bound
+to the declared endpoint/model/revision fingerprint. Host declaration, server
+validation, Python SDK checks, Flutter controls and submission all carry the
+same `sceneAudioEvidence` option. A changed declaration invalidates old job
+fingerprints rather than expanding a previous image-only consent.
+
+Inputs are restricted to twelve seconds per cue and two minutes total. Decode
+bytes, process lifetime and provider response sizes remain bounded. Original
+cues/timing survive unchanged; proposed alternatives, clip hashes and uncertainty
+are returned for review. This supplies actual audio and scene evidence together
+to a compatible configured model. It does not attest model internals, implement
+visual lip decoding, establish accuracy, or claim accelerator placement.

@@ -196,12 +196,18 @@ class Store:
         temporal_regions = value.get("sceneTemporalRegions", False)
         if type(temporal_regions) is not bool or temporal_regions and task != "scene_review":
             raise ValueError("invalid_scene_temporal_regions")
+        audio_evidence = value.get("sceneAudioEvidence", False)
+        if type(audio_evidence) is not bool or audio_evidence and task != "scene_review":
+            raise ValueError("invalid_scene_audio_evidence")
         vision_fingerprint = None
         if task == "scene_review":
             config = vision_capabilities()
             if config is None or value.get("visionProviderFingerprint") != config["fingerprint"]:
                 raise ValueError("vision_provider_changed_resubmit_after_review")
             vision_fingerprint = config["fingerprint"]
+            if audio_evidence and (not config['audioEvidence'] or any(c['endMs']-c['startMs'] > 12000 for c in cues) or
+                    sum(c['endMs']-c['startMs'] for c in cues) > 120000):
+                raise ValueError('scene_audio_capability_or_duration_limit')
             if len(cues) > 30 or max(c["endMs"] for c in cues) > 3600000:
                 raise ValueError("visual_review_limit_thirty_cues_one_hour")
         crop = value.get("crop", [0, 0.65, 1, 0.35])
@@ -216,7 +222,7 @@ class Store:
                          "cues": cues, "audioTrack": track, "timelineOffsetMs": timeline_offset, "itemTimeline": item_timeline, "soundStereoEvidence": stereo_evidence, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
-                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions,
+                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions, "sceneAudioEvidence": audio_evidence,
                          "translateToEnglish": task == "transcribe" and value.get("translateToEnglish") is True,
                          "preprocess": task in {"transcribe", "align", "diarize"} and value.get("preprocess") is True}
             fingerprint = hashlib.sha256(json.dumps(canonical, sort_keys=True).encode()).hexdigest()
@@ -413,7 +419,7 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
-                             "visionProvider": vision, "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES),
+                             "visionProvider": vision, "sceneAudioEvidence": vision is not None and vision['audioEvidence'], "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES),
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})
             return
         artifact_match = re.fullmatch(r"/v1/jobs/([0-9a-f]{32})/artifacts/([0-9a-f]{64})", path)

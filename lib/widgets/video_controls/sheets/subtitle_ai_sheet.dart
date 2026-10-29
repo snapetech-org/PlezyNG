@@ -838,6 +838,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var preprocess = false;
       var soundStereoEvidence = false;
       var sceneTemporalRegions = false;
+      var sceneAudioEvidence = false;
       var duckRatio = .25;
       var track = 0;
       var subtitleTrack = 0, bitmapTail = 2000;
@@ -890,8 +891,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 onChanged: (value) => update(() => readingMode = value ?? 'hiragana')),
             ],
             if (task == 'scene_review') Text('The host will forward up to 30 chosen captions and ${sceneTemporalRegions ? 3 : 1} resized video frame(s) per cue to:\n'
-              '${capabilities['visionProvider']}. This is explicitly unverified scene context; it cannot verify spoken words. '
+              '${capabilities['visionProvider']}. ${sceneAudioEvidence ? "Selected-track audio clips will also be forwarded (12 seconds per cue, two minutes total). Joint model interpretation remains unverified." : "This is unverified image context; images cannot verify spoken words."} '
               'Original wording remains unless you select an alternative during image review.'),
+            if (task == 'scene_review' && capabilities['sceneAudioEvidence'] == true)
+              SwitchListTile(title: const Text('Include synchronized audio with scene images'),
+                subtitle: const Text('Explicitly forwards each selected cue’s audio to the declared destination. Provider modality support is host-declared, not verified. Listen to the source before accepting alternatives.'),
+                value: sceneAudioEvidence, onChanged: (v) => update(() => sceneAudioEvidence = v)),
             if (task == 'scene_review' && capabilities['sceneTemporalRegions'] == true)
               SwitchListTile(title: const Text('Sample scene movement during each cue'),
                 subtitle: const Text('Sends three frames at 10%, 50% and 90% of each cue. Evidence shows chronological panels; sampled region associations remain unverified.'),
@@ -950,7 +955,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
         targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
-        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, crop: [0, cropTop, 1, 1 - cropTop],
+        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, sceneAudioEvidence: sceneAudioEvidence, crop: [0, cropTop, 1, 1 - cropTop],
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         voiceFingerprint: (task == 'dubbing' || task == 'dub_mix') ? (capabilities['synthesisVoice'] as Map?)?['fingerprint'] as String? : null,
         translationMode: translationMode, scriptConversion: scriptConversion, readingMode: readingMode,

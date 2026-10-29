@@ -358,3 +358,25 @@ proposals, not identities or continuous tracking. `avoidRegions` retains at
 most twelve envelopes per cue, preferring repeated observations. All normal
 one-hour, thirty-cue, 4 MiB/image and 32 MiB evidence limits still apply. The
 Python and Flutter clients refuse the option on a host without the capability.
+
+### Joint audio and image review
+
+A host whose configured `PLEZY_VISION` chat-completions provider accepts both
+`image_url` and WAV `input_audio` content in one request may explicitly declare
+`PLEZY_VISION_ACCEPTS_AUDIO=1`. This declaration changes the provider fingerprint
+and is shown as unqualified in capabilities. It does not probe a model, select a
+provider, establish a license, or prove that the model uses both modalities.
+The default remains image-only. Incompatible providers fail the job.
+
+`sceneAudioEvidence: true` is available only for `scene_review`, after separate
+client consent to forward audio to the declared destination. Each selected-track
+clip follows the supplied cue interval (up to 12 seconds, two minutes total) and
+is decoded as PCM16 mono 16 kHz WAV with byte and execution bounds. Audio and
+chronological frames are sent together. The result records clip hashes, interval,
+track and decode format, and requests alternate wording without changing baseline
+text or timing. Alternatives still require review against the source audio.
+No lip-reading, identity, attested modality use or measured improvement is claimed.
+The content-part schema follows the provider-compatible
+[Chat Completions contract](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create);
+a schema accepting both parts does not imply every model supports them jointly.
+No provider request or model execution was performed while implementing this.

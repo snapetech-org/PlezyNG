@@ -96,8 +96,14 @@ class KaraokePackages {
             sha256: (await sha256.bind(file.openRead()).first).toString(), bytes: await file.length(), kind: kind));
         }
         final id = const Uuid().v4();
+        final rawYear=parsed?.metadata['YEAR']?.trim() ?? '',year=int.tryParse(rawYear);
+        final rawDifficulty=parsed?.metadata['DIFFICULTY']?.trim() ?? '',difficulty=int.tryParse(rawDifficulty);
+        if(rawYear.isNotEmpty && (year==null || year<1800 || year>2200))warnings.add('Ignored unsupported year metadata');
+        if(rawDifficulty.isNotEmpty && (difficulty==null || difficulty<1 || difficulty>5))warnings.add('Ignored difficulty metadata outside the 1–5 scale');
         track = KaraokeTrack(id: id, songId: id, title: parsed?.metadata['TITLE'] ?? p.basenameWithoutExtension(audio.first.path),
           artist: parsed?.metadata['ARTIST'] ?? '', language: parsed?.metadata['LANGUAGE'] ?? '',
+          genre: parsed?.metadata['GENRE'] ?? '', year: year!=null && year>=1800 && year<=2200 ? year : null,
+          difficulty: difficulty!=null && difficulty>=1 && difficulty<=5 ? difficulty : null,
           lyrics: parsed?.lyrics ?? const Lyrics(synced: false, lines: []), notes: parsed?.notes ?? const [], assets: assets);
       }
       var total = 0;

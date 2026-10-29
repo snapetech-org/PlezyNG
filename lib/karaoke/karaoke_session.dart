@@ -59,6 +59,7 @@ class KaraokeSession extends ChangeNotifier {
   bool fairRotation = true, allowExplicit = true, requireApproval = true, held = false;
   bool _disposed = false, _loopSeeking = false, _finishing = false;
   bool _usingMusic = false, _started = false;
+  bool _resumeAfterQuiz = false;
   KaraokeMode mode = KaraokeMode.sing;
   String? error;
   KaraokeParty party=KaraokeParty();
@@ -163,13 +164,47 @@ class KaraokeSession extends ChangeNotifier {
     await PlaybackCoordinator.instance.claimKaraoke();
     _musicClaimRevision=music.queueSessionRevision;
   }
-  List<KaraokeTrack> search(String query,{bool offline=false,bool duet=false,String? language,String? tag,String? singerId}) {
+  int? suggestedKey(KaraokeTrack track,{String? singerId}) {
+    final singer=singers.where((s)=>s.id==singerId).firstOrNull;
+    final low=singer?.lowMidi,high=singer?.highMidi;
+    final notes=track.notes.where((n)=>!n.freestyle).toList();
+    if(low==null || high==null || notes.isEmpty)return null;
+    var bottom=double.infinity,top=double.negativeInfinity;
+    for(final note in notes) { bottom=math.min(bottom,note.midi).toDouble(); top=math.max(top,note.midi).toDouble(); }
+    var best=0,bestCost=double.infinity;
+    for(var key=-12;key<=12;key++) {
+      final cost=(math.max(0,low-(bottom+key))+math.max(0,(top+key)-high)).toDouble()+key.abs()*.005;
+      if(cost<bestCost) { best=key; bestCost=cost; }
+    }
+    return best;
+  }
+  bool fitsComfortableRange(KaraokeTrack track,{String? singerId}) {
+    final singer=singers.where((s)=>s.id==singerId).firstOrNull;
+    final low=singer?.lowMidi,high=singer?.highMidi;
+    final notes=track.notes.where((n)=>!n.freestyle).toList();
+    if(low==null || high==null || notes.isEmpty)return false;
+    var bottom=double.infinity,top=double.negativeInfinity;
+    for(final note in notes) { bottom=math.min(bottom,note.midi).toDouble(); top=math.max(top,note.midi).toDouble(); }
+    return math.max(-12,(low-bottom).ceil())<=math.min(12,(high-top).floor());
+  }
+  List<KaraokeTrack> search(String query,{bool offline=false,bool duet=false,bool scored=false,bool fitsRange=false,
+      String? language,String? genre,int? decade,int? difficulty,String? tag,String? singerId}) {
     final words=query.toLowerCase().split(RegExp(r'\s+')).where((s)=>s.isNotEmpty);
     final singer=singers.where((s)=>s.id==singerId).firstOrNull;
-    final found=catalog.values.where((t) => (allowExplicit || !t.explicit) && (!offline || t.assets.isNotEmpty) &&
-      (!duet || t.parts.length>1) && (language==null || t.language==language) && (tag==null || t.tags.contains(tag)) &&
-      words.every((q)=>'${t.title} ${t.artist} ${t.producer} ${t.tags.join(' ')}'.toLowerCase().contains(q))).toList();
+    final rangeFit=<String,bool>{};
+    final found=<KaraokeTrack>[];
+    for(final t in catalog.values) {
+      if(singer?.lowMidi!=null && singer?.highMidi!=null)rangeFit[t.id]=fitsComfortableRange(t,singerId:singerId);
+      if((!allowExplicit && t.explicit) || (offline && t.assets.isEmpty) || (duet && t.parts.length<=1) ||
+          (scored && !t.canScore) || (fitsRange && rangeFit[t.id]!=true) || (language!=null && t.language!=language) ||
+          (genre!=null && t.genre!=genre) || (decade!=null && (t.year==null || (t.year! ~/ 10) * 10 != decade)) ||
+          (difficulty!=null && t.difficulty!=difficulty) || (tag!=null && !t.tags.contains(tag)) ||
+          !words.every((q)=>'${t.title} ${t.artist} ${t.producer} ${t.genre} ${t.year ?? ''} ${t.tags.join(' ')}'.toLowerCase().contains(q)))continue;
+      found.add(t);
+    }
     found.sort((a,b) {
+      final rangeA=rangeFit[a.id]==true ? 0 : 1, rangeB=rangeFit[b.id]==true ? 0 : 1;
+      if(rangeA!=rangeB)return rangeA.compareTo(rangeB);
       final fa=singer?.favorites.contains(a.id)==true ? 0 : 1, fb=singer?.favorites.contains(b.id)==true ? 0 : 1;
       return fa!=fb ? fa.compareTo(fb) : a.title.toLowerCase().compareTo(b.title.toLowerCase());
     });
@@ -205,9 +240,29 @@ class KaraokeSession extends ChangeNotifier {
         case 'party':
           final operation=payload['operation'] as String;
           if(guestSinger!=null && operation!='answer')throw StateError('Host permission required');
-          if(operation=='startQuestion' && _started)await pause();
-          if(operation=='mode') {if(_started)await pause();epoch++;}
-          party.command(operation,Map<String,dynamic>.from(payload['data'] as Map? ?? {}),singerId:guestSinger);
+          final data=Map<String,dynamic>.from(payload['data'] as Map? ?? {});
+          if(operation=='startQuestion') {
+            final index=data['index'], seconds=data['seconds'];
+            if(index is! int || index<0 || index>=party.questions.length || (seconds!=null && seconds is! int)) {
+              throw const FormatException('Invalid quiz question or duration');
+            }
+            final resumeAfter=_started && playing;
+            if(resumeAfter) { await pause(); held=true; }
+            _resumeAfterQuiz=_resumeAfterQuiz || resumeAfter;
+          }
+          if(operation=='mode') {
+            if(!{'no-score','solo','duet','teams','cooperative','battle','tournament','medley','quiz'}.contains(data['game'])) {
+              throw const FormatException('Unknown party mode');
+            }
+            _resumeAfterQuiz=false;
+            if(_started) { if(playing)await pause(); held=true; }
+            epoch++;
+          }
+          party.command(operation,data,singerId:guestSinger);
+          if(operation=='endQuiz') {
+            if(_resumeAfterQuiz && _started) { await resume(); held=false; }
+            _resumeAfterQuiz=false;
+          }
         case 'singer':
           final name=(payload['name'] as String).trim();
           if(name.isEmpty || name.length>80 || singers.length>=64) throw const FormatException('Singer name/room limit');
@@ -249,10 +304,13 @@ class KaraokeSession extends ChangeNotifier {
         case 'absent':
           singers.firstWhere((s)=>s.id==payload['singerId']).absent=payload['value']==true;
         case 'reorder':
-          final from=requests.indexWhere((r)=>r.id==payload['requestId']);
-          final to=(payload['index'] as int).clamp(0,requests.length-1);
-          if(from<0) throw StateError('Request missing');
-          requests.insert(to,requests.removeAt(from)); fairRotation=false;
+          final visible=rotation,from=visible.indexWhere((r)=>r.id==payload['requestId']);
+          if(from<0 || visible.isEmpty) throw StateError('Ready request missing');
+          final to=(payload['index'] as int).clamp(0,visible.length-1);
+          visible.insert(to,visible.removeAt(from));
+          final ids=visible.map((r)=>r.id).toSet();var next=0;
+          for(var i=0;i<requests.length;i++) { if(ids.contains(requests[i].id))requests[i]=visible[next++]; }
+          fairRotation=false;
         case 'medley':
           if(_started)throw StateError('Finish the active performance first');
           final group=const Uuid().v4(),items=rotation.take(10).toList();
@@ -268,12 +326,12 @@ class KaraokeSession extends ChangeNotifier {
           final r=payload['requestId']==null ? rotation.firstOrNull : requests.where((r)=>r.id==payload['requestId']).firstOrNull;
           if(r==null || r.state!=KaraokeRequestState.ready) throw StateError('No ready request');
           await _start(r,resumeMs:payload['resume']==true ? positionMs.value : 0);
-        case 'pause': await pause(); held=true;
-        case 'resume': if(!_started) throw StateError('Select the recovered request to resume'); await resume(); held=false;
+        case 'pause': await pause(); held=true;_resumeAfterQuiz=false;
+        case 'resume': if(!_started) throw StateError('Select the recovered request to resume'); await resume(); held=false;_resumeAfterQuiz=false;
         case 'restart': await seek(0);
         case 'seek': await seek(payload['positionMs'] as int);
         case 'finish': await _finish(skipped:payload['skipped']==true);
-        case 'end': await stopPlayback();await restoreMusic();current=null;held=true;
+        case 'end': await stopPlayback();await restoreMusic();current=null;held=true;_resumeAfterQuiz=false;
         case 'controls': await setControls((payload['key'] as num).toDouble(),(payload['tempo'] as num).toDouble());
         case 'requestSetlist':
           final name=payload['name'] as String,ids=List<String>.from(setlists[name] ?? const []);
@@ -322,6 +380,7 @@ class KaraokeSession extends ChangeNotifier {
 
   Future<void> _start(KaraokeRequest request,{int resumeMs=0}) async {
     if(_started) throw StateError('Finish or stop the current performance first');
+    _resumeAfterQuiz=false;
     _captureMusicSnapshot();
     await stopPlayback();
     if(_disposed)throw StateError('Profile session closed');

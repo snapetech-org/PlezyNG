@@ -65,18 +65,20 @@ class KaraokeSection {
 
 /// A rendition is a specific arrangement/cut, not just an album or song title.
 class KaraokeTrack {
-  final String id, songId, title, artist, language, producer;
+  final String id, songId, title, artist, language, producer, genre;
   final MediaItem? media;
   final Lyrics lyrics;
   final List<KaraokeNote> notes;
   final List<KaraokeAsset> assets;
   final List<KaraokeSection> sections;
   final int durationMs, lyricOffsetMs;
+  final int? year, difficulty;
   final bool chartReviewed, explicit;
   final String? providerId, license;
   final List<String> tags;
   const KaraokeTrack({required this.id, required this.songId, required this.title, this.artist = '',
-    this.language = '', this.producer = '', this.media, this.lyrics = const Lyrics(synced: false, lines: []),
+    this.language = '', this.producer = '', this.genre = '', this.year, this.difficulty,
+    this.media, this.lyrics = const Lyrics(synced: false, lines: []),
     this.notes = const [], this.assets = const [], this.sections = const [], this.durationMs = 0,
     this.lyricOffsetMs = 0, this.chartReviewed = false, this.explicit = false, this.providerId, this.license,
     this.tags = const []});
@@ -86,7 +88,8 @@ class KaraokeTrack {
   bool get hasLocalAudio => assets.any((a) => a.kind == KaraokeAssetKind.audio || a.kind == KaraokeAssetKind.instrumental);
   Set<String> get parts => {...notes.map((n) => n.part), ...lyrics.lines.map((l) => l.part).whereType<String>()};
   Map<String, dynamic> toJson() => {'schema': 1, 'id': id, 'songId': songId, 'title': title, 'artist': artist,
-    'language': language, 'producer': producer, 'media': media?.toJson(), 'lyrics': lyrics.toJson(),
+    'language': language, 'producer': producer, 'genre': genre, 'year': year, 'difficulty': difficulty,
+    'media': media?.toJson(), 'lyrics': lyrics.toJson(),
     'notes': notes.map((n) => n.toJson()).toList(), 'assets': assets.map((a) => a.toJson()).toList(),
     'sections': sections.map((s) => s.toJson()).toList(), 'durationMs': durationMs, 'lyricOffsetMs': lyricOffsetMs,
     'chartReviewed': chartReviewed, 'explicit': explicit, 'providerId': providerId, 'license': license, 'tags': tags};
@@ -101,6 +104,13 @@ class KaraokeTrack {
       throw const FormatException('Karaoke package limit exceeded');
     }
     final lyrics = Lyrics.fromJson(rawLyrics);
+    final year = j['year'] as int?;
+    final difficulty = j['difficulty'] as int?;
+    final genre=j['genre'] as String? ?? '';
+    if (genre.length>100 || (year != null && (year < 1800 || year > 2200)) ||
+        (difficulty != null && (difficulty < 1 || difficulty > 5))) {
+      throw const FormatException('Invalid rendition year or difficulty');
+    }
     for (final l in lyrics.lines) {
       if (l.text.length > 16000 || (l.startMs ?? 0) < 0 || (l.endMs ?? 0) > 24 * 3600000 ||
           l.spans.length > 4096 || (l.startMs != null && l.endMs != null && l.endMs! < l.startMs!)) {
@@ -114,6 +124,7 @@ class KaraokeTrack {
     }
     return KaraokeTrack(id: id, songId: j['songId'] as String, title: j['title'] as String,
       artist: j['artist'] as String? ?? '', language: j['language'] as String? ?? '', producer: j['producer'] as String? ?? '',
+      genre: genre, year: year, difficulty: difficulty,
       media: j['media'] == null ? null : MediaItem.fromJson(Map<String, dynamic>.from(j['media'] as Map)),
       lyrics: lyrics, notes: List.unmodifiable(notes.map((n) => KaraokeNote.fromJson(Map<String, dynamic>.from(n as Map)))),
       assets: List.unmodifiable(assets.map((a) => KaraokeAsset.fromJson(Map<String, dynamic>.from(a as Map)))),
@@ -147,11 +158,16 @@ class KaraokeSinger {
     this.lowMidi, this.highMidi}) : favorites = favorites ?? {}, keys = keys ?? {}, tempos = tempos ?? {}, history = history ?? [];
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'absent': absent, 'favorites': favorites.toList(),
     'keys': keys, 'tempos': tempos, 'history': history.take(500).toList(), 'lowMidi': lowMidi, 'highMidi': highMidi};
-  factory KaraokeSinger.fromJson(Map<String, dynamic> j) => KaraokeSinger(id: j['id'] as String, name: j['name'] as String,
-    absent: j['absent'] == true, favorites: Set<String>.from(j['favorites'] as List? ?? const []),
-    keys: (j['keys'] as Map? ?? {}).map((k,v) => MapEntry(k as String, (v as num).toDouble())),
-    tempos: (j['tempos'] as Map? ?? {}).map((k,v) => MapEntry(k as String, (v as num).toDouble())),
-    history: List<String>.from(j['history'] as List? ?? const []), lowMidi: (j['lowMidi'] as num?)?.toDouble(), highMidi: (j['highMidi'] as num?)?.toDouble());
+  factory KaraokeSinger.fromJson(Map<String, dynamic> j) {
+    final low=(j['lowMidi'] as num?)?.toDouble(),high=(j['highMidi'] as num?)?.toDouble();
+    if((low!=null && (!low.isFinite || low<24 || low>108)) || (high!=null && (!high.isFinite || high<24 || high>108)) ||
+        (low!=null && high!=null && low>=high))throw const FormatException('Invalid comfortable range');
+    return KaraokeSinger(id: j['id'] as String, name: j['name'] as String,
+      absent: j['absent'] == true, favorites: Set<String>.from(j['favorites'] as List? ?? const []),
+      keys: (j['keys'] as Map? ?? {}).map((k,v) => MapEntry(k as String, (v as num).toDouble())),
+      tempos: (j['tempos'] as Map? ?? {}).map((k,v) => MapEntry(k as String, (v as num).toDouble())),
+      history: List<String>.from(j['history'] as List? ?? const []), lowMidi: low, highMidi: high);
+  }
 }
 
 class KaraokeRequest {

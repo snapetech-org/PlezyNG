@@ -15,7 +15,8 @@ class KaraokeCollections {
   Map<String,dynamic> snapshot()=>{'schema':'plezyng.karaoke-collection.v1','id':const Uuid().v4(),
     'created':DateTime.now().toUtc().toIso8601String(),'singers':session.singers.map((s)=>s.toJson()).toList(),
     'setlists':session.setlists,'catalog':[for(final t in session.catalog.values){'id':t.id,'songId':t.songId,
-      'title':t.title,'artist':t.artist,'packageDigest':digest(t)}]};
+      'title':t.title,'artist':t.artist,'language':t.language,'genre':t.genre,'year':t.year,'difficulty':t.difficulty,
+      'producer':t.producer,'parts':t.parts.toList(),'packageDigest':digest(t)}]};
   Future<void> export(String destination) async {
     await File('$destination.pending').writeAsString(jsonEncode(snapshot()),flush:true);
     await File('$destination.pending').rename(destination);
@@ -49,13 +50,14 @@ class KaraokeCollections {
   }
   Future<void> catalog(String destination,String format) async {
     final songs=session.search('');
-    const columns=['Rendition','Title','Artist','Language','Producer','Parts','Package assets','Reviewed chart'];
-    final rows=[columns,for(final s in songs)[s.id,s.title,s.artist,s.language,s.producer,s.parts.join(' / '),'${s.assets.length}',s.canScore ? 'Yes' : 'No']];
+    const columns=['Rendition','Title','Artist','Language','Genre','Year','Difficulty','Producer','Parts','Package assets','Reviewed chart'];
+    final rows=[columns,for(final s in songs)[s.id,s.title,s.artist,s.language,s.genre,'${s.year ?? ''}','${s.difficulty ?? ''}',
+      s.producer,s.parts.join(' / '),'${s.assets.length}',s.canScore ? 'Yes' : 'No']];
     String xml(String s)=>const HtmlEscape(HtmlEscapeMode.element).convert(s);
     String csv(String s){if(RegExp(r'^[=+@\-\t\r]').hasMatch(s))s="'$s";return '"${s.replaceAll('"','""')}"';}
     final output=switch(format){
       'csv'=>rows.map((r)=>r.map(csv).join(',')).join('\r\n'),
-      'xml'=>'<?xml version="1.0" encoding="UTF-8"?><songbook version="1">${songs.map((s)=>'<song id="${s.id}"><title>${xml(s.title)}</title><artist>${xml(s.artist)}</artist><language>${xml(s.language)}</language><producer>${xml(s.producer)}</producer></song>').join()}</songbook>',
+      'xml'=>'<?xml version="1.0" encoding="UTF-8"?><songbook version="1">${songs.map((s)=>'<song id="${s.id}"><title>${xml(s.title)}</title><artist>${xml(s.artist)}</artist><language>${xml(s.language)}</language><genre>${xml(s.genre)}</genre><year>${s.year ?? ''}</year><difficulty>${s.difficulty ?? ''}</difficulty><producer>${xml(s.producer)}</producer></song>').join()}</songbook>',
       'html'=>'<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Karaoke songbook</title><style>body{font:14px system-ui;margin:24px}table{border-collapse:collapse;width:100%}th,td{text-align:left;border-bottom:1px solid #bbb;padding:8px}thead{display:table-header-group}tr{break-inside:avoid}@media print{body{margin:0}td:first-child,th:first-child{display:none}}</style><h1>${xml(session.banner.isEmpty ? 'Karaoke songbook' : session.banner)}</h1><p>${songs.length} renditions · ${DateTime.now().toIso8601String().substring(0,10)}</p><table><thead><tr>${columns.map((v)=>'<th>${xml(v)}</th>').join()}</tr></thead><tbody>${rows.skip(1).map((r)=>'<tr>${r.map((v)=>'<td>${xml(v)}</td>').join()}</tr>').join()}</tbody></table>',
       _=>throw UnsupportedError('Catalog format unavailable'),
     };

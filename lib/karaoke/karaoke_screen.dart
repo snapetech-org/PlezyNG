@@ -51,7 +51,8 @@ class KaraokeScreen extends StatefulWidget {
 class _KaraokeScreenState extends State<KaraokeScreen> {
   final _query=TextEditingController();
   String? _singer;
-  bool _busy=false,_offline=false,_duet=false;
+  String _genre='',_language='',_decade='',_difficulty='';
+  bool _busy=false,_offline=false,_duet=false,_scored=false,_fitsRange=false;
   int _tab=0;
   late final KaraokePreparation _preparation=KaraokePreparation(widget.session);
   late final KaraokeAudio _audio=KaraokeAudio(widget.session);
@@ -110,7 +111,8 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
       final singer=s.singers.firstWhere((p)=>p.id==_singer);
       final invite=s.duetInvitation?['renditionId']==track.id ? s.duetInvitation : null;
       final result=await s.host('request',{'trackId':track.id,'singers':people.toList(),'parts':parts,
-        'key':invite?['key'] ?? singer.keys[track.id] ?? 0,'tempo':invite?['tempo'] ?? singer.tempos[track.id] ?? 1,'part':invite?['part']});
+        'key':invite?['key'] ?? singer.keys[track.id] ?? s.suggestedKey(track,singerId:_singer) ?? 0,
+        'tempo':invite?['tempo'] ?? singer.tempos[track.id] ?? 1,'part':invite?['part']});
       if(start) { await s.host('start',{'requestId':result['requestId']}); if(mounted)setState(()=>_tab=2); }
     });
   }
@@ -180,11 +182,19 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
   Widget _singerPicker() => Wrap(spacing:12,crossAxisAlignment:WrapCrossAlignment.center,children:[
     if(s.singers.isNotEmpty) DropdownButton<String>(value:s.singers.any((p)=>p.id==_singer) ? _singer : null,
       hint:Text(tr('singerName')),items:s.singers.map((p)=>DropdownMenuItem(value:p.id,child:Text(p.name))).toList(),
-      onChanged:(value)=>setState(()=>_singer=value)),
+      onChanged:(value)=>setState((){_singer=value;final singer=s.singers.where((p)=>p.id==value).firstOrNull;
+        if(singer?.lowMidi==null || singer?.highMidi==null)_fitsRange=false;})),
     OutlinedButton.icon(onPressed:_busy ? null : _addSinger,icon:const Icon(Icons.person_add),label:Text(tr('addSinger'))),
   ]);
   Widget _library() {
-    final tracks=s.search(_query.text,offline:_offline,duet:_duet,singerId:_singer);
+    final tracks=s.search(_query.text,offline:_offline,duet:_duet,scored:_scored,fitsRange:_fitsRange,singerId:_singer,
+      genre:_genre.isEmpty ? null : _genre,language:_language.isEmpty ? null : _language,
+      decade:int.tryParse(_decade),difficulty:int.tryParse(_difficulty));
+    final genres=s.catalog.values.map((t)=>t.genre.trim()).where((v)=>v.isNotEmpty).toSet().toList()..sort();
+    final languages=s.catalog.values.map((t)=>t.language.trim()).where((v)=>v.isNotEmpty).toSet().toList()..sort();
+    final decades=s.catalog.values.where((t)=>t.year!=null).map((t)=>(t.year! ~/ 10)*10).toSet().toList()..sort();
+    final difficulties=s.catalog.values.where((t)=>t.difficulty!=null).map((t)=>t.difficulty!).toSet().toList()..sort();
+    final singer=s.singers.where((p)=>p.id==_singer).firstOrNull;
     return Column(children:[Padding(padding:const EdgeInsets.all(16),child:Column(children:[
       TextField(controller:_query,onChanged:(_)=>setState((){}),onSubmitted:(q)=>_run(()=>widget.searchRemote(q)),
         decoration:InputDecoration(labelText:tr('search'),prefixIcon:const Icon(Icons.search),suffixIcon:IconButton(
@@ -192,11 +202,31 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
       const SizedBox(height:12),_singerPicker(),Wrap(spacing:12,children:[
         FilterChip(label:Text(tr('offline')),selected:_offline,onSelected:(v)=>setState(()=>_offline=v)),
         FilterChip(label:Text(tr('duets')),selected:_duet,onSelected:(v)=>setState(()=>_duet=v)),
+        FilterChip(label:const Text('Scored charts'),selected:_scored,onSelected:(v)=>setState(()=>_scored=v)),
+        FilterChip(label:const Text('Fits my range'),selected:_fitsRange,
+          onSelected:singer?.lowMidi==null || singer?.highMidi==null ? null : (v)=>setState(()=>_fitsRange=v)),
+      ]),
+      if(genres.isNotEmpty || languages.isNotEmpty || decades.isNotEmpty || difficulties.isNotEmpty)Wrap(spacing:12,runSpacing:4,children:[
+        if(genres.isNotEmpty)DropdownButton<String>(value:genres.contains(_genre) ? _genre : '',
+          items:[const DropdownMenuItem(value:'',child:Text('All genres')),...genres.map((v)=>DropdownMenuItem(value:v,child:Text(v)))],
+          onChanged:(v)=>setState(()=>_genre=v ?? '')),
+        if(languages.isNotEmpty)DropdownButton<String>(value:languages.contains(_language) ? _language : '',
+          items:[const DropdownMenuItem(value:'',child:Text('All languages')),...languages.map((v)=>DropdownMenuItem(value:v,child:Text(v)))],
+          onChanged:(v)=>setState(()=>_language=v ?? '')),
+        if(decades.isNotEmpty)DropdownButton<String>(value:decades.map((v)=>'$v').contains(_decade) ? _decade : '',
+          items:[const DropdownMenuItem(value:'',child:Text('All decades')),...decades.map((v)=>DropdownMenuItem(value:'$v',child:Text('${v}s')))],
+          onChanged:(v)=>setState(()=>_decade=v ?? '')),
+        if(difficulties.isNotEmpty)DropdownButton<String>(value:difficulties.map((v)=>'$v').contains(_difficulty) ? _difficulty : '',
+          items:[const DropdownMenuItem(value:'',child:Text('All difficulty levels')),...difficulties.map((v)=>DropdownMenuItem(value:'$v',child:Text('Difficulty $v / 5')))],
+          onChanged:(v)=>setState(()=>_difficulty=v ?? '')),
       ]),
     ])),Expanded(child:tracks.isEmpty ? Center(child:Padding(padding:const EdgeInsets.all(24),child:Text(tr('empty'),textAlign:TextAlign.center))) :
       ListView.builder(itemCount:tracks.length,itemBuilder:(context,i) {
         final track=tracks[i],favorite=s.singers.where((p)=>p.id==_singer).firstOrNull?.favorites.contains(track.id)==true;
-        return ListTile(title:Text(track.title),subtitle:Text('${track.artist}\n${track.canScore ? tr('reviewed') : tr('notScored')}'),isThreeLine:true,
+        final suggested=s.suggestedKey(track,singerId:_singer);
+        final details=[track.artist,if(track.genre.isNotEmpty)track.genre,if(track.year!=null)'${track.year}',
+          track.canScore ? tr('reviewed') : tr('notScored'),if(suggested!=null)'Suggested key ${suggested>0?'+':''}$suggested'].where((v)=>v.isNotEmpty).join(' · ');
+        return ListTile(title:Text(track.title),subtitle:Text(details),
           leading:IconButton(tooltip:tr('favorite'),icon:Icon(favorite ? Icons.star : Icons.star_border),onPressed:_singer==null || _busy ? null :
             ()=>_command('favorite',{'singerId':_singer,'trackId':track.id,'value':!favorite})),
           onTap:_busy ? null : ()=>_request(track,start:!s.hasPerformance),trailing:PopupMenuButton<String>(onSelected:(action) async {
@@ -238,6 +268,11 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
         trailing:Wrap(children:[IconButton(tooltip:tr(request.state==KaraokeRequestState.pending ? 'approve' : 'start'),
           onPressed:_busy || (s.hasPerformance && request.state==KaraokeRequestState.ready) ? null : ()=>_command(request.state==KaraokeRequestState.pending ? 'approve' : 'start',{'requestId':request.id}),
           icon:Icon(request.state==KaraokeRequestState.pending ? Icons.check : Icons.play_arrow)),
+          if(s.rotation.indexWhere((r)=>r.id==request.id)>0)IconButton(tooltip:'Move up',onPressed:_busy ? null : ()=>_command('reorder',
+            {'requestId':request.id,'index':s.rotation.indexWhere((r)=>r.id==request.id)-1}),icon:const Icon(Icons.arrow_upward)),
+          if(s.rotation.indexWhere((r)=>r.id==request.id)>=0 && s.rotation.indexWhere((r)=>r.id==request.id)<s.rotation.length-1)
+            IconButton(tooltip:'Move down',onPressed:_busy ? null : ()=>_command('reorder',
+              {'requestId':request.id,'index':s.rotation.indexWhere((r)=>r.id==request.id)+1}),icon:const Icon(Icons.arrow_downward)),
           IconButton(tooltip:tr('reject'),onPressed:_busy ? null : ()=>_command('cancel',{'requestId':request.id}),icon:const Icon(Icons.close))])),
   ]);
   Widget _performance() => LayoutBuilder(builder:(context,constraints) {
@@ -246,9 +281,12 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
       Wrap(spacing:12,runSpacing:8,alignment:WrapAlignment.center,children:[
         FilledButton.icon(onPressed:_busy || !s.hasPerformance ? null : ()=>_command(s.playing ? 'pause' : 'resume'),
           icon:Icon(s.playing ? Icons.pause : Icons.play_arrow),label:Text(tr(s.playing ? 'pause' : 'resume'))),
+        OutlinedButton.icon(onPressed:_busy || !s.hasPerformance ? null : ()=>_command('restart'),
+          icon:const Icon(Icons.replay),label:const Text('Restart')),
         OutlinedButton(onPressed:_busy || !s.hasPerformance ? null : ()=>_command('finish'),child:Text(tr('next'))),
         OutlinedButton(onPressed:_busy || !s.hasPerformance ? null : ()=>_run(s.skipToSinging),child:Text(tr('skip'))),
         OutlinedButton(onPressed:_busy || !s.hasPerformance ? null : ()=>_run(s.undoSeek),child:Text(tr('undoSkip'))),
+        TextButton(onPressed:_busy || !s.hasPerformance ? null : ()=>_command('end'),child:const Text('End performance')),
       ]),
       if(s.current case final request?) ...[
         Text('${tr('key')}: ${request.key.toStringAsFixed(0)}'),Slider(min:-12,max:12,divisions:24,value:request.key,

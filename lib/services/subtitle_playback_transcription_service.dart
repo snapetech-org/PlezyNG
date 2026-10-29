@@ -64,6 +64,25 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   int _audioGeneration = 0;
   DateTime? _startedAt;
   DateTime? _lastPacketAt;
+  SubtitleCue? _arrivalCue;
+  DateTime? _arrivalExpires;
+  int _discontinuities = 0;
+  int _droppedAudioMs = 0;
+  bool _showDelayedText = true;
+
+  /// A live caption can arrive after its media interval has passed. This is
+  /// presentation policy only: exported cue times always remain source times.
+  bool get showDelayedText => _showDelayedText;
+  void setShowDelayedText(bool value) {
+    _showDelayedText = value;
+    liveCaption.value = null;
+    notifyListeners();
+  }
+  int get discontinuities => _discontinuities;
+  int get droppedAudioMs => _droppedAudioMs;
+  bool isForPlayer(Object player) => identical(player, _player) &&
+      _invalidCaptureSessionReason(_player) == null;
+
   SubtitleTranscriptionResult? _recentTranscript;
 
   bool get isRunning => _running;
@@ -93,9 +112,6 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     }
     if (_starting || _running || _session != null) {
       throw StateError('A live subtitle capture session is already active.');
-    }
-    if (player.isLivePlayback) {
-      throw UnsupportedError('Live TV capture is not supported; use a VOD playback session.');
     }
     if (!await player.subtitlePcmCaptureAvailable()) {
       throw UnsupportedError('This player build does not expose decoded PCM to live subtitles.');
@@ -127,6 +143,10 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _lastChannels = null;
       _lastEncoding = null;
       _packetsReceived = 0;
+      _discontinuities = 0;
+      _droppedAudioMs = 0;
+      _arrivalCue = null;
+      _arrivalExpires = null;
       _recentTranscript = null;
       liveCaption.value = null;
 
@@ -138,7 +158,6 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         },
       );
       if (player.disposed ||
-          player.isLivePlayback ||
           player.mediaSessionGeneration != startGeneration ||
           player.playbackTimelineGeneration != startTimelineGeneration ||
           player.subtitlePcmAudioTrackId != startAudioTrackId) {
@@ -152,7 +171,6 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         throw UnsupportedError('This player session cannot capture decoded PCM.');
       }
       if (player.disposed ||
-          player.isLivePlayback ||
           player.mediaSessionGeneration != startGeneration ||
           player.playbackTimelineGeneration != startTimelineGeneration ||
           player.subtitlePcmAudioTrackId != startAudioTrackId) {
@@ -200,6 +218,13 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _running = false;
 
     var invalidReason = _invalidCaptureSessionReason(player);
+    if (player != null && player.playbackTimelineGeneration != _playerTimelineGeneration) {
+      _audioGeneration++;
+      _samples.clear();
+      _streamStartMs = null;
+      _playerTimelineGeneration = player.playbackTimelineGeneration;
+      await player.drainSubtitlePcmCapture();
+    }
     if (invalidReason != null) _discardCapturedTimeline();
 
     if (player != null) {
@@ -274,11 +299,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
   String? _invalidCaptureSessionReason(SubtitlePcmCaptureSource? player) {
     if (player == null) return 'Playback session ended; captured transcript was discarded.';
-    if (player.disposed || player.isLivePlayback || player.mediaSessionGeneration != _playerGeneration) {
+    if (player.disposed || player.mediaSessionGeneration != _playerGeneration) {
       return 'Playback session changed; captured transcript was discarded.';
-    }
-    if (player.playbackTimelineGeneration != _playerTimelineGeneration) {
-      return 'Playback position changed during capture; the partial transcript was discarded. Start capture again.';
     }
     if (!_profileIsCurrent(_isProfileIdentityCurrent)) {
       return 'Active profile changed during capture; the partial transcript was discarded. Start again.';
@@ -298,7 +320,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   bool _isCurrentInference(int generation) =>
-      generation == _audioGeneration && _invalidCaptureSessionReason(_player) == null;
+      generation == _audioGeneration &&
+      _player?.playbackTimelineGeneration == _playerTimelineGeneration &&
+      _invalidCaptureSessionReason(_player) == null;
 
   void _discardCapturedTimeline() {
     _audioGeneration++;
@@ -311,6 +335,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _lastChannels = null;
     _lastEncoding = null;
     _recentTranscript = null;
+    _arrivalCue = null;
+    _arrivalExpires = null;
     liveCaption.value = null;
   }
 
@@ -330,7 +356,28 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     }
     _polling = true;
     try {
+      if (player.playbackTimelineGeneration != _playerTimelineGeneration) {
+        // Retire the native/inference window before any await. Finalized cues
+        // remain reusable on a seek within this media/audio session.
+        final timeline = player.playbackTimelineGeneration;
+        _resetAudioWindow(player.currentPosition.inMicroseconds);
+        _streamStartMs = null;
+        _arrivalCue = null;
+        _arrivalExpires = null;
+        liveCaption.value = null;
+        await player.setSubtitlePcmCaptureEnabled(false);
+        await player.drainSubtitlePcmCapture();
+        if (!_running || _invalidCaptureSessionReason(player) != null) return;
+        if (!await player.setSubtitlePcmCaptureEnabled(true)) {
+          throw StateError('The new playback route cannot expose PCM.');
+        }
+        _playerTimelineGeneration = timeline;
+        if (player.playbackTimelineGeneration != timeline) return;
+        _setStatus('Capture resumed at the new playhead; finalized cues retained.');
+      }
+      final timeline = player.playbackTimelineGeneration;
       final packets = await player.drainSubtitlePcmCapture();
+      if (player.playbackTimelineGeneration != timeline) return;
       if (packets.isNotEmpty) {
         _appendPackets(packets);
         _packetsReceived += packets.length;
@@ -358,6 +405,13 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         return;
       }
       _startInference(finalChunk: false);
+      // Flush a trailing utterance on pause/end-of-stream without repeatedly
+      // submitting the same overlap. Packet age is not a source timestamp.
+      if (_lastPacketAt != null &&
+          DateTime.now().difference(_lastPacketAt!) > const Duration(seconds: 2) &&
+          _samples.length >= _minimumFinalSamples && _samples.length < _windowSamples) {
+        _startInference(finalChunk: true);
+      }
     } catch (error) {
       _lastError = error;
       _running = false;
@@ -402,6 +456,15 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       final expected = _nextExpectedPtsUs;
       final gapUs = expected == null ? 0 : ptsUs - expected;
       if (changedFormat || (expected != null && (gapUs < -150000 || gapUs > 1500000))) {
+        // A raw PTS reset without an explicit seek can reuse old timestamps
+        // for different live content. Retire the old clock namespace.
+        _discontinuities++;
+        _cues.clear();
+        _wordTimings.clear();
+        _recentTranscript = null;
+        _arrivalCue = null;
+        _arrivalExpires = null;
+        liveCaption.value = null;
         _resetAudioWindow(ptsUs);
       } else if (_streamStartMs == null) {
         _streamStartMs = ptsUs / 1000.0;
@@ -446,6 +509,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   void _trimOldSamples() {
     if (_samples.length <= _maximumQueuedSamples) return;
     final trim = _samples.length - _maximumQueuedSamples;
+    _droppedAudioMs += (trim * 1000 / _sampleRate).round();
     _samples.removeRange(0, trim);
     _streamStartMs = (_streamStartMs ?? 0) + trim * 1000.0 / _sampleRate;
   }
@@ -601,18 +665,25 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       return similarity >= 0.68;
     });
     if (existingIndex >= 0) {
-      final old = _cues[existingIndex];
-      _cues[existingIndex] = SubtitleCue(
-        index: old.index,
-        startMs: math.min(old.startMs, cue.startMs).toInt(),
-        endMs: math.max(old.endMs, cue.endMs).toInt(),
-        text: cue.text.length > old.text.length ? cue.text : old.text,
-        cueId: old.stableId,
-      );
+      // A finalized cue must not change while a viewer is reading it.
+      return;
     } else if (_cues.length < _maximumCueCount) {
       _cues.add(cue);
+      _arrivalCue = cue;
+      _arrivalExpires = DateTime.now().add(Duration(
+        milliseconds: (cue.text.runes.length * 65).clamp(1800, 6000).toInt()));
     }
     _cues.sort((left, right) => left.startMs.compareTo(right.startMs));
+    if (_player?.isLivePlayback == true && _cues.isNotEmpty) {
+      // Two hours/4000 cues, whichever is smaller. Bound live sessions even
+      // when the station runs indefinitely or its DVR window is very large.
+      final cutoff = _cues.last.endMs - const Duration(hours: 2).inMilliseconds;
+      _cues.removeWhere((value) => value.endMs < cutoff);
+      if (_cues.length > 4000) _cues.removeRange(0, _cues.length - 4000);
+      final first = _cues.first.startMs;
+      _wordTimings.removeWhere((value) => value.endMs < first);
+      if (_wordTimings.length > 32000) _wordTimings.removeRange(0, _wordTimings.length - 32000);
+    }
     for (var index = 0; index < _cues.length; index++) {
       final cue = _cues[index];
       _cues[index] = SubtitleCue(
@@ -656,14 +727,24 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       if (liveCaption.value != null) liveCaption.value = null;
       return;
     }
+    if (!_isCurrentInference(_audioGeneration)) {
+      liveCaption.value = null;
+      return;
+    }
     final position = player.currentPosition.inMilliseconds;
     SubtitleCue? current;
     for (final cue in _cues.reversed) {
-      if (position >= cue.startMs - 1600 && position <= cue.endMs + 2200) {
+      if (position >= cue.startMs && position < cue.endMs) {
         current = cue;
         break;
       }
       if (cue.startMs < position - 5000) break;
+    }
+    if (current == null && _showDelayedText && player.state.playing &&
+        _arrivalExpires?.isAfter(DateTime.now()) == true &&
+        _arrivalCue != null && position >= _arrivalCue!.endMs &&
+        position - _arrivalCue!.endMs < 30000) {
+      current = _arrivalCue;
     }
     final next = current == null
         ? null

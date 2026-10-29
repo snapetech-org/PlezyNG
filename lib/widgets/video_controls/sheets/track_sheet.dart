@@ -1,3 +1,4 @@
+import '../../../mpv/player/subtitle_pcm_capture_source.dart';
 import 'dart:async';
 import 'dart:io' show Directory, File;
 
@@ -666,7 +667,7 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
   }
 
   if (!kIsWeb) {
-    if (player.supportedLocalSubtitleExtensions.contains('srt')) {
+    if (player.supportedLocalSubtitleExtensions.contains('srt') || player is SubtitlePcmCaptureSource) {
       actions.add(
         FocusableListTile(
           leading: const AppIcon(Symbols.auto_awesome_rounded),

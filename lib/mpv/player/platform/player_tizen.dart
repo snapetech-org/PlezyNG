@@ -78,7 +78,7 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
   @override
   Future<bool> subtitlePcmCaptureAvailable() async {
     final controller = _controller;
-    if (audioOnly || isLivePlayback || controller == null || !_loaded || _failed) return false;
+    if (controller == null || !_loaded || _failed) return false;
     try {
       return await controller.subtitlePcmCaptureAvailable();
     } catch (_) {
@@ -89,14 +89,14 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
   @override
   Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
     final controller = _controller;
-    if (audioOnly || isLivePlayback || controller == null || !_loaded || _failed) return false;
+    if (controller == null || !_loaded || _failed) return false;
     return controller.setSubtitlePcmCaptureEnabled(enabled);
   }
 
   @override
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
     final controller = _controller;
-    if (audioOnly || isLivePlayback || controller == null || !_loaded || _failed) return const [];
+    if (controller == null || !_loaded || _failed) return const [];
     return controller.drainSubtitlePcmCapture();
   }
 

@@ -590,7 +590,7 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
 
   @override
   Future<bool> subtitlePcmCaptureAvailable() async {
-    if (disposed || _isLive) return false;
+    if (disposed) return false;
     try {
       return await methodChannel.invokeMethod<bool>('subtitlePcmCaptureAvailable') ?? false;
     } on Object {
@@ -602,14 +602,14 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   /// MPV fallback capture is capability-gated by its session-leased JNI bridge.
   @override
   Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
-    if (disposed || _isLive) return false;
+    if (disposed) return false;
     return await methodChannel.invokeMethod<bool>('setSubtitlePcmCaptureEnabled', {'enabled': enabled}) ?? false;
   }
 
   /// Drains captured PCM packets. Each packet carries its media presentation timestamp.
   @override
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
-    if (disposed || _isLive) return const [];
+    if (disposed) return const [];
     final packets = await methodChannel.invokeMethod<List<dynamic>>('drainSubtitlePcmCapture');
     return packets?.map((packet) => Map<String, Object?>.from(packet as Map)).toList(growable: false) ?? const [];
   }

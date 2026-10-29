@@ -1589,9 +1589,7 @@ class PlayerNative extends PlayerBase
   @override
   Future<bool> subtitlePcmCaptureAvailable() async {
     if (_nativeCoreUnavailable ||
-        audioOnly ||
-        !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) ||
-        _isLivePlayback) {
+        !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid)) {
       return false;
     }
     await _ensureInitialized();
@@ -1606,7 +1604,6 @@ class PlayerNative extends PlayerBase
   @override
   Future<bool> setSubtitlePcmCaptureEnabled(bool enabled) async {
     if (_nativeCoreUnavailable ||
-        audioOnly ||
         !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) ||
         !initialized) {
       return false;
@@ -1621,7 +1618,6 @@ class PlayerNative extends PlayerBase
   @override
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture() async {
     if (_nativeCoreUnavailable ||
-        audioOnly ||
         !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) ||
         !initialized) {
       return const [];

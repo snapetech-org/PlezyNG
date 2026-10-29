@@ -20,6 +20,27 @@ The catalogue contains **132 tracked requirements across ten work packages**, wi
 - **Replay:** MPV can seek to the active text cue for primary or secondary subtitles, including embedded and server-provided tracks when the backend exposes cue timing. It leaves the active track and pause state alone. Other backends do not expose a universal cue-timing contract, so replay is capability-limited.
 
 The player-owned PCM tap is available on Android ExoPlayer VOD. Linux MPV now has an ordered native drain bridge, but the locked libmpv runtime does not export the new symbol, so current shipped builds still require a matching WAV; the bridge becomes usable only with a rebuilt patched libmpv artifact. Tizen source now wires its native C player tap and builds the CPU Whisper FFI bridge into the Tizen package from the lockfile-verified source; this integration still needs a private-JIT package build and target-TV qualification. The webOS package build now compiles the CPU Whisper bridge from the same lockfile-verified source and makes WAV transcription available only when the packaged bridge is detected; it still needs a package build and TV qualification. DRM and codecs/devices that reject PCM export remain unavailable. Other MPV and Apple players still need patched binaries or a WAV. webOS playback still requires a matching WAV because its native NDL player exposes no decoded PCM; browser playback remains unavailable because this app has no browser `Player`. Unsupported PCM layouts and tunneled/offloaded routes can produce no capture. System loopback is not treated as player audio because it can include unrelated applications. The app now labels provider initialization/fallback separately from execution evidence; Whisper and Sherpa do not expose per-operation GPU/NPU placement. Target-device subtitle qualification remains pending; the current environment does not expose the target GPU or player runtime.
+### Live and app rendering source update, October 29
+
+Player PCM capture no longer rejects live streams solely for being live. The
+capture worker retires in-flight audio on seek while retaining finalized cues
+for the same player/audio; unknown PTS resets retire old cue history. Live
+history is bounded to two hours/4000 cues/32000 words. Queue overruns and clock
+resets are visible. Finalized text is immutable, trailing audio flushes after
+packet inactivity, and late-text presentation is optional. This is delayed
+recognition of received audio, not future-audio read-ahead or delayed video.
+ExoPlayer capture now refuses encoded/tunneled/non-1x routes instead of changing
+the audible output. Backend-specific live PTS/window mapping remains unqualified.
+
+Reviewed cues can be attached to either of two independent app text overlays.
+Both library and standalone screens render them with media/audio/profile guards,
+source-clock overlap lookup, separate delay/size/color/outline/background/margins,
+stable lane separation, and optional original word-timing highlights. A reversible
+opaque bottom band can cover burned text; it does not reconstruct video pixels.
+Authored native ASS/bitmap rendering is unchanged. These overlays are screen-bound
+and explicitly excluded from native PiP/Cast; SDR colors are not calibrated HDR
+luminance. No tests, builds, analyzer, hardware runs or CI were executed.
+
 # 1 What PlezyNG already has
 
 The correct starting point is an established subtitle system. Rebuilding track selection or replacing libass would create avoidable regressions. The table distinguishes working code paths from settings, engine capabilities, and proposed additions.

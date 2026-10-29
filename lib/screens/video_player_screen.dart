@@ -21,6 +21,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import '../mpv/mpv.dart';
 import '../mpv/player/platform/player_android.dart';
 import '../services/subtitle_playback_transcription_service.dart';
+import '../widgets/subtitle_caption_overlay.dart';
 import '../services/subtitle_rejection_service.dart';
 import '../models/subtitles/subtitle_search_result.dart';
 import '../mpv/player/player_native.dart';

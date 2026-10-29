@@ -43,6 +43,8 @@ import 'subtitle_jobs_dialog.dart';
 import 'subtitle_waveform_editor.dart';
 import 'subtitle_companion_jobs_dialog.dart';
 import 'subtitle_study_dialog.dart';
+import 'subtitle_overlay_dialog.dart';
+import '../../../services/subtitle_overlay_service.dart';
 import 'subtitle_import_dialog.dart';
 import 'subtitle_bitmap_review_dialog.dart';
 import 'subtitle_discovery_dialog.dart';
@@ -50,7 +52,7 @@ import 'subtitle_discovery_dialog.dart';
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
 /// SRT that viewers may export or attach as a separate external track.
-enum _SubtitleReviewChoice { discard, exportSrt, exportJson, player, serverAndPlayer, sourceAndPlayer }
+enum _SubtitleReviewChoice { discard, exportSrt, exportJson, overlayPrimary, overlaySecondary, player, serverAndPlayer, sourceAndPlayer }
 
 typedef SubtitleSourceSubtitleSaver = Future<void> Function(String name, Uint8List bytes, String languageCode);
 
@@ -1214,12 +1216,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       setState(() => _status = service.status);
       return;
     }
-    final profileId = _activeProfileId;
+    final profiles = context.read<ActiveProfileProvider>();
+    final profileId = profiles.activeId;
     await service.start(
       captureSource,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       provider: _liveProvider,
-      isProfileIdentityCurrent: () => _activeProfileId == profileId,
+      isProfileIdentityCurrent: () => profiles.activeId == profileId,
       onProgress: (phase, received, total) {
         if (!mounted) return;
         final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';
@@ -3143,8 +3146,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.sourceAndPlayer),
                 child: const Text('Save to source + attach'),
               ),
+            for (final lane in [_SubtitleReviewChoice.overlayPrimary, _SubtitleReviewChoice.overlaySecondary])
+              OutlinedButton(onPressed: () => Navigator.of(dialogContext).pop(lane),
+                child: Text(lane == _SubtitleReviewChoice.overlayPrimary ? 'App overlay 1' : 'App overlay 2')),
             FilledButton(
-              onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.player),
+              onPressed: widget.player.supportedLocalSubtitleExtensions.contains('srt')
+                  ? () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.player) : null,
               child: const Text('Attach to player'),
             ),
           ],
@@ -3291,7 +3298,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       _lastResultUploadedToServer = true;
     }
     try {
-      if (choice == _SubtitleReviewChoice.sourceAndPlayer) {
+      if (choice == _SubtitleReviewChoice.overlayPrimary || choice == _SubtitleReviewChoice.overlaySecondary) {
+        final profiles = context.read<ActiveProfileProvider>();
+        final profileId = profiles.activeId;
+        final isSourceCurrent = widget.isRevisionIdentityCurrent;
+        final lane = choice == _SubtitleReviewChoice.overlayPrimary ? 0 : 1;
+        final track = SubtitleOverlayTrack(cues: reviewedCues, words: reviewedWordTimings, title: operationLabel,
+          isCurrent: () => profiles.activeId == profileId && isSourceCurrent?.call() != false);
+        track.position = lane == 0 ? .9 : .12;
+        SubtitleOverlayService.attach(widget.player, lane, track);
+      } else if (choice == _SubtitleReviewChoice.sourceAndPlayer) {
         final saveToSource = widget.onSaveToSource;
         if (saveToSource == null) throw StateError('This item cannot store a standalone subtitle sidecar.');
         _requireCurrentOperationIdentity();
@@ -3569,6 +3585,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('bitmap_ocr', 'Read PGS/VobSub images and correct OCR'),
           ]) FocusableListTile(leading: const AppIcon(Symbols.auto_awesome_rounded), title: Text(entry.$2),
             onTap: _busy || _revisionIdentity == null ? null : () => unawaited(_submitCompanion(entry.$1))),
+          TextButton(onPressed: () => showSubtitleOverlayControls(context, widget.player), child: const Text('App overlay appearance and cover')),
           if (!localSpeech) const Padding(padding: EdgeInsets.symmetric(vertical: 8),
             child: Text('Local speech inference is unavailable in this build. Companion processing and text-based editing remain available.')),
           if (_playbackCaptureSupported) ...[
@@ -3623,6 +3640,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
+                    SwitchListTile(
+                      title: const Text('Show late captions when recognition finishes'),
+                      subtitle: const Text('Off uses exact media timing only. DVR replay reuses retained finalized cues. '
+                        'This does not delay the video or send overlays into native PiP or Cast.'),
+                      value: service.showDelayedText,
+                      onChanged: service.setShowDelayedText,
+                    ),
+                    if (service.droppedAudioMs > 0 || service.discontinuities > 0)
+                      Text('Dropped analysis audio: ${service.droppedAudioMs} ms; '
+                        'clock discontinuities: ${service.discontinuities}. Missing audio is not inferred.'),
                     if (service.status != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),

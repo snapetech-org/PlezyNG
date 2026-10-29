@@ -53,6 +53,8 @@ import 'source_queue_sheet.dart';
 import 'source_widgets.dart';
 import '../../widgets/video_controls/sheets/picture_adjustments_sheet.dart';
 import '../../widgets/video_controls/sheets/subtitle_ai_sheet.dart';
+import '../../widgets/subtitle_caption_overlay.dart';
+import '../../services/pip_service.dart';
 import '../../widgets/video_controls/widgets/sync_offset_control.dart';
 
 class SourcePlayerScreen extends StatefulWidget {
@@ -1721,7 +1723,8 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                 )
               : AspectRatio(
                   aspectRatio: 16 / 9,
-                  child: Video(player: core),
+                  child: Stack(fit: StackFit.expand, children: [Video(player: core),
+                    SubtitleCaptionOverlay(player: core)]),
                 )
         : null;
     return Focus(
@@ -1739,6 +1742,8 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                 child: Stack(
                   children: [
                     Positioned.fill(child: Video(player: core!)),
+                    if (!_workspaceDetached && !PipService().isPipActive.value)
+                      Positioned.fill(child: SubtitleCaptionOverlay(player: core!, bottomInset: 110)),
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Material(

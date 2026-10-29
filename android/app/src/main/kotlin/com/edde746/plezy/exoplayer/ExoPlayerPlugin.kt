@@ -1382,7 +1382,7 @@ open class ExoPlayerPlugin(
       result.success(available)
       return
     }
-    result.success(playerCore?.isInitialized == true)
+    result.success(playerCore?.subtitlePcmCaptureAvailable() == true)
   }
 
   private fun handleSetSubtitlePcmCaptureEnabled(call: MethodCall, result: MethodChannel.Result) {

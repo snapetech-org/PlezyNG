@@ -2502,7 +2502,6 @@ class ExoPlayerCore(private val activity: Activity) :
 
   private fun shouldBlockDirectAudioOutput(format: Format, reason: String): Boolean {
     val mimeType = format.sampleMimeType ?: return false
-    if (subtitlePcmCaptureEnabled && isEncodedAudioMimeType(mimeType)) return true
     // Loudness normalization needs decoded PCM for the audiofx chain to act on.
     if (audioNormalizationEnabled && isEncodedAudioMimeType(mimeType)) return true
     // Stereo downmix runs in the sink's PCM pipeline; bitstream output would
@@ -3804,25 +3803,29 @@ class ExoPlayerCore(private val activity: Activity) :
     }
   }
 
-  /**
-   * Enables an opt-in PCM copy for local transcription. Encoded passthrough is
-   * temporarily decoded while capture is active; the user's setting is retained.
-   */
+  /** Captures only an already-decoded route; never changes audible output. */
+  fun subtitlePcmCaptureAvailable(): Boolean {
+    val player = exoPlayer ?: return false
+    val encoding = lastAudioTrackConfig?.encoding ?: return false
+    return !currentTunneledPlayback && player.playbackParameters.speed == 1f &&
+      (encoding == C.ENCODING_PCM_16BIT || encoding == C.ENCODING_PCM_FLOAT)
+  }
+
   fun setSubtitlePcmCaptureEnabled(enabled: Boolean): Boolean {
     val factory = renderersFactory ?: return false
-    if (subtitlePcmCaptureEnabled == enabled) return true
+    if (enabled && !subtitlePcmCaptureAvailable()) return false
     subtitlePcmCaptureEnabled = enabled
-    tunnelingDisabledForSubtitleCapture = enabled
     factory.subtitlePcmCaptureBuffer.setEnabled(enabled)
-    val selectedMime = selectedAudioFormat()?.sampleMimeType
-    val encodedTrack = selectedMime != null && isEncodedAudioMimeType(selectedMime)
-    if (exoPlayer != null && (encodedTrack || currentTunneledPlayback)) {
-      startAudioRendererBounce("subtitle-pcm-capture")
-    }
     return true
   }
 
-  fun drainSubtitlePcmCapture(): List<Map<String, Any>> = renderersFactory?.subtitlePcmCaptureBuffer?.drain() ?: emptyList()
+  fun drainSubtitlePcmCapture(): List<Map<String, Any>> {
+    if (subtitlePcmCaptureEnabled && !subtitlePcmCaptureAvailable()) {
+      setSubtitlePcmCaptureEnabled(false)
+      return emptyList()
+    }
+    return renderersFactory?.subtitlePcmCaptureBuffer?.drain() ?: emptyList()
+  }
 
   fun setAudioPassthrough(enabled: Boolean) {
     if (audioPassthroughEnabled == enabled) return

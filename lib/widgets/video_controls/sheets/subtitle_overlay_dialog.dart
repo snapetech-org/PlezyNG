@@ -13,12 +13,15 @@ import '../../../services/subtitle_font_store.dart';
 import '../../../services/subtitle_offline_package.dart';
 import '../../../services/subtitle_download_assets.dart';
 import '../../../services/subtitle_frame_export.dart';
+import '../../../services/subtitle_analysis_source.dart';
 import 'subtitle_fonts_dialog.dart';
 
 Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
   SubtitleDownloadBinding? download,
   bool Function()? downloadIsCurrent,
   Future<void> Function()? onDownloadChanged,
+  Future<SubtitleAnalysisSource> Function()? openAnalysisSource,
+  bool Function()? isSourceCurrent,
 }) async {
   try { await SubtitleFontStore.instance.initialize(); } catch (_) {}
   if (!context.mounted) return;
@@ -32,7 +35,8 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
           'Native PiP, Cast and external players require a compatible exported subtitle; app overlays are not sent. '
           'Color brightness is an SDR UI value, not calibrated HDR luminance.'),
         TextButton(onPressed: () async {
-          await showDialog<void>(context: context, builder: (_) => const SubtitleFontsDialog());
+          await showDialog<void>(context: context, builder: (_) => SubtitleFontsDialog(
+            openSource: openAnalysisSource, isSourceCurrent: isSourceCurrent));
           if (context.mounted) { update(() {}); session.changed(); }
         }, child: const Text('Manage offline fonts')),
         for (var index = 0; index < 2; index++) if (session.lanes[index] case final SubtitleOverlayTrack track) ...[

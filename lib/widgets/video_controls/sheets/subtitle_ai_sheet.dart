@@ -1965,6 +1965,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (!mounted || !current()) return;
     final saved = binding;
     await showSubtitleOverlayControls(context, player, download: saved, downloadIsCurrent: current,
+      openAnalysisSource: widget.openAnalysisSource ?? () => SubtitleAnalysisSource.localPlayer(player, current),
+      isSourceCurrent: current,
       onDownloadChanged: saved == null ? null : () => downloads!.refreshDownloadSize(saved.globalKey));
   }
 

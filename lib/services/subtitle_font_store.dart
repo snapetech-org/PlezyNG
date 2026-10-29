@@ -16,8 +16,8 @@ class SubtitleStoredFont {
   Map<String, Object> toJson() => {'sha256': digest, 'label': label, 'bytes': bytes, 'license': license};
 }
 
-/// Explicitly imported, content-addressed OpenType fonts. No media attachment,
-/// network URL or subtitle-controlled path can cause a font to be installed.
+/// Explicitly imported, content-addressed OpenType fonts. Media attachments
+/// require individual selection; subtitle-controlled paths never install fonts.
 /// Table-directory validation bounds the input; it is not font-parser fuzzing
 /// or proof that a font is safe for every native shaping implementation.
 class SubtitleFontStore {
@@ -141,6 +141,9 @@ class SubtitleFontStore {
       throw const FormatException('The font lacks required outline or text tables.');
     }
   }
+
+  /// Structural inspection only; registration still requires an explicit import.
+  static void validateBytes(Uint8List bytes) => _validate(bytes);
 
   Future<Uint8List> _verified(SubtitleStoredFont font) async {
     final bytes = await _bounded(File(p.join(_root!, '${font.digest}.otf')), maximumFontBytes);

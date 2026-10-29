@@ -6,9 +6,13 @@ import 'package:path/path.dart' as p;
 import '../../../mpv/font_loader.dart';
 import '../../../services/file_picker_service.dart';
 import '../../../services/subtitle_font_store.dart';
+import '../../../services/subtitle_analysis_source.dart';
+import '../../../services/subtitle_embedded_fonts.dart';
 
 class SubtitleFontsDialog extends StatefulWidget {
-  const SubtitleFontsDialog({super.key});
+  const SubtitleFontsDialog({super.key, this.openSource, this.isSourceCurrent});
+  final Future<SubtitleAnalysisSource> Function()? openSource;
+  final bool Function()? isSourceCurrent;
   @override
   State<SubtitleFontsDialog> createState() => _SubtitleFontsDialogState();
 }
@@ -59,6 +63,50 @@ class _SubtitleFontsDialogState extends State<SubtitleFontsDialog> {
         FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Remove'))]));
     if (accepted == true) await _store.remove(font);
   });
+  Future<void> _embedded() => _run(() async {
+    final open = widget.openSource;
+    if (open == null || widget.isSourceCurrent?.call() == false) throw StateError('Playback changed');
+    SubtitleEmbeddedFonts? media;
+    final attribution = TextEditingController();
+    try {
+      media = await SubtitleEmbeddedFonts.open(await open());
+      final source = media;
+      bool current() => mounted && source.current && widget.isSourceCurrent?.call() != false;
+      if (!current()) throw StateError('Playback changed');
+      if (source.fonts.isEmpty) { _message = 'This media contains no supported TTF / OTF attachments.'; return; }
+      final selected = <SubtitleEmbeddedFont>{};
+      final accepted = await showDialog<bool>(context: context, builder: (context) => StatefulBuilder(builder: (context, update) => AlertDialog(
+        title: const Text('Choose embedded fonts'),
+        content: SizedBox(width: 560, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Text('Selected fonts are copied to offline font storage on this device. Choose a saved font in the caption appearance controls.'),
+          for (final font in source.fonts) CheckboxListTile(value: selected.contains(font), title: Text(font.name),
+            subtitle: Text('${(font.bytes / 1048576).toStringAsFixed(2)} MiB'),
+            onChanged: (checked) => update(() { if (checked == true) { selected.add(font); } else { selected.remove(font); } })),
+          TextField(controller: attribution, minLines: 2, maxLines: 6, maxLength: 15000,
+            decoration: const InputDecoration(labelText: 'License / attribution for these fonts (optional)')),
+        ]))),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          FilledButton(onPressed: selected.isEmpty ? null : () => Navigator.pop(context, true), child: Text('Import ${selected.length} selected'))],
+      )));
+      if (accepted != true) return;
+      var imported = 0;
+      try {
+        for (final font in source.fonts.where(selected.contains)) {
+          if (!current()) throw StateError('Playback changed');
+          final bytes = await source.readFont(font);
+          if (!current()) throw StateError('Playback changed');
+          var name = p.basenameWithoutExtension(font.name).trim();
+          if (name.isEmpty) name = 'Embedded font';
+          if (name.length > 100) name = name.substring(0, 100);
+          await _store.importBytes(bytes, label: name, license: attribution.text.trim());
+          imported++;
+        }
+        _message = '$imported selected fonts retained offline.';
+      } catch (error) {
+        throw StateError('$imported selected fonts retained before import stopped: $error');
+      }
+    } finally { attribution.dispose(); await media?.close(); }
+  });
   @override
   Widget build(BuildContext context) => AlertDialog(title: const Text('Offline subtitle fonts'),
     content: SizedBox(width: 560, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -72,6 +120,8 @@ class _SubtitleFontsDialogState extends State<SubtitleFontsDialog> {
         trailing: IconButton(tooltip: 'Remove font', icon: const Icon(Icons.delete_outline), onPressed: _busy ? null : () => _remove(font))),
       if (_message != null) Text(_message!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
       if (_busy) const LinearProgressIndicator(),
-    ]))), actions: [TextButton(onPressed: _busy ? null : _import, child: const Text('Import TTF / OTF')),
+    ]))), actions: [
+      if (widget.openSource != null) TextButton(onPressed: _busy ? null : _embedded, child: const Text('Find embedded fonts')),
+      TextButton(onPressed: _busy ? null : _import, child: const Text('Import TTF / OTF')),
       TextButton(onPressed: _busy ? null : () => Navigator.pop(context), child: const Text('Close'))]);
 }

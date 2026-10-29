@@ -784,6 +784,8 @@ jobs:
       # shared_preferences_windows store write is the fix for #1732, so exercise
       # it here, on a real NTFS volume, against the real backend.
       - name: Run the vendored Windows preference store tests
+        env:
+          no_proxy: localhost,127.0.0.1,::1
         shell: pwsh
         run: flutter test test/services/prefs_store_atomic_write_windows_test.dart
 

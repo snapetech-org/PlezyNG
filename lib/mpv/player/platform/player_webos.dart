@@ -342,9 +342,11 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
         'active': active,
       });
     } on MissingPluginException {
-      _visualizerBound = false;
+      // Retain the binding state so teardown still attempts an explicit
+      // unbind if the host channel becomes available again.
     } on PlatformException {
-      _visualizerBound = false;
+      // A transient/stale operation failure does not prove the native host
+      // released the source binding; teardown still needs to unbind it.
     }
   }
 
@@ -353,9 +355,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     try {
       await _visualizerChannel.invokeMethod<void>('visualizerAudioDiscontinuity', {'playerId': sourceId});
     } on MissingPluginException {
-      _visualizerBound = false;
+      // Keep ownership state until visualizerUnbindPlayer is attempted.
     } on PlatformException {
-      _visualizerBound = false;
+      // Keep ownership state until visualizerUnbindPlayer is attempted.
     }
   }
 

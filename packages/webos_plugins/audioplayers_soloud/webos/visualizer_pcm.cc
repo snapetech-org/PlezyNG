@@ -16,8 +16,12 @@ void AddDropped(std::atomic<uint32_t>& dropped, uint32_t frames) noexcept {
 }  // namespace
 
 VisualizerPcm& VisualizerPcm::Shared() {
-  static VisualizerPcm tap;
-  return tap;
+  // Keep this process-lifetime object alive until the SoLoud callback has
+  // stopped. AudioPlayer initializes it on the platform thread before audio
+  // starts, so the real-time mixer callback never performs its first-use
+  // allocation or local-static initialization.
+  static VisualizerPcm* tap = new VisualizerPcm();
+  return *tap;
 }
 
 void VisualizerPcm::SetActive(bool active) noexcept {

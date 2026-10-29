@@ -93,6 +93,10 @@ AudioPlayer::AudioPlayer(flutter::PluginRegistrar* plugin_registrar,
   : player_id_(player_id)
   , debug_id_(debug_id) {
 
+  // Construct the PCM tap before starting SoLoud's real-time mixer thread.
+  // VisualizerPostMix must stay allocation- and lock-free on that thread.
+  VisualizerPcm::Shared();
+
   if (main_context_ == nullptr) {
     main_context_ = g_main_context_ref_thread_default();
   }

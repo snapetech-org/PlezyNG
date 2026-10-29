@@ -3286,6 +3286,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleRoles$en subtitleRoles = Translations$videoControls$subtitleRoles$en.internal(_root);
 	late final Translations$videoControls$subtitleDefaultsCloud$en subtitleDefaultsCloud = Translations$videoControls$subtitleDefaultsCloud$en.internal(_root);
 	late final Translations$videoControls$subtitleDefaultsTransfer$en subtitleDefaultsTransfer = Translations$videoControls$subtitleDefaultsTransfer$en.internal(_root);
+	late final Translations$videoControls$subtitleDiscovery$en subtitleDiscovery = Translations$videoControls$subtitleDiscovery$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
@@ -13449,6 +13450,82 @@ class Translations$videoControls$subtitleDefaultsTransfer$en {
 
 }
 
+// Path: videoControls.subtitleDiscovery
+class Translations$videoControls$subtitleDiscovery$en {
+	Translations$videoControls$subtitleDiscovery$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Find subtitles in folders'
+	String get title => 'Find subtitles in folders';
+
+	/// en: 'Media filename/title prefix'
+	String get titlePrefixLabel => 'Media filename/title prefix';
+
+	/// en: 'Punctuation and case are ignored. Release and language suffixes may follow the title.'
+	String get titlePrefixHint => 'Punctuation and case are ignored. Release and language suffixes may follow the title.';
+
+	/// en: 'Include the local media folder'
+	String get includeMediaFolder => 'Include the local media folder';
+
+	/// en: 'Forget folder (keeps files)'
+	String get forgetFolder => 'Forget folder (keeps files)';
+
+	/// en: 'Add subtitle folder'
+	String get addFolder => 'Add subtitle folder';
+
+	/// en: 'Include one subfolder level'
+	String get includeOneSubfolder => 'Include one subfolder level';
+
+	/// en: 'Folders are remembered for this profile. Originals stay in place. Only chosen local folders are searched; expired permissions may require choosing the folder again.'
+	String get foldersHelp => 'Folders are remembered for this profile. Originals stay in place. Only chosen local folders are searched; expired permissions may require choosing the folder again.';
+
+	/// en: 'Search folders'
+	String get searchFolders => 'Search folders';
+
+	/// en: 'Found ${matches} matching files; inspected ${scanned} entries.'
+	String matchSummary({required Object matches, required Object scanned}) => 'Found ${matches} matching files; inspected ${scanned} entries.';
+
+	/// en: 'No matching subtitle files were found.'
+	String get noMatches => 'No matching subtitle files were found.';
+
+	/// en: 'Search limit reached. Choose a narrower folder.'
+	String get searchLimited => 'Search limit reached. Choose a narrower folder.';
+
+	/// en: 'Saved subtitle folders could not be read.'
+	String get readFoldersFailed => 'Saved subtitle folders could not be read.';
+
+	/// en: 'Choose a subtitle folder'
+	String get chooseFolderTitle => 'Choose a subtitle folder';
+
+	/// en: 'This folder is unavailable. Use subtitle file import if this platform cannot grant folder access.'
+	String get folderUnavailable => 'This folder is unavailable. Use subtitle file import if this platform cannot grant folder access.';
+
+	/// en: 'This folder preference could not be saved.'
+	String get folderPreferenceSaveFailed => 'This folder preference could not be saved.';
+
+	/// en: 'Enter 2–256 characters of the media filename/title.'
+	String get queryBounds => 'Enter 2–256 characters of the media filename/title.';
+
+	/// en: 'Too many subtitle folders are selected.'
+	String get tooManyRoots => 'Too many subtitle folders are selected.';
+
+	/// en: 'Discovery stopped because the folder or playback session changed.'
+	String get staleSession => 'Discovery stopped because the folder or playback session changed.';
+
+	/// en: 'Folder permission is missing or expired: ${folder}. Pick it again or use file import.'
+	String permissionExpired({required Object folder}) => 'Folder permission is missing or expired: ${folder}. Pick it again or use file import.';
+
+	/// en: 'Could not read folder: ${folder}.'
+	String unreadableFolder({required Object folder}) => 'Could not read folder: ${folder}.';
+
+	/// en: 'Folder access timed out: ${folder}.'
+	String folderTimedOut({required Object folder}) => 'Folder access timed out: ${folder}.';
+
+}
+
 // Path: videoControls.subtitleRoles
 class Translations$videoControls$subtitleRoles$en {
 	Translations$videoControls$subtitleRoles$en.internal(this._root);
@@ -17505,6 +17582,28 @@ extension on Translations {
 			'videoControls.subtitleDefaultsTransfer.backgroundColor' => 'Background color (ARGB)',
 			'videoControls.subtitleDefaultsTransfer.font' => 'Font',
 			'videoControls.subtitleDefaultsTransfer.alignment' => 'Alignment',
+			'videoControls.subtitleDiscovery.title' => 'Find subtitles in folders',
+			'videoControls.subtitleDiscovery.titlePrefixLabel' => 'Media filename/title prefix',
+			'videoControls.subtitleDiscovery.titlePrefixHint' => 'Punctuation and case are ignored. Release and language suffixes may follow the title.',
+			'videoControls.subtitleDiscovery.includeMediaFolder' => 'Include the local media folder',
+			'videoControls.subtitleDiscovery.forgetFolder' => 'Forget folder (keeps files)',
+			'videoControls.subtitleDiscovery.addFolder' => 'Add subtitle folder',
+			'videoControls.subtitleDiscovery.includeOneSubfolder' => 'Include one subfolder level',
+			'videoControls.subtitleDiscovery.foldersHelp' => 'Folders are remembered for this profile. Originals stay in place. Only chosen local folders are searched; expired permissions may require choosing the folder again.',
+			'videoControls.subtitleDiscovery.searchFolders' => 'Search folders',
+			'videoControls.subtitleDiscovery.matchSummary' => ({required Object matches, required Object scanned}) => 'Found ${matches} matching files; inspected ${scanned} entries.',
+			'videoControls.subtitleDiscovery.noMatches' => 'No matching subtitle files were found.',
+			'videoControls.subtitleDiscovery.searchLimited' => 'Search limit reached. Choose a narrower folder.',
+			'videoControls.subtitleDiscovery.readFoldersFailed' => 'Saved subtitle folders could not be read.',
+			'videoControls.subtitleDiscovery.chooseFolderTitle' => 'Choose a subtitle folder',
+			'videoControls.subtitleDiscovery.folderUnavailable' => 'This folder is unavailable. Use subtitle file import if this platform cannot grant folder access.',
+			'videoControls.subtitleDiscovery.folderPreferenceSaveFailed' => 'This folder preference could not be saved.',
+			'videoControls.subtitleDiscovery.queryBounds' => 'Enter 2–256 characters of the media filename/title.',
+			'videoControls.subtitleDiscovery.tooManyRoots' => 'Too many subtitle folders are selected.',
+			'videoControls.subtitleDiscovery.staleSession' => 'Discovery stopped because the folder or playback session changed.',
+			'videoControls.subtitleDiscovery.permissionExpired' => ({required Object folder}) => 'Folder permission is missing or expired: ${folder}. Pick it again or use file import.',
+			'videoControls.subtitleDiscovery.unreadableFolder' => ({required Object folder}) => 'Could not read folder: ${folder}.',
+			'videoControls.subtitleDiscovery.folderTimedOut' => ({required Object folder}) => 'Folder access timed out: ${folder}.',
 			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
 			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
 			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',

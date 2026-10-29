@@ -9,9 +9,25 @@ import 'settings_service.dart';
 
 final class SubtitleDiscoveryResult {
   const SubtitleDiscoveryResult(this.paths, this.warnings, this.scanned, this.limited);
-  final List<String> paths, warnings;
+  final List<String> paths;
+  final List<SubtitleDiscoveryWarning> warnings;
   final int scanned;
   final bool limited;
+}
+
+enum SubtitleDiscoveryWarningKind { permissionExpired, unreadable, timedOut }
+
+final class SubtitleDiscoveryWarning {
+  const SubtitleDiscoveryWarning(this.kind, this.folder);
+  final SubtitleDiscoveryWarningKind kind;
+  final String folder;
+}
+
+enum SubtitleDiscoveryFailure { queryBounds, tooManyRoots, staleOwner }
+
+final class SubtitleDiscoveryException implements Exception {
+  const SubtitleDiscoveryException(this.failure);
+  final SubtitleDiscoveryFailure failure;
 }
 
 /// User-selected local roots only. No remote URL probing, recursive symlink
@@ -42,20 +58,21 @@ abstract final class SubtitleDiscoveryService {
   static Future<SubtitleDiscoveryResult> discover({required List<String> roots, required String title,
     required Set<String> extensions, required bool Function() isCurrent, bool includeSubfolders = true}) async {
     final query = _matchText(title);
-    if (query.runes.length < 2 || query.length > 256) throw const FormatException('Enter 2–256 characters of the media filename/title.');
-    if (roots.length > 9) throw const FormatException('Too many subtitle roots.');
-    final found = <String>{}, visited = <String>{}, warnings = <String>[];
+    final queryLength = query.runes.length;
+    if (queryLength < 2 || queryLength > 256) throw const SubtitleDiscoveryException(SubtitleDiscoveryFailure.queryBounds);
+    if (roots.length > 9) throw const SubtitleDiscoveryException(SubtitleDiscoveryFailure.tooManyRoots);
+    final found = <String>{}, visited = <String>{}, warnings = <SubtitleDiscoveryWarning>[];
     final queue = <(String, int)>[for (final root in roots.toSet()) (root, 0)];
     final deadline = DateTime.now().add(const Duration(seconds: 15));
     var scanned = 0, limited = false;
     for (var cursor = 0; cursor < queue.length; cursor++) {
-      if (!isCurrent()) throw StateError('Media or profile changed during subtitle discovery.');
+      if (!isCurrent()) throw const SubtitleDiscoveryException(SubtitleDiscoveryFailure.staleOwner);
       if (DateTime.now().isAfter(deadline)) { limited = true; break; }
       final directory = queue[cursor];
       if (!p.isAbsolute(directory.$1) || !visited.add(p.normalize(directory.$1))) continue;
       try {
         await for (final entity in Directory(directory.$1).list(followLinks: false).timeout(const Duration(seconds: 3))) {
-          if (!isCurrent()) throw StateError('Media or profile changed during subtitle discovery.');
+          if (!isCurrent()) throw const SubtitleDiscoveryException(SubtitleDiscoveryFailure.staleOwner);
           if (++scanned > 10000 || DateTime.now().isAfter(deadline) || found.length >= 128) { limited = true; break; }
           if (entity is Directory && includeSubfolders && directory.$2 == 0) {
             if (queue.length >= 128) { limited = true; break; }
@@ -69,9 +86,9 @@ abstract final class SubtitleDiscoveryService {
             if (size > 0 && size <= 32 * 1024 * 1024) found.add(entity.path);
           }
         }
-      } on FileSystemException { warnings.add('Folder permission is missing or expired: ${p.basename(directory.$1)}. Pick it again or use file import.'); }
-      on IOException { warnings.add('Could not read folder: ${p.basename(directory.$1)}.'); }
-      on TimeoutException { warnings.add('Folder access timed out: ${p.basename(directory.$1)}.'); }
+      } on FileSystemException { warnings.add(SubtitleDiscoveryWarning(SubtitleDiscoveryWarningKind.permissionExpired, p.basename(directory.$1))); }
+      on IOException { warnings.add(SubtitleDiscoveryWarning(SubtitleDiscoveryWarningKind.unreadable, p.basename(directory.$1))); }
+      on TimeoutException { warnings.add(SubtitleDiscoveryWarning(SubtitleDiscoveryWarningKind.timedOut, p.basename(directory.$1))); }
       if (limited) break;
     }
     final paths = found.toList()..sort((a, b) => p.basename(a).toLowerCase().compareTo(p.basename(b).toLowerCase()));

@@ -302,3 +302,14 @@ parser and compatibility gate identify the supported uniform Fade subset.
 Spatial patterns and unsupported extensions still fail closed. Full HLSL and
 all-pattern `.milk2` compatibility remain open; the gate change has not been
 built or renderer-qualified.
+
+
+## Active sprite and classic renderer source checkpoint, 2026-10-29
+
+The original completion contract remains intact. MilkRust PR #20 adds active
+saved-sprite parsing/runtime/native/WebGL passes and classic display/feedback
+controls. The exact engine revision is pinned in native/visualizer/sources.lock.json;
+IMPLEMENTATION_STATUS.md records the source features and remaining conformance
+boundaries. These changes have source regression cases but no executed build,
+test or device evidence. Qualification, historical rights decisions, immutable
+mpv artifact promotion and owner-held catalog custody remain separate gates.

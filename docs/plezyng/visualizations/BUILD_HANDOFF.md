@@ -47,7 +47,8 @@ mpv extension, but still need their own SDK and physical audio qualification.
 1. Build/test the pinned MilkRust native and browser compiler/renderer on private
    JIT. The browser `test:hlsl` corpus exercises typed helpers, loops, arrays,
    matrices, writable globals, entry semantics, blur/noise resources, legacy TGA
-   uploads, WebGL context restoration and rejected inputs. It emits
+   uploads, all eleven sprite blend modes, one-frame sprite loading, classic
+   gamma/invert, WebGL context restoration and rejected inputs. It emits
    compiler/driver evidence only, not a visual fidelity certification.
 2. Build the app packages using the paths above and the promoted PCM artifacts.
    Verify installed runtime/notices/source, actual PCM, preset import/download,

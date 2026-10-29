@@ -2,7 +2,7 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `c60c56daa439869a31fc9e65fc09cb708f1994e8`; the exact dependency
+pins MilkRust `3ae8fcbc40ea0153adca56bd6fb42c199332109d`; the exact dependency
 contract is in `native/visualizer/sources.lock.json`. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
@@ -18,7 +18,7 @@ moderate for source integration; compiled behavior and device fidelity are unkno
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
 | HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/arrays/matrices/control flow, bounded errors | Corpus coverage, remaining emitter/environment semantics and reference fidelity |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
-| `.milk2` | Saved wrapper, two independent states, saved progress/direction/randoms, independent masks and preserved explicitly disabled sprite blocks | Exact MilkDrop3 mask/progress semantics and executable extensions |
+| `.milk2` | Saved wrapper, two independent states, saved progress/direction/randoms, independent masks, active saved sprite equations and native/WebGL layers/blends | Exact MilkDrop3 mask/progress and sprite-field/filtering semantics |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
 | Library/UI | Search, notices, favorites, playlists, import, download/cancel/retry/update/remove, offline receipts and controls | Executed user flows, accessibility, TV focus, localization and performance |
@@ -89,7 +89,7 @@ qualification, rights decisions and production custody/publication are also open
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `c60c56daa439869a31fc9e65fc09cb708f1994e8`:
+- The app pins MilkRust `3ae8fcbc40ea0153adca56bd6fb42c199332109d`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -140,7 +140,7 @@ qualification, rights decisions and production custody/publication are also open
   illegal uniform-initializer and unbound-custom-global cases; reference corpus
   conformance is still unmeasured.
 - `.milk2` honors explicit `sprite=0` with well-formed disabled trailer blocks,
-  preserving them on export. Active sprite equations/layers/blends remain gated.
+  preserving them on export. Active sprite equations/layers/blends now have bounded native/WebGL source paths; disabled blocks remain inert.
   Independently authored pattern masks still are not exact MilkDrop3 semantics.
 - Native DDS row validation avoids multiplication overflow on 32-bit TV targets.
   Regression source covers excessive pitch in addition to color/alpha/orientation.
@@ -149,9 +149,30 @@ qualification, rights decisions and production custody/publication are also open
   while retaining GIF support. No unrelated working checkout was modified.
 
 **Code-completion boundary:** this is not 100% implementation of every community
-preset. Exact saved-pair masks and active embedded sprite semantics still need
-an authoritative, compatible implementation/reference; other corpus exceptions
+preset. Exact saved-pair masks and sprite-field/filtering behavior still need
+reference conformance; other corpus exceptions
 must remain visible through compiler/import/render diagnostics. These are separate
 from first builds, mpv binary promotion, physical qualification, report generation
 and owner-held signing custody. The latter steps cannot be replaced with source
 claims, fabricated checksums, invented rights approvals or an empty trust root.
+
+
+## Saved sprites and classic rendering continuation
+
+- Saved sprite blocks now have independent persistent EEL scopes, numbered init/frame
+  code, final-frame retirement, pack-local texture dependencies, signed transforms,
+  color keying and eleven explicit compositing modes. Burning layers enter feedback
+  before/after composite; non-burning overlays draw once over the combined display.
+  Both GPU backends share geometry and fragment arithmetic. WebGL holds evaluated
+  frames while images load. Unknown fields and malformed blocks remain errors.
+- Classic video echo, gamma gain, brighten/darken/solarize/invert and clamp/wrap now
+  reach both GPU hosts. Feedback includes zoom exponent, stretch, center, animated
+  warp, rotation, translation and aspect correction, even without per-pixel code.
+  Each grid vertex evaluates once; native/browser dimensions and render FPS reach
+  equations. Additive waves/shapes, dots and darken-center are retained.
+- Fixed an undefined renderer flag in the engine compatibility-report builder.
+  Core and browser regression sources cover the added behavior. No builds/tests,
+  CI dispatch, captures, pack generation or physical qualification ran.
+- Reference parity, waveform modes/stereo and thin/thick geometry still require
+  code review and conformance. This source pin must not be called universal
+  community-preset compatibility or a working installed release.

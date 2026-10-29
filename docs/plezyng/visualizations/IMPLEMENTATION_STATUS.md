@@ -2,7 +2,7 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `cef6fa7fdf570ff5b0686da605cc71578d932319`; the exact dependency
+pins MilkRust `1fca8a4cee55607dc1f75021d4a35702eaee8d07`; the exact dependency
 contract is in `native/visualizer/sources.lock.json`. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
@@ -89,7 +89,7 @@ qualification, rights decisions and production custody/publication are also open
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `cef6fa7fdf570ff5b0686da605cc71578d932319`:
+- The app pins MilkRust `1fca8a4cee55607dc1f75021d4a35702eaee8d07`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -218,3 +218,22 @@ An authored numerical-result shader and rejection cases accompany the change.
 JavaScript syntax and whitespace checks passed. Compiler/driver execution is
 still unknown; this source checkpoint does not establish universal HLSL or
 MilkDrop3 conformance, nor does it promote unqualified catalog entries.
+
+## Operator, intrinsic and macro continuation, 2026-10-29
+
+The current pin also supplies remainder/shift/compound operators, unsigned
+literals, cast/conditional precedence, legacy math and matrix component
+intrinsics, typed modf/frexp/sincos outputs, finite checks and bit reinterpretation.
+Numeric literals retain round-trip precision; identifier and numeric bounds fail
+before unsafe copies/conversions. Macro rescanning supports aliases, returned
+function macros, empty token pastes and recursion suppression. Volume sampling,
+constant LOD offsets and size-only texture discovery reach both compiler builds.
+Shapes now admit up to 500 sides within the aggregate scene budget.
+
+The additional source controls check exact numerical colors, texture calls,
+preprocessor boundaries and rejected input. No executable gate has run. Known
+scope limits remain explicit: a legacy pixel-shader profile, unavailable exact
+MilkDrop3 saved-pattern semantics, reference-dependent non-default sprite
+controls, unqualified platform/content cells, real mpv artifact promotion and
+owner-held signing/publication. Confidence is moderate in source integration;
+compiled and rendered behavior remains unknown.

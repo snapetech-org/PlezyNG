@@ -94,3 +94,11 @@ multiplication, transpose/rectangular multiplication, writable selectors,
 single-evaluation indices and function output conversion. Compile acceptance
 alone is insufficient; retain its actual pixel assertion when executing the
 private-JIT integration gate. This source-only continuation has not run it.
+
+The same browser gate now includes the authored intrinsic numerical control,
+macro-rescan/volume-sampling cases, dimension-only bindings and constant LOD
+offsets. Run native compiler rejection/limits tests as well as the GPU probes;
+syntax parsing does not exercise either compiler. Native and Emscripten build
+inputs include the new vendored numeric/intrinsic headers and implementation
+fragments through the existing include directory. Their license/provenance
+remains the vendored MIT notice plus local patch inventory.

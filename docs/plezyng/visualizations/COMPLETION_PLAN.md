@@ -333,3 +333,13 @@ component versus linear-algebra multiplication, writable masks/rows and
 converting function outputs. The app lock selects the published engine revision.
 A numerical shader control is wired into the private browser integration suite;
 it has not been executed. The original completion gates remain unchanged.
+
+## 2026-10-29 operator, intrinsic and preprocessing checkpoint
+
+The pinned engine completes the newly identified numeric lowering paths,
+legacy math/output intrinsics, bounded literal handling, macro rescanning and
+volume/LOD texture overloads. The 500-side shape limit is supported under the
+existing aggregate budget. Compiler and numerical GPU control sources accompany
+these implementations. The ledger retains unrun execution gates and the exact
+MilkDrop3/reference boundaries; this does not declare the universal-compatibility
+completion contract satisfied.

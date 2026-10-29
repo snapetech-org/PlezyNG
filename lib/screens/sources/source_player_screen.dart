@@ -229,10 +229,39 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
   }
 
   SubtitleRevisionIdentity? _sourceSubtitleRevisionIdentity(SourcePlayback playback) {
-    if (playback.isTransientInput) return null;
     final profileId = playback.sources.profileId?.trim();
     final entry = playback.entry;
     final index = playback.fileIndex;
+
+    // Open-media uses ephemeral source IDs, so its normal entry key changes
+    // every launch. Local VOD files carry a stable, privacy-safe URI key plus
+    // a stat-derived revision token; use those together for device-local
+    // subtitle history. Live streams, capture previews, temporary picker
+    // copies, and transient remote URLs have no trustworthy cross-session
+    // content identity.
+    if (playback.isTransientInput) {
+      if (playback.isLiveInput || playback.isSamplePreview || playback.currentFileIsTemporaryMedia) return null;
+      final file = index >= 0 && index < playback.files.length ? playback.files[index] : null;
+      final localKey = playback.localMediaRevisionKey;
+      final revision = file?.revision?.trim();
+      if (profileId == null ||
+          profileId.isEmpty ||
+          file == null ||
+          localKey == null ||
+          revision == null ||
+          revision.isEmpty) {
+        return null;
+      }
+      return SubtitleRevisionIdentity(
+        profileId: profileId,
+        serverId: 'open-media',
+        ratingKey: '$localKey:$revision:${file.size ?? 0}',
+        mediaIndex: 0,
+        mediaTitle: file.name,
+        sourceLabel: 'Open media',
+      );
+    }
+
     if (profileId == null ||
         profileId.isEmpty ||
         entry == null ||

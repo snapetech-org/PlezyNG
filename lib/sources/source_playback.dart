@@ -166,6 +166,31 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   bool get isTransientInput => !_persistProgress;
   bool get isSamplePreview => files.isNotEmpty && files.every((file) => file.sampleOnly);
   bool get isLiveInput => _liveInput;
+  String? get localMediaRevisionKey {
+    if (!isTransientInput || _liveInput || isSamplePreview || _fileIndex < 0 || _fileIndex >= files.length) {
+      return null;
+    }
+    final uri = _localOverrides[files[_fileIndex].id];
+    if (uri == null || uri.scheme != 'file') return null;
+    return 'open-media:${sourceDigest(uri.normalizePath().toString())}';
+  }
+
+  bool get currentFileIsTemporaryMedia {
+    if (_fileIndex < 0 || _fileIndex >= files.length) return false;
+    final uri = _localOverrides[files[_fileIndex].id];
+    if (uri == null || uri.scheme != 'file') return false;
+    try {
+      String pathKey(String value) {
+        final normalized = p.normalize(value);
+        return Platform.isWindows ? normalized.toLowerCase() : normalized;
+      }
+
+      final currentPath = pathKey(uri.toFilePath());
+      return _temporaryMediaFiles.any((file) => pathKey(file.path) == currentPath);
+    } on Object {
+      return true;
+    }
+  }
   bool get isCapturePreview =>
       _fileIndex >= 0 && _fileIndex < files.length && _directPlayerAddresses.containsKey(files[_fileIndex].id);
   bool get isRecordingStream => _streamRecordingPartial != null;

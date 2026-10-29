@@ -611,11 +611,33 @@ class _OpenMediaScreenState extends State<OpenMediaScreen> {
     final overrides = <String, Uri>{...localOverrides};
     for (final input in items) {
       final id = _pendingFileIds[input] ?? const Uuid().v4();
+      int? size;
+      String? revision;
+      if (input.uri.scheme == 'file') {
+        try {
+          final stat = await File.fromUri(input.uri).stat();
+          if (stat.type == FileSystemEntityType.file && stat.size >= 0) {
+            size = stat.size;
+            // Transient open-media sessions receive fresh provider IDs on
+            // every launch. Keep a separate local revision token so subtitle
+            // history can follow this path while invalidating when its size
+            // or modification time changes.
+            revision = sourceDigest(
+              jsonEncode([input.uri.normalizePath().toString(), stat.size, stat.modified.toUtc().microsecondsSinceEpoch]),
+            );
+          }
+        } on Object {
+          // A file that cannot be stat'ed remains playable, but will not have
+          // a stable revision identity for persistent subtitle history.
+        }
+      }
       files.add(
         PublicationFile(
           id: id,
           name: input.title,
           mimeType: universalMediaMimeType(input.title),
+          size: size,
+          revision: revision,
           durationMs: input.durationSeconds == null || input.durationSeconds! < 0
               ? null
               : input.durationSeconds! * 1000,

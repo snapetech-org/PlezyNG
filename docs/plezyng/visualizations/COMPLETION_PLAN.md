@@ -347,7 +347,7 @@ completion contract satisfied.
 
 ## 2026-10-29 declarations, aggregate semantics and classic sprite checkpoint
 
-The app now selects MilkRust `bf132800434814b168688ee57abcb5c06e60d12f`. Its compiler adds scoped
+The app now selects MilkRust `145d8a479dc232fdd22563277211839a8fd1c264`. Its compiler adds scoped
 aliases/numeric templates, flattened legacy aggregate initialization and casts,
 typed constant selections, GLSL name isolation and readonly destination checks.
 Classic sprite alpha/key/byte-color handling, persistent unwrapped rotation and
@@ -375,7 +375,7 @@ ran for this checkpoint.
 
 ## 2026-10-29 browser decoder worker checkpoint
 
-The selected MilkRust pin is `bf132800434814b168688ee57abcb5c06e60d12f`.
+The selected MilkRust pin is `145d8a479dc232fdd22563277211839a8fd1c264`.
 The web package now stages a separate static decoder worker, uses it when it
 shares the page origin, and falls back to a bounded blob worker when static
 worker construction is rejected and policy permits. PNG/JPEG/BMP/static

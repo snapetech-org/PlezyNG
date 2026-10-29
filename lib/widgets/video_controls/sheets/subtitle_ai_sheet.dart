@@ -2076,6 +2076,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             'wordTimingAvailability': reviewedWordTimings.isEmpty
                 ? (wordTimings.isEmpty ? 'not-returned-by-backend' : 'omitted-after-cue-edits')
                 : (invalidatedWordTimingCount > 0 ? 'partial-after-cue-edits' : 'whisper-token-timestamps'),
+            'wordTimingOmittedCount': invalidatedWordTimingCount,
             'wordTimings': reviewedWordTimings
                 .map(
                   (word) => {

@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 
 import '../../../i18n/strings.g.dart';
-import '../../../services/file_picker_service.dart';
+import '../../../services/subtitle_artifact_export.dart';
 import '../../../services/subtitle_companion_service.dart';
 import '../../../services/subtitle_overlay_service.dart';
 import '../../../services/subtitle_retimer.dart';
@@ -137,7 +137,7 @@ class _VocalNoteDialogState extends State<_VocalNoteDialog> {
       };
       final bytes = await compute(_encodeNotes, report);
       if (!widget.isCurrent()) throw StateError(_reviewCopy.itemChanged);
-      final saved = await FilePickerService.instance.saveFile(dialogTitle: _copy.vocalNoteExportTitle,
+      final saved = await SubtitleArtifactExport.saveFile(dialogTitle: _copy.vocalNoteExportTitle,
         fileName: 'PlezyNG.reviewed-vocal-notes.json', bytes: bytes,
         type: FileType.custom, allowedExtensions: const ['json']);
       if (mounted) setState(() => _status = saved == null ? _copy.vocalNoteExportCancelled : _copy.vocalNoteExported);

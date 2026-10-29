@@ -7,7 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show compute;
 
-import '../../../services/file_picker_service.dart';
+import '../../../services/subtitle_artifact_export.dart';
 import '../../../services/subtitle_companion_service.dart';
 import '../../../services/subtitle_retimer.dart';
 
@@ -135,9 +135,9 @@ class _SubtitleBitmapReviewDialogState extends State<SubtitleBitmapReviewDialog>
       parts.add(('manifest.json', manifest));
       final encoded = await compute(_encodeEvidence, parts);
       if (!_current) return;
-      await FilePickerService.instance.saveFile(dialogTitle: 'Save bitmap images and OCR provenance', fileName: 'subtitle_ocr_evidence.zip',
+      final saved = await SubtitleArtifactExport.saveFile(dialogTitle: 'Save bitmap images and OCR provenance', fileName: 'subtitle_ocr_evidence.zip',
         type: FileType.custom, allowedExtensions: const ['zip'], bytes: Uint8List.fromList(encoded));
-      if (mounted) setState(() => _message = 'Evidence export prepared with original images and review annotations.');
+      if (saved != null && mounted) setState(() => _message = 'Evidence exported with original images and review annotations.');
     } catch (_) { if (mounted) setState(() => _error = 'The evidence archive could not be exported. Original images remain with the companion job.'); }
     finally { if (mounted) setState(() => _exporting = false); }
   }

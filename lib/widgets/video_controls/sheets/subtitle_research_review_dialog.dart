@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show compute;
 
 import '../../../i18n/strings.g.dart';
-import '../../../services/file_picker_service.dart';
+import '../../../services/subtitle_artifact_export.dart';
 import '../../../services/subtitle_companion_service.dart';
 import '../../../services/subtitle_overlay_service.dart';
 import 'subtitle_vocal_notes_dialog.dart';
@@ -75,7 +75,7 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
       // descriptors are included; image pixels use the existing image export.
       final bytes = await compute(_encode, report);
       if (!widget.isCurrent()) throw StateError(copy.itemChanged);
-      final saved = await FilePickerService.instance.saveFile(dialogTitle: copy.exportTitle,
+      final saved = await SubtitleArtifactExport.saveFile(dialogTitle: copy.exportTitle,
         fileName: 'subtitle-research-${widget.jobId.substring(0, 8)}.json', bytes: bytes,
         type: FileType.custom, allowedExtensions: const ['json']);
       if (mounted) setState(() => _status = saved == null ? copy.exportCancelled : copy.exported);

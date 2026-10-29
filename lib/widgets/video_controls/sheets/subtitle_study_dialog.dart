@@ -11,7 +11,7 @@ import '../../../i18n/strings.g.dart';
 import '../../../mpv/mpv.dart';
 import '../../../mpv/player/player_media_session_identity.dart';
 import '../../../mpv/player/subtitle_pcm_capture_source.dart';
-import '../../../services/file_picker_service.dart';
+import '../../../services/subtitle_artifact_export.dart';
 import '../../../services/media_bookmark_service.dart';
 import '../../../services/subtitle_retimer.dart';
 import 'subtitle_dictionary_dialog.dart';
@@ -214,7 +214,7 @@ class _SubtitleStudyDialogState extends State<SubtitleStudyDialog> {
     final output = StringBuffer('${copy.phraseNoteHeader}\t${copy.sourceTitleHeader}\t${copy.timeMsHeader}\t${copy.sourceIdentityHeader}\n');
     for (final mark in marks) { output.writeln('${cell(mark.label)}\t${cell(widget.title)}\t${mark.positionMs}\t${cell(identity)}'); }
     try {
-      await FilePickerService.instance.saveFile(dialogTitle: copy.exportTitle, fileName: 'subtitle_phrases.tsv',
+      await SubtitleArtifactExport.saveFile(dialogTitle: copy.exportTitle, fileName: 'subtitle_phrases.tsv',
         bytes: Uint8List.fromList(utf8.encode(output.toString())), type: FileType.custom, allowedExtensions: const ['tsv']);
     } catch (_) { if (mounted) setState(() => _message = copy.exportFailed); }
   }

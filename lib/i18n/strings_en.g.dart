@@ -12696,6 +12696,27 @@ class Translations$videoControls$subtitleLive$en {
 	/// en: 'A fresh backend program clock is used when available. Otherwise, pause on a live frame with a known UTC program time; the next dialog records your anchor. Program alignment remains estimated.'
 	String get readAheadClockHelp => 'A fresh backend program clock is used when available. Otherwise, pause on a live frame with a known UTC program time; the next dialog records your anchor. Program alignment remains estimated.';
 
+	/// en: 'Prepare captions ahead of playback'
+	String get readAheadTitle => 'Prepare captions ahead of playback';
+
+	/// en: 'Live analysis uses native Android/Apple readers for local segment snapshots, or the packaged TV/desktop FFmpeg decoder, to read completed HLS or eligible DASH audio segments. It requires program timestamps and an active live-clock mapping, which remains an estimate. It can prepare captions ahead when you watch behind the live edge; it does not predict future speech. DASH requires clear audio/mp4, explicit SegmentTimeline, UTC availability/publication clocks and audio stream ordinal 0. Protected, partial and unsupported manifests are refused. Mobile snapshots accept TS, relative fMP4 and packed AAC only when the OS decoder supports them. This uses additional bandwidth and replaces app overlay 1.'
+	String get readAheadLiveDescription => 'Live analysis uses native Android/Apple readers for local segment snapshots, or the packaged TV/desktop FFmpeg decoder, to read completed HLS or eligible DASH audio segments. It requires program timestamps and an active live-clock mapping, which remains an estimate. It can prepare captions ahead when you watch behind the live edge; it does not predict future speech. DASH requires clear audio/mp4, explicit SegmentTimeline, UTC availability/publication clocks and audio stream ordinal 0. Protected, partial and unsupported manifests are refused. Mobile snapshots accept TS, relative fMP4 and packed AAC only when the OS decoder supports them. This uses additional bandwidth and replaces app overlay 1.';
+
+	/// en: 'A separate native decoder on Android/Apple, packaged audio decoder on TVs, or installed FFmpeg on desktop reads the current source through its owning transport. This may use additional bandwidth. It prepares about two minutes ahead and replaces app overlay 1. Choose the audio stream in file order (0 is the first); native player track IDs may use a different numbering scheme.'
+	String get readAheadVodDescription => 'A separate native decoder on Android/Apple, packaged audio decoder on TVs, or installed FFmpeg on desktop reads the current source through its owning transport. This may use additional bandwidth. It prepares about two minutes ahead and replaces app overlay 1. Choose the audio stream in file order (0 is the first); native player track IDs may use a different numbering scheme.';
+
+	/// en: 'Audio stream ordinal (0–63)'
+	String get audioOrdinalLabel => 'Audio stream ordinal (0–63)';
+
+	/// en: 'Live audio rendition / representation ordinal (0–63)'
+	String get liveAudioOrdinalLabel => 'Live audio rendition / representation ordinal (0–63)';
+
+	/// en: 'Playlist order, independent of player IDs. Verify the spoken language.'
+	String get liveAudioOrdinalHelp => 'Playlist order, independent of player IDs. Verify the spoken language.';
+
+	/// en: 'Start local analysis'
+	String get startAnalysis => 'Start local analysis';
+
 	/// en: 'Hold the requested DVR delay'
 	String get holdTitle => 'Hold the requested DVR delay';
 
@@ -17000,6 +17021,13 @@ extension on Translations {
 			'videoControls.subtitleLive.title' => 'Delayed live / DVR playback',
 			'videoControls.subtitleLive.description' => 'Choose how far behind the backend’s live edge to watch. This uses the available DVR buffer and its seek grid. It does not make future audio available to playback capture or guarantee captions arrive before dialogue.',
 			'videoControls.subtitleLive.readAheadClockHelp' => 'A fresh backend program clock is used when available. Otherwise, pause on a live frame with a known UTC program time; the next dialog records your anchor. Program alignment remains estimated.',
+			'videoControls.subtitleLive.readAheadTitle' => 'Prepare captions ahead of playback',
+			'videoControls.subtitleLive.readAheadLiveDescription' => 'Live analysis uses native Android/Apple readers for local segment snapshots, or the packaged TV/desktop FFmpeg decoder, to read completed HLS or eligible DASH audio segments. It requires program timestamps and an active live-clock mapping, which remains an estimate. It can prepare captions ahead when you watch behind the live edge; it does not predict future speech. DASH requires clear audio/mp4, explicit SegmentTimeline, UTC availability/publication clocks and audio stream ordinal 0. Protected, partial and unsupported manifests are refused. Mobile snapshots accept TS, relative fMP4 and packed AAC only when the OS decoder supports them. This uses additional bandwidth and replaces app overlay 1.',
+			'videoControls.subtitleLive.readAheadVodDescription' => 'A separate native decoder on Android/Apple, packaged audio decoder on TVs, or installed FFmpeg on desktop reads the current source through its owning transport. This may use additional bandwidth. It prepares about two minutes ahead and replaces app overlay 1. Choose the audio stream in file order (0 is the first); native player track IDs may use a different numbering scheme.',
+			'videoControls.subtitleLive.audioOrdinalLabel' => 'Audio stream ordinal (0–63)',
+			'videoControls.subtitleLive.liveAudioOrdinalLabel' => 'Live audio rendition / representation ordinal (0–63)',
+			'videoControls.subtitleLive.liveAudioOrdinalHelp' => 'Playlist order, independent of player IDs. Verify the spoken language.',
+			'videoControls.subtitleLive.startAnalysis' => 'Start local analysis',
 			'videoControls.subtitleLive.holdTitle' => 'Hold the requested DVR delay',
 			'videoControls.subtitleLive.holdHelp' => 'May seek at most once every 30 seconds when drift exceeds the backend grid. Stops on manual seek, pause, speed, media, audio or profile changes. It does not decode future audio.',
 			'videoControls.subtitleLive.holdingStatus' => ({required Object seconds}) => 'Holding ${seconds} seconds behind live',

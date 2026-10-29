@@ -1439,37 +1439,31 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _preparePlaybackCaptions() => _run(() async {
     final service = SubtitleReadAheadService.instance;
-    final liveCopy = Translations.of(context).videoControls.subtitleLive;
+    final translations = Translations.of(context);
+    final liveCopy = translations.videoControls.subtitleLive;
     if (service.running) { await service.stop(); return; }
     final input = TextEditingController(text: '0');
     final rendition = TextEditingController(text: '0');
     final live = widget.player is SubtitlePcmCaptureSource && (widget.player as SubtitlePcmCaptureSource).isLivePlayback;
     var selectedRendition = 0;
     final ordinal = await showDialog<int>(context: context, builder: (context) => AlertDialog(
-      title: const Text('Prepare captions ahead of playback'),
+      title: Text(liveCopy.readAheadTitle),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text(live ? 'Live analysis uses native Android/Apple readers for local segment snapshots, or the packaged TV/desktop FFmpeg decoder, to read completed HLS or eligible DASH audio segments. '
-          'It requires program timestamps and an active live-clock mapping, which remains an estimate. '
-          'It can prepare captions ahead when you watch behind the live edge; it does not predict future speech. '
-          'DASH requires clear audio/mp4, explicit SegmentTimeline, UTC availability/publication clocks and audio stream ordinal 0. Protected, partial and unsupported manifests are refused. Mobile snapshots accept TS, relative fMP4 and packed AAC only when the OS decoder supports them. '
-          'This uses additional bandwidth and replaces app overlay 1.'
-          : 'A separate native decoder on Android/Apple, packaged audio decoder on TVs, or installed FFmpeg on desktop reads the current source through its owning transport. '
-          'This may use additional bandwidth. It prepares about two minutes ahead and replaces app overlay 1. '
-          'Choose the audio stream in file order (0 is the first); native player track IDs may use a different numbering scheme.'),
+        Text(live ? liveCopy.readAheadLiveDescription : liveCopy.readAheadVodDescription),
         TextField(controller: input, keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'Audio stream ordinal (0–63)')),
+          decoration: InputDecoration(labelText: liveCopy.audioOrdinalLabel)),
         if (live) TextField(controller: rendition, keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'Live audio rendition / representation ordinal (0–63)',
-            helperText: 'Playlist order, independent of player IDs. Verify the spoken language.')),
+          decoration: InputDecoration(labelText: liveCopy.liveAudioOrdinalLabel,
+            helperText: liveCopy.liveAudioOrdinalHelp)),
         if (live && widget.openReadAheadSource != null) Text(liveCopy.readAheadClockHelp),
-      ]), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+      ]), actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(translations.common.cancel)),
         FilledButton(onPressed: () {
           final value = int.tryParse(input.text), variant = int.tryParse(rendition.text);
           if (value != null && value >= 0 && value <= 63 && variant != null && variant >= 0 && variant <= 63) {
             selectedRendition = variant; Navigator.pop(context, value);
           }
         },
-          child: const Text('Start local analysis'))]));
+          child: Text(liveCopy.startAnalysis))]));
     input.dispose(); rendition.dispose();
     if (ordinal == null || !mounted) return;
     _requireCurrentOperationIdentity();

@@ -221,14 +221,17 @@ setup_flutter_windows = (
 require(bool(setup_flutter_windows), "missing .github/actions/setup-flutter-windows/action.yml")
 require(
     setup_flutter_windows.count("uses: subosito/flutter-action@") == 3
-    and setup_flutter_windows.count("continue-on-error: true") == 3
+    and setup_flutter_windows.count("continue-on-error: true") == 4
     and setup_flutter_windows.count("cache: true")
     == setup_flutter_windows.count("cache-key: ${{ inputs.cache-key }}")
     and "steps.first.outcome == 'failure'" in setup_flutter_windows
     and "steps.second.outcome == 'failure'" in setup_flutter_windows
     and "steps.third.outcome == 'failure'" in setup_flutter_windows
     and "Remove-Item -LiteralPath $installRoot -Recurse -Force" in setup_flutter_windows
-    and "throw 'Flutter setup failed three times" in setup_flutter_windows,
+    and "throw 'Flutter setup failed three times" in setup_flutter_windows
+    and "name: Probe pinned Flutter release connectivity" in setup_flutter_windows
+    and "curl --head --fail" in setup_flutter_windows
+    and "--show-error" in setup_flutter_windows,
     "Windows Flutter setup must retry three times with a trusted cache key and fail closed",
 )
 
@@ -532,6 +535,17 @@ require(
     and "xcodebuild -resolvePackageDependencies -workspace" in apple_native
     and "-disableAutomaticPackageResolution" in apple_native,
     "Apple CI must refresh pinned SwiftPM mirrors and resolve exact locked packages before Xcode tests",
+)
+
+unit_tests = job_block(ci_text, "test")
+chrome_setup = named_step(unit_tests, "Configure Flutter Chrome executable")
+chrome_test = named_step(unit_tests, "Run wakelock_plus Chrome tests")
+require(
+    "working-directory: tools/reader-tests" in chrome_setup
+    and "chromium.executablePath()" in chrome_setup
+    and "CHROME_EXECUTABLE=%s" in chrome_setup
+    and "flutter test --platform chrome" in chrome_test,
+    "Flutter Chrome tests must use the Chromium installed for reader browser checks",
 )
 
 windows_native = job_block(ci_text, "windows-native-test")

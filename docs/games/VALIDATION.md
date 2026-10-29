@@ -47,6 +47,13 @@ result is inferred from them.
   Linux image dependencies cover the codec and shader tools. Runner routing,
   trust, manual dispatch and hosted-fallback policy are unchanged. No workflow
   was dispatched and no runner image/service was deployed by this preparation.
+- After integrating current main, the native build and CTest run pass again:
+  **42 passed, one display-dependent test skipped**. Android Intel targets
+  reconfigure/build/inspect successfully with unchanged binaries. The six Mac
+  Flutter-cache regression tests also pass. Incoming iOS simulator settings had
+  six unquoted conditional keys: their OpenStep parse failure was reproduced,
+  the keys were quoted, and all three Apple project files parse successfully.
+  Apple SDK preflight now invokes native `plutil -lint` before source probes.
 
 Standalone JNI artifact SHA-256 values (unstripped development outputs, not
 release-distribution checksums):
@@ -58,9 +65,11 @@ release-distribution checksums):
 | x86 | `0ade78329a4323bc02b356e843c209eaf670de9eaa0aee9d311b9e363a5dc01b` |
 | x86_64 | `1a9d112634169174ed2d95e7145d1287f4a5b7274476e01fca22220aefd8c03f` |
 
-Application/native source is unchanged from the preceding ownership checkpoint;
-SDK scripts and CI preparation are the changes in this pass. Historical Flutter,
-native runtime and Go results below still identify their original checks.
+Application/native feature logic is unchanged from the preceding ownership
+checkpoint. The latest-main integration also preserves Darwin interface-flag
+visibility, parent CTest isolation from Opus, private-JIT memory/disk fixes and
+Apple simulator project changes. Historical Flutter, native runtime and Go
+results below still identify their original checks.
 Apple's real Xcode SDKs must be provisioned on Mac agents; unit-tested command
 construction is not Apple compilation. Full Gradle packages, MSVC, Xcode,
 hardware, live accounts and service deployment remain the handoff gates.

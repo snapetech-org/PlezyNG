@@ -187,7 +187,8 @@ when needed. `--simulator-version <approved-exact-version>` with a simulator SDK
 optionally downloads that simulator runtime. A runtime is distinct from the SDK
 and does not install full Xcode.
 
-The probes compile actual VideoToolbox/Pyrowave receiver code, microphone
+Preflight validates the selected Xcode project with `plutil`. The probes compile
+actual VideoToolbox/Pyrowave receiver code, microphone
 availability guards, controller Swift and the actual embedded conversion/HDR
 presentation shaders through the Metal compiler and linker. They preserve
 macOS 14.0, iOS 15.5 and tvOS 15.0 deployment targets. `--flutter-framework` accepts

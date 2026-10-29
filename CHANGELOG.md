@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Prepare Steam platform SDKs and build-agent receipts, including all four Android JNI ABIs, real Apple shader probes, and Windows/Linux SDK checks.
+
 - Complete embedded Steam controller rumble/motion forwarding with ownership and capability gates, and per-game accessible touch layout editing across receivers.
 
 - Steam: explicit microphone forwarding on Android, Windows, Linux and iOS/macOS, with visible mute state, native permission checks, bounded Opus encoding, ownership-based automatic mute and safe concurrent transport teardown.
@@ -10,6 +12,8 @@
 
 - Keep Steam transports alive across receiver-widget recreation, reattach Android video output to replacement Surfaces, and allow opted-in GPU/HDR negotiation over authenticated internet tunnels.
 
+- Bound Android Gradle and Kotlin daemon memory so private CI runners can complete Android tests and release builds.
+- Keep Apple native tests on the simulator's native architecture and preserve the 30 GiB Mac JIT disk floor during Flutter setup.
 - Fix the Linux native runner build with Flutter's mutable `FlValue` accessors.
 - Quote the Windows Flutter cache key so GitHub can parse and dispatch CI workflows.
 - Prepare the checksum-verified Flutter SDK in each Mac JIT job's temporary APFS workspace with resumable parallel downloads.

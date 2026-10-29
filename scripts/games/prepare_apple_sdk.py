@@ -86,6 +86,8 @@ def prepare(env: dict[str, str], sdk: str, simulator_version: str | None,
 def inspect(env: dict[str, str], sdk: str, arch: str, required_build: str | None = None) -> dict:
     triple = target_triple(sdk, arch)
     version = xcode_version(env, required_build)
+    project = "macos" if sdk == "macosx" else "ios" if sdk.startswith("iphone") else "tvos"
+    output(["plutil", "-lint", str(ROOT / project / "Runner.xcodeproj/project.pbxproj")], env)
     sdk_path = Path(output(["xcrun", "--sdk", sdk, "--show-sdk-path"], env))
     if not sdk_path.is_absolute() or not sdk_path.is_dir():
         raise ValueError("xcrun did not return an installed SDK directory")
@@ -110,7 +112,7 @@ def inspect(env: dict[str, str], sdk: str, arch: str, required_build: str | None
             "sdkVersion": output(["xcrun", "--sdk", sdk, "--show-sdk-version"], env),
             "target": triple, "frameworks": list(FRAMEWORKS), "tools": tools, "cmake": cmake_version,
             "metal": metal_version,
-            "sourceProbesPassed": False, "flutterAdapterChecked": False}
+            "projectSyntaxChecked": True, "sourceProbesPassed": False, "flutterAdapterChecked": False}
 
 
 def application_shaders(converter: str, presenter: str) -> dict[str, str]:

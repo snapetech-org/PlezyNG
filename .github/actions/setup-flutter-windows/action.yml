@@ -14,6 +14,40 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Probe pinned Flutter release connectivity
+      continue-on-error: true
+      shell: bash
+      env:
+        FLUTTER_VERSION: ${{ inputs.flutter-version }}
+      run: |
+        manifest_url="${FLUTTER_STORAGE_BASE_URL:-https://storage.googleapis.com}/flutter_infra_release/releases/releases_windows.json"
+        set +e
+        manifest="$(curl --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 0 "$manifest_url")"
+        manifest_exit=$?
+        set -e
+        if [[ $manifest_exit -ne 0 ]]; then
+          echo "Flutter release manifest probe failed (curl exit $manifest_exit); continuing to bounded setup retries." >&2
+          exit "$manifest_exit"
+        fi
+        archive_path="$(printf '%s\n' "$manifest" | jq -er --arg version "$FLUTTER_VERSION" '
+          [.releases[]
+            | select(.channel == "stable" and .version == $version)
+            | select(.dart_sdk_arch == "x64" or (has("dart_sdk_arch") | not))]
+          | .[0].archive // empty')"
+        if [[ -z "$archive_path" ]]; then
+          echo "Pinned Flutter $FLUTTER_VERSION x64 archive was absent from the stable manifest; continuing to bounded setup retries." >&2
+          exit 1
+        fi
+        archive_url="${FLUTTER_STORAGE_BASE_URL:-https://storage.googleapis.com}/flutter_infra_release/releases/$archive_path"
+        set +e
+        curl --head --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 0 --output /dev/null --write-out 'Pinned Flutter archive HTTP %{http_code}; TLS verify %{ssl_verify_result}.\n' "$archive_url"
+        archive_exit=$?
+        set -e
+        if [[ $archive_exit -ne 0 ]]; then
+          echo "Pinned Flutter archive probe failed (curl exit $archive_exit); continuing to bounded setup retries." >&2
+          exit "$archive_exit"
+        fi
+
     - name: Set up Flutter (attempt 1 of 3)
       id: first
       continue-on-error: true

@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Bound Android Gradle and Kotlin daemon memory so private CI runners can complete Android tests and release builds.
 - Fix the Linux native runner build with Flutter's mutable `FlValue` accessors.
 - Quote the Windows Flutter cache key so GitHub can parse and dispatch CI workflows.
 - Prepare the checksum-verified Flutter SDK in each Mac JIT job's temporary APFS workspace with resumable parallel downloads.

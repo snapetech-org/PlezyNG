@@ -215,8 +215,9 @@ for expected in (
 windows_download_step = named_step(
     windows, "Download and verify pinned Windows libmpv archive"
 )
+windows_download_step_normalized = windows_download_step.replace("\\", "/")
 require(
-    "windows/tool/download-pinned-mpv.ps1" in windows_download_step
+    "windows/tool/download-pinned-mpv.ps1" in windows_download_step_normalized
     and "steps.setup_flutter_windows.outputs.windows_curl_path" in windows_download_step
     and windows.find("name: Download and verify pinned Windows libmpv archive")
     < windows.find("name: Configure repository updater trust root"),
@@ -296,8 +297,9 @@ require(bool(windows_ci), "missing Windows native CI job")
 windows_ci_download_step = named_step(
     windows_ci, "Download and verify pinned Windows libmpv archive"
 )
+windows_ci_download_step_normalized = windows_ci_download_step.replace("\\", "/")
 require(
-    "windows/tool/download-pinned-mpv.ps1" in windows_ci_download_step
+    "windows/tool/download-pinned-mpv.ps1" in windows_ci_download_step_normalized
     and "steps.setup_flutter_windows.outputs.windows_curl_path" in windows_ci_download_step
     and windows_ci.find("name: Download and verify pinned Windows libmpv archive")
     < windows_ci.find("name: Prepare Flutter Windows configuration"),

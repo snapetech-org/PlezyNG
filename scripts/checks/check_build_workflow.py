@@ -18,6 +18,7 @@ WORKFLOW = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else DEFAULT_WORKFL
 # Resolve the shared bootstrap and the Windows CMake file beside the workflow
 # so fixture checks use their local copies rather than the checkout's real ones.
 SETUP_FLUTTER_GIT = WORKFLOW.parents[1] / "actions/setup-flutter-git/action.yml"
+SETUP_FLUTTER_WINDOWS = ROOT / ".github/actions/setup-flutter-windows/action.yml"
 WINDOWS_CMAKE = WORKFLOW.parents[2] / "windows/CMakeLists.txt"
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
@@ -213,6 +214,23 @@ for expected in (
         expected in setup_flutter_git,
         f"shared Flutter bootstrap must keep its verified pin: {expected}",
     )
+
+setup_flutter_windows = (
+    SETUP_FLUTTER_WINDOWS.read_text(encoding="utf-8") if SETUP_FLUTTER_WINDOWS.is_file() else ""
+)
+require(bool(setup_flutter_windows), "missing .github/actions/setup-flutter-windows/action.yml")
+require(
+    setup_flutter_windows.count("uses: subosito/flutter-action@") == 3
+    and setup_flutter_windows.count("continue-on-error: true") == 3
+    and setup_flutter_windows.count("cache: true")
+    == setup_flutter_windows.count("cache-key: ${{ inputs.cache-key }}")
+    and "steps.first.outcome == 'failure'" in setup_flutter_windows
+    and "steps.second.outcome == 'failure'" in setup_flutter_windows
+    and "steps.third.outcome == 'failure'" in setup_flutter_windows
+    and "Remove-Item -LiteralPath $installRoot -Recurse -Force" in setup_flutter_windows
+    and "throw 'Flutter setup failed three times" in setup_flutter_windows,
+    "Windows Flutter setup must retry three times with a trusted cache key and fail closed",
+)
 
 linux = job("build-linux")
 require(
@@ -516,6 +534,14 @@ require(
     "Apple CI must refresh pinned SwiftPM mirrors and resolve exact locked packages before Xcode tests",
 )
 
+windows_native = job_block(ci_text, "windows-native-test")
+require(
+    "uses: ./.github/actions/setup-flutter-windows" in windows_native
+    and "cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:" in windows_native
+    and "uses: ./.github/actions/setup-flutter-git" in windows_native,
+    "Windows x64 CI must use bounded Flutter setup retries while ARM64 keeps its pinned bootstrap",
+)
+
 
 run_name = re.search(r"(?m)^run-name: (.*)$", text)
 run_name_expression = run_name.group(1) if run_name else ""
@@ -711,8 +737,10 @@ for cache_key in cache_keys:
         "TRUSTED_BUILD_CACHE_VERSION" in cache_key,
         f"cache key is outside the trusted build namespace: {cache_key}",
     )
+windows_flutter_wrappers = text.count("uses: ./.github/actions/setup-flutter-windows")
 require(
-    text.count("cache-key:") == text.count("cache: true"),
+    windows_flutter_wrappers == 2
+    and text.count("cache-key:") == text.count("cache: true") + windows_flutter_wrappers,
     "every Flutter SDK cache must define its trusted cache key",
 )
 

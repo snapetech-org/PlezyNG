@@ -1,0 +1,58 @@
+{
+  "code_commit": "db4376768ebf95b0c87afe7e0892fb723a346b74",
+  "code_tree": "140515235f462dd4acef360f630ac3e99facfecb",
+  "captured_at": "2026-10-29",
+  "evidence": "Flutter production widgets with deterministic fixtures; not live Steam/device screenshots",
+  "font": "Roboto with Material Symbols Rounded",
+  "covers": "Public Steam library_600x900.jpg artwork for AppIDs 620, 220 and 413150; test inputs only",
+  "images": [
+    {
+      "file": "detail-desktop-dark.png",
+      "width": 1280,
+      "height": 900,
+      "sha256": "fc76ece38c3457809a933c8cd81f1a9ecaa5781a7ab32901820d87ad5e667a54"
+    },
+    {
+      "file": "detail-phone-rtl-large.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d2538fce26616f99b8e9712122dbed8a299e9820ff6ed3925c76b6aaa46cde1f"
+    },
+    {
+      "file": "library-desktop-dark.png",
+      "width": 1280,
+      "height": 900,
+      "sha256": "47f2326cd7e56750c36d769f8a523c38046b0c9580cc09f855ad072c7206f32a"
+    },
+    {
+      "file": "library-phone-paper.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "7dde9c40fb25542f76c5635af75c1d59f84aa6876d8332ce7b71df878d765db5"
+    },
+    {
+      "file": "library-phone-rtl-large.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "8912b5040c4f5d0ccd43ee49ab30ef1039f5f898545ef91a9bb7c25a61e6bdd1"
+    },
+    {
+      "file": "settings-tablet-dark.png",
+      "width": 800,
+      "height": 900,
+      "sha256": "c2669fcc3e138e68d30f24e53e909bdcfd8063b3e373ea3a7fc2c5760ca983b0"
+    },
+    {
+      "file": "setup-phone-light.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "fde30fd00e7be3c66c0229e9b9c7e2a62bd4f08efbd2cfd377fd417d87bf275b"
+    },
+    {
+      "file": "stream-recovery-oled.png",
+      "width": 390,
+      "height": 600,
+      "sha256": "6ba03c37539fdd444f05f3092956b0d1f27886cb97c41ca3df78cbfbd7d98f32"
+    }
+  ]
+}

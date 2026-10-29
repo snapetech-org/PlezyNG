@@ -19,7 +19,7 @@ The Games tab is a normal PlezyNG library: existing poster shape, gutters, focus
 
 First use explains two independent choices: find/pair a computer for play, or link Steam to import the account catalog. The Connections page refreshes discovery on entry, retains manual add/pair/wake/forget controls, groups account link/refresh/unlink together and provides a return to All games. A linked catalog alone is never shown as a ready receiver. Private, stale and truncated account inventories keep their explanations and recovery entry point.
 
-Game details use a responsive artwork/title/action layout and grouped computer rows. Play, Choose computer, Favorite and Mini-player retain existing action semantics. Desktop actions fit beside the cover; phone and large-text layouts stack, with Play before the longer inventory explanation. Each route shows the observed installation state, source, checked time and preferred state. Its existing menu also exposes permissioned installation, launch, Input and properties actions. Activity remains on demand; achievements, news and optional friends context are expandable. Cloud/Families keep their separate authorization and review flows.
+Game details use a responsive artwork/title/action layout and grouped computer rows. Play, Choose computer, Favorite and Mini-player retain existing action semantics. Desktop actions fit beside the cover; phone and large-text layouts stack, with Play before the longer inventory explanation. Each route shows the observed installation state, source, checked time and preferred state. Its existing menu also exposes permissioned installation, launch, Input and properties actions. The merged Android/iOS controller-only mode appears as Use as controller in the card menu and details, with an explanation that picture/sound remain on the host. Its native code is preserved from `3eccf6ecbc5bd2aa71c5673a77d4b6642f52b347`; SDK/live-host qualification still applies. Activity remains on demand; achievements, news and optional friends context are expandable. Cloud/Families keep their separate authorization and review flows.
 
 Explicit computer preferences use optional version-2 `routeSelections` data. They survive successful play on another host; selecting Automatic overrides remembered successful-route history. Setting a preference does not create a recent play or claim a connection. Deserialization accepts only current game/route identities, and older stores without the optional field retain their previous behavior.
 
@@ -37,12 +37,12 @@ The browser OpenID landing page embeds Valve's original [sign-in image](https://
 
 ## Verification record
 
-Local Linux verification on 2026-10-29:
+Local Linux verification on 2026-10-29 against code commit `db4376768ebf95b0c87afe7e0892fb723a346b74` (tree `140515235f462dd4acef360f630ac3e99facfecb`):
 
-- 165 Games and Steam workspace/texture widget and unit tests passed, including multi-computer preference persistence, profile retirement, activity privacy, host permissions, stream ownership and cancellation during reconnect.
+- 167 Games and Steam workspace/texture widget and unit tests passed, including multi-computer preference persistence, profile retirement, activity privacy, host permissions, stream ownership and cancellation during reconnect. The final run includes controller-only menu dispatch and microphone refusal.
 - The focused visual/card suite exercises actual production widgets, action callbacks, D-pad selection, semantics, filter recovery, 2× RTL text, responsive geometry and existing light/dark/OLED/paper/glacier themes. Capture uses real Roboto and Material Symbols fonts, not the test font.
 - Focused Dart analysis passed; Go `go test -race ./...` passed, including OpenID endpoint/state validation, no credential forms or remote assets, and CSP stylesheet validation.
-- Localization integrity checks cover 37 locales and 4,405 messages. New copy has explicit English-fallback provenance; it is not claimed as reviewed translation. Removed obsolete keys were removed from regional overrides too.
+- Localization integrity checks cover 37 locales and 4,407 messages. New copy has explicit English-fallback provenance; it is not claimed as reviewed translation. Removed obsolete keys were removed from regional overrides too.
 
 These are production-widget fixtures and portable tests, not screenshots of live Steam sessions or proof of OS accessibility/device behavior. The following remain build/live acceptance gates: actual screen-reader reading order (VoiceOver, TalkBack, NVDA and Orca), physical TV remotes/controllers, system font scaling and RTL input, real host discovery and large catalogs, native back/predictive-back behavior, OS reduced motion, browser return-to-app and supported-platform packaging. Native receiver, HDR, Valve approval and relay deployment gates in [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) still apply.
 
@@ -66,3 +66,7 @@ flutter test --concurrency=1 test/games/game_visual_experience_test.dart
 ```
 
 The detail fixture is mounted as the home route; normal in-app navigation also supplies the existing back affordance. RTL captures deliberately retain English fallback copy to stress directional isolation; they are not an Arabic translation review.
+
+## Reviewed screenshots
+
+Eight unedited production-widget captures and their hashes are in [visuals/](visuals/README.md). They cover desktop dark, phone paper, 2× RTL/custom palette, first use, responsive details, grouped settings and OLED stream recovery. The final documentation-only commit does not change the validated source tree's code files.

@@ -1,5 +1,34 @@
 # Games validation and release gates
 
+## Steam visual and interaction pass — 2026-10-29
+
+Code commit `db4376768ebf95b0c87afe7e0892fb723a346b74`, tree
+`140515235f462dd4acef360f630ac3e99facfecb`, integrates the visual pass and the
+concurrent controller-only follow-up. [VISUAL_EXPERIENCE.md](VISUAL_EXPERIENCE.md)
+records flows, branding, screenshot provenance and physical-device acceptance.
+
+- **167 Flutter tests pass:** all `test/games`, Steam workspace and texture
+  tests. Includes explicit computer preferences, controller-only action dispatch
+  and microphone refusal, cancellation during reconnect, D-pad, semantics,
+  filter recovery, responsive grid/detail/settings and 2× RTL text.
+- Focused standard Dart analysis of Games screens, models/controller, Steam
+  workspace surface and changed tests reports **zero diagnostics**.
+- Server **`go test -race ./...` passes** after adding the browser Steam sign-in
+  page, including OpenID destination/state, CSP stylesheet and no-credential-
+  collection checks. Official sign-in art is embedded without remote requests.
+- Localization and strict unused-key checks pass: **37 locales, 4,407 messages**,
+  24,264 explicit English fallback entries. These counts do not mean language
+  review. Outdated Games help has an explicit English fallback pending review.
+- Eight actual production-widget screenshots were rendered and visually
+  inspected with real fonts and fixture Steam cover art. Their
+  [receipt](visuals/receipt.json) binds the pixels to this code commit.
+
+This pass does not requalify native SDK builds or hardware. The phone
+controller-only native follow-up remains newer than earlier JNI/native receipts.
+The existing private-JIT, packaging, Apple/Windows, live-host/HDR/accessibility,
+Valve-authority and relay deployment gates remain open. No workflows were
+changed or dispatched for the visual pass.
+
 ## Controller-only phone receiver follow-up — 2026-10-29
 
 The implementation now adds an input-only Steam request and session negotiation,

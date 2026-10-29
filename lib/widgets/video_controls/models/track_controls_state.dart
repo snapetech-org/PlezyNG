@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../media/media_item.dart';
+import '../../../media/live_tv_timeline.dart';
 import '../../../media/media_version.dart';
 import '../../../media/media_source_info.dart';
 import '../../../models/transcode_quality_preset.dart';
@@ -73,6 +74,9 @@ class TrackControlsState {
   final VoidCallback? onToggleAmbientLighting;
   final bool canControl;
   final bool isLive;
+  final LiveTvTimeline Function(Duration)? liveSubtitleTimeline;
+  final ValueChanged<double>? onLiveSubtitleSeek;
+  final VoidCallback? onSubtitleGoLive;
   final bool subtitlesVisible;
   final bool showQueueButton;
   final Function(MediaItem)? onQueueItemSelected;
@@ -146,6 +150,9 @@ class TrackControlsState {
     this.onToggleAmbientLighting,
     this.canControl = true,
     this.isLive = false,
+    this.liveSubtitleTimeline,
+    this.onLiveSubtitleSeek,
+    this.onSubtitleGoLive,
     this.subtitlesVisible = true,
     this.showQueueButton = false,
     this.onQueueItemSelected,

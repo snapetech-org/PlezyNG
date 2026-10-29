@@ -15,6 +15,7 @@ import '../theme/mono_tokens.dart';
 import '../widgets/focusable_list_tile.dart';
 import 'workspace_controller.dart';
 import 'workspace_models.dart';
+import '../widgets/subtitle_pane_policy.dart';
 
 /// Mounts a persistent entry in the profile Overlay.
 ///
@@ -318,7 +319,7 @@ class _WorkspaceWindowState extends State<_WorkspaceWindow> {
   }
 
   Widget _buildSurfaceWithMoveGestures(BuildContext context, String id, WorkspaceSurfaceRegistration registration) {
-    final surface = registration.buildSurface(context);
+    final surface = SubtitlePanePolicy(visible: (controller.focusedSessionId ?? controller.audibleSessionId ?? controller.visibleSessions.firstOrNull?.descriptor.id) == id, child: registration.buildSurface(context));
     if (!widget.floating) return surface;
 
     if (controller.positioningSessionId == id) {

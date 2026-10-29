@@ -1,5 +1,6 @@
 import '../../../mpv/player/subtitle_pcm_capture_source.dart';
 import 'dart:async';
+import 'subtitle_live_delay_dialog.dart';
 import 'dart:io' show Directory, File;
 
 import 'package:desktop_drop/desktop_drop.dart';
@@ -666,6 +667,11 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
     );
   }
 
+  if (state.isLive && state.liveSubtitleTimeline != null && state.onLiveSubtitleSeek != null) {
+    actions.add(FocusableListTile(leading: const Icon(Icons.timelapse), title: const Text('Delayed live / DVR playback'),
+      subtitle: const Text('Choose an explicit delay within the backend’s DVR window'), onTap: () => showDialog<void>(context: context,
+        builder: (_) => SubtitleLiveDelayDialog(player: player, timeline: state.liveSubtitleTimeline!, seek: state.onLiveSubtitleSeek!, goLive: state.onSubtitleGoLive))));
+  }
   if (!kIsWeb) {
     if (player.supportedLocalSubtitleExtensions.contains('srt') || player is SubtitlePcmCaptureSource) {
       actions.add(

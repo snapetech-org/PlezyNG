@@ -21,7 +21,7 @@ def main():
         parser.error("Use an empty output directory so rollback keeps the previous model intact")
     root.mkdir(parents=True, exist_ok=True)
     snapshot_download(repo_id=args.repo, revision=args.revision, local_dir=root,
-                      allow_patterns=["*.json", "*.bin", "*.safetensors", "*.txt", "*.model", "README*", "LICENSE*"],
+                      allow_patterns=["*.json", "*.bin", "*.onnx", "*.safetensors", "*.txt", "*.model", "README*", "LICENSE*"],
                       ignore_patterns=["*.py", "*.pt", "*.pkl", "*.pickle"])
     files = []
     for path in sorted(root.rglob("*")):

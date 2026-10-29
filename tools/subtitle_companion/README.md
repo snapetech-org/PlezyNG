@@ -294,3 +294,33 @@ baseline cues. A single image cannot establish spoken words. The app requires
 explicit alternative selection and image review. Compatible protocol shape is
 based on the primary [llama.cpp server documentation](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md).
 No model/provider was executed or qualified during source implementation.
+
+### Offline model adaptation
+
+`adapt_model.py` is an explicit administrator CLI, never an HTTP job. Use a
+separate environment with `requirements-adaptation.txt`, a local safetensors
+Whisper tiny/base checkpoint, a local corpus, and three JSON manifests: training,
+domain holdout, and general holdout. Each row has exactly `audio` (path relative
+to corpus root), `text`, `sha256` (WAV bytes), and `sourceDigest` (parent recording
+identity). Use 10–2000 examples per split, 0.1–30-second mono 16 kHz PCM16 WAVs,
+and disjoint parent recordings and clip hashes across splits. The tool rechecks
+clip integrity when reading. Corpus identities are declarations; they do not
+prove speaker, title or population independence.
+
+```sh
+python adapt_model.py --base /models/whisper-base-hf --corpus /corpus \
+  --train /corpus/train.json --domain-eval /corpus/domain.json \
+  --general-eval /corpus/general.json --output /models/candidate-new \
+  --language en --license 'Record the model/corpus license and consent here' \
+  --device cpu --steps 200 --export-ctranslate2
+```
+
+The tool measures baseline and candidate WER/CER with identical disclosed
+normalization, requires lower domain WER with no general WER/CER regression for
+a positive recommendation, and writes checksums, corpus-manifest digests,
+parameters and the declared license to `adaptation-report.json`. It never
+activates a candidate or modifies the base. Optional CTranslate2 int8 export
+happens only after the HF-model gate; exported quantization still needs its own
+quality/hardware qualification. Point `PLEZY_SECOND_WHISPER_MODEL` at a reviewed
+export for independent comparison before any deliberate host-model change.
+No training, model installation or evaluation was run while adding this code.

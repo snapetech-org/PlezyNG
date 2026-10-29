@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../widgets/subtitle_caption_overlay.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../focus/focusable_button.dart';
@@ -124,7 +125,7 @@ class _SourcePlaybackWorkspaceSurfaceState extends State<SourcePlaybackWorkspace
             color: tk.bg,
             child: Column(
               children: [
-                Expanded(child: Video(player: core)),
+                Expanded(child: Stack(fit: StackFit.expand, children: [Video(player: core), SubtitleCaptionOverlay(player: core)])),
                 _transport(context, playback),
               ],
             ),

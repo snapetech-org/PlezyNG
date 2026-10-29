@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../mpv/mpv.dart';
+import 'subtitle_pane_policy.dart';
 import '../services/settings_service.dart';
 import '../services/subtitle_overlay_service.dart';
 import '../services/subtitle_playback_transcription_service.dart';
@@ -31,8 +32,9 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
       ? Color(0xff000000 | int.parse(text.substring(1), radix: 16)) : fallback;
   @override
   Widget build(BuildContext context) {
+    final policy = SubtitlePanePolicy.of(context);
     final player = widget.player;
-    if (player.disposed) return const SizedBox.shrink();
+    if (policy?.visible == false || player.disposed) return const SizedBox.shrink();
     final session = SubtitleOverlayService.forPlayer(player);
     final live = SubtitlePlaybackTranscriptionService.instance;
     final caption = live.isForPlayer(player) ? live.liveCaption.value : null;
@@ -64,7 +66,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
           if (lane > 0 && (y - visible[0].position).abs() < .22) y = (visible[0].position - .25).clamp(.08, .92);
           return Positioned.fill(bottom: widget.bottomInset, child: Align(alignment: Alignment(0, y * 2 - 1),
             child: Padding(padding: EdgeInsets.symmetric(horizontal: constraints.maxWidth * track.margin),
-              child: Column(mainAxisSize: MainAxisSize.min, children: track.at(position).where((cue) => !track.regions.containsKey(cue.stableId)).map((cue) => Padding(
+              child: Column(mainAxisSize: MainAxisSize.min, children: track.at(position).where((cue) => !track.regions.containsKey(cue.stableId)).take(policy == null ? 8 : 2).map((cue) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 2),
                 child: _line(TextSpan(children: track.spans(cue, position)), track.fontSize * scale,
                   track.color, track.outline, track.outlineWidth * scale, track.backgroundOpacity,
@@ -85,15 +87,22 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
 
   Widget _line(InlineSpan content, double size, Color color, Color outline,
       double border, double opacity, {bool bold = false, bool italic = false}) {
-    final style = TextStyle(fontSize: size, fontWeight: bold ? FontWeight.bold : FontWeight.w500,
+    var direction = TextDirection.ltr;
+    for (final rune in content.toPlainText().runes) {
+      final character = String.fromCharCode(rune);
+      if (!RegExp(r'\p{L}', unicode: true).hasMatch(character)) continue;
+      if (rune >= 0x590 && rune <= 0x8ff || rune >= 0xfb1d && rune <= 0xfdff || rune >= 0xfe70 && rune <= 0xfeff) direction = TextDirection.rtl;
+      break;
+    }
+    final style = TextStyle(fontSize: size, fontFamilyFallback: const ['Noto Sans', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans CJK SC'], fontWeight: bold ? FontWeight.bold : FontWeight.w500,
         fontStyle: italic ? FontStyle.italic : FontStyle.normal, color: color, height: 1.25);
     return DecoratedBox(decoration: BoxDecoration(color: Colors.black.withValues(alpha: opacity),
         borderRadius: BorderRadius.circular(4)), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Stack(children: [
-        if (border > 0) ExcludeSemantics(child: Text.rich(content, textAlign: TextAlign.center,
+        if (border > 0) ExcludeSemantics(child: Text.rich(content, textDirection: direction, textAlign: TextAlign.center,
           style: style.copyWith(foreground: Paint()..style = PaintingStyle.stroke..strokeWidth = border * 2..color = outline),
-          maxLines: 6, overflow: TextOverflow.ellipsis)),
-        Text.rich(content, textAlign: TextAlign.center, style: style, maxLines: 6, overflow: TextOverflow.ellipsis),
+          maxLines: SubtitlePanePolicy.of(context) == null ? 6 : 3, overflow: TextOverflow.ellipsis)),
+        Text.rich(content, textDirection: direction, textAlign: TextAlign.center, style: style, maxLines: SubtitlePanePolicy.of(context) == null ? 6 : 3, overflow: TextOverflow.ellipsis),
       ])));
   }
 }

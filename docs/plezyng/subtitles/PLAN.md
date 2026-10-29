@@ -815,3 +815,25 @@ fits at no more than 2× speed, reports omitted overlong lines, and exports an
 integrity-checked WAV. CPU is explicit for Piper; no speaker identity, lip-sync,
 research accuracy or performance claim is made. These are implemented paths;
 quality evaluation, target hardware and native package execution remain open.
+
+## DVR controls, workspace rendering and adaptation source update
+
+A live subtitle action now requests an explicit 5–120-second DVR delay using
+backend epoch bounds and seek granularity, reports the available clipped target,
+and offers return-to-live. It neither derives a live clock from device time nor
+promises future-audio recognition. Backend-confirmed playback remains the
+source of truth. Sliding-window PCM normalization is described above.
+
+Workspace video surfaces now mount each player's app overlays and show them in
+the focused pane (audible/first pane fallback), bounded to two cues per lane and
+three lines per cue. Native authored captions remain controlled by their native
+track settings. App paragraph direction follows the first strong text character,
+independent of UI locale, with system font fallback names; installed-font and
+script shaping qualification remains open.
+
+An explicit offline adaptation CLI now supports local safetensors Whisper
+tiny/base training, disjoint declared source/clip holdouts, baseline/candidate
+WER/CER reports and conditional CTranslate2 export. It never activates or
+publishes a model. The code includes quality gates but none were run. A positive
+holdout result would still not establish broad accent/language improvement or
+quantized-runtime equivalence. See the companion README for schema and commands.

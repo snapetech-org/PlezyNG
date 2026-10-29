@@ -1,0 +1,7 @@
+# Separate offline training environment. Nothing is installed by the app/server.
+transformers==4.48.3
+accelerate>=1.3,<2
+torch>=2.5,<3
+numpy>=1.26,<3
+safetensors>=0.5,<1
+ctranslate2>=4.5,<5

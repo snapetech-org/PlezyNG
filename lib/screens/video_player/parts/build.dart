@@ -380,7 +380,7 @@ extension _VideoPlayerBuildMethods on VideoPlayerScreenState {
                   },
                 ),
               ),
-              if (player != null && !PipService().isPipActive.value && !_workspaceSurfaceDetached)
+              if (player != null && !PipService().isPipActive.value && (!_workspaceSurfaceDetached || forWorkspace))
                 Positioned.fill(child: SubtitleCaptionOverlay(player: player!, bottomInset: 92)),
               // Netflix-style auto-play overlay (hidden in PiP mode)
               VideoPlayerPlayNextOverlay(

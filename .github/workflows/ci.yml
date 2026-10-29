@@ -157,15 +157,13 @@ jobs:
             ~/.pub-cache
           key: ${{ runner.os }}-pub-v3-${{ hashFiles('**/pubspec.yaml', '**/pubspec.lock') }}
 
-      - name: Install native reader test dependencies
+      - name: Install unit test system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang build-essential
+          sudo apt-get install -y --no-install-recommends clang build-essential ffmpeg
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang build-essential
           flutter clean
           flutter pub get
 
@@ -319,7 +317,30 @@ jobs:
 
       - name: Run Android JVM unit tests
         working-directory: android
-        run: ./gradlew :app:testDebugUnitTest :saf_util:testDebugUnitTest :libass:testDebugUnitTest -x :app:compileFlutterBuildDebug --continue
+        shell: bash
+        run: |
+          set +e
+          for attempt in 1 2 3; do
+            log_file="$RUNNER_TEMP/android-jvm-tests-${attempt}.log"
+            ./gradlew :app:testDebugUnitTest :saf_util:testDebugUnitTest :libass:testDebugUnitTest \
+              -x :app:compileFlutterBuildDebug --continue --console=plain \
+              -Dorg.gradle.internal.http.connectionTimeout=60000 \
+              -Dorg.gradle.internal.http.socketTimeout=120000 2>&1 | tee "$log_file"
+            status=${PIPESTATUS[0]}
+            if [[ "$status" -eq 0 ]]; then
+              exit 0
+            fi
+            if ! grep -Eiq 'Could not (GET|download)|Read timed out|Connection reset|Connection timed out|UnknownHostException|Temporary failure in name resolution|No route to host|ProxyError|tunnel.*failed' "$log_file"; then
+              exit "$status"
+            fi
+            if [[ "$attempt" -eq 3 ]]; then
+              echo "Gradle still failed after three attempts because a dependency download could not complete."
+              exit "$status"
+            fi
+            delay=$((attempt * 20))
+            echo "Transient Gradle dependency download failure; retrying the Android JVM tests in ${delay}s (attempt ${attempt}/3)."
+            sleep "$delay"
+          done
 
       - name: Check Android API compatibility
         working-directory: android
@@ -525,12 +546,9 @@ jobs:
           persist-credentials: false
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        uses: ./.github/actions/setup-flutter-apple
         with:
-          channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-          pub-cache: false
 
       - name: Ensure CMake for the embedded Steam receiver
         shell: bash
@@ -716,12 +734,10 @@ jobs:
 
       - name: Setup Flutter
         if: matrix.flutter_setup == 'action'
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        uses: ./.github/actions/setup-flutter-windows
         with:
-          channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-          pub-cache: false
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
 
       - name: Set up Flutter from its pinned commit
         if: matrix.flutter_setup == 'git'

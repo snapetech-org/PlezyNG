@@ -165,6 +165,7 @@ void main() {
           tester,
           () => find.textContaining('loadfile failed').evaluate().isNotEmpty,
           describe: () => 'loadfiles=$loadfileUrls, no failure view',
+          timeout: const Duration(seconds: 10),
         );
         final failureMessage = find.textContaining('loadfile failed');
         expect(
@@ -194,7 +195,12 @@ void main() {
         expect(observer.ownsPlayback, isTrue, reason: 'the screen still owns the player; only the receipt is terminal');
 
         await tester.tap(retry);
-        await pumpUntil(tester, () => loadfileUrls.length == 2, describe: () => 'loadfiles=$loadfileUrls');
+        await pumpUntil(
+          tester,
+          () => loadfileUrls.length == 2,
+          describe: () => 'loadfiles=$loadfileUrls',
+          timeout: const Duration(seconds: 10),
+        );
         expect(loadfileUrls[1], loadfileUrls[0], reason: 'Retry re-runs the same open');
         await pumpUntil(
           tester,

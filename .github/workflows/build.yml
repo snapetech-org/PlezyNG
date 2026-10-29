@@ -745,13 +745,9 @@ jobs:
           persist-credentials: false
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        uses: ./.github/actions/setup-flutter-apple
         with:
-          channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-          cache-key: "${{ env.TRUSTED_BUILD_CACHE_VERSION }}-flutter-:os:-:channel:-:version:-:arch:-:hash:"
-          pub-cache: false
 
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
@@ -1035,13 +1031,9 @@ jobs:
           persist-credentials: false
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        uses: ./.github/actions/setup-flutter-apple
         with:
-          channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-          cache-key: "${{ env.TRUSTED_BUILD_CACHE_VERSION }}-flutter-:os:-:channel:-:version:-:arch:-:hash:"
-          pub-cache: false
 
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
@@ -1256,13 +1248,9 @@ jobs:
           persist-credentials: false
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        uses: ./.github/actions/setup-flutter-apple
         with:
-          channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-          cache-key: "${{ env.TRUSTED_BUILD_CACHE_VERSION }}-flutter-:os:-:channel:-:version:-:arch:-:hash:"
-          pub-cache: false
 
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
@@ -1630,13 +1618,10 @@ jobs:
 
       - name: Setup Flutter
         if: matrix.flutter_setup == 'action'
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        uses: ./.github/actions/setup-flutter-windows
         with:
-          channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
           cache-key: "${{ env.TRUSTED_BUILD_CACHE_VERSION }}-flutter-:os:-:channel:-:version:-:arch:-:hash:"
-          pub-cache: false
 
       - name: Set up Flutter from its pinned commit
         if: matrix.flutter_setup == 'git'
@@ -1817,13 +1802,10 @@ jobs:
           .\windows\tool\prepare-build-toolchain.ps1 -IncludeInstaller -VerifyOnly
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        uses: ./.github/actions/setup-flutter-windows
         with:
-          channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
           cache-key: "${{ env.TRUSTED_BUILD_CACHE_VERSION }}-flutter-:os:-:channel:-:version:-:arch:-:hash:"
-          pub-cache: false
 
       - name: Install dependencies
         shell: pwsh

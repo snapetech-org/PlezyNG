@@ -52,7 +52,7 @@ jobs:
 
   android-engine:
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-android-engine"]}}', github.run_id)) }}
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -85,6 +85,36 @@ jobs:
       - name: Compile both pinned embedded engines, JNI and adapters
         working-directory: android
         run: ./gradlew :moonlight:assembleDebug :steam:assembleDebug :steam:testDebugUnitTest :app:assembleDebug --stacktrace
+      - name: Build shrunk app and receiver instrumentation harness
+        working-directory: android
+        run: ./gradlew :app:assembleMinified :app:assembleMinifiedAndroidTest -Pplezy.testBuildType=minified --stacktrace
+      - name: Verify packaged receiver after shrinking
+        run: >-
+          python3 scripts/games/check_android_package.py
+          build/app/outputs/apk/minified/app-minified.apk
+          --abi armeabi-v7a --abi arm64-v8a --abi x86_64
+          --readelf "$ANDROID_HOME/ndk/29.0.14206865/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf"
+          --zipalign "$ANDROID_HOME/build-tools/36.1.0/zipalign"
+          --report "$RUNNER_TEMP/steam-android-package.json"
+      - name: Preserve shrunk app and on-device test harness
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: steam-android-minified-test-app
+          if-no-files-found: error
+          path: |
+            build/app/outputs/apk/minified/*.apk
+            build/app/outputs/apk/androidTest/minified/*.apk
+      - name: Build catalog-only application without embedded engines
+        working-directory: android
+        run: ./gradlew :app:assembleDebug -PplezyGamesEmbedded=false --stacktrace
+      - name: Verify catalog-only package excludes the Steam receiver
+        run: >-
+          python3 scripts/games/check_android_package.py
+          build/app/outputs/apk/debug/app-debug.apk --disabled
+          --abi armeabi-v7a --abi arm64-v8a --abi x86_64
+          --readelf "$ANDROID_HOME/ndk/29.0.14206865/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf"
+          --zipalign "$ANDROID_HOME/build-tools/36.1.0/zipalign"
+          --report "$RUNNER_TEMP/steam-android-disabled-package.json"
       - name: Check every Android receiver ABI and JNI export
         run: >-
           python3 scripts/games/build_steam_android.py
@@ -94,7 +124,7 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: steam-android-sdk
-          path: ${{ runner.temp }}/steam-android-sdk.json
+          path: ${{ runner.temp }}/steam-android-*.json
       - name: Run focused game and Multiview regression tests
         run: >-
           flutter test test/games test/multiview

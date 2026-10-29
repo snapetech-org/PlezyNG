@@ -67,6 +67,16 @@ to the existing reverse proxy; forward WebSocket upgrades at
 greater than 45 seconds. Never log Authorization or X-Steam-Relay-Admission.
 Do not expose the plaintext application listener publicly.
 
+Startup now rejects explicitly requested but unavailable Steam services before
+opening the HTTP listener. Invalid enabled flags, incomplete Cloud configuration,
+an unusable HTTPS origin, invalid relay bandwidth/UDP settings or an occupied
+requested UDP port cause a nonzero exit with a fixed, credential-free diagnostic.
+Unset/false optional features preserve the existing deployment behavior. This
+prevents `/health` from looking healthy while a requested Steam route is absent;
+health still does not establish public TLS, Valve grants or real NAT traversal.
+Correct the configuration before restarting rather than disabling the feature
+to make a deployment check appear successful.
+
 WSS works without a UDP port. For automatic direct traversal, expose the
 configured UDP port on the **same public IPv4 hostname**. The optional
 [Compose override](../../server/steam-relay.compose.yml) publishes it. A CDN or

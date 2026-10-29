@@ -2692,6 +2692,10 @@ func main() {
 	registerWatchmodeAvailabilityRoutes(mux, clientIPs)
 	steamRelay := registerSteamRelay(mux, clientIPs, srv.oauth)
 	defer steamRelay.close()
+	if err := validateSteamStartup(srv.oauth, steamRelay); err != nil {
+		steamRelay.close()
+		log.Fatal(err)
+	}
 
 	httpSrv := newHTTPServer(*addr, mux)
 

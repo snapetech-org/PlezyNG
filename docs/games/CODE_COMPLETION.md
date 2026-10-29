@@ -114,6 +114,13 @@ The focused and platform-specific verification is recorded at the top of
 
 ## Remaining contracts and qualification
 
+- Final-package verification and a shrunk-app Android device harness are now
+  implemented and wired into private build/release jobs. Embedded-disabled app
+  builds explicitly check that the receiver is absent. Requested Steam server
+  features fail startup if configuration or UDP binding prevented registration.
+  These close packaging/deployment code gaps; they do not count as executed
+  Windows/Apple builds, Android instrumentation, deployment or live acceptance.
+
 - SDK preparation is implemented: checksum-verified Android host tools and all
   vendored-module pins; NDK/JNI/ELF artifact inspection; Linux development/codec
   preflight; Windows VS/SDK provisioning and verification; process-local Xcode,
@@ -195,5 +202,6 @@ See [the follow-up evidence](VALIDATION.md#input-ownership-and-accessible-adjust
 The controller-only phone follow-up adds a separate Steam receiver mode
 that disables audio/video negotiation while retaining touch and physical input.
 It is documented in [STEAM_CONTROLLERS.md](STEAM_CONTROLLERS.md). This code was
-added after the verification counts above and still needs exact-head Android/iOS
-builds and paired-host acceptance; it is not included in those counts.
+added after the verification counts above. Its four Android JNI ABIs now pass
+at `605e4059981148ba34c466df8eebe6f2cd517c89` (43 exports), while full Android/iOS
+application builds and paired-host acceptance remain separate gates.

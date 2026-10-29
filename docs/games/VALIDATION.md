@@ -1,5 +1,39 @@
 # Games validation and release gates
 
+## Packaging and deployment code closure — 2026-10-29
+
+Added final APK/AAB receiver inspection, minified-app instrumentation and
+embedded-disabled packaging to the existing private build jobs. Release APKs
+are checked before archiving; Play/Amazon copies are checked before attestation.
+The checker verifies the exact receiver/Flutter ABI set, exported JNI contract,
+ELF alignment, runtime dependency presence and APK ZIP alignment. Its receipts
+explicitly do not claim signing, generated-AAB APK checks or device execution.
+
+Requested Steam relay/Families/Cloud features now fail server startup when their
+configuration prevents registration, including an occupied UDP observation port.
+Default-disabled configurations remain valid; diagnostics never echo values.
+
+Validation performed:
+
+- 34 Games preparation/package tests pass, including missing ABI/runtime/JNI,
+  disabled-receiver, duplicate ZIP entry and bad ZIP alignment rejection.
+- The real ARM64 receiver from the earlier four-ABI build passes the checker in
+  a synthetic aligned ZIP fixture with the actual NDK libc++ runtime: 43 JNI
+  exports and real `llvm-readelf`/`zipalign` checks. This fixture is not a Flutter
+  application and is not application-build evidence.
+- 22 build-workflow tests and 24 shrinker-rule tests pass; workflow security and
+  immutable-action-pin checks pass. Existing private runner routing is retained.
+- `go test -race ./...` passes, including real occupied-UDP-port rejection and
+  configured/disabled/incomplete-feature startup cases. The server also compiles
+  with CGO disabled for Linux amd64 and arm64.
+
+The new Android instrumentation harness has not been compiled or executed by
+Gradle here. It must run against the shrunk app on a device. Full Android app
+packaging, Windows/MSVC and Apple SDK builds, signing, public service deployment
+and hardware/network/account acceptance remain qualification gates. No workflow
+was dispatched and no live account was modified. Account-global Cloud writes
+remain outside the established API contract; this change adds no guessed setter.
+
 ## Controller-only native build closure — 2026-10-29
 
 Code `605e4059981148ba34c466df8eebe6f2cd517c89` repairs a real source-preparation

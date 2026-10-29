@@ -62,8 +62,10 @@ class CompanionClient:
         return f"/v1/jobs/{job_id}" + (f"/{action}" if action else "")
 
     def create(self, *, task, identity, media=None, **options):
-        if options.get("timelineOffsetMs", 0) or options.get("itemTimeline", False) or options.get("soundStereoEvidence", False):
+        if options.get("sceneTemporalRegions", False) or options.get("timelineOffsetMs", 0) or options.get("itemTimeline", False) or options.get("soundStereoEvidence", False):
             caps = self.capabilities()
+            if options.get("sceneTemporalRegions", False) and caps.get("sceneTemporalRegions") is not True:
+                raise ValueError("Companion cannot produce temporal scene proposals")
             if (options.get("timelineOffsetMs", 0) or options.get("itemTimeline", False)) and caps.get("sourceTimelineOffsets") is not True:
                 raise ValueError("Companion cannot preserve source timeline offsets")
             if options.get("soundStereoEvidence", False) and caps.get("soundStereoEvidence") is not True:

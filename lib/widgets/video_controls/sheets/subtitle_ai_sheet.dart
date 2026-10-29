@@ -836,6 +836,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (!mounted) return;
       var preprocess = false;
       var soundStereoEvidence = false;
+      var sceneTemporalRegions = false;
       var duckRatio = .25;
       var track = 0;
       var subtitleTrack = 0, bitmapTail = 2000;
@@ -887,9 +888,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   DropdownMenuItem(value: 'hepburn', child: Text('Original + Hepburn romanization line'))],
                 onChanged: (value) => update(() => readingMode = value ?? 'hiragana')),
             ],
-            if (task == 'scene_review') Text('The host will forward up to 30 chosen captions and one resized video frame per cue to:\n'
+            if (task == 'scene_review') Text('The host will forward up to 30 chosen captions and ${sceneTemporalRegions ? 3 : 1} resized video frame(s) per cue to:\n'
               '${capabilities['visionProvider']}. This is explicitly unverified scene context; it cannot verify spoken words. '
               'Original wording remains unless you select an alternative during image review.'),
+            if (task == 'scene_review' && capabilities['sceneTemporalRegions'] == true)
+              SwitchListTile(title: const Text('Sample scene movement during each cue'),
+                subtitle: const Text('Sends three frames at 10%, 50% and 90% of each cue. Evidence shows chronological panels; sampled region associations remain unverified.'),
+                value: sceneTemporalRegions, onChanged: (v) => update(() => sceneTemporalRegions = v)),
             if (task == 'ocr_auto') const Text('Find a repeatedly occupied text band using samples from the first two minutes. '
               'This can select credits or signs; inspect the returned cue images before accepting.'),
             if (task == 'dubbing' || task == 'dub_mix') ...[
@@ -944,7 +949,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
         targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
-        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, crop: [0, cropTop, 1, 1 - cropTop],
+        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, crop: [0, cropTop, 1, 1 - cropTop],
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         voiceFingerprint: (task == 'dubbing' || task == 'dub_mix') ? (capabilities['synthesisVoice'] as Map?)?['fingerprint'] as String? : null,
         translationMode: translationMode, scriptConversion: scriptConversion, readingMode: readingMode,

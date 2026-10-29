@@ -193,6 +193,9 @@ class Store:
             provider_fingerprint = config["fingerprint"]
             if value.get("translationProviderFingerprint") != provider_fingerprint:
                 raise ValueError("translation_provider_changed_resubmit_after_review")
+        temporal_regions = value.get("sceneTemporalRegions", False)
+        if type(temporal_regions) is not bool or temporal_regions and task != "scene_review":
+            raise ValueError("invalid_scene_temporal_regions")
         vision_fingerprint = None
         if task == "scene_review":
             config = vision_capabilities()
@@ -213,7 +216,7 @@ class Store:
                          "cues": cues, "audioTrack": track, "timelineOffsetMs": timeline_offset, "itemTimeline": item_timeline, "soundStereoEvidence": stereo_evidence, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
-                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint,
+                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions,
                          "translateToEnglish": task == "transcribe" and value.get("translateToEnglish") is True,
                          "preprocess": task in {"transcribe", "align", "diarize"} and value.get("preprocess") is True}
             fingerprint = hashlib.sha256(json.dumps(canonical, sort_keys=True).encode()).hexdigest()
@@ -408,7 +411,7 @@ class Handler(BaseHTTPRequestHandler):
                 tasks.append("extract_text")
                 if vision is not None: tasks.append("scene_review")
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
-                             "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True,
+                             "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
                              "visionProvider": vision, "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES),
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})

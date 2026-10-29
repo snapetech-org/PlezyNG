@@ -345,3 +345,16 @@ URLs or credentials. Limits remain 1 GiB / one hour; playlists require a decoder
 measurements. `soundEvidence` records downmix method, window count, median L/R
 dB difference and an explicit `eventLocalized: false`. This is not physical
 sound localization. The Python SDK checks support before using either extension.
+
+### Sampled temporal scene evidence
+
+`sceneTemporalRegions: true` is an opt-in `scene_review` extension, advertised by
+the capability of the same name. It forwards three 640×360 frames per chosen cue
+(10%, 50%, 90%) to the reviewed vision destination. One chronological three-panel
+PNG per cue preserves compatibility with image correction/evidence exports.
+`sceneRegionTracks` contains cue-local adjacent-frame IoU associations, original
+sample times/rectangles, and an envelope. These are unverified nonsemantic
+proposals, not identities or continuous tracking. `avoidRegions` retains at
+most twelve envelopes per cue, preferring repeated observations. All normal
+one-hour, thirty-cue, 4 MiB/image and 32 MiB evidence limits still apply. The
+Python and Flutter clients refuse the option on a host without the capability.

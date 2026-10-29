@@ -2008,6 +2008,7 @@ class Translations$settings$en {
 	String get startupSectionDescription => 'Choose which section opens when PlezyNG starts.';
 
 	late final Translations$settings$startupSectionOptions$en startupSectionOptions = Translations$settings$startupSectionOptions$en.internal(_root);
+	late final Translations$settings$subtitleLanguageOrder$en subtitleLanguageOrder = Translations$settings$subtitleLanguageOrder$en.internal(_root);
 
 	/// en: 'Set the distance moved by the short backward and forward seek controls.'
 	String get smallSkipDurationDescription => 'Set the distance moved by the short backward and forward seek controls.';
@@ -11963,6 +11964,51 @@ class Translations$settings$startupSectionOptions$en {
 	String get search => 'Open media search.';
 }
 
+// Path: settings.subtitleLanguageOrder
+class Translations$settings$subtitleLanguageOrder$en {
+	Translations$settings$subtitleLanguageOrder$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Preferred subtitle languages'
+	String get title => 'Preferred subtitle languages';
+
+	/// en: 'Device-local fallback order'
+	String get groupTitle => 'Device-local fallback order';
+
+	/// en: 'Enter ISO 639-1 language codes in priority order, separated by commas. The server profile language is checked first. This order is used by automatic track selection, Always show subtitles, and preferred subtitle downloads when no matching server choice is available.'
+	String get description => 'Enter ISO 639-1 language codes in priority order, separated by commas. The server profile language is checked first. This order is used by automatic track selection, Always show subtitles, and preferred subtitle downloads when no matching server choice is available.';
+
+	/// en: 'Language codes'
+	String get label => 'Language codes';
+
+	/// en: 'en, es, ja'
+	String get hint => 'en, es, ja';
+
+	/// en: 'Use at most 12 language codes.'
+	String get maxLanguages => 'Use at most 12 language codes.';
+
+	/// en: '“${value}” is not a supported language code.'
+	String unsupportedLanguage({required Object value}) => '“${value}” is not a supported language code.';
+
+	/// en: 'Language order saved.'
+	String get saved => 'Language order saved.';
+
+	/// en: 'Language fallback order cleared.'
+	String get cleared => 'Language fallback order cleared.';
+
+	/// en: 'Could not save the subtitle language order.'
+	String get saveFailed => 'Could not save the subtitle language order.';
+
+	/// en: 'Could not clear the subtitle language order.'
+	String get clearFailed => 'Could not clear the subtitle language order.';
+
+	/// en: 'Save order'
+	String get saveAction => 'Save order';
+}
+
 // Path: themeEditor.slots
 class Translations$themeEditor$slots$en {
 	Translations$themeEditor$slots$en.internal(this._root);
@@ -12828,6 +12874,9 @@ class Translations$videoControls$subtitleResources$en {
 
 	/// en: 'Local subtitle resources'
 	String get title => 'Local subtitle resources';
+
+	/// en: 'Controls for process memory, heat, external power, and multiview.'
+	String get entryDescription => 'Controls for process memory, heat, external power, and multiview.';
 
 	/// en: 'One local speech model runs at a time. Live captions retain their model; stop them before starting another local model. Memory pressure or severe heat stops live inference at the next safe boundary and preserves completed cues. Playback settings are unchanged.'
 	String get description => 'One local speech model runs at a time. Live captions retain their model; stop them before starting another local model. Memory pressure or severe heat stops live inference at the next safe boundary and preserves completed cues. Playback settings are unchanged.';
@@ -16057,6 +16106,18 @@ extension on Translations {
 			'settings.musicQualityTitle' => 'Music Quality',
 			'settings.subtitleStyling' => 'Subtitle Styling',
 			'settings.subtitleStylingDescription' => 'Customize subtitle appearance',
+			'settings.subtitleLanguageOrder.title' => 'Preferred subtitle languages',
+			'settings.subtitleLanguageOrder.groupTitle' => 'Device-local fallback order',
+			'settings.subtitleLanguageOrder.description' => 'Enter ISO 639-1 language codes in priority order, separated by commas. The server profile language is checked first. This order is used by automatic track selection, Always show subtitles, and preferred subtitle downloads when no matching server choice is available.',
+			'settings.subtitleLanguageOrder.label' => 'Language codes',
+			'settings.subtitleLanguageOrder.hint' => 'en, es, ja',
+			'settings.subtitleLanguageOrder.maxLanguages' => 'Use at most 12 language codes.',
+			'settings.subtitleLanguageOrder.unsupportedLanguage' => ({required Object value}) => '“${value}” is not a supported language code.',
+			'settings.subtitleLanguageOrder.saved' => 'Language order saved.',
+			'settings.subtitleLanguageOrder.cleared' => 'Language fallback order cleared.',
+			'settings.subtitleLanguageOrder.saveFailed' => 'Could not save the subtitle language order.',
+			'settings.subtitleLanguageOrder.clearFailed' => 'Could not clear the subtitle language order.',
+			'settings.subtitleLanguageOrder.saveAction' => 'Save order',
 			'settings.smallSkipDuration' => 'Small Skip Duration',
 			'settings.largeSkipDuration' => 'Large Skip Duration',
 			'settings.rewindOnResume' => 'Rewind on Resume',
@@ -17165,6 +17226,7 @@ extension on Translations {
 			'videoControls.subtitleLive.playbackChanged' => 'Playback changed. Pause the frame and reopen this dialog.',
 			'videoControls.subtitleLive.useAnchor' => 'Use this program-time anchor',
 			'videoControls.subtitleResources.title' => 'Local subtitle resources',
+			'videoControls.subtitleResources.entryDescription' => 'Controls for process memory, heat, external power, and multiview.',
 			'videoControls.subtitleResources.description' => 'One local speech model runs at a time. Live captions retain their model; stop them before starting another local model. Memory pressure or severe heat stops live inference at the next safe boundary and preserves completed cues. Playback settings are unchanged.',
 			'videoControls.subtitleResources.workerStatus' => ({required Object state, required Object waiting}) => 'Worker: ${state} · ${waiting} waiting',
 			'videoControls.subtitleResources.residentModelStatus' => ({required Object state}) => 'Resident live model: ${state}',

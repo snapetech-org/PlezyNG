@@ -4713,5 +4713,18 @@
   "videoControls.subtitleResources.waitMemoryPressure": "4f3c84e3c79e77c5",
   "videoControls.subtitleResources.waitModerateThermal": "d9a39d8b9d74073b",
   "videoControls.subtitleResources.waitMultiview": "b675a08e0d360b4c",
-  "videoControls.subtitleResources.waitExternalPower": "ddbc31d08d9f2f2e"
+  "videoControls.subtitleResources.waitExternalPower": "ddbc31d08d9f2f2e",
+  "videoControls.subtitleResources.entryDescription": "21c8c2563e46bcdc",
+  "settings.subtitleLanguageOrder.title": "afd97511fa454941",
+  "settings.subtitleLanguageOrder.groupTitle": "d1e760c0ee4939af",
+  "settings.subtitleLanguageOrder.description": "5edb54c09e426990",
+  "settings.subtitleLanguageOrder.label": "87ffad5695e7c8fb",
+  "settings.subtitleLanguageOrder.hint": "4177fd583a231b0b",
+  "settings.subtitleLanguageOrder.maxLanguages": "03d9def456fe5922",
+  "settings.subtitleLanguageOrder.unsupportedLanguage": "56d8736509a60161",
+  "settings.subtitleLanguageOrder.saved": "7695b30c374c40eb",
+  "settings.subtitleLanguageOrder.cleared": "b3f8c4cb84b7308b",
+  "settings.subtitleLanguageOrder.saveFailed": "da5765f5c58fcf44",
+  "settings.subtitleLanguageOrder.clearFailed": "b93d47216bfc230b",
+  "settings.subtitleLanguageOrder.saveAction": "ddac0636dfc014dc"
 }

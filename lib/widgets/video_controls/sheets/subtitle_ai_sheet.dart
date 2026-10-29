@@ -3894,6 +3894,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   @override
   Widget build(BuildContext context) {
     final jobsCopy = Translations.of(context).videoControls.subtitleJobs;
+    final resourceCopy = Translations.of(context).videoControls.subtitleResources;
     final localSpeech = SubtitleAiService.supportedPlatform;
     final providers = SubtitleAiService.availableProviderRequests;
     final liveProviders = providers
@@ -4275,8 +4276,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.settings_rounded),
-            title: const Text('Local subtitle resources'),
-            subtitle: const Text('Power, heat, memory pressure and multiview admission controls'),
+            title: Text(resourceCopy.title),
+            subtitle: Text(resourceCopy.entryDescription),
             onTap: () => unawaited(showDialog<void>(context: context, builder: (_) => const SubtitleResourceDialog())),
           ),
           FocusableListTile(

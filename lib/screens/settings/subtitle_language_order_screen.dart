@@ -44,20 +44,21 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
   }
 
   List<String>? _parseOrder() {
+    final strings = Translations.of(context).settings.subtitleLanguageOrder;
     final raw = _controller.text
         .split(RegExp(r'[,;\s]+'))
         .map((value) => value.trim())
         .where((value) => value.isNotEmpty)
         .toList(growable: false);
     if (raw.length > 12) {
-      setState(() => _error = 'Use at most 12 language codes.');
+      setState(() => _error = strings.maxLanguages);
       return null;
     }
     final normalized = <String>[];
     for (final value in raw) {
       final code = LanguageCodes.getIso6391Code(value);
       if (code == null) {
-        setState(() => _error = '“$value” is not a supported language code.');
+        setState(() => _error = strings.unsupportedLanguage(value: value));
         return null;
       }
       if (!normalized.contains(code)) normalized.add(code);
@@ -66,6 +67,7 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
   }
 
   Future<void> _save() async {
+    final strings = Translations.of(context).settings.subtitleLanguageOrder;
     final order = _parseOrder();
     if (order == null) return;
     setState(() {
@@ -77,16 +79,17 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
       final settings = await SettingsService.getInstance();
       await settings.write(SettingsService.subtitleLanguageOrder, order);
       if (mounted) {
-        setState(() => _status = order.isEmpty ? 'Language fallback order cleared.' : 'Language order saved.');
+        setState(() => _status = order.isEmpty ? strings.cleared : strings.saved);
       }
     } catch (_) {
-      if (mounted) setState(() => _error = 'Could not save the subtitle language order.');
+      if (mounted) setState(() => _error = strings.saveFailed);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
   }
 
   Future<void> _clear() async {
+    final strings = Translations.of(context).settings.subtitleLanguageOrder;
     setState(() {
       _saving = true;
       _error = null;
@@ -96,9 +99,9 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
       final settings = await SettingsService.getInstance();
       await settings.reset(SettingsService.subtitleLanguageOrder);
       _controller.clear();
-      if (mounted) setState(() => _status = 'Language fallback order cleared.');
+      if (mounted) setState(() => _status = strings.cleared);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Could not clear the subtitle language order.');
+      if (mounted) setState(() => _error = strings.clearFailed);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -106,11 +109,12 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
 
   @override
   Widget build(BuildContext context) {
+    final strings = Translations.of(context).settings.subtitleLanguageOrder;
     return SettingsPage(
-      title: const Text('Preferred subtitle languages'),
+      title: Text(strings.title),
       children: [
         SettingsGroup(
-          title: 'Device-local fallback order',
+          title: strings.groupTitle,
           children: [
             ListTile(title: Text(Translations.of(context).videoControls.subtitleRoles.title),
               subtitle: Text(Translations.of(context).videoControls.subtitleRoles.settingsTileHelp),
@@ -118,9 +122,7 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Text(
-                'Enter ISO 639-1 language codes in priority order, separated by commas. '
-                'The server profile language is checked first. This order is used by automatic track selection, '
-                'Always show subtitles, and preferred subtitle downloads when no matching server choice is available.',
+                strings.description,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
@@ -131,8 +133,8 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
                 enabled: !_saving,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  labelText: 'Language codes',
-                  hintText: 'en, es, ja',
+                  labelText: strings.label,
+                  hintText: strings.hint,
                   errorText: _error,
                   border: const OutlineInputBorder(),
                 ),
@@ -152,12 +154,12 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
                     icon: _saving
                         ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                         : const AppIcon(Symbols.save_rounded),
-                    label: const Text('Save order'),
+                    label: Text(strings.saveAction),
                   ),
                   TextButton.icon(
                     onPressed: _saving ? null : _clear,
                     icon: const AppIcon(Symbols.clear_all_rounded),
-                    label: const Text('Clear'),
+                    label: Text(Translations.of(context).common.clear),
                   ),
                 ],
               ),

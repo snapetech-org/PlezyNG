@@ -311,6 +311,20 @@
     "musicQualityTitle": "Music Quality",
     "subtitleStyling": "Subtitle Styling",
     "subtitleStylingDescription": "Customize subtitle appearance",
+    "subtitleLanguageOrder": {
+      "title": "Preferred subtitle languages",
+      "groupTitle": "Device-local fallback order",
+      "description": "Enter ISO 639-1 language codes in priority order, separated by commas. The server profile language is checked first. This order is used by automatic track selection, Always show subtitles, and preferred subtitle downloads when no matching server choice is available.",
+      "label": "Language codes",
+      "hint": "en, es, ja",
+      "maxLanguages": "Use at most 12 language codes.",
+      "unsupportedLanguage": "“${value}” is not a supported language code.",
+      "saved": "Language order saved.",
+      "cleared": "Language fallback order cleared.",
+      "saveFailed": "Could not save the subtitle language order.",
+      "clearFailed": "Could not clear the subtitle language order.",
+      "saveAction": "Save order"
+    },
     "smallSkipDuration": "Small Skip Duration",
     "largeSkipDuration": "Large Skip Duration",
     "rewindOnResume": "Rewind on Resume",
@@ -1458,6 +1472,7 @@
     },
     "subtitleResources": {
       "title": "Local subtitle resources",
+      "entryDescription": "Controls for process memory, heat, external power, and multiview.",
       "description": "One local speech model runs at a time. Live captions retain their model; stop them before starting another local model. Memory pressure or severe heat stops live inference at the next safe boundary and preserves completed cues. Playback settings are unchanged.",
       "workerStatus": "Worker: ${state} · ${waiting} waiting",
       "residentModelStatus": "Resident live model: ${state}",

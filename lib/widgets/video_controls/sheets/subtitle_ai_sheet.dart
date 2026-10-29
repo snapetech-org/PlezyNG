@@ -348,6 +348,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   bool _useSeriesGlossary = false;
   final TextEditingController _glossaryController = TextEditingController();
   final Map<String, String> _glossaryDrafts = <String, String>{};
+  final Set<String> _temporaryWavPaths = <String>{};
   bool _playbackCaptureSupported = false;
   bool _lastResultUploadedToServer = false;
   bool _lastResultSavedToSource = false;
@@ -414,7 +415,21 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     } catch (error) {
       if (mounted) setState(() => _error = _readableError(error));
     } finally {
+      await _deleteTemporaryWavCopies();
       if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _deleteTemporaryWavCopies() async {
+    final paths = _temporaryWavPaths.toList(growable: false);
+    _temporaryWavPaths.clear();
+    for (final path in paths) {
+      try {
+        final file = File(path);
+        if (await file.exists()) await file.delete();
+      } catch (_) {
+        // The platform temporary directory remains subject to OS cleanup.
+      }
     }
   }
 
@@ -446,6 +461,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final directory = await getTemporaryDirectory();
     final path = p.join(directory.path, 'subtitle_audio_${DateTime.now().microsecondsSinceEpoch}.wav');
     await File(path).writeAsBytes(bytes, flush: true);
+    _temporaryWavPaths.add(path);
     return path;
   }
 

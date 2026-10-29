@@ -26,6 +26,7 @@ import '../../../services/subtitle_language_text.dart';
 import '../../../services/subtitle_sync_service.dart';
 import '../../../services/subtitle_interval_service.dart';
 import '../../../services/subtitle_job_service.dart';
+import '../../../services/subtitle_job_source.dart';
 import '../../../services/subtitle_editing_service.dart';
 import '../../../services/subtitle_waveform_service.dart';
 import '../../../services/subtitle_companion_service.dart';
@@ -77,11 +78,13 @@ class _SubtitleOperationSnapshot {
     required this.player,
     required this.mediaSessionGeneration,
     required this.revisionIdentity,
+    required this.audioId,
   });
 
   final Player player;
   final int? mediaSessionGeneration;
   final SubtitleRevisionIdentity? revisionIdentity;
+  final String? audioId;
 
   bool isCurrent({
     required Player currentPlayer,
@@ -89,6 +92,7 @@ class _SubtitleOperationSnapshot {
     required bool Function()? isRevisionIdentityCurrent,
   }) {
     if (!identical(player, currentPlayer)) return false;
+    if (currentPlayer.disposed || currentPlayer.state.track.audio?.id != audioId) return false;
     if (mediaSessionGeneration != null) {
       if (currentPlayer is! PlayerMediaSessionIdentity ||
           currentPlayer.mediaSessionGeneration != mediaSessionGeneration) {
@@ -281,6 +285,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       player: player,
       mediaSessionGeneration: player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null,
       revisionIdentity: _revisionIdentity,
+      audioId: player.state.track.audio?.id,
     );
     _operationSnapshot = snapshot;
     setState(() {
@@ -492,51 +497,96 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     await _showApplied();
   });
 
-  Future<void> _queueTranscription() => _run(() async {
+  Future<SubtitleJobSource> _openJobSource(int ordinal) async {
+    _requireCurrentOperationIdentity();
+    final player = widget.player, profiles = context.read<ActiveProfileProvider>();
+    final profile = profiles.activeId, track = player.state.track.audio;
+    if (player is SubtitlePcmCaptureSource && player.isLivePlayback) {
+      throw UnsupportedError('Resumable source jobs require a complete VOD file.');
+    }
+    final generation = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
+    final sourceCurrent = widget.isRevisionIdentityCurrent;
+    bool current() => profiles.activeId == profile && !player.disposed && sourceCurrent?.call() != false &&
+        (generation == null || (player as PlayerMediaSessionIdentity).mediaSessionGeneration == generation) &&
+        player.state.track.audio?.id == track?.id;
+    return SubtitleJobSource.open(
+      openSource: widget.openAnalysisSource ?? () => SubtitleAnalysisSource.localPlayer(player, current),
+      audioOrdinal: ordinal,
+      audioDescriptor: jsonEncode([track?.id, track?.language, track?.title, track?.codec, track?.channels]),
+      fallbackDurationMs: player.state.duration.inMilliseconds, isCurrent: current);
+  }
+
+  Future<void> _queueTranscription({bool useSource = false}) => _run(() async {
     final identity = _operationRevisionIdentity;
     if (identity == null) throw StateError('Open a stable library item or local file to create a resumable job.');
     final profiles = context.read<ActiveProfileProvider>();
     final service = SubtitleJobService.instance..bindProfile(profiles);
     await service.ready;
-    final wavPath = await _pickWav();
-    if (wavPath == null || !mounted) return;
+    final wavPath = useSource ? null : await _pickWav();
+    if (!useSource && wavPath == null || !mounted) return;
     var chargingOnly = false;
     var idleOnly = false;
     var followPlayhead = true;
-    final accepted = await showDialog<bool>(
+    final ordinalInput = TextEditingController(text: '0');
+    var ordinal = 0;
+    bool? accepted;
+    try {
+    accepted = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(builder: (dialogContext, update) => AlertDialog(
         title: const Text('Queue transcription'),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('An owned copy of the WAV is retained until you delete the job. '
+        content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(useSource ? 'Decode this file through its owning source transport, one window at a time. '
+              'This uses additional bandwidth and may download the local speech model on first use. '
+              'Completed text is saved; decoded audio is temporary. Reopen the same file and audio stream to resume after a restart. '
+              'The transport identity is checked; the remote file is not hashed in full. Results require review.'
+              : 'An owned copy of the WAV is retained until you delete the job. '
               'The queue saves each completed window and never attaches results automatically.'),
+          if (useSource) TextField(controller: ordinalInput, keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: 'Audio stream ordinal (0–63)',
+              helperText: 'File order, independent of native player IDs. Confirm the selected language/cut.')),
           SwitchListTile(title: const Text('Prioritize near the playhead'), value: followPlayhead,
               onChanged: (value) => update(() => followPlayhead = value)),
           SwitchListTile(title: const Text('Only on external power'), value: chargingOnly,
               onChanged: (value) => update(() => chargingOnly = value)),
           SwitchListTile(title: const Text('Only while playback is idle'), value: idleOnly,
               onChanged: (value) => update(() => idleOnly = value)),
-        ]),
+        ])),
         actions: [
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Queue')),
+          FilledButton(onPressed: () {
+            final value = int.tryParse(ordinalInput.text);
+            if (useSource && (value == null || value < 0 || value > 63)) return;
+            ordinal = value ?? 0; Navigator.pop(dialogContext, true);
+          }, child: const Text('Queue')),
         ],
       )),
     );
+    } finally { ordinalInput.dispose(); }
     if (accepted != true || !mounted) return;
     _requireCurrentOperationIdentity();
     final player = widget.player;
     final session = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
     final profileId = profiles.activeId;
+    int playhead() => !player.disposed && profiles.activeId == profileId &&
+        (session == null || (player as PlayerMediaSessionIdentity).mediaSessionGeneration == session)
+        ? player.currentPosition.inMilliseconds : 0;
+    bool playing() => !player.disposed && player.state.playing;
+    if (useSource) {
+      final source = await _openJobSource(ordinal);
+      await service.enqueueSource(source: source,
+        identityKey: identity.storageKey, title: widget.mediaTitle ?? 'Source transcription',
+        provider: _provider, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
+        translateToEnglish: _translateSpeechToEnglish, chargingOnly: chargingOnly, idleOnly: idleOnly,
+        playheadMs: followPlayhead ? playhead : null, playbackBusy: playing);
+    } else {
     await service.enqueue(
-      wavPath: wavPath, identityKey: identity.storageKey, title: widget.mediaTitle ?? 'Subtitle transcription',
+      wavPath: wavPath!, identityKey: identity.storageKey, title: widget.mediaTitle ?? 'Subtitle transcription',
       provider: _provider, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       translateToEnglish: _translateSpeechToEnglish, chargingOnly: chargingOnly, idleOnly: idleOnly,
-      playheadMs: !followPlayhead ? null : () => !player.disposed && profiles.activeId == profileId &&
-          (session == null || (player as PlayerMediaSessionIdentity).mediaSessionGeneration == session)
-          ? player.currentPosition.inMilliseconds : 0,
-      playbackBusy: () => !player.disposed && player.state.playing,
+      playheadMs: followPlayhead ? playhead : null, playbackBusy: playing,
     );
+    }
     if (mounted) setState(() => _status = 'Queued. Open Transcription jobs to pause, resume, cancel, or review saved windows.');
   });
 
@@ -548,6 +598,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final session = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
     final job = await showDialog<SubtitleJob>(context: context, builder: (_) => SubtitleJobsDialog(
       identityKey: _operationRevisionIdentity?.storageKey,
+      openSource: (job) => _openJobSource(job.audioOrdinal!),
       playheadMs: () => !player.disposed &&
           (session == null || (player as PlayerMediaSessionIdentity).mediaSessionGeneration == session)
           ? player.currentPosition.inMilliseconds : 0,
@@ -560,10 +611,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (job.state == SubtitleJobState.running || job.state == SubtitleJobState.queued) await service.pause(job);
     final result = await service.readResult(job);
     final complete = job.state == SubtitleJobState.completed;
-    await _writeAndApply(result.cues,
+    final offset = job.usesSourceDecoder ? job.timelineOffsetMs : 0;
+    final cues = offset == 0 ? result.cues : [for (final cue in result.cues) SubtitleCue(
+      index: cue.index, startMs: cue.startMs + offset, endMs: cue.endMs + offset, text: cue.text, cueId: cue.stableId)];
+    final words = offset == 0 ? result.wordTimings : [for (final word in result.wordTimings) SubtitleWordTiming(
+      startMs: word.startMs + offset, endMs: word.endMs + offset, text: word.text, confidence: word.confidence,
+      unit: word.unit, cueIndex: word.cueIndex, cueId: word.cueId)];
+    await _writeAndApply(cues,
       operationLabel: complete ? 'Queued transcription' : 'Partial queued transcription',
       operationLanguageCode: result.detectedLanguage,
-      wordTimings: result.wordTimings,
+      wordTimings: words, onItemTimeline: job.usesSourceDecoder,
       reviewWarnings: [
         if (!complete) 'Only ${job.completedChunks} of ${job.chunkCount} audio windows are included. Unprocessed ranges have no captions.',
         'Backend: ${result.runtimeProvider}. ${result.placementEvidence.displayLabel}.',
@@ -4205,6 +4262,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             title: const Text('Queue resumable WAV transcription'),
             subtitle: const Text('Checkpointed windows, playhead priority, pause/resume, and power policy'),
             onTap: _busy || !localSpeech || _revisionIdentity == null ? null : () => unawaited(_queueTranscription()),
+          ),
+          if (SubtitleReadAheadService.available) FocusableListTile(
+            leading: const AppIcon(Symbols.queue_music_rounded),
+            title: const Text('Queue current source transcription'),
+            subtitle: const Text('Decode a complete VOD file with resumable text checkpoints and temporary audio'),
+            onTap: _busy || !localSpeech || _revisionIdentity == null ? null
+                : () => unawaited(_queueTranscription(useSource: true)),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.settings_rounded),

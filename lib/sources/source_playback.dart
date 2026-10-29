@@ -238,6 +238,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       if (!analysisCurrent()) throw const SourceException(SourceFailure.cancelled);
       return SubtitleAnalysisSource(uri: uri, identity: sourceDigest('$profile:${item.key}:${file.fingerprint}'),
         isCurrent: analysisCurrent, close: gateway.close,
+        durationMs: live ? null : _durations[index] ?? native.state.duration.inMilliseconds,
         liveEpochForPosition: live ? liveClock!.epochForPosition : null);
     } catch (_) { await gateway.close(); rethrow; }
   }

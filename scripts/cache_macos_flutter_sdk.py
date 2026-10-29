@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep the pinned Apple Flutter SDK in the Mac JIT worker's local APFS cache."""
+"""Prepare the pinned Apple Flutter SDK in the Mac JIT job's local APFS temp directory."""
 
 from __future__ import annotations
 
@@ -28,7 +28,10 @@ SEGMENT_BYTES = 64 * 1024 * 1024
 MAX_WORKERS = 16
 MAX_ATTEMPTS = 8
 READ_SIZE = 1024 * 1024
-MIN_FREE_BYTES = 40 * 1024**3
+# The broker requires 40 GiB while the Mac is idle. Keep this per-job SDK
+# cache under RUNNER_TEMP so the worker removes it after each job and restores
+# that idle capacity before it dispatches another Apple job.
+MIN_FREE_BYTES = 30 * 1024**3
 INSTALL_HEADROOM_BYTES = 12 * 1024**3
 CONTENT_RANGE_RE = re.compile(r"^bytes (\d+)-(\d+)/(\d+)$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -146,6 +149,27 @@ def cache_is_valid(cache_path: Path, version: str, sha256: str) -> bool:
     except (OSError, ValueError):
         return False
     return metadata.get("version") == version and metadata.get("sha256") == sha256
+
+
+def require_per_job_cache_root(cache_root: Path, runner_temp: str | None) -> Path:
+    if not runner_temp:
+        raise RuntimeError("RUNNER_TEMP is required for the per-job Flutter SDK cache")
+    temporary = Path(runner_temp).expanduser().resolve()
+    root = Path(os.path.abspath(cache_root.expanduser()))
+    if not root.resolve(strict=False).is_relative_to(temporary):
+        raise RuntimeError("Flutter SDK cache must stay inside this JIT job's RUNNER_TEMP")
+    return root
+
+
+def require_install_headroom(free_bytes: int) -> None:
+    required_bytes = MIN_FREE_BYTES + INSTALL_HEADROOM_BYTES
+    if free_bytes < required_bytes:
+        raise RuntimeError(
+            f"Flutter SDK install needs {required_bytes / 1024**3:.0f} GiB free "
+            f"({MIN_FREE_BYTES / 1024**3:.0f} GiB reserved plus "
+            f"{INSTALL_HEADROOM_BYTES / 1024**3:.0f} GiB install headroom); "
+            f"Mac JIT has {free_bytes / 1024**3:.1f} GiB free"
+        )
 
 
 def _archive_length(url: str) -> int:
@@ -317,6 +341,7 @@ def _extract_sdk_archive(archive: Path, cache_root: Path, version: str, sha256: 
 def ensure_sdk(version: str, cache_root: Path) -> Path:
     if sys.platform != "darwin" or os.uname().machine != "arm64":
         raise RuntimeError("the pinned macOS Flutter cache can only be prepared on Apple Silicon")
+    cache_root = require_per_job_cache_root(cache_root, os.environ.get("RUNNER_TEMP"))
     metadata = fetch_release_metadata(version)
     cache_root = _ensure_private_directory(cache_root)
     with _cache_lock(cache_root):
@@ -328,11 +353,7 @@ def ensure_sdk(version: str, cache_root: Path) -> Path:
             return cache_path
 
         free_bytes = shutil.disk_usage(cache_root).free
-        if free_bytes < MIN_FREE_BYTES + INSTALL_HEADROOM_BYTES:
-            raise RuntimeError(
-                f"Flutter SDK install needs {INSTALL_HEADROOM_BYTES / 1024**3:.0f} GiB headroom; "
-                f"Mac JIT has {free_bytes / 1024**3:.1f} GiB free"
-            )
+        require_install_headroom(free_bytes)
         downloads = _ensure_private_directory(cache_root / ".downloads")
         archive = downloads / metadata["archive_name"]
         download_archive(metadata["archive_url"], metadata["sha256"], archive)

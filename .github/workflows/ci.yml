@@ -737,7 +737,7 @@ jobs:
         uses: ./.github/actions/setup-flutter-windows
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
 
       - name: Set up Flutter from its pinned commit
         if: matrix.flutter_setup == 'git'

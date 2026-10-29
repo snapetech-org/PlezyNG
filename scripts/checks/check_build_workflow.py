@@ -535,9 +535,15 @@ require(
 )
 
 windows_native = job_block(ci_text, "windows-native-test")
+windows_ci_flutter_cache_key = re.search(
+    r'(?m)^\s*cache-key:\s*["\']?([^"\'\s]+)["\']?\s*$',
+    windows_native,
+)
 require(
     "uses: ./.github/actions/setup-flutter-windows" in windows_native
-    and "cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:" in windows_native
+    and windows_ci_flutter_cache_key is not None
+    and windows_ci_flutter_cache_key.group(1)
+    == "flutter-:os:-:channel:-:version:-:arch:-:hash:"
     and "uses: ./.github/actions/setup-flutter-git" in windows_native,
     "Windows x64 CI must use bounded Flutter setup retries while ARM64 keeps its pinned bootstrap",
 )

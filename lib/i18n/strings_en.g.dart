@@ -3276,6 +3276,7 @@ class Translations$videoControls$en {
 	String volumePercent({required Object percent}) => 'Volume ${percent}%';
 
 	late final Translations$videoControls$subtitleBook$en subtitleBook = Translations$videoControls$subtitleBook$en.internal(_root);
+	late final Translations$videoControls$subtitleFonts$en subtitleFonts = Translations$videoControls$subtitleFonts$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
 
@@ -12217,6 +12218,103 @@ class Translations$videoControls$subtitleBook$en {
 
 }
 
+// Path: videoControls.subtitleFonts
+class Translations$videoControls$subtitleFonts$en {
+	Translations$videoControls$subtitleFonts$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Offline subtitle fonts'
+	String get title => 'Offline subtitle fonts';
+
+	/// en: 'Bundled multilingual and Hangul fonts are always available offline. Imported single-font TTF/OTF files are shared on this device, limited to 16 fonts, 16 MiB per font and 128 MiB including metadata. Font collections and web fonts are unsupported.'
+	String get description => 'Bundled multilingual and Hangul fonts are always available offline. Imported single-font TTF/OTF files are shared on this device, limited to 16 fonts, 16 MiB per font and 128 MiB including metadata. Font collections and web fonts are unsupported.';
+
+	/// en: 'Saved storage: ${storage} · ${count} saved · ${registered}/16 registered this app session'
+	String storageStatus({required Object storage, required Object count, required Object registered}) => 'Saved storage: ${storage} · ${count} saved · ${registered}/16 registered this app session';
+
+	/// en: '${bytes} MiB · SHA-256 ${digest} ${license}'
+	String fontMetadata({required Object bytes, required Object digest, required Object license}) => '${bytes} MiB · SHA-256 ${digest}\n${license}';
+
+	/// en: 'Loading…'
+	String get loading => 'Loading…';
+
+	/// en: 'No separate license text supplied'
+	String get noLicense => 'No separate license text supplied';
+
+	/// en: 'License text retained'
+	String get licenseRetained => 'License text retained';
+
+	/// en: 'Remove font'
+	String get removeFont => 'Remove font';
+
+	/// en: 'Find embedded fonts'
+	String get findEmbedded => 'Find embedded fonts';
+
+	/// en: 'Import TTF / OTF'
+	String get importTtfOtf => 'Import TTF / OTF';
+
+	/// en: 'Import an offline font'
+	String get importOfflineTitle => 'Import an offline font';
+
+	/// en: 'Display name'
+	String get displayName => 'Display name';
+
+	/// en: 'License / attribution text (optional)'
+	String get licenseLabel => 'License / attribution text (optional)';
+
+	/// en: 'Only this chosen file is imported. Keep any required license text with the font. App captions can use it immediately. Native ASS can find its internal family name when a new player opens.'
+	String get importHelp => 'Only this chosen file is imported. Keep any required license text with the font. App captions can use it immediately. Native ASS can find its internal family name when a new player opens.';
+
+	/// en: 'Import'
+	String get importButton => 'Import';
+
+	/// en: 'Remove ${font}?'
+	String removeTitle({required Object font}) => 'Remove ${font}?';
+
+	/// en: 'Remove the saved font file. Captions using it fall back to the bundled font. Existing native players and Flutter’s registered font memory are released when those players or the app restart.'
+	String get removeHelp => 'Remove the saved font file. Captions using it fall back to the bundled font. Existing native players and Flutter’s registered font memory are released when those players or the app restart.';
+
+	/// en: 'Remove'
+	String get removeButton => 'Remove';
+
+	/// en: 'Choose embedded fonts'
+	String get chooseEmbeddedTitle => 'Choose embedded fonts';
+
+	/// en: 'Embedded font'
+	String get embeddedFontName => 'Embedded font';
+
+	/// en: 'Selected fonts are copied to offline font storage on this device. Choose a saved font in the caption appearance controls.'
+	String get selectedCopyHelp => 'Selected fonts are copied to offline font storage on this device. Choose a saved font in the caption appearance controls.';
+
+	/// en: 'License / attribution for these fonts (optional)'
+	String get embeddedLicense => 'License / attribution for these fonts (optional)';
+
+	/// en: 'Import ${count} selected'
+	String importSelected({required Object count}) => 'Import ${count} selected';
+
+	/// en: 'This media contains no supported TTF / OTF attachments.'
+	String get noEmbeddedFonts => 'This media contains no supported TTF / OTF attachments.';
+
+	/// en: 'Embedded fonts are unavailable for this source.'
+	String get sourceUnavailable => 'Embedded fonts are unavailable for this source.';
+
+	/// en: 'Playback changed. Reopen the font picker for the current source.'
+	String get playbackChanged => 'Playback changed. Reopen the font picker for the current source.';
+
+	/// en: '${count} selected fonts retained offline.'
+	String retainedOffline({required Object count}) => '${count} selected fonts retained offline.';
+
+	/// en: '${count} fonts were retained before import stopped. Retry the remaining fonts.'
+	String partialImport({required Object count}) => '${count} fonts were retained before import stopped. Retry the remaining fonts.';
+
+	/// en: 'Could not update offline fonts.'
+	String get actionFailed => 'Could not update offline fonts.';
+
+}
+
 // Path: videoControls.subtitleHdr
 class Translations$videoControls$subtitleHdr$en {
 	Translations$videoControls$subtitleHdr$en.internal(this._root);
@@ -15924,6 +16022,35 @@ extension on Translations {
 			'videoControls.subtitleBook.exportTooLarge' => 'Book transcript export exceeds 16 MiB.',
 			'videoControls.subtitleBook.invalidExport' => 'The book changed or the transcript is empty or too large.',
 			'videoControls.subtitleBook.none' => 'None',
+			'videoControls.subtitleFonts.title' => 'Offline subtitle fonts',
+			'videoControls.subtitleFonts.description' => 'Bundled multilingual and Hangul fonts are always available offline. Imported single-font TTF/OTF files are shared on this device, limited to 16 fonts, 16 MiB per font and 128 MiB including metadata. Font collections and web fonts are unsupported.',
+			'videoControls.subtitleFonts.storageStatus' => ({required Object storage, required Object count, required Object registered}) => 'Saved storage: ${storage} · ${count} saved · ${registered}/16 registered this app session',
+			'videoControls.subtitleFonts.fontMetadata' => ({required Object bytes, required Object digest, required Object license}) => '${bytes} MiB · SHA-256 ${digest}\n${license}',
+			'videoControls.subtitleFonts.loading' => 'Loading…',
+			'videoControls.subtitleFonts.noLicense' => 'No separate license text supplied',
+			'videoControls.subtitleFonts.licenseRetained' => 'License text retained',
+			'videoControls.subtitleFonts.removeFont' => 'Remove font',
+			'videoControls.subtitleFonts.findEmbedded' => 'Find embedded fonts',
+			'videoControls.subtitleFonts.importTtfOtf' => 'Import TTF / OTF',
+			'videoControls.subtitleFonts.importOfflineTitle' => 'Import an offline font',
+			'videoControls.subtitleFonts.displayName' => 'Display name',
+			'videoControls.subtitleFonts.licenseLabel' => 'License / attribution text (optional)',
+			'videoControls.subtitleFonts.importHelp' => 'Only this chosen file is imported. Keep any required license text with the font. App captions can use it immediately. Native ASS can find its internal family name when a new player opens.',
+			'videoControls.subtitleFonts.importButton' => 'Import',
+			'videoControls.subtitleFonts.removeTitle' => ({required Object font}) => 'Remove ${font}?',
+			'videoControls.subtitleFonts.removeHelp' => 'Remove the saved font file. Captions using it fall back to the bundled font. Existing native players and Flutter’s registered font memory are released when those players or the app restart.',
+			'videoControls.subtitleFonts.removeButton' => 'Remove',
+			'videoControls.subtitleFonts.chooseEmbeddedTitle' => 'Choose embedded fonts',
+			'videoControls.subtitleFonts.embeddedFontName' => 'Embedded font',
+			'videoControls.subtitleFonts.selectedCopyHelp' => 'Selected fonts are copied to offline font storage on this device. Choose a saved font in the caption appearance controls.',
+			'videoControls.subtitleFonts.embeddedLicense' => 'License / attribution for these fonts (optional)',
+			'videoControls.subtitleFonts.importSelected' => ({required Object count}) => 'Import ${count} selected',
+			'videoControls.subtitleFonts.noEmbeddedFonts' => 'This media contains no supported TTF / OTF attachments.',
+			'videoControls.subtitleFonts.sourceUnavailable' => 'Embedded fonts are unavailable for this source.',
+			'videoControls.subtitleFonts.playbackChanged' => 'Playback changed. Reopen the font picker for the current source.',
+			'videoControls.subtitleFonts.retainedOffline' => ({required Object count}) => '${count} selected fonts retained offline.',
+			'videoControls.subtitleFonts.partialImport' => ({required Object count}) => '${count} fonts were retained before import stopped. Retry the remaining fonts.',
+			'videoControls.subtitleFonts.actionFailed' => 'Could not update offline fonts.',
 			'videoControls.subtitleHdr.close' => 'Close',
 			'videoControls.subtitleHdr.restoreOpening' => 'Restore opening value',
 			'videoControls.subtitleHdr.useVideoMetadata' => 'Use video metadata',

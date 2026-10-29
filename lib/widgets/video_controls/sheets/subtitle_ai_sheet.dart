@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 34034)
-Total output lines: 3009
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show File, Platform;
@@ -917,7 +914,1478 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   });
 
   Future<void> _synchronizeTranscriptAcrossLanguages({
-    required List<SubtitleCue>…14034 tokens truncated…': word.confidence,
+    required List<SubtitleCue> transcriptCues,
+    required String? transcriptLanguageCode,
+    required String transcriptDescription,
+    required bool repairCuts,
+  }) async {
+    if (!_translationSupported) {
+      throw UnsupportedError('Cross-language transcript matching needs a supported local subtitle translator.');
+    }
+    final normalizedTranscriptLanguage = transcriptLanguageCode?.trim();
+    final referenceLanguage = normalizedTranscriptLanguage == null || normalizedTranscriptLanguage.isEmpty
+        ? null
+        : SubtitleTranslationService.languageForCode(normalizedTranscriptLanguage);
+    if (referenceLanguage == null) {
+      throw const FormatException('The transcript language is unknown or unsupported. Set the speech language and capture it again.');
+    }
+    final selected = await _pickSubtitleCues();
+    if (selected == null || !mounted) return;
+    final pair = await _chooseCrossLanguagePair(fixedReference: referenceLanguage);
+    if (pair == null || !mounted) return;
+    final sourceLanguage = pair.$1;
+    final playerDuration = widget.player.state.duration.inMilliseconds;
+    final transcriptEndMs = transcriptCues
+        .map((cue) => cue.endMs)
+        .fold<int>(1, (maximum, endMs) => endMs > maximum ? endMs : maximum);
+    final durationMs = playerDuration > 0 ? playerDuration : transcriptEndMs;
+
+    setState(() => _status = 'Translating subtitle text to the transcript language for matching…');
+    final translated = await SubtitleTranslationService.translateCues(
+      cues: selected.$1,
+      sourceLanguage: sourceLanguage,
+      targetLanguage: referenceLanguage,
+      allowMobileData: _allowMobileData,
+      requestDesktopCuda: _requestTranslationCuda,
+      glossary: _glossaryForPair(sourceLanguage, referenceLanguage),
+      onProgress: (completed, total) {
+        if (mounted) setState(() => _status = 'Translating cues for alignment ($completed/$total)…');
+      },
+    );
+    if (!mounted) return;
+    _requireSubtitleCueIdentityPreserved(selected.$1, translated.cues);
+
+    setState(() => _status = 'Matching translated subtitle text against $transcriptDescription…');
+    final aligned = SubtitleSyncService.synchronize(
+      subtitleCues: translated.cues,
+      speechCues: transcriptCues,
+      mediaDurationMs: durationMs,
+      repairCuts: repairCuts,
+      preserveUnmatchedOutsideEvidence: repairCuts,
+    );
+    final retimedOriginal = _restoreOriginalCueTextWithAlignedTimes(selected.$1, aligned.cues);
+    if (!await _writeAndApply(
+      retimedOriginal,
+      operationLabel: repairCuts ? 'Cross-language transcript cut repair' : 'Cross-language transcript sync',
+      operationLanguageCode: sourceLanguage.bcpCode,
+    )) return;
+    if (!mounted) return;
+    final percent = (aligned.meanMatchConfidence * 100).round();
+    setState(() {
+      _status = 'Cross-language ${repairCuts ? 'cut repair' : 'sync'} applied to '
+          '${aligned.matchedCueCount} of ${aligned.totalCueCount} cues ($percent% match confidence). '
+          'The original target text was preserved. Translated from '
+          '${SubtitleTranslationService.languageLabel(sourceLanguage)} to '
+          '${SubtitleTranslationService.languageLabel(referenceLanguage)}. '
+          '${aligned.discontinuityCount} timing discontinuities detected. '
+          '$_resultPersistenceSuffix';
+    });
+    await _showApplied();
+  }
+
+  Future<void> _synchronizeSavedTranscriptAcrossLanguages({required bool repairCuts}) => _run(() async {
+    final transcript = await _chooseSavedTranscript();
+    if (transcript == null || !mounted) return;
+    final revision = transcript.loadedRevision;
+    await _synchronizeTranscriptAcrossLanguages(
+      transcriptCues: revision.cues,
+      transcriptLanguageCode: revision.languageCode,
+      transcriptDescription: 'the saved transcript from ${transcript.mediaTitle} (${transcript.sourceLabel})',
+      repairCuts: repairCuts,
+    );
+  });
+
+  Future<void> _synchronizeCapturedPlaybackAcrossLanguages({required bool repairCuts}) => _run(() async {
+    final transcript = SubtitlePlaybackTranscriptionService.instance.recentTranscript;
+    if (transcript == null || transcript.cues.length < 3) {
+      throw const FormatException('Capture at least three speech cues before cross-language synchronization.');
+    }
+    await _synchronizeTranscriptAcrossLanguages(
+      transcriptCues: transcript.cues,
+      transcriptLanguageCode: transcript.detectedLanguage,
+      transcriptDescription: 'captured playback speech',
+      repairCuts: repairCuts,
+    );
+  });
+
+  Map<String, String> _parseGlossary() {
+    final source = _glossaryController.text.trim();
+    if (source.isEmpty) return const {};
+    final decoded = jsonDecode(source);
+    if (decoded is! Map) {
+      throw const FormatException('Glossary must be a JSON object mapping source terms to translated terms.');
+    }
+    final glossary = <String, String>{};
+    for (final entry in decoded.entries) {
+      if (entry.key is! String || entry.value is! String) {
+        throw const FormatException('Every glossary key and value must be a string.');
+      }
+      glossary[entry.key as String] = entry.value as String;
+    }
+    return glossary;
+  }
+
+  String? get _activeProfileId {
+    try {
+      return context.read<ActiveProfileProvider>().activeId;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  SubtitleRevisionIdentity? get _revisionIdentity {
+    final standaloneIdentity = widget.revisionIdentity;
+    if (standaloneIdentity != null) return standaloneIdentity;
+    final profileId = _activeProfileId?.trim();
+    final serverId = widget.serverId?.trim();
+    final ratingKey = widget.ratingKey?.trim();
+    if (profileId == null ||
+        profileId.isEmpty ||
+        serverId == null ||
+        serverId.isEmpty ||
+        ratingKey == null ||
+        ratingKey.isEmpty ||
+        widget.mediaIndex < 0) {
+      return null;
+    }
+    return SubtitleRevisionIdentity(
+      profileId: profileId,
+      serverId: serverId,
+      ratingKey: ratingKey,
+      mediaIndex: widget.mediaIndex,
+      mediaTitle: widget.mediaTitle,
+      sourceLabel: widget.sourceLabel ?? 'Media library',
+    );
+  }
+
+  Future<bool> _storeReviewedRevision({
+    required List<SubtitleCue> cues,
+    required String operation,
+    String? languageCode,
+    required List<SubtitleWordTiming> wordTimings,
+  }) async {
+    final identity = _revisionIdentity;
+    if (identity == null) {
+      if (mounted) setState(() => _revisionStatus = 'Revision history needs an active profile and media item.');
+      return false;
+    }
+    try {
+      final revision = await SubtitleRevisionService.saveRevision(
+        identity: identity,
+        operation: operation,
+        languageCode: languageCode,
+        cues: cues,
+        wordTimings: wordTimings,
+      );
+      if (mounted) {
+        setState(
+          () => _revisionStatus = 'Saved revision ${revision.id} to this device for this profile and media item.',
+        );
+      }
+      return true;
+    } catch (error) {
+      if (mounted) setState(() => _revisionStatus = 'Could not save this revision locally: $error');
+      return false;
+    }
+  }
+
+  Future<bool?> _askToRecoverSubtitleDraft(SubtitleRevisionDraft draft) => showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Resume subtitle review?'),
+      content: Text(
+        'An in-progress ${draft.operation.toLowerCase()} review from ${_formatRevisionDate(draft.savedAt)} '
+        'matches this exact subtitle result. Resume ${draft.undoHistory.length} undo step${draft.undoHistory.length == 1 ? '' : 's'}?',
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Discard draft')),
+        FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Resume review')),
+      ],
+    ),
+  );
+
+  Future<bool?> _askToReplaceSubtitleDraft(SubtitleRevisionDraft draft) => showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Keep the saved review?'),
+      content: Text(
+        'This item already has an unfinished ${draft.operation.toLowerCase()} review from '
+        '${_formatRevisionDate(draft.savedAt)}. Resume or delete it from subtitle history before starting a different review.',
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Keep saved draft')),
+        FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Delete and continue')),
+      ],
+    ),
+  );
+
+  Future<void> _deleteSubtitleDraft(SubtitleRevisionIdentity? identity) async {
+    if (identity == null) return;
+    try {
+      await SubtitleRevisionService.deleteDraft(identity);
+    } catch (error) {
+      if (mounted) setState(() => _revisionStatus = 'Could not clear the saved subtitle review draft: $error');
+    }
+  }
+
+  Future<bool> _storeUndoCheckpoint({
+    required List<SubtitleCue> cues,
+    required String operation,
+    String? languageCode,
+    required List<SubtitleWordTiming> wordTimings,
+  }) async {
+    final identity = _revisionIdentity;
+    if (identity == null) {
+      if (mounted) {
+        setState(
+          () => _revisionStatus =
+              'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.',
+        );
+      }
+      return true;
+    }
+    try {
+      final checkpointOperation = '$_subtitleUndoCheckpointPrefix${operation.trim()}';
+      await SubtitleRevisionService.saveRevision(
+        identity: identity,
+        operation: checkpointOperation.length <= 120 ? checkpointOperation : checkpointOperation.substring(0, 120),
+        languageCode: languageCode,
+        cues: cues,
+        wordTimings: wordTimings,
+      );
+      if (mounted) setState(() => _revisionStatus = 'Saved an undo checkpoint to this device for this item.');
+      return true;
+    } catch (error) {
+      if (mounted) {
+        setState(
+          () => _revisionStatus = 'Could not save an undo checkpoint; the accepted revision remains available: $error',
+        );
+      }
+      return false;
+    }
+  }
+
+  Future<void> _storeUndoHistory({
+    required List<SubtitleCue> cues,
+    required List<(int, SubtitleCue)> undoHistory,
+    required String operation,
+    String? languageCode,
+    required List<SubtitleWordTiming> wordTimings,
+  }) async {
+    final identity = _revisionIdentity;
+    if (identity == null || undoHistory.isEmpty) return;
+
+    // The most recent pre-edit states are the most useful recovery points.
+    // Leave one item-history slot for the accepted final revision.
+    final snapshot = List<SubtitleCue>.from(cues);
+    var saved = 0;
+    for (
+      var index = undoHistory.length - 1;
+      index >= 0 && saved < SubtitleRevisionService.maximumRevisionsPerItem - 1;
+      index--
+    ) {
+      final (cueIndex, previousCue) = undoHistory[index];
+      if (cueIndex < 0 || cueIndex >= snapshot.length) continue;
+      final currentCue = snapshot[cueIndex];
+      if (currentCue.startMs == previousCue.startMs &&
+          currentCue.endMs == previousCue.endMs &&
+          currentCue.text == previousCue.text) {
+        continue;
+      }
+      snapshot[cueIndex] = previousCue;
+      final persisted = await _storeUndoCheckpoint(
+        cues: List<SubtitleCue>.unmodifiable(snapshot),
+        operation: operation,
+        languageCode: languageCode,
+        wordTimings: wordTimings,
+      );
+      if (!persisted) return;
+      saved++;
+    }
+  }
+
+  Future<void> _restoreSubtitleRevision(SubtitleRevision revision) async {
+    final bytes = SubtitleSyncService.writeSrt(revision.cues);
+    final directory = await getTemporaryDirectory();
+    final path = p.join(directory.path, 'plezyng_revision_${revision.id}.srt');
+    await File(path).writeAsBytes(bytes, flush: true);
+    await widget.player.command(['sub-add', path, 'select']);
+    if (mounted) {
+      setState(() => _status = 'Attached reviewed revision from ${_formatRevisionDate(revision.createdAt)}.');
+      OverlaySheetController.of(context).refocus();
+    }
+  }
+
+  Future<void> _exportSubtitleRevision(SubtitleRevision revision) async {
+    final result = await FilePickerService.instance.saveFile(
+      dialogTitle: 'Export reviewed subtitle revision',
+      fileName: 'PlezyNG_revision_${revision.id}.srt',
+      bytes: SubtitleSyncService.writeSrt(revision.cues),
+      type: FileType.custom,
+      allowedExtensions: const ['srt'],
+    );
+    if (mounted && result != null) {
+      setState(() => _status = 'Reviewed subtitle revision exported as SRT.');
+    }
+  }
+
+  Future<void> _exportSubtitleRevisionJson(SubtitleRevision revision) async {
+    final bytes = Uint8List.fromList(utf8.encode(const JsonEncoder.withIndent('  ').convert(revision.toJson())));
+    final result = await FilePickerService.instance.saveFile(
+      dialogTitle: 'Export subtitle revision with word timings',
+      fileName: 'PlezyNG_revision_${revision.id}.json',
+      bytes: bytes,
+      type: FileType.custom,
+      allowedExtensions: const ['json'],
+    );
+    if (mounted && result != null) {
+      setState(() => _status = 'Revision JSON exported with stable cue IDs and retained word timings.');
+    }
+  }
+
+  Future<SubtitleRevision?> _importSubtitleRevisionJson(SubtitleRevisionIdentity identity) async {
+    final picked = await FilePickerService.instance.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['json'],
+      withReadStream: true,
+    );
+    if (picked == null || picked.files.isEmpty) return null;
+    final file = picked.files.first;
+    if (p.extension(file.name).toLowerCase() != '.json' ||
+        file.size <= 0 ||
+        file.size > SubtitleRevisionService.maximumRevisionBytes) {
+      throw const FormatException('Choose a subtitle revision JSON file no larger than 8 MiB.');
+    }
+    Stream<List<int>>? source = file.readStream;
+    if (source == null && file.path != null) {
+      final input = File(file.path!);
+      final actualSize = await input.length();
+      if (actualSize != file.size) {
+        throw const FormatException('Subtitle revision JSON changed while it was being selected.');
+      }
+      source = input.openRead();
+    }
+    final pickedBytes = file.bytes;
+    if (source == null && pickedBytes != null) source = Stream<List<int>>.value(pickedBytes);
+    if (source == null) {
+      throw const FormatException('This platform did not provide a readable revision JSON stream.');
+    }
+    final output = BytesBuilder(copy: false);
+    var received = 0;
+    await for (final chunk in source) {
+      received += chunk.length;
+      if (received > SubtitleRevisionService.maximumRevisionBytes) {
+        throw const FormatException('Subtitle revision JSON exceeds the 8 MiB import limit.');
+      }
+      output.add(chunk);
+    }
+    if (received != file.size) {
+      throw const FormatException('Subtitle revision JSON changed or was truncated while it was read.');
+    }
+    if (received <= 0 || received > SubtitleRevisionService.maximumRevisionBytes) {
+      throw const FormatException('Subtitle revision JSON exceeds the 8 MiB import limit.');
+    }
+    final bytes = output.takeBytes();
+    final decoded = jsonDecode(utf8.decode(bytes, allowMalformed: false));
+    final imported = SubtitleRevision.fromJson(_normalizeSubtitleRevisionImport(decoded));
+    final operation = 'Imported: ${imported.operation.runes.take(110).map(String.fromCharCode).join()}';
+    return SubtitleRevisionService.saveRevision(
+      identity: identity,
+      operation: operation,
+      languageCode: imported.languageCode,
+      cues: imported.cues,
+      wordTimings: imported.wordTimings,
+    );
+  }
+
+  Object? _normalizeSubtitleRevisionImport(Object? value) {
+    if (value is! Map<String, dynamic> || value['schema'] != 'plezyng.subtitle-cues.v3') return value;
+    if (value['timebase'] != 'milliseconds' ||
+        value['operation'] is! String ||
+        value['createdAt'] is! String ||
+        (value['language'] != null && value['language'] is! String) ||
+        value['cues'] is! List ||
+        value['wordTimings'] is! List) {
+      throw const FormatException('Reviewed subtitle cue JSON metadata is invalid.');
+    }
+    final wordTimings = (value['wordTimings'] as List).map((rawTiming) {
+      if (rawTiming is! Map) return rawTiming;
+      final timing = Map<String, dynamic>.from(rawTiming);
+      timing['confidence'] = timing['confidence'] ?? timing['probability'];
+      return timing;
+    }).toList(growable: false);
+    return <String, Object?>{
+      'schema': 'plezyng.subtitle-revision.v1',
+      'id': '0_0',
+      'createdAt': value['createdAt'],
+      'operation': value['operation'],
+      'languageCode': value['language'],
+      'cues': value['cues'],
+      'wordTimings': wordTimings,
+    };
+  }
+
+  String _formatRevisionDate(DateTime value) {
+    final local = value.toLocal();
+    String pad(int part) => part.toString().padLeft(2, '0');
+    return '${local.year}-${pad(local.month)}-${pad(local.day)} ${pad(local.hour)}:${pad(local.minute)}';
+  }
+
+  Future<void> _showRevisionHistory() async {
+    final identity = _revisionIdentity;
+    if (identity == null) {
+      setState(() => _revisionStatus = 'Revision history needs a stable profile and media item.');
+      return;
+    }
+    try {
+      var revisions = await SubtitleRevisionService.loadRevisions(identity);
+      var draft = await SubtitleRevisionService.loadDraftForIdentity(identity);
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            final height = (MediaQuery.sizeOf(dialogContext).height - 220).clamp(240.0, 460.0).toDouble();
+            return AlertDialog(
+              title: const Text('Subtitle revision history'),
+              content: SizedBox(
+                width: 620,
+                height: height,
+                child: revisions.isEmpty && draft == null
+                    ? const Center(child: Text('No reviewed revisions have been saved for this item yet.'))
+                    : ListView.separated(
+                        itemCount: revisions.length + (draft == null ? 0 : 1),
+                        separatorBuilder: (_, _) => const Divider(height: 12),
+                        itemBuilder: (context, index) {
+                          if (draft != null && index == 0) {
+                            final pendingDraft = draft!;
+                            return Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text(
+                                      'Unfinished review · ${pendingDraft.operation}',
+                                      style: Theme.of(context).textTheme.titleSmall,
+                                    ),
+                                    Text(
+                                      '${_formatRevisionDate(pendingDraft.savedAt)} · ${pendingDraft.cues.length} cues · '
+                                      '${pendingDraft.undoHistory.length} undo steps',
+                                      style: Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                    Wrap(
+                                      spacing: 8,
+                                      children: [
+                                        TextButton.icon(
+                                          onPressed: () {
+                                            Navigator.of(dialogContext).pop();
+                                            unawaited(
+                                              _run(() async {
+                                                await _writeAndApply(
+                                                  pendingDraft.baseCues,
+                                                  operationLabel: pendingDraft.operation,
+                                                  operationLanguageCode: pendingDraft.languageCode,
+                                                  sourceCues: pendingDraft.sourceCues,
+                                                  wordTimings: pendingDraft.wordTimings,
+                                                  resumeDraft: pendingDraft,
+                                                  resumeIdentity: identity,
+                                                );
+                                              }),
+                                            );
+                                          },
+                                          icon: const AppIcon(Symbols.play_arrow_rounded),
+                                          label: const Text('Resume review'),
+                                        ),
+                                        TextButton.icon(
+                                          onPressed: () async {
+                                            await SubtitleRevisionService.deleteDraft(identity);
+                                            if (!mounted || !dialogContext.mounted) return;
+                                            setDialogState(() => draft = null);
+                                          },
+                                          icon: const AppIcon(Symbols.delete_outline_rounded),
+                                          label: const Text('Delete draft'),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                          final revisionIndex = index - (draft == null ? 0 : 1);
+                          final revision = revisions[revisionIndex];
+                          final language = revision.languageCode == null ? '' : ' · ${revision.languageCode}';
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(revision.operation, style: Theme.of(context).textTheme.titleSmall),
+                                Text(
+                                  '${_formatRevisionDate(revision.createdAt)} · ${revision.cues.length} cues$language',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                if (revision.wordTimings.isNotEmpty)
+                                  Text(
+                                    '${revision.wordTimings.length} token-derived timing spans retained',
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                Wrap(
+                                  spacing: 8,
+                                  children: [
+                                    TextButton.icon(
+                                      onPressed: () {
+                                        Navigator.of(dialogContext).pop();
+                                        unawaited(_run(() => _restoreSubtitleRevision(revision)));
+                                      },
+                                      icon: AppIcon(
+                                        revision.operation.startsWith(_subtitleUndoCheckpointPrefix)
+                                            ? Symbols.undo_rounded
+                                            : Symbols.subtitles_rounded,
+                                      ),
+                                      label: Text(
+                                        revision.operation.startsWith(_subtitleUndoCheckpointPrefix)
+                                            ? 'Restore checkpoint'
+                                            : 'Attach',
+                                      ),
+                                    ),
+                                    TextButton.icon(
+                                      onPressed: () {
+                                        Navigator.of(dialogContext).pop();
+                                        unawaited(_run(() => _exportSubtitleRevision(revision)));
+                                      },
+                                      icon: const AppIcon(Symbols.save_alt_rounded),
+                                      label: const Text('Export'),
+                                    ),
+                                    TextButton.icon(
+                                      onPressed: () {
+                                        Navigator.of(dialogContext).pop();
+                                        unawaited(_run(() => _exportSubtitleRevisionJson(revision)));
+                                      },
+                                      icon: const AppIcon(Symbols.data_object_rounded),
+                                      label: const Text('Export JSON'),
+                                    ),
+                                    TextButton.icon(
+                                      onPressed: () async {
+                                        await SubtitleRevisionService.deleteRevision(identity, revision.id);
+                                        if (!mounted || !dialogContext.mounted) return;
+                                        setDialogState(
+                                          () => revisions = revisions
+                                              .where((item) => item.id != revision.id)
+                                              .toList(growable: false),
+                                        );
+                                      },
+                                      icon: const AppIcon(Symbols.delete_outline_rounded),
+                                      label: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+              ),
+              actions: [
+                TextButton.icon(
+                  onPressed: () async {
+                    try {
+                      final imported = await _importSubtitleRevisionJson(identity);
+                      if (imported != null && mounted && dialogContext.mounted) {
+                        setDialogState(() => revisions = [imported, ...revisions]);
+                        setState(() => _revisionStatus = 'Imported revision with stable cue IDs and word timings.');
+                      }
+                    } catch (error) {
+                      if (mounted) setState(() => _error = _readableError(error));
+                    }
+                  },
+                  icon: const AppIcon(Symbols.file_upload),
+                  label: const Text('Import JSON'),
+                ),
+                TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Close')),
+              ],
+            );
+          },
+        ),
+      );
+    } catch (error) {
+      if (mounted) setState(() => _revisionStatus = 'Could not open subtitle revision history: $error');
+    }
+  }
+
+  String _currentGlossaryPairKey() {
+    String code(TranslateLanguage language) => language.bcpCode.toLowerCase().split('-').first;
+    return '${code(_sourceLanguage)}>${code(_targetLanguage)}';
+  }
+
+  String _currentGlossaryDraftKey() =>
+      '${_useSeriesGlossary ? 'series:${widget.seriesKey}' : 'profile'}|${_currentGlossaryPairKey()}';
+
+  Future<void> _loadSpeechLanguageForProfile() async {
+    final profileId = _activeProfileId;
+    if (profileId == null) return;
+    try {
+      final code = SettingsService.instance.read(SettingsService.subtitleSpeechLanguageForProfile(profileId));
+      if (!mounted) return;
+      if (code == 'auto' || _whisperLanguagesByCode().containsKey(code)) {
+        setState(() => _speechLanguageCode = code);
+      }
+    } catch (_) {
+      // A corrupt or stale preference should not block subtitle generation.
+    }
+  }
+
+  Future<void> _saveSpeechLanguageForProfile(String code) async {
+    final profileId = _activeProfileId;
+    if (profileId == null) return;
+    try {
+      await SettingsService.instance.write(SettingsService.subtitleSpeechLanguageForProfile(profileId), code);
+    } catch (_) {
+      if (mounted) setState(() => _status = 'Could not save the speech language preference for this profile.');
+    }
+  }
+
+  Future<void> _loadGlossaryForCurrentPair() async {
+    final draft = _glossaryDrafts[_currentGlossaryDraftKey()];
+    final profileId = _activeProfileId;
+    Map<String, String> saved = const {};
+    if (draft == null && profileId != null) {
+      try {
+        saved = SubtitleTranslationService.loadGlossaryForProfile(
+          profileId: profileId,
+          sourceLanguage: _sourceLanguage,
+          targetLanguage: _targetLanguage,
+          seriesId: _useSeriesGlossary ? widget.seriesKey : null,
+        );
+      } catch (_) {
+        saved = const {};
+      }
+    }
+    if (!mounted) return;
+    _glossaryController.text = draft ?? (saved.isEmpty ? '' : JsonEncoder.withIndent('  ').convert(saved));
+  }
+
+  void _changeTranslationLanguage({required bool source, required TranslateLanguage? value}) {
+    if (value == null || (source ? value == _sourceLanguage : value == _targetLanguage)) return;
+    _glossaryDrafts[_currentGlossaryDraftKey()] = _glossaryController.text;
+    if (_glossaryDrafts.length > 16) _glossaryDrafts.remove(_glossaryDrafts.keys.first);
+    setState(() {
+      if (source) {
+        _sourceLanguage = value;
+      } else {
+        _targetLanguage = value;
+      }
+    });
+    unawaited(_loadGlossaryForCurrentPair());
+  }
+
+  Future<void> _saveGlossary() async {
+    final profileId = _activeProfileId;
+    if (profileId == null) {
+      throw StateError('An active profile is required to save a translation glossary.');
+    }
+    final glossary = _parseGlossary();
+    await SubtitleTranslationService.saveGlossaryForProfile(
+      profileId: profileId,
+      sourceLanguage: _sourceLanguage,
+      targetLanguage: _targetLanguage,
+      seriesId: _useSeriesGlossary ? widget.seriesKey : null,
+      glossary: glossary,
+    );
+    _glossaryDrafts[_currentGlossaryDraftKey()] = _glossaryController.text;
+    if (mounted) {
+      setState(
+        () => _status = _useSeriesGlossary
+            ? 'Saved glossary override for this series and language pair.'
+            : 'Saved glossary for this profile and language pair.',
+      );
+    }
+  }
+
+  Future<void> _showGlossaryHistory() async {
+    final profileId = _activeProfileId;
+    if (profileId == null) {
+      if (mounted) setState(() => _status = 'An active profile is required to load glossary history.');
+      return;
+    }
+    final revisions = SubtitleTranslationService.loadGlossaryHistoryForProfile(
+      profileId: profileId,
+      sourceLanguage: _sourceLanguage,
+      targetLanguage: _targetLanguage,
+      seriesId: _useSeriesGlossary ? widget.seriesKey : null,
+    );
+    if (revisions.isEmpty) {
+      if (mounted) setState(() => _status = 'No previous glossary versions are saved for this scope and language pair.');
+      return;
+    }
+    final selected = await showDialog<SubtitleGlossaryRevision>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Saved glossary history'),
+        content: SizedBox(
+          width: 520,
+          height: 360,
+          child: ListView.builder(
+            itemCount: revisions.length,
+            itemBuilder: (context, index) {
+              final revision = revisions[index];
+              return ListTile(
+                title: Text(_formatRevisionDate(revision.createdAt)),
+                subtitle: Text('${revision.glossary.length} terms · ${_useSeriesGlossary ? 'series' : 'profile'} scope'),
+                onTap: () => Navigator.of(dialogContext).pop(revision),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(t.common.cancel)),
+        ],
+      ),
+    );
+    if (selected == null || !mounted) return;
+    final restoredDraft = JsonEncoder.withIndent('  ').convert(selected.glossary);
+    setState(() {
+      _glossaryController.text = restoredDraft;
+      _glossaryDrafts[_currentGlossaryDraftKey()] = restoredDraft;
+      _status = 'Loaded glossary version from ${_formatRevisionDate(selected.createdAt)}. Save it to replace the current glossary.';
+    });
+  }
+
+  Future<void> _prepareTranslationModels() => _run(() async {
+    await SubtitleTranslationService.prepareMobileModels(
+      sourceLanguage: _sourceLanguage,
+      targetLanguage: _targetLanguage,
+      allowMobileData: _allowMobileData,
+      onStatus: (status) {
+        if (mounted) setState(() => _status = status);
+      },
+    );
+    if (mounted) setState(() => _status = 'Selected language models are ready for offline translation.');
+  });
+
+  Future<void> _translate() => _run(() async {
+    if (!await SubtitleTranslationService.isSupportedOnCurrentDevice()) {
+      throw UnsupportedError(
+        SubtitleTranslationService.desktopPlatformSupported
+            ? 'Install Argos Translate in Python and the selected language pair to translate locally on desktop.'
+            : 'On-device translation is available on supported phones and tablets only.',
+      );
+    }
+    final selected = await _pickSubtitleCues();
+    if (selected == null || !mounted) return;
+    final glossary = _parseGlossary();
+    final profileId = _activeProfileId;
+    if (profileId != null) {
+      await SubtitleTranslationService.saveGlossaryForProfile(
+        profileId: profileId,
+        sourceLanguage: _sourceLanguage,
+        targetLanguage: _targetLanguage,
+        seriesId: _useSeriesGlossary ? widget.seriesKey : null,
+        glossary: glossary,
+      );
+      _glossaryDrafts[_currentGlossaryDraftKey()] = _glossaryController.text;
+    }
+    setState(
+      () => _status = SubtitleTranslationService.desktopPlatformSupported
+          ? 'Starting local translation…'
+          : 'Preparing on-device language models…',
+    );
+    final result = await SubtitleTranslationService.translateCues(
+      cues: selected.$1,
+      sourceLanguage: _sourceLanguage,
+      targetLanguage: _targetLanguage,
+      allowMobileData: _allowMobileData,
+      requestDesktopCuda: _requestTranslationCuda,
+      bilingual: _bilingualTranslation,
+      glossary: glossary,
+      onProgress: (completed, total) {
+        if (mounted) setState(() => _status = 'Translating cue $completed of $total on this device…');
+      },
+    );
+    _requireSubtitleCueIdentityPreserved(selected.$1, result.cues);
+    if (!await _writeAndApply(
+      result.cues,
+      operationLabel: 'Translated subtitles',
+      operationLanguageCode: _targetLanguage.bcpCode,
+      sourceCues: selected.$1,
+      reviewWarnings: result.qualityWarnings,
+    )) {
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      _status =
+          'Translated ${result.cues.length} cues from '
+          '${SubtitleTranslationService.languageLabel(_sourceLanguage)} to '
+          '${SubtitleTranslationService.languageLabel(_targetLanguage)}. '
+          'Timing and original subtitle file were preserved. ${result.backendLabel}.'
+          '$_resultPersistenceSuffix';
+    });
+    await _showApplied();
+  });
+
+  Future<SubtitleCue?> _editCueForReview(BuildContext dialogContext, SubtitleCue cue) async {
+    final textController = TextEditingController(text: cue.text);
+    final startController = TextEditingController(text: cue.startMs.toString());
+    final endController = TextEditingController(text: cue.endMs.toString());
+    SubtitleCue? edited;
+    String? validationError;
+    try {
+      await showDialog<bool>(
+        context: dialogContext,
+        builder: (editorContext) => StatefulBuilder(
+          builder: (context, setEditorState) => AlertDialog(
+            title: const Text('Edit subtitle cue'),
+            content: SizedBox(
+              width: 480,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      controller: textController,
+                      minLines: 3,
+                      maxLines: 8,
+                      decoration: const InputDecoration(labelText: 'Cue text', border: OutlineInputBorder()),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: startController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(labelText: 'Start (ms)', border: OutlineInputBorder()),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: endController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(labelText: 'End (ms)', border: OutlineInputBorder()),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (validationError != null) ...[
+                      const SizedBox(height: 8),
+                      Text(validationError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(editorContext).pop(false), child: const Text('Cancel')),
+              FilledButton(
+                onPressed: () {
+                  final startMs = int.tryParse(startController.text.trim());
+                  final endMs = int.tryParse(endController.text.trim());
+                  final text = textController.text.trimRight();
+                  if (startMs == null ||
+                      endMs == null ||
+                      startMs < 0 ||
+                      endMs <= startMs ||
+                      endMs > SubtitleRetimer.maximumTimeMs ||
+                      text.trim().isEmpty ||
+                      text.length > 4000) {
+                    setEditorState(() {
+                      validationError = 'Use non-empty text up to 4000 characters and valid millisecond times.';
+                    });
+                    return;
+                  }
+                  edited = SubtitleCue(
+                    index: cue.index,
+                    startMs: startMs,
+                    endMs: endMs,
+                    text: text,
+                    cueId: cue.stableId,
+                  );
+                  Navigator.of(editorContext).pop(true);
+                },
+                child: const Text('Save cue'),
+              ),
+            ],
+          ),
+        ),
+      );
+      return edited;
+    } finally {
+      textController.dispose();
+      startController.dispose();
+      endController.dispose();
+    }
+  }
+
+  void _rememberCueEdit(List<(int, SubtitleCue)> undoHistory, int index, SubtitleCue cue) {
+    if (undoHistory.length == 100) undoHistory.removeAt(0);
+    undoHistory.add((index, cue));
+  }
+
+  Future<void> _showFullCueEditor(
+    BuildContext dialogContext,
+    List<SubtitleCue> cues, {
+    List<SubtitleCue>? sourceCues,
+    required List<(int, SubtitleCue)> undoHistory,
+    VoidCallback? onChanged,
+  }) async {
+    final searchController = TextEditingController();
+    var query = '';
+    try {
+      await showDialog<void>(
+        context: dialogContext,
+        builder: (editorContext) => StatefulBuilder(
+          builder: (context, setEditorState) {
+            final normalizedQuery = query.trim().toLowerCase();
+            final visibleIndexes = List<int>.generate(cues.length, (index) => index)
+                .where((index) {
+                  if (normalizedQuery.isEmpty) return true;
+                  final output = cues[index].text.toLowerCase();
+                  final original = sourceCues != null && index < sourceCues.length
+                      ? sourceCues[index].text.toLowerCase()
+                      : '';
+                  return output.contains(normalizedQuery) || original.contains(normalizedQuery);
+                })
+                .toList(growable: false);
+            return AlertDialog(
+              title: Text('Edit all ${cues.length} cues'),
+              content: SizedBox(
+                width: 720,
+                height: (MediaQuery.sizeOf(editorContext).height - 220).clamp(280.0, 560.0).toDouble(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text('Review or edit any output cue. Changes stay in this result until you attach it.'),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: searchController,
+                      maxLength: 128,
+                      decoration: const InputDecoration(
+                        labelText: 'Find in source or output cues',
+                        prefixIcon: AppIcon(Symbols.search_rounded),
+                        border: OutlineInputBorder(),
+                        counterText: '',
+                      ),
+                      onChanged: (value) => setEditorState(() => query = value),
+                    ),
+                    const SizedBox(height: 4),
+                    Text('Showing ${visibleIndexes.length} of ${cues.length} cues.'),
+                    const SizedBox(height: 6),
+                    Expanded(
+                      child: visibleIndexes.isEmpty
+                          ? const Center(child: Text('No cues match this search.'))
+                          : ListView.builder(
+                              itemCount: visibleIndexes.length,
+                              itemBuilder: (context, visibleIndex) {
+                                final cueIndex = visibleIndexes[visibleIndex];
+                                final cue = cues[cueIndex];
+                                final original = sourceCues != null && cueIndex < sourceCues.length
+                                    ? sourceCues[cueIndex].text
+                                    : null;
+                                Future<void> editCue() async {
+                                  final edited = await _editCueForReview(editorContext, cue);
+                                  if (edited != null && mounted) {
+                                    _rememberCueEdit(undoHistory, cueIndex, cue);
+                                    setEditorState(() => cues[cueIndex] = edited);
+                                    onChanged?.call();
+                                  }
+                                }
+
+                                return ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text(
+                                    'Cue ${cue.index} · ${_formatCueTime(cue.startMs)} – ${_formatCueTime(cue.endMs)}',
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (original != null) ...[
+                                        Text('Original', style: Theme.of(context).textTheme.labelSmall),
+                                        SelectableText(original),
+                                        const SizedBox(height: 4),
+                                      ],
+                                      Text('Output', style: Theme.of(context).textTheme.labelSmall),
+                                      SelectableText(cue.text),
+                                    ],
+                                  ),
+                                  trailing: IconButton(
+                                    tooltip: 'Edit cue',
+                                    onPressed: editCue,
+                                    icon: const AppIcon(Symbols.edit_rounded),
+                                  ),
+                                  onTap: editCue,
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                if (undoHistory.isNotEmpty)
+                  TextButton.icon(
+                    onPressed: () {
+                      final previous = undoHistory.removeLast();
+                      setEditorState(() => cues[previous.$1] = previous.$2);
+                      onChanged?.call();
+                    },
+                    icon: const AppIcon(Symbols.undo_rounded),
+                    label: Text('Undo (${undoHistory.length})'),
+                  ),
+                TextButton(onPressed: () => Navigator.of(editorContext).pop(), child: const Text('Done')),
+              ],
+            );
+          },
+        ),
+      );
+    } finally {
+      searchController.dispose();
+    }
+  }
+
+  String? _normalizedUploadLanguage(String? languageCode) {
+    final code = languageCode?.trim().toLowerCase().split(RegExp(r'[-_]')).first ?? '';
+    return RegExp(r'^[a-z]{2,3}$').hasMatch(code) ? code : null;
+  }
+
+  String get _resultPersistenceSuffix {
+    if (_lastResultSavedToSource) return ' Saved to the standalone source item.';
+    if (_lastResultUploadedToServer) return ' Uploaded to the server library.';
+    return '';
+  }
+
+
+  Future<void> _uploadSubtitleToServer(Uint8List bytes, String languageCode, String originToken) async {
+    final serverId = widget.serverId;
+    final ratingKey = widget.ratingKey;
+    if (serverId == null || serverId.isEmpty || ratingKey == null || ratingKey.isEmpty) {
+      throw StateError('This playback item is not linked to a server library entry.');
+    }
+    final client = context.tryGetMediaClientForServer(ServerId(serverId));
+    if (client == null) throw StateError('The media server is offline or unavailable.');
+    final uploaded = await client.attachSubtitle(
+      ratingKey,
+      bytes: bytes,
+      fileName: 'PlezyNG.$originToken.$languageCode.srt',
+      format: 'srt',
+      language: languageCode,
+      mediaIndex: widget.mediaIndex,
+    );
+    if (!uploaded) {
+      throw UnsupportedError('The server refused this subtitle upload or does not support library attachment.');
+    }
+  }
+
+  String _originTokenForOperation(String operationLabel) {
+    final normalized = operationLabel.toLowerCase();
+    if (normalized.contains('translat')) return 'translated';
+    if (normalized.contains('sync') || normalized.contains('repair')) return 'synchronized';
+    return 'generated';
+  }
+
+  Future<bool> _writeAndApply(
+    List<SubtitleCue> cues, {
+    required String operationLabel,
+    String? operationLanguageCode,
+    List<SubtitleCue>? sourceCues,
+    List<String> reviewWarnings = const [],
+    List<SubtitleWordTiming> wordTimings = const <SubtitleWordTiming>[],
+    SubtitleRevisionDraft? resumeDraft,
+    SubtitleRevisionIdentity? resumeIdentity,
+  }) async {
+    if (cues.isEmpty || cues.length > SubtitleRetimer.maximumCueCount) {
+      throw const FormatException('Subtitle result has no cues or exceeds the 50000 cue processing bound.');
+    }
+    if (sourceCues != null && sourceCues.length != cues.length) {
+      throw StateError('Source and output cue counts do not match; no subtitle was attached.');
+    }
+    var reviewedCues = List<SubtitleCue>.from(cues);
+    final originalCuesById = <String, SubtitleCue>{for (final cue in cues) cue.stableId: cue};
+    var reviewedWordTimings = SubtitleWordTimingBuilder.attachCueIndices(wordTimings, reviewedCues).toList();
+    var invalidatedWordTimingCount = 0;
+    final undoHistory = <(int, SubtitleCue)>[];
+    final draftIdentity = _revisionIdentity;
+    final sourceFingerprint = SubtitleRevisionService.reviewFingerprint(cues, sourceCues: sourceCues);
+    if (resumeDraft != null) {
+      if (draftIdentity == null ||
+          resumeIdentity == null ||
+          draftIdentity.storageKey != resumeIdentity.storageKey ||
+          resumeDraft.sourceFingerprint != sourceFingerprint ||
+          resumeDraft.operation != operationLabel) {
+        throw StateError('This subtitle review draft no longer matches the active item or cue set.');
+      }
+      reviewedCues = List<SubtitleCue>.from(resumeDraft.cues);
+      reviewedWordTimings = List<SubtitleWordTiming>.from(resumeDraft.wordTimings);
+      undoHistory.addAll(resumeDraft.undoHistory);
+    } else if (draftIdentity != null) {
+      final draft = await SubtitleRevisionService.loadDraftForIdentity(draftIdentity);
+      if (draft != null && mounted) {
+        if (draft.sourceFingerprint == sourceFingerprint && draft.operation == operationLabel) {
+          final recovery = await _askToRecoverSubtitleDraft(draft);
+          if (recovery == null) {
+            setState(() => _revisionStatus = 'The saved review draft is still available to resume later.');
+            return false;
+          }
+          if (recovery) {
+            reviewedCues = List<SubtitleCue>.from(draft.cues);
+            reviewedWordTimings = List<SubtitleWordTiming>.from(draft.wordTimings);
+            undoHistory.addAll(draft.undoHistory);
+          } else {
+            await _deleteSubtitleDraft(draftIdentity);
+          }
+        } else {
+          final discardPriorDraft = await _askToReplaceSubtitleDraft(draft);
+          if (discardPriorDraft != true) {
+            setState(() => _revisionStatus = 'The earlier review draft was kept; resume it from subtitle history.');
+            return false;
+          }
+          await _deleteSubtitleDraft(draftIdentity);
+        }
+      }
+    }
+    Future<void> persistReviewDraft() async {
+      if (draftIdentity == null) return;
+      try {
+        await SubtitleRevisionService.saveDraft(
+          identity: draftIdentity,
+          draft: SubtitleRevisionDraft(
+            sourceFingerprint: sourceFingerprint,
+            savedAt: DateTime.now().toUtc(),
+            operation: operationLabel,
+            languageCode: operationLanguageCode,
+            baseCues: List<SubtitleCue>.unmodifiable(cues),
+            sourceCues: sourceCues == null ? null : List<SubtitleCue>.unmodifiable(sourceCues),
+            cues: List<SubtitleCue>.unmodifiable(reviewedCues),
+            wordTimings: List<SubtitleWordTiming>.unmodifiable(reviewedWordTimings),
+            undoHistory: List<(int, SubtitleCue)>.unmodifiable(undoHistory),
+          ),
+        );
+        if (mounted) setState(() => _revisionStatus = 'Saved this subtitle review and its undo steps on this device.');
+      } catch (error) {
+        if (mounted) setState(() => _revisionStatus = 'Could not save the subtitle review draft: $error');
+      }
+    }
+    var pendingDraftWrite = Future<void>.value();
+    void scheduleDraftPersistence() {
+      pendingDraftWrite = pendingDraftWrite.then((_) => persistReviewDraft());
+    }
+
+    Future<void> clearReviewDraft() async {
+      await pendingDraftWrite;
+      await _deleteSubtitleDraft(draftIdentity);
+    }
+    _lastResultUploadedToServer = false;
+    _lastResultSavedToSource = false;
+    final uploadLanguage = _normalizedUploadLanguage(operationLanguageCode);
+    final canUploadToServer =
+        uploadLanguage != null && widget.serverId?.isNotEmpty == true && widget.ratingKey?.isNotEmpty == true;
+    final canSaveToSource = widget.onSaveToSource != null;
+    final List<int> previewIndexes;
+    if (cues.length <= 12) {
+      previewIndexes = List<int>.generate(cues.length, (index) => index);
+    } else {
+      final sample = <int>{
+        ...List<int>.generate(8, (index) => index),
+        cues.length ~/ 2,
+        ...List<int>.generate(3, (index) => cues.length - 3 + index),
+      };
+      previewIndexes = sample.toList()..sort();
+    }
+    final choice = await showDialog<_SubtitleReviewChoice>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text('Review $operationLabel'),
+          content: SizedBox(
+            width: 560,
+            height: (MediaQuery.sizeOf(dialogContext).height - 220).clamp(240.0, 420.0).toDouble(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('${cues.length} cues are ready. Review this sample before attaching the generated SRT.'),
+                if (reviewWarnings.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Translation review found ${reviewWarnings.length} possible mismatch${reviewWarnings.length == 1 ? '' : 'es'} in glossary terms or numbers. Review these cues before attaching.',
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        ...reviewWarnings
+                            .take(3)
+                            .map(
+                              (warning) => Tooltip(
+                                message: warning,
+                                child: Text(
+                                  warning,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                        if (reviewWarnings.length > 3)
+                          Text('And ${reviewWarnings.length - 3} more.', style: Theme.of(context).textTheme.bodySmall),
+                      ],
+                    ),
+                  ),
+                Text(
+                  draftIdentity == null
+                      ? 'Edits and undo stay in this review session. Save SRT or JSON exports a separate result without changing the source subtitle.'
+                      : 'Edits and undo steps auto-save to this device for this item. Save SRT or JSON exports a separate result without changing the source subtitle.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Text(
+                  reviewedWordTimings.isEmpty
+                      ? 'This backend did not return token timestamps; cue timing remains available.'
+                      : 'JSON includes ${reviewedWordTimings.length} token-derived word timings. Editing a cue omits its linked spans so timings cannot become stale. Whisper token confidence is not calibrated.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                TextButton.icon(
+                  onPressed: () => unawaited(
+                    _showFullCueEditor(
+                      dialogContext,
+                      reviewedCues,
+                      sourceCues: sourceCues,
+                      undoHistory: undoHistory,
+                      onChanged: () {
+                        setDialogState(() {});
+                        scheduleDraftPersistence();
+                      },
+                    ),
+                  ),
+                  icon: const AppIcon(Symbols.edit_rounded),
+                  label: const Text('Edit all cues'),
+                ),
+                if (widget.selectedSubtitleBurnedIn)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                if (canUploadToServer)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      'Upload + attach stores this SRT on the active library item when the server allows it.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  )
+                else if (canSaveToSource)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      'This SRT can be stored with the active standalone source item and attached to this player.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      uploadLanguage == null
+                          ? 'Server upload is unavailable because this result has no known subtitle language. You can still attach it to the current player.'
+                          : 'Server upload is unavailable because this is not an active server library item. You can still attach it to the current player.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: previewIndexes.length,
+                    itemBuilder: (context, index) {
+                      final cueIndex = previewIndexes[index];
+                      final cue = reviewedCues[cueIndex];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${_formatCueTime(cue.startMs)} – ${_formatCueTime(cue.endMs)}',
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                            const SizedBox(height: 2),
+                            if (sourceCues != null && cueIndex < sourceCues.length) ...[
+                              Text('Original', style: Theme.of(context).textTheme.labelSmall),
+                              SelectableText(sourceCues[cueIndex].text),
+                              const SizedBox(height: 2),
+                            ],
+                            SelectableText(cue.text),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton.icon(
+                                onPressed: () async {
+                                  final edited = await _editCueForReview(dialogContext, cue);
+                                  if (edited != null && mounted) {
+                                    setDialogState(() {
+                                      _rememberCueEdit(undoHistory, cueIndex, cue);
+                                      reviewedCues[cueIndex] = edited;
+                                    });
+                                    scheduleDraftPersistence();
+                                  }
+                                },
+                                icon: const AppIcon(Symbols.edit_rounded),
+                                label: const Text('Edit sample cue'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            if (undoHistory.isNotEmpty)
+              TextButton.icon(
+                onPressed: () {
+                  final previous = undoHistory.removeLast();
+                  setDialogState(() => reviewedCues[previous.$1] = previous.$2);
+                  scheduleDraftPersistence();
+                },
+                icon: const AppIcon(Symbols.undo_rounded),
+                label: Text('Undo (${undoHistory.length})'),
+              ),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.exportSrt),
+              icon: const AppIcon(Symbols.save_alt_rounded),
+              label: const Text('Save SRT'),
+            ),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.exportJson),
+              icon: const AppIcon(Symbols.data_object_rounded),
+              label: const Text('Save JSON'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.discard),
+              child: const Text('Discard'),
+            ),
+            if (canUploadToServer)
+              OutlinedButton(
+                onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.serverAndPlayer),
+                child: const Text('Upload + attach'),
+              ),
+            if (canSaveToSource)
+              OutlinedButton(
+                onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.sourceAndPlayer),
+                child: const Text('Save to source + attach'),
+              ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.player),
+              child: const Text('Attach to player'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || choice == null || choice == _SubtitleReviewChoice.discard) {
+      if (mounted) {
+        setState(() => _status = 'Subtitle result discarded; the current track and source file are unchanged.');
+      }
+      await clearReviewDraft();
+      return false;
+    }
+    if (choice != _SubtitleReviewChoice.exportSrt &&
+        choice != _SubtitleReviewChoice.exportJson &&
+        widget.isRevisionIdentityCurrent?.call() == false) {
+      throw StateError('Playback changed while the subtitle was being reviewed. Reopen subtitle tools for the current item.');
+    }
+    final editedCueIds = <String>{};
+    for (final cue in reviewedCues) {
+      final original = originalCuesById[cue.stableId];
+      if (original != null &&
+          (original.startMs != cue.startMs || original.endMs != cue.endMs || original.text != cue.text)) {
+        editedCueIds.add(cue.stableId);
+      }
+    }
+    if (editedCueIds.isNotEmpty && reviewedWordTimings.isNotEmpty) {
+      final retainedWordTimings = reviewedWordTimings
+          .where((word) => word.cueId == null || !editedCueIds.contains(word.cueId))
+          .toList(growable: false);
+      invalidatedWordTimingCount = reviewedWordTimings.length - retainedWordTimings.length;
+      reviewedWordTimings = retainedWordTimings;
+    }
+    final bytes = SubtitleSyncService.writeSrt(reviewedCues);
+    final originToken = _originTokenForOperation(operationLabel);
+    if (choice == _SubtitleReviewChoice.exportSrt) {
+      final exportPath = await FilePickerService.instance.saveFile(
+        dialogTitle: 'Save reviewed subtitle',
+        fileName: 'PlezyNG_${originToken}_${DateTime.now().microsecondsSinceEpoch}.srt',
+        bytes: bytes,
+        type: FileType.custom,
+        allowedExtensions: const ['srt'],
+      );
+      if (!mounted) return false;
+      if (exportPath == null) {
+        setState(() => _status = 'SRT export was cancelled; the active track and source subtitle are unchanged.');
+        return false;
+      }
+      await _storeUndoHistory(
+        cues: reviewedCues,
+        undoHistory: undoHistory,
+        operation: operationLabel,
+        languageCode: operationLanguageCode,
+        wordTimings: reviewedWordTimings,
+      );
+      final revisionSaved = await _storeReviewedRevision(
+        cues: reviewedCues,
+        operation: operationLabel,
+        languageCode: operationLanguageCode,
+        wordTimings: reviewedWordTimings,
+      );
+      if (revisionSaved) await clearReviewDraft();
+      if (mounted) setState(() => _status = 'Reviewed subtitle exported as SRT.');
+      return false;
+    }
+    if (choice == _SubtitleReviewChoice.exportJson) {
+      final jsonBytes = Uint8List.fromList(
+        utf8.encode(
+          JsonEncoder.withIndent('  ').convert({
+            'schema': 'plezyng.subtitle-cues.v3',
+            'generatedBy': 'PlezyNG',
+            'operation': operationLabel,
+            'language': operationLanguageCode,
+            'timebase': 'milliseconds',
+            'createdAt': DateTime.now().toUtc().toIso8601String(),
+            'cues': reviewedCues
+                .map(
+                  (cue) => {
+                    'cueId': cue.stableId,
+                    'index': cue.index,
+                    'startMs': cue.startMs,
+                    'endMs': cue.endMs,
+                    'text': cue.text,
+                  },
+                )
+                .toList(growable: false),
+            'wordTimingAvailability': reviewedWordTimings.isEmpty
+                ? (wordTimings.isEmpty ? 'not-returned-by-backend' : 'omitted-after-cue-edits')
+                : (invalidatedWordTimingCount > 0 ? 'partial-after-cue-edits' : 'whisper-token-timestamps'),
+            'wordTimingOmittedCount': invalidatedWordTimingCount,
+            'wordTimings': reviewedWordTimings
+                .map(
+                  (word) => {
+                    'startMs': word.startMs,
+                    'endMs': word.endMs,
+                    'text': word.text,
+                    'unit': word.unit.name,
+                    'probability': word.confidence,
                     'cueIndex': word.cueIndex,
                     'cueId': word.cueId,
                   },
@@ -938,12 +2406,6 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         setState(() => _status = 'JSON export was cancelled; the active track and source subtitle are unchanged.');
         return false;
       }
-      await _storeReviewedRevision(
-        cues: reviewedCues,
-        operation: operationLabel,
-        languageCode: operationLanguageCode,
-        wordTimings: reviewedWordTimings,
-      );
       await _storeUndoHistory(
         cues: reviewedCues,
         undoHistory: undoHistory,
@@ -951,6 +2413,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
       );
+      final revisionSaved = await _storeReviewedRevision(
+        cues: reviewedCues,
+        operation: operationLabel,
+        languageCode: operationLanguageCode,
+        wordTimings: reviewedWordTimings,
+      );
+      if (revisionSaved) await clearReviewDraft();
       if (mounted) setState(() => _status = 'Reviewed subtitle exported as versioned cue JSON.');
       return false;
     }
@@ -977,15 +2446,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       }
     } catch (error) {
       if (_lastResultUploadedToServer) {
-        await _storeReviewedRevision(
+        await _storeUndoHistory(
           cues: reviewedCues,
+          undoHistory: undoHistory,
           operation: operationLabel,
           languageCode: operationLanguageCode,
           wordTimings: reviewedWordTimings,
         );
-        await _storeUndoHistory(
+        await _storeReviewedRevision(
           cues: reviewedCues,
-          undoHistory: undoHistory,
           operation: operationLabel,
           languageCode: operationLanguageCode,
           wordTimings: reviewedWordTimings,
@@ -994,12 +2463,6 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       }
       rethrow;
     }
-    await _storeReviewedRevision(
-      cues: reviewedCues,
-      operation: operationLabel,
-      languageCode: operationLanguageCode,
-      wordTimings: reviewedWordTimings,
-    );
     await _storeUndoHistory(
       cues: reviewedCues,
       undoHistory: undoHistory,
@@ -1007,6 +2470,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       languageCode: operationLanguageCode,
       wordTimings: reviewedWordTimings,
     );
+    final revisionSaved = await _storeReviewedRevision(
+      cues: reviewedCues,
+      operation: operationLabel,
+      languageCode: operationLanguageCode,
+      wordTimings: reviewedWordTimings,
+    );
+    if (revisionSaved) await clearReviewDraft();
     return true;
   }
 

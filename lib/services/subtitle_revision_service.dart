@@ -246,6 +246,158 @@ final class SubtitleRevision {
   }
 }
 
+/// An unaccepted cue edit session that can be recovered after the review UI
+/// or application is interrupted. Drafts are scoped to one item and one exact
+/// input cue set, separate from accepted revision history.
+final class SubtitleRevisionDraft {
+  const SubtitleRevisionDraft({
+    required this.sourceFingerprint,
+    required this.savedAt,
+    required this.operation,
+    required this.languageCode,
+    required this.baseCues,
+    required this.sourceCues,
+    required this.cues,
+    required this.wordTimings,
+    required this.undoHistory,
+  });
+
+  final String sourceFingerprint;
+  final DateTime savedAt;
+  final String operation;
+  final String? languageCode;
+  final List<SubtitleCue> baseCues;
+  final List<SubtitleCue>? sourceCues;
+  final List<SubtitleCue> cues;
+  final List<SubtitleWordTiming> wordTimings;
+  final List<(int, SubtitleCue)> undoHistory;
+
+  Map<String, Object?> toJson() {
+    SubtitleRevision snapshot(String id, List<SubtitleCue> snapshotCues) => SubtitleRevision(
+      id: id,
+      createdAt: savedAt.toUtc(),
+      operation: operation,
+      languageCode: languageCode,
+      cues: snapshotCues,
+      wordTimings: const <SubtitleWordTiming>[],
+    );
+
+    final revision = SubtitleRevision(
+      id: '0_0',
+      createdAt: savedAt.toUtc(),
+      operation: operation,
+      languageCode: languageCode,
+      cues: cues,
+      wordTimings: wordTimings,
+    );
+    return {
+      'schema': 'plezyng.subtitle-revision-draft.v2',
+      'sourceFingerprint': sourceFingerprint,
+      'savedAt': savedAt.toUtc().toIso8601String(),
+      'baseRevision': snapshot('0_1', baseCues).toJson(),
+      'sourceRevision': sourceCues == null ? null : snapshot('0_2', sourceCues).toJson(),
+      'revision': revision.toJson(),
+      'undoHistory': undoHistory
+          .map(
+            (entry) => {
+              'cuePosition': entry.$1,
+              'cue': {
+                'cueId': entry.$2.stableId,
+                'index': entry.$2.index,
+                'startMs': entry.$2.startMs,
+                'endMs': entry.$2.endMs,
+                'text': entry.$2.text,
+              },
+            },
+          )
+          .toList(growable: false),
+    };
+  }
+
+  static SubtitleRevisionDraft fromJson(Object? value) {
+    if (value is! Map<String, dynamic> || value['schema'] != 'plezyng.subtitle-revision-draft.v2') {
+      throw const FormatException('Unsupported subtitle review draft.');
+    }
+    final sourceFingerprint = value['sourceFingerprint'];
+    final savedAt = DateTime.tryParse(value['savedAt'] as String? ?? '');
+    final revision = SubtitleRevision.fromJson(value['revision']);
+    final baseRevision = SubtitleRevision.fromJson(value['baseRevision']);
+    final sourceRevision = value['sourceRevision'] == null
+        ? null
+        : SubtitleRevision.fromJson(value['sourceRevision']);
+    final rawUndoHistory = value['undoHistory'];
+    if (sourceFingerprint is! String ||
+        !RegExp(r'^[0-9a-f]{64}$').hasMatch(sourceFingerprint) ||
+        savedAt == null ||
+        rawUndoHistory is! List ||
+        rawUndoHistory.length > 100 ||
+        revision.cues.length != baseRevision.cues.length ||
+        (sourceRevision != null && sourceRevision.cues.length != baseRevision.cues.length) ||
+        SubtitleRevisionService.reviewFingerprint(baseRevision.cues, sourceCues: sourceRevision?.cues) !=
+            sourceFingerprint) {
+      throw const FormatException('Subtitle review draft metadata is invalid.');
+    }
+    for (var index = 0; index < baseRevision.cues.length; index++) {
+      final baseCue = baseRevision.cues[index];
+      if (revision.cues[index].stableId != baseCue.stableId || revision.cues[index].index != baseCue.index) {
+        throw const FormatException('Subtitle review draft changed cue identity or order.');
+      }
+    }
+    final undoHistory = <(int, SubtitleCue)>[];
+    for (final rawEntry in rawUndoHistory) {
+      if (rawEntry is! Map<String, dynamic>) {
+        throw const FormatException('Subtitle review draft undo entry is invalid.');
+      }
+      final cuePosition = rawEntry['cuePosition'];
+      final rawCue = rawEntry['cue'];
+      if (cuePosition is! int || cuePosition < 0 || cuePosition >= revision.cues.length || rawCue is! Map) {
+        throw const FormatException('Subtitle review draft undo position is invalid.');
+      }
+      final cue = _subtitleDraftCueFromJson(rawCue.cast<String, dynamic>());
+      final currentCue = revision.cues[cuePosition];
+      if (cue.stableId != currentCue.stableId || cue.index != currentCue.index) {
+        throw const FormatException('Subtitle review draft undo cue does not match its stable identity.');
+      }
+      undoHistory.add((cuePosition, cue));
+    }
+    return SubtitleRevisionDraft(
+      sourceFingerprint: sourceFingerprint,
+      savedAt: savedAt.toUtc(),
+      operation: revision.operation,
+      languageCode: revision.languageCode,
+      baseCues: baseRevision.cues,
+      sourceCues: sourceRevision?.cues,
+      cues: revision.cues,
+      wordTimings: revision.wordTimings,
+      undoHistory: List<(int, SubtitleCue)>.unmodifiable(undoHistory),
+    );
+  }
+}
+
+SubtitleCue _subtitleDraftCueFromJson(Map<String, dynamic> value) {
+  final cueId = value['cueId'];
+  final index = value['index'];
+  final startMs = value['startMs'];
+  final endMs = value['endMs'];
+  final text = value['text'];
+  if (cueId is! String ||
+      !_stableSubtitleCueIdPattern.hasMatch(cueId) ||
+      index is! int ||
+      index < 1 ||
+      index > SubtitleRetimer.maximumCueCount ||
+      startMs is! int ||
+      startMs < 0 ||
+      endMs is! int ||
+      endMs <= startMs ||
+      endMs > SubtitleRetimer.maximumTimeMs ||
+      text is! String ||
+      text.isEmpty ||
+      text.length > SubtitleRetimer.maximumInputBytes) {
+    throw const FormatException('Subtitle review draft cue is invalid.');
+  }
+  return SubtitleCue(index: index, startMs: startMs, endMs: endMs, text: text, cueId: cueId);
+}
+
 /// Device-local, bounded history for reviewed results on library or source items.
 ///
 /// Records are stored in the app support directory, scoped by a one-way hash of
@@ -258,11 +410,14 @@ abstract final class SubtitleRevisionService {
   static const int maximumHistoryBytesPerItem = 24 * 1024 * 1024;
   static const int maximumTotalRevisionFiles = 1000;
   static const int maximumTotalRevisionBytes = 256 * 1024 * 1024;
+  static const int maximumTotalDraftFiles = 100;
+  static const int maximumTotalDraftBytes = 64 * 1024 * 1024;
   static const int maximumTranscriptLibraryItems = 100;
   static const int maximumTranscriptLibraryScanItems = 2000;
 
   static const String _itemMetadataName = 'item.json';
   static const String _itemMetadataSchema = 'plezyng.subtitle-revision-item.v1';
+  static const String _draftName = 'draft.json';
 
   /// Produces a stable, non-reversible provider label for the local index.
   static String privacySafeSourceLabel(String kind, String identifier) {
@@ -272,6 +427,30 @@ abstract final class SubtitleRevisionService {
     final digest = sha256.convert(utf8.encode(normalizedIdentifier)).toString();
     return '$normalizedKind ${digest.substring(0, 8)}';
   }
+
+  /// Also binds optional original-language cues used for side-by-side review.
+  static String reviewFingerprint(List<SubtitleCue> cues, {List<SubtitleCue>? sourceCues}) => sha256
+      .convert(
+        utf8.encode(
+          jsonEncode({
+            'resultCues': _cueFingerprintRows(cues),
+            'sourceCues': sourceCues == null ? null : _cueFingerprintRows(sourceCues),
+          }),
+        ),
+      )
+      .toString();
+
+  static List<Map<String, Object?>> _cueFingerprintRows(List<SubtitleCue> cues) => cues
+      .map(
+        (cue) => <String, Object?>{
+          'cueId': cue.stableId,
+          'index': cue.index,
+          'startMs': cue.startMs,
+          'endMs': cue.endMs,
+          'text': cue.text,
+        },
+      )
+      .toList(growable: false);
 
   static Future<void> _writeTail = Future<void>.value();
 
@@ -402,6 +581,61 @@ abstract final class SubtitleRevisionService {
       await _pruneGlobal(await _rootDirectory());
     });
     return revision;
+  }
+
+  static Future<void> saveDraft({
+    required SubtitleRevisionIdentity identity,
+    required SubtitleRevisionDraft draft,
+  }) async {
+    await _exclusive(() async {
+      if (identity.profileId.trim().isEmpty ||
+          identity.serverId.trim().isEmpty ||
+          identity.ratingKey.trim().isEmpty ||
+          identity.mediaIndex < 0) {
+        throw ArgumentError('Subtitle revision identity is incomplete.');
+      }
+      final validated = SubtitleRevisionDraft.fromJson(draft.toJson());
+      final bytes = utf8.encode(jsonEncode(validated.toJson()));
+      if (bytes.length > maximumRevisionBytes) {
+        throw const FormatException('This in-progress subtitle review exceeds the 8 MiB draft limit.');
+      }
+      final directory = await _directoryFor(identity);
+      final target = File(p.join(directory.path, _draftName));
+      final temporary = File(p.join(directory.path, '.tmp-draft-${DateTime.now().microsecondsSinceEpoch}'));
+      try {
+        await temporary.writeAsBytes(bytes, flush: true);
+        await temporary.rename(target.path);
+      } finally {
+        if (await temporary.exists()) await temporary.delete();
+      }
+      await _pruneDrafts(await _rootDirectory(), preservePath: target.path);
+    });
+  }
+
+  static Future<SubtitleRevisionDraft?> loadDraftForIdentity(SubtitleRevisionIdentity identity) async {
+    await _writeTail;
+    final directory = Directory(p.join((await _rootDirectory()).path, identity.storageKey));
+    final file = File(p.join(directory.path, _draftName));
+    if (!await file.exists()) return null;
+    try {
+      final length = await file.length();
+      if (length <= 0 || length > maximumRevisionBytes) {
+        throw const FormatException('Subtitle review draft exceeds its storage limit.');
+      }
+      return SubtitleRevisionDraft.fromJson(jsonDecode(await file.readAsString()));
+    } catch (_) {
+      try {
+        await deleteDraft(identity);
+      } catch (_) {}
+      return null;
+    }
+  }
+
+  static Future<void> deleteDraft(SubtitleRevisionIdentity identity) async {
+    await _exclusive(() async {
+      final file = File(p.join((await _rootDirectory()).path, identity.storageKey, _draftName));
+      if (await file.exists()) await file.delete();
+    });
   }
 
   static Future<List<SubtitleRevision>> loadRevisions(SubtitleRevisionIdentity identity) async {
@@ -765,6 +999,38 @@ abstract final class SubtitleRevisionService {
         }
         await entity.delete();
       }
+    }
+  }
+
+  static Future<void> _pruneDrafts(Directory root, {required String preservePath}) async {
+    final drafts = <File>[];
+    await for (final entity in root.list(recursive: true, followLinks: false)) {
+      if (entity is File && p.basename(entity.path) == _draftName) drafts.add(entity);
+    }
+    final ordered = <(File, DateTime, int)>[];
+    var total = 0;
+    for (final file in drafts) {
+      try {
+        final modified = await file.lastModified();
+        final size = await file.length();
+        ordered.add((file, modified, size));
+        total += size;
+      } catch (_) {
+        try {
+          await file.delete();
+        } catch (_) {}
+      }
+    }
+    ordered.sort((left, right) {
+      if (left.$1.path == preservePath) return -1;
+      if (right.$1.path == preservePath) return 1;
+      return right.$2.compareTo(left.$2);
+    });
+    var keep = ordered.length;
+    while (keep > maximumTotalDraftFiles || total > maximumTotalDraftBytes) {
+      keep--;
+      total -= ordered[keep].$3;
+      await ordered[keep].$1.delete();
     }
   }
 }

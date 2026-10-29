@@ -14942,6 +14942,226 @@ class Translations$videoControls$subtitleAiControls$en {
 
 	/// en: 'Use current source file'
 	String get companionInputUseCurrentSource => 'Use current source file';
+
+	/// en: 'Send job to companion'
+	String get companionSendJobTitle => 'Send job to companion';
+
+	/// en: 'Destination: ${destination}\n${input} will be uploaded and retained on this host until you delete the job. No playback URL or media-server credentials are shared.'
+	String companionJobUploadDescription({required Object destination, required Object input}) => 'Destination: ${destination}\n${input} will be uploaded and retained on this host until you delete the job. No playback URL or media-server credentials are shared.';
+
+	/// en: 'Subtitle text'
+	String get companionSubtitleTextInput => 'Subtitle text';
+
+	/// en: 'The selected media file'
+	String get companionSelectedMediaInput => 'The selected media file';
+
+	/// en: '\nThe opened part offset (${offset} ms) will be retained in generated cue times.'
+	String companionOpenedPartOffset({required Object offset}) => '\nThe opened part offset (${offset} ms) will be retained in generated cue times.';
+
+	/// en: 'Experimental evidence: model suggestions need review. Separation is limited to five minutes and speaker numbering is local to each window. Sound labels do not identify direction or a verified source. Recognition glossary keys are hints, not spelling guarantees.'
+	String get companionExperimentalEvidence => 'Experimental evidence: model suggestions need review. Separation is limited to five minutes and speaker numbering is local to each window. Sound labels do not identify direction or a verified source. Recognition glossary keys are hints, not spelling guarantees.';
+
+	/// en: 'Only use text matching the spoken ${language} audio, with approximate cue intervals no longer than 60 seconds. Unsupported/uncertain cues keep their original timing.'
+	String companionAlignGuidance({required Object language}) => 'Only use text matching the spoken ${language} audio, with approximate cue intervals no longer than 60 seconds. Unsupported/uncertain cues keep their original timing.';
+
+	/// en: 'Analyze the whole chosen video with the host’s local object detector: up to eight hours / 1 GiB, one frame per second and 5000 supplied cues. Captions must use this file’s clock. Anonymous paths stop at cuts or uncertain matches; short occlusions may be associated without inventing hidden positions. The host retains resumable minute checkpoints and a bounded downloadable frame log. Placement proposals require review. No images are sent to a separate vision provider; wording stays unchanged.'
+	String get companionSceneTrackGuidance => 'Analyze the whole chosen video with the host’s local object detector: up to eight hours / 1 GiB, one frame per second and 5000 supplied cues. Captions must use this file’s clock. Anonymous paths stop at cuts or uncertain matches; short occlusions may be associated without inventing hidden positions. The host retains resumable minute checkpoints and a bounded downloadable frame log. Placement proposals require review. No images are sent to a separate vision provider; wording stays unchanged.';
+
+	/// en: 'Use lyrics matching the sung ${language} audio. Maximum five minutes, 120 cues, 30 seconds per cue. A configured local CTC model compares original and percussive-suppressed audio. Only agreeing word boundaries are proposed; lyric text and cue bounds stay unchanged. This is experimental, not verified singing alignment.'
+	String companionSingingAlignGuidance({required Object language}) => 'Use lyrics matching the sung ${language} audio. Maximum five minutes, 120 cues, 30 seconds per cue. A configured local CTC model compares original and percussive-suppressed audio. Only agreeing word boundaries are proposed; lyric text and cue bounds stay unchanged. This is experimental, not verified singing alignment.';
+
+	/// en: 'Supply syllable groups (${cues} cues)'
+	String companionSupplySyllableGroups({required Object cues}) => 'Supply syllable groups (${cues} cues)';
+
+	/// en: 'Keep word proposals only'
+	String get companionKeepWordProposalsOnly => 'Keep word proposals only';
+
+	/// en: 'Include mix pitch candidates'
+	String get companionMixPitchTitle => 'Include mix pitch candidates';
+
+	/// en: 'At most 12 seconds per cue and two minutes total. Compares monophonic pitch estimates in both audio views. Instruments and octave errors can dominate; candidates are evidence only and do not change lyrics or cue timing.'
+	String get companionMixPitchDescription => 'At most 12 seconds per cue and two minutes total. Compares monophonic pitch estimates in both audio views. Instruments and octave errors can dominate; candidates are evidence only and do not change lyrics or cue timing.';
+
+	/// en: 'Translate ${source} to ${target} using an installed host language pair.'
+	String companionTranslatePair({required Object source, required Object target}) => 'Translate ${source} to ${target} using an installed host language pair.';
+
+	/// en: 'The companion will forward subtitle text, neighboring dialogue and protected glossary markers to:\n${destination}\nModel: ${model}\nRevision declared by the host: ${revision}. Provider retention and charges apply if configured. No media audio or playback credentials are forwarded.'
+	String companionExternalModelForwarding({required Object destination, required Object model, required Object revision}) => 'The companion will forward subtitle text, neighboring dialogue and protected glossary markers to:\n${destination}\nModel: ${model}\nRevision declared by the host: ${revision}. Provider retention and charges apply if configured. No media audio or playback credentials are forwarded.';
+
+	/// en: 'Translate ${source} to ${target}. The model’s actual language quality is not qualified by this app.'
+	String companionModelTranslatePair({required Object source, required Object target}) => 'Translate ${source} to ${target}. The model’s actual language quality is not qualified by this app.';
+
+	/// en: 'Translation mode'
+	String get companionTranslationMode => 'Translation mode';
+
+	/// en: 'Faithful · retain meaning and tone'
+	String get companionTranslationFaithful => 'Faithful · retain meaning and tone';
+
+	/// en: 'Natural · idiomatic subtitle wording'
+	String get companionTranslationNatural => 'Natural · idiomatic subtitle wording';
+
+	/// en: 'Literal · language-learning correspondence'
+	String get companionTranslationLiteral => 'Literal · language-learning correspondence';
+
+	/// en: 'Protected glossary (JSON source → target pairs)'
+	String get companionProtectedGlossaryLabel => 'Protected glossary (JSON source → target pairs)';
+
+	/// en: 'Up to 200 plain-text terms, 128 characters each. This job records its glossary digest.'
+	String get companionProtectedGlossaryHelper => 'Up to 200 plain-text terms, 128 characters each. This job records its glossary digest.';
+
+	/// en: 'Convert Chinese script/region conventions as a separate track. This is not semantic translation. Native layout remains in the original.'
+	String get companionScriptConversionDescription => 'Convert Chinese script/region conventions as a separate track. This is not semantic translation. Native layout remains in the original.';
+
+	/// en: 'Explicit script/region conversion'
+	String get companionScriptConversionLabel => 'Explicit script/region conversion';
+
+	/// en: 'Simplified → Traditional'
+	String get scriptSimplifiedTraditional => 'Simplified → Traditional';
+
+	/// en: 'Traditional → Simplified'
+	String get scriptTraditionalSimplified => 'Traditional → Simplified';
+
+	/// en: 'Simplified → Taiwan characters'
+	String get scriptSimplifiedTaiwan => 'Simplified → Taiwan characters';
+
+	/// en: 'Taiwan → Simplified'
+	String get scriptTaiwanSimplified => 'Taiwan → Simplified';
+
+	/// en: 'Simplified → Hong Kong'
+	String get scriptSimplifiedHongKong => 'Simplified → Hong Kong';
+
+	/// en: 'Hong Kong → Simplified'
+	String get scriptHongKongSimplified => 'Hong Kong → Simplified';
+
+	/// en: 'Traditional → Taiwan characters'
+	String get scriptTraditionalTaiwan => 'Traditional → Taiwan characters';
+
+	/// en: 'Traditional → Hong Kong'
+	String get scriptTraditionalHongKong => 'Traditional → Hong Kong';
+
+	/// en: 'Simplified → Taiwan characters and phrases'
+	String get scriptSimplifiedTaiwanPhrases => 'Simplified → Taiwan characters and phrases';
+
+	/// en: 'Taiwan phrases → Simplified'
+	String get scriptTaiwanPhrasesSimplified => 'Taiwan phrases → Simplified';
+
+	/// en: 'Add dictionary-derived Japanese reading aids to a separate SRT. Names and ambiguous readings need review; the original is unchanged.'
+	String get companionReadingDescription => 'Add dictionary-derived Japanese reading aids to a separate SRT. Names and ambiguous readings need review; the original is unchanged.';
+
+	/// en: 'Reading display'
+	String get companionReadingDisplay => 'Reading display';
+
+	/// en: 'Inline kana after kanji'
+	String get companionReadingHiragana => 'Inline kana after kanji';
+
+	/// en: 'Original + Hepburn romanization line'
+	String get companionReadingHepburn => 'Original + Hepburn romanization line';
+
+	/// en: 'Ruby readings above base text in app overlays'
+	String get companionReadingRuby => 'Ruby readings above base text in app overlays';
+
+	/// en: 'The host will forward up to 30 chosen captions and ${frames} resized video frame(s) per cue to:\n${provider}.'
+	String companionSceneForwardingDescription({required Object frames, required Object provider}) => 'The host will forward up to 30 chosen captions and ${frames} resized video frame(s) per cue to:\n${provider}.';
+
+	/// en: 'Selected-track audio clips will also be forwarded (12 seconds per cue, two minutes total). Joint model interpretation remains unverified.'
+	String get companionSceneAudioForwarded => 'Selected-track audio clips will also be forwarded (12 seconds per cue, two minutes total). Joint model interpretation remains unverified.';
+
+	/// en: 'This is unverified image context; images cannot verify spoken words.'
+	String get companionSceneImageOnly => 'This is unverified image context; images cannot verify spoken words.';
+
+	/// en: 'Original wording remains unless you select an alternative during image review.'
+	String get companionSceneAlternativeWarning => 'Original wording remains unless you select an alternative during image review.';
+
+	/// en: 'Include synchronized audio with scene images'
+	String get companionSceneAudioTitle => 'Include synchronized audio with scene images';
+
+	/// en: 'Explicitly forwards each selected cue’s audio to the declared destination. Provider modality support is host-declared, not verified. Listen to the source before accepting alternatives.'
+	String get companionSceneAudioDescription => 'Explicitly forwards each selected cue’s audio to the declared destination. Provider modality support is host-declared, not verified. Listen to the source before accepting alternatives.';
+
+	/// en: 'Sample scene movement during each cue'
+	String get companionSceneMovementTitle => 'Sample scene movement during each cue';
+
+	/// en: 'Sends three frames at 10%, 50% and 90% of each cue (the first is 0% when motion tracking is enabled). Evidence shows chronological panels; sampled region associations remain unverified.'
+	String get companionSceneMovementDescription => 'Sends three frames at 10%, 50% and 90% of each cue (the first is 0% when motion tracking is enabled). Evidence shows chronological panels; sampled region associations remain unverified.';
+
+	/// en: 'Track region motion locally on the companion'
+	String get companionSceneMotionTitle => 'Track region motion locally on the companion';
+
+	/// en: 'Uses the first cue frame as a seed, then tracks texture at 12 Hz for up to 12 seconds per cue / two minutes total. Extra tracking frames stay on the companion. Paths stop when matching fails; placement uses fixed envelopes. This can drift and needs review.'
+	String get companionSceneMotionDescription => 'Uses the first cue frame as a seed, then tracks texture at 12 Hz for up to 12 seconds per cue / two minutes total. Extra tracking frames stay on the companion. Paths stop when matching fails; placement uses fixed envelopes. This can drift and needs review.';
+
+	/// en: 'Track anonymous object classes locally'
+	String get companionSceneObjectTitle => 'Track anonymous object classes locally';
+
+	/// en: 'Uses the companion’s local CPU detector at 2 Hz, up to 12 seconds per cue / two minutes total. Class, appearance and overlap may recover short gaps up to 1.5 seconds. Similar objects, cuts and occlusion can break matching. Extra frames stay on the companion; labels and paths require review.'
+	String get companionSceneObjectDescription => 'Uses the companion’s local CPU detector at 2 Hz, up to 12 seconds per cue / two minutes total. Class, appearance and overlap may recover short gaps up to 1.5 seconds. Similar objects, cuts and occlusion can break matching. Extra frames stay on the companion; labels and paths require review.';
+
+	/// en: 'Find a repeatedly occupied text band using samples from the first two minutes. This can select credits or signs; inspect the returned cue images before accepting.'
+	String get companionOcrAutoDescription => 'Find a repeatedly occupied text band using samples from the first two minutes. This can select credits or signs; inspect the returned cue images before accepting.';
+
+	/// en: 'Synthesize a separate audio product from already-reviewed spoken-language subtitles. Maximum ten minutes / 500 cues. This is a generic synthetic voice, not the original speaker or lip synchronization. Voice: ${voice}. The host voice fingerprint is bound to this request.'
+	String companionDubbingDescription({required Object voice}) => 'Synthesize a separate audio product from already-reviewed spoken-language subtitles. Maximum ten minutes / 500 cues. This is a generic synthetic voice, not the original speaker or lip synchronization. Voice: ${voice}. The host voice fingerprint is bound to this request.';
+
+	/// en: 'Keep ${percent}% of original audio under synthesized speech'
+	String companionDuckRatio({required Object percent}) => 'Keep ${percent}% of original audio under synthesized speech';
+
+	/// en: 'Include stereo mix evidence'
+	String get companionStereoEvidenceTitle => 'Include stereo mix evidence';
+
+	/// en: 'Measures repeated left/right energy dominance in a stereo rendering. It cannot identify a sound’s physical direction or isolate it from the rest of the mix.'
+	String get companionStereoEvidenceDescription => 'Measures repeated left/right energy dominance in a stereo rendering. It cannot identify a sound’s physical direction or isolate it from the rest of the mix.';
+
+	/// en: 'Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.'
+	String get companionDiarizeDescription => 'Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.';
+
+	/// en: 'Audio stream (zero based)'
+	String get companionAudioStreamLabel => 'Audio stream (zero based)';
+
+	/// en: 'Audio stream ${index}'
+	String companionAudioStreamItem({required Object index}) => 'Audio stream ${index}';
+
+	/// en: 'High-pass and FFT denoise'
+	String get companionPreprocessTitle => 'High-pass and FFT denoise';
+
+	/// en: 'Optional preprocessing can alter speech; original media stays intact'
+	String get companionPreprocessDescription => 'Optional preprocessing can alter speech; original media stays intact';
+
+	/// en: 'Burned-caption OCR samples the selected full-width crop at two frames per second. It does not decode PGS/VobSub tracks.'
+	String get companionBurnedOcrDescription => 'Burned-caption OCR samples the selected full-width crop at two frames per second. It does not decode PGS/VobSub tracks.';
+
+	/// en: 'Crop starts at ${percent}% of image height and extends to the bottom'
+	String companionCropDescription({required Object percent}) => 'Crop starts at ${percent}% of image height and extends to the bottom';
+
+	/// en: 'Decode PGS SUP or a PGS/VobSub stream in the selected container. For VobSub sidecars, upload a ZIP containing exactly one matching IDX/SUB pair. Original caption images are retained for OCR correction and export.'
+	String get companionBitmapOcrDescription => 'Decode PGS SUP or a PGS/VobSub stream in the selected container. For VobSub sidecars, upload a ZIP containing exactly one matching IDX/SUB pair. Original caption images are retained for OCR correction and export.';
+
+	/// en: 'Subtitle stream (zero based)'
+	String get companionSubtitleStreamLabel => 'Subtitle stream (zero based)';
+
+	/// en: 'Subtitle stream ${index}'
+	String companionSubtitleStreamItem({required Object index}) => 'Subtitle stream ${index}';
+
+	/// en: 'Last cue duration only if its end is missing'
+	String get companionBitmapTailLabel => 'Last cue duration only if its end is missing';
+
+	/// en: '${duration} ms'
+	String companionDurationMilliseconds({required Object duration}) => '${duration} ms';
+
+	/// en: 'Caption language: ${language}. Install matching Tesseract language data and select it on the host.'
+	String companionBitmapLanguage({required Object language}) => 'Caption language: ${language}. Install matching Tesseract language data and select it on the host.';
+
+	/// en: 'Convert an embedded text stream, such as mov_text, into a separate SRT. Layout and caption-service behavior may be flattened; bitmap streams require OCR.'
+	String get companionExtractTextDescription => 'Convert an embedded text stream, such as mov_text, into a separate SRT. Layout and caption-service behavior may be flattened; bitmap streams require OCR.';
+
+	/// en: 'Host backends: ${tasks}. Hardware placement is unverified.'
+	String companionHostBackends({required Object tasks}) => 'Host backends: ${tasks}. Hardware placement is unverified.';
+
+	/// en: 'Forward text and translate'
+	String get companionForwardTextAndTranslate => 'Forward text and translate';
+
+	/// en: 'Send and process'
+	String get companionSendAndProcess => 'Send and process';
+
 }
 
 // Path: videoControls.subtitleLiveCapture
@@ -19650,6 +19870,79 @@ extension on Translations {
 			'videoControls.subtitleAiControls.companionInputDescription' => 'Use the current VOD file through its owning source transport, or choose a matching file. The current-file option copies at most 1 GiB / one hour to temporary storage, then uploads after review. It may use additional bandwidth and cannot copy a playlist, live stream or protected source.',
 			'videoControls.subtitleAiControls.companionInputChooseMatchingFile' => 'Choose a matching file',
 			'videoControls.subtitleAiControls.companionInputUseCurrentSource' => 'Use current source file',
+			'videoControls.subtitleAiControls.companionSendJobTitle' => 'Send job to companion',
+			'videoControls.subtitleAiControls.companionJobUploadDescription' => ({required Object destination, required Object input}) => 'Destination: ${destination}\n${input} will be uploaded and retained on this host until you delete the job. No playback URL or media-server credentials are shared.',
+			'videoControls.subtitleAiControls.companionSubtitleTextInput' => 'Subtitle text',
+			'videoControls.subtitleAiControls.companionSelectedMediaInput' => 'The selected media file',
+			'videoControls.subtitleAiControls.companionOpenedPartOffset' => ({required Object offset}) => '\nThe opened part offset (${offset} ms) will be retained in generated cue times.',
+			'videoControls.subtitleAiControls.companionExperimentalEvidence' => 'Experimental evidence: model suggestions need review. Separation is limited to five minutes and speaker numbering is local to each window. Sound labels do not identify direction or a verified source. Recognition glossary keys are hints, not spelling guarantees.',
+			'videoControls.subtitleAiControls.companionAlignGuidance' => ({required Object language}) => 'Only use text matching the spoken ${language} audio, with approximate cue intervals no longer than 60 seconds. Unsupported/uncertain cues keep their original timing.',
+			'videoControls.subtitleAiControls.companionSceneTrackGuidance' => 'Analyze the whole chosen video with the host’s local object detector: up to eight hours / 1 GiB, one frame per second and 5000 supplied cues. Captions must use this file’s clock. Anonymous paths stop at cuts or uncertain matches; short occlusions may be associated without inventing hidden positions. The host retains resumable minute checkpoints and a bounded downloadable frame log. Placement proposals require review. No images are sent to a separate vision provider; wording stays unchanged.',
+			'videoControls.subtitleAiControls.companionSingingAlignGuidance' => ({required Object language}) => 'Use lyrics matching the sung ${language} audio. Maximum five minutes, 120 cues, 30 seconds per cue. A configured local CTC model compares original and percussive-suppressed audio. Only agreeing word boundaries are proposed; lyric text and cue bounds stay unchanged. This is experimental, not verified singing alignment.',
+			'videoControls.subtitleAiControls.companionSupplySyllableGroups' => ({required Object cues}) => 'Supply syllable groups (${cues} cues)',
+			'videoControls.subtitleAiControls.companionKeepWordProposalsOnly' => 'Keep word proposals only',
+			'videoControls.subtitleAiControls.companionMixPitchTitle' => 'Include mix pitch candidates',
+			'videoControls.subtitleAiControls.companionMixPitchDescription' => 'At most 12 seconds per cue and two minutes total. Compares monophonic pitch estimates in both audio views. Instruments and octave errors can dominate; candidates are evidence only and do not change lyrics or cue timing.',
+			'videoControls.subtitleAiControls.companionTranslatePair' => ({required Object source, required Object target}) => 'Translate ${source} to ${target} using an installed host language pair.',
+			'videoControls.subtitleAiControls.companionExternalModelForwarding' => ({required Object destination, required Object model, required Object revision}) => 'The companion will forward subtitle text, neighboring dialogue and protected glossary markers to:\n${destination}\nModel: ${model}\nRevision declared by the host: ${revision}. Provider retention and charges apply if configured. No media audio or playback credentials are forwarded.',
+			'videoControls.subtitleAiControls.companionModelTranslatePair' => ({required Object source, required Object target}) => 'Translate ${source} to ${target}. The model’s actual language quality is not qualified by this app.',
+			'videoControls.subtitleAiControls.companionTranslationMode' => 'Translation mode',
+			'videoControls.subtitleAiControls.companionTranslationFaithful' => 'Faithful · retain meaning and tone',
+			'videoControls.subtitleAiControls.companionTranslationNatural' => 'Natural · idiomatic subtitle wording',
+			'videoControls.subtitleAiControls.companionTranslationLiteral' => 'Literal · language-learning correspondence',
+			'videoControls.subtitleAiControls.companionProtectedGlossaryLabel' => 'Protected glossary (JSON source → target pairs)',
+			'videoControls.subtitleAiControls.companionProtectedGlossaryHelper' => 'Up to 200 plain-text terms, 128 characters each. This job records its glossary digest.',
+			'videoControls.subtitleAiControls.companionScriptConversionDescription' => 'Convert Chinese script/region conventions as a separate track. This is not semantic translation. Native layout remains in the original.',
+			'videoControls.subtitleAiControls.companionScriptConversionLabel' => 'Explicit script/region conversion',
+			'videoControls.subtitleAiControls.scriptSimplifiedTraditional' => 'Simplified → Traditional',
+			'videoControls.subtitleAiControls.scriptTraditionalSimplified' => 'Traditional → Simplified',
+			'videoControls.subtitleAiControls.scriptSimplifiedTaiwan' => 'Simplified → Taiwan characters',
+			'videoControls.subtitleAiControls.scriptTaiwanSimplified' => 'Taiwan → Simplified',
+			'videoControls.subtitleAiControls.scriptSimplifiedHongKong' => 'Simplified → Hong Kong',
+			'videoControls.subtitleAiControls.scriptHongKongSimplified' => 'Hong Kong → Simplified',
+			'videoControls.subtitleAiControls.scriptTraditionalTaiwan' => 'Traditional → Taiwan characters',
+			'videoControls.subtitleAiControls.scriptTraditionalHongKong' => 'Traditional → Hong Kong',
+			'videoControls.subtitleAiControls.scriptSimplifiedTaiwanPhrases' => 'Simplified → Taiwan characters and phrases',
+			'videoControls.subtitleAiControls.scriptTaiwanPhrasesSimplified' => 'Taiwan phrases → Simplified',
+			'videoControls.subtitleAiControls.companionReadingDescription' => 'Add dictionary-derived Japanese reading aids to a separate SRT. Names and ambiguous readings need review; the original is unchanged.',
+			'videoControls.subtitleAiControls.companionReadingDisplay' => 'Reading display',
+			'videoControls.subtitleAiControls.companionReadingHiragana' => 'Inline kana after kanji',
+			'videoControls.subtitleAiControls.companionReadingHepburn' => 'Original + Hepburn romanization line',
+			'videoControls.subtitleAiControls.companionReadingRuby' => 'Ruby readings above base text in app overlays',
+			'videoControls.subtitleAiControls.companionSceneForwardingDescription' => ({required Object frames, required Object provider}) => 'The host will forward up to 30 chosen captions and ${frames} resized video frame(s) per cue to:\n${provider}.',
+			'videoControls.subtitleAiControls.companionSceneAudioForwarded' => 'Selected-track audio clips will also be forwarded (12 seconds per cue, two minutes total). Joint model interpretation remains unverified.',
+			'videoControls.subtitleAiControls.companionSceneImageOnly' => 'This is unverified image context; images cannot verify spoken words.',
+			'videoControls.subtitleAiControls.companionSceneAlternativeWarning' => 'Original wording remains unless you select an alternative during image review.',
+			'videoControls.subtitleAiControls.companionSceneAudioTitle' => 'Include synchronized audio with scene images',
+			'videoControls.subtitleAiControls.companionSceneAudioDescription' => 'Explicitly forwards each selected cue’s audio to the declared destination. Provider modality support is host-declared, not verified. Listen to the source before accepting alternatives.',
+			'videoControls.subtitleAiControls.companionSceneMovementTitle' => 'Sample scene movement during each cue',
+			'videoControls.subtitleAiControls.companionSceneMovementDescription' => 'Sends three frames at 10%, 50% and 90% of each cue (the first is 0% when motion tracking is enabled). Evidence shows chronological panels; sampled region associations remain unverified.',
+			'videoControls.subtitleAiControls.companionSceneMotionTitle' => 'Track region motion locally on the companion',
+			'videoControls.subtitleAiControls.companionSceneMotionDescription' => 'Uses the first cue frame as a seed, then tracks texture at 12 Hz for up to 12 seconds per cue / two minutes total. Extra tracking frames stay on the companion. Paths stop when matching fails; placement uses fixed envelopes. This can drift and needs review.',
+			'videoControls.subtitleAiControls.companionSceneObjectTitle' => 'Track anonymous object classes locally',
+			'videoControls.subtitleAiControls.companionSceneObjectDescription' => 'Uses the companion’s local CPU detector at 2 Hz, up to 12 seconds per cue / two minutes total. Class, appearance and overlap may recover short gaps up to 1.5 seconds. Similar objects, cuts and occlusion can break matching. Extra frames stay on the companion; labels and paths require review.',
+			'videoControls.subtitleAiControls.companionOcrAutoDescription' => 'Find a repeatedly occupied text band using samples from the first two minutes. This can select credits or signs; inspect the returned cue images before accepting.',
+			'videoControls.subtitleAiControls.companionDubbingDescription' => ({required Object voice}) => 'Synthesize a separate audio product from already-reviewed spoken-language subtitles. Maximum ten minutes / 500 cues. This is a generic synthetic voice, not the original speaker or lip synchronization. Voice: ${voice}. The host voice fingerprint is bound to this request.',
+			'videoControls.subtitleAiControls.companionDuckRatio' => ({required Object percent}) => 'Keep ${percent}% of original audio under synthesized speech',
+			'videoControls.subtitleAiControls.companionStereoEvidenceTitle' => 'Include stereo mix evidence',
+			'videoControls.subtitleAiControls.companionStereoEvidenceDescription' => 'Measures repeated left/right energy dominance in a stereo rendering. It cannot identify a sound’s physical direction or isolate it from the rest of the mix.',
+			'videoControls.subtitleAiControls.companionDiarizeDescription' => 'Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.',
+			'videoControls.subtitleAiControls.companionAudioStreamLabel' => 'Audio stream (zero based)',
+			'videoControls.subtitleAiControls.companionAudioStreamItem' => ({required Object index}) => 'Audio stream ${index}',
+			'videoControls.subtitleAiControls.companionPreprocessTitle' => 'High-pass and FFT denoise',
+			'videoControls.subtitleAiControls.companionPreprocessDescription' => 'Optional preprocessing can alter speech; original media stays intact',
+			'videoControls.subtitleAiControls.companionBurnedOcrDescription' => 'Burned-caption OCR samples the selected full-width crop at two frames per second. It does not decode PGS/VobSub tracks.',
+			'videoControls.subtitleAiControls.companionCropDescription' => ({required Object percent}) => 'Crop starts at ${percent}% of image height and extends to the bottom',
+			'videoControls.subtitleAiControls.companionBitmapOcrDescription' => 'Decode PGS SUP or a PGS/VobSub stream in the selected container. For VobSub sidecars, upload a ZIP containing exactly one matching IDX/SUB pair. Original caption images are retained for OCR correction and export.',
+			'videoControls.subtitleAiControls.companionSubtitleStreamLabel' => 'Subtitle stream (zero based)',
+			'videoControls.subtitleAiControls.companionSubtitleStreamItem' => ({required Object index}) => 'Subtitle stream ${index}',
+			'videoControls.subtitleAiControls.companionBitmapTailLabel' => 'Last cue duration only if its end is missing',
+			'videoControls.subtitleAiControls.companionDurationMilliseconds' => ({required Object duration}) => '${duration} ms',
+			'videoControls.subtitleAiControls.companionBitmapLanguage' => ({required Object language}) => 'Caption language: ${language}. Install matching Tesseract language data and select it on the host.',
+			'videoControls.subtitleAiControls.companionExtractTextDescription' => 'Convert an embedded text stream, such as mov_text, into a separate SRT. Layout and caption-service behavior may be flattened; bitmap streams require OCR.',
+			'videoControls.subtitleAiControls.companionHostBackends' => ({required Object tasks}) => 'Host backends: ${tasks}. Hardware placement is unverified.',
+			'videoControls.subtitleAiControls.companionForwardTextAndTranslate' => 'Forward text and translate',
+			'videoControls.subtitleAiControls.companionSendAndProcess' => 'Send and process',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',

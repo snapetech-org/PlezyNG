@@ -973,23 +973,24 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       final accepted = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, update) => AlertDialog(
           title: Text(task == 'vocal_notes' ? aiCopy.sendVocalNotesTitle
-            : task == 'sound_localize' ? aiCopy.sendArrayLocalizationTitle : 'Send $task job to companion'),
+            : task == 'sound_localize' ? aiCopy.sendArrayLocalizationTitle : aiCopy.companionSendJobTitle),
           content: SizedBox(width: 560, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text('Destination: ${service.endpoint}\n${path == null ? 'Subtitle text' : 'The selected media file'} will be uploaded and retained on this host until you delete the job. '
-                'No playback URL or media-server credentials are shared.${useCurrentSource ? " The opened part offset ($timelineOffsetMs ms) will be retained in generated cue times." : ""}'),
+            Text(
+              aiCopy.companionJobUploadDescription(
+                destination: service.endpoint,
+                input: path == null ? aiCopy.companionSubtitleTextInput : aiCopy.companionSelectedMediaInput,
+              ) +
+                  (useCurrentSource
+                      ? aiCopy.companionOpenedPartOffset(offset: timelineOffsetMs)
+                      : ''),
+            ),
             if ({'ensemble', 'separate', 'sound_events', 'completeness', 'signs'}.contains(task))
-              const Text('Experimental evidence: model suggestions need review. Separation is limited to five minutes and speaker numbering is local to each window. '
-                'Sound labels do not identify direction or a verified source. Recognition glossary keys are hints, not spelling guarantees.'),
-            if (task == 'align') Text('Only use text matching the spoken ${SubtitleTranslationService.languageLabel(_sourceLanguage)} audio, '
-                'with approximate cue intervals no longer than 60 seconds. Unsupported/uncertain cues keep their original timing.'),
-            if (task == 'scene_track') const Text('Analyze the whole chosen video with the host’s local object detector: '
-                'up to eight hours / 1 GiB, one frame per second and 5000 supplied cues. Captions must use this file’s clock. '
-                'Anonymous paths stop at cuts or uncertain matches; short occlusions may be associated without inventing hidden positions. '
-                'The host retains resumable minute checkpoints and a bounded downloadable frame log. Placement proposals require review. '
-                'No images are sent to a separate vision provider; wording stays unchanged.'),
-            if (task == 'singing_align') Text('Use lyrics matching the sung ${SubtitleTranslationService.languageLabel(_sourceLanguage)} audio. '
-                'Maximum five minutes, 120 cues, 30 seconds per cue. A configured local CTC model compares original and percussive-suppressed audio. '
-                'Only agreeing word boundaries are proposed; lyric text and cue bounds stay unchanged. This is experimental, not verified singing alignment.'),
+              Text(aiCopy.companionExperimentalEvidence),
+            if (task == 'align') Text(aiCopy.companionAlignGuidance(
+              language: SubtitleTranslationService.languageLabel(_sourceLanguage))),
+            if (task == 'scene_track') Text(aiCopy.companionSceneTrackGuidance),
+            if (task == 'singing_align') Text(aiCopy.companionSingingAlignGuidance(
+              language: SubtitleTranslationService.languageLabel(_sourceLanguage))),
             if (task == 'singing_align' && capabilities['lyricSyllables'] == true) ...[
               TextButton(onPressed: () async {
                 try {
@@ -998,123 +999,121 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 } catch (error) {
                   if (dialogContext.mounted) ScaffoldMessenger.of(dialogContext).showSnackBar(SnackBar(content: Text(_readableError(error))));
                 }
-              }, child: Text('Supply syllable groups (${lyricSyllables.length} cues)')),
-              if (lyricSyllables.isNotEmpty) TextButton(onPressed: () => update(() => lyricSyllables = {}), child: const Text('Keep word proposals only')),
+              }, child: Text(aiCopy.companionSupplySyllableGroups(cues: lyricSyllables.length))),
+              if (lyricSyllables.isNotEmpty) TextButton(onPressed: () => update(() => lyricSyllables = {}), child: Text(aiCopy.companionKeepWordProposalsOnly)),
             ],
             if (task == 'singing_align' && capabilities['lyricPitchEvidence'] == true) SwitchListTile(
-              title: const Text('Include mix pitch candidates'),
-              subtitle: const Text('At most 12 seconds per cue and two minutes total. Compares monophonic pitch estimates in both audio views. '
-                'Instruments and octave errors can dominate; candidates are evidence only and do not change lyrics or cue timing.'),
+              title: Text(aiCopy.companionMixPitchTitle),
+              subtitle: Text(aiCopy.companionMixPitchDescription),
               value: lyricPitchEvidence, onChanged: (value) => update(() => lyricPitchEvidence = value)),
-            if (task == 'translate') Text('Translate ${SubtitleTranslationService.languageLabel(_sourceLanguage)} to ${SubtitleTranslationService.languageLabel(_targetLanguage)} using an installed host language pair.'),
+            if (task == 'translate') Text(aiCopy.companionTranslatePair(
+              source: SubtitleTranslationService.languageLabel(_sourceLanguage),
+              target: SubtitleTranslationService.languageLabel(_targetLanguage))),
             if (task == 'translate_model') ...[
-              Text('The companion will forward subtitle text, neighboring dialogue and protected glossary markers to:\n'
-                  '${(modelProvider as Map)['destination']}\nModel: ${modelProvider['model']}\n'
-                  'Revision declared by the host: ${modelProvider['declaredRevision']}. Provider retention and charges apply if configured. No media audio or playback credentials are forwarded.'),
-              Text('Translate ${SubtitleTranslationService.languageLabel(_sourceLanguage)} to ${SubtitleTranslationService.languageLabel(_targetLanguage)}. '
-                  'The model’s actual language quality is not qualified by this app.'),
-              DropdownButtonFormField<String>(initialValue: translationMode, decoration: const InputDecoration(labelText: 'Translation mode'),
-                items: const [DropdownMenuItem(value: 'faithful', child: Text('Faithful · retain meaning and tone')),
-                  DropdownMenuItem(value: 'natural', child: Text('Natural · idiomatic subtitle wording')),
-                  DropdownMenuItem(value: 'literal', child: Text('Literal · language-learning correspondence'))],
+              Text(aiCopy.companionExternalModelForwarding(
+                destination: (modelProvider as Map)['destination'], model: modelProvider['model'],
+                revision: modelProvider['declaredRevision'])),
+              Text(aiCopy.companionModelTranslatePair(
+                source: SubtitleTranslationService.languageLabel(_sourceLanguage),
+                target: SubtitleTranslationService.languageLabel(_targetLanguage))),
+              DropdownButtonFormField<String>(initialValue: translationMode, decoration: InputDecoration(labelText: aiCopy.companionTranslationMode),
+                items: [DropdownMenuItem(value: 'faithful', child: Text(aiCopy.companionTranslationFaithful)),
+                  DropdownMenuItem(value: 'natural', child: Text(aiCopy.companionTranslationNatural)),
+                  DropdownMenuItem(value: 'literal', child: Text(aiCopy.companionTranslationLiteral))],
                 onChanged: (value) => update(() => translationMode = value ?? 'faithful')),
               TextField(controller: _glossaryController, maxLines: 4, maxLength: 65536,
-                decoration: const InputDecoration(labelText: 'Protected glossary (JSON source → target pairs)',
-                  helperText: 'Up to 200 plain-text terms, 128 characters each. This job records its glossary digest.')),
+                decoration: InputDecoration(labelText: aiCopy.companionProtectedGlossaryLabel,
+                  helperText: aiCopy.companionProtectedGlossaryHelper)),
             ],
             if (task == 'script_convert') ...[
-              const Text('Convert Chinese script/region conventions as a separate track. This is not semantic translation. Native layout remains in the original.'),
+              Text(aiCopy.companionScriptConversionDescription),
               DropdownButtonFormField<String>(initialValue: scriptConversion, isExpanded: true,
-                decoration: const InputDecoration(labelText: 'Explicit script/region conversion'),
-                items: (const <String, String>{'s2t': 'Simplified → Traditional', 't2s': 'Traditional → Simplified',
-                  's2tw': 'Simplified → Taiwan characters', 'tw2s': 'Taiwan → Simplified',
-                  's2hk': 'Simplified → Hong Kong', 'hk2s': 'Hong Kong → Simplified',
-                  't2tw': 'Traditional → Taiwan characters', 't2hk': 'Traditional → Hong Kong',
-                  's2twp': 'Simplified → Taiwan characters and phrases', 'tw2sp': 'Taiwan phrases → Simplified'}).entries
+                decoration: InputDecoration(labelText: aiCopy.companionScriptConversionLabel),
+                items: <String, String>{'s2t': aiCopy.scriptSimplifiedTraditional, 't2s': aiCopy.scriptTraditionalSimplified,
+                  's2tw': aiCopy.scriptSimplifiedTaiwan, 'tw2s': aiCopy.scriptTaiwanSimplified,
+                  's2hk': aiCopy.scriptSimplifiedHongKong, 'hk2s': aiCopy.scriptHongKongSimplified,
+                  't2tw': aiCopy.scriptTraditionalTaiwan, 't2hk': aiCopy.scriptTraditionalHongKong,
+                  's2twp': aiCopy.scriptSimplifiedTaiwanPhrases, 'tw2sp': aiCopy.scriptTaiwanPhrasesSimplified}.entries
                     .map((entry) => DropdownMenuItem(value: entry.key, child: Text(entry.value, overflow: TextOverflow.ellipsis))).toList(),
                 onChanged: (value) => update(() => scriptConversion = value ?? 's2t')),
             ],
             if (task == 'reading') ...[
-              const Text('Add dictionary-derived Japanese reading aids to a separate SRT. Names and ambiguous readings need review; the original is unchanged.'),
-              DropdownButtonFormField<String>(initialValue: readingMode, decoration: const InputDecoration(labelText: 'Reading display'),
-                items: [const DropdownMenuItem(value: 'hiragana', child: Text('Inline kana after kanji')),
-                  const DropdownMenuItem(value: 'hepburn', child: Text('Original + Hepburn romanization line')),
+              Text(aiCopy.companionReadingDescription),
+              DropdownButtonFormField<String>(initialValue: readingMode, decoration: InputDecoration(labelText: aiCopy.companionReadingDisplay),
+                items: [DropdownMenuItem(value: 'hiragana', child: Text(aiCopy.companionReadingHiragana)),
+                  DropdownMenuItem(value: 'hepburn', child: Text(aiCopy.companionReadingHepburn)),
                   if (capabilities['readingModes'] is List && (capabilities['readingModes'] as List).contains('ruby'))
-                    const DropdownMenuItem(value: 'ruby', child: Text('Ruby readings above base text in app overlays'))],
+                    DropdownMenuItem(value: 'ruby', child: Text(aiCopy.companionReadingRuby))],
                 onChanged: (value) => update(() => readingMode = value ?? 'hiragana')),
             ],
-            if (task == 'scene_review') Text('The host will forward up to 30 chosen captions and ${sceneTemporalRegions ? 3 : 1} resized video frame(s) per cue to:\n'
-              '${capabilities['visionProvider']}. ${sceneAudioEvidence ? "Selected-track audio clips will also be forwarded (12 seconds per cue, two minutes total). Joint model interpretation remains unverified." : "This is unverified image context; images cannot verify spoken words."} '
-              'Original wording remains unless you select an alternative during image review.'),
+            if (task == 'scene_review') Text('${aiCopy.companionSceneForwardingDescription(
+              frames: sceneTemporalRegions ? 3 : 1, provider: capabilities['visionProvider'])} '
+              '${sceneAudioEvidence ? aiCopy.companionSceneAudioForwarded : aiCopy.companionSceneImageOnly} '
+              '${aiCopy.companionSceneAlternativeWarning}'),
             if (task == 'scene_review' && capabilities['sceneAudioEvidence'] == true)
-              SwitchListTile(title: const Text('Include synchronized audio with scene images'),
-                subtitle: const Text('Explicitly forwards each selected cue’s audio to the declared destination. Provider modality support is host-declared, not verified. Listen to the source before accepting alternatives.'),
+              SwitchListTile(title: Text(aiCopy.companionSceneAudioTitle),
+                subtitle: Text(aiCopy.companionSceneAudioDescription),
                 value: sceneAudioEvidence, onChanged: (v) => update(() => sceneAudioEvidence = v)),
             if (task == 'scene_review' && capabilities['sceneTemporalRegions'] == true)
-              SwitchListTile(title: const Text('Sample scene movement during each cue'),
-                subtitle: const Text('Sends three frames at 10%, 50% and 90% of each cue (the first is 0% when motion tracking is enabled). Evidence shows chronological panels; sampled region associations remain unverified.'),
+              SwitchListTile(title: Text(aiCopy.companionSceneMovementTitle),
+                subtitle: Text(aiCopy.companionSceneMovementDescription),
                 value: sceneTemporalRegions, onChanged: (v) => update(() => sceneTemporalRegions = v)),
             if (task == 'scene_review' && capabilities['sceneMotionTracking'] == true)
-              SwitchListTile(title: const Text('Track region motion locally on the companion'),
-                subtitle: const Text('Uses the first cue frame as a seed, then tracks texture at 12 Hz for up to 12 seconds per cue / two minutes total. '
-                  'Extra tracking frames stay on the companion. Paths stop when matching fails; placement uses fixed envelopes. This can drift and needs review.'),
+              SwitchListTile(title: Text(aiCopy.companionSceneMotionTitle),
+                subtitle: Text(aiCopy.companionSceneMotionDescription),
                 value: sceneMotionTracking, onChanged: (v) => update(() => sceneMotionTracking = v)),
             if (task == 'scene_review' && capabilities['sceneObjectTracking'] == true) SwitchListTile(
-              title: const Text('Track anonymous object classes locally'),
-              subtitle: const Text('Uses the companion’s local CPU detector at 2 Hz, up to 12 seconds per cue / two minutes total. '
-                'Class, appearance and overlap may recover short gaps up to 1.5 seconds. Similar objects, cuts and occlusion can break matching. '
-                'Extra frames stay on the companion; labels and paths require review.'),
+              title: Text(aiCopy.companionSceneObjectTitle),
+              subtitle: Text(aiCopy.companionSceneObjectDescription),
               value: sceneObjectTracking, onChanged: (value) => update(() => sceneObjectTracking = value)),
-            if (task == 'ocr_auto') const Text('Find a repeatedly occupied text band using samples from the first two minutes. '
-              'This can select credits or signs; inspect the returned cue images before accepting.'),
+            if (task == 'ocr_auto') Text(aiCopy.companionOcrAutoDescription),
             if (task == 'dubbing' || task == 'dub_mix') ...[
-              Text('Synthesize a separate audio product from already-reviewed spoken-language subtitles. Maximum ten minutes / 500 cues. '
-                'This is a generic synthetic voice, not the original speaker or lip synchronization. '
-                'Voice: ${capabilities['synthesisVoice']}. The host voice fingerprint is bound to this request.'),
+              Text(aiCopy.companionDubbingDescription(voice: capabilities['synthesisVoice'])),
               if (task == 'dub_mix') ...[
-                Text('Keep ${(duckRatio * 100).round()}% of original audio under synthesized speech'),
+                Text(aiCopy.companionDuckRatio(percent: (duckRatio * 100).round())),
                 Slider(value: duckRatio, min: 0, max: 1, onChanged: (v) => update(() => duckRatio = v)),
               ],
             ],
             if (task == 'sound_events' && capabilities['soundStereoEvidence'] == true) SwitchListTile(
-              title: const Text('Include stereo mix evidence'),
-              subtitle: const Text('Measures repeated left/right energy dominance in a stereo rendering. It cannot identify a sound’s physical direction or isolate it from the rest of the mix.'),
+              title: Text(aiCopy.companionStereoEvidenceTitle),
+              subtitle: Text(aiCopy.companionStereoEvidenceDescription),
               value: soundStereoEvidence, onChanged: (v) => update(() => soundStereoEvidence = v)),
-            if (task == 'diarize') const Text('Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.'),
+            if (task == 'diarize') Text(aiCopy.companionDiarizeDescription),
             if (task == 'sound_localize') Text(aiCopy.microphoneArrayTaskDescription),
             if (task == 'vocal_notes') CheckboxListTile(value: isolatedLeadVocal,
               onChanged: (v) => update(() => isolatedLeadVocal = v == true),
               title: Text(aiCopy.vocalNoteTaskDeclarationTitle),
               subtitle: Text(aiCopy.vocalNoteTaskDeclarationDescription)),
             if (path != null && task != 'ocr' && task != 'bitmap_ocr' && task != 'sound_localize' && task != 'vocal_notes') ...[
-              DropdownButtonFormField<int>(initialValue: track, decoration: const InputDecoration(labelText: 'Audio stream (zero based)'),
-                items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text('Audio stream $i'))),
+              DropdownButtonFormField<int>(initialValue: track, decoration: InputDecoration(labelText: aiCopy.companionAudioStreamLabel),
+                items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text(aiCopy.companionAudioStreamItem(index: i)))),
                 onChanged: (value) => update(() => track = value ?? 0)),
-              SwitchListTile(title: const Text('High-pass and FFT denoise'), subtitle: const Text('Optional preprocessing can alter speech; original media stays intact'),
+              SwitchListTile(title: Text(aiCopy.companionPreprocessTitle), subtitle: Text(aiCopy.companionPreprocessDescription),
                 value: preprocess, onChanged: (value) => update(() => preprocess = value)),
             ],
             if (task == 'ocr' || task == 'signs') ...[
-              const Text('Burned-caption OCR samples the selected full-width crop at two frames per second. It does not decode PGS/VobSub tracks.'),
-              Text('Crop starts at ${(cropTop * 100).round()}% of image height and extends to the bottom'),
+              Text(aiCopy.companionBurnedOcrDescription),
+              Text(aiCopy.companionCropDescription(percent: (cropTop * 100).round())),
               Slider(value: cropTop, min: 0, max: 0.9, divisions: 18, label: '${(cropTop * 100).round()}%',
                 onChanged: (value) => update(() => cropTop = value)),
             ],
             if (task == 'bitmap_ocr' || task == 'extract_text') ...[
-              if (task == 'bitmap_ocr') const Text('Decode PGS SUP or a PGS/VobSub stream in the selected container. For VobSub sidecars, upload a ZIP containing exactly one matching IDX/SUB pair. Original caption images are retained for OCR correction and export.'),
-              DropdownButtonFormField<int>(initialValue: subtitleTrack, decoration: const InputDecoration(labelText: 'Subtitle stream (zero based)'),
-                items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text('Subtitle stream $i'))),
+              if (task == 'bitmap_ocr') Text(aiCopy.companionBitmapOcrDescription),
+              DropdownButtonFormField<int>(initialValue: subtitleTrack, decoration: InputDecoration(labelText: aiCopy.companionSubtitleStreamLabel),
+                items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text(aiCopy.companionSubtitleStreamItem(index: i)))),
                 onChanged: (value) => update(() => subtitleTrack = value ?? 0)),
-              if (task == 'bitmap_ocr') DropdownButtonFormField<int>(initialValue: bitmapTail, decoration: const InputDecoration(labelText: 'Last cue duration only if its end is missing'),
-                items: [1000, 2000, 3000, 5000, 10000, 30000].map((ms) => DropdownMenuItem(value: ms, child: Text('$ms ms'))).toList(),
+              if (task == 'bitmap_ocr') DropdownButtonFormField<int>(initialValue: bitmapTail, decoration: InputDecoration(labelText: aiCopy.companionBitmapTailLabel),
+                items: [1000, 2000, 3000, 5000, 10000, 30000].map((ms) => DropdownMenuItem(value: ms, child: Text(aiCopy.companionDurationMilliseconds(duration: ms)))).toList(),
                 onChanged: (value) => update(() => bitmapTail = value ?? 2000)),
-              if (task == 'bitmap_ocr') Text('Caption language: ${SubtitleTranslationService.languageLabel(_sourceLanguage)}. Install matching Tesseract language data and select it on the host.'),
-              if (task == 'extract_text') const Text('Convert an embedded text stream, such as mov_text, into a separate SRT. Layout and caption-service behavior may be flattened; bitmap streams require OCR.'),
+              if (task == 'bitmap_ocr') Text(aiCopy.companionBitmapLanguage(
+                language: SubtitleTranslationService.languageLabel(_sourceLanguage))),
+              if (task == 'extract_text') Text(aiCopy.companionExtractTextDescription),
             ],
-            Text('Host backends: ${(capabilities['tasks'] as List).join(', ')}. Hardware placement is unverified.'),
+            Text(aiCopy.companionHostBackends(tasks: (capabilities['tasks'] as List).join(', '))),
           ]))),
-          actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+          actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(Translations.of(dialogContext).common.cancel)),
             FilledButton(onPressed: task == 'vocal_notes' && !isolatedLeadVocal ? null : () => Navigator.pop(dialogContext, true),
-              child: Text(task == 'translate_model' ? 'Forward text and translate' : 'Send and process'))],
+              child: Text(task == 'translate_model' ? aiCopy.companionForwardTextAndTranslate : aiCopy.companionSendAndProcess))],
         ),
       ));
       if (accepted != true || !mounted) return;

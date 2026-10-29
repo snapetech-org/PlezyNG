@@ -30,6 +30,7 @@ import '../../../services/subtitle_companion_service.dart';
 import '../../../services/subtitle_translation_service.dart';
 import '../../../services/subtitle_translation_memory.dart';
 import '../../../services/subtitle_text_importer.dart';
+import '../../../services/subtitle_discovery_service.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_playback_transcription_service.dart';
 import '../../../services/subtitle_revision_service.dart';
@@ -44,6 +45,7 @@ import 'subtitle_companion_jobs_dialog.dart';
 import 'subtitle_study_dialog.dart';
 import 'subtitle_import_dialog.dart';
 import 'subtitle_bitmap_review_dialog.dart';
+import 'subtitle_discovery_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -388,6 +390,36 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final selected = await _pickSubtitleCues(preview: true);
     if (selected == null || !mounted) return;
     await _writeAndApply(selected.$1, operationLabel: 'Imported text subtitle', reviewWarnings: selected.$3);
+  });
+
+  Future<void> _discoverSubtitles() => _run(() async {
+    final profile = _activeProfileId;
+    if (profile == null) throw StateError('Choose a profile before managing subtitle folders.');
+    final path = await showDialog<String>(context: context,
+      builder: (_) => SubtitleDiscoveryDialog(player: widget.player, profileId: profile,
+        title: _operationRevisionIdentity?.mediaTitle,
+        isCurrent: () => mounted && _activeProfileId == profile && _operationIdentityIsCurrent));
+    if (path == null || !mounted) return;
+    _requireCurrentOperationIdentity();
+    if (_activeProfileId != profile) throw StateError('Profile changed before subtitle attachment.');
+    final extension = p.extension(path).toLowerCase();
+    if (widget.player.supportedLocalSubtitleExtensions.contains(extension.substring(1))) {
+      await SubtitleDiscoveryService.validateBitmapPair(path);
+      _requireCurrentOperationIdentity();
+      await widget.player.command(['sub-add', path, 'select']);
+      if (mounted) setState(() => _status = 'Attached ${p.basename(path)} from its original folder.');
+    } else {
+      final file = File(path);
+      final size = await file.length();
+      if (size <= 0 || size > SubtitleRetimer.maximumInputBytes) throw const FormatException('Text conversion is limited to 5 MiB.');
+      final bytes = await file.readAsBytes();
+      if (bytes.length != size) throw const FormatException('Subtitle changed during selection.');
+      if (!mounted) return;
+      final imported = await showDialog<SubtitleTextImport>(context: context,
+        builder: (_) => SubtitleImportDialog(bytes: bytes, extension: extension, name: p.basename(path)));
+      if (imported == null || !mounted) return;
+      await _writeAndApply(imported.cues, operationLabel: 'Imported folder subtitle', reviewWarnings: imported.warnings);
+    }
   });
 
   Future<void> _transcribe() => _run(() async {
@@ -3776,6 +3808,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             title: const Text('Convert or repair subtitle text encoding'),
             subtitle: const Text('Preview legacy encodings, TTML/IMSC text, SAMI, MicroDVD, SBV, LRC, or MPL2 as a separate SRT'),
             onTap: _busy ? null : () => unawaited(_importTextSubtitle()),
+          ),
+          FocusableListTile(
+            leading: const AppIcon(Symbols.folder_open_rounded),
+            title: const Text('Find subtitles in folders'),
+            subtitle: const Text('Search beside local media or in this profile’s chosen subtitle folders'),
+            onTap: _busy ? null : () => unawaited(_discoverSubtitles()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.replay_rounded),

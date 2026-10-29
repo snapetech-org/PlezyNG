@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../mpv/mpv.dart';
 import '../../../mpv/player/player_media_session_identity.dart';
@@ -145,6 +146,33 @@ class _SubtitleStudyDialogState extends State<SubtitleStudyDialog> {
 
   static String _plain(SubtitleCue cue) => cue.text.replaceAll(RegExp(r'<[^>]*>|\{[^}]*\}'), '').replaceAll(r'\N', '\n');
 
+  Future<void> _dictionary(SubtitleCue cue) async {
+    if (!_current) return;
+    final query = TextEditingController();
+    try {
+      final term = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
+        title: const Text('Look up a word or phrase'),
+        content: SizedBox(width: 520, child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          SelectableText(_plain(cue)),
+          const SizedBox(height: 12),
+          TextField(controller: query, autofocus: true, maxLength: 128,
+            decoration: const InputDecoration(labelText: 'Word or phrase to look up')),
+          const Text('Opens Wiktionary in your browser and sends only the term you enter. Copying text remains available offline.'),
+        ])),
+        actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+          FilledButton(onPressed: () {
+            final value = query.text.trim();
+            if (value.isNotEmpty && value.length <= 128) Navigator.pop(dialogContext, value);
+          }, child: const Text('Open dictionary'))]));
+      if (term == null || !_current) return;
+      final uri = Uri.https('en.wiktionary.org', '/w/index.php', {'title': 'Special:Search', 'search': term});
+      if (!await launchUrl(uri, mode: LaunchMode.externalApplication) && mounted) {
+        setState(() => _message = 'This device cannot open a dictionary browser. Copy the term for lookup on another device.');
+      }
+    } catch (_) { if (mounted) setState(() => _message = 'The dictionary could not be opened.'); }
+    finally { query.dispose(); }
+  }
+
   Future<void> _bookmark(SubtitleCue cue) async {
     final identity = widget.identityKey;
     if (identity == null || !_current) return;
@@ -247,6 +275,7 @@ class _SubtitleStudyDialogState extends State<SubtitleStudyDialog> {
               leading: IconButton(tooltip: 'Replay cue ${cue.index}', onPressed: _current && widget.player.state.seekable
                   ? () => _replay(cue) : null, icon: const Icon(Icons.replay)),
               trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                IconButton(tooltip: 'Look up a word or phrase', onPressed: () => _dictionary(cue), icon: const Icon(Icons.menu_book_outlined)),
                 IconButton(tooltip: 'Copy cue text', onPressed: () => Clipboard.setData(ClipboardData(text: _plain(cue))), icon: const Icon(Icons.copy)),
                 if (widget.identityKey != null) IconButton(tooltip: 'Save phrase or bookmark', onPressed: () => _bookmark(cue), icon: const Icon(Icons.bookmark_add_outlined)),
               ]),

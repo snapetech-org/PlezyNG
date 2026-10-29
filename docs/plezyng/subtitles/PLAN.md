@@ -22,7 +22,7 @@ with `[skip ci]`. Existing native dependency pins were not fabricated or promote
 | --- | --- | --- |
 | Transcription and translation | Local whisper.cpp CPU/optional compiled desktop CUDA/Vulkan; Sherpa provider requests with fallback; ML Kit and desktop Argos; selected-range work; durable WAV jobs; reviewed glossary/memory/model translation; cross-language sync and word timings. | Runtime/provider reports do not prove per-operation GPU/NPU execution. TV/accelerator packages and language quality need qualification. |
 | Live/DVR | Ordered PCM consumption, seek generation retirement, immutable finalized cues, bounded retained history, ExoPlayer source-frame clocks and moving DVR origin rebasing, optional late-text display, overlapping stable-prefix agreement with explicit provisional text, backend-grid DVR delay and opt-in delay hold. | No general future-audio live ingestion or engine-native incremental decoding. Local-agreement recognition is implemented but unqualified. Delay hold seeks the viewer, not a second live decoder. Clock/output routes remain unqualified. |
-| Playback/source access | Android Media3 pre-speed PCM processor; native MPV bridges; Tizen tap; desktop FFmpeg read-ahead via renewable standalone/library source leases; explicit companion staging of eligible current VOD files on IO platforms. | Current locked MPV libraries lack the ordered ABI. webOS NDL has no direct PCM tap; there is no browser Player. Mobile/TV do not yet have a separate local analysis decoder. Companion staging is limited to complete, accessible files up to 1 GiB/one hour; playlists/live/protected sources are refused. |
+| Playback/source access | Android Media3 pre-speed PCM processor; native MPV bridges; Tizen tap; Android MediaExtractor/MediaCodec and Apple AVAssetReader analysis bridges plus desktop FFmpeg read-ahead via renewable standalone/library source leases; explicit companion staging of eligible current VOD files on IO platforms. | Current locked MPV libraries lack the ordered ABI. webOS NDL has no direct PCM tap; there is no browser Player. Android/Apple separate analysis sources now exist; native format/device qualification and Tizen/webOS local analysis decoders remain open. Companion staging is limited to complete, accessible files up to 1 GiB/one hour; playlists/live/protected sources are refused. |
 | Import and attachment | Existing format conversion/archive/drop/share flows; Plex/Jellyfin/Emby upload; managed standalone native text attachment; adapter-owned folder discovery for local/network/cloud sources and DLNA metadata-linked text resources. | Backend format limits still apply. Non-MPV attachment refuses saved affine corrections. Vendor-only DLNA caption tags and catalogue-specific sources without a file listing remain unsupported. |
 | App rendering | Two independent text lanes, per-profile/lane appearance defaults, installed-family/script fallback, original word highlights, fixed authored sign regions, stable optional scene-region avoidance, manual burned-caption cover, focused-pane density limit, spoken subtitles with explicit duck/rate. | App styling is not a replacement for native ASS/bitmap rendering. HDR luminance, font shaping and output paths are unqualified. Centered contain/cover/stretch/zoom geometry and screen/video anchoring are implemented; renderer/output qualification, ruby/vertical typography, new closed-caption service semantics and localized new controls remain open. |
 | Ecosystem | Corrected SRT/native snapshot handoff on the opened-part clock; expiring LAN second screen and WebVTT exports; explicit Cast WebVTT loading/restoration; revision/history transfer bundles and study tools. | Receiver rendering/native PiP remain capability limited. Automatic Watch Together asset policy, cross-device conflict sync, font-aware offline packaging/accounting and HDR subtitle screenshot composition remain unfinished. |
@@ -381,7 +381,7 @@ All entries below are target requirements unless explicitly marked Existing. Exi
 | A09 | Whisper CPU/desktop GPU WAV transcription and Android ExoPlayer live capture request token timestamps and export cue-linked word/token records with mean token probability. Whitespace-delimited language segments are grouped into words; segments without reliable separators retain token spans instead of invented word boundaries. Moonshine accelerator requests do not return word timings. Whisper probabilities are not calibrated confidence. | M4–M6 |
 | A10 | The optional companion WhisperX/pyannote adapter adds anonymous numbered speaker labels to a separate reviewed transcript. It uses overlap evidence and does not assign names or claim correct separation of simultaneous speech. Model access and overlap/speaker-change evaluation remain unqualified. | M7 |
 | A11 | Alternate audio tracks have distinct analysis identities; no transcript from the previous dub leaks through. | M4 |
-| A12 | Desktop VOD read-ahead uses a separate FFmpeg decoder through an owned source lease and preserves passthrough/output mode. Mobile/TV local analysis decoders remain open; eligible complete files can instead be explicitly staged to the paired companion. | M4 |
+| A12 | Desktop VOD read-ahead uses a separate FFmpeg decoder through an owned source lease and preserves passthrough/output mode. Android/Apple native read-ahead decoders are implemented with codec/container limits; Tizen/webOS local analysis decoders remain open; eligible complete files can instead be explicitly staged to the paired companion. | M4 |
 | A13 | A selected WAV interval can be transcribed without running inference over the rest of the file. Users can replace cues inside the range while preserving cues outside it, or add speech-recognized cues only to long uncovered ranges while preserving all existing cues. The gap heuristic is conservative and the result remains reviewable; confidence-based, language-aware verified-gap detection remains open. | M7 |
 | A14 | Standalone MPV audio-only sources now expose the same transcript tools as video, including local/companion generation, revision history where a stable source identity exists, and transcript study on the selected file’s clock. Other audio engines and chapter-aggregated transcript clocks remain open. | M8 |
 | A15 | A profile-local in-app WAV queue persists immutable audio copies and per-30-second-window results, resumes explicitly after restart, prioritizes windows near a changing playhead, and supports pause/cancel, external-power and playback-idle policies. Profile changes pause jobs; results require same-item review before attachment. Bounds: 12 jobs / 2 GiB audio per profile, 1 GiB per WAV, 24 MiB output per job. Cancellation discards the in-flight window once the non-interruptible native call returns. OS background-execution entitlements and source-decoder jobs remain open. | M4 |
@@ -954,3 +954,30 @@ compatible with existing image review/export. Full sampled tracks remain in the
 companion result for SDK consumers. Input, result and evidence bounds remain in
 force; provider fingerprint changes require resubmission after review. Single-
 frame mode remains the default. No model execution or quality evaluation ran.
+
+### Native VOD analysis source integrations
+
+The read-ahead worker now uses a shared separate-decoder contract. Android
+registers a MediaExtractor/MediaCodec worker; Apple registers AVAssetReader in
+the shared iOS/tvOS/macOS plugin. The UI enables only platforms that also have
+local inference available. Native readers create no AudioTrack/AVAudioSession,
+video surface or audio-focus request. They preserve the chosen audio ordinal
+and source timestamps, produce mono 16 kHz PCM16 for at most 64 seconds, bound
+work to 90 seconds, and reject missing PCM intervals above 250 ms. Small codec
+priming gaps are zero padded. Android resampling is linear and channel averaging
+is deliberately not reported as speech-source separation.
+
+Local files and exact literal-loopback gateways are the only decoder inputs.
+Android MediaDataSource and Apple's custom AVAssetResourceLoader use bounded
+256 KiB range responses, no redirects, and per-request timeouts; they do not
+inherit upstream provider credentials. Cancellation/profile/media/audio/seek
+changes retire results. Flutter writes the bounded temporary WAV and deletes it
+through the existing worker cleanup. macOS can fall back to installed FFmpeg;
+Linux/Windows retain it. Native codec/container availability and Apple asset
+readability are explicit failure boundaries, not promises to decode every file.
+No package build, decoder run, device output check or CI execution occurred.
+
+API contracts used: Android [MediaDataSource](https://developer.android.com/reference/android/media/MediaDataSource)
+and [MediaCodec](https://developer.android.com/reference/android/media/MediaCodec),
+Apple [AVAssetReader](https://developer.apple.com/documentation/avfoundation/avassetreader)
+and [AVAssetResourceLoader](https://developer.apple.com/documentation/avfoundation/avassetresourceloader).

@@ -892,6 +892,7 @@ class PlezyActivity : FlutterActivity() {
 
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
+    flutterEngine.plugins.add(com.edde746.plezy.subtitles.SubtitleAnalysisPlugin())
     flutterEngine.plugins.add(MpvPlayerPlugin())
     flutterEngine.plugins.add(MpvWorkspacePlayerPlugin())
     flutterEngine.plugins.add(ExoPlayerPlugin())

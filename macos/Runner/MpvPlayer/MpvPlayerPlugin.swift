@@ -35,6 +35,7 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
   // MARK: - FlutterPlugin Registration
 
   static func register(with registrar: FlutterPluginRegistrar) {
+    SubtitleAnalysisBridge.register(messenger: registrar.messenger)
     let methodChannel = FlutterMethodChannel(
       name: "com.plezy/mpv_player",
       binaryMessenger: registrar.messenger

@@ -22,6 +22,9 @@ import 'subtitle_whisper_cpp_service.dart';
 enum SubtitleInferenceProvider { cpu, desktopGpu, coreMl, qnn, rknn }
 
 extension SubtitleInferenceProviderName on SubtitleInferenceProvider {
+  bool get supportsCooperativeCancellation =>
+      this == SubtitleInferenceProvider.cpu || this == SubtitleInferenceProvider.desktopGpu;
+
   String get runtimeName => switch (this) {
     SubtitleInferenceProvider.cpu || SubtitleInferenceProvider.desktopGpu => 'cpu',
     SubtitleInferenceProvider.coreMl => 'coreml',
@@ -228,6 +231,11 @@ final class SubtitleAiService {
       client.close();
     }
   }
+
+  static Map<String, String> providerModelIdentity(SubtitleInferenceProvider provider) =>
+      provider == SubtitleInferenceProvider.cpu || provider == SubtitleInferenceProvider.desktopGpu
+          ? SubtitleWhisperCppService.modelIdentity
+          : {'id': _modelId, 'archiveSha256': _modelArchiveSha256, 'vadSha256': _vadSha256};
 
   /// Checks the chosen installed model without starting a download or inference.
   Future<bool> isProviderModelInstalled(SubtitleInferenceProvider provider) =>

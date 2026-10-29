@@ -106,6 +106,12 @@ final class SubtitleWhisperCppService {
     }
   }
 
+  static Map<String, String> get modelIdentity => {
+    'id': whisper.WhisperModels.baseQ5_1.id,
+    'sha256': whisper.WhisperModels.baseQ5_1.sha256,
+    'runtimePackage': 'flutter_whisper_ggml/0.0.2',
+  };
+
   String? _verifiedInstalledPath;
   FileStat? _verifiedInstalledStat;
 

@@ -7483,8 +7483,8 @@ class Translations$videoSettings$en {
 	/// en: 'Allow OS background transcription'
 	String get subtitleBackgroundJobs => 'Allow OS background transcription';
 
-	/// en: 'Retained WAV jobs can continue while the app is inactive. The OS chooses when they run. The selected speech model must already be installed; the worker never downloads models. Source jobs and jobs requiring confirmed playback idle remain in the foreground.'
-	String get subtitleBackgroundJobsHelp => 'Retained WAV jobs can continue while the app is inactive. The OS chooses when they run. The selected speech model must already be installed; the worker never downloads models. Source jobs and jobs requiring confirmed playback idle remain in the foreground.';
+	/// en: 'Retained WAV jobs can continue while the app is inactive. The OS chooses when they run. CPU and desktop GPU Whisper jobs require the selected speech model to be installed; the worker never downloads models. Source jobs, jobs requiring confirmed playback idle and other accelerator requests remain in the foreground.'
+	String get subtitleBackgroundJobsHelp => 'Retained WAV jobs can continue while the app is inactive. The OS chooses when they run. CPU and desktop GPU Whisper jobs require the selected speech model to be installed; the worker never downloads models. Source jobs, jobs requiring confirmed playback idle and other accelerator requests remain in the foreground.';
 
 	/// en: 'Completed windows survive restarts and require review before attachment. Normal jobs resume explicitly. Jobs allowed in the background can resume automatically. Pause or cancel retires the current window and preserves completed checkpoints.'
 	String get subtitleBackgroundQueueHelp => 'Completed windows survive restarts and require review before attachment. Normal jobs resume explicitly. Jobs allowed in the background can resume automatically. Pause or cancel retires the current window and preserves completed checkpoints.';
@@ -7503,6 +7503,54 @@ class Translations$videoSettings$en {
 
 	/// en: 'This job requires confirmed playback idle. It will wait for the app to reopen instead of assuming that background audio has stopped.'
 	String get subtitleBackgroundIdleNote => 'This job requires confirmed playback idle. It will wait for the app to reopen instead of assuming that background audio has stopped.';
+
+	/// en: 'Check this speech backend'
+	String get subtitleBackendCheckTitle => 'Check this speech backend';
+
+	/// en: 'Run the installed model on a known 0.5–15 second WAV (up to 8 MiB). No model is downloaded. A successful request does not prove that every operation used the accelerator or that live captions can keep up.'
+	String get subtitleBackendCheckHelp => 'Run the installed model on a known 0.5–15 second WAV (up to 8 MiB). No model is downloaded. A successful request does not prove that every operation used the accelerator or that live captions can keep up.';
+
+	/// en: 'Expected words (optional, up to 2000 characters)'
+	String get subtitleBackendCheckExpected => 'Expected words (optional, up to 2000 characters)';
+
+	/// en: 'Run sample check'
+	String get subtitleBackendCheckRun => 'Run sample check';
+
+	/// en: 'Running the sample with the selected installed model…'
+	String get subtitleBackendCheckRunning => 'Running the sample with the selected installed model…';
+
+	/// en: 'The sample check was cancelled. Native work may need to finish before releasing its model.'
+	String get subtitleBackendCheckCancelled => 'The sample check was cancelled. Native work may need to finish before releasing its model.';
+
+	/// en: 'The sample check could not complete. No provider or playback setting was changed.'
+	String get subtitleBackendCheckFailed => 'The sample check could not complete. No provider or playback setting was changed.';
+
+	/// en: 'Choose a valid 0.5–15 second WAV no larger than 8 MiB, with at most 2000 characters of reference text.'
+	String get subtitleBackendCheckSampleLimit => 'Choose a valid 0.5–15 second WAV no larger than 8 MiB, with at most 2000 characters of reference text.';
+
+	/// en: 'Export sample report'
+	String get subtitleBackendCheckExport => 'Export sample report';
+
+	/// en: 'No speech was returned. This sample does not establish recognition quality.'
+	String get subtitleBackendCheckNoSpeech => 'No speech was returned. This sample does not establish recognition quality.';
+
+	/// en: 'Execution evidence: ${evidence}'
+	String subtitleBackendCheckPlacement({required String evidence}) => 'Execution evidence: ${evidence}';
+
+	/// en: 'Elapsed, including queue and model loading: ${seconds} s · elapsed/audio ratio: ${ratio}'
+	String subtitleBackendCheckElapsed({required String seconds, required String ratio}) => 'Elapsed, including queue and model loading: ${seconds} s · elapsed/audio ratio: ${ratio}';
+
+	/// en: 'The recognized words match the entered text after ignoring case and repeated spaces. This one sample is not a quality benchmark.'
+	String get subtitleBackendCheckAgrees => 'The recognized words match the entered text after ignoring case and repeated spaces. This one sample is not a quality benchmark.';
+
+	/// en: 'The recognized text differs from the entered text. Review both; no quality score is inferred.'
+	String get subtitleBackendCheckDiffers => 'The recognized text differs from the entered text. Review both; no quality score is inferred.';
+
+	/// en: 'No reference was supplied. Recognition quality is unknown. The exported report includes the recognized text and sample digest.'
+	String get subtitleBackendCheckUnknown => 'No reference was supplied. Recognition quality is unknown. The exported report includes the recognized text and sample digest.';
+
+	/// en: 'Requested: ${requested} · Runtime: ${runtime} · CPU fallback: ${fallback}'
+	String subtitleBackendCheckRuntime({required String requested, required String runtime, required String fallback}) => 'Requested: ${requested} · Runtime: ${runtime} · CPU fallback: ${fallback}';
 
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
@@ -22989,13 +23037,29 @@ extension on Translations {
 			'videoSettings.subtitleAutoSkip' => 'Skip subtitle retrieval',
 			'videoSettings.subtitleAutoSearchAgain' => 'Search subtitles again',
 			'videoSettings.subtitleBackgroundJobs' => 'Allow OS background transcription',
-			'videoSettings.subtitleBackgroundJobsHelp' => 'Retained WAV jobs can continue while the app is inactive. The OS chooses when they run. The selected speech model must already be installed; the worker never downloads models. Source jobs and jobs requiring confirmed playback idle remain in the foreground.',
+			'videoSettings.subtitleBackgroundJobsHelp' => 'Retained WAV jobs can continue while the app is inactive. The OS chooses when they run. CPU and desktop GPU Whisper jobs require the selected speech model to be installed; the worker never downloads models. Source jobs, jobs requiring confirmed playback idle and other accelerator requests remain in the foreground.',
 			'videoSettings.subtitleBackgroundQueueHelp' => 'Completed windows survive restarts and require review before attachment. Normal jobs resume explicitly. Jobs allowed in the background can resume automatically. Pause or cancel retires the current window and preserves completed checkpoints.',
 			'videoSettings.subtitleBackgroundWaiting' => 'Waiting for the background subtitle window to release its checkpoint…',
 			'videoSettings.subtitleBackgroundModelRequired' => 'Install the selected speech model by generating subtitles in the foreground first.',
 			'videoSettings.subtitleBackgroundUnavailable' => 'OS subtitle scheduling is unavailable on this device. The job remains available in the app.',
 			'videoSettings.subtitleBackgroundSourceNote' => 'This source job requires its current file and audio lease and pauses when the app leaves the foreground.',
 			'videoSettings.subtitleBackgroundIdleNote' => 'This job requires confirmed playback idle. It will wait for the app to reopen instead of assuming that background audio has stopped.',
+			'videoSettings.subtitleBackendCheckTitle' => 'Check this speech backend',
+			'videoSettings.subtitleBackendCheckHelp' => 'Run the installed model on a known 0.5–15 second WAV (up to 8 MiB). No model is downloaded. A successful request does not prove that every operation used the accelerator or that live captions can keep up.',
+			'videoSettings.subtitleBackendCheckExpected' => 'Expected words (optional, up to 2000 characters)',
+			'videoSettings.subtitleBackendCheckRun' => 'Run sample check',
+			'videoSettings.subtitleBackendCheckRunning' => 'Running the sample with the selected installed model…',
+			'videoSettings.subtitleBackendCheckCancelled' => 'The sample check was cancelled. Native work may need to finish before releasing its model.',
+			'videoSettings.subtitleBackendCheckFailed' => 'The sample check could not complete. No provider or playback setting was changed.',
+			'videoSettings.subtitleBackendCheckSampleLimit' => 'Choose a valid 0.5–15 second WAV no larger than 8 MiB, with at most 2000 characters of reference text.',
+			'videoSettings.subtitleBackendCheckExport' => 'Export sample report',
+			'videoSettings.subtitleBackendCheckNoSpeech' => 'No speech was returned. This sample does not establish recognition quality.',
+			'videoSettings.subtitleBackendCheckPlacement' => ({required String evidence}) => 'Execution evidence: ${evidence}',
+			'videoSettings.subtitleBackendCheckElapsed' => ({required String seconds, required String ratio}) => 'Elapsed, including queue and model loading: ${seconds} s · elapsed/audio ratio: ${ratio}',
+			'videoSettings.subtitleBackendCheckAgrees' => 'The recognized words match the entered text after ignoring case and repeated spaces. This one sample is not a quality benchmark.',
+			'videoSettings.subtitleBackendCheckDiffers' => 'The recognized text differs from the entered text. Review both; no quality score is inferred.',
+			'videoSettings.subtitleBackendCheckUnknown' => 'No reference was supplied. Recognition quality is unknown. The exported report includes the recognized text and sample digest.',
+			'videoSettings.subtitleBackendCheckRuntime' => ({required String requested, required String runtime, required String fallback}) => 'Requested: ${requested} · Runtime: ${runtime} · CPU fallback: ${fallback}',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

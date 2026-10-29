@@ -45,6 +45,7 @@ import '../../../widgets/focusable_list_tile.dart';
 import '../../../widgets/overlay_sheet.dart';
 import 'base_video_control_sheet.dart';
 import 'subtitle_jobs_dialog.dart';
+import 'subtitle_backend_probe_dialog.dart';
 import 'subtitle_waveform_editor.dart';
 import 'subtitle_companion_jobs_dialog.dart';
 import 'subtitle_study_dialog.dart';
@@ -361,6 +362,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       }
     }
   }
+
+  Future<void> _checkSpeechBackend() => _run(() async {
+    final path = await _pickWav();
+    if (path == null || !mounted) return;
+    _requireCurrentOperationIdentity();
+    await showDialog<void>(context: context, barrierDismissible: false, builder: (_) => SubtitleBackendProbeDialog(
+      wavPath: path, provider: _provider,
+      languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
+      isCurrent: () => mounted && _operationIdentityIsCurrent));
+  });
 
   Future<void> _ensureSpeechModel() async {
     if (_provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu) return;
@@ -4150,6 +4161,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 : aiCopy.cpuProviderNote,
             style: Theme.of(context).textTheme.bodySmall,
           ),
+          TextButton(onPressed: _busy ? null : _checkSpeechBackend,
+            child: Text(Translations.of(context).videoSettings.subtitleBackendCheckTitle)),
           const SizedBox(height: 12),
           _speechLanguageSelector(),
           const SizedBox(height: 10),

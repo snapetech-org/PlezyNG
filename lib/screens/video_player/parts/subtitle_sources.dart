@@ -26,7 +26,14 @@ extension _VideoPlayerSubtitleSources on VideoPlayerScreenState {
             ? liveSession.streamHeaders : const <String, String>{});
         if (!liveCurrent()) throw StateError('The live source changed');
         return SubtitleAnalysisSource(uri: uri, identity: sourceDigest('$profile:${item.globalKey}:live:$streamGeneration'),
-          isCurrent: liveCurrent, close: gateway.close, liveEpochForPosition: (positionMs) {
+          isCurrent: liveCurrent, close: gateway.close, liveSeekableEpochRange: () {
+            if (!liveCurrent()) return null;
+            final timeline = _liveTimelineForPosition(core.currentPosition);
+            final window = timeline.seekable;
+            if (!timeline.playback.active || window?.isValid != true ||
+                timeline.playback.accuracy == LiveTvTimeAccuracy.stale || timeline.playback.accuracy == LiveTvTimeAccuracy.unknown) return null;
+            return (startMs: (window!.startEpoch * 1000).round(), endMs: (window.endEpoch * 1000).round());
+          }, liveEpochForPosition: (positionMs) {
             if (!liveCurrent()) return null;
             final currentPosition = core.currentPosition;
             final position = _live.playbackPosition(currentPosition);

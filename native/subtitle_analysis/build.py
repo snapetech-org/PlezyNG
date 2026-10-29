@@ -54,7 +54,7 @@ def build(args):
         '--enable-decoder=aac,aac_fixed,ac3,eac3,dca,flac,mp3,mp3float,opus,vorbis,alac,pcm_s16le,pcm_s16be,pcm_s24le,pcm_s24be,pcm_s32le,pcm_s32be,pcm_f32le,pcm_f32be',
         '--enable-parser=aac,aac_latm,ac3,dca,flac,mpegaudio,opus,vorbis',
         '--enable-encoder=pcm_s16le', '--enable-muxer=wav',
-        '--enable-filter=abuffer,abuffersink,aresample,aformat,anull']
+        '--enable-filter=abuffer,abuffersink,aresample,aformat,anull,apad,atrim']
     signature = hashlib.sha256(json.dumps({'source': PIN, 'configure': configure}, sort_keys=True).encode()).hexdigest()
     stamp = output / 'configure-key.txt'
     if stamp.exists() and stamp.read_text() != signature: raise ValueError('Use a clean decoder build directory after changing SDK/configuration')

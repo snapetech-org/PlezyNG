@@ -42,6 +42,9 @@ class SubtitleReadAheadService extends ChangeNotifier {
   SubtitleHlsAnalysis? _hls;
   final Map<String, int> _completedSegments = {};
   DateTime _lastLivePoll = DateTime.fromMillisecondsSinceEpoch(0);
+  DateTime _nextLivePoll = DateTime.fromMillisecondsSinceEpoch(0);
+  DateTime? _liveFailureStarted;
+  int _liveFailures = 0;
   String status = 'Stopped';
   bool get running => _player != null;
   bool get busy => _busy;
@@ -73,6 +76,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
     _provider = provider;
     _windows.clear(); _words.clear(); _published = SubtitleOverlayService.forPlayer(player).lanes[0];
     _completedSegments.clear(); _lastLivePoll = DateTime.fromMillisecondsSinceEpoch(0);
+    _nextLivePoll = DateTime.fromMillisecondsSinceEpoch(0); _liveFailureStarted = null; _liveFailures = 0;
     try {
       final source = await open();
       if (epoch != _generation) { await source.close(); return; }
@@ -166,7 +170,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
     } on SubtitleInferenceDeferred catch (error) {
       if (_current(epoch)) status = error.reason;
     } catch (error) {
-      if (epoch == _generation) {
+      if (_current(epoch) && (seek == null || (player as SubtitlePcmCaptureSource).playbackTimelineGeneration == seek)) {
         await stop();
         status = error is ProcessException ? 'Read-ahead stopped. Install FFmpeg or configure PLEZY_FFMPEG.'
             : 'Read-ahead stopped. The decoder, model, or current source could not complete the window.';
@@ -179,7 +183,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
   }
 
   Future<void> _tickLive(int epoch) async {
-    if (DateTime.now().difference(_lastLivePoll).inSeconds < 3) return;
+    if (DateTime.now().difference(_lastLivePoll).inSeconds < 3 || DateTime.now().isBefore(_nextLivePoll)) return;
     _lastLivePoll = DateTime.now();
     final player = _player!, source = _source!, hls = _hls!;
     final now = source.liveEpochForPosition!(player.currentPosition.inMilliseconds);
@@ -191,9 +195,20 @@ class SubtitleReadAheadService extends ChangeNotifier {
     try {
       final segments = await hls.segments();
       if (!current()) return;
+      final dvr = source.liveSeekableEpochRange?.call();
+      if (dvr != null && dvr.endMs >= dvr.startMs) {
+        // Evict only against fresh backend bounds, never against a shortened
+        // playlist while the player may still have an older DVR buffer.
+        final expired = _windows.keys.where((start) => start + 64000 < dvr.startMs).toSet();
+        for (final start in expired) { _windows.remove(start); _words.remove(start); }
+        _completedSegments.removeWhere((_, start) => expired.contains(start));
+        if (expired.isNotEmpty) await _publish(epoch, now, _language);
+        if (!current()) return;
+      }
       final first = segments.indexWhere((segment) => !segment.gap && segment.endMs > now - 10000 &&
           segment.startMs < now + 120000 && !_completedSegments.containsKey(segment.key));
       if (first < 0) {
+        _liveFailures = 0; _liveFailureStarted = null;
         status = 'Waiting for complete HLS audio near or ahead of playback. Program-clock alignment is estimated.';
         return;
       }
@@ -232,15 +247,31 @@ class SubtitleReadAheadService extends ChangeNotifier {
           endMs: anchor + word.endMs.clamp(0, duration).toInt(), text: word.text, confidence: word.confidence, unit: word.unit)];
       for (final segment in selected) { _completedSegments[segment.key] = anchor; }
       await _publish(epoch, now, result.detectedLanguage);
+      _liveFailures = 0; _liveFailureStarted = null;
       status = 'Prepared live/DVR captions from complete HLS segments; ${result.runtimeProvider}. '
           'Program-clock alignment remains estimated; protected or untimestamped streams are refused.';
     } on SubtitleInferenceDeferred catch (error) {
       if (_current(epoch)) status = error.reason;
     } catch (error) {
       if (_current(epoch)) {
-        await stop();
-        status = error is UnsupportedError ? error.message?.toString() ?? 'This live source cannot be analyzed'
-            : error is FormatException ? error.message : 'Live analysis stopped: a segment, decoder or model was unavailable.';
+        final transient = error is SubtitleLiveReadUnavailable || error is SocketException || error is TimeoutException || error is HttpException;
+        if (transient && current()) {
+          _liveFailureStarted ??= DateTime.now();
+          _liveFailures++;
+          if (_liveFailures <= 8 && DateTime.now().difference(_liveFailureStarted!).inMinutes < 5) {
+            final suggested = error is SubtitleLiveReadUnavailable ? error.retryAfterSeconds : 0;
+            final backoff = (3 * (1 << _liveFailures.clamp(0, 4).toInt())).clamp(3, 45).toInt();
+            final wait = suggested > backoff ? suggested : backoff;
+            _nextLivePoll = DateTime.now().add(Duration(seconds: wait));
+            status = 'Live audio temporarily unavailable; refreshing the playlist in $wait seconds. Finalized captions are retained.';
+          } else {
+            await stop(); status = 'Live analysis stopped after repeated transport failures; finalized captions are retained.';
+          }
+        } else if (current()) {
+          await stop();
+          status = error is UnsupportedError ? error.message?.toString() ?? 'This live source cannot be analyzed'
+              : error is FormatException ? error.message : 'Live analysis stopped: a segment, decoder or model was unavailable.';
+        }
       }
     } finally {
       await _decoder.cancel();

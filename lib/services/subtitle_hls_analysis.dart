@@ -3,6 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+/// A temporary transport/rolling-playlist failure. Retry uses a fresh playlist;
+/// it never retries already staged bytes under a different source clock.
+class SubtitleLiveReadUnavailable implements Exception {
+  const SubtitleLiveReadUnavailable({this.retryAfterSeconds = 0});
+  final int retryAfterSeconds;
+}
+
 /// A complete HLS segment, timestamped by PROGRAM-DATE-TIME, never by wall
 /// clock receipt time or an intended seek. Times are UTC milliseconds. The
 /// playback-side epoch mapping can still be an estimate; callers disclose it.
@@ -55,6 +62,10 @@ class SubtitleHlsAnalysis {
     try {
       deadline = Timer(const Duration(seconds: 20), () => request.abort(const HttpException('HLS analysis read timed out')));
       final response = await request.close();
+      if (const {404, 408, 410, 429, 500, 502, 503, 504}.contains(response.statusCode)) {
+        final retry = int.tryParse(response.headers.value(HttpHeaders.retryAfterHeader) ?? '') ?? 0;
+        throw SubtitleLiveReadUnavailable(retryAfterSeconds: retry.clamp(0, 120).toInt());
+      }
       if (response.statusCode != (range == null ? 200 : 206) || response.contentLength > limit ||
           (range != null && response.headers.value(HttpHeaders.contentRangeHeader)?.startsWith(
             'bytes ${range.offset}-${range.offset + range.length - 1}/') != true)) {
@@ -120,7 +131,8 @@ class SubtitleHlsAnalysis {
 
   List<SubtitleHlsSegment> _media(List<String> lines, Uri base) {
     final result = <SubtitleHlsSegment>[];
-    int sequence = 0, discontinuity = 0;
+    final unanchored = <SubtitleHlsSegment>[];
+    int sequence = 0, discontinuity = 0, completeCount = 0;
     int? epoch, duration;
     Uri? initialization, previousUri;
     ({int offset, int length})? range, initializationRange, previousRange;
@@ -137,13 +149,13 @@ class SubtitleHlsAnalysis {
     String? rawRange;
     for (final line in lines) {
       if (line.startsWith('#EXT-X-MEDIA-SEQUENCE:')) {
-        if (result.isNotEmpty) throw const FormatException('Late HLS media sequence');
+        if (completeCount > 0) throw const FormatException('Late HLS media sequence');
         sequence = int.parse(line.substring(22));
       } else if (line.startsWith('#EXT-X-DISCONTINUITY-SEQUENCE:')) {
-        if (result.isNotEmpty) throw const FormatException('Late HLS discontinuity sequence');
+        if (completeCount > 0) throw const FormatException('Late HLS discontinuity sequence');
         discontinuity = int.parse(line.substring(30));
       } else if (line == '#EXT-X-DISCONTINUITY') {
-        discontinuity++; epoch = null; previousRange = null; previousUri = null;
+        discontinuity++; epoch = null; previousRange = null; previousUri = null; unanchored.clear();
       } else if (line.startsWith('#EXT-X-PROGRAM-DATE-TIME:')) {
         final date = line.substring(25);
         if (!RegExp(r'(Z|[+-]\d\d:\d\d)$').hasMatch(date)) throw const FormatException('HLS program time needs a time zone');
@@ -175,15 +187,29 @@ class SubtitleHlsAnalysis {
         final uri = _child(base, line);
         range = rawRange == null ? null : byteRange(rawRange!, implicitOffset: previousUri == uri && previousRange != null
           ? previousRange!.offset + previousRange!.length : null);
-        if (epoch != null) result.add(SubtitleHlsSegment(uri: uri, sequence: sequence, discontinuity: discontinuity,
-          startMs: epoch, durationMs: duration, range: range, initialization: initialization,
-          initializationRange: initializationRange, gap: gap));
-        // A segment before the first explicit program time is intentionally
-        // not assigned a fabricated wall clock. The next refresh may anchor it.
+        if (epoch != null && unanchored.isNotEmpty) {
+          // HLS permits a program timestamp later in a continuity run. Exact
+          // EXTINF durations anchor the preceding complete segments backwards.
+          // Never infer across a discontinuity or from the response clock.
+          var at = epoch - unanchored.fold<int>(0, (sum, s) => sum + s.durationMs);
+          if (at < 0) throw const FormatException('Invalid HLS program-time origin');
+          for (final segment in unanchored) {
+            result.add(SubtitleHlsSegment(uri: segment.uri, sequence: segment.sequence, discontinuity: segment.discontinuity,
+              startMs: at, durationMs: segment.durationMs, range: segment.range, initialization: segment.initialization,
+              initializationRange: segment.initializationRange, gap: segment.gap));
+            at += segment.durationMs;
+          }
+          unanchored.clear();
+        }
+        final segment = SubtitleHlsSegment(uri: uri, sequence: sequence, discontinuity: discontinuity,
+          startMs: epoch ?? 0, durationMs: duration, range: range, initialization: initialization,
+          initializationRange: initializationRange, gap: gap);
+        if (epoch != null) { result.add(segment); } else { unanchored.add(segment); }
+        // Unanchored segments are internal only; none reach the decoder.
         if (epoch != null) epoch += duration;
         sequence++; duration = null; rawRange = null; gap = false;
         previousUri = uri; previousRange = range;
-        if (result.length > 2000) throw const FormatException('HLS analysis playlist limit');
+        if (++completeCount > 2000) throw const FormatException('HLS analysis playlist limit');
       }
     }
     if (result.isEmpty) throw UnsupportedError('Live analysis requires complete segments with program timestamps');

@@ -10,7 +10,7 @@ import 'subtitle_discovery_service.dart';
 class SubtitleAnalysisSource {
   const SubtitleAnalysisSource({required this.uri, required this.identity,
     required this.isCurrent, required this.close, this.timelineOffsetMs = 0, this.durationMs,
-    this.liveEpochForPosition});
+    this.liveEpochForPosition, this.liveSeekableEpochRange});
   final Uri uri;
   final String identity;
   final int timelineOffsetMs;
@@ -21,6 +21,9 @@ class SubtitleAnalysisSource {
   /// source is opening or its mapping is stale. This can be an estimate and
   /// is not upgraded to confirmed timing by analysis.
   final int? Function(int playerPositionMs)? liveEpochForPosition;
+  /// Current backend DVR bounds, in UTC milliseconds. A stale/unavailable
+  /// window must return null; playlist length is not a substitute for this.
+  final ({int startMs, int endMs})? Function()? liveSeekableEpochRange;
   static Future<SubtitleAnalysisSource> localPlayer(Player player, bool Function() current) async {
     final path = SubtitleDiscoveryService.localMediaPath(await player.getProperty('path'));
     if (path == null) throw UnsupportedError('This player does not expose an owned local analysis source.');

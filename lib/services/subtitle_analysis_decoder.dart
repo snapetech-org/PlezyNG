@@ -82,7 +82,10 @@ final class SubtitleAnalysisDecoder {
         '-threads', '2', '-filter_threads', '1',
         '-ss', (startMs/1000).toStringAsFixed(3), '-i', uri.scheme == 'file' ? uri.toFilePath() : uri.toString(),
         '-map', '0:a:$audioOrdinal', '-vn', '-sn', '-t', ((endMs-startMs)/1000).toStringAsFixed(3),
-        if (localHlsSnapshot) ...['-af', 'aresample=async=1:first_pts=0'],
+        // Preserve decoded timestamps for VOD as well as live snapshots. WAV
+        // has no PTS: an audio lead-in/gap must become silence, not a caption
+        // shifted to the first returned sample. Bound and pad the exact window.
+        '-af', 'aresample=16000:async=1:first_pts=0,apad=whole_len=${(endMs-startMs)*16},atrim=end_sample=${(endMs-startMs)*16}',
         '-ac', '1', '-ar', '16000', '-c:a', 'pcm_s16le', '-f', 'wav', '-fs', '2100000', destination.path,
       ], runInShell: false, includeParentEnvironment: false, environment: {
         for (final entry in Platform.environment.entries)
@@ -117,6 +120,11 @@ final class SubtitleAnalysisDecoder {
             data['source']['revision'] != '946fcce07b6dcd0331c8cc609192aeff5e1924f8' ||
             data['source']['repository'] != 'https://github.com/FFmpeg/FFmpeg' ||
             data['sha256'] is! String || !RegExp(r'^[a-f0-9]{64}$').hasMatch(data['sha256'])) continue;
+        final configure = data['configure'];
+        if (configure is! List) continue;
+        final filters = configure.whereType<String>().where((value) => value.startsWith('--enable-filter='))
+            .expand((value) => value.substring('--enable-filter='.length).split(',')).toSet();
+        if (!filters.containsAll(const {'aresample', 'apad', 'atrim'})) continue;
         final digest = await sha256.bind(helper.openRead()).first;
         if (digest.toString() == data['sha256']) return helper.path;
       }

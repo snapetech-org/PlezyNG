@@ -1222,3 +1222,22 @@ pixels and 64 MiB for the native image. The native command, font layout and
 compositor have not been run or device-qualified in this pass.
 
 Reference: [MPV screenshot commands and color options](https://mpv.io/manual/stable/).
+
+## Live segment recovery and decoder clock completion
+
+Live HLS analysis refreshes temporary transport/expiry failures with bounded
+backoff, honors numeric Retry-After up to two minutes, and retains finalized
+captions. Eight failed attempts or five minutes of continuous failures stop the
+worker. Reconnects always fetch the current playlist before staging fresh bytes;
+no failed segment is reassigned to a new clock. Complete segments preceding the
+first program timestamp in one continuity run can now be anchored backwards
+from EXTINF durations. No inference crosses a discontinuity or uses receipt time.
+The parser bounds all complete entries, including unanchored/discarded ones.
+
+Retained live windows expire only against fresh playback-backend DVR bounds,
+never against a shorter HLS playlist. A seek cancels an obsolete VOD/live decode
+without stopping the current session's worker. Separate FFmpeg windows now pad
+source-timestamp gaps and exact bounded durations; the TV helper configuration
+and receipt gate require the matching resample/pad/trim filters. Native decoder
+windows already have bounded sample-clock padding. These source changes have
+not been executed or qualified, following the no-tests/no-builds instruction.

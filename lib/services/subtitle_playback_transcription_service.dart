@@ -41,6 +41,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   int? _playerGeneration;
   int? _playerTimelineGeneration;
   String? _audioTrackId;
+  bool Function()? _isProfileIdentityCurrent;
   whisper.FlutterWhisper? _session;
   Timer? _timer;
   Future<void>? _inferenceFuture;
@@ -79,6 +80,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     SubtitlePcmCaptureSource player, {
     String? languageCode,
     SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu,
+    bool Function()? isProfileIdentityCurrent,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
     if (provider != SubtitleInferenceProvider.cpu && provider != SubtitleInferenceProvider.desktopGpu) {
@@ -142,6 +144,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           player.subtitlePcmAudioTrackId != startAudioTrackId) {
         throw StateError('Playback changed while Whisper was loading. Start live captions again.');
       }
+      if (!_profileIsCurrent(isProfileIdentityCurrent)) {
+        throw StateError('The active profile changed while Whisper was loading. Start live captions again.');
+      }
       captureEnabled = await player.setSubtitlePcmCaptureEnabled(true);
       if (!captureEnabled) {
         throw UnsupportedError('This player session cannot capture decoded PCM.');
@@ -153,6 +158,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           player.subtitlePcmAudioTrackId != startAudioTrackId) {
         throw StateError('Playback changed while live capture was starting. Start again on the current audio track.');
       }
+      if (!_profileIsCurrent(isProfileIdentityCurrent)) {
+        throw StateError('The active profile changed while live capture was starting. Start again.');
+      }
 
       _session = loadedRuntime.session;
       _runtimeProvider = loadedRuntime.runtimeProvider;
@@ -162,6 +170,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _playerGeneration = startGeneration;
       _playerTimelineGeneration = startTimelineGeneration;
       _audioTrackId = startAudioTrackId;
+      _isProfileIdentityCurrent = isProfileIdentityCurrent;
       _running = true;
       _startedAt = DateTime.now();
       _lastPacketAt = null;
@@ -220,16 +229,6 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         _lastError == null &&
         _samples.length >= _windowSamples &&
         _invalidCaptureSessionReason(player) == null) {
-      final postDrainInvalidReason = _invalidCaptureSessionReason(player);
-      if (postDrainInvalidReason != null) {
-        _running = false;
-        _timer?.cancel();
-        _timer = null;
-        _discardCapturedTimeline();
-        _setStatus(postDrainInvalidReason);
-        unawaited(stop());
-        return;
-      }
       _startInference(finalChunk: false);
       final inference = _inferenceFuture;
       if (inference == null) break;
@@ -256,6 +255,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _playerGeneration = null;
     _playerTimelineGeneration = null;
     _audioTrackId = null;
+    _isProfileIdentityCurrent = null;
     liveCaption.value = null;
 
     if (_lastError != null) {
@@ -280,10 +280,21 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (player.playbackTimelineGeneration != _playerTimelineGeneration) {
       return 'Playback position changed during capture; the partial transcript was discarded. Start capture again.';
     }
+    if (!_profileIsCurrent(_isProfileIdentityCurrent)) {
+      return 'Active profile changed during capture; the partial transcript was discarded. Start again.';
+    }
     if (player.subtitlePcmAudioTrackId != _audioTrackId) {
       return 'Selected audio track changed; captured transcript was discarded. Start capture again on the new track.';
     }
     return null;
+  }
+
+  static bool _profileIsCurrent(bool Function()? isCurrent) {
+    try {
+      return isCurrent?.call() != false;
+    } catch (_) {
+      return false;
+    }
   }
 
   bool _isCurrentInference(int generation) =>
@@ -335,6 +346,16 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         } else if (lastPacket != null && DateTime.now().difference(lastPacket) > const Duration(seconds: 8)) {
           _setStatus('No recent PCM packets. Playback may be paused or the route may not expose decoded audio.');
         }
+      }
+      final postDrainInvalidReason = _invalidCaptureSessionReason(player);
+      if (postDrainInvalidReason != null) {
+        _running = false;
+        _timer?.cancel();
+        _timer = null;
+        _discardCapturedTimeline();
+        _setStatus(postDrainInvalidReason);
+        unawaited(stop());
+        return;
       }
       _startInference(finalChunk: false);
     } catch (error) {

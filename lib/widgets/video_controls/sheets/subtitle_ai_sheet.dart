@@ -717,10 +717,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       setState(() => _status = service.status);
       return;
     }
+    final profileId = _activeProfileId;
     await service.start(
       captureSource,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       provider: _liveProvider,
+      isProfileIdentityCurrent: () => _activeProfileId == profileId,
       onProgress: (phase, received, total) {
         if (!mounted) return;
         final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';

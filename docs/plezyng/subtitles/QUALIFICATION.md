@@ -63,3 +63,7 @@ A row is not qualified by successful model load, provider enumeration, a provide
 ~~~
 
 Do not populate this report from provider enumeration alone. Device-specific results belong under `docs/plezyng/evidence/<device-date>/` after the actual run.
+
+## Resumable WAV jobs
+
+The source now includes a profile-scoped queue with owned audio copies, SHA-256 integrity verification, atomic manifest recovery, 30-second overlapping inference windows, explicit restart recovery, playhead priority, pause/cancel, and external-power/playback-idle policies. Completed or partial results enter the existing review flow for the same item. Native calls finish their current window before cancellation can release resources. This is in-app scheduling, not guaranteed OS background execution. No tests, analyzer, builds, or CI were run for this addition, per owner instruction.

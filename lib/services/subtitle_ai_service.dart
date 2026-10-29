@@ -237,6 +237,7 @@ final class SubtitleAiService {
     int? endMs,
     int numThreads = 2,
     bool translateToEnglish = false,
+    bool allowEmpty = false,
     String? languageCode,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
@@ -262,6 +263,7 @@ final class SubtitleAiService {
         startMs: startMs,
         endMs: rangeEndMs,
         translateToEnglish: translateToEnglish,
+        allowEmpty: allowEmpty,
         languageCode: languageOverride,
         onProgress: onProgress,
       );
@@ -297,6 +299,7 @@ final class SubtitleAiService {
         numThreads: numThreads.clamp(1, 8).toInt(),
         startMs: startMs,
         endMs: rangeEndMs,
+        allowEmpty: allowEmpty,
       ),
     );
     final rawCues = result['cues'] as List<dynamic>;
@@ -363,6 +366,7 @@ Future<Map<String, Object?>> _runSubtitleTranscriptionWorker({
   required String modelDirectory,
   required String provider,
   required int numThreads,
+  required bool allowEmpty,
   required int startMs,
   required int endMs,
 }) async {
@@ -460,7 +464,7 @@ Future<Map<String, Object?>> _runSubtitleTranscriptionWorker({
       vad.flush();
       await drainVad();
       final durationMs = wav.durationMs;
-      if (output.isEmpty) throw const FormatException('No speech was detected in this WAV file.');
+      if (output.isEmpty && !allowEmpty) throw const FormatException('No speech was detected in this WAV file.');
       return {
         'cues': output,
         'durationMs': durationMs,

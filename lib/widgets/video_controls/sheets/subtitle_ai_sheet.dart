@@ -23,6 +23,7 @@ import '../../../services/subtitle_retimer.dart';
 import '../../../services/subtitle_word_timing.dart';
 import '../../../services/subtitle_sync_service.dart';
 import '../../../services/subtitle_interval_service.dart';
+import '../../../services/subtitle_job_service.dart';
 import '../../../services/subtitle_translation_service.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_playback_transcription_service.dart';
@@ -32,6 +33,7 @@ import '../../../widgets/app_icon.dart';
 import '../../../widgets/focusable_list_tile.dart';
 import '../../../widgets/overlay_sheet.dart';
 import 'base_video_control_sheet.dart';
+import 'subtitle_jobs_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -403,6 +405,85 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           '$_resultPersistenceSuffix';
     });
     await _showApplied();
+  });
+
+  Future<void> _queueTranscription() => _run(() async {
+    final identity = _operationRevisionIdentity;
+    if (identity == null) throw StateError('Open a stable library item or local file to create a resumable job.');
+    final profiles = context.read<ActiveProfileProvider>();
+    final service = SubtitleJobService.instance..bindProfile(profiles);
+    await service.ready;
+    final wavPath = await _pickWav();
+    if (wavPath == null || !mounted) return;
+    var chargingOnly = false;
+    var idleOnly = false;
+    var followPlayhead = true;
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(builder: (dialogContext, update) => AlertDialog(
+        title: const Text('Queue transcription'),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Text('An owned copy of the WAV is retained until you delete the job. '
+              'The queue saves each completed window and never attaches results automatically.'),
+          SwitchListTile(title: const Text('Prioritize near the playhead'), value: followPlayhead,
+              onChanged: (value) => update(() => followPlayhead = value)),
+          SwitchListTile(title: const Text('Only on external power'), value: chargingOnly,
+              onChanged: (value) => update(() => chargingOnly = value)),
+          SwitchListTile(title: const Text('Only while playback is idle'), value: idleOnly,
+              onChanged: (value) => update(() => idleOnly = value)),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Queue')),
+        ],
+      )),
+    );
+    if (accepted != true || !mounted) return;
+    _requireCurrentOperationIdentity();
+    final player = widget.player;
+    final session = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
+    final profileId = profiles.activeId;
+    await service.enqueue(
+      wavPath: wavPath, identityKey: identity.storageKey, title: widget.mediaTitle ?? 'Subtitle transcription',
+      provider: _provider, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
+      translateToEnglish: _translateSpeechToEnglish, chargingOnly: chargingOnly, idleOnly: idleOnly,
+      playheadMs: !followPlayhead ? null : () => !player.disposed && profiles.activeId == profileId &&
+          (session == null || (player as PlayerMediaSessionIdentity).mediaSessionGeneration == session)
+          ? player.currentPosition.inMilliseconds : 0,
+      playbackBusy: () => !player.disposed && player.state.playing,
+    );
+    if (mounted) setState(() => _status = 'Queued. Open Transcription jobs to pause, resume, cancel, or review saved windows.');
+  });
+
+  Future<void> _manageTranscriptionJobs() => _run(() async {
+    final service = SubtitleJobService.instance..bindProfile(context.read<ActiveProfileProvider>());
+    await service.ready;
+    if (!mounted) return;
+    final player = widget.player;
+    final session = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
+    final job = await showDialog<SubtitleJob>(context: context, builder: (_) => SubtitleJobsDialog(
+      identityKey: _operationRevisionIdentity?.storageKey,
+      playheadMs: () => !player.disposed &&
+          (session == null || (player as PlayerMediaSessionIdentity).mediaSessionGeneration == session)
+          ? player.currentPosition.inMilliseconds : 0,
+      playbackBusy: () => !player.disposed && player.state.playing,
+    ));
+    if (job == null || !mounted) return;
+    _requireCurrentOperationIdentity();
+    if (job.identityKey != _operationRevisionIdentity?.storageKey) throw StateError('This job belongs to another item.');
+    // Pause while reading a partial result so its coverage and words form one checkpoint.
+    if (job.state == SubtitleJobState.running || job.state == SubtitleJobState.queued) await service.pause(job);
+    final result = await service.readResult(job);
+    final complete = job.state == SubtitleJobState.completed;
+    await _writeAndApply(result.cues,
+      operationLabel: complete ? 'Queued transcription' : 'Partial queued transcription',
+      operationLanguageCode: result.detectedLanguage,
+      wordTimings: result.wordTimings,
+      reviewWarnings: [
+        if (!complete) 'Only ${job.completedChunks} of ${job.chunkCount} audio windows are included. Unprocessed ranges have no captions.',
+        'Backend: ${result.runtimeProvider}. ${result.placementEvidence.displayLabel}.',
+      ],
+    );
   });
 
   Future<SubtitleAudioInterval?> _chooseAudioInterval(int durationMs) async {
@@ -3189,6 +3270,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   : 'Downloads a verified English model on first use',
             ),
             onTap: _busy ? null : () => unawaited(_transcribe()),
+          ),
+          FocusableListTile(
+            leading: const AppIcon(Symbols.queue_music_rounded),
+            title: const Text('Queue resumable WAV transcription'),
+            subtitle: const Text('Checkpointed windows, playhead priority, pause/resume, and power policy'),
+            onTap: _busy || _revisionIdentity == null ? null : () => unawaited(_queueTranscription()),
+          ),
+          FocusableListTile(
+            leading: const AppIcon(Symbols.history_rounded),
+            title: const Text('Transcription jobs'),
+            subtitle: const Text('Manage this profile’s jobs and review complete or partial results'),
+            onTap: _busy ? null : () => unawaited(_manageTranscriptionJobs()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.queue_music_rounded),

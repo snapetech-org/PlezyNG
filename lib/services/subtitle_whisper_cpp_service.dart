@@ -171,6 +171,7 @@ final class SubtitleWhisperCppService {
     int startMs = 0,
     int? endMs,
     bool translateToEnglish = false,
+    bool allowEmpty = false,
     String? languageCode,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
@@ -215,6 +216,7 @@ final class SubtitleWhisperCppService {
         runtimeProvider: 'CPU (no compiled GPU device detected)',
         fellBackToCpu: true,
         languageCode: selectedLanguage,
+        allowEmpty: allowEmpty,
       );
     }
 
@@ -234,6 +236,7 @@ final class SubtitleWhisperCppService {
         runtimeProvider: selectedDevice?.name ?? 'CPU',
         fellBackToCpu: false,
         languageCode: selectedLanguage,
+        allowEmpty: allowEmpty,
       );
     } catch (error) {
       if (selectedDevice == null) rethrow;
@@ -251,6 +254,7 @@ final class SubtitleWhisperCppService {
         runtimeProvider: 'CPU (GPU fallback)',
         fellBackToCpu: true,
         languageCode: selectedLanguage,
+        allowEmpty: allowEmpty,
       );
     }
   }
@@ -267,6 +271,7 @@ final class SubtitleWhisperCppService {
     required String runtimeProvider,
     required bool fellBackToCpu,
     required String languageCode,
+    required bool allowEmpty,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
     final session = await whisper.FlutterWhisper.loadModel(
@@ -306,7 +311,7 @@ final class SubtitleWhisperCppService {
         cues.add(SubtitleCue(index: cues.length + 1, startMs: startMs, endMs: endMs, text: text));
         if (cues.length >= _maximumCues) break;
       }
-      if (cues.isEmpty) throw const FormatException('Whisper did not produce any speech cues.');
+      if (cues.isEmpty && !allowEmpty) throw const FormatException('Whisper did not produce any speech cues.');
       return SubtitleWhisperResult(
         cues: List.unmodifiable(cues),
         durationMs: durationMs,

@@ -9,6 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
 
+final RegExp _stableSubtitleCueIdPattern = RegExp(r'^[0-9a-f]{64}$');
+
 /// Stable local scope for revisions belonging to one profile and media item.
 final class SubtitleRevisionIdentity {
   const SubtitleRevisionIdentity({
@@ -161,7 +163,7 @@ final class SubtitleRevision {
           start is! int ||
           end is! int ||
           text is! String ||
-          (cueId != null && (cueId is! String || !RegExp(r'^[0-9a-f]{64}$').hasMatch(cueId))) ||
+          (cueId != null && (cueId is! String || !_stableSubtitleCueIdPattern.hasMatch(cueId))) ||
           text.length > SubtitleRetimer.maximumInputBytes ||
           index < 1 ||
           index > SubtitleRetimer.maximumCueCount ||
@@ -197,7 +199,7 @@ final class SubtitleRevision {
           confidence is! num ||
           unitName is! String ||
           (cueIndex != null && cueIndex is! int) ||
-          (cueId != null && (cueId is! String || !RegExp(r'^[0-9a-f]{64}$').hasMatch(cueId))) ||
+          (cueId != null && (cueId is! String || !_stableSubtitleCueIdPattern.hasMatch(cueId))) ||
           start < 0 ||
           end <= start ||
           end > SubtitleRetimer.maximumTimeMs ||
@@ -209,12 +211,14 @@ final class SubtitleRevision {
       }
       final unit = SubtitleWordTimingUnit.values.where((candidate) => candidate.name == unitName);
       if (unit.isEmpty) throw const FormatException('Subtitle revision timing unit is invalid.');
-      final indexedCue = cueIndex == null ? null : cuesByIndex[cueIndex];
-      final identifiedCue = cueId == null ? null : cuesById[cueId];
+      final cueIndexValue = cueIndex as int?;
+      final cueIdValue = cueId as String?;
+      final indexedCue = cueIndexValue == null ? null : cuesByIndex[cueIndexValue];
+      final identifiedCue = cueIdValue == null ? null : cuesById[cueIdValue];
       if ((cueIndex != null && indexedCue == null) || (cueId != null && identifiedCue == null)) {
         throw const FormatException('Subtitle revision word timing refers to a missing cue.');
       }
-      if (cueId != null && indexedCue != null && indexedCue.stableId != cueId) {
+      if (cueIdValue != null && indexedCue != null && indexedCue.stableId != cueIdValue) {
         throw const FormatException('Subtitle revision word timing refers to a different cue.');
       }
       final linkedCue = identifiedCue ?? indexedCue;
@@ -225,8 +229,8 @@ final class SubtitleRevision {
           text: text,
           confidence: confidence.toDouble(),
           unit: unit.first,
-          cueIndex: (cueIndex as int?) ?? linkedCue?.index,
-          cueId: (cueId as String?) ?? linkedCue?.stableId,
+          cueIndex: cueIndexValue ?? linkedCue?.index,
+          cueId: cueIdValue ?? linkedCue?.stableId,
         ),
       );
     }
@@ -328,7 +332,7 @@ abstract final class SubtitleRevisionService {
             cue.endMs > SubtitleRetimer.maximumTimeMs ||
             cue.text.length > SubtitleRetimer.maximumInputBytes ||
             cue.index < 1 ||
-            !RegExp(r'^[0-9a-f]{64}$').hasMatch(cue.stableId) ||
+            !_stableSubtitleCueIdPattern.hasMatch(cue.stableId) ||
             cuesByIndex.containsKey(cue.index) ||
             cuesById.containsKey(cue.stableId)) {
           throw const FormatException('Subtitle revision contains an invalid cue.');
@@ -349,8 +353,8 @@ abstract final class SubtitleRevisionService {
             (timing.cueId != null && !cuesById.containsKey(timing.cueId!))) {
           throw const FormatException('Subtitle revision contains an invalid word timing.');
         }
-        final indexedCue = timing.cueIndex == null ? null : cuesByIndex[timing.cueIndex];
-        final identifiedCue = timing.cueId == null ? null : cuesById[timing.cueId];
+        final indexedCue = timing.cueIndex == null ? null : cuesByIndex[timing.cueIndex!];
+        final identifiedCue = timing.cueId == null ? null : cuesById[timing.cueId!];
         if (indexedCue != null && identifiedCue != null && indexedCue.stableId != identifiedCue.stableId) {
           throw const FormatException('Subtitle revision word timing refers to different cues.');
         }

@@ -144,6 +144,7 @@ abstract final class SubtitleWordTimingBuilder {
 
   static List<SubtitleWordTiming> attachCueIndices(List<SubtitleWordTiming> wordTimings, List<SubtitleCue> cues) {
     if (wordTimings.isEmpty || cues.isEmpty) return List.unmodifiable(wordTimings);
+    final cueIds = cues.map((cue) => cue.stableId).toList(growable: false);
     final result = <SubtitleWordTiming>[];
     var firstPossibleCue = 0;
     for (final word in wordTimings) {
@@ -164,7 +165,7 @@ abstract final class SubtitleWordTimingBuilder {
       result.add(
         word.withCueIndex(
           bestIndex < 0 ? null : cues[bestIndex].index,
-          cueId: bestIndex < 0 ? null : cues[bestIndex].stableId,
+          cueId: bestIndex < 0 ? null : cueIds[bestIndex],
         ),
       );
     }

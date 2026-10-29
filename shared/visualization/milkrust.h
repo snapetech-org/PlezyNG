@@ -15,12 +15,14 @@ typedef uint64_t milkrust_handle;
 typedef const void* (*milkrust_gl_loader)(const char* name);
 uint32_t milkrust_abi_version(void);
 /* All calls for a session, including destroy, require its creating thread and
- * a current host-owned GL context. gles=1: GLES 3.0; gles=0: desktop GL 3.2.
+ * a current host-owned GL context. gles=1: GLES 3.0; gles=0: desktop GL 3.3.
  * Renderer owns GL state within that context; give it a dedicated context.
  * Loader and GL context must outlive the session. Handle 0 means create failed.
  */
 milkrust_handle milkrust_create(milkrust_gl_loader loader, int gles);
-int milkrust_load(milkrust_handle handle, const uint8_t* utf8, size_t length);
+/* Preset bytes: UTF-8, BOM-marked UTF-16LE/BE or legacy Windows-1252.
+ * Encoded and decoded text are each capped at 2 MiB; malformed text fails. */
+int milkrust_load(milkrust_handle handle, const uint8_t* text_bytes, size_t length);
 /* Newline-separated UTF-8 texture dependencies. Query size with null/0, then
  * provide that capacity. Returns required bytes including NUL, or 0 on error.
  */

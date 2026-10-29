@@ -2,7 +2,7 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `90c150ee121fd8ba73d80c01b5550b6aee2edf6d`; the exact dependency
+pins MilkRust `819dc540d3d7714cb75cc7795b97d1c3b62e6f88`; the exact dependency
 contract is in `native/visualizer/sources.lock.json`. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
@@ -22,7 +22,7 @@ moderate for source integration; compiled behavior and device fidelity are unkno
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
 | Library/UI | Search, notices, favorites, playlists, import, download/cancel/retry/update/remove, offline receipts and controls | Executed user flows, accessibility, TV focus, localization and performance |
-| Content | Existing offline CC0 fixture plus 24 new original CC0 studies in two MilkRust collections; historical conversion candidates remain rights-review-required | Archive builds, rights review and per-preset/target qualification before catalog promotion |
+| Content | Existing offline CC0 fixture, 24 original CC0 studies and 55 unchanged CC BY 4.0 CaYaDev presets with pinned provenance; historical candidates remain rights-review-required | Archive builds, rights review and per-preset/target qualification before catalog promotion |
 | Signed delivery | Ed25519 quorum/expiry/sequence/revocation, public-root configuration, keyless preflight, gated publication | Owner-held keys, reviewed public root, environment provisioning and signed publication |
 
 ## Audio and host contracts
@@ -53,8 +53,9 @@ has been built or physically qualified here.
 
 All hosts keep PCM/pixels out of per-frame Dart method channels, serialize
 controls, preserve session leases and suspend hidden/paused rendering. The
-in-process worker cannot contain a hung graphics driver; teardown can block.
-Compiler budgets are useful input limits, not driver-process isolation.
+in-process worker uses bounded teardown with retained shared state and quarantine
+admission after a stall. This does not isolate a graphics driver that hangs the
+entire process or device. Compiler budgets are input limits, not process isolation.
 
 ## Compatibility and content boundaries
 
@@ -88,7 +89,7 @@ qualification, rights decisions and production custody/publication are also open
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `861c48b7ea20d93b97ac5e7eed3eaa94804b1cef`:
+- The app pins MilkRust `819dc540d3d7714cb75cc7795b97d1c3b62e6f88`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -116,3 +117,14 @@ qualification, rights decisions and production custody/publication are also open
   target builds and adds decoder/lifetime regression programs with sanitizers.
   No build, tests, CI, archive generation, capture or device run was performed.
   Static diff/JSON/Python-source checks do not replace these execution gates.
+
+- Preset import now decodes UTF-8, BOM-marked UTF-16LE/BE and Windows-1252 before
+  checking shader includes. Installed archive bytes stay unchanged. Malformed
+  surrogates, undefined code-page bytes and binary controls fail explicitly; both
+  input and decoded text remain capped at 2 MiB. Native and browser loaders use
+  the same policy, with unrun regression sources in each implementation.
+- The updated engine shares writable globals across HLSL helpers, aliases scalar
+  and packed q registers, provides original UV/corner-hue/polar entry inputs, and
+  binds actual dimensions for named textures. Native dependency lookup strips
+  sampler addressing prefixes to load the correct asset. These are source fixes;
+  the first compiler/driver runs are still outstanding.

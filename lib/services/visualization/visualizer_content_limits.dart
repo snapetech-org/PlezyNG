@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'visualizer_preset_text.dart';
 
 /// Header-only checks before handing community assets to a native decoder.
 /// These bound allocations; they do not replace codec validation or isolation.
@@ -23,12 +24,7 @@ abstract final class VisualizerContentLimits {
   }
 
   static void checkPreset(List<int> bytes) {
-    if (bytes.isEmpty || bytes.length > maxPresetBytes || bytes.contains(0)) {
-      throw const FormatException('Preset text is empty, binary, or larger than 2 MB.');
-    }
-    // Latin-1 keeps the original bytes intact and also recognizes ASCII
-    // directives in historical encodings. Native parsing still owns semantics.
-    final text = latin1.decode(bytes);
+    final text = VisualizerPresetText.decode(bytes);
     final include = RegExp(r'(^|[=;])\s*`?\s*#\s*include\b', caseSensitive: false);
     for (final line in const LineSplitter().convert(text)) {
       final source = line.trimLeft();

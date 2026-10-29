@@ -1,0 +1,2 @@
+# Optional; language packages remain an explicit host installation.
+argostranslate>=1.9,<2

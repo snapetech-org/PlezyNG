@@ -26,6 +26,7 @@ import '../../../services/subtitle_interval_service.dart';
 import '../../../services/subtitle_job_service.dart';
 import '../../../services/subtitle_editing_service.dart';
 import '../../../services/subtitle_waveform_service.dart';
+import '../../../services/subtitle_companion_service.dart';
 import '../../../services/subtitle_translation_service.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_playback_transcription_service.dart';
@@ -37,6 +38,7 @@ import '../../../widgets/overlay_sheet.dart';
 import 'base_video_control_sheet.dart';
 import 'subtitle_jobs_dialog.dart';
 import 'subtitle_waveform_editor.dart';
+import 'subtitle_companion_jobs_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -88,19 +90,19 @@ Map<String, SubtitleCue> _subtitleCuesByStableId(List<SubtitleCue> cues) {
 
 void _requireSubtitleCueIdentityPreserved(List<SubtitleCue> source, List<SubtitleCue> translated) {
   if (source.length != translated.length) {
-    throw const StateError('Translation changed the cue count; no output was attached.');
+    throw StateError('Translation changed the cue count; no output was attached.');
   }
   final sourceById = _subtitleCuesByStableId(source);
   final translatedById = _subtitleCuesByStableId(translated);
   if (sourceById.length != translatedById.length) {
-    throw const StateError('Translation changed cue identities; no output was attached.');
+    throw StateError('Translation changed cue identities; no output was attached.');
   }
   for (final entry in sourceById.entries) {
     final translatedCue = translatedById[entry.key];
     if (translatedCue == null ||
         translatedCue.startMs != entry.value.startMs ||
         translatedCue.endMs != entry.value.endMs) {
-      throw const StateError('Translation changed cue identity or timing; no output was attached.');
+      throw StateError('Translation changed cue identity or timing; no output was attached.');
     }
   }
 }
@@ -174,6 +176,8 @@ class SubtitleAiSheet extends StatefulWidget {
 
 class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   _SubtitleOperationSnapshot? _operationSnapshot;
+  SubtitleCompanionService? _activeCompanion;
+  String? _activeCompanionJob;
   bool _busy = false;
   bool _translateSpeechToEnglish = false;
   bool _translationSupported = false;
@@ -198,6 +202,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   @override
   void dispose() {
+    _activeCompanion?.close();
     _glossaryController.dispose();
     super.dispose();
   }
@@ -541,7 +546,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   }
                   Navigator.of(dialogContext).pop(interval);
                 },
-                child: const Text('Transcribe interval'),
+                child: const Text('Use interval'),
               ),
             ],
           ),
@@ -647,6 +652,170 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (cues == null || !mounted) return;
     await _writeAndApply(cues, operationLabel: 'Waveform timing edit', sourceCues: selected.$1,
       reviewWarnings: const ['Cue boundaries were edited against audio energy; no automatic word alignment was inferred.']);
+  });
+
+  Future<void> _configureCompanion() => _run(() async {
+    final profile = _activeProfileId;
+    if (profile == null) throw StateError('Choose an active profile before pairing a companion.');
+    final existing = await SubtitleCompanionService.load(profile);
+    final address = TextEditingController(text: existing?.endpoint.toString() ?? 'https://');
+    final token = TextEditingController();
+    existing?.close();
+    if (!mounted) { address.dispose(); token.dispose(); return; }
+    String? error;
+    var saving = false;
+    var remember = true;
+    try {
+      await showDialog<void>(context: context, builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, update) => AlertDialog(
+          title: const Text('Pair subtitle companion'),
+          content: SizedBox(width: 520, child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const Text('Use a host you control. Media is sent only after you choose a file and submit a job. '
+                'The host retains that file until you delete the job. Its token is stored in the OS credential store.'),
+            TextField(controller: address, decoration: const InputDecoration(labelText: 'Host URL'), keyboardType: TextInputType.url),
+            TextField(controller: token, obscureText: true, enableSuggestions: false, autocorrect: false,
+                decoration: const InputDecoration(labelText: 'Pairing token')),
+            SwitchListTile(title: const Text('Remember pairing in the OS credential store'),
+              subtitle: const Text('Turn off for a session-only pairing on devices without a credential plugin'),
+              value: remember, onChanged: saving ? null : (value) => update(() => remember = value)),
+            if (saving) const LinearProgressIndicator(),
+            if (error != null) Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+          ])),
+          actions: [
+            TextButton(onPressed: saving ? null : () async {
+              update(() => saving = true);
+              try { await SubtitleCompanionService.forget(profile); if (dialogContext.mounted) Navigator.pop(dialogContext); }
+              catch (_) { if (dialogContext.mounted) update(() { saving = false; error = 'The saved pairing could not be removed.'; }); }
+            }, child: const Text('Forget')),
+            TextButton(onPressed: saving ? null : () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            FilledButton(onPressed: saving ? null : () async {
+              update(() { saving = true; error = null; });
+              try {
+                if (_activeProfileId != profile) throw StateError('Active profile changed.');
+                await SubtitleCompanionService.configure(profile, address.text, token.text.trim(), remember: remember);
+                if (dialogContext.mounted) Navigator.pop(dialogContext);
+              } catch (failure) {
+                if (dialogContext.mounted) update(() { saving = false; error = _readableError(failure); });
+              }
+            }, child: const Text('Save pairing')),
+          ],
+        ),
+      ));
+    } finally { address.dispose(); token.dispose(); }
+  });
+
+  Future<SubtitleCompanionService> _pairedCompanion() async {
+    final profile = _activeProfileId;
+    if (profile == null) throw StateError('An active profile is required.');
+    final service = await SubtitleCompanionService.load(profile);
+    if (service == null) throw StateError('Pair a subtitle companion before submitting a job.');
+    return service;
+  }
+
+  Future<void> _submitCompanion(String task) => _run(() async {
+    final identity = _operationRevisionIdentity;
+    if (identity == null) throw StateError('Open a stable library item or local file before submitting a job.');
+    final service = await _pairedCompanion();
+    _activeCompanion = service;
+    _activeCompanionJob = null;
+    try {
+      final capabilities = await service.capabilities();
+      if (!(capabilities['tasks'] as List).contains(task)) throw UnsupportedError('Install the $task backend on the companion first.');
+      List<SubtitleCue> cues = const [];
+      if (task == 'align' || task == 'translate') {
+        final selected = await _pickSubtitleCues();
+        if (selected == null || !mounted) return;
+        cues = selected.$1;
+      }
+      String? path;
+      if (task != 'translate') {
+        final selected = await FilePickerService.instance.pickFiles(type: FileType.any);
+        if (selected == null || selected.files.isEmpty || !mounted) return;
+        final file = selected.files.first;
+        if (file.size <= 0 || file.size > SubtitleCompanionService.maximumInputBytes) throw const FormatException('Choose media up to 1 GiB and one hour.');
+        path = file.path;
+        if (path == null) {
+          final bytes = file.bytes;
+          if (bytes == null || bytes.length > 256 * 1024 * 1024) throw const FormatException('The picker did not expose a bounded local media file.');
+          final temp = await getTemporaryDirectory();
+          path = p.join(temp.path, 'subtitle_companion_${DateTime.now().microsecondsSinceEpoch}.media');
+          await File(path).writeAsBytes(bytes, flush: true);
+          _temporaryWavPaths.add(path);
+        }
+      }
+      if (!mounted) return;
+      var preprocess = false;
+      var track = 0;
+      var cropTop = 0.65;
+      final accepted = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, update) => AlertDialog(
+          title: Text('Send $task job to companion'),
+          content: SizedBox(width: 560, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text('Destination: ${service.endpoint}\n${path == null ? 'Subtitle text' : 'The selected media file'} will be uploaded and retained on this host until you delete the job. '
+                'No playback URL or media-server credentials are shared.'),
+            if (task == 'align') Text('Only use text matching the spoken ${SubtitleTranslationService.languageLabel(_sourceLanguage)} audio, '
+                'with approximate cue intervals no longer than 60 seconds. Unsupported/uncertain cues keep their original timing.'),
+            if (task == 'translate') Text('Translate ${SubtitleTranslationService.languageLabel(_sourceLanguage)} to ${SubtitleTranslationService.languageLabel(_targetLanguage)} using an installed host language pair.'),
+            if (task == 'diarize') const Text('Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.'),
+            if (path != null && task != 'ocr') ...[
+              DropdownButtonFormField<int>(initialValue: track, decoration: const InputDecoration(labelText: 'Audio stream (zero based)'),
+                items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text('Audio stream $i'))),
+                onChanged: (value) => update(() => track = value ?? 0)),
+              SwitchListTile(title: const Text('High-pass and FFT denoise'), subtitle: const Text('Optional preprocessing can alter speech; original media stays intact'),
+                value: preprocess, onChanged: (value) => update(() => preprocess = value)),
+            ],
+            if (task == 'ocr') ...[
+              const Text('Burned-caption OCR samples the selected full-width crop at two frames per second. It does not decode PGS/VobSub tracks.'),
+              Text('Crop starts at ${(cropTop * 100).round()}% of image height and extends to the bottom'),
+              Slider(value: cropTop, min: 0, max: 0.9, divisions: 18, label: '${(cropTop * 100).round()}%',
+                onChanged: (value) => update(() => cropTop = value)),
+            ],
+            Text('Host backends: ${(capabilities['tasks'] as List).join(', ')}. Hardware placement is unverified.'),
+          ]))),
+          actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Upload and process'))],
+        ),
+      ));
+      if (accepted != true || !mounted) return;
+      _requireCurrentOperationIdentity();
+      final id = await service.submit(task: task, identityKey: identity.storageKey, mediaPath: path, cues: cues,
+        language: task == 'align' || task == 'translate' ? _sourceLanguage.bcpCode.split('-').first
+            : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
+        targetLanguage: task == 'translate' ? _targetLanguage.bcpCode.split('-').first : null,
+        translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
+        preprocess: preprocess, audioTrack: track, crop: [0, cropTop, 1, 1 - cropTop],
+        onCreated: (id) { if (mounted) setState(() => _activeCompanionJob = id); },
+        onUpload: (sent, total) { if (mounted) setState(() => _status = 'Uploading chosen media: ${(sent * 100 / total).round()}%'); },
+      );
+      if (mounted) setState(() => _status = 'Companion job $id submitted. Open Companion jobs to cancel, resume, or review its result.');
+    } finally { service.close(); _activeCompanion = null; _activeCompanionJob = null; }
+  });
+
+  Future<void> _cancelCompanionUpload() async {
+    final active = _activeCompanion;
+    final id = _activeCompanionJob;
+    try {
+      await active?.cancelAndClose(id);
+      if (mounted) setState(() => _status = 'Companion job cancelled. Delete it in Companion jobs to remove retained media.');
+    } catch (_) {
+      if (mounted) setState(() => _error = 'Upload stopped. Check Companion jobs to confirm the host cancelled processing.');
+    }
+  }
+
+  Future<void> _showCompanionJobs() => _run(() async {
+    final service = await _pairedCompanion();
+    try {
+      if (!mounted) return;
+      final job = await showDialog<Map<String, dynamic>>(context: context,
+        builder: (_) => SubtitleCompanionJobsDialog(service: service, identityKey: _operationRevisionIdentity?.storageKey));
+      if (job == null || !mounted) return;
+      _requireCurrentOperationIdentity();
+      final identity = _operationRevisionIdentity;
+      if (identity == null || job['identity'] != identity.storageKey) throw StateError('The job belongs to another item.');
+      final result = await service.result(job['id'] as String, identityKey: identity.storageKey, audioDigest: job['audioDigest'] as String);
+      await _writeAndApply(result.cues, operationLabel: 'Companion ${job['task']}', operationLanguageCode: result.language,
+        wordTimings: result.wordTimings, reviewWarnings: result.warnings);
+    } finally { service.close(); }
   });
 
   Future<void> _generateInterval({required bool fillSpeechGaps}) => _run(() async {
@@ -1059,12 +1228,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     );
     if (!mounted) return;
     if (translated.cues.length != transcriptCues.length) {
-      throw const StateError('Translation changed the transcript cue count; no subtitle was attached.');
+      throw StateError('Translation changed the transcript cue count; no subtitle was attached.');
     }
     for (var index = 0; index < translated.cues.length; index++) {
       if (translated.cues[index].startMs != transcriptCues[index].startMs ||
           translated.cues[index].endMs != transcriptCues[index].endMs) {
-        throw const StateError('Translation changed transcript timing; no subtitle was attached.');
+        throw StateError('Translation changed transcript timing; no subtitle was attached.');
       }
     }
     if (!await _writeAndApply(
@@ -2877,7 +3046,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 .toList(growable: false),
             'wordTimingAvailability': reviewedWordTimings.isEmpty
                 ? (wordTimings.isEmpty ? 'not-returned-by-backend' : 'omitted-after-cue-edits')
-                : (invalidatedWordTimingCount > 0 ? 'partial-after-cue-edits' : 'whisper-token-timestamps'),
+                : (invalidatedWordTimingCount > 0 ? 'partial-after-cue-edits' : 'backend-word-or-token-timestamps'),
             'wordTimingOmittedCount': invalidatedWordTimingCount,
             'wordTimings': reviewedWordTimings
                 .map(
@@ -3101,6 +3270,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final localSpeech = SubtitleAiService.supportedPlatform;
     final providers = SubtitleAiService.availableProviderRequests;
     final liveProviders = providers
         .where(
@@ -3161,6 +3331,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           _speechLanguageSelector(),
           const SizedBox(height: 10),
           if (_busy) const LinearProgressIndicator(),
+          if (_busy && _activeCompanion != null)
+            TextButton(onPressed: _cancelCompanionUpload, child: const Text('Cancel companion upload/job')),
           if (_status != null) ...[
             const SizedBox(height: 8),
             Text(_status!, style: Theme.of(context).textTheme.bodyMedium),
@@ -3180,6 +3352,31 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               subtitle: const Text('Restore, export, or delete reviewed versions stored on this device'),
               onTap: _busy ? null : () => unawaited(_showRevisionHistory()),
             ),
+          const Divider(height: 24),
+          Text('Companion processing', style: Theme.of(context).textTheme.titleMedium),
+          const Text('Optional processing on a paired host. Each upload requires explicit selection. Results are reviewed before attachment.'),
+          FocusableListTile(leading: const AppIcon(Symbols.settings_rounded), title: const Text('Pair subtitle companion'),
+            onTap: _busy ? null : () => unawaited(_configureCompanion())),
+          FocusableListTile(leading: const AppIcon(Symbols.history_rounded), title: const Text('Companion jobs'),
+            subtitle: const Text('Resume, cancel, review, or delete uploaded media and results'),
+            onTap: _busy ? null : () => unawaited(_showCompanionJobs())),
+          Row(children: [
+            _languageSelector(label: 'Companion source / spoken language', value: _sourceLanguage,
+              onChanged: (value) => _changeTranslationLanguage(source: true, value: value)),
+            const SizedBox(width: 8),
+            _languageSelector(label: 'Companion translation language', value: _targetLanguage,
+              onChanged: (value) => _changeTranslationLanguage(source: false, value: value)),
+          ]),
+          for (final entry in const <(String, String)>[
+            ('transcribe', 'Transcribe a media file on the companion'),
+            ('align', 'Force-align a matching-language transcript'),
+            ('diarize', 'Transcribe with anonymous speaker labels'),
+            ('translate', 'Translate subtitles on the companion'),
+            ('ocr', 'Extract burned captions from a video crop'),
+          ]) FocusableListTile(leading: const AppIcon(Symbols.auto_awesome_rounded), title: Text(entry.$2),
+            onTap: _busy || _revisionIdentity == null ? null : () => unawaited(_submitCompanion(entry.$1))),
+          if (!localSpeech) const Padding(padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text('Local speech inference is unavailable in this build. Companion processing and text-based editing remain available.')),
           if (_playbackCaptureSupported) ...[
             const Divider(height: 24),
             Text('Live captions from playback', style: Theme.of(context).textTheme.titleMedium),
@@ -3374,13 +3571,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   ? 'Downloads a verified multilingual Whisper model on first use'
                   : 'Downloads a verified English model on first use',
             ),
-            onTap: _busy ? null : () => unawaited(_transcribe()),
+            onTap: _busy || !localSpeech ? null : () => unawaited(_transcribe()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.queue_music_rounded),
             title: const Text('Queue resumable WAV transcription'),
             subtitle: const Text('Checkpointed windows, playhead priority, pause/resume, and power policy'),
-            onTap: _busy || _revisionIdentity == null ? null : () => unawaited(_queueTranscription()),
+            onTap: _busy || !localSpeech || _revisionIdentity == null ? null : () => unawaited(_queueTranscription()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.history_rounded),
@@ -3392,19 +3589,19 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             leading: const AppIcon(Symbols.queue_music_rounded),
             title: const Text('Replace captions in an interval'),
             subtitle: const Text('Transcribe a selected WAV range; keep source cues outside it'),
-            onTap: _busy ? null : () => unawaited(_generateInterval(fillSpeechGaps: false)),
+            onTap: _busy || !localSpeech ? null : () => unawaited(_generateInterval(fillSpeechGaps: false)),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.add_comment_rounded),
             title: const Text('Fill speech-detected caption gaps'),
             subtitle: const Text('Add recognized speech only in long uncovered ranges; review before attaching'),
-            onTap: _busy ? null : () => unawaited(_generateInterval(fillSpeechGaps: true)),
+            onTap: _busy || !localSpeech ? null : () => unawaited(_generateInterval(fillSpeechGaps: true)),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.sync_rounded),
             title: const Text('Automatically sync an existing subtitle'),
             subtitle: const Text('Aligns SRT, VTT, ASS, or SSA text against local speech recognition'),
-            onTap: _busy ? null : () => unawaited(_synchronize(repairCuts: false)),
+            onTap: _busy || !localSpeech ? null : () => unawaited(_synchronize(repairCuts: false)),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.edit_rounded),
@@ -3422,7 +3619,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             leading: const AppIcon(Symbols.content_cut_rounded),
             title: const Text('Repair cuts and sync'),
             subtitle: const Text('Uses piecewise timing where subtitle/audio text anchors suggest a cut offset change'),
-            onTap: _busy ? null : () => unawaited(_synchronize(repairCuts: true)),
+            onTap: _busy || !localSpeech ? null : () => unawaited(_synchronize(repairCuts: true)),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.closed_caption_rounded),

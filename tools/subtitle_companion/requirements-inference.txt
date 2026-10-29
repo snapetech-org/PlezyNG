@@ -1,0 +1,4 @@
+# Core adapter versions audited against their upstream APIs. Install the
+# platform-specific PyTorch/CUDA runtime separately when GPU use is desired.
+faster-whisper==1.2.1
+whisperx==3.8.6

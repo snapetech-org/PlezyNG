@@ -18,7 +18,6 @@ import '../../../services/file_picker_service.dart';
 import '../../../services/incoming_subtitle_share_service.dart';
 import '../../../services/playback_subtitle_resolver.dart';
 import '../../../services/subtitle_archive_importer.dart';
-import '../../../services/subtitle_ai_service.dart';
 import '../../../services/track_selection_service.dart';
 import '../../../i18n/strings.g.dart';
 import '../../../i18n/presentation_formats.dart';
@@ -661,7 +660,7 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
     );
   }
 
-  if (SubtitleAiService.supportedPlatform) {
+  if (!kIsWeb) {
     if (player.supportedLocalSubtitleExtensions.contains('srt')) {
       actions.add(
         FocusableListTile(

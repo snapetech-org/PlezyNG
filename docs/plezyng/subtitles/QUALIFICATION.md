@@ -71,3 +71,7 @@ The source now includes a profile-scoped queue with owned audio copies, SHA-256 
 ## Editing and alignment diagnostics
 
 Added bounded waveform/spectrogram interval editing, explicit FPS conversion, opt-in text reflow/corrections/filtering, and sync coverage/residual/unmatched-span review. Analysis uses a shared streaming reader supporting integer PCM and IEEE-float WAV. No tests, analyzer, builds, or CI were run. Timing and linguistic quality remain unqualified.
+
+## Optional companion source integration
+
+Added an authenticated upload-only companion with a durable job store, process-group cancellation, Python SDK, pinned core adapter requirements, commit-pinned model preparation with SHA-256 manifests, and Flutter pairing/upload/job/review UI. Optional adapters decode selected media audio, transcribe on CPU/requested CUDA, force-align matching-language transcripts, cluster anonymous speakers, translate with installed Argos pairs, and OCR a bounded video crop. Inputs/results are bound to profile scope, item identity, job ID and media SHA-256. Uncertain alignment retains original cue timing; OCR samples at 2 Hz. No service was started, dependencies installed, inference run, tests executed, analyzer/build run, or CI triggered. Cross-platform runtime, model and TLS packaging remain unqualified.

@@ -25,7 +25,6 @@ import '../../multiview/workspace_models.dart';
 import '../../utils/formatters.dart';
 import '../../utils/app_logger.dart';
 import '../../services/open_subtitles_client.dart';
-import '../../services/subtitle_ai_service.dart';
 import '../../services/subtitle_revision_service.dart';
 import '../../services/player_sync_offsets.dart';
 import '../../services/subtitle_retimer.dart';
@@ -1555,7 +1554,6 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
             ),
           if (s.video &&
               !s.isLiveInput &&
-              SubtitleAiService.supportedPlatform &&
               s.player?.playerType == 'mpv' &&
               s.player?.supportedLocalSubtitleExtensions.contains('srt') == true)
             IconButton(

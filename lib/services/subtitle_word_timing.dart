@@ -145,9 +145,20 @@ abstract final class SubtitleWordTimingBuilder {
   static List<SubtitleWordTiming> attachCueIndices(List<SubtitleWordTiming> wordTimings, List<SubtitleCue> cues) {
     if (wordTimings.isEmpty || cues.isEmpty) return List.unmodifiable(wordTimings);
     final cueIds = cues.map((cue) => cue.stableId).toList(growable: false);
+    final indexById = <String, int>{for (var i = 0; i < cueIds.length; i++) cueIds[i]: i};
     final result = <SubtitleWordTiming>[];
     var firstPossibleCue = 0;
     for (final word in wordTimings) {
+      // Explicit identity wins over overlap: simultaneously displayed speaker
+      // cues can otherwise steal one another's aligned words during review.
+      final explicitIndex = indexById[word.cueId];
+      if (explicitIndex != null) {
+        final cue = cues[explicitIndex];
+        final overlaps = word.startMs < cue.endMs && word.endMs > cue.startMs;
+        result.add(word.withCueIndex(overlaps ? cue.index : null,
+            cueId: overlaps ? cueIds[explicitIndex] : null));
+        continue;
+      }
       while (firstPossibleCue < cues.length && cues[firstPossibleCue].endMs < word.startMs) {
         firstPossibleCue++;
       }

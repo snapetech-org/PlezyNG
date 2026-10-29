@@ -25,6 +25,7 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
   Future<void> Function()? onDownloadChanged,
   Future<SubtitleAnalysisSource> Function()? openAnalysisSource,
   bool Function()? isSourceCurrent,
+  bool audioOnly = false,
 }) async {
   try { await SubtitleFontStore.instance.initialize(); } catch (_) {}
   if (!context.mounted) return;
@@ -116,7 +117,7 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
               if (path != null && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) await File(path).writeAsBytes(snapshot.bytes, flush: true);
             } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(copy.exportSrtFailed))); }
           }, child: Text(copy.exportSrt)),
-          if (player.supportedLocalSubtitleExtensions.contains('srt')) TextButton(onPressed: () async {
+          if (!audioOnly && player.supportedLocalSubtitleExtensions.contains('srt')) TextButton(onPressed: () async {
             try {
               final snapshot = SubtitleNativeHandoffService.export(player, track);
               if (!context.mounted || !await _confirmSnapshot(context, snapshot.clipped, attach: true)) return;
@@ -169,7 +170,7 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
             onChanged: (v) => update(() => SubtitleSpeechService.instance.duck = v)),
         ],
         const Divider(),
-        if (player.playerType == 'mpv') ...[
+        if (!audioOnly && player.playerType == 'mpv') ...[
           TextButton(onPressed: () => showSubtitleHdrControls(context, player,
             () => session.current && isSourceCurrent?.call() != false),
             child: Text(t.videoControls.subtitleHdr.open)),

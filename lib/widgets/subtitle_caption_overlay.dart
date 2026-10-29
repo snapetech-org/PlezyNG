@@ -16,11 +16,13 @@ import '../services/subtitle_frame_export.dart';
 /// Screen-safe Flutter overlay. Native PiP/Cast surfaces do not include this
 /// widget; callers hide it while the video is presented on those surfaces.
 class SubtitleCaptionOverlay extends StatefulWidget {
-  const SubtitleCaptionOverlay({super.key, required this.player, this.bottomInset = 0, this.fitMode = 0, this.zoom = 1});
+  const SubtitleCaptionOverlay({super.key, required this.player, this.bottomInset = 0, this.fitMode = 0, this.zoom = 1,
+    this.audioOnly = false});
   final Player player;
   final double bottomInset;
   final int fitMode;
   final double zoom;
+  final bool audioOnly;
   @override
   State<SubtitleCaptionOverlay> createState() => _SubtitleCaptionOverlayState();
 }
@@ -36,7 +38,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
   int _geometryTicks = 0;
 
   Future<void> _refreshGeometry() async {
-    if (_readingGeometry || widget.player.disposed) return;
+    if (widget.audioOnly || _readingGeometry || widget.player.disposed) return;
     final player = widget.player;
     final generation = _generation(player);
     if (generation == null) return;
@@ -45,7 +47,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
       final dimensions = await Future.wait([player.getProperty('dwidth'), player.getProperty('dheight')])
         .timeout(const Duration(seconds: 2));
       final width = double.tryParse(dimensions[0] ?? ''), height = double.tryParse(dimensions[1] ?? '');
-      if (!mounted || widget.player != player || _generation(player) != generation) return;
+      if (!mounted || widget.audioOnly || widget.player != player || _generation(player) != generation) return;
       _geometryPlayer = player;
       _geometryGeneration = generation;
       _displaySize = width != null && height != null && width.isFinite && height.isFinite &&
@@ -71,6 +73,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
     }, onError: (Object _) { /* Keep system fallback if an asset is unavailable. */ }));
   }
   void _registerCapture() {
+    if (widget.audioOnly) return;
     final player = widget.player;
     SubtitleFrameExport.register(player, _captureKey, () => mounted && identical(widget.player, player) &&
         SubtitlePanePolicy.of(context)?.visible != false);
@@ -78,9 +81,12 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
   @override
   void didUpdateWidget(covariant SubtitleCaptionOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.player, widget.player)) {
+    if (!identical(oldWidget.player, widget.player) || oldWidget.audioOnly != widget.audioOnly) {
       SubtitleFrameExport.unregister(oldWidget.player, _captureKey);
+      _displaySize = null; _geometryPlayer = null; _geometryGeneration = null;
+      _placementCache.clear();
       _registerCapture();
+      unawaited(_refreshGeometry());
     }
   }
   @override

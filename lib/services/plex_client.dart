@@ -5391,10 +5391,15 @@ class PlexClient
     String? mediaSourceId,
     Duration? position,
   }) async {
-    final playbackData = await getVideoPlaybackData(item.id, mediaIndex: mediaIndex, position: position);
+    final playbackData = await getVideoPlaybackData(item.id, mediaIndex: mediaIndex,
+      selectedMediaSourceId: mediaSourceId, position: position);
     if (!playbackData.hasValidVideoUrl) return null;
+    final requested = mediaSourceId?.trim();
+    if (requested != null && requested.isNotEmpty && playbackData.mediaInfo?.mediaSourceId != requested) return null;
     return ExternalPlaybackTarget(
       url: playbackData.videoUrl!,
+      mediaSourceId: playbackData.mediaInfo?.mediaSourceId,
+      partId: playbackData.mediaInfo?.partId?.toString(),
       subtitles: [for (final sidecar in _buildExternalSubtitles(playbackData.mediaInfo)) sidecar.track],
       partTimeline: playbackData.mediaInfo?.partTimeline,
     );

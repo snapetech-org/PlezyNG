@@ -42,6 +42,8 @@ import '../../widgets/media_context_menu.dart';
 import '../../widgets/music/lyrics_view.dart';
 import '../../widgets/music/repeat_mode.dart';
 import '../../widgets/music/music_visualizer.dart';
+import '../../widgets/music/music_caption_button.dart';
+import '../../widgets/subtitle_caption_overlay.dart';
 import '../../widgets/optimized_media_image.dart';
 import '../../widgets/overlay_sheet.dart';
 import 'queue_sheet.dart';
@@ -638,6 +640,7 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
                 icon: AppIcon(Symbols.picture_in_picture_alt_rounded, fill: 1, color: tk.text),
               ),
             ),
+            MusicCaptionButton(service: service, color: tk.text),
             _buildOverflowButton(track),
           ],
         ),
@@ -837,7 +840,8 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
     MediaServerClient? client, {
     bool tvArt = false,
   }) {
-    return AnimatedSwitcher(
+    final access = service is MusicSubtitleService ? service.subtitleAccess : null;
+    final content = AnimatedSwitcher(
       duration: MonoMotion.fill(context),
       child: _showLyrics
           ? KeyedSubtree(
@@ -864,6 +868,12 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
               child: _Artwork(track: track, client: client, tvSized: tvArt),
             ),
     );
+    // Provider lyrics keep their own view; reviewed captions are shown over
+    // artwork or the visualizer and use the same audio owner's clock.
+    return Stack(fit: StackFit.passthrough, children: [content,
+      if (!_showLyrics && access != null) Positioned.fill(child: SubtitleCaptionOverlay(
+        player: access.player, audioOnly: true)),
+    ]);
   }
 
   Widget _buildSeekBar(MediaItem track) {

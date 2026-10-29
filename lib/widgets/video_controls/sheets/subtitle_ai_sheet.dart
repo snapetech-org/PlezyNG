@@ -186,6 +186,7 @@ class SubtitleAiSheet extends StatefulWidget {
     this.openReadAheadSource,
     this.seriesKey,
     this.selectedSubtitleBurnedIn = false,
+    this.appOverlayOnly = false,
   });
 
   final Player player;
@@ -207,6 +208,8 @@ class SubtitleAiSheet extends StatefulWidget {
   final Future<SubtitleAnalysisSource?> Function()? openReadAheadSource;
   final String? seriesKey;
   final bool selectedSubtitleBurnedIn;
+  /// Audio-only owners have no native caption presentation surface.
+  final bool appOverlayOnly;
 
   @override
   State<SubtitleAiSheet> createState() => _SubtitleAiSheetState();
@@ -2115,6 +2118,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (!mounted || !current()) return;
     final saved = binding;
     await showSubtitleOverlayControls(context, player, download: saved, downloadIsCurrent: current,
+      audioOnly: widget.appOverlayOnly,
       openAnalysisSource: widget.openAnalysisSource ?? () => SubtitleAnalysisSource.localPlayer(player, current),
       isSourceCurrent: current,
       onDownloadChanged: saved == null ? null : () => downloads!.refreshDownloadSize(saved.globalKey));
@@ -2335,6 +2339,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   Future<void> _restoreSubtitleRevision(SubtitleRevision revision, SubtitleRevisionIdentity expectedIdentity) async {
     if (_operationRevisionIdentity?.storageKey != expectedIdentity.storageKey) {
       throw StateError('The selected subtitle revision belongs to a different media item or profile.');
+    }
+    if (widget.appOverlayOnly) {
+      await _writeAndApply(revision.cues, operationLabel: revision.operation,
+        operationLanguageCode: revision.languageCode, onItemTimeline: revision.onItemTimeline,
+        wordTimings: revision.wordTimings);
+      return;
     }
     final bytes = await _bytesForNativeTimeline(revision.cues, revision.onItemTimeline);
     final directory = await getTemporaryDirectory();
@@ -3367,8 +3377,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     _lastResultSavedToSource = false;
     final uploadLanguage = _normalizedUploadLanguage(operationLanguageCode);
     final canUploadToServer =
-        !onItemTimeline && uploadLanguage != null && widget.serverId?.isNotEmpty == true && widget.ratingKey?.isNotEmpty == true;
-    final canSaveToSource = widget.onSaveToSource != null;
+        !widget.appOverlayOnly && !onItemTimeline && uploadLanguage != null && widget.serverId?.isNotEmpty == true && widget.ratingKey?.isNotEmpty == true;
+    final canSaveToSource = !widget.appOverlayOnly && widget.onSaveToSource != null;
     final List<int> previewIndexes;
     if (cues.length <= 12) {
       previewIndexes = List<int>.generate(cues.length, (index) => index);
@@ -3576,7 +3586,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             for (final lane in [_SubtitleReviewChoice.overlayPrimary, _SubtitleReviewChoice.overlaySecondary])
               OutlinedButton(onPressed: () => Navigator.of(dialogContext).pop(lane),
                 child: Text(lane == _SubtitleReviewChoice.overlayPrimary ? copy.appOverlayOne : copy.appOverlayTwo)),
-            FilledButton(
+            if (!widget.appOverlayOnly) FilledButton(
               onPressed: widget.player.supportedLocalSubtitleExtensions.contains('srt')
                   ? () => Navigator.of(dialogContext).pop(_SubtitleReviewChoice.player) : null,
               child: Text(copy.attachToPlayer),
@@ -3889,6 +3899,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Widget _speechLanguageSelector() {
+    final aiCopy = Translations.of(context).videoControls.subtitleAiControls;
     final supportsOverride =
         _provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu;
     final languages = _whisperLanguagesByCode();
@@ -3897,13 +3908,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         InputDecorator(
-          decoration: const InputDecoration(labelText: 'Speech language', border: OutlineInputBorder()),
+          decoration: InputDecoration(labelText: aiCopy.speechLanguage, border: OutlineInputBorder()),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: selected,
               isExpanded: true,
               items: [
-                const DropdownMenuItem(value: 'auto', child: Text('Auto-detect')),
+                const DropdownMenuItem(value: 'auto', child: Text(aiCopy.autoDetect)),
                 ...languages.entries.map(
                   (entry) => DropdownMenuItem(
                     value: entry.key,
@@ -3928,7 +3939,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Text(
-              'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
+              aiCopy.englishOnlyAccelerator,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
@@ -3939,6 +3950,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   @override
   Widget build(BuildContext context) {
     final jobsCopy = Translations.of(context).videoControls.subtitleJobs;
+    final aiCopy = Translations.of(context).videoControls.subtitleAiControls;
+    final liveCopy = Translations.of(context).videoControls.subtitleLiveCapture;
     final resourceCopy = Translations.of(context).videoControls.subtitleResources;
     final localSpeech = SubtitleAiService.supportedPlatform;
     final providers = SubtitleAiService.availableProviderRequests;
@@ -3951,19 +3964,19 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (!providers.contains(_provider)) _provider = SubtitleInferenceProvider.cpu;
     if (!liveProviders.contains(_liveProvider)) _liveProvider = SubtitleInferenceProvider.cpu;
     return BaseVideoControlSheet(
-      title: 'AI subtitles',
+      title: aiCopy.title,
       icon: Symbols.auto_awesome_rounded,
       onBack: () => OverlaySheetController.of(context).pop(),
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         children: [
           Text(
-            'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
+            aiCopy.intro,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 12),
           InputDecorator(
-            decoration: const InputDecoration(labelText: 'Inference backend', border: OutlineInputBorder()),
+            decoration: InputDecoration(labelText: aiCopy.inferenceBackend, border: OutlineInputBorder()),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<SubtitleInferenceProvider>(
                 value: _provider,
@@ -3993,8 +4006,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           const SizedBox(height: 6),
           Text(
             _provider == SubtitleInferenceProvider.desktopGpu
-                ? 'Desktop GPU uses CUDA or Vulkan only when compiled into the native Whisper runtime. Successful inference does not prove every operation ran on the GPU; placement is unverified and failures restart on CPU.'
-                : 'CPU is the baseline. Core ML/QNN/RKNN are provider requests for the installed native runtime; unsupported requests retry on CPU. The result reports provider initialization/fallback and marks per-operation placement as unverified.',
+                ? aiCopy.desktopGpuAvailability
+                : aiCopy.cpuProviderNote,
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 12),
@@ -4018,13 +4031,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           if (_revisionIdentity != null)
             FocusableListTile(
               leading: const AppIcon(Symbols.history_rounded),
-              title: const Text('Subtitle revision history'),
-              subtitle: const Text('Restore, export, or delete reviewed versions stored on this device'),
+              title: Text(aiCopy.revisionHistoryTitle),
+              subtitle: Text(aiCopy.revisionHistoryDescription),
               onTap: _busy ? null : () => unawaited(_showRevisionHistory()),
             ),
           if (_revisionIdentity != null)
-            FocusableListTile(leading: const Icon(Icons.cloud_sync), title: const Text('Sync reviewed subtitles across devices'),
-              subtitle: const Text('Encrypted cloud transfer with explicit item pairing and conflict choices'),
+            FocusableListTile(leading: const Icon(Icons.cloud_sync), title: Text(aiCopy.syncReviewedTitle),
+              subtitle: Text(aiCopy.syncReviewedDescription),
               onTap: _busy ? null : () => unawaited(_run(() async {
                 final identity = _operationRevisionIdentity;
                 if (identity == null) return;
@@ -4032,64 +4045,60 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   isCurrent: () => mounted && _operationIdentityIsCurrent && _operationRevisionIdentity?.storageKey == identity.storageKey));
               }))),
           const Divider(height: 24),
-          Text('Companion processing', style: Theme.of(context).textTheme.titleMedium),
-          const Text('Optional processing on a paired host. Each upload requires explicit selection. Results are reviewed before attachment.'),
-          FocusableListTile(leading: const AppIcon(Symbols.settings_rounded), title: const Text('Pair subtitle companion'),
+          Text(aiCopy.companionProcessing, style: Theme.of(context).textTheme.titleMedium),
+          Text(aiCopy.companionProcessingDescription),
+          FocusableListTile(leading: const AppIcon(Symbols.settings_rounded), title: Text(aiCopy.pairCompanion),
             onTap: _busy ? null : () => unawaited(_configureCompanion())),
-          FocusableListTile(leading: const AppIcon(Symbols.history_rounded), title: const Text('Companion jobs'),
-            subtitle: const Text('Resume, cancel, review, or delete uploaded media and results'),
+          FocusableListTile(leading: const AppIcon(Symbols.history_rounded), title: Text(aiCopy.companionJobs),
+            subtitle: Text(aiCopy.companionJobsDescription),
             onTap: _busy ? null : () => unawaited(_showCompanionJobs())),
           Row(children: [
-            _languageSelector(label: 'Companion source / spoken language', value: _sourceLanguage,
+            _languageSelector(label: aiCopy.companionSourceLanguage, value: _sourceLanguage,
               onChanged: (value) => _changeTranslationLanguage(source: true, value: value)),
             const SizedBox(width: 8),
-            _languageSelector(label: 'Companion translation language', value: _targetLanguage,
+            _languageSelector(label: aiCopy.companionTargetLanguage, value: _targetLanguage,
               onChanged: (value) => _changeTranslationLanguage(source: false, value: value)),
           ]),
-          for (final entry in const <(String, String)>[
-            ('transcribe', 'Transcribe a media file on the companion'),
-            ('ensemble', 'Compare two recognition models'),
-            ('separate', 'Separate overlapping voice candidates (experimental)'),
-            ('sound_events', 'Propose sound-event captions (experimental)'),
-            ('completeness', 'Compare detected speech against subtitle coverage'),
-            ('extract_text', 'Extract an embedded text subtitle stream'),
-            ('signs', 'Read on-screen signs in a chosen crop'),
-            ('align', 'Force-align a matching-language transcript'),
-            ('singing_align', 'Propose lyric word timing against music (experimental)'),
-            ('diarize', 'Transcribe with anonymous speaker labels'),
-            ('translate', 'Translate subtitles on the companion'),
-            ('translate_model', 'Translate with faithful, natural, or literal wording'),
-            ('script_convert', 'Convert Chinese script or region variants'),
-            ('reading', 'Add Japanese kana or romanization readings'),
-            ('dubbing', 'Synthesize a timed subtitle voice track'),
-            ('dub_mix', 'Mix synthesized subtitles with explicitly uploaded audio'),
-            ('scene_review', 'Review uncertain captions against scene images'),
+          for (final entry in <(String, String)>[
+            ('transcribe', aiCopy.companionTranscribe),
+            ('ensemble', aiCopy.companionEnsemble),
+            ('separate', aiCopy.companionSeparate),
+            ('sound_events', aiCopy.companionSoundEvents),
+            ('completeness', aiCopy.companionCompleteness),
+            ('extract_text', aiCopy.companionExtractText),
+            ('signs', aiCopy.companionSigns),
+            ('align', aiCopy.companionAlign),
+            ('singing_align', aiCopy.companionSingingAlign),
+            ('diarize', aiCopy.companionDiarize),
+            ('translate', aiCopy.companionTranslate),
+            ('translate_model', aiCopy.companionTranslateModel),
+            ('script_convert', aiCopy.companionScriptConvert),
+            ('reading', aiCopy.companionReading),
+            ('dubbing', aiCopy.companionDubbing),
+            ('dub_mix', aiCopy.companionDubMix),
+            ('scene_review', aiCopy.companionSceneReview),
             ('scene_track', 'Track scene objects across a chosen video (experimental)'),
-            ('ocr_auto', 'Find a burned-caption region and read it'),
-            ('ocr', 'Extract burned captions from a video crop'),
-            ('bitmap_ocr', 'Read PGS/VobSub images and correct OCR'),
+            ('ocr_auto', aiCopy.companionOcrAuto),
+            ('ocr', aiCopy.companionOcr),
+            ('bitmap_ocr', aiCopy.companionBitmapOcr),
           ]) FocusableListTile(leading: const AppIcon(Symbols.auto_awesome_rounded), title: Text(entry.$2),
             onTap: _busy || _revisionIdentity == null ? null : () => unawaited(_submitCompanion(entry.$1))),
-          TextButton(onPressed: () => unawaited(_run(_openOverlayControls)), child: const Text('App overlay appearance and cover')),
+          TextButton(onPressed: () => unawaited(_run(_openOverlayControls)), child: Text(aiCopy.appOverlayAppearance)),
           if (localSpeech && SubtitleReadAheadService.available) AnimatedBuilder(
             animation: SubtitleReadAheadService.instance, builder: (context, _) {
               final service = SubtitleReadAheadService.instance;
               return FocusableListTile(leading: const AppIcon(Symbols.subtitles_rounded),
-                title: Text(service.running ? 'Stop preparing playback captions' : 'Prepare playback captions ahead'),
+                title: Text(service.running ? aiCopy.stopPreparingPlaybackTitle : aiCopy.preparePlaybackTitle),
                 subtitle: Text(service.status), onTap: _busy || service.busy && !service.running
                     ? null : () => unawaited(_preparePlaybackCaptions()));
             }),
           if (!localSpeech) const Padding(padding: EdgeInsets.symmetric(vertical: 8),
-            child: Text('Local speech inference is unavailable in this build. Companion processing and text-based editing remain available.')),
+            child: Text(aiCopy.localSpeechUnavailable)),
           if (_playbackCaptureSupported) ...[
             const Divider(height: 24),
-            Text('Live captions from playback', style: Theme.of(context).textTheme.titleMedium),
+            Text(liveCopy.sectionTitle, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
-            Text(
-              'The active player copies bounded decoded PCM with media timestamps. '
-              'Live Whisper supports CPU and a best-effort compiled desktop GPU request; '
-              'GPU placement is unverified and inference failures fall back to CPU. '
-              'Audio is not saved, and captions arrive with a short delay.',
+            Text(liveCopy.description),
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 6),
@@ -4105,18 +4114,17 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                         final result = await FilePickerService.instance.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
                         final path = result?.files.single.path;
                         if (mounted && path != null) setState(() => _streamingModelManifest = path);
-                      })), child: const Text('Choose a local streaming-model manifest')),
+                      })), child: Text(liveCopy.chooseManifest)),
                       if (_streamingModelManifest != null) ...[
-                        Text('Streaming CPU model: ${p.basename(_streamingModelManifest!)}. Uses the manifest’s declared language. '
-                          'Partial text can change. Final cue times cover decoder utterance windows; no word alignment is claimed.'),
+                        Text(liveCopy.streamingModelDescription(model: p.basename(_streamingModelManifest!))),
                         TextButton(onPressed: _busy || service.isStarting || service.hasActiveSession ? null :
-                          () => setState(() => _streamingModelManifest = null), child: const Text('Use multilingual Whisper')),
+                          () => setState(() => _streamingModelManifest = null), child: Text(liveCopy.useWhisper)),
                       ],
                     ],
                     if (_streamingModelManifest == null && liveProviders.length > 1) ...[
                       InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Live captions backend',
+                        decoration: InputDecoration(
+                          labelText: liveCopy.backendLabel,
                           border: OutlineInputBorder(),
                         ),
                         child: DropdownButtonHideUnderline(
@@ -4142,25 +4150,24 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),
                         child: Text(
-                          'Live captions backend: CPU (multilingual Whisper)',
+                          liveCopy.backendCpu,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
-                    if (_streamingModelManifest == null) SwitchListTile(title: const Text('Stabilize live partial captions'),
-                      subtitle: const Text('Compare overlapping recognition passes before freezing text. Partial text can change and is excluded from history; pause/end and 12-second boundaries may finalize a single pass. Uses more inference work.'),
+                    if (_streamingModelManifest == null) SwitchListTile(title: Text(liveCopy.stabilizePartials),
+                      subtitle: Text(liveCopy.stabilizeDescription),
                       value: service.stableStreaming,
                       onChanged: service.isStarting || service.hasActiveSession ? null : service.setStableStreaming),
-                    if (service.singlePassTails > 0) Text('${service.singlePassTails} caption tails finalized at a pause or bounded window without two-pass agreement.'),
+                    if (service.singlePassTails > 0) Text(liveCopy.singlePassTails(count: service.singlePassTails)),
                     SwitchListTile(
-                      title: const Text('Show late captions when recognition finishes'),
+                      title: Text(liveCopy.showLateCaptions),
                       subtitle: const Text('Off uses exact media timing only. DVR replay reuses retained finalized cues. '
                         'This does not delay the video or send overlays into native PiP or Cast.'),
                       value: service.showDelayedText,
                       onChanged: service.setShowDelayedText,
                     ),
                     if (service.droppedAudioMs > 0 || service.discontinuities > 0)
-                      Text('Dropped analysis audio: ${service.droppedAudioMs} ms; '
-                        'clock discontinuities: ${service.discontinuities}. Missing audio is not inferred.'),
+                      Text(liveCopy.droppedAudio(milliseconds: service.droppedAudioMs, discontinuities: service.discontinuities)),
                     if (service.status != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),
@@ -4176,27 +4183,27 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       ),
                       title: Text(
                         service.isStarting
-                            ? 'Preparing live captions…'
+                            ? liveCopy.preparing
                             : (service.isRunning || service.hasActiveSession)
-                            ? 'Stop live capture'
-                            : 'Start live captions',
+                            ? liveCopy.stopCapture
+                            : liveCopy.start,
                       ),
                       subtitle: Text(
                         service.isStarting
-                            ? 'Loading the local recognition model'
+                            ? liveCopy.loadingModel
                             : (service.isRunning || service.hasActiveSession)
-                            ? 'Stop capture and retain the transcript for sync'
+                            ? liveCopy.stopRetainTranscript
                             : _streamingModelManifest == null
-                            ? 'This player session; downloads the local Whisper model on first use'
-                            : 'This player session; verifies and loads the selected local streaming model',
+                            ? liveCopy.whisperSessionDescription
+                            : liveCopy.streamingSessionDescription,
                       ),
                       onTap: (_busy || service.isStarting) ? null : () => unawaited(_captureLivePlayback()),
                     ),
                     if (service.hasRecentTranscript)
                       FocusableListTile(
                         leading: const AppIcon(Symbols.search_rounded),
-                        title: const Text('Browse captured transcript'),
-                        subtitle: const Text('Search cues, seek to their start, or hide future dialogue'),
+                        title: Text(liveCopy.browseTranscript),
+                        subtitle: Text(liveCopy.browseTranscriptDescription),
                         onTap: () => unawaited(_showCapturedTranscript(service)),
                       ),
                     if (service.hasRecentTranscript &&
@@ -4206,40 +4213,40 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                         _revisionIdentity != null)
                       FocusableListTile(
                         leading: const AppIcon(Symbols.save_rounded),
-                        title: const Text('Save transcript to revision history'),
-                        subtitle: const Text('Keep its cues and word timings with this item on this device'),
+                        title: Text(liveCopy.saveTranscript),
+                        subtitle: Text(liveCopy.saveTranscriptDescription),
                         onTap: _busy ? null : () => unawaited(_saveCapturedTranscript(service)),
                       ),
                     if (_revisionIdentity != null) ...[
                       FocusableListTile(
                         leading: const AppIcon(Symbols.sync_rounded),
-                        title: const Text('Sync from a saved transcript'),
-                        subtitle: const Text('Reuse watched-portion speech saved for this item'),
+                        title: Text(liveCopy.syncSaved),
+                        subtitle: Text(liveCopy.syncSavedDescription),
                         onTap: _busy ? null : () => unawaited(_synchronizeSavedTranscript(repairCuts: false)),
                       ),
                       FocusableListTile(
                         leading: const AppIcon(Symbols.content_cut_rounded),
-                        title: const Text('Repair cuts from a saved transcript'),
-                        subtitle: const Text('Keep timing outside the transcript evidence'),
+                        title: Text(liveCopy.repairSaved),
+                        subtitle: Text(liveCopy.repairSavedDescription),
                         onTap: _busy ? null : () => unawaited(_synchronizeSavedTranscript(repairCuts: true)),
                       ),
                       if (_translationSupported) ...[
                         FocusableListTile(
                           leading: const AppIcon(Symbols.translate_rounded),
-                          title: const Text('Translate a saved transcript into subtitles'),
-                          subtitle: const Text('Reuse its speech timings for another subtitle language'),
+                          title: Text(liveCopy.translateSaved),
+                          subtitle: Text(liveCopy.translateSavedDescription),
                           onTap: _busy ? null : () => unawaited(_translateSavedTranscript()),
                         ),
                         FocusableListTile(
                           leading: const AppIcon(Symbols.translate_rounded),
-                          title: const Text('Sync across languages from a saved transcript'),
-                          subtitle: const Text('Translate target cues locally to match this transcript language'),
+                          title: Text(liveCopy.syncSavedLanguages),
+                          subtitle: Text(liveCopy.syncSavedLanguagesDescription),
                           onTap: _busy ? null : () => unawaited(_synchronizeSavedTranscriptAcrossLanguages(repairCuts: false)),
                         ),
                         FocusableListTile(
                           leading: const AppIcon(Symbols.content_cut_rounded),
-                          title: const Text('Repair cuts across languages from a saved transcript'),
-                          subtitle: const Text('Use translated text for anchors and preserve original dialogue'),
+                          title: Text(liveCopy.repairSavedLanguages),
+                          subtitle: Text(liveCopy.repairSavedLanguagesDescription),
                           onTap: _busy ? null : () => unawaited(_synchronizeSavedTranscriptAcrossLanguages(repairCuts: true)),
                         ),
                       ],
@@ -4248,33 +4255,33 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       if (_translationSupported)
                         FocusableListTile(
                           leading: const AppIcon(Symbols.translate_rounded),
-                          title: const Text('Translate captured speech into subtitles'),
-                          subtitle: const Text('Create timed subtitles in another language for the watched portion'),
+                          title: Text(liveCopy.translateCaptured),
+                          subtitle: Text(liveCopy.translateCapturedDescription),
                           onTap: _busy ? null : () => unawaited(_translateCapturedTranscript()),
                         ),
                       FocusableListTile(
                         leading: const AppIcon(Symbols.sync_rounded),
-                        title: const Text('Sync from captured playback'),
-                        subtitle: const Text('Aligns the watched portion against an existing subtitle'),
+                        title: Text(liveCopy.syncCaptured),
+                        subtitle: Text(liveCopy.syncCapturedDescription),
                         onTap: _busy ? null : () => unawaited(_synchronizeCapturedPlayback(repairCuts: false)),
                       ),
                       FocusableListTile(
                         leading: const AppIcon(Symbols.content_cut_rounded),
-                        title: const Text('Repair cuts from captured playback'),
-                        subtitle: const Text('Preserves cue timing outside speech-matched evidence'),
+                        title: Text(liveCopy.repairCaptured),
+                        subtitle: Text(liveCopy.repairCapturedDescription),
                         onTap: _busy ? null : () => unawaited(_synchronizeCapturedPlayback(repairCuts: true)),
                       ),
                       if (_translationSupported) ...[
                         FocusableListTile(
                           leading: const AppIcon(Symbols.translate_rounded),
-                          title: const Text('Sync across languages from captured playback'),
-                          subtitle: const Text('Translate target cues locally to match detected speech language'),
+                          title: Text(liveCopy.syncCapturedLanguages),
+                          subtitle: Text(liveCopy.syncCapturedLanguagesDescription),
                           onTap: _busy ? null : () => unawaited(_synchronizeCapturedPlaybackAcrossLanguages(repairCuts: false)),
                         ),
                         FocusableListTile(
                           leading: const AppIcon(Symbols.content_cut_rounded),
-                          title: const Text('Repair cuts across languages from captured playback'),
-                          subtitle: const Text('Use translated text for anchors and preserve original dialogue'),
+                          title: Text(liveCopy.repairCapturedLanguages),
+                          subtitle: Text(liveCopy.repairSavedLanguagesDescription),
                           onTap: _busy ? null : () => unawaited(_synchronizeCapturedPlaybackAcrossLanguages(repairCuts: true)),
                         ),
                       ],
@@ -4288,9 +4295,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           if (_provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu)
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Translate detected speech to English'),
+              title: Text(aiCopy.translateDetectedSpeech),
               subtitle: const Text(
-                'Used only for generation; sync always transcribes the source language. Whisper translates audio instead of transcribing it.',
+                aiCopy.translationGenerationOnly,
               ),
               value: _translateSpeechToEnglish,
               onChanged: _busy ? null : (value) => setState(() => _translateSpeechToEnglish = value),
@@ -4298,12 +4305,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           FocusableListTile(
             leading: const AppIcon(Symbols.graphic_eq_rounded),
             title: Text(
-              _translateSpeechToEnglish ? 'Translate speech to English from WAV' : 'Generate subtitles from WAV',
+              _translateSpeechToEnglish ? aiCopy.translateSpeechFromWav : aiCopy.generateSubtitlesFromWav,
             ),
             subtitle: Text(
               _provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu
-                  ? 'Downloads a verified multilingual Whisper model on first use'
-                  : 'Downloads a verified English model on first use',
+                  ? aiCopy.downloadMultilingualModel
+                  : aiCopy.downloadEnglishModel,
             ),
             onTap: _busy || !localSpeech ? null : () => unawaited(_transcribe()),
           ),
@@ -4334,101 +4341,101 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.queue_music_rounded),
-            title: const Text('Replace captions in an interval'),
-            subtitle: const Text('Transcribe a selected WAV range; keep source cues outside it'),
+            title: Text(aiCopy.replaceIntervalTitle),
+            subtitle: Text(aiCopy.replaceIntervalDescription),
             onTap: _busy || !localSpeech ? null : () => unawaited(_generateInterval(fillSpeechGaps: false)),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.add_comment_rounded),
-            title: const Text('Fill speech-detected caption gaps'),
-            subtitle: const Text('Add recognized speech only in long uncovered ranges; review before attaching'),
+            title: Text(aiCopy.fillGapsTitle),
+            subtitle: Text(aiCopy.fillGapsDescription),
             onTap: _busy || !localSpeech ? null : () => unawaited(_generateInterval(fillSpeechGaps: true)),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.sync_rounded),
-            title: const Text('Automatically sync an existing subtitle'),
-            subtitle: const Text('Aligns SRT, VTT, ASS, or SSA text against local speech recognition'),
+            title: Text(aiCopy.syncExistingTitle),
+            subtitle: Text(aiCopy.syncExistingDescription),
             onTap: _busy || !localSpeech ? null : () => unawaited(_synchronize(repairCuts: false)),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.edit_rounded),
-            title: const Text('Reflow, correct, filter, or convert FPS'),
-            subtitle: const Text('Preview reading limits, explicit spelling fixes, SDH/song/credit filters, and timing conversion'),
+            title: Text(aiCopy.reflowTitle),
+            subtitle: Text(aiCopy.reflowDescription),
             onTap: _busy ? null : () => unawaited(_transformSubtitles()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.spellcheck_rounded),
-            title: const Text('Review spelling with an offline dictionary'),
-            subtitle: const Text('Choose a language pack and approve individual word occurrences'),
+            title: Text(aiCopy.spellingReviewTitle),
+            subtitle: Text(aiCopy.spellingReviewDescription),
             onTap: _busy ? null : () => unawaited(_reviewDictionarySpelling()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.subtitles_rounded),
-            title: const Text('Convert or repair subtitle text encoding'),
-            subtitle: const Text('Preview legacy encodings, TTML/IMSC text, SAMI, MicroDVD, SBV, LRC, or MPL2 as a separate SRT'),
+            title: Text(aiCopy.encodingTitle),
+            subtitle: Text(aiCopy.encodingDescription),
             onTap: _busy ? null : () => unawaited(_importTextSubtitle()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.folder_open_rounded),
-            title: const Text('Find subtitles in folders'),
-            subtitle: const Text('Search beside local media or in this profile’s chosen subtitle folders'),
+            title: Text(aiCopy.discoverSubtitlesTitle),
+            subtitle: Text(aiCopy.discoverSubtitlesDescription),
             onTap: _busy ? null : () => unawaited(_discoverSubtitles()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.replay_rounded),
-            title: const Text('Study a subtitle transcript'),
-            subtitle: const Text('Search, replay, pause after lines, loop with gaps, and save phrases from a matching subtitle'),
+            title: Text(aiCopy.studySubtitleTitle),
+            subtitle: Text(aiCopy.studySubtitleDescription),
             onTap: _busy ? null : () => unawaited(_studySubtitle()),
           ),
           if (_revisionIdentity != null) FocusableListTile(
             leading: const AppIcon(Symbols.history_rounded),
-            title: const Text('Study a saved transcript'),
-            subtitle: const Text('Reuse this item’s saved speech transcript and source times'),
+            title: Text(aiCopy.studySavedTranscriptTitle),
+            subtitle: Text(aiCopy.studySavedTranscriptDescription),
             onTap: _busy ? null : () => unawaited(_studySubtitle(saved: true)),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.graphic_eq_rounded),
-            title: const Text('Waveform and spectrogram editor'),
-            subtitle: const Text('Edit cue anchors against a matching WAV interval up to five minutes'),
+            title: Text(aiCopy.waveformEditorTitle),
+            subtitle: Text(aiCopy.waveformEditorDescription),
             onTap: _busy ? null : () => unawaited(_editWaveform()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.content_cut_rounded),
-            title: const Text('Repair cuts and sync'),
-            subtitle: const Text('Uses piecewise timing where subtitle/audio text anchors suggest a cut offset change'),
+            title: Text(aiCopy.repairCutsTitle),
+            subtitle: Text(aiCopy.repairCutsDescription),
             onTap: _busy || !localSpeech ? null : () => unawaited(_synchronize(repairCuts: true)),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.closed_caption_rounded),
-            title: const Text('Sync to another subtitle'),
-            subtitle: const Text('Use a same-language SRT, VTT, ASS, or SSA subtitle as the timing reference'),
+            title: Text(aiCopy.syncReferenceTitle),
+            subtitle: Text(aiCopy.syncReferenceDescription),
             onTap: _busy ? null : () => unawaited(_synchronizeToReference(repairCuts: false)),
           ),
           if (_translationSupported)
             FocusableListTile(
               leading: const AppIcon(Symbols.translate_rounded),
-              title: const Text('Sync across subtitle languages'),
-              subtitle: const Text('Translate target text locally for matching; keep its original text'),
+              title: Text(aiCopy.syncLanguagesTitle),
+              subtitle: Text(aiCopy.syncLanguagesDescription),
               onTap: _busy ? null : () => unawaited(_synchronizeAcrossLanguages(repairCuts: false)),
             ),
           if (_translationSupported)
             FocusableListTile(
               leading: const AppIcon(Symbols.content_cut_rounded),
-              title: const Text('Repair cuts across subtitle languages'),
-              subtitle: const Text('Uses translated text for anchors and keeps the original target text'),
+              title: Text(aiCopy.repairLanguagesTitle),
+              subtitle: Text(aiCopy.repairLanguagesDescription),
               onTap: _busy ? null : () => unawaited(_synchronizeAcrossLanguages(repairCuts: true)),
             ),
           FocusableListTile(
             leading: const AppIcon(Symbols.content_cut_rounded),
-            title: const Text('Repair cuts using another subtitle'),
-            subtitle: const Text('Apply piecewise offsets where dialogue anchors show a timing discontinuity'),
+            title: Text(aiCopy.repairReferenceTitle),
+            subtitle: Text(aiCopy.repairReferenceDescription),
             onTap: _busy ? null : () => unawaited(_synchronizeToReference(repairCuts: true)),
           ),
           if (_translationSupported) ...[
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Reuse and remember reviewed translations'),
-              subtitle: const Text('Profile-local exact text/context and glossary matches. Only accepted results are remembered; model revisions are not reported.'),
+              title: Text(aiCopy.reuseTranslationMemory),
+              subtitle: Text(aiCopy.translationMemoryDescription),
               value: _useTranslationMemory,
               onChanged: _busy ? null : (value) => setState(() => _useTranslationMemory = value),
             ),
@@ -4436,28 +4443,28 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               final profile = _activeProfileId;
               if (profile == null) return;
               await SubtitleTranslationMemory.clear(profile);
-              if (mounted) setState(() => _status = 'Reviewed translation memory cleared for this profile.');
-            }), child: const Text('Clear this profile’s translation memory')),
+              if (mounted) setState(() => _status = aiCopy.translationMemoryCleared);
+            }), child: Text(aiCopy.clearTranslationMemory)),
             const Divider(height: 24),
-            Text('Local subtitle translation', style: Theme.of(context).textTheme.titleMedium),
+            Text(aiCopy.localSubtitleTranslation, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
             Text(
               SubtitleTranslationService.desktopPlatformSupported
-                  ? 'Desktop uses optional local Argos Translate. Install its Python package and the source-to-target language model; set PLEZY_ARGOS_PYTHON if python/python3 is not on PATH.'
-                  : 'Mobile translation uses on-device ML Kit models.',
+                  ? aiCopy.desktopArgosDescription
+                  : aiCopy.mobileMlKitDescription,
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 8),
             Row(
               children: [
                 _languageSelector(
-                  label: 'Source',
+                  label: aiCopy.sourceLanguage,
                   value: _sourceLanguage,
                   onChanged: (value) => _changeTranslationLanguage(source: true, value: value),
                 ),
                 const SizedBox(width: 8),
                 _languageSelector(
-                  label: 'Target',
+                  label: aiCopy.targetLanguage,
                   value: _targetLanguage,
                   onChanged: (value) => _changeTranslationLanguage(source: false, value: value),
                 ),
@@ -4466,8 +4473,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             if (widget.seriesKey?.isNotEmpty == true)
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Use a series-specific glossary'),
-                subtitle: const Text('Starts with the profile glossary; saved edits apply only to this series.'),
+                title: Text(aiCopy.seriesGlossary),
+                subtitle: Text(aiCopy.seriesGlossaryDescription),
                 value: _useSeriesGlossary,
                 onChanged: _busy
                     ? null
@@ -4479,8 +4486,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Bilingual subtitle output'),
-              subtitle: const Text('Show the original line followed by its translation in each cue'),
+              title: Text(aiCopy.bilingualOutput),
+              subtitle: Text(aiCopy.bilingualOutputDescription),
               value: _bilingualTranslation,
               onChanged: _busy ? null : (value) => setState(() => _bilingualTranslation = value),
             ),
@@ -4490,11 +4497,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               maxLines: 4,
               enabled: !_busy,
               decoration: InputDecoration(
-                labelText: 'Translation glossary (JSON)',
-                hintText: '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}',
+                labelText: aiCopy.glossaryLabel,
+                hintText: aiCopy.glossaryHint,
                 helperText: widget.seriesKey == null
-                    ? 'Protects up to 200 whole terms. Saved for this profile and language pair.'
-                    : 'Protects up to 200 terms. Choose profile or series scope above.',
+                    ? aiCopy.glossaryProfileHelper
+                    : aiCopy.glossarySeriesHelper,
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) => _glossaryDrafts[_currentGlossaryDraftKey()] = value,
@@ -4508,12 +4515,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   OutlinedButton.icon(
                     onPressed: _busy ? null : () => unawaited(_showGlossaryHistory()),
                     icon: const AppIcon(Symbols.history_rounded),
-                    label: const Text('History'),
+                    label: Text(aiCopy.history),
                   ),
                   TextButton.icon(
                     onPressed: _busy ? null : () => unawaited(_run(_saveGlossary)),
                     icon: const AppIcon(Symbols.save_rounded),
-                    label: const Text('Save glossary'),
+                    label: Text(aiCopy.saveGlossary),
                   ),
                 ],
               ),
@@ -4522,7 +4529,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             if (SubtitleTranslationService.mobilePlatformSupported) ...[
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Allow language-model downloads over mobile data'),
+                title: Text(aiCopy.allowMobileDownloads),
                 value: _allowMobileData,
                 onChanged: _busy ? null : (value) => setState(() => _allowMobileData = value),
               ),
@@ -4531,30 +4538,30 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 child: OutlinedButton.icon(
                   onPressed: _busy ? null : () => unawaited(_prepareTranslationModels()),
                   icon: const AppIcon(Symbols.download_for_offline_rounded),
-                  label: const Text('Prepare offline language models'),
+                  label: Text(aiCopy.prepareOfflineModels),
                 ),
               ),
             ],
             if (SubtitleTranslationService.desktopPlatformSupported && (Platform.isWindows || Platform.isLinux))
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Request Argos CUDA'),
+                title: Text(aiCopy.requestArgosCuda),
                 subtitle: const Text(
-                  'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.',
+                  aiCopy.requestArgosCudaDescription,
                 ),
                 value: _requestTranslationCuda,
                 onChanged: _busy ? null : (value) => setState(() => _requestTranslationCuda = value),
               ),
             Text(
               SubtitleTranslationService.desktopPlatformSupported
-                  ? 'Subtitle text stays local. Argos does not report per-cue hardware placement; GPU requests are best-effort.'
-                  : 'Translation runs locally through ML Kit. Its CPU/GPU choice is not exposed by the provider.',
+                  ? aiCopy.desktopTranslationLocalNote
+                  : aiCopy.mobileTranslationLocalNote,
               style: Theme.of(context).textTheme.bodySmall,
             ),
             FocusableListTile(
               leading: const AppIcon(Symbols.translate_rounded),
-              title: const Text('Translate an existing subtitle'),
-              subtitle: const Text('Timing and source file remain unchanged'),
+              title: Text(aiCopy.translateExistingTitle),
+              subtitle: Text(aiCopy.translateExistingDescription),
               onTap: _busy ? null : () => unawaited(_translate()),
             ),
           ],

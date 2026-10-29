@@ -153,12 +153,17 @@ class PlaybackSubtitleSidecar {
 class ExternalPlaybackTarget {
   final String url;
   final List<SubtitleTrack> subtitles;
+  /// Server metadata identity, independent of expiring URL credentials. Null
+  /// means the resolver could not identify the selected representation.
+  final String? mediaSourceId;
+  final String? partId;
 
   /// Where [url] sits on its item when the item is stacked across several
   /// files: the external player gets that one file, on that file's clock.
   final MediaPartTimeline? partTimeline;
 
-  const ExternalPlaybackTarget({required this.url, this.subtitles = const [], this.partTimeline});
+  const ExternalPlaybackTarget({required this.url, this.subtitles = const [], this.partTimeline,
+    this.mediaSourceId, this.partId});
 }
 
 /// Reason the transcode branch fell back to direct play.

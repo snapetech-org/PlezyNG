@@ -537,6 +537,8 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
     // api_key in the query string) is otherwise identical to the video one.
     final isTrack = item.kind == MediaKind.track;
     final bundle = await fetchPlaybackBundle(item.id, sourceIndex: mediaIndex, sourceId: mediaSourceId);
+    final requested = mediaSourceId?.trim();
+    if (requested != null && requested.isNotEmpty && bundle?.selectedSourceId != requested) return null;
     if (bundle == null) {
       return ExternalPlaybackTarget(
         url: isTrack
@@ -551,6 +553,7 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
     // for players that can't tell an ISO stream from a plain video file.
     if (isTrack) {
       return ExternalPlaybackTarget(
+        mediaSourceId: bundle.selectedSourceId,
         url: buildAudioDirectStreamUrl(
           item.id,
           container: container,
@@ -568,6 +571,7 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
     );
     return ExternalPlaybackTarget(
       url: buildDirectStreamUrl(item.id, container: container, mediaSourceId: pinnedSourceId, containerExtension: true),
+      mediaSourceId: bundle.selectedSourceId,
       subtitles: [
         for (final sidecar in _buildExternalSubtitles(item.id, bundle.selectedSourceId, mediaInfo)) sidecar.track,
       ],

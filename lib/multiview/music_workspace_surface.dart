@@ -11,6 +11,8 @@ import '../services/music/music_playback_service.dart';
 import '../theme/mono_tokens.dart';
 import '../widgets/app_icon.dart';
 import '../widgets/music/music_visualizer.dart';
+import '../widgets/music/music_caption_button.dart';
+import '../widgets/subtitle_caption_overlay.dart';
 import '../utils/formatters.dart';
 import 'workspace_controller.dart';
 
@@ -118,6 +120,8 @@ class _MusicWorkspaceTrack extends StatelessWidget {
     final title = track.title?.trim();
     final displayTitle = title == null || title.isEmpty ? t.common.unknown : title;
     final duration = service.duration ?? Duration.zero;
+    final owner = service;
+    final captions = owner is MusicSubtitleService ? owner.subtitleAccess : null;
 
     return Material(
       color: tk.bg,
@@ -141,6 +145,8 @@ class _MusicWorkspaceTrack extends StatelessWidget {
                 ),
               ),
             ),
+            if (captions != null) SubtitleCaptionOverlay(player: captions.player, audioOnly: true, bottomInset: 150),
+            Align(alignment: Alignment.topRight, child: MusicCaptionButton(service: service, color: Colors.white)),
             Padding(
               padding: EdgeInsets.all(tk.space),
               child: Column(

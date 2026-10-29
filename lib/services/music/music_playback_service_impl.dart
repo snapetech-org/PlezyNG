@@ -18,6 +18,10 @@ import '../../mpv/models.dart';
 import '../../mpv/player/audio_spectrum.dart';
 import '../../mpv/player/player.dart';
 import '../../mpv/player/player_native.dart';
+import '../../mpv/player/player_media_session_identity.dart';
+import '../../sources/content_access.dart';
+import '../../sources/source_models.dart' show sourceDigest;
+import '../subtitle_analysis_source.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/notification_permission.dart';
 import '../../utils/platform_detector.dart';
@@ -85,7 +89,59 @@ class _PendingResume {
 /// progress stop the session with [MusicPlaybackStatus.error].
 class MusicPlaybackServiceImpl extends MusicPlaybackService
     with WidgetsBindingObserver
-    implements MusicLoudnessProfileService, MusicAudioSpectrumService, MusicVisualizationAudioService {
+    implements MusicLoudnessProfileService, MusicAudioSpectrumService, MusicVisualizationAudioService, MusicSubtitleService {
+  @override
+  MusicSubtitleAccess? get subtitleAccess {
+    final player = _player, track = _currentTrack, source = _currentSource;
+    if (_disposed || player == null || player.disposed || track == null || source == null ||
+        !const [MusicPlaybackStatus.playing, MusicPlaybackStatus.paused].contains(_status)) return null;
+    final generation = _generation;
+    final mediaGeneration = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
+    final mediaIndex = source.mediaInfo?.mediaIndex ?? 0;
+    final sourceId = source.mediaInfo?.mediaSourceId, partId = source.mediaInfo?.partId;
+    final identity = sourceDigest('${track.globalKey}:$mediaIndex:$sourceId:$partId:${track.durationMs}');
+    bool current() => !_disposed && generation == _generation && identical(_player, player) && !player.disposed &&
+        identical(_currentSource, source) && _currentTrack?.globalKey == track.globalKey &&
+        (mediaGeneration == null || (player is PlayerMediaSessionIdentity && player.mediaSessionGeneration == mediaGeneration));
+    return MusicSubtitleAccess(player: player, item: track, mediaIndex: mediaIndex, sourceIdentity: identity,
+      isCurrent: current, openAnalysisSource: () async {
+        if (!current()) throw StateError('The music track changed.');
+        final opened = Uri.tryParse(source.url);
+        if (source.isOffline || opened?.scheme == 'file' || opened?.scheme.isEmpty == true) {
+          return SubtitleAnalysisSource.localPlayer(player, current);
+        }
+        final client = source.reportingClient;
+        if (client == null) throw UnsupportedError('This music source cannot open an independent analysis lease.');
+        final gateway = SourceStreamGateway(valid: current);
+        try {
+          final target = await client.resolveExternalPlayback(track, mediaIndex: mediaIndex,
+            mediaSourceId: sourceId, position: Duration.zero);
+          if (!current() || target == null) throw StateError('Music analysis source unavailable.');
+          final part = target.partTimeline?.current;
+          if ((sourceId?.isNotEmpty == true && target.mediaSourceId != sourceId) ||
+              (partId != null && target.partId != '$partId')) {
+            throw StateError('Music analysis selected a different source part.');
+          }
+          final offset = part?.start.inMilliseconds ?? 0;
+          final uri = await gateway.registerUri(Uri.parse(target.url), renew: () async {
+            if (!current()) throw StateError('The music analysis source expired.');
+            final renewed = await client.resolveExternalPlayback(track, mediaIndex: mediaIndex,
+              mediaSourceId: sourceId, position: Duration.zero);
+            if (!current() || renewed == null || renewed.mediaSourceId != target.mediaSourceId ||
+                renewed.partId != target.partId || renewed.partTimeline?.current.partId != part?.partId ||
+                (renewed.partTimeline?.current.start.inMilliseconds ?? 0) != offset) {
+              throw StateError('Music source renewal changed the file.');
+            }
+            return (uri: Uri.parse(renewed.url), headers: const <String, String>{});
+          });
+          if (!current()) throw StateError('The music track changed.');
+          return SubtitleAnalysisSource(uri: uri, identity: '$identity:${target.mediaSourceId}:${target.partId}:$offset',
+            durationMs: part?.duration.inMilliseconds ?? track.durationMs,
+            timelineOffsetMs: offset, isCurrent: current, close: gateway.close);
+        } catch (_) { await gateway.close(); rethrow; }
+      });
+  }
+
   @override
   bool get hasNativeVisualizationAudio {
     final player = _player;

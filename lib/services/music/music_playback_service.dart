@@ -4,6 +4,8 @@ import '../../media/lyrics.dart';
 import '../../media/media_item.dart';
 import '../../media/media_source_info.dart';
 import '../../mpv/player/audio_spectrum.dart';
+import '../../mpv/player/player.dart';
+import '../subtitle_analysis_source.dart';
 import '../playback_launch_observer.dart';
 
 /// Repeat behavior of the music queue.
@@ -34,6 +36,24 @@ abstract interface class MusicVisualizationAudioService {
 /// Backends without derived audio metadata keep using Plex loudness or ambient motion.
 abstract interface class MusicAudioSpectrumService {
   AudioSpectrumAnalyzer? get audioSpectrumAnalyzer;
+}
+
+/// Optional, borrowed access to the existing audio owner. Consumers never open,
+/// replace or dispose this player. Every asynchronous operation must retain the
+/// selection-bound [MusicSubtitleAccess.isCurrent] guard.
+abstract interface class MusicSubtitleService {
+  MusicSubtitleAccess? get subtitleAccess;
+}
+
+class MusicSubtitleAccess {
+  const MusicSubtitleAccess({required this.player, required this.item, required this.mediaIndex,
+    required this.sourceIdentity, required this.isCurrent, required this.openAnalysisSource});
+  final Player player;
+  final MediaItem item;
+  final int mediaIndex;
+  final String sourceIdentity;
+  final bool Function() isCurrent;
+  final Future<SubtitleAnalysisSource> Function() openAnalysisSource;
 }
 
 /// Outcome of [MusicPlaybackService.playInstantMix]. Fetch failures throw

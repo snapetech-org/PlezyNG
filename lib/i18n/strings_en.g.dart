@@ -15351,6 +15351,67 @@ class Translations$videoControls$subtitleAiControls$en {
 	/// en: 'Hide this subtitle revision'
 	String get subtitleChoiceHideTooltip => 'Hide this subtitle revision';
 
+	/// en: 'Saved transcript cues have not been loaded yet.'
+	String get savedTranscriptCuesNotLoaded => 'Saved transcript cues have not been loaded yet.';
+	/// en: 'Unsupported subtitle revision record.'
+	String get revisionRecordUnsupported => 'Unsupported subtitle revision record.';
+	/// en: 'Invalid revision clock basis'
+	String get revisionClockBasisInvalid => 'Invalid revision clock basis';
+	/// en: 'Subtitle revision metadata is invalid.'
+	String get revisionMetadataInvalid => 'Subtitle revision metadata is invalid.';
+	/// en: 'Subtitle revision cue is invalid.'
+	String get revisionCueInvalid => 'Subtitle revision cue is invalid.';
+	/// en: 'Subtitle revision cue timing or text is invalid.'
+	String get revisionCueTimingOrTextInvalid => 'Subtitle revision cue timing or text is invalid.';
+	/// en: 'Subtitle revision contains duplicate cue identity.'
+	String get revisionDuplicateCueIdentity => 'Subtitle revision contains duplicate cue identity.';
+	/// en: 'Subtitle revision word timing is invalid.'
+	String get revisionWordTimingInvalid => 'Subtitle revision word timing is invalid.';
+	/// en: 'Subtitle revision word timing fields are invalid.'
+	String get revisionWordTimingFieldsInvalid => 'Subtitle revision word timing fields are invalid.';
+	/// en: 'Subtitle revision timing unit is invalid.'
+	String get revisionTimingUnitInvalid => 'Subtitle revision timing unit is invalid.';
+	/// en: 'Subtitle revision word timing refers to a missing cue.'
+	String get revisionWordTimingCueMissing => 'Subtitle revision word timing refers to a missing cue.';
+	/// en: 'Subtitle revision word timing refers to a different cue.'
+	String get revisionWordTimingCueDifferent => 'Subtitle revision word timing refers to a different cue.';
+	/// en: 'Unsupported subtitle review draft.'
+	String get reviewDraftUnsupported => 'Unsupported subtitle review draft.';
+	/// en: 'Subtitle review draft metadata is invalid.'
+	String get reviewDraftMetadataInvalid => 'Subtitle review draft metadata is invalid.';
+	/// en: 'Subtitle review draft changed cue identity or order.'
+	String get reviewDraftCueIdentityOrOrderChanged => 'Subtitle review draft changed cue identity or order.';
+	/// en: 'Subtitle review draft undo entry is invalid.'
+	String get reviewDraftUndoEntryInvalid => 'Subtitle review draft undo entry is invalid.';
+	/// en: 'Subtitle review draft undo position is invalid.'
+	String get reviewDraftUndoPositionInvalid => 'Subtitle review draft undo position is invalid.';
+	/// en: 'Subtitle review draft undo cue does not match its stable identity.'
+	String get reviewDraftUndoCueMismatch => 'Subtitle review draft undo cue does not match its stable identity.';
+	/// en: 'Subtitle review draft cue is invalid.'
+	String get reviewDraftCueInvalid => 'Subtitle review draft cue is invalid.';
+	/// en: 'Subtitle revision owner changed.'
+	String get revisionOwnerChanged => 'Subtitle revision owner changed.';
+	/// en: 'Subtitle revision exceeds the supported metadata or cue bound.'
+	String get revisionBoundsExceeded => 'Subtitle revision exceeds the supported metadata or cue bound.';
+	/// en: 'Subtitle revision contains an invalid cue.'
+	String get revisionContainsInvalidCue => 'Subtitle revision contains an invalid cue.';
+	/// en: 'Subtitle revision contains an invalid word timing.'
+	String get revisionContainsInvalidWordTiming => 'Subtitle revision contains an invalid word timing.';
+	/// en: 'Subtitle revision word timing refers to different cues.'
+	String get revisionWordTimingDifferentCues => 'Subtitle revision word timing refers to different cues.';
+	/// en: 'This reviewed result is too large for local revision history.'
+	String get revisionTooLargeForHistory => 'This reviewed result is too large for local revision history.';
+	/// en: 'This in-progress subtitle review exceeds the 8 MiB draft limit.'
+	String get reviewDraftTooLarge => 'This in-progress subtitle review exceeds the 8 MiB draft limit.';
+	/// en: 'Subtitle review draft exceeds its storage limit.'
+	String get reviewDraftStorageLimit => 'Subtitle review draft exceeds its storage limit.';
+	/// en: 'Revision filename does not match its record.'
+	String get revisionFilenameMismatch => 'Revision filename does not match its record.';
+	/// en: 'Saved transcript identity is invalid.'
+	String get savedTranscriptIdentityInvalid => 'Saved transcript identity is invalid.';
+	/// en: 'Subtitle revision identifier is invalid.'
+	String get revisionIdentifierInvalid => 'Subtitle revision identifier is invalid.';
+
 }
 
 // Path: videoControls.subtitleLiveCapture
@@ -20224,6 +20285,36 @@ extension on Translations {
 			'videoControls.subtitleAiControls.subtitleChoiceIgnoredTag' => 'Ignored revision',
 			'videoControls.subtitleAiControls.subtitleChoiceShowAgainTooltip' => 'Show this subtitle revision again',
 			'videoControls.subtitleAiControls.subtitleChoiceHideTooltip' => 'Hide this subtitle revision',
+			'videoControls.subtitleAiControls.savedTranscriptCuesNotLoaded' => 'Saved transcript cues have not been loaded yet.',
+			'videoControls.subtitleAiControls.revisionRecordUnsupported' => 'Unsupported subtitle revision record.',
+			'videoControls.subtitleAiControls.revisionClockBasisInvalid' => 'Invalid revision clock basis',
+			'videoControls.subtitleAiControls.revisionMetadataInvalid' => 'Subtitle revision metadata is invalid.',
+			'videoControls.subtitleAiControls.revisionCueInvalid' => 'Subtitle revision cue is invalid.',
+			'videoControls.subtitleAiControls.revisionCueTimingOrTextInvalid' => 'Subtitle revision cue timing or text is invalid.',
+			'videoControls.subtitleAiControls.revisionDuplicateCueIdentity' => 'Subtitle revision contains duplicate cue identity.',
+			'videoControls.subtitleAiControls.revisionWordTimingInvalid' => 'Subtitle revision word timing is invalid.',
+			'videoControls.subtitleAiControls.revisionWordTimingFieldsInvalid' => 'Subtitle revision word timing fields are invalid.',
+			'videoControls.subtitleAiControls.revisionTimingUnitInvalid' => 'Subtitle revision timing unit is invalid.',
+			'videoControls.subtitleAiControls.revisionWordTimingCueMissing' => 'Subtitle revision word timing refers to a missing cue.',
+			'videoControls.subtitleAiControls.revisionWordTimingCueDifferent' => 'Subtitle revision word timing refers to a different cue.',
+			'videoControls.subtitleAiControls.reviewDraftUnsupported' => 'Unsupported subtitle review draft.',
+			'videoControls.subtitleAiControls.reviewDraftMetadataInvalid' => 'Subtitle review draft metadata is invalid.',
+			'videoControls.subtitleAiControls.reviewDraftCueIdentityOrOrderChanged' => 'Subtitle review draft changed cue identity or order.',
+			'videoControls.subtitleAiControls.reviewDraftUndoEntryInvalid' => 'Subtitle review draft undo entry is invalid.',
+			'videoControls.subtitleAiControls.reviewDraftUndoPositionInvalid' => 'Subtitle review draft undo position is invalid.',
+			'videoControls.subtitleAiControls.reviewDraftUndoCueMismatch' => 'Subtitle review draft undo cue does not match its stable identity.',
+			'videoControls.subtitleAiControls.reviewDraftCueInvalid' => 'Subtitle review draft cue is invalid.',
+			'videoControls.subtitleAiControls.revisionOwnerChanged' => 'Subtitle revision owner changed.',
+			'videoControls.subtitleAiControls.revisionBoundsExceeded' => 'Subtitle revision exceeds the supported metadata or cue bound.',
+			'videoControls.subtitleAiControls.revisionContainsInvalidCue' => 'Subtitle revision contains an invalid cue.',
+			'videoControls.subtitleAiControls.revisionContainsInvalidWordTiming' => 'Subtitle revision contains an invalid word timing.',
+			'videoControls.subtitleAiControls.revisionWordTimingDifferentCues' => 'Subtitle revision word timing refers to different cues.',
+			'videoControls.subtitleAiControls.revisionTooLargeForHistory' => 'This reviewed result is too large for local revision history.',
+			'videoControls.subtitleAiControls.reviewDraftTooLarge' => 'This in-progress subtitle review exceeds the 8 MiB draft limit.',
+			'videoControls.subtitleAiControls.reviewDraftStorageLimit' => 'Subtitle review draft exceeds its storage limit.',
+			'videoControls.subtitleAiControls.revisionFilenameMismatch' => 'Revision filename does not match its record.',
+			'videoControls.subtitleAiControls.savedTranscriptIdentityInvalid' => 'Saved transcript identity is invalid.',
+			'videoControls.subtitleAiControls.revisionIdentifierInvalid' => 'Subtitle revision identifier is invalid.',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',

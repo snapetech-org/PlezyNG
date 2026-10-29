@@ -6,6 +6,8 @@ import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../i18n/strings.g.dart';
+
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
 
@@ -58,7 +60,7 @@ final class SavedSubtitleTranscript {
   final SubtitleRevision? revision;
 
   SubtitleRevision get loadedRevision =>
-      revision ?? (throw StateError('Saved transcript cues have not been loaded yet.'));
+      revision ?? (throw StateError(t.videoControls.subtitleAiControls.savedTranscriptCuesNotLoaded));
 
   SavedSubtitleTranscript withRevision(SubtitleRevision value) => SavedSubtitleTranscript(
     storageKey: storageKey,
@@ -127,9 +129,9 @@ final class SubtitleRevision {
 
   static SubtitleRevision fromJson(Object? value) {
     if (value is! Map<String, dynamic> || value['schema'] != 'plezyng.subtitle-revision.v1') {
-      throw const FormatException('Unsupported subtitle revision record.');
+      throw FormatException(t.videoControls.subtitleAiControls.revisionRecordUnsupported);
     }
-    if (value['onItemTimeline'] != null && value['onItemTimeline'] is! bool) throw const FormatException('Invalid revision clock basis');
+    if (value['onItemTimeline'] != null && value['onItemTimeline'] is! bool) throw FormatException(t.videoControls.subtitleAiControls.revisionClockBasisInvalid);
     final id = value['id'];
     final createdAt = DateTime.tryParse(value['createdAt'] as String? ?? '');
     final operation = value['operation'];
@@ -148,7 +150,7 @@ final class SubtitleRevision {
         rawCues.isEmpty ||
         rawCues.length > SubtitleRetimer.maximumCueCount ||
         rawWords.length > 250000) {
-      throw const FormatException('Subtitle revision metadata is invalid.');
+      throw FormatException(t.videoControls.subtitleAiControls.revisionMetadataInvalid);
     }
 
     final cues = <SubtitleCue>[];
@@ -156,7 +158,7 @@ final class SubtitleRevision {
     final seenCueIds = <String>{};
     for (final row in rawCues) {
       if (row is! Map<String, dynamic>) {
-        throw const FormatException('Subtitle revision cue is invalid.');
+        throw FormatException(t.videoControls.subtitleAiControls.revisionCueInvalid);
       }
       final index = row['index'];
       final start = row['startMs'];
@@ -174,11 +176,11 @@ final class SubtitleRevision {
           start < 0 ||
           end <= start ||
           end > SubtitleRetimer.maximumTimeMs) {
-        throw const FormatException('Subtitle revision cue timing or text is invalid.');
+        throw FormatException(t.videoControls.subtitleAiControls.revisionCueTimingOrTextInvalid);
       }
       final cue = SubtitleCue(index: index, startMs: start, endMs: end, text: text, cueId: cueId as String?);
       if (!seenCueIndexes.add(index) || !seenCueIds.add(cue.stableId)) {
-        throw const FormatException('Subtitle revision contains duplicate cue identity.');
+        throw FormatException(t.videoControls.subtitleAiControls.revisionDuplicateCueIdentity);
       }
       cues.add(cue);
     }
@@ -188,7 +190,7 @@ final class SubtitleRevision {
     final cuesById = <String, SubtitleCue>{for (final cue in cues) cue.stableId: cue};
     for (final row in rawWords) {
       if (row is! Map<String, dynamic>) {
-        throw const FormatException('Subtitle revision word timing is invalid.');
+        throw FormatException(t.videoControls.subtitleAiControls.revisionWordTimingInvalid);
       }
       final start = row['startMs'];
       final end = row['endMs'];
@@ -211,19 +213,19 @@ final class SubtitleRevision {
           confidence < 0 ||
           confidence > 1 ||
           (cueIndex != null && (cueIndex as int) < 1)) {
-        throw const FormatException('Subtitle revision word timing fields are invalid.');
+        throw FormatException(t.videoControls.subtitleAiControls.revisionWordTimingFieldsInvalid);
       }
       final unit = SubtitleWordTimingUnit.values.where((candidate) => candidate.name == unitName);
-      if (unit.isEmpty) throw const FormatException('Subtitle revision timing unit is invalid.');
+      if (unit.isEmpty) throw FormatException(t.videoControls.subtitleAiControls.revisionTimingUnitInvalid);
       final cueIndexValue = cueIndex as int?;
       final cueIdValue = cueId as String?;
       final indexedCue = cueIndexValue == null ? null : cuesByIndex[cueIndexValue];
       final identifiedCue = cueIdValue == null ? null : cuesById[cueIdValue];
       if ((cueIndex != null && indexedCue == null) || (cueId != null && identifiedCue == null)) {
-        throw const FormatException('Subtitle revision word timing refers to a missing cue.');
+        throw FormatException(t.videoControls.subtitleAiControls.revisionWordTimingCueMissing);
       }
       if (cueIdValue != null && indexedCue != null && indexedCue.stableId != cueIdValue) {
-        throw const FormatException('Subtitle revision word timing refers to a different cue.');
+        throw FormatException(t.videoControls.subtitleAiControls.revisionWordTimingCueDifferent);
       }
       final linkedCue = identifiedCue ?? indexedCue;
       wordTimings.add(
@@ -325,7 +327,7 @@ final class SubtitleRevisionDraft {
 
   static SubtitleRevisionDraft fromJson(Object? value) {
     if (value is! Map<String, dynamic> || value['schema'] != 'plezyng.subtitle-revision-draft.v2') {
-      throw const FormatException('Unsupported subtitle review draft.');
+      throw FormatException(t.videoControls.subtitleAiControls.reviewDraftUnsupported);
     }
     final sourceFingerprint = value['sourceFingerprint'];
     final savedAt = DateTime.tryParse(value['savedAt'] as String? ?? '');
@@ -346,28 +348,28 @@ final class SubtitleRevisionDraft {
         (sourceRevision != null && sourceRevision.cues.length != baseRevision.cues.length) ||
         SubtitleRevisionService.reviewFingerprint(baseRevision.cues, sourceCues: sourceRevision?.cues) !=
             sourceFingerprint) {
-      throw const FormatException('Subtitle review draft metadata is invalid.');
+      throw FormatException(t.videoControls.subtitleAiControls.reviewDraftMetadataInvalid);
     }
     for (var index = 0; index < baseRevision.cues.length; index++) {
       final baseCue = baseRevision.cues[index];
       if (revision.cues[index].stableId != baseCue.stableId || revision.cues[index].index != baseCue.index) {
-        throw const FormatException('Subtitle review draft changed cue identity or order.');
+        throw FormatException(t.videoControls.subtitleAiControls.reviewDraftCueIdentityOrOrderChanged);
       }
     }
     final undoHistory = <(int, SubtitleCue)>[];
     for (final rawEntry in rawUndoHistory) {
       if (rawEntry is! Map<String, dynamic>) {
-        throw const FormatException('Subtitle review draft undo entry is invalid.');
+        throw FormatException(t.videoControls.subtitleAiControls.reviewDraftUndoEntryInvalid);
       }
       final cuePosition = rawEntry['cuePosition'];
       final rawCue = rawEntry['cue'];
       if (cuePosition is! int || cuePosition < 0 || cuePosition >= revision.cues.length || rawCue is! Map) {
-        throw const FormatException('Subtitle review draft undo position is invalid.');
+        throw FormatException(t.videoControls.subtitleAiControls.reviewDraftUndoPositionInvalid);
       }
       final cue = _subtitleDraftCueFromJson(rawCue.cast<String, dynamic>());
       final currentCue = revision.cues[cuePosition];
       if (cue.stableId != currentCue.stableId || cue.index != currentCue.index) {
-        throw const FormatException('Subtitle review draft undo cue does not match its stable identity.');
+        throw FormatException(t.videoControls.subtitleAiControls.reviewDraftUndoCueMismatch);
       }
       undoHistory.add((cuePosition, cue));
     }
@@ -405,7 +407,7 @@ SubtitleCue _subtitleDraftCueFromJson(Map<String, dynamic> value) {
       text is! String ||
       text.isEmpty ||
       text.length > SubtitleRetimer.maximumInputBytes) {
-    throw const FormatException('Subtitle review draft cue is invalid.');
+    throw FormatException(t.videoControls.subtitleAiControls.reviewDraftCueInvalid);
   }
   return SubtitleCue(index: index, startMs: startMs, endMs: endMs, text: text, cueId: cueId);
 }
@@ -507,7 +509,7 @@ abstract final class SubtitleRevisionService {
   }) async {
     late SubtitleRevision revision;
     await _exclusive(() async {
-      if (isCurrent?.call() == false) throw StateError('Subtitle revision owner changed.');
+      if (isCurrent?.call() == false) throw StateError(t.videoControls.subtitleAiControls.revisionOwnerChanged);
       if (identity.profileId.trim().isEmpty ||
           identity.serverId.trim().isEmpty ||
           identity.ratingKey.trim().isEmpty ||
@@ -520,7 +522,7 @@ abstract final class SubtitleRevisionService {
           cues.isEmpty ||
           cues.length > SubtitleRetimer.maximumCueCount ||
           wordTimings.length > 250000) {
-        throw const FormatException('Subtitle revision exceeds the supported metadata or cue bound.');
+        throw FormatException(t.videoControls.subtitleAiControls.revisionBoundsExceeded);
       }
       final cuesByIndex = <int, SubtitleCue>{};
       final cuesById = <String, SubtitleCue>{};
@@ -533,7 +535,7 @@ abstract final class SubtitleRevisionService {
             !_stableSubtitleCueIdPattern.hasMatch(cue.stableId) ||
             cuesByIndex.containsKey(cue.index) ||
             cuesById.containsKey(cue.stableId)) {
-          throw const FormatException('Subtitle revision contains an invalid cue.');
+          throw FormatException(t.videoControls.subtitleAiControls.revisionContainsInvalidCue);
         }
         cuesByIndex[cue.index] = cue;
         cuesById[cue.stableId] = cue;
@@ -549,12 +551,12 @@ abstract final class SubtitleRevisionService {
             timing.confidence > 1 ||
             (timing.cueIndex != null && !cuesByIndex.containsKey(timing.cueIndex!)) ||
             (timing.cueId != null && !cuesById.containsKey(timing.cueId!))) {
-          throw const FormatException('Subtitle revision contains an invalid word timing.');
+          throw FormatException(t.videoControls.subtitleAiControls.revisionContainsInvalidWordTiming);
         }
         final indexedCue = timing.cueIndex == null ? null : cuesByIndex[timing.cueIndex!];
         final identifiedCue = timing.cueId == null ? null : cuesById[timing.cueId!];
         if (indexedCue != null && identifiedCue != null && indexedCue.stableId != identifiedCue.stableId) {
-          throw const FormatException('Subtitle revision word timing refers to different cues.');
+          throw FormatException(t.videoControls.subtitleAiControls.revisionWordTimingDifferentCues);
         }
         final linkedCue = identifiedCue ?? indexedCue;
         savedWordTimings.add(
@@ -583,12 +585,12 @@ abstract final class SubtitleRevisionService {
       );
       final bytes = utf8.encode(jsonEncode(revision.toJson()));
       if (bytes.length > maximumRevisionBytes) {
-        throw const FormatException('This reviewed result is too large for local revision history.');
+        throw FormatException(t.videoControls.subtitleAiControls.revisionTooLargeForHistory);
       }
       final temporary = File(p.join(directory.path, '.tmp-$id'));
       try {
         await temporary.writeAsBytes(bytes, flush: true);
-        if (isCurrent?.call() == false) throw StateError('Subtitle revision owner changed.');
+        if (isCurrent?.call() == false) throw StateError(t.videoControls.subtitleAiControls.revisionOwnerChanged);
         await temporary.rename(target.path);
         await _writeItemMetadata(
           directory,
@@ -618,7 +620,7 @@ abstract final class SubtitleRevisionService {
       final validated = SubtitleRevisionDraft.fromJson(draft.toJson());
       final bytes = utf8.encode(jsonEncode(validated.toJson()));
       if (bytes.length > maximumRevisionBytes) {
-        throw const FormatException('This in-progress subtitle review exceeds the 8 MiB draft limit.');
+        throw FormatException(t.videoControls.subtitleAiControls.reviewDraftTooLarge);
       }
       final directory = await _directoryFor(identity);
       final target = File(p.join(directory.path, _draftName));
@@ -641,7 +643,7 @@ abstract final class SubtitleRevisionService {
     try {
       final length = await file.length();
       if (length <= 0 || length > maximumRevisionBytes) {
-        throw const FormatException('Subtitle review draft exceeds its storage limit.');
+        throw FormatException(t.videoControls.subtitleAiControls.reviewDraftStorageLimit);
       }
       return SubtitleRevisionDraft.fromJson(jsonDecode(await file.readAsString()));
     } catch (_) {
@@ -675,7 +677,7 @@ abstract final class SubtitleRevisionService {
         final decoded = jsonDecode(await file.readAsString());
         final revision = SubtitleRevision.fromJson(decoded);
         final expected = p.basenameWithoutExtension(file.path);
-        if (revision.id != expected) throw const FormatException('Revision filename does not match its record.');
+        if (revision.id != expected) throw FormatException(t.videoControls.subtitleAiControls.revisionFilenameMismatch);
         output.add(revision);
         totalBytes += length;
       } catch (_) {
@@ -822,7 +824,7 @@ abstract final class SubtitleRevisionService {
     await _writeTail;
     if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(transcript.storageKey) ||
         !RegExp(r'^\d+_[0-9a-f]+$').hasMatch(transcript.transcriptId)) {
-      throw const FormatException('Saved transcript identity is invalid.');
+      throw FormatException(t.videoControls.subtitleAiControls.savedTranscriptIdentityInvalid);
     }
     final directory = Directory(p.join((await _rootDirectory()).path, transcript.storageKey));
     final file = File(p.join(directory.path, '${transcript.transcriptId}.json'));
@@ -843,7 +845,7 @@ abstract final class SubtitleRevisionService {
 
   static Future<void> deleteRevision(SubtitleRevisionIdentity identity, String id) async {
     if (!RegExp(r'^\d+_[0-9a-f]+$').hasMatch(id)) {
-      throw const FormatException('Subtitle revision identifier is invalid.');
+      throw FormatException(t.videoControls.subtitleAiControls.revisionIdentifierInvalid);
     }
     await _exclusive(() async {
       final directory = Directory(p.join((await _rootDirectory()).path, identity.storageKey));
@@ -870,7 +872,7 @@ abstract final class SubtitleRevisionService {
       try {
         final revision = SubtitleRevision.fromJson(jsonDecode(await file.readAsString()));
         if (revision.id != p.basenameWithoutExtension(file.path)) {
-          throw const FormatException('Revision filename does not match its record.');
+          throw FormatException(t.videoControls.subtitleAiControls.revisionFilenameMismatch);
         }
         if (_isCapturedPlaybackTranscript(revision.operation) && revision.cues.length >= 3) {
           pointers.add(_TranscriptPointer.fromRevision(revision));

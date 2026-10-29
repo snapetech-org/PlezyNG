@@ -224,10 +224,13 @@ def stereo_evidence(folder, job, events):
     """Measure the stereo rendering of the selected audio, never physical origin.
 
     A classifier observes a mixed signal; energy balance is not event separation
-    or a localization estimate. Require repeated same-side non-silent windows.
+    or a localization estimate. Delay/correlation also describe the encoded mix,
+    not a physical source direction. Keep both event and window work bounded.
     """
     from worker import FORMATS
     import numpy as np
+    maximum_events, maximum_windows, maximum_windows_per_event = 128, 1024, 8
+    total_windows = 0
     target = folder / 'sound_stereo.wav'
     command = [os.environ.get('PLEZY_FFMPEG', 'ffmpeg'), '-nostdin', '-hide_banner', '-loglevel', 'error', '-y',
         '-protocol_whitelist', 'file,pipe', '-format_whitelist', FORMATS,
@@ -240,24 +243,56 @@ def stereo_evidence(folder, job, events):
         with wave.open(str(target), 'rb') as stream:
             if stream.getnchannels() != 2 or stream.getsampwidth() != 2 or stream.getframerate() != 16000 or stream.getnframes() > 3600 * 16000:
                 raise ValueError('stereo_evidence_duration_or_layout')
-            for event in events:
-                balances = []
+            for event_number, event in enumerate(events):
+                if event_number >= maximum_events:
+                    event['stereoEvidence'] = {'status': 'event-budget-limit', 'eventLocalized': False,
+                        'physicalDirectionDegrees': None, 'qualification': 'unverified'}
+                    continue
+                balances, lags, correlations = [], [], []
+                event_windows = 0
+                window_limit = min(maximum_windows_per_event, maximum_windows - total_windows)
                 for ms in range(event['startMs'], event['endMs'], 500):
+                    if event_windows >= window_limit: break
                     frame = ms * 16
                     if frame >= stream.getnframes(): break
                     stream.setpos(frame)
                     data = np.frombuffer(stream.readframes(min(8000, (event['endMs'] - ms) * 16)), dtype='<i2').reshape(-1, 2).astype(np.float64) / 32768
                     if len(data) < 1600: continue
+                    event_windows += 1
+                    total_windows += 1
                     power = np.mean(data * data, axis=0)
                     if max(power) < 1e-6: continue
                     balances.append(10 * math.log10((float(power[0]) + 1e-12) / (float(power[1]) + 1e-12)))
-                if len(balances) < 4: continue
-                left = sum(value >= 6 for value in balances) / len(balances)
-                right = sum(value <= -6 for value in balances) / len(balances)
-                side = 'left' if left >= .8 else 'right' if right >= .8 else 'indeterminate'
+                    # A centered 128 ms sample bounds the local delay estimate.
+                    # Positive lag means the left channel trails the right.
+                    sample_start = max(0, (len(data) - 2048) // 2)
+                    sample = data[sample_start:sample_start + 2048]
+                    if len(sample) >= 1024:
+                        left, right = sample[:, 0] - np.mean(sample[:, 0]), sample[:, 1] - np.mean(sample[:, 1])
+                        best_lag, best_correlation = 0, 0.0
+                        for lag in range(-16, 17):
+                            if lag > 0: a, b = left[lag:], right[:-lag]
+                            elif lag < 0: a, b = left[:lag], right[-lag:]
+                            else: a, b = left, right
+                            denominator = math.sqrt(float(np.dot(a, a)) * float(np.dot(b, b)))
+                            if denominator < 1e-8: continue
+                            value = float(np.dot(a, b)) / denominator
+                            if abs(value) > abs(best_correlation) or abs(value) == abs(best_correlation) and abs(lag) < abs(best_lag):
+                                best_lag, best_correlation = lag, value
+                        if abs(best_correlation) >= .5:
+                            lags.append(best_lag)
+                            correlations.append(abs(best_correlation))
+                left = sum(value >= 6 for value in balances) / len(balances) if balances else 0
+                right = sum(value <= -6 for value in balances) / len(balances) if balances else 0
+                side = 'left' if len(balances) >= 4 and left >= .8 else 'right' if len(balances) >= 4 and right >= .8 else 'indeterminate'
                 event['stereoEvidence'] = {'rendering': 'ffmpeg-stereo-downmix', 'halfSecondWindows': len(balances),
-                    'medianLeftMinusRightDb': round(float(np.median(balances)), 2), 'mixSide': side,
-                    'eventLocalized': False, 'qualification': 'unverified'}
+                    'medianLeftMinusRightDb': round(float(np.median(balances)), 2) if balances else None, 'mixSide': side,
+                    'interchannelLagSampleRateHz': 16000,
+                    'medianInterchannelLagSamples': round(float(np.median(lags)), 2) if len(lags) >= 4 else None,
+                    'medianAbsoluteInterchannelCorrelation': round(float(np.median(correlations)), 3) if len(correlations) >= 4 else None,
+                    'correlationWindows': len(lags), 'positiveLagMeansLeftTrailsRight': True,
+                    'physicalDirectionDegrees': None, 'eventLocalized': False, 'qualification': 'unverified',
+                    'windowBudgetReached': total_windows >= maximum_windows}
     finally: target.unlink(missing_ok=True)
 
 
@@ -294,7 +329,7 @@ def sound_events(folder, job, audio, device, progress, recognize):
     return {'cues': cues, 'wordTimings': [], 'language': 'en', 'durationMs': round(len(audio) / 16),
         'model': 'audio-classification ' + path.name, 'soundEvidence': events, 'warnings': [
             'Experimental sound-event candidates require two overlapping windows at score ≥0.8. Scores are not calibrated accuracy.',
-            'These are separate from dialogue. Optional stereo evidence describes the complete downmixed audio, not the event’s physical direction or isolated source. Stable 6 dB side dominance in 80% of at least four windows is heuristic, not localization accuracy.']}
+            'These are separate from dialogue. Optional stereo evidence describes the complete downmixed audio, not an isolated event or physical direction. Mix-side weighting requires 6 dB dominance in 80% of at least four windows; delay/correlation uses centered 128 ms samples and requires four correlated windows. Both are bounded heuristics, not localization accuracy.']}
 
 
 def extract_text(folder, job, progress):

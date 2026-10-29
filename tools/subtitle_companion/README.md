@@ -341,10 +341,16 @@ The Flutter client can stage
 complete VOD files through its source-owned gateway without sending playback
 URLs or credentials. Limits remain 1 GiB / one hour; playlists require a decoder.
 
-`soundStereoEvidence: true` on a sound-event job requests repeated stereo energy
-measurements. `soundEvidence` records downmix method, window count, median L/R
-dB difference and an explicit `eventLocalized: false`. This is not physical
-sound localization. The Python SDK checks support before using either extension.
+`soundStereoEvidence: true` on a sound-event job requests bounded evidence from
+the rendered stereo mix. For at most 128 events and 1024 half-second windows,
+`soundEvidence` records L/R energy balance plus centered 128 ms interchannel
+correlation samples with lags limited to ±1 ms. Positive lag means the left
+channel trails the right. The mix-side label requires at least four windows with
+6 dB side dominance in 80%; a lag estimate requires four correlated windows.
+Results explicitly leave `eventLocalized` false and physical direction null.
+These measures describe the full downmix, not an isolated source or a room
+position, and are uncalibrated. The Python SDK checks support before using this
+extension.
 
 ### Sampled temporal scene evidence
 

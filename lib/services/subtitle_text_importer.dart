@@ -25,18 +25,18 @@ abstract final class SubtitleTextImporter {
 
   static Future<SubtitleTextImport> parseAsync(List<int> bytes, String extension, {
     String encoding = 'unicode', double? framesPerSecond, int finalCueDurationMs = 2000, String? samiClass,
-    int sccChannel = 1, bool sccNtsc = true, int sccClockOriginMs = 0,
-  }) => compute(_parseRequest, (bytes, extension, encoding, framesPerSecond, finalCueDurationMs, samiClass, sccChannel, sccNtsc, sccClockOriginMs));
+    int sccChannel = 1, bool sccNtsc = true, int sccClockOriginMs = 0, Map<String, String>? localizedMessages,
+  }) => compute(_parseRequest, (bytes, extension, encoding, framesPerSecond, finalCueDurationMs, samiClass, sccChannel, sccNtsc, sccClockOriginMs, localizedMessages));
 
-  static SubtitleTextImport _parseRequest((List<int>, String, String, double?, int, String?, int, bool, int) request) => parse(
+  static SubtitleTextImport _parseRequest((List<int>, String, String, double?, int, String?, int, bool, int, Map<String, String>?) request) => parse(
     request.$1, request.$2, encoding: request.$3, framesPerSecond: request.$4,
     finalCueDurationMs: request.$5, samiClass: request.$6,
-    sccChannel: request.$7, sccNtsc: request.$8, sccClockOriginMs: request.$9,
+    sccChannel: request.$7, sccNtsc: request.$8, sccClockOriginMs: request.$9, localizedMessages: request.$10,
   );
 
   static SubtitleTextImport parse(List<int> bytes, String extension, {
     String encoding = 'unicode', double? framesPerSecond, int finalCueDurationMs = 2000, String? samiClass,
-    int sccChannel = 1, bool sccNtsc = true, int sccClockOriginMs = 0,
+    int sccChannel = 1, bool sccNtsc = true, int sccClockOriginMs = 0, Map<String, String>? localizedMessages,
   }) {
     final text = SubtitleTextCodec.decode(bytes, encoding: encoding);
     if (text.contains('\u0000') || utf8.encode(text).length > SubtitleRetimer.maximumInputBytes) {
@@ -67,7 +67,7 @@ abstract final class SubtitleTextImporter {
       warnings.add('TTML/IMSC text and timed spans are flattened to SRT. Regions, fonts, ruby, styling and writing modes stay only in the original; image profiles and non-media clocks are refused.');
     } else if (format == '.scc') {
       SubtitleSccDecoder.decode(text, add, warnings, channel: sccChannel, ntsc: sccNtsc,
-        clockOriginMs: sccClockOriginMs, finalDurationMs: finalCueDurationMs);
+        clockOriginMs: sccClockOriginMs, finalDurationMs: finalCueDurationMs, messages: localizedMessages);
     } else if (format == '.sub') {
       _microDvd(text, framesPerSecond, add, warnings);
     } else if (format == '.smi' || format == '.sami') {

@@ -6,36 +6,43 @@ import 'subtitle_retimer.dart';
 /// Explicit SCC-to-text derivative. Display memory changes become timed text
 /// snapshots; the original remains the source for native 608 layout/styles.
 abstract final class SubtitleSccDecoder {
+  static String _message(Map<String, String>? messages, String key, String fallback, [Map<String, Object?> values = const {}]) {
+    var result = messages?[key] ?? fallback;
+    for (final entry in values.entries) { result = result.replaceAll('{${entry.key}}', '${entry.value}'); }
+    return result;
+  }
+
   static void decode(String text, void Function(int, int, String) add, List<String> warnings, {
     required int channel, required bool ntsc, required int clockOriginMs, required int finalDurationMs,
+    Map<String, String>? messages,
   }) {
     if (channel < 1 || channel > 2 || clockOriginMs < 0 || clockOriginMs > 86400000) {
-      throw const FormatException('Choose SCC channel 1 or 2 and a clock origin from 0 to 86400000 ms.');
+      throw FormatException(_message(messages, 'subtitleImportSccChannelRangeError', 'Choose SCC channel 1 or 2 and a clock origin from 0 to 86400000 ms.'));
     }
     final lines = const LineSplitter().convert(text);
     var header = false, packets = 0, previousFrame = -1, lastMs = 0;
     bool? dropFrame;
-    final decoder = _SccChannel(channel, add);
+    final decoder = _SccChannel(channel, add, messages);
     for (var index = 0; index < lines.length; index++) {
       final line = lines[index].trim();
       if (line.isEmpty) continue;
       if (!header) {
-        if (line != 'Scenarist_SCC V1.0') throw const FormatException('Missing Scenarist_SCC V1.0 header.');
+        if (line != 'Scenarist_SCC V1.0') throw FormatException(_message(messages, 'subtitleImportSccMissingHeaderError', 'Missing Scenarist_SCC V1.0 header.'));
         header = true; continue;
       }
-      if (line.length > 32768) throw const FormatException('SCC line exceeds the packet bound.');
+      if (line.length > 32768) throw FormatException(_message(messages, 'subtitleImportSccLineLimitError', 'SCC line exceeds the 32768-character packet bound.'));
       final match = RegExp(r'^([0-2]\d):([0-5]\d):([0-5]\d)([:;])([0-2]\d)\s+([0-9a-fA-F]{4}(?:\s+[0-9a-fA-F]{4})*)$').firstMatch(line);
-      if (match == null) throw FormatException('Malformed SCC timecode or byte pairs at line ${index + 1}.');
+      if (match == null) throw FormatException(_message(messages, 'subtitleImportSccMalformedLine', 'Malformed SCC timecode or byte pairs at line {line}.', {'line': index + 1}));
       final hours = int.parse(match[1]!), minutes = int.parse(match[2]!), seconds = int.parse(match[3]!), frames = int.parse(match[5]!);
       final drop = match[4] == ';';
       if (hours > 23 || drop && (!ntsc || minutes % 10 != 0 && seconds == 0 && frames < 2) || dropFrame != null && dropFrame != drop) {
-        throw const FormatException('Invalid/mixed SCC drop-frame clock; semicolon timecode requires 30000/1001 fps.');
+        throw FormatException(_message(messages, 'subtitleImportSccDropFrameError', 'Invalid or mixed SCC drop-frame clock; semicolon timecode requires 30000/1001 fps.'));
       }
       dropFrame ??= drop;
       final totalMinutes = hours * 60 + minutes;
       var frame = ((hours * 3600 + minutes * 60 + seconds) * 30 + frames) - (drop ? 2 * (totalMinutes - totalMinutes ~/ 10) : 0);
       for (final pair in match[6]!.split(RegExp(r'\s+'))) {
-        if (++packets > 500000 || frame <= previousFrame) throw const FormatException('SCC packets overlap, run backwards or exceed 500000 pairs.');
+        if (++packets > 500000 || frame <= previousFrame) throw FormatException(_message(messages, 'subtitleImportSccPacketOrderError', 'SCC packets overlap, run backwards or exceed 500000 pairs.'));
         final raw = int.parse(pair, radix: 16), a = raw >> 8, b = raw & 255;
         bool parity(int byte) {
           if (byte == 0) return true; // Explicit zero padding has no text value.
@@ -43,21 +50,22 @@ abstract final class SubtitleSccDecoder {
           for (var bit = 0; bit < 8; bit++) { ones += (byte >> bit) & 1; }
           return ones.isOdd;
         }
-        if (!parity(a) || !parity(b)) throw FormatException('SCC odd-parity check failed at line ${index + 1}.');
+        if (!parity(a) || !parity(b)) throw FormatException(_message(messages, 'subtitleImportSccParityError', 'SCC odd-parity check failed at line {line}.', {'line': index + 1}));
         lastMs = (frame * (ntsc ? 1001000 : 1000000) / 30000).round() - clockOriginMs;
-        if (lastMs > SubtitleRetimer.maximumTimeMs) throw const FormatException('SCC exceeds the supported media timeline. Set its explicit clock origin.');
+        if (lastMs > SubtitleRetimer.maximumTimeMs) throw FormatException(_message(messages, 'subtitleImportSccTimelineError', 'SCC exceeds the supported media timeline. Set its explicit clock origin.'));
         decoder.accept(a & 127, b & 127, lastMs);
         previousFrame = frame++;
       }
     }
-    if (!header || packets == 0) throw const FormatException('SCC has no caption packets.');
+    if (!header || packets == 0) throw FormatException(_message(messages, 'subtitleImportSccNoPacketsError', 'SCC has no caption packets.'));
     decoder.finish(math.min(SubtitleRetimer.maximumTimeMs, lastMs + finalDurationMs));
-    warnings.add('SCC channel $channel in the supplied field; ${ntsc ? '30000/1001' : '30'} fps, '
-      '${dropFrame == true ? 'drop-frame' : 'non-drop-frame'} labels, clock origin $clockOriginMs ms. Byte pairs advance one frame each; parity is checked.');
-    warnings.add('608 pop-on memory swaps, paint-on updates and 2/3/4-row roll-up become separate text snapshots. '
-      'Screen positions, empty rows, colors, underline, italics, flash and background effects are flattened. '
-      'Other fields, XDS/TEXT services and CEA-708 need their native decoder.');
-    if (decoder.hadOpenTail) warnings.add('The final visible SCC screen has no clear command; it uses the selected $finalDurationMs ms tail after the last packet.');
+    warnings.add(_message(messages, 'subtitleImportSccDecodedSummary', 'SCC channel {channel} in the supplied field; {fps} fps, {frameType} labels, clock origin {clockOrigin} ms. Byte pairs advance one frame each; parity is checked.', {
+      'channel': channel, 'fps': ntsc ? '30000/1001' : '30',
+      'frameType': _message(messages, dropFrame == true ? 'subtitleImportSccDropFrameLabel' : 'subtitleImportSccNonDropFrameLabel', dropFrame == true ? 'drop-frame' : 'non-drop-frame'),
+      'clockOrigin': clockOriginMs,
+    }));
+    warnings.add(_message(messages, 'subtitleImportSccFlattenedWarning', '608 pop-on memory swaps, paint-on updates and 2/3/4-row roll-up become separate text snapshots. Screen positions, empty rows, colors, underline, italics, flash and background effects are flattened. Other fields, XDS/TEXT services and CEA-708 need their native decoder.'));
+    if (decoder.hadOpenTail) warnings.add(_message(messages, 'subtitleImportSccOpenTailWarning', 'The final visible SCC screen has no clear command; it uses the selected {duration} ms tail after the last packet.', {'duration': finalDurationMs}));
   }
 }
 
@@ -68,9 +76,10 @@ class _SccMemory {
 }
 
 class _SccChannel {
-  _SccChannel(this.selected, this.add);
+  _SccChannel(this.selected, this.add, this._messages);
   final int selected;
   final void Function(int, int, String) add;
+  final Map<String, String>? _messages;
   _SccMemory _display = _SccMemory(), _loading = _SccMemory();
   int _channel = 1, _rollRows = 2;
   String _mode = 'unknown', _visible = '';
@@ -89,7 +98,7 @@ class _SccChannel {
     0x7b: 'ç', 0x7c: '÷', 0x7d: 'Ñ', 0x7e: 'ñ', 0x7f: '■'};
 
   void _write(String character) {
-    if (_column >= 32) throw const FormatException('SCC writes beyond the 32-column caption grid.');
+    if (_column >= 32) throw FormatException(_message(messages, 'subtitleImportSccColumnLimitError', 'SCC writes beyond the 32-column caption grid.'));
     _writing.rows[_row][_column++] = character;
   }
   void _backspace() { if (_column > 0) _writing.rows[_row][--_column] = ' '; }
@@ -107,14 +116,14 @@ class _SccChannel {
     if (_visible.isEmpty || until <= math.max(0, _since)) return;
     final payload = const HtmlEscape(HtmlEscapeMode.element).convert(_visible);
     _bytes += utf8.encode(payload).length;
-    if (_bytes > SubtitleRetimer.maximumInputBytes) throw const FormatException('SCC display snapshots exceed 5 MiB.');
+    if (_bytes > SubtitleRetimer.maximumInputBytes) throw FormatException(SubtitleSccDecoder._message(_messages, 'subtitleImportSccSnapshotLimitError', 'SCC display snapshots exceed 5 MiB.'));
     add(math.max(0, _since), until, payload);
   }
   void finish(int until) { hadOpenTail = _visible.isNotEmpty; _emit(until); }
 
   void accept(int a, int b, int at) {
     if (a == 0 && b == 0) return;
-    if (a > 0 && a < 0x10) throw const FormatException('XDS/non-caption data is not supported by this SCC text conversion.');
+    if (a > 0 && a < 0x10) throw FormatException(SubtitleSccDecoder._message(_messages, 'subtitleImportSccXdsUnsupportedError', 'XDS or other non-caption data is not supported by this SCC text conversion.'));
     final isControl = (a & 0xf6) == 0x14 && b >= 0x20 && b <= 0x2f;
     if (isControl) {
       // The channel bit is meaningful on a CEA-608 control pair. PAC/address
@@ -143,7 +152,7 @@ class _SccChannel {
         case 0x28: break; // Flash styling stays in the original.
         case 0x29: _mode = 'paint';
         case 0x2a:
-        case 0x2b: throw const FormatException('SCC TEXT service requires a native caption decoder.');
+        case 0x2b: throw FormatException(SubtitleSccDecoder._message(_messages, 'subtitleImportSccTextUnsupportedError', 'SCC TEXT service requires a native caption decoder.'));
         case 0x2c: _display = _SccMemory();
         case 0x2d:
           if (_mode == 'roll') {
@@ -158,7 +167,7 @@ class _SccChannel {
       return; // A partial file must select a caption mode before writing text.
     } else if (a >= 0x10 && a <= 0x1f && b >= 0x40 && b <= 0x7f) {
       final row = const [10, 0, 2, 11, 13, 4, 6, 8][a & 7] + ((b & 0x20) == 0 ? 0 : 1);
-      if (row >= 15) throw const FormatException('Invalid SCC row address.');
+      if (row >= 15) throw FormatException(SubtitleSccDecoder._message(_messages, 'subtitleImportSccRowAddressError', 'Invalid SCC row address.'));
       if (_mode == 'roll' && row != _row) {
         final moved = _SccMemory(), retained = math.min(_rollRows, math.min(row + 1, _row + 1));
         for (var n = 0; n < retained; n++) { moved.rows[row - n] = List.of(_display.rows[_row - n]); }
@@ -178,9 +187,9 @@ class _SccChannel {
     } else if (a >= 0x20 || a == 0) {
       if (a >= 0x20) _write(_basic[a] ?? String.fromCharCode(a));
       if (b >= 0x20) _write(_basic[b] ?? String.fromCharCode(b));
-      else if (b != 0) throw const FormatException('Invalid SCC second character.');
+      else if (b != 0) throw FormatException(SubtitleSccDecoder._message(_messages, 'subtitleImportSccSecondCharacterError', 'Invalid SCC second character.'));
     } else {
-      throw const FormatException('Unsupported SCC control pair.');
+      throw FormatException(SubtitleSccDecoder._message(_messages, 'subtitleImportSccControlPairError', 'Unsupported SCC control pair.'));
     }
     _publish(at);
   }

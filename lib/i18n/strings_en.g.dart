@@ -3499,6 +3499,69 @@ class Translations$videoControls$en {
 
 	/// en: 'Add language annotation'
 	String get subtitleLanguageAddAction => 'Add language annotation';
+	/// en: 'Choose SCC channel 1 or 2 and a clock origin from 0 to 86400000 ms.'
+	String get subtitleImportSccChannelRangeError => 'Choose SCC channel 1 or 2 and a clock origin from 0 to 86400000 ms.';
+
+	/// en: 'Missing Scenarist_SCC V1.0 header.'
+	String get subtitleImportSccMissingHeaderError => 'Missing Scenarist_SCC V1.0 header.';
+
+	/// en: 'SCC line exceeds the 32768-character packet bound.'
+	String get subtitleImportSccLineLimitError => 'SCC line exceeds the 32768-character packet bound.';
+
+	/// en: 'Malformed SCC timecode or byte pairs at line ${line}.'
+	String subtitleImportSccMalformedLine({required Object line}) => 'Malformed SCC timecode or byte pairs at line ${line}.';
+
+	/// en: 'Invalid or mixed SCC drop-frame clock; semicolon timecode requires 30000/1001 fps.'
+	String get subtitleImportSccDropFrameError => 'Invalid or mixed SCC drop-frame clock; semicolon timecode requires 30000/1001 fps.';
+
+	/// en: 'SCC packets overlap, run backwards or exceed 500000 pairs.'
+	String get subtitleImportSccPacketOrderError => 'SCC packets overlap, run backwards or exceed 500000 pairs.';
+
+	/// en: 'SCC odd-parity check failed at line ${line}.'
+	String subtitleImportSccParityError({required Object line}) => 'SCC odd-parity check failed at line ${line}.';
+
+	/// en: 'SCC exceeds the supported media timeline. Set its explicit clock origin.'
+	String get subtitleImportSccTimelineError => 'SCC exceeds the supported media timeline. Set its explicit clock origin.';
+
+	/// en: 'SCC has no caption packets.'
+	String get subtitleImportSccNoPacketsError => 'SCC has no caption packets.';
+
+	/// en: 'SCC writes beyond the 32-column caption grid.'
+	String get subtitleImportSccColumnLimitError => 'SCC writes beyond the 32-column caption grid.';
+
+	/// en: 'SCC display snapshots exceed 5 MiB.'
+	String get subtitleImportSccSnapshotLimitError => 'SCC display snapshots exceed 5 MiB.';
+
+	/// en: 'XDS or other non-caption data is not supported by this SCC text conversion.'
+	String get subtitleImportSccXdsUnsupportedError => 'XDS or other non-caption data is not supported by this SCC text conversion.';
+
+	/// en: 'SCC TEXT service requires a native caption decoder.'
+	String get subtitleImportSccTextUnsupportedError => 'SCC TEXT service requires a native caption decoder.';
+
+	/// en: 'Invalid SCC row address.'
+	String get subtitleImportSccRowAddressError => 'Invalid SCC row address.';
+
+	/// en: 'Invalid SCC second character.'
+	String get subtitleImportSccSecondCharacterError => 'Invalid SCC second character.';
+
+	/// en: 'Unsupported SCC control pair.'
+	String get subtitleImportSccControlPairError => 'Unsupported SCC control pair.';
+
+	/// en: 'SCC channel ${channel} in the supplied field; ${fps} fps, ${frameType} labels, clock origin ${clockOrigin} ms. Byte pairs advance one frame each; parity is checked.'
+	String subtitleImportSccDecodedSummary({required Object channel, required Object fps, required Object frameType, required Object clockOrigin}) => 'SCC channel ${channel} in the supplied field; ${fps} fps, ${frameType} labels, clock origin ${clockOrigin} ms. Byte pairs advance one frame each; parity is checked.';
+
+	/// en: '608 pop-on memory swaps, paint-on updates and 2/3/4-row roll-up become separate text snapshots. Screen positions, empty rows, colors, underline, italics, flash and background effects are flattened. Other fields, XDS/TEXT services and CEA-708 need their native decoder.'
+	String get subtitleImportSccFlattenedWarning => '608 pop-on memory swaps, paint-on updates and 2/3/4-row roll-up become separate text snapshots. Screen positions, empty rows, colors, underline, italics, flash and background effects are flattened. Other fields, XDS/TEXT services and CEA-708 need their native decoder.';
+
+	/// en: 'The final visible SCC screen has no clear command; it uses the selected ${duration} ms tail after the last packet.'
+	String subtitleImportSccOpenTailWarning({required Object duration}) => 'The final visible SCC screen has no clear command; it uses the selected ${duration} ms tail after the last packet.';
+
+	/// en: 'drop-frame'
+	String get subtitleImportSccDropFrameLabel => 'drop-frame';
+
+	/// en: 'non-drop-frame'
+	String get subtitleImportSccNonDropFrameLabel => 'non-drop-frame';
+
 }
 
 // Path: messages
@@ -20801,6 +20864,27 @@ extension on Translations {
 			'videoControls.subtitleImportTailRequired' => 'Enter the final cue duration in whole milliseconds.',
 			'videoControls.subtitleImportClockOriginRequired' => 'Enter the SCC clock origin in whole milliseconds.',
 			'videoControls.subtitleImportDecodeError' => 'This file could not be decoded. Check its format and encoding.',
+			'videoControls.subtitleImportSccChannelRangeError' => 'Choose SCC channel 1 or 2 and a clock origin from 0 to 86400000 ms.',
+			'videoControls.subtitleImportSccMissingHeaderError' => 'Missing Scenarist_SCC V1.0 header.',
+			'videoControls.subtitleImportSccLineLimitError' => 'SCC line exceeds the 32768-character packet bound.',
+			'videoControls.subtitleImportSccMalformedLine' => ({required Object line}) => 'Malformed SCC timecode or byte pairs at line ${line}.',
+			'videoControls.subtitleImportSccDropFrameError' => 'Invalid or mixed SCC drop-frame clock; semicolon timecode requires 30000/1001 fps.',
+			'videoControls.subtitleImportSccPacketOrderError' => 'SCC packets overlap, run backwards or exceed 500000 pairs.',
+			'videoControls.subtitleImportSccParityError' => ({required Object line}) => 'SCC odd-parity check failed at line ${line}.',
+			'videoControls.subtitleImportSccTimelineError' => 'SCC exceeds the supported media timeline. Set its explicit clock origin.',
+			'videoControls.subtitleImportSccNoPacketsError' => 'SCC has no caption packets.',
+			'videoControls.subtitleImportSccColumnLimitError' => 'SCC writes beyond the 32-column caption grid.',
+			'videoControls.subtitleImportSccSnapshotLimitError' => 'SCC display snapshots exceed 5 MiB.',
+			'videoControls.subtitleImportSccXdsUnsupportedError' => 'XDS or other non-caption data is not supported by this SCC text conversion.',
+			'videoControls.subtitleImportSccTextUnsupportedError' => 'SCC TEXT service requires a native caption decoder.',
+			'videoControls.subtitleImportSccRowAddressError' => 'Invalid SCC row address.',
+			'videoControls.subtitleImportSccSecondCharacterError' => 'Invalid SCC second character.',
+			'videoControls.subtitleImportSccControlPairError' => 'Unsupported SCC control pair.',
+			'videoControls.subtitleImportSccDecodedSummary' => ({required Object channel, required Object fps, required Object frameType, required Object clockOrigin}) => 'SCC channel ${channel} in the supplied field; ${fps} fps, ${frameType} labels, clock origin ${clockOrigin} ms. Byte pairs advance one frame each; parity is checked.',
+			'videoControls.subtitleImportSccFlattenedWarning' => '608 pop-on memory swaps, paint-on updates and 2/3/4-row roll-up become separate text snapshots. Screen positions, empty rows, colors, underline, italics, flash and background effects are flattened. Other fields, XDS/TEXT services and CEA-708 need their native decoder.',
+			'videoControls.subtitleImportSccOpenTailWarning' => ({required Object duration}) => 'The final visible SCC screen has no clear command; it uses the selected ${duration} ms tail after the last packet.',
+			'videoControls.subtitleImportSccDropFrameLabel' => 'drop-frame',
+			'videoControls.subtitleImportSccNonDropFrameLabel' => 'non-drop-frame',
 			'videoControls.subtitleLanguageAnnotateAction' => 'Annotate the language of selected words',
 			'videoControls.subtitleLanguageDialogTitle' => 'Language of selected words',
 			'videoControls.subtitleLanguageCodeLabel' => 'Language code',

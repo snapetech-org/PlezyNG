@@ -10,8 +10,14 @@ import 'package:flutter_test/flutter_test.dart';
 /// so a wait blocked behind a player handover expires here first and reports an
 /// empty observation rather than the timeout. Pass [describe] to attach the
 /// observed state to that failure.
-Future<void> pumpUntil(WidgetTester tester, bool Function() condition, {String Function()? describe}) async {
-  for (var i = 0; i < 200 && !condition(); i++) {
+Future<void> pumpUntil(
+  WidgetTester tester,
+  bool Function() condition, {
+  String Function()? describe,
+  Duration timeout = const Duration(seconds: 2),
+}) async {
+  final maxFrames = (timeout.inMilliseconds / 10).ceil();
+  for (var i = 0; i < maxFrames && !condition(); i++) {
     await tester.pump(const Duration(milliseconds: 10));
     if (!condition()) {
       await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 5)));

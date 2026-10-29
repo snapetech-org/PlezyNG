@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 - Cache the checksum-verified Flutter SDK in the Mac JIT user's local APFS cache with resumable parallel downloads.
+- Retry transient Flutter SDK setup failures on Windows x64 JIT runners.
+- Stabilize player startup assertions, install FFmpeg for unit tests, and retry transient Android Gradle fetch failures.
 - Fix Apple native configuration to use Boost headers from CMake's extracted source root.
 - Install GStreamer development packages for Linux native CI and set Git identity in codegen test clones.
 - Fix Tizen subtitle PCM capture compilation by importing the base64 decoder.

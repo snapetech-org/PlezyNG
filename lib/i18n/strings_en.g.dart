@@ -3279,6 +3279,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleFonts$en subtitleFonts = Translations$videoControls$subtitleFonts$en.internal(_root);
 	late final Translations$videoControls$subtitleOverlays$en subtitleOverlays = Translations$videoControls$subtitleOverlays$en.internal(_root);
 	late final Translations$videoControls$subtitleLive$en subtitleLive = Translations$videoControls$subtitleLive$en.internal(_root);
+	late final Translations$videoControls$subtitleResources$en subtitleResources = Translations$videoControls$subtitleResources$en.internal(_root);
 	late final Translations$videoControls$subtitleLyrics$en subtitleLyrics = Translations$videoControls$subtitleLyrics$en.internal(_root);
 	late final Translations$videoControls$subtitleJobs$en subtitleJobs = Translations$videoControls$subtitleJobs$en.internal(_root);
 	late final Translations$videoControls$subtitleRoles$en subtitleRoles = Translations$videoControls$subtitleRoles$en.internal(_root);
@@ -12817,6 +12818,108 @@ class Translations$videoControls$subtitleLive$en {
 	String get useAnchor => 'Use this program-time anchor';
 
 }
+// Path: videoControls.subtitleResources
+class Translations$videoControls$subtitleResources$en {
+	Translations$videoControls$subtitleResources$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Local subtitle resources'
+	String get title => 'Local subtitle resources';
+
+	/// en: 'One local speech model runs at a time. Live captions retain their model; stop them before starting another local model. Memory pressure or severe heat stops live inference at the next safe boundary and preserves completed cues. Playback settings are unchanged.'
+	String get description => 'One local speech model runs at a time. Live captions retain their model; stop them before starting another local model. Memory pressure or severe heat stops live inference at the next safe boundary and preserves completed cues. Playback settings are unchanged.';
+
+	/// en: 'Worker: ${state} · ${waiting} waiting'
+	String workerStatus({required Object state, required Object waiting}) => 'Worker: ${state} · ${waiting} waiting';
+
+	/// en: 'Resident live model: ${state}'
+	String residentModelStatus({required Object state}) => 'Resident live model: ${state}';
+
+	/// en: 'Active video players: ${count}'
+	String activeVideoPlayers({required Object count}) => 'Active video players: ${count}';
+
+	/// en: 'External power: ${state}'
+	String externalPowerStatus({required Object state}) => 'External power: ${state}';
+
+	/// en: 'Thermal tier: ${state}'
+	String thermalTierStatus({required Object state}) => 'Thermal tier: ${state}';
+
+	/// en: 'Process RSS: ${state}'
+	String processRssStatus({required Object state}) => 'Process RSS: ${state}';
+
+	/// en: 'running'
+	String get running => 'running';
+
+	/// en: 'idle'
+	String get idle => 'idle';
+
+	/// en: 'connected'
+	String get connected => 'connected';
+
+	/// en: 'disconnected'
+	String get disconnected => 'disconnected';
+
+	/// en: 'Some inference work is paused by the active resource policy.'
+	String get waitingPolicy => 'Some inference work is paused by the active resource policy.';
+
+	/// en: 'Waiting for the device to cool down (${tier}).'
+	String waitThermal({required Object tier}) => 'Waiting for the device to cool down (${tier}).';
+
+	/// en: 'The process is above the configured ${limit} MiB RSS limit.'
+	String waitProcessRss({required Object limit}) => 'The process is above the configured ${limit} MiB RSS limit.';
+
+	/// en: 'A live subtitle model is resident. Stop live captions to run another local model.'
+	String get waitResidentModel => 'A live subtitle model is resident. Stop live captions to run another local model.';
+
+	/// en: 'The live model is releasing resources.'
+	String get waitModelRelease => 'The live model is releasing resources.';
+
+	/// en: 'Waiting after an OS memory-pressure event.'
+	String get waitMemoryPressure => 'Waiting after an OS memory-pressure event.';
+
+	/// en: 'Waiting for lower device thermal pressure.'
+	String get waitModerateThermal => 'Waiting for lower device thermal pressure.';
+
+	/// en: 'Waiting while multiple video players are active.'
+	String get waitMultiview => 'Waiting while multiple video players are active.';
+
+	/// en: 'Read-ahead is waiting for confirmed external power.'
+	String get waitExternalPower => 'Read-ahead is waiting for confirmed external power.';
+
+	/// en: 'Read ahead only on external power'
+	String get readAheadChargingOnly => 'Read ahead only on external power';
+
+	/// en: 'An unknown power state waits until this option is turned off.'
+	String get readAheadChargingHelp => 'An unknown power state waits until this option is turned off.';
+
+	/// en: 'Pause queued work during multiview'
+	String get pauseForMultiview => 'Pause queued work during multiview';
+
+	/// en: 'Read-ahead and background jobs wait while more than one video player is active. Explicit foreground work remains available.'
+	String get pauseForMultiviewHelp => 'Read-ahead and background jobs wait while more than one video player is active. Explicit foreground work remains available.';
+
+	/// en: 'Process RSS admission limit (MiB)'
+	String get rssLimitLabel => 'Process RSS admission limit (MiB)';
+
+	/// en: '0 disables it; otherwise 256–65536. Applies to all local speech work.'
+	String get rssLimitHelp => '0 disables it; otherwise 256–65536. Applies to all local speech work.';
+
+	/// en: '${value} MiB'
+	String memoryMiB({required Object value}) => '${value} MiB';
+
+	/// en: 'RSS covers the app process and is sampled between operations. It is not free memory, GPU memory, or a hard allocation cap. Thermal reporting is available only through supported player bridges; unknown does not mean cool. These controls do not coordinate every shader, motion model or device-wide GPU allocation.'
+	String get resourceLimitsHelp => 'RSS covers the app process and is sampled between operations. It is not free memory, GPU memory, or a hard allocation cap. Thermal reporting is available only through supported player bridges; unknown does not mean cool. These controls do not coordinate every shader, motion model or device-wide GPU allocation.';
+
+	/// en: 'Could not save the local subtitle resource settings.'
+	String get saveFailed => 'Could not save the local subtitle resource settings.';
+
+	/// en: 'Enter 0 or a whole number from 256 to 65536 MiB.'
+	String get invalidRssLimit => 'Enter 0 or a whole number from 256 to 65536 MiB.';
+
+}
 // Path: videoControls.subtitleLyrics
 class Translations$videoControls$subtitleLyrics$en {
 	Translations$videoControls$subtitleLyrics$en.internal(this._root);
@@ -17061,6 +17164,37 @@ extension on Translations {
 			'videoControls.subtitleLive.invalidUtc' => 'Use an actual UTC date and time ending in Z.',
 			'videoControls.subtitleLive.playbackChanged' => 'Playback changed. Pause the frame and reopen this dialog.',
 			'videoControls.subtitleLive.useAnchor' => 'Use this program-time anchor',
+			'videoControls.subtitleResources.title' => 'Local subtitle resources',
+			'videoControls.subtitleResources.description' => 'One local speech model runs at a time. Live captions retain their model; stop them before starting another local model. Memory pressure or severe heat stops live inference at the next safe boundary and preserves completed cues. Playback settings are unchanged.',
+			'videoControls.subtitleResources.workerStatus' => ({required Object state, required Object waiting}) => 'Worker: ${state} · ${waiting} waiting',
+			'videoControls.subtitleResources.residentModelStatus' => ({required Object state}) => 'Resident live model: ${state}',
+			'videoControls.subtitleResources.activeVideoPlayers' => ({required Object count}) => 'Active video players: ${count}',
+			'videoControls.subtitleResources.externalPowerStatus' => ({required Object state}) => 'External power: ${state}',
+			'videoControls.subtitleResources.thermalTierStatus' => ({required Object state}) => 'Thermal tier: ${state}',
+			'videoControls.subtitleResources.processRssStatus' => ({required Object state}) => 'Process RSS: ${state}',
+			'videoControls.subtitleResources.running' => 'running',
+			'videoControls.subtitleResources.idle' => 'idle',
+			'videoControls.subtitleResources.connected' => 'connected',
+			'videoControls.subtitleResources.disconnected' => 'disconnected',
+			'videoControls.subtitleResources.waitingPolicy' => 'Some inference work is paused by the active resource policy.',
+			'videoControls.subtitleResources.waitThermal' => ({required Object tier}) => 'Waiting for the device to cool down (${tier}).',
+			'videoControls.subtitleResources.waitProcessRss' => ({required Object limit}) => 'The process is above the configured ${limit} MiB RSS limit.',
+			'videoControls.subtitleResources.waitResidentModel' => 'A live subtitle model is resident. Stop live captions to run another local model.',
+			'videoControls.subtitleResources.waitModelRelease' => 'The live model is releasing resources.',
+			'videoControls.subtitleResources.waitMemoryPressure' => 'Waiting after an OS memory-pressure event.',
+			'videoControls.subtitleResources.waitModerateThermal' => 'Waiting for lower device thermal pressure.',
+			'videoControls.subtitleResources.waitMultiview' => 'Waiting while multiple video players are active.',
+			'videoControls.subtitleResources.waitExternalPower' => 'Read-ahead is waiting for confirmed external power.',
+			'videoControls.subtitleResources.readAheadChargingOnly' => 'Read ahead only on external power',
+			'videoControls.subtitleResources.readAheadChargingHelp' => 'An unknown power state waits until this option is turned off.',
+			'videoControls.subtitleResources.pauseForMultiview' => 'Pause queued work during multiview',
+			'videoControls.subtitleResources.pauseForMultiviewHelp' => 'Read-ahead and background jobs wait while more than one video player is active. Explicit foreground work remains available.',
+			'videoControls.subtitleResources.rssLimitLabel' => 'Process RSS admission limit (MiB)',
+			'videoControls.subtitleResources.rssLimitHelp' => '0 disables it; otherwise 256–65536. Applies to all local speech work.',
+			'videoControls.subtitleResources.memoryMiB' => ({required Object value}) => '${value} MiB',
+			'videoControls.subtitleResources.resourceLimitsHelp' => 'RSS covers the app process and is sampled between operations. It is not free memory, GPU memory, or a hard allocation cap. Thermal reporting is available only through supported player bridges; unknown does not mean cool. These controls do not coordinate every shader, motion model or device-wide GPU allocation.',
+			'videoControls.subtitleResources.saveFailed' => 'Could not save the local subtitle resource settings.',
+			'videoControls.subtitleResources.invalidRssLimit' => 'Enter 0 or a whole number from 256 to 65536 MiB.',
 			'videoControls.subtitleLyrics.title' => 'Supply sung syllable groups',
 			'videoControls.subtitleLyrics.description' => 'Insert | between the groups you want timed, for example Hel|lo world. Keep every original character, space and punctuation mark. Unchanged lines keep word timing. The host proposes a group only when its characters align in both audio views.',
 			'videoControls.subtitleLyrics.cueLabel' => ({required Object cue}) => 'Cue ${cue}',

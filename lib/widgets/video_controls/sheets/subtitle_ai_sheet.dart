@@ -45,6 +45,8 @@ import 'subtitle_companion_jobs_dialog.dart';
 import 'subtitle_study_dialog.dart';
 import 'subtitle_overlay_dialog.dart';
 import '../../../services/subtitle_overlay_service.dart';
+import '../../../services/subtitle_analysis_source.dart';
+import '../../../services/subtitle_read_ahead_service.dart';
 import 'subtitle_import_dialog.dart';
 import 'subtitle_bitmap_review_dialog.dart';
 import 'subtitle_discovery_dialog.dart';
@@ -158,6 +160,7 @@ class SubtitleAiSheet extends StatefulWidget {
     this.revisionIdentity,
     this.isRevisionIdentityCurrent,
     this.onSaveToSource,
+    this.openAnalysisSource,
     this.seriesKey,
     this.selectedSubtitleBurnedIn = false,
   });
@@ -176,6 +179,7 @@ class SubtitleAiSheet extends StatefulWidget {
   final bool Function()? isRevisionIdentityCurrent;
   /// Persists and attaches a reviewed SRT to the active standalone source item.
   final SubtitleSourceSubtitleSaver? onSaveToSource;
+  final Future<SubtitleAnalysisSource> Function()? openAnalysisSource;
   final String? seriesKey;
   final bool selectedSubtitleBurnedIn;
 
@@ -1202,6 +1206,37 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       searchController.dispose();
     }
   }
+
+  Future<void> _preparePlaybackCaptions() => _run(() async {
+    final service = SubtitleReadAheadService.instance;
+    if (service.running) { await service.stop(); return; }
+    final input = TextEditingController(text: '0');
+    final ordinal = await showDialog<int>(context: context, builder: (context) => AlertDialog(
+      title: const Text('Prepare captions ahead of playback'),
+      content: Column(mainAxisSize: MainAxisSize.min, children: [
+        const Text('A separate local FFmpeg process reads the current source through its owning transport. '
+          'This may use additional bandwidth. It prepares about two minutes ahead and replaces app overlay 1. '
+          'Choose the audio stream in file order (0 is the first); native player track IDs may use a different numbering scheme.'),
+        TextField(controller: input, keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'Audio stream ordinal (0–63)')),
+      ]), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        FilledButton(onPressed: () { final value = int.tryParse(input.text); if (value != null && value >= 0 && value <= 63) Navigator.pop(context, value); },
+          child: const Text('Start local analysis'))]));
+    input.dispose();
+    if (ordinal == null || !mounted) return;
+    _requireCurrentOperationIdentity();
+    final profiles = context.read<ActiveProfileProvider>();
+    final profile = profiles.activeId, player = widget.player;
+    final generation = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
+    final audio = player.state.track.audio?.id;
+    final sourceCurrent = widget.isRevisionIdentityCurrent;
+    bool current() => profiles.activeId == profile && !player.disposed && sourceCurrent?.call() != false &&
+        (generation == null || (player as PlayerMediaSessionIdentity).mediaSessionGeneration == generation) &&
+        player.state.track.audio?.id == audio;
+    await service.start(player, open: widget.openAnalysisSource ?? () => SubtitleAnalysisSource.localPlayer(player, current),
+      isCurrent: current, audioOrdinal: ordinal, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
+      provider: _liveProvider);
+  });
 
   Future<void> _captureLivePlayback() => _run(() async {
     final player = widget.player;
@@ -3586,6 +3621,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           ]) FocusableListTile(leading: const AppIcon(Symbols.auto_awesome_rounded), title: Text(entry.$2),
             onTap: _busy || _revisionIdentity == null ? null : () => unawaited(_submitCompanion(entry.$1))),
           TextButton(onPressed: () => showSubtitleOverlayControls(context, widget.player), child: const Text('App overlay appearance and cover')),
+          if (localSpeech && SubtitleReadAheadService.available) AnimatedBuilder(
+            animation: SubtitleReadAheadService.instance, builder: (context, _) {
+              final service = SubtitleReadAheadService.instance;
+              return FocusableListTile(leading: const AppIcon(Symbols.subtitles_rounded),
+                title: Text(service.running ? 'Stop preparing playback captions' : 'Prepare playback captions ahead'),
+                subtitle: Text(service.status), onTap: _busy || service.busy && !service.running
+                    ? null : () => unawaited(_preparePlaybackCaptions()));
+            }),
           if (!localSpeech) const Padding(padding: EdgeInsets.symmetric(vertical: 8),
             child: Text('Local speech inference is unavailable in this build. Companion processing and text-based editing remain available.')),
           if (_playbackCaptureSupported) ...[

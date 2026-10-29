@@ -709,3 +709,21 @@ Repository links below are pinned to the audited commit except PRs and upstream 
 [W36]: https://ryzenai.docs.amd.com/en/latest/whisper_cpp.html
 [W37]: https://github.com/PaddlePaddle/PaddleOCR
 [W38]: https://pub.dev/packages/flutter_whisper_ggml
+
+## Desktop read-ahead decoder source update
+
+The subtitle sheet now starts/stops a separate desktop FFmpeg decoder with
+explicit audio-stream ordinal selection. It reads 34-second bounded WAV windows,
+prioritizes the playhead and prepares roughly two minutes ahead into app overlay
+1. Seek/media/audio/profile changes retire obsolete results; a bounded two-hour
+window cache supports nearby seeks. It yields while player PCM recognition owns
+the model and kills the FFmpeg process on stop. Completed captions remain a
+session overlay. There is no throughput or on-time guarantee on unmeasured hosts.
+
+Standalone source playback supplies a separate `SourceStreamGateway` lease, so
+renewable provider access and credentials remain under the existing transport.
+Local/cache files use file access. Library players can use exposed local paths;
+remote library URLs are refused until their owning transport supplies a lease.
+Stream-only/sample/live/capture sources are refused. Optional desktop FFmpeg
+must be installed; mobile/TV native analysis decoding remains open. No process,
+model, build, test, analyzer or CI was run during implementation.

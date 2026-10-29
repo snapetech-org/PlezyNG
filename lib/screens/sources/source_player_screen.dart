@@ -321,6 +321,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
         builder: (_) => SubtitleAiSheet(
           player: player,
           revisionIdentity: revisionIdentity,
+          openAnalysisSource: playback.openSubtitleAnalysisSource,
           isRevisionIdentityCurrent: revisionIdentity == null ? null : isRevisionIdentityCurrent,
           onSaveToSource: canSaveToSource
               ? (name, bytes, languageCode) => _saveSubtitleToSource(

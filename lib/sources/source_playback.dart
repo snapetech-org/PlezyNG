@@ -14,6 +14,7 @@ import '../services/media_control_router.dart';
 import '../services/media_controls_manager.dart';
 import '../services/playback_coordinator.dart';
 import '../services/settings_service.dart';
+import '../services/subtitle_analysis_source.dart';
 import '../services/track_selection_service.dart';
 import '../services/music/music_hardware_transport.dart';
 import '../services/player_sync_offsets.dart';
@@ -193,6 +194,40 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   }
   bool get isCapturePreview =>
       _fileIndex >= 0 && _fileIndex < files.length && _directPlayerAddresses.containsKey(files[_fileIndex].id);
+  /// Opens a separate, renewable analysis lease without reusing the audible
+  /// player's decoder or giving the inference process provider credentials.
+  Future<SubtitleAnalysisSource> openSubtitleAnalysisSource() async {
+    if (!_valid || _liveInput || isSamplePreview || isCapturePreview || files.isEmpty || player == null) {
+      throw const SourceException(SourceFailure.unsupported);
+    }
+    final native = player!, item = entry!, profile = _profile!;
+    final file = files[_fileIndex], index = _fileIndex, generation = _generation, epoch = _fileEpoch;
+    bool current() => _valid && player == native && entry == item && _profile == profile &&
+        _generation == generation && _fileEpoch == epoch && _fileIndex == index &&
+        index < files.length && files[index].fingerprint == file.fingerprint;
+    if (file.streamOnly || file.sampleOnly) throw const SourceException(SourceFailure.permission);
+    final gateway = SourceStreamGateway(valid: current);
+    try {
+      final cached = await sources.downloads.local(profile, item.sourceId, file);
+      final override = _localOverrides[file.id];
+      late final Uri uri;
+      if (override != null) {
+        if (override.scheme == 'file') { uri = override; }
+        else if (const {'http', 'https'}.contains(override.scheme)) {
+          uri = await gateway.registerUri(override, headers: _localOverrideHeaders[file.id] ?? const {});
+        } else { throw const SourceException(SourceFailure.unsupported); }
+      } else if (cached != null) { uri = cached.uri; }
+      else {
+        final adapter = sources.adapter(item.sourceId);
+        uri = adapter.source.kind == FileSourceKind.local
+            ? (await adapter.resolve(file)).uri : await gateway.register(adapter, file);
+      }
+      if (!current()) throw const SourceException(SourceFailure.cancelled);
+      return SubtitleAnalysisSource(uri: uri, identity: sourceDigest('$profile:${item.key}:${file.fingerprint}'),
+        isCurrent: current, close: gateway.close);
+    } catch (_) { await gateway.close(); rethrow; }
+  }
+
   bool get isRecordingStream => _streamRecordingPartial != null;
   bool get hasSelectedPersistentExternalSubtitle =>
       _isSelectedExternalSubtitlePath(player?.state.track.subtitle, _selectedExternalSubtitlePath);

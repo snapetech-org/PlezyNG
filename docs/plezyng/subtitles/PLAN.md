@@ -727,3 +727,16 @@ remote library URLs are refused until their owning transport supplies a lease.
 Stream-only/sample/live/capture sources are refused. Optional desktop FFmpeg
 must be installed; mobile/TV native analysis decoding remains open. No process,
 model, build, test, analyzer or CI was run during implementation.
+
+## Research evidence source update
+
+Companion tasks now cover independent ASR comparison with explicit alternative
+selection, five-minute window-local voice separation, repeated sound-event
+candidates, VAD/subtitle completeness diagnostics, and embedded text-stream
+extraction. Recognition can use explicit glossary terms as hotword hints.
+Burned-caption/sign OCR preserves a representative image per emitted cue;
+signs retain a normalized crop region for the app overlay. These are implemented
+adapters with explicit host model installation, not measured research outcomes.
+No benefit/accuracy/spatial-direction/speaker-identity claim is made. Model
+adaptation, audiovisual reasoning, synchronized dubbing, and automatic OCR-region
+detection remain separate work. Runtime and artifact qualification remain open.

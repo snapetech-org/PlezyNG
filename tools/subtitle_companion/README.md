@@ -219,3 +219,44 @@ Primary adapter references:
 
 No tests, analyzer, builds, inference runs, device qualification or CI were run
 for this implementation, per the owner's instruction.
+
+## Experimental evidence adapters
+
+Install `requirements-research.txt` only for the selected adapters, in a separate
+host environment. Models are **explicit local directories**; prepare pinned,
+reviewed snapshots with the existing model preparation utility. No model was
+installed or executed during implementation.
+
+- `ensemble`: set `PLEZY_SECOND_WHISPER_MODEL` to a second CTranslate2 Whisper
+  directory. Both passes run independently. Time-overlapping disagreements are
+  returned as alternatives; the client keeps the baseline unless the viewer
+  selects an alternative. Agreement is not an accuracy score.
+- `separate`: set `PLEZY_SEPARATOR_MODEL` to a trusted local SpeechBrain SepFormer
+  package (2/3 sources, 8/16 kHz). Five-minute input maximum, ten-second analysis
+  windows/eight-second ownership. Separation artifacts and permutation changes
+  are possible; labels explicitly identify **window-local voice candidates**.
+  Parallel cues are preserved. This is not cross-window speaker identification.
+- `sound_events`: set `PLEZY_SOUND_MODEL` to a local Transformers audio classifier.
+  Five-second windows at 2.5-second strides need two consecutive ≥0.8 scores to
+  propose a caption. Output says “Possible sound”; mono analysis never claims
+  spatial direction. No language/event quality is qualified.
+- `completeness`: submit matching cues and media. Bundled Silero VAD is compared
+  with the union of subtitle intervals. Original cues are retained; uncovered
+  speech intervals and coverage counts are evidence, not proven omissions.
+- `extract_text`: choose an embedded subtitle ordinal. FFmpeg converts supported
+  text streams (including mov_text) to bounded SRT; drawings, positioning and
+  closed-caption service semantics are not represented by SRT.
+- `signs`: the chosen OCR crop is retained as a normalized sign region. App
+  overlays preserve that region; SRT flattens it. Both burned-caption and sign
+  OCR now preserve a representative resized grayscale image for every cue,
+  within the 32 MiB image evidence budget, for the existing correction/export UI.
+
+Recognition now accepts the existing glossary's source keys as explicit hotword
+hints. Hints do not force recognized spelling and are not model adaptation.
+Research adapters remain subprocess-cancellable and use the existing upload,
+profile scope, identity, result bounds and four-hour worker deadline.
+
+API references: [SpeechBrain separation](https://github.com/speechbrain/speechbrain/blob/develop/speechbrain/inference/separation.py),
+[SepFormer model input contract](https://huggingface.co/speechbrain/sepformer-wsj02mix),
+[Transformers audio classification](https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.AudioClassificationPipeline),
+[faster-whisper VAD](https://github.com/SYSTRAN/faster-whisper/blob/master/faster_whisper/vad.py).

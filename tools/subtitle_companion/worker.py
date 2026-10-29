@@ -54,15 +54,16 @@ def cue_id(job, index, start, end, text):
     return hashlib.sha256(f"{job['audioDigest']}:{index}:{start}:{end}:{text}".encode()).hexdigest()
 
 
-def recognize(folder, job, audio, device):
+def recognize(folder, job, audio, device, model_name=None):
     from faster_whisper import WhisperModel
-    model = WhisperModel(os.environ.get("PLEZY_WHISPER_MODEL", "base"), device=device,
+    model = WhisperModel(model_name or os.environ.get("PLEZY_WHISPER_MODEL", "base"), device=device,
                          compute_type="float16" if device == "cuda" else "int8",
                          cpu_threads=min(8, os.cpu_count() or 2), num_workers=1,
                          local_files_only=os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") != "1")
     segments, info = model.transcribe(audio, language=job.get("language"),
                                      task="translate" if job.get("translateToEnglish") else "transcribe",
-                                     word_timestamps=True, vad_filter=True, condition_on_previous_text=False)
+                                     word_timestamps=True, vad_filter=True, condition_on_previous_text=False,
+                                     hotwords=" ".join(job.get("glossary", {}).keys())[:2000] or None)
     cues, words = [], []
     duration_ms = round(len(audio) / 16)
     for segment in segments:
@@ -188,13 +189,31 @@ def ocr(folder, job):
                "-protocol_whitelist", "file,pipe", "-format_whitelist", FORMATS, "-i", str(folder / "input.media"),
                "-an", "-sn", "-vf", filters, "-t", str(MAX_SECONDS + 0.5), "-pix_fmt", "gray", "-f", "rawvideo", "pipe:1"]
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+    from bitmap_ocr import png
+    evidence = folder / 'evidence'
+    evidence.mkdir(mode=0o700, exist_ok=True)
+    images, image_sizes, image_bytes = [], {}, 0
     cues, active, frame = [], None, 0
     language = os.environ.get("PLEZY_TESSERACT_LANGUAGE", "eng")
     def finish():
-        nonlocal active
+        nonlocal active, image_bytes
         if active is not None and active["endMs"] - active["startMs"] >= 1000:
             active["cueId"] = cue_id(job, len(cues), active["startMs"], active["endMs"], active["text"])
             active["index"] = len(cues) + 1
+            encoded = png(960, 240, active.pop('_image'), 1)
+            digest = hashlib.sha256(encoded).hexdigest()
+            if digest not in image_sizes:
+                image_bytes += len(encoded)
+                if image_bytes > 32 * 1024**2: raise ValueError('ocr_image_evidence_limit')
+                image_sizes[digest] = len(encoded)
+                (evidence / f'{digest}.png').write_bytes(encoded)
+            images.append({'cueId': active['cueId'], 'sha256': digest, 'bytes': len(encoded),
+                'width': 960, 'height': 240, 'x': 0, 'y': 0, 'startMs': active['startMs'], 'endMs': active['endMs'],
+                'confidence': active['ocrConfidence'], 'forced': job['task'] == 'signs',
+                'requiresReview': active['ocrConfidence'] < .65})
+            if job['task'] == 'signs':
+                active['role'] = 'sign'
+                active['region'] = job['crop']
             cues.append(active)
         active = None
     try:
@@ -231,7 +250,7 @@ def ocr(folder, job):
                 finish()
                 if text:
                     active = {"startMs": start, "endMs": end, "text": text,
-                              "ocrConfidence": sum(confidences) / len(confidences), "crop": job["crop"]}
+                              "ocrConfidence": sum(confidences) / len(confidences), "crop": job["crop"], '_image': bytes(data)}
             frame += 1
             progress(folder, "Reading caption crop (2 frames/second)", frame / (MAX_SECONDS * 2))
         finish()
@@ -242,9 +261,10 @@ def ocr(folder, job):
             process.kill()
             process.wait()
         process.stdout.close()
-    return {"cues": cues, "wordTimings": [], "language": job.get("language") or "unknown", "durationMs": frame * 500,
+    return {"cues": cues, "images": images, "wordTimings": [], "language": job.get("language") or "unknown", "durationMs": frame * 500,
             "warnings": ["OCR samples a selected crop at 2 Hz; short captions, stylized text, and scene text can be missed or mistaken for dialogue.",
-                         "Timing is quantized to 500 ms and confidence is an uncalibrated OCR score. Original media and crop coordinates are retained as provenance."]}
+                         "Timing is quantized to 500 ms and confidence is an uncalibrated OCR score. A representative unmodified crop image is retained for every emitted cue.",
+                         "Sign tracks retain their chosen normalized region in app-overlay review. SRT export flattens position; crop images are resized evidence, not full-resolution video frames."]}
 
 
 def main():
@@ -275,7 +295,11 @@ def main():
     elif task in {"script_convert", "reading"}:
         result = derivative(folder, job, progress)
         device = "host-text-cpu"
-    elif task == "ocr":
+    elif task == "extract_text":
+        from research import extract_text
+        result = extract_text(folder, job, progress)
+        device = "ffmpeg-subtitle-decoder-cpu"
+    elif task in {"ocr", "signs"}:
         result = ocr(folder, job)
         device = "tesseract-cpu"
     elif task == "bitmap_ocr":
@@ -284,7 +308,12 @@ def main():
         device = "ffmpeg-decode-and-tesseract-cpu"
     else:
         audio = decode_audio(folder, job)
-        function = {"transcribe": recognize, "align": align, "diarize": diarize}[task]
+        from research import AUDIO_TASKS, ensemble, separate, sound_events, completeness
+        if task in AUDIO_TASKS:
+            adapter = {"ensemble": ensemble, "separate": separate, "sound_events": sound_events, "completeness": completeness}[task]
+            function = lambda folder, job, audio, device: adapter(folder, job, audio, device, progress, recognize)
+        else:
+            function = {"transcribe": recognize, "align": align, "diarize": diarize}[task]
         try:
             result = function(folder, job, audio, device)
         except Exception:

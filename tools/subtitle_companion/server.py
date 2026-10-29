@@ -27,6 +27,8 @@ from urllib.parse import urlsplit
 
 from text_adapters import TEXT_TASKS, SCRIPT_MODES, MODES, capabilities as translation_capabilities, provider_config
 
+from research import MEDIA_TASKS
+
 MAX_INPUT = 1024**3
 MAX_JSON = 5 * 1024**2
 MAX_RESULT = 24 * 1024**2
@@ -106,7 +108,7 @@ class Store:
 
     def create(self, scope, value):
         task = value.get("task")
-        if task not in {"transcribe", "align", "diarize", "ocr", "bitmap_ocr"} | TEXT_TASKS:
+        if task not in {"transcribe", "align", "diarize", "ocr", "bitmap_ocr"} | TEXT_TASKS | MEDIA_TASKS:
             raise ValueError("unsupported_task")
         for key in ("identity", "audioDigest", "requestId"):
             if not isinstance(value.get(key), str) or not HEX.fullmatch(value[key]):
@@ -125,7 +127,7 @@ class Store:
         if task == "align" and value.get("spokenLanguage") != language:
             raise ValueError("alignment_requires_matching_spoken_language")
         cues = value.get("cues", [])
-        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align"} | TEXT_TASKS and not cues):
+        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "completeness"} | TEXT_TASKS and not cues):
             raise ValueError("cue_limit")
         ids = set()
         for cue in cues:
@@ -341,7 +343,13 @@ class Handler(BaseHTTPRequestHandler):
             installed = lambda module: importlib.util.find_spec(module) is not None
             tasks = []
             if installed("faster_whisper") and shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
-                tasks.append("transcribe")
+                tasks.extend(["transcribe", "completeness"])
+                if os.environ.get("PLEZY_SECOND_WHISPER_MODEL"):
+                    tasks.append("ensemble")
+                if installed("speechbrain") and os.environ.get("PLEZY_SEPARATOR_MODEL"):
+                    tasks.append("separate")
+                if installed("transformers") and os.environ.get("PLEZY_SOUND_MODEL"):
+                    tasks.append("sound_events")
                 if installed("whisperx"):
                     tasks.extend(["align", "diarize"])
             if installed("argostranslate"):
@@ -354,9 +362,11 @@ class Handler(BaseHTTPRequestHandler):
             if installed("pykakasi"):
                 tasks.append("reading")
             if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
-                tasks.append("ocr")
+                tasks.extend(["ocr", "signs"])
             if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_SUBTITLE_DECODER", "plezy-subtitle-decode")):
                 tasks.append("bitmap_ocr")
+            if shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
+                tasks.append("extract_text")
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS,
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",

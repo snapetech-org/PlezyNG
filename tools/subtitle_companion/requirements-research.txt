@@ -1,0 +1,6 @@
+# Optional; install in an isolated companion environment with reviewed local
+# model packages. Versions are bounded APIs, not qualified runtime claims.
+speechbrain>=1.0,<2
+transformers>=4.48,<5
+torchaudio>=2.5,<3
+piper-tts>=1.3,<2

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' show Rect;
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +14,7 @@ import 'subtitle_word_timing.dart';
 
 final class SubtitleCompanionResult {
   const SubtitleCompanionResult({required this.cues, required this.wordTimings, required this.language,
-      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const []});
+      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const [], this.alternatives = const {}, this.regions = const {}});
   final List<SubtitleCue> cues;
   final List<SubtitleWordTiming> wordTimings;
   final String language;
@@ -22,6 +23,8 @@ final class SubtitleCompanionResult {
   final bool cpuFallback;
   final List<SubtitleCompanionImage> images;
   final List<SubtitleCue> sourceCues;
+  final Map<String, String> alternatives;
+  final Map<String, Rect> regions;
 }
 
 final class SubtitleCompanionImage {
@@ -245,6 +248,7 @@ final class SubtitleCompanionService {
       throw const FormatException('Companion result exceeds caption limits.');
     }
     final cues = <SubtitleCue>[];
+    final regions = <String, Rect>{};
     final ids = <String>{};
     var textBytes = 0;
     for (final value in raw) {
@@ -255,6 +259,15 @@ final class SubtitleCompanionService {
       if (start < 0 || end <= start || end > SubtitleRetimer.maximumTimeMs || text.trim().isEmpty || text.length > 4000 ||
           textBytes > SubtitleRetimer.maximumInputBytes || !_digest.hasMatch(cueId) || !ids.add(cueId)) {
         throw const FormatException('The companion returned an invalid cue.');
+      }
+      final region = c['region'];
+      if (region != null) {
+        if (region is! List || region.length != 4 || region.any((v) => v is! num || !v.isFinite || v < 0 || v > 1)) {
+          throw const FormatException('Invalid subtitle region.');
+        }
+        final r = region.cast<num>().map((v) => v.toDouble()).toList();
+        if (r[2] <= 0 || r[3] <= 0 || r[0] + r[2] > 1.001 || r[1] + r[3] > 1.001) throw const FormatException('Invalid subtitle region.');
+        regions[cueId] = Rect.fromLTWH(r[0], r[1], r[2], r[3]);
       }
       cues.add(SubtitleCue(index: cues.length + 1, startMs: start, endMs: end, text: text, cueId: cueId));
     }
@@ -317,7 +330,20 @@ final class SubtitleCompanionService {
       images.add(SubtitleCompanionImage(cueId: cueId, digest: digest, bytes: bytes, width: width, height: height,
         x: x, y: y, confidence: score, forced: value['forced'] == true, requiresReview: value['requiresReview'] == true));
     }
-    return SubtitleCompanionResult(cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
+    final alternatives = <String, String>{};
+    final rawAlternatives = data['alternatives'] ?? const [];
+    if (rawAlternatives is! List || rawAlternatives.length > 5000) throw const FormatException('Too many recognition alternatives.');
+    var alternativeBytes = 0;
+    for (final value in rawAlternatives) {
+      if (value is! Map || value['cueId'] is! String || !byId.containsKey(value['cueId']) ||
+          value['text'] is! String || (value['text'] as String).trim().isEmpty || (value['text'] as String).length > 4000) {
+        throw const FormatException('Invalid recognition alternative.');
+      }
+      alternativeBytes += utf8.encode(value['text'] as String).length;
+      if (alternativeBytes > 5 * 1024 * 1024) throw const FormatException('Recognition alternatives exceed limits.');
+      alternatives[value['cueId'] as String] = value['text'] as String;
+    }
+    return SubtitleCompanionResult(alternatives: Map.unmodifiable(alternatives), regions: Map.unmodifiable(regions), cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
       language: label(data['language'], 24, 'unknown'), warnings: warnings,
       runtimeDevice: runtime, cpuFallback: data['cpuFallback'] == true, images: List.unmodifiable(images), sourceCues: List.unmodifiable(sourceCues));
   }

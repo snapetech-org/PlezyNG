@@ -786,7 +786,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         throw const FormatException('The companion did not declare its translation destination.');
       }
       List<SubtitleCue> cues = const [];
-      if (task == 'align' || textTask) {
+      if (task == 'align' || task == 'completeness' || textTask) {
         final selected = await _pickSubtitleCues();
         if (selected == null || !mounted) return;
         cues = selected.$1;
@@ -820,6 +820,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           content: SizedBox(width: 560, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
             Text('Destination: ${service.endpoint}\n${path == null ? 'Subtitle text' : 'The selected media file'} will be uploaded and retained on this host until you delete the job. '
                 'No playback URL or media-server credentials are shared.'),
+            if ({'ensemble', 'separate', 'sound_events', 'completeness', 'signs'}.contains(task))
+              const Text('Experimental evidence: model suggestions need review. Separation is limited to five minutes and speaker numbering is local to each window. '
+                'Sound labels do not identify direction or a verified source. Recognition glossary keys are hints, not spelling guarantees.'),
             if (task == 'align') Text('Only use text matching the spoken ${SubtitleTranslationService.languageLabel(_sourceLanguage)} audio, '
                 'with approximate cue intervals no longer than 60 seconds. Unsupported/uncertain cues keep their original timing.'),
             if (task == 'translate') Text('Translate ${SubtitleTranslationService.languageLabel(_sourceLanguage)} to ${SubtitleTranslationService.languageLabel(_targetLanguage)} using an installed host language pair.'),
@@ -865,21 +868,22 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               SwitchListTile(title: const Text('High-pass and FFT denoise'), subtitle: const Text('Optional preprocessing can alter speech; original media stays intact'),
                 value: preprocess, onChanged: (value) => update(() => preprocess = value)),
             ],
-            if (task == 'ocr') ...[
+            if (task == 'ocr' || task == 'signs') ...[
               const Text('Burned-caption OCR samples the selected full-width crop at two frames per second. It does not decode PGS/VobSub tracks.'),
               Text('Crop starts at ${(cropTop * 100).round()}% of image height and extends to the bottom'),
               Slider(value: cropTop, min: 0, max: 0.9, divisions: 18, label: '${(cropTop * 100).round()}%',
                 onChanged: (value) => update(() => cropTop = value)),
             ],
-            if (task == 'bitmap_ocr') ...[
-              const Text('Decode PGS SUP or a PGS/VobSub stream in the selected container. For VobSub sidecars, upload a ZIP containing exactly one matching IDX/SUB pair. Original caption images are retained for OCR correction and export.'),
+            if (task == 'bitmap_ocr' || task == 'extract_text') ...[
+              if (task == 'bitmap_ocr') const Text('Decode PGS SUP or a PGS/VobSub stream in the selected container. For VobSub sidecars, upload a ZIP containing exactly one matching IDX/SUB pair. Original caption images are retained for OCR correction and export.'),
               DropdownButtonFormField<int>(initialValue: subtitleTrack, decoration: const InputDecoration(labelText: 'Subtitle stream (zero based)'),
                 items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text('Subtitle stream $i'))),
                 onChanged: (value) => update(() => subtitleTrack = value ?? 0)),
-              DropdownButtonFormField<int>(initialValue: bitmapTail, decoration: const InputDecoration(labelText: 'Last cue duration only if its end is missing'),
+              if (task == 'bitmap_ocr') DropdownButtonFormField<int>(initialValue: bitmapTail, decoration: const InputDecoration(labelText: 'Last cue duration only if its end is missing'),
                 items: [1000, 2000, 3000, 5000, 10000, 30000].map((ms) => DropdownMenuItem(value: ms, child: Text('$ms ms'))).toList(),
                 onChanged: (value) => update(() => bitmapTail = value ?? 2000)),
-              Text('Caption language: ${SubtitleTranslationService.languageLabel(_sourceLanguage)}. Install matching Tesseract language data and select it on the host.'),
+              if (task == 'bitmap_ocr') Text('Caption language: ${SubtitleTranslationService.languageLabel(_sourceLanguage)}. Install matching Tesseract language data and select it on the host.'),
+              if (task == 'extract_text') const Text('Convert an embedded text stream, such as mov_text, into a separate SRT. Layout and caption-service behavior may be flattened; bitmap streams require OCR.'),
             ],
             Text('Host backends: ${(capabilities['tasks'] as List).join(', ')}. Hardware placement is unverified.'),
           ]))),
@@ -899,7 +903,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail,
         translationMode: translationMode, scriptConversion: scriptConversion, readingMode: readingMode,
         translationProviderFingerprint: task == 'translate_model' ? (modelProvider as Map)['fingerprint'] as String : null,
-        glossary: task == 'translate_model' ? _parseGlossary() : const {},
+        glossary: {'translate_model', 'transcribe', 'ensemble', 'separate'}.contains(task) ? _parseGlossary() : const {},
         onCreated: (id) { if (mounted) setState(() => _activeCompanionJob = id); },
         onUpload: (sent, total) { if (mounted) setState(() => _status = 'Uploading chosen media: ${(sent * 100 / total).round()}%'); },
       );
@@ -930,6 +934,23 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (identity == null || job['identity'] != identity.storageKey) throw StateError('The job belongs to another item.');
       final result = await service.result(job['id'] as String, identityKey: identity.storageKey, audioDigest: job['audioDigest'] as String);
       var cues = result.cues;
+      if (result.alternatives.isNotEmpty) {
+        final selected = <String>{};
+        final accepted = await showDialog<bool>(context: context, builder: (context) => StatefulBuilder(builder: (context, update) =>
+          AlertDialog(title: const Text('Review recognition disagreements'), content: SizedBox(width: 720, height: 500,
+            child: ListView(children: [const Text('Baseline wording is retained unless you explicitly select an alternative. Model agreement does not prove accuracy.'),
+              for (final cue in cues) if (result.alternatives[cue.stableId] case final String other)
+                CheckboxListTile(value: selected.contains(cue.stableId), title: Text('Baseline: ${cue.text}'),
+                  subtitle: Text('Alternative: $other'), onChanged: (v) => update(() {
+                    if (v == true) { selected.add(cue.stableId); } else { selected.remove(cue.stableId); }
+                  })),
+            ])), actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+              FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Continue with selected wording'))])));
+        if (accepted != true || !mounted) return;
+        cues = [for (final cue in cues) selected.contains(cue.stableId)
+          ? SubtitleCue(index: cue.index, startMs: cue.startMs, endMs: cue.endMs,
+              text: result.alternatives[cue.stableId]!, cueId: cue.stableId) : cue];
+      }
       if (result.images.isNotEmpty) {
         if (!mounted) return;
         _requireCurrentOperationIdentity();
@@ -941,7 +962,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       }
       await _writeAndApply(cues, operationLabel: 'Companion ${job['task']}', operationLanguageCode: result.language,
         sourceCues: result.sourceCues.isEmpty ? null : result.sourceCues,
-        wordTimings: result.wordTimings, reviewWarnings: result.warnings);
+        wordTimings: result.alternatives.isEmpty ? result.wordTimings : const [],
+        regions: result.regions, reviewWarnings: result.warnings);
     } finally { service.close(); }
   });
 
@@ -2877,6 +2899,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     String? operationLanguageCode,
     List<SubtitleCue>? sourceCues,
     List<String> reviewWarnings = const [],
+    Map<String, Rect> regions = const {},
     List<SubtitleWordTiming> wordTimings = const <SubtitleWordTiming>[],
     SubtitleRevisionDraft? resumeDraft,
     SubtitleRevisionIdentity? resumeIdentity,
@@ -3338,7 +3361,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         final profileId = profiles.activeId;
         final isSourceCurrent = widget.isRevisionIdentityCurrent;
         final lane = choice == _SubtitleReviewChoice.overlayPrimary ? 0 : 1;
-        final track = SubtitleOverlayTrack(cues: reviewedCues, words: reviewedWordTimings, title: operationLabel,
+        final track = SubtitleOverlayTrack(cues: reviewedCues, words: reviewedWordTimings, title: operationLabel, regions: regions,
           isCurrent: () => profiles.activeId == profileId && isSourceCurrent?.call() != false);
         track.position = lane == 0 ? .9 : .12;
         SubtitleOverlayService.attach(widget.player, lane, track);
@@ -3610,6 +3633,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           ]),
           for (final entry in const <(String, String)>[
             ('transcribe', 'Transcribe a media file on the companion'),
+            ('ensemble', 'Compare two recognition models'),
+            ('separate', 'Separate overlapping voice candidates (experimental)'),
+            ('sound_events', 'Propose sound-event captions (experimental)'),
+            ('completeness', 'Compare detected speech against subtitle coverage'),
+            ('extract_text', 'Extract an embedded text subtitle stream'),
+            ('signs', 'Read on-screen signs in a chosen crop'),
             ('align', 'Force-align a matching-language transcript'),
             ('diarize', 'Transcribe with anonymous speaker labels'),
             ('translate', 'Translate subtitles on the companion'),

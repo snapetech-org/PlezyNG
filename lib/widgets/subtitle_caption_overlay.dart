@@ -50,6 +50,13 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
           left: region.left * constraints.maxWidth, top: region.top * constraints.maxHeight,
           width: region.width * constraints.maxWidth, height: region.height * constraints.maxHeight,
           child: const ColoredBox(color: Colors.black)),
+        for (final track in visible) for (final cue in track.at(position))
+          if (track.regions[cue.stableId] case final Rect region)
+            Positioned(left: region.left * constraints.maxWidth, top: region.top * constraints.maxHeight,
+              width: region.width * constraints.maxWidth, height: region.height * constraints.maxHeight,
+              child: Center(child: _line(TextSpan(children: track.spans(cue, position)), track.fontSize * scale,
+                track.color, track.outline, track.outlineWidth * scale, track.backgroundOpacity,
+                bold: track.bold, italic: track.italic))),
         for (var lane = 0; lane < visible.length; lane++) Builder(builder: (_) {
           final track = visible[lane];
           var y = track.position;
@@ -57,7 +64,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
           if (lane > 0 && (y - visible[0].position).abs() < .22) y = (visible[0].position - .25).clamp(.08, .92);
           return Positioned.fill(bottom: widget.bottomInset, child: Align(alignment: Alignment(0, y * 2 - 1),
             child: Padding(padding: EdgeInsets.symmetric(horizontal: constraints.maxWidth * track.margin),
-              child: Column(mainAxisSize: MainAxisSize.min, children: track.at(position).map((cue) => Padding(
+              child: Column(mainAxisSize: MainAxisSize.min, children: track.at(position).where((cue) => !track.regions.containsKey(cue.stableId)).map((cue) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 2),
                 child: _line(TextSpan(children: track.spans(cue, position)), track.fontSize * scale,
                   track.color, track.outline, track.outlineWidth * scale, track.backgroundOpacity,

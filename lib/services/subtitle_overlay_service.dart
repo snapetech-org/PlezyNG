@@ -9,7 +9,7 @@ import 'subtitle_word_timing.dart';
 /// owns an immutable source-clock index and independent presentation settings.
 class SubtitleOverlayTrack {
   SubtitleOverlayTrack({required List<SubtitleCue> cues, this.words = const [],
-    required this.title, required this.isCurrent})
+    required this.title, required this.isCurrent, this.regions = const {}})
       : cues = List.of(cues)..sort((a, b) => a.startMs.compareTo(b.startMs)) {
     if (cues.length > 50000 || words.length > 250000) throw ArgumentError('Overlay limit');
     for (final cue in this.cues) {
@@ -25,6 +25,7 @@ class SubtitleOverlayTrack {
   final List<SubtitleCue> cues;
   final List<SubtitleWordTiming> words;
   final String title;
+  final Map<String, Rect> regions;
   final bool Function() isCurrent;
   final Map<int, int> _ends = {};
   int _build(int node, int lo, int hi) {

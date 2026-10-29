@@ -14,7 +14,92 @@ import subprocess
 import wave
 
 AUDIO_TASKS = {'ensemble', 'separate', 'sound_events', 'completeness'}
-MEDIA_TASKS = AUDIO_TASKS | {'extract_text', 'signs', 'dub_mix', 'ocr_auto', 'scene_review'}
+MEDIA_TASKS = AUDIO_TASKS | {'extract_text', 'signs', 'dub_mix', 'ocr_auto', 'scene_review', 'singing_align'}
+
+
+def harmonic_view(audio):
+    """Bounded median-mask harmonic/percussive view, NOT a vocal isolator.
+
+    Uses original-rate samples and overlap/add, never stretches lyrics or
+    assigns evenly spaced word times. Harmonic instruments survive this mask.
+    """
+    import numpy as np
+    frame, hop, context = 1024, 256, 2048
+    window = np.hanning(frame).astype(np.float32)
+    output = np.empty_like(audio)
+    for start in range(0, len(audio), 16 * 16000):
+        end = min(len(audio), start + 16 * 16000)
+        left, right = max(0, start-context), min(len(audio), end+context)
+        samples = audio[left:right]
+        padded = np.pad(samples, (frame//2, frame), mode='reflect')
+        frames = np.lib.stride_tricks.sliding_window_view(padded, frame)[::hop]
+        spectrum = np.fft.rfft(frames * window)
+        magnitude = np.abs(spectrum).astype(np.float32)
+        # A 17-frame/time and 17-bin/frequency median. Windows are views;
+        # temporaries are bounded by this 16-second chunk, not the whole song.
+        horizontal = np.median(np.lib.stride_tricks.sliding_window_view(
+            np.pad(magnitude, ((8, 8), (0, 0)), mode='edge'), 17, axis=0), axis=-1)
+        vertical = np.median(np.lib.stride_tricks.sliding_window_view(
+            np.pad(magnitude, ((0, 0), (8, 8)), mode='edge'), 17, axis=1), axis=-1)
+        mask = horizontal**2 / np.maximum(horizontal**2 + vertical**2, 1e-12)
+        inverse = np.fft.irfft(spectrum * mask, n=frame).astype(np.float32)
+        signal = np.zeros((len(frames)-1)*hop + frame, dtype=np.float32)
+        weight = np.zeros_like(signal)
+        for i, values in enumerate(inverse):
+            at = i*hop
+            signal[at:at+frame] += values * window
+            weight[at:at+frame] += window * window
+        signal /= np.maximum(weight, 1e-8)
+        reconstructed = signal[frame//2:frame//2+len(samples)]
+        output[start:end] = reconstructed[start-left:end-left]
+    if not np.isfinite(output).all(): raise ValueError('invalid_harmonic_analysis_samples')
+    return np.clip(output, -1, 1)
+
+
+def singing_align(folder, job, audio, device, progress, align, load_runtime):
+    """Conservative lyric word proposals from two acoustic views of one mix."""
+    if len(audio) > 300 * 16000 or len(job['cues']) > 120 or any(
+            cue['endMs']-cue['startMs'] > 30000 for cue in job['cues']):
+        raise ValueError('lyric_alignment_limit_five_minutes_120_cues_30_seconds_per_cue')
+    path = model_directory('PLEZY_SINGING_ALIGN_MODEL')
+    import json
+    config = json.loads((path / 'config.json').read_text(encoding='utf-8'))
+    if (config.get('model_type') != 'wav2vec2' or 'Wav2Vec2ForCTC' not in config.get('architectures', []) or
+            config.get('auto_map') or not (path / 'vocab.json').is_file()):
+        raise ValueError('configure_supported_local_lyric_ctc_model')
+    runtime = load_runtime(job['language'], device, explicit_model=str(path))
+    baseline = align(folder, job, audio, device, runtime=runtime)
+    progress(folder, 'Comparing original and percussive-suppressed lyric evidence', .45)
+    alternate = align(folder, job, harmonic_view(audio), device, runtime=runtime)
+    def grouped(result):
+        groups = {}
+        for word in result['wordTimings']: groups.setdefault(word['cueId'], []).append(word)
+        return groups
+    original, harmonic = grouped(baseline), grouped(alternate)
+    words, evidence, uncertain = [], [], []
+    def spelling(value): return re.sub(r'\W', '', value.casefold())
+    for cue in job['cues']:
+        a, b = original.get(cue['cueId'], []), harmonic.get(cue['cueId'], [])
+        differences = []
+        agrees = bool(a) and len(a) == len(b)
+        if agrees:
+            for one, two in zip(a, b):
+                drift = max(abs(one['startMs']-two['startMs']), abs(one['endMs']-two['endMs']))
+                differences.append(drift)
+                if not spelling(one['text']) or spelling(one['text']) != spelling(two['text']) or drift > 250:
+                    agrees = False
+        if agrees: words.extend(a)
+        else: uncertain.append(cue['cueId'])
+        evidence.append({'cueId': cue['cueId'], 'acceptedWords': len(a) if agrees else 0,
+            'originalWords': len(a), 'harmonicWords': len(b), 'maximumBoundaryDifferenceMs': max(differences) if differences else None,
+            'status': 'two-view-agreement-unqualified' if agrees else 'retain-original-no-word-proposal'})
+    return {'cues': job['cues'], 'sourceCues': job['cues'], 'wordTimings': words,
+        'language': job['language'], 'durationMs': round(len(audio)/16), 'model': 'lyric CTC / ' + path.name,
+        'uncertainCueIds': uncertain, 'lyricTimingEvidence': evidence,
+        'warnings': ['Lyric text and cue bounds remain unchanged. Only CTC word proposals agreeing within 250 ms across original and harmonic views are retained.',
+            'The spectral mask suppresses percussion; it does not isolate vocals. Harmonic instruments, vibrato, melisma and overlapping singers can defeat both views.',
+            'CTC confidence and two-view agreement are uncalibrated, not proof of correct singing alignment. No syllables, notes or evenly spaced word times were invented.',
+            f'{len(uncertain)} cues have no accepted word proposal. Review against the song before enabling karaoke.']}
 
 
 def model_directory(variable):

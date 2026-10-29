@@ -121,15 +121,15 @@ class Store:
         language = value.get("language")
         if language is not None and (not isinstance(language, str) or not re.fullmatch(r"[a-z]{2,3}", language)):
             raise ValueError("invalid_language")
-        if task in {"align", "dub_mix"} | TEXT_TASKS and not language:
+        if task in {"align", "singing_align", "dub_mix"} | TEXT_TASKS and not language:
             raise ValueError("language_required")
         target = value.get("targetLanguage")
         if task in {"translate", "translate_model"} and (not isinstance(target, str) or not re.fullmatch(r"[a-z]{2,3}", target) or target == language):
             raise ValueError("target_language_required")
-        if task == "align" and value.get("spokenLanguage") != language:
+        if task in {"align", "singing_align"} and value.get("spokenLanguage") != language:
             raise ValueError("alignment_requires_matching_spoken_language")
         cues = value.get("cues", [])
-        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "completeness", "dub_mix", "scene_review"} | TEXT_TASKS and not cues):
+        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "singing_align", "completeness", "dub_mix", "scene_review"} | TEXT_TASKS and not cues):
             raise ValueError("cue_limit")
         ids = set()
         for cue in cues:
@@ -152,6 +152,9 @@ class Store:
             if len(cues) > 500 or max(c["endMs"] for c in cues) > 600000:
                 raise ValueError("dubbing_limit_ten_minutes_five_hundred_cues")
         stereo_evidence = value.get("soundStereoEvidence", False)
+        if task == 'singing_align' and (len(cues) > 120 or max(c['endMs'] for c in cues) > 300000 or
+                any(c['endMs']-c['startMs'] > 30000 for c in cues)):
+            raise ValueError('lyric_alignment_limit_five_minutes_120_cues_30_seconds_per_cue')
         if type(stereo_evidence) is not bool or stereo_evidence and task != "sound_events":
             raise ValueError("invalid_sound_stereo_evidence")
         timeline_offset = value.get("timelineOffsetMs", 0)
@@ -174,7 +177,7 @@ class Store:
         mode = value.get("translationMode", "faithful")
         conversion = value.get("scriptConversion", "s2t")
         reading = value.get("readingMode", "hiragana")
-        if not isinstance(mode, str) or mode not in MODES or not isinstance(conversion, str) or conversion not in SCRIPT_MODES or not isinstance(reading, str) or reading not in {"hiragana", "hepburn"}:
+        if not isinstance(mode, str) or mode not in MODES or not isinstance(conversion, str) or conversion not in SCRIPT_MODES or not isinstance(reading, str) or reading not in {"hiragana", "hepburn", "ruby"}:
             raise ValueError("invalid_text_derivative_mode")
         if task == "script_convert" and language != "zh" or task == "reading" and language != "ja":
             raise ValueError("text_derivative_language_mismatch")
@@ -392,6 +395,8 @@ class Handler(BaseHTTPRequestHandler):
                     tasks.append("sound_events")
                 if installed("whisperx"):
                     tasks.extend(["align", "diarize"])
+                    if os.environ.get('PLEZY_SINGING_ALIGN_MODEL'):
+                        tasks.append('singing_align')
             synthesis = None
             if installed("piper") and shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
                 try:
@@ -419,7 +424,7 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
-                             "visionProvider": vision, "sceneAudioEvidence": vision is not None and vision['audioEvidence'], "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES),
+                             "visionProvider": vision, "sceneAudioEvidence": vision is not None and vision['audioEvidence'], "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES), "readingModes": ["hiragana", "hepburn", "ruby"],
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})
             return
         artifact_match = re.fullmatch(r"/v1/jobs/([0-9a-f]{32})/artifacts/([0-9a-f]{64})", path)

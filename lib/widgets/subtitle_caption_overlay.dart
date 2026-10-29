@@ -156,7 +156,7 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
     final obstacles = blocked;
     if (obstacles.isEmpty) return preferred;
     final key = '${identityHashCode(track)}:${cues.map((c) => c.stableId).join(',')}:$width:$height:$preferred:'
-        '${track.fontSize}:${track.fontFamily}:${track.bold}:${track.italic}:${track.margin}:${MediaQuery.textScalerOf(context).scale(1)}:$obstacles';
+        '${track.fontSize}:${track.fontFamily}:${track.bold}:${track.italic}:${track.margin}:${track.ruby}:${MediaQuery.textScalerOf(context).scale(1)}:$obstacles';
     final cached = _placementCache[key];
     if (cached != null) return cached;
     var pixels = 0.0;
@@ -166,7 +166,10 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
           fontWeight: track.bold ? FontWeight.bold : FontWeight.w500, fontStyle: track.italic ? FontStyle.italic : FontStyle.normal, height: 1.25)),
         textDirection: _direction(cue.text), textScaler: MediaQuery.textScalerOf(context), maxLines: SubtitlePanePolicy.of(context) == null ? 6 : 3)
         ..layout(maxWidth: (width * (1 - 2 * track.margin) - 16).clamp(1.0, double.infinity).toDouble());
-      pixels += painter.height + 12; painter.dispose();
+      // Reserve reading-line headroom in the avoidance estimate. Actual ruby
+      // pairs are laid out by Flutter inline children at the same text scale.
+      pixels += painter.height * (track.ruby && cue.text.toLowerCase().contains('<ruby') ? 1.65 : 1) + 12;
+      painter.dispose();
     }
     final h = (pixels / height).clamp(.04, .85);
     var best = preferred, bestScore = double.infinity;
@@ -198,13 +201,15 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
     final direction = _direction(content.toPlainText());
     final style = TextStyle(fontSize: size, fontFamily: track == null ? SubtitleFontLoader.overlayFamily : track.renderedFontFamily, fontFamilyFallback: SubtitleOverlayTrack.fallbackFonts, fontWeight: bold ? FontWeight.bold : FontWeight.w500,
         fontStyle: italic ? FontStyle.italic : FontStyle.normal, color: color, height: 1.25);
+    Widget layer(TextStyle paintStyle) => DefaultTextStyle(style: paintStyle, child: Text.rich(content,
+      textDirection: direction, textAlign: track?.alignment ?? TextAlign.center, style: paintStyle,
+      maxLines: SubtitlePanePolicy.of(context) == null ? 6 : 3, overflow: TextOverflow.ellipsis));
     return DecoratedBox(decoration: BoxDecoration(color: (track?.backgroundColor ?? Colors.black).withValues(alpha: opacity),
         borderRadius: BorderRadius.circular(4)), child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Stack(children: [
-        if (border > 0) ExcludeSemantics(child: Text.rich(content, textDirection: direction, textAlign: track?.alignment ?? TextAlign.center,
-          style: style.copyWith(foreground: Paint()..style = PaintingStyle.stroke..strokeWidth = border * 2..color = outline),
-          maxLines: SubtitlePanePolicy.of(context) == null ? 6 : 3, overflow: TextOverflow.ellipsis)),
-        Text.rich(content, textDirection: direction, textAlign: track?.alignment ?? TextAlign.center, style: style, maxLines: SubtitlePanePolicy.of(context) == null ? 6 : 3, overflow: TextOverflow.ellipsis),
+        if (border > 0) ExcludeSemantics(child: layer(style.copyWith(foreground:
+          Paint()..style = PaintingStyle.stroke..strokeWidth = border * 2..color = outline))),
+        layer(style),
       ])));
   }
 }

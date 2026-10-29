@@ -7,6 +7,8 @@ import '../mpv/player/player_media_session_identity.dart';
 import 'subtitle_retimer.dart';
 import 'settings_service.dart';
 import 'subtitle_word_timing.dart';
+import 'subtitle_ruby_text.dart';
+import '../widgets/subtitle_ruby_span.dart';
 
 /// App-rendered plain text, distinct from native ASS/bitmap tracks. Each lane
 /// owns an immutable source-clock index and independent presentation settings.
@@ -64,6 +66,8 @@ class SubtitleOverlayTrack {
   double margin = .04;
   int delayMs = 0;
   bool karaoke = false;
+  bool ruby = true;
+  final Map<String, List<SubtitleRubyRun>?> _rubyRuns = {};
   bool bold = false;
   bool italic = false;
   bool avoidObjects = false;
@@ -80,7 +84,7 @@ class SubtitleOverlayTrack {
 
   Map<String, Object> appearance() => {'fontSize': fontSize, 'position': position,
     'backgroundOpacity': backgroundOpacity, 'color': color.toARGB32(), 'outline': outline.toARGB32(),
-    'outlineWidth': outlineWidth, 'margin': margin, 'karaoke': karaoke, 'bold': bold, 'italic': italic,
+    'outlineWidth': outlineWidth, 'margin': margin, 'karaoke': karaoke, 'ruby': ruby, 'bold': bold, 'italic': italic,
     'videoAnchored': videoAnchored, 'overscan': overscan,
     'backgroundColor': backgroundColor.toARGB32(), 'fontFamily': fontFamily, 'alignment': alignment.name};
 
@@ -100,6 +104,7 @@ class SubtitleOverlayTrack {
     overscan = number('overscan', overscan, 0, .15);
     if (value['videoAnchored'] is bool) videoAnchored = value['videoAnchored'] as bool;
     if (value['karaoke'] is bool) karaoke = value['karaoke'] as bool;
+    if (value['ruby'] is bool) ruby = value['ruby'] as bool;
     if (value['bold'] is bool) bold = value['bold'] as bool;
     if (value['italic'] is bool) italic = value['italic'] as bool;
   }
@@ -156,6 +161,12 @@ class SubtitleOverlayTrack {
 
   List<InlineSpan> spans(SubtitleCue cue, int positionMs) {
     final text = plain(cue.text);
+    if (ruby && cue.text.toLowerCase().contains('<ruby')) {
+      if (_rubyRuns.length > 128) _rubyRuns.clear();
+      final runs = _rubyRuns.putIfAbsent(cue.stableId, () => SubtitleRubyText.parse(cue.text));
+      if (runs != null) return [for (final run in runs)
+        if (run.reading == null) TextSpan(text: run.base) else SubtitleRubySpan(run.base, run.reading!)];
+    }
     final sourceMs = positionToSourceMs == null ? positionMs : positionToSourceMs!(positionMs);
     final timing = _words[cue.stableId];
     if (!karaoke || timing == null) return [TextSpan(text: text)];
@@ -177,8 +188,7 @@ class SubtitleOverlayTrack {
     return result;
   }
 
-  static String plain(String text) => text.replaceAll(RegExp(r'<[^>]*>|\{[^}]*\}'), '')
-      .replaceAll(r'\N', '\n').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&');
+  static String plain(String text) => SubtitleRubyText.plain(text);
 }
 
 class SubtitleOverlaySession extends ChangeNotifier {

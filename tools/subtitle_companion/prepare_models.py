@@ -12,6 +12,8 @@ def main():
     parser.add_argument("--repo", required=True, help="Model owner/name")
     parser.add_argument("--revision", required=True, help="Exact 40-character model repository commit")
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--purpose", choices=["general", "alignment", "singing-alignment"], default="general",
+                        help="Record the intended adapter; CTC purposes require the supported local Wav2Vec2 layout")
     args = parser.parse_args()
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", args.repo) or not re.fullmatch(r"[0-9a-f]{40}", args.revision):
         parser.error("Use a model repository and its exact commit, not a moving branch or tag")
@@ -23,6 +25,13 @@ def main():
     snapshot_download(repo_id=args.repo, revision=args.revision, local_dir=root,
                       allow_patterns=["*.json", "*.bin", "*.onnx", "*.safetensors", "*.txt", "*.model", "README*", "LICENSE*"],
                       ignore_patterns=["*.py", "*.pt", "*.pkl", "*.pickle"])
+    if args.purpose != 'general':
+        config = json.loads((root / 'config.json').read_text(encoding='utf-8'))
+        if (config.get('model_type') != 'wav2vec2' or 'Wav2Vec2ForCTC' not in config.get('architectures', []) or
+                config.get('auto_map') or not (root / 'vocab.json').is_file()):
+            parser.error('This alignment adapter needs a local Wav2Vec2 CTC config/vocabulary without remote model code')
+        if not any(root.glob('*.safetensors')) and not any(root.glob('pytorch_model*.bin')):
+            parser.error('The local CTC model has no supported weights')
     files = []
     for path in sorted(root.rglob("*")):
         if not path.is_file() or ".cache" in path.relative_to(root).parts:
@@ -33,6 +42,7 @@ def main():
                 digest.update(chunk)
         files.append({"path": str(path.relative_to(root)), "bytes": path.stat().st_size, "sha256": digest.hexdigest()})
     manifest = {"schema": 1, "repo": args.repo, "revision": args.revision, "files": files,
+                "purpose": args.purpose, "qualityQualified": False,
                 "license": "See the pinned model card and license files; access does not establish redistribution rights."}
     (root / "plezy-model-manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(f"Prepared {len(files)} files at {root}. Configure the host to use this directory.")

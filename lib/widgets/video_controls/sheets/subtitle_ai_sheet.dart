@@ -788,7 +788,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         throw const FormatException('The companion did not declare its translation destination.');
       }
       List<SubtitleCue> cues = const [];
-      if (task == 'align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || textTask) {
+      if (task == 'align' || task == 'singing_align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || textTask) {
         final selected = await _pickSubtitleCues();
         if (selected == null || !mounted) return;
         cues = selected.$1;
@@ -855,6 +855,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 'Sound labels do not identify direction or a verified source. Recognition glossary keys are hints, not spelling guarantees.'),
             if (task == 'align') Text('Only use text matching the spoken ${SubtitleTranslationService.languageLabel(_sourceLanguage)} audio, '
                 'with approximate cue intervals no longer than 60 seconds. Unsupported/uncertain cues keep their original timing.'),
+            if (task == 'singing_align') Text('Use lyrics matching the sung ${SubtitleTranslationService.languageLabel(_sourceLanguage)} audio. '
+                'Maximum five minutes, 120 cues, 30 seconds per cue. A configured local CTC model compares original and percussive-suppressed audio. '
+                'Only agreeing word boundaries are proposed; lyric text and cue bounds stay unchanged. This is experimental, not verified singing alignment.'),
             if (task == 'translate') Text('Translate ${SubtitleTranslationService.languageLabel(_sourceLanguage)} to ${SubtitleTranslationService.languageLabel(_targetLanguage)} using an installed host language pair.'),
             if (task == 'translate_model') ...[
               Text('The companion will forward subtitle text, neighboring dialogue and protected glossary markers to:\n'
@@ -886,8 +889,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             if (task == 'reading') ...[
               const Text('Add dictionary-derived Japanese reading aids to a separate SRT. Names and ambiguous readings need review; the original is unchanged.'),
               DropdownButtonFormField<String>(initialValue: readingMode, decoration: const InputDecoration(labelText: 'Reading display'),
-                items: const [DropdownMenuItem(value: 'hiragana', child: Text('Inline kana after kanji')),
-                  DropdownMenuItem(value: 'hepburn', child: Text('Original + Hepburn romanization line'))],
+                items: [const DropdownMenuItem(value: 'hiragana', child: Text('Inline kana after kanji')),
+                  const DropdownMenuItem(value: 'hepburn', child: Text('Original + Hepburn romanization line')),
+                  if (capabilities['readingModes'] is List && (capabilities['readingModes'] as List).contains('ruby'))
+                    const DropdownMenuItem(value: 'ruby', child: Text('Ruby readings above base text in app overlays'))],
                 onChanged: (value) => update(() => readingMode = value ?? 'hiragana')),
             ],
             if (task == 'scene_review') Text('The host will forward up to 30 chosen captions and ${sceneTemporalRegions ? 3 : 1} resized video frame(s) per cue to:\n'
@@ -951,7 +956,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       _requireCurrentOperationIdentity();
       final id = await service.submit(task: task, identityKey: identity.storageKey, mediaPath: path, cues: cues,
         language: task == 'script_convert' ? 'zh' : task == 'reading' ? 'ja'
-            : task == 'align' || task == 'dub_mix' || textTask || task == 'bitmap_ocr' ? _sourceLanguage.bcpCode.split('-').first
+            : task == 'align' || task == 'singing_align' || task == 'dub_mix' || textTask || task == 'bitmap_ocr' ? _sourceLanguage.bcpCode.split('-').first
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
         targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
@@ -3815,6 +3820,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('extract_text', 'Extract an embedded text subtitle stream'),
             ('signs', 'Read on-screen signs in a chosen crop'),
             ('align', 'Force-align a matching-language transcript'),
+            ('singing_align', 'Propose lyric word timing against music (experimental)'),
             ('diarize', 'Transcribe with anonymous speaker labels'),
             ('translate', 'Translate subtitles on the companion'),
             ('translate_model', 'Translate with faithful, natural, or literal wording'),

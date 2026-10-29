@@ -31,6 +31,9 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
             items: [for (final font in SubtitleOverlayTrack.fonts) DropdownMenuItem(value: font, child: Text(font))],
             onChanged: (font) { if (font != null) change(() => track.fontFamily = font); }),
           const Text('Bundled multilingual fonts work offline, including Hangul fallback. Other choices use installed system families and may be unavailable on this device.'),
+          SwitchListTile(title: const Text('Show ruby reading aids'),
+            subtitle: const Text('Display supplied ruby readings above their base text. Ruby groups wrap together and use base text for speech and plain export. Word highlighting pauses for annotated cues.'),
+            value: track.ruby, onChanged: (value) => change(() => track.ruby = value)),
           Wrap(spacing: 8, children: [for (final align in [TextAlign.start, TextAlign.center, TextAlign.end])
             ChoiceChip(label: Text(align.name), selected: track.alignment == align,
               onSelected: (_) => change(() => track.alignment = align))]),

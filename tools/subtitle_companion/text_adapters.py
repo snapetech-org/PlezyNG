@@ -6,6 +6,7 @@ model and declared revision shown by capabilities before any text is forwarded.
 from __future__ import annotations
 
 import hashlib
+import html
 import importlib.metadata
 import json
 import os
@@ -205,14 +206,21 @@ def derivative(folder, job, progress):
         import pykakasi
         converter = pykakasi.kakasi()
         mode = job["readingMode"]
+        if mode == 'ruby' and any(re.search(r'<ruby\b', cue['text'], re.I) for cue in job['cues']):
+            raise ValueError('choose_unannotated_text_for_ruby_generation')
         def reading(text):
             pieces = converter.convert(text)
             if mode == "hepburn":
                 return " ".join(piece["hepburn"] for piece in pieces)
+            if mode == 'ruby':
+                return ''.join('<ruby>' + html.escape(piece['orig']) + '<rt>' + html.escape(piece['hira']) + '</rt></ruby>'
+                    if re.search(r'[\u3400-\u9fff]', piece['orig']) and piece['orig'] != piece['hira']
+                    else html.escape(piece['orig']) for piece in pieces)
             return "".join(piece["orig"] + (f"（{piece['hira']}）" if re.search(r"[\u3400-\u9fff]", piece["orig"]) and piece["orig"] != piece["hira"] else "") for piece in pieces)
         transform = (lambda text: text + "\n" + map_plain(text, reading)) if mode == "hepburn" else (lambda text: map_plain(text, reading))
         language, model = "ja", "pykakasi " + mode
-        warning = "Japanese readings are dictionary-derived and can be wrong for names/context. This separate SRT uses inline kana or a romanization line, not native ruby positioning."
+        warning = ("Japanese readings are dictionary-derived and can be wrong for names/context. Ruby markup is rendered by the PlezyNG app overlay; native SRT players may flatten it. Plain snapshot export omits readings."
+            if mode == 'ruby' else "Japanese readings are dictionary-derived and can be wrong for names/context. This separate SRT uses inline kana or a romanization line, not native ruby positioning.")
     output = []
     total = 0
     for cue in job["cues"]:

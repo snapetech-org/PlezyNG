@@ -25,13 +25,13 @@ def progress(folder, phase, fraction):
     atomic_json(folder / "progress.json", {"phase": phase, "fraction": max(0, min(1, fraction))})
 
 
-def decode_audio(folder, job):
+def decode_audio(folder, job, max_seconds=MAX_SECONDS):
     progress(folder, "Decoding selected audio", 0)
     target = folder / "analysis.wav"
     command = [os.environ.get("PLEZY_FFMPEG", "ffmpeg"), "-nostdin", "-hide_banner", "-loglevel", "error", "-y",
                "-protocol_whitelist", "file,pipe", "-format_whitelist", FORMATS,
                "-i", str(folder / "input.media"), "-map", f"0:a:{job['audioTrack']}", "-vn",
-               "-ac", "1", "-ar", "16000", "-t", str(MAX_SECONDS + 0.1)]
+               "-ac", "1", "-ar", "16000", "-t", str(max_seconds + 0.1)]
     if job.get("preprocess"):
         command.extend(["-af", "highpass=f=80,afftdn=nf=-25"])
     command.extend(["-c:a", "pcm_s16le", "-f", "wav", str(target)])
@@ -44,8 +44,8 @@ def decode_audio(folder, job):
         count = stream.getnframes()
         if stream.getnchannels() != 1 or stream.getsampwidth() != 2 or stream.getframerate() != 16000:
             raise ValueError("invalid_decoded_audio")
-        if not 0 < count <= MAX_SECONDS * 16000:
-            raise ValueError("audio_duration_limit_one_hour")
+        if not 0 < count <= max_seconds * 16000:
+            raise ValueError("audio_duration_limit")
         audio = np.frombuffer(stream.readframes(count), dtype="<i2").astype(np.float32) / 32768
     return audio
 
@@ -86,21 +86,27 @@ def recognize(folder, job, audio, device, model_name=None):
             "languageProbability": float(info.language_probability), "durationMs": duration_ms}
 
 
-def align(folder, job, audio, device):
+def alignment_runtime(language, device, explicit_model=None):
     import whisperx
-    language = job["language"]
-    explicit_model = os.environ.get("PLEZY_ALIGN_MODEL")
+    explicit_model = explicit_model or os.environ.get("PLEZY_ALIGN_MODEL")
     allow_download = os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1"
     if not allow_download and not explicit_model:
         raise ValueError("configure_cached_alignment_model")
-    model, metadata = whisperx.load_align_model(language_code=language, device=device,
-                                                model_name=explicit_model, model_cache_only=not allow_download)
+    return whisperx.load_align_model(language_code=language, device=device,
+                                    model_name=explicit_model, model_cache_only=not allow_download)
+
+
+def align(folder, job, audio, device, runtime=None):
+    import whisperx
+    language = job["language"]
+    model, metadata = runtime if runtime is not None else alignment_runtime(language, device)
     output, words, uncertain = [], [], []
     duration_ms = round(len(audio) / 16)
     for index, cue in enumerate(job["cues"]):
         # Whole-title alignment without timing anchors grows the CTC trellis
         # without bound. Each submitted cue must be a plausible <=60s region.
-        plain = re.sub(r"<[^>]{0,160}>|\{[^}]{0,160}\}", "", cue["text"]).replace("\\N", " ").strip()
+        base = re.sub(r'<(?:rt|rp)\s*>[\s\S]*?</(?:rt|rp)\s*>', '', cue['text'], flags=re.I)
+        plain = re.sub(r"<[^>]{0,160}>|\{[^}]{0,160}\}", "", base).replace("\\N", " ").strip()
         if cue["endMs"] > duration_ms or cue["endMs"] - cue["startMs"] > 60000 or not plain:
             output.append(cue)
             uncertain.append(cue["cueId"])
@@ -319,9 +325,12 @@ def main():
         result = run(folder, job, progress)
         device = "ffmpeg-decode-and-tesseract-cpu"
     else:
-        audio = decode_audio(folder, job)
+        audio = decode_audio(folder, job, max_seconds=300 if task == 'singing_align' else MAX_SECONDS)
         from research import AUDIO_TASKS, ensemble, separate, sound_events, completeness
-        if task in AUDIO_TASKS:
+        if task == 'singing_align':
+            from research import singing_align
+            function = lambda folder, job, audio, device: singing_align(folder, job, audio, device, progress, align, alignment_runtime)
+        elif task in AUDIO_TASKS:
             adapter = {"ensemble": ensemble, "separate": separate, "sound_events": sound_events, "completeness": completeness}[task]
             function = lambda folder, job, audio, device: adapter(folder, job, audio, device, progress, recognize)
         else:

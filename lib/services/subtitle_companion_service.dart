@@ -202,6 +202,8 @@ final class SubtitleCompanionService {
     if ((itemTimeline || timelineOffsetMs != 0) && caps['sourceTimelineOffsets'] != true) throw UnsupportedError('Update the companion to preserve source timeline offsets');
     if (sceneTemporalRegions && caps['sceneTemporalRegions'] != true) throw UnsupportedError('Update the companion for temporal scene proposals');
     if (sceneAudioEvidence && caps['sceneAudioEvidence'] != true) throw UnsupportedError('The companion has not declared a joint audio/image provider');
+    if (task == 'reading' && readingMode == 'ruby' &&
+        (caps['readingModes'] is! List || !(caps['readingModes'] as List).contains('ruby'))) throw UnsupportedError('Update the companion for ruby reading output');
     if (soundStereoEvidence && caps['soundStereoEvidence'] != true) throw UnsupportedError('Update the companion for stereo evidence');
     final input = mediaPath == null ? null : File(mediaPath);
     final length = input == null ? 0 : await input.length();

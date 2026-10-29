@@ -380,3 +380,33 @@ The content-part schema follows the provider-compatible
 [Chat Completions contract](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create);
 a schema accepting both parts does not imply every model supports them jointly.
 No provider request or model execution was performed while implementing this.
+
+### Ruby and lyric word proposals
+
+`readingMode: "ruby"` adds bounded `<ruby>base<rt>reading</rt></ruby>` markup using
+the existing Japanese dictionary adapter. `readingModes` advertises the option
+and both clients check it. PlezyNG's horizontal app overlay renders the reading
+above the base; native SRT playback may flatten it. Plain snapshot export and
+spoken subtitles use base text. Readings remain dictionary suggestions, not
+verified pronunciation. Existing annotated text is refused for ruby generation
+to prevent nested or duplicated annotations.
+
+`singing_align` is advertised with WhisperX plus `PLEZY_SINGING_ALIGN_MODEL`,
+an absolute directory containing a reviewed Wav2Vec2 CTC model and vocabulary.
+`prepare_models.py --purpose singing-alignment --repo OWNER/MODEL
+--revision FULL_COMMIT --output EMPTY_DIRECTORY` prepares and hashes the supported
+layout without executing model code. Select a model whose license and language
+coverage you have reviewed; this workflow does not supply or qualify weights.
+
+The lyric adapter accepts matching-language lyrics for a media file up to five
+minutes, 120 cues and 30 seconds per cue. It compares CTC alignment on original
+audio with a median-mask harmonic view, processed in bounded 16-second chunks.
+This suppresses percussive energy rather than isolating vocals. Only word
+sequences whose boundaries agree within 250 ms across both views are returned.
+The original lyric text and cue bounds are unchanged. `lyricTimingEvidence`
+records accepted words, rejected cues and observed boundary differences.
+Melisma, instruments, chorus overlap and singing pronunciation can defeat both
+views; shared agreement is not a calibrated confidence score. No note/syllable
+timing or uniform word interpolation is invented. CPU and requested CUDA follow
+the existing explicit fallback path, without per-operation placement attestation.
+No model preparation, inference, evaluation, rendering or test was run.

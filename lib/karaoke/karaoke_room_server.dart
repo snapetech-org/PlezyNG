@@ -142,16 +142,17 @@ class KaraokeRoomServer extends ChangeNotifier {
         final offset=(int.tryParse(r.uri.queryParameters['offset'] ?? '') ?? 0).clamp(0,2000);
         final query=r.uri.queryParameters['q'] ?? '';
         if(query.length>200)throw const FormatException('Search too long');
-        final found=session.search(query,singerId:grant.singer);
+        final found=session.search(query,singerId:grant.singer).where((t)=>session.allowExplicit || !t.explicit).toList();
         response.write(jsonEncode({'revision':session.revision,'total':found.length,'songs':found.skip(offset).take(100).map((t)=>{
           'id':t.id,'title':t.title,'artist':t.artist,'language':t.language,'parts':t.parts.toList(),'explicit':t.explicit,
+          'singAlongOnly':t.singAlongOnly,'scored':t.canScore,
           'favorite':session.singers.where((s)=>s.id==grant.singer).firstOrNull?.favorites.contains(t.id)==true,
         }).toList()})); return;
       }
       if(r.method=='POST' && path=='/api/command') {
         if(grant.role==KaraokeRoomRole.display) { response.statusCode=403; return; }
         final body=await _body(r),action=body['action'] as String;
-        if(grant.role==KaraokeRoomRole.host && !{'request','cancel','approve','absent','reorder','start','pause','resume','restart','seek','finish','end','controls','settings','favorite','party'}.contains(action)) {
+        if(grant.role==KaraokeRoomRole.host && !{'request','cancel','approve','absent','reorder','start','pause','resume','restart','seek','finish','end','controls','settings','favorite','party','missingSongStatus'}.contains(action)) {
           response.statusCode=403; return;
         }
         final result=await session.command(body['id'] as String,body['revision'] as int,action,
@@ -190,15 +191,26 @@ class KaraokeRoomServer extends ChangeNotifier {
   }
   Map<String,dynamic> _state(_Grant grant) {
     final s=session,t=s.track;
+    final missing=s.missingSongs.where((m)=>grant.role==KaraokeRoomRole.host || m.singerId==grant.singer).toList()
+      ..sort((a,b) {
+        final openOrder=(b.status=='open'?1:0).compareTo(a.status=='open'?1:0);
+        return openOrder!=0 ? openOrder : b.createdMs.compareTo(a.createdMs);
+      });
     return {'schema':1,'revision':s.revision,'epoch':s.epoch,'authority':s.authority,
       'serverTimeMs':DateTime.now().millisecondsSinceEpoch,'playing':s.playing,'positionMs':s.positionMs.value,'durationMs':s.durationMs,
+      'allowVotes':s.allowVotes,
       'key':s.current?.key ?? 0,'tempo':s.current?.tempo ?? 1,'banner':s.banner,'stageColor':s.stageColor,
       'track':t==null ? null : {'id':t.id,'title':t.title,'artist':t.artist,'offsetMs':t.lyricOffsetMs+s.displayOffsetMs},
       'role':grant.role.name,'singerId':grant.singer,'phoneInput':{'available':_secure || _address=='127.0.0.1','activeSinger':s.current?.singers.contains(grant.singer)==true,'meters':grant.role==KaraokeRoomRole.host ? phoneInputs.meters : []},'party':s.party.view(),
       'singers':grant.role==KaraokeRoomRole.host ? s.singers.map((p)=>{'id':p.id,'name':p.name,'absent':p.absent}).toList() : null,
+      'missingSongs':[for(final request in missing.take(320)) {
+        'id':request.id,'title':request.title,'artist':request.artist,'language':request.language,'status':request.status,
+        'createdMs':request.createdMs,'singer':s.singers.where((p)=>p.id==request.singerId).firstOrNull?.name ?? 'Singer',
+      }],
       'queue':[for(final r in [if(s.current?.state==KaraokeRequestState.playing)s.current!,...s.rotation,...s.requests.where((r)=>r.state==KaraokeRequestState.pending)]) {
         'id':r.id,'title':s.catalog[r.trackId]?.title ?? '', 'singers':r.singers.map((id)=>s.singers.where((p)=>p.id==id).firstOrNull?.name ?? '').toList(),
         'state':r.state.name,'mine':grant.singer!=null && r.singers.contains(grant.singer),'waitMs':s.waitMs(r),
+        'votes':r.votes.length,'voteScore':r.voteScore,'myVote':grant.singer==null ? 0 : r.votes[grant.singer] ?? 0,
       }],
     };
   }

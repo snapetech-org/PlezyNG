@@ -85,6 +85,7 @@ class KaraokeTrack {
 
   bool get canScore => chartReviewed && notes.any((n) => !n.freestyle);
   bool get hasBacking => assets.any((a) => a.kind == KaraokeAssetKind.instrumental);
+  bool get singAlongOnly => media != null && !hasBacking;
   bool get hasLocalAudio => assets.any((a) => a.kind == KaraokeAssetKind.audio || a.kind == KaraokeAssetKind.instrumental);
   Set<String> get parts => {...notes.map((n) => n.part), ...lyrics.lines.map((l) => l.part).whereType<String>()};
   Map<String, dynamic> toJson() => {'schema': 1, 'id': id, 'songId': songId, 'title': title, 'artist': artist,
@@ -178,15 +179,42 @@ class KaraokeRequest {
   KaraokeRequestState state;
   String? part,medleyGroup;
   final Map<String,String> parts;
+  final Map<String,int> votes;
   int? clipStartMs,clipEndMs;
   KaraokeRequest({required this.id, required this.trackId, required this.singers, required this.createdMs,
-    this.key = 0, this.tempo = 1, this.state = KaraokeRequestState.ready, this.part,Map<String,String>? parts,this.clipStartMs,this.clipEndMs,this.medleyGroup}) : parts=parts ?? {};
+    this.key = 0, this.tempo = 1, this.state = KaraokeRequestState.ready, this.part,Map<String,String>? parts,
+    Map<String,int>? votes,this.clipStartMs,this.clipEndMs,this.medleyGroup}) : parts=parts ?? {},votes=votes ?? {};
+  int get voteScore=>votes.values.fold(0,(sum,value)=>sum+value);
   Map<String, dynamic> toJson() => {'id': id, 'trackId': trackId, 'singers': singers, 'createdMs': createdMs,
-    'key': key, 'tempo': tempo, 'state': state.name, 'part': part,'parts':parts,'clipStartMs':clipStartMs,'clipEndMs':clipEndMs,'medleyGroup':medleyGroup};
-  factory KaraokeRequest.fromJson(Map<String, dynamic> j) => KaraokeRequest(id: j['id'] as String,
-    trackId: j['trackId'] as String, singers: List<String>.from(j['singers'] as List), createdMs: j['createdMs'] as int,
-    key: ((j['key'] as num?)?.toDouble() ?? 0).clamp(-12,12),
-    tempo: ((j['tempo'] as num?)?.toDouble() ?? 1).clamp(.5,2),
-    state: KaraokeRequestState.values.byName(j['state'] as String), part: j['part'] as String?,parts:Map<String,String>.from(j['parts'] as Map? ?? {}),
-    clipStartMs:j['clipStartMs'] as int?,clipEndMs:j['clipEndMs'] as int?,medleyGroup:j['medleyGroup'] as String?);
+    'key': key, 'tempo': tempo, 'state': state.name, 'part': part,'parts':parts,'votes':votes,
+    'clipStartMs':clipStartMs,'clipEndMs':clipEndMs,'medleyGroup':medleyGroup};
+  factory KaraokeRequest.fromJson(Map<String, dynamic> j) {
+    final votes=Map<String,int>.from(j['votes'] as Map? ?? {});
+    if(votes.length>64 || votes.values.any((v)=>v < -1 || v > 1))throw const FormatException('Invalid request votes');
+    return KaraokeRequest(id: j['id'] as String,
+      trackId: j['trackId'] as String, singers: List<String>.from(j['singers'] as List), createdMs: j['createdMs'] as int,
+      key: ((j['key'] as num?)?.toDouble() ?? 0).clamp(-12,12),
+      tempo: ((j['tempo'] as num?)?.toDouble() ?? 1).clamp(.5,2),
+      state: KaraokeRequestState.values.byName(j['state'] as String), part: j['part'] as String?,
+      parts:Map<String,String>.from(j['parts'] as Map? ?? {}),votes:votes,
+      clipStartMs:j['clipStartMs'] as int?,clipEndMs:j['clipEndMs'] as int?,medleyGroup:j['medleyGroup'] as String?);
+  }
+}
+
+class KaraokeMissingSong {
+  KaraokeMissingSong({required this.id,required this.singerId,required this.title,required this.artist,
+    required this.language,required this.createdMs,this.status='open'});
+  final String id,singerId,title,artist,language;
+  final int createdMs;
+  String status;
+  Map<String,dynamic> toJson()=>{'id':id,'singerId':singerId,'title':title,'artist':artist,'language':language,'createdMs':createdMs,'status':status};
+  factory KaraokeMissingSong.fromJson(Map<String,dynamic> j) {
+    final song=KaraokeMissingSong(id:j['id'] as String,singerId:j['singerId'] as String,title:j['title'] as String,
+      artist:j['artist'] as String? ?? '',language:j['language'] as String? ?? '',createdMs:j['createdMs'] as int,
+      status:j['status'] as String? ?? 'open');
+    if(!RegExp(r'^[a-zA-Z0-9_-]{8,128}$').hasMatch(song.id) || !RegExp(r'^[a-zA-Z0-9_-]{1,128}$').hasMatch(song.singerId) ||
+        song.title.isEmpty || song.title.length>160 || song.artist.length>120 || song.language.length>32 || song.createdMs<0 ||
+        !{'open','found','dismissed'}.contains(song.status))throw const FormatException('Invalid missing-song suggestion');
+    return song;
+  }
 }

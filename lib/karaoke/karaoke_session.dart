@@ -41,6 +41,7 @@ class KaraokeSession extends ChangeNotifier {
   final Map<String,KaraokeTrack> catalog = {};
   final List<KaraokeSinger> singers = [];
   final List<KaraokeRequest> requests = [];
+  final List<KaraokeMissingSong> missingSongs=[];
   final Map<String,List<String>> setlists = {};
   final Map<String,int> _turns = {}, _lastTurn = {};
   final Map<String,Map<String,dynamic>> _receipts = {};
@@ -56,7 +57,7 @@ class KaraokeSession extends ChangeNotifier {
   KaraokeRequest? current;
   int revision = 0, epoch = 0, _turnNumber = 0, _savedAt = 0;
   int? loopStartMs, loopEndMs, _undoSeek;
-  bool fairRotation = true, allowExplicit = true, requireApproval = true, held = false;
+  bool fairRotation = true, allowExplicit = true, requireApproval = true, allowVotes = false, held = false;
   bool _disposed = false, _loopSeeking = false, _finishing = false;
   bool _usingMusic = false, _started = false;
   bool _resumeAfterQuiz = false;
@@ -96,6 +97,7 @@ class KaraokeSession extends ChangeNotifier {
       fillerTrackIds=fillerTrackIds.where(catalog.containsKey).toList();
       singers.addAll((j['singers'] as List? ?? const []).map((s) => KaraokeSinger.fromJson(Map<String,dynamic>.from(s as Map))));
       requests.addAll((j['requests'] as List? ?? const []).map((r) => KaraokeRequest.fromJson(Map<String,dynamic>.from(r as Map))));
+      missingSongs.addAll((j['missingSongs'] as List? ?? const []).map((s)=>KaraokeMissingSong.fromJson(Map<String,dynamic>.from(s as Map))));
       for(final r in requests) { if(r.state == KaraokeRequestState.playing) { r.state=KaraokeRequestState.ready; current=r; } }
       positionMs.value = j['positionMs'] as int? ?? 0;
       revision=j['revision'] as int? ?? 0; epoch=(j['epoch'] as int? ?? 0)+1;
@@ -105,6 +107,7 @@ class KaraokeSession extends ChangeNotifier {
       _receipts.addAll((j['receipts'] as Map? ?? {}).map((k,v) => MapEntry(k as String,Map<String,dynamic>.from(v as Map))));
       setlists.addAll((j['setlists'] as Map? ?? {}).map((k,v) => MapEntry(k as String,List<String>.from(v as List))));
       fairRotation=j['fairRotation'] != false; allowExplicit=j['allowExplicit'] != false; requireApproval=j['requireApproval'] != false;
+      allowVotes=j['allowVotes']==true;
       banner=j['banner'] as String? ?? ''; stageColor=j['stageColor'] as int? ?? stageColor;
       stageTextScale=((j['stageTextScale'] as num?)?.toDouble() ?? 1).clamp(.75,2).toDouble();
       displayOffsetMs=(j['displayOffsetMs'] as int? ?? 0).clamp(-2000,2000);
@@ -118,8 +121,8 @@ class KaraokeSession extends ChangeNotifier {
   }
   Map<String,dynamic> _snapshot() => {'schema':1,'revision':revision,'epoch':epoch,'positionMs':positionMs.value,
     'catalog':catalog.values.map((t)=>t.toJson()).toList(),'singers':singers.map((s)=>s.toJson()).toList(),
-    'requests':requests.map((r)=>r.toJson()).toList(),'turns':_turns,'lastTurn':_lastTurn,'turnNumber':_turnNumber,
-    'receipts':_receipts,'setlists':setlists,'fairRotation':fairRotation,'allowExplicit':allowExplicit,'requireApproval':requireApproval,
+    'requests':requests.map((r)=>r.toJson()).toList(),'missingSongs':missingSongs.map((s)=>s.toJson()).toList(),'turns':_turns,'lastTurn':_lastTurn,'turnNumber':_turnNumber,
+    'receipts':_receipts,'setlists':setlists,'fairRotation':fairRotation,'allowExplicit':allowExplicit,'requireApproval':requireApproval,'allowVotes':allowVotes,
     'party':party.toJson(),'duetInvitation':duetInvitation,'fillerTrackIds':fillerTrackIds,'perSingerLimit':perSingerLimit,'banner':banner,'stageColor':stageColor,'stageTextScale':stageTextScale,'displayOffsetMs':displayOffsetMs};
   Future<void> save() => store.write('session',_snapshot());
   String _analysisKey(String id)=>'analysis-${sha256.convert(utf8.encode(id))}';
@@ -188,10 +191,15 @@ class KaraokeSession extends ChangeNotifier {
     return math.max(-12,(low-bottom).ceil())<=math.min(12,(high-top).floor());
   }
   List<KaraokeTrack> search(String query,{bool offline=false,bool duet=false,bool scored=false,bool fitsRange=false,
+      bool favoritesOnly=false,bool recentlyPlayed=false,bool recentlyAdded=false,
       String? language,String? genre,int? decade,int? difficulty,String? tag,String? singerId}) {
     final words=query.toLowerCase().split(RegExp(r'\s+')).where((s)=>s.isNotEmpty);
     final singer=singers.where((s)=>s.id==singerId).firstOrNull;
     final rangeFit=<String,bool>{};
+    final addedOrder=<String,int>{};var addedIndex=0;
+    for(final id in catalog.keys)addedOrder[id]=addedIndex++;
+    final playedOrder=<String,int>{};
+    if(singer!=null)for(var i=0;i<singer.history.length;i++)playedOrder.putIfAbsent(singer.history[i],()=>i);
     final found=<KaraokeTrack>[];
     for(final t in catalog.values) {
       if(singer?.lowMidi!=null && singer?.highMidi!=null)rangeFit[t.id]=fitsComfortableRange(t,singerId:singerId);
@@ -199,10 +207,13 @@ class KaraokeSession extends ChangeNotifier {
           (scored && !t.canScore) || (fitsRange && rangeFit[t.id]!=true) || (language!=null && t.language!=language) ||
           (genre!=null && t.genre!=genre) || (decade!=null && (t.year==null || (t.year! ~/ 10) * 10 != decade)) ||
           (difficulty!=null && t.difficulty!=difficulty) || (tag!=null && !t.tags.contains(tag)) ||
+          (favoritesOnly && singer?.favorites.contains(t.id)!=true) || (recentlyPlayed && !playedOrder.containsKey(t.id)) ||
           !words.every((q)=>'${t.title} ${t.artist} ${t.producer} ${t.genre} ${t.year ?? ''} ${t.tags.join(' ')}'.toLowerCase().contains(q)))continue;
       found.add(t);
     }
     found.sort((a,b) {
+      if(recentlyPlayed) { final c=(playedOrder[a.id] ?? (1<<30)).compareTo(playedOrder[b.id] ?? (1<<30));if(c!=0)return c; }
+      if(recentlyAdded) { final c=(addedOrder[b.id] ?? -1).compareTo(addedOrder[a.id] ?? -1);if(c!=0)return c; }
       final rangeA=rangeFit[a.id]==true ? 0 : 1, rangeB=rangeFit[b.id]==true ? 0 : 1;
       if(rangeA!=rangeB)return rangeA.compareTo(rangeB);
       final fa=singer?.favorites.contains(a.id)==true ? 0 : 1, fb=singer?.favorites.contains(b.id)==true ? 0 : 1;
@@ -234,7 +245,7 @@ class KaraokeSession extends ChangeNotifier {
       final prior=_receipts[id];
       if(prior!=null) { if(prior['fingerprint']!=fingerprint) throw StateError('Command ID reused for different content');await save();return Map<String,dynamic>.from(prior['result'] as Map); }
       if(expectedRevision!=revision) throw KaraokeConflict(revision);
-      if(guestSinger!=null && !{'request','cancel','favorite','party'}.contains(action)) throw StateError('Host permission required');
+      if(guestSinger!=null && !{'request','cancel','favorite','vote','missingSong','party'}.contains(action)) throw StateError('Host permission required');
       final response=<String,dynamic>{};
       switch(action) {
         case 'party':
@@ -301,6 +312,55 @@ class KaraokeSession extends ChangeNotifier {
           final trackId=payload['trackId'] as String;
           if(!catalog.containsKey(trackId)) throw StateError('Unknown song');
           if(payload['value']==true) { s.favorites.add(trackId); } else { s.favorites.remove(trackId); }
+        case 'vote':
+          if(!allowVotes)throw StateError('Queue voting is disabled by the host');
+          final request=requests.firstWhere((r)=>r.id==payload['requestId']);
+          if(!{KaraokeRequestState.pending,KaraokeRequestState.ready}.contains(request.state))throw StateError('Only waiting requests can be voted on');
+          final singerId=guestSinger ?? payload['singerId'] as String;
+          if(!singers.any((s)=>s.id==singerId))throw StateError('Unknown voting singer');
+          final rawValue=payload['value'];
+          if(rawValue is! int)throw const FormatException('Vote must be an integer');
+          final value=rawValue;
+          if(value < -1 || value > 1)throw const FormatException('Vote must be -1, 0 or 1');
+          if(value==0)request.votes.remove(singerId);else request.votes[singerId]=value;
+          response['voteCount']=request.votes.length;response['voteScore']=request.voteScore;
+        case 'missingSong':
+          final rawSinger=payload['singerId'];
+          final singerId=guestSinger ?? (rawSinger is String ? rawSinger : throw const FormatException('Singer is required'));
+          if(!singers.any((s)=>s.id==singerId))throw StateError('Unknown suggestion singer');
+          final rawTitle=payload['title'],rawArtist=payload['artist'],rawLanguage=payload['language'];
+          if(rawTitle is! String || (rawArtist!=null && rawArtist is! String) || (rawLanguage!=null && rawLanguage is! String)) {
+            throw const FormatException('Suggestion fields must be text');
+          }
+          final title=rawTitle.trim(),artist=(rawArtist is String ? rawArtist : '').trim(),language=(rawLanguage is String ? rawLanguage : '').trim();
+          if(title.isEmpty || title.length>160 || artist.length>120 || language.length>32)throw const FormatException('Invalid missing-song suggestion');
+          final prior=missingSongs.where((s)=>s.singerId==singerId && s.status=='open' && s.title.toLowerCase()==title.toLowerCase() &&
+            s.artist.toLowerCase()==artist.toLowerCase()).firstOrNull;
+          if(prior!=null){response['suggestionId']=prior.id;response['duplicate']=true;}
+          else {
+            if(missingSongs.where((s)=>s.status=='open').length>=256)throw StateError('Missing-song suggestion limit reached');
+            if(missingSongs.length>=512) {
+              final prune=missingSongs.indexWhere((s)=>s.status!='open');
+              if(prune<0)throw StateError('Suggestion history limit reached');
+              missingSongs.removeAt(prune);
+            }
+            final suggestion=KaraokeMissingSong(id:const Uuid().v4(),singerId:singerId,title:title,artist:artist,language:language,
+              createdMs:DateTime.now().millisecondsSinceEpoch);
+            missingSongs.add(suggestion);response['suggestionId']=suggestion.id;
+          }
+        case 'missingSongStatus':
+          final suggestion=missingSongs.firstWhere((s)=>s.id==payload['suggestionId']);
+          final rawStatus=payload['status'];if(rawStatus is! String)throw const FormatException('Suggestion status is required');
+          final status=rawStatus;
+          if(!{'open','found','dismissed'}.contains(status))throw const FormatException('Invalid suggestion status');
+          if(status=='open' && suggestion.status!='open') {
+            if(missingSongs.where((s)=>s.status=='open').length>=256)throw StateError('Missing-song suggestion limit reached');
+            if(missingSongs.any((s)=>s.id!=suggestion.id && s.singerId==suggestion.singerId && s.status=='open' &&
+                s.title.toLowerCase()==suggestion.title.toLowerCase() && s.artist.toLowerCase()==suggestion.artist.toLowerCase())) {
+              throw StateError('A matching suggestion is already open');
+            }
+          }
+          suggestion.status=status;
         case 'absent':
           singers.firstWhere((s)=>s.id==payload['singerId']).absent=payload['value']==true;
         case 'reorder':
@@ -364,6 +424,8 @@ class KaraokeSession extends ChangeNotifier {
           fairRotation=payload['fairRotation'] as bool? ?? fairRotation;
           allowExplicit=payload['allowExplicit'] as bool? ?? allowExplicit;
           requireApproval=payload['requireApproval'] as bool? ?? requireApproval;
+          if(payload['allowVotes']==false)for(final request in requests)request.votes.clear();
+          allowVotes=payload['allowVotes'] as bool? ?? allowVotes;
           banner=(payload['banner'] as String? ?? banner).substring(0,math.min((payload['banner'] as String? ?? banner).length,160));
         default: throw UnsupportedError('Unknown room command: $action');
       }

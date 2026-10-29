@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 import 'package:file_picker/file_picker.dart';
@@ -22,8 +24,27 @@ class KaraokeEditor extends StatefulWidget {
 class _KaraokeEditorState extends State<KaraokeEditor> {
   late KaraokeTrack _track=widget.track;
   final List<Map<String,dynamic>> _undo=[],_redo=[];
+  List<List<double>> _waveform=[];
   bool _busy=false;
   int _tap=0;
+  @override void initState(){super.initState();unawaited(_loadWaveform());}
+  Future<void> _loadWaveform() async {
+    try {
+      final key='waveform-${sha256.convert(utf8.encode(_track.id))}';
+      final saved=await widget.session.store.read(key);
+      if(saved?['schema']!=1 || saved?['renditionId']!=_track.id || saved?['waveform'] is! Map)return;
+      final raw=(saved!['waveform'] as Map)['peaks'];
+      if(raw is! List || raw.length>100000)throw const FormatException('Invalid waveform data');
+      final peaks=<List<double>>[];
+      for(final entry in raw) {
+        if(entry is! List || entry.length!=2 || entry.any((v)=>v is! num))throw const FormatException('Invalid waveform peak');
+        final low=(entry[0] as num).toDouble(),high=(entry[1] as num).toDouble();
+        if(!low.isFinite || !high.isFinite || low < -1 || high > 1 || low>high)throw const FormatException('Invalid waveform amplitude');
+        peaks.add([low,high]);
+      }
+      if(mounted)setState(()=>_waveform=peaks);
+    } catch(_) { if(mounted)setState(()=>_waveform=[]); }
+  }
   void _edit(KaraokeTrack value) {
     _undo.add(_track.toJson());if(_undo.length>40)_undo.removeAt(0);_redo.clear();
     setState(()=>_track=value);
@@ -143,6 +164,26 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
   ]),body:ListView(padding:const EdgeInsets.all(16),children:[
     if(_busy)const LinearProgressIndicator(),
     const Text('Original files stay unchanged. Review imported or generated notes against the backing track before enabling scoring.'),
+    if(_waveform.isNotEmpty) ...[
+      Text('Waveform · tap to seek during this rendition',style:Theme.of(context).textTheme.titleLarge),
+      ValueListenableBuilder<int>(
+        valueListenable:widget.session.positionMs,
+        builder:(context,position,_)=>LayoutBuilder(builder:(context,constraints)=>GestureDetector(
+          behavior:HitTestBehavior.opaque,
+          onTapDown:(details) {
+            final duration=widget.session.durationMs>0 ? widget.session.durationMs : _track.durationMs;
+            if(widget.session.track?.id==_track.id && widget.session.hasPerformance && duration>0 && constraints.maxWidth>0) {
+              var target=(details.localPosition.dx/constraints.maxWidth*duration).round();
+              if(target<0)target=0;
+              if(target>duration)target=duration;
+              _run(()=>widget.session.seek(target));
+            }
+          },
+          child:CustomPaint(size:Size(constraints.maxWidth,96),painter:_WaveformLane(_waveform,
+            playhead:widget.session.track?.id==_track.id && widget.session.durationMs>0 ? position/widget.session.durationMs : null)),
+        )),
+      ),
+    ] else const Text('Generate a waveform from Prepare to see the audio timeline here.'),
     Wrap(spacing:8,runSpacing:8,children:[
       OutlinedButton(onPressed:_importLyrics,child:const Text('Import lyrics / UltraStar')),
       OutlinedButton(onPressed:()=>_run(()=>_line(null)),child:const Text('Add line')),
@@ -186,4 +227,26 @@ class _NoteLane extends CustomPainter {
     }
   }
   @override bool shouldRepaint(_NoteLane old)=>old.notes!=notes;
+}
+class _WaveformLane extends CustomPainter {
+  _WaveformLane(this.peaks,{this.playhead});
+  final List<List<double>> peaks;
+  final double? playhead;
+  @override void paint(Canvas canvas,Size size) {
+    if(peaks.isEmpty || size.width<=0 || size.height<=0)return;
+    final paint=Paint()..color=Colors.lightBlueAccent..strokeWidth=1.2;
+    final center=size.height/2,width=size.width.ceil();
+    for(var x=0;x<width;x++) {
+      var start=(x/width*peaks.length).floor();if(start<0)start=0;if(start>=peaks.length)start=peaks.length-1;
+      var end=((x+1)/width*peaks.length).ceil();if(end<start+1)end=start+1;if(end>peaks.length)end=peaks.length;
+      var low=0.0,high=0.0;
+      for(var i=start;i<end;i++){low=math.min(low,peaks[i][0]).toDouble();high=math.max(high,peaks[i][1]).toDouble();}
+      canvas.drawLine(Offset(x.toDouble(),center-high*center),Offset(x.toDouble(),center-low*center),paint);
+    }
+    if(playhead!=null && playhead!.isFinite) {
+      final x=(playhead!.clamp(0.0,1.0)*size.width).toDouble();
+      canvas.drawLine(Offset(x,0),Offset(x,size.height),Paint()..color=Colors.amber..strokeWidth=2);
+    }
+  }
+  @override bool shouldRepaint(_WaveformLane old)=>old.peaks!=peaks || old.playhead!=playhead;
 }

@@ -52,7 +52,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
   final _query=TextEditingController();
   String? _singer;
   String _genre='',_language='',_decade='',_difficulty='';
-  bool _busy=false,_offline=false,_duet=false,_scored=false,_fitsRange=false;
+  bool _busy=false,_offline=false,_duet=false,_scored=false,_fitsRange=false,_favorites=false,_played=false,_recent=false;
   int _tab=0;
   late final KaraokePreparation _preparation=KaraokePreparation(widget.session);
   late final KaraokeAudio _audio=KaraokeAudio(widget.session);
@@ -183,11 +183,13 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
     if(s.singers.isNotEmpty) DropdownButton<String>(value:s.singers.any((p)=>p.id==_singer) ? _singer : null,
       hint:Text(tr('singerName')),items:s.singers.map((p)=>DropdownMenuItem(value:p.id,child:Text(p.name))).toList(),
       onChanged:(value)=>setState((){_singer=value;final singer=s.singers.where((p)=>p.id==value).firstOrNull;
-        if(singer?.lowMidi==null || singer?.highMidi==null)_fitsRange=false;})),
+        if(singer?.lowMidi==null || singer?.highMidi==null)_fitsRange=false;
+        if(value==null){_favorites=false;_played=false;}})),
     OutlinedButton.icon(onPressed:_busy ? null : _addSinger,icon:const Icon(Icons.person_add),label:Text(tr('addSinger'))),
   ]);
   Widget _library() {
-    final tracks=s.search(_query.text,offline:_offline,duet:_duet,scored:_scored,fitsRange:_fitsRange,singerId:_singer,
+    final tracks=s.search(_query.text,offline:_offline,duet:_duet,scored:_scored,fitsRange:_fitsRange,
+      favoritesOnly:_favorites,recentlyPlayed:_played,recentlyAdded:_recent,singerId:_singer,
       genre:_genre.isEmpty ? null : _genre,language:_language.isEmpty ? null : _language,
       decade:int.tryParse(_decade),difficulty:int.tryParse(_difficulty));
     final genres=s.catalog.values.map((t)=>t.genre.trim()).where((v)=>v.isNotEmpty).toSet().toList()..sort();
@@ -202,6 +204,11 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
       const SizedBox(height:12),_singerPicker(),Wrap(spacing:12,children:[
         FilterChip(label:Text(tr('offline')),selected:_offline,onSelected:(v)=>setState(()=>_offline=v)),
         FilterChip(label:Text(tr('duets')),selected:_duet,onSelected:(v)=>setState(()=>_duet=v)),
+        FilterChip(label:const Text('Favorites'),selected:_favorites,
+          onSelected:_singer==null ? null : (v)=>setState(()=>_favorites=v)),
+        FilterChip(label:const Text('Recently played'),selected:_played,
+          onSelected:_singer==null ? null : (v)=>setState(()=>_played=v)),
+        FilterChip(label:const Text('Recently added'),selected:_recent,onSelected:(v)=>setState(()=>_recent=v)),
         FilterChip(label:const Text('Scored charts'),selected:_scored,onSelected:(v)=>setState(()=>_scored=v)),
         FilterChip(label:const Text('Fits my range'),selected:_fitsRange,
           onSelected:singer?.lowMidi==null || singer?.highMidi==null ? null : (v)=>setState(()=>_fitsRange=v)),
@@ -225,7 +232,8 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
         final track=tracks[i],favorite=s.singers.where((p)=>p.id==_singer).firstOrNull?.favorites.contains(track.id)==true;
         final suggested=s.suggestedKey(track,singerId:_singer);
         final details=[track.artist,if(track.genre.isNotEmpty)track.genre,if(track.year!=null)'${track.year}',
-          track.canScore ? tr('reviewed') : tr('notScored'),if(suggested!=null)'Suggested key ${suggested>0?'+':''}$suggested'].where((v)=>v.isNotEmpty).join(' · ');
+          track.singAlongOnly ? 'Sing-along only · original audio' : track.canScore ? tr('reviewed') : tr('notScored'),
+          if(suggested!=null)'Suggested key ${suggested>0?'+':''}$suggested'].where((v)=>v.isNotEmpty).join(' · ');
         return ListTile(title:Text(track.title),subtitle:Text(details),
           leading:IconButton(tooltip:tr('favorite'),icon:Icon(favorite ? Icons.star : Icons.star_border),onPressed:_singer==null || _busy ? null :
             ()=>_command('favorite',{'singerId':_singer,'trackId':track.id,'value':!favorite})),
@@ -255,16 +263,34 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
     _singerPicker(),const SizedBox(height:12),
     SwitchListTile(title:Text(tr('fair')),value:s.fairRotation,onChanged:_busy ? null : (v)=>_command('settings',{'fairRotation':v})),
     SwitchListTile(title:Text(tr('approval')),value:s.requireApproval,onChanged:_busy ? null : (v)=>_command('settings',{'requireApproval':v})),
+    SwitchListTile(title:const Text('Allow guest votes on waiting songs'),value:s.allowVotes,
+      onChanged:_busy ? null : (v)=>_command('settings',{'allowVotes':v})),
     SwitchListTile(title:Text(tr('explicit')),value:s.allowExplicit,onChanged:_busy ? null : (v)=>_command('settings',{'allowExplicit':v})),
     for(final singer in s.singers) CheckboxListTile(title:Text(singer.name),subtitle:Text(tr('absent')),value:singer.absent,
       onChanged:_busy ? null : (v)=>_command('absent',{'singerId':singer.id,'value':v})),
+    if(s.missingSongs.any((m)=>m.status=='open'))const Divider(),
+    for(final suggestion in s.missingSongs.where((m)=>m.status=='open'))ListTile(
+      title:Text(suggestion.title),subtitle:Text('${suggestion.artist.isEmpty ? 'Artist unknown' : suggestion.artist} · '
+        '${s.singers.where((p)=>p.id==suggestion.singerId).firstOrNull?.name ?? 'Guest'} · ${suggestion.language.isEmpty ? 'Language unspecified' : suggestion.language}'),
+      trailing:Wrap(children:[IconButton(tooltip:'Mark sourced',onPressed:_busy ? null : ()=>_command('missingSongStatus',
+        {'suggestionId':suggestion.id,'status':'found'}),icon:const Icon(Icons.check)),
+        IconButton(tooltip:'Dismiss suggestion',onPressed:_busy ? null : ()=>_command('missingSongStatus',
+          {'suggestionId':suggestion.id,'status':'dismissed'}),icon:const Icon(Icons.close))])),
+    if(s.missingSongs.any((m)=>m.status!='open'))Text('Resolved missing-song suggestions',style:Theme.of(context).textTheme.titleMedium),
+    for(final suggestion in s.missingSongs.where((m)=>m.status!='open'))ListTile(
+      title:Text(suggestion.title),subtitle:Text('${suggestion.artist.isEmpty ? 'Artist unknown' : suggestion.artist} · '
+        '${s.singers.where((p)=>p.id==suggestion.singerId).firstOrNull?.name ?? 'Guest'} · ${suggestion.status}'),
+      trailing:IconButton(tooltip:'Reopen suggestion',onPressed:_busy ? null : ()=>_command('missingSongStatus',
+        {'suggestionId':suggestion.id,'status':'open'}),icon:const Icon(Icons.refresh))),
     const Divider(),
     if(s.current!=null) ListTile(title:Text('${tr('playing')}: ${s.track?.title ?? ''}'),trailing:TextButton(onPressed:_busy ? null :
       ()=>_command(s.hasPerformance ? 'finish' : 'start',s.hasPerformance ? {} : {'requestId':s.current!.id,'resume':true}),
       child:Text(tr(s.hasPerformance ? 'next' : 'resume')))),
     for(final request in [...s.requests.where((r)=>r.state==KaraokeRequestState.pending),...s.rotation])
       ListTile(title:Text(s.catalog[request.trackId]?.title ?? request.trackId),
-        subtitle:Text('${request.singers.map((id)=>s.singers.where((p)=>p.id==id).firstOrNull?.name ?? id).join(' + ')} · ${tr(request.state.name)}\n${s.rotationReason(request)} · ~${(s.waitMs(request)/60000).ceil()} min'),
+        subtitle:Text('${request.singers.map((id)=>s.singers.where((p)=>p.id==id).firstOrNull?.name ?? id).join(' + ')} · ${tr(request.state.name)}'
+          '${request.votes.isEmpty ? '' : ' · ${request.votes.length} votes (${request.voteScore>0?'+':''}${request.voteScore})'}\n'
+          '${s.rotationReason(request)} · ~${(s.waitMs(request)/60000).ceil()} min'),
         trailing:Wrap(children:[IconButton(tooltip:tr(request.state==KaraokeRequestState.pending ? 'approve' : 'start'),
           onPressed:_busy || (s.hasPerformance && request.state==KaraokeRequestState.ready) ? null : ()=>_command(request.state==KaraokeRequestState.pending ? 'approve' : 'start',{'requestId':request.id}),
           icon:Icon(request.state==KaraokeRequestState.pending ? Icons.check : Icons.play_arrow)),

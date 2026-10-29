@@ -8,8 +8,9 @@ const karaokeGuestHtml=r'''<!doctype html>
 <p id="message" role="status" aria-live="polite"></p>
 <section id="join"><p>Join this karaoke room. Microphone access is optional and separate.</p><form id="joinForm"><label>Your name <input id="name" maxlength="80" autocomplete="nickname" required></label><button>Join room</button></form></section>
 <main id="room" hidden><nav aria-label="Karaoke views"><button data-view="book">Songbook</button><button data-view="waiting">Queue</button><button data-view="stage">Stage</button><button data-view="input">Microphone</button><button id="leave">Leave</button></nav>
-<section id="book"><h2>Choose a song</h2><form id="search" class="row"><input id="query" aria-label="Search songs" placeholder="Title or artist" maxlength="200"><button>Search</button></form><label>Key <select id="key" aria-label="Key in semitones"></select></label><div id="songs"></div><button id="more" hidden>More songs</button></section>
-<section id="waiting" hidden><div id="quiz"></div><h2>Singer rotation</h2><div id="queue"></div><div id="host" class="row" hidden><button data-command="pause">Pause</button><button data-command="resume">Resume</button><button data-command="restart">Restart</button><button data-command="finish">Finish song</button><button data-command="end">End performance</button></div></section>
+<section id="book"><h2>Choose a song</h2><form id="search" class="row"><input id="query" aria-label="Title or artist" placeholder="Title or artist" maxlength="200"><button>Search</button></form><label>Key <select id="key" aria-label="Key in semitones"></select></label><div id="songs"></div><button id="more" hidden>More songs</button>
+<div id="myMissing" aria-live="polite"></div><details id="missingSuggestion"><summary>Can't find a song?</summary><form id="missingForm"><label>Song title <input id="missingTitle" maxlength="160" required></label><label>Artist <input id="missingArtist" maxlength="120"></label><label>Language <input id="missingLanguage" maxlength="32"></label><button>Suggest it to the host</button></form></details></section>
+<section id="waiting" hidden><div id="quiz"></div><h2>Singer rotation</h2><div id="queue"></div><section id="host" hidden><div class="row"><button data-command="pause">Pause</button><button data-command="resume">Resume</button><button data-command="restart">Restart</button><button data-command="finish">Finish song</button><button data-command="end">End performance</button></div><h3>Missing song suggestions</h3><div id="missingQueue"></div></section></section>
 <section id="stage" hidden><p id="banner"></p><p id="title" class="muted"></p><div id="lyric" dir="auto"></div><p id="next" dir="auto"></p><small id="translation"></small><progress id="progress" value="0" max="1" aria-label="Song progress"></progress><p><button id="fullscreen">Full screen</button></p></section>
 <section id="input" hidden><h2>Phone pitch and private recording</h2><p>Use headphones. This input provides pitch feedback and an optional private dry recording on the host. It does not amplify your voice through the stage speakers.</p><p id="inputReason"></p><label><input id="recordPhone" type="checkbox"> Send raw vocal audio to save a private take on the host</label><button id="microphone">Enable phone microphone</button><p id="pitch" role="status"></p><progress id="meter" max="1" value="0" aria-label="Microphone level"></progress></section>
 <button id="retry" hidden>Retry last action</button></main>
@@ -37,6 +38,7 @@ async function pair(event){event.preventDefault();if(busy)return;busy=true;try{
 }catch(e){message(e.message,true);}finally{busy=false;}}
 $('joinForm').onsubmit=pair;
 async function enter(){ $('join').hidden=true;$('room').hidden=false;$('host').hidden=credentials.role!=='host';
+ $('missingSuggestion').hidden=credentials.role!=='singer';
  if(credentials.role==='display'){document.body.classList.add('display');selectView('stage');}
  await refresh();if(credentials.role!=='display')await search(true);$('retry').hidden=!pending;
 }
@@ -46,12 +48,17 @@ async function sendPending(){if(!pending||busy)return;busy=true;$('retry').hidde
 }catch(e){if(e.status===409||e.status===400||e.status===403){pending=null;sessionStorage.removeItem('plezy-pending');await refresh();message(e.message+' Check the queue before trying again.',true);}else{message(e.message+' You can retry safely.',true);$('retry').hidden=false;}}finally{busy=false;}}
 $('retry').onclick=sendPending;
 async function search(reset){try{if(reset){offset=0;$('songs').replaceChildren();}const result=(await api('/api/catalog?q='+encodeURIComponent($('query').value)+'&offset='+offset)).data;
- for(const song of result.songs){const row=node('div');row.className='song';const detail=node('div');detail.append(node('strong',song.title),node('p',song.artist));row.append(detail);
+ for(const song of result.songs){const row=node('div');row.className='song';const detail=node('div');detail.append(node('strong',song.title),node('p',song.artist));
+ if(song.explicit)detail.append(node('small','Explicit'));
+ if(song.singAlongOnly)detail.append(node('small','Sing-along only · original audio'));
+ if(!song.scored)detail.append(node('small',' · no reviewed score chart'));
+ row.append(detail);
  const actions=node('div');actions.className='row';let part=null;if(song.parts.length>1){part=node('select');part.setAttribute('aria-label','Duet part');part.append(node('option','All parts'));part.firstChild.value='';for(const p of song.parts){const o=node('option',p);o.value=p;part.append(o);}actions.append(part);}
  if(credentials.role==='singer'){actions.append(button('Request',()=>command('request',{trackId:song.id,key:Number($('key').value),part:part&&part.value||null})),button(song.favorite?'★':'☆',()=>command('favorite',{trackId:song.id,value:!song.favorite})));}
  row.append(actions);$('songs').append(row);}offset+=result.songs.length;$('more').hidden=offset>=result.total;
 }catch(e){message(e.message,true);}}
 $('search').onsubmit=e=>{e.preventDefault();search(true);};$('more').onclick=()=>search(false);
+$('missingForm').onsubmit=e=>{e.preventDefault();command('missingSong',{title:$('missingTitle').value,artist:$('missingArtist').value,language:$('missingLanguage').value});};
 async function refresh(){if(!credentials)return;try{const result=await api('/api/state');state=result.data;if(mic && (!state.playing || state.epoch!==mic.epoch || !state.phoneInput.activeSinger))await stopMic();
  $('inputReason').textContent=!window.isSecureContext || !state.phoneInput.available?'Phone capture requires the host HTTPS room with a certificate trusted by this phone. The ordinary LAN songbook remains available.':!state.phoneInput.activeSinger?'The host must start a request assigned to your singer before you enable input.':'Phone timing is uncalibrated. Feedback is for practice and does not enter competitive leaderboards.';
  $('microphone').disabled=!mic && (!window.isSecureContext || !state.phoneInput.available || !state.phoneInput.activeSinger);anchor=performance.now();anchorPosition=state.positionMs+(state.playing?result.rtt*.5*state.tempo:0);
@@ -63,7 +70,15 @@ async function refresh(){if(!credentials)return;try{const result=await api('/api
  if(question.revealed)$('quiz').append(node('p','Answer: '+question.options[question.answer]));}
  $('queue').replaceChildren();for(const r of state.queue){const row=node('div');row.className='queue';row.append(node('strong',r.title),node('p',r.singers.join(' + ')+' · '+r.state+' · ~'+Math.ceil(r.waitMs/60000)+' min'));
  if(r.mine&&['pending','ready'].includes(r.state))row.append(button('Cancel',()=>command('cancel',{requestId:r.id})));
+ if(credentials.role==='singer'&&state.allowVotes&&['pending','ready'].includes(r.state)){
+  const up=button('Upvote ('+r.votes+')',()=>command('vote',{requestId:r.id,value:r.myVote===1?0:1}));up.setAttribute('aria-pressed',r.myVote===1?'true':'false');
+  const down=button('Downvote',()=>command('vote',{requestId:r.id,value:r.myVote===-1?0:-1}));down.setAttribute('aria-pressed',r.myVote===-1?'true':'false');row.append(up,down,node('small','Net score '+r.voteScore));
+ }
  if(credentials.role==='host'&&['pending','ready'].includes(r.state)){row.append(button(r.state==='pending'?'Approve':'Start',()=>command(r.state==='pending'?'approve':'start',{requestId:r.id})),button('Reject',()=>command('cancel',{requestId:r.id})));}$('queue').append(row);}
+ if(credentials.role==='host'){$('missingQueue').replaceChildren();for(const suggestion of state.missingSongs||[]){const row=node('div');row.className='queue';row.append(node('strong',suggestion.title),node('p',(suggestion.artist||'Artist unknown')+' · '+suggestion.singer+' · '+(suggestion.language||'Language unspecified')+' · '+suggestion.status));
+  if(suggestion.status==='open')row.append(button('Mark sourced',()=>command('missingSongStatus',{suggestionId:suggestion.id,status:'found'})),button('Dismiss',()=>command('missingSongStatus',{suggestionId:suggestion.id,status:'dismissed'})));
+  else row.append(button('Reopen',()=>command('missingSongStatus',{suggestionId:suggestion.id,status:'open'})));$('missingQueue').append(row);}}
+ if(credentials.role==='singer'){$('myMissing').replaceChildren();for(const suggestion of state.missingSongs||[])$('myMissing').append(node('p','Your suggestion: '+suggestion.title+' · '+suggestion.status));}
  }catch(e){message(e.message,true);if(e.status===401){credentials=null;sessionStorage.removeItem('plezy-room');$('join').hidden=false;$('room').hidden=true;}}}
 for(const b of document.querySelectorAll('[data-command]'))b.onclick=()=>command(b.dataset.command,{});
 $('leave').onclick=async()=>{await stopMic();credentials=null;sessionStorage.removeItem('plezy-room');sessionStorage.removeItem('plezy-pending');location.reload();};

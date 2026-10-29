@@ -793,6 +793,10 @@ class SettingsService extends BaseSharedPreferencesService {
   );
   static BoolPref steamSwapTouchSidesForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'steam_swap_touch_sides'), defaultValue: false);
+  static BoolPref steamControllerRumbleForProfile(String profileId) =>
+      BoolPref(profileScopedPrefsKey(profileId, 'steam_controller_rumble'), defaultValue: true);
+  static BoolPref steamMotionControllerForProfile(String profileId) =>
+      BoolPref(profileScopedPrefsKey(profileId, 'steam_motion_controller'), defaultValue: false);
   static BoolPref shareSteamInventoryForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'share_steam_inventory'), defaultValue: false);
   static BoolPref steamInternetForProfile(String profileId) =>
@@ -805,6 +809,8 @@ class SettingsService extends BaseSharedPreferencesService {
       BoolPref(profileScopedPrefsKey(profileId, 'allow_steam_install'), defaultValue: false);
   static StringPref steamInstallRootForProfile(String profileId) =>
       StringPref(profileScopedPrefsKey(profileId, 'steam_install_root'));
+  static StringPref steamTouchLayoutForGame(String profileId, String appId) =>
+      StringPref(profileScopedPrefsKey(profileId, 'steam_touch_layout_$appId'));
   static StringPref steamInputForGame(String profileId, String appId) =>
       StringPref(profileScopedPrefsKey(profileId, 'steam_input_$appId'));
   static BoolPref gamePyrowaveForProfile(String profileId) =>

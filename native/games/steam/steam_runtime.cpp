@@ -45,6 +45,34 @@ void Runtime::cancel() {
   }
   condition_.notify_all();
   muteMicrophone();
+  controllerFeedbackEnabled(false);
+}
+void Runtime::controllerFeedbackEnabled(bool enabled) {
+  for (const auto& pad : pads_) {
+    std::lock_guard<std::mutex> lock(pad->mutex);
+    pad->feedback.ownership(enabled && !cancelled_);
+  }
+}
+void Runtime::resetControllerFeedback(unsigned seat) {
+  if (seat >= pads_.size()) return;
+  std::lock_guard<std::mutex> lock(pads_[seat]->mutex);
+  pads_[seat]->feedback.ownership(pads_[seat]->feedback.enabled);
+}
+void Runtime::motionControllers(bool enabled) {
+  for (const auto& pad : pads_) {
+    std::lock_guard<std::mutex> lock(pad->mutex);
+    pad->motionController = enabled;
+  }
+}
+std::array<int64_t, 8> Runtime::controllerFeedback(unsigned seat) {
+  if (seat >= pads_.size() || cancelled_) return {};
+  std::lock_guard<std::mutex> lock(pads_[seat]->mutex);
+  return pads_[seat]->feedback.take();
+}
+bool Runtime::controllerMotion(unsigned seat, const std::array<double, 6>& values) {
+  if (seat >= pads_.size() || cancelled_) return false;
+  std::lock_guard<std::mutex> lock(pads_[seat]->mutex);
+  return pads_[seat]->feedback.setMotion(values);
 }
 void Runtime::finish(int result) {
   std::lock_guard<std::mutex> lock(mutex_);
@@ -225,6 +253,7 @@ int Runtime::run(
   }
   result = IHS_SessionConnect(session) ? awaitSession(std::chrono::seconds(30), std::chrono::seconds(12)) : -1;
   muteMicrophone();
+  controllerFeedbackEnabled(false);
   // Stop accepting input before teardown, but never hold apiMutex_ while joining
   // a callback thread: renderer completion can arrive during shutdown.
   {

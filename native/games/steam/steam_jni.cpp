@@ -546,6 +546,33 @@ JNI(padSeat)(JNIEnv* env, jclass, jlong id, jint seat, jshortArray axes, jint bu
   if (env->ExceptionCheck()) return;
   r->padSeat(static_cast<unsigned>(seat), values, buttons);
 }
+extern "C" JNIEXPORT void JNICALL JNI(controllerFeedbackEnabled)(JNIEnv*, jclass, jlong id, jboolean enabled) {
+  if (auto r = get(id)) r->controllerFeedbackEnabled(enabled);
+}
+extern "C" JNIEXPORT void JNICALL JNI(motionControllers)(JNIEnv*, jclass, jlong id, jboolean enabled) {
+  if (auto r = get(id)) r->motionControllers(enabled);
+}
+extern "C" JNIEXPORT void JNICALL JNI(resetControllerFeedback)(JNIEnv*, jclass, jlong id, jint seat) {
+  if (auto r = get(id); r && seat >= 0 && seat < 4) r->resetControllerFeedback(unsigned(seat));
+}
+extern "C" JNIEXPORT jlongArray JNICALL JNI(controllerFeedback)(JNIEnv* env, jclass, jlong id, jint seat) {
+  auto r = get(id);
+  if (!r || seat < 0 || seat > 3) return nullptr;
+  const auto values = r->controllerFeedback(unsigned(seat));
+  jlong output[8];
+  for (size_t i = 0; i < 8; ++i) output[i] = values[i];
+  auto result = env->NewLongArray(8);
+  if (result) env->SetLongArrayRegion(result, 0, 8, output);
+  return result;
+}
+extern "C" JNIEXPORT jboolean JNICALL
+JNI(controllerMotion)(JNIEnv* env, jclass, jlong id, jint seat, jdoubleArray motion) {
+  auto r = get(id);
+  if (!r || seat < 0 || seat > 3 || !motion || env->GetArrayLength(motion) != 6) return false;
+  std::array<double, 6> values{};
+  env->GetDoubleArrayRegion(motion, 0, 6, values.data());
+  return !env->ExceptionCheck() && r->controllerMotion(unsigned(seat), values);
+}
 extern "C" JNIEXPORT void JNICALL JNI(key)(JNIEnv*, jclass, jlong id, jint usage, jboolean down) {
   if (auto r = get(id)) r->key(usage, down);
 }

@@ -273,7 +273,75 @@ void microphoneOwnership() {
   RuntimeTest::microphoneSession(runtime, nullptr);
   IHS_SessionDestroy(session);
 }
+void feedbackLifecycle() {
+  for (bool motion : {false, true}) {
+    Runtime receiver;
+    receiver.motionControllers(motion);
+    auto* provider = makeController(RuntimeTest::pad(receiver, 0));
+    IHS_HIDDeviceInfo info{};
+    IHS_HIDProviderDeviceInfo(provider, nullptr, &info);
+    assert(info.vendor_id == (motion ? 0x054c : 0x045e));
+    auto* device = IHS_HIDProviderOpenDevice(provider, info.path);
+    assert(device);
+    IHS_Buffer features{};
+    IHS_BufferInit(&features, 128, 128);
+    const uint8_t command = 4;
+    assert(device->cls->getFeatureReport(device, &command, 1, &features, 21) == 0);
+    assert(features.size == 21 && features.data[1] == 1 && features.data[2] == 0);
+    assert(features.data[3] == (motion ? 34 : 32));
+    assert(features.data[7] == 0xff);  // Unknown player index, not a capability mask.
+    for (size_t i = 11; i < 21; ++i) assert(features.data[i] == 0);
+    IHS_BufferClear(&features, true);
+    device->cls->free(device);
+    IHS_SessionHIDProviderDestroy(provider);
+  }
+  ControllerFeedback feedback;
+  const uint8_t rumble[] = {1, 0xff, 0xff, 0x34, 0x12, 0xff, 0xff, 0xff, 0xff};
+  assert(!feedback.write(nullptr, 1));
+  assert(!feedback.write(rumble, 129));
+  assert(feedback.write(rumble, sizeof(rumble)));
+  assert(feedback.take()[0] == 0);  // No ownership means no physical output.
+  feedback.ownership(true);
+  feedback.take();
+  assert(feedback.write(rumble, 3));
+  assert(feedback.take()[0] == 0);
+  assert(feedback.write(rumble + 3, 6));
+  auto output = feedback.take();
+  assert(output[0] == 1 && output[1] == 65535 && output[2] == 0x1234 && output[3] <= 1000);
+  assert(feedback.take()[0] == 0);  // Bounded latest-value queue, drained exactly once.
+  const uint8_t commands[] = {8, 1, 9, 3, 5, 1, 2, 3};
+  assert(feedback.write(commands, sizeof(commands)));
+  assert(feedback.sensors && feedback.version == 3);
+  assert(feedback.setMotion({34.90659, -34.90659, 0, 19.6133, -19.6133, 0}));
+  assert(feedback.motion[0] == 32767 && feedback.motion[1] == -32768);
+  assert(feedback.motion[3] == 32767 && feedback.motion[4] == -32768);
+  assert(!feedback.setMotion({NAN, 0, 0, 0, 0, 0}));
+  feedback.motionAt -= std::chrono::seconds(1);
+  feedback.expireMotion();
+  assert((feedback.motion == std::array<int16_t, 6>{}));
+  feedback.ownership(false);
+  assert(!feedback.setMotion({1, 2, 3, 4, 5, 6}));
+  assert(feedback.take()[7] == 0);
+  Runtime runtime;
+  InputState input(2);
+  input.enabled(runtime, true);
+  input.button(runtime, 42, "a", true);
+  auto pad = RuntimeTest::pad(runtime, 0);
+  pad->feedback.write(rumble, sizeof(rumble));
+  auto rows = input.feedback(runtime);
+  assert(rows.size() == 1 && rows[0][0] == 42 && rows[0][2] == 65535);
+  assert(!input.motion(runtime, 99, {}));  // Motion never allocates a seat.
+  input.disconnect(runtime, 42);
+  assert(input.feedback(runtime).empty());
+  input.button(runtime, 99, "b", true);
+  rows = input.feedback(runtime);
+  assert(rows.size() == 1 && rows[0][0] == 99 && rows[0][2] == 0);
+  runtime.cancel();
+  assert(runtime.controllerFeedback(0)[0] == 0);
+}
+
 int main() {
+  feedbackLifecycle();
   microphoneOwnership();
   controllerMappings();
   assert(validInputText(u8"日本語 Ελληνικά 🙂\n"));

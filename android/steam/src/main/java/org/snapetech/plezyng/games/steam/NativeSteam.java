@@ -42,6 +42,11 @@ final class NativeSteam {
   static native void pad(long handle, short[] axes, int buttons);
   static native void padSeat(long handle, int seat, short[] axes, int buttons);
   static native boolean controllerMapping(long handle, int seat, int[] values);
+  static native void controllerFeedbackEnabled(long handle, boolean enabled);
+  static native void motionControllers(long handle, boolean enabled);
+  static native void resetControllerFeedback(long handle, int seat);
+  static native long[] controllerFeedback(long handle, int seat);
+  static native boolean controllerMotion(long handle, int seat, double[] values);
   static native void key(long handle, int usage, boolean down);
   static native void mouse(long handle, float x, float y, int button, boolean down);
   static native boolean textUtf8(long handle, byte[] text);

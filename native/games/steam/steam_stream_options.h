@@ -7,6 +7,7 @@ struct StreamOptions {
   int controllerCount = 1;
   int audioChannels = 2;
   bool hdr10 = false;  // Actual qualified native output, not merely a preference.
+  bool motionController = false;  // Explicit PS4-compatible virtual profile; Xbox remains the default.
   bool microphone = true;  // Native capture availability; consent is separate.
   // Current request bounds, not the decoder's theoretical limits.
   bool valid() const {

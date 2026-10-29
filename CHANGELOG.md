@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Complete embedded Steam controller rumble/motion forwarding with ownership and capability gates, and per-game accessible touch layout editing across receivers.
+
 - Steam: explicit microphone forwarding on Android, Windows, Linux and iOS/macOS, with visible mute state, native permission checks, bounded Opus encoding, ownership-based automatic mute and safe concurrent transport teardown.
 
 - Steam: per-game controller layouts, committed IME text and touch appearance across receivers, session-owned presentation, host overlay/capture controls, LAN-install guidance, opt-in 4K60/1080p120, and configurable relay bandwidth with conservative video ceilings.

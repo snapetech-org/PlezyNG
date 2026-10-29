@@ -137,6 +137,22 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
             requestMicrophonePermission(result)
             return
           }
+          "setTouchControllerState" -> {
+            invoke("setTouchControllerState", arrayOf(Map::class.java, Map::class.java), call.argument<Map<*, *>>("buttons") ?: emptyMap<Any, Any>(), call.argument<Map<*, *>>("axes") ?: emptyMap<Any, Any>())
+            result.success(null)
+            return
+          }
+          "releaseTouchControls" -> { invoke("releaseTouchControls"); result.success(null); return }
+          "readControllerFeedback" -> {
+            result.success(target.javaClass.getMethod("readControllerFeedback").invoke(target))
+            return
+          }
+          "setControllerMotion" -> {
+            val values = listOf("gx", "gy", "gz", "ax", "ay", "az").map { call.argument<Number>(it)?.toDouble() ?: Double.NaN }.toDoubleArray()
+            result.success(target.javaClass.getMethod("setControllerMotion", Int::class.javaPrimitiveType, DoubleArray::class.java)
+              .invoke(target, call.argument<Number>("deviceId")?.toInt() ?: -1, values) == true)
+            return
+          }
           "getMicrophoneState" -> {
             result.success(target.javaClass.getMethod("getMicrophoneState").invoke(target))
             return

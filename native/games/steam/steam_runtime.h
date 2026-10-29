@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "steam_audio.h"
+#include "steam_controller_feedback.h"
 #include "steam_controller_mapping.h"
 #include "steam_h26x.h"
 #include "steam_microphone.h"
@@ -56,6 +57,8 @@ struct PadState {
   std::array<int16_t, 6> axes{};
   uint32_t buttons = 0;
   ControllerMapping mapping;
+  ControllerFeedback feedback;
+  bool motionController = false;
 };
 struct StreamMetrics {
   uint64_t epoch = 0;  // Local measurement epoch, never a host/account identity.
@@ -105,6 +108,11 @@ class Runtime {
   void pad(const std::array<int16_t, 6>& axes, uint32_t buttons);
   void padSeat(unsigned seat, const std::array<int16_t, 6>& axes, uint32_t buttons);
   bool controllerMapping(unsigned seat, const std::vector<int64_t>& encoded);
+  void controllerFeedbackEnabled(bool enabled);
+  void resetControllerFeedback(unsigned seat);
+  void motionControllers(bool enabled);
+  std::array<int64_t, 8> controllerFeedback(unsigned seat);
+  bool controllerMotion(unsigned seat, const std::array<double, 6>& values);
   void key(uint32_t usage, bool down);
   void mouse(float x, float y, int button, bool down);
   void mouseWheel(int direction);

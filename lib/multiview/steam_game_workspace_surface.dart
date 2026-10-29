@@ -13,6 +13,9 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../games/game_models.dart';
 import '../games/steam_internet_tunnel.dart';
 import '../games/steam_input_profile.dart';
+import '../games/steam_touch_layout.dart';
+import '../screens/games/steam_touch_layout_dialog.dart';
+import '../games/steam_controller_feedback.dart';
 import '../games/steam_text.dart';
 import '../screens/games/steam_text_input_dialog.dart';
 import '../screens/games/steam_input_dialog.dart';
@@ -44,6 +47,8 @@ class SteamGameWorkspaceSession {
     required this.touchControls,
     this.touchOpacity = 100,
     this.swapTouchSides = false,
+    this.controllerRumble = true,
+    this.motionController = false,
     this.pyrowave = false,
     this.allowHdr = false,
     this.quality = SteamStreamQuality.balanced,
@@ -55,12 +60,16 @@ class SteamGameWorkspaceSession {
     this.connectInternet,
     SteamInputProfile? inputProfile,
     this.persistInputProfile,
+    SteamTouchLayout? touchLayout,
+    this.persistTouchLayout,
   }) {
     _inputProfile = inputProfile ?? SteamInputProfile.defaults();
+    _touchLayout = touchLayout ?? SteamTouchLayout();
     _mappingReady = _inputProfile.isDefault;
     _setTunnel(internetTunnel);
     if (![50, 65, 85, 100].contains(touchOpacity)) throw ArgumentError.value(touchOpacity, 'touchOpacity');
     if (controllerCount < 1 || controllerCount > 4) throw ArgumentError.value(controllerCount, 'controllerCount');
+    GamepadService.instance.workspaceInputAvailable.addListener(_inputAvailabilityChanged);
     _inputBinding = WorkspaceGameInputBinding(
       onEvent: handleInput,
       onNativeKeyEvent: handleNativeKey,
@@ -77,6 +86,14 @@ class SteamGameWorkspaceSession {
   final bool touchControls;
   final int touchOpacity;
   final bool swapTouchSides;
+  final bool controllerRumble, motionController;
+  late final _feedback = SteamControllerFeedbackSession(
+    owner: _nativeOwner,
+    rumble: controllerRumble,
+    motion: motionController,
+  );
+  void _inputAvailabilityChanged() => unawaited(setInputEnabled(_inputEnabled));
+  void _syncFeedback() => _feedback.update(_channel, _canInput);
   final bool pyrowave;
   final bool allowHdr;
   final SteamStreamQuality quality;
@@ -109,6 +126,17 @@ class SteamGameWorkspaceSession {
         }),
       );
     }
+  }
+
+  final Future<void> Function(SteamTouchLayout)? persistTouchLayout;
+  late SteamTouchLayout _touchLayout;
+  SteamTouchLayout get touchLayout => _touchLayout;
+  Future<void> applyTouchLayout(SteamTouchLayout value) async {
+    if (!current) throw StateError('Steam session retired');
+    await persistTouchLayout?.call(value);
+    if (!current) throw StateError('Steam session retired');
+    _touchLayout = value;
+    releaseTouchControls();
   }
 
   final Future<void> Function(SteamInputProfile)? persistInputProfile;
@@ -223,6 +251,7 @@ class SteamGameWorkspaceSession {
       !_disposed &&
       !_restarting &&
       _surfaceAttached &&
+      GamepadService.instance.workspaceInputAvailable.value &&
       _mappingReady &&
       _inputEnabled &&
       _inputSuspensions == 0 &&
@@ -243,8 +272,10 @@ class SteamGameWorkspaceSession {
     'appId': game.id,
     'appName': game.name,
     'touchControls': touchControls,
+    'flutterTouchControls': true,
     'touchOpacity': touchOpacity,
     'swapTouchSides': swapTouchSides,
+    'motionController': motionController,
     'pyrowave': pyrowave,
     'allowHdr': allowHdr,
     ...quality.nativeArguments,
@@ -274,6 +305,7 @@ class SteamGameWorkspaceSession {
       await _invoke('resetInput');
     }
     await _invoke('setInputEnabled', {'enabled': canInput});
+    _syncFeedback();
   }
 
   Future<bool> requestMicrophonePermission() async {
@@ -480,10 +512,11 @@ class SteamGameWorkspaceSession {
   void releaseTouchControls() => unawaited(_invoke('releaseTouchControls'));
 
   void resetInput() {
+    _feedback.stop();
     muteMicrophone();
     _inputRevision++;
     inputResets.value = _inputRevision;
-    unawaited(_invoke('resetInput'));
+    unawaited(_invoke('resetInput').then((_) => _syncFeedback()));
   }
 
   /// The desired workspace lease may change while a dialog is open. Restore
@@ -492,6 +525,7 @@ class SteamGameWorkspaceSession {
     if (_disposed) return;
     muteMicrophone();
     _inputSuspensions++;
+    _feedback.stop();
     _inputBinding.setEnabled(false);
     inputAvailable.value = false;
     await _invoke('setInputEnabled', {'enabled': false});
@@ -503,6 +537,7 @@ class SteamGameWorkspaceSession {
         _inputBinding.setEnabled(_canInput);
         inputAvailable.value = _canInput;
         await _invoke('setInputEnabled', {'enabled': _canInput});
+        _syncFeedback();
       }
     }
   }
@@ -647,7 +682,7 @@ class SteamGameWorkspaceSession {
           .catchError((Object _) {}),
     );
     unawaited(_invoke('setAudioEnabled', {'enabled': _audioEnabled}));
-    unawaited(_invoke('setInputEnabled', {'enabled': _canInput}));
+    unawaited(_invoke('setInputEnabled', {'enabled': _canInput}).then((_) => _syncFeedback()));
   }
 
   void _stateChanged(Object? state) {
@@ -665,7 +700,7 @@ class SteamGameWorkspaceSession {
     if (state == 'playing' && !_mappingReady) unawaited(_restoreMapping());
     _inputBinding.setEnabled(_canInput);
     inputAvailable.value = _canInput;
-    unawaited(_invoke('setInputEnabled', {'enabled': _canInput}));
+    unawaited(_invoke('setInputEnabled', {'enabled': _canInput}).then((_) => _syncFeedback()));
     if (state == 'playing' && !_reportedFirstFrame) {
       _reportedFirstFrame = true;
       onFirstFrame?.call();
@@ -763,6 +798,8 @@ class SteamGameWorkspaceSession {
     resetInput();
     unawaited(_invoke('disconnect'));
     _disposed = true;
+    _feedback.stop();
+    GamepadService.instance.workspaceInputAvailable.removeListener(_inputAvailabilityChanged);
     _inputBinding.dispose();
     _releaseReceiverIdentity();
     nativePresentation.dispose();
@@ -942,7 +979,7 @@ class SteamGameWorkspaceSurface extends StatefulWidget {
 
 class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
   bool _detailsOpen = false;
-  late bool _touchVisible = widget.session.touchControls && Platform.isIOS;
+  late bool _touchVisible = widget.session.touchControls && (Platform.isIOS || Platform.isAndroid);
 
   Future<void> _showDetails() async {
     if (_detailsOpen) return;
@@ -991,6 +1028,7 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
     final session = widget.session;
     String? selected;
     String? composed;
+    SteamTouchLayout? touchLayout;
     try {
       await session.withInputSuspended(() async {
         if (!mounted) return;
@@ -1002,6 +1040,12 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                FocusableListTile(
+                  leading: const AppIcon(Symbols.drag_pan_rounded),
+                  title: Text(t.games.touchLayout),
+                  subtitle: Text(t.games.touchLayoutHelp),
+                  onTap: () => Navigator.pop(dialog, 'touchLayout'),
+                ),
                 FocusableListTile(
                   leading: const AppIcon(Symbols.group_rounded),
                   title: Text(t.games.steamOverlay),
@@ -1025,10 +1069,21 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
             actions: [DialogActionButton(label: t.common.close, onPressed: () => Navigator.pop(dialog))],
           ),
         );
+        if (selected == 'touchLayout' && mounted && session.current) {
+          touchLayout = await showScopedDialog<SteamTouchLayout>(
+            context: context,
+            builder: (_) => SteamTouchLayoutDialog(initial: session.touchLayout, swapSides: session.swapTouchSides),
+          );
+          if (touchLayout != null) await session.applyTouchLayout(touchLayout!);
+        }
         if (selected == 'text' && mounted && session.current) {
           composed = await showScopedDialog<String>(context: context, builder: (_) => const SteamTextInputDialog());
         }
       });
+      if (selected == 'touchLayout') {
+        if (mounted && touchLayout != null) setState(() => _touchVisible = true);
+        return;
+      }
       if (selected != null && mounted && session.current && (selected != 'text' || composed != null)) {
         final sent = selected == 'text'
             ? await session.sendComposedText(composed!)
@@ -1043,6 +1098,8 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
           }
         }
       }
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context, t.games.touchLayoutFailed);
     } finally {
       if (mounted) setState(() => _detailsOpen = false);
     }
@@ -1110,7 +1167,7 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
       fit: StackFit.expand,
       children: [
         session.build(),
-        if (!Platform.isAndroid && _touchVisible)
+        if (_touchVisible)
           ValueListenableBuilder<bool>(
             valueListenable: session.inputAvailable,
             builder: (_, enabled, _) => !enabled
@@ -1122,6 +1179,7 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
                       child: SteamTouchControls(
                         key: ValueKey(revision),
                         swapSides: session.swapTouchSides,
+                        layout: session.touchLayout,
                         onButton: session.handleTouchButton,
                         onStick: session.handleTouchStick,
                         onRelease: session.releaseTouchControls,
@@ -1224,16 +1282,15 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
                           ),
                         ),
                       ),
-                      if (!Platform.isAndroid)
-                        FocusableButton(
+                      FocusableButton(
+                        onPressed: () => setState(() => _touchVisible = !_touchVisible),
+                        child: IconButton.filledTonal(
+                          tooltip: t.games.touchControls,
+                          isSelected: _touchVisible,
                           onPressed: () => setState(() => _touchVisible = !_touchVisible),
-                          child: IconButton.filledTonal(
-                            tooltip: t.games.touchControls,
-                            isSelected: _touchVisible,
-                            onPressed: () => setState(() => _touchVisible = !_touchVisible),
-                            icon: const AppIcon(Symbols.sports_esports_rounded),
-                          ),
+                          icon: const AppIcon(Symbols.sports_esports_rounded),
                         ),
+                      ),
                       FocusableButton(
                         onPressed: _detailsOpen ? null : _showDetails,
                         child: IconButton.filledTonal(

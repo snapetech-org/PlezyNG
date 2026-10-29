@@ -4663,7 +4663,18 @@
     "microphoneEnable": "Share microphone",
     "microphoneHelp": "Send live microphone audio to this paired Steam computer for game and voice chat. Recording stops when you leave the stream, open a dialog, or switch input ownership. You must turn it on again. Use headphones to avoid feedback.",
     "microphoneFailed": "The microphone could not start. Check device permissions, the input device and the host’s Remote Play microphone setting, then try again.",
-    "microphoneMute": "Mute microphone"
+    "microphoneMute": "Mute microphone",
+    "controllerRumble": "Controller vibration",
+    "controllerRumbleHelp": "Forward game feedback to supported controllers while this game has input. Applies to the next stream.",
+    "motionController": "Motion controller profile",
+    "motionControllerHelp": "Use a PlayStation-compatible virtual controller for gyro and accelerometer input. Requires a supported physical controller and a game or Steam Input motion binding. Applies to the next stream; button prompts may change.",
+    "touchLayout": "Arrange touch controls",
+    "touchLayoutHelp": "Drag a control, or select it and adjust its position. Saved for this game and profile, with separate wide and compact layouts.",
+    "touchLayoutCollision": "Controls cannot overlap. Choose a clear position.",
+    "touchLayoutHorizontal": "Horizontal",
+    "touchLayoutVertical": "Vertical",
+    "touchLayoutFailed": "Could not save the touch layout. Your previous layout is still available.",
+    "touchLayoutPosition": "Position controls"
   },
   "deepLinks": {
     "invalid": "This Plezy link isn't valid.",

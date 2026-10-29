@@ -13,6 +13,7 @@ import '../../games/game_discovery.dart';
 import '../../games/game_library_controller.dart';
 import '../../games/steam_internet_tunnel.dart';
 import '../../games/steam_input_profile.dart';
+import '../../games/steam_touch_layout.dart';
 import '../../games/game_models.dart';
 import '../../games/steam_stream_preferences.dart';
 import '../../games/steam_inventory_exchange.dart';
@@ -648,8 +649,21 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           checkCurrent: c.requireCurrent,
         );
       },
+      touchLayout: SteamTouchLayout.restore(
+        SettingsService.instance.read(SettingsService.steamTouchLayoutForGame(c.profileId, game.id)),
+      ),
+      persistTouchLayout: (layout) async {
+        c.requireCurrent();
+        await SettingsService.instance.write(
+          SettingsService.steamTouchLayoutForGame(c.profileId, game.id),
+          layout.encode(),
+          checkCurrent: c.requireCurrent,
+        );
+      },
       touchOpacity: SettingsService.instance.read(SettingsService.steamTouchOpacityForProfile(c.profileId)),
       swapTouchSides: SettingsService.instance.read(SettingsService.steamSwapTouchSidesForProfile(c.profileId)),
+      controllerRumble: SettingsService.instance.read(SettingsService.steamControllerRumbleForProfile(c.profileId)),
+      motionController: SettingsService.instance.read(SettingsService.steamMotionControllerForProfile(c.profileId)),
       internetTunnel: tunnel,
       connectInternet: connectInternet,
       onFirstFrame: () {
@@ -1298,6 +1312,18 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
                   subtitle: t.games.touchDescription,
                 ),
                 if (PlatformDetector.supportsEmbeddedGameStreaming()) ...[
+                  SettingSwitchTile(
+                    pref: SettingsService.steamControllerRumbleForProfile(_profile!),
+                    icon: Symbols.vibration_rounded,
+                    title: t.games.controllerRumble,
+                    subtitle: t.games.controllerRumbleHelp,
+                  ),
+                  SettingSwitchTile(
+                    pref: SettingsService.steamMotionControllerForProfile(_profile!),
+                    icon: Symbols.screen_rotation_rounded,
+                    title: t.games.motionController,
+                    subtitle: t.games.motionControllerHelp,
+                  ),
                   SettingSelectionTile<int>(
                     pref: SettingsService.steamTouchOpacityForProfile(_profile!),
                     icon: Symbols.opacity_rounded,

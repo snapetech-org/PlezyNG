@@ -12,9 +12,11 @@ reviewed Families management. Build the exact PR #81
 head; earlier PRs and historical test results are not substitutes.
 
 Test the implemented receivers and connected library described below. The
-requested Families and Windows/Apple HDR source paths are integrated. The
-broader Steam roadmap still contains unsupported or unimplemented facilities;
-do not label this a release candidate or treat source integration as deployment.
+requested Families and Windows/Apple HDR source paths are integrated. The supported receiver/client source scope is integrated, including controller
+feedback/motion, microphone sharing and per-game touch positioning. Account-global
+Cloud mutation has no assumed write contract; game-side SDK actions still need
+the owning game. Do not label this a release candidate or treat source
+integration as deployment.
 [VALIDATION.md](VALIDATION.md) records actual checks; historical results do not
 qualify a different commit. Record `git rev-parse HEAD` with every result.
 
@@ -232,3 +234,26 @@ permission denial/revocation, actual host voice input, all mute/lifetime paths,
 headset changes and simultaneous receiver playback. No local source test proves
 OS capture permissions or real host microphone negotiation. tvOS must show
 unavailable without prompting or advertising a microphone channel.
+
+## Controller and touch completion pass
+
+Use [STEAM_CONTROLLERS.md](STEAM_CONTROLLERS.md) for capability and ownership
+contracts. Build the vendored gamepad plugin on every target as part of the app;
+Windows now pins SDL3 to an immutable commit and uses C++20 for Flutter's
+current event-channel headers. Apple SDK compilation and Kotlin/Gradle/NDK
+compilation are required gates, not inferred from C++ syntax or Java checks.
+
+- Exercise one through four controllers, USB/Bluetooth hot-plug and OS ID reuse.
+  Rumble must affect the correct physical controller and stop on focus/dialog/
+  profile/lease loss. Unsupported controllers still provide buttons/sticks.
+- Enable the motion profile before opening the stream; configure a compatible
+  game or host Steam Input gyro binding. Verify gyro/acceleration axis orientation,
+  neutral input after disconnect/backgrounding and no phone-IMU substitution.
+- Arrange touch controls through Steam controls. Drag, use position sliders,
+  Cancel/Save/Reset, rotate and resize, and switch profiles or host machines.
+  Check large text, RTL, TalkBack/VoiceOver and D-pad navigation. Keep a finger
+  held while hiding the overlay or transferring input; every input must release.
+- On Android verify the embedded Flutter overlay above both SurfaceView codecs
+  and Vulkan output; separately verify legacy standalone native controls.
+- Keep microphone consent off while qualifying controller sensors: gyro is
+  controller input and must never turn on microphone capture.

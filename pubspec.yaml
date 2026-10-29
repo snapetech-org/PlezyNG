@@ -105,7 +105,8 @@ dependencies:
   video_player_videohole:
     path: packages/tizen_plugins/video_player_videohole
   path: ^1.9.0
-  universal_gamepad: ^1.5.7
+  universal_gamepad:
+    path: packages/universal_gamepad
   drift: ^2.31.0
   crypto: ^3.0.7
   pointycastle: ^4.0.0

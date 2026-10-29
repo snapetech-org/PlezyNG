@@ -564,6 +564,7 @@ struct Session : std::enable_shared_from_this<Session> {
           for (int attempt = 0; attempt < 4 && !self->closing; ++attempt) {
             self->displayLost = false;
             auto r = std::make_shared<Runtime>();
+            r->motionControllers(self->options.motionController);
             struct Failure {
               std::atomic<bool> video{false}, audio{false};
             };
@@ -830,7 +831,28 @@ void Session::method(FlutterMethodCall* call, FlutterResult reply) {
     return;
   } else {
     auto args = arguments(call.arguments);
-    if ([method isEqualToString:@"setAudioEnabled"]) {
+    if ([method isEqualToString:@"readControllerFeedback"]) {
+      NSMutableArray* rows = [NSMutableArray array];
+      if (runtime && active && runtime->metrics().epoch == renderedEpoch)
+        for (const auto& row : input.feedback(*runtime)) {
+          NSMutableArray* values = [NSMutableArray array];
+          for (auto value : row) [values addObject:@(value)];
+          [rows addObject:values];
+        }
+      reply(rows);
+      return;
+    } else if ([method isEqualToString:@"setControllerMotion"]) {
+      std::array<double, 6> values{};
+      NSArray* keys = @[ @"gx", @"gy", @"gz", @"ax", @"ay", @"az" ];
+      for (size_t i = 0; i < 6; ++i) {
+        if (!isNumber(args[keys[i]])) throw std::invalid_argument("Invalid motion");
+        values[i] = [args[keys[i]] doubleValue];
+      }
+      reply(
+          @(runtime && active && runtime->metrics().epoch == renderedEpoch &&
+            input.motion(*runtime, integer(args[@"deviceId"]), values)));
+      return;
+    } else if ([method isEqualToString:@"setAudioEnabled"]) {
       audible = boolean(args, @"enabled");
 #if !TARGET_OS_OSX
       if (audible) [[AVAudioSession sharedInstance] setActive:YES error:nil];
@@ -925,6 +947,7 @@ void Manager::method(FlutterMethodCall* call, FlutterResult reply, bool create) 
     options.fps = number(args, @"streamFps", 60, 15, 120);
     options.bitrateKbps = number(args, @"streamBitrateKbps", 30000, 1000, 100000);
     options.controllerCount = number(args, @"controllerCount", 1, 1, 4);
+    options.motionController = boolean(args, @"motionController");
     options.audioChannels = number(args, @"audioChannels", 2, 2, 6);
     options.hdr10 = boolean(args, @"allowHdr");
     if (!options.valid()) throw std::invalid_argument("Invalid stream options");

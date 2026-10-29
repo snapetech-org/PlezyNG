@@ -1,6 +1,6 @@
 # Connected games code completion
 
-This ledger tracks the remaining original implementation scope on PR #81. It
+This ledger tracks the implemented receiver/client scope and external API boundaries on PR #81. It
 does not replace the SDK build and real-device acceptance cases in
 [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md).
 
@@ -63,6 +63,18 @@ does not replace the SDK build and real-device acceptance cases in
   mutes; capture never resumes automatically. tvOS reports unavailable and does
   not advertise microphone capture. See [STEAM_MICROPHONE.md](STEAM_MICROPHONE.md).
 
+- Physical controller rumble, trigger rumble where supported, and opt-in motion
+  are wired from Steam SDL reports through bounded native queues to the existing
+  device plugin on Windows, Linux, Apple and Android. The default Xbox profile
+  is preserved; motion uses an explicit PS4-compatible virtual profile. Device
+  capability checks, same-device identity, ownership tokens, input/focus gates,
+  cancellable requests and neutral motion expiry protect teardown and handoff.
+- Individual touch controls can be dragged or positioned with accessible sliders,
+  saved per game/profile with separate wide and compact layouts. Collision and
+  viewport bounds preserve minimum targets. Embedded Android shares the themed
+  Flutter editor/overlay; legacy standalone callers retain native controls.
+  See [STEAM_CONTROLLERS.md](STEAM_CONTROLLERS.md).
+
 ## Remaining contracts and qualification
 
 - Cloud settings: public Steamworks exposes account-wide read access and an
@@ -71,10 +83,6 @@ does not replace the SDK build and real-device acceptance cases in
 - Steam Input game-side glyph/action APIs and automatic Together invites belong
   to the game SDK, not an arbitrary receiver. The implemented receiver layout and
   host overlay flows do not impersonate game AppIDs.
-- Rumble/gyro and unrestricted drag-to-position touch
-  editing are not implemented. They require additional platform/device plumbing;
-  they are not relabeled as hardware-only qualification. Steam game-side glyph
-  and action-set integration also needs the game's own cooperation.
 - SDK builds, physical HDR/chroma output, real Steam hosts/accounts and deployed
   relay throughput still require the exact-head handoff cases.
 
@@ -114,3 +122,10 @@ tests, the standard analyzer, 42 native tests (one display case skipped), Androi
 Java API 36 compilation, and Windows runtime/test executable links. The runtime
 suite now includes concurrent microphone channel removal and lease invalidation;
 the audio suite decodes real 10 ms Opus packets at every supported input rate.
+
+The controller/touch completion pass passes **171 Flutter tests**, the standard
+analyzer, strict Linux/Windows adapter and controller-plugin syntax checks,
+Android API 36 Java compilation, **16 JVM tests**, and the expanded native
+runtime checks. The native suite remains **42 passed plus one display skip**;
+Windows runtime/test executable links pass. Current details and SDK/live gates
+are in [VALIDATION.md](VALIDATION.md#controller-and-touch-completion--2026-10-29).

@@ -656,3 +656,37 @@ and [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) for exact-commit build cases.
 Kotlin/Gradle/NDK, MSVC, signed Apple builds and permission/device/Steam-host
 qualification remain handoff checks. No live microphone or user audio was
 accessed during these source tests.
+
+## Controller and touch completion — 2026-10-29
+
+- **171 Flutter tests passed**: all `test/games`, Steam workspace and texture
+  suites, `test/services/gamepad_service_test.dart` and the vendored gamepad wire
+  format suite. New cases cover physical device routing, stale claims/polls,
+  malformed feedback, cancellation of pending timers, window focus loss,
+  touch persistence/collision/resize, drag editing, large text and accessible
+  position controls. The ordinary input wire-format regression cases pass.
+- Standard analyzer passes with zero diagnostics. Localization placeholders,
+  explicit English fallback manifest and source hashes pass; translation review
+  is not implied. The private-JIT workflow architecture guard passes unchanged.
+- **42 native tests passed; one display test skipped**. The extended runtime
+  test also passes after its final feature-report assertions: fragmented/multiple
+  host commands, duration bounds, stale motion, ownership loss, seat reuse,
+  explicit virtual controller identity and zeroed reserved bytes.
+- Windows MinGW runtime and five test executables compile/link. Strict Linux and
+  Windows Steam adapters pass; the Linux gamepad extension and Windows extension
+  compile with warnings treated as errors (upstream unused parameters excluded).
+  Windows checks use real SDL3 3.2.8 headers fetched through the GitHub connector,
+  not local stubs. Flutter's event-channel header requires C++20 for the vendored
+  Windows plugin; the existing Steam runtime remains C++17.
+- Android Steam sources and the controller-effects extension compile against API
+  36, with 22 deprecation warnings (20 existing plus two compatibility vibrator
+  calls). **16 Android JVM tests passed**. Java compilation does not compile the
+  Kotlin bridge or package/link the NDK receiver.
+- No server behavior changed after the previously passing Go race suite. No
+  workflow, JIT policy, trust boundary or runner deployment was changed.
+
+Build/live gates remain: current-head Apple SDK and signed app builds,
+Kotlin/Gradle/NDK packaging, MSVC builds/execution, physical controllers and
+motion axes, microphone permission/device paths, actual HDR/chroma presentation,
+Steam host/account interoperability, approved Cloud authority and deployed relay
+NAT/throughput tests. This is a source handoff, not hardware or deployment approval.

@@ -153,7 +153,27 @@ public final class SteamStreamView
     controls.toggle();
   }
 
+  public java.util.List<java.util.List<Long>> readControllerFeedback() {
+    java.util.List<java.util.List<Long>> rows = new java.util.ArrayList<>();
+    if (!inputEnabled || stopping || handle == 0) return rows;
+    for (int seat = 0; seat < controllerSeats.count(); seat++) {
+      Integer device = controllerSeats.device(seat);
+      if (device == null) continue;
+      long[] pending = NativeSteam.controllerFeedback(handle, seat);
+      if (pending == null || pending.length != 8 || (pending[0] == 0 && pending[7] == 0)) continue;
+      java.util.List<Long> row = new java.util.ArrayList<>();
+      row.add(device.longValue());
+      for (long value : pending) row.add(value);
+      rows.add(row);
+    }
+    return rows;
+  }
+  public boolean setControllerMotion(int device, double[] values) {
+    int seat = controllerSeats.existingSeat(device);
+    return inputEnabled && !stopping && handle != 0 && seat >= 0 && NativeSteam.controllerMotion(handle, seat, values);
+  }
   public void setInputEnabled(boolean enabled) {
+    if (handle != 0) NativeSteam.controllerFeedbackEnabled(handle, enabled);
     if (!enabled && handle != 0)
       NativeSteam.microphoneMute(handle);
     if (inputEnabled == enabled)
@@ -162,7 +182,7 @@ public final class SteamStreamView
       releaseInput();
     inputEnabled = enabled;
     controls.setInputEnabled(enabled);
-    controls.setEnabled(enabled && Boolean.TRUE.equals(args.get("touchControls")));
+    controls.setEnabled(enabled && Boolean.TRUE.equals(args.get("touchControls")) && !Boolean.TRUE.equals(args.get("flutterTouchControls")));
     if (enabled)
       requestFocus();
     else
@@ -196,6 +216,15 @@ public final class SteamStreamView
    * Partial updates preserve native axes when Flutter only forwards a button.
    * Both paths use the Android device ID, so one controller never gets two seats.
    */
+  public void setTouchControllerState(Map<?, ?> buttons, Map<?, ?> axes) {
+    if (!inputEnabled || stopping) return;
+    if (buttons != null && buttons.size() <= 32) for (Map.Entry<?, ?> entry : buttons.entrySet())
+      if (entry.getKey() instanceof String key && entry.getValue() instanceof Boolean down) controller.setButton(key, down);
+    if (axes != null && axes.size() <= 8) for (Map.Entry<?, ?> entry : axes.entrySet())
+      if (entry.getKey() instanceof String key && entry.getValue() instanceof Number value) controller.setAxis(key, value.doubleValue());
+    sendPad(0);
+  }
+  public void releaseTouchControls() { controller.reset(); sendPad(0); }
   public void setControllerDeviceState(int deviceId, Map<?, ?> buttons, Map<?, ?> axes) {
     if (!inputEnabled || stopping || buttons == null || axes == null || buttons.size() > 32 || axes.size() > 8)
       return;
@@ -216,6 +245,7 @@ public final class SteamStreamView
 
   public void disconnectController(int deviceId) {
     int seat = controllerSeats.disconnect(deviceId);
+    if (handle != 0 && seat >= 0) NativeSteam.resetControllerFeedback(handle, seat);
     // A composite device can supply both navigation keys and a gamepad.
     // Resend unchanged seats too, so both representations release together.
     if (seat >= 0)
@@ -339,6 +369,7 @@ public final class SteamStreamView
     }
     started = true;
     long created = NativeSteam.create();
+    NativeSteam.motionControllers(created, Boolean.TRUE.equals(args.get("motionController")));
     if (created == 0) {
       failOnMain();
       return;
@@ -422,6 +453,7 @@ public final class SteamStreamView
           audioChannels = 2;
         NativeSteam.destroy(session);
         session = NativeSteam.create();
+        NativeSteam.motionControllers(session, Boolean.TRUE.equals(args.get("motionController")));
         handle = session;
         if (session == 0)
           throw new IllegalStateException("Steam compatibility reconnect failed");
@@ -598,6 +630,7 @@ public final class SteamStreamView
     controls.reset();
     controller.reset();
     controllerSeats.reset();
+    if (handle != 0) for (int seat = 0; seat < controllerSeats.count(); seat++) NativeSteam.resetControllerFeedback(handle, seat);
     Arrays.fill(touch, (short) 0);
     touchButtons = 0;
     long session = handle;

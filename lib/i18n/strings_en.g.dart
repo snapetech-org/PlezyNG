@@ -11866,6 +11866,39 @@ class Translations$games$en {
 
 	/// en: 'Mute microphone'
 	String get microphoneMute => 'Mute microphone';
+
+	/// en: 'Controller vibration'
+	String get controllerRumble => 'Controller vibration';
+
+	/// en: 'Forward game feedback to supported controllers while this game has input. Applies to the next stream.'
+	String get controllerRumbleHelp => 'Forward game feedback to supported controllers while this game has input. Applies to the next stream.';
+
+	/// en: 'Motion controller profile'
+	String get motionController => 'Motion controller profile';
+
+	/// en: 'Use a PlayStation-compatible virtual controller for gyro and accelerometer input. Requires a supported physical controller and a game or Steam Input motion binding. Applies to the next stream; button prompts may change.'
+	String get motionControllerHelp => 'Use a PlayStation-compatible virtual controller for gyro and accelerometer input. Requires a supported physical controller and a game or Steam Input motion binding. Applies to the next stream; button prompts may change.';
+
+	/// en: 'Arrange touch controls'
+	String get touchLayout => 'Arrange touch controls';
+
+	/// en: 'Drag a control, or select it and adjust its position. Saved for this game and profile, with separate wide and compact layouts.'
+	String get touchLayoutHelp => 'Drag a control, or select it and adjust its position. Saved for this game and profile, with separate wide and compact layouts.';
+
+	/// en: 'Controls cannot overlap. Choose a clear position.'
+	String get touchLayoutCollision => 'Controls cannot overlap. Choose a clear position.';
+
+	/// en: 'Horizontal'
+	String get touchLayoutHorizontal => 'Horizontal';
+
+	/// en: 'Vertical'
+	String get touchLayoutVertical => 'Vertical';
+
+	/// en: 'Could not save the touch layout. Your previous layout is still available.'
+	String get touchLayoutFailed => 'Could not save the touch layout. Your previous layout is still available.';
+
+	/// en: 'Position controls'
+	String get touchLayoutPosition => 'Position controls';
 }
 
 // Path: deepLinks
@@ -18876,6 +18909,17 @@ extension on Translations {
 			'games.microphoneHelp' => 'Send live microphone audio to this paired Steam computer for game and voice chat. Recording stops when you leave the stream, open a dialog, or switch input ownership. You must turn it on again. Use headphones to avoid feedback.',
 			'games.microphoneFailed' => 'The microphone could not start. Check device permissions, the input device and the host’s Remote Play microphone setting, then try again.',
 			'games.microphoneMute' => 'Mute microphone',
+			'games.controllerRumble' => 'Controller vibration',
+			'games.controllerRumbleHelp' => 'Forward game feedback to supported controllers while this game has input. Applies to the next stream.',
+			'games.motionController' => 'Motion controller profile',
+			'games.motionControllerHelp' => 'Use a PlayStation-compatible virtual controller for gyro and accelerometer input. Requires a supported physical controller and a game or Steam Input motion binding. Applies to the next stream; button prompts may change.',
+			'games.touchLayout' => 'Arrange touch controls',
+			'games.touchLayoutHelp' => 'Drag a control, or select it and adjust its position. Saved for this game and profile, with separate wide and compact layouts.',
+			'games.touchLayoutCollision' => 'Controls cannot overlap. Choose a clear position.',
+			'games.touchLayoutHorizontal' => 'Horizontal',
+			'games.touchLayoutVertical' => 'Vertical',
+			'games.touchLayoutFailed' => 'Could not save the touch layout. Your previous layout is still available.',
+			'games.touchLayoutPosition' => 'Position controls',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

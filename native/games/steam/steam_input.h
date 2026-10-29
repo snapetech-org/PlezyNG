@@ -18,8 +18,27 @@ class InputState {
       reset(runtime);
     }
     enabled_ = value;
+    runtime.controllerFeedbackEnabled(value);
   }
   bool isEnabled() const { return enabled_; }
+  std::vector<std::array<int64_t, 9>> feedback(Runtime& runtime) {
+    std::vector<std::array<int64_t, 9>> result;
+    if (!enabled_) return result;
+    for (const auto& entry : seats_) {
+      auto pending = runtime.controllerFeedback(entry.second);
+      // Keep the host's sensor request visible while no new rumble is pending.
+      if (!pending[0] && !pending[7]) continue;
+      std::array<int64_t, 9> row{};
+      row[0] = entry.first;
+      std::copy(pending.begin(), pending.end(), row.begin() + 1);
+      result.push_back(row);
+    }
+    return result;
+  }
+  bool motion(Runtime& runtime, int64_t device, const std::array<double, 6>& values) {
+    auto found = seats_.find(device);
+    return enabled_ && found != seats_.end() && runtime.controllerMotion(found->second, values);
+  }
   void button(Runtime& runtime, int64_t device, const std::string& name, bool down, bool assistance = false) {
     if (!enabled_) return;
     const auto key = normalize(name);
@@ -77,6 +96,7 @@ class InputState {
     auto it = seats_.find(device);
     if (it == seats_.end()) return;
     pads_[it->second] = {};
+    runtime.resetControllerFeedback(it->second);
     emit(runtime, it->second);
     seats_.erase(it);
   }
@@ -147,6 +167,7 @@ class InputState {
     for (unsigned seat = 0; seat < count_; ++seat) {
       pads_[seat] = {};
       runtime.padSeat(seat, {}, 0);
+      runtime.resetControllerFeedback(seat);
     }
     for (auto key : keys_) runtime.key(key, false);
     keys_.clear();

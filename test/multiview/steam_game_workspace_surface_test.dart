@@ -41,6 +41,33 @@ void main() {
 
   tearDown(() => messenger.setMockMethodCallHandler(channel, null));
 
+  test('window and keyboard availability release effects and native input until focus returns', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      return null;
+    });
+    final gamepads = GamepadService.instance;
+    gamepads.debugSetWindowFocused(true);
+    final stream = session();
+    addTearDown(() {
+      stream.dispose();
+      gamepads.debugSetWindowFocused(true);
+    });
+    stream.attachPlatformView(99);
+    await state('playing');
+    await stream.setInputEnabled(true);
+    expect(stream.inputAvailable.value, isTrue);
+    gamepads.debugSetWindowFocused(false);
+    await Future<void>.delayed(Duration.zero);
+    expect(stream.inputAvailable.value, isFalse);
+    expect(calls.where((c) => c.method == 'setInputEnabled').last.arguments['enabled'], isFalse);
+    gamepads.debugSetWindowFocused(true);
+    await Future<void>.delayed(Duration.zero);
+    expect(stream.inputAvailable.value, isTrue);
+    expect(stream.microphoneState.value, 1);
+  });
+
   test('microphone stays opt-in and mutes on lease loss and dialog suspension', () async {
     final calls = <MethodCall>[];
     messenger.setMockMethodCallHandler(channel, (call) async {

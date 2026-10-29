@@ -483,6 +483,7 @@ void Session::start() {
       for (int attempt = 0; attempt < 4 && !closing; ++attempt) {
         active = false;
         auto current = std::make_shared<Runtime>();
+        current->motionControllers(options.motionController);
         std::atomic<bool> audioFailed{false}, videoFailed{false};
         auto decoder = std::make_shared<GStreamerSink>(
             [weak, source = std::weak_ptr<Runtime>(current)](DecodedPixels&& pixels) {
@@ -655,6 +656,28 @@ void Session::method(FlMethodCall* call) {
     ok(call, result);
     return;
   }
+  if (method == "readControllerFeedback") {
+    g_autoptr(FlValue) rows = fl_value_new_list();
+    if (runtime && active && runtime->metrics().epoch == renderedEpoch)
+      for (const auto& row : input.feedback(*runtime)) {
+        auto* values = fl_value_new_list();
+        for (auto value : row) fl_value_append_take(values, fl_value_new_int(value));
+        fl_value_append_take(rows, values);
+      }
+    ok(call, rows);
+    return;
+  }
+  if (method == "setControllerMotion") {
+    std::array<double, 6> values{};
+    const char* keys[] = {"gx", "gy", "gz", "ax", "ay", "az"};
+    for (size_t i = 0; i < 6; ++i) values[i] = real(args, keys[i]);
+    auto* device = field(args, "deviceId");
+    g_autoptr(FlValue) result = fl_value_new_bool(
+        runtime && active && runtime->metrics().epoch == renderedEpoch && device &&
+        fl_value_get_type(device) == FL_VALUE_TYPE_INT && input.motion(*runtime, fl_value_get_int(device), values));
+    ok(call, result);
+    return;
+  }
   if (method == "inputText") {
     auto* value = field(args, "text");
     if (!value || fl_value_get_type(value) != FL_VALUE_TYPE_UINT8_LIST || fl_value_get_length(value) > 512)
@@ -821,6 +844,7 @@ void Manager::method(FlMethodCall* call, bool receiver) {
     options.fps = number(args, "streamFps", 60, 15, 120);
     options.bitrateKbps = number(args, "streamBitrateKbps", 30000, 1000, 100000);
     options.controllerCount = number(args, "controllerCount", 1, 1, 4);
+    options.motionController = boolean(args, "motionController");
     options.audioChannels = number(args, "audioChannels", 2, 2, 6);
     if (!options.valid()) throw std::invalid_argument("Invalid options");
     auto session = std::make_shared<Session>(

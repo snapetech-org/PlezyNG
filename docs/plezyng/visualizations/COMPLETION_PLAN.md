@@ -371,3 +371,17 @@ source-only validation boundary. Integer/Boolean and one-row/one-column
 matrices, arrays of arrays, resource-bearing structs, exact `.milk2` masks and
 remaining sprite semantics stay open. No compiler, GPU, build or device gate
 ran for this checkpoint.
+
+
+## 2026-10-29 browser decoder worker checkpoint
+
+The selected MilkRust pin is `bf132800434814b168688ee57abcb5c06e60d12f`.
+The web package now stages a separate static decoder worker, uses it when it
+shares the page origin, and falls back to a bounded blob worker when static
+worker construction is rejected and policy permits. PNG/JPEG/BMP/static
+GIF/WebP decode and dimension revalidation run in the disposable worker; a
+timeout terminates it before a stalled codec can hold the renderer thread.
+This does not isolate browser-process OOM or GPU-driver hangs. Whitespace,
+JSON and JavaScript syntax checks passed; builds, tests, browser execution and
+device qualification remain unrun. Exact MilkDrop3 masks, HLSL profile gaps and
+non-default sprite semantics remain code/reference work.

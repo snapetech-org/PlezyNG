@@ -62,6 +62,120 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Subtitle documents and archives</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.matroska.srt</string>
+				<string>org.matroska.ass</string>
+				<string>org.w3.webvtt</string>
+				<string>org.snapetech.subtitle-text</string>
+				<string>org.snapetech.subtitle-bitmap</string>
+				<string>public.zip-archive</string>
+				<string>public.tar-archive</string>
+				<string>org.gnu.gnu-zip-archive</string>
+			</array>
+		</dict>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>org.matroska.srt</string>
+			<key>UTTypeDescription</key>
+			<string>SubRip subtitles</string>
+			<key>UTTypeConformsTo</key>
+			<array><string>public.plain-text</string></array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>srt</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>org.matroska.ass</string>
+			<key>UTTypeDescription</key>
+			<string>Advanced SubStation Alpha subtitles</string>
+			<key>UTTypeConformsTo</key>
+			<array><string>public.plain-text</string></array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ass</string>
+					<string>ssa</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>org.w3.webvtt</string>
+			<key>UTTypeDescription</key>
+			<string>WebVTT subtitles</string>
+			<key>UTTypeConformsTo</key>
+			<array><string>public.plain-text</string></array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>vtt</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>org.snapetech.subtitle-text</string>
+			<key>UTTypeDescription</key>
+			<string>Subtitle text</string>
+			<key>UTTypeConformsTo</key>
+			<array><string>public.text</string></array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>aqt</string>
+					<string>jss</string>
+					<string>mpl</string>
+					<string>scc</string>
+					<string>smi</string>
+					<string>ttml</string>
+					<string>dfxp</string>
+					<string>imsc</string>
+					<string>sami</string>
+					<string>sbv</string>
+					<string>lrc</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>org.snapetech.subtitle-bitmap</string>
+			<key>UTTypeDescription</key>
+			<string>Subtitle image stream</string>
+			<key>UTTypeConformsTo</key>
+			<array><string>public.data</string></array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>idx</string>
+					<string>sub</string>
+					<string>sup</string>
+					<string>mks</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

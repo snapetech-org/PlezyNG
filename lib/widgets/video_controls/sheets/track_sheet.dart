@@ -648,7 +648,7 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
     ValueListenableBuilder<int>(
       valueListenable: IncomingSubtitleShareService.pendingCount,
       builder: (context, count, _) {
-        if (count == 0 || defaultTargetPlatform != TargetPlatform.android) return const SizedBox.shrink();
+        if (count == 0 || player.supportedLocalSubtitleExtensions.isEmpty) return const SizedBox.shrink();
         return FocusableListTile(
           leading: const AppIcon(Symbols.move_to_inbox_rounded),
           title: Text('Import shared subtitle ($count)'),

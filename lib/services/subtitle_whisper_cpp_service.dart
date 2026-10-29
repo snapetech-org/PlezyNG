@@ -73,6 +73,8 @@ final class SubtitleWhisperCppService {
             Platform.isLinux);
   }
 
+  static Future<int> readWavDurationMs(String path) => _WavDurationReader.readDurationMs(path);
+
   static bool get _tizenWhisperRuntimeAvailable => _tizenWhisperRuntimeState ??= _probeTizenWhisperRuntime();
 
   static bool _probeTizenWhisperRuntime() {
@@ -166,6 +168,8 @@ final class SubtitleWhisperCppService {
   Future<SubtitleWhisperResult> transcribeWav(
     String wavPath, {
     required bool requestGpu,
+    int startMs = 0,
+    int? endMs,
     bool translateToEnglish = false,
     String? languageCode,
     void Function(String phase, int received, int total)? onProgress,
@@ -182,6 +186,10 @@ final class SubtitleWhisperCppService {
     if (durationMs <= 0 || durationMs > _maximumAudioHours * 60 * 60 * 1000) {
       throw const FormatException('WAV duration must be between one millisecond and eight hours.');
     }
+    final rangeEndMs = endMs ?? durationMs;
+    if (startMs < 0 || rangeEndMs <= startMs || rangeEndMs > durationMs) {
+      throw const FormatException('The selected transcription interval must be inside the WAV duration.');
+    }
     final modelDirectory = p.join((await getApplicationSupportDirectory()).path, 'subtitle_models', 'whisper_cpp');
     final model = whisper.WhisperModels.baseQ5_1;
     List<whisper.WhisperDevice> devices = [];
@@ -197,6 +205,8 @@ final class SubtitleWhisperCppService {
       return _run(
         wavPath,
         durationMs,
+        startMs,
+        rangeEndMs,
         modelDirectory,
         model,
         const whisper.WhisperModelConfig(useGpu: false),
@@ -212,6 +222,8 @@ final class SubtitleWhisperCppService {
       return await _run(
         wavPath,
         durationMs,
+        startMs,
+        rangeEndMs,
         modelDirectory,
         model,
         selectedDevice == null
@@ -229,6 +241,8 @@ final class SubtitleWhisperCppService {
       return _run(
         wavPath,
         durationMs,
+        startMs,
+        rangeEndMs,
         modelDirectory,
         model,
         const whisper.WhisperModelConfig(useGpu: false),
@@ -244,6 +258,8 @@ final class SubtitleWhisperCppService {
   Future<SubtitleWhisperResult> _run(
     String wavPath,
     int durationMs,
+    int startMs,
+    int endMs,
     String modelDirectory,
     whisper.WhisperModel model,
     whisper.WhisperModelConfig config, {
@@ -273,6 +289,8 @@ final class SubtitleWhisperCppService {
           noSpeechThreshold: 0.6,
           tokenTimestamps: true,
           splitOnWord: true,
+          offset: Duration(milliseconds: startMs),
+          duration: Duration(milliseconds: endMs - startMs),
         ),
         onProgress: (progress) => onProgress?.call('Whisper inference', progress, 100),
       );

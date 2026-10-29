@@ -94,6 +94,8 @@ final class SubtitleAiService {
         (Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isMacOS || Platform.isLinux);
   }
 
+  Future<int> readWavDurationMs(String wavPath) => SubtitleWhisperCppService.readWavDurationMs(wavPath);
+
   static List<SubtitleInferenceProvider> get availableProviderRequests {
     if (_tizenBuild || _webOsBuild) return const [SubtitleInferenceProvider.cpu];
     if (Platform.isAndroid) {
@@ -228,6 +230,8 @@ final class SubtitleAiService {
   Future<SubtitleTranscriptionResult> transcribeWav(
     String wavPath, {
     SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu,
+    int startMs = 0,
+    int? endMs,
     int numThreads = 2,
     bool translateToEnglish = false,
     String? languageCode,
@@ -240,10 +244,20 @@ final class SubtitleAiService {
     if (languageOverride != null && !RegExp(r'^[a-z]{2,3}$').hasMatch(languageOverride)) {
       throw ArgumentError.value(languageCode, 'languageCode', 'Use a two or three letter language code or auto.');
     }
+    final durationMs = await SubtitleWhisperCppService.readWavDurationMs(wavPath);
+    final rangeEndMs = endMs ?? durationMs;
+    if (durationMs <= 0 || durationMs > _maximumAudioHours * 60 * 60 * 1000) {
+      throw const FormatException('WAV duration must be between one millisecond and eight hours.');
+    }
+    if (startMs < 0 || rangeEndMs <= startMs || rangeEndMs > durationMs) {
+      throw const FormatException('The selected transcription interval must be inside the WAV duration.');
+    }
     if (requested == SubtitleInferenceProvider.cpu || requested == SubtitleInferenceProvider.desktopGpu) {
       final whisperResult = await SubtitleWhisperCppService.instance.transcribeWav(
         wavPath,
         requestGpu: requested == SubtitleInferenceProvider.desktopGpu,
+        startMs: startMs,
+        endMs: rangeEndMs,
         translateToEnglish: translateToEnglish,
         languageCode: languageOverride,
         onProgress: onProgress,
@@ -278,6 +292,8 @@ final class SubtitleAiService {
         modelDirectory: root,
         provider: requested.runtimeName,
         numThreads: numThreads.clamp(1, 8).toInt(),
+        startMs: startMs,
+        endMs: rangeEndMs,
       ),
     );
     final rawCues = result['cues'] as List<dynamic>;
@@ -344,6 +360,8 @@ Future<Map<String, Object?>> _runSubtitleTranscriptionWorker({
   required String modelDirectory,
   required String provider,
   required int numThreads,
+  required int startMs,
+  required int endMs,
 }) async {
   await sherpa.initBindingsAsync();
 
@@ -393,13 +411,17 @@ Future<Map<String, Object?>> _runSubtitleTranscriptionWorker({
       recognizer = engine.$1;
       vad = engine.$2;
       final output = <Map<String, Object?>>[];
+      if (startMs < 0 || endMs <= startMs || endMs > wav.durationMs) {
+        throw const FormatException('The selected transcription interval must be inside the WAV duration.');
+      }
 
       Future<void> drainVad() async {
         while (!vad!.isEmpty()) {
           final segment = vad.front();
-          final startMs = (segment.start * 1000 / SubtitleAiService._sampleRate).round();
-          final endMs = ((segment.start + segment.samples.length) * 1000 / SubtitleAiService._sampleRate).round();
-          if (segment.samples.isEmpty || endMs <= startMs) {
+          final cueStartMs = startMs + (segment.start * 1000 / SubtitleAiService._sampleRate).round();
+          final cueEndMs =
+              startMs + ((segment.start + segment.samples.length) * 1000 / SubtitleAiService._sampleRate).round();
+          if (segment.samples.isEmpty || cueEndMs <= cueStartMs) {
             vad.pop();
             continue;
           }
@@ -411,8 +433,10 @@ Future<Map<String, Object?>> _runSubtitleTranscriptionWorker({
             final text = recognizer.getResult(stream).text.replaceAll(RegExp(r'\s+'), ' ').trim();
             if (text.isNotEmpty && text.runes.length <= 600 && output.length < SubtitleAiService._maximumCueCount) {
               final previous = output.isEmpty ? null : output.last;
-              if (previous == null || previous['text'] != text || startMs - (previous['endMs'] as int) > 1200) {
-                output.add({'index': output.length + 1, 'startMs': startMs, 'endMs': endMs, 'text': text});
+              if (previous == null ||
+                  previous['text'] != text ||
+                  cueStartMs - (previous['endMs'] as int) > 1200) {
+                output.add({'index': output.length + 1, 'startMs': cueStartMs, 'endMs': cueEndMs, 'text': text});
               }
             }
           } finally {
@@ -422,10 +446,14 @@ Future<Map<String, Object?>> _runSubtitleTranscriptionWorker({
         }
       }
 
-      await wav.forEachMono16kChunk((samples) async {
-        vad!.acceptWaveform(samples);
-        await drainVad();
-      });
+      await wav.forEachMono16kChunk(
+        (samples) async {
+          vad!.acceptWaveform(samples);
+          await drainVad();
+        },
+        startMs: startMs,
+        endMs: endMs,
+      );
       vad.flush();
       await drainVad();
       final durationMs = wav.durationMs;
@@ -546,10 +574,20 @@ final class _PcmWavReader {
     }
   }
 
-  Future<void> forEachMono16kChunk(Future<void> Function(Float32List samples) callback) async {
+  Future<void> forEachMono16kChunk(
+    Future<void> Function(Float32List samples) callback, {
+    required int startMs,
+    required int endMs,
+  }) async {
     const outputChunkFrames = 16000;
-    for (var outputStart = 0; outputStart < outputFrames; outputStart += outputChunkFrames) {
-      final count = (outputFrames - outputStart).clamp(0, outputChunkFrames).toInt();
+    final firstOutputFrame = ((startMs * SubtitleAiService._sampleRate) ~/ 1000)
+        .clamp(0, outputFrames)
+        .toInt();
+    final endOutputFrame = ((endMs * SubtitleAiService._sampleRate + 999) ~/ 1000)
+        .clamp(firstOutputFrame, outputFrames)
+        .toInt();
+    for (var outputStart = firstOutputFrame; outputStart < endOutputFrame; outputStart += outputChunkFrames) {
+      final count = (endOutputFrame - outputStart).clamp(0, outputChunkFrames).toInt();
       if (count == 0) break;
       final sourceStart = (outputStart * sampleRate) ~/ SubtitleAiService._sampleRate;
       final lastPosition = ((outputStart + count - 1) * sampleRate) / SubtitleAiService._sampleRate;

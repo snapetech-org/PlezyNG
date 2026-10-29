@@ -796,6 +796,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'The pinned private image 7-Zip is not usable' }
 
       - name: Setup Flutter
+        id: setup_flutter_windows
         if: matrix.flutter_setup == 'action'
         uses: ./.github/actions/setup-flutter-windows
         with:
@@ -826,6 +827,12 @@ jobs:
         run: |
           flutter precache --windows
           .\windows\tool\install-patched-engine.ps1
+
+      - name: Download and verify pinned Windows libmpv archive
+        shell: pwsh
+        env:
+          PLEZYNG_WINDOWS_CURL_PATH: ${{ steps.setup_flutter_windows.outputs.windows_curl_path }}
+        run: .\windows\tool\download-pinned-mpv.ps1 -Architecture '${{ matrix.arch }}'
 
       - name: Prepare Flutter Windows configuration
         shell: pwsh

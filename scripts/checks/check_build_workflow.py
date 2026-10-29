@@ -20,6 +20,7 @@ WORKFLOW = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else DEFAULT_WORKFL
 SETUP_FLUTTER_GIT = WORKFLOW.parents[1] / "actions/setup-flutter-git/action.yml"
 SETUP_FLUTTER_WINDOWS = ROOT / ".github/actions/setup-flutter-windows/action.yml"
 WINDOWS_CMAKE = WORKFLOW.parents[2] / "windows/CMakeLists.txt"
+WINDOWS_MPV_DOWNLOADER = WORKFLOW.parents[2] / "windows/tool/download-pinned-mpv.ps1"
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
 WEBOS_RELEASE_GATE = ROOT / "tools/webos/check_release_eligibility.py"
@@ -168,6 +169,11 @@ for expected in (
 windows_cmake = WINDOWS_CMAKE.read_text(encoding="utf-8") if WINDOWS_CMAKE.is_file() else ""
 require(bool(windows_cmake), "missing windows/CMakeLists.txt")
 windows_mpv_block = windows_cmake.split("FetchContent_MakeAvailable(mpv_dev)", 1)[0]
+windows_mpv_downloader = (
+    WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8")
+    if WINDOWS_MPV_DOWNLOADER.is_file()
+    else ""
+)
 require(
     "URL_HASH SHA256=${MPV_SHA256}" in windows_mpv_block,
     "Windows libmpv fetch must keep URL_HASH enforcement",
@@ -176,6 +182,46 @@ require(
     "string(JSON MPV_SHA256 GET " in windows_mpv_block
     and re.search(r"[0-9a-f]{64}", windows_mpv_block) is None,
     "Windows libmpv checksum must come from mpv-build.lock.json, not a literal",
+)
+require(
+    "MPV_LOCAL_ARCHIVE" in windows_mpv_block
+    and "PLEZYNG_MPV_ARCHIVE_PATH" in windows_mpv_block
+    and "set(MPV_DOWNLOAD_URL" in windows_mpv_block
+    and "URL_HASH SHA256=${MPV_SHA256}" in windows_mpv_block,
+    "Windows CMake must use a predownloaded MPV archive without dropping lockfile hash verification",
+)
+require(
+    "PLEZYNG_WINDOWS_CURL_PATH" in windows_cmake
+    and "sdk.lunarg.com" in windows_cmake
+    and "--ssl-revoke-best-effort" in windows_cmake
+    and "file(SHA256" in windows_cmake
+    and "VULKAN_RT_SHA256" in windows_cmake,
+    "Windows Vulkan runtime downloads must use verified Schannel curl and keep the pinned SHA-256",
+)
+require(bool(windows_mpv_downloader), "missing pinned Windows MPV download helper")
+for expected in (
+    "[ValidateSet('x64', 'arm64')]",
+    "mpv-build.lock.json",
+    "github.com",
+    "HTTPS_PROXY",
+    "--proxy",
+    "--ssl-revoke-best-effort",
+    "Schannel",
+    "Get-FileHash -Algorithm SHA256",
+    "PLEZYNG_MPV_ARCHIVE_PATH=",
+    "PLEZYNG_WINDOWS_CURL_PATH=",
+):
+    require(expected in windows_mpv_downloader, f"Windows MPV bootstrap must keep: {expected}")
+windows_download_step = named_step(
+    windows, "Download and verify pinned Windows libmpv archive"
+)
+windows_download_step_normalized = windows_download_step.replace("\\", "/")
+require(
+    "windows/tool/download-pinned-mpv.ps1" in windows_download_step_normalized
+    and "steps.setup_flutter_windows.outputs.windows_curl_path" in windows_download_step
+    and windows.find("name: Download and verify pinned Windows libmpv archive")
+    < windows.find("name: Configure repository updater trust root"),
+    "Windows release builds must download and verify MPV before CMake configures",
 )
 require(
     "sourceforge" not in windows_cmake,
@@ -240,8 +286,24 @@ require(
     and 'curl() {' in setup_flutter_windows
     and "name: Verify best-effort curl wrapper for Flutter setup" in setup_flutter_windows
     and "PLEZY_REAL_CURL" in setup_flutter_windows
+    and "windows_curl_path:" in setup_flutter_windows
+    and "steps.windows_curl.outputs.windows_curl_path" in setup_flutter_windows
     and "--show-error" in setup_flutter_windows,
     "Windows Flutter setup must retry three times with a trusted cache key and fail closed",
+)
+
+windows_ci = job_block(ci_text, "windows-native-test")
+require(bool(windows_ci), "missing Windows native CI job")
+windows_ci_download_step = named_step(
+    windows_ci, "Download and verify pinned Windows libmpv archive"
+)
+windows_ci_download_step_normalized = windows_ci_download_step.replace("\\", "/")
+require(
+    "windows/tool/download-pinned-mpv.ps1" in windows_ci_download_step_normalized
+    and "steps.setup_flutter_windows.outputs.windows_curl_path" in windows_ci_download_step
+    and windows_ci.find("name: Download and verify pinned Windows libmpv archive")
+    < windows_ci.find("name: Prepare Flutter Windows configuration"),
+    "Windows native CI must predownload the hash-locked MPV archive before CMake",
 )
 
 linux = job("build-linux")

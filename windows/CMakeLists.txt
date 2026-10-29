@@ -41,6 +41,22 @@ elseif(PLEZYNG_DV_ENGINE_SHA256)
   message(FATAL_ERROR "PLEZYNG_DV_ENGINE_SHA256 requires PLEZYNG_DV_ENGINE_ARCHIVE")
 endif()
 
+# CI downloads this archive with Schannel's best-effort revocation handling,
+# then CMake still verifies the same lockfile hash before extraction. CMake's
+# embedded downloader cannot apply curl's Schannel revocation option itself.
+if(NOT PLEZYNG_DV_ENGINE_ARCHIVE)
+  set(MPV_LOCAL_ARCHIVE "$ENV{PLEZYNG_MPV_ARCHIVE_PATH}")
+  if(NOT MPV_LOCAL_ARCHIVE STREQUAL "")
+    file(TO_CMAKE_PATH "${MPV_LOCAL_ARCHIVE}" MPV_LOCAL_ARCHIVE)
+    if(NOT IS_ABSOLUTE "${MPV_LOCAL_ARCHIVE}" OR
+       NOT EXISTS "${MPV_LOCAL_ARCHIVE}" OR
+       IS_DIRECTORY "${MPV_LOCAL_ARCHIVE}")
+      message(FATAL_ERROR "PLEZYNG_MPV_ARCHIVE_PATH must name an existing absolute archive")
+    endif()
+    set(MPV_DOWNLOAD_URL "${MPV_LOCAL_ARCHIVE}")
+  endif()
+endif()
+
 # Plain zips extract with CMake's built-in libarchive on every host arch, so
 # both arches share the FetchContent path (the old mpv-dev 7z needed a
 # 7-Zip binary on ARM64, whose libarchive lacks LZMA2).
@@ -97,16 +113,52 @@ set(VULKAN_RT_DIR "${CMAKE_BINARY_DIR}/vulkan-runtime")
 if(NOT EXISTS "${VULKAN_RT_DIR}/vulkan-1.dll" OR NOT EXISTS "${VULKAN_RT_DIR}/VulkanRT-License.txt")
   set(VULKAN_RT_ZIP "${VULKAN_RT_DIR}/vulkan-runtime-components.zip")
   message(STATUS "Downloading Vulkan runtime (${VULKAN_RT_SLUG} ${VULKAN_RT_VERSION})...")
-  # sdk.lunarg.com rejects requests without a recognized User-Agent.
-  file(DOWNLOAD
-    "https://sdk.lunarg.com/sdk/download/${VULKAN_RT_VERSION}/${VULKAN_RT_SLUG}/vulkan-runtime-components.zip"
-    "${VULKAN_RT_ZIP}"
-    HTTPHEADER "User-Agent: curl/8.4.0"
-    EXPECTED_HASH SHA256=${VULKAN_RT_SHA256}
-    STATUS VULKAN_RT_DL_STATUS)
-  list(GET VULKAN_RT_DL_STATUS 0 VULKAN_RT_DL_RESULT)
-  if(NOT VULKAN_RT_DL_RESULT EQUAL 0)
-    message(FATAL_ERROR "Failed to download Vulkan runtime: ${VULKAN_RT_DL_STATUS}")
+  set(VULKAN_RT_URL
+    "https://sdk.lunarg.com/sdk/download/${VULKAN_RT_VERSION}/${VULKAN_RT_SLUG}/vulkan-runtime-components.zip")
+  set(VULKAN_RT_CURL_PATH "$ENV{PLEZYNG_WINDOWS_CURL_PATH}")
+  if(NOT VULKAN_RT_CURL_PATH STREQUAL "")
+    file(TO_CMAKE_PATH "${VULKAN_RT_CURL_PATH}" VULKAN_RT_CURL_PATH)
+    set(VULKAN_RT_PROXY "$ENV{HTTPS_PROXY}")
+    if(NOT EXISTS "${VULKAN_RT_CURL_PATH}" OR IS_DIRECTORY "${VULKAN_RT_CURL_PATH}" OR
+       VULKAN_RT_PROXY STREQUAL "")
+      message(FATAL_ERROR "The verified Windows curl and private JIT proxy are required for Vulkan runtime downloads")
+    endif()
+    execute_process(
+      COMMAND "${VULKAN_RT_CURL_PATH}"
+        --proxy "${VULKAN_RT_PROXY}"
+        --ssl-revoke-best-effort
+        --user-agent curl/8.4.0
+        --fail
+        --location
+        --silent
+        --show-error
+        --connect-timeout 20
+        --max-time 600
+        --retry 3
+        --output "${VULKAN_RT_ZIP}"
+        "${VULKAN_RT_URL}"
+      RESULT_VARIABLE VULKAN_RT_CURL_RESULT
+    )
+    if(NOT VULKAN_RT_CURL_RESULT EQUAL 0)
+      message(FATAL_ERROR "Failed to download Vulkan runtime through verified Schannel curl")
+    endif()
+    file(SHA256 "${VULKAN_RT_ZIP}" VULKAN_RT_ACTUAL_SHA256)
+    string(TOLOWER "${VULKAN_RT_ACTUAL_SHA256}" VULKAN_RT_ACTUAL_SHA256)
+    if(NOT VULKAN_RT_ACTUAL_SHA256 STREQUAL VULKAN_RT_SHA256)
+      message(FATAL_ERROR "Vulkan runtime SHA-256 mismatch: ${VULKAN_RT_ACTUAL_SHA256}")
+    endif()
+  else()
+    # sdk.lunarg.com rejects requests without a recognized User-Agent.
+    file(DOWNLOAD
+      "${VULKAN_RT_URL}"
+      "${VULKAN_RT_ZIP}"
+      HTTPHEADER "User-Agent: curl/8.4.0"
+      EXPECTED_HASH SHA256=${VULKAN_RT_SHA256}
+      STATUS VULKAN_RT_DL_STATUS)
+    list(GET VULKAN_RT_DL_STATUS 0 VULKAN_RT_DL_RESULT)
+    if(NOT VULKAN_RT_DL_RESULT EQUAL 0)
+      message(FATAL_ERROR "Failed to download Vulkan runtime: ${VULKAN_RT_DL_STATUS}")
+    endif()
   endif()
   execute_process(
     COMMAND "${CMAKE_COMMAND}" -E tar xf "${VULKAN_RT_ZIP}"

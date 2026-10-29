@@ -136,7 +136,8 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
   });
 
   String _value(String key, Object value) {
-    final copy = Translations.of(context).videoControls.subtitleDefaultsTransfer;
+    final controls = Translations.of(context).videoControls;
+    final copy = controls.subtitleDefaultsTransfer;
     if (const {'color', 'outline', 'backgroundColor'}.contains(key) && value is int) {
       return '#${value.toRadixString(16).padLeft(8, '0').toUpperCase()}';
     }
@@ -145,6 +146,14 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
     }
     if (value is bool) return value ? copy.enabled : copy.disabled;
     if (key == 'fontFamily') return SubtitleFontStore.instance.label(value.toString());
+    if (key == 'alignment') return switch (value.toString()) {
+      'left' => controls.subtitleOverlays.alignmentStart,
+      'start' => controls.subtitleOverlays.alignmentStart,
+      'center' => controls.subtitleOverlays.alignmentCenter,
+      'right' => controls.subtitleOverlays.alignmentEnd,
+      'end' => controls.subtitleOverlays.alignmentEnd,
+      _ => value.toString(),
+    };
     if (key == 'writingMode') return switch (value) {
       'vertical-lr' => copy.verticalLr, 'vertical-rl' => copy.verticalRl, _ => copy.horizontal};
     return value.toString();

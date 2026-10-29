@@ -45,7 +45,7 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
       child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
         Text(copy.description),
         TextButton(onPressed: () => showDialog<void>(context: context, builder: (_) => const SubtitleDefaultsDialog()),
-          child: const Text('Transfer saved caption defaults')),
+          child: Text(t.videoControls.subtitleDefaultsTransfer.title)),
         TextButton(onPressed: () async {
           await showDialog<void>(context: context, builder: (_) => SubtitleFontsDialog(
             openSource: openAnalysisSource, isSourceCurrent: isSourceCurrent));

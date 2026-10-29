@@ -60,7 +60,7 @@ Future<void> showSubtitleRoleDialog(BuildContext context, {String? titleIdentity
             final after = SubtitleSelectionRules.resolve(titleIdentity: titleOnly ? titleIdentity : null);
             if (before.forced != after.forced || before.accessibility != after.accessibility) update(() => rules = after);
           }
-        }, child: const Text('Transfer saved caption defaults')),
+        }, child: Text(translations.videoControls.subtitleDefaultsTransfer.title)),
         if (error != null) Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
       ]))), actions: [
         TextButton(onPressed: busy ? null : () => save(reset: true), child: Text(titleOnly ? copy.removeTitleOverride : copy.resetProfileDefault)),

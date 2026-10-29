@@ -7,9 +7,11 @@ contract is in that file. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
 **This is implemented source, not a verified working release or universal
-compatibility result.** No builds, tests, CI dispatch, pack generation, captures,
-benchmarks or device runs were performed for this continuation. Confidence is
-moderate for source integration; compiled behavior and device fidelity are unknown.
+compatibility result.** The user has now requested builds. Repository policy
+requires private ephemeral JIT runners; this workspace has no runner-dispatch
+control, so no build, test, pack generation, capture, benchmark or device result
+is recorded for this checkpoint. Compiled behavior and device fidelity remain
+unknown.
 
 ## Source delivered
 
@@ -18,7 +20,7 @@ moderate for source integration; compiled behavior and device fidelity are unkno
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
 | HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/one-dimensional arrays/all numeric matrix shapes/control flow, bounded errors; unsupported ESSL profile constructs fail closed | Compiler/corpus execution and reference fidelity; nested/resource-array forms remain outside the declared profile, and ESSL 3.00 forbids arrays of arrays |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
-| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, explicit sprite opt-in, saved progress/direction/randoms, sprite flips/alpha/rotation/offset/repeat fields, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
+| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, default-on trailing sprites (`sprite=0` disables), saved progress/direction/randoms, sprite flips/alpha/rotation/offset/repeat fields, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
 | Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
@@ -83,8 +85,9 @@ private key was invented.
 [BUILD_HANDOFF.md](BUILD_HANDOFF.md) identifies the build entrypoints, artifact
 promotion and evidence needed. [CATALOG_RELEASE.md](CATALOG_RELEASE.md) records
 public-root provisioning without private keys in source. All executable work
-must use compatible private ephemeral JIT runners under `AGENTS.md` and the
-existing source-only restriction; no workflow was dispatched for this change.
+must use compatible private ephemeral JIT runners under `AGENTS.md`. The current
+user request includes builds, but no runner/workflow dispatch control is
+available in this workspace; no workflow was dispatched for this checkpoint.
 
 The remaining work is broader than access to physical hardware: compiler/link
 verification, mpv artifact production/promotion, reference-pixel conformance,
@@ -92,7 +95,7 @@ corpus qualification, rights decisions and production custody/publication are al
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `03c975eae4eeb39d5e26eef7ff63b6f06177571b` with C ABI v2:
+- At this checkpoint, the app pinned MilkRust `597cdfb74090c983191dca0505adb8878152c07d` with C ABI v2:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -285,13 +288,12 @@ missing reference or these remaining language features.
 
 ## 2026-10-29 saved sprite blend-table correction
 
-The current MilkRust source path now follows the compatible MIT MilkDrop 3
-table for all eleven saved sprite blend modes, including the modes beyond the
-classic five. The saved `SpriteBlend` default is 4; out-of-range per-frame
-selectors map to mode 0. Existing browser pixel controls cover all modes and 66
-alpha/key/mode combinations. They have not run; builds, pixel references and
-device evidence remain unverified. The app lock is advanced to the exact PR
-head separately from those execution gates.
+At this intermediate checkpoint, the MilkRust source path followed the
+compatible MIT MilkDrop 3 table for all eleven saved sprite blend modes. That
+checkpoint used saved `SpriteBlend` default 4; the current source changes the
+default to 0 and computes diffuse bytes in shared Rust code. Existing browser
+pixel controls cover all modes and 66 alpha/key/mode combinations. They have not
+run; builds, pixel references and device evidence remain unverified.
 
 
 ## 2026-10-29 browser texture worker checkpoint
@@ -319,52 +321,73 @@ registers the core notices from an app asset.
 
 This is source integration only. GIF decoding in WASM runs on the calling thread.
 Finite GIF loop counts now repeat each cycle before holding the final frame; a
-missing loop extension plays once and a zero count loops forever. The app pins
-MilkRust `03c975eae4eeb39d5e26eef7ff63b6f06177571b` with ABI v2. The matching
+missing loop extension plays once and a zero count loops forever. At this
+checkpoint, the app pinned MilkRust `597cdfb74090c983191dca0505adb8878152c07d`
+with ABI v2. The matching
 engine source also raises both hosts to the 100-name image-cache limit and uses
 packed 32-bit blend-vertex data with per-fragment 64×48 triangle interpolation.
 Reference compositing, browser CSP/codec behavior, compile/link, GPU, build and
 device results remain unknown; runtime artifacts remain unbuilt.
 
 
-## 2026-10-29 saved blend register carry-forward checkpoint
+## 2026-10-29 saved blend header correction
 
-MilkRust PR #20 now resolves omitted .milk2 header registers from the prior
-double-preset state. A new runtime starts with an unset pattern, progress 1,
-direction 0 and zero random registers; a missing first-load pattern fails
-closed instead of being treated as Fade. Serialization preserves whether those
-header records were present. PlezyNG pins the exact engine commit in
-native/visualizer/sources.lock.json.
+The current MilkRust working source parses each `.milk2` file independently:
+missing pattern is empty and fails closed, progress defaults to 0.5, direction
+to 1 and omitted random values to zero. Header state is not carried from a
+previous file. Trailing sprite blocks execute unless `sprite=0`. At the time of
+this intermediate checkpoint, the app lock still pointed at
+`597cdfb74090c983191dca0505adb8878152c07d`, which did not contain the correction.
+The current lock update advances to the corrected source.
 
-The app behavior remains source-only and unqualified. No build, test, browser,
-GPU or device run was performed for this checkpoint. Renderer pixel parity,
-non-default sprite-field conformance and the other ledger items remain open.
+No build, test, browser, GPU or device run was performed. Renderer pixel parity,
+non-default sprite-field conformance and the other qualification items remain
+open.
 
+## 2026-10-29 animated-image import budget correction
 
-## 2026-10-29 saved sprite runtime semantics checkpoint
+The app's import gate now scans PNG chunk headers and rejects APNG before the
+file enters an installed pack. GIF admission walks the block stream, validates
+frame rectangles and sub-block bounds, caps each animation at 120 frames and
+16 Mi decoded canvas pixels, and charges every frame against the pack's 32 Mi
+pixel budget. Standalone `.milk`/`.milk2` import now uses the same 2 MiB source
+limit as pack validation and the engine; file reads stop at limit plus one and
+reject a changed source size. This aligns import-time accounting with MilkRust's
+decoder limits and prevents oversized GIFs from appearing as one-frame assets
+during installation. Static PNG remains header-admitted; the native codec
+still performs the pixel decode checks. Pack validation now reads image and
+preset assets through the same byte ceilings, even if a file changes after a
+stat or integrity check. No build or test was run.
 
-The paired engine source now uses MilkDrop's saved-sprite defaults and frame
-rules: a missing `SpriteBurn` defaults to always burning, other numeric values
-select the EEL `burn` register, and non-default `SpriteRot` modes apply
-`SpriteSpeed` to absolute host time. Script alpha remains unclamped after
-`SpriteAlpha`; the CPU packs legacy D3D vertex-color bytes once and both native
-GL and WebGL receive the same normalized bytes.
+## 2026-10-29 sprite burn and image admission correction
 
-The app lock pins MilkRust
-`03c975eae4eeb39d5e26eef7ff63b6f06177571b`. This closes these source-level sprite semantics within the
-documented compatibility profile. It does not establish reference-renderer
-pixel parity, GPU filtering/layer parity, builds, tests or device qualification.
+MilkRust now follows the inspected saved-sprite draw order in both native and
+WebGL: primary final-frame feedback draws use MilkDrop's 4:3 correction, display
+copies and Milk2's additional final feedback stamp restore normal geometry, and
+Milk2 layers 1–4 enter feedback at their ordered scene stages. Layer 0 and
+classic layers use the per-frame burn path. Shared Rust code packs diffuse color
+bytes before GL submission. MilkDrop 3 layer/burn and pixel parity remain
+reference qualification items.
 
+The app import gate now aligns TGA bit-depth admission with the engine, rejects
+truncated PNG chunk streams, accepts JPEG `JFIF` aliases, and bounds static WebP
+header inspection while rejecting animation. The preset browser copy now
+describes the implemented saved-pattern profile instead of the old Fade-only
+subset. `git diff --check` passed; no build, test, browser or device run was
+performed. The app lock has not yet been advanced to these current engine source
+changes, and no produced runtime includes them.
 
-## 2026-10-29 saved sprite feedback-layer checkpoint
+## 2026-10-29 sprite byte-packing and plan-status checkpoint
 
-The paired MilkRust source now inserts saved sprite layers 1–4 at their classic
-feedback stages: after warp/blur, after shapes, after custom waves, and after
-the main wave and borders. Both GL hosts consume the same scene markers.
-Layers 1–4 are drawn once into feedback when non-burning and twice when burning;
-they are presented through their owner's composite. Layer 0 alone gets the
-separate screen overlay, and its burn copy enters feedback after composite.
+MilkRust now computes D3D9-compatible sprite diffuse bytes in shared Rust code
+and passes the normalized byte values to native GL and WebGL. The fragment
+shader no longer quantizes diffuse RGB or alpha independently on each GPU. This
+closes the last identified sprite source mismatch; authored GPU controls and
+reference-pixel parity remain unrun.
 
-The app lock pins MilkRust `03c975eae4eeb39d5e26eef7ff63b6f06177571b`. Sprite source behavior is implemented
-against the compatible MIT behavioral reference; rendered layer/filter
-parity and target qualification remain unverified. No build or test was run.
+The current engine source also resolves `.milk2` header defaults per file, runs
+trailing sprite blocks unless `sprite=0`, implements the 30 documented saved
+pattern formulas and ordered sprite layers, and keeps explicit failures for
+extensions outside the declared compiler/format profile. The app source lock
+pins MilkRust `11b603d2db38f799d5e83f0a95366bd82ca75d1a` with C ABI v2. Builds
+remain requested but must use private ephemeral JIT runners under `AGENTS.md`.

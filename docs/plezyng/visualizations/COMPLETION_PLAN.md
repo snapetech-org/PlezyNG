@@ -408,9 +408,9 @@ signing gates remain separate product/release work.
 
 ## 2026-10-29 saved sprite blend-table correction
 
-MilkRust's native/WebGL sprite shader now implements all eleven MilkDrop 3
+At this checkpoint, MilkRust's native/WebGL sprite shader implemented all eleven MilkDrop 3
 texture-stage/blend-factor modes, including multiplicative, subtractive, invert,
-cutoff, darken and vivid. `SpriteBlend` defaults to 4, EEL `blendmode` starts
+cutoff, darken and vivid. Its `SpriteBlend` default was 4, and EEL `blendmode` started
 from that value, and selectors outside 0–10 resolve to mode 0. The authored
 browser control now covers all eleven modes and 66 combinations of mode, source
 alpha and opaque color-key state. These source controls remain unrun under the
@@ -436,7 +436,7 @@ records the exact engine revision and ABI separately from platform artifacts.
 
 ## 2026-10-29 saved blend and animation source checkpoint
 
-The app now pins MilkRust `03c975eae4eeb39d5e26eef7ff63b6f06177571b`, C ABI v2.
+At this checkpoint, the app pinned MilkRust `597cdfb74090c983191dca0505adb8878152c07d`, C ABI v2.
 Native GL and WebGL upload a packed 32-bit vertex field and evaluate the saved
 64×48 transition mesh with matching triangle interpolation. Both hosts admit
 the documented 100-name image cache within the existing decoded-pixel budget.
@@ -449,41 +449,32 @@ restriction and are kept as separate qualification gates.
 
 
 
-## Saved blend header carry-forward source checkpoint, 2026-10-29
+## Saved blend header correction, 2026-10-29
 
-The current app pin resolves omitted saved .milk2 header values from the
-previous double-preset runtime state. Process-start defaults are an unset
-pattern, progress 1, direction 0 and zero random values. Missing first-load
-patterns fail closed. The source lock records MilkRust commit
-03c975eae4eeb39d5e26eef7ff63b6f06177571b. This closes the header carry-forward
-implementation item; it does not establish saved-pair visual parity or a
-qualified app runtime.
-
-
-## 2026-10-29 saved sprite semantics source closure
-
-MilkRust's current source implementation and PlezyNG's engine lock now agree on
-saved sprite semantics in the declared native/WebGL profile. The paired source
-checkpoint fixes the omitted `SpriteBurn` default, numeric static burn modes,
-absolute-time `SpriteRot`, and CPU-side D3D vertex-byte quantization shared by
-both renderers. See [the sprite implementation notes](https://github.com/snapetech-org/MilkRust/blob/03c975eae4eeb39d5e26eef7ff63b6f06177571b/docs/EMBEDDED_SPRITES.md)
-for the implemented rules.
-
-This closes the identified source gaps for saved sprite fields. The compatible
-MIT behavioral reference is the implementation basis; actual MilkDrop 3 image
-comparison, compiler/build checks, and target-device qualification remain
-separate gates. No execution was performed for this checkpoint.
+The current MilkRust working source resolves every `.milk2` file independently:
+an omitted pattern remains empty and fails closed, progress defaults to 0.5,
+direction to 1, and omitted random values to zero. Trailing sprite blocks run
+unless `sprite=0`. The app source lock is being advanced to
+`11b603d2db38f799d5e83f0a95366bd82ca75d1a`, which includes this correction.
+This source change does not establish saved-pair pixel parity or a qualified
+runtime.
 
 
-## 2026-10-29 saved sprite feedback-layer source closure
+## 2026-10-29 current source checkpoint
 
-The current MilkRust engine checkpoint and PlezyNG source lock include shared
-scene-order markers for saved sprite layers. Native GL and WebGL insert feedback
-layers 1–4 after warp/blur, shapes, custom waves, and the main wave/borders.
-Burning sprites in those layers draw twice into feedback; non-burning sprites
-draw once. Layer 0 alone gets a separate screen overlay, with its optional
-feedback burn after the composite.
+This checkpoint supersedes earlier October notes that described `.milk2`
+sprites as opt-in, set the saved blend default to 4, listed non-default sprite
+fields as unimplemented, or said the final feedback draws shared one geometry.
+Current MilkRust source executes saved sprite blocks unless `sprite=0`, defaults
+`SpriteBlend` to 0, applies the documented saved fields, packs D3D9 diffuse
+bytes in shared Rust code, and uses distinct geometry for primary final-burn
+draws, display copies and Milk2's extra final feedback stamp. The app source lock
+pins MilkRust `11b603d2db38f799d5e83f0a95366bd82ca75d1a` with C ABI v2.
 
-This closes the identified saved-sprite source-order and burn-count gaps within
-the declared profile. MilkDrop 3 reference captures, pixel filtering/layer
-parity, build checks and device qualification are separate open gates.
+All 30 documented saved-pattern formulas are implemented, and the native/WebGL
+hosts consume the same 64×48 interpolated mask. Formula implementation is source
+work; exact reference pixels remain an open qualification gate. HLSL resource
+forms and historical text/image formats outside the declared profile still fail
+closed and remain compatibility work. OS-level isolation for a wedged GPU driver,
+browser-process OOM containment, verified mpv binaries, pack qualification and
+production signing remain separate open tasks.

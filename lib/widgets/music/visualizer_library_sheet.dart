@@ -534,8 +534,8 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                             const Padding(
                               padding: EdgeInsets.all(8),
                               child: Text(
-                                'MilkRust supports a limited shader subset and uniform Fade double presets. '
-                                'Preset changes currently cut immediately. Unsupported presets report an error.',
+                                'MilkRust supports a bounded shader profile, all 30 saved .milk2 patterns, and saved sprite layers. '
+                                'Pixel parity and cross-preset transitions are not yet qualified. Unsupported shaders and trailer extensions report an error.',
                               ),
                             ),
                           _sectionTitle(context, 'Included packs and downloads'),

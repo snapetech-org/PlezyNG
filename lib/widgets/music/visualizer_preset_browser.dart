@@ -211,7 +211,7 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
               if (preset.tags.isNotEmpty) 'Tags: ${preset.tags.join(', ')}',
               preset.supportsProjectM
                   ? 'Classic .milk candidate. Rendering fidelity depends on the selected engine and is not yet qualified.'
-                  : 'Native MilkRust can attempt saved uniform Fade blends. Other .milk2 patterns remain unsupported.',
+                  : 'MilkRust implements the documented saved .milk2 patterns and sprite fields. Pixel parity is not yet qualified; unsupported shaders and trailer extensions fail with diagnostics.',
               if (!widget.capability.available) widget.capability.reason,
               'Stored offline. Presets can contain rapid flashes and intense motion.',
             ].join('\n\n'),

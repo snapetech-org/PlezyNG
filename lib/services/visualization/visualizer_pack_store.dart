@@ -420,10 +420,23 @@ class VisualizerPackStore {
     if (!p.isWithin(root, canonical) ||
         !['.milk', '.milk2'].contains(p.extension(canonical).toLowerCase()) ||
         await file.length() == 0 ||
-        await file.length() > 2 * 1024 * 1024) {
+        await file.length() > VisualizerContentLimits.maxPresetBytes) {
       throw const VisualizerPackException('The preset is missing, outside its pack, or exceeds 2 MB.');
     }
     return canonical;
+  }
+
+  /// Read a file with a hard byte ceiling even if its size changes after a
+  /// preceding stat or integrity check.
+  static Future<Uint8List> _readBounded(File file, int maxBytes) async {
+    final bytes = await file.openRead(0, maxBytes + 1).fold<List<int>>(
+      <int>[],
+      (result, chunk) => result..addAll(chunk),
+    );
+    if (bytes.length > maxBytes) {
+      throw FormatException('File exceeds the $maxBytes-byte read limit.');
+    }
+    return Uint8List.fromList(bytes);
   }
 
   Future<List<VisualizerInstalledPack>> installedPacks() async {
@@ -940,8 +953,8 @@ class VisualizerPackStore {
   Future<String> importPreset(String name, List<int> bytes) => _assetOperation(() => _importPreset(name, bytes));
 
   Future<String> _importPreset(String name, List<int> bytes) async {
-    if (bytes.isEmpty || bytes.length > 1024 * 1024) {
-      throw const VisualizerPackException('Preset files must be smaller than 1 MB.');
+    if (bytes.isEmpty || bytes.length > VisualizerContentLimits.maxPresetBytes) {
+      throw const VisualizerPackException('Preset files must be at most 2 MB.');
     }
     final extension = p.extension(name).toLowerCase();
     if (extension != '.milk' && extension != '.milk2') {
@@ -969,12 +982,15 @@ class VisualizerPackStore {
   }
 
   Future<String> importPresetFile(String name, String sourcePath, int announcedSize) async {
-    if (announcedSize < 0 || announcedSize > 1024 * 1024) {
-      throw const VisualizerPackException('Preset files must be smaller than 1 MB.');
+    if (announcedSize <= 0 || announcedSize > VisualizerContentLimits.maxPresetBytes) {
+      throw const VisualizerPackException('Preset files must be at most 2 MB.');
     }
     final bytes = await File(
       sourcePath,
-    ).openRead(0, 1024 * 1024 + 1).fold<List<int>>(<int>[], (buffer, chunk) => buffer..addAll(chunk));
+    ).openRead(0, VisualizerContentLimits.maxPresetBytes + 1).fold<List<int>>(
+      <int>[],
+      (buffer, chunk) => buffer..addAll(chunk),
+    );
     if (bytes.length != announcedSize) {
       throw const VisualizerPackException('The selected preset changed while it was being imported.');
     }
@@ -1243,17 +1259,17 @@ class VisualizerPackStore {
         VisualizerContentLimits.checkAssetPath(relative, isNotice: licensePaths.contains(relative));
         final extension = p.extension(relative).toLowerCase();
         if (VisualizerContentLimits.imageExtensions.contains(extension)) {
-          final bytes = await File(p.joinAll([directory.path, ...relative.split('/')])).readAsBytes();
+          final file = File(p.joinAll([directory.path, ...relative.split('/')]));
+          final bytes = await _readBounded(file, maxFileBytes);
           imagePixels += VisualizerContentLimits.imagePixels(extension, bytes);
           if (imagePixels > VisualizerContentLimits.maxPackImagePixels) {
             throw const FormatException('Pack textures exceed the combined 32 megapixel budget.');
           }
         } else if (extension == '.milk' || extension == '.milk2') {
           final file = File(p.joinAll([directory.path, ...relative.split('/')]));
-          if (await file.length() > VisualizerContentLimits.maxPresetBytes) {
-            throw const FormatException('A preset exceeds 2 MB.');
-          }
-          VisualizerContentLimits.checkPreset(await file.readAsBytes());
+          VisualizerContentLimits.checkPreset(
+            await _readBounded(file, VisualizerContentLimits.maxPresetBytes),
+          );
         }
       } on FormatException catch (error) {
         throw VisualizerPackException('$relative: ${error.message}');

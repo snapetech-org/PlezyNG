@@ -1,9 +1,10 @@
 # Visualization build and release handoff
 
 This document describes the committed entrypoints. It is not an execution log.
-The source-only restriction remains active; every future build/test/package job
-must run on compatible private ephemeral JIT, with the existing trust isolation.
-Do not dispatch CI or publish releases solely because this handoff exists.
+The current user request includes build work. Every build/test/package job must
+run on compatible private ephemeral JIT, with the existing trust isolation.
+This workspace has no runner/workflow dispatch control. Do not publish releases
+solely because this handoff exists.
 
 ## Runtime build inputs
 
@@ -106,13 +107,14 @@ fragments through the existing include directory. Their license/provenance
 remains the vendored MIT notice plus local patch inventory.
 
 
-The current MilkRust pin `03c975eae4eeb39d5e26eef7ff63b6f06177571b` also
+The current MilkRust pin `11b603d2db38f799d5e83f0a95366bd82ca75d1a` also
 contains bounded function-macro stringification with preserved token-boundary
 whitespace and escaped string tokens, plus worker-based browser raster decoding.
 The WASM package builder stages the decoder worker beside the generated module;
-the SDK configures its static URL only when it shares the page origin. Preserve
-this pin when building the native and Emscripten compiler. Its source was not
-compiled or executed during this source-only continuation.
+the SDK configures its static URL only when it shares the page origin. The same
+pin includes per-file `.milk2` header defaults, default-on saved sprites, all
+documented saved blend patterns, and shared CPU-quantized sprite diffuse bytes.
+Build this exact source on the required private JIT before promoting artifacts.
 
 
 The declaration/aggregate continuation additionally wires
@@ -130,17 +132,3 @@ results. These authored controls are not captures of the MilkDrop3 reference
 renderer.
 The native C++ and Emscripten builders already include the new aggregate headers
 and lowering fragments through their pinned vendored source directory.
-
-
-The current engine revision also closes the saved-sprite source gaps for the
-declared native/WebGL profile: omitted `SpriteBurn` defaults to always-on,
-non-default rotation uses absolute host time, and CPU-side packed D3D vertex
-bytes are shared by both GL hosts. Keep the existing source-only qualification
-boundary; this does not replace reference pixel comparisons or target builds.
-
-
-The engine lock also includes saved-sprite feedback stage markers shared by
-native GL and WebGL. Layers 1–4 enter their owner's feedback at documented
-scene boundaries; burning sprites there draw twice into feedback, while
-layer 0 alone has the separate display overlay. This remains source-only until
-the private reference, build and device gates run.

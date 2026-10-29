@@ -96,3 +96,11 @@ P0 contracts and package identity; P1 home karaoke; P2 party hosting; P3 audio/m
 - Added a source-clock CD+G decoder with palette/scroll/transparency checkpoints; local audio/video/ASS use existing player ownership.
 - Current locale catalog has English fallback and partial German/Spanish/French translations; locale completion remains work in progress.
 - No tests, builds, analyzers or CI executed. Runtime/platform behavior remains unverified.
+
+## Implementation batch 2 — room and capture sources
+
+- Embedded LAN songbook/stage with expiring scoped invitations, guest-owned requests, host handover, revision conflicts, bounded traffic and replay receipts. Media URLs/tokens are never serialized into the guest protocol.
+- Native PCM capture through pinned `record` 7.1.2, music-oriented capture settings, explicit start, interruption/background retirement, bounded analysis/recording and private WAV takes with source-clock metadata.
+- Reference-chart scoring, pitch trace and comfortable-range estimation. Seeking/settings invalidate competitive passes. No unreviewed chart is scored.
+- Added OS permission descriptions and Linux package prerequisites. New dependency lock entries are pinned to published package metadata; dependency resolution and platform packaging have not run.
+- Remaining work includes multichannel routing/monitoring, editor, preparation, production/collaboration, games, provider integration and locale completion.

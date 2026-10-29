@@ -3,11 +3,15 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../media/media_item.dart';
 import '../media/media_kind.dart';
 import '../providers/multi_server_provider.dart';
 import 'karaoke_models.dart';
+import 'karaoke_audio.dart';
+import 'karaoke_audio_panel.dart';
 import 'karaoke_session.dart';
+import 'karaoke_room_server.dart';
 import 'karaoke_stage.dart';
 import 'karaoke_strings.dart';
 
@@ -38,12 +42,14 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
   String? _singer;
   bool _busy=false,_offline=false,_duet=false;
   int _tab=0;
+  late final KaraokeAudio _audio=KaraokeAudio(widget.session);
+  late final KaraokeRoomServer _room=KaraokeRoomServer(widget.session);
   KaraokeSession get s=>widget.session;
   String tr(String key)=>karaokeText(context,key);
   @override void initState() { super.initState(); unawaited(_initialize()); }
   Future<void> _initialize() async { await s.ready; if(mounted)setState(()=>_singer=s.singers.firstOrNull?.id); }
   @override void dispose() {
-    _query.dispose();
+    _query.dispose(); _room.dispose(); _audio.dispose();
     unawaited(s.stopPlayback().then((_)=>s.save()).catchError(s.report));
     super.dispose();
   }
@@ -82,6 +88,29 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
       if(start) { await s.host('start',{'requestId':result['requestId']}); if(mounted)setState(()=>_tab=2); }
     });
   }
+  Future<void> _guestRoom() => _run(() async {
+    if(!_room.running) {
+      final addresses=await KaraokeRoomServer.addresses();
+      if(addresses.isEmpty) throw StateError('Connect to a local network to open a guest songbook');
+      if(!mounted)return;
+      final address=await showDialog<String>(context:context,builder:(context)=>SimpleDialog(title:Text(tr('guest')),
+        children:addresses.map((a)=>SimpleDialogOption(onPressed:()=>Navigator.pop(context,a),child:Text(a))).toList()));
+      if(address==null)return;
+      await _room.start(address);
+    }
+    var link=_room.invitation(KaraokeRoomRole.singer);
+    if(!mounted)return;
+    await showDialog<void>(context:context,builder:(context)=>StatefulBuilder(builder:(context,update)=>AlertDialog(
+      title:Text(tr('guest')),content:SizedBox(width:300,child:SingleChildScrollView(child:Column(mainAxisSize:MainAxisSize.min,children:[
+        QrImageView(data:link,size:240,backgroundColor:Colors.white),SelectableText(link),
+        const Text('This invitation expires in 30 minutes. Connected guests can request songs for 8 hours, until revoked or the room closes.'),
+        TextButton(onPressed:()=>Clipboard.setData(ClipboardData(text:link)),child:const Text('Copy invitation')),
+        TextButton(onPressed:()=>update(()=>link=_room.invitation(KaraokeRoomRole.display)),child:const Text('Create read-only stage link')),
+        TextButton(onPressed:()=>update(()=>link=_room.invitation(KaraokeRoomRole.host)),child:const Text('Create one-use host handover link')),
+        TextButton(onPressed:(){_room.revokeGuests();update(()=>link=_room.invitation(KaraokeRoomRole.singer));},child:const Text('Revoke guests and replace invitation')),
+      ]))),actions:[TextButton(onPressed:() async { await _room.stop(); if(context.mounted)Navigator.pop(context); },child:const Text('Close room')),
+        TextButton(onPressed:()=>Navigator.pop(context),child:Text(tr('close')))])));
+  });
   Future<void> _stage() => Navigator.push(context,MaterialPageRoute<void>(builder:(context)=>AnimatedBuilder(animation:s,builder:(context,_)=>
     Scaffold(backgroundColor:Colors.black,body:Stack(children:[Positioned.fill(child:KaraokeStage(session:s)),
       SafeArea(child:Align(alignment:Alignment.topRight,child:IconButton.filledTonal(tooltip:tr('return'),
@@ -91,6 +120,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
     SingleActivator(LogicalKeyboardKey.escape):DismissIntent(),
   },child:Scaffold(appBar:AppBar(title:Text(tr('title')),actions:[
     IconButton(tooltip:tr('import'),onPressed:_busy ? null : _import,icon:const Icon(Icons.file_open)),
+    IconButton(tooltip:tr('guest'),onPressed:_busy ? null : _guestRoom,icon:const Icon(Icons.qr_code)),
     IconButton(tooltip:tr('stage'),onPressed:_stage,icon:const Icon(Icons.fullscreen)),
     IconButton(tooltip:tr('stop'),onPressed:_busy ? null : ()=>_command('end'),icon:const Icon(Icons.stop_circle_outlined)),
   ]),body:Column(children:[
@@ -178,6 +208,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
           min:0,max:s.durationMs>0 ? s.durationMs.toDouble() : 1,value:position.toDouble().clamp(0,s.durationMs>0 ? s.durationMs.toDouble() : 1),
           onChanged:_busy || !s.hasPerformance ? null : (v)=>_command('seek',{'positionMs':v.round()}))),
       ],
+      KaraokeAudioPanel(session:s,audio:_audio,singer:_singer),
       Wrap(spacing:12,children:[
         TextButton(onPressed:!s.hasPerformance ? null : ()=>s.setLoop(s.positionMs.value,null),child:Text(tr('loopStart'))),
         TextButton(onPressed:s.loopStartMs==null ? null : ()=>_run(() async { s.setLoop(s.loopStartMs,s.positionMs.value); }),child:Text(tr('loopEnd'))),

@@ -32,3 +32,6 @@ set(WHISPER_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(WHISPER_BUILD_SERVER OFF CACHE BOOL "" FORCE)
 add_subdirectory("${PLEZY_WHISPER_SOURCE_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}/flutter-whisper")
 install(TARGETS flutter_whisper_plugin LIBRARY DESTINATION lib)
+
+# Independently decoded VOD windows; this never attaches to the NDL audio route.
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../native/subtitle_analysis" "${CMAKE_CURRENT_BINARY_DIR}/subtitle-analysis")

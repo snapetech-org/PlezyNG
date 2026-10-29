@@ -341,11 +341,26 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
         raise ValueError('Expected one Tizen Whisper bridge library')
     shutil.copyfile(whisper_libraries[0], out / 'libflutter_whisper_plugin.so')
 
+    decoder_source = Path(args.source_root).resolve() / 'ffmpeg' if args.source_root else sources / 'subtitle-ffmpeg'
+    if not args.source_root:
+        run(sys.executable, ROOT / 'native/subtitle_analysis/build.py', 'source', '--destination', decoder_source)
+    run('cmake', '-S', ROOT / 'native/subtitle_analysis', '-B', out / 'subtitle-analysis-build',
+        f'-DCMAKE_TOOLCHAIN_FILE={toolchain}', '-DCMAKE_BUILD_TYPE=Release',
+        f'-DPLEZY_SUBTITLE_FFMPEG_SOURCE_DIR={decoder_source}')
+    run('cmake', '--build', out / 'subtitle-analysis-build', '--target', 'plezy_subtitle_ffmpeg', '--parallel', args.jobs)
+    decoder_output = out / 'subtitle-analysis-build/audio-ffmpeg'
+    (out / 'subtitle-analysis').mkdir(exist_ok=True)
+    for name in ('plezy-subtitle-ffmpeg', 'subtitle-analysis-build.json', 'COPYING.LGPLv2.1', 'FFmpeg-LICENSE.md'):
+        shutil.copy2(decoder_output / name, out / 'subtitle-analysis' / name)
+    for name in ('ffmpeg.lock.json', 'build.py', 'CMakeLists.txt'):
+        shutil.copy2(ROOT / 'native/subtitle_analysis' / name, out / 'subtitle-analysis' / name)
+
     report = {
         'architecture': args.arch,
         'pins': PINS,
         'whisper': {'version': WHISPER_GGML_VERSION, 'archive_sha256': WHISPER_GGML_SHA256},
         'libraries': {},
+        'subtitle_analysis': json.loads((decoder_output / 'subtitle-analysis-build.json').read_text()),
     }
     for name in ('libplezy_sqlite3.so', 'libdart_smb2.so', 'libplezy_torrent.so', 'libflutter_whisper_plugin.so'):
         path = out / name
@@ -383,6 +398,12 @@ def stage(source, destination, native_dir, arch, *, visualizer_native=None, visu
         dest = destination / 'build-inputs' / name if name == 'libdart_smb2.so' else native_target / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, dest)
+    decoder = native_dir / 'subtitle-analysis/plezy-subtitle-ffmpeg'
+    decoder_receipt = report.get('subtitle_analysis', {})
+    if not decoder.is_file() or sha256(decoder) != decoder_receipt.get('sha256') or elf_arch(decoder.read_bytes()[:64]) != arch:
+        raise ValueError('Native subtitle decoder input mismatch')
+    shutil.copytree(native_dir / 'subtitle-analysis', destination / 'tizen/res/subtitle_analysis', dirs_exist_ok=True)
+    (destination / 'tizen/res/subtitle_analysis/plezy-subtitle-ffmpeg').chmod(0o755)
     if bool(visualizer_native) != bool(visualizer_manifest_sha256):
         raise ValueError('Specify both the MilkRust bundle and its reviewed manifest SHA-256')
     if visualizer_native:
@@ -481,6 +502,14 @@ def build(args):
         native_report = json.loads((Path(args.native) / 'native-build.json').read_text())
         report = inspect_package(packages[0], args.arch, required_libraries={'libflutter_whisper_plugin.so'})
         with zipfile.ZipFile(packages[0]) as archive:
+            decoder_path = 'res/subtitle_analysis/plezy-subtitle-ffmpeg'
+            decoder_bytes = archive.read(decoder_path)
+            if hashlib.sha256(decoder_bytes).hexdigest() != native_report['subtitle_analysis']['sha256'] or elf_arch(decoder_bytes[:64]) != args.arch:
+                raise ValueError('The packaged analysis decoder differs from its native build')
+            if hashlib.sha256(archive.read('res/subtitle_analysis/COPYING.LGPLv2.1')).hexdigest() != native_report['subtitle_analysis']['licenseSha256']:
+                raise ValueError('The packaged decoder license differs from its source')
+            if not (archive.getinfo(decoder_path).external_attr >> 16) & 0o111:
+                raise ValueError('The packaged analysis decoder lost its executable mode')
             whisper_members = [name for name in archive.namelist()
                                if PurePosixPath(name).name == 'libflutter_whisper_plugin.so']
             if (len(whisper_members) != 1 or hashlib.sha256(archive.read(whisper_members[0])).hexdigest() !=

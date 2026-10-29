@@ -83,13 +83,16 @@ if [[ "$LOCK_BEFORE" != "$LOCK_AFTER" ]]; then
 fi
 
 # webOS NDL playback does not expose decoded audio, but the locked Linux ARM
-# FFI bridge supports CPU transcription of a user-selected WAV. Build that
+# FFI bridge supports CPU transcription of WAV analysis windows. Build that
 # bridge from the exact source archive recorded in pubspec.lock.
 WHISPER_PREP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/plezyng-webos-whisper.XXXXXX")"
 trap 'rm -rf -- "$WHISPER_PREP_ROOT"' EXIT
 PLEZY_WHISPER_SOURCE_DIR="$("$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/prepare_whisper.py" \
   --destination "$WHISPER_PREP_ROOT/flutter_whisper_ggml")"
 export PLEZY_WHISPER_SOURCE_DIR
+PLEZY_SUBTITLE_FFMPEG_SOURCE_DIR="$WHISPER_PREP_ROOT/ffmpeg"
+"$WEBOS_PYTHON_BIN" "$ROOT/native/subtitle_analysis/build.py" source --destination "$PLEZY_SUBTITLE_FFMPEG_SOURCE_DIR"
+export PLEZY_SUBTITLE_FFMPEG_SOURCE_DIR
 
 GIT_COMMIT="${PLEZY_WEBOS_GIT_COMMIT:-$(git -C "$ROOT" rev-parse HEAD)}"
 if [[ ! "$GIT_COMMIT" =~ ^[0-9a-f]{40,64}$ ]]; then

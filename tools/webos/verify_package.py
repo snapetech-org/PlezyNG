@@ -173,6 +173,8 @@ def read_tar_members(
                     raise ValueError(f"unexpected path in IPK tar archive: {name!r}")
                 if len(names) > MAX_TAR_ENTRIES:
                     raise ValueError("IPK tar archive exceeds the 100,000-entry safety limit")
+                if name == str(APP_ROOT / 'lib/plezy-subtitle-ffmpeg') and not member.mode & 0o111:
+                    raise ValueError('The packaged analysis decoder is not executable')
                 if member.size < 0:
                     raise ValueError(f"negative tar member size: {name!r}")
                 unpacked_bytes += member.size
@@ -354,7 +356,18 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
     package_info_path = f"usr/palm/packages/{APP_ID}/packageinfo.json"
     notice_path = str(APP_ROOT / "data/flutter_assets/assets/licenses/LGFlutterWebOSRuntimeNotice.txt")
     library_paths = [str(APP_ROOT / "lib" / name) for name in (*RUNTIME_LIBRARIES, *REQUIRED_NATIVE_LIBRARIES)]
-    selected = read_tar_members(data_tar, {appinfo_path, executable_path, package_info_path, notice_path, *library_paths})
+    decoder_path = str(APP_ROOT / 'lib/plezy-subtitle-ffmpeg')
+    decoder_receipt_path = str(APP_ROOT / 'share/subtitle_analysis/subtitle-analysis-build.json')
+    decoder_license_path = str(APP_ROOT / 'share/subtitle_analysis/COPYING.LGPLv2.1')
+    selected = read_tar_members(data_tar, {appinfo_path, executable_path, package_info_path, notice_path, *library_paths,
+        decoder_path, decoder_receipt_path, decoder_license_path})
+    decoder_receipt = json.loads(selected[decoder_receipt_path])
+    decoder_pin = json.loads((ROOT / 'native/subtitle_analysis/ffmpeg.lock.json').read_text())
+    if decoder_receipt.get('schema') != 1 or decoder_receipt.get('source') != decoder_pin or decoder_receipt.get('architecture') != 'arm' or decoder_receipt.get('sha256') != sha256(selected[decoder_path]):
+        raise ValueError('The packaged analysis decoder differs from its reviewed source/build receipt')
+    verify_arm_elf(selected[decoder_path], 'plezy-subtitle-ffmpeg')
+    if decoder_receipt.get('licenseSha256') != sha256(selected[decoder_license_path]) or b'GNU LESSER GENERAL PUBLIC LICENSE' not in selected[decoder_license_path][:256]:
+        raise ValueError('Missing FFmpeg LGPL notice')
     appinfo = json.loads(selected[appinfo_path])
     if appinfo.get("id") != APP_ID:
         raise ValueError(f"IPK app ID is {appinfo.get('id')!r}; expected {APP_ID!r}")
@@ -404,7 +417,7 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
         or whisper_runtime.get("backend") != "CPU-only"
         or whisper_runtime.get("playbackCapture") is not False
     ):
-        raise ValueError("webOS Whisper must remain CPU-only and WAV-only")
+        raise ValueError("webOS Whisper must remain CPU-only with no direct NDL PCM tap")
 
     packaged_notice = selected[notice_path]
     if packaged_notice != LICENSE_ASSET.read_bytes():

@@ -16,6 +16,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.Proxy
 import java.nio.ByteOrder
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -113,7 +114,7 @@ class SubtitleAnalysisPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
             if (time < 0 || time > endMs * 1000 + 250000) {
               codec.queueInputBuffer(slot, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM); inputEnded = true
             } else {
-              require(extractor.sampleFlags and MediaExtractor.SAMPLE_FLAG_ENCRYPTED == 0)
+              require((extractor.sampleFlags and MediaExtractor.SAMPLE_FLAG_ENCRYPTED) == 0)
               val size = extractor.readSampleData(buffer, 0)
               if (size < 0) { codec.queueInputBuffer(slot, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM); inputEnded = true }
               else { codec.queueInputBuffer(slot, 0, size, time, 0); extractor.advance() }
@@ -130,7 +131,7 @@ class SubtitleAnalysisPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
           try {
             require(sampleRate in 8000..192000 && channels in 1..8)
             val bytesPerSample = when (encoding) { AudioFormat.ENCODING_PCM_16BIT -> 2; AudioFormat.ENCODING_PCM_FLOAT -> 4; else -> error("PCM encoding") }
-            if (info.size > 0 && info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG == 0) {
+            if (info.size > 0 && (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG) == 0) {
               val raw = requireNotNull(codec.getOutputBuffer(slot)).duplicate().order(ByteOrder.LITTLE_ENDIAN)
               require(info.size <= 4 * 1024 * 1024 && info.size % (channels * bytesPerSample) == 0)
               val frames = info.size / (channels * bytesPerSample)
@@ -153,7 +154,7 @@ class SubtitleAnalysisPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 output[target*2] = value.toByte(); output[target*2+1] = (value shr 8).toByte(); populated[target] = true
               }
             }
-            outputEnded = info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0 || info.presentationTimeUs >= endMs * 1000
+            outputEnded = (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0 || info.presentationTimeUs >= endMs * 1000
           } finally { codec.releaseOutputBuffer(slot, false) }
         }
       }
@@ -176,7 +177,7 @@ private class OwnedAnalysisHttpSource(private val uri: String, private val cance
   private var length = -1L
   private fun connection(method: String): HttpURLConnection {
     if (closed || cancelled.get() || SystemClock.elapsedRealtime() >= deadline) throw IOException("Analysis source expired")
-    return (URL(uri).openConnection() as HttpURLConnection).apply {
+    return (URL(uri).openConnection(Proxy.NO_PROXY) as HttpURLConnection).apply {
       requestMethod = method; connectTimeout = 10000; readTimeout = 10000
       instanceFollowRedirects = false; useCaches = false
       setRequestProperty("Accept-Encoding", "identity")

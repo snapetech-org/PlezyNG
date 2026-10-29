@@ -1306,7 +1306,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final ordinal = await showDialog<int>(context: context, builder: (context) => AlertDialog(
       title: const Text('Prepare captions ahead of playback'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        const Text('A separate native decoder on Android/Apple, or installed FFmpeg on desktop, reads the current source through its owning transport. '
+        const Text('A separate native decoder on Android/Apple, packaged audio decoder on TVs, or installed FFmpeg on desktop reads the current source through its owning transport. '
           'This may use additional bandwidth. It prepares about two minutes ahead and replaces app overlay 1. '
           'Choose the audio stream in file order (0 is the first); native player track IDs may use a different numbering scheme.'),
         TextField(controller: input, keyboardType: TextInputType.number,

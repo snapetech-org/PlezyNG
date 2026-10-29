@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/FFmpeg/FFmpeg",
+  "revision": "946fcce07b6dcd0331c8cc609192aeff5e1924f8",
+  "version": "n9.0.2",
+  "provenance": "Reuses the reviewed FFmpeg source pin in snapetech-org/mpv-build versions.json; no new upstream version is selected."
+}

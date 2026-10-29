@@ -476,7 +476,7 @@ final class SubtitleAnalysisBridge {
         let audio = CMAudioFormatDescriptionGetStreamBasicDescription(format),
         audio.pointee.mSampleRate == 16000, audio.pointee.mChannelsPerFrame == 1,
         audio.pointee.mBytesPerFrame == 2, audio.pointee.mFormatID == kAudioFormatLinearPCM,
-        audio.pointee.mFormatFlags & (kAudioFormatFlagIsFloat | kAudioFormatFlagIsBigEndian) == 0,
+        (audio.pointee.mFormatFlags & (kAudioFormatFlagIsFloat | kAudioFormatFlagIsBigEndian)) == 0,
         let block = CMSampleBufferGetDataBuffer(sample) else { throw SubtitleAnalysisFailure.unavailable }
       let length = CMBlockBufferGetDataLength(block)
       guard length > 0, length <= 4*1024*1024, length % 2 == 0 else { throw SubtitleAnalysisFailure.unavailable }

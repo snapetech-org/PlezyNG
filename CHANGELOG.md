@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Stabilize Android validation on constrained private CI runners and retry the pinned FFmpeg header download.
 - Fix Android Kotlin compilation by correcting a duplicate visibility modifier and implementing the shared video-surface method.
 - Restore Apple CI by quoting simulator-only Xcode project settings and keeping the macOS test plugin current with its shared protocol.
 - Bound Android Gradle and Kotlin daemon memory so private CI runners can complete Android tests and release builds.

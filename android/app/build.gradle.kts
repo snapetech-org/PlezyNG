@@ -744,7 +744,17 @@ val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") 
         val sourceArchive = File(staging, "ffmpeg-$mpvFfmpegVersion.tar.xz")
         try {
           providers.exec {
-            commandLine("curl", "-sfL", mpvFfmpegSourceUrl, "-o", sourceArchive.absolutePath)
+            commandLine(
+              "curl",
+              "-fsSL",
+              "--retry", "3",
+              "--retry-connrefused",
+              "--retry-delay", "2",
+              "--connect-timeout", "30",
+              "--max-time", "180",
+              mpvFfmpegSourceUrl,
+              "-o", sourceArchive.absolutePath
+            )
           }.result.get().assertNormalExitValue()
         } catch (error: Exception) {
           throw GradleException("Failed to download FFmpeg $mpvFfmpegVersion headers", error)

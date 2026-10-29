@@ -43,6 +43,7 @@ import 'subtitle_waveform_editor.dart';
 import 'subtitle_companion_jobs_dialog.dart';
 import 'subtitle_study_dialog.dart';
 import 'subtitle_import_dialog.dart';
+import 'subtitle_bitmap_review_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -386,7 +387,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   Future<void> _importTextSubtitle() => _run(() async {
     final selected = await _pickSubtitleCues(preview: true);
     if (selected == null || !mounted) return;
-    await _writeAndApply(selected.$1, 'Imported text subtitle', reviewWarnings: selected.$3);
+    await _writeAndApply(selected.$1, operationLabel: 'Imported text subtitle', reviewWarnings: selected.$3);
   });
 
   Future<void> _transcribe() => _run(() async {
@@ -749,6 +750,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       }
       String? path;
       if (task != 'translate') {
+        if (task == 'bitmap_ocr' && mounted) setState(() => _status = 'Choose PGS SUP, a video container, or a ZIP containing one matching VobSub IDX/SUB pair.');
         final selected = await FilePickerService.instance.pickFiles(type: FileType.any);
         if (selected == null || selected.files.isEmpty || !mounted) return;
         final file = selected.files.first;
@@ -766,6 +768,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (!mounted) return;
       var preprocess = false;
       var track = 0;
+      var subtitleTrack = 0, bitmapTail = 2000;
       var cropTop = 0.65;
       final accepted = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, update) => AlertDialog(
@@ -777,7 +780,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 'with approximate cue intervals no longer than 60 seconds. Unsupported/uncertain cues keep their original timing.'),
             if (task == 'translate') Text('Translate ${SubtitleTranslationService.languageLabel(_sourceLanguage)} to ${SubtitleTranslationService.languageLabel(_targetLanguage)} using an installed host language pair.'),
             if (task == 'diarize') const Text('Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.'),
-            if (path != null && task != 'ocr') ...[
+            if (path != null && task != 'ocr' && task != 'bitmap_ocr') ...[
               DropdownButtonFormField<int>(initialValue: track, decoration: const InputDecoration(labelText: 'Audio stream (zero based)'),
                 items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text('Audio stream $i'))),
                 onChanged: (value) => update(() => track = value ?? 0)),
@@ -790,6 +793,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               Slider(value: cropTop, min: 0, max: 0.9, divisions: 18, label: '${(cropTop * 100).round()}%',
                 onChanged: (value) => update(() => cropTop = value)),
             ],
+            if (task == 'bitmap_ocr') ...[
+              const Text('Decode PGS SUP or a PGS/VobSub stream in the selected container. For VobSub sidecars, upload a ZIP containing exactly one matching IDX/SUB pair. Original caption images are retained for OCR correction and export.'),
+              DropdownButtonFormField<int>(initialValue: subtitleTrack, decoration: const InputDecoration(labelText: 'Subtitle stream (zero based)'),
+                items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text('Subtitle stream $i'))),
+                onChanged: (value) => update(() => subtitleTrack = value ?? 0)),
+              DropdownButtonFormField<int>(initialValue: bitmapTail, decoration: const InputDecoration(labelText: 'Last cue duration only if its end is missing'),
+                items: [1000, 2000, 3000, 5000, 10000, 30000].map((ms) => DropdownMenuItem(value: ms, child: Text('$ms ms'))).toList(),
+                onChanged: (value) => update(() => bitmapTail = value ?? 2000)),
+              Text('Caption language: ${SubtitleTranslationService.languageLabel(_sourceLanguage)}. Install matching Tesseract language data and select it on the host.'),
+            ],
             Text('Host backends: ${(capabilities['tasks'] as List).join(', ')}. Hardware placement is unverified.'),
           ]))),
           actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
@@ -799,11 +812,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (accepted != true || !mounted) return;
       _requireCurrentOperationIdentity();
       final id = await service.submit(task: task, identityKey: identity.storageKey, mediaPath: path, cues: cues,
-        language: task == 'align' || task == 'translate' ? _sourceLanguage.bcpCode.split('-').first
+        language: task == 'align' || task == 'translate' || task == 'bitmap_ocr' ? _sourceLanguage.bcpCode.split('-').first
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
         targetLanguage: task == 'translate' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
         preprocess: preprocess, audioTrack: track, crop: [0, cropTop, 1, 1 - cropTop],
+        subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail,
         onCreated: (id) { if (mounted) setState(() => _activeCompanionJob = id); },
         onUpload: (sent, total) { if (mounted) setState(() => _status = 'Uploading chosen media: ${(sent * 100 / total).round()}%'); },
       );
@@ -833,7 +847,17 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       final identity = _operationRevisionIdentity;
       if (identity == null || job['identity'] != identity.storageKey) throw StateError('The job belongs to another item.');
       final result = await service.result(job['id'] as String, identityKey: identity.storageKey, audioDigest: job['audioDigest'] as String);
-      await _writeAndApply(result.cues, operationLabel: 'Companion ${job['task']}', operationLanguageCode: result.language,
+      var cues = result.cues;
+      if (result.images.isNotEmpty) {
+        if (!mounted) return;
+        _requireCurrentOperationIdentity();
+        final reviewed = await showDialog<List<SubtitleCue>>(context: context,
+          builder: (_) => SubtitleBitmapReviewDialog(service: service, result: result, jobId: job['id'] as String,
+            mediaDigest: job['audioDigest'] as String, isCurrent: () => mounted && _operationIdentityIsCurrent));
+        if (reviewed == null || !mounted) return;
+        cues = reviewed;
+      }
+      await _writeAndApply(cues, operationLabel: 'Companion ${job['task']}', operationLanguageCode: result.language,
         wordTimings: result.wordTimings, reviewWarnings: result.warnings);
     } finally { service.close(); }
   });
@@ -3462,6 +3486,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('diarize', 'Transcribe with anonymous speaker labels'),
             ('translate', 'Translate subtitles on the companion'),
             ('ocr', 'Extract burned captions from a video crop'),
+            ('bitmap_ocr', 'Read PGS/VobSub images and correct OCR'),
           ]) FocusableListTile(leading: const AppIcon(Symbols.auto_awesome_rounded), title: Text(entry.$2),
             onTap: _busy || _revisionIdentity == null ? null : () => unawaited(_submitCompanion(entry.$1))),
           if (!localSpeech) const Padding(padding: EdgeInsets.symmetric(vertical: 8),

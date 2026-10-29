@@ -72,11 +72,13 @@ class Store:
                 if job["id"] != folder.name or not HEX.fullmatch(job["scope"]):
                     continue
                 if job["state"] in {"queued", "running", "uploading"}:
-                    job["state"] = "paused" if (folder / "input.media").is_file() else "awaiting_audio"
+                    job["state"] = "paused" if job.get("task") == "translate" or (folder / "input.media").is_file() else "awaiting_audio"
                 self.jobs[job["id"]] = job
                 self.save(job)
                 (folder / "audio.part").unlink(missing_ok=True)
                 (folder / "analysis.wav").unlink(missing_ok=True)
+                (folder / "ocr_input.png").unlink(missing_ok=True)
+                shutil.rmtree(folder / "bitmap_input", ignore_errors=True)
             except (ValueError, KeyError, OSError, TypeError):
                 # Do not turn malformed records into jobs or execute their paths.
                 continue
@@ -102,7 +104,7 @@ class Store:
 
     def create(self, scope, value):
         task = value.get("task")
-        if task not in {"transcribe", "align", "diarize", "translate", "ocr"}:
+        if task not in {"transcribe", "align", "diarize", "translate", "ocr", "bitmap_ocr"}:
             raise ValueError("unsupported_task")
         for key in ("identity", "audioDigest", "requestId"):
             if not isinstance(value.get(key), str) or not HEX.fullmatch(value[key]):
@@ -136,6 +138,12 @@ class Store:
         track = value.get("audioTrack", 0)
         if type(track) is not int or not 0 <= track <= 63:
             raise ValueError("invalid_audio_track")
+        subtitle_track = value.get("subtitleTrack", 0)
+        if type(subtitle_track) is not int or not 0 <= subtitle_track <= 63:
+            raise ValueError("invalid_subtitle_track")
+        bitmap_tail = value.get("finalBitmapDurationMs", 2000)
+        if type(bitmap_tail) is not int or not 100 <= bitmap_tail <= 30000:
+            raise ValueError("invalid_final_bitmap_duration")
         crop = value.get("crop", [0, 0.65, 1, 0.35])
         if not isinstance(crop, list) or len(crop) != 4 or any(type(n) not in (int, float) or not 0 <= n <= 1 for n in crop):
             raise ValueError("invalid_crop")
@@ -146,6 +154,7 @@ class Store:
             canonical = {"task": task, "identity": value["identity"], "audioDigest": value["audioDigest"],
                          "audioBytes": size, "language": language, "targetLanguage": target,
                          "cues": cues, "audioTrack": track, "crop": crop,
+                         "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "translateToEnglish": value.get("translateToEnglish") is True,
                          "preprocess": value.get("preprocess") is True}
             fingerprint = hashlib.sha256(json.dumps(canonical, sort_keys=True).encode()).hexdigest()
@@ -203,6 +212,8 @@ class Store:
                             job["error"] = "worker_failed"
                     self.save(job)
                 (folder / "analysis.wav").unlink(missing_ok=True)
+                (folder / "ocr_input.png").unlink(missing_ok=True)
+                shutil.rmtree(folder / "bitmap_input", ignore_errors=True)
             self.wake.set()
 
     def interrupt(self, job, state):
@@ -276,6 +287,17 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
         self.close_connection = True
 
+    def reply_image(self, data):
+        self.send_response(200)
+        self.send_header("Content-Type", "image/png")
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Connection", "close")
+        self.end_headers()
+        self.wfile.write(data)
+        self.close_connection = True
+
     def handle_api(self):
         store = self.server.store
         supplied = self.headers.get("Authorization", "")
@@ -300,10 +322,34 @@ class Handler(BaseHTTPRequestHandler):
                 tasks.append("translate")
             if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
                 tasks.append("ocr")
+            if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_SUBTITLE_DECODER", "plezy-subtitle-decode")):
+                tasks.append("bitmap_ocr")
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS,
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})
+            return
+        image_match = re.fullmatch(r"/v1/jobs/([0-9a-f]{32})/evidence/([0-9a-f]{64})", path)
+        if image_match is not None and self.command == "GET":
+            identifier, digest = image_match.groups()
+            with store.lock:
+                job = store.jobs.get(identifier)
+                if job is None or job["scope"] != scope or job["state"] != "completed":
+                    self.reply(404, {"error": "not_found"})
+                    return
+                folder = store.root / identifier
+                result = read_json(folder / "result.json", MAX_RESULT)
+                if not any(image.get("sha256") == digest for image in result.get("images", [])):
+                    self.reply(404, {"error": "not_found"})
+                    return
+                image_path = folder / "evidence" / f"{digest}.png"
+                if image_path.is_symlink():
+                    raise ValueError("invalid_image_evidence")
+                with image_path.open("rb") as stream:
+                    data = stream.read(4 * 1024**2 + 1)
+                if len(data) > 4 * 1024**2 or hashlib.sha256(data).hexdigest() != digest:
+                    raise ValueError("invalid_image_evidence")
+            self.reply_image(data)
             return
         if path == "/v1/jobs":
             if self.command == "POST":

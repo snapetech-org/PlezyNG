@@ -110,3 +110,17 @@ class CompanionClient:
         if result.get("schema") != 1 or result.get("identity") != identity or result.get("audioDigest") != audio_digest or result.get("jobId") != job_id:
             raise ValueError("Result identity does not match the submitted media")
         return result
+
+    def evidence_image(self, job_id, sha256):
+        if not re.fullmatch(r"[0-9a-f]{64}", sha256):
+            raise ValueError("Invalid image digest")
+        connection = self._connection()
+        try:
+            connection.request("GET", self.route(job_id, f"evidence/{sha256}"), headers=self.headers)
+            response = connection.getresponse()
+            data = response.read(4 * 1024**2 + 1)
+            if response.status != 200 or len(data) > 4 * 1024**2 or hashlib.sha256(data).hexdigest() != sha256:
+                raise ValueError("Image evidence failed integrity verification")
+            return data
+        finally:
+            connection.close()

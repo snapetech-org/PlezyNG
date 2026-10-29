@@ -271,6 +271,10 @@ def main():
     elif task == "ocr":
         result = ocr(folder, job)
         device = "tesseract-cpu"
+    elif task == "bitmap_ocr":
+        from bitmap_ocr import run
+        result = run(folder, job, progress)
+        device = "ffmpeg-decode-and-tesseract-cpu"
     else:
         audio = decode_audio(folder, job)
         function = {"transcribe": recognize, "align": align, "diarize": diarize}[task]

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
@@ -12,13 +13,26 @@ import 'subtitle_word_timing.dart';
 
 final class SubtitleCompanionResult {
   const SubtitleCompanionResult({required this.cues, required this.wordTimings, required this.language,
-      required this.warnings, required this.runtimeDevice, required this.cpuFallback});
+      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const []});
   final List<SubtitleCue> cues;
   final List<SubtitleWordTiming> wordTimings;
   final String language;
   final List<String> warnings;
   final String runtimeDevice;
   final bool cpuFallback;
+  final List<SubtitleCompanionImage> images;
+}
+
+final class SubtitleCompanionImage {
+  const SubtitleCompanionImage({required this.cueId, required this.digest, required this.bytes, required this.width,
+    required this.height, required this.x, required this.y, required this.forced, required this.confidence,
+    required this.requiresReview});
+  final String cueId, digest;
+  final int bytes, width, height, x, y;
+  final bool forced, requiresReview;
+  final double confidence;
+  Map<String, Object> toJson() => {'cueId': cueId, 'sha256': digest, 'bytes': bytes, 'width': width, 'height': height,
+    'x': x, 'y': y, 'forced': forced, 'confidence': confidence, 'requiresReview': requiresReview};
 }
 
 /// Explicitly paired processing host. Media access consists only of a chosen
@@ -160,7 +174,8 @@ final class SubtitleCompanionService {
 
   Future<String> submit({required String task, required String identityKey, String? mediaPath,
     List<SubtitleCue> cues = const [], String? language, String? targetLanguage,
-    bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0,
+    bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0,
+    int finalBitmapDurationMs = 2000,
     List<double> crop = const [0, 0.65, 1, 0.35],
     void Function(String jobId)? onCreated, void Function(int sent, int total)? onUpload,
   }) async {
@@ -177,6 +192,7 @@ final class SubtitleCompanionService {
       'task': task, 'identity': identityKey, 'audioDigest': audioDigest, 'audioBytes': length,
       'language': language, 'spokenLanguage': language, 'targetLanguage': targetLanguage,
       'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop,
+      'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs,
       'cues': cues.map((cue) => {'cueId': cue.stableId, 'index': cue.index, 'startMs': cue.startMs,
         'endMs': cue.endMs, 'text': cue.text}).toList(),
     };
@@ -256,9 +272,60 @@ final class SubtitleCompanionService {
     final runtime = label(data['runtimeDevice'], 256, 'unreported');
     warnings.add('Companion $runtime; per-operation placement is unverified. '
         'Preprocessing: ${label(data['preprocessing'], 120, 'unreported')}.');
+    final images = <SubtitleCompanionImage>[];
+    final rawImages = data['images'] ?? const [];
+    if (rawImages is! List || rawImages.length > 50000) throw const FormatException('Companion image evidence exceeds limits.');
+    final byId = {for (final cue in cues) cue.stableId: cue};
+    final digests = <String, int>{}, imageCueIds = <String>{};
+    var evidenceBytes = 0;
+    for (final rawImage in rawImages) {
+      final value = rawImage as Map<String, dynamic>;
+      final cueId = value['cueId'] as String, digest = value['sha256'] as String;
+      final bytes = value['bytes'] as int, width = value['width'] as int, height = value['height'] as int;
+      final x = value['x'] as int, y = value['y'] as int;
+      final score = (value['confidence'] as num).toDouble();
+      final cue = byId[cueId];
+      if (cue == null || !imageCueIds.add(cueId) || !_digest.hasMatch(digest) || bytes < 45 || bytes > 4 * 1024 * 1024 ||
+          width <= 0 || width > 4096 || height <= 0 || height > 2160 || width * height > 8 * 1024 * 1024 ||
+          x < 0 || x > 8192 || y < 0 || y > 8192 || !score.isFinite || score < 0 || score > 1 ||
+          value['startMs'] != cue.startMs || value['endMs'] != cue.endMs ||
+          (digests.containsKey(digest) && digests[digest] != bytes)) throw const FormatException('Invalid companion image evidence.');
+      if (!digests.containsKey(digest)) { digests[digest] = bytes; evidenceBytes += bytes; }
+      if (evidenceBytes > 32 * 1024 * 1024) throw const FormatException('Companion image evidence exceeds 32 MiB.');
+      images.add(SubtitleCompanionImage(cueId: cueId, digest: digest, bytes: bytes, width: width, height: height,
+        x: x, y: y, confidence: score, forced: value['forced'] == true, requiresReview: value['requiresReview'] == true));
+    }
     return SubtitleCompanionResult(cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
       language: label(data['language'], 24, 'unknown'), warnings: warnings,
-      runtimeDevice: runtime, cpuFallback: data['cpuFallback'] == true);
+      runtimeDevice: runtime, cpuFallback: data['cpuFallback'] == true, images: List.unmodifiable(images));
+  }
+
+  Future<Uint8List> evidenceImage(String jobId, SubtitleCompanionImage image) async {
+    if (_closed || !_digest.hasMatch(image.digest)) throw StateError('Companion image is unavailable.');
+    final client = http.Client();
+    _requests.add(client);
+    try {
+      final request = http.Request('GET', endpoint.replace(path: '${_route(jobId)}/evidence/${image.digest}'))
+        ..followRedirects = false;
+      request.headers.addAll(_headers);
+      final response = await client.send(request).timeout(const Duration(seconds: 30));
+      if (response.statusCode != 200 || response.headers['content-type'] != 'image/png' ||
+          response.contentLength != image.bytes) throw const FormatException('Invalid companion image response.');
+      final builder = BytesBuilder(copy: false);
+      await for (final block in response.stream.timeout(const Duration(seconds: 30))) {
+        if (builder.length + block.length > image.bytes) throw const FormatException('Companion image exceeds its declared size.');
+        builder.add(block);
+      }
+      final bytes = builder.takeBytes();
+      if (bytes.length != image.bytes || sha256.convert(bytes).toString() != image.digest ||
+          bytes.length < 33 || bytes[0] != 137 || ascii.decode(bytes.sublist(1, 4)) != 'PNG' ||
+          ascii.decode(bytes.sublist(12, 16)) != 'IHDR') throw const FormatException('Companion image digest/header mismatch.');
+      final header = ByteData.sublistView(bytes);
+      if (header.getUint32(16) != image.width || header.getUint32(20) != image.height) {
+        throw const FormatException('Companion image dimensions do not match its provenance.');
+      }
+      return bytes;
+    } finally { _requests.remove(client); client.close(); }
   }
 
   void close() {

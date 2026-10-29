@@ -141,13 +141,18 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
   Future<void> _streamChanged() async {
     final stream = _stream; if (!_live || stream == null) return;
     if (stream.error.isNotEmpty) setState(() { _error = stream.error; _busy = false; });
-    if (!stream.active || stream.room == null || _proxy != null || _openingRoom) return;
+    if (!stream.active) {
+      final proxy = _proxy; _proxy = null;
+      setState(() { _url = null; _busy = false; });
+      await proxy?.close(); return;
+    }
+    if (stream.room == null || _proxy != null || _openingRoom) return;
     _openingRoom = true;
     try {
       final room = stream.room!;
       // The room is a separate trust boundary: never pass the RomM API token.
       final proxy = await RommPlayerProxy.start(upstream: room.replace(path: '/', query: null), current: () => _live);
-      if (!_live) { await proxy.close(); return; }
+      if (!_live || !identical(stream, _stream) || !stream.active || stream.room != room) { await proxy.close(); return; }
       _proxy = proxy;
       setState(() { _url = proxy.bootstrap('${room.path}${room.hasQuery ? '?${room.query}' : ''}'); _busy = false; _error = ''; });
     } catch (_) { if (_live) setState(() { _error = 'romm.connectionFailed'; _busy = false; }); }

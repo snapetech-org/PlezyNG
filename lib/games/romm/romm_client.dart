@@ -71,13 +71,20 @@ class RommClient {
     return data.takeBytes();
   }
 
-  Future<Object?> json(String method, String path, {Map<String, Object?> query = const {}, Object? body}) async {
+  Future<Object?> json(String method, String path, {Map<String, Object?> query = const {}, Object? body,
+      Duration timeout = const Duration(seconds: 30)}) async {
     final request = await open(method, uri('api/$path', query));
+    try {
     if (body != null) { request.headers.contentType = ContentType.json; request.write(jsonEncode(body)); }
-    final response = await request.close().timeout(const Duration(seconds: 30));
+    final response = await request.close().timeout(timeout);
     final bytes = await read(response);
     Object? data;
-    try { if (bytes.isNotEmpty) data = jsonDecode(utf8.decode(bytes)); } catch (_) { throw const RommFailure('romm.invalidResponse'); }
+    try { if (bytes.isNotEmpty) data = jsonDecode(utf8.decode(bytes)); }
+    on FormatException {
+      // Reverse proxies commonly return HTML for an expired login or outage.
+      // Preserve the status so the UI can offer the correct recovery action.
+      if (response.statusCode >= 200 && response.statusCode < 300) throw const RommFailure('romm.invalidResponse');
+    }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final detail = rommMap(data)['detail'];
       if (response.statusCode == 428 && rommMap(detail)['code'] == 'memory_card_import_required') {
@@ -90,10 +97,19 @@ class RommClient {
           : response.statusCode == 404 ? 'romm.notFound' : 'romm.serverError', status: response.statusCode);
     }
     return data;
+    } catch (_) { request.abort(); rethrow; }
   }
 
-  Future<Map<String, dynamic>> getMap(String path, {Map<String, Object?> query = const {}}) async =>
-      rommMap(await json('GET', path, query: query));
+  Future<Map<String, dynamic>> getMap(String path, {Map<String, Object?> query = const {}}) async {
+    final value = await json('GET', path, query: query);
+    if (value is! Map) throw const RommFailure('romm.invalidResponse');
+    return rommMap(value);
+  }
+  Future<List<dynamic>> getList(String path, {Map<String, Object?> query = const {}}) async {
+    final value = await json('GET', path, query: query);
+    if (value is! List) throw const RommFailure('romm.invalidResponse');
+    return value;
+  }
   Future<Map<String, dynamic>> me() => getMap('users/me');
   Future<Map<String, dynamic>> heartbeat() => getMap('heartbeat');
   Future<Map<String, dynamic>> config() => getMap('config');
@@ -116,27 +132,38 @@ class RommClient {
       'order_by': recent ? 'last_played' : search.isEmpty ? 'name' : null,
       'order_dir': recent ? 'desc' : 'asc', 'last_played': recent ? true : null,
       'group_by_meta_id': false, 'with_char_index': false, 'with_filter_values': false, 'with_rom_id_index': false});
-    final rows = rommList(map['items']).take(100).map((e) => RommGame.fromJson(connection, rommMap(e))).where((g) => g.id > 0).toList();
-    final total = rommInt(map['total'], offset + rows.length);
+    if (map['items'] is! List || map['total'] is! int || rommInt(map['total'], -1) < 0 || rommList(map['items']).length > 100) {
+      throw const RommFailure('romm.invalidResponse');
+    }
+    final rows = rommList(map['items']).map((e) => RommGame.fromJson(connection, rommMap(e))).toList();
+    if (rows.any((g) => g.id <= 0) || rows.map((g) => g.id).toSet().length != rows.length) throw const RommFailure('romm.invalidResponse');
+    final total = rommInt(map['total']);
     return RommPage(rows, total, rows.isNotEmpty && offset + rows.length < total ? offset + rows.length : null);
   }
-  Future<RommGame> game(String connection, int id) async => RommGame.fromJson(connection, await getMap('roms/$id'));
-  Future<List<Map<String, dynamic>>> platforms() async => rommList(await json('GET', 'platforms')).map(rommMap).toList();
+  Future<RommGame> game(String connection, int id) async {
+    if (id <= 0) throw const RommFailure('romm.notFound');
+    final value = RommGame.fromJson(connection, await getMap('roms/$id'));
+    if (value.id != id) throw const RommFailure('romm.invalidResponse');
+    return value;
+  }
+  Future<List<Map<String, dynamic>>> platforms() async => (await getList('platforms')).map(rommMap).where((p) => rommInt(p['id']) > 0).toList();
   Future<List<RommCollection>> collections() async {
     final result = <RommCollection>[];
     for (final route in {'collections': 'collection', 'collections/smart': 'smart_collection', 'collections/virtual': 'virtual_collection'}.entries) {
-      try { result.addAll(rommList(await json('GET', route.key)).take(1000).map((e) => RommCollection.fromJson(rommMap(e), route.value))); }
+      try { result.addAll((await getList(route.key)).take(1000).map((e) => RommCollection.fromJson(rommMap(e), route.value))); }
       on RommFailure catch (error) { if (error.status != 404 && error.status != 403) rethrow; }
     }
     return result;
   }
   Future<RommCollection> createFavorites() async {
     final request = await open('POST', uri('api/collections', {'is_favorite': true, 'is_public': false}));
+    try {
     request.headers.set('content-type', 'application/x-www-form-urlencoded'); request.write('name=PlezyNG+Favorites');
-    final response = await request.close();
+    final response = await request.close().timeout(const Duration(seconds: 30));
     final bytes = await read(response);
     if (response.statusCode < 200 || response.statusCode > 299) throw RommFailure('romm.permissionDenied', status: response.statusCode);
     return RommCollection.fromJson(rommMap(jsonDecode(utf8.decode(bytes))), 'collection');
+    } catch (_) { request.abort(); rethrow; }
   }
   Future<void> collectionMembership(RommCollection collection, int romId, bool add) async {
     if (collection.kind != 'collection' || int.tryParse(collection.id) == null) throw const RommFailure('romm.permissionDenied');
@@ -164,20 +191,26 @@ class RommClient {
         return await read(response, maximum: maximum);
       } finally { public.close(force: true); }
     }
-    final response = await (await open('GET', resource(path))).close().timeout(const Duration(seconds: 30));
+    final request = await open('GET', resource(path));
+    try {
+    final response = await request.close().timeout(const Duration(seconds: 30));
     if (response.statusCode != 200) throw RommFailure('romm.notFound', status: response.statusCode);
-    return read(response, maximum: maximum);
+    return await read(response, maximum: maximum);
+    } catch (_) { request.abort(); rethrow; }
   }
   Uri content(RommGame game, {RommFile? file}) => uri(
     'api/roms/${game.id}/content/${Uri.encodeComponent(file?.name ?? game.fileName)}',
     {if (file != null) 'file_ids': file.id});
   Future<Uint8List> saveBytes(RommSave save, {String deviceId = ''}) async {
-    final response = await (await open('GET', uri('api/${save.state ? 'states' : 'saves'}/${save.id}/content', {
+    final request = await open('GET', uri('api/${save.state ? 'states' : 'saves'}/${save.id}/content', {
       if (!save.state && deviceId.isNotEmpty) 'device_id': deviceId,
       if (!save.state) 'optimistic': false,
-    }))).close().timeout(const Duration(seconds: 30));
+    }));
+    try {
+    final response = await request.close().timeout(const Duration(seconds: 30));
     if (response.statusCode != 200) throw RommFailure('romm.notFound', status: response.statusCode);
-    return read(response, maximum: 128 * 1024 * 1024);
+    return await read(response, maximum: 128 * 1024 * 1024);
+    } catch (_) { request.abort(); rethrow; }
   }
   Future<void> acknowledgeSave(RommSave save, String deviceId, String contentHash) async {
     if (save.state || deviceId.isEmpty) return;
@@ -201,6 +234,7 @@ class RommClient {
       if (!state) 'slot': slot, if (!state) 'autocleanup': false,
       if (!state) 'overwrite': overwrite, if (contentHash != null && !state) 'content_hash': contentHash,
     }));
+    try {
     request.headers.set(HttpHeaders.contentTypeHeader, 'multipart/form-data; boundary=$boundary');
     // RFC 7578 quoted names: quotes and CR/LF never enter multipart headers.
     final safeName = name.replaceAll('"', '_');
@@ -224,5 +258,6 @@ class RommClient {
       if (rommInt(saved['id']) != id || rommInt(saved['rom_id']) != romId) throw const RommFailure('romm.invalidResponse');
     }
     return saved;
+    } catch (_) { request.abort(); rethrow; }
   }
 }

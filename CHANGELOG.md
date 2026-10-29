@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Fix Linux builds with Flutter's `FlValue` API, bundle `gio-launch-desktop` from `/usr/lib` hosts, and localize the Neural initialization status.
 - Refuse reused Qualcomm context output roots and atomically publish the manifest only after the full selected context set completes.
 - Prepare Qualcomm HTP contexts on hardened Linux hosts by preserving short temporary paths and clearing executable-stack requests only on generated host model libraries.
 - Fix Apple native configuration to use Boost headers from CMake's extracted source root.

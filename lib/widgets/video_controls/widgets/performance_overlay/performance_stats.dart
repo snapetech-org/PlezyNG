@@ -388,7 +388,7 @@ class PerformanceStats {
     if (resolution.requested == MotionProcessingMode.neural) {
       final providerStatus = (playbackCapabilityReport?.neuralProvider ?? neuralProvider)?.toLowerCase();
       if (providerStatus == 'initializing' || providerStatus?.endsWith('-initializing') == true) {
-        return '$neuralRequest · initializing${isActive ? ' → ${t.settings.motionSmoothingMpv}' : ''}';
+        return '$neuralRequest · ${t.common.loading}${isActive ? ' → ${t.settings.motionSmoothingMpv}' : ''}';
       }
       if (resolution.fallback == MotionProcessingFallback.neuralUnavailable ||
           providerStatus == 'unavailable' ||

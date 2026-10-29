@@ -8,7 +8,7 @@ import threading
 WIDTH, HEIGHT, FPS = 640, 360, 12
 
 
-def _frames(folder, cue):
+def _frames(folder, cue, *, fps=FPS, rgb=False):
     from bitmap_ocr import stop
     span = cue['endMs'] - cue['startMs']
     if not 0 < span <= 12000:
@@ -17,12 +17,12 @@ def _frames(folder, cue):
         '-protocol_whitelist', 'file,pipe', '-format_whitelist', 'matroska,webm,mov,avi,mpegts,mpeg',
         '-threads', '2', '-filter_threads', '1', '-ss', str(cue['startMs'] / 1000),
         '-i', str(folder / 'input.media'), '-an', '-sn', '-t', str(span / 1000),
-        '-vf', f'scale={WIDTH}:{HEIGHT},fps={FPS}:start_time=0', '-pix_fmt', 'gray', '-f', 'rawvideo', 'pipe:1']
+        '-vf', f'scale={WIDTH}:{HEIGHT},fps={fps}:start_time=0', '-pix_fmt', 'rgb24' if rgb else 'gray', '-f', 'rawvideo', 'pipe:1']
     process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     timer = threading.Timer(90, stop, (process,)); timer.daemon = True; timer.start()
-    count, bound = 0, WIDTH * HEIGHT
+    count, bound = 0, WIDTH * HEIGHT * (3 if rgb else 1)
     try:
-        while count < math.ceil(span * FPS / 1000):
+        while count < math.ceil(span * fps / 1000):
             data = bytearray()
             while len(data) < bound:
                 block = process.stdout.read(bound - len(data))
@@ -30,12 +30,12 @@ def _frames(folder, cue):
                 data.extend(block)
             if not data: break
             if len(data) != bound: raise ValueError('motion_frame_incomplete')
-            yield cue['startMs'] + round(count * 1000 / FPS), data
+            yield cue['startMs'] + round(count * 1000 / fps), data
             count += 1
         if count == 0: raise ValueError('motion_frames_unavailable')
         # The fixed output grid should cover the requested cue to within one
         # frame; a truncated decoder must not masquerade as a completed track.
-        if count < max(1, math.floor(span * FPS / 1000) - 1):
+        if count < max(1, math.floor(span * fps / 1000) - 1):
             raise ValueError('motion_interval_incomplete')
     finally:
         timer.cancel(); stop(process); process.wait(); process.stdout.close()

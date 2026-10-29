@@ -31,6 +31,7 @@ from research import MEDIA_TASKS
 from lyric_research import validate_syllables
 from dubbing import voice_config, capabilities as synthesis_capabilities
 from visual_research import vision_capabilities
+from scene_objects import capabilities as scene_object_capabilities
 
 MAX_INPUT = 1024**3
 MAX_JSON = 5 * 1024**2
@@ -217,6 +218,17 @@ class Store:
         if motion_tracking and (importlib.util.find_spec("cv2") is None or any(c['endMs']-c['startMs'] > 12000 for c in cues) or
                 sum(c['endMs']-c['startMs'] for c in cues) > 120000):
             raise ValueError("scene_motion_capability_or_duration_limit")
+        object_tracking = value.get('sceneObjectTracking', False)
+        object_fingerprint = None
+        if type(object_tracking) is not bool or object_tracking and task != 'scene_review':
+            raise ValueError('invalid_scene_object_tracking')
+        if object_tracking:
+            detector = scene_object_capabilities()
+            if detector is None or value.get('sceneDetectorFingerprint') != detector['fingerprint']:
+                raise ValueError('scene_detector_changed_resubmit_after_review')
+            if any(c['endMs']-c['startMs'] > 12000 for c in cues) or sum(c['endMs']-c['startMs'] for c in cues) > 120000:
+                raise ValueError('scene_object_duration_limit')
+            object_fingerprint = detector['fingerprint']
         vision_fingerprint = None
         if task == "scene_review":
             config = vision_capabilities()
@@ -240,6 +252,7 @@ class Store:
                          "cues": cues, "audioTrack": track, "timelineOffsetMs": timeline_offset, "itemTimeline": item_timeline, "soundStereoEvidence": stereo_evidence, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "lyricSyllables": lyric_syllables, "lyricPitchEvidence": lyric_pitch,
+                         "sceneObjectTracking": object_tracking, "sceneDetectorFingerprint": object_fingerprint,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
                          "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions, "sceneAudioEvidence": audio_evidence, "sceneMotionTracking": motion_tracking,
                          "translateToEnglish": task == "transcribe" and value.get("translateToEnglish") is True,
@@ -434,12 +447,14 @@ class Handler(BaseHTTPRequestHandler):
             if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_SUBTITLE_DECODER", "plezy-subtitle-decode")):
                 tasks.append("bitmap_ocr")
             vision = vision_capabilities()
+            scene_detector = scene_object_capabilities() if vision is not None else None
             if shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
                 tasks.append("extract_text")
                 if vision is not None: tasks.append("scene_review")
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
                              "sceneMotionTracking": vision is not None and installed("cv2"),
+                             "sceneObjectTracking": scene_detector is not None, "sceneObjectDetector": scene_detector,
                              "lyricSyllables": 'singing_align' in tasks,
                              "lyricPitchEvidence": 'singing_align' in tasks and installed('librosa'),
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",

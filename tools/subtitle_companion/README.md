@@ -436,6 +436,42 @@ possible. No tracking/quality/device run was performed during implementation.
 
 API reference: [OpenCV feature optical flow](https://docs.opencv.org/4.x/dc/d6b/group__video__track.html).
 
+### Optional local object-class proposals
+
+An operator may install `requirements-research.txt`, prepare a local DETR
+checkpoint, and set `PLEZY_SCENE_DETECTOR_MODEL` to its absolute directory. The
+preparer accepts only a pinned Hugging Face repository revision and a single
+`model.safetensors` DETR checkpoint without remote model code:
+
+```sh
+python3 tools/subtitle_companion/prepare_models.py \
+  --purpose scene-object-detection --repo OWNER/MODEL \
+  --revision FULL_COMMIT --output /absolute/path/to/empty-model-dir
+PLEZY_SCENE_DETECTOR_MODEL=/absolute/path/to/empty-model-dir \
+  python3 tools/subtitle_companion/server.py
+```
+
+The optional `sceneObjectTracking` capability appears only when the local
+manifest, CPU runtime, image dependencies, and scene-review provider are
+available. The app shows the detector fingerprint and asks for explicit opt-in.
+Up to 30 selected cues are accepted, each no longer than 12 seconds and totaling
+at most two minutes. Each cue is decoded locally at 2 Hz to 640×360. The
+detector emits at most twelve high-score boxes per frame; same-class,
+appearance-histogram, and overlap gates associate observations across gaps no
+longer than 1.5 seconds. Cut/flash and ambiguous-pair gates refuse uncertain
+associations. Extra detector frames remain on the companion; only the already
+consented scene-review frames are sent to the configured provider.
+
+Results are anonymous class/appearance proposals with observed samples and
+fixed envelopes. They may support caption placement review; they never identify
+a person, infer a hidden location, or claim recovery through occlusion. DETR
+labels, score thresholds, and association limits are experimental and not
+quality-qualified. Review each proposal. The model is not bundled, selected,
+downloaded, or licensed by PlezyNG. `sceneObjectEvidence` records the model
+fingerprint, local runtime versions, decoder-grid clock, sample count, and
+unqualified status. Manifest hashes are rechecked before model load; any
+changed or missing model file refuses the job.
+
 ### App research evidence export
 
 Completed research jobs expose their bounded measurements in the app before
@@ -484,3 +520,42 @@ See [WhisperX character alignment](https://github.com/m-bain/whisperX/blob/main/
 and [librosa pitch assumptions](https://librosa.org/doc/0.11.0/generated/librosa.pyin.html).
 Confidence: moderate in the bounded source integration, low in unmeasured music
 accuracy. No inference, tests, dependency installation, builds or CI were run.
+
+### Anonymous object classes and short-gap matching
+
+The optional `sceneObjectTracking` path supplements `scene_review` with a local
+CPU DETR detector at 2 Hz. Set `PLEZY_SCENE_DETECTOR_MODEL` to a prepared local
+pack after installing the research dependencies. Use `prepare_models.py
+--purpose scene-object-detection --repo OWNER/MODEL --revision FULL_COMMIT
+--output EMPTY_DIRECTORY`; this adapter supports a standard DETR ResNet-50/101
+checkpoint with config, image processor and one `model.safetensors` file. It
+verifies the manifest and every recorded file before loading (1 GiB total),
+refuses remote-code model configurations, disables pretrained-backbone fetching,
+and uses only the CPU with fixed 640x360 input. No weights are included or
+qualified. Retain the model card and applicable license with the pack.
+
+Capabilities expose a `sceneObjectDetector` fingerprint. Both clients and the
+immutable job bind `sceneDetectorFingerprint` to the reviewed pack. In the app,
+select “Track anonymous object classes locally” during scene-job submission.
+The existing external vision destination still receives only the explicitly
+selected scene samples/audio; additional detector frames remain on the host.
+Limits are 30 cues, 12 seconds per cue and two minutes summed cue duration.
+
+Detections with score >=0.75 are capped at 12 per frame. Associations require
+the same detector class, IoU >=0.15, HSV histogram distance <=0.25 and an
+unambiguous 0.1 score margin among competing pairs. A prior track may be matched
+after at most 1500 ms; no positions are invented inside the gap. Cut/flash gates
+terminate prior tracks. Each cue has at most 64 track IDs; omitted new tracks
+are counted. These are conservative heuristics, not calibrated confidence.
+Similar objects can still be confused, and cuts, lighting, occlusion and motion
+can break the association. No personal names or biometric identities are used.
+
+The research dialog/export retains labels, observed paths, gap measurements,
+refusals, frame-clock metadata, model fingerprint and package versions. Only
+tracks with at least two observed detections supply fixed caption-placement
+envelopes; authored signs remain unchanged. This is a bounded research path,
+not whole-title semantic tracking or verified occlusion reconstruction.
+References: [DETR API](https://huggingface.co/docs/transformers/v4.45.2/en/model_doc/detr)
+and [OpenCV histogram comparison](https://docs.opencv.org/4.8.0/d6/dc7/group__imgproc__hist.html).
+Confidence: moderate in source integration; model accuracy and association
+quality remain unknown. No models, dependencies, tests, builds or CI were run.

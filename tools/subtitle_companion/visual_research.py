@@ -164,6 +164,12 @@ def scene_review(folder, job, progress):
         raise ValueError('visual_review_limit_thirty_cues_one_hour')
     temporal = job.get('sceneTemporalRegions') is True
     motion = job.get('sceneMotionTracking') is True
+    detector = None
+    if job.get('sceneObjectTracking') is True:
+        if any(c['endMs']-c['startMs'] > 12000 for c in cues) or sum(c['endMs']-c['startMs'] for c in cues) > 120000:
+            raise ValueError('scene_object_duration_limit')
+        from scene_objects import Detector
+        detector = Detector(job.get('sceneDetectorFingerprint'))
     if motion and (any(c['endMs']-c['startMs'] > 12000 for c in cues) or sum(c['endMs']-c['startMs'] for c in cues) > 120000):
         raise ValueError('scene_motion_duration_limit')
     audio_enabled = job.get('sceneAudioEvidence') is True
@@ -175,6 +181,7 @@ def scene_review(folder, job, progress):
     opener = build_opener(NoRedirect(), HTTPSHandler(context=ssl.create_default_context()), ProxyHandler({}))
     evidence = folder / 'evidence'; evidence.mkdir(mode=0o700, exist_ok=True)
     images, alternatives, notes, avoidance, tracks, audio_evidence, motion_evidence, total = [], [], [], [], [], [], [], 0
+    object_evidence = []
     for i, cue in enumerate(cues):
         span = cue['endMs'] - cue['startMs']
         fractions = ((0, .5, .9) if temporal else (0,)) if motion else ((.1, .5, .9) if temporal else (.5,))
@@ -244,6 +251,11 @@ def scene_review(folder, job, progress):
             # envelopes are added only after a second accepted local frame.
             associations = tracked['tracks'] + associations
             motion_evidence.append({'cueId': cue['cueId'], **{key: value for key, value in tracked.items() if key != 'tracks'}})
+        if detector is not None:
+            from scene_objects import track_objects
+            tracked = track_objects(folder, cue, detector)
+            associations = tracked['tracks'] + associations
+            object_evidence.append({'cueId': cue['cueId'], **{key: value for key, value in tracked.items() if key != 'tracks'}})
         if associations:
             avoidance.append({'cueId': cue['cueId'], 'regions': [track['envelope'] for track in associations[:12]]})
             tracks.append({'cueId': cue['cueId'], 'tracks': associations, 'renderedEnvelopes': min(12, len(associations))})
@@ -254,6 +266,7 @@ def scene_review(folder, job, progress):
         'avoidRegions': avoidance, 'sceneRegionTracks': tracks, 'sceneSampleCount': 3 if temporal else 1,
         'sceneAudioEvidence': audio_evidence,
         'sceneMotionEvidence': motion_evidence,
+        'sceneObjectEvidence': object_evidence,
         'language': job.get('language') or 'unknown', 'durationMs': max(c['endMs'] for c in cues),
         'model': config['model'], 'providerFingerprint': config['fingerprint'],
         'warnings': [('Three chronological panels per cue show 10%, 50%, 90% samples (0%, 50%, 90% with motion tracking). Adjacent-frame IoU links are uncertain proposals; '
@@ -265,4 +278,7 @@ def scene_review(folder, job, progress):
              if audio_enabled else []) +
             (['Local optical flow follows first-frame region texture on a 12 Hz decoded grid, bounded to 12 seconds per cue and two minutes total. '
               'Paths end on failed forward/reverse matches, large motion, frame departure or cut/flash gates; no identity or occlusion recovery is inferred. '
-              'Paths and confidence gates are unqualified; background texture can drift. Caption placement uses fixed envelopes, not animated paths.'] if motion else []) + notes}
+              'Paths and confidence gates are unqualified; background texture can drift. Caption placement uses fixed envelopes, not animated paths.'] if motion else []) +
+            (['A local CPU DETR model proposes anonymous object classes at 2 Hz. Class, appearance and overlap gates may recover a match after at most 1.5 seconds. '
+              'Ambiguous matches and cut/flash boundaries are refused. Labels and short-gap associations can be wrong, especially for similar objects or occlusion. '
+              'This does not identify people or reconstruct hidden positions. Extra detector frames stay on the companion; placement uses observed envelopes only.'] if detector is not None else []) + notes}

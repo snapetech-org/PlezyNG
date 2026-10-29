@@ -42,6 +42,7 @@ class RommPlayerProxy {
   bool permits(Uri uri) => live && {'http', 'https'}.contains(uri.scheme) && uri.origin == origin.origin;
   bool _authorized(HttpRequest request) => request.cookies.any((cookie) => cookie.name == _cookieName && cookie.value == _secret);
   Future<void> _serve(HttpRequest request) async {
+    HttpClientRequest? pending;
     try {
       if (!live || request.headers.value('host') != origin.authority) { request.response.statusCode = 403; return; }
       final incomingOrigin = request.headers.value('origin');
@@ -84,7 +85,7 @@ class RommPlayerProxy {
         return;
       }
       if (!{'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'}.contains(request.method)) { request.response.statusCode = 405; return; }
-      final forwarded = await _api.open(request.method, target);
+      final forwarded = pending = await _api.open(request.method, target);
       for (final header in ['accept', 'content-type', 'range', 'if-range', 'if-none-match', 'if-modified-since', 'x-csrftoken']) {
         final value = request.headers.value(header); if (value != null) forwarded.headers.set(header, value);
       }
@@ -113,13 +114,14 @@ class RommPlayerProxy {
       request.response.headers.set('x-content-type-options', 'nosniff');
       final location = response.headers.value('location');
       if (location != null) {
-        final redirected = _api.resource(location);
+        final redirected = _api.resource(location.startsWith('/') ? location : target.resolve(location).toString());
         final localPath = redirected.path.substring(upstream.path.length);
         request.response.headers.set('location', origin.replace(path: '/$localPath', query: redirected.hasQuery ? redirected.query : null));
       }
       // Stream ROMs and WASM; a large game must never be buffered in Dart memory.
       await request.response.addStream(response.timeout(const Duration(minutes: 2)));
     } catch (_) {
+      pending?.abort();
       try { request.response.statusCode = 502; } catch (_) { /* Headers already sent. */ }
     } finally {
       try { await request.response.close(); } catch (_) { /* Player already gone. */ }

@@ -6,6 +6,7 @@ import '../../games/romm/romm_controller.dart';
 import '../../games/romm/romm_models.dart';
 import '../../games/romm/romm_text.dart';
 import '../../i18n/presentation_formats.dart';
+import '../../i18n/strings.g.dart';
 import '../../services/file_picker_service.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/focusable_list_tile.dart';
@@ -21,7 +22,7 @@ class _RommSavesScreenState extends State<RommSavesScreen> {
   late RommGame _game = widget.game;
   bool _busy = false;
   String _error = '';
-  bool get live => mounted && widget.controller.current;
+  bool get live => mounted && widget.controller.current && widget.controller.hasConnection(_game.connectionId);
   @override void initState() { super.initState(); }
   Future<void> _run(Future<void> Function() work) async {
     if (!live || _busy) return;
@@ -66,19 +67,21 @@ class _RommSavesScreenState extends State<RommSavesScreen> {
     } finally { emulator.dispose(); core.dispose(); slot.dispose(); }
   }
   Future<void> _resolve(String id, String action) async {
-    if (action == 'replaceServer' || action == 'useServer') {
+    if (action == 'replaceServer' || action == 'useServer' || action == 'discard') {
       final confirmed = await showDialog<bool>(context: context, builder: (dialog) => AlertDialog(
-        title: Text(rommText(dialog, action)), content: Text(rommText(dialog, 'saveConflict')),
+        title: Text(action == 'discard' ? context.t.common.delete : rommText(dialog, action)),
+        content: Text(action == 'discard' ? context.t.downloads.deleteConfirm(title: isolateDisplayText(_game.name)) : rommText(dialog, 'saveConflict')),
         actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'cancel'))),
-          FilledButton(onPressed: () => Navigator.pop(dialog, true), child: Text(rommText(dialog, action)))]));
+          FilledButton(onPressed: () => Navigator.pop(dialog, true), child: Text(action == 'discard' ? context.t.common.delete : rommText(dialog, action)))]));
       if (confirmed != true || !live) return;
     }
-    if (action == 'useServer') await widget.controller.storage.discardPending(id);
+    if (action == 'useServer' || action == 'discard') await widget.controller.storage.discardPending(id, useServer: action == 'useServer');
     else await widget.controller.storage.sync(id, keepBoth: action == 'keepBoth', replace: action == 'replaceServer');
     await _refresh();
   }
   @override Widget build(BuildContext context) => AnimatedBuilder(animation: widget.controller.storage, builder: (context, _) {
     final storage = widget.controller.storage;
+    if (!widget.controller.current || !widget.controller.hasConnection(_game.connectionId)) return const SizedBox.shrink();
     final own = widget.controller.connection(_game.connectionId).userId;
     final pending = storage.pending.entries.where((e) => e.value['connectionId'] == _game.connectionId && rommMap(e.value['game'])['id'] == _game.id).toList();
     return FocusedScrollScaffold(title: Text(rommText(context, 'saves')), slivers: [
@@ -94,8 +97,8 @@ class _RommSavesScreenState extends State<RommSavesScreen> {
         Text(rommText(context, storage.failures[entry.key] ?? 'savedLocally')),
         Wrap(spacing: 8, children: [
           OutlinedButton(onPressed: _busy ? null : () => _run(() async => _export('plezy-${entry.key}.save', await storage.pendingBytes(entry.key))), child: Text(rommText(context, 'exportSave'))),
-          for (final action in entry.value['conflict'] == true ? ['keepBoth', 'useServer', 'replaceServer'] : ['sync'])
-            OutlinedButton(onPressed: _busy ? null : () => _run(() => _resolve(entry.key, action)), child: Text(rommText(context, action))),
+          for (final action in entry.value['conflict'] == true ? ['keepBoth', 'useServer', 'replaceServer', 'discard'] : ['sync', 'discard'])
+            OutlinedButton(onPressed: _busy ? null : () => _run(() => _resolve(entry.key, action)), child: Text(action == 'discard' ? context.t.common.delete : rommText(context, action))),
         ]),
       ]))),
       if (_game.saves.isEmpty && _game.states.isEmpty) SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(16), child: Text(rommText(context, 'noSaves')))),

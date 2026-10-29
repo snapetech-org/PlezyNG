@@ -4,7 +4,7 @@
 #include <string>
 
 namespace {
-struct Surface { GtkOverlay* overlay; GtkWidget* fixed=nullptr; WebKitWebView* web=nullptr; std::string origin; };
+struct Surface { GtkOverlay* overlay; GtkWidget* fixed=nullptr; WebKitWebView* web=nullptr; std::string origin,owner; };
 void respond(FlMethodCall* call,FlValue* value=nullptr) {
   g_autoptr(FlMethodResponse) response=FL_METHOD_RESPONSE(fl_method_success_response_new(value));
   fl_method_call_respond(call,response,nullptr);
@@ -26,7 +26,7 @@ double number(FlValue* args,const char* key) {
 }
 void close(Surface* surface) {
   if(surface->fixed)gtk_widget_destroy(surface->fixed);
-  surface->fixed=nullptr;surface->web=nullptr;surface->origin.clear();
+  surface->fixed=nullptr;surface->web=nullptr;surface->origin.clear();surface->owner.clear();
 }
 bool permitted(Surface* surface,const char* url) {
   const std::string value=url?url:"";
@@ -52,12 +52,18 @@ void layout(Surface* surface,FlValue* args) {
 void method(FlMethodChannel*,FlMethodCall* call,gpointer data) {
   auto* surface=static_cast<Surface*>(data);const char* name=fl_method_call_get_name(call);auto* args=fl_method_call_get_args(call);
   if(g_strcmp0(name,"available")==0){g_autoptr(FlValue) yes=fl_value_new_bool(TRUE);respond(call,yes);return;}
+  const std::string owner=text(args,"owner");
+  if(owner.empty() || owner.size()>128){fail(call);return;}
+  if(g_strcmp0(name,"open")!=0 && owner!=surface->owner){
+    if(g_strcmp0(name,"close")==0 || g_strcmp0(name,"visible")==0){respond(call);return;}
+    fail(call);return;
+  }
   if(g_strcmp0(name,"close")==0){close(surface);respond(call);return;}
   if(g_strcmp0(name,"visible")==0){if(surface->fixed)gtk_widget_set_visible(surface->fixed,number(args,"value")!=0);respond(call);return;}
   if(g_strcmp0(name,"open")==0){
     const std::string origin=text(args,"origin"),url=text(args,"url");
     if(origin.rfind("http://127.0.0.1:",0)!=0 || origin.find('/',7)!=std::string::npos || url.rfind(origin+"/",0)!=0){fail(call);return;}
-    close(surface);surface->origin=origin;
+    close(surface);surface->origin=origin;surface->owner=owner;
     surface->fixed=gtk_fixed_new();gtk_overlay_add_overlay(surface->overlay,surface->fixed);
     gtk_overlay_set_overlay_pass_through(surface->overlay,surface->fixed,FALSE);
     const std::string partition=text(args,"partition");
@@ -78,7 +84,9 @@ void method(FlMethodChannel*,FlMethodCall* call,gpointer data) {
       webkit_permission_request_deny(request);return TRUE;
     }),nullptr);
     gtk_fixed_put(GTK_FIXED(surface->fixed),GTK_WIDGET(surface->web),0,0);layout(surface,args);
-    gtk_widget_show_all(surface->fixed);gtk_widget_grab_focus(GTK_WIDGET(surface->web));
+    gtk_widget_show_all(surface->fixed);
+    gtk_widget_set_visible(surface->fixed,number(args,"visible")!=0);
+    if(number(args,"visible")!=0)gtk_widget_grab_focus(GTK_WIDGET(surface->web));
     webkit_web_view_load_uri(surface->web,url.c_str());respond(call);return;
   }
   if(!surface->web){fail(call);return;}
@@ -101,7 +109,7 @@ void method(FlMethodChannel*,FlMethodCall* call,gpointer data) {
 }
 }
 void romm_web_register(FlPluginRegistrar* registrar,GtkOverlay* overlay) {
-  auto* surface=new Surface{overlay,nullptr,nullptr,{}};
+  auto* surface=new Surface{overlay,nullptr,nullptr,{}, {}};
   g_autoptr(FlStandardMethodCodec) codec=fl_standard_method_codec_new();
   g_autoptr(FlMethodChannel) channel=fl_method_channel_new(fl_plugin_registrar_get_messenger(registrar),"com.plezy/romm_web",FL_METHOD_CODEC(codec));
   fl_method_channel_set_method_call_handler(channel,method,surface,[](gpointer value){auto* s=static_cast<Surface*>(value);close(s);delete s;});

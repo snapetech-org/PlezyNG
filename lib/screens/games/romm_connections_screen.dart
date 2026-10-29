@@ -11,6 +11,7 @@ import '../../games/romm/romm_text.dart';
 import '../../i18n/presentation_formats.dart';
 import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/focused_scroll_scaffold.dart';
+import '../../utils/snackbar_helper.dart';
 
 class RommConnectionsScreen extends StatelessWidget {
   const RommConnectionsScreen({super.key, required this.controller});
@@ -35,7 +36,10 @@ class RommConnectionsScreen extends StatelessWidget {
             title: Text(rommText(dialog, 'remove')), content: Text(rommText(dialog, 'removeHelp')),
             actions: [TextButton(onPressed: () => Navigator.pop(dialog, false), child: Text(rommText(dialog, 'cancel'))),
               FilledButton(onPressed: () => Navigator.pop(dialog, true), child: Text(rommText(dialog, 'remove')))]));
-          if (remove == true && controller.current) await controller.disconnect(source.id);
+          if (remove == true && controller.current) {
+            try { await controller.disconnect(source.id); }
+            catch (error) { if (context.mounted && controller.current) showErrorSnackBar(context, rommText(context, error is RommFailure ? error.code : 'connectionFailed')); }
+          }
         }),
       )),
     ],
@@ -68,7 +72,7 @@ class _RommPairDialogState extends State<RommPairDialog> {
     try {
       final base = rommBaseUri(_address.text);
       if (_manual) {
-        await widget.controller.connect(name: _name.text, base: base, token: _token.text.trim(), replaceId: widget.source?.id);
+        await widget.controller.connect(name: _name.text, base: base, token: _token.text.trim(), replaceId: widget.source?.id, allowed: () => _live(epoch));
         if (_live(epoch)) Navigator.pop(context);
       } else {
         final api = _pairClient = RommClient(base);
@@ -99,7 +103,7 @@ class _RommPairDialogState extends State<RommPairDialog> {
       if (!_live(epoch)) return;
       await widget.controller.connect(name: _name.text, base: _pairClient!.base,
         token: rommString(grant['access_token'], 4096), deviceId: rommString(grant['device_id'], 128),
-        scopes: rommStrings(grant['scopes']), replaceId: widget.source?.id);
+        scopes: rommStrings(grant['scopes']), replaceId: widget.source?.id, allowed: () => _live(epoch));
       if (_live(epoch)) Navigator.pop(context);
     } on RommFailure catch (error) {
       if (!_live(epoch)) return;

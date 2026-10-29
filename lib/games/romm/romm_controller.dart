@@ -35,7 +35,8 @@ class RommController extends ChangeNotifier {
   int? platformId;
   RommCollection? collection;
   bool get current => !_disposed && sessionCurrent();
-  bool get hasMore => _next.values.any((v) => v != null);
+  bool get hasMore => _next.entries.any((e) => (source.isEmpty || e.key == source) && e.value != null);
+  bool hasConnection(String id) => connections.any((connection) => connection.id == id);
   bool sessionOnly(String id) => _sessionTokens.containsKey(id);
   void requireCurrent() { if (!current) throw const RommFailure('romm.cancelled'); }
   void changed() { if (current) notifyListeners(); }
@@ -100,15 +101,16 @@ class RommController extends ChangeNotifier {
   }
 
   Future<void> connect({required String name, required Uri base, required String token,
-      String deviceId = '', List<String> scopes = const [], String? replaceId}) async {
-    requireCurrent();
+      String deviceId = '', List<String> scopes = const [], String? replaceId, bool Function()? allowed}) async {
+    void checkAttempt() { requireCurrent(); if (allowed?.call() == false) throw const RommFailure('romm.cancelled'); }
+    checkAttempt();
     if (token.isEmpty || token.length > 4096 || RegExp(r'[\s\x00-\x1f]').hasMatch(token)) {
       throw const RommFailure('romm.invalidToken');
     }
     final probe = RommClient(base, token: token);
     try {
       final me = await probe.me(), beat = await probe.heartbeat();
-      requireCurrent();
+      checkAttempt();
       final uid = rommInt(me['id']);
       if (uid == 0) throw const RommFailure('romm.signInAgain');
       if (replaceId != null) {
@@ -119,11 +121,11 @@ class RommController extends ChangeNotifier {
       String credential = '';
       try { credential = await CredentialVault.protect(token); }
       catch (_) { /* Unsupported vault: keep this session's token only. */ }
-      requireCurrent();
+      checkAttempt();
       _sessionTokens.remove(id);
       _covers.removeWhere((key, _) => key.startsWith('romm:$id:'));
       if (!CredentialVault.isProtected(credential)) { credential = ''; _sessionTokens[id] = token; }
-      final next = RommConnection(id: id, name: name.trim().isEmpty ? base.host : name.trim(),
+      final next = RommConnection(id: id, name: name.trim().isEmpty ? base.host : rommString(name.trim(), 128),
         baseUrl: base.toString(), userId: uid, username: rommString(me['username'], 128),
         deviceId: deviceId.isEmpty ? rommString(me['current_device_id'], 128) : deviceId, credential: credential, scopes: scopes,
         version: rommString(rommMap(beat['SYSTEM'])['VERSION'], 64));
@@ -137,6 +139,8 @@ class RommController extends ChangeNotifier {
   }
 
   Future<void> disconnect(String id) async {
+    requireCurrent();
+    await storage.forgetConnectionDownloads(id);
     requireCurrent();
     _queryGeneration++; busy = false;
     _clients.remove(id)?.close(); _sessionTokens.remove(id);
@@ -165,6 +169,7 @@ class RommController extends ChangeNotifier {
       streams: stream['enabled'] == true ? rommList(stream['containers']).take(500).map(rommMap).toList() : [],
       platforms: platforms, observedAt: DateTime.now());
     collections[id] = lists;
+    if (source == id && collection != null && !lists.any((list) => list.kind == collection!.kind && list.id == collection!.id)) collection = null;
     final ownFavorites = lists.where((list) => list.favorite && list.userId == connection(id).userId);
     favorites.removeWhere((key) => key.startsWith('romm:$id:'));
     for (final list in ownFavorites) { favorites.addAll(list.romIds.map((romId) => 'romm:$id:$romId')); }
@@ -183,7 +188,8 @@ class RommController extends ChangeNotifier {
         if (!current || epoch != _queryGeneration) return;
         if (more && _next[source.id] == null) continue;
         try {
-          if (!more) await refreshCapabilities(source.id);
+          if (!more && (capabilities[source.id]?.fresh != true || !collections.containsKey(source.id) ||
+              search == null && !changeFilter)) await refreshCapabilities(source.id);
           final page = await (await client(source.id)).games(source.id, search: query,
             offset: more ? _next[source.id] ?? 0 : 0, platformId: platformId, collection: collection);
           if (!current || epoch != _queryGeneration) return;
@@ -197,7 +203,10 @@ class RommController extends ChangeNotifier {
         }
         changed();
       }
-      if (current && epoch == _queryGeneration) await persist();
+      if (current && epoch == _queryGeneration) {
+        await persist();
+        unawaited(storage.syncAll().catchError((_) {}));
+      }
     } finally { if (current && epoch == _queryGeneration) { busy = false; changed(); } }
   }
 

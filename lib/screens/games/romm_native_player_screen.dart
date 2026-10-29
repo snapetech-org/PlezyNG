@@ -31,14 +31,14 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   ui.Image? _frame;
   bool _decoding = false, _ready = false, _paused = false, _closing = false, _canPop = false, _touch = false, _capturing = false;
   String _error = '', _lastHash = '', _copyIdentity = '';
-  bool _exitPrompt = false;
+  bool _exitPrompt = false, _retiring = false;
   final _pads = <int, int>{};
   final _buttons = [0, 0, 0, 0];
   final _axes = [0, 0, 0, 0];
   StreamSubscription<GamepadConnectionEvent>? _connections;
   Timer? _autosave;
   Directory? _sessionDirectory;
-  bool get live => mounted && widget.controller.current;
+  bool get live => mounted && widget.controller.current && widget.controller.hasConnection(widget.game.connectionId);
   String get _emulator => 'plezy_libretro_${widget.core}_${_copyIdentity.substring(5, 17)}';
   @override void initState() {
     super.initState(); WidgetsBinding.instance.addObserver(this); _runtime.addListener(_newFrame);
@@ -53,7 +53,16 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     }, onError: (Object _) => _release());
     GamepadService.instance.setWorkspaceInputOwner(this); unawaited(_start());
   }
-  void _profile() { if (!widget.controller.current) { _release(); _runtime.pause(true); unawaited(_runtime.shutdown()); } }
+  void _profile() {
+    if (live || _retiring) return;
+    _retiring = true; _autosave?.cancel(); _release(); _runtime.pause(true);
+    GamepadService.instance.releaseWorkspaceInputOwner(this);
+    unawaited(_runtime.shutdown());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final route = ModalRoute.of(context); if (route?.isActive == true) route!.navigator?.removeRoute(route);
+    });
+  }
   @override void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) {
       _release(); _runtime.pause(true); _paused = true;
@@ -87,8 +96,8 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       if (widget.resume && (widget.stateId != null || widget.saveId != null)) {
         await _cloudResume();
       } else if (widget.resume) {
-        final sram = await storage.nativeProgress(widget.game, _runtime.identity);
-        final state = await storage.nativeProgress(widget.game, _runtime.identity, state: true);
+        final snapshot = await storage.nativeSnapshot(widget.game, _runtime.identity);
+        final sram = snapshot.sram, state = snapshot.state;
         if (sram != null) await _runtime.restore(sram);
         if (state != null) await _runtime.restore(state, state: true);
         if (sram == null && state == null) await _cloudResume();
@@ -155,7 +164,6 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       if (save.hash.isNotEmpty && hash != save.hash) throw const RommFailure('romm.checksumFailed');
       if (!live) return;
       await _runtime.restore(bytes);
-      await widget.controller.storage.clearNativeState(widget.game, _runtime.identity);
       await widget.controller.storage.keepNativeProgress(widget.game, _runtime.identity, bytes);
       await widget.controller.storage.rememberSaveBaseline(widget.game, save);
       try { await api.acknowledgeSave(save, source.deviceId, hash); } catch (_) { /* Local progress is already durable; a later upload can surface a conflict. */ }
@@ -236,9 +244,8 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       final progress = await _runtime.captureProgress();
       final sram = progress.sram, snapshot = progress.state;
       if (!live) return;
-      if (sram != null) await storage.keepNativeProgress(widget.game, _runtime.identity, sram);
-      if (snapshot != null) await storage.keepNativeProgress(widget.game, _runtime.identity, snapshot, state: true);
       if (sram == null && snapshot == null) throw const RommFailure('romm.saveFailed');
+      await storage.keepNativeSnapshot(widget.game, _runtime.identity, sram: sram, state: snapshot);
       final bytes = state || sram == null ? snapshot : sram;
       if (bytes == null) throw const RommFailure('romm.saveFailed');
       final hash = sha256.convert(bytes).toString(); if (hash == _lastHash && !state) return;
@@ -305,6 +312,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   }
   @override Widget build(BuildContext context) => PopScope(canPop: _canPop, onPopInvokedWithResult: (popped, _) { if (!popped) unawaited(_askExit()); }, child: Focus(
     autofocus: true,
+    descendantsAreFocusable: !_ready || _paused || _closing,
     onKeyEvent: (_, event) {
       // Android bypasses GamepadService's global keyboard handler; Tizen uses
       // its engine's key input. Handle those keys only while gameplay owns focus.

@@ -14,11 +14,12 @@ class RommLink {
     if (platform.isNotEmpty) 'platform': platform, if (igdbId > 0) 'igdb': '$igdbId'});
   static RommLink? parse(Uri uri) {
     if (!{'plezy', 'plezyng', 'plezxyng'}.contains(uri.scheme) || uri.host != 'game' || uri.path.isNotEmpty ||
-        uri.userInfo.isNotEmpty || uri.hasFragment || uri.toString().length > 4096) return null;
+        uri.userInfo.isNotEmpty || uri.hasPort || uri.hasFragment || uri.toString().length > 4096) return null;
     final q = uri.queryParameters;
     if (q['source'] != 'romm' || q.keys.any((key) => !{'source', 'server', 'rom', 'copy', 'platform', 'igdb'}.contains(key)) ||
         uri.queryParametersAll.values.any((values) => values.length != 1)) return null;
     try {
+      if (['rom', 'igdb'].any((key) => q.containsKey(key) && !RegExp(r'^[0-9]{1,10}$').hasMatch(q[key]!))) return null;
       final server = rommBaseUri(q['server'] ?? '');
       final id = int.tryParse(q['rom'] ?? '') ?? 0, igdb = int.tryParse(q['igdb'] ?? '') ?? 0;
       final copy = q['copy'] ?? '', platform = q['platform'] ?? '';

@@ -13,6 +13,7 @@ String rommString(Object? value, [int limit = 4096]) {
 int rommInt(Object? value, [int fallback = 0]) => value is int && value >= 0 && value <= 0x1fffffffffffff
     ? value : fallback;
 List<String> rommStrings(Object? value) => rommList(value).take(100).map((e) => rommString(e, 256)).where((s) => s.isNotEmpty).toList();
+String rommHash(Object? value, int length) => value is String && RegExp('^[0-9a-fA-F]{$length}\$').hasMatch(value) ? value.toLowerCase() : '';
 
 Uri rommBaseUri(String input) {
   final uri = Uri.tryParse(input.trim());
@@ -56,7 +57,7 @@ class RommFile {
   final String name, sha1, md5, category;
   factory RommFile.fromJson(Map<String, dynamic> j) => RommFile(id: rommInt(j['id']),
     name: rommString(j['file_name'], 1024), size: rommInt(j['file_size_bytes']),
-    sha1: rommString(j['sha1_hash'], 40), md5: rommString(j['md5_hash'], 32),
+    sha1: rommHash(j['sha1_hash'], 40), md5: rommHash(j['md5_hash'], 32),
     category: rommString(j['category'], 64));
   Map<String, dynamic> toJson() => {'id': id, 'file_name': name, 'file_size_bytes': size,
     'sha1_hash': sha1, 'md5_hash': md5, 'category': category};
@@ -96,7 +97,7 @@ class RommGame {
       fileName: rommString(j['fs_name'], 1024), extension: rommString(j['fs_extension'], 32).toLowerCase(),
       size: rommInt(j['fs_size_bytes']), summary: rommString(j['summary'], 16384),
       cover: rommString(j['path_cover_large'] ?? j['path_cover_small'], 2048),
-      revision: rommString(j['revision'], 128), sha1: rommString(j['sha1_hash'], 40), md5: rommString(j['md5_hash'], 32),
+      revision: rommString(j['revision'], 128), sha1: rommHash(j['sha1_hash'], 40), md5: rommHash(j['md5_hash'], 32),
       regions: rommStrings(j['regions']), languages: rommStrings(j['languages']), tags: rommStrings(j['tags']),
       files: rommList(j['files']).take(8192).map((e) => RommFile.fromJson(rommMap(e))).where((e) => e.id > 0).toList(),
       siblingIds: rommList(j['sibling_roms']).take(200).map((e) => rommInt(rommMap(e)['id'])).where((id) => id > 0).toList(),
@@ -132,7 +133,8 @@ class RommSave {
   factory RommSave.fromJson(Map<String, dynamic> j, {bool state = false}) => RommSave(
     id: rommInt(j['id']), romId: rommInt(j['rom_id']), userId: rommInt(j['user_id']),
     name: rommString(j['file_name'], 255), size: rommInt(j['file_size_bytes']),
-    emulator: rommString(j['emulator'], 128), core: rommString(j['core'], 128),
+    emulator: rommString(j['emulator'], 128), core: rommString(j['core'], 128).isNotEmpty ? rommString(j['core'], 128)
+      : rommList(j['labels']).whereType<String>().where((label) => label.startsWith('Plezy core: ')).firstOrNull?.substring(12) ?? '',
     slot: rommString(j['slot'], 255), hash: rommString(j['content_hash'], 128),
     updatedAt: DateTime.tryParse(rommString(j['updated_at'], 64)), state: state,
     missing: j['missing_from_fs'] == true,

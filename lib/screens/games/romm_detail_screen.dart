@@ -26,10 +26,10 @@ class RommDetailScreen extends StatefulWidget {
 }
 class _RommDetailScreenState extends State<RommDetailScreen> {
   late RommGame _game = widget.game;
-  bool _loading = false, _browser = false;
+  bool _loading = false, _browser = false, _launching = false;
   Set<String> _cores = {};
   String _error = '';
-  bool get live => mounted && widget.controller.current;
+  bool get live => mounted && widget.controller.current && widget.controller.hasConnection(_game.connectionId);
   @override void initState() { super.initState(); unawaited(_refresh()); }
   Future<void> _run(Future<void> Function() work) async {
     if (!live || _loading) return;
@@ -45,7 +45,9 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
     if (live) setState(() => _game = game);
   });
   Future<void> _play(RommRoute route) async {
-    if (!live || !route.available) return;
+    if (!live || !route.available || _launching) return;
+    setState(() => _launching = true);
+    try {
     if (route.engine != RommEngine.native && widget.controller.capabilities[_game.connectionId]?.fresh != true) {
       await _refresh(); return;
     }
@@ -105,6 +107,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
     await rommPush<void>(context, widget.controller, RommWebPlayerScreen(controller: widget.controller, game: _game, route: route,
       stateId: stateId, saveId: saveId, memoryCardId: memoryCardId, multiplayer: multiplayer));
     if (live) unawaited(_refresh());
+    } finally { if (live) setState(() => _launching = false); }
   }
   Future<void> _download() async {
     RommFile? selected;
@@ -136,7 +139,9 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
   }
   @override Widget build(BuildContext context) => AnimatedBuilder(animation: widget.controller, builder: (context, _) {
     final c = widget.controller, storage = c.storage;
-    final routes = c.capabilities[_game.connectionId]?.routes(_game, browserAvailable: _browser, nativeCores: _cores, offlineAvailable: storage.available(_game)) ?? <RommRoute>[];
+    if (!c.current || !c.hasConnection(_game.connectionId)) return const SizedBox.shrink();
+    final routes = c.capabilities[_game.connectionId]?.routes(_game, browserAvailable: _browser, nativeCores: _cores,
+      offlineAvailable: storage.available(_game), offlineFileName: rommString(storage.downloads[_game.key]?['name'], 1024)) ?? <RommRoute>[];
     final downloading = storage.progress.containsKey(_game.key), offline = storage.available(_game);
     final achievements = rommList(_game.achievements['achievements']).map(rommMap).toList();
     final earned = rommList(c.achievementProgress[_game.connectionId]?['results']).map(rommMap)
@@ -185,7 +190,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
         if (routes.isEmpty) Text(rommText(context, _game.hasBytes ? 'noRoute' : 'missing')),
         for (final route in routes) ListTile(title: Text('${rommText(context, route.engine.name)}${route.core.isEmpty ? '' : ' · ${route.core}'}'),
           subtitle: route.available ? null : Text(rommText(context, route.reason)), leading: const Icon(Icons.play_circle_outline),
-          onTap: !route.available || _loading ? null : () => _play(route)),
+          onTap: !route.available || _loading || _launching ? null : () => _play(route)),
         const SizedBox(height: 16), Text(rommText(context, 'firmwareHelp')),
         const SizedBox(height: 8), Text(rommText(context, 'netplayHelp')),
         const SizedBox(height: 20), Text(rommText(context, 'storage'), style: Theme.of(context).textTheme.titleLarge),

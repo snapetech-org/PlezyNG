@@ -36,6 +36,7 @@ class GameLibraryView extends StatefulWidget {
     this.additionalGames = const [],
     this.includePrimaryGames = true,
     this.additionalFavorites = const {},
+    this.additionalInstalled = const {},
     this.additionalRecent = const [],
     this.additionalCardBuilder,
     this.onSearchChanged,
@@ -52,6 +53,7 @@ class GameLibraryView extends StatefulWidget {
   final List<LibraryGame> additionalGames;
   final bool includePrimaryGames;
   final Set<String> additionalFavorites;
+  final Set<String> additionalInstalled;
   final List<String> additionalRecent;
   final Widget Function(LibraryGame game, FocusNode? focus)? additionalCardBuilder;
   final ValueChanged<String>? onSearchChanged;
@@ -68,7 +70,7 @@ class _GameLibraryViewState extends State<GameLibraryView> {
   @override
   void didUpdateWidget(GameLibraryView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_computerFilter != null && !widget.library.hosts.any((h) => h.key == _computerFilter)) _computerFilter = null;
+    if (_computerFilter != null && (!widget.includePrimaryGames || !widget.library.hosts.any((h) => h.key == _computerFilter))) _computerFilter = null;
   }
 
   @override
@@ -144,7 +146,9 @@ class _GameLibraryViewState extends State<GameLibraryView> {
     final entries = [if (widget.includePrimaryGames) ...state.entries, ...widget.additionalGames];
     final byKey = {for (final game in entries) game.key: game};
     final filtered = entries.where((game) {
-      if (!game.name.toLowerCase().contains(_query.trim().toLowerCase())) return false;
+      // RomM already searched its server catalog, including metadata matches.
+      if (game.romm == null && !game.name.toLowerCase().contains(_query.trim().toLowerCase())) return false;
+      if (game.romm != null) return _computerFilter == null && (!_installedOnly || widget.additionalInstalled.contains(game.key));
       if (game.routes.isEmpty) return _computerFilter == null && !_installedOnly;
       return game.routes.any(
         (route) =>

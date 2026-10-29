@@ -25,7 +25,7 @@ class RommStreamSession extends ChangeNotifier {
     owned = true; active = true;
     if (!live) { await _release(); return; }
     await poll();
-    _timer = Timer.periodic(const Duration(seconds: 5), (_) => unawaited(poll()));
+    if (live && active) _timer = Timer.periodic(const Duration(seconds: 5), (_) => unawaited(poll()));
   }
   Future<void> join(String selectedPlatform, String selectedContainer) async {
     if (!live || active) return;
@@ -85,6 +85,7 @@ class RommStreamSession extends ChangeNotifier {
     finally { cleanup.close(); }
   }
   @override void dispose() {
+    if (_disposed) return;
     _disposed = true; _timer?.cancel(); unawaited(_release()); super.dispose();
   }
 }

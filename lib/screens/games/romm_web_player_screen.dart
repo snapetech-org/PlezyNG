@@ -31,10 +31,11 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
   Uri? _url;
   String _error = '', _lastCapture = '';
   bool _busy = true, _closing = false, _canPop = false, _capturing = false, _controls = false;
+  bool _exitPrompt = false, _retrying = false, _retiring = false;
   final _web = GlobalKey<RommWebSurfaceState>();
   Timer? _snapshot;
   final _started = DateTime.now();
-  bool get _live => mounted && widget.controller.current;
+  bool get _live => mounted && widget.controller.current && widget.controller.hasConnection(widget.game.connectionId);
   bool get _ejs => widget.route.engine == RommEngine.emulatorJs;
   @override void initState() {
     super.initState(); WidgetsBinding.instance.addObserver(this);
@@ -45,7 +46,15 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
     unawaited(_start());
   }
   void _sessionChanged() {
-    if (!widget.controller.current) { unawaited(_proxy?.close()); _stream?.dispose(); _stream = null; }
+    if (!_live && !_retiring) {
+      _retiring = true; _snapshot?.cancel();
+      GamepadService.instance.releaseWorkspaceInputOwner(this);
+      unawaited(_proxy?.close()); _stream?.dispose(); _stream = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final route = ModalRoute.of(context); if (route?.isActive == true) route!.navigator?.removeRoute(route);
+      });
+    }
   }
   @override void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed && _ejs) unawaited(_capture().catchError((_) {}));
@@ -104,14 +113,34 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
         setState(() { _url = proxy!.bootstrap('/rom/${widget.game.id}/${widget.route.engine.path}'); _busy = false; });
         if (_ejs) _snapshot = Timer.periodic(const Duration(seconds: 45), (_) => unawaited(_capture().catchError((_) {})));
       }
-      if (_live) await widget.controller.played(widget.game);
+      if (_live) { try { await widget.controller.played(widget.game); } catch (_) { /* Metadata persistence does not stop the player. */ } }
     } catch (error) { if (_live) setState(() { _error = error is RommFailure ? error.code : 'romm.connectionFailed'; _busy = false; }); }
   }
   bool _openingRoom = false;
+  Future<void> _retry() async {
+    if (!_live || _retrying || _closing || _openingRoom) return;
+    if (_capturing) { setState(() => _error = 'romm.saveInProgress'); return; }
+    _retrying = true;
+    try {
+      if (_ejs) await _capture().catchError((_) {});
+      _snapshot?.cancel();
+      final proxy = _proxy; _proxy = null;
+      setState(() { _url = null; _busy = true; _error = ''; });
+      await proxy?.close();
+      if (!_live) return;
+      if (_stream?.active == true) {
+        await _stream!.poll(); await _streamChanged();
+      } else {
+        _stream?.dispose(); _stream = null;
+        await _start();
+      }
+    } catch (_) { if (_live) setState(() { _error = 'romm.connectionFailed'; _busy = false; }); }
+    finally { _retrying = false; }
+  }
   Future<void> _streamChanged() async {
     final stream = _stream; if (!_live || stream == null) return;
     if (stream.error.isNotEmpty) setState(() { _error = stream.error; _busy = false; });
-    if (stream.room == null || _proxy != null || _openingRoom) return;
+    if (!stream.active || stream.room == null || _proxy != null || _openingRoom) return;
     _openingRoom = true;
     try {
       final room = stream.room!;
@@ -180,9 +209,11 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
     finally { if (_live) setState(() => _closing = false); }
   }
   Future<void> _askExit() async {
-    if (_closing || !_live) return;
+    if (_closing || _exitPrompt || !_live) return;
+    _exitPrompt = true;
     GamepadService.instance.releaseWorkspaceInputOwner(this);
-    await _web.currentState?.visible(false);
+    try {
+    await _web.currentState?.visible(false).catchError((_) {});
     if (!_live) return;
     final result = await showDialog<String>(context: context, builder: (dialog) => AlertDialog(
       title: Text(rommText(dialog, 'exitConfirm')), content: Text(rommText(dialog, _ejs || _stream != null ? 'saveExitHelp' : 'browserSaveHelp')),
@@ -190,9 +221,14 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
         TextButton(onPressed: () => Navigator.pop(dialog, 'discard'), child: Text(rommText(dialog, _ejs || _stream != null ? 'exitWithoutSaving' : 'savedClose'))),
         if (_ejs || _stream != null) FilledButton(onPressed: () => Navigator.pop(dialog, 'save'), child: Text(rommText(dialog, 'saveAndExit')))]));
     if (!_live) return;
-    await _web.currentState?.visible(true);
-    GamepadService.instance.setWorkspaceInputOwner(this);
     if (result != null) await _finish(result == 'save');
+    } finally {
+      _exitPrompt = false;
+      if (_live && !_canPop) {
+        await _web.currentState?.visible(true).catchError((_) {});
+        GamepadService.instance.setWorkspaceInputOwner(this);
+      }
+    }
   }
   Future<void> _command(String action, Map<String, Object?> body) async {
     try { await _stream!.command(action, body); }
@@ -214,7 +250,7 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
       body: Column(children: [
         if (_busy || _closing) const LinearProgressIndicator(),
         if (_error.isNotEmpty) MaterialBanner(content: Text(rommText(context, _error)), actions: [TextButton(
-          onPressed: stream == null ? () => setState(() => _error = '') : stream.poll, child: Text(rommText(context, 'retry')))]),
+          onPressed: _retrying || _closing ? null : _retry, child: Text(rommText(context, 'retry')))]),
         if (_controls) SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [
           if (_ejs) TextButton(onPressed: _closing ? null : () => _capture(state: true).catchError((_) { if (_live) showErrorSnackBar(context, rommText(context, 'saveFailed')); }), child: Text(rommText(context, 'saveState'))),
           if (stream?.owned == true && config?['supports_live_states'] == true)

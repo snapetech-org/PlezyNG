@@ -60,12 +60,26 @@ that transfer's HTTP client.
 
 The software libretro host handles video, audio, keyboard, up to four gamepads,
 touch controls, pause, SRAM and states. Core calls and serialization run on one
-worker isolate. Native states include ROM hash and exact core/version identity;
+worker isolate. It stays paused until restoration completes and clears buffered
+audio on pause. SRAM and state are captured together and atomically committed
+as one local snapshot. Native states include the indexed ROM identity, the
+downloaded file fingerprint and exact core/version identity;
 incompatible states cannot be restored as browser/stream states. Local progress
 resumes offline; a new device can fetch a compatible native state from RomM.
 Start-from-beginning is an explicit alternative. Archives, disc sets, firmware-
 dependent systems and GPU-rendered cores use server/browser routes in this
 initial native adapter; they are not mislabeled as supported native cartridges.
+
+Disconnect refuses while a source has pending save uploads or active downloads,
+so unsynced progress remains reachable. Pending versions can be exported or
+explicitly deleted from the Saves screen. Successful refreshes retry the outbox;
+uploads for the same slot are serialized and unknown hashes are treated as
+conflicts. Imported states retain their declared core as a RomM asset label.
+
+The browser-origin registry retains every port assigned to a profile/source,
+including ports replaced after a collision. Registry replacement is atomic,
+with a separate cross-process lock. Linux browser operations carry a surface
+owner ID, preventing a retired page from closing or changing a newer player.
 
 ## Platform packaging
 

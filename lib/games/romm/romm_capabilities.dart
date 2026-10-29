@@ -11,7 +11,7 @@ class RommCapabilities {
   bool get fresh => observedAt != null && DateTime.now().difference(observedAt!) < const Duration(minutes: 5);
   String slug(RommGame game) => rommString(rommMap(config['PLATFORMS_VERSIONS'])[game.platform], 128).isEmpty
       ? game.platform : rommString(rommMap(config['PLATFORMS_VERSIONS'])[game.platform], 128);
-  List<RommRoute> routes(RommGame game, {required bool browserAvailable, Set<String> nativeCores = const {}, bool offlineAvailable = false}) {
+  List<RommRoute> routes(RommGame game, {required bool browserAvailable, Set<String> nativeCores = const {}, bool offlineAvailable = false, String offlineFileName = ''}) {
     if (!game.hasBytes && !offlineAvailable) return const [];
     final platform = slug(game);
     final result = <RommRoute>[];
@@ -35,7 +35,12 @@ class RommCapabilities {
           : !fresh ? 'romm.refreshBeforePlay' : ''));
     }
     for (final core in nativeCores) {
-      if ((rommNativeCorePlatforms[core] ?? const []).contains(platform)) result.add(RommRoute(RommEngine.native, core: core));
+      if (!(rommNativeCorePlatforms[core] ?? const []).contains(platform)) continue;
+      final name = offlineAvailable && offlineFileName.isNotEmpty ? offlineFileName : game.fileName;
+      final extension = name.split('.').last.toLowerCase();
+      final eligible = {'sfc', 'smc', 'gb', 'gbc', 'gba', 'nes', 'bin', 'md', 'gen', 'sms', 'gg'}.contains(extension) &&
+        (offlineAvailable || game.files.length <= 1);
+      result.add(RommRoute(RommEngine.native, core: core, available: eligible, reason: eligible ? '' : 'romm.unsupportedArchive'));
     }
     return result;
   }

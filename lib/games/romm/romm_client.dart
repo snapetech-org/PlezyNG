@@ -212,6 +212,17 @@ class RommClient {
     final data = await read(response);
     if (response.statusCode == 409) throw const RommFailure('romm.conflict', status: 409);
     if (response.statusCode < 200 || response.statusCode > 299) throw RommFailure('romm.saveUploadFailed', status: response.statusCode);
-    return rommMap(jsonDecode(utf8.decode(data)));
+    var saved = rommMap(jsonDecode(utf8.decode(data)));
+    final id = rommInt(saved['id']);
+    if (id == 0 || rommInt(saved['rom_id']) != romId || saved['emulator'] != emulator) throw const RommFailure('romm.invalidResponse');
+    if (state && core.isNotEmpty) {
+      // The upload endpoint has no writable core parameter. Preserve the
+      // declared identity using RomM's supported asset-annotation API instead.
+      final label = 'Plezy core: ${rommString(core, 100)}';
+      final labels = rommList(saved['labels']).whereType<String>().where((v) => !v.startsWith('Plezy core: ')).take(19).toList();
+      saved = rommMap(await json('PUT', 'states/$id/labels', body: {'labels': [...labels, label]}));
+      if (rommInt(saved['id']) != id || rommInt(saved['rom_id']) != romId) throw const RommFailure('romm.invalidResponse');
+    }
+    return saved;
   }
 }

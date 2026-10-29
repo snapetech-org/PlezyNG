@@ -117,13 +117,13 @@ class RommNative extends ChangeNotifier {
     }
   }
   Future<Object?> _request(String action, [Map<String, Object?> args = const {}]) {
-    if (_closed || _commands == null) throw const RommFailure('romm.nativeError');
+    if (_closed || _retired || _commands == null) throw const RommFailure('romm.nativeError');
     final id = ++_sequence, result = Completer<Object?>(); _pending[id] = result;
     _commands!.send({'id': id, 'action': action, ...args});
     return result.future.timeout(const Duration(seconds: 15)).whenComplete(() => _pending.remove(id));
   }
-  void input(int port, int buttons) { if (!_closed) _commands?.send({'action': 'input', 'port': port, 'buttons': buttons}); }
-  void pause(bool paused) { if (!_closed) _commands?.send({'action': 'pause', 'paused': paused}); }
+  void input(int port, int buttons) { if (!_closed && !_retired) _commands?.send({'action': 'input', 'port': port, 'buttons': buttons}); }
+  void pause(bool paused) { if (!_closed && !_retired) _commands?.send({'action': 'pause', 'paused': paused}); }
   Future<Uint8List?> capture({bool state = false}) async {
     final data = await _request('capture', {'state': state});
     return data is TransferableTypedData ? data.materialize().asUint8List() : null;

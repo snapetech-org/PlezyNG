@@ -15,6 +15,7 @@ import '../services/media_controls_manager.dart';
 import '../services/playback_coordinator.dart';
 import '../services/settings_service.dart';
 import '../services/subtitle_analysis_source.dart';
+import '../services/subtitle_manual_live_clock.dart';
 import '../services/track_selection_service.dart';
 import '../services/music/music_hardware_transport.dart';
 import '../services/player_sync_offsets.dart';
@@ -86,6 +87,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   bool _persistProgress = true;
   Future<void> Function(PublicationProgress progress)? _onTransientProgress;
   bool _liveInput = false;
+  bool _transientSubtitleAnalysisAllowed = false;
   List<File> _temporaryMediaFiles = const [];
   SourcePreviewSession? _previewSession;
   File? _streamRecordingTarget;
@@ -197,8 +199,8 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       _fileIndex >= 0 && _fileIndex < files.length && _directPlayerAddresses.containsKey(files[_fileIndex].id);
   /// Opens a separate, renewable analysis lease without reusing the audible
   /// player's decoder or giving the inference process provider credentials.
-  Future<SubtitleAnalysisSource> openSubtitleAnalysisSource() async {
-    if (!_valid || _liveInput || isSamplePreview || isCapturePreview || files.isEmpty || player == null) {
+  Future<SubtitleAnalysisSource> openSubtitleAnalysisSource({SubtitleManualLiveClock? liveClock}) async {
+    if (!_valid || isSamplePreview || isCapturePreview || files.isEmpty || player == null) {
       throw const SourceException(SourceFailure.unsupported);
     }
     final native = player!, item = entry!, profile = _profile!;
@@ -206,26 +208,35 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     bool current() => _valid && player == native && entry == item && _profile == profile &&
         _generation == generation && _fileEpoch == epoch && _fileIndex == index &&
         index < files.length && files[index].fingerprint == file.fingerprint;
-    if (file.streamOnly || file.sampleOnly) throw const SourceException(SourceFailure.permission);
-    final gateway = SourceStreamGateway(valid: current);
+    if (file.streamOnly && !_transientSubtitleAnalysisAllowed || file.sampleOnly) {
+      throw const SourceException(SourceFailure.permission);
+    }
+    final live = _liveInput;
+    if (live && (liveClock == null || !identical(liveClock.player, native) || !liveClock.isCurrent)) {
+      throw StateError('Standalone live analysis requires an explicit current program-time anchor.');
+    }
+    bool analysisCurrent() => current() && (!live || liveClock?.isCurrent == true);
+    final gateway = SourceStreamGateway(valid: analysisCurrent, subtitleLiveAnalysis: live);
     try {
-      final cached = await sources.downloads.local(profile, item.sourceId, file);
       final override = _localOverrides[file.id];
+      final cached = live || override != null ? null : await sources.downloads.local(profile, item.sourceId, file);
       late final Uri uri;
       if (override != null) {
-        if (override.scheme == 'file') { uri = override; }
+        if (override.scheme == 'file' && !live) { uri = override; }
         else if (const {'http', 'https'}.contains(override.scheme)) {
           uri = await gateway.registerUri(override, headers: _localOverrideHeaders[file.id] ?? const {});
         } else { throw const SourceException(SourceFailure.unsupported); }
       } else if (cached != null) { uri = cached.uri; }
       else {
         final adapter = sources.adapter(item.sourceId);
+        if (live && adapter.source.kind == FileSourceKind.local) throw const SourceException(SourceFailure.unsupported);
         uri = adapter.source.kind == FileSourceKind.local
             ? (await adapter.resolve(file)).uri : await gateway.register(adapter, file);
       }
-      if (!current()) throw const SourceException(SourceFailure.cancelled);
+      if (!analysisCurrent()) throw const SourceException(SourceFailure.cancelled);
       return SubtitleAnalysisSource(uri: uri, identity: sourceDigest('$profile:${item.key}:${file.fingerprint}'),
-        isCurrent: current, close: gateway.close);
+        isCurrent: analysisCurrent, close: gateway.close,
+        liveEpochForPosition: live ? liveClock!.epochForPosition : null);
     } catch (_) { await gateway.close(); rethrow; }
   }
 
@@ -740,6 +751,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     int initialPositionMs = 0,
     Future<void> Function(PublicationProgress progress)? onTransientProgress,
     bool liveInput = false,
+    bool allowTransientSubtitleAnalysis = false,
     List<File> temporaryMediaFiles = const [],
     SourcePreviewSession? samplePreview,
     Map<String, String> directPlayerAddresses = const {},
@@ -763,6 +775,10 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       }
       if (containsSample) _previewSession = samplePreview;
       final effectiveOverrides = Map<String, Uri>.from(localOverrides);
+      if (allowTransientSubtitleAnalysis && (persistProgress || containsSample || directPlayerAddresses.isNotEmpty ||
+          selected.any((file) => !const {'file', 'http', 'https'}.contains(effectiveOverrides[file.id]?.scheme)))) {
+        throw const SourceException(SourceFailure.permission);
+      }
       if (containsSample) {
         final previewFile = await samplePreview!.open();
         effectiveOverrides[selected.single.id] = previewFile.uri;
@@ -830,6 +846,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       _persistProgress = persistProgress;
       _onTransientProgress = onTransientProgress;
       _liveInput = liveInput;
+      _transientSubtitleAnalysisAllowed = allowTransientSubtitleAnalysis;
       _temporaryMediaFiles = List.unmodifiable(temporaryMediaFiles);
       mode = requestedMode;
       _userMuted = false;
@@ -2779,6 +2796,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     _persistProgress = true;
     _onTransientProgress = null;
     _liveInput = false;
+    _transientSubtitleAnalysisAllowed = false;
     progress = null;
     _lastKnownFilePositionMs = 0;
     _failedFilePositionMs = null;

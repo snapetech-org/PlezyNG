@@ -664,6 +664,10 @@ class _OpenMediaScreenState extends State<OpenMediaScreen> {
       localOverrides: overrides,
       persistProgress: false,
       liveInput: live,
+      // These files/URLs were explicitly opened by the viewer. The streamOnly
+      // flag keeps them out of persistent source downloads; it is not a
+      // provider restriction on a separate local subtitle decoder.
+      allowTransientSubtitleAnalysis: items.every((item) => const {'file', 'http', 'https'}.contains(item.uri.scheme)),
       temporaryMediaFiles: temporaryMediaFiles,
     );
     if (!mounted) return;

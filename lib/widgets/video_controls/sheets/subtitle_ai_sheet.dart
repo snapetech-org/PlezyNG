@@ -172,6 +172,7 @@ class SubtitleAiSheet extends StatefulWidget {
     this.isRevisionIdentityCurrent,
     this.onSaveToSource,
     this.openAnalysisSource,
+    this.openReadAheadSource,
     this.seriesKey,
     this.selectedSubtitleBurnedIn = false,
   });
@@ -191,6 +192,8 @@ class SubtitleAiSheet extends StatefulWidget {
   /// Persists and attaches a reviewed SRT to the active standalone source item.
   final SubtitleSourceSubtitleSaver? onSaveToSource;
   final Future<SubtitleAnalysisSource> Function()? openAnalysisSource;
+  /// Optional explicit live-clock preparation owned by a standalone source UI.
+  final Future<SubtitleAnalysisSource?> Function()? openReadAheadSource;
   final String? seriesKey;
   final bool selectedSubtitleBurnedIn;
 
@@ -1401,6 +1404,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         if (live) TextField(controller: rendition, keyboardType: TextInputType.number,
           decoration: const InputDecoration(labelText: 'Live audio rendition / representation ordinal (0–63)',
             helperText: 'Playlist order, independent of player IDs. Verify the spoken language.')),
+        if (live && widget.openReadAheadSource != null) const Text('Standalone analysis requires a paused frame '
+          'with a known UTC program time. The next dialog records that explicit anchor; it is not automatic clock detection.'),
       ]), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
         FilledButton(onPressed: () {
           final value = int.tryParse(input.text), variant = int.tryParse(rendition.text);
@@ -1420,9 +1425,21 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     bool current() => profiles.activeId == profile && !player.disposed && sourceCurrent?.call() != false &&
         (generation == null || (player as PlayerMediaSessionIdentity).mediaSessionGeneration == generation) &&
         player.state.track.audio?.id == audio;
-    await service.start(player, open: widget.openAnalysisSource ?? () => SubtitleAnalysisSource.localPlayer(player, current),
-      isCurrent: current, audioOrdinal: ordinal, profileId: profile, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
-      provider: _liveProvider, hlsRendition: selectedRendition);
+    SubtitleAnalysisSource? prepared;
+    final prepare = widget.openReadAheadSource;
+    if (prepare != null) {
+      prepared = await prepare();
+      if (prepared == null) return;
+      if (!mounted || !current()) { await prepared.close(); return; }
+    }
+    final ready = prepared;
+    var claimed = false;
+    try {
+      await service.start(player, open: ready != null ? () async { claimed = true; return ready; }
+          : widget.openAnalysisSource ?? () => SubtitleAnalysisSource.localPlayer(player, current),
+        isCurrent: current, audioOrdinal: ordinal, profileId: profile, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
+        provider: _liveProvider, hlsRendition: selectedRendition);
+    } finally { if (ready != null && !claimed) await ready.close(); }
   });
 
   Future<void> _captureLivePlayback() => _run(() async {

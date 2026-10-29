@@ -17,6 +17,7 @@ import '../../focus/focusable_slider.dart';
 import '../../i18n/presentation_formats.dart';
 import '../../i18n/strings.g.dart';
 import '../../mpv/mpv.dart';
+import '../../profiles/active_profile_provider.dart';
 import '../../mpv/player/audio_spectrum.dart';
 import '../../models/media_bookmark.dart';
 import '../../multiview/source_playback_workspace_surface.dart';
@@ -58,6 +59,7 @@ import 'source_queue_sheet.dart';
 import 'source_widgets.dart';
 import '../../widgets/video_controls/sheets/picture_adjustments_sheet.dart';
 import '../../widgets/video_controls/sheets/subtitle_ai_sheet.dart';
+import '../../widgets/video_controls/sheets/subtitle_live_clock_dialog.dart';
 import '../../widgets/subtitle_caption_overlay.dart';
 import '../../services/pip_service.dart';
 import '../../widgets/video_controls/widgets/sync_offset_control.dart';
@@ -325,6 +327,10 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
     final fileFingerprint = fileIndex >= 0 && fileIndex < playback.files.length
         ? playback.files[fileIndex].fingerprint.trim()
         : '';
+    final profiles = context.read<ActiveProfileProvider>(), profile = context.read<ActiveProfileProvider>().activeId;
+    bool sourceCurrent() => mounted && !player.disposed && playback.player == player && playback.entry == entry &&
+        profiles.activeId == profile && playback.fileIndex == fileIndex &&
+        fileIndex >= 0 && fileIndex < playback.files.length && playback.files[fileIndex].fingerprint.trim() == fileFingerprint;
     final expectedScope = entry != null && edition?.isNotEmpty == true && fileFingerprint.isNotEmpty
         ? (
             entryKey: entry.key,
@@ -353,6 +359,14 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
           player: player,
           revisionIdentity: revisionIdentity,
           openAnalysisSource: playback.openSubtitleAnalysisSource,
+          openReadAheadSource: !playback.isLiveInput ? null : () async {
+            if (!sourceCurrent()) return null;
+            final clock = await showSubtitleLiveClockAnchor(context, player, sourceCurrent);
+            if (clock == null) return null;
+            if (!sourceCurrent()) { clock.retire(); return null; }
+            try { return await playback.openSubtitleAnalysisSource(liveClock: clock); }
+            catch (_) { clock.retire(); rethrow; }
+          },
           isRevisionIdentityCurrent: revisionIdentity == null ? null : isRevisionIdentityCurrent,
           onSaveToSource: canSaveToSource
               ? (name, bytes, languageCode) => _saveSubtitleToSource(

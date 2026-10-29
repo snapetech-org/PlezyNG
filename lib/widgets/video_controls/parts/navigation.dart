@@ -86,18 +86,26 @@ extension _VideoControlsNavigationMethods on _PlexVideoControlsState {
     if (switchSource == null) return SubtitleDownloadApplyOutcome.unavailable;
 
     final itemKey = widget.metadata.globalKey;
+    final mediaIndex = widget.selectedMediaIndex;
+    final sourcePartId = widget.sourcePartId;
+    final player = widget.player;
     bool targetIsCurrent() =>
         mounted &&
+        identical(widget.player, player) &&
         widget.metadata.globalKey == itemKey &&
         widget.metadata.serverId == serverId &&
-        widget.metadata.id == ratingKey;
+        widget.metadata.id == ratingKey &&
+        widget.selectedMediaIndex == mediaIndex &&
+        (sourcePartId == null || widget.sourcePartId == sourcePartId);
 
     try {
+      if (!targetIsCurrent()) return SubtitleDownloadApplyOutcome.superseded;
       final client = context.getMediaClientForServer(ServerId(serverId));
       final expectedDownloadedStreamId = await client.consumeDownloadedSubtitleStreamId(
         ratingKey,
-        mediaIndex: widget.selectedMediaIndex,
+        mediaIndex: mediaIndex,
       );
+      if (!targetIsCurrent()) return SubtitleDownloadApplyOutcome.superseded;
 
       if (expectedDownloadedStreamId != null) {
         final immediateOutcome = await switchSource(
@@ -108,7 +116,7 @@ extension _VideoControlsNavigationMethods on _PlexVideoControlsState {
           try {
             final tracksAfterImmediateApply = await client.fetchSourceSubtitleTracks(
               ratingKey,
-              mediaIndex: widget.selectedMediaIndex,
+              mediaIndex: mediaIndex,
             );
             final selectedNow = tracksAfterImmediateApply.any(
               (track) => track.id == expectedDownloadedStreamId && track.selected,
@@ -144,7 +152,7 @@ extension _VideoControlsNavigationMethods on _PlexVideoControlsState {
           // whose streams [existingSourceIds] came from.
           final tracks = await client.fetchSourceSubtitleTracks(
             ratingKey,
-            mediaIndex: widget.selectedMediaIndex,
+            mediaIndex: mediaIndex,
             position: widget.player.state.position,
           );
           if (!targetIsCurrent()) return SubtitleDownloadApplyOutcome.superseded;
@@ -190,7 +198,7 @@ extension _VideoControlsNavigationMethods on _PlexVideoControlsState {
       for (var attempt = 0; attempt < 4; attempt++) {
         if (!targetIsCurrent()) return SubtitleDownloadApplyOutcome.superseded;
         try {
-          final tracks = await client.fetchSourceSubtitleTracks(ratingKey, mediaIndex: widget.selectedMediaIndex);
+          final tracks = await client.fetchSourceSubtitleTracks(ratingKey, mediaIndex: mediaIndex);
           if (!targetIsCurrent()) return SubtitleDownloadApplyOutcome.superseded;
           final selectedNow = tracks.any((track) => track.id == expectedSelectedStreamId && track.selected);
           if (selectedNow) return mappedOutcome;

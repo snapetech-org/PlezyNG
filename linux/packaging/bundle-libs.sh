@@ -116,9 +116,9 @@ fi
 
 # gio-launch-desktop helper
 # libgio spawns URI/desktop-file handlers through this binary. Its location is
-# compiled into libgio as the *build host's* pkglibexecdir (an Ubuntu
+# compiled into libgio as the *build host's* pkglibexecdir (often an Ubuntu
 # multiarch path), which does not exist on other distros, and glib's bare-name
-# PATH fallback misses hosts that keep the helper in /usr/libexec (Fedora).
+# PATH fallback misses hosts that keep the helper in /usr/lib or /usr/libexec.
 # Every launchUrl then failed (#1477). Ship the helper that matches the
 # bundled libgio; plezy.sh points GIO_LAUNCH_DESKTOP at it.
 if compgen -G "$LIB_DIR/libgio-2.0.so*" > /dev/null; then
@@ -126,6 +126,7 @@ if compgen -G "$LIB_DIR/libgio-2.0.so*" > /dev/null; then
     GIO_HELPER=""
     for candidate in "${GLIB_LIBDIR:+$GLIB_LIBDIR/glib-2.0/gio-launch-desktop}" \
         /usr/libexec/gio-launch-desktop \
+        /usr/lib/gio-launch-desktop \
         /usr/lib/glib-2.0/gio-launch-desktop; do
         if [[ -n "$candidate" && -x "$candidate" ]]; then
             GIO_HELPER="$candidate"

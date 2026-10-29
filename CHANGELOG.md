@@ -4,6 +4,9 @@
 
 - Fall back to packaged LiteRT providers when Qualcomm HTP context preparation fails.
 - Fix the Linux native runner build with Flutter's mutable `FlValue` accessors.
+- Fix Linux builds with Flutter's mutable `FlValue` API, bundle `gio-launch-desktop` from `/usr/lib` hosts, and localize the Neural initialization status.
+- Refuse reused Qualcomm context output roots and atomically publish the manifest only after the full selected context set completes.
+- Prepare Qualcomm HTP contexts on hardened Linux hosts by preserving short temporary paths and clearing executable-stack requests only on generated host model libraries.
 - Quote the Windows Flutter cache key so GitHub can parse and dispatch CI workflows.
 - Prepare the checksum-verified Flutter SDK in each Mac JIT job's temporary APFS workspace with resumable parallel downloads.
 - Retry transient Flutter SDK setup failures on Windows x64 JIT runners.

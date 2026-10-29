@@ -21,6 +21,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -172,6 +173,45 @@ def run(command: list[str], *, env: dict[str, str], cwd: Path) -> None:
     subprocess.run(command, check=True, cwd=cwd, env=env)
 
 
+def clear_executable_stack_if_needed(
+    model_library: Path,
+    *,
+    env: dict[str, str],
+    cwd: Path,
+) -> None:
+    patchelf = shutil.which("patchelf")
+    if patchelf is None:
+        return
+
+    inspection = subprocess.run(
+        [patchelf, "--print-execstack", str(model_library)],
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=cwd,
+        env=env,
+    )
+    if not inspection.stdout.strip().endswith("X"):
+        return
+
+    # The library is a temporary host-side QNN model wrapper, not the Android
+    # artifact. QAIRT's generated ELF can request an executable stack even
+    # though this wrapper does not need one; clear that request so hardened
+    # Linux hosts can load it without relaxing their process policy.
+    run([patchelf, "--clear-execstack", str(model_library)], env=env, cwd=cwd)
+    verified = subprocess.run(
+        [patchelf, "--print-execstack", str(model_library)],
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=cwd,
+        env=env,
+    )
+    if not verified.stdout.strip().endswith("-"):
+        raise RuntimeError(f"Could not clear executable-stack request from {model_library}")
+    print("Cleared executable-stack request from temporary QNN model library", flush=True)
+
+
 def calibration_list(calibration_root: Path, resolution: str, work_dir: Path) -> Path:
     source_dir = calibration_root / resolution
     resize_from_1080p = resolution == "720p" and not (source_dir / "input_list.txt").is_file()
@@ -292,7 +332,9 @@ def compile_context(
     env["PYTHONPATH"] = os.pathsep.join(filter(None, (qairt_python, env.get("PYTHONPATH", ""))))
     env["LD_LIBRARY_PATH"] = os.pathsep.join(filter(None, (qairt_libs, env.get("LD_LIBRARY_PATH", ""))))
     env["PATH"] = os.pathsep.join((str(bin_dir), env.get("PATH", "")))
-    env["TMPDIR"] = str(work)
+    temp_dir = Path(env.get("TMPDIR") or work)
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    env["TMPDIR"] = str(temp_dir)
 
     model_output = work / graph_name
     run(
@@ -354,6 +396,7 @@ def compile_context(
     model_library = work / "x86_64-linux-clang" / f"lib{graph_name}.so"
     if not model_library.is_file():
         raise RuntimeError(f"QNN model library was not produced: {model_library}")
+    clear_executable_stack_if_needed(model_library, env=env, cwd=work)
 
     target_dir = output / target_id / f"{model_id}-{resolution}"
     target_dir.mkdir(parents=True, exist_ok=True)
@@ -420,6 +463,12 @@ def main() -> int:
     calibration_root = args.calibration_root.resolve()
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
+    manifest_path = output / "manifest.json"
+    if manifest_path.exists() or manifest_path.is_symlink():
+        raise ValueError(
+            "Output directory already contains manifest.json; use a fresh --output-dir "
+            "so an interrupted build cannot leave a stale package manifest"
+        )
     qairt_metadata = qairt_sdk_metadata(qairt)
     requested_targets = set(args.targets or TARGETS)
     requested_models = set(args.models or MODELS)
@@ -473,8 +522,9 @@ def main() -> int:
         "calibration": calibration_manifest(calibration_root, calibration_by_resolution),
         "contexts": prepared,
     }
-    manifest_path = output / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    manifest_temporary = output / f".manifest.json.{os.getpid()}.partial"
+    manifest_temporary.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    os.replace(manifest_temporary, manifest_path)
     print(f"\nPrepared {len(prepared)} ANVIL contexts. Manifest: {manifest_path}", flush=True)
     return 0
 

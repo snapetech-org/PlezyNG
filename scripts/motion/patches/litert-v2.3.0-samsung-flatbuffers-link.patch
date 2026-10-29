@@ -1,0 +1,10 @@
+diff --git a/litert/vendors/samsung/compiler/builders/BUILD b/litert/vendors/samsung/compiler/builders/BUILD
+--- a/litert/vendors/samsung/compiler/builders/BUILD
++++ b/litert/vendors/samsung/compiler/builders/BUILD
+@@ -257,5 +257,6 @@ cc_library(
+         "//litert/cc:litert_macros",
+         "//litert/compiler/cc:litert_model",
++        "@flatbuffers//:flatbuffers",
+         "@flatbuffers//:runtime_cc",
+     ],
+ )

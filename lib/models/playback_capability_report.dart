@@ -34,6 +34,10 @@ final class PlaybackCapabilityReport {
   final String? neuralProvider;
   final String? neuralProviderVendor;
 
+  /// Model pack selected for a model-backed Neural session. Null means the
+  /// player did not report a model ID or the active provider has no model pack.
+  final String? neuralModelId;
+
   /// Provider-reported mode (for example, QNN HTP power mode). Null means
   /// the runtime did not confirm a mode or it does not apply to the provider.
   final String? neuralPowerMode;
@@ -71,6 +75,7 @@ final class PlaybackCapabilityReport {
     this.neuralProviderReady = false,
     this.neuralProvider,
     this.neuralProviderVendor,
+    this.neuralModelId,
     this.neuralPowerMode,
     this.neuralOutputObserved = false,
     this.neuralInferenceP95Ms,

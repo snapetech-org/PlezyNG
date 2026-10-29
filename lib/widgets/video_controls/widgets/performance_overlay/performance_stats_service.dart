@@ -246,6 +246,7 @@ class PerformanceStatsService {
         neuralProviderReady: _isNeuralProviderReady(neuralProvider, outputObserved: neuralOutputObserved),
         neuralProvider: neuralProvider,
         neuralProviderVendor: neuralProviderVendor,
+        neuralModelId: MotionProcessingService.configuredNeuralModelIdForPlayer(player),
         neuralPowerMode: statsMap['anvil-power-mode']?.toString(),
         neuralOutputObserved: neuralOutputObserved,
         neuralInferenceP95Ms: _parseDouble(statsMap['anvil-inference-p95-ms']?.toString()),
@@ -516,7 +517,16 @@ class PerformanceStatsService {
         (neuralGeneratedFrames != null && neuralGeneratedFrames > 0) ||
         nativeInterpolationStatus == 'active';
     final playbackPlayerType = player.playerType;
-    final reportedVideoOutput = videoResults?[13] ?? (playbackPlayerType == 'webos' ? 'webos-native' : null);
+    // TV media planes do not expose mpv's current-vo property. Identify the
+    // active native output without implying that the TV reported interpolation
+    // or a particular hardware decoder.
+    final reportedVideoOutput =
+        videoResults?[13] ??
+        switch (playbackPlayerType) {
+          'webos' => 'webos-native',
+          'tizen' => 'tizen-native',
+          _ => null,
+        };
     final videoWidth = _parseInt(results[1] ?? (webosDimensions.isEmpty ? null : webosDimensions[0]));
     final videoHeight = _parseInt(results[2] ?? (webosDimensions.length < 2 ? null : webosDimensions[1]));
     final sourceWidth = _parseInt(results[1]);
@@ -549,6 +559,7 @@ class PerformanceStatsService {
           ((Platform.isIOS || Platform.isMacOS) && const {'ready', 'active'}.contains(nativeInterpolationStatus)),
       neuralProvider: neuralProvider,
       neuralProviderVendor: metadataProviderVendor,
+      neuralModelId: MotionProcessingService.configuredNeuralModelIdForPlayer(player),
       neuralPowerMode: videoResults?[28],
       neuralOutputObserved: neuralOutputObserved,
       neuralInferenceP95Ms: _parseDouble(videoResults?[20]),

@@ -140,12 +140,12 @@ class _SubtitleCaptionOverlayState extends State<SubtitleCaptionOverlay> {
                 )).toList())))),
         if (caption != null) Positioned.fromRect(rect: safe, child: Align(
           alignment: const Alignment(0, -.75), child: Padding(padding: const EdgeInsets.all(16),
-            child: _line(TextSpan(text: caption.text), settings.read(SettingsService.subtitleFontSize) * scale,
+            child: _line(TextSpan(text: caption.provisional ? '… ${caption.text}' : caption.text), settings.read(SettingsService.subtitleFontSize) * scale,
               _color(settings.read(SettingsService.subtitleTextColor), Colors.white),
               _color(settings.read(SettingsService.subtitleBorderColor), Colors.black),
               settings.read(SettingsService.subtitleBorderSize) * scale,
               settings.read(SettingsService.subtitleBackgroundOpacity) / 100,
-              bold: settings.read(SettingsService.subtitleBold), italic: settings.read(SettingsService.subtitleItalic))))),
+              bold: settings.read(SettingsService.subtitleBold), italic: caption.provisional || settings.read(SettingsService.subtitleItalic))))),
       ]));
     }));
   }

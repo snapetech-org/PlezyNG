@@ -3856,6 +3856,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
+                    SwitchListTile(title: const Text('Stabilize live partial captions'),
+                      subtitle: const Text('Compare overlapping recognition passes before freezing text. Partial text can change and is excluded from history; pause/end and 12-second boundaries may finalize a single pass. Uses more inference work.'),
+                      value: service.stableStreaming,
+                      onChanged: service.isStarting || service.hasActiveSession ? null : service.setStableStreaming),
+                    if (service.singlePassTails > 0) Text('${service.singlePassTails} caption tails finalized at a pause or bounded window without two-pass agreement.'),
                     SwitchListTile(
                       title: const Text('Show late captions when recognition finishes'),
                       subtitle: const Text('Off uses exact media timing only. DVR replay reuses retained finalized cues. '

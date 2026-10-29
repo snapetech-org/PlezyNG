@@ -11,13 +11,15 @@ import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_whisper_cpp_service.dart';
 import 'subtitle_word_timing.dart';
+import 'subtitle_stream_stabilizer.dart';
 
 @immutable
 final class SubtitleLiveCaption {
-  const SubtitleLiveCaption({required this.startMs, required this.endMs, required this.text});
+  const SubtitleLiveCaption({required this.startMs, required this.endMs, required this.text, this.provisional = false});
   final int startMs;
   final int endMs;
   final String text;
+  final bool provisional;
 }
 
 /// Opt-in player-owned caption capture. PCM remains in a bounded queue and is
@@ -30,7 +32,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   static const int _windowSamples = _sampleRate * 5;
   static const int _strideSamples = _sampleRate * 4;
   static const int _maximumQueuedSamples = _sampleRate * 24;
-  static const int _minimumFinalSamples = _sampleRate * 2;
+  static const int _minimumFinalSamples = _sampleRate;
+  static const int _streamWindowSamples = _sampleRate * 12;
   static const int _maximumCueCount = 50000;
 
   final ValueNotifier<SubtitleLiveCaption?> liveCaption = ValueNotifier<SubtitleLiveCaption?>(null);
@@ -71,6 +74,22 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   int _discontinuities = 0;
   int _droppedAudioMs = 0;
   bool _showDelayedText = true;
+  bool _stableStreaming = true;
+  final _stabilizer = SubtitleStreamStabilizer();
+  int? _lastStreamingEndMs;
+  SubtitleLiveCaption? _partialCaption;
+  DateTime? _partialExpires;
+  int _singlePassTails = 0;
+  bool get stableStreaming => _stableStreaming;
+  int get singlePassTails => _singlePassTails;
+  void setStableStreaming(bool value) {
+    if (_starting || _running || _session != null) return;
+    _stableStreaming = value; notifyListeners();
+  }
+  void _resetPartial() {
+    _stabilizer.reset(); _lastStreamingEndMs = null;
+    _partialCaption = null; _partialExpires = null;
+  }
 
   /// A live caption can arrive after its media interval has passed. This is
   /// presentation policy only: exported cue times always remain source times.
@@ -137,6 +156,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _runtimeProvider = 'Loading Whisper';
       _fellBackToCpu = false;
       _samples.clear();
+      _resetPartial(); _singlePassTails = 0;
       _cues.clear();
       _wordTimings.clear();
       _streamStartMs = null;
@@ -285,6 +305,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _audioTrackId = null;
     _isProfileIdentityCurrent = null;
     liveCaption.value = null;
+    _resetPartial();
 
     if (_lastError != null) {
       _setStatus('Capture ended with an inference error: $_lastError');
@@ -329,6 +350,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
   void _discardCapturedTimeline() {
     _audioGeneration++;
+    _resetPartial();
     _samples.clear();
     _cues.clear();
     _wordTimings.clear();
@@ -413,7 +435,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       // submitting the same overlap. Packet age is not a source timestamp.
       if (_lastPacketAt != null &&
           DateTime.now().difference(_lastPacketAt!) > const Duration(seconds: 2) &&
-          _samples.length >= _minimumFinalSamples && _samples.length < _windowSamples) {
+          _samples.length >= _minimumFinalSamples && (_stableStreaming || _samples.length < _windowSamples)) {
         _startInference(finalChunk: true);
       }
     } catch (error) {
@@ -437,6 +459,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _clockOriginUs = origin;
     if (previous == null || previous == origin) return;
     final delta = ((previous - origin) / 1000).round();
+    _stabilizer.rebase(delta);
+    if (_lastStreamingEndMs != null) _lastStreamingEndMs = _lastStreamingEndMs! + delta;
+    _partialCaption = null; _partialExpires = null;
     // A sliding DVR window changes the zero point, not the underlying audio.
     // Preserve stable cue IDs while retiring content outside the new window.
     final shifted = <SubtitleCue>[];
@@ -546,12 +571,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (_samples.length <= _maximumQueuedSamples) return;
     final trim = _samples.length - _maximumQueuedSamples;
     _droppedAudioMs += (trim * 1000 / _sampleRate).round();
+    _resetPartial(); _audioGeneration++;
     _samples.removeRange(0, trim);
     _streamStartMs = (_streamStartMs ?? 0) + trim * 1000.0 / _sampleRate;
   }
 
   void _resetAudioWindow(int ptsUs) {
     _audioGeneration++;
+    _resetPartial();
     _samples.clear();
     _streamStartMs = ptsUs / 1000.0;
     _nextExpectedPtsUs = null;
@@ -562,21 +589,28 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
   void _startInference({required bool finalChunk}) {
     if (_inferenceFuture != null || _session == null || _streamStartMs == null) return;
-    if (_samples.length < _windowSamples && !(finalChunk && _samples.length >= _minimumFinalSamples)) return;
-    final count = math.min(_windowSamples, _samples.length).toInt();
+    final minimum = _stableStreaming ? _sampleRate * 2 : _windowSamples;
+    if (_samples.length < minimum && !(finalChunk && _samples.length >= _minimumFinalSamples)) return;
+    final count = math.min(_stableStreaming ? _streamWindowSamples : _windowSamples, _samples.length).toInt();
+    final inputEndMs = _streamStartMs!.round() + (count * 1000 / _sampleRate).round();
+    if (_stableStreaming && !finalChunk && _lastStreamingEndMs != null && inputEndMs - _lastStreamingEndMs! < 800) return;
+    if (_stableStreaming) _lastStreamingEndMs = inputEndMs;
+    final flush = finalChunk || _stableStreaming && count == _streamWindowSamples;
     final samples = Float32List.fromList(_samples.take(count).toList(growable: false));
     final startMs = _streamStartMs!.round();
     final consume = finalChunk ? count : math.min(_strideSamples, count).toInt();
     final generation = _audioGeneration;
     final session = _session!;
     final origin = _clockOriginUs;
-    _inferenceFuture = _transcribeWindow(session, samples, startMs, generation, origin)
+    _inferenceFuture = _transcribeWindow(session, samples, startMs, generation, origin, flush: flush)
         .then<void>((_) {
           if (generation != _audioGeneration) return;
           // The bounded queue may trim samples while native inference is
           // running. Advance to this window's intended stride by media time,
           // not by blindly removing [consume] from the now-shifted queue.
-          final desiredNextStartMs = startMs + _originShiftMs(origin) + consume * 1000.0 / _sampleRate;
+          final desiredNextStartMs = _stableStreaming
+              ? (flush ? inputEndMs + _originShiftMs(origin) : math.max(startMs + _originShiftMs(origin), _stabilizer.committedThroughMs - 500)).toDouble()
+              : startMs + _originShiftMs(origin) + consume * 1000.0 / _sampleRate;
           final queuedStartMs = _streamStartMs ?? startMs.toDouble();
           final samplesToDrop = ((desiredNextStartMs - queuedStartMs) * _sampleRate / 1000.0)
               .round()
@@ -608,12 +642,13 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     Float32List samples,
     int startMs,
     int generation,
-    int? origin,
-  ) async {
+    int? origin, {
+    required bool flush,
+  }) async {
     if (samples.length < _minimumFinalSamples) return;
     dynamic result;
     try {
-      result = await _transcribeWindowResult(session, samples);
+      result = await _transcribeWindowResult(session, samples, generation);
     } on Object catch (error) {
       if (!_isCurrentInference(generation)) return;
       if (_requestedProvider != SubtitleInferenceProvider.desktopGpu ||
@@ -624,27 +659,37 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       await _switchLiveInferenceToCpu(error);
       final fallbackSession = _session;
       if (fallbackSession == null || !_isCurrentInference(generation)) return;
-      result = await _transcribeWindowResult(fallbackSession, samples);
+      result = await _transcribeWindowResult(fallbackSession, samples, generation);
     }
     if (result == null) return;
     if (!_isCurrentInference(generation)) return;
     startMs += _originShiftMs(origin);
     final language = result.language.trim();
     if (language.isNotEmpty && language.toLowerCase() != 'auto') _detectedLanguage = language;
-    for (final word in SubtitleWordTimingBuilder.fromWhisperSegments(
-      result.segments,
-      durationMs: SubtitleRetimer.maximumTimeMs,
-      offsetMs: startMs,
-    )) {
-      _mergeWordTiming(word);
-    }
+    final words = SubtitleWordTimingBuilder.fromWhisperSegments(result.segments,
+      durationMs: SubtitleRetimer.maximumTimeMs, offsetMs: startMs);
+    final cues = <SubtitleCue>[];
+    final windowEnd = startMs + (samples.length * 1000 / _sampleRate).round();
     for (final segment in result.segments) {
       final text = segment.text.trim().replaceAll(RegExp(r'\s+'), ' ');
       if (text.isEmpty || text.length > 600) continue;
       final start = startMs + segment.start.inMilliseconds;
       final end = startMs + segment.end.inMilliseconds;
-      if (start < 0 || end <= start || end > SubtitleRetimer.maximumTimeMs) continue;
-      _mergeCue(SubtitleCue(index: 0, startMs: start, endMs: end, text: text));
+      if (start < 0 || end <= start || end > windowEnd || end > SubtitleRetimer.maximumTimeMs) continue;
+      cues.add(SubtitleCue(index: 0, startMs: start, endMs: end, text: text));
+    }
+    if (_stableStreaming) {
+      final update = _stabilizer.add(cues: cues, words: words, windowEndMs: windowEnd, flush: flush);
+      for (final word in update.words) { _mergeWordTiming(word); }
+      for (final cue in update.cues) { _mergeCue(cue); }
+      if (update.boundaryFinalized) _singlePassTails++;
+      _partialCaption = update.preview == null ? null : SubtitleLiveCaption(startMs: math.max(startMs, _stabilizer.committedThroughMs),
+        endMs: windowEnd, text: update.preview!, provisional: true);
+      _partialExpires = DateTime.now().add(const Duration(seconds: 4));
+      _publishCurrentCaption();
+    } else {
+      for (final word in words) { _mergeWordTiming(word); }
+      for (final cue in cues) { _mergeCue(cue); }
     }
   }
 
@@ -663,7 +708,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _setStatus('GPU live inference failed; continuing with CPU Whisper: $error');
   }
 
-  Future<dynamic> _transcribeWindowResult(whisper.FlutterWhisper session, Float32List samples) => SubtitleInferenceScheduler.instance.run(() => session.transcribe(
+  Future<dynamic> _transcribeWindowResult(whisper.FlutterWhisper session, Float32List samples, int generation) => SubtitleInferenceScheduler.instance.run(() => session.transcribe(
     samples,
     config: whisper.WhisperTranscribeConfig(
       language: _languageCode,
@@ -673,7 +718,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       noSpeechThreshold: 0.6,
     ),
   ), priority: SubtitleWorkPriority.playback,
-    isCurrent: () => identical(_session, session) && _invalidCaptureSessionReason(_player) == null);
+    isCurrent: () => identical(_session, session) && _isCurrentInference(generation));
 
   void _mergeWordTiming(SubtitleWordTiming timing) {
     if (timing.text.isEmpty || timing.endMs <= timing.startMs) return;
@@ -763,7 +808,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
   void _publishCurrentCaption() {
     final player = _player;
-    if (!_running || player == null || _cues.isEmpty) {
+    if (!_running || player == null) {
       if (liveCaption.value != null) liveCaption.value = null;
       return;
     }
@@ -786,11 +831,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         position - _arrivalCue!.endMs < 30000) {
       current = _arrivalCue;
     }
+    final partial = _partialExpires?.isAfter(DateTime.now()) == true && player.state.playing &&
+        (_showDelayedText || _partialCaption != null && position >= _partialCaption!.startMs && position < _partialCaption!.endMs)
+        ? _partialCaption : null;
     final next = current == null
-        ? null
+        ? partial
         : SubtitleLiveCaption(startMs: current.startMs, endMs: current.endMs, text: current.text);
     final previous = liveCaption.value;
-    if (previous?.startMs != next?.startMs || previous?.endMs != next?.endMs || previous?.text != next?.text) {
+    if (previous?.startMs != next?.startMs || previous?.endMs != next?.endMs || previous?.text != next?.text || previous?.provisional != next?.provisional) {
       liveCaption.value = next;
     }
   }

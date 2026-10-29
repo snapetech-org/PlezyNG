@@ -922,3 +922,20 @@ suppresses image-positioned cover/avoidance. The bundled universal and Hangul
 fonts are also registered with Flutter, so offline app captions no longer rely
 only on installed system-family names. Native ASS stays in its existing renderer.
 These are source changes; no output, shaping, HDR or device qualification ran.
+
+### Streaming agreement implementation
+
+Live PCM can now use a bounded overlapping local-agreement loop instead of the
+fixed five-second/four-second-stride path. It starts after two seconds, retries
+only after at least 800 ms of new source audio, and retains at most a twelve-second
+recognition window. Two consecutive hypotheses must agree on the prefix text
+and its source times before that prefix becomes immutable transcript cues.
+Original word/token timings drive segmentation; segment-level agreement is the
+fallback when words are absent. Italic ellipsis-prefixed partial text is a
+separate expiring presentation value, excluded from saved transcript/history.
+Pause, end and twelve-second boundary flushes can finalize an unconfirmed tail;
+the UI counts and discloses those single-pass tails. Agreement is not a calibrated
+accuracy score or an engine-native incremental decoder. Discontinuity, seek,
+audio/profile/media ownership and DVR origin changes retire or rebase pending
+state. Queue overflow discards the stale in-flight hypothesis rather than
+attaching it to a newer audio window. No recognizer evaluation was run.

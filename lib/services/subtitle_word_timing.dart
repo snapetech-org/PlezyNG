@@ -2,10 +2,12 @@ import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
 
 import 'subtitle_retimer.dart';
 
-enum SubtitleWordTimingUnit { word, token }
+enum SubtitleWordTimingUnit { word, token, syllable }
 
 /// A token-derived lexical timing. [confidence] is Whisper's mean token
-/// probability, not a calibrated probability that the word is correct.
+/// probability (or an explicitly identified alignment score), not a calibrated
+/// probability that the word is correct. Syllable groups require user-supplied
+/// segmentation and measured character boundaries; they are never interpolated.
 final class SubtitleWordTiming {
   const SubtitleWordTiming({
     required this.startMs,

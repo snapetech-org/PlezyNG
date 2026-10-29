@@ -28,6 +28,7 @@ from urllib.parse import urlsplit
 from text_adapters import TEXT_TASKS, SCRIPT_MODES, MODES, capabilities as translation_capabilities, provider_config
 
 from research import MEDIA_TASKS
+from lyric_research import validate_syllables
 from dubbing import voice_config, capabilities as synthesis_capabilities
 from visual_research import vision_capabilities
 
@@ -155,6 +156,14 @@ class Store:
         if task == 'singing_align' and (len(cues) > 120 or max(c['endMs'] for c in cues) > 300000 or
                 any(c['endMs']-c['startMs'] > 30000 for c in cues)):
             raise ValueError('lyric_alignment_limit_five_minutes_120_cues_30_seconds_per_cue')
+        lyric_syllables = validate_syllables(value.get('lyricSyllables', {}), cues)
+        lyric_pitch = value.get('lyricPitchEvidence', False)
+        if type(lyric_pitch) is not bool or (lyric_syllables or lyric_pitch) and task != 'singing_align':
+            raise ValueError('lyric_evidence_requires_singing_alignment')
+        if lyric_pitch and (importlib.util.find_spec('librosa') is None or
+                any(c['endMs']-c['startMs'] > 12000 for c in cues) or
+                sum(c['endMs']-c['startMs'] for c in cues) > 120000):
+            raise ValueError('lyric_pitch_capability_or_duration_limit')
         if type(stereo_evidence) is not bool or stereo_evidence and task != "sound_events":
             raise ValueError("invalid_sound_stereo_evidence")
         timeline_offset = value.get("timelineOffsetMs", 0)
@@ -230,6 +239,7 @@ class Store:
                          "audioBytes": size, "language": language, "targetLanguage": target,
                          "cues": cues, "audioTrack": track, "timelineOffsetMs": timeline_offset, "itemTimeline": item_timeline, "soundStereoEvidence": stereo_evidence, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
+                         "lyricSyllables": lyric_syllables, "lyricPitchEvidence": lyric_pitch,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
                          "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions, "sceneAudioEvidence": audio_evidence, "sceneMotionTracking": motion_tracking,
                          "translateToEnglish": task == "transcribe" and value.get("translateToEnglish") is True,
@@ -430,6 +440,8 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
                              "sceneMotionTracking": vision is not None and installed("cv2"),
+                             "lyricSyllables": 'singing_align' in tasks,
+                             "lyricPitchEvidence": 'singing_align' in tasks and installed('librosa'),
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
                              "visionProvider": vision, "sceneAudioEvidence": vision is not None and vision['audioEvidence'], "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES), "readingModes": ["hiragana", "hepburn", "ruby"],
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})

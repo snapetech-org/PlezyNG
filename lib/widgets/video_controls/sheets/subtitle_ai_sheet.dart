@@ -59,6 +59,7 @@ import 'subtitle_discovery_dialog.dart';
 import 'subtitle_cloud_sync_dialog.dart';
 import 'subtitle_resource_dialog.dart';
 import 'subtitle_research_review_dialog.dart';
+import 'subtitle_lyric_units_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -848,6 +849,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var sceneTemporalRegions = false;
       var sceneAudioEvidence = false;
       var sceneMotionTracking = false;
+      var lyricSyllables = <String, List<String>>{};
+      var lyricPitchEvidence = false;
       var duckRatio = .25;
       var track = 0;
       var subtitleTrack = 0, bitmapTail = 2000;
@@ -867,6 +870,22 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             if (task == 'singing_align') Text('Use lyrics matching the sung ${SubtitleTranslationService.languageLabel(_sourceLanguage)} audio. '
                 'Maximum five minutes, 120 cues, 30 seconds per cue. A configured local CTC model compares original and percussive-suppressed audio. '
                 'Only agreeing word boundaries are proposed; lyric text and cue bounds stay unchanged. This is experimental, not verified singing alignment.'),
+            if (task == 'singing_align' && capabilities['lyricSyllables'] == true) ...[
+              TextButton(onPressed: () async {
+                try {
+                  final selected = await showSubtitleLyricUnits(dialogContext, cues, lyricSyllables);
+                  if (selected != null && dialogContext.mounted) update(() => lyricSyllables = selected);
+                } catch (error) {
+                  if (dialogContext.mounted) ScaffoldMessenger.of(dialogContext).showSnackBar(SnackBar(content: Text(_readableError(error))));
+                }
+              }, child: Text('Supply syllable groups (${lyricSyllables.length} cues)')),
+              if (lyricSyllables.isNotEmpty) TextButton(onPressed: () => update(() => lyricSyllables = {}), child: const Text('Keep word proposals only')),
+            ],
+            if (task == 'singing_align' && capabilities['lyricPitchEvidence'] == true) SwitchListTile(
+              title: const Text('Include mix pitch candidates'),
+              subtitle: const Text('At most 12 seconds per cue and two minutes total. Compares monophonic pitch estimates in both audio views. '
+                'Instruments and octave errors can dominate; candidates are evidence only and do not change lyrics or cue timing.'),
+              value: lyricPitchEvidence, onChanged: (value) => update(() => lyricPitchEvidence = value)),
             if (task == 'translate') Text('Translate ${SubtitleTranslationService.languageLabel(_sourceLanguage)} to ${SubtitleTranslationService.languageLabel(_targetLanguage)} using an installed host language pair.'),
             if (task == 'translate_model') ...[
               Text('The companion will forward subtitle text, neighboring dialogue and protected glossary markers to:\n'
@@ -976,6 +995,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
         preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, sceneAudioEvidence: sceneAudioEvidence, sceneMotionTracking: sceneMotionTracking, crop: [0, cropTop, 1, 1 - cropTop],
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
+        lyricSyllables: lyricSyllables, lyricPitchEvidence: lyricPitchEvidence,
         voiceFingerprint: (task == 'dubbing' || task == 'dub_mix') ? (capabilities['synthesisVoice'] as Map?)?['fingerprint'] as String? : null,
         translationMode: translationMode, scriptConversion: scriptConversion, readingMode: readingMode,
         visionProviderFingerprint: task == 'scene_review' ? (capabilities['visionProvider'] as Map?)?['fingerprint'] as String? : null,

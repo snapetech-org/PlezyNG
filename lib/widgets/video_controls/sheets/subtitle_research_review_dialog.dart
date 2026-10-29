@@ -28,6 +28,7 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
   static const _labels = {
     'coverageEvidence': 'Possible uncovered speech', 'ensembleEvidence': 'Recognition comparison',
     'soundEvidence': 'Possible sound events and mix balance', 'lyricTimingEvidence': 'Lyric boundary agreement',
+    'lyricSyllableEvidence': 'Supplied syllable alignment', 'lyricPitchEvidence': 'Mix pitch candidates (unqualified)',
     'uncertainCueIds': 'Cues without an agreed word proposal', 'sceneRegionTracks': 'Sampled region paths',
     'sceneAudioEvidence': 'Audio sent with scene images', 'sceneMotionEvidence': 'Local motion tracking observations',
     'synthesisEvidence': 'Synthesized line fitting and omissions',

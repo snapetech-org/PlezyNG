@@ -96,11 +96,11 @@ def alignment_runtime(language, device, explicit_model=None):
                                     model_name=explicit_model, model_cache_only=not allow_download)
 
 
-def align(folder, job, audio, device, runtime=None):
+def align(folder, job, audio, device, runtime=None, capture_characters=False):
     import whisperx
     language = job["language"]
     model, metadata = runtime if runtime is not None else alignment_runtime(language, device)
-    output, words, uncertain = [], [], []
+    output, words, uncertain, characters = [], [], [], []
     duration_ms = round(len(audio) / 16)
     for index, cue in enumerate(job["cues"]):
         # Whole-title alignment without timing anchors grows the CTC trellis
@@ -113,7 +113,20 @@ def align(folder, job, audio, device, runtime=None):
             continue
         result = whisperx.align([{"start": cue["startMs"] / 1000, "end": cue["endMs"] / 1000, "text": plain}],
                                 model, metadata, audio, device, interpolate_method="ignore",
-                                return_char_alignments=False, print_progress=False)
+                                return_char_alignments=capture_characters, print_progress=False)
+        if capture_characters:
+            chars = []
+            for segment in result.get('segments', []):
+                for row in segment.get('chars') or []:
+                    if not isinstance(row.get('char'), str) or len(row['char']) != 1 or len(chars) >= 4000:
+                        raise ValueError('invalid_lyric_character_result')
+                    value = {'char': row['char']}
+                    for source, target in [('start', 'startMs'), ('end', 'endMs'), ('score', 'score')]:
+                        number = row.get(source)
+                        if type(number) in (int, float) and math.isfinite(number):
+                            value[target] = number if source == 'score' else round(number * 1000)
+                    chars.append(value)
+            characters.append({'cueId': cue['cueId'], 'characters': chars})
         aligned = [w for w in result.get("word_segments", []) if
                    isinstance(w.get("start"), (int, float)) and isinstance(w.get("end"), (int, float)) and
                    w["end"] > w["start"] and math.isfinite(w.get("score", 0)) and w.get("score", 0) >= 0.35]
@@ -139,6 +152,7 @@ def align(folder, job, audio, device, runtime=None):
             raise ValueError("word_timing_limit")
         progress(folder, "Aligning matching-language transcript", (index + 1) / len(job["cues"]))
     return {"cues": output, "wordTimings": words, "language": language, "durationMs": duration_ms,
+            **({'characterTimings': characters} if capture_characters else {}),
             "uncertainCueIds": uncertain, "warnings": [f"{len(uncertain)} cues retained original timing because alignment was unsupported or uncertain.",
             "CTC scores are uncalibrated. Alignment requires matching spoken-language text and approximate cue intervals."]}
 

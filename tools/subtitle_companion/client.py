@@ -64,8 +64,12 @@ class CompanionClient:
     def create(self, *, task, identity, media=None, **options):
         if task == 'reading' and options.get('readingMode') == 'ruby' and 'ruby' not in self.capabilities().get('readingModes', []):
             raise ValueError('Companion cannot produce ruby reading markup')
-        if options.get("sceneMotionTracking", False) or options.get("sceneAudioEvidence", False) or options.get("sceneTemporalRegions", False) or options.get("timelineOffsetMs", 0) or options.get("itemTimeline", False) or options.get("soundStereoEvidence", False):
+        if options.get("lyricSyllables") or options.get("lyricPitchEvidence", False) or options.get("sceneMotionTracking", False) or options.get("sceneAudioEvidence", False) or options.get("sceneTemporalRegions", False) or options.get("timelineOffsetMs", 0) or options.get("itemTimeline", False) or options.get("soundStereoEvidence", False):
             caps = self.capabilities()
+            if options.get('lyricSyllables') and caps.get('lyricSyllables') is not True:
+                raise ValueError('companion_does_not_support_lyric_syllables')
+            if options.get('lyricPitchEvidence', False) and caps.get('lyricPitchEvidence') is not True:
+                raise ValueError('companion_does_not_support_lyric_pitch_evidence')
             if options.get("sceneMotionTracking", False) and caps.get("sceneMotionTracking") is not True:
                 raise ValueError("Companion has no local motion tracker")
             if options.get("sceneAudioEvidence", False) and caps.get("sceneAudioEvidence") is not True:

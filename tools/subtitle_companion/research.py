@@ -68,9 +68,11 @@ def singing_align(folder, job, audio, device, progress, align, load_runtime):
             config.get('auto_map') or not (path / 'vocab.json').is_file()):
         raise ValueError('configure_supported_local_lyric_ctc_model')
     runtime = load_runtime(job['language'], device, explicit_model=str(path))
-    baseline = align(folder, job, audio, device, runtime=runtime)
+    characters = bool(job.get('lyricSyllables'))
+    baseline = align(folder, job, audio, device, runtime=runtime, capture_characters=characters)
     progress(folder, 'Comparing original and percussive-suppressed lyric evidence', .45)
-    alternate = align(folder, job, harmonic_view(audio), device, runtime=runtime)
+    harmonic_audio = harmonic_view(audio)
+    alternate = align(folder, job, harmonic_audio, device, runtime=runtime, capture_characters=characters)
     def grouped(result):
         groups = {}
         for word in result['wordTimings']: groups.setdefault(word['cueId'], []).append(word)
@@ -93,12 +95,21 @@ def singing_align(folder, job, audio, device, progress, align, load_runtime):
         evidence.append({'cueId': cue['cueId'], 'acceptedWords': len(a) if agrees else 0,
             'originalWords': len(a), 'harmonicWords': len(b), 'maximumBoundaryDifferenceMs': max(differences) if differences else None,
             'status': 'two-view-agreement-unqualified' if agrees else 'retain-original-no-word-proposal'})
+    from lyric_research import syllable_proposals, pitch_evidence
+    syllables, syllable_evidence = syllable_proposals(job, baseline, alternate)
+    syllable_ids = {unit['cueId'] for unit in syllables}
+    words = [word for word in words if word['cueId'] not in syllable_ids] + syllables
+    words.sort(key=lambda word: (word['startMs'], word['endMs']))
+    uncertain = [key for key in uncertain if key not in syllable_ids]
+    pitch = pitch_evidence(job, audio, harmonic_audio) if job.get('lyricPitchEvidence') else []
     return {'cues': job['cues'], 'sourceCues': job['cues'], 'wordTimings': words,
+        'lyricSyllableEvidence': syllable_evidence, 'lyricPitchEvidence': pitch,
         'language': job['language'], 'durationMs': round(len(audio)/16), 'model': 'lyric CTC / ' + path.name,
         'uncertainCueIds': uncertain, 'lyricTimingEvidence': evidence,
         'warnings': ['Lyric text and cue bounds remain unchanged. Only CTC word proposals agreeing within 250 ms across original and harmonic views are retained.',
             'The spectral mask suppresses percussion; it does not isolate vocals. Harmonic instruments, vibrato, melisma and overlapping singers can defeat both views.',
-            'CTC confidence and two-view agreement are uncalibrated, not proof of correct singing alignment. No syllables, notes or evenly spaced word times were invented.',
+            'CTC confidence and two-view agreement are uncalibrated. Syllable units are supplied by the viewer and require valid character alignment in both views; no evenly spaced timing is substituted.',
+            'Optional pitch candidates measure the uploaded mix. Instruments, harmonies and octave errors can dominate them; they are not verified vocal notes and do not change lyric timing.',
             f'{len(uncertain)} cues have no accepted word proposal. Review against the song before enabling karaoke.']}
 
 

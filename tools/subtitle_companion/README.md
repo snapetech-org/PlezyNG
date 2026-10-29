@@ -406,8 +406,8 @@ sequences whose boundaries agree within 250 ms across both views are returned.
 The original lyric text and cue bounds are unchanged. `lyricTimingEvidence`
 records accepted words, rejected cues and observed boundary differences.
 Melisma, instruments, chorus overlap and singing pronunciation can defeat both
-views; shared agreement is not a calibrated confidence score. No note/syllable
-timing or uniform word interpolation is invented. CPU and requested CUDA follow
+views; shared agreement is not a calibrated confidence score. No uniform word interpolation is substituted. Optional supplied syllable
+groups and mix pitch evidence are described below. CPU and requested CUDA follow
 the existing explicit fallback path, without per-operation placement attestation.
 No model preparation, inference, evaluation, rendering or test was run.
 
@@ -448,3 +448,39 @@ observations before viewer edits and remain unqualified. The app accepts at most
 4 MiB of evidence and exports reports up to 24 MiB. Image bundles include the
 same metadata; audio/image pixels are exported separately through their existing
 explicit actions. No new network destination or automatic upload is added.
+
+### Supplied lyric syllables and mix pitch evidence
+
+A `singing_align` request may include `lyricSyllables`, a map from cue ID to an
+ordered list of text groups. Concatenation must exactly preserve the cue's plain
+lyrics, including spaces and punctuation. Use 2–128 groups for each selected
+cue and at most 4096 groups in the job. The app offers an editor that inserts
+`|` separators without changing the lyrics. Capability discovery and both
+clients guard this option; groups enter the immutable job/request digest.
+
+The adapter obtains WhisperX character results with interpolation disabled.
+Every letter/number in every requested group must have ordered, finite, in-cue
+boundaries and a score of at least 0.35 in both original and harmonic views.
+Group boundaries must agree within 250 ms. An accepted cue uses `syllable`
+timing units; an incomplete cue keeps its existing accepted word proposals.
+`lyricSyllableEvidence` retains supplied groups and refusal reasons. The app's
+original-text highlighting, history and JSON export preserve the unit kind.
+Older clients that do not recognize this unit must reject it, not relabel it.
+
+`lyricPitchEvidence: true` additionally requires librosa 0.11 and tighter limits:
+12 seconds per cue and two minutes summed cue duration. Bounded pYIN passes
+compare original/harmonic audio at 16 kHz, 2048-sample frames and 320-sample hops,
+65–1000 Hz. Both must be voiced with scores >=0.8, agree within 50 cents and
+stay within 35 cents of one semitone for at least five consecutive frames
+(100 ms). Candidate intervals refer to frame centers, so edge transients are
+not assigned fabricated times. Results retain at most 80 candidates per cue
+and 2000 per job and report omitted groups. Evidence includes algorithm version,
+parameters, frame counts, pitch and score; it never modifies cue timing.
+
+These are **mix pitch candidates**, not verified sung notes. Instruments,
+polyphony, vibrato and octave ambiguity can defeat the method. Syllable grouping
+is supplied by the viewer, not a pronunciation model; agreement is uncalibrated.
+See [WhisperX character alignment](https://github.com/m-bain/whisperX/blob/main/whisperx/alignment.py)
+and [librosa pitch assumptions](https://librosa.org/doc/0.11.0/generated/librosa.pyin.html).
+Confidence: moderate in the bounded source integration, low in unmeasured music
+accuracy. No inference, tests, dependency installation, builds or CI were run.

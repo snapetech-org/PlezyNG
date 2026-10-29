@@ -227,6 +227,9 @@ final class SubtitleAiService {
     }
   }
 
+  /// Transcribes the half-open [startMs, endMs) media-time range. A null end
+  /// transcribes through the end of the file; output cue times stay on the
+  /// original WAV timeline so partial results can merge with existing cues.
   Future<SubtitleTranscriptionResult> transcribeWav(
     String wavPath, {
     SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu,
@@ -476,7 +479,7 @@ Future<Map<String, Object?>> _runSubtitleTranscriptionWorker({
     return await run(provider, fellBackToCpu: false);
   } catch (error) {
     if (provider == 'cpu') rethrow;
-    appLogger.i('Subtitle inference provider $provider failed; retrying the full file with CPU: $error');
+    appLogger.i('Subtitle inference provider $provider failed; retrying the selected WAV interval with CPU: $error');
     return run('cpu', fellBackToCpu: true);
   }
 }

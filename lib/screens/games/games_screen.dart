@@ -50,6 +50,7 @@ import '../../widgets/oauth_proxy_dialog.dart';
 import 'game_card.dart';
 import 'steam_game_activity_panel.dart';
 import 'steam_stream_diagnostics.dart';
+import 'steam_lan_install_dialog.dart';
 import '../settings/settings_utils.dart' show DialogOption;
 
 class GamesScreen extends StatefulWidget {
@@ -808,18 +809,32 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       SteamHostAction.inputConfiguration => t.games.inputOnComputer,
       SteamHostAction.properties => t.games.propertiesOnComputer,
     };
-    final confirmed = await showConfirmDialog(
-      context,
-      title: label,
-      message: t.games.hostActionConfirm(computer: isolateDisplayText(host.name)),
-      confirmText: label,
-    );
+    final confirmed = action == SteamHostAction.install
+        ? await showScopedDialog<bool>(
+                context: context,
+                builder: (_) => SteamLanInstallDialog(
+                  target: host,
+                  game: c.library.entries.where((g) => g.steamAppId == appId).firstOrNull,
+                  isCurrent: () => mounted && c.current && remote.gameActionPeerId == peer,
+                ),
+              ) ==
+              true
+        : await showConfirmDialog(
+            context,
+            title: label,
+            message:
+                '${t.games.hostActionConfirm(computer: isolateDisplayText(host.name))}${action == SteamHostAction.properties ? '\n\n${t.games.cloudSettingsHelp}' : ''}',
+            confirmText: label,
+          );
     if (!confirmed || !mounted || !c.current || remote.gameActionPeerId != peer) return;
     await _run((c) async {
       final result = await remote.requestGameAction(action, appId: appId);
       if (!mounted || !c.current || remote.gameActionPeerId != peer) return;
       if (result == SteamHostActionResult.submitted) {
-        showSuccessSnackBar(context, t.games.hostActionSubmitted);
+        showSuccessSnackBar(
+          context,
+          action == SteamHostAction.install ? t.games.lanInstallSubmitted : t.games.hostActionSubmitted,
+        );
       } else {
         showErrorSnackBar(
           context,
@@ -1342,5 +1357,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     SteamStreamQuality.reducedBandwidth => t.games.qualityReducedBandwidth,
     SteamStreamQuality.sharperPicture => t.games.qualitySharperPicture,
     SteamStreamQuality.reducedFrameRate => t.games.qualityReducedFrameRate,
+    SteamStreamQuality.ultraHd => t.games.qualityUltraHd,
+    SteamStreamQuality.highRefresh => t.games.qualityHighRefresh,
   };
 }

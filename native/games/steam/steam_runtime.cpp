@@ -134,6 +134,8 @@ int Runtime::run(
   request.streamingEnable = {true, true, true};
   request.maxResolution = {options.width, options.height};
   requestedAudioChannels_ = options.audioChannels;
+  requestedWidth_ = options.width;
+  requestedHeight_ = options.height;
   request.audioChannelCount = options.audioChannels;
   request.streamingInterface = IHS_StreamInterfaceBigPicture;
   request.gameId = game;
@@ -231,7 +233,8 @@ int Runtime::run(
 }
 int Runtime::videoStart(IHS_Session*, const IHS_StreamVideoConfig* c, void* ctx) {
   auto* self = static_cast<Runtime*>(ctx);
-  if (!c || c->width == 0 || c->height == 0 || c->width > 4096 || c->height > 2160 || c->codecDataLen > 65536)
+  if (!c || c->width == 0 || c->height == 0 || c->width > unsigned(self->requestedWidth_) ||
+      c->height > unsigned(self->requestedHeight_) || c->codecDataLen > 65536)
     return -1;
   if (c->codec != IHS_StreamVideoCodecH264 && c->codec != IHS_StreamVideoCodecHEVC &&
       (c->codec != IHS_StreamVideoCodecPyrowave || !self->pyrowaveEnabled_))
@@ -275,7 +278,7 @@ IHS_StreamVideoSubmitResult Runtime::videoSubmit(
     IHS_Session*, const IHS_VideoEpochInfo*, uint16_t, IHS_FrameTicket* ticket, IHS_Buffer* b,
     IHS_StreamVideoFrameFlag flags, bool* taken, void* ctx) {
   auto* self = static_cast<Runtime*>(ctx);
-  if (self->cancelled_ || !b || b->size > 2 * 1024 * 1024 || !ticket) return IHS_StreamVideoSubmitReportLost;
+  if (self->cancelled_ || !b || b->size > 8 * 1024 * 1024 || !ticket) return IHS_StreamVideoSubmitReportLost;
   uint32_t id;
   {
     std::lock_guard<std::mutex> lock(self->frameMutex_);

@@ -58,7 +58,7 @@ teardown. Its decode submission signals a semaphore before the presentation
 submission samples the planes. Each swapchain image has its own presentation
 semaphore; a render fence alone is not treated as proof that WSI consumed a signal.
 
-Frames are bounded to 1920x1080 and 2 MiB of compressed data. The Linux queue holds
+Frames are bounded to the selected request size (at most 3840x2160) and 8 MiB of compressed data. The Linux queue holds
 at most four frames. Surface acquisition and frame-fence waits are bounded;
 resource destruction still waits for driver ownership to end rather than freeing
 in-flight GPU resources. A driver stuck inside Vulkan can therefore still block

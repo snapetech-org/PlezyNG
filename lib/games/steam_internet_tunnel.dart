@@ -73,6 +73,11 @@ class SteamInternetTunnel {
   InternetAddress? _observer, _candidate;
   int _observerPort = 0, _candidatePort = 0;
   List<int>? _cookie, _observed;
+  int _relayBytesPerSecond = 8 * 1024 * 1024;
+
+  /// Reserve 25% for transport overhead and bursts, including a later fallback
+  /// from the direct route. Older relays retain the conservative 8 MiB/s cap.
+  int get relayBitrateCeilingKbps => _relayBytesPerSecond * 6 ~/ 1000;
   final _incoming = Queue<({Uint8List data, bool udp})>();
   final _outgoing = Queue<({int kind, List<int> data, bool udp})>();
   final _batch = BytesBuilder(copy: false);
@@ -268,6 +273,9 @@ class SteamInternetTunnel {
               m['udpCookie'] is! String) {
             throw const FormatException();
           }
+          final rate = m['bytesPerSecond'] ?? 8 * 1024 * 1024;
+          if (rate is! int || rate < 1024 * 1024 || rate > 64 * 1024 * 1024) throw const FormatException();
+          _relayBytesPerSecond = rate;
           final cookie = base64Url.decode(base64Url.normalize(m['udpCookie']));
           if (cookie.length != 32) throw const FormatException();
           _cookie = cookie;

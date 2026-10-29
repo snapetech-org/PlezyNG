@@ -28,15 +28,34 @@ does not replace the SDK build and real-device acceptance cases in
   authority for game-specific action sets through the existing host configuration
   action. PlezyNG does not alter another game's Steam Input files.
 
-## Work still in progress
+- The Steam controls toolbar sends explicit default host shortcuts for the
+  overlay/Remote Play Together and screenshot capture. Input ownership gates
+  submission, and all keys release on completion/error/lease loss. The UI explains
+  host shortcut configuration, game eligibility and Steam-owned guest permissions.
+- Installation confirmation identifies other installed host snapshots and their
+  observation dates. It excludes the target and incomplete copies, preserves the
+  paired-peer/install permission gates, and distinguishes request submission from
+  observed installation or Steam's LAN donor selection.
+- Optional 4K60 and 1080p120 requests now reach every receiver. All native decoder
+  and output bounds, compressed access units and texture allocations are consistent.
+  Host dimensions cannot exceed the selected request. The legacy preset remains
+  1080p60/30 Mbps; older persisted settings remain valid.
+- Relay bandwidth is explicitly configurable from 1..64 MiB/s per direction,
+  retaining the 8 MiB/s default. Its optional ready field is backward compatible.
+  Receiver video requests reserve headroom for a later direct-to-relay transition.
 
-- Remote Play Together/host overlay and capture controls.
-- Multi-computer LAN-install assistance and honest transfer state.
+## Remaining contracts and qualification
+
 - Cloud settings: public Steamworks exposes account-wide read access and an
   app-scoped setter for the calling game's own AppID. A general account-wide
   mutation must not be fabricated from those APIs or from an assumed VDF key.
-- Documentation reconciliation, security checks and focused regression coverage
-  for the completed paths.
+- Steam Input game-side glyph/action APIs and automatic Together invites belong
+  to the game SDK, not an arbitrary receiver. The implemented receiver layout and
+  host overlay flows do not impersonate game AppIDs.
+- Touch placement/opacity, full IME integration, rumble/gyro and microphone input
+  are not claimed as implemented by the controller mapping work.
+- SDK builds, physical HDR/chroma output, real Steam hosts/accounts and deployed
+  relay throughput still require the exact-head handoff cases.
 
 ## Contract references
 
@@ -57,3 +76,9 @@ inventory separately from completion or a guaranteed transfer source.
   preferences over the tunnel.
 - Android Steam Java sources compile against API 36 (20 existing deprecation
   warnings). This does not establish a Kotlin/Gradle/NDK or device build.
+
+The controller checkpoint passed 22 focused Flutter tests, Android Java API 36
+compilation, 42 native tests (one separate GPU/display case skipped), and Windows
+MinGW runtime plus five test-executable links. The host/quality follow-through
+also passes Go race tests and the targeted dialog/lease/tunnel cases. These
+checks are not substitutes for Kotlin/Gradle/NDK, Apple SDK or MSVC builds.

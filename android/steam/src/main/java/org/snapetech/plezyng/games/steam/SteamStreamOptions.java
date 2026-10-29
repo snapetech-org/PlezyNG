@@ -11,10 +11,10 @@ final class SteamStreamOptions {
 
   private SteamStreamOptions(Map<?, ?> args) {
     for (int i = 0; i < 6; ++i) relayPorts[i] = integer(args, "relayPort" + i, 0, 1, 65535);
-    width = integer(args, "streamWidth", 1920, 640, 1920);
-    height = integer(args, "streamHeight", 1080, 360, 1080);
-    fps = integer(args, "streamFps", 60, 15, 60);
-    bitrateKbps = integer(args, "streamBitrateKbps", 30000, 1000, 50000);
+    width = integer(args, "streamWidth", 1920, 640, 3840);
+    height = integer(args, "streamHeight", 1080, 360, 2160);
+    fps = integer(args, "streamFps", 60, 15, 120);
+    bitrateKbps = integer(args, "streamBitrateKbps", 30000, 1000, 100000);
     controllerCount = integer(args, "controllerCount", 1, 1, 4);
     audioChannels = integer(args, "audioChannels", 2, 2, 6);
     if (audioChannels != 2 && audioChannels != 4 && audioChannels != 6)

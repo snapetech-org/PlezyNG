@@ -198,7 +198,7 @@ struct PixelsData {
   std::unique_ptr<PendingPixels> pending;
   // Flutter owns the read buffer until the texture is unregistered. Network
   // and decoder threads never mutate it; only copy_pixels does.
-  std::vector<uint8_t> output = std::vector<uint8_t>(1920 * 1080 * 4);
+  std::vector<uint8_t> output = std::vector<uint8_t>(4);
   uint32_t width = 1, height = 1;
   ~PixelsData() {
     if (pending) pending->complete(false);
@@ -281,6 +281,7 @@ struct Session : std::enable_shared_from_this<Session> {
         registrar(FL_TEXTURE_REGISTRAR(g_object_ref(fl_plugin_registrar_get_texture_registrar(plugin)))),
         texture(reinterpret_cast<SteamPixels*>(g_object_new(steam_pixels_get_type(), nullptr))),
         channel(nullptr) {
+    texture->data->output.resize(size_t(o.width) * o.height * 4);
     channelName = "com.plezy/games/steam_stream/" + std::to_string(id);
     g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
     channel = fl_method_channel_new(messenger, channelName.c_str(), FL_METHOD_CODEC(codec));
@@ -306,7 +307,9 @@ struct Session : std::enable_shared_from_this<Session> {
     });
   }
   bool pixels(DecodedPixels&& pixels, std::weak_ptr<Runtime> source) {
-    if (closing) return false;
+    if (closing || !pixels.width || !pixels.height || pixels.width > unsigned(options.width) ||
+        pixels.height > unsigned(options.height) || pixels.rgba.size() != size_t(pixels.width) * pixels.height * 4)
+      return false;
     const auto frame = pixels.id;
     const auto frameWidth = pixels.width, frameHeight = pixels.height;
     auto pending = std::make_unique<PendingPixels>(PendingPixels{
@@ -781,10 +784,10 @@ void Manager::method(FlMethodCall* call, bool receiver) {
     auto host = hostFrom(args);
     auto game = identifier(text(args, "appId"), true);
     StreamOptions options;
-    options.width = number(args, "streamWidth", 1920, 640, 1920);
-    options.height = number(args, "streamHeight", 1080, 360, 1080);
-    options.fps = number(args, "streamFps", 60, 15, 60);
-    options.bitrateKbps = number(args, "streamBitrateKbps", 30000, 1000, 50000);
+    options.width = number(args, "streamWidth", 1920, 640, 3840);
+    options.height = number(args, "streamHeight", 1080, 360, 2160);
+    options.fps = number(args, "streamFps", 60, 15, 120);
+    options.bitrateKbps = number(args, "streamBitrateKbps", 30000, 1000, 100000);
     options.controllerCount = number(args, "controllerCount", 1, 1, 4);
     options.audioChannels = number(args, "audioChannels", 2, 2, 6);
     if (!options.valid()) throw std::invalid_argument("Invalid options");

@@ -4645,7 +4645,9 @@
     "lanInstallNoCandidates": "No other computer has reported this game installed yet. Refresh inventories after enabling sharing on your computers.",
     "lanInstallTarget": "Install on $computer",
     "lanInstallSubmitted": "Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.",
-    "cloudSettingsHelp": "Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes."
+    "cloudSettingsHelp": "Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.",
+    "qualityUltraHd": "Ultra HD · capable hardware required",
+    "qualityHighRefresh": "High refresh rate · capable display required"
   },
   "deepLinks": {
     "invalid": "This Plezy link isn't valid.",

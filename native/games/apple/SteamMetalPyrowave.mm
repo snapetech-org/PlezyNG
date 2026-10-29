@@ -113,8 +113,8 @@ bool MetalPyrowave::supported() {
 }
 bool MetalPyrowave::start(int width, int height, const uint8_t* extra, size_t length, bool allowHdr) {
   reset();
-  if (width < 2 || height < 2 || width > 1920 || height > 1080 || (width & 1) || (height & 1) ||
-      length > 2 * 1024 * 1024 || (length && !extra))
+  if (width < 2 || height < 2 || width > 3840 || height > 2160 || (width & 1) || (height & 1) ||
+      length > 8 * 1024 * 1024 || (length && !extra))
     return false;
   impl_->width = width;
   impl_->height = height;

@@ -5,8 +5,10 @@ adds [Android/Wayland Vulkan and HDR10](VULKAN_RECEIVER.md),
 [scoped Cloud file actions](STEAM_CLOUD.md) and
 [paired internet traversal/relay](STEAM_INTERNET.md),
 [Windows/Apple HDR](DESKTOP_HDR.md) and [Families management](STEAM_FAMILIES.md).
-Older sections below are
-historical milestones, not current hardware or service qualification.
+The [code follow-through](CODE_COMPLETION.md) adds session-owned receivers,
+controller layouts, host controls, LAN-install assistance and higher-resolution
+requests. Older sections below are historical milestones, not current hardware
+or service qualification.
 
 This is the review ledger for the connected Steam / GameStream experience.
 The product remains PlezyNG: existing poster geometry, theme tokens, focus,
@@ -31,11 +33,11 @@ platform build prerequisites and features that still require implementation.
 | Grid, details, routes and filtering | Implemented using existing app components | Device accessibility, RTL, controller and visual qualification; new strings currently use the English fallback |
 | Android stream preferences / recovery | Implemented through Flutter, Java and JNI | Full Android build/minification, real host reconnect and negotiated-quality measurements |
 | Native Steam transport | Portable Linux build and 42 tests pass locally; native loopback tunnel mapping integrated in all four platform adapters | Current-head sanitizer CI, SDK builds, Android packaging and live transport qualification |
-| View-independent stream lifetime | Retained Android PlatformView and Windows/Linux/Apple texture surfaces | Native session still belongs to its retained surface; surface destruction stops it |
-| Adaptive metrics / advanced codecs | Host-driven feedback, measured diagnostics, request ceilings, one-to-four seats, mono/stereo/quad/5.1; Apple Metal and Android/Wayland/Windows Vulkan direct GPU 4:2:0/4:4:4 with gated native HDR10 | Actual hardware GPU/HDR/color tests, Apple SDK builds, 4K and Windows/Apple HDR output qualification; audio/controller/adaptation measurements |
+| View-independent stream lifetime | Workspace-owned desktop/Apple receivers; Android session registry and replaceable video Surface | Device suspend/rotation/multiview qualification |
+| Adaptive metrics / advanced codecs | Host-driven feedback, measured diagnostics, request ceilings, one-to-four remappable seats, opt-in 4K60/1080p120, mono/stereo/quad/5.1; Apple Metal and Android/Wayland/Windows Vulkan direct GPU 4:2:0/4:4:4 with gated native HDR10 | Actual hardware GPU/HDR/color tests, Apple SDK builds, 4K and Windows/Apple HDR output qualification; audio/controller/adaptation measurements |
 | Other embedded receiver platforms | Linux receiver implemented; Windows Media Foundation/XAudio2 and Apple VideoToolbox/Core Audio/Metal receiver sources integrated; shared texture/touch input and workspace ownership | Full Linux/SteamOS packaging and host qualification; Apple SDK/device qualification; Windows MSVC x64/ARM64 and device qualification |
-| Rich Steam / host features | Achievements/news/optional friends-playing, Input/properties host actions; optional AppID-scoped Cloud listing/download/replace/delete; separately authorized and reviewed Families mutations | Valve Cloud approval/live contracts, Families service/account qualification, global Cloud settings, live Input configuration, Together and captures |
-| Companion game control / internet transport | Inventory, permissioned host actions and stream controls; paired encrypted WSS relay, authenticated IPv4 hole punching/fallback, same-account admission, existing diagnostics and opt-in settings | Deployment, actual routers/CGNAT, sustained bandwidth and platform/host qualification; internet Pyrowave/HDR not enabled |
+| Rich Steam / host features | Achievements/news/optional friends-playing, Input/properties host actions, overlay/Together and screenshot shortcuts, LAN-install assistance; optional AppID-scoped Cloud listing/download/replace/delete; separately authorized and reviewed Families mutations | Valve Cloud approval/live contracts, Families service/account qualification, account-global Cloud mutation contract; live Input configuration, Together eligibility and host capture qualification |
+| Companion game control / internet transport | Inventory, permissioned host actions and stream controls; paired encrypted WSS relay, authenticated IPv4 hole punching/fallback, same-account admission, existing diagnostics and opt-in settings | Deployment, actual routers/CGNAT, sustained bandwidth and platform/host qualification; opted-in internet Pyrowave/HDR throughput qualification |
 
 No claim of “every Steam API” is made: public catalog APIs, game-side Steamworks
 APIs, private client interfaces and services requiring Valve approval have

@@ -4,8 +4,8 @@ The game detail view can list, download, replace and delete Steam Cloud files
 through Valve's documented ICloudService. This is an **eligible-AppID integration**,
 not general access to every purchased game's saves. It is disabled unless the
 operator configures a Valve-approved OAuth client and exact AppID allowlists.
-Steam Families management remains a confirmed handoff to Steam's account UI;
-there is no implemented or advertised general Families mutation API.
+Steam Families uses a separate, disabled-by-default client-service integration;
+see [STEAM_FAMILIES.md](STEAM_FAMILIES.md). It does not inherit Cloud authority.
 
 ## Eligibility and deployment
 
@@ -96,11 +96,21 @@ GetTokenDetails/EnumerateUserFiles response shapes, storage origins and scopes;
 back up a disposable test game's saves before upload/delete/conflict tests. Test
 an account mismatch, denial, profile change mid-upload, lost response after a
 successful PUT, concurrent game sync, readonly AppID, and oversized save. Inspect
-logs for secrets without publishing their contents. Keep Families actions in
-Steam's own UI and test the signed-in account warning.
+logs for secrets without publishing their contents. Qualify the separate Families
+flow using its own authorization and review cases.
 
 Primary references checked 2026-10-28:
 
 - [Steam OAuth](https://partner.steamgames.com/doc/webapi_overview/OAuth)
 - [ICloudService](https://partner.steamgames.com/doc/webapi/ICloudService)
 - [Steam Families](https://partner.steamgames.com/doc/features/families)
+
+## Global sync settings
+
+The authenticated host's **Cloud and game settings on computer** action opens
+Steam's game properties after confirmation. Account-wide sync is changed in
+Steam Settings → Cloud. This is a host-assisted workflow, not a programmatic
+account-global mutation. `ISteamRemoteStorage::SetCloudEnabledForApp` belongs to
+the calling game's AppID; `IsCloudEnabledForAccount` is read-only. PlezyNG does not
+impersonate other AppIDs or modify guessed private VDF keys. A general programmatic
+account toggle remains blocked on a legitimate Valve/host-client write contract.

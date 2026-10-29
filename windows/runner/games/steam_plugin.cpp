@@ -266,7 +266,7 @@ struct Session : std::enable_shared_from_this<Session> {
   std::unique_ptr<flutter::TextureVariant> texture;
   int64_t textureId = -1;
   FlutterDesktopPixelBuffer buffer{};
-  std::vector<uint8_t> output = std::vector<uint8_t>(1920 * 1080 * 4);
+  std::vector<uint8_t> output = std::vector<uint8_t>(4);
   struct Pixels {
     DecodedPixels data;
     std::weak_ptr<Runtime> source;
@@ -297,6 +297,7 @@ struct Session : std::enable_shared_from_this<Session> {
     channel = std::make_unique<Channel>(
         plugin->messenger(), "com.plezy/games/steam_stream/" + std::to_string(id),
         &flutter::StandardMethodCodec::GetInstance());
+    output.resize(size_t(o.width) * o.height * 4);
     buffer.buffer = output.data();
     buffer.width = buffer.height = 1;
     if (pyrowave) {
@@ -388,8 +389,8 @@ struct Session : std::enable_shared_from_this<Session> {
     return &buffer;
   }
   bool pixels(DecodedPixels&& pixels, std::weak_ptr<Runtime> source) {
-    if (closing || !pixels.width || !pixels.height || pixels.width > 1920 || pixels.height > 1080 ||
-        pixels.rgba.size() != size_t(pixels.width) * pixels.height * 4)
+    if (closing || !pixels.width || !pixels.height || pixels.width > unsigned(options.width) ||
+        pixels.height > unsigned(options.height) || pixels.rgba.size() != size_t(pixels.width) * pixels.height * 4)
       return false;
     auto next = std::make_unique<Pixels>(Pixels{std::move(pixels), source});
     std::unique_ptr<Pixels> old;
@@ -786,10 +787,10 @@ void Manager::method(const Call& call, Reply reply, bool stream) {
     auto host = hostFrom(args);
     auto game = identifier(text(args, "appId"), true);
     StreamOptions options;
-    options.width = number(args, "streamWidth", 1920, 640, 1920);
-    options.height = number(args, "streamHeight", 1080, 360, 1080);
-    options.fps = number(args, "streamFps", 60, 15, 60);
-    options.bitrateKbps = number(args, "streamBitrateKbps", 30000, 1000, 50000);
+    options.width = number(args, "streamWidth", 1920, 640, 3840);
+    options.height = number(args, "streamHeight", 1080, 360, 2160);
+    options.fps = number(args, "streamFps", 60, 15, 120);
+    options.bitrateKbps = number(args, "streamBitrateKbps", 30000, 1000, 100000);
     options.controllerCount = number(args, "controllerCount", 1, 1, 4);
     options.audioChannels = number(args, "audioChannels", 2, 2, 6);
     options.hdr10 = boolean(args, "allowHdr");

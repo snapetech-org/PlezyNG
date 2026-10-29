@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/games/game_models.dart';
+import 'package:plezy/games/steam_stream_preferences.dart';
 import 'package:plezy/games/steam_internet_tunnel.dart';
 import 'package:plezy/multiview/steam_game_workspace_surface.dart';
 import 'package:plezy/utils/certificate_trust.dart';
@@ -176,6 +177,7 @@ void main() {
         host: computer,
         game: StreamGame(hostKey: computer.key, id: '620', name: 'Portal 2'),
         touchControls: false,
+        quality: SteamStreamQuality.ultraHd,
         pyrowave: true,
         allowHdr: true,
         internetTunnel: receiver,
@@ -188,6 +190,9 @@ void main() {
       expect(session.creationParams['relayPort0'], receiver.ports[0]);
       expect(session.creationParams['pyrowave'], isTrue);
       expect(session.creationParams['allowHdr'], isTrue);
+      expect(receiver.relayBitrateCeilingKbps, 50331); // Older relay without a rate field.
+      expect(session.creationParams['streamBitrateKbps'], 50331);
+      expect(session.creationParams['streamWidth'], 3840);
       final steam = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 27036, reuseAddress: false);
       final native = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
       addTearDown(steam.close);

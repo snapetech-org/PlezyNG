@@ -21,9 +21,14 @@ import '../screens/games/steam_stream_diagnostics.dart';
 import '../screens/games/steam_touch_controls.dart';
 import '../utils/dialogs.dart';
 import '../widgets/app_icon.dart';
+import '../widgets/focusable_list_tile.dart';
+import '../widgets/dialog_action_button.dart';
+import '../utils/snackbar_helper.dart';
 import '../focus/focusable_button.dart';
 import '../i18n/strings.g.dart';
 import 'workspace_game_input.dart';
+
+enum SteamStreamShortcut { overlay, screenshot }
 
 const steamGamePlatformViewType = 'com.plezy/games/steam_stream';
 
@@ -226,6 +231,7 @@ class SteamGameWorkspaceSession {
     'pyrowave': pyrowave,
     'allowHdr': allowHdr,
     ...quality.nativeArguments,
+    if (_tunnel != null) 'streamBitrateKbps': min(quality.bitrateKbps, _tunnel!.relayBitrateCeilingKbps),
     'allowHevc': codec == SteamStreamCodec.automatic,
     'controllerCount': controllerCount,
     'audioChannels': audio.channels,
@@ -271,6 +277,45 @@ class SteamGameWorkspaceSession {
       );
     } else if (event is GamepadConnectionEvent && !event.connected) {
       unawaited(_invoke('disconnectController', {'deviceId': event.gamepadId}));
+    }
+  }
+
+  bool _shortcutBusy = false;
+
+  /// Fixed, user-initiated host shortcuts. Acknowledgement means key submission,
+  /// not that Steam opened its overlay, invited a guest or saved a screenshot.
+  Future<bool> sendShortcut(SteamStreamShortcut shortcut) async {
+    final channel = _channel;
+    if (!_canInput || _shortcutBusy || channel == null) return false;
+    _shortcutBusy = true;
+    final epoch = _mappingEpoch;
+    final keys = shortcut == SteamStreamShortcut.overlay ? [(225, 'Shift Left'), (43, 'Tab')] : [(69, 'F12')];
+    final pressed = <(int, String)>[];
+    try {
+      resetInput();
+      for (final key in keys) {
+        if (!_canInput || _channel != channel || epoch != _mappingEpoch) return false;
+        // Record before awaiting: even a failed/late acknowledgement needs key-up.
+        pressed.add(key);
+        await channel
+            .invokeMethod<void>('inputKey', {'usage': key.$1, 'key': key.$2, 'down': true})
+            .timeout(const Duration(seconds: 2));
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+      return _canInput && _channel == channel && epoch == _mappingEpoch;
+    } catch (_) {
+      return false;
+    } finally {
+      for (final key in pressed.reversed) {
+        try {
+          await channel
+              .invokeMethod<void>('inputKey', {'usage': key.$1, 'key': key.$2, 'down': false})
+              .timeout(const Duration(seconds: 2));
+        } catch (_) {
+          /* Native teardown/reset also releases every held key. */
+        }
+      }
+      _shortcutBusy = false;
     }
   }
 
@@ -458,7 +503,7 @@ class SteamGameWorkspaceSession {
         final args = call.arguments;
         if (args is Map && args['width'] is int && args['height'] is int) {
           final width = args['width'] as int, height = args['height'] as int;
-          if (width > 0 && height > 0 && width <= 1920 && height <= 1080) streamAspectRatio.value = width / height;
+          if (width > 0 && height > 0 && width <= 3840 && height <= 2160) streamAspectRatio.value = width / height;
         }
         return null;
       }
@@ -826,6 +871,55 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
     }
   }
 
+  Future<void> _showSteamTools() async {
+    if (_detailsOpen) return;
+    setState(() => _detailsOpen = true);
+    final session = widget.session;
+    SteamStreamShortcut? selected;
+    try {
+      await session.withInputSuspended(() async {
+        if (!mounted) return;
+        selected = await showScopedDialog<SteamStreamShortcut>(
+          context: context,
+          builder: (dialog) => AlertDialog(
+            title: Text(t.games.steamTools),
+            scrollable: true,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FocusableListTile(
+                  leading: const AppIcon(Symbols.group_rounded),
+                  title: Text(t.games.steamOverlay),
+                  subtitle: Text(t.games.steamOverlayHelp),
+                  onTap: () => Navigator.pop(dialog, SteamStreamShortcut.overlay),
+                ),
+                FocusableListTile(
+                  leading: const AppIcon(Symbols.screenshot_monitor_rounded),
+                  title: Text(t.games.steamScreenshot),
+                  subtitle: Text(t.games.steamScreenshotHelp),
+                  onTap: () => Navigator.pop(dialog, SteamStreamShortcut.screenshot),
+                ),
+              ],
+            ),
+            actions: [DialogActionButton(label: t.common.close, onPressed: () => Navigator.pop(dialog))],
+          ),
+        );
+      });
+      if (selected != null && mounted && session.current) {
+        final sent = await session.sendShortcut(selected!);
+        if (mounted && session.current) {
+          if (sent) {
+            showSuccessSnackBar(context, t.games.steamShortcutSent);
+          } else {
+            showErrorSnackBar(context, t.games.steamShortcutFailed);
+          }
+        }
+      }
+    } finally {
+      if (mounted) setState(() => _detailsOpen = false);
+    }
+  }
+
   @override
   void didUpdateWidget(covariant SteamGameWorkspaceSurface oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -917,6 +1011,14 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
                 : Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      FocusableButton(
+                        onPressed: _detailsOpen ? null : _showSteamTools,
+                        child: IconButton.filledTonal(
+                          tooltip: t.games.steamTools,
+                          onPressed: _detailsOpen ? null : _showSteamTools,
+                          icon: const AppIcon(Symbols.more_horiz_rounded),
+                        ),
+                      ),
                       ValueListenableBuilder<bool>(
                         valueListenable: session.mappingFailed,
                         builder: (_, failed, _) => FocusableButton(

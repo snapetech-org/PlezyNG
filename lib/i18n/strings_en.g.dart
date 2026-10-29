@@ -11812,6 +11812,12 @@ class Translations$games$en {
 
 	/// en: 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.'
 	String get cloudSettingsHelp => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.';
+
+	/// en: 'Ultra HD · capable hardware required'
+	String get qualityUltraHd => 'Ultra HD · capable hardware required';
+
+	/// en: 'High refresh rate · capable display required'
+	String get qualityHighRefresh => 'High refresh rate · capable display required';
 }
 
 // Path: deepLinks
@@ -18804,6 +18810,8 @@ extension on Translations {
 			'games.lanInstallTarget' => ({required Object computer}) => 'Install on ${computer}',
 			'games.lanInstallSubmitted' => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.',
 			'games.cloudSettingsHelp' => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.',
+			'games.qualityUltraHd' => 'Ultra HD · capable hardware required',
+			'games.qualityHighRefresh' => 'High refresh rate · capable display required',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

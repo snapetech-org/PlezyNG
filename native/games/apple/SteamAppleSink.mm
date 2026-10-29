@@ -89,7 +89,7 @@ struct AppleSink::Impl {
     const auto id = uint32_t(reinterpret_cast<uintptr_t>(ref));
     self->decodeSucceeded = status == noErr && image &&
                             CVPixelBufferGetPixelFormatType(image) == kCVPixelFormatType_32BGRA &&
-                            CVPixelBufferGetWidth(image) <= 1920 && CVPixelBufferGetHeight(image) <= 1080;
+                            CVPixelBufferGetWidth(image) <= 3840 && CVPixelBufferGetHeight(image) <= 2160;
     if (!self->decodeSucceeded || !self->present(image, id)) self->complete(id, false);
     if (status != noErr) self->fail(false);
   }
@@ -331,7 +331,7 @@ AppleSink::~AppleSink() = default;
 bool AppleSink::supportsHevc() { return VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC); }
 bool AppleSink::supportsPyrowave() { return MetalPyrowave::supported(); }
 bool AppleSink::video(int codec, int width, int height, const uint8_t* extra, size_t length) {
-  if ((codec != 4 && codec != 5 && codec != 9) || width <= 0 || height <= 0 || width > 1920 || height > 1080 ||
+  if ((codec != 4 && codec != 5 && codec != 9) || width <= 0 || height <= 0 || width > 3840 || height > 2160 ||
       length > 65536 || (length && !extra))
     return false;
   std::deque<Impl::Video> old;
@@ -348,7 +348,7 @@ bool AppleSink::video(int codec, int width, int height, const uint8_t* extra, si
   return true;
 }
 bool AppleSink::frame(const uint8_t* bytes, size_t length, uint32_t id, bool) {
-  if (!bytes || !length || length > 2 * 1024 * 1024) return false;
+  if (!bytes || !length || length > 8 * 1024 * 1024) return false;
   uint32_t dropped = 0;
   {
     std::lock_guard<std::mutex> lock(impl_->mutex);

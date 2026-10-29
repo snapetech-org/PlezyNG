@@ -135,6 +135,7 @@ class Runtime {
   std::array<std::shared_ptr<PadState>, 4> pads_;
   AudioDecoder audio_;
   int requestedAudioChannels_ = 2;
+  int requestedWidth_ = 1920, requestedHeight_ = 1080;
   bool pyrowaveEnabled_ = false;
   PyrowaveDecoder pyrowave_;
   H26xParser h26x_;

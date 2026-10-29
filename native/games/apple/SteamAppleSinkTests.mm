@@ -39,7 +39,7 @@
       });
   XCTAssertFalse(sink.video(99, 64, 64, nullptr, 0));
   XCTAssertFalse(sink.video(IHS_StreamVideoCodecH264, 100000, 64, nullptr, 0));
-  XCTAssertFalse(sink.frame(redH264, 2 * 1024 * 1024 + 1, 1, true));
+  XCTAssertFalse(sink.frame(redH264, 8 * 1024 * 1024 + 1, 1, true));
   XCTAssertTrue(sink.video(IHS_StreamVideoCodecH264, 64, 64, nullptr, 0));
   XCTAssertTrue(sink.frame(redH264, sizeof(redH264), 7, true));
   {

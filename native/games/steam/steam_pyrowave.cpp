@@ -15,9 +15,9 @@
 
 namespace plezy::steam {
 namespace {
-constexpr size_t kMaxFrameBytes = 2 * 1024 * 1024;
-constexpr uint32_t kMaxWidth = 1920;
-constexpr uint32_t kMaxHeight = 1080;
+constexpr size_t kMaxFrameBytes = 8 * 1024 * 1024;
+constexpr uint32_t kMaxWidth = 3840;
+constexpr uint32_t kMaxHeight = 2160;
 
 uint16_t read16(const uint8_t* p) { return uint16_t(p[0]) | (uint16_t(p[1]) << 8); }
 uint32_t read32(const uint8_t* p) {

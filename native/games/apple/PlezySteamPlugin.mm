@@ -873,10 +873,10 @@ void Manager::method(FlutterMethodCall* call, FlutterResult reply, bool create) 
     auto host = hostFrom(args);
     auto game = identifier(args[@"appId"], true);
     StreamOptions options;
-    options.width = number(args, @"streamWidth", 1920, 640, 1920);
-    options.height = number(args, @"streamHeight", 1080, 360, 1080);
-    options.fps = number(args, @"streamFps", 60, 15, 60);
-    options.bitrateKbps = number(args, @"streamBitrateKbps", 30000, 1000, 50000);
+    options.width = number(args, @"streamWidth", 1920, 640, 3840);
+    options.height = number(args, @"streamHeight", 1080, 360, 2160);
+    options.fps = number(args, @"streamFps", 60, 15, 120);
+    options.bitrateKbps = number(args, @"streamBitrateKbps", 30000, 1000, 100000);
     options.controllerCount = number(args, @"controllerCount", 1, 1, 4);
     options.audioChannels = number(args, @"audioChannels", 2, 2, 6);
     options.hdr10 = boolean(args, @"allowHdr");

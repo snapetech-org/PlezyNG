@@ -33,8 +33,8 @@ need qualification. See [VALIDATION.md](VALIDATION.md) and
    a lost direct path returns to the relay after its 2.5-second lease expires.
    Reconnect creates new keys and re-evaluates the LAN/internet route.
 
-Internet sessions currently select compatible H.264/HEVC SDR. LAN Pyrowave/HDR
-preferences remain saved. The internet tunnel neither wakes a sleeping computer
+Internet sessions preserve the chosen codec/Pyrowave/HDR preferences. Native
+decoder/display qualification and conventional fallback remain authoritative. The internet tunnel neither wakes a sleeping computer
 nor runs when its Companion server is stopped. Steam's own launch acceptance,
 pairing, game availability and session encryption are still required.
 
@@ -46,6 +46,8 @@ options in [steam-relay.env.example](../../server/steam-relay.env.example):
 
 ```dotenv
 STEAM_STREAM_RELAY_ENABLED=true
+# Explicitly provision capacity before increasing this bound (1..64 MiB/s).
+STEAM_STREAM_RELAY_MIB_PER_SECOND=8
 # Optional: a public IPv4 UDP observation port, identical inside/outside Docker.
 STEAM_STREAM_RELAY_UDP_PORT=3479
 ```
@@ -101,13 +103,13 @@ these are implementation limits, not a public service capacity commitment.
   accept an all-or-nothing set of distinct loopback ports and reject an
   out-of-range Steam launch port. Older native adapters keep their LAN path.
 - The relay accepts two endpoints per room, binary messages no larger than
-  64 KiB, 16 queued frames per endpoint, 8 MiB/s and 32 GiB per direction over a
+  64 KiB, 16 queued frames per endpoint, a default 8 MiB/s and 32 GiB per direction over a
   two-hour connection. Deadlines bound slow readers and idle sockets. The
   client limits datagrams to 2,048 bytes, batches to 128 datagrams/60 KiB, and
   input/output queues to 32 frames. Congestion drops data or closes an
   overloaded control channel rather than growing memory without a bound.
 - Disabling the profile permission, stopping Companion, rotating pairing,
-  changing profile, disposing the pane or retiring native playback closes the
+  changing profile or retiring the workspace session/native playback closes the
   owned route. The server checks catalog admission on each incoming message
   and every 15 seconds while idle/direct; revoked admission closes the room.
   These are explicit revocation bounds, not instantaneous remote revocation.
@@ -148,3 +150,13 @@ The automated fixture uses real localhost TLS, WSS and UDP sockets, authentic
 codec handshakes, fake Steam loopback datagrams and two UDP proxies. It proves
 packet delivery, encryption, upgrade, loss fallback and permission retirement
 under controlled conditions; it does not qualify a real Steam host or router.
+
+The server advertises its per-direction byte rate in the optional version-one
+`ready.bytesPerSecond` field. Receivers accept only 1..64 MiB/s, use 8 MiB/s for
+older servers, and reserve 25% for protocol overhead and bursts when requesting
+video bitrate. This ceiling also applies while using direct UDP so a later WSS
+fallback does not immediately exceed the relay budget. It is a requested target,
+not a throughput guarantee; Pyrowave and high-resolution streams still need
+adequate provisioned bandwidth and real-network qualification. Geometry and
+compressed-frame limits remain bounded independently of the relay packet size.
+Presentation detachment preserves the tunnel; owner retirement closes it.

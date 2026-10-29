@@ -37,7 +37,7 @@ int main() {
         });
     assert(!sink.video(99, 64, 64, nullptr, 0));
     assert(!sink.video(4, 100000, 64, nullptr, 0));
-    assert(!sink.frame(redH264, 2 * 1024 * 1024 + 1, 1, true));
+    assert(!sink.frame(redH264, 8 * 1024 * 1024 + 1, 1, true));
     assert(!sink.audio(8, 48000));
     assert(sink.video(4, 64, 64, nullptr, 0));
     assert(sink.frame(redH264, sizeof(redH264), 7, true));

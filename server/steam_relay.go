@@ -74,19 +74,20 @@ func relayControl(kind string, fields map[string]any) steamRelayFrame {
 
 type steamRelayRoom struct{ host, receiver *steamRelayPeer }
 type steamRelay struct {
-	oauth     *oauthProxy
-	mu        sync.Mutex
-	rooms     map[[32]byte]*steamRelayRoom
-	cookies   map[[32]byte]*steamRelayPeer
-	ips       map[string]int
-	clientIPs clientIPResolver
-	udp       *net.UDPConn
-	udpPort   int
-	closed    bool
+	bytesPerSecond int64
+	oauth          *oauthProxy
+	mu             sync.Mutex
+	rooms          map[[32]byte]*steamRelayRoom
+	cookies        map[[32]byte]*steamRelayPeer
+	ips            map[string]int
+	clientIPs      clientIPResolver
+	udp            *net.UDPConn
+	udpPort        int
+	closed         bool
 }
 
 func newSteamRelay(resolver clientIPResolver, oauth *oauthProxy) *steamRelay {
-	return &steamRelay{oauth: oauth, rooms: map[[32]byte]*steamRelayRoom{}, cookies: map[[32]byte]*steamRelayPeer{}, ips: map[string]int{}, clientIPs: resolver}
+	return &steamRelay{bytesPerSecond: 8 << 20, oauth: oauth, rooms: map[[32]byte]*steamRelayRoom{}, cookies: map[[32]byte]*steamRelayPeer{}, ips: map[string]int{}, clientIPs: resolver}
 }
 func registerSteamRelay(mux *http.ServeMux, resolver clientIPResolver, oauth *oauthProxy) *steamRelay {
 	if os.Getenv("STEAM_STREAM_RELAY_ENABLED") != "true" || oauth == nil {
@@ -97,6 +98,13 @@ func registerSteamRelay(mux *http.ServeMux, resolver clientIPResolver, oauth *oa
 		return nil
 	}
 	s := newSteamRelay(resolver, oauth)
+	if raw := os.Getenv("STEAM_STREAM_RELAY_MIB_PER_SECOND"); raw != "" {
+		limit, err := strconv.Atoi(raw)
+		if err != nil || limit < 1 || limit > 64 {
+			return nil
+		}
+		s.bytesPerSecond = int64(limit) << 20
+	}
 	if raw := os.Getenv("STEAM_STREAM_RELAY_UDP_PORT"); raw != "" {
 		port, err := strconv.Atoi(raw)
 		if err != nil || port < 1024 || port > 65535 {
@@ -230,7 +238,7 @@ func (s *steamRelay) handle(w http.ResponseWriter, r *http.Request) {
 	}
 	p.conn = conn
 	s.cookies[p.cookie] = p
-	p.enqueue(relayControl("ready", map[string]any{"udpCookie": base64.RawURLEncoding.EncodeToString(p.cookie[:]), "udpPort": s.udpPort}))
+	p.enqueue(relayControl("ready", map[string]any{"udpCookie": base64.RawURLEncoding.EncodeToString(p.cookie[:]), "udpPort": s.udpPort, "bytesPerSecond": s.bytesPerSecond}))
 	if room.host.conn != nil && room.receiver != nil && room.receiver.conn != nil {
 		room.host.enqueue(relayControl("peer", nil))
 		room.receiver.enqueue(relayControl("peer", nil))
@@ -257,7 +265,7 @@ func (s *steamRelay) handle(w http.ResponseWriter, r *http.Request) {
 		}
 		total += int64(len(data))
 		windowBytes += int64(len(data))
-		if total > 32<<30 || windowBytes > 8<<20 {
+		if total > 32<<30 || windowBytes > s.bytesPerSecond {
 			return
 		}
 		s.mu.Lock()

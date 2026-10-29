@@ -211,3 +211,22 @@ func TestSteamRelayExpiresCatalogAdmission(t *testing.T) {
 		t.Fatal("expired catalog admission remained authorized")
 	}
 }
+
+func TestSteamRelayConfiguredBandwidthIsBounded(t *testing.T) {
+	t.Setenv("STEAM_STREAM_RELAY_ENABLED", "true")
+	t.Setenv("STEAM_STREAM_RELAY_UDP_PORT", "")
+	for _, invalid := range []string{"0", "-1", "65", "1.5", "999999999999999999999999"} {
+		t.Setenv("STEAM_STREAM_RELAY_MIB_PER_SECOND", invalid)
+		if registerSteamRelay(http.NewServeMux(), clientIPResolver{}, relayTestOAuth()) != nil {
+			t.Fatalf("accepted bandwidth %q", invalid)
+		}
+	}
+	for _, valid := range []string{"", "1", "8", "64"} {
+		t.Setenv("STEAM_STREAM_RELAY_MIB_PER_SECOND", valid)
+		relay := registerSteamRelay(http.NewServeMux(), clientIPResolver{}, relayTestOAuth())
+		if relay == nil || relay.bytesPerSecond < 1<<20 || relay.bytesPerSecond > 64<<20 {
+			t.Fatalf("invalid bandwidth for %q", valid)
+		}
+		relay.close()
+	}
+}

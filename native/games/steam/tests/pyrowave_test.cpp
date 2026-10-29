@@ -20,6 +20,12 @@ std::array<uint8_t, 16> sequenceFrame(bool fullRange = false) {
   return bytes;
 }
 void sequenceValidation() {
+  auto large = sequenceFrame();
+  write32(large.data(), 3839u | (2159u << 14) | (1u << 31));
+  plezy::steam::PyrowaveFrameInfo bounds{};
+  assert(plezy::steam::parsePyrowaveFrame(large.data(), large.size(), 3840, 2160, bounds));
+  assert(!plezy::steam::parsePyrowaveFrame(large.data(), large.size(), 3842, 2160, bounds));
+  assert(!plezy::steam::parsePyrowaveFrame(large.data(), 8 * 1024 * 1024 + 1, 3840, 2160, bounds));
   auto bytes = sequenceFrame();
   plezy::steam::PyrowaveFrameInfo info{};
   assert(plezy::steam::parsePyrowaveFrame(bytes.data(), bytes.size(), 2, 2, info));

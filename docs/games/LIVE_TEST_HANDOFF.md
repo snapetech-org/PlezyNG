@@ -23,10 +23,10 @@ qualify a different commit. Record `git rev-parse HEAD` with every result.
 | Windows | Media Foundation H.264/HEVC SDR, retained texture, XAudio2, Credential Manager and input; opt-in Win32 Vulkan direct Pyrowave/HDR plane | Current-head MSVC x64/ARM64 builds and device qualification; Vulkan HDR/Pyrowave output qualification |
 | Linux/SteamOS | GStreamer H.264/HEVC SDR; opt-in Wayland Vulkan direct GPU Pyrowave 4:2:0/4:4:4 and gated HDR10; libsecret, surround and input | Packaged app, compositor/GPU/HDR and host qualification; X11 keeps the compatible SDR path |
 | macOS/iOS/iPadOS/tvOS | VideoToolbox/Core Audio, Keychain, retained texture; opt-in Metal Pyrowave SDR/HDR 4:2:0/4:4:4 on supported GPUs/displays | Current-head Apple SDK builds and device qualification; native Metal HDR output qualification |
-| Android/Android TV/Fire TV | H.264/HEVC SurfaceView, retained pane/activity, Opus, controller seats; opt-in native Vulkan direct GPU Pyrowave 4:2:0/4:4:4 and gated HDR10 | Current-head Gradle/NDK/release builds, GPU/display/color and host qualification |
+| Android/Android TV/Fire TV | H.264/HEVC SurfaceView, session-owned replaceable Surface/activity, Opus, controller seats; opt-in native Vulkan direct GPU Pyrowave 4:2:0/4:4:4 and gated HDR10 | Current-head Gradle/NDK/release builds, GPU/display/color and host qualification |
 | Connected library | Canonical AppID cards with independent routes from several computers, inventory permissions, favorites and preferred routes | Real-host inventory/availability and large-library qualification |
-| Steam account/host features | Public catalog/achievements/news, optional social context; permissioned host actions; scoped Cloud listing/download/replace/delete; separately authorized and reviewed Families mutations | Valve-issued Cloud approval/configuration, live Families and Cloud qualification; global Cloud settings |
-| Internet streaming | Paired same-Steam-account WSS relay, encrypted IPv4 UDP hole punching, automatic relay fallback and route diagnostics | Operator deployment, current platform builds, real NAT/CGNAT/mobile and throughput qualification; Pyrowave/HDR stay LAN-only |
+| Steam account/host features | Public catalog/achievements/news, optional social context; permissioned host actions; scoped Cloud listing/download/replace/delete; separately authorized and reviewed Families mutations | Valve-issued Cloud approval/configuration, live Families and Cloud qualification; account-global Cloud mutation requires a supported write contract |
+| Internet streaming | Paired same-Steam-account WSS relay, encrypted IPv4 UDP hole punching, automatic relay fallback and route diagnostics | Operator deployment, current platform builds, real NAT/CGNAT/mobile and throughput qualification; opted-in internet Pyrowave/HDR throughput and output qualification |
 
 HDR is advertised only by an opted-in Vulkan or Metal decoder/native-plane path
 that passes its runtime display and format probes. Conventional SDR receivers
@@ -192,3 +192,27 @@ File implementation gaps separately from device failures and skipped tests.
 ## Windows and Apple HDR source checkpoint (2026-10-29)
 
 See [DESKTOP_HDR.md](DESKTOP_HDR.md) for output gating, lifecycle and the device test matrix. Windows Vulkan-enabled cross-compilation/linking and strict adapter syntax checks pass. Apple HDR code and GPU precision tests are integrated but have not run under an Apple SDK here. Do not promote that to a tested Apple build or measured HDR output.
+
+## Follow-through acceptance cases — 2026-10-29
+
+- Unmount/remount a workspace pane during playback. The native receiver ID,
+  route and transport survive; input is neutral while hidden. Rotate Android,
+  replace its Surface and background/foreground it; decoder output recovers.
+  Explicit close and engine destruction still retire the session exactly once.
+- Edit each controller seat's mapping, disabled buttons, stick axes/deadzones and
+  trigger deadzone. Confirm no stuck keys/buttons, isolation between players,
+  persistence across host choices for the same AppID, profile isolation and
+  replay after conventional-codec fallback. Reject malformed native mapping data.
+- Use Steam controls with and without a live input lease. Shift+Tab opens the
+  configured host overlay; test an eligible Remote Play Together game and invite
+  manually in Steam. F12 captures on the host with the default shortcut. Custom
+  or disabled Steam shortcuts must not produce a false success claim.
+- Install on the BC250 with the game already installed on the desktop. Confirm
+  snapshot dates, target exclusion and request-only feedback. In Steam Downloads,
+  verify whether Steam selects LAN transfer; repeat with a stale/offline donor.
+- Test opt-in 4K60 and 1080p120 on capable and incapable hosts/devices. Confirm
+  unchanged defaults on an older saved profile, actual diagnostics, bounded
+  queues and graceful decoder rejection. Verify HDR/chroma independently.
+- Relay old/new ready messages and invalid rate announcements. Confirm request
+  bitrate fits the advertised budget with headroom, including a direct-to-relay
+  transition. Higher relay limits require explicit operator provisioning.

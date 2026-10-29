@@ -112,6 +112,47 @@ void main() {
     expect(saved, isFalse);
   });
 
+  test('host shortcuts require the live input lease and always release modifiers', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      return null;
+    });
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await state('playing');
+    expect(await stream.sendShortcut(SteamStreamShortcut.overlay), isFalse);
+    expect(calls.where((c) => c.method == 'inputKey'), isEmpty);
+    await stream.setInputEnabled(true);
+    expect(await stream.sendShortcut(SteamStreamShortcut.overlay), isTrue);
+    expect(calls.where((c) => c.method == 'inputKey').map((c) => c.arguments), [
+      {'usage': 225, 'key': 'Shift Left', 'down': true},
+      {'usage': 43, 'key': 'Tab', 'down': true},
+      {'usage': 43, 'key': 'Tab', 'down': false},
+      {'usage': 225, 'key': 'Shift Left', 'down': false},
+    ]);
+  });
+
+  test('host shortcut stops on lease loss and releases an acknowledged key', () async {
+    final calls = <MethodCall>[];
+    final stream = session();
+    addTearDown(stream.dispose);
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      if (call.method == 'inputKey' && (call.arguments as Map)['down'] == true) await stream.setInputEnabled(false);
+      return null;
+    });
+    stream.attachPlatformView(99);
+    await state('playing');
+    await stream.setInputEnabled(true);
+    expect(await stream.sendShortcut(SteamStreamShortcut.overlay), isFalse);
+    expect(calls.where((c) => c.method == 'inputKey').map((c) => c.arguments), [
+      {'usage': 225, 'key': 'Shift Left', 'down': true},
+      {'usage': 225, 'key': 'Shift Left', 'down': false},
+    ]);
+  });
+
   test('disconnect acknowledgement permits reconnect after a texture channel retires', () async {
     var stops = 0;
     messenger.setMockMethodCallHandler(channel, (call) async {

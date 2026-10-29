@@ -106,7 +106,7 @@ final class SteamDecoder implements AutoCloseable {
   public synchronized boolean onVideo(int codec, int width, int height, byte[] extra) {
     if (closed)
       return false;
-    if ((codec != 4 && codec != 5 && codec != 9) || width < 1 || height < 1 || width > 1920 || height > 1080
+    if ((codec != 4 && codec != 5 && codec != 9) || width < 1 || height < 1 || width > 3840 || height > 2160
         || extra == null || extra.length > 65536) {
       if (codec == 9)
         rejectPyrowave();
@@ -126,7 +126,7 @@ final class SteamDecoder implements AutoCloseable {
     return accepted;
   }
   public synchronized boolean onFrame(byte[] bytes, int id, boolean key) {
-    if (closed || presentation == null || bytes.length > 2 * 1024 * 1024 || lost.getAndSet(false))
+    if (closed || presentation == null || bytes.length > 8 * 1024 * 1024 || lost.getAndSet(false))
       return false;
     Video frame = new Video();
     frame.bytes = bytes;
@@ -342,9 +342,9 @@ final class SteamDecoder implements AutoCloseable {
           }
           String mime = item.codec == 5 ? MediaFormat.MIMETYPE_VIDEO_HEVC : MediaFormat.MIMETYPE_VIDEO_AVC;
           MediaFormat format = MediaFormat.createVideoFormat(mime, item.width, item.height);
-          format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, 2 * 1024 * 1024);
-          format.setInteger(MediaFormat.KEY_MAX_WIDTH, 1920);
-          format.setInteger(MediaFormat.KEY_MAX_HEIGHT, 1080);
+          format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, 8 * 1024 * 1024);
+          format.setInteger(MediaFormat.KEY_MAX_WIDTH, item.width);
+          format.setInteger(MediaFormat.KEY_MAX_HEIGHT, item.height);
           if (Build.VERSION.SDK_INT >= 30)
             format.setInteger(MediaFormat.KEY_LOW_LATENCY, 1);
           byte[][] parameters = NativeSteam.h26xStart(handle, item.codec, item.bytes);
@@ -450,7 +450,7 @@ final class SteamDecoder implements AutoCloseable {
             MediaFormat actual = decoder.getOutputFormat();
             int width = actual.getInteger(MediaFormat.KEY_WIDTH);
             int height = actual.getInteger(MediaFormat.KEY_HEIGHT);
-            if (width < 1 || width > 1920 || height < 1 || height > 1088)
+            if (width < 1 || width > 3840 || height < 1 || height > 2176)
               throw new IllegalStateException("Decoder dimensions exceed the receiver limit");
             if (Build.VERSION.SDK_INT >= 24) {
               int transfer = actual.containsKey(MediaFormat.KEY_COLOR_TRANSFER)

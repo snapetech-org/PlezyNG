@@ -141,7 +141,7 @@ bool VulkanSink::video(int codec, int width, int height, const uint8_t* bytes, s
   impl_->selected(pyro);
   impl_->pyro = pyro;
   if (!pyro) return impl_->fallback->video(codec, width, height, bytes, length);
-  if (width < 2 || height < 2 || width > 1920 || height > 1080 || (width & 1) || (height & 1) || length > 65536 ||
+  if (width < 2 || height < 2 || width > 3840 || height > 2160 || (width & 1) || (height & 1) || length > 65536 ||
       (length && !bytes))
     return false;
   std::deque<Impl::Frame> abandoned;
@@ -160,7 +160,7 @@ bool VulkanSink::video(int codec, int width, int height, const uint8_t* bytes, s
 }
 bool VulkanSink::frame(const uint8_t* bytes, size_t length, uint32_t id, bool key) {
   if (!impl_->pyro) return impl_->fallback->frame(bytes, length, id, key);
-  if (!bytes || !length || length > 2 * 1024 * 1024) return false;
+  if (!bytes || !length || length > 8 * 1024 * 1024) return false;
   std::lock_guard<std::mutex> lock(impl_->mutex);
   if (impl_->stopping || !impl_->available || impl_->frames.size() >= 4) return false;
   impl_->frames.push_back({std::vector<uint8_t>(bytes, bytes + length), id});

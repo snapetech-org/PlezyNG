@@ -149,7 +149,7 @@ class JavaSink final : public Sink {
     return false;  // Decoder failure is returned to the transport.
   }
   static jbyteArray bytes(JNIEnv* env, const uint8_t* data, size_t length) {
-    if (length > 2 * 1024 * 1024 || (length && !data)) return nullptr;
+    if (length > 8 * 1024 * 1024 || (length && !data)) return nullptr;
     auto result = env->NewByteArray(static_cast<jsize>(length));
     if (!result) {
       healthy(env);
@@ -327,7 +327,7 @@ JNI(gpuConfigure)(JNIEnv* env, jclass, jlong id, jint width, jint height, jbyteA
 }
 extern "C" JNIEXPORT jint JNICALL JNI(gpuPresent)(JNIEnv* env, jclass, jlong id, jbyteArray data) {
   auto output = gpuOutput(id);
-  if (!output || !data || env->GetArrayLength(data) > 2 * 1024 * 1024) return -1;
+  if (!output || !data || env->GetArrayLength(data) > 8 * 1024 * 1024) return -1;
   try {
     std::vector<uint8_t> bytes(env->GetArrayLength(data));
     env->GetByteArrayRegion(data, 0, bytes.size(), reinterpret_cast<jbyte*>(bytes.data()));
@@ -389,12 +389,12 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI(h26xFrame)(JNIEnv* env, jclass, jlon
   auto runtime = get(id);
   if (!runtime || !input) return nullptr;
   const auto length = env->GetArrayLength(input);
-  if (length <= 0 || length > 2 * 1024 * 1024) return nullptr;
+  if (length <= 0 || length > 8 * 1024 * 1024) return nullptr;
   try {
     std::vector<uint8_t> bytes(static_cast<size_t>(length)), normalized;
     env->GetByteArrayRegion(input, 0, length, reinterpret_cast<jbyte*>(bytes.data()));
     if (env->ExceptionCheck() || !runtime->normalizeH26x(bytes.data(), bytes.size(), normalized) ||
-        normalized.size() > 2 * 1024 * 1024)
+        normalized.size() > 8 * 1024 * 1024)
       return nullptr;
     auto output = env->NewByteArray(static_cast<jsize>(normalized.size()));
     if (output && !normalized.empty())
@@ -409,7 +409,7 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI(h26xFrame)(JNIEnv* env, jclass, jlon
 extern "C" JNIEXPORT jboolean JNICALL
 JNI(pyrowaveStart)(JNIEnv* env, jclass, jlong id, jint width, jint height, jbyteArray initial) {
   auto r = get(id);
-  if (!r || width < 2 || height < 2 || width > 1920 || height > 1080 || !initial ||
+  if (!r || width < 2 || height < 2 || width > 3840 || height > 2160 || !initial ||
       env->GetArrayLength(initial) > 65536)
     return JNI_FALSE;
   try {
@@ -426,7 +426,7 @@ JNI(pyrowaveStart)(JNIEnv* env, jclass, jlong id, jint width, jint height, jbyte
 }
 extern "C" JNIEXPORT jbyteArray JNICALL JNI(pyrowaveDecode)(JNIEnv* env, jclass, jlong id, jbyteArray input) {
   auto r = get(id);
-  if (!r || !input || env->GetArrayLength(input) <= 0 || env->GetArrayLength(input) > 2 * 1024 * 1024) {
+  if (!r || !input || env->GetArrayLength(input) <= 0 || env->GetArrayLength(input) > 8 * 1024 * 1024) {
     fail(env, -1);
     return nullptr;
   }

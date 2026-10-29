@@ -11,6 +11,7 @@
     public java.util.Map getStreamMetrics();
     public boolean isFailed();
     public void toggleTouchControls();
+    public boolean setControllerMapping(int, java.util.List);
     public void setControllerState(java.util.Map, java.util.Map);
     public void setControllerDeviceState(int, java.util.Map, java.util.Map);
     public void disconnectController(int);

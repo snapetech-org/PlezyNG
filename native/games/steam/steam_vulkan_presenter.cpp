@@ -37,31 +37,33 @@ struct wl_surface;
 namespace plezy::steam {
 namespace {
 constexpr uint64_t kGpuTimeout = 250000000;  // 250ms; never block the receiver on a hung frame.
-#define INSTANCE_FUNCTIONS(X)                                                                                  \
-  X(DestroyInstance)                                                                                           \
-  X(EnumeratePhysicalDevices)                                                                                  \
-  X(GetPhysicalDeviceProperties)                                                                               \
-  X(GetPhysicalDeviceFeatures2) X(GetPhysicalDeviceQueueFamilyProperties) X(GetPhysicalDeviceMemoryProperties) \
-      X(GetPhysicalDeviceFormatProperties) X(GetPhysicalDeviceSurfaceSupportKHR)                               \
-          X(GetPhysicalDeviceSurfaceCapabilitiesKHR) X(GetPhysicalDeviceSurfaceFormatsKHR)                     \
-              X(EnumerateDeviceExtensionProperties) X(CreateDevice) X(GetDeviceProcAddr) X(DestroySurfaceKHR)
-#define DEVICE_FUNCTIONS(X)                                                                                         \
-  X(DestroyDevice)                                                                                                  \
-  X(GetDeviceQueue)                                                                                                 \
-  X(DeviceWaitIdle)                                                                                                 \
-  X(CreateSwapchainKHR) X(DestroySwapchainKHR) X(GetSwapchainImagesKHR) X(AcquireNextImageKHR) X(QueuePresentKHR)   \
-      X(QueueSubmit) X(CreateCommandPool) X(DestroyCommandPool) X(AllocateCommandBuffers) X(ResetCommandPool)       \
-          X(BeginCommandBuffer) X(EndCommandBuffer) X(CreateFence) X(DestroyFence) X(WaitForFences) X(ResetFences)  \
-              X(CreateSemaphore) X(DestroySemaphore) X(CreateImage) X(DestroyImage) X(GetImageMemoryRequirements)   \
-                  X(AllocateMemory) X(FreeMemory) X(BindImageMemory) X(CreateImageView) X(DestroyImageView)         \
-                      X(CreateSampler) X(DestroySampler) X(CreateDescriptorSetLayout) X(DestroyDescriptorSetLayout) \
-                          X(CreateDescriptorPool) X(DestroyDescriptorPool) X(AllocateDescriptorSets)                \
-                              X(UpdateDescriptorSets) X(CreatePipelineLayout) X(DestroyPipelineLayout)              \
-                                  X(CreateShaderModule) X(DestroyShaderModule) X(CreateRenderPass)                  \
-                                      X(DestroyRenderPass) X(CreateGraphicsPipelines) X(DestroyPipeline)            \
-                                          X(CreateFramebuffer) X(DestroyFramebuffer) X(CmdPipelineBarrier)          \
-                                              X(CmdBeginRenderPass) X(CmdEndRenderPass) X(CmdBindPipeline)          \
-                                                  X(CmdBindDescriptorSets) X(CmdPushConstants) X(CmdSetViewport)    \
+#define INSTANCE_FUNCTIONS(X)                                                                                         \
+  X(DestroyInstance)                                                                                                  \
+  X(EnumeratePhysicalDevices)                                                                                         \
+  X(GetPhysicalDeviceProperties)                                                                                      \
+  X(GetPhysicalDeviceFeatures2)                                                                                       \
+  X(GetPhysicalDeviceQueueFamilyProperties) X(GetPhysicalDeviceMemoryProperties) X(GetPhysicalDeviceFormatProperties) \
+      X(GetPhysicalDeviceSurfaceSupportKHR) X(GetPhysicalDeviceSurfaceCapabilitiesKHR)                                \
+          X(GetPhysicalDeviceSurfaceFormatsKHR) X(EnumerateDeviceExtensionProperties) X(CreateDevice)                 \
+              X(GetDeviceProcAddr) X(DestroySurfaceKHR)
+#define DEVICE_FUNCTIONS(X)                                                                                          \
+  X(DestroyDevice)                                                                                                   \
+  X(GetDeviceQueue)                                                                                                  \
+  X(DeviceWaitIdle)                                                                                                  \
+  X(CreateSwapchainKHR)                                                                                              \
+  X(DestroySwapchainKHR) X(GetSwapchainImagesKHR) X(AcquireNextImageKHR) X(QueuePresentKHR) X(QueueSubmit)           \
+      X(CreateCommandPool) X(DestroyCommandPool) X(AllocateCommandBuffers) X(ResetCommandPool) X(BeginCommandBuffer) \
+          X(EndCommandBuffer) X(CreateFence) X(DestroyFence) X(WaitForFences) X(ResetFences) X(CreateSemaphore)      \
+              X(DestroySemaphore) X(CreateImage) X(DestroyImage) X(GetImageMemoryRequirements) X(AllocateMemory)     \
+                  X(FreeMemory) X(BindImageMemory) X(CreateImageView) X(DestroyImageView) X(CreateSampler)           \
+                      X(DestroySampler) X(CreateDescriptorSetLayout) X(DestroyDescriptorSetLayout)                   \
+                          X(CreateDescriptorPool) X(DestroyDescriptorPool) X(AllocateDescriptorSets)                 \
+                              X(UpdateDescriptorSets) X(CreatePipelineLayout) X(DestroyPipelineLayout)               \
+                                  X(CreateShaderModule) X(DestroyShaderModule) X(CreateRenderPass)                   \
+                                      X(DestroyRenderPass) X(CreateGraphicsPipelines) X(DestroyPipeline)             \
+                                          X(CreateFramebuffer) X(DestroyFramebuffer) X(CmdPipelineBarrier)           \
+                                              X(CmdBeginRenderPass) X(CmdEndRenderPass) X(CmdBindPipeline)           \
+                                                  X(CmdBindDescriptorSets) X(CmdPushConstants) X(CmdSetViewport)     \
                                                       X(CmdSetScissor) X(CmdDraw)
 struct Dispatch {
   PFN_vkGetInstanceProcAddr GetInstanceProcAddr = nullptr;
@@ -773,7 +775,7 @@ bool VulkanPresenter::open(GpuWindow window, bool allowHdr10) {
 bool VulkanPresenter::supportsHdr10() const { return impl_->hdrSupported; }
 bool VulkanPresenter::hdr10Active() const { return impl_->hdrActive; }
 bool VulkanPresenter::configure(int width, int height, const uint8_t* initial, size_t length) {
-  if (impl_->failed || !impl_->pyro || width < 2 || height < 2 || width > 1920 || height > 1080 || (width & 1) ||
+  if (impl_->failed || !impl_->pyro || width < 2 || height < 2 || width > 3840 || height > 2160 || (width & 1) ||
       (height & 1) || length > 65536 || (length && !initial))
     return false;
   PyrowaveFrameInfo info;

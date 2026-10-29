@@ -28,7 +28,11 @@ class SteamInputProfile {
   factory SteamInputProfile.decode(String text) {
     if (text.length > 4096) throw const FormatException('Input profile too large');
     final value = jsonDecode(text);
-    if (value is! Map || value.length != 2 || value['version'] != 1 || value['seats'] is! List) {
+    if (value is! Map ||
+        value.length != 2 ||
+        value['version'] is! int ||
+        value['version'] != 1 ||
+        value['seats'] is! List) {
       throw const FormatException('Invalid input profile');
     }
     final seats = value['seats'] as List;

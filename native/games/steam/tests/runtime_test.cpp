@@ -287,12 +287,16 @@ int main() {
   c.device = 123;
   c.user = 456;
   c.key.fill(42);
+  assert((StreamOptions{3840, 2160, 60, 80000}).valid());
+  assert((StreamOptions{1920, 1080, 120, 50000}).valid());
+  assert(!(StreamOptions{3842, 2160, 60, 80000}).valid());
+  assert(!(StreamOptions{3840, 2162, 60, 80000}).valid());
   Runtime invalid;
   for (const auto& options :
        {StreamOptions{0, 1080, 60, 30000},
         {1920, 1081, 60, 30000},
-        {1920, 1080, 120, 30000},
-        {1920, 1080, 60, 50001},
+        {1920, 1080, 121, 30000},
+        {1920, 1080, 60, 100001},
         {1920, 1080, 60, 30000, 0},
         {1920, 1080, 60, 30000, 5},
         {1920, 1080, 60, 30000, 1, 3}}) {

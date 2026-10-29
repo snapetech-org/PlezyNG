@@ -10,6 +10,18 @@ import prepare_apple_sdk as sdk
 
 
 class AppleSdkPreparationTests(unittest.TestCase):
+    def test_probe_uses_the_actual_embedded_conversion_and_presentation_shaders(self):
+        converter = (sdk.ROOT / "native/games/apple/SteamMetalPyrowave.mm").read_text()
+        presenter = (sdk.ROOT / "native/games/apple/PlezySteamPlugin.mm").read_text()
+        shaders = sdk.application_shaders(converter, presenter)
+        self.assertIn("kernel void convert(", shaders["conversion"])
+        self.assertIn("vertex V screen(", shaders["presentation"])
+        self.assertIn("fragment float4 color(", shaders["presentation"])
+        self.assertIn("#include <metal_stdlib>\n", shaders["presentation"])
+        for missing in (("", presenter), (converter, "")):
+            with self.assertRaisesRegex(ValueError, "shader declarations changed"):
+                sdk.application_shaders(*missing)
+
     def test_targets_preserve_deployment_minimums_and_simulator_identity(self):
         expected = {
             "macosx": "arm64-apple-macosx14.0",

@@ -4,6 +4,11 @@ PR: [#81](https://github.com/snapetech-org/PlezyNG/pull/81)
 
 Branch: `codex/steam-vulkan-cloud-relay-20261028`
 
+Start with [SDK_BUILD_HANDOFF.md](SDK_BUILD_HANDOFF.md) for SDK acquisition,
+platform preparation, reproducible native build commands and build-agent
+receipts. Android JNI builds now pass for all four ABIs and the Kotlin bridge
+compiles against real SDK APIs; full application packaging remains a gate.
+
 ## What this handoff covers
 
 PRs #54 and #71 have merged. This follow-up adds native Vulkan/HDR10 reception,
@@ -152,8 +157,10 @@ framing. A missing plugin is a provisioning failure, not a passing test.
    actual host result separately from submission. Follow
    [STEAM_CLOUD.md](STEAM_CLOUD.md) with a disposable authorized save for the
    separate read/write grants, conflict, cancellation and ambiguous-result cases.
-   Disabled/older servers keep the confirmed browser fallback. Families remains
-   a fixed Steam destination and must never claim a programmatic mutation.
+   Disabled/older servers keep the confirmed Steam fallback. When separately
+   enabled and authorized, qualify the implemented Families mutations using
+   [STEAM_FAMILIES.md](STEAM_FAMILIES.md); a submitted request must never be
+   described as an observed account change.
 8. **Accessibility and older builds.** Test screen readers, keyboard-only and
    remote-only use, 2× text, RTL, narrow portrait/landscape, high contrast and
    existing light/dark themes. Focus must return to the opening control after a
@@ -240,8 +247,10 @@ unavailable without prompting or advertising a microphone channel.
 Use [STEAM_CONTROLLERS.md](STEAM_CONTROLLERS.md) for capability and ownership
 contracts. Build the vendored gamepad plugin on every target as part of the app;
 Windows now pins SDL3 to an immutable commit and uses C++20 for Flutter's
-current event-channel headers. Apple SDK compilation and Kotlin/Gradle/NDK
-compilation are required gates, not inferred from C++ syntax or Java checks.
+current event-channel headers. Apple SDK compilation and full Gradle app
+packaging remain required gates. The SDK preparation checkpoint separately
+records successful real NDK builds and Kotlin adapter compilation; neither
+substitutes for packaged app execution.
 
 - Exercise one through four controllers, USB/Bluetooth hot-plug and OS ID reuse.
   Rumble must affect the correct physical controller and stop on focus/dialog/

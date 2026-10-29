@@ -4,6 +4,11 @@ This ledger tracks the implemented receiver/client scope and external API bounda
 does not replace the SDK build and real-device acceptance cases in
 [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md).
 
+[SDK_BUILD_HANDOFF.md](SDK_BUILD_HANDOFF.md) provides SDK acquisition and
+preparation scripts, exact platform commands and build-agent assignments. All
+four Android JNI ABIs and the Kotlin bridge now compile against real SDKs;
+full application packages and native Windows/Apple builds remain separate gates.
+
 ## Implemented in this follow-through
 
 - Desktop/Apple receiver creation and teardown are owned by the workspace
@@ -83,6 +88,13 @@ does not replace the SDK build and real-device acceptance cases in
   increase/decrease actions as one accessible control.
 
 ## Remaining contracts and qualification
+
+- SDK preparation is implemented: checksum-verified Android host tools and all
+  vendored-module pins; NDK/JNI/ELF artifact inspection; Linux development/codec
+  preflight; Windows VS/SDK provisioning and verification; process-local Xcode,
+  Metal and actual Apple source probes. Private-runner CI invokes these checks
+  and preserves receipts. Windows/Apple host execution and the amended workflows
+  have not run in this Linux development environment.
 
 - Cloud settings: public Steamworks exposes account-wide read access and an
   app-scoped setter for the calling game's own AppID. A general account-wide

@@ -1,5 +1,72 @@
 # Games validation and release gates
 
+## SDK preparation and real Android compilation — 2026-10-29
+
+[SDK_BUILD_HANDOFF.md](SDK_BUILD_HANDOFF.md) contains the committed platform
+preparation, build commands and agent acceptance criteria. These checks extend
+the earlier source checkpoints below; no full Apple/Windows build or hardware
+result is inferred from them.
+
+- Official Android command-line tools **22.0 / 15859902** were downloaded and
+  checked against Google's published SHA-256. JDK **21.0.12**, build tools
+  **36.1.0**, NDK **29.0.14206865**, CMake **3.22.1/4.1.2** and platform APIs
+  **34, 35, 36, 37.0** were installed and verified. Vendored plugins' older SDK
+  declarations are included. Real installation exposed malformed nested legacy
+  platform directories; the guarded repair and serial installer were exercised.
+- The actual Steam JNI runtime, crypto/transport, Opus, Granite and direct
+  Vulkan/Pyrowave path compile and link in Release for **arm64-v8a,
+  armeabi-v7a, x86 and x86_64** with the pinned NDK/CMake and requested native
+  API 25. Each artifact exports all **42** required JNI entry points, has the
+  correct ELF machine, and has no text relocations or runtime search paths.
+  ARM64 and x86_64 LOAD segments meet **16 KB** alignment; 32-bit targets retain
+  compatible 4 KB alignment. These are standalone JNI builds, not APK/AAB builds.
+- The vendored controller's Java and all Kotlin sources compile against its
+  declared **API 34** and the real Flutter **3.47.1** embedding. The actual
+  `SteamStreamPlatformViewFactory.kt` compiles against **API 37.0**. Kotlin
+  **2.4.10** and JDK 21 were used. The two compatibility vibrator deprecations
+  remain; Kotlin compilation produced no diagnostics. Gradle dependency
+  resolution, app resources, R8, signing and package execution are still gates.
+- Linux SDK preflight passes with GTK **3.24.41**, libsecret **0.21.4**, libevdev
+  **1.13.1**, Wayland **1.22.0**, EGL **1.5**, GStreamer **1.24.2**, Vulkan
+  **1.3.275** and CMake **3.28.3**. Real GStreamer inspection finds all required
+  elements, including H.264/H.265 decoding/parsing, capture/playback endpoints
+  and the OpenH264 test encoder. This does not access a microphone or qualify
+  a display/GPU.
+- The official VS 2022 bootstrapper was downloaded and SHA-256 verified. The
+  Windows script parses under PowerShell **7.4.19**, and its non-Windows refusal
+  executes correctly. Microsoft Windows SDK **10.0.26100.9457** package contents
+  were inspected to confirm receiver import-library names. Actual installation,
+  Windows Authenticode verification, MSVC compilation and execution have not run.
+- **39 Python tests pass**: 14 shared Android SDK tests and 25 Games preparation,
+  archive and artifact checks. Cases include checksum/traversal/link rejection,
+  platform layout identity, partial installs, preserved Apple archives, wrong
+  Xcode selection, bundled/downloaded Metal, failed-receipt invalidation, actual
+  shader extraction, ABI/JNI/alignment rejection and missing Linux codecs.
+- Workflow action-pin, architecture/private-runner and security checks pass.
+  The existing private jobs now invoke SDK preflight/probes and preserve receipts;
+  Linux image dependencies cover the codec and shader tools. Runner routing,
+  trust, manual dispatch and hosted-fallback policy are unchanged. No workflow
+  was dispatched and no runner image/service was deployed by this preparation.
+
+Standalone JNI artifact SHA-256 values (unstripped development outputs, not
+release-distribution checksums):
+
+| ABI | SHA-256 |
+| --- | --- |
+| arm64-v8a | `b520538c076840080e2e70b4a3cf06f067344b263f667e5ca16c75de87377c8d` |
+| armeabi-v7a | `b32accda046b515a47136368c36704a5958714ec712c0dee03174e610c17431d` |
+| x86 | `0ade78329a4323bc02b356e843c209eaf670de9eaa0aee9d311b9e363a5dc01b` |
+| x86_64 | `1a9d112634169174ed2d95e7145d1287f4a5b7274476e01fca22220aefd8c03f` |
+
+Application/native source is unchanged from the preceding ownership checkpoint;
+SDK scripts and CI preparation are the changes in this pass. Historical Flutter,
+native runtime and Go results below still identify their original checks.
+Apple's real Xcode SDKs must be provisioned on Mac agents; unit-tested command
+construction is not Apple compilation. Full Gradle packages, MSVC, Xcode,
+hardware, live accounts and service deployment remain the handoff gates.
+
+## Earlier source checkpoints
+
 Current source checkpoint is [PR #81](https://github.com/snapetech-org/PlezyNG/pull/81):
 [Vulkan/HDR10](VULKAN_RECEIVER.md), [Cloud files](STEAM_CLOUD.md) and
 [paired internet streaming](STEAM_INTERNET.md), [Windows/Apple HDR](DESKTOP_HDR.md)

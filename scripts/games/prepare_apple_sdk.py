@@ -113,6 +113,17 @@ def inspect(env: dict[str, str], sdk: str, arch: str, required_build: str | None
             "sourceProbesPassed": False, "flutterAdapterChecked": False}
 
 
+def application_shaders(converter: str, presenter: str) -> dict[str, str]:
+    conversion = re.search(r'constexpr char convertShader\[\]\s*=\s*R"metal\((.*?)\)metal";', converter, re.DOTALL)
+    presentation = re.search(r'static NSString\* shader\s*=\s*@((?:"(?:\\.|[^"\\])*"\s*)+);', presenter)
+    if not conversion or not presentation:
+        raise ValueError("Receiver shader declarations changed; update the SDK probe to compile their actual sources")
+    # These C string literals use JSON-compatible escapes. Decode each fragment
+    # instead of maintaining an independent copy of the production shader.
+    fragments = re.findall(r'"(?:\\.|[^"\\])*"', presentation[1])
+    return {"conversion": conversion[1], "presentation": "".join(json.loads(fragment) for fragment in fragments)}
+
+
 def probe(report: dict, env: dict[str, str], flutter_framework: Path | None) -> None:
     run([os.sys.executable, str(ROOT / "scripts/games/prepare_steam.py")], env)
     source = ROOT / ".dart_tool/games/steam"
@@ -145,13 +156,19 @@ def probe(report: dict, env: dict[str, str], flutter_framework: Path | None) -> 
         report["flutterAdapterChecked"] = True
         checked.append("native/games/apple/PlezySteamPlugin.mm")
     with tempfile.TemporaryDirectory(prefix="plezy-steam-metal-") as temporary:
-        air, library = Path(temporary) / "probe.air", Path(temporary) / "probe.metallib"
-        run(["xcrun", "--sdk", report["sdk"], "metal", "-c", str(ROOT / "scripts/games/probes/receiver.metal"),
-             "-o", str(air)], env)
-        run(["xcrun", "--sdk", report["sdk"], "metallib", str(air), "-o", str(library)], env)
+        shaders = application_shaders((ROOT / "native/games/apple/SteamMetalPyrowave.mm").read_text(),
+                                      (ROOT / "native/games/apple/PlezySteamPlugin.mm").read_text())
+        objects = []
+        for name, code in shaders.items():
+            source, air = Path(temporary) / f"{name}.metal", Path(temporary) / f"{name}.air"
+            source.write_text(code)
+            run(["xcrun", "--sdk", report["sdk"], "metal", "-c", str(source), "-o", str(air)], env)
+            objects.append(str(air))
+        library = Path(temporary) / "receiver.metallib"
+        run(["xcrun", "--sdk", report["sdk"], "metallib", *objects, "-o", str(library)], env)
         if not library.is_file() or library.stat().st_size == 0:
             raise ValueError("Metal SDK did not produce a library")
-    report.update(sourceProbesPassed=True, checkedSources=checked)
+    report.update(sourceProbesPassed=True, checkedSources=checked, metalShadersChecked=list(shaders))
 
 
 def write_report(path: Path, report: dict) -> None:

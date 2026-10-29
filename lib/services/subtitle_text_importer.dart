@@ -21,7 +21,7 @@ final class SubtitleTextImport {
 /// Layout/style flattening is explicit; unsupported timing is refused instead
 /// of silently approximated. Originals are never rewritten.
 abstract final class SubtitleTextImporter {
-  static const extensions = ['srt', 'vtt', 'ass', 'ssa', 'ttml', 'dfxp', 'imsc', 'xml', 'smi', 'sami', 'sub', 'sbv', 'lrc', 'mpl', 'scc'];
+  static const extensions = ['srt', 'vtt', 'ass', 'ssa', 'ttml', 'dfxp', 'imsc', 'xml', 'smi', 'sami', 'sub', 'sbv', 'lrc', 'mpl', 'scc', 'sc2'];
   static const nativeTextExtensions = {'.srt', '.vtt', '.ass', '.ssa'};
 
   /// Materialize translated strings before parsing on a worker isolate.
@@ -171,7 +171,7 @@ abstract final class SubtitleTextImporter {
       _ttml(text, add, localizedMessages);
       warnings.add(_message(localizedMessages, 'subtitleImportTtmlFlattenWarning',
         'TTML/IMSC text and timed spans are flattened to SRT. Regions, fonts, ruby, styling and writing modes stay only in the original; image profiles and non-media clocks are refused.'));
-    } else if (format == '.scc') {
+    } else if (format == '.scc' || format == '.sc2') {
       SubtitleSccDecoder.decode(text, add, warnings, channel: sccChannel, ntsc: sccNtsc,
         clockOriginMs: sccClockOriginMs, finalDurationMs: finalCueDurationMs, messages: localizedMessages);
     } else if (format == '.sub') {

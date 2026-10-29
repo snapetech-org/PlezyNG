@@ -16,13 +16,14 @@ abstract final class SubtitleSccDecoder {
     required int channel, required bool ntsc, required int clockOriginMs, required int finalDurationMs,
     Map<String, String>? messages,
   }) {
-    if (channel < 1 || channel > 2 || clockOriginMs < 0 || clockOriginMs > 86400000) {
-      throw FormatException(_message(messages, 'subtitleImportSccChannelRangeError', 'Choose SCC channel 1 or 2 and a clock origin from 0 to 86400000 ms.'));
+    if (channel < 1 || channel > 4 || clockOriginMs < 0 || clockOriginMs > 86400000) {
+      throw FormatException(_message(messages, 'subtitleImportSccChannelRangeError', 'Choose a CEA-608 service from CC1 to CC4 and a clock origin from 0 to 86400000 ms.'));
     }
+    final channelWithinField = ((channel - 1) % 2) + 1;
     final lines = const LineSplitter().convert(text);
     var header = false, packets = 0, previousFrame = -1, lastMs = 0;
     bool? dropFrame;
-    final decoder = _SccChannel(channel, add, messages);
+    final decoder = _SccChannel(channelWithinField, add, messages);
     for (var index = 0; index < lines.length; index++) {
       final line = lines[index].trim();
       if (line.isEmpty) continue;
@@ -59,8 +60,8 @@ abstract final class SubtitleSccDecoder {
     }
     if (!header || packets == 0) throw FormatException(_message(messages, 'subtitleImportSccNoPacketsError', 'SCC has no caption packets.'));
     decoder.finish(math.min(SubtitleRetimer.maximumTimeMs, lastMs + finalDurationMs));
-    warnings.add(_message(messages, 'subtitleImportSccDecodedSummary', 'SCC channel {channel} in the supplied field; {fps} fps, {frameType} labels, clock origin {clockOrigin} ms. Byte pairs advance one frame each; parity is checked.', {
-      'channel': channel, 'fps': ntsc ? '30000/1001' : '30',
+    warnings.add(_message(messages, 'subtitleImportSccDecodedSummary', 'SCC {channel} service; {fps} fps, {frameType} labels, clock origin {clockOrigin} ms. Byte pairs advance one frame each; parity is checked.', {
+      'channel': 'CC$channel', 'fps': ntsc ? '30000/1001' : '30',
       'frameType': _message(messages, dropFrame == true ? 'subtitleImportSccDropFrameLabel' : 'subtitleImportSccNonDropFrameLabel', dropFrame == true ? 'drop-frame' : 'non-drop-frame'),
       'clockOrigin': clockOriginMs,
     }));
@@ -129,6 +130,9 @@ class _SccChannel {
       // The channel bit is meaningful on a CEA-608 control pair. PAC/address
       // and character pairs reuse the same byte bits for their own payload;
       // interpreting those as a channel change can discard valid captions.
+      // Each selected SCC input represents one field. The control-pair bit 3
+      // selects channel 1 or 2 within that field; the import choice maps the
+      // field/channel pair to CC1 through CC4.
       _channel = ((a >> 3) & 1) + 1;
       final pair = (a << 8) | b;
       if (_lastPair == pair) { _lastPair = -1; return; }

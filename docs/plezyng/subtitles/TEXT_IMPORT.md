@@ -16,7 +16,7 @@ original.
 | SBV | Explicit start/end clock pairs and multiline text. |
 | LRC | Repeated line timestamps, explicit offset, next timestamp as end. Enhanced word markers are flattened, not represented as verified word timings. |
 | MPL2 | Decisecond start/end, line separators and per-line italic markers. |
-| SCC | Explicit channel within the supplied field, 30000/1001 or 30 fps, validated drop/non-drop timecode and optional clock-origin subtraction. Odd parity, frame-ordered byte pairs, pop-on memory swaps, paint-on updates and 2/3/4-row roll-up produce text-screen snapshots. Positions/styles are flattened; XDS, TEXT and 708 are refused. |
+| SCC/SC2 | Explicit CEA-608 service choice (CC1–CC4), 30000/1001 or 30 fps, validated drop/non-drop timecode and optional clock-origin subtraction. Odd parity, frame-ordered byte pairs, pop-on memory swaps, paint-on updates and 2/3/4-row roll-up produce text-screen snapshots. Positions/styles are flattened; XDS, TEXT and 708 are refused. |
 
 SCC's generated SRT keeps literal caption characters entity-escaped so they are
 not interpreted as authored subtitle markup. The review preview decodes those
@@ -62,11 +62,15 @@ milliseconds after conversion; no first-caption or one-hour origin is guessed.
 For example a 01:00:00:00 non-drop label at 30000/1001 is 3603600 elapsed ms.
 Negative-origin preroll updates memory but only visible time at/after zero is
 exported. Final visible text without a clear uses the selected tail duration.
+The service selector maps CC1/CC2 to field 1 and CC3/CC4 to field 2; the byte
+pair control bit selects channel 1 or 2 within the chosen field. SC2 files
+default to CC3 and remain editable in the preview.
 
 Two 15x32 memories and their cursors retain loading/displayed state. Repeated
-control transmissions are suppressed. CC1/CC2 selection changes only on a
-recognized control pair; PAC/address and character bytes cannot switch the
-active channel. Non-caption services and unsupported pairs fail explicitly.
+control transmissions are suppressed. The selector covers CC1–CC4; the
+selected service changes only on a recognized control pair. PAC/address and
+character bytes cannot switch it. Non-caption services and unsupported pairs
+fail explicitly.
 The conversion bounds packets (500000), source lines
 (32768 characters), resulting text (5 MiB), and snapshots (50000). Rapid paint-on
 updates can therefore reach the output limit before a long program ends. This

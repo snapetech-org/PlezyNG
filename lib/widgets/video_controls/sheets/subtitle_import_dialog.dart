@@ -33,6 +33,7 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
   @override
   void initState() {
     super.initState();
+    if (widget.extension.toLowerCase() == '.sc2') _sccChannel = 3;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) unawaited(_preview());
     });
@@ -87,10 +88,11 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
             onChanged: (_) => _invalidate()),
           if (const {'.smi', '.sami'}.contains(widget.extension)) TextField(controller: _samiClass, maxLength: 128,
             decoration: InputDecoration(labelText: t.videoControls.subtitleImportSamiClass, helperText: t.videoControls.subtitleImportSamiClassHint), onChanged: (_) => _invalidate()),
-          if (widget.extension == '.scc') ...[
+          if (const {'.scc', '.sc2'}.contains(widget.extension.toLowerCase())) ...[
             DropdownButtonFormField<int>(initialValue: _sccChannel,
               decoration: InputDecoration(labelText: t.videoControls.subtitleImportSccChannel),
-              items: [DropdownMenuItem(value: 1, child: Text(t.videoControls.subtitleImportChannel1)), DropdownMenuItem(value: 2, child: Text(t.videoControls.subtitleImportChannel2))],
+              items: [for (var channel = 1; channel <= 4; channel++)
+                DropdownMenuItem(value: channel, child: Text('CC$channel'))],
               onChanged: _parsing ? null : (value) { _sccChannel = value ?? 1; _invalidate(); }),
             DropdownButtonFormField<bool>(initialValue: _sccNtsc,
               decoration: InputDecoration(labelText: t.videoControls.subtitleImportSccFrameClock),
@@ -102,7 +104,7 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
                 helperText: t.videoControls.subtitleImportSccClockOriginHint),
               onChanged: (_) => _invalidate()),
           ],
-          if (const {'.smi', '.sami', '.lrc', '.scc'}.contains(widget.extension)) TextField(controller: _tail, maxLength: 5,
+          if (const {'.smi', '.sami', '.lrc', '.scc', '.sc2'}.contains(widget.extension.toLowerCase())) TextField(controller: _tail, maxLength: 5,
             keyboardType: TextInputType.number, decoration: InputDecoration(labelText: t.videoControls.subtitleImportFinalCueDuration),
             onChanged: (_) => _invalidate()),
           const SizedBox(height: 10),
@@ -113,7 +115,7 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
             Text(t.videoControls.subtitleImportCueSummary(count: count)),
             for (final warning in result.warnings) Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Text(warning)),
             for (final index in sample) ListTile(dense: true,
-              title: SelectableText(widget.extension.toLowerCase() == '.scc'
+              title: SelectableText(const {'.scc', '.sc2'}.contains(widget.extension.toLowerCase())
                   ? SubtitleTextImporter.decodeHtmlEntities(result.cues[index].text)
                   : result.cues[index].text),
               subtitle: Text('${Duration(milliseconds: result.cues[index].startMs)} → ${Duration(milliseconds: result.cues[index].endMs)}')),

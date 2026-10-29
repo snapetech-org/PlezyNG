@@ -1404,7 +1404,7 @@ See VOCAL-NOTES.md for limits and remaining evidence needs.
 
 ## SCC and broader source-folder text import
 
-The shared importer now decodes bounded SCC channel text with explicit frame
+The shared importer now decodes bounded SCC CC1–CC4 service text with explicit frame
 clock/origin, parity checks and 608 displayed/non-displayed memories. Its preview
 exposes channel and final-tail choices; styles/positions and unsupported service
 semantics remain declared limits. Source-folder discovery now offers the other

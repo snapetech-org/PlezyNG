@@ -3416,8 +3416,8 @@ class Translations$videoControls$en {
 	/// en: 'The preview lists the classes declared in the file.'
 	String get subtitleImportSamiClassHint => 'The preview lists the classes declared in the file.';
 
-	/// en: 'Channel within the supplied SCC field'
-	String get subtitleImportSccChannel => 'Channel within the supplied SCC field';
+	/// en: 'CEA-608 caption service'
+	String get subtitleImportSccChannel => 'CEA-608 caption service';
 
 	/// en: 'Channel 1'
 	String get subtitleImportChannel1 => 'Channel 1';
@@ -3499,8 +3499,8 @@ class Translations$videoControls$en {
 
 	/// en: 'Add language annotation'
 	String get subtitleLanguageAddAction => 'Add language annotation';
-	/// en: 'Choose SCC channel 1 or 2 and a clock origin from 0 to 86400000 ms.'
-	String get subtitleImportSccChannelRangeError => 'Choose SCC channel 1 or 2 and a clock origin from 0 to 86400000 ms.';
+	/// en: 'Choose a CEA-608 service from CC1 to CC4 and a clock origin from 0 to 86400000 ms.'
+	String get subtitleImportSccChannelRangeError => 'Choose a CEA-608 service from CC1 to CC4 and a clock origin from 0 to 86400000 ms.';
 
 	/// en: 'Missing Scenarist_SCC V1.0 header.'
 	String get subtitleImportSccMissingHeaderError => 'Missing Scenarist_SCC V1.0 header.';
@@ -3547,8 +3547,8 @@ class Translations$videoControls$en {
 	/// en: 'Unsupported SCC control pair.'
 	String get subtitleImportSccControlPairError => 'Unsupported SCC control pair.';
 
-	/// en: 'SCC channel ${channel} in the supplied field; ${fps} fps, ${frameType} labels, clock origin ${clockOrigin} ms. Byte pairs advance one frame each; parity is checked.'
-	String subtitleImportSccDecodedSummary({required Object channel, required Object fps, required Object frameType, required Object clockOrigin}) => 'SCC channel ${channel} in the supplied field; ${fps} fps, ${frameType} labels, clock origin ${clockOrigin} ms. Byte pairs advance one frame each; parity is checked.';
+	/// en: 'SCC ${channel} service; ${fps} fps, ${frameType} labels, clock origin ${clockOrigin} ms. Byte pairs advance one frame each; parity is checked.'
+	String subtitleImportSccDecodedSummary({required Object channel, required Object fps, required Object frameType, required Object clockOrigin}) => 'SCC ${channel} service; ${fps} fps, ${frameType} labels, clock origin ${clockOrigin} ms. Byte pairs advance one frame each; parity is checked.';
 
 	/// en: '608 pop-on memory swaps, paint-on updates and 2/3/4-row roll-up become separate text snapshots. Screen positions, empty rows, colors, underline, italics, flash and background effects are flattened. Other fields, XDS/TEXT services and CEA-708 need their native decoder.'
 	String get subtitleImportSccFlattenedWarning => '608 pop-on memory swaps, paint-on updates and 2/3/4-row roll-up become separate text snapshots. Screen positions, empty rows, colors, underline, italics, flash and background effects are flattened. Other fields, XDS/TEXT services and CEA-708 need their native decoder.';
@@ -21097,7 +21097,7 @@ extension on Translations {
 			'videoControls.subtitleImportMicroDvdFpsHint' => 'For 23.976 film use 23.976023976; variable-frame-rate media does not imply a subtitle FPS.',
 			'videoControls.subtitleImportSamiClass' => 'SAMI language class (blank selects first)',
 			'videoControls.subtitleImportSamiClassHint' => 'The preview lists the classes declared in the file.',
-			'videoControls.subtitleImportSccChannel' => 'Channel within the supplied SCC field',
+			'videoControls.subtitleImportSccChannel' => 'CEA-608 caption service',
 			'videoControls.subtitleImportChannel1' => 'Channel 1',
 			'videoControls.subtitleImportChannel2' => 'Channel 2',
 			'videoControls.subtitleImportSccFrameClock' => 'SCC frame clock',
@@ -21113,7 +21113,7 @@ extension on Translations {
 			'videoControls.subtitleImportTailRequired' => 'Enter the final cue duration in whole milliseconds.',
 			'videoControls.subtitleImportClockOriginRequired' => 'Enter the SCC clock origin in whole milliseconds.',
 			'videoControls.subtitleImportDecodeError' => 'This file could not be decoded. Check its format and encoding.',
-			'videoControls.subtitleImportSccChannelRangeError' => 'Choose SCC channel 1 or 2 and a clock origin from 0 to 86400000 ms.',
+			'videoControls.subtitleImportSccChannelRangeError' => 'Choose a CEA-608 service from CC1 to CC4 and a clock origin from 0 to 86400000 ms.',
 			'videoControls.subtitleImportSccMissingHeaderError' => 'Missing Scenarist_SCC V1.0 header.',
 			'videoControls.subtitleImportSccLineLimitError' => 'SCC line exceeds the 32768-character packet bound.',
 			'videoControls.subtitleImportSccMalformedLine' => ({required Object line}) => 'Malformed SCC timecode or byte pairs at line ${line}.',
@@ -21129,7 +21129,7 @@ extension on Translations {
 			'videoControls.subtitleImportSccRowAddressError' => 'Invalid SCC row address.',
 			'videoControls.subtitleImportSccSecondCharacterError' => 'Invalid SCC second character.',
 			'videoControls.subtitleImportSccControlPairError' => 'Unsupported SCC control pair.',
-			'videoControls.subtitleImportSccDecodedSummary' => ({required Object channel, required Object fps, required Object frameType, required Object clockOrigin}) => 'SCC channel ${channel} in the supplied field; ${fps} fps, ${frameType} labels, clock origin ${clockOrigin} ms. Byte pairs advance one frame each; parity is checked.',
+			'videoControls.subtitleImportSccDecodedSummary' => ({required Object channel, required Object fps, required Object frameType, required Object clockOrigin}) => 'SCC ${channel} service; ${fps} fps, ${frameType} labels, clock origin ${clockOrigin} ms. Byte pairs advance one frame each; parity is checked.',
 			'videoControls.subtitleImportSccFlattenedWarning' => '608 pop-on memory swaps, paint-on updates and 2/3/4-row roll-up become separate text snapshots. Screen positions, empty rows, colors, underline, italics, flash and background effects are flattened. Other fields, XDS/TEXT services and CEA-708 need their native decoder.',
 			'videoControls.subtitleImportSccOpenTailWarning' => ({required Object duration}) => 'The final visible SCC screen has no clear command; it uses the selected ${duration} ms tail after the last packet.',
 			'videoControls.subtitleImportSccDropFrameLabel' => 'drop-frame',

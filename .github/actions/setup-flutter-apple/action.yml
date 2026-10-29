@@ -1,0 +1,29 @@
+name: Setup Flutter on the private Apple runner
+description: Prepare a checksum-verified Flutter SDK in the Mac JIT job's local APFS temporary directory.
+inputs:
+  flutter-version:
+    description: Exact Flutter stable version.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Prepare the pinned Flutter SDK in local APFS cache
+      shell: bash
+      env:
+        FLUTTER_VERSION: ${{ inputs.flutter-version }}
+        FLUTTER_CACHE_ROOT: ${{ runner.temp }}/flutter-sdk
+      run: |
+        set -euo pipefail
+        python3 scripts/cache_macos_flutter_sdk.py ensure \
+          --version "$FLUTTER_VERSION" \
+          --cache-root "$FLUTTER_CACHE_ROOT"
+
+    - name: Add cached Flutter SDK to PATH
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+      with:
+        channel: stable
+        flutter-version: ${{ inputs.flutter-version }}
+        architecture: arm64
+        cache: false
+        cache-path: ${{ runner.temp }}/flutter-sdk/stable-${{ inputs.flutter-version }}-arm64
+        pub-cache: false

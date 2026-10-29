@@ -39,6 +39,13 @@ class NativeWorker {
   using ContextFactory = std::function<std::unique_ptr<NativeContext>()>;
   using Publish = std::function<void(std::shared_ptr<const NativeFrame>)>;
  private:
+  static bool IsPresetPath(const std::filesystem::path& path) {
+    auto extension = path.extension().u8string();
+    for (auto& character : extension) {
+      if (character >= 'A' && character <= 'Z') character += 'a' - 'A';
+    }
+    return extension == ".milk" || extension == ".milk2";
+  }
   struct WorkerState {
     WorkerState(ContextFactory context, MilkRustImageDecoder decoder, AudioReader audio, Publish publish, bool owned_publish)
         : context_(std::move(context)), decoder_(std::move(decoder)), audio_(std::move(audio)),
@@ -56,8 +63,7 @@ class NativeWorker {
     void Load(const std::string& path, const std::string& root) {
       if (path.empty() || root.empty() || path.size() > 32768 || root.size() > 32768)
         throw std::runtime_error("A bounded preset path and pack root are required.");
-      const auto ext = std::filesystem::path(path).extension().string();
-      if (ext != ".milk" && ext != ".MILK" && ext != ".milk2" && ext != ".MILK2")
+      if (!NativeWorker::IsPresetPath(std::filesystem::u8path(path)))
         throw std::runtime_error("Native MilkRust accepts .milk and supported .milk2 presets.");
       {
         std::lock_guard<std::mutex> lock(mutex_);

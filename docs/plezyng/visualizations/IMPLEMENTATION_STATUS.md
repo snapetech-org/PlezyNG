@@ -389,5 +389,17 @@ The current engine source also resolves `.milk2` header defaults per file, runs
 trailing sprite blocks unless `sprite=0`, implements the 30 documented saved
 pattern formulas and ordered sprite layers, and keeps explicit failures for
 extensions outside the declared compiler/format profile. The app source lock
-pins MilkRust `11b603d2db38f799d5e83f0a95366bd82ca75d1a` with C ABI v2. Builds
+pins MilkRust `4b30f62186cdec0c3c8f19c26174d72648816ba4` with C ABI v2. Builds
 remain requested but must use private ephemeral JIT runners under `AGENTS.md`.
+
+## 2026-10-29 preset-boundary source correction
+
+The shared native host now folds ASCII case in `.milk`/`.milk2` suffixes, matching
+the pack importer and the mixed-case `.MILk` file found in MilkRust's public
+corpus. MilkRust's legacy pair detector now looks for an exact `[preset01]`
+section line instead of searching arbitrary source text; comment text can no
+longer misclassify a single preset. The parser also rejects active or
+equation-backed custom shapes/waves beyond MilkDrop's four slots while
+preserving inert out-of-range fields. PlezyNG now pins the corresponding
+MilkRust commit. These are source changes only; no
+workflow, build, test or device job has run.

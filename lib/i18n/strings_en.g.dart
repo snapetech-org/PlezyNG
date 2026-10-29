@@ -11818,6 +11818,33 @@ class Translations$games$en {
 
 	/// en: 'High refresh rate · capable display required'
 	String get qualityHighRefresh => 'High refresh rate · capable display required';
+
+	/// en: 'Enter text in game'
+	String get textInput => 'Enter text in game';
+
+	/// en: 'Compose with your device’s keyboard, then send to the focused text field on the streaming computer. Steam and the game must support text input. The draft is not saved.'
+	String get textInputHelp => 'Compose with your device’s keyboard, then send to the focused text field on the streaming computer. Steam and the game must support text input. The draft is not saved.';
+
+	/// en: 'Finish IME composition before sending. Up to 512 UTF-8 bytes.'
+	String get textInputLimit => 'Finish IME composition before sending. Up to 512 UTF-8 bytes.';
+
+	/// en: 'Shorten the text or remove control characters.'
+	String get textInputInvalid => 'Shorten the text or remove control characters.';
+
+	/// en: 'Text submitted to the streaming computer'
+	String get textInputSent => 'Text submitted to the streaming computer';
+
+	/// en: 'Send text'
+	String get sendText => 'Send text';
+
+	/// en: 'Steam touch control opacity'
+	String get touchOpacity => 'Steam touch control opacity';
+
+	/// en: 'Swap Steam controller sides'
+	String get swapTouchSides => 'Swap Steam controller sides';
+
+	/// en: 'Applied when the next Steam stream opens. Button labels and actions stay the same; hit targets stay at least 48 pixels. Center controls keep their position.'
+	String get touchAppearanceHelp => 'Applied when the next Steam stream opens. Button labels and actions stay the same; hit targets stay at least 48 pixels. Center controls keep their position.';
 }
 
 // Path: deepLinks
@@ -18812,6 +18839,15 @@ extension on Translations {
 			'games.cloudSettingsHelp' => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.',
 			'games.qualityUltraHd' => 'Ultra HD · capable hardware required',
 			'games.qualityHighRefresh' => 'High refresh rate · capable display required',
+			'games.textInput' => 'Enter text in game',
+			'games.textInputHelp' => 'Compose with your device’s keyboard, then send to the focused text field on the streaming computer. Steam and the game must support text input. The draft is not saved.',
+			'games.textInputLimit' => 'Finish IME composition before sending. Up to 512 UTF-8 bytes.',
+			'games.textInputInvalid' => 'Shorten the text or remove control characters.',
+			'games.textInputSent' => 'Text submitted to the streaming computer',
+			'games.sendText' => 'Send text',
+			'games.touchOpacity' => 'Steam touch control opacity',
+			'games.swapTouchSides' => 'Swap Steam controller sides',
+			'games.touchAppearanceHelp' => 'Applied when the next Steam stream opens. Button labels and actions stay the same; hit targets stay at least 48 pixels. Center controls keep their position.',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

@@ -76,6 +76,7 @@ class InputState {
     emit(runtime, it->second);
     seats_.erase(it);
   }
+  bool text(Runtime& runtime, const std::string& value) { return enabled_ && runtime.text(value); }
   void key(Runtime& runtime, const std::string& name, bool down) {
     if (!enabled_) return;
     auto n = normalize(name);

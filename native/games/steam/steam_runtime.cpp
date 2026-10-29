@@ -5,6 +5,8 @@
 #include <cmath>
 #include <cstring>
 
+#include "steam_text.h"
+
 namespace plezy::steam {
 static uint64_t nowUs() {
   return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch())
@@ -384,9 +386,10 @@ void Runtime::mouseWheel(int direction) {
   std::lock_guard<std::mutex> lock(apiMutex_);
   if (session_) IHS_SessionSendMouseWheel(session_, static_cast<IHS_StreamInputMouseWheelDirection>(direction));
 }
-void Runtime::text(const std::string& text) {
+bool Runtime::text(const std::string& text) {
+  if (!validInputText(text)) return false;
   std::lock_guard<std::mutex> lock(apiMutex_);
-  if (session_ && text.size() <= 4096) IHS_SessionSendText(session_, text.c_str());
+  return session_ && IHS_SessionSendText(session_, text.c_str());
 }
 void Runtime::frameComplete(uint32_t id, bool displayed) {
   IHS_FrameTicket* ticket;

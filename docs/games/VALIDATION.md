@@ -602,3 +602,38 @@ from the preceding implementation checkpoint. Their recorded native/server
 results remain separately identified above; no new SDK build or live deployment
 is claimed. This reconciliation resolves source conflicts without merging the
 PR into main or changing the required private-JIT platform qualification gates.
+
+## Code follow-through — 2026-10-29
+
+Checkpoints `4d8c8add` (session ownership/internet codecs), `1465511c`
+(controller layouts) and `35d7e8bd` (host controls/UHD/relay budgets) are followed
+by committed IME text and touch appearance. All remote writes use the GitHub
+connector; PR #81 targets main `86c852ee`. No workflow trigger, runner pool or
+trust rule changed.
+
+Latest source verification:
+
+- **141 Flutter tests passed**: all `test/games` plus the Steam workspace session
+  and texture suites. Coverage includes local TLS/UDP traversal/fallback,
+  inventory/account isolation, Cloud/Families reviews, mapping rollback/replay,
+  IME commit gating, UTF-8 bounds, touch-side geometry, large text and retirement.
+- Standard analyzer passed with zero allowed info diagnostics. Localization
+  placeholders/source hashes pass with explicit English fallback tracking;
+  this is not a translation review.
+- Linux native build: **42 tests passed; one GPU/display test skipped**.
+  Native text tests reject overlong/truncated/surrogate UTF-8, controls and
+  oversized buffers. Runtime tests cover controller mappings and request bounds.
+- Windows MinGW runtime and five native test executables compile/link. Linux
+  and Windows Flutter adapter syntax checks pass with warnings treated as errors
+  for application source; vendored SDK headers are system includes.
+- Android Java compiles against API 36 with 20 existing deprecation warnings;
+  **16 JVM tests passed**, including updated quality bounds, controller seats,
+  legacy defaults and worker lifecycle. Reflection methods are explicitly kept
+  for shrinking. This is not Kotlin/Gradle/NDK packaging qualification.
+- Full server `go test -race ./...` passed after the relay bandwidth changes;
+  the later input work does not change server source.
+
+No Apple SDK, Android release package, MSVC execution, hardware HDR/chroma,
+production relay deployment or live Valve account mutation is claimed. Follow
+[CODE_COMPLETION.md](CODE_COMPLETION.md) for the remaining contract/code boundaries
+and [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) for exact-commit build cases.

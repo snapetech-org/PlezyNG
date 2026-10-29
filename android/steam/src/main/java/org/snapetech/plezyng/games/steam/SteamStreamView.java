@@ -94,6 +94,7 @@ public final class SteamStreamView
             NativeSteam.mouse(session, sx, sy, button, down);
           }
         });
+    controls.configureAppearance(options.touchOpacity, options.swapTouchSides);
     controls.setEnabled(false);
     addView(controls, new FrameLayout.LayoutParams(-1, -1));
     status = new TextView(context);
@@ -230,6 +231,10 @@ public final class SteamStreamView
     disconnectController(deviceId);
   }
 
+  public boolean inputText(byte[] utf8) {
+    return inputEnabled && !stopping && handle != 0 && utf8 != null && utf8.length <= 512
+        && NativeSteam.textUtf8(handle, utf8);
+  }
   public void inputKey(String name, boolean down) {
     if (!inputEnabled || stopping)
       return;
@@ -249,11 +254,13 @@ public final class SteamStreamView
   }
   public boolean setControllerMapping(int seat, java.util.List<?> values) {
     long session = handle;
-    if (session == 0 || stopping || seat < 0 || seat > 3 || values == null || values.size() != 19) return false;
+    if (session == 0 || stopping || seat < 0 || seat > 3 || values == null || values.size() != 19)
+      return false;
     int[] encoded = new int[19];
     for (int i = 0; i < encoded.length; i++) {
       Object value = values.get(i);
-      if (!(value instanceof Integer)) return false;
+      if (!(value instanceof Integer))
+        return false;
       encoded[i] = (Integer) value;
     }
     releaseInput();
@@ -280,7 +287,8 @@ public final class SteamStreamView
     setInputEnabled(false);
     presentationAvailable = false;
     SteamDecoder current = decoder;
-    if (current != null) current.setPresentation(null);
+    if (current != null)
+      current.setPresentation(null);
     super.onDetachedFromWindow();
   }
 
@@ -291,7 +299,8 @@ public final class SteamStreamView
 
   @Override
   public void surfaceCreated(SurfaceHolder holder) {
-    if (stopping) return;
+    if (stopping)
+      return;
     presentationAvailable = true;
     final boolean previousHdr = displayHdr10;
     Display display = getDisplay();
@@ -306,7 +315,8 @@ public final class SteamStreamView
       SteamDecoder current = decoder;
       if (current != null) {
         current.setPresentation(holder);
-        if (previousHdr && !displayHdr10) current.requestPyrowaveFallback();
+        if (previousHdr && !displayHdr10)
+          current.requestPyrowaveFallback();
       }
       return;
     }
@@ -347,7 +357,8 @@ public final class SteamStreamView
         SteamDecoder sink =
             new SteamDecoder(session, holder, decoderEvents(session), pyrowave, options.allowHdr && displayHdr10);
         decoder = sink;
-        if (!presentationAvailable) sink.setPresentation(null);
+        if (!presentationAvailable)
+          sink.setPresentation(null);
         sink.setVolume(requestedAudio ? 1.0f : 0.0f);
         if (stopping) {
           sink.close();
@@ -460,7 +471,8 @@ public final class SteamStreamView
     presentationAvailable = false;
     setInputEnabled(false);
     SteamDecoder current = decoder;
-    if (current != null) current.setPresentation(null);
+    if (current != null)
+      current.setPresentation(null);
   }
 
   private SteamDecoder.Events decoderEvents(final long source) {

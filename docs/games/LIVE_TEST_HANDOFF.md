@@ -216,3 +216,11 @@ See [DESKTOP_HDR.md](DESKTOP_HDR.md) for output gating, lifecycle and the device
 - Relay old/new ready messages and invalid rate announcements. Confirm request
   bitrate fits the advertised budget with headroom, including a direct-to-relay
   transition. Higher relay limits require explicit operator provisioning.
+
+- Compose CJK, accented and astral/emoji text using the local keyboard and TV
+  keyboard fallback. Do not submit pre-edit composition. Confirm the active host
+  field receives committed text once, input lease loss cancels submission, and
+  invalid controls or payloads over 512 UTF-8 bytes fail without partial text.
+- Change touch opacity and swap controller sides in profile settings. Start a
+  new stream on Android and a texture receiver; verify unchanged labels/actions,
+  independent multi-touch release, physical minimum targets and profile isolation.

@@ -44,6 +44,15 @@ does not replace the SDK build and real-device acceptance cases in
   retaining the 8 MiB/s default. Its optional ready field is backward compatible.
   Receiver video requests reserve headroom for a later direct-to-relay transition.
 
+- The Steam controls dialog composes text through PlezyNG's existing local/TV
+  keyboard and IME. Composing text stays local; only an explicit committed Send
+  submits bounded standard UTF-8 through every native receiver. Control bytes,
+  invalid sequences and oversized payloads are rejected. Submission requires a
+  current input lease and native acknowledgement; there is no automatic retry.
+- Profile-scoped touch opacity and swapping controller sides work on the shared
+  Flutter overlay and Android native controls. Defaults and 48-pixel minimum hit
+  targets stay intact. Changes apply when the next stream opens.
+
 ## Remaining contracts and qualification
 
 - Cloud settings: public Steamworks exposes account-wide read access and an
@@ -52,8 +61,10 @@ does not replace the SDK build and real-device acceptance cases in
 - Steam Input game-side glyph/action APIs and automatic Together invites belong
   to the game SDK, not an arbitrary receiver. The implemented receiver layout and
   host overlay flows do not impersonate game AppIDs.
-- Touch placement/opacity, full IME integration, rumble/gyro and microphone input
-  are not claimed as implemented by the controller mapping work.
+- Rumble/gyro, microphone forwarding and unrestricted drag-to-position touch
+  editing are not implemented. They require additional platform/device plumbing;
+  they are not relabeled as hardware-only qualification. Steam game-side glyph
+  and action-set integration also needs the game's own cooperation.
 - SDK builds, physical HDR/chroma output, real Steam hosts/accounts and deployed
   relay throughput still require the exact-head handoff cases.
 
@@ -82,3 +93,8 @@ compilation, 42 native tests (one separate GPU/display case skipped), and Window
 MinGW runtime plus five test-executable links. The host/quality follow-through
 also passes Go race tests and the targeted dialog/lease/tunnel cases. These
 checks are not substitutes for Kotlin/Gradle/NDK, Apple SDK or MSVC builds.
+
+The final input pass expands verification to 141 Steam Flutter tests and 16
+Android JVM tests, while retaining the native build/test and strict Linux/Windows
+adapter checks. See [VALIDATION.md](VALIDATION.md#code-follow-through--2026-10-29)
+for the exact distinction between source checks and platform qualification.

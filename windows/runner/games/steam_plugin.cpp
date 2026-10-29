@@ -639,6 +639,13 @@ void Session::method(const Call& call, Reply reply) {
   }
   std::lock_guard<std::mutex> lock(mutex);
   const bool live = runtime && active && runtime->metrics().epoch == renderedEpoch;
+  if (method == "inputText") {
+    const auto* value = field(args, "text");
+    const auto* bytes = value ? std::get_if<std::vector<uint8_t>>(value) : nullptr;
+    if (!bytes || bytes->empty() || bytes->size() > 512) throw std::invalid_argument("Invalid text");
+    reply->Success(Value(live && input.text(*runtime, std::string(bytes->begin(), bytes->end()))));
+    return;
+  }
   if (method == "setControllerMapping") {
     const auto* encoded = field(args, "mapping");
     const auto* values = encoded ? std::get_if<flutter::EncodableList>(encoded) : nullptr;

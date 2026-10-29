@@ -4647,7 +4647,16 @@
     "lanInstallSubmitted": "Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.",
     "cloudSettingsHelp": "Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.",
     "qualityUltraHd": "Ultra HD · capable hardware required",
-    "qualityHighRefresh": "High refresh rate · capable display required"
+    "qualityHighRefresh": "High refresh rate · capable display required",
+    "textInput": "Enter text in game",
+    "textInputHelp": "Compose with your device’s keyboard, then send to the focused text field on the streaming computer. Steam and the game must support text input. The draft is not saved.",
+    "textInputLimit": "Finish IME composition before sending. Up to 512 UTF-8 bytes.",
+    "textInputInvalid": "Shorten the text or remove control characters.",
+    "textInputSent": "Text submitted to the streaming computer",
+    "sendText": "Send text",
+    "touchOpacity": "Steam touch control opacity",
+    "swapTouchSides": "Swap Steam controller sides",
+    "touchAppearanceHelp": "Applied when the next Steam stream opens. Button labels and actions stay the same; hit targets stay at least 48 pixels. Center controls keep their position."
   },
   "deepLinks": {
     "invalid": "This Plezy link isn't valid.",

@@ -635,6 +635,18 @@ void Session::method(FlMethodCall* call) {
     return;
   }
   std::lock_guard<std::mutex> lock(mutex);
+  if (method == "inputText") {
+    auto* value = field(args, "text");
+    if (!value || fl_value_get_type(value) != FL_VALUE_TYPE_UINT8_LIST || fl_value_get_length(value) > 512)
+      throw std::invalid_argument("Invalid text");
+    const auto* bytes = fl_value_get_uint8_list(value);
+    const auto length = fl_value_get_length(value);
+    g_autoptr(FlValue) result = fl_value_new_bool(
+        length && runtime && active && runtime->metrics().epoch == renderedEpoch &&
+        input.text(*runtime, std::string(reinterpret_cast<const char*>(bytes), length)));
+    ok(call, result);
+    return;
+  }
   if (method == "setControllerMapping") {
     auto* encoded = field(args, "mapping");
     if (!encoded || fl_value_get_type(encoded) != FL_VALUE_TYPE_LIST || fl_value_get_length(encoded) != 19)

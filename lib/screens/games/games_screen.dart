@@ -648,6 +648,8 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           checkCurrent: c.requireCurrent,
         );
       },
+      touchOpacity: SettingsService.instance.read(SettingsService.steamTouchOpacityForProfile(c.profileId)),
+      swapTouchSides: SettingsService.instance.read(SettingsService.steamSwapTouchSidesForProfile(c.profileId)),
       internetTunnel: tunnel,
       connectInternet: connectInternet,
       onFirstFrame: () {
@@ -1295,6 +1297,24 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
                   title: t.games.touchControls,
                   subtitle: t.games.touchDescription,
                 ),
+                if (PlatformDetector.supportsEmbeddedGameStreaming()) ...[
+                  SettingSelectionTile<int>(
+                    pref: SettingsService.steamTouchOpacityForProfile(_profile!),
+                    icon: Symbols.opacity_rounded,
+                    title: t.games.touchOpacity,
+                    subtitleBuilder: (value) => '$value%',
+                    description: t.games.touchAppearanceHelp,
+                    options: [
+                      for (final value in [50, 65, 85, 100]) DialogOption(value: value, title: '$value%'),
+                    ],
+                  ),
+                  SettingSwitchTile(
+                    pref: SettingsService.steamSwapTouchSidesForProfile(_profile!),
+                    icon: Symbols.swap_horiz_rounded,
+                    title: t.games.swapTouchSides,
+                    subtitle: t.games.touchAppearanceHelp,
+                  ),
+                ],
                 Padding(padding: const EdgeInsets.all(16), child: Text(t.games.touchSetupHint)),
                 if (PlatformDetector.supportsEmbeddedGameStreaming())
                   SettingSwitchTile(

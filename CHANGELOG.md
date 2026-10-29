@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Steam: per-game controller layouts across receivers, session-owned presentation, host overlay/capture controls, LAN-install guidance, opt-in 4K60/1080p120, and configurable relay bandwidth with conservative video ceilings.
+- Steam: per-game controller layouts, committed IME text and touch appearance across receivers, session-owned presentation, host overlay/capture controls, LAN-install guidance, opt-in 4K60/1080p120, and configurable relay bandwidth with conservative video ceilings.
 
 - Keep Steam transports alive across receiver-widget recreation, reattach Android video output to replacement Surfaces, and allow opted-in GPU/HDR negotiation over authenticated internet tunnels.
 

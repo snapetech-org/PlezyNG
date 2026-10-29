@@ -786,6 +786,13 @@ class SettingsService extends BaseSharedPreferencesService {
       BoolPref(profileScopedPrefsKey(profileId, 'show_games_tab'), defaultValue: false);
   static BoolPref gameTouchControlsForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'game_touch_controls'), defaultValue: true);
+  static IntPref steamTouchOpacityForProfile(String profileId) => IntPref(
+    profileScopedPrefsKey(profileId, 'steam_touch_opacity'),
+    defaultValue: 100,
+    transform: (value) => [50, 65, 85, 100].contains(value) ? value : 100,
+  );
+  static BoolPref steamSwapTouchSidesForProfile(String profileId) =>
+      BoolPref(profileScopedPrefsKey(profileId, 'steam_swap_touch_sides'), defaultValue: false);
   static BoolPref shareSteamInventoryForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'share_steam_inventory'), defaultValue: false);
   static BoolPref steamInternetForProfile(String profileId) =>

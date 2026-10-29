@@ -9,10 +9,17 @@ import '../../widgets/app_icon.dart';
 /// Touch assistance for player one. Platform adapters merge it independently
 /// of physical controllers; removing this overlay releases assistance only.
 class SteamTouchControls extends StatefulWidget {
-  const SteamTouchControls({super.key, required this.onButton, required this.onStick, required this.onRelease});
+  const SteamTouchControls({
+    super.key,
+    required this.onButton,
+    required this.onStick,
+    required this.onRelease,
+    this.swapSides = false,
+  });
   final void Function(String, bool) onButton;
   final void Function(String, Offset) onStick;
   final VoidCallback onRelease;
+  final bool swapSides;
 
   @override
   State<SteamTouchControls> createState() => _SteamTouchControlsState();
@@ -115,7 +122,8 @@ class _SteamTouchControlsState extends State<SteamTouchControls> {
         child: Stack(
           children: [
             Positioned(
-              left: 8,
+              left: widget.swapSides ? null : 8,
+              right: widget.swapSides ? 8 : null,
               bottom: 8,
               child: wide
                   ? Row(
@@ -127,7 +135,8 @@ class _SteamTouchControlsState extends State<SteamTouchControls> {
                   : Column(children: [_shoulders(true), _stick(true), _cross(directions: true)]),
             ),
             Positioned(
-              right: 8,
+              right: widget.swapSides ? null : 8,
+              left: widget.swapSides ? 8 : null,
               bottom: 8,
               child: wide
                   ? Row(

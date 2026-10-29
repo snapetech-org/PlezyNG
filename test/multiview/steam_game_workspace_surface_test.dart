@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -151,6 +152,28 @@ void main() {
       {'usage': 225, 'key': 'Shift Left', 'down': true},
       {'usage': 225, 'key': 'Shift Left', 'down': false},
     ]);
+  });
+
+  test('composed text uses bounded UTF-8 only with a live input lease', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      return call.method == 'inputText' ? true : null;
+    });
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await state('playing');
+    expect(await stream.sendComposedText('hello'), isFalse);
+    await stream.setInputEnabled(true);
+    expect(await stream.sendComposedText('日本語 🙂'), isTrue);
+    expect((calls.where((c) => c.method == 'inputText').single.arguments as Map)['text'], utf8.encode('日本語 🙂'));
+    for (final invalid in ['', '🙂' * 129, '\u0000', '\u001b', '\u0085']) {
+      expect(await stream.sendComposedText(invalid), isFalse);
+    }
+    expect(calls.where((c) => c.method == 'inputText'), hasLength(1));
+    stream.detach();
+    expect(await stream.sendComposedText('late'), isFalse);
   });
 
   test('disconnect acknowledgement permits reconnect after a texture channel retires', () async {

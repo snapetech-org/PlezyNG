@@ -11,6 +11,7 @@
 
 #include "steam_input.h"
 #include "steam_runtime.h"
+#include "steam_text.h"
 extern "C" {
 #include "hid/provider.h"
 #include "protobuf/discovery.pb-c.h"
@@ -198,6 +199,19 @@ void controllerMappings() {
 }
 int main() {
   controllerMappings();
+  assert(validInputText(u8"日本語 Ελληνικά 🙂\n"));
+  assert(validInputText(std::string(512, 'x')));
+  assert(!validInputText(std::string(513, 'x')));
+  assert(!validInputText(std::string("a\0b", 3)));
+  assert(!validInputText("\x1b"));
+  assert(!validInputText("\xc0\xaf"));          // Overlong encoding.
+  assert(!validInputText("\xed\xa0\x80"));      // UTF-8 surrogate.
+  assert(!validInputText("\xf4\x90\x80\x80"));  // Above Unicode range.
+  assert(!validInputText("\xf0\x9f"));          // Truncated sequence.
+  Runtime disconnectedText;
+  assert(!disconnectedText.text("hello"));
+  InputState textInput(1);
+  assert(!textInput.text(disconnectedText, "hello"));
   {
     Host direct{"192.0.2.1", 27036, 1};
     assert(direct.validRelay());

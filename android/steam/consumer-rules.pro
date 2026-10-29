@@ -15,6 +15,7 @@
     public void setControllerState(java.util.Map, java.util.Map);
     public void setControllerDeviceState(int, java.util.Map, java.util.Map);
     public void disconnectController(int);
+    public boolean inputText(byte[]);
     public void inputKey(java.lang.String, boolean);
     public void resetInput();
     public void close();

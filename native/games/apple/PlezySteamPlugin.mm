@@ -725,6 +725,17 @@ void Session::method(FlutterMethodCall* call, FlutterResult reply) {
     return;
   }
   std::lock_guard<std::mutex> lock(mutex);
+  if ([method isEqualToString:@"inputText"]) {
+    auto args = arguments(call.arguments);
+    id encoded = args[@"text"];
+    if (![encoded isKindOfClass:FlutterStandardTypedData.class]) throw std::invalid_argument("Invalid text");
+    NSData* bytes = [(FlutterStandardTypedData*)encoded data];
+    if (!bytes.length || bytes.length > 512) throw std::invalid_argument("Invalid text");
+    reply(
+        @(runtime && active && runtime->metrics().epoch == renderedEpoch &&
+          input.text(*runtime, std::string(static_cast<const char*>(bytes.bytes), bytes.length))));
+    return;
+  }
   if ([method isEqualToString:@"setControllerMapping"]) {
     auto args = arguments(call.arguments);
     id encoded = args[@"mapping"];

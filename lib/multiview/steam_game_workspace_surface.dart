@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:math';
 
@@ -12,6 +13,8 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../games/game_models.dart';
 import '../games/steam_internet_tunnel.dart';
 import '../games/steam_input_profile.dart';
+import '../games/steam_text.dart';
+import '../screens/games/steam_text_input_dialog.dart';
 import '../screens/games/steam_input_dialog.dart';
 import '../games/steam_native_plane.dart';
 import '../games/steam_stream_preferences.dart';
@@ -39,6 +42,8 @@ class SteamGameWorkspaceSession {
     required this.host,
     required this.game,
     required this.touchControls,
+    this.touchOpacity = 100,
+    this.swapTouchSides = false,
     this.pyrowave = false,
     this.allowHdr = false,
     this.quality = SteamStreamQuality.balanced,
@@ -54,6 +59,7 @@ class SteamGameWorkspaceSession {
     _inputProfile = inputProfile ?? SteamInputProfile.defaults();
     _mappingReady = _inputProfile.isDefault;
     _setTunnel(internetTunnel);
+    if (![50, 65, 85, 100].contains(touchOpacity)) throw ArgumentError.value(touchOpacity, 'touchOpacity');
     if (controllerCount < 1 || controllerCount > 4) throw ArgumentError.value(controllerCount, 'controllerCount');
     _inputBinding = WorkspaceGameInputBinding(
       onEvent: handleInput,
@@ -69,6 +75,8 @@ class SteamGameWorkspaceSession {
   final GameHost host;
   final StreamGame game;
   final bool touchControls;
+  final int touchOpacity;
+  final bool swapTouchSides;
   final bool pyrowave;
   final bool allowHdr;
   final SteamStreamQuality quality;
@@ -228,6 +236,8 @@ class SteamGameWorkspaceSession {
     'appId': game.id,
     'appName': game.name,
     'touchControls': touchControls,
+    'touchOpacity': touchOpacity,
+    'swapTouchSides': swapTouchSides,
     'pyrowave': pyrowave,
     'allowHdr': allowHdr,
     ...quality.nativeArguments,
@@ -277,6 +287,20 @@ class SteamGameWorkspaceSession {
       );
     } else if (event is GamepadConnectionEvent && !event.connected) {
       unawaited(_invoke('disconnectController', {'deviceId': event.gamepadId}));
+    }
+  }
+
+  Future<bool> sendComposedText(String text) async {
+    final channel = _channel, epoch = _mappingEpoch;
+    if (!_canInput || channel == null || !validSteamInputText(text)) return false;
+    try {
+      resetInput();
+      final sent = await channel
+          .invokeMethod<bool>('inputText', {'text': Uint8List.fromList(utf8.encode(text))})
+          .timeout(const Duration(seconds: 3));
+      return sent == true && _canInput && _channel == channel && _mappingEpoch == epoch;
+    } catch (_) {
+      return false;
     }
   }
 
@@ -875,11 +899,12 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
     if (_detailsOpen) return;
     setState(() => _detailsOpen = true);
     final session = widget.session;
-    SteamStreamShortcut? selected;
+    String? selected;
+    String? composed;
     try {
       await session.withInputSuspended(() async {
         if (!mounted) return;
-        selected = await showScopedDialog<SteamStreamShortcut>(
+        selected = await showScopedDialog<String>(
           context: context,
           builder: (dialog) => AlertDialog(
             title: Text(t.games.steamTools),
@@ -891,25 +916,38 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
                   leading: const AppIcon(Symbols.group_rounded),
                   title: Text(t.games.steamOverlay),
                   subtitle: Text(t.games.steamOverlayHelp),
-                  onTap: () => Navigator.pop(dialog, SteamStreamShortcut.overlay),
+                  onTap: () => Navigator.pop(dialog, 'overlay'),
+                ),
+                FocusableListTile(
+                  leading: const AppIcon(Symbols.keyboard_rounded),
+                  title: Text(t.games.textInput),
+                  subtitle: Text(t.games.textInputHelp),
+                  onTap: () => Navigator.pop(dialog, 'text'),
                 ),
                 FocusableListTile(
                   leading: const AppIcon(Symbols.screenshot_monitor_rounded),
                   title: Text(t.games.steamScreenshot),
                   subtitle: Text(t.games.steamScreenshotHelp),
-                  onTap: () => Navigator.pop(dialog, SteamStreamShortcut.screenshot),
+                  onTap: () => Navigator.pop(dialog, 'screenshot'),
                 ),
               ],
             ),
             actions: [DialogActionButton(label: t.common.close, onPressed: () => Navigator.pop(dialog))],
           ),
         );
+        if (selected == 'text' && mounted && session.current) {
+          composed = await showScopedDialog<String>(context: context, builder: (_) => const SteamTextInputDialog());
+        }
       });
-      if (selected != null && mounted && session.current) {
-        final sent = await session.sendShortcut(selected!);
+      if (selected != null && mounted && session.current && (selected != 'text' || composed != null)) {
+        final sent = selected == 'text'
+            ? await session.sendComposedText(composed!)
+            : await session.sendShortcut(
+                selected == 'overlay' ? SteamStreamShortcut.overlay : SteamStreamShortcut.screenshot,
+              );
         if (mounted && session.current) {
           if (sent) {
-            showSuccessSnackBar(context, t.games.steamShortcutSent);
+            showSuccessSnackBar(context, selected == 'text' ? t.games.textInputSent : t.games.steamShortcutSent);
           } else {
             showErrorSnackBar(context, t.games.steamShortcutFailed);
           }
@@ -951,11 +989,15 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
                 ? const SizedBox.shrink()
                 : ValueListenableBuilder<int>(
                     valueListenable: session.inputResets,
-                    builder: (_, revision, _) => SteamTouchControls(
-                      key: ValueKey(revision),
-                      onButton: session.handleTouchButton,
-                      onStick: session.handleTouchStick,
-                      onRelease: session.releaseTouchControls,
+                    builder: (_, revision, _) => Opacity(
+                      opacity: session.touchOpacity / 100,
+                      child: SteamTouchControls(
+                        key: ValueKey(revision),
+                        swapSides: session.swapTouchSides,
+                        onButton: session.handleTouchButton,
+                        onStick: session.handleTouchStick,
+                        onRelease: session.releaseTouchControls,
+                      ),
                     ),
                   ),
           ),

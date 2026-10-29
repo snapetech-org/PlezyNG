@@ -523,6 +523,15 @@ extern "C" JNIEXPORT void JNICALL
 JNI(mouse)(JNIEnv*, jclass, jlong id, jfloat x, jfloat y, jint button, jboolean down) {
   if (auto r = get(id)) r->mouse(x, y, button, down);
 }
+extern "C" JNIEXPORT jboolean JNICALL JNI(textUtf8)(JNIEnv* env, jclass, jlong id, jbyteArray value) {
+  auto runtime = get(id);
+  if (!runtime || !value) return false;
+  auto length = env->GetArrayLength(value);
+  if (length < 1 || length > 512) return false;
+  std::string text(length, '\0');
+  env->GetByteArrayRegion(value, 0, length, reinterpret_cast<jbyte*>(text.data()));
+  return !env->ExceptionCheck() && runtime->text(text);
+}
 extern "C" JNIEXPORT void JNICALL JNI(text)(JNIEnv* env, jclass, jlong id, jstring value) {
   if (auto r = get(id)) r->text(string(env, value));
 }

@@ -44,6 +44,7 @@ final class NativeSteam {
   static native boolean controllerMapping(long handle, int seat, int[] values);
   static native void key(long handle, int usage, boolean down);
   static native void mouse(long handle, float x, float y, int button, boolean down);
+  static native boolean textUtf8(long handle, byte[] text);
   static native void text(long handle, String text);
   static native void frameComplete(long handle, int id, boolean displayed);
   static native long[] metrics(long handle);

@@ -154,6 +154,12 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
             arrayOf(Int::class.javaPrimitiveType!!),
             call.argument<Int>("deviceId") ?: throw IllegalArgumentException("Missing controller")
           )
+          "inputText" -> {
+            val text = call.argument<ByteArray>("text") ?: throw IllegalArgumentException("Missing text")
+            if (text.size > 512) throw IllegalArgumentException("Text too long")
+            result.success(target.javaClass.getMethod("inputText", ByteArray::class.java).invoke(target, text) == true)
+            return
+          }
           "inputKey" -> invoke(
             "inputKey",
             arrayOf(String::class.java, booleanType),

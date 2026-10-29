@@ -6,7 +6,7 @@ adds [Android/Wayland Vulkan and HDR10](VULKAN_RECEIVER.md),
 [paired internet traversal/relay](STEAM_INTERNET.md),
 [Windows/Apple HDR](DESKTOP_HDR.md) and [Families management](STEAM_FAMILIES.md).
 The [code follow-through](CODE_COMPLETION.md) adds session-owned receivers,
-controller layouts, host controls, LAN-install assistance and higher-resolution
+controller layouts, committed IME text, touch appearance, host controls, LAN-install assistance and higher-resolution
 requests. Older sections below are historical milestones, not current hardware
 or service qualification.
 

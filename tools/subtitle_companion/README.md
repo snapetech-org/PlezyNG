@@ -559,3 +559,25 @@ References: [DETR API](https://huggingface.co/docs/transformers/v4.45.2/en/model
 and [OpenCV histogram comparison](https://docs.opencv.org/4.8.0/d6/dc7/group__imgproc__hist.html).
 Confidence: moderate in source integration; model accuracy and association
 quality remain unknown. No models, dependencies, tests, builds or CI were run.
+
+
+### Expiring Watch Together caption relay
+
+The server now advertises `captionRelay: 1` and can retain opaque encrypted
+caption envelopes in a channel independent of its upload/job authentication.
+The creating paired profile receives a six-hour channel capability; viewers
+receive that capability and a separate encryption key through an explicitly
+shared app code, never the companion administration token. Channels are bound
+to the app's current room scope and use existing revision/clock review logic.
+
+Storage is memory-only: eight channels, 256 files/channel, 2 MiB/object,
+64 MiB/channel and 128 MiB total. Monotonic expiry disables access at six hours;
+background cleanup clears expired bytes within 30 seconds. Restart clears all
+channels. Authenticated profile-scoped revocation is available before expiry.
+The shared code grants read/write access, not sender authentication; there is
+no OWP protocol extension, public relay provisioning or NAT traversal.
+
+See [the caption relay contract](../../docs/plezyng/subtitles/WATCH-CAPTION-RELAY.md)
+for routes, app setup, cancellation and limits. Python SDK create/revoke methods
+manage transport capabilities only. Confidence: moderate in source integration;
+runtime behavior is unknown. No execution, tests, builds or CI occurred.

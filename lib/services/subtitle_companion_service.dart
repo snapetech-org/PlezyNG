@@ -165,6 +165,16 @@ final class SubtitleCompanionService {
     return result;
   }
 
+  Future<Map<String, dynamic>> createCaptionChannel() async {
+    if ((await capabilities())['captionRelay'] != 1) throw StateError('This companion does not support caption channels.');
+    return _request('POST', '/v1/caption-channels', body: {'version': 1});
+  }
+
+  Future<void> revokeCaptionChannel(String identifier) async {
+    if (!_id.hasMatch(identifier)) throw const FormatException('Invalid caption channel.');
+    await _request('DELETE', '/v1/caption-channels/$identifier');
+  }
+
   Future<List<Map<String, dynamic>>> jobs() async {
     final response = await _request('GET', '/v1/jobs');
     final jobs = response['jobs'];

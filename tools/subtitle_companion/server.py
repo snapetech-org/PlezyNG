@@ -32,6 +32,7 @@ from lyric_research import validate_syllables
 from dubbing import voice_config, capabilities as synthesis_capabilities
 from visual_research import vision_capabilities
 from scene_objects import capabilities as scene_object_capabilities
+from caption_channels import CaptionChannels, RelayError
 
 MAX_INPUT = 1024**3
 MAX_JSON = 5 * 1024**2
@@ -72,6 +73,7 @@ class Store:
         self.uploads: set[str] = set()
         self.wake = threading.Event()
         self.closing = threading.Event()
+        self.caption_channels = CaptionChannels(self.closing)
         for folder in root.iterdir():
             if not folder.is_dir() or folder.is_symlink() or not JOB_ID.fullmatch(folder.name):
                 continue
@@ -401,16 +403,39 @@ class Handler(BaseHTTPRequestHandler):
     def handle_api(self):
         store = self.server.store
         supplied = self.headers.get("Authorization", "")
+        route = urlsplit(self.path)
+        if route.query or route.fragment:
+            raise ValueError("unsupported_query")
+        path = route.path
+        relay = re.fullmatch(r"/v1/caption-relay/([0-9a-f]{32})/(list/([0-9a-f]{24})|objects(?:/(plezyng-state-v1-[a-f0-9]{24}-[a-f0-9]{32}-[0-9]{16}\.json))?)", path)
+        if relay is not None:
+            if self.headers.get("Origin"):
+                self.reply(401, {"error": "unauthorized"}); return
+            identifier, _, namespace, name = relay.groups()
+            # Reject invalid/expired capability before reading a request body.
+            store.caption_channels.authorized(identifier, supplied)
+            if self.command == 'PUT' and namespace is None and name is None:
+                value = self.body_json()
+                result = store.caption_channels.request(identifier, supplied, 'PUT', name=value.get('name'), text=value.get('text'))
+            elif (self.command == 'GET' and namespace is not None) or (self.command in {'GET', 'DELETE'} and name is not None):
+                result = store.caption_channels.request(identifier, supplied, self.command, namespace=namespace, name=name)
+            else:
+                raise ValueError('unsupported_caption_relay_method')
+            self.reply(200, result); return
         if self.headers.get("Origin") or not hmac.compare_digest(supplied, "Bearer " + store.token):
             self.reply(401, {"error": "unauthorized"})
             return
         scope = self.headers.get("X-Plezy-Scope", "")
         if not HEX.fullmatch(scope):
             raise ValueError("invalid_scope")
-        route = urlsplit(self.path)
-        if route.query or route.fragment:
-            raise ValueError("unsupported_query")
-        path = route.path
+        if path == '/v1/caption-channels' and self.command == 'POST':
+            if self.body_json() != {'version': 1}:
+                raise ValueError('unsupported_caption_channel_version')
+            self.reply(201, store.caption_channels.create(scope)); return
+        channel = re.fullmatch(r'/v1/caption-channels/([0-9a-f]{32})', path)
+        if channel is not None and self.command == 'DELETE':
+            store.caption_channels.revoke(channel.group(1), scope)
+            self.reply(200, {'deleted': True}); return
         if path == "/v1/capabilities" and self.command == "GET":
             installed = lambda module: importlib.util.find_spec(module) is not None
             tasks = []
@@ -451,7 +476,7 @@ class Handler(BaseHTTPRequestHandler):
             if shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
                 tasks.append("extract_text")
                 if vision is not None: tasks.append("scene_review")
-            self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
+            self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT, "captionRelay": 1,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
                              "sceneMotionTracking": vision is not None and installed("cv2"),
                              "sceneObjectTracking": scene_detector is not None, "sceneObjectDetector": scene_detector,
@@ -635,6 +660,8 @@ class Handler(BaseHTTPRequestHandler):
     def dispatch(self):
         try:
             self.handle_api()
+        except RelayError as error:
+            self.reply(error.status, {'error': error.code})
         except (ValueError, KeyError, TypeError) as error:
             code = str(error)
             self.reply(400, {"error": code if re.fullmatch(r"[a-z_]{1,80}", code) else "invalid_request"})

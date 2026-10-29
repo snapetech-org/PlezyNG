@@ -54,3 +54,12 @@ device/simulator, macOS and Mac Catalyst architectures (including the build's
 tvOS arm64e slice). Missing simulator/device slices cannot pass merely because
 the remaining slices export the ABI. Consumer promotion requires schema 3;
 older receipt-bearing artifacts are not silently promoted.
+
+Publication availability was checked read-only on October 29, 2026. The main
+manifest at `bb618dfd5b6bb1a06088d411eb283137cda05f73` still has no ordered-PCM
+receipts on its MPV assets. The ordered-PCM PR branch reports no workflow runs;
+the visible Apple rolling assets predate this patch, and the Linux rolling
+release has no assets. There is no compatible published manifest to promote
+under the code-only constraint. Consumer pins therefore remain unchanged.
+Confidence is high in that metadata finding; no archive inspection, build or
+publication was executed during this check.

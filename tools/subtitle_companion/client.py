@@ -52,6 +52,21 @@ class CompanionClient:
     def capabilities(self):
         return self.request("GET", "/v1/capabilities")
 
+    def create_caption_channel(self):
+        """Return a six-hour transport capability, not a companion admin token.
+
+        The SDK does not turn this into an app invite or send it to anyone.
+        App room binding and client-side AES-GCM encryption remain required.
+        """
+        if self.capabilities().get('captionRelay') != 1:
+            raise ValueError('Companion does not support caption channels')
+        return self.request('POST', '/v1/caption-channels', {'version': 1})
+
+    def revoke_caption_channel(self, identifier):
+        if not isinstance(identifier, str) or not re.fullmatch(r'[0-9a-f]{32}', identifier):
+            raise ValueError('Invalid caption channel ID')
+        return self.request('DELETE', f'/v1/caption-channels/{identifier}')
+
     def jobs(self):
         return self.request("GET", "/v1/jobs")["jobs"]
 

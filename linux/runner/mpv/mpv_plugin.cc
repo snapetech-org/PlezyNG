@@ -1172,7 +1172,7 @@ static FlMethodResponse* visualizer_method(MpvPlugin* self, const char* method, 
     auto* value = arg(name);
     return value && fl_value_get_type(value) == FL_VALUE_TYPE_INT ? fl_value_get_int(value) : fallback;
   };
-  const auto* requested_engine = arg("engine");
+  auto* requested_engine = arg("engine");
   const std::string engine = requested_engine && fl_value_get_type(requested_engine) == FL_VALUE_TYPE_STRING
                                  ? fl_value_get_string(requested_engine)
                                  : "projectm";

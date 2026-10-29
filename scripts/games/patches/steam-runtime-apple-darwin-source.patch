@@ -1,0 +1,11 @@
+diff --git a/src/platforms/ihs_udp_posix.c b/src/platforms/ihs_udp_posix.c
+--- a/src/platforms/ihs_udp_posix.c
++++ b/src/platforms/ihs_udp_posix.c
+@@ -26,3 +26,7 @@
++#if defined(__APPLE__) && !defined(_DARWIN_C_SOURCE)
++#define _DARWIN_C_SOURCE
++#endif
++
+ #include "ihs_udp.h"
+ #include "ihs_buffer.h"
+ #include "ihs_thread.h"

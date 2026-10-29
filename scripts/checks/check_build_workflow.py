@@ -18,6 +18,7 @@ WORKFLOW = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else DEFAULT_WORKFL
 # Resolve the shared bootstrap and the Windows CMake file beside the workflow
 # so fixture checks use their local copies rather than the checkout's real ones.
 SETUP_FLUTTER_GIT = WORKFLOW.parents[1] / "actions/setup-flutter-git/action.yml"
+SETUP_FLUTTER_WINDOWS = ROOT / ".github/actions/setup-flutter-windows/action.yml"
 WINDOWS_CMAKE = WORKFLOW.parents[2] / "windows/CMakeLists.txt"
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
@@ -213,6 +214,35 @@ for expected in (
         expected in setup_flutter_git,
         f"shared Flutter bootstrap must keep its verified pin: {expected}",
     )
+
+setup_flutter_windows = (
+    SETUP_FLUTTER_WINDOWS.read_text(encoding="utf-8") if SETUP_FLUTTER_WINDOWS.is_file() else ""
+)
+require(bool(setup_flutter_windows), "missing .github/actions/setup-flutter-windows/action.yml")
+require(
+    setup_flutter_windows.count("uses: subosito/flutter-action@") == 3
+    and setup_flutter_windows.count("continue-on-error: true") == 4
+    and setup_flutter_windows.count("cache: true")
+    == setup_flutter_windows.count("cache-key: ${{ inputs.cache-key }}")
+    and "steps.first.outcome == 'failure'" in setup_flutter_windows
+    and "steps.second.outcome == 'failure'" in setup_flutter_windows
+    and "steps.third.outcome == 'failure'" in setup_flutter_windows
+    and "Remove-Item -LiteralPath $installRoot -Recurse -Force" in setup_flutter_windows
+    and "throw 'Flutter setup failed three times" in setup_flutter_windows
+    and "name: Probe pinned Flutter release connectivity" in setup_flutter_windows
+    and "--ssl-revoke-best-effort" in setup_flutter_windows
+    and "--ssl-revoke-best-effort --head --fail" in setup_flutter_windows
+    and 'manifest="$("$PLEZY_REAL_CURL" --ssl-revoke-best-effort --fail' in setup_flutter_windows
+    and setup_flutter_windows.count("BASH_ENV: ${{ steps.windows_curl.outputs.bash_env }}") == 4
+    and setup_flutter_windows.count(
+        "PLEZY_REAL_CURL: ${{ steps.windows_curl.outputs.curl_path }}"
+    ) == 5
+    and 'curl() {' in setup_flutter_windows
+    and "name: Verify best-effort curl wrapper for Flutter setup" in setup_flutter_windows
+    and "PLEZY_REAL_CURL" in setup_flutter_windows
+    and "--show-error" in setup_flutter_windows,
+    "Windows Flutter setup must retry three times with a trusted cache key and fail closed",
+)
 
 linux = job("build-linux")
 require(
@@ -516,6 +546,31 @@ require(
     "Apple CI must refresh pinned SwiftPM mirrors and resolve exact locked packages before Xcode tests",
 )
 
+unit_tests = job_block(ci_text, "test")
+chrome_setup = named_step(unit_tests, "Configure Flutter Chrome executable")
+chrome_test = named_step(unit_tests, "Run wakelock_plus Chrome tests")
+require(
+    "working-directory: tools/reader-tests" in chrome_setup
+    and "chromium.executablePath()" in chrome_setup
+    and "CHROME_EXECUTABLE=%s" in chrome_setup
+    and "flutter test --platform chrome" in chrome_test,
+    "Flutter Chrome tests must use the Chromium installed for reader browser checks",
+)
+
+windows_native = job_block(ci_text, "windows-native-test")
+windows_ci_flutter_cache_key = re.search(
+    r'(?m)^\s*cache-key:\s*["\']?([^"\'\s]+)["\']?\s*$',
+    windows_native,
+)
+require(
+    "uses: ./.github/actions/setup-flutter-windows" in windows_native
+    and windows_ci_flutter_cache_key is not None
+    and windows_ci_flutter_cache_key.group(1)
+    == "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+    and "uses: ./.github/actions/setup-flutter-git" in windows_native,
+    "Windows x64 CI must use bounded Flutter setup retries while ARM64 keeps its pinned bootstrap",
+)
+
 
 run_name = re.search(r"(?m)^run-name: (.*)$", text)
 run_name_expression = run_name.group(1) if run_name else ""
@@ -711,8 +766,10 @@ for cache_key in cache_keys:
         "TRUSTED_BUILD_CACHE_VERSION" in cache_key,
         f"cache key is outside the trusted build namespace: {cache_key}",
     )
+windows_flutter_wrappers = text.count("uses: ./.github/actions/setup-flutter-windows")
 require(
-    text.count("cache-key:") == text.count("cache: true"),
+    windows_flutter_wrappers == 2
+    and text.count("cache-key:") == text.count("cache: true") + windows_flutter_wrappers,
     "every Flutter SDK cache must define its trusted cache key",
 )
 

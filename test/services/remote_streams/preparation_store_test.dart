@@ -154,12 +154,24 @@ void main() {
     final directory = await Directory.systemTemp.createTemp('preparation-workers-');
     final file = File('${directory.path}/state.sqlite');
     final first = SourceDatabase(
-      NativeDatabase.createInBackground(file, setup: (db) => db.execute('PRAGMA busy_timeout=10000')),
+      NativeDatabase.createInBackground(
+        file,
+        setup: (db) {
+          db.execute('PRAGMA busy_timeout=10000');
+          db.execute('PRAGMA journal_mode=WAL');
+        },
+      ),
     );
     RemoteStreamStore.useDatabaseForTesting(first);
     await RemoteStreamStore.load('alice');
     final second = SourceDatabase(
-      NativeDatabase.createInBackground(file, setup: (db) => db.execute('PRAGMA busy_timeout=10000')),
+      NativeDatabase.createInBackground(
+        file,
+        setup: (db) {
+          db.execute('PRAGMA busy_timeout=10000');
+          db.execute('PRAGMA journal_mode=WAL');
+        },
+      ),
     );
     final account = RemoteStreamAccount.create(
       service: RemoteStreamService.realDebrid,

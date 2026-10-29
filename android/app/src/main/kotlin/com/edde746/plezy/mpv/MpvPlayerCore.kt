@@ -3302,7 +3302,7 @@ class MpvPlayerCore private constructor(
     }
   }
 
-  fun setVideoRect(
+  override fun setVideoRect(
     left: Int,
     top: Int,
     right: Int,

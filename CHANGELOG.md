@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+- Resolve tvOS CocoaPods plugins from Flutter's resolved package paths without relying on iOS symlinks.
+- Stabilize Android and Windows validation on private CI runners, retry the pinned FFmpeg header download, and bypass the proxy for loopback tests.
+- Fix Android Kotlin compilation by correcting a duplicate visibility modifier and implementing the shared video-surface method.
+- Restore Apple CI by quoting simulator-only Xcode project settings and keeping the macOS test plugin current with its shared protocol.
+- Bound Android Gradle and Kotlin daemon memory so private CI runners can complete Android tests and release builds.
+- Fix Android private-JIT builds for the sharing plugin and pinned LiteRT OpenVINO runtime downloads.
+- Keep Apple native tests on the simulator's native architecture and preserve the 30 GiB Mac JIT disk floor during Flutter setup.
+- Fix the Linux native runner build with Flutter's mutable `FlValue` accessors.
+- Quote the Windows Flutter cache key so GitHub can parse and dispatch CI workflows.
+- Prepare the checksum-verified Flutter SDK in each Mac JIT job's temporary APFS workspace with resumable parallel downloads.
+- Retry transient Flutter SDK setup failures on Windows x64 JIT runners.
+- Stabilize player startup assertions, install FFmpeg for unit tests, and retry transient Android Gradle fetch failures.
+- Fix Apple native configuration to use Boost headers from CMake's extracted source root.
+- Install GStreamer development packages for Linux native CI and set Git identity in codegen test clones.
 - Fix Tizen subtitle PCM capture compilation by importing the base64 decoder.
 - Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.

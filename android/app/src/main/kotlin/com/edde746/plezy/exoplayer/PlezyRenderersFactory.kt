@@ -646,7 +646,7 @@ internal class DvSanitizingVideoRenderer(
 // lookups, and media3's own onReleased delivery all run there.
 
 @OptIn(UnstableApi::class)
-internal internal class RawPositionOutputProvider(
+internal class RawPositionOutputProvider(
   private val delegate: AudioOutputProvider,
   private val rawPositionUs: AtomicLong,
   private val log: ((String, String, String) -> Unit)?,

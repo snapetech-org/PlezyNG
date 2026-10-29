@@ -157,22 +157,20 @@ jobs:
             ~/.pub-cache
           key: ${{ runner.os }}-pub-v3-${{ hashFiles('**/pubspec.yaml', '**/pubspec.lock') }}
 
-      - name: Install native reader test dependencies
+      - name: Install unit test system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang build-essential
+          sudo apt-get install -y --no-install-recommends clang build-essential ffmpeg
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang build-essential
           flutter clean
           flutter pub get
 
       - name: Run tests
         run: |
           if [ -d "test" ] && [ "$(find test -name '*_test.dart' | wc -l)" -gt 0 ]; then
-            scripts/run_tests.sh
+            scripts/run_tests.sh -j 2
           else
             echo "No tests found, skipping test execution"
           fi
@@ -202,6 +200,13 @@ jobs:
         working-directory: packages/wakelock_plus
         run: flutter test test/wakelock_plus_linux_plugin_test.dart
 
+      - name: Configure Flutter Chrome executable
+        working-directory: tools/reader-tests
+        run: |
+          browser_path="$(node -p "require('playwright').chromium.executablePath()")"
+          test -x "$browser_path"
+          printf 'CHROME_EXECUTABLE=%s\n' "$browser_path" >> "$GITHUB_ENV"
+
       - name: Run wakelock_plus Chrome tests
         working-directory: packages/wakelock_plus
         run: flutter test --platform chrome --dart-define=WEB_PLUGIN_TESTS=true test/wakelock_plus_web_plugin_test.dart
@@ -216,6 +221,7 @@ jobs:
 
   android-test:
     name: Android JVM and Native Tests
+    needs: test
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-android-test"]}}', github.run_id)) }}
     permissions:
@@ -319,7 +325,47 @@ jobs:
 
       - name: Run Android JVM unit tests
         working-directory: android
-        run: ./gradlew :app:testDebugUnitTest :saf_util:testDebugUnitTest :libass:testDebugUnitTest -x :app:compileFlutterBuildDebug --continue
+        shell: bash
+        run: |
+          set +e
+          for attempt in 1 2 3; do
+            log_file="$RUNNER_TEMP/android-jvm-tests-${attempt}.log"
+            ./gradlew :app:testDebugUnitTest :saf_util:testDebugUnitTest :libass:testDebugUnitTest \
+              -x :app:compileFlutterBuildDebug --continue --console=plain \
+              -Dorg.gradle.internal.http.connectionTimeout=60000 \
+              -Dorg.gradle.internal.http.socketTimeout=120000 2>&1 | tee "$log_file"
+            status=${PIPESTATUS[0]}
+            if [[ "$status" -eq 0 ]]; then
+              exit 0
+            fi
+            echo "::group::Android Gradle failure resource diagnostics (attempt $attempt)"
+            date --iso-8601=seconds
+            free -h
+            df -h "$RUNNER_TEMP" "$GITHUB_WORKSPACE"
+            df -i "$RUNNER_TEMP" "$GITHUB_WORKSPACE"
+            for file in /proc/pressure/memory /proc/pressure/io \
+                        /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.high \
+                        /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.events; do
+              if [[ -r "$file" ]]; then
+                echo "== $file =="
+                cat "$file"
+              fi
+            done
+            dmesg --time-format=iso 2>/dev/null \
+              | grep -Ei 'out of memory|oom-kill|killed process' \
+              | tail -20
+            echo "::endgroup::"
+            if ! grep -Eiq 'Could not (GET|download)|Read timed out|Connection reset|Connection timed out|UnknownHostException|Temporary failure in name resolution|No route to host|ProxyError|tunnel.*failed' "$log_file"; then
+              exit "$status"
+            fi
+            if [[ "$attempt" -eq 3 ]]; then
+              echo "Gradle still failed after three attempts because a dependency download could not complete."
+              exit "$status"
+            fi
+            delay=$((attempt * 20))
+            echo "Transient Gradle dependency download failure; retrying the Android JVM tests in ${delay}s (attempt ${attempt}/3)."
+            sleep "$delay"
+          done
 
       - name: Check Android API compatibility
         working-directory: android
@@ -360,12 +406,14 @@ jobs:
 
   linux-native-test:
     name: Linux native reliability (${{ matrix.sanitizer }})
+    needs: [test, android-test, server]
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-linux-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include:
           - sanitizer: address
@@ -398,7 +446,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             clang cmake ninja-build pkg-config libgtk-3-dev libsecret-1-dev liblzma-dev \
             libstdc++-12-dev libmpv-dev libepoxy-dev libcurl4-openssl-dev libevdev-dev \
-            libwayland-dev libegl-dev libvulkan-dev mesa-vulkan-drivers
+            libwayland-dev libegl-dev libvulkan-dev mesa-vulkan-drivers \
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
       - name: Prepare Flutter Linux configuration
         run: |
@@ -524,12 +573,9 @@ jobs:
           persist-credentials: false
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        uses: ./.github/actions/setup-flutter-apple
         with:
-          channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-          pub-cache: false
 
       - name: Ensure CMake for the embedded Steam receiver
         shell: bash
@@ -538,6 +584,23 @@ jobs:
           export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
           command -v cmake >/dev/null || brew install cmake
           cmake --version
+
+      - name: Build and verify iOS native torrent framework
+        if: matrix.platform == 'iOS'
+        run: |
+          python3 scripts/p2p/build_apple.py ios
+          framework=packages/plezy_torrent/ios/Frameworks/ios/PlezyTorrent.xcframework
+          test -f "$framework/Info.plist"
+          test -d "$framework/ios-arm64/PlezyTorrent.framework"
+          test -d "$framework/ios-arm64_x86_64-simulator/PlezyTorrent.framework"
+
+      - name: Build and verify macOS native torrent framework
+        if: matrix.platform == 'macOS'
+        run: |
+          python3 scripts/p2p/build_apple.py macos
+          framework=packages/plezy_torrent/macos/Frameworks/macos/PlezyTorrent.xcframework
+          test -f "$framework/Info.plist"
+          test -d "$framework/macos-arm64_x86_64/PlezyTorrent.framework"
 
       - name: Install CocoaPods
         shell: bash
@@ -574,6 +637,10 @@ jobs:
         run: |
           test -f "$PODFILE_LOCK"
           shasum -a 256 "$PODFILE_LOCK" > "$RUNNER_TEMP/plezy-podfile-lock.sha256"
+
+      - name: Verify iOS Xcode project syntax
+        if: matrix.platform == 'iOS'
+        run: plutil -lint ios/Runner.xcodeproj/project.pbxproj
 
       - name: Prepare iOS Flutter build settings
         if: matrix.platform == 'iOS'
@@ -659,6 +726,7 @@ jobs:
           PY
 
       - name: Run Apple native reliability tests
+        if: matrix.platform != 'macOS'
         run: |
           result_bundle="$RUNNER_TEMP/apple-native-reliability.xcresult"
           set +e
@@ -670,13 +738,27 @@ jobs:
             -disableAutomaticPackageResolution \
             -resultBundlePath "$result_bundle" \
             CODE_SIGNING_ALLOWED=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            ARCHS=arm64
           test_status=$?
           set -e
           if [ "$test_status" -ne 0 ]; then
             xcrun xcresulttool get test-results tests --path "$result_bundle"
           fi
           exit "$test_status"
+
+      - name: Build macOS application and XCTest bundle
+        if: matrix.platform == 'macOS'
+        run: |
+          xcodebuild build-for-testing \
+            -workspace "${{ matrix.workspace }}" \
+            -scheme Runner \
+            -configuration Debug \
+            -destination "$APPLE_TEST_DESTINATION" \
+            -disableAutomaticPackageResolution \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            ARCHS=arm64
 
   # packer-windows-jit-v1
   windows-native-test:
@@ -715,12 +797,10 @@ jobs:
 
       - name: Setup Flutter
         if: matrix.flutter_setup == 'action'
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        uses: ./.github/actions/setup-flutter-windows
         with:
-          channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-          pub-cache: false
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
 
       - name: Set up Flutter from its pinned commit
         if: matrix.flutter_setup == 'git'
@@ -736,6 +816,8 @@ jobs:
       # shared_preferences_windows store write is the fix for #1732, so exercise
       # it here, on a real NTFS volume, against the real backend.
       - name: Run the vendored Windows preference store tests
+        env:
+          no_proxy: localhost,127.0.0.1,::1
         shell: pwsh
         run: flutter test test/services/prefs_store_atomic_write_windows_test.dart
 
@@ -814,6 +896,7 @@ jobs:
 
   server:
     name: Server checks
+    needs: [test, android-test, analyze, dependency-check]
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-server"]}}', github.run_id)) }}
     permissions:

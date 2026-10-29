@@ -63,6 +63,7 @@ target 'Runner' do
   tvos_pod_plugins.each do |name|
     plugin_package_path = plugin_paths[name] or
       raise "tvos/Podfile: plugin '#{name}' not in .flutter-plugins-dependencies"
+    # The tvOS lane does not run `pod install` in ios/ to materialize its symlinks.
     plugin_pod_path = File.expand_path(File.join(plugin_package_path, 'ios'), File.expand_path('..', __dir__))
     unless Dir.exist?(plugin_pod_path)
       raise "tvos/Podfile: plugin '#{name}' is missing at #{plugin_pod_path}"

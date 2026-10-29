@@ -24,11 +24,8 @@ final class IncomingSubtitleShareService {
   static const int _maximumPendingBytes = 128 * 1024 * 1024;
   static const Duration _maximumPendingAge = Duration(days: 7);
   static const Set<String> _extensions = {
-    'aqt',
     'ass',
     'idx',
-    'jss',
-    'mks',
     'mpl',
     'scc',
     'smi',
@@ -42,7 +39,6 @@ final class IncomingSubtitleShareService {
     'sami',
     'sbv',
     'lrc',
-    'txt',
     'vtt',
     'xml',
     'zip',

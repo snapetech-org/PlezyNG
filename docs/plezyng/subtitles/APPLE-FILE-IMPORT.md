@@ -1,12 +1,13 @@
 # Apple subtitle document delivery
 
-iOS/iPadOS and macOS register as alternate viewers for subtitle documents and
-ZIP/TAR/gzip archives. The shared DeepLinkPlugin receives both cold scene opens
+iOS/iPadOS and macOS register as alternate viewers for supported subtitle
+documents and ZIP/TAR/gzip archives. The registered suffixes match the app's
+native-player and text-conversion routes; unsupported AQT, JSS, MKS and plain
+TXT files are not accepted by the share inbox. XML subtitle documents remain
+available through the existing file picker. The shared DeepLinkPlugin receives both cold scene opens
 and subsequent file opens; ordinary Plezy links keep their existing delivery
 coordinator. There is no new share extension or background download permission.
-Plain TXT/XML remain available through the existing file picker; the app does
-not advertise itself as a viewer for every text/XML document. A gzip input must
-be named `.tar.gz`.
+A gzip input must be named `.tar.gz`.
 
 The native inbox acquires the URL's security scope before handing work to its
 serial queue, coordinates a read, copies in 64 KiB blocks, and releases the

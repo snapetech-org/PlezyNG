@@ -119,8 +119,8 @@ private final class AppleSubtitleInbox {
   private let maximumBytes = 128 * 1024 * 1024
   private let lifetime: TimeInterval = 7 * 24 * 60 * 60
   private let extensions: Set<String> = [
-    "aqt", "ass", "idx", "jss", "mks", "mpl", "scc", "smi", "srt", "ssa",
-    "sub", "sup", "ttml", "dfxp", "imsc", "sami", "sbv", "lrc", "txt", "vtt",
+    "ass", "idx", "mpl", "scc", "smi", "srt", "ssa",
+    "sub", "sup", "ttml", "dfxp", "imsc", "sami", "sbv", "lrc", "vtt",
     "xml", "zip", "tar", "tgz", "gz"
   ]
 

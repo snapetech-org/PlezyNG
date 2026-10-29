@@ -143,8 +143,6 @@
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
-					<string>aqt</string>
-					<string>jss</string>
 					<string>mpl</string>
 					<string>scc</string>
 					<string>smi</string>
@@ -171,7 +169,6 @@
 					<string>idx</string>
 					<string>sub</string>
 					<string>sup</string>
-					<string>mks</string>
 				</array>
 			</dict>
 		</dict>

@@ -170,7 +170,7 @@ jobs:
       - name: Run tests
         run: |
           if [ -d "test" ] && [ "$(find test -name '*_test.dart' | wc -l)" -gt 0 ]; then
-            scripts/run_tests.sh
+            scripts/run_tests.sh -j 2
           else
             echo "No tests found, skipping test execution"
           fi
@@ -388,12 +388,14 @@ jobs:
 
   linux-native-test:
     name: Linux native reliability (${{ matrix.sanitizer }})
+    needs: [test, android-test]
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-linux-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include:
           - sanitizer: address

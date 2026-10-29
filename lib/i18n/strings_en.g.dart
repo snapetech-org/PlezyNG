@@ -3275,6 +3275,7 @@ class Translations$videoControls$en {
 	/// en: 'Volume ${percent}%'
 	String volumePercent({required Object percent}) => 'Volume ${percent}%';
 
+	late final Translations$videoControls$subtitleBook$en subtitleBook = Translations$videoControls$subtitleBook$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
 
@@ -12110,6 +12111,112 @@ class Translations$hotkeys$actions$en {
 	String get subtitleDelayReset => 'Reset Subtitle Timing';
 }
 
+// Path: videoControls.subtitleBook
+class Translations$videoControls$subtitleBook$en {
+	Translations$videoControls$subtitleBook$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Combine saved transcripts on the book clock'
+	String get buttonTooltip => 'Combine saved transcripts on the book clock';
+
+	/// en: 'Book transcript unavailable'
+	String get unavailableTitle => 'Book transcript unavailable';
+
+	/// en: 'The source, profile, queue order or a file duration changed. Reopen the transcript for the current book.'
+	String get unavailableBody => 'The source, profile, queue order or a file duration changed. Reopen the transcript for the current book.';
+
+	/// en: 'Book transcript: ${title}'
+	String title({required Object title}) => 'Book transcript: ${title}';
+
+	/// en: 'Select a saved revision for each file. This view adds the current queue offsets once and does not replace native subtitles or original revisions. Seeking preserves the current play/pause state. Missing files stay visibly incomplete.'
+	String get description => 'Select a saved revision for each file. This view adds the current queue offsets once and does not replace native subtitles or original revisions. Seeking preserves the current play/pause state. Missing files stay visibly incomplete.';
+
+	/// en: '${selected}/${total} files selected · ${cues} cues'
+	String selectedSummary({required Object selected, required Object total, required Object cues}) => '${selected}/${total} files selected · ${cues} cues';
+
+	/// en: 'Hide future text'
+	String get hideFutureText => 'Hide future text';
+
+	/// en: 'Search selected transcripts'
+	String get searchSelected => 'Search selected transcripts';
+
+	/// en: 'No revision selected'
+	String get noRevisionSelected => 'No revision selected';
+
+	/// en: '${count} cues'
+	String cueCount({required Object count}) => '${count} cues';
+
+	/// en: 'Remove this file from the view'
+	String get removeFile => 'Remove this file from the view';
+
+	/// en: 'Seek to this cue in its source file'
+	String get seekCue => 'Seek to this cue in its source file';
+
+	/// en: 'Copy cue text'
+	String get copyCue => 'Copy cue text';
+
+	/// en: 'Export book transcript JSON'
+	String get export => 'Export book transcript JSON';
+
+	/// en: 'Source changed'
+	String get sourceChangedTitle => 'Source changed';
+
+	/// en: 'The transcript action could not complete.'
+	String get actionFailed => 'The transcript action could not complete.';
+
+	/// en: 'No saved revisions for ${file}. Generate or import one through its transcript tools first.'
+	String noSavedRevisions({required Object file}) => 'No saved revisions for ${file}. Generate or import one through its transcript tools first.';
+
+	/// en: 'Saved transcript: ${title}'
+	String savedRevisionTitle({required Object title}) => 'Saved transcript: ${title}';
+
+	/// en: 'File starts at ${start} in this queue and lasts ${duration}.'
+	String fileClockInfo({required Object start, required Object duration}) => 'File starts at ${start} in this queue and lasts ${duration}.';
+
+	/// en: 'Revision timestamps use the whole book clock'
+	String get bookClockTitle => 'Revision timestamps use the whole book clock';
+
+	/// en: 'Off: file-local timestamps, as used by standalone transcription. On: subtract this file’s book offset. Cues outside the file are refused.'
+	String get bookClockHelp => 'Off: file-local timestamps, as used by standalone transcription. On: subtract this file’s book offset. Cues outside the file are refused.';
+
+	/// en: 'I checked this file, edition, audio and timestamp basis'
+	String get confirmationTitle => 'I checked this file, edition, audio and timestamp basis';
+
+	/// en: 'The file identity matches; that does not prove the selected revision matches this narration.'
+	String get confirmationHelp => 'The file identity matches; that does not prove the selected revision matches this narration.';
+
+	/// en: '${operation} · ${language}'
+	String revisionSummary({required Object operation, required Object language}) => '${operation} · ${language}';
+
+	/// en: '${createdAt} · ${count} cues First cue: ${firstCue}'
+	String revisionDetails({required Object createdAt, required Object count, required Object firstCue}) => '${createdAt} · ${count} cues\nFirst cue: ${firstCue}';
+
+	/// en: 'The combined view is limited to 50000 cues and 5 MiB of text.'
+	String get combinedLimit => 'The combined view is limited to 50000 cues and 5 MiB of text.';
+
+	/// en: 'Unspecified language'
+	String get unspecifiedLanguage => 'Unspecified language';
+
+	/// en: 'A cue falls outside this file. Select the correct clock or correct the revision first.'
+	String get clockMismatch => 'A cue falls outside this file. Select the correct clock or correct the revision first.';
+
+	/// en: 'The book or its queue changed. Reopen it for the current book.'
+	String get changed => 'The book or its queue changed. Reopen it for the current book.';
+
+	/// en: 'Book transcript export exceeds 16 MiB.'
+	String get exportTooLarge => 'Book transcript export exceeds 16 MiB.';
+
+	/// en: 'The book changed or the transcript is empty or too large.'
+	String get invalidExport => 'The book changed or the transcript is empty or too large.';
+
+	/// en: 'None'
+	String get none => 'None';
+
+}
+
 // Path: videoControls.subtitleHdr
 class Translations$videoControls$subtitleHdr$en {
 	Translations$videoControls$subtitleHdr$en.internal(this._root);
@@ -15785,6 +15892,38 @@ extension on Translations {
 			'videoControls.tapAgainToUnlock' => 'Tap again to unlock',
 			'videoControls.secondarySubtitle' => 'Secondary subtitle',
 			'videoControls.subtitleImportTitle' => 'Preview subtitle import',
+			'videoControls.subtitleBook.buttonTooltip' => 'Combine saved transcripts on the book clock',
+			'videoControls.subtitleBook.unavailableTitle' => 'Book transcript unavailable',
+			'videoControls.subtitleBook.unavailableBody' => 'The source, profile, queue order or a file duration changed. Reopen the transcript for the current book.',
+			'videoControls.subtitleBook.title' => ({required Object title}) => 'Book transcript: ${title}',
+			'videoControls.subtitleBook.description' => 'Select a saved revision for each file. This view adds the current queue offsets once and does not replace native subtitles or original revisions. Seeking preserves the current play/pause state. Missing files stay visibly incomplete.',
+			'videoControls.subtitleBook.selectedSummary' => ({required Object selected, required Object total, required Object cues}) => '${selected}/${total} files selected · ${cues} cues',
+			'videoControls.subtitleBook.hideFutureText' => 'Hide future text',
+			'videoControls.subtitleBook.searchSelected' => 'Search selected transcripts',
+			'videoControls.subtitleBook.noRevisionSelected' => 'No revision selected',
+			'videoControls.subtitleBook.cueCount' => ({required Object count}) => '${count} cues',
+			'videoControls.subtitleBook.removeFile' => 'Remove this file from the view',
+			'videoControls.subtitleBook.seekCue' => 'Seek to this cue in its source file',
+			'videoControls.subtitleBook.copyCue' => 'Copy cue text',
+			'videoControls.subtitleBook.export' => 'Export book transcript JSON',
+			'videoControls.subtitleBook.sourceChangedTitle' => 'Source changed',
+			'videoControls.subtitleBook.actionFailed' => 'The transcript action could not complete.',
+			'videoControls.subtitleBook.noSavedRevisions' => ({required Object file}) => 'No saved revisions for ${file}. Generate or import one through its transcript tools first.',
+			'videoControls.subtitleBook.savedRevisionTitle' => ({required Object title}) => 'Saved transcript: ${title}',
+			'videoControls.subtitleBook.fileClockInfo' => ({required Object start, required Object duration}) => 'File starts at ${start} in this queue and lasts ${duration}.',
+			'videoControls.subtitleBook.bookClockTitle' => 'Revision timestamps use the whole book clock',
+			'videoControls.subtitleBook.bookClockHelp' => 'Off: file-local timestamps, as used by standalone transcription. On: subtract this file’s book offset. Cues outside the file are refused.',
+			'videoControls.subtitleBook.confirmationTitle' => 'I checked this file, edition, audio and timestamp basis',
+			'videoControls.subtitleBook.confirmationHelp' => 'The file identity matches; that does not prove the selected revision matches this narration.',
+			'videoControls.subtitleBook.revisionSummary' => ({required Object operation, required Object language}) => '${operation} · ${language}',
+			'videoControls.subtitleBook.revisionDetails' => ({required Object createdAt, required Object count, required Object firstCue}) => '${createdAt} · ${count} cues\nFirst cue: ${firstCue}',
+			'videoControls.subtitleBook.combinedLimit' => 'The combined view is limited to 50000 cues and 5 MiB of text.',
+			'videoControls.subtitleBook.unspecifiedLanguage' => 'Unspecified language',
+			'videoControls.subtitleBook.clockMismatch' => 'A cue falls outside this file. Select the correct clock or correct the revision first.',
+			'videoControls.subtitleBook.changed' => 'The book or its queue changed. Reopen it for the current book.',
+			'videoControls.subtitleBook.exportTooLarge' => 'Book transcript export exceeds 16 MiB.',
+			'videoControls.subtitleBook.invalidExport' => 'The book changed or the transcript is empty or too large.',
+			'videoControls.subtitleBook.none' => 'None',
 			'videoControls.subtitleHdr.close' => 'Close',
 			'videoControls.subtitleHdr.restoreOpening' => 'Restore opening value',
 			'videoControls.subtitleHdr.useVideoMetadata' => 'Use video metadata',

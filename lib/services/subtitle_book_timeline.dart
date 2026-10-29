@@ -23,6 +23,19 @@ class SubtitleBookCue {
   int get endMs => part.startMs + fileEndMs;
 }
 
+enum SubtitleBookIssue {
+  changed,
+  clockOutsidePart,
+  invalidExport,
+  exportTooLarge,
+  combinedLimit,
+}
+
+class SubtitleBookException implements Exception {
+  const SubtitleBookException(this.issue);
+  final SubtitleBookIssue issue;
+}
+
 /// An immutable queue clock, owned and invalidated by SourcePlayback. It never
 /// reinterprets a per-file revision as a book clock without an explicit choice.
 class SubtitleBookTimeline {
@@ -46,13 +59,13 @@ class SubtitleBookTimeline {
   final Listenable changes;
 
   List<SubtitleBookCue> useRevision(SubtitleBookPart part, SubtitleRevision revision, {required bool bookClock}) {
-    if (!isCurrent() || !parts.contains(part)) throw StateError('The book or its queue changed.');
+    if (!isCurrent() || !parts.contains(part)) throw const SubtitleBookException(SubtitleBookIssue.changed);
     final shift = bookClock ? part.startMs : 0;
     final result = <SubtitleBookCue>[];
     for (final cue in revision.cues) {
       final start = cue.startMs - shift, end = cue.endMs - shift;
       if (start < 0 || end <= start || end > part.durationMs) {
-        throw const FormatException('A cue falls outside this file. Select the correct clock or correct the revision first.');
+        throw const SubtitleBookException(SubtitleBookIssue.clockOutsidePart);
       }
       result.add(SubtitleBookCue(part, revision.id, cue, start, end));
     }
@@ -60,11 +73,14 @@ class SubtitleBookTimeline {
   }
 
   Uint8List export(List<SubtitleBookCue> cues) {
-    if (!isCurrent() || cues.isEmpty || cues.length > 50000) throw StateError('The book changed or the transcript is empty/too large.');
+    if (!isCurrent()) throw const SubtitleBookException(SubtitleBookIssue.changed);
+    if (cues.isEmpty || cues.length > 50000) {
+      throw const SubtitleBookException(SubtitleBookIssue.invalidExport);
+    }
     if (cues.any((cue) => !parts.contains(cue.part) || cue.fileStartMs < 0 || cue.fileEndMs <= cue.fileStartMs ||
         cue.fileEndMs > cue.part.durationMs) ||
         cues.fold<int>(0, (sum, cue) => sum + utf8.encode(cue.source.text).length) > 5 * 1024 * 1024) {
-      throw const FormatException('Book transcript bounds or provenance changed');
+      throw const SubtitleBookException(SubtitleBookIssue.invalidExport);
     }
     final output = {'schema': 'plezyng.book-transcript.v1', 'title': title,
       'clock': 'current-source-queue-milliseconds', 'complete': parts.every((part) => cues.any((cue) => identical(cue.part, part))),
@@ -76,7 +92,7 @@ class SubtitleBookTimeline {
       'limitations': ['Explicitly selected saved revisions; completeness is not a speech-coverage assertion.',
         'Queue order, file durations and identities are snapshot-bound. This is not a native sidecar or an importable single-file revision.']};
     final bytes = utf8.encode(jsonEncode(output));
-    if (bytes.length > 16 * 1024 * 1024) throw const FormatException('Book transcript export exceeds 16 MiB');
+    if (bytes.length > 16 * 1024 * 1024) throw const SubtitleBookException(SubtitleBookIssue.exportTooLarge);
     return Uint8List.fromList(bytes);
   }
 }

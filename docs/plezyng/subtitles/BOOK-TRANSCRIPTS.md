@@ -21,6 +21,9 @@ changes invalidate the snapshot and hide its data; changing the current file
 within the same book is allowed. The combined view does not attach a native
 subtitle or overwrite any saved revision.
 
+The dialog labels, tooltips and typed action errors use the shared English
+fallback catalog. Translation review remains open.
+
 Explicit JSON export is bounded to 16 MiB and records the book clock, part
 offsets/durations, privacy-safe identity digests, selected revision/source-cue
 IDs, file-local times, book times and canonical text. It is a separate

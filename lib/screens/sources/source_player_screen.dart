@@ -1610,7 +1610,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
               onPressed: () => _openSourceSubtitleAi(s),
               icon: const AppIcon(Symbols.auto_awesome_rounded),
             ),
-          if (s.canUseBookTranscript) IconButton(tooltip: 'Combine saved transcripts on the book clock', icon: const Icon(Icons.menu_book),
+          if (s.canUseBookTranscript) IconButton(tooltip: Translations.of(context).videoControls.subtitleBook.buttonTooltip, icon: const Icon(Icons.menu_book),
             onPressed: () => sourceAction(context, () async {
               final timeline = s.bookTranscriptTimeline();
               await showDialog<void>(context: context, builder: (_) => SubtitleBookDialog(timeline: timeline));

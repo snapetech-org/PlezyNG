@@ -414,10 +414,10 @@ class Translations$common$en {
 	String get ok => 'OK';
 
 	/// en: 'On'
-	String get on => 'On';
+	String get enabled => 'On';
 
 	/// en: 'Off'
-	String get off => 'Off';
+	String get disabled => 'Off';
 
 	/// en: 'Options'
 	String get options => 'Options';
@@ -3285,6 +3285,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleJobs$en subtitleJobs = Translations$videoControls$subtitleJobs$en.internal(_root);
 	late final Translations$videoControls$subtitleRoles$en subtitleRoles = Translations$videoControls$subtitleRoles$en.internal(_root);
 	late final Translations$videoControls$subtitleDefaultsCloud$en subtitleDefaultsCloud = Translations$videoControls$subtitleDefaultsCloud$en.internal(_root);
+	late final Translations$videoControls$subtitleDefaultsTransfer$en subtitleDefaultsTransfer = Translations$videoControls$subtitleDefaultsTransfer$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
@@ -7420,7 +7421,7 @@ class Translations$externalPlayer$en {
 	String get playerUrlScheme => 'URL Scheme';
 
 	/// en: 'Off'
-	String get off => 'Off';
+	String get disabled => 'Off';
 
 	/// en: 'Failed to open external player'
 	String get launchFailed => 'Failed to open external player';
@@ -9079,7 +9080,7 @@ class Translations$homeLayout$en {
 	String actionState({required Object action, required Object state}) => '${action}: ${state}';
 
 	/// en: 'On'
-	String get on => 'On';
+	String get enabled => 'On';
 
 	/// en: 'Turns off every row's hero setting and brings back the single rotating banner at the top, like before hero rows existed. Row order is kept.'
 	String get resetHeroButtonDescription => 'Turns off every row\'s hero setting and brings back the single rotating banner at the top, like before hero rows existed. Row order is kept.';
@@ -10150,7 +10151,7 @@ class Translations$fileSources$en {
 	String get browserReaderHelp => 'The reader is open in your browser. Keep PlezyNG open to save your place and notes.';
 
 	/// en: 'On'
-	String get on => 'On';
+	String get enabled => 'On';
 
 	/// en: 'App registration'
 	String get advancedSetup => 'App registration';
@@ -13295,6 +13296,157 @@ class Translations$videoControls$subtitleDefaultsCloud$en {
 
 	/// en: 'Defaults synchronization failed. Check the pairing code, cloud account, folder and network.'
 	String get syncFailed => 'Defaults synchronization failed. Check the pairing code, cloud account, folder and network.';
+}
+
+// Path: videoControls.subtitleDefaultsTransfer
+class Translations$videoControls$subtitleDefaultsTransfer$en {
+	Translations$videoControls$subtitleDefaultsTransfer$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Transfer caption defaults'
+	String get title => 'Transfer caption defaults';
+
+	/// en: 'Export saved appearance for both app-caption lanes and profile subtitle-role preferences. Import each group explicitly after preview. These defaults apply to future captions or track selection.'
+	String get description => 'Export saved appearance for both app-caption lanes and profile subtitle-role preferences. Import each group explicitly after preview. These defaults apply to future captions or track selection.';
+
+	/// en: 'The file contains no captions, font files, title overrides, delay corrections, accounts or pairing codes. Imported fonts need a separate installation; unavailable fonts use the bundled fallback.'
+	String get privacy => 'The file contains no captions, font files, title overrides, delay corrections, accounts or pairing codes. Imported fonts need a separate installation; unavailable fonts use the bundled fallback.';
+
+	/// en: 'Export saved defaults'
+	String get exportAction => 'Export saved defaults';
+
+	/// en: 'Open defaults for preview'
+	String get openPreview => 'Open defaults for preview';
+
+	/// en: 'Refresh current defaults'
+	String get refreshCurrent => 'Refresh current defaults';
+
+	/// en: 'Lane ${lane} appearance'
+	String laneAppearance({required Object lane}) => 'Lane ${lane} appearance';
+
+	/// en: 'Setting'
+	String get settingColumn => 'Setting';
+
+	/// en: 'Current'
+	String get currentColumn => 'Current';
+
+	/// en: 'Incoming'
+	String get incomingColumn => 'Incoming';
+
+	/// en: 'Import lane ${lane} defaults'
+	String importLaneAction({required Object lane}) => 'Import lane ${lane} defaults';
+
+	/// en: 'Profile subtitle roles'
+	String get profileRolesTitle => 'Profile subtitle roles';
+
+	/// en: 'Current: ${value}'
+	String currentRoles({required Object value}) => 'Current: ${value}';
+
+	/// en: 'Incoming: ${value}'
+	String incomingRoles({required Object value}) => 'Incoming: ${value}';
+
+	/// en: 'Import profile role defaults'
+	String get importRolesAction => 'Import profile role defaults';
+
+	/// en: 'Saved the current profile’s caption defaults.'
+	String get saved => 'Saved the current profile’s caption defaults.';
+
+	/// en: 'Preview loaded. Choose each group to import after comparing it with the current defaults.'
+	String get previewLoaded => 'Preview loaded. Choose each group to import after comparing it with the current defaults.';
+
+	/// en: 'Saved profile subtitle-role defaults. Title overrides still take precedence.'
+	String get importedRoles => 'Saved profile subtitle-role defaults. Title overrides still take precedence.';
+
+	/// en: 'Saved lane ${lane} appearance for future app captions. Active captions keep their current appearance.'
+	String importedLane({required Object lane}) => 'Saved lane ${lane} appearance for future app captions. Active captions keep their current appearance.';
+
+	/// en: 'The active profile changed. Reopen caption defaults.'
+	String get profileChanged => 'The active profile changed. Reopen caption defaults.';
+
+	/// en: 'Choose one caption defaults file, at most 16 KiB.'
+	String get chooseFile => 'Choose one caption defaults file, at most 16 KiB.';
+
+	/// en: 'The selected file cannot be read on this device.'
+	String get fileUnreadable => 'The selected file cannot be read on this device.';
+
+	/// en: 'Caption defaults exceed the 16 KiB or 20-second read limit.'
+	String get readLimitExceeded => 'Caption defaults exceed the 16 KiB or 20-second read limit.';
+
+	/// en: 'This caption defaults file could not be read or is invalid.'
+	String get invalidFile => 'This caption defaults file could not be read or is invalid.';
+
+	/// en: 'Could not transfer caption defaults. The file or settings storage may be unavailable.'
+	String get operationFailed => 'Could not transfer caption defaults. The file or settings storage may be unavailable.';
+
+	/// en: 'On'
+	String get enabled => 'On';
+
+	/// en: 'Off'
+	String get disabled => 'Off';
+
+	/// en: 'Vertical, columns left to right'
+	String get verticalLr => 'Vertical, columns left to right';
+
+	/// en: 'Vertical, columns right to left'
+	String get verticalRl => 'Vertical, columns right to left';
+
+	/// en: 'Horizontal'
+	String get horizontal => 'Horizontal';
+
+	/// en: 'Font size'
+	String get fontSize => 'Font size';
+
+	/// en: 'Position'
+	String get position => 'Position';
+
+	/// en: 'Background opacity'
+	String get backgroundOpacity => 'Background opacity';
+
+	/// en: 'Text color (ARGB)'
+	String get textColor => 'Text color (ARGB)';
+
+	/// en: 'Outline color (ARGB)'
+	String get outlineColor => 'Outline color (ARGB)';
+
+	/// en: 'Outline width'
+	String get outlineWidth => 'Outline width';
+
+	/// en: 'Margin'
+	String get margin => 'Margin';
+
+	/// en: 'Word highlighting'
+	String get wordHighlighting => 'Word highlighting';
+
+	/// en: 'Ruby readings'
+	String get rubyReadings => 'Ruby readings';
+
+	/// en: 'Bold'
+	String get bold => 'Bold';
+
+	/// en: 'Italic'
+	String get italic => 'Italic';
+
+	/// en: 'Anchor to video'
+	String get anchorToVideo => 'Anchor to video';
+
+	/// en: 'Overscan inset'
+	String get overscanInset => 'Overscan inset';
+
+	/// en: 'Writing direction'
+	String get writingDirection => 'Writing direction';
+
+	/// en: 'Background color (ARGB)'
+	String get backgroundColor => 'Background color (ARGB)';
+
+	/// en: 'Font'
+	String get font => 'Font';
+
+	/// en: 'Alignment'
+	String get alignment => 'Alignment';
+
 }
 
 // Path: videoControls.subtitleRoles
@@ -17306,6 +17458,53 @@ extension on Translations {
 			'videoControls.subtitleDefaultsCloud.configRequired' => 'Configure a cloud sync account and folder in Sources → Sync first.',
 			'videoControls.subtitleDefaultsCloud.sourceRequired' => 'Choose a supported cloud sync source.',
 			'videoControls.subtitleDefaultsCloud.syncFailed' => 'Defaults synchronization failed. Check the pairing code, cloud account, folder and network.',
+			'videoControls.subtitleDefaultsTransfer.title' => 'Transfer caption defaults',
+			'videoControls.subtitleDefaultsTransfer.description' => 'Export saved appearance for both app-caption lanes and profile subtitle-role preferences. Import each group explicitly after preview. These defaults apply to future captions or track selection.',
+			'videoControls.subtitleDefaultsTransfer.privacy' => 'The file contains no captions, font files, title overrides, delay corrections, accounts or pairing codes. Imported fonts need a separate installation; unavailable fonts use the bundled fallback.',
+			'videoControls.subtitleDefaultsTransfer.exportAction' => 'Export saved defaults',
+			'videoControls.subtitleDefaultsTransfer.openPreview' => 'Open defaults for preview',
+			'videoControls.subtitleDefaultsTransfer.refreshCurrent' => 'Refresh current defaults',
+			'videoControls.subtitleDefaultsTransfer.laneAppearance' => ({required Object lane}) => 'Lane ${lane} appearance',
+			'videoControls.subtitleDefaultsTransfer.settingColumn' => 'Setting',
+			'videoControls.subtitleDefaultsTransfer.currentColumn' => 'Current',
+			'videoControls.subtitleDefaultsTransfer.incomingColumn' => 'Incoming',
+			'videoControls.subtitleDefaultsTransfer.importLaneAction' => ({required Object lane}) => 'Import lane ${lane} defaults',
+			'videoControls.subtitleDefaultsTransfer.profileRolesTitle' => 'Profile subtitle roles',
+			'videoControls.subtitleDefaultsTransfer.currentRoles' => ({required Object value}) => 'Current: ${value}',
+			'videoControls.subtitleDefaultsTransfer.incomingRoles' => ({required Object value}) => 'Incoming: ${value}',
+			'videoControls.subtitleDefaultsTransfer.importRolesAction' => 'Import profile role defaults',
+			'videoControls.subtitleDefaultsTransfer.saved' => 'Saved the current profile’s caption defaults.',
+			'videoControls.subtitleDefaultsTransfer.previewLoaded' => 'Preview loaded. Choose each group to import after comparing it with the current defaults.',
+			'videoControls.subtitleDefaultsTransfer.importedRoles' => 'Saved profile subtitle-role defaults. Title overrides still take precedence.',
+			'videoControls.subtitleDefaultsTransfer.importedLane' => ({required Object lane}) => 'Saved lane ${lane} appearance for future app captions. Active captions keep their current appearance.',
+			'videoControls.subtitleDefaultsTransfer.profileChanged' => 'The active profile changed. Reopen caption defaults.',
+			'videoControls.subtitleDefaultsTransfer.chooseFile' => 'Choose one caption defaults file, at most 16 KiB.',
+			'videoControls.subtitleDefaultsTransfer.fileUnreadable' => 'The selected file cannot be read on this device.',
+			'videoControls.subtitleDefaultsTransfer.readLimitExceeded' => 'Caption defaults exceed the 16 KiB or 20-second read limit.',
+			'videoControls.subtitleDefaultsTransfer.invalidFile' => 'This caption defaults file could not be read or is invalid.',
+			'videoControls.subtitleDefaultsTransfer.operationFailed' => 'Could not transfer caption defaults. The file or settings storage may be unavailable.',
+			'videoControls.subtitleDefaultsTransfer.enabled' => 'On',
+			'videoControls.subtitleDefaultsTransfer.disabled' => 'Off',
+			'videoControls.subtitleDefaultsTransfer.verticalLr' => 'Vertical, columns left to right',
+			'videoControls.subtitleDefaultsTransfer.verticalRl' => 'Vertical, columns right to left',
+			'videoControls.subtitleDefaultsTransfer.horizontal' => 'Horizontal',
+			'videoControls.subtitleDefaultsTransfer.fontSize' => 'Font size',
+			'videoControls.subtitleDefaultsTransfer.position' => 'Position',
+			'videoControls.subtitleDefaultsTransfer.backgroundOpacity' => 'Background opacity',
+			'videoControls.subtitleDefaultsTransfer.textColor' => 'Text color (ARGB)',
+			'videoControls.subtitleDefaultsTransfer.outlineColor' => 'Outline color (ARGB)',
+			'videoControls.subtitleDefaultsTransfer.outlineWidth' => 'Outline width',
+			'videoControls.subtitleDefaultsTransfer.margin' => 'Margin',
+			'videoControls.subtitleDefaultsTransfer.wordHighlighting' => 'Word highlighting',
+			'videoControls.subtitleDefaultsTransfer.rubyReadings' => 'Ruby readings',
+			'videoControls.subtitleDefaultsTransfer.bold' => 'Bold',
+			'videoControls.subtitleDefaultsTransfer.italic' => 'Italic',
+			'videoControls.subtitleDefaultsTransfer.anchorToVideo' => 'Anchor to video',
+			'videoControls.subtitleDefaultsTransfer.overscanInset' => 'Overscan inset',
+			'videoControls.subtitleDefaultsTransfer.writingDirection' => 'Writing direction',
+			'videoControls.subtitleDefaultsTransfer.backgroundColor' => 'Background color (ARGB)',
+			'videoControls.subtitleDefaultsTransfer.font' => 'Font',
+			'videoControls.subtitleDefaultsTransfer.alignment' => 'Alignment',
 			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
 			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
 			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',

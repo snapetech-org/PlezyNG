@@ -1321,10 +1321,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final ordinal = await showDialog<int>(context: context, builder: (context) => AlertDialog(
       title: const Text('Prepare captions ahead of playback'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text(live ? 'Live analysis uses the packaged TV or desktop FFmpeg decoder to read completed HLS segments. '
+        Text(live ? 'Live analysis uses native Android/Apple readers for local segment snapshots, or the packaged TV/desktop FFmpeg decoder, to read completed HLS segments. '
           'It requires program timestamps and an active live-clock mapping, which remains an estimate. '
           'It can prepare captions ahead when you watch behind the live edge; it does not predict future speech. '
-          'Protected, untimestamped and non-HLS sources are refused. This uses additional bandwidth and replaces app overlay 1.'
+          'Protected, untimestamped and non-HLS sources are refused. Mobile snapshots accept TS, relative fMP4 and packed AAC only when the OS decoder supports them. '
+          'This uses additional bandwidth and replaces app overlay 1.'
           : 'A separate native decoder on Android/Apple, packaged audio decoder on TVs, or installed FFmpeg on desktop reads the current source through its owning transport. '
           'This may use additional bandwidth. It prepares about two minutes ahead and replaces app overlay 1. '
           'Choose the audio stream in file order (0 is the first); native player track IDs may use a different numbering scheme.'),

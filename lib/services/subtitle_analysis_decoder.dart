@@ -14,7 +14,8 @@ final class SubtitleAnalysisDecoder {
   static const _channel = MethodChannel('com.plezy/subtitle_analysis');
   static const _tv = bool.fromEnvironment('PLEZY_TIZEN') || bool.fromEnvironment('PLEZY_WEBOS');
   static bool get available => _tv || Platform.isAndroid || Platform.isIOS || Platform.isMacOS || Platform.isLinux || Platform.isWindows;
-  static bool get hlsAvailable => _tv || Platform.isLinux || Platform.isWindows || Platform.isMacOS;
+  static bool get hlsAvailable => available;
+  static bool get nativeHlsSnapshot => !_tv && (Platform.isAndroid || Platform.isIOS);
   static Future<String>? _packagedHelper;
   String? _id;
   Process? _process;
@@ -31,13 +32,17 @@ final class SubtitleAnalysisDecoder {
   }
 
   Future<void> decode({required Uri uri, required int startMs, required int endMs, required int audioOrdinal,
-      required File destination, required bool Function() isCurrent, bool localHlsSnapshot = false}) async {
+      required File destination, required bool Function() isCurrent, bool localHlsSnapshot = false,
+      bool localSegmentSnapshot = false}) async {
     if (_id != null) throw StateError('This analysis decoder is already in use');
     if (uri.userInfo.isNotEmpty || uri.hasFragment || !(uri.scheme == 'file' && uri.host.isEmpty || uri.scheme == 'http' && uri.host == '127.0.0.1') ||
         startMs < 0 || endMs <= startMs || endMs > 28800000 || endMs - startMs > 64000 || audioOrdinal < 0 || audioOrdinal > 63) {
       throw const FormatException('Invalid owned media source or bounded analysis window');
     }
-    if (localHlsSnapshot && (!hlsAvailable || uri.scheme != 'file')) throw UnsupportedError('A local HLS snapshot requires the separate FFmpeg decoder');
+    if (localHlsSnapshot && (!hlsAvailable || nativeHlsSnapshot || uri.scheme != 'file')) throw UnsupportedError('A local HLS playlist requires the separate TV or desktop FFmpeg decoder');
+    if (localSegmentSnapshot && (localHlsSnapshot || uri.scheme != 'file' || startMs != 0 || !nativeHlsSnapshot)) {
+      throw UnsupportedError('A native complete-segment snapshot requires a bounded local mobile media file');
+    }
     final random = Random.secure();
     final id = List.generate(16, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
     _id = id; _cancelled = false;
@@ -49,10 +54,12 @@ final class SubtitleAnalysisDecoder {
         try {
           final capabilities = await _channel.invokeMapMethod<String, dynamic>('capabilities').timeout(const Duration(seconds: 3));
           if (capabilities?['version'] != 1) throw UnsupportedError('Native analysis decoder is not installed');
+          if (localSegmentSnapshot && capabilities?['localSegmentSnapshot'] != true) throw UnsupportedError('Rebuild the native app to enable complete-segment analysis');
           backend = capabilities?['backend'] as String? ?? 'Native audio decoder';
           _nativePending = true;
           final pcm = await _channel.invokeMethod<Uint8List>('decode', {'id': id, 'uri': uri.toString(),
-            'startMs': startMs, 'endMs': endMs, 'audioOrdinal': audioOrdinal}).timeout(const Duration(seconds: 95));
+            'startMs': startMs, 'endMs': endMs, 'audioOrdinal': audioOrdinal,
+            'localSegmentSnapshot': localSegmentSnapshot}).timeout(const Duration(seconds: 95));
           _nativePending = false;
           if (!current()) throw StateError('Analysis source changed');
           if (pcm == null || pcm.length != (endMs-startMs)*32) throw const FormatException('Native decoder returned an invalid audio window');

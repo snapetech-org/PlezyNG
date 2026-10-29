@@ -40,7 +40,8 @@ class SubtitleAnalysisPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
   }
   override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
     if (call.method == "capabilities") {
-      result.success(mapOf("version" to 1, "backend" to "Android MediaExtractor/MediaCodec", "maxWindowMs" to 64000)); return
+      result.success(mapOf("version" to 1, "backend" to "Android MediaExtractor/MediaCodec", "maxWindowMs" to 64000,
+        "localSegmentSnapshot" to true)); return
     }
     val id = call.argument<String>("id")
     if (call.method == "cancel") { if (active?.first == id) active?.second?.set(true); result.success(null); return }
@@ -49,10 +50,11 @@ class SubtitleAnalysisPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     val start = call.argument<Number>("startMs")?.toLong()
     val end = call.argument<Number>("endMs")?.toLong()
     val ordinal = call.argument<Number>("audioOrdinal")?.toInt()
+    val segmentSnapshot = call.argument<Boolean>("localSegmentSnapshot") == true
     if (id == null || !Regex("^[a-f0-9]{32}$").matches(id) || uri == null || uri.userInfo != null || uri.fragment != null ||
         !(uri.scheme == "file" && (uri.host.isNullOrEmpty()) || uri.scheme == "http" && uri.host == "127.0.0.1") ||
         start == null || end == null || start < 0 || end <= start || end > 28800000 || end-start > 64000 ||
-        ordinal == null || ordinal !in 0..63) {
+        ordinal == null || ordinal !in 0..63 || segmentSnapshot && (uri.scheme != "file" || start != 0L)) {
       result.error("ANALYSIS_ARGUMENTS", "Invalid owned source or bounded audio window", null); return
     }
     if (active != null) { result.error("ANALYSIS_BUSY", "Another analysis decoder is closing or active", null); return }
@@ -60,7 +62,7 @@ class SubtitleAnalysisPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     active = id to cancelled
     worker.execute {
       try {
-        val pcm = decode(uri, start, end, ordinal, cancelled)
+        val pcm = decode(uri, start, end, ordinal, segmentSnapshot, cancelled)
         main.post { if (active?.first == id) active = null
           if (channel != null) result.success(pcm) }
       } catch (_: Exception) {
@@ -70,7 +72,7 @@ class SubtitleAnalysisPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
   }
 
-  private fun decode(uri: Uri, startMs: Long, endMs: Long, ordinal: Int, cancelled: AtomicBoolean): ByteArray {
+  private fun decode(uri: Uri, startMs: Long, endMs: Long, ordinal: Int, segmentSnapshot: Boolean, cancelled: AtomicBoolean): ByteArray {
     val extractor = MediaExtractor()
     var decoder: MediaCodec? = null
     var ownedHttp: OwnedAnalysisHttpSource? = null
@@ -84,13 +86,35 @@ class SubtitleAnalysisPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         ownedHttp = source; extractor.setDataSource(source)
       }
       current()
+      require(extractor.trackCount in 1..64)
       val audio = (0 until extractor.trackCount).filter { extractor.getTrackFormat(it).getString(MediaFormat.KEY_MIME)?.startsWith("audio/") == true }
       val index = audio.getOrNull(ordinal) ?: error("Audio stream missing")
       val format = extractor.getTrackFormat(index)
       val mime = requireNotNull(format.getString(MediaFormat.KEY_MIME))
       require(!mime.contains("scrambled"))
+      // A concatenated complete-segment snapshot may start at a large MPEG
+      // timestamp. Use the earliest first A/V sample, preserving audio's lead
+      // or delay relative to video; never substitute receipt time or a seek.
+      var originUs = 0L
+      if (segmentSnapshot) {
+        var first: Long? = null
+        for (track in 0 until extractor.trackCount) {
+          current()
+          val type = extractor.getTrackFormat(track).getString(MediaFormat.KEY_MIME) ?: continue
+          if (!type.startsWith("audio/") && !type.startsWith("video/")) continue
+          extractor.selectTrack(track)
+          extractor.seekTo(0, MediaExtractor.SEEK_TO_PREVIOUS_SYNC)
+          val time = extractor.sampleTime
+          extractor.unselectTrack(track)
+          require(time in 0..1000000000000000L)
+          first = first?.let { minOf(it, time) } ?: time
+        }
+        originUs = requireNotNull(first)
+      }
+      val startUs = originUs + startMs * 1000
+      val endUs = originUs + endMs * 1000
       extractor.selectTrack(index)
-      extractor.seekTo(startMs * 1000, MediaExtractor.SEEK_TO_PREVIOUS_SYNC)
+      extractor.seekTo(startUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC)
       format.setInteger(MediaFormat.KEY_PCM_ENCODING, AudioFormat.ENCODING_PCM_16BIT)
       val codec = MediaCodec.createDecoderByType(mime)
       decoder = codec
@@ -111,7 +135,7 @@ class SubtitleAnalysisPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
           if (slot >= 0) {
             val buffer = requireNotNull(codec.getInputBuffer(slot)); buffer.clear()
             val time = extractor.sampleTime
-            if (time < 0 || time > endMs * 1000 + 250000) {
+            if (time < 0 || time > endUs + 250000) {
               codec.queueInputBuffer(slot, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM); inputEnded = true
             } else {
               require((extractor.sampleFlags and MediaExtractor.SAMPLE_FLAG_ENCRYPTED) == 0)
@@ -144,17 +168,17 @@ class SubtitleAnalysisPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 }
                 return sum / channels
               }
-              val first = ceil((info.presentationTimeUs - startMs * 1000) * .016).toInt().coerceIn(0, count)
-              val last = ceil((info.presentationTimeUs + frames * 1000000.0 / sampleRate - startMs * 1000) * .016).toInt().coerceIn(0, count)
+              val first = ceil((info.presentationTimeUs - startUs) * .016).toInt().coerceIn(0, count)
+              val last = ceil((info.presentationTimeUs - startUs + frames * 1000000.0 / sampleRate) * .016).toInt().coerceIn(0, count)
               for (target in first until last) {
-                val position = ((startMs * 1000 + target * 62.5 - info.presentationTimeUs) * sampleRate / 1000000.0).coerceIn(0.0, (frames-1).toDouble())
+                val position = ((startUs - info.presentationTimeUs + target * 62.5) * sampleRate / 1000000.0).coerceIn(0.0, (frames-1).toDouble())
                 val left = position.toInt(); val right = (left + 1).coerceAtMost(frames - 1)
                 val fraction = position - left
                 val value = ((mono(left) * (1-fraction) + mono(right) * fraction) * 32767).roundToInt().coerceIn(-32768, 32767)
                 output[target*2] = value.toByte(); output[target*2+1] = (value shr 8).toByte(); populated[target] = true
               }
             }
-            outputEnded = (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0 || info.presentationTimeUs >= endMs * 1000
+            outputEnded = (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0 || info.presentationTimeUs >= endUs
           } finally { codec.releaseOutputBuffer(slot, false) }
         }
       }

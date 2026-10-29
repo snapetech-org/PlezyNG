@@ -413,8 +413,10 @@ final class SubtitleAnalysisBridge {
     channel.setMethodCallHandler { [bridge] call, result in bridge.handle(call, result) }
   }
   private func handle(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-    if call.method == "capabilities" { result(["version": 1, "backend": "Apple AVAssetReader", "maxWindowMs": 64000]); return }
+    if call.method == "capabilities" { result(["version": 1, "backend": "Apple AVAssetReader", "maxWindowMs": 64000,
+      "localSegmentSnapshot": true]); return }
     let args = call.arguments as? [String: Any] ?? [:]
+    let segmentSnapshot = args["localSegmentSnapshot"] as? Bool == true
     if call.method == "cancel" { if active?.id == args["id"] as? String { active?.cancel() }; result(nil); return }
     guard call.method == "decode" else { result(FlutterMethodNotImplemented); return }
     guard let id = args["id"] as? String, id.range(of: "^[a-f0-9]{32}$", options: .regularExpression) != nil,
@@ -422,6 +424,7 @@ final class SubtitleAnalysisBridge {
       (url.isFileURL && (url.host ?? "").isEmpty || url.scheme == "http" && url.host == "127.0.0.1"),
       let start = args["startMs"] as? Int, let end = args["endMs"] as? Int,
       start >= 0, end > start, end <= 28_800_000, end-start <= 64_000,
+      (!segmentSnapshot || url.isFileURL && start == 0),
       let ordinal = args["audioOrdinal"] as? Int, (0...63).contains(ordinal) else {
       result(FlutterError(code: "ANALYSIS_ARGUMENTS", message: "Invalid owned source or bounded audio window", details: nil)); return
     }
@@ -429,7 +432,7 @@ final class SubtitleAnalysisBridge {
     let request = SubtitleAnalysisRequest(id); active = request
     worker.async { [weak self] in
       do {
-        let data = try Self.decode(url, start: start, end: end, ordinal: ordinal, request: request)
+        let data = try Self.decode(url, start: start, end: end, ordinal: ordinal, segmentSnapshot: segmentSnapshot, request: request)
         DispatchQueue.main.async { self?.active = nil; result(FlutterStandardTypedData(bytes: data)) }
       } catch {
         DispatchQueue.main.async {
@@ -439,7 +442,7 @@ final class SubtitleAnalysisBridge {
       }
     }
   }
-  private static func decode(_ url: URL, start: Int, end: Int, ordinal: Int, request: SubtitleAnalysisRequest) throws -> Data {
+  private static func decode(_ url: URL, start: Int, end: Int, ordinal: Int, segmentSnapshot: Bool, request: SubtitleAnalysisRequest) throws -> Data {
     let loader: SubtitleAnalysisHttpLoader?
     if url.isFileURL { loader = nil } else { loader = try SubtitleAnalysisHttpLoader(source: url, request: request) }
     defer { loader?.close() }
@@ -455,9 +458,33 @@ final class SubtitleAnalysisBridge {
     guard asset.isReadable, !asset.hasProtectedContent else { throw SubtitleAnalysisFailure.unavailable }
     let tracks = asset.tracks(withMediaType: .audio)
     guard ordinal < tracks.count else { throw SubtitleAnalysisFailure.unavailable }
+    var origin = 0.0
+    if segmentSnapshot {
+      let timed = asset.tracks.filter { $0.mediaType == .audio || $0.mediaType == .video }
+      guard !timed.isEmpty, timed.count <= 64 else { throw SubtitleAnalysisFailure.unavailable }
+      var first: Double?
+      // Read one compressed sample per track. A track's declared range can
+      // include an empty edit; actual first A/V PTS preserves the audio offset.
+      for track in timed {
+        try request.check()
+        let probe = try AVAssetReader(asset: asset); request.bind(probe)
+        defer { probe.cancelReading() }
+        let compressed = AVAssetReaderTrackOutput(track: track, outputSettings: nil)
+        compressed.alwaysCopiesSampleData = false
+        guard probe.canAdd(compressed) else { throw SubtitleAnalysisFailure.unavailable }
+        probe.add(compressed)
+        guard probe.startReading(), let sample = compressed.copyNextSampleBuffer() else { throw SubtitleAnalysisFailure.unavailable }
+        let seconds = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sample))
+        guard seconds.isFinite, seconds >= 0, seconds <= 1_000_000_000 else { throw SubtitleAnalysisFailure.unavailable }
+        first = min(first ?? seconds, seconds)
+      }
+      guard let first else { throw SubtitleAnalysisFailure.unavailable }
+      origin = first
+    }
+    let startSeconds = origin + Double(start)/1000
     let reader = try AVAssetReader(asset: asset); request.bind(reader)
     defer { reader.cancelReading() }
-    reader.timeRange = CMTimeRange(start: CMTime(value: Int64(start), timescale: 1000),
+    reader.timeRange = CMTimeRange(start: CMTime(seconds: startSeconds, preferredTimescale: 1_000_000),
       duration: CMTime(value: Int64(end-start), timescale: 1000))
     let output = AVAssetReaderTrackOutput(track: tracks[ordinal], outputSettings: [
       AVFormatIDKey: kAudioFormatLinearPCM, AVSampleRateKey: 16000, AVNumberOfChannelsKey: 1,
@@ -484,8 +511,8 @@ final class SubtitleAnalysisBridge {
       let copied = data.withUnsafeMutableBytes { CMBlockBufferCopyDataBytes(block, atOffset: 0, dataLength: length, destination: $0.baseAddress!) }
       guard copied == kCMBlockBufferNoErr else { throw SubtitleAnalysisFailure.unavailable }
       let seconds = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sample))
-      guard seconds.isFinite, abs(seconds) < 86400 else { throw SubtitleAnalysisFailure.unavailable }
-      let first = Int(((seconds - Double(start)/1000)*16000).rounded())
+      guard seconds.isFinite, abs(seconds - startSeconds) < 86400 else { throw SubtitleAnalysisFailure.unavailable }
+      let first = Int(((seconds - startSeconds)*16000).rounded())
       for frame in 0..<(length/2) {
         let index = first+frame
         if index >= 0 && index < count { bytes[index*2] = data[frame*2]; bytes[index*2+1] = data[frame*2+1]; present[index] = true }

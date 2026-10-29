@@ -229,4 +229,132 @@ class SubtitleHlsAnalysis {
     final file = File('${directory.path}/window.m3u8');
     await file.writeAsString(manifest.toString(), flush: true); return file;
   }
+
+  /// Native mobile readers need a media file, not a local HLS playlist. Only
+  /// relocatable fMP4, whole 188-byte TS packets or ADTS frames are joined.
+  /// No transcoding, timestamp fabrication, partial segment or format guessing.
+  Future<File> stageNative(List<SubtitleHlsSegment> segments, Directory directory) async {
+    if (segments.isEmpty || segments.any((segment) => segment.initialization != segments.first.initialization ||
+        segment.initializationRange != segments.first.initializationRange)) {
+      throw const FormatException('A native live snapshot cannot cross an initialization change');
+    }
+    await stage(segments, directory);
+    final fragmented = segments.first.initialization != null;
+    String? format, audioConfiguration;
+    RandomAccessFile? output;
+    File? destination;
+    var written = 0;
+    try {
+      Future<void> append(Uint8List bytes) async {
+        _check();
+        written += bytes.length;
+        if (written > 128 * 1024 * 1024) throw const FormatException('Native live snapshot exceeds 128 MiB');
+        await output!.writeFrom(bytes);
+      }
+      if (fragmented) {
+        final init = File('${directory.path}/init0.mp4');
+        final bytes = await init.readAsBytes();
+        _fragmentBoxes(bytes, initialization: true);
+        format = 'mp4'; destination = File('${directory.path}/window.mp4');
+        output = await destination.open(mode: FileMode.write);
+        await append(bytes); await init.delete();
+      }
+      for (var index = 0; index < segments.length; index++) {
+        _check();
+        final input = File('${directory.path}/segment$index.${fragmented ? 'm4s' : 'ts'}');
+        var bytes = await input.readAsBytes(); // Stage already caps each input to 32 MiB.
+        if (fragmented) {
+          _fragmentBoxes(bytes, initialization: false);
+        } else if (bytes.length >= 188 && bytes.length % 188 == 0 && bytes[0] == 0x47) {
+          if (format != null && format != 'ts') throw const FormatException('Live audio changed container format');
+          format = 'ts';
+          for (var packet = 0; packet < bytes.length; packet += 188) {
+            if (bytes[packet] != 0x47) throw const FormatException('Incomplete transport-stream packet');
+          }
+        } else {
+          if (format != null && format != 'aac') throw const FormatException('Live audio changed container format');
+          // Packed AAC can carry a leading HLS timestamp ID3 tag. Program time
+          // is supplied separately; strip tags so every joined byte is ADTS.
+          var start = 0;
+          while (start + 10 <= bytes.length && bytes[start] == 0x49 && bytes[start+1] == 0x44 && bytes[start+2] == 0x33) {
+            if (bytes[start+3] < 3 || bytes[start+3] > 4 || (bytes[start+5] & 0x10) != 0 || bytes.sublist(start+6, start+10).any((b) => b >= 128)) {
+              throw const FormatException('Unsupported packed-audio ID3 header');
+            }
+            final size = (bytes[start+6] << 21) | (bytes[start+7] << 14) | (bytes[start+8] << 7) | bytes[start+9];
+            start += 10 + size;
+            if (start > bytes.length || size > 1024 * 1024) throw const FormatException('Invalid packed-audio ID3 size');
+          }
+          if (start == bytes.length) throw const FormatException('Packed audio contains no frames');
+          bytes = Uint8List.sublistView(bytes, start);
+          var position = 0;
+          while (position < bytes.length) {
+            if (position + 7 > bytes.length || bytes[position] != 0xff || (bytes[position+1] & 0xf6) != 0xf0 ||
+                ((bytes[position+2] >> 2) & 15) > 12) throw UnsupportedError('Native live analysis supports only TS, relocatable fMP4 or packed ADTS AAC');
+            final header = (bytes[position+1] & 1) != 0 ? 7 : 9;
+            final length = ((bytes[position+3] & 3) << 11) | (bytes[position+4] << 3) | (bytes[position+5] >> 5);
+            if (length < header || length > bytes.length - position) throw const FormatException('Incomplete ADTS audio frame');
+            final configuration = '${bytes[position+2] >> 2}:${((bytes[position+2] & 1) << 2) | (bytes[position+3] >> 6)}';
+            if (audioConfiguration != null && audioConfiguration != configuration) throw const FormatException('Live audio changed codec configuration without a discontinuity');
+            audioConfiguration = configuration;
+            position += length;
+          }
+          format = 'aac';
+        }
+        if (output == null) {
+          destination = File('${directory.path}/window.$format');
+          output = await destination.open(mode: FileMode.write);
+        }
+        await append(bytes);
+        await input.delete(); // Bound duplicate disk bytes to the current segment.
+      }
+      await output!.flush(); _check(); return destination!;
+    } finally { await output?.close(); }
+  }
+
+  static void _fragmentBoxes(Uint8List bytes, {required bool initialization}) {
+    if (bytes.isEmpty || bytes.length > 32 * 1024 * 1024) throw const FormatException('Invalid MP4 snapshot size');
+    final data = ByteData.sublistView(bytes);
+    var boxes = 0;
+    Set<String> walk(int start, int end, int depth) {
+      if (depth > 10) throw const FormatException('MP4 snapshot nesting limit');
+      final types = <String>{};
+      while (start < end) {
+        if (end-start < 8 || ++boxes > 10000) throw const FormatException('Invalid MP4 snapshot boxes');
+        var length = data.getUint32(start), header = 8;
+        final type = String.fromCharCodes(bytes.sublist(start+4, start+8));
+        if (length == 1) {
+          if (end-start < 16) throw const FormatException('Truncated large MP4 box');
+          length = data.getUint64(start+8); header = 16;
+        } else if (length == 0) { throw const FormatException('Open-ended MP4 boxes cannot be concatenated'); }
+        if (length < header || length > end-start) throw const FormatException('Invalid MP4 box length');
+        final body = start+header, stop = start+length;
+        types.add(type);
+        if (type == 'mfra' || type == 'tfra') throw const FormatException('Absolute MP4 fragment indexes cannot be relocated');
+        if (type == 'tfhd') {
+          if (stop-body < 8 || (data.getUint32(body) & 1) != 0) throw const FormatException('MP4 fragments require relative data addressing');
+        } else if (type == 'dref') {
+          if (stop-body < 8 || data.getUint32(body+4) > 64) throw const FormatException('Invalid MP4 data references');
+          var offset = body+8;
+          for (var n = 0; n < data.getUint32(body+4); n++) {
+            if (offset+12 > stop || data.getUint32(offset) != 12 ||
+                String.fromCharCodes(bytes.sublist(offset+4, offset+8)) != 'url ' || data.getUint32(offset+8) != 1) {
+              throw const FormatException('External MP4 data references are refused');
+            }
+            offset += 12;
+          }
+          if (offset != stop) throw const FormatException('Invalid MP4 reference table');
+        } else if (const {'moov','trak','mdia','minf','dinf','stbl','mvex','moof','traf'}.contains(type)) {
+          final children = walk(body, stop, depth+1);
+          if (type == 'traf' && !children.containsAll({'tfhd','tfdt'})) throw const FormatException('Fragment timing is missing');
+        }
+        start = stop;
+      }
+      return types;
+    }
+    final types = walk(0, bytes.length, 0);
+    if (initialization ? !types.containsAll({'ftyp','moov'}) || types.contains('mdat')
+        : !types.containsAll({'moof','mdat'}) || types.contains('moov')) {
+      throw const FormatException('Expected an HLS initialization section or complete MP4 fragment');
+    }
+  }
 }

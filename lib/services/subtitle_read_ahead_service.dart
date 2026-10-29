@@ -83,7 +83,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
         throw UnsupportedError('Decoder access must be through the owning local transport.');
       }
       if (source.liveEpochForPosition != null) {
-        if (!SubtitleAnalysisDecoder.hlsAvailable) throw UnsupportedError('Live HLS analysis requires the packaged TV or desktop FFmpeg decoder');
+        if (!SubtitleAnalysisDecoder.hlsAvailable) throw UnsupportedError('Live HLS analysis requires a separate local audio decoder');
         _hls = SubtitleHlsAnalysis(uri, () => _current(epoch), rendition: hlsRendition);
       } else if (live) { throw UnsupportedError('This live source does not provide program-clock analysis access'); }
       status = 'Preparing captions ahead of the playhead. Initial speech may finish late.';
@@ -202,6 +202,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
       for (final segment in segments.skip(first)) {
         if (selected.length >= 32 || duration >= 30000 || duration + segment.durationMs > 64000 ||
             segment.gap || segment.discontinuity != segments[first].discontinuity ||
+            segment.initialization != segments[first].initialization || segment.initializationRange != segments[first].initializationRange ||
             segment.startMs >= now + 120000 || _completedSegments.containsKey(segment.key) ||
             selected.isNotEmpty && (segment.startMs - selected.last.endMs).abs() > 250) break;
         selected.add(segment); duration += segment.durationMs;
@@ -210,11 +211,12 @@ class SubtitleReadAheadService extends ChangeNotifier {
       await SubtitleInferenceScheduler.instance.run(() async {}, priority: SubtitleWorkPriority.readAhead, isCurrent: current);
       temporary = await (await getTemporaryDirectory()).createTemp('subtitle_live_analysis_');
       status = 'Reading ${selected.length} completed live segments through the source transport'; notifyListeners();
-      final manifest = await hls.stage(selected, temporary);
+      final native = SubtitleAnalysisDecoder.nativeHlsSnapshot;
+      final manifest = native ? await hls.stageNative(selected, temporary) : await hls.stage(selected, temporary);
       if (!current()) return;
       final wav = File('${temporary.path}/window.wav');
       await _decoder.decode(uri: manifest.uri, startMs: 0, endMs: duration, audioOrdinal: _audioOrdinal,
-        destination: wav, isCurrent: current, localHlsSnapshot: true);
+        destination: wav, isCurrent: current, localHlsSnapshot: !native, localSegmentSnapshot: native);
       if (!current()) return;
       status = 'Recognizing completed live audio; the audible player is unchanged'; notifyListeners();
       final result = await SubtitleAiService.instance.transcribeWav(wav.path,

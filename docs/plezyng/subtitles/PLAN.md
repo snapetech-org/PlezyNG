@@ -21,7 +21,7 @@ with `[skip ci]`. Existing native dependency pins were not fabricated or promote
 | Area | Implemented source paths | Remaining boundary |
 | --- | --- | --- |
 | Transcription and translation | Local whisper.cpp CPU/optional compiled desktop CUDA/Vulkan; Sherpa provider requests with fallback; ML Kit and desktop Argos; selected-range work; durable WAV jobs; reviewed glossary/memory/model translation; cross-language sync and word timings. | Runtime/provider reports do not prove per-operation GPU/NPU execution. TV/accelerator packages and language quality need qualification. |
-| Live/DVR | Ordered PCM consumption, seek generation retirement, immutable finalized cues, bounded retained history, ExoPlayer source-frame clocks and moving DVR origin rebasing, optional late-text display, overlapping stable-prefix agreement with explicit provisional text, backend-grid DVR delay and opt-in delay hold; bounded completed-HLS-segment analysis on desktop/TV through owned source access. | No unrestricted future-audio live ingestion or engine-native incremental decoding. HLS needs explicit program timestamps, an active (possibly estimated) playback epoch, and the packaged TV or desktop FFmpeg decoder. Local-agreement recognition is implemented but unqualified. Delay hold seeks the viewer, not a second live decoder. Clock/output routes remain unqualified. |
+| Live/DVR | Ordered PCM consumption, seek generation retirement, immutable finalized cues, bounded retained history, ExoPlayer source-frame clocks and moving DVR origin rebasing, optional late-text display, overlapping stable-prefix agreement with explicit provisional text, backend-grid DVR delay and opt-in delay hold; bounded completed-HLS-segment analysis through owned source access, with desktop/TV playlists and mobile native media snapshots. | No unrestricted future-audio live ingestion or engine-native incremental decoding. HLS needs explicit program timestamps, an active (possibly estimated) playback epoch, and a capable local decoder. Mobile snapshots accept bounded TS, relative fMP4 and packed AAC; OS codec/container support remains a gate. Local-agreement recognition is implemented but unqualified. Delay hold seeks the viewer, not a second live decoder. Clock/output routes remain unqualified. |
 | Playback/source access | Android Media3 pre-speed PCM processor; native MPV bridges; Tizen tap; Android MediaExtractor/MediaCodec and Apple AVAssetReader analysis bridges plus desktop FFmpeg read-ahead via renewable standalone/library source leases; explicit companion staging of eligible current VOD files on IO platforms. | Current locked MPV libraries lack the ordered ABI. webOS NDL has no direct PCM tap; there is no browser Player. Android/Apple native readers and source-built Tizen/webOS audio helpers are implemented. Native format support, TV subprocess policy, shipped helper artifacts and device behavior remain unqualified. Companion staging is limited to complete, accessible files up to 1 GiB/one hour; playlists/live/protected sources are refused. |
 | Import and attachment | Existing format conversion/archive/drop/share flows; Plex/Jellyfin/Emby upload; managed standalone native text attachment; adapter-owned folder discovery for local/network/cloud sources and DLNA metadata-linked text resources. | Backend format limits still apply. Non-MPV attachment refuses saved affine corrections. Vendor-only DLNA caption tags and catalogue-specific sources without a file listing remain unsupported. |
 | App rendering | Two independent text lanes, per-profile/lane appearance defaults, installed-family/script fallback, original word highlights, fixed authored sign regions, stable optional scene-region avoidance, manual burned-caption cover, focused-pane density limit, horizontal ruby reading aids, spoken subtitles with explicit duck/rate. | App styling is not a replacement for native ASS/bitmap rendering. HDR luminance, font shaping and output paths are unqualified. Centered contain/cover/stretch/zoom geometry and screen/video anchoring are implemented; renderer/output qualification, vertical typography, new closed-caption service semantics and localized new controls remain open. |
@@ -1149,3 +1149,36 @@ This provides offline local fonts and explicit portable text/font export.
 Automatic download-item font dependency retention, embedded-media font
 extraction, full-fidelity styled packages and parser/device qualification remain
 open. No tests, analyzers, builds, font execution or CI were run in this pass.
+
+## Native mobile completed-HLS snapshots
+
+Android/iOS read-ahead can now stage completed timestamped HLS windows into a
+single local media file for the native analysis reader. This avoids asking
+MediaExtractor or AVAssetReader to interpret a local playlist. Accepted inputs
+are complete 188-byte TS packets, relocatable fMP4 initialization/fragments, or
+packed ADTS AAC with bounded leading ID3 metadata. fMP4 checks require bounded
+boxes, per-track fragment timing, relative data addressing and self-contained
+sample references. Open-ended boxes, absolute fragment indexes, changes in
+initialization/codec configuration, encryption and incomplete frames are
+refused. No native process or new network authority is introduced.
+
+The new native capability flag enables an explicit segment-snapshot mode. Both
+bridges find the earliest first audio/video sample timestamp and use that as
+the local window origin, preserving the selected audio's lead or delay against
+video. Apple probes compressed samples, so it does not decode video to find the
+origin. Android uses bounded track selection/sample-time reads. The existing
+PCM gap bound, 64-second window, cancellation and decode deadline still apply.
+The source's PROGRAM-DATE-TIME provides the absolute segment anchor, while the
+current player's wall/media mapping can remain an estimate. The app never
+substitutes receipt time or an intended seek as a native sample timestamp.
+
+A window remains at most 128 MiB of source bytes; flattening deletes consumed
+input files and temporarily duplicates at most the current 32 MiB segment.
+No audible-player seek, audio-output change, decoder replacement or tuner open
+occurs. A platform that cannot read a particular snapshot container/codec fails
+explicitly. Native builds and target playback/timing qualification remain
+necessary. No tests, builds, decodes, model runs or CI were executed.
+
+API/format references: [HLS segment and program-time contracts](https://www.rfc-editor.org/rfc/rfc8216),
+[MediaExtractor track/sample access](https://developer.android.com/reference/android/media/MediaExtractor),
+and [AVAssetReader](https://developer.apple.com/documentation/avfoundation/avassetreader).

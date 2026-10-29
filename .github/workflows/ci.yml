@@ -221,6 +221,7 @@ jobs:
 
   android-test:
     name: Android JVM and Native Tests
+    needs: test
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-android-test"]}}', github.run_id)) }}
     permissions:
@@ -583,6 +584,23 @@ jobs:
           export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
           command -v cmake >/dev/null || brew install cmake
           cmake --version
+
+      - name: Build and verify iOS native torrent framework
+        if: matrix.platform == 'iOS'
+        run: |
+          python3 scripts/p2p/build_apple.py ios
+          framework=packages/plezy_torrent/ios/Frameworks/ios/PlezyTorrent.xcframework
+          test -f "$framework/Info.plist"
+          test -d "$framework/ios-arm64/PlezyTorrent.framework"
+          test -d "$framework/ios-arm64_x86_64-simulator/PlezyTorrent.framework"
+
+      - name: Build and verify macOS native torrent framework
+        if: matrix.platform == 'macOS'
+        run: |
+          python3 scripts/p2p/build_apple.py macos
+          framework=packages/plezy_torrent/macos/Frameworks/macos/PlezyTorrent.xcframework
+          test -f "$framework/Info.plist"
+          test -d "$framework/macos-arm64_x86_64/PlezyTorrent.framework"
 
       - name: Install CocoaPods
         shell: bash

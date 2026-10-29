@@ -11,9 +11,14 @@ import '../../../services/subtitle_speech_service.dart';
 import '../../../services/speech_output_service.dart';
 import '../../../services/subtitle_font_store.dart';
 import '../../../services/subtitle_offline_package.dart';
+import '../../../services/subtitle_download_assets.dart';
 import 'subtitle_fonts_dialog.dart';
 
-Future<void> showSubtitleOverlayControls(BuildContext context, Player player) async {
+Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
+  SubtitleDownloadBinding? download,
+  bool Function()? downloadIsCurrent,
+  Future<void> Function()? onDownloadChanged,
+}) async {
   try { await SubtitleFontStore.instance.initialize(); } catch (_) {}
   if (!context.mounted) return;
   final session = SubtitleOverlayService.forPlayer(player);
@@ -53,6 +58,20 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
             } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not save caption appearance.'))); }
           }, child: const Text('Use this appearance for future tracks')),
           if (track.positionToSourceMs != null) const Text('This live overlay follows the moving program clock. Fixed-file export, Cast and native snapshot attachment are unavailable.'),
+          if (download != null && track.positionToSourceMs == null) TextButton(
+            onPressed: exportingPackage ? null : () async {
+              update(() => exportingPackage = true);
+              try {
+                if (!session.current || !session.lanes.contains(track)) throw StateError('Playback changed');
+                await SubtitleDownloadAssets.save(download, index, track);
+                await onDownloadChanged?.call();
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Captions, appearance and selected imported font retained for this downloaded part.')));
+              } catch (_) {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Could not retain captions. Check the download, available font and caption storage quota.')));
+              } finally { if (context.mounted) update(() => exportingPackage = false); }
+            }, child: const Text('Keep this lane with the downloaded video')),
           if (track.positionToSourceMs == null) TextButton(onPressed: exportingPackage ? null : () async {
             update(() => exportingPackage = true);
             try {
@@ -130,6 +149,41 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
             onChanged: (v) => update(() => SubtitleSpeechService.instance.duck = v)),
         ],
         const Divider(),
+        if (download != null) ...[
+          const Text('Saved download captions retain both reviewed lanes and their selected imported fonts in app storage. '
+            'They count toward download usage and are removed with your download. Restoring replaces the corresponding app lanes '
+            'and registers only fonts you previously chose. Native tracks stay selected until you turn them off.'),
+          TextButton(onPressed: exportingPackage ? null : () async {
+            update(() => exportingPackage = true);
+            try {
+              bool current() => session.current && downloadIsCurrent?.call() != false &&
+                  player.timelineOffset.inMilliseconds == download.partOffsetMs;
+              final restored = <SubtitleOverlayTrack?>[];
+              for (var lane = 0; lane < 2; lane++) {
+                restored.add(await SubtitleDownloadAssets.restore(download, lane, isCurrent: current));
+              }
+              if (!context.mounted || !current()) return;
+              for (var lane = 0; lane < 2; lane++) {
+                final track = restored[lane];
+                if (track != null) SubtitleOverlayService.attach(player, lane, track, restoreAppearance: false);
+              }
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(restored.every((track) => track == null)
+                  ? 'No captions were retained for this downloaded version and part.' : 'Saved download captions restored.')));
+            } catch (_) {
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Could not restore captions or their font. The saved copy has been retained.')));
+            } finally { if (context.mounted) update(() => exportingPackage = false); }
+          }, child: const Text('Restore saved download captions')),
+          TextButton(onPressed: exportingPackage ? null : () async {
+            update(() => exportingPackage = true);
+            try {
+              await SubtitleDownloadAssets.remove(download.globalKey, profileId: download.profileId);
+              await onDownloadChanged?.call();
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Removed your saved captions for this download. Current playback is unchanged.')));
+            } finally { if (context.mounted) update(() => exportingPackage = false); }
+          }, child: const Text('Remove saved captions from this download')),
+        ],
         const Text('Share the reviewed app overlays as a read-only second screen and receiver-compatible WebVTT links. '
           'Only private-network peers with the secret link can read them. HTTP is unencrypted; use a trusted local network. '
           'Playback URLs and credentials are never shared. App styling and authored layouts are flattened.'),

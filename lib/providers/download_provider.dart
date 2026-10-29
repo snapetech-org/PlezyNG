@@ -20,6 +20,7 @@ import '../services/background_work_diagnostics_service.dart';
 import '../services/download_manager_service.dart';
 import '../services/orphan_download_cleanup_service.dart';
 import '../services/download_size_calculator.dart';
+import '../services/subtitle_download_assets.dart';
 import '../services/api_cache.dart';
 import '../services/download_artwork_service.dart';
 import '../services/download_storage_service.dart';
@@ -311,6 +312,7 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
       await _database.removeDownloadOwner(profileId: profileId, globalKey: globalKey);
     }
 
+    await SubtitleDownloadAssets.remove(globalKey, profileId: profileId);
     final parsed = parseGlobalKey(globalKey);
     if (parsed != null && owner != null) {
       await _downloadManager.deleteMetadataForOwner(
@@ -817,10 +819,19 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     await _measureDownloadSizes({globalKey: storedPath});
   }
 
+  /// Refresh after an explicit retained-caption/font change for an owned item.
+  Future<void> refreshDownloadSize(String globalKey) async {
+    if (!_ownsDownloadKey(globalKey)) return;
+    await _measureCompletedDownload(globalKey);
+  }
+
   /// Measure the files behind [storedPaths] (globalKey → stored media path)
   /// and notify once if any size changed.
   Future<void> _measureDownloadSizes(Map<String, String> storedPaths) async {
     final sizes = await _sizeCalculator.measureAll(storedPaths);
+    for (final key in sizes.keys.toList(growable: false)) {
+      sizes[key] = sizes[key]! + await SubtitleDownloadAssets.bytesFor(key);
+    }
     var changed = false;
     for (final entry in sizes.entries) {
       if (_downloads[entry.key]?.status != DownloadStatus.completed) continue;

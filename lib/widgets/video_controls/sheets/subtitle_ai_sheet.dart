@@ -45,6 +45,10 @@ import 'subtitle_companion_jobs_dialog.dart';
 import 'subtitle_study_dialog.dart';
 import 'subtitle_overlay_dialog.dart';
 import '../../../services/subtitle_overlay_service.dart';
+import '../../../services/subtitle_download_assets.dart';
+import '../../../providers/download_provider.dart';
+import '../../../database/download_operations.dart';
+import '../../../utils/global_key_utils.dart';
 import '../../../services/subtitle_analysis_source.dart';
 import '../../../services/subtitle_source_upload.dart';
 import '../../../services/subtitle_read_ahead_service.dart';
@@ -1917,6 +1921,40 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     } catch (_) {
       return null;
     }
+  }
+
+  Future<void> _openOverlayControls() async {
+    SubtitleDownloadBinding? binding;
+    DownloadProvider? downloads;
+    final profile = context.read<ActiveProfileProvider>();
+    final profileId = profile.activeId;
+    final player = widget.player;
+    final session = SubtitleOverlayService.forPlayer(player);
+    final sourceCurrent = widget.isRevisionIdentityCurrent;
+    final partOffset = player.timelineOffset.inMilliseconds;
+    bool current() => profile.activeId == profileId && session.current &&
+        player.timelineOffset.inMilliseconds == partOffset && sourceCurrent?.call() != false;
+    // Standalone source identities do not name library download rows.
+    if (widget.revisionIdentity == null && widget.serverId != null && widget.ratingKey != null && profileId != null) {
+      downloads = context.read<DownloadProvider>();
+      final owner = downloads;
+      final key = buildGlobalKey(ServerId(widget.serverId!), widget.ratingKey!);
+      final row = await owner.getCompletedDownload(key);
+      if (row != null && row.mediaIndex == widget.mediaIndex && current()) {
+        final version = SubtitleDownloadAssets.digest(jsonEncode([row.mediaIndex, row.mediaSourceId, row.storedPartPaths]));
+        binding = SubtitleDownloadBinding(globalKey: key, profileId: profileId, version: version,
+          partOffsetMs: partOffset, isCurrent: () async {
+            if (!current()) return false;
+            final now = await owner.getCompletedDownload(key);
+            return current() && now != null && version == SubtitleDownloadAssets.digest(
+                jsonEncode([now.mediaIndex, now.mediaSourceId, now.storedPartPaths]));
+          });
+      }
+    }
+    if (!mounted || !current()) return;
+    final saved = binding;
+    await showSubtitleOverlayControls(context, player, download: saved, downloadIsCurrent: current,
+      onDownloadChanged: saved == null ? null : () => downloads!.refreshDownloadSize(saved.globalKey));
   }
 
   SubtitleRevisionIdentity? get _revisionIdentity {
@@ -3842,7 +3880,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('bitmap_ocr', 'Read PGS/VobSub images and correct OCR'),
           ]) FocusableListTile(leading: const AppIcon(Symbols.auto_awesome_rounded), title: Text(entry.$2),
             onTap: _busy || _revisionIdentity == null ? null : () => unawaited(_submitCompanion(entry.$1))),
-          TextButton(onPressed: () => showSubtitleOverlayControls(context, widget.player), child: const Text('App overlay appearance and cover')),
+          TextButton(onPressed: () => unawaited(_run(_openOverlayControls)), child: const Text('App overlay appearance and cover')),
           if (localSpeech && SubtitleReadAheadService.available) AnimatedBuilder(
             animation: SubtitleReadAheadService.instance, builder: (context, _) {
               final service = SubtitleReadAheadService.instance;

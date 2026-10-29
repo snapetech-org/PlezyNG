@@ -49,9 +49,12 @@ abstract final class SubtitleNativeHandoffService {
     if (!player.supportedLocalSubtitleExtensions.contains('srt')) throw UnsupportedError('This renderer cannot import SRT');
     final session = SubtitleOverlayService.forPlayer(player);
     final snapshot = export(player, track);
+    final snapshotDelay = track.delayMs;
+    final snapshotOffset = player.timelineOffset;
     if (snapshot.clipped > 0 && !allowClipping) throw StateError('Confirm clipping at the opened part boundary first');
     bool current() {
-      try { return session.current && track.isCurrent() && session.lanes.contains(track); }
+      try { return session.current && track.isCurrent() && session.lanes.contains(track) &&
+          track.delayMs == snapshotDelay && player.timelineOffset == snapshotOffset; }
       catch (_) { return false; }
     }
     var owner = _owners[player];

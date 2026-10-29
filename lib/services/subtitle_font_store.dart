@@ -162,13 +162,20 @@ class SubtitleFontStore {
     _registered.add(font.digest);
   }
 
-  Future<SubtitleStoredFont> importFile(File file, {required String label, String license = ''}) => _serialize(() async {
+  Future<SubtitleStoredFont> importFile(File file, {required String label, String license = ''}) async =>
+      importBytes(await _bounded(file, maximumFontBytes), label: label, license: license);
+
+  /// Explicit restore of a font the viewer previously retained with a download.
+  /// It passes through the same validation, registration and quota as import.
+  Future<SubtitleStoredFont> importBytes(Uint8List input, {required String label, String license = ''}) {
+    if (input.length > maximumFontBytes) throw const FormatException('Invalid font size.');
+    final bytes = Uint8List.fromList(input);
+    return _serialize(() async {
     await initialize();
     final name = label.trim();
     if (name.isEmpty || name.length > 100 || RegExp(r'[\x00-\x1f\x7f]').hasMatch(name) || utf8.encode(license).length > 16384) {
       throw const FormatException('Use a short font label and at most 16 KiB of license text.');
     }
-    final bytes = await _bounded(file, maximumFontBytes);
     _validate(bytes);
     final digest = sha256.convert(bytes).toString();
     if (_fonts[digest] case final SubtitleStoredFont existing) return existing;
@@ -192,7 +199,8 @@ class SubtitleFontStore {
       rethrow;
     }
     return font;
-  });
+    });
+  }
 
   Future<void> remove(SubtitleStoredFont font) => _serialize(() async {
     await initialize();

@@ -26,6 +26,7 @@ import 'orphan_download_cleanup_service.dart';
 import 'jellyfin_cache_resolver.dart';
 import 'plex_api_cache.dart';
 import 'settings_service.dart';
+import 'subtitle_download_assets.dart';
 import '../models/transcode_quality_preset.dart';
 import 'saf_storage_service.dart';
 import 'package:saf_util/saf_util_platform_interface.dart' show SafDocumentFile;
@@ -561,6 +562,7 @@ class DownloadManagerService {
       if (root == null && videoUri != null) {
         root = await _safStorage.resolvePersistedPermissionUri(videoUri);
       }
+      await SubtitleDownloadAssets.remove(globalKey);
       final deletedRoot = await _database.deleteDownload(globalKey);
       root ??= deletedRoot;
       if (root != null) {

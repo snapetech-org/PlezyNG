@@ -129,6 +129,10 @@ class _SubtitleReviewDataDialogState extends State<SubtitleReviewDataDialog> {
               return Card(child: Padding(padding: const EdgeInsets.all(10), child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 Text('${key.substring(0, 12)} · ${entry['reviewedAt']}', style: Theme.of(context).textTheme.labelSmall),
+                if (entry['sourceText'] is String && (entry['sourceText'] as String).isNotEmpty)
+                  SelectableText(t.videoSettings.subtitleReviewSource(text: entry['sourceText'] as String))
+                else
+                  Text(t.videoSettings.subtitleReviewSourceUnavailable),
                 if (conflict) SelectableText(t.videoSettings.subtitleReviewLocal(text: local.memory[key]!['text'] as String)),
                 SelectableText(t.videoSettings.subtitleReviewIncoming(text: entry['text'] as String)),
                 if (conflict) CheckboxListTile(contentPadding: EdgeInsets.zero,

@@ -1923,6 +1923,8 @@
     "videoSettings.subtitleReviewOpen",
     "videoSettings.subtitleReviewRejectionsImported",
     "videoSettings.subtitleReviewReplace",
+    "videoSettings.subtitleReviewSource",
+    "videoSettings.subtitleReviewSourceUnavailable",
     "videoSettings.subtitleReviewTransferFailed",
     "videoSettings.subtitleSourceTime",
     "videoSettings.subtitleUsePlaybackTime",

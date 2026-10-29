@@ -7402,8 +7402,14 @@ class Translations$videoSettings$en {
 	/// en: 'Transfer reviewed subtitle data'
 	String get subtitleReviewData => 'Transfer reviewed subtitle data';
 
-	/// en: 'Transfer reviewed translation suggestions and hidden provider revisions between profiles or devices. The file contains translated dialogue in plaintext. Existing translations stay unless you choose incoming text for each conflict. Imports do not attach subtitles; reused translations still need review. Hidden revisions require matching server and item identities.'
-	String get subtitleReviewDataHelp => 'Transfer reviewed translation suggestions and hidden provider revisions between profiles or devices. The file contains translated dialogue in plaintext. Existing translations stay unless you choose incoming text for each conflict. Imports do not attach subtitles; reused translations still need review. Hidden revisions require matching server and item identities.';
+	/// en: 'Transfer reviewed translation suggestions and hidden provider revisions between profiles or devices. The file may contain source and translated dialogue, opaque media-item identifiers, and hashes in plaintext. Existing translations stay unless you choose incoming text for each conflict. Imports do not attach subtitles; reused translations still need review. Hidden revisions require matching server and item identities.'
+	String get subtitleReviewDataHelp => 'Transfer reviewed translation suggestions and hidden provider revisions between profiles or devices. The file may contain source and translated dialogue, opaque media-item identifiers, and hashes in plaintext. Existing translations stay unless you choose incoming text for each conflict. Imports do not attach subtitles; reused translations still need review. Hidden revisions require matching server and item identities.';
+
+	/// en: 'Source: ${text}'
+	String subtitleReviewSource({required String text}) => 'Source: ${text}';
+
+	/// en: 'Source text is not included in this older entry.'
+	String get subtitleReviewSourceUnavailable => 'Source text is not included in this older entry.';
 
 	/// en: 'Transfer could not be completed. Check the file, active profile and storage limits, then refresh the preview if local data changed.'
 	String get subtitleReviewTransferFailed => 'Transfer could not be completed. Check the file, active profile and storage limits, then refresh the preview if local data changed.';
@@ -22905,7 +22911,9 @@ extension on Translations {
 			'videoSettings.subtitleCalibrationInconsistent' => 'These anchors do not agree on one speed and delay. Correct or remove mismatched observations, or use cut-aware synchronization.',
 			'videoSettings.subtitleCalibrationHistoryFailed' => 'Timing was applied, but its review history could not be saved.',
 			'videoSettings.subtitleReviewData' => 'Transfer reviewed subtitle data',
-			'videoSettings.subtitleReviewDataHelp' => 'Transfer reviewed translation suggestions and hidden provider revisions between profiles or devices. The file contains translated dialogue in plaintext. Existing translations stay unless you choose incoming text for each conflict. Imports do not attach subtitles; reused translations still need review. Hidden revisions require matching server and item identities.',
+			'videoSettings.subtitleReviewDataHelp' => 'Transfer reviewed translation suggestions and hidden provider revisions between profiles or devices. The file may contain source and translated dialogue, opaque media-item identifiers, and hashes in plaintext. Existing translations stay unless you choose incoming text for each conflict. Imports do not attach subtitles; reused translations still need review. Hidden revisions require matching server and item identities.',
+			'videoSettings.subtitleReviewSource' => ({required String text}) => 'Source: ${text}',
+			'videoSettings.subtitleReviewSourceUnavailable' => 'Source text is not included in this older entry.',
 			'videoSettings.subtitleReviewTransferFailed' => 'Transfer could not be completed. Check the file, active profile and storage limits, then refresh the preview if local data changed.',
 			'videoSettings.subtitleReviewExport' => 'Export this profile',
 			'videoSettings.subtitleReviewOpen' => 'Open transfer for review',

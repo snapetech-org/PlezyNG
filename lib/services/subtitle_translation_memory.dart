@@ -73,14 +73,23 @@ abstract final class SubtitleTranslationMemory {
       final value = raw[key];
       const fields = {'text', 'sourceFingerprint', 'namespace', 'reviewRevision', 'itemIdentity',
         'cueId', 'backend', 'modelRevision', 'reviewedAt'};
-      if (!hex.hasMatch(key) || value is! Map || value.length != fields.length ||
-          value.keys.any((field) => !fields.contains(field))) throw const FormatException('Invalid memory entry.');
+      const optionalFields = {'sourceText'};
+      if (!hex.hasMatch(key) || value is! Map || value.length < fields.length ||
+          value.length > fields.length + optionalFields.length ||
+          !fields.every(value.containsKey) ||
+          value.keys.any((field) => !fields.contains(field) && !optionalFields.contains(field))) {
+        throw const FormatException('Invalid memory entry.');
+      }
       final text = value['text'], source = value['sourceFingerprint'], namespace = value['namespace'];
       final revision = value['reviewRevision'], reviewed = value['reviewedAt'];
+      final sourceText = value['sourceText'];
       if (text is! String || text.trim().isEmpty || text.length > 4000 ||
           source is! String || !hex.hasMatch(source) || namespace is! String || !hex.hasMatch(namespace) ||
           revision is! String || !hex.hasMatch(revision) || reviewed is! String || reviewed.length > 64 ||
           DateTime.tryParse(reviewed) == null) throw const FormatException('Invalid reviewed translation.');
+      if (sourceText != null && (sourceText is! String || sourceText.length > 4000 || digest(sourceText) != source)) {
+        throw const FormatException('Invalid source preview.');
+      }
       String bounded(String name, int maximum) {
         final item = value[name];
         if (item is! String || item.length > maximum) throw const FormatException('Invalid memory provenance.');
@@ -89,7 +98,8 @@ abstract final class SubtitleTranslationMemory {
       output[key] = Map.unmodifiable({'text': text, 'sourceFingerprint': source, 'namespace': namespace,
         'reviewRevision': revision, 'itemIdentity': bounded('itemIdentity', 256),
         'cueId': bounded('cueId', 256), 'backend': bounded('backend', 256),
-        'modelRevision': bounded('modelRevision', 256), 'reviewedAt': reviewed});
+        'modelRevision': bounded('modelRevision', 256), 'reviewedAt': reviewed,
+        if (sourceText is String) 'sourceText': sourceText});
     }
     if (utf8.encode(jsonEncode({'schema': 1, 'entries': output})).length > _maximumBytes) {
       throw const FormatException('Translation memory size limit.');
@@ -154,10 +164,12 @@ abstract final class SubtitleTranslationMemory {
         if (cue == null || cue.text.trim().isEmpty || cue.text.length > 4000) continue;
         final key = _key(source, i, namespace);
         entries.remove(key); // insertion order is bounded LRU by accepted review.
-        entries[key] = {'text': cue.text, 'sourceFingerprint': digest(source[i].text), 'namespace': namespace,
+        final remembered = <String, Object?>{'text': cue.text, 'sourceFingerprint': digest(source[i].text), 'namespace': namespace,
           'reviewRevision': revisionDigest, 'itemIdentity': itemIdentity, 'cueId': cue.stableId,
           'backend': backendLabel.length > 256 ? backendLabel.substring(0, 256) : backendLabel,
           'modelRevision': 'not-reported-by-local-translator', 'reviewedAt': DateTime.now().toUtc().toIso8601String()};
+        if (source[i].text.length <= 4000) remembered['sourceText'] = source[i].text;
+        entries[key] = remembered;
         if (entries.length > _maximumEntries) entries.remove(entries.keys.first);
       }
       var encoded = jsonEncode({'schema': 1, 'entries': entries});

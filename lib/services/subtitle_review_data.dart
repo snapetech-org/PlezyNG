@@ -6,8 +6,8 @@ import 'package:crypto/crypto.dart';
 import 'subtitle_rejection_service.dart';
 import 'subtitle_translation_memory.dart';
 
-/// Explicit, plaintext transfer of reviewed suggestions and opaque provider
-/// revision fingerprints. No server URLs, login data or active track is shared.
+/// Plaintext transfer of reviewed source/translation text, opaque media IDs and
+/// provider revision fingerprints. No server URLs, login data or active track is shared.
 final class SubtitleReviewData {
   SubtitleReviewData({required Map<String, Map<String, Object?>> memory, required Map<String, int> rejections})
     : memory = SubtitleTranslationMemory.validatePortable(memory),

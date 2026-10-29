@@ -2,10 +2,13 @@
 
 Playback settings and portable caption defaults expose a review-data dialog.
 It exports reviewed translation suggestions and hidden provider-revision hashes
-as a bounded JSON file. The file is plaintext and contains translated dialogue;
+as a bounded JSON file. The file is plaintext and can contain source and
+translated dialogue, opaque media-item identifiers, and source/context hashes;
 the dialog discloses this before export. It contains no transport configuration,
-credential, model file or active-track selection. A canonical payload SHA-256
-detects corruption; it does not authenticate the sender.
+credential, model file or active-track selection. New translation-memory entries
+include a bounded source-line preview; older entries remain importable without
+that preview. A canonical payload SHA-256 detects corruption; it does not
+authenticate the sender.
 
 Opening a file only previews it. Translation conflicts show current and incoming
 text, default to keeping local text, and require an individual incoming choice

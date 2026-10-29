@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:uuid/uuid.dart';
 import '../../focus/focusable_text_field.dart';
 import '../../games/romm/romm_client.dart';
 import '../../games/romm/romm_controller.dart';
@@ -13,11 +14,13 @@ import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/focused_scroll_scaffold.dart';
 import '../../utils/snackbar_helper.dart';
 
+import 'romm_session_page.dart';
+
 class RommConnectionsScreen extends StatelessWidget {
   const RommConnectionsScreen({super.key, required this.controller});
   final RommController controller;
-  Future<void> _connect(BuildContext context, [RommConnection? source]) => showDialog<void>(
-    context: context, builder: (_) => RommPairDialog(controller: controller, source: source));
+  Future<void> _connect(BuildContext context, [RommConnection? source]) => rommDialog<void>(
+    context: context, controller: controller, builder: (_) => RommPairDialog(controller: controller, source: source));
   @override Widget build(BuildContext context) => AnimatedBuilder(animation: controller, builder: (context, _) => FocusedScrollScaffold(
     title: Text(rommText(context, 'connections')),
     slivers: [SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(16), child: Column(
@@ -32,7 +35,7 @@ class RommConnectionsScreen extends StatelessWidget {
           '${controller.sessionOnly(source.id) ? rommText(context, 'sessionOnly') : source.version}'),
         onTap: () => _connect(context, source),
         trailing: IconButton(tooltip: rommText(context, 'remove'), icon: const Icon(Icons.link_off), onPressed: () async {
-          final remove = await showDialog<bool>(context: context, builder: (dialog) => AlertDialog(
+          final remove = await rommDialog<bool>(context: context, controller: controller, builder: (dialog) => AlertDialog(
             title: Text(rommText(dialog, 'remove')), content: Text(rommText(dialog, 'removeHelp')),
             actions: [TextButton(onPressed: () => Navigator.pop(dialog, false), child: Text(rommText(dialog, 'cancel'))),
               FilledButton(onPressed: () => Navigator.pop(dialog, true), child: Text(rommText(dialog, 'remove')))]));
@@ -85,7 +88,8 @@ class _RommPairDialogState extends State<RommPairDialog> {
         if (_live(epoch)) Navigator.pop(context);
       } else {
         final api = _pairClient = RommClient(base);
-        final result = await api.startPairing(const Uuid().v4(), _name.text.trim().isEmpty ? 'PlezyNG' : _name.text.trim());
+        final identifier = 'plezy:${sha256.convert(utf8.encode('${widget.controller.profileId}:$base'))}';
+        final result = await api.startPairing(identifier, _name.text.trim().isEmpty ? 'PlezyNG' : _name.text.trim());
         if (!_live(epoch)) return;
         _deviceCode = rommString(result['device_code'], 128);
         _code = rommString(result['user_code'], 32);

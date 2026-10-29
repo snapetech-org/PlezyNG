@@ -24,3 +24,10 @@ class _RommSessionPageState extends State<RommSessionPage> {
 }
 Future<T?> rommPush<T>(BuildContext context, RommController controller, Widget child, {String? connectionId}) => Navigator.of(context).push<T>(
   MaterialPageRoute(builder: (_) => RommSessionPage(controller: controller, connectionId: connectionId, child: child)));
+
+/// Dialog routes live above their parent page, so they need the same profile
+/// ownership as players and details. Removing the page alone leaves a dialog.
+Future<T?> rommDialog<T>({required BuildContext context, required RommController controller,
+    required WidgetBuilder builder, String? connectionId}) => showDialog<T>(context: context,
+  builder: (dialog) => RommSessionPage(controller: controller, connectionId: connectionId,
+    child: Builder(builder: builder)));

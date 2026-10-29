@@ -15,6 +15,8 @@ import '../../services/playback_coordinator.dart';
 import '../../utils/snackbar_helper.dart';
 import 'romm_web_surface.dart';
 
+import 'romm_session_page.dart';
+
 class RommWebPlayerScreen extends StatefulWidget {
   const RommWebPlayerScreen({super.key, required this.controller, required this.game, required this.route,
     this.stateId, this.saveId, this.memoryCardId, this.multiplayer = false, this.joinContainer, this.joinPlatform});
@@ -79,7 +81,7 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
           } on RommFailure catch (failure) {
             if (failure.status != 428 || !_live) rethrow;
             GamepadService.instance.releaseWorkspaceInputOwner(this);
-            final choice = await showDialog<String>(context: context, builder: (dialog) => AlertDialog(
+            final choice = await rommDialog<String>(context: context, controller: widget.controller, connectionId: widget.game.connectionId, builder: (dialog) => AlertDialog(
               title: Text(rommText(dialog, 'memoryCard')), content: Text(rommText(dialog, failure.code)), actions: [
                 TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'cancel'))),
                 TextButton(onPressed: () => Navigator.pop(dialog, 'discard'), child: Text(rommText(dialog, 'discardContainerCard'))),
@@ -231,7 +233,7 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
     try {
     await _web.currentState?.visible(false).catchError((_) {});
     if (!_live) return;
-    final result = await showDialog<String>(context: context, builder: (dialog) => AlertDialog(
+    final result = await rommDialog<String>(context: context, controller: widget.controller, connectionId: widget.game.connectionId, builder: (dialog) => AlertDialog(
       title: Text(rommText(dialog, 'exitConfirm')), content: Text(rommText(dialog, _ejs || _stream != null ? 'saveExitHelp' : 'browserSaveHelp')),
       actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'continue'))),
         TextButton(onPressed: () => Navigator.pop(dialog, 'discard'), child: Text(rommText(dialog, _ejs || _stream != null ? 'exitWithoutSaving' : 'savedClose'))),

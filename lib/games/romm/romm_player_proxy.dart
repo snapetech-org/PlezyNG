@@ -90,7 +90,7 @@ class RommPlayerProxy {
         final value = request.headers.value(header); if (value != null) forwarded.headers.set(header, value);
       }
       forwarded.headers.set('accept-encoding', 'identity');
-      if (_roomCookies.isNotEmpty) forwarded.headers.set('cookie', _roomCookies.entries.map((e) => '${e.key}=${e.value}').join('; '));
+      if (_api.token.isEmpty && _roomCookies.isNotEmpty) forwarded.headers.set('cookie', _roomCookies.entries.map((e) => '${e.key}=${e.value}').join('; '));
       if (incomingOrigin != null) forwarded.headers.set('origin', upstream.origin);
       var size = 0;
       await for (final chunk in request.timeout(const Duration(seconds: 30))) {
@@ -101,8 +101,14 @@ class RommPlayerProxy {
       }
       final response = await forwarded.close().timeout(const Duration(minutes: 2));
       if (!live) return;
-      for (final cookie in response.cookies) {
-        if (_roomCookies.length < 32 && cookie.name.length < 128 && cookie.value.length < 4096) _roomCookies[cookie.name] = cookie.value;
+      // RomM resolves a session cookie before a bearer token. A page must not
+      // replace the native connection's account by setting a web login cookie.
+      if (_api.token.isEmpty) for (final cookie in response.cookies) {
+        if (cookie.maxAge == 0 || cookie.expires?.isBefore(DateTime.now()) == true) {
+          _roomCookies.remove(cookie.name);
+        } else if ((_roomCookies.length < 32 || _roomCookies.containsKey(cookie.name)) && cookie.name.length < 128 && cookie.value.length < 4096) {
+          _roomCookies[cookie.name] = cookie.value;
+        }
       }
       request.response.statusCode = response.statusCode;
       for (final header in ['content-type', 'content-range', 'accept-ranges', 'etag', 'last-modified',

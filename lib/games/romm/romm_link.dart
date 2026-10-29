@@ -29,6 +29,7 @@ class RommLink {
       return RommLink(server, id, copy.toLowerCase(), platform: platform, igdbId: igdb);
     } catch (_) { return null; }
   }
-  bool matches(RommGame game) => (romId == 0 || game.id == romId) && (identity.isEmpty || game.identity.toLowerCase() == identity) &&
+  bool matches(RommGame game) => (romId == 0 || game.id == romId) && (identity.isEmpty ||
+      identity == 'sha1:${game.sha1}' || identity == 'md5:${game.md5}') &&
       (platform.isEmpty || game.platform == platform) && (igdbId == 0 || game.igdbId == igdbId);
 }

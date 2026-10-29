@@ -52,7 +52,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
       await _refresh(); return;
     }
     if (route.engine == RommEngine.native) {
-      final resume = await showDialog<String>(context: context, builder: (dialog) => SimpleDialog(
+      final resume = await rommDialog<String>(context: context, controller: widget.controller, connectionId: _game.connectionId, builder: (dialog) => SimpleDialog(
         title: Text(rommText(dialog, 'native')), children: [
           SimpleDialogOption(onPressed: () => Navigator.pop(dialog, 'resume'), child: Text(rommText(dialog, 'nativeCloudResume'))),
           SimpleDialogOption(onPressed: () => Navigator.pop(dialog, 'fresh'), child: Text(rommText(dialog, 'startFresh'))),
@@ -79,7 +79,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
         final cards = config?['supports_memory_cards'] == true
             ? rommList(await api.json('GET', 'memory-cards', query: {'emulator': route.core})).map(rommMap).toList() : <Map<String, dynamic>>[];
         if (!live) return;
-        final result = await showDialog<bool>(context: context, builder: (dialog) => StatefulBuilder(builder: (dialog, update) => AlertDialog(
+        final result = await rommDialog<bool>(context: context, controller: widget.controller, connectionId: _game.connectionId, builder: (dialog) => StatefulBuilder(builder: (dialog, update) => AlertDialog(
           title: Text(rommText(dialog, 'stream')), content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
             Text(rommText(dialog, 'compatibilityHelp')),
             DropdownButtonFormField<int>(initialValue: 0, isExpanded: true, decoration: InputDecoration(labelText: rommText(dialog, 'resume')),
@@ -112,7 +112,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
   Future<void> _download() async {
     RommFile? selected;
     if (_game.files.length > 1) {
-      selected = await showDialog<RommFile>(context: context, builder: (dialog) => SimpleDialog(title: Text(rommText(dialog, 'chooseFile')),
+      selected = await rommDialog<RommFile>(context: context, controller: widget.controller, connectionId: _game.connectionId, builder: (dialog) => SimpleDialog(title: Text(rommText(dialog, 'chooseFile')),
         children: [for (final file in _game.files) SimpleDialogOption(onPressed: () => Navigator.pop(dialog, file), child: Text(isolateDisplayText(file.name)))]));
       if (selected == null || !live) return;
     }
@@ -129,7 +129,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
     final data = await (await widget.controller.client(_game.connectionId)).getMap('streaming/sessions/joinable');
     final rows = rommList(data['sessions']).map(rommMap).toList();
     if (!live) return;
-    final selected = await showDialog<Map<String, dynamic>>(context: context, builder: (dialog) => SimpleDialog(
+    final selected = await rommDialog<Map<String, dynamic>>(context: context, controller: widget.controller, connectionId: _game.connectionId, builder: (dialog) => SimpleDialog(
       title: Text(rommText(dialog, 'join')), children: [if (rows.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text(rommText(dialog, 'noJoinable'))),
         for (final row in rows) SimpleDialogOption(onPressed: () => Navigator.pop(dialog, row), child: Text(isolateDisplayText(rommString(row['rom_name'], 512))))]));
     if (selected == null || !live) return;

@@ -116,10 +116,10 @@ class RommClient {
   Future<Map<String, dynamic>> streaming() => getMap('streaming/config');
 
   Future<Map<String, dynamic>> startPairing(String identifier, String name) async => rommMap(await json(
-    'POST', 'auth/device/init', body: {'client_device_identifier': identifier, 'name': name,
+    'POST', 'auth/device/init', body: {'client_device_identifier': identifier, 'name': rommString(name, 128),
       'client': 'PlezyNG', 'platform': Platform.operatingSystem, 'client_version': '1',
-      'requested_scopes': ['roms.read', 'roms.user.read', 'roms.user.write', 'assets.read', 'assets.write',
-        'platforms.read', 'collections.read', 'collections.write', 'devices.read', 'devices.write']}));
+      'requested_scopes': ['me.read', 'roms.read', 'roms.user.read', 'roms.user.write', 'assets.read', 'assets.write',
+        'platforms.read', 'firmware.read', 'collections.read', 'collections.write', 'devices.read', 'devices.write']}));
   Future<Map<String, dynamic>> pollPairing(String deviceCode) async =>
       rommMap(await json('POST', 'auth/device/token', body: {'device_code': deviceCode}));
   Future<String> exchangeCode(String code) async => rommString(

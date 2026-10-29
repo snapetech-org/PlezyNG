@@ -41,7 +41,7 @@ class RommConnection {
     'credential': credential, 'version': version, 'scopes': scopes};
   factory RommConnection.fromJson(Map<String, dynamic> j) {
     final id = rommString(j['id'], 128);
-    if (!RegExp(r'^[a-zA-Z0-9_-]{8,128}$').hasMatch(id)) throw const FormatException('romm.invalidConnection');
+    if (!RegExp(r'^[a-zA-Z0-9_-]{8,128}$').hasMatch(id) || rommInt(j['userId']) == 0) throw const FormatException('romm.invalidConnection');
     return RommConnection(id: id, name: rommString(j['name'], 128),
       baseUrl: rommBaseUri(rommString(j['baseUrl'], 2048)).toString(),
       userId: rommInt(j['userId']), username: rommString(j['username'], 128),
@@ -91,12 +91,12 @@ class RommGame {
   factory RommGame.fromJson(String connectionId, Map<String, dynamic> j) {
     final user = rommMap(j['rom_user']);
     return RommGame(connectionId: connectionId, id: rommInt(j['id']),
-      platformId: rommInt(j['platform_id']), name: rommString(j['name'] ?? j['fs_name'], 512),
+      platformId: rommInt(j['platform_id']), name: rommString(j['name'], 512).trim().isNotEmpty ? rommString(j['name'], 512) : rommString(j['fs_name'], 512),
       platform: rommString(j['platform_slug'], 128),
       platformName: rommString(j['platform_display_name'] ?? j['platform_slug'], 256),
       fileName: rommString(j['fs_name'], 1024), extension: rommString(j['fs_extension'], 32).toLowerCase(),
       size: rommInt(j['fs_size_bytes']), summary: rommString(j['summary'], 16384),
-      cover: rommString(j['path_cover_large'] ?? j['path_cover_small'], 2048),
+      cover: rommString(j['path_cover_large'], 2048).isNotEmpty ? rommString(j['path_cover_large'], 2048) : rommString(j['path_cover_small'], 2048),
       revision: rommString(j['revision'], 128), sha1: rommHash(j['sha1_hash'], 40), md5: rommHash(j['md5_hash'], 32),
       regions: rommStrings(j['regions']), languages: rommStrings(j['languages']), tags: rommStrings(j['tags']),
       files: rommList(j['files']).take(8192).map((e) => RommFile.fromJson(rommMap(e))).where((e) => e.id > 0).toList(),
@@ -135,7 +135,7 @@ class RommSave {
     name: rommString(j['file_name'], 255), size: rommInt(j['file_size_bytes']),
     emulator: rommString(j['emulator'], 128), core: rommString(j['core'], 128).isNotEmpty ? rommString(j['core'], 128)
       : rommList(j['labels']).whereType<String>().where((label) => label.startsWith('Plezy core: ')).firstOrNull?.substring(12) ?? '',
-    slot: rommString(j['slot'], 255), hash: rommString(j['content_hash'], 128),
+    slot: rommString(j['slot'], 255), hash: rommHash(j['content_hash'], 32),
     updatedAt: DateTime.tryParse(rommString(j['updated_at'], 64)), state: state,
     missing: j['missing_from_fs'] == true,
     screenshot: rommString(rommMap(j['screenshot'])['download_path'], 2048));

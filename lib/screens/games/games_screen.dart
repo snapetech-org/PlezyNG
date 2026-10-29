@@ -1316,7 +1316,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     if (link == null) {
       final text = TextEditingController();
       try {
-        final raw = await showDialog<String>(context: context, builder: (dialog) => AlertDialog(
+        final raw = await rommDialog<String>(context: context, controller: romm, builder: (dialog) => AlertDialog(
           title: Text(rommText(dialog, 'openLink')), content: FocusableTextField(controller: text,
             decoration: InputDecoration(labelText: rommText(dialog, 'linkHelp'))),
           actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'cancel'))),
@@ -1327,8 +1327,16 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     }
     try {
       if (link == null) throw const RommFailure('romm.invalidAddress');
-      final source = romm.connections.where((s) => s.base == link!.server).firstOrNull;
-      if (source == null) throw const RommFailure('romm.notConnected');
+      final sources = romm.connections.where((s) => s.base == link!.server && romm.hasConnection(s.id)).toList();
+      if (sources.isEmpty) throw const RommFailure('romm.notConnected');
+      RommConnection? source = sources.singleOrNull;
+      if (source == null) {
+        if (!mounted || !romm.current) return;
+        source = await rommDialog<RommConnection>(context: context, controller: romm, builder: (dialog) => SimpleDialog(
+          title: Text(rommText(dialog, 'connections')), children: [for (final item in sources)
+            SimpleDialogOption(onPressed: () => Navigator.pop(dialog, item), child: Text(isolateDisplayText('${item.name} · ${item.username}')))]));
+        if (source == null || !romm.current) return;
+      }
       RommGame? game;
       if (link.romId > 0) game = await (await romm.client(source.id)).game(source.id, link.romId);
       else {
@@ -1344,7 +1352,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         final matches = candidates.where(link.matches).toList();
         if (matches.length == 1) game = matches.single;
         else if (matches.length > 1 && mounted && romm.current) {
-          game = await showDialog<RommGame>(context: context, builder: (dialog) => SimpleDialog(
+          game = await rommDialog<RommGame>(context: context, controller: romm, connectionId: source.id, builder: (dialog) => SimpleDialog(
             title: Text(rommText(dialog, 'chooseCopy')), children: [for (final copy in matches)
               SimpleDialogOption(onPressed: () => Navigator.pop(dialog, copy), child: Text(isolateDisplayText('${copy.name} · ${copy.variant}')))]));
           if (game == null) return;

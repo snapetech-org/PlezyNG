@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ import '../../utils/snackbar_helper.dart';
 import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/focused_scroll_scaffold.dart';
 
+import 'romm_session_page.dart';
+
 class RommSavesScreen extends StatefulWidget {
   const RommSavesScreen({super.key, required this.controller, required this.game});
   final RommController controller;
@@ -23,7 +26,7 @@ class _RommSavesScreenState extends State<RommSavesScreen> {
   bool _busy = false;
   String _error = '';
   bool get live => mounted && widget.controller.current && widget.controller.hasConnection(_game.connectionId);
-  @override void initState() { super.initState(); }
+  @override void initState() { super.initState(); unawaited(_run(_refresh)); }
   Future<void> _run(Future<void> Function() work) async {
     if (!live || _busy) return;
     setState(() { _busy = true; _error = ''; });
@@ -41,7 +44,7 @@ class _RommSavesScreenState extends State<RommSavesScreen> {
   Future<void> _import(bool state) async {
     final emulator = TextEditingController(text: _game.saves.firstOrNull?.emulator ?? ''), core = TextEditingController(), slot = TextEditingController(text: 'manual');
     try {
-      final accepted = await showDialog<bool>(context: context, builder: (dialog) => AlertDialog(
+      final accepted = await rommDialog<bool>(context: context, controller: widget.controller, connectionId: _game.connectionId, builder: (dialog) => AlertDialog(
         title: Text(rommText(dialog, state ? 'importState' : 'importSave')),
         content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(isolateDisplayText(_game.variant)), Text(rommText(dialog, 'compatibilityHelp')),
@@ -52,14 +55,16 @@ class _RommSavesScreenState extends State<RommSavesScreen> {
           FilledButton(onPressed: () => Navigator.pop(dialog, true), child: Text(rommText(dialog, 'importSave')))]));
       if (accepted != true || !live) return;
       if (!RegExp(r'^[a-zA-Z0-9_.-]{1,50}$').hasMatch(emulator.text) ||
-          state && !RegExp(r'^[a-zA-Z0-9_.-]{1,100}$').hasMatch(core.text) ||
+          state && (core.text.trim().isEmpty || core.text.length > 100 || RegExp(r'[\x00-\x1f\x7f]').hasMatch(core.text)) ||
           !RegExp(r'^[a-zA-Z0-9_.-]{1,100}$').hasMatch(slot.text)) throw const RommFailure('romm.invalidFile');
       final picked = await FilePickerService.instance.pickFiles(withData: false);
       if (!live || picked == null) return;
       final file = picked.files.single;
       if (file.size <= 0 || file.size > 128 * 1024 * 1024) throw const RommFailure('romm.invalidFile');
+      if (file.path != null && await File(file.path!).length() != file.size) throw const RommFailure('romm.invalidFile');
       final bytes = file.bytes ?? (file.path == null ? null : await File(file.path!).readAsBytes());
       if (!live || bytes == null) return;
+      if (bytes.length != file.size) throw const RommFailure('romm.invalidFile');
       final id = await widget.controller.storage.enqueue(game: _game, bytes: bytes, emulator: emulator.text,
         core: core.text, state: state, slot: slot.text);
       await widget.controller.storage.sync(id, keepBoth: true); await _refresh();
@@ -68,7 +73,7 @@ class _RommSavesScreenState extends State<RommSavesScreen> {
   }
   Future<void> _resolve(String id, String action) async {
     if (action == 'replaceServer' || action == 'useServer' || action == 'discard') {
-      final confirmed = await showDialog<bool>(context: context, builder: (dialog) => AlertDialog(
+      final confirmed = await rommDialog<bool>(context: context, controller: widget.controller, connectionId: _game.connectionId, builder: (dialog) => AlertDialog(
         title: Text(action == 'discard' ? context.t.common.delete : rommText(dialog, action)),
         content: Text(action == 'discard' ? context.t.downloads.deleteConfirm(title: isolateDisplayText(_game.name)) : rommText(dialog, 'saveConflict')),
         actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'cancel'))),

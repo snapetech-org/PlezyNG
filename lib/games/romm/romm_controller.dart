@@ -160,7 +160,8 @@ class RommController extends ChangeNotifier {
       if (!CredentialVault.isProtected(credential)) { credential = ''; _sessionTokens[id] = token; }
       final next = RommConnection(id: id, name: name.trim().isEmpty ? base.host : rommString(name.trim(), 128),
         baseUrl: base.toString(), userId: uid, username: rommString(me['username'], 128),
-        deviceId: deviceId.isEmpty ? rommString(me['current_device_id'], 128) : deviceId, credential: credential, scopes: scopes,
+        deviceId: deviceId.isEmpty ? rommString(me['current_device_id'], 128) : deviceId, credential: credential,
+        scopes: me['oauth_scopes'] is List ? rommStrings(me['oauth_scopes']) : scopes,
         version: rommString(rommMap(beat['SYSTEM'])['VERSION'], 64));
       connections.removeWhere((c) => c.id == id); connections.add(next);
       _clients.remove(id)?.close();
@@ -208,7 +209,7 @@ class RommController extends ChangeNotifier {
     capabilities[id] = RommCapabilities(version: rommString(rommMap(beat['SYSTEM'])['VERSION'], 64),
       emulation: rommMap(beat['EMULATION']), config: config,
       streams: stream['enabled'] == true ? rommList(stream['containers']).take(500).map(rommMap).toList() : [],
-      platforms: platforms, observedAt: DateTime.now());
+      platforms: platforms, scopes: rommStrings(me['oauth_scopes']), observedAt: DateTime.now());
     collections[id] = lists;
     if (source == id && collection != null && !lists.any((list) => list.kind == collection!.kind && list.id == collection!.id)) collection = null;
     final ownFavorites = lists.where((list) => list.favorite && list.userId == connection(id).userId);

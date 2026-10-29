@@ -17,6 +17,8 @@ import '../../services/gamepad_service.dart';
 import '../../services/playback_coordinator.dart';
 import '../../utils/platform_detector.dart';
 
+import 'romm_session_page.dart';
+
 class RommNativePlayerScreen extends StatefulWidget {
   const RommNativePlayerScreen({super.key, required this.controller, required this.game, required this.core, this.resume = true, this.stateId, this.saveId});
   final RommController controller;
@@ -310,7 +312,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     _exitPrompt = true;
     _runtime.pause(true); _release(); GamepadService.instance.releaseWorkspaceInputOwner(this);
     try {
-    final save = await showDialog<bool>(context: context, builder: (dialog) => AlertDialog(title: Text(rommText(dialog, 'exitConfirm')),
+    final save = await rommDialog<bool>(context: context, controller: widget.controller, connectionId: widget.game.connectionId, builder: (dialog) => AlertDialog(title: Text(rommText(dialog, 'exitConfirm')),
       content: Text(rommText(dialog, 'saveExitHelp')), actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'continue'))),
         TextButton(onPressed: () => Navigator.pop(dialog, false), child: Text(rommText(dialog, 'exitWithoutSaving'))),
         FilledButton(onPressed: () => Navigator.pop(dialog, true), child: Text(rommText(dialog, 'saveAndExit')))]));

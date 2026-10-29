@@ -8,6 +8,7 @@ import 'subtitle_retimer.dart';
 import 'settings_service.dart';
 import 'subtitle_word_timing.dart';
 import 'subtitle_ruby_text.dart';
+import 'subtitle_font_store.dart';
 import '../widgets/subtitle_ruby_span.dart';
 
 /// App-rendered plain text, distinct from native ASS/bitmap tracks. Each lane
@@ -75,12 +76,14 @@ class SubtitleOverlayTrack {
   double overscan = 0;
   String fontFamily = 'Bundled multilingual';
   String? get renderedFontFamily => fontFamily == 'System' ? null
-      : fontFamily == 'Bundled multilingual' ? SubtitleFontLoader.overlayFamily : fontFamily;
+      : fontFamily == 'Bundled multilingual' || SubtitleFontStore.familyPattern.hasMatch(fontFamily) &&
+          !SubtitleFontStore.instance.families.contains(fontFamily) ? SubtitleFontLoader.overlayFamily : fontFamily;
   static const fallbackFonts = [SubtitleFontLoader.overlayFamily, SubtitleFontLoader.overlayHangulFamily,
     'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans CJK SC'];
   TextAlign alignment = TextAlign.center;
   Color backgroundColor = Colors.black;
-  static const fonts = ['Bundled multilingual', 'System', 'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans CJK SC', 'Arial', 'Georgia', 'monospace'];
+  static List<String> get fonts => ['Bundled multilingual', 'System', 'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans CJK SC', 'Arial', 'Georgia', 'monospace',
+    ...SubtitleFontStore.instance.families];
 
   Map<String, Object> appearance() => {'fontSize': fontSize, 'position': position,
     'backgroundOpacity': backgroundOpacity, 'color': color.toARGB32(), 'outline': outline.toARGB32(),
@@ -97,7 +100,8 @@ class SubtitleOverlayTrack {
     backgroundOpacity = number('backgroundOpacity', backgroundOpacity, 0, 1);
     outlineWidth = number('outlineWidth', outlineWidth, 0, 5); margin = number('margin', margin, .02, .2);
     color = paint('color', color); outline = paint('outline', outline); backgroundColor = paint('backgroundColor', backgroundColor);
-    if (fonts.contains(value['fontFamily'])) fontFamily = value['fontFamily'] as String;
+    final storedFamily = value['fontFamily'];
+    if (storedFamily is String && (fonts.contains(storedFamily) || SubtitleFontStore.familyPattern.hasMatch(storedFamily))) fontFamily = storedFamily;
     if (const ['left', 'center', 'right', 'start', 'end'].contains(value['alignment'])) {
       alignment = TextAlign.values.byName(value['alignment'] as String);
     }

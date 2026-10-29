@@ -9,9 +9,15 @@ import '../../../mpv/mpv.dart';
 import '../../../services/subtitle_overlay_service.dart';
 import '../../../services/subtitle_speech_service.dart';
 import '../../../services/speech_output_service.dart';
+import '../../../services/subtitle_font_store.dart';
+import '../../../services/subtitle_offline_package.dart';
+import 'subtitle_fonts_dialog.dart';
 
 Future<void> showSubtitleOverlayControls(BuildContext context, Player player) async {
+  try { await SubtitleFontStore.instance.initialize(); } catch (_) {}
+  if (!context.mounted) return;
   final session = SubtitleOverlayService.forPlayer(player);
+  var exportingPackage = false;
   await showDialog<void>(context: context, builder: (context) => StatefulBuilder(builder: (context, update) {
     void change(VoidCallback action) { update(action); session.changed(); }
     return AlertDialog(title: const Text('App caption overlays'), content: SizedBox(width: 620,
@@ -19,6 +25,10 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
         const Text('Plain-text overlays are local to this player. Native ASS/bitmap tracks retain their own rendering. '
           'Native PiP, Cast and external players require a compatible exported subtitle; app overlays are not sent. '
           'Color brightness is an SDR UI value, not calibrated HDR luminance.'),
+        TextButton(onPressed: () async {
+          await showDialog<void>(context: context, builder: (_) => const SubtitleFontsDialog());
+          if (context.mounted) { update(() {}); session.changed(); }
+        }, child: const Text('Manage offline fonts')),
         for (var index = 0; index < 2; index++) if (session.lanes[index] case final SubtitleOverlayTrack track) ...[
           ListTile(title: Text('${index + 1}: ${track.title}'), trailing: IconButton(tooltip: 'Remove overlay',
             onPressed: () => change(() => session.lanes[index] = null), icon: const Icon(Icons.close))),
@@ -27,10 +37,10 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
             if (speech.isSpeaking(track)) { await speech.stop(); } else { await speech.start(player, track); }
             if (context.mounted) update(() {});
           }, child: Text(SubtitleSpeechService.instance.isSpeaking(track) ? 'Stop spoken subtitles' : 'Speak this overlay')),
-          DropdownButton<String>(value: track.fontFamily, isExpanded: true,
-            items: [for (final font in SubtitleOverlayTrack.fonts) DropdownMenuItem(value: font, child: Text(font))],
+          DropdownButton<String>(value: SubtitleOverlayTrack.fonts.contains(track.fontFamily) ? track.fontFamily : 'Bundled multilingual', isExpanded: true,
+            items: [for (final font in SubtitleOverlayTrack.fonts) DropdownMenuItem(value: font, child: Text(SubtitleFontStore.instance.label(font)))],
             onChanged: (font) { if (font != null) change(() => track.fontFamily = font); }),
-          const Text('Bundled multilingual fonts work offline, including Hangul fallback. Other choices use installed system families and may be unavailable on this device.'),
+          const Text('Bundled and imported fonts work offline, including Hangul fallback. System-family choices may be unavailable on this device. Removed imports fall back to the bundled font.'),
           SwitchListTile(title: const Text('Show ruby reading aids'),
             subtitle: const Text('Display supplied ruby readings above their base text. Ruby groups wrap together and use base text for speech and plain export. Word highlighting pauses for annotated cues.'),
             value: track.ruby, onChanged: (value) => change(() => track.ruby = value)),
@@ -43,6 +53,20 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
             } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not save caption appearance.'))); }
           }, child: const Text('Use this appearance for future tracks')),
           if (track.positionToSourceMs != null) const Text('This live overlay follows the moving program clock. Fixed-file export, Cast and native snapshot attachment are unavailable.'),
+          if (track.positionToSourceMs == null) TextButton(onPressed: exportingPackage ? null : () async {
+            update(() => exportingPackage = true);
+            try {
+              final snapshot = SubtitleNativeHandoffService.export(player, track);
+              if (!context.mounted || !await _confirmSnapshot(context, snapshot.clipped, attach: false)) return;
+              final package = await SubtitleOfflinePackage.create(player, track);
+              if (!context.mounted) return;
+              final path = await FilePickerService.instance.saveFile(fileName: 'PlezyNG.captions.zip', bytes: package.bytes,
+                type: FileType.custom, allowedExtensions: ['zip']);
+              if (path != null && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) await File(path).writeAsBytes(package.bytes, flush: true);
+            } catch (_) {
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not export the subtitle and font package.')));
+            } finally { if (context.mounted) update(() => exportingPackage = false); }
+          }, child: Text(exportingPackage ? 'Preparing offline package…' : 'Export SRT + selected imported font')),
           if (track.positionToSourceMs == null) Wrap(spacing: 8, children: [TextButton(onPressed: () async {
             try {
               final snapshot = SubtitleNativeHandoffService.export(player, track);

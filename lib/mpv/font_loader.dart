@@ -5,6 +5,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 import '../utils/app_logger.dart';
+import '../services/subtitle_font_store.dart';
 
 /// One bundled subtitle font: its asset, the file name libass sees, and the
 /// asset's byte length, which is what decides whether an extracted copy is
@@ -58,6 +59,7 @@ class SubtitleFontLoader {
   /// process — caching the result skips ~20ms on every subsequent Player
   /// instantiation.
   static Future<String?>? _cachedFontDir;
+  static Future<void> _extractionQueue = Future.value();
   static Future<void>? _overlayFonts;
   static const overlayFamily = 'Plezy Subtitle Universal';
   static const overlayHangulFamily = 'Plezy Subtitle Hangul';
@@ -73,10 +75,17 @@ class SubtitleFontLoader {
       loader.addFont(rootBundle.load(fonts[index].asset));
       await loader.load();
     }
+    try { await SubtitleFontStore.instance.initialize(); } catch (error, stack) {
+      appLogger.w('Imported subtitle fonts are unavailable; bundled fonts remain active', error: error, stackTrace: stack);
+    }
   }
 
   static Future<String?> loadSubtitleFont() {
-    return _cachedFontDir ??= _loadSubtitleFontOnce();
+    return _cachedFontDir ??= () {
+      final result = _extractionQueue.then((_) => _loadSubtitleFontOnce());
+      _extractionQueue = result.then<void>((_) {}, onError: (Object error, StackTrace stack) {});
+      return result;
+    }();
   }
 
   /// Forget the resolved directory so the next [loadSubtitleFont] re-runs the
@@ -86,22 +95,34 @@ class SubtitleFontLoader {
     _cachedFontDir = null;
   }
 
+  /// Imported fonts are read when a new native player opens; existing libass
+  /// contexts retain their current font provider until that player is reopened.
+  static void importedFontsChanged() { _cachedFontDir = null; }
+
   static Future<String?> _loadSubtitleFontOnce() async {
     try {
       final cacheDir = await getTemporaryDirectory();
       final fontDir = Directory(path.join(cacheDir.path, 'subtitle_fonts'));
       await fontDir.create(recursive: true);
+      final imported = SubtitleFontStore.instance;
+      var customFonts = <SubtitleStoredFont>[];
+      try { await imported.initialize(); customFonts = imported.fonts; } catch (error, stack) {
+        appLogger.w('Imported native subtitle fonts are unavailable', error: error, stackTrace: stack);
+      }
 
       // libass loads every file in the directory, so anything that is not a
-      // current copy of a bundled font has to go: an earlier build's version
+      // current copy of a bundled font or an explicit verified import goes:
+      // an earlier build's version
       // of the same file name, a copy truncated by a crash, an interrupted
       // write. Length is the currency check; a file of the right name and
-      // length is a copy of the asset this build ships.
-      final expected = {for (final font in fonts) font.fileName: font.length};
+      // length is a copy of the asset this build ships. Imported copies are
+      // always replaced from the hash-verified durable store.
+      final expected = {for (final font in fonts) font.fileName: font.length,
+        for (final font in customFonts) '${font.digest}.otf': font.bytes};
       final current = <String>{};
       await for (final entry in fontDir.list(followLinks: false)) {
         final name = path.basename(entry.path);
-        if (entry is File && expected[name] == await entry.length()) {
+        if (entry is File && !name.endsWith('.otf') && expected[name] == await entry.length()) {
           current.add(name);
         } else {
           await entry.delete(recursive: true);
@@ -114,6 +135,17 @@ class SubtitleFontLoader {
         final partial = File(path.join(fontDir.path, font.fileName + _partialSuffix));
         await partial.writeAsBytes(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes), flush: true);
         await partial.rename(path.join(fontDir.path, font.fileName));
+      }
+
+      for (final font in customFonts) {
+        try {
+          final bytes = await imported.verifiedBytes(font);
+          final partial = File(path.join(fontDir.path, '${font.digest}.otf$_partialSuffix'));
+          await partial.writeAsBytes(bytes, flush: true);
+          await partial.rename(path.join(fontDir.path, '${font.digest}.otf'));
+        } catch (error, stack) {
+          appLogger.w('An imported subtitle font could not be staged', error: error, stackTrace: stack);
+        }
       }
 
       return fontDir.path;

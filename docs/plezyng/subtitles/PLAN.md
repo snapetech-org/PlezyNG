@@ -25,7 +25,7 @@ with `[skip ci]`. Existing native dependency pins were not fabricated or promote
 | Playback/source access | Android Media3 pre-speed PCM processor; native MPV bridges; Tizen tap; Android MediaExtractor/MediaCodec and Apple AVAssetReader analysis bridges plus desktop FFmpeg read-ahead via renewable standalone/library source leases; explicit companion staging of eligible current VOD files on IO platforms. | Current locked MPV libraries lack the ordered ABI. webOS NDL has no direct PCM tap; there is no browser Player. Android/Apple native readers and source-built Tizen/webOS audio helpers are implemented. Native format support, TV subprocess policy, shipped helper artifacts and device behavior remain unqualified. Companion staging is limited to complete, accessible files up to 1 GiB/one hour; playlists/live/protected sources are refused. |
 | Import and attachment | Existing format conversion/archive/drop/share flows; Plex/Jellyfin/Emby upload; managed standalone native text attachment; adapter-owned folder discovery for local/network/cloud sources and DLNA metadata-linked text resources. | Backend format limits still apply. Non-MPV attachment refuses saved affine corrections. Vendor-only DLNA caption tags and catalogue-specific sources without a file listing remain unsupported. |
 | App rendering | Two independent text lanes, per-profile/lane appearance defaults, installed-family/script fallback, original word highlights, fixed authored sign regions, stable optional scene-region avoidance, manual burned-caption cover, focused-pane density limit, horizontal ruby reading aids, spoken subtitles with explicit duck/rate. | App styling is not a replacement for native ASS/bitmap rendering. HDR luminance, font shaping and output paths are unqualified. Centered contain/cover/stretch/zoom geometry and screen/video anchoring are implemented; renderer/output qualification, vertical typography, new closed-caption service semantics and localized new controls remain open. |
-| Ecosystem | Corrected SRT/native snapshot handoff on the opened-part clock; expiring LAN second screen and WebVTT exports; explicit Cast WebVTT loading/restoration; revision/history transfer bundles, explicit encrypted cloud synchronization with causal conflict review, and study tools. | Receiver rendering/native PiP remain capability limited. Automatic Watch Together asset policy, font-aware offline packaging/accounting and HDR subtitle screenshot composition remain unfinished. |
+| Ecosystem | Corrected SRT/native snapshot handoff on the opened-part clock; expiring LAN second screen and WebVTT exports; explicit Cast WebVTT loading/restoration; revision/history transfer bundles, explicit encrypted cloud synchronization with causal conflict review, bounded offline font imports and text/font ZIP export, and study tools. | Receiver rendering/native PiP remain capability limited. Automatic Watch Together asset policy, download-item font dependency retention and HDR subtitle screenshot composition remain unfinished. |
 | Research | Bitmap/burned OCR with image review and automatic text-band proposals; positioned signs; second-model disagreements; local speech separation; VAD completeness; single-frame or three-sample scene proposals and bounded temporal region associations; explicitly configured joint audio/image review; conservative lyric word alignment across original/harmonic views; stereo-mix event evidence; licensed generic-voice dubbing/mixing; offline Whisper adaptation with separate holdouts. | These are opt-in, reviewable experimental adapters. Physical sound localization and continuous visual tracking remain unfinished. Lyric CTC word proposals are implemented, while note/syllable timing and singing quality remain unestablished. Joint audio/image provider requests are implemented; actual multimodal use and quality improvements are not established. No adaptation/evaluation run occurred. |
 | MPV packaging | Shared ordered-PCM patch and all platform bridge sources; final archive/native export inspection; per-binary/archive receipts; receipt-aware content keys and manifest freshness; atomic consumer promotion gate. | No new binaries were built/published and no consumer lock was advanced. The private-JIT build/publication and exact-artifact promotion described in `MPV-PACKAGING.md` are still required. |
 
@@ -1123,3 +1123,29 @@ fabricated timing. Inputs are limited to five minutes / 120 cues / thirty second
 per cue. Model preparation can verify and record a supported commit-pinned local
 CTC layout without activating it. No specialized weight set, lyric accuracy,
 notes, syllables or device performance is claimed. The code was not executed.
+
+## Offline imported fonts and portable text packages
+
+The app now owns an explicit imported-font store: individual TTF/OTF files only,
+SHA-256 identity, bounded SFNT table directories, 16 MiB per font, 16 saved fonts
+and 128 MiB including disk metadata/recovery overhead. The selector shows only
+successfully registered fonts. Startup verifies each file again; damaged files
+are skipped. Actual store byte accounting includes leftover files if cleanup
+fails, and a new import reserves metadata space before writing. A removed font
+falls back to the shipped family in app captions. Flutter has no family-unload
+API here, so registrations are also capped at 16 distinct fonts per process;
+restarting releases that memory. Native MPV receives verified copies in its
+font directory when a new player opens, without restyling an authored ASS file.
+
+The overlay controls can export a bounded 24 MiB ZIP containing a corrected
+opened-part-clock SRT, the selected imported font and supplied attribution,
+a manifest with file hashes/byte counts, and appearance metadata. No font is
+installed automatically from subtitles or an archive. Shipped/system families
+are declared as external requirements in this export; the ZIP does not pretend
+to embed unavailable fonts. SRT does not preserve ruby, signs, word timing or
+ASS styling. The native handoff's clipping and stale-session guards also apply.
+
+This provides offline local fonts and explicit portable text/font export.
+Automatic download-item font dependency retention, embedded-media font
+extraction, full-fidelity styled packages and parser/device qualification remain
+open. No tests, analyzers, builds, font execution or CI were run in this pass.

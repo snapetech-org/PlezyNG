@@ -1,5 +1,9 @@
 # PlezyNG visualization and community preset implementation plan
 
+The original audit and dated checkpoints below are preserved. For the current
+2026-10-29 implementation, use [the status ledger](IMPLEMENTATION_STATUS.md) and
+[build handoff](BUILD_HANDOFF.md); historical gaps below are not current claims.
+
 PlezyNG has a working set of six original music scenes, but the requested MilkDrop-compatible engine and downloadable community-preset library are not integrated. MilkRust contains reusable engine work and a substantial imported corpus; its existing compatibility totals do not establish faithful rendering.
 
 This is the implementation handoff for Luna, prepared October 27, 2026, for **PlezyNG**. Complete the app experience, community-pack distribution, and the custom MilkRust compatibility track. Planning is complete here; implementation and release qualification remain the work below.

@@ -1,6 +1,6 @@
 # Using the visualizer library
 
-Open Now Playing, enable the visualizer, then choose the library button. The six original scenes remain available on their existing platforms. Native preset playback is optional and currently unqualified; available engines and hosts vary by platform. It needs the matching native dependencies described in `native/visualizer/README.md`. Existing shipped binaries have not been replaced by this PR.
+Open Now Playing, enable the visualizer, then choose the library button. The six original scenes remain available on their existing platforms. Native preset playback is currently unqualified; regular build recipes include MilkRust, while engine/audio availability still varies by platform. It needs the matching native dependencies described in `native/visualizer/README.md`. Existing shipped binaries have not been replaced by this PR.
 
 Original scenes also remain available for local/source audio. They use Plex loudness when present, otherwise available live MPV audio statistics, otherwise ambient motion. The live statistics are compact measurements, not a full spectrum or waveform display. Native preset controls use the active dedicated audio player in either source path.
 
@@ -14,7 +14,7 @@ Use Import .milk or .milk2 for loose files, Import folder with textures and noti
 
 ## Choose and organize
 
-Choose Browse installed presets, search by title/author/pack/tag, and select a supported `.milk` or `.milk2` candidate. MilkRust attempts documented saved blend-pattern names using procedural masks; full HLSL compatibility, exact transition parity and embedded extensions remain unsupported. If the native dependency or playback audio is unavailable, the browser shows the reason and still offers metadata and notices. The details button shows author, license and content notice. Visual fidelity has not yet been measured for these entries.
+Choose Browse installed presets, search by title/author/pack/tag, and select a supported `.milk` or `.milk2` candidate. MilkRust attempts documented saved blend-pattern names using procedural masks; the typed legacy HLSL profile has explicit limits, and exact transition parity and embedded extensions remain unsupported. If the native dependency or playback audio is unavailable, the browser shows the reason and still offers metadata and notices. The details button shows author, license and content notice. Visual fidelity has not yet been measured for these entries.
 
 Favorites and display choices belong to the active profile. Filter a list, save it under a playlist name, and use its reorder menu to move entries up or down. Selecting a preset uses the visible playable list for previous/next and shuffle. Playlists can be imported/exported as bounded JSON containing library-relative references. They do not include preset artwork; missing references require separately installing or importing the corresponding pack.
 
@@ -41,14 +41,18 @@ Use **Check for pack updates** in the library to fetch a signed catalog when the
 
 The preset library offers projectM and experimental native MilkRust. The choice
 is saved with the profile. Linux has source for both engines; Windows, macOS,
-iOS/tvOS and Android/TV have source for native MilkRust. A build without the
+iOS/tvOS, Android/TV, Tizen and webOS have source for native MilkRust. A build without the
 matching engine and same-player PCM extension reports the missing dependency.
 This source increment does not add compiled engines to existing releases.
 
 Native MilkRust currently accepts classic `.milk` candidates and attempts
-documented `.milk2` blend-pattern names with procedural spatial masks. Full
-HLSL, exact MilkDrop3 transition behavior, embedded saved-state extensions,
+documented `.milk2` blend-pattern names with procedural spatial masks. The broader typed legacy HLSL profile still has limits. Exact MilkDrop3
+transition behavior, embedded saved-state extensions,
 unsupported shaders and missing images remain blockers or produce diagnostics.
 Preset changes are immediate in this engine; the cross-preset transition setting
 applies to projectM. Compatibility and performance remain unqualified across
 devices.
+
+Two new original CC0 study collections (24 presets) are committed in MilkRust.
+They are not published app downloads yet: archive production, rights review and
+per-target rendering qualification must precede signed-catalog promotion.

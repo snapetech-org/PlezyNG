@@ -124,8 +124,9 @@ time-pos gates blocks, with no synchronous per-frame mpv property request.
 Controls on `com.plezy/mpv_audio_player` are `visualizerCapabilities`, `Create`,
 `Load`, `Resize`, `SetPaused`, `Status`, and `Dispose` (all use the `visualizer`
 prefix). Create returns separate `sessionId` and `textureId` values. Every later
-operation requires the session lease. Loading requires a bounded `.milk` file
-under its installed asset root. `.milk2` remains explicitly unavailable.
+operation requires the session lease. Loading requires a bounded preset under its installed asset root. projectM
+rejects `.milk2`; MilkRust attempts the documented saved patterns with its own
+procedural masks, without claiming reference parity.
 
 The controller serializes loads and disposal, handles missing plugins, and
 shows original scenes while a native preset has no current frame or has failed.
@@ -157,7 +158,7 @@ The app source now includes these hosts:
 | --- | --- | --- |
 | Linux | Existing surfaceless EGL/GLES 3 and pixel-buffer texture | Existing mpv native mutex and cached playback PTS |
 | Windows | Dedicated hidden WGL 3.2 core context, WIC images, leased Flutter RGBA buffers | Same-player tap under native mutex; worker stops before disposal |
-| macOS | Dedicated CGL 3.2 core context, ImageIO, retained CVPixelBuffer | `MpvPlayerCoreBase` lifecycle lock and internal PTS observation |
+| macOS | Dedicated CGL 4.1 core context, ImageIO, retained CVPixelBuffer | `MpvPlayerCoreBase` lifecycle lock and internal PTS observation |
 | iOS/tvOS | Dedicated EAGL ES 3 context, ImageIO, retained CVPixelBuffer | Same Apple lifecycle lease |
 | Android/Android TV | EGL ES 3 pbuffer, bounded BitmapFactory decoding, SurfaceTexture native window | AAR `SessionGuard` admission lease; opaque session ID |
 
@@ -178,17 +179,21 @@ exports a raw player pointer, queries the decoder from the render worker, or
 delivers PCM through Kotlin/Dart. Stock AARs fail this capability gate and keep
 normal playback.
 
-### Artifact wiring after private JIT qualification
+### Regular runtime artifact wiring
 
-- Linux: install `libmilkrust_native.so` beside the bundled native libraries.
-- Windows: install `milkrust_native.dll` beside the signed app executable.
-- Android: place the matching `libmilkrust_native.so` in the release's `jniLibs`
-  directory for every packaged ABI, and use the patched, verified mpv AAR.
-- Apple: link the per-architecture static library with `-force_load` and retain
-  the C ABI exports (`-Wl,-export_dynamic`) so the runtime gate can resolve them.
-  Include the host's OpenGL/OpenGLES, ImageIO and CoreVideo framework links in the
-  signed target. A universal/XCFramework artifact must carry device and simulator
-  slices separately. The existing default mpv artifacts are not patched here.
+The regular build paths now produce the pinned MilkRust runtime on private JIT.
+Desktop workflows call `scripts/visualizer/build_runtime.py` before Flutter;
+CMake verifies the receipt/pin/digests and requires the runtime by default.
+Android Gradle stages selected ABIs before JNI/assets merge. Apple Runner targets
+build per-SDK static archives in an Xcode phase and use strong C ABI references,
+with C++ and iconv link flags, rather than `dlsym`/export flags. Source/notices
+travel with every artifact. Tizen's normal workflow cross-builds through the
+selected SDK toolchain and requires the provenance bundle at package creation.
+
+These paths do not replace the old mpv binary lock. Actual private-JIT mpv
+artifacts with the PCM/session extension still need production and digest
+promotion before those platforms can visualize playback. Full entrypoint and
+acceptance details: `docs/plezyng/visualizations/BUILD_HANDOFF.md`.
 
 The webOS release-candidate path builds the MilkRust crate pinned in
 `sources.lock.json` with the pinned Rust toolchain and LG ARM linker, creates a
@@ -214,11 +219,9 @@ isolation or platform-specific recovery remains a release gate for untrusted
 community shaders; this source does not claim that containment is solved.
 
 
-Desktop CMake has an explicit artifact path: set
-`PLEZY_VISUALIZER_MILKRUST_LIBRARY`, `PLEZY_VISUALIZER_MILKRUST_SHA256`,
+Desktop CMake also accepts explicit library/source paths and reviewed SHA-256
+values via `PLEZY_VISUALIZER_MILKRUST_LIBRARY`, `PLEZY_VISUALIZER_MILKRUST_SHA256`,
 `PLEZY_VISUALIZER_MILKRUST_SOURCE_ARCHIVE` and
-`PLEZY_VISUALIZER_MILKRUST_SOURCE_SHA256`. Both digests are checked at configure
-time. Installation includes the runtime library, corresponding-source archive,
-source lock and notices. With no library configured, nothing is downloaded or
-installed and the runtime capability reports unavailable. This wiring has not
-been exercised; it is not an artifact qualification record.
+`PLEZY_VISUALIZER_MILKRUST_SOURCE_SHA256`. The standard build uses its generated
+receipt instead. Missing artifacts fail configuration unless an explicitly
+non-visualization build sets `PLEZY_VISUALIZER_REQUIRE_MILKRUST=OFF`.

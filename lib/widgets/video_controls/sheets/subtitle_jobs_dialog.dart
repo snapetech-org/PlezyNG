@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../i18n/strings.g.dart';
 import '../../../services/subtitle_job_service.dart';
 import '../../../services/subtitle_job_source.dart';
 
@@ -23,7 +24,7 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
     if (_working) return;
     setState(() { _working = true; _error = null; });
     try { await action(); } catch (_) {
-      if (mounted) setState(() => _error = 'The job could not be updated. Reopen the queue and try again.');
+      if (mounted) setState(() => _error = Translations.of(context).videoControls.subtitleJobs.actionFailed);
     } finally { if (mounted) setState(() => _working = false); }
   }
 
@@ -49,8 +50,38 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
   @override
   Widget build(BuildContext context) {
     final service = SubtitleJobService.instance;
+    final copy = Translations.of(context).videoControls.subtitleJobs;
+    String stateLabel(SubtitleJobState state) => switch (state) {
+      SubtitleJobState.queued => copy.stateQueued,
+      SubtitleJobState.running => copy.stateRunning,
+      SubtitleJobState.paused => copy.statePaused,
+      SubtitleJobState.completed => copy.stateCompleted,
+      SubtitleJobState.cancelled => copy.stateCancelled,
+      SubtitleJobState.failed => copy.stateFailed,
+    };
+    String jobMessage(String? message) {
+      if (message == null) return '';
+      final progress = RegExp(r'^.+ · (\d+)/(\d+) windows saved$').firstMatch(message);
+      if (progress != null) return copy.progressStatus(
+        completed: progress.group(1)!, total: progress.group(2)!);
+      return switch (message) {
+        'Reopen the original file and audio stream to resume this source job.' => copy.reopenSource,
+        'Waiting for playback to stop (reopen this item to report playback state).' => copy.waitingPlayback,
+        'Waiting for confirmed external power.' => copy.waitingPower,
+        'Preparing transcription' => copy.preparing,
+        'All audio windows saved; review before attachment.' => copy.allAudioSaved,
+        'This window could not finish. Completed windows are saved; resume to retry.' => copy.windowFailed,
+        _ => copy.statusUnavailable,
+      };
+    }
+    String loadMessage(String? message) => switch (message) {
+      'A damaged job record was skipped. Other jobs remain available.' => copy.loadDamaged,
+      'The transcription queue could not be opened.' => copy.loadFailed,
+      null => '',
+      _ => copy.loadFailed,
+    };
     return AlertDialog(
-      title: const Text('Transcription jobs'),
+      title: Text(copy.title),
       content: SizedBox(
         width: 650,
         height: 470,
@@ -58,13 +89,10 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
           animation: service,
           builder: (context, _) => ListView(
             children: [
-              const Text('Completed 30-second windows survive restarts. Resume is explicit after restart. '
-                  'Pause and cancel discard the current window when native inference returns. '
-                  'Source jobs pause when the app leaves the foreground and require the original file/audio to resume or review. '
-                  'WAV jobs keep an owned audio copy. Jobs never attach results automatically.'),
+              Text(copy.description),
               if (_error != null) Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-              if (service.loadError != null) Text(service.loadError!),
-              if (service.jobs.isEmpty) const Padding(padding: EdgeInsets.all(16), child: Text('No jobs in this profile.')),
+              if (service.loadError != null) Text(loadMessage(service.loadError)),
+              if (service.jobs.isEmpty) Padding(padding: const EdgeInsets.all(16), child: Text(copy.noJobs)),
               for (final job in service.jobs) Card(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
@@ -72,27 +100,27 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(job.title, style: Theme.of(context).textTheme.titleMedium),
-                      Text('${job.state.name} · ${job.completedChunks}/${job.chunkCount} windows'),
-                      if (job.usesSourceDecoder) Text('Source decoder · audio ordinal ${job.audioOrdinal} · temporary audio only'),
+                      Text(copy.progress(state: stateLabel(job.state), completed: job.completedChunks, total: job.chunkCount)),
+                      if (job.usesSourceDecoder) Text(copy.sourceSummary(ordinal: job.audioOrdinal!)),
                       LinearProgressIndicator(value: job.progress),
-                      if (job.message != null) Text(job.message!),
+                      if (job.message != null) Text(jobMessage(job.message)),
                       if (job.chargingOnly || job.idleOnly)
-                        Text([if (job.chargingOnly) 'External power only', if (job.idleOnly) 'While playback is idle'].join(' · ')),
-                      if (job.identityKey != widget.identityKey) const Text('Open this media item to review or attach its result.'),
+                        Text([if (job.chargingOnly) copy.externalPowerOnly, if (job.idleOnly) copy.whilePlaybackIdle].join(' · ')),
+                      if (job.identityKey != widget.identityKey) Text(copy.openThisMedia),
                       Wrap(spacing: 8, children: [
                         if (job.state == SubtitleJobState.running || job.state == SubtitleJobState.queued)
-                          TextButton(onPressed: _working ? null : () => _action(() => service.pause(job)), child: const Text('Pause')),
+                          TextButton(onPressed: _working ? null : () => _action(() => service.pause(job)), child: Text(copy.pause)),
                         if (job.state == SubtitleJobState.paused || job.state == SubtitleJobState.failed)
                           TextButton(onPressed: _working || job.usesSourceDecoder &&
                               (widget.openSource == null || job.identityKey != widget.identityKey) ? null
-                              : () => _action(() => _resume(job)), child: const Text('Resume')),
+                              : () => _action(() => _resume(job)), child: Text(copy.resume)),
                         if (!job.terminal)
-                          TextButton(onPressed: _working ? null : () => _action(() => service.cancel(job)), child: const Text('Cancel')),
+                          TextButton(onPressed: _working ? null : () => _action(() => service.cancel(job)), child: Text(copy.cancel)),
                         if (job.hasResult && job.identityKey == widget.identityKey)
                           TextButton(onPressed: _working || job.usesSourceDecoder && widget.openSource == null ? null
                               : () => _action(() => _review(job)),
-                              child: Text(job.state == SubtitleJobState.completed ? 'Review result' : 'Review saved portion')),
-                        TextButton(onPressed: _working ? null : () => _action(() => service.delete(job)), child: const Text('Delete')),
+                              child: Text(job.state == SubtitleJobState.completed ? copy.reviewResult : copy.reviewSaved)),
+                        TextButton(onPressed: _working ? null : () => _action(() => service.delete(job)), child: Text(copy.delete)),
                       ]),
                     ],
                   ),
@@ -102,7 +130,7 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
           ),
         ),
       ),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(Translations.of(context).common.close))],
     );
   }
 }

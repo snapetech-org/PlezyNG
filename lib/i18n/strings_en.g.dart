@@ -3280,6 +3280,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleOverlays$en subtitleOverlays = Translations$videoControls$subtitleOverlays$en.internal(_root);
 	late final Translations$videoControls$subtitleLive$en subtitleLive = Translations$videoControls$subtitleLive$en.internal(_root);
 	late final Translations$videoControls$subtitleLyrics$en subtitleLyrics = Translations$videoControls$subtitleLyrics$en.internal(_root);
+	late final Translations$videoControls$subtitleJobs$en subtitleJobs = Translations$videoControls$subtitleJobs$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
 
@@ -12718,6 +12719,183 @@ class Translations$videoControls$subtitleLyrics$en {
 	String get useGroups => 'Use these groups';
 
 }
+// Path: videoControls.subtitleJobs
+class Translations$videoControls$subtitleJobs$en {
+	Translations$videoControls$subtitleJobs$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Queue transcription'
+	String get queueTitle => 'Queue transcription';
+
+	/// en: 'An owned copy of the WAV is retained until you delete the job. The queue saves each completed window and never attaches results automatically.'
+	String get wavHelp => 'An owned copy of the WAV is retained until you delete the job. The queue saves each completed window and never attaches results automatically.';
+
+	/// en: 'Decode this file through its owning source transport, one window at a time. This uses additional bandwidth and may download the local speech model on first use. Completed text is saved; decoded audio is temporary. Reopen the same file and audio stream to resume after a restart. The transport identity is checked; the remote file is not hashed in full. Results require review.'
+	String get sourceHelp => 'Decode this file through its owning source transport, one window at a time. This uses additional bandwidth and may download the local speech model on first use. Completed text is saved; decoded audio is temporary. Reopen the same file and audio stream to resume after a restart. The transport identity is checked; the remote file is not hashed in full. Results require review.';
+
+	/// en: 'Audio stream ordinal (0–63)'
+	String get ordinalLabel => 'Audio stream ordinal (0–63)';
+
+	/// en: 'File order, independent of native player IDs. Confirm the selected language/cut.'
+	String get ordinalHelp => 'File order, independent of native player IDs. Confirm the selected language/cut.';
+
+	/// en: 'Prioritize near the playhead'
+	String get prioritizePlayhead => 'Prioritize near the playhead';
+
+	/// en: 'Only on external power'
+	String get externalPower => 'Only on external power';
+
+	/// en: 'Only while playback is idle'
+	String get playbackIdle => 'Only while playback is idle';
+
+	/// en: 'Queue'
+	String get queueAction => 'Queue';
+
+	/// en: 'Queued. Open Transcription jobs to pause, resume, cancel, or review saved windows.'
+	String get queuedStatus => 'Queued. Open Transcription jobs to pause, resume, cancel, or review saved windows.';
+
+	/// en: 'Subtitle transcription'
+	String get wavTitle => 'Subtitle transcription';
+
+	/// en: 'Source transcription'
+	String get sourceTitle => 'Source transcription';
+
+	/// en: 'Queue resumable WAV transcription'
+	String get queueWavTitle => 'Queue resumable WAV transcription';
+
+	/// en: 'Checkpointed windows, playhead priority, pause/resume, and power policy'
+	String get queueWavDescription => 'Checkpointed windows, playhead priority, pause/resume, and power policy';
+
+	/// en: 'Queue current source transcription'
+	String get queueSourceTitle => 'Queue current source transcription';
+
+	/// en: 'Decode a complete VOD file with resumable text checkpoints and temporary audio'
+	String get queueSourceDescription => 'Decode a complete VOD file with resumable text checkpoints and temporary audio';
+
+	/// en: 'Transcription jobs'
+	String get title => 'Transcription jobs';
+
+	/// en: 'Manage this profile’s jobs and review complete or partial results'
+	String get openJobsHelp => 'Manage this profile’s jobs and review complete or partial results';
+
+	/// en: 'Completed 30-second windows survive restarts. Resume is explicit after restart. Pause and cancel discard the current window when native inference returns. Source jobs pause when the app leaves the foreground and require the original file/audio to resume or review. WAV jobs keep an owned audio copy. Jobs never attach results automatically.'
+	String get description => 'Completed 30-second windows survive restarts. Resume is explicit after restart. Pause and cancel discard the current window when native inference returns. Source jobs pause when the app leaves the foreground and require the original file/audio to resume or review. WAV jobs keep an owned audio copy. Jobs never attach results automatically.';
+
+	/// en: 'No jobs in this profile.'
+	String get noJobs => 'No jobs in this profile.';
+
+	/// en: 'Queued'
+	String get stateQueued => 'Queued';
+
+	/// en: 'Running'
+	String get stateRunning => 'Running';
+
+	/// en: 'Paused'
+	String get statePaused => 'Paused';
+
+	/// en: 'Completed'
+	String get stateCompleted => 'Completed';
+
+	/// en: 'Cancelled'
+	String get stateCancelled => 'Cancelled';
+
+	/// en: 'Failed'
+	String get stateFailed => 'Failed';
+
+	/// en: '${state} · ${completed}/${total} windows'
+	String progress({required Object state, required Object completed, required Object total}) => '${state} · ${completed}/${total} windows';
+
+	/// en: 'Source decoder · audio ordinal ${ordinal} · temporary audio only'
+	String sourceSummary({required Object ordinal}) => 'Source decoder · audio ordinal ${ordinal} · temporary audio only';
+
+	/// en: 'External power only'
+	String get externalPowerOnly => 'External power only';
+
+	/// en: 'While playback is idle'
+	String get whilePlaybackIdle => 'While playback is idle';
+
+	/// en: 'Open this media item to review or attach its result.'
+	String get openThisMedia => 'Open this media item to review or attach its result.';
+
+	/// en: 'Pause'
+	String get pause => 'Pause';
+
+	/// en: 'Resume'
+	String get resume => 'Resume';
+
+	/// en: 'Cancel'
+	String get cancel => 'Cancel';
+
+	/// en: 'Review result'
+	String get reviewResult => 'Review result';
+
+	/// en: 'Review saved portion'
+	String get reviewSaved => 'Review saved portion';
+
+	/// en: 'Delete'
+	String get delete => 'Delete';
+
+	/// en: 'The job could not be updated. Reopen the queue and try again.'
+	String get actionFailed => 'The job could not be updated. Reopen the queue and try again.';
+
+	/// en: 'A damaged job record was skipped. Other jobs remain available.'
+	String get loadDamaged => 'A damaged job record was skipped. Other jobs remain available.';
+
+	/// en: 'The transcription queue could not be opened.'
+	String get loadFailed => 'The transcription queue could not be opened.';
+
+	/// en: 'Reopen the original file and audio stream to resume this source job.'
+	String get reopenSource => 'Reopen the original file and audio stream to resume this source job.';
+
+	/// en: 'Waiting for playback to stop (reopen this item to report playback state).'
+	String get waitingPlayback => 'Waiting for playback to stop (reopen this item to report playback state).';
+
+	/// en: 'Waiting for confirmed external power.'
+	String get waitingPower => 'Waiting for confirmed external power.';
+
+	/// en: 'Preparing transcription'
+	String get preparing => 'Preparing transcription';
+
+	/// en: 'All audio windows saved; review before attachment.'
+	String get allAudioSaved => 'All audio windows saved; review before attachment.';
+
+	/// en: 'This window could not finish. Completed windows are saved; resume to retry.'
+	String get windowFailed => 'This window could not finish. Completed windows are saved; resume to retry.';
+
+	/// en: 'Saved ${completed}/${total} audio windows so far.'
+	String progressStatus({required Object completed, required Object total}) => 'Saved ${completed}/${total} audio windows so far.';
+
+	/// en: 'Status details are unavailable in this language.'
+	String get statusUnavailable => 'Status details are unavailable in this language.';
+
+	/// en: 'Open a stable library item or local file to create a resumable job.'
+	String get stableIdentityRequired => 'Open a stable library item or local file to create a resumable job.';
+
+	/// en: 'Delete an old job before adding another (12-job limit).'
+	String get jobLimit => 'Delete an old job before adding another (12-job limit).';
+
+	/// en: 'The source or profile changed, or another job is being created.'
+	String get sourceChanged => 'The source or profile changed, or another job is being created.';
+
+	/// en: 'Reopen the same file, audio stream and clock before resuming this job.'
+	String get resumeBindingMismatch => 'Reopen the same file, audio stream and clock before resuming this job.';
+
+	/// en: 'This job uses its retained WAV.'
+	String get wavJobNoSource => 'This job uses its retained WAV.';
+
+	/// en: 'Choose a complete VOD file up to eight hours and an explicit audio stream.'
+	String get completeVodRequired => 'Choose a complete VOD file up to eight hours and an explicit audio stream.';
+
+	/// en: 'A source job requires a local file or its owned loopback transport.'
+	String get supportedTransportRequired => 'A source job requires a local file or its owned loopback transport.';
+
+	/// en: 'The job was saved under its original profile; switch back to resume it.'
+	String get originalProfileResume => 'The job was saved under its original profile; switch back to resume it.';
+
+}
 // Path: videoControls.subtitleHdr
 class Translations$videoControls$subtitleHdr$en {
 	Translations$videoControls$subtitleHdr$en.internal(this._root);
@@ -16601,6 +16779,62 @@ extension on Translations {
 			'videoControls.subtitleLyrics.groupLimit' => 'Use at most 4096 syllable groups per job.',
 			'videoControls.subtitleLyrics.cueLimit' => 'Syllable editing requires 1–120 lyric cues.',
 			'videoControls.subtitleLyrics.useGroups' => 'Use these groups',
+			'videoControls.subtitleJobs.queueTitle' => 'Queue transcription',
+			'videoControls.subtitleJobs.wavHelp' => 'An owned copy of the WAV is retained until you delete the job. The queue saves each completed window and never attaches results automatically.',
+			'videoControls.subtitleJobs.sourceHelp' => 'Decode this file through its owning source transport, one window at a time. This uses additional bandwidth and may download the local speech model on first use. Completed text is saved; decoded audio is temporary. Reopen the same file and audio stream to resume after a restart. The transport identity is checked; the remote file is not hashed in full. Results require review.',
+			'videoControls.subtitleJobs.ordinalLabel' => 'Audio stream ordinal (0–63)',
+			'videoControls.subtitleJobs.ordinalHelp' => 'File order, independent of native player IDs. Confirm the selected language/cut.',
+			'videoControls.subtitleJobs.prioritizePlayhead' => 'Prioritize near the playhead',
+			'videoControls.subtitleJobs.externalPower' => 'Only on external power',
+			'videoControls.subtitleJobs.playbackIdle' => 'Only while playback is idle',
+			'videoControls.subtitleJobs.queueAction' => 'Queue',
+			'videoControls.subtitleJobs.queuedStatus' => 'Queued. Open Transcription jobs to pause, resume, cancel, or review saved windows.',
+			'videoControls.subtitleJobs.wavTitle' => 'Subtitle transcription',
+			'videoControls.subtitleJobs.sourceTitle' => 'Source transcription',
+			'videoControls.subtitleJobs.queueWavTitle' => 'Queue resumable WAV transcription',
+			'videoControls.subtitleJobs.queueWavDescription' => 'Checkpointed windows, playhead priority, pause/resume, and power policy',
+			'videoControls.subtitleJobs.queueSourceTitle' => 'Queue current source transcription',
+			'videoControls.subtitleJobs.queueSourceDescription' => 'Decode a complete VOD file with resumable text checkpoints and temporary audio',
+			'videoControls.subtitleJobs.title' => 'Transcription jobs',
+			'videoControls.subtitleJobs.openJobsHelp' => 'Manage this profile’s jobs and review complete or partial results',
+			'videoControls.subtitleJobs.description' => 'Completed 30-second windows survive restarts. Resume is explicit after restart. Pause and cancel discard the current window when native inference returns. Source jobs pause when the app leaves the foreground and require the original file/audio to resume or review. WAV jobs keep an owned audio copy. Jobs never attach results automatically.',
+			'videoControls.subtitleJobs.noJobs' => 'No jobs in this profile.',
+			'videoControls.subtitleJobs.stateQueued' => 'Queued',
+			'videoControls.subtitleJobs.stateRunning' => 'Running',
+			'videoControls.subtitleJobs.statePaused' => 'Paused',
+			'videoControls.subtitleJobs.stateCompleted' => 'Completed',
+			'videoControls.subtitleJobs.stateCancelled' => 'Cancelled',
+			'videoControls.subtitleJobs.stateFailed' => 'Failed',
+			'videoControls.subtitleJobs.progress' => ({required Object state, required Object completed, required Object total}) => '${state} · ${completed}/${total} windows',
+			'videoControls.subtitleJobs.sourceSummary' => ({required Object ordinal}) => 'Source decoder · audio ordinal ${ordinal} · temporary audio only',
+			'videoControls.subtitleJobs.externalPowerOnly' => 'External power only',
+			'videoControls.subtitleJobs.whilePlaybackIdle' => 'While playback is idle',
+			'videoControls.subtitleJobs.openThisMedia' => 'Open this media item to review or attach its result.',
+			'videoControls.subtitleJobs.pause' => 'Pause',
+			'videoControls.subtitleJobs.resume' => 'Resume',
+			'videoControls.subtitleJobs.cancel' => 'Cancel',
+			'videoControls.subtitleJobs.reviewResult' => 'Review result',
+			'videoControls.subtitleJobs.reviewSaved' => 'Review saved portion',
+			'videoControls.subtitleJobs.delete' => 'Delete',
+			'videoControls.subtitleJobs.actionFailed' => 'The job could not be updated. Reopen the queue and try again.',
+			'videoControls.subtitleJobs.loadDamaged' => 'A damaged job record was skipped. Other jobs remain available.',
+			'videoControls.subtitleJobs.loadFailed' => 'The transcription queue could not be opened.',
+			'videoControls.subtitleJobs.reopenSource' => 'Reopen the original file and audio stream to resume this source job.',
+			'videoControls.subtitleJobs.waitingPlayback' => 'Waiting for playback to stop (reopen this item to report playback state).',
+			'videoControls.subtitleJobs.waitingPower' => 'Waiting for confirmed external power.',
+			'videoControls.subtitleJobs.preparing' => 'Preparing transcription',
+			'videoControls.subtitleJobs.allAudioSaved' => 'All audio windows saved; review before attachment.',
+			'videoControls.subtitleJobs.windowFailed' => 'This window could not finish. Completed windows are saved; resume to retry.',
+			'videoControls.subtitleJobs.progressStatus' => ({required Object completed, required Object total}) => 'Saved ${completed}/${total} audio windows so far.',
+			'videoControls.subtitleJobs.statusUnavailable' => 'Status details are unavailable in this language.',
+			'videoControls.subtitleJobs.stableIdentityRequired' => 'Open a stable library item or local file to create a resumable job.',
+			'videoControls.subtitleJobs.jobLimit' => 'Delete an old job before adding another (12-job limit).',
+			'videoControls.subtitleJobs.sourceChanged' => 'The source or profile changed, or another job is being created.',
+			'videoControls.subtitleJobs.resumeBindingMismatch' => 'Reopen the same file, audio stream and clock before resuming this job.',
+			'videoControls.subtitleJobs.wavJobNoSource' => 'This job uses its retained WAV.',
+			'videoControls.subtitleJobs.completeVodRequired' => 'Choose a complete VOD file up to eight hours and an explicit audio stream.',
+			'videoControls.subtitleJobs.supportedTransportRequired' => 'A source job requires a local file or its owned loopback transport.',
+			'videoControls.subtitleJobs.originalProfileResume' => 'The job was saved under its original profile; switch back to resume it.',
 			'videoControls.subtitleHdr.open' => 'Native HDR caption brightness',
 			'videoControls.subtitleImportSourceEncoding' => 'Source encoding',
 			'videoControls.subtitleImportMicroDvdFps' => 'MicroDVD FPS (blank uses the file header)',

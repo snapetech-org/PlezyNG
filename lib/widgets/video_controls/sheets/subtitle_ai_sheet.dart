@@ -517,6 +517,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Future<void> _queueTranscription({bool useSource = false}) => _run(() async {
+    final t = Translations.of(context);
+    final copy = t.videoControls.subtitleJobs;
     final identity = _operationRevisionIdentity;
     if (identity == null) throw StateError('Open a stable library item or local file to create a resumable job.');
     final profiles = context.read<ActiveProfileProvider>();
@@ -534,31 +536,25 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     accepted = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(builder: (dialogContext, update) => AlertDialog(
-        title: const Text('Queue transcription'),
+        title: Text(copy.queueTitle),
         content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(useSource ? 'Decode this file through its owning source transport, one window at a time. '
-              'This uses additional bandwidth and may download the local speech model on first use. '
-              'Completed text is saved; decoded audio is temporary. Reopen the same file and audio stream to resume after a restart. '
-              'The transport identity is checked; the remote file is not hashed in full. Results require review.'
-              : 'An owned copy of the WAV is retained until you delete the job. '
-              'The queue saves each completed window and never attaches results automatically.'),
+          Text(useSource ? copy.sourceHelp : copy.wavHelp),
           if (useSource) TextField(controller: ordinalInput, keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Audio stream ordinal (0–63)',
-              helperText: 'File order, independent of native player IDs. Confirm the selected language/cut.')),
-          SwitchListTile(title: const Text('Prioritize near the playhead'), value: followPlayhead,
+            decoration: InputDecoration(labelText: copy.ordinalLabel, helperText: copy.ordinalHelp)),
+          SwitchListTile(title: Text(copy.prioritizePlayhead), value: followPlayhead,
               onChanged: (value) => update(() => followPlayhead = value)),
-          SwitchListTile(title: const Text('Only on external power'), value: chargingOnly,
+          SwitchListTile(title: Text(copy.externalPower), value: chargingOnly,
               onChanged: (value) => update(() => chargingOnly = value)),
-          SwitchListTile(title: const Text('Only while playback is idle'), value: idleOnly,
+          SwitchListTile(title: Text(copy.playbackIdle), value: idleOnly,
               onChanged: (value) => update(() => idleOnly = value)),
         ])),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(t.common.cancel)),
           FilledButton(onPressed: () {
             final value = int.tryParse(ordinalInput.text);
             if (useSource && (value == null || value < 0 || value > 63)) return;
             ordinal = value ?? 0; Navigator.pop(dialogContext, true);
-          }, child: const Text('Queue')),
+          }, child: Text(copy.queueAction)),
         ],
       )),
     );
@@ -575,19 +571,19 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (useSource) {
       final source = await _openJobSource(ordinal);
       await service.enqueueSource(source: source,
-        identityKey: identity.storageKey, title: widget.mediaTitle ?? 'Source transcription',
+        identityKey: identity.storageKey, title: widget.mediaTitle ?? copy.sourceTitle,
         provider: _provider, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
         translateToEnglish: _translateSpeechToEnglish, chargingOnly: chargingOnly, idleOnly: idleOnly,
         playheadMs: followPlayhead ? playhead : null, playbackBusy: playing);
     } else {
     await service.enqueue(
-      wavPath: wavPath!, identityKey: identity.storageKey, title: widget.mediaTitle ?? 'Subtitle transcription',
+      wavPath: wavPath!, identityKey: identity.storageKey, title: widget.mediaTitle ?? copy.wavTitle,
       provider: _provider, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       translateToEnglish: _translateSpeechToEnglish, chargingOnly: chargingOnly, idleOnly: idleOnly,
       playheadMs: followPlayhead ? playhead : null, playbackBusy: playing,
     );
     }
-    if (mounted) setState(() => _status = 'Queued. Open Transcription jobs to pause, resume, cancel, or review saved windows.');
+    if (mounted) setState(() => _status = copy.queuedStatus);
   });
 
   Future<void> _manageTranscriptionJobs() => _run(() async {
@@ -3796,11 +3792,23 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   String _readableError(Object error) {
+    final copy = Translations.of(context).videoControls.subtitleJobs;
     if (error is UnsupportedError || error is FormatException || error is ArgumentError || error is StateError) {
-      return error.toString().replaceFirst(
+      final message = error.toString().replaceFirst(
         RegExp(r'^(Unsupported operation|FormatException|Invalid argument|Bad state):\s*'),
         '',
       );
+      return switch (message) {
+        'Open a stable library item or local file to create a resumable job.' => copy.stableIdentityRequired,
+        'Delete an old job before adding another (12-job limit).' => copy.jobLimit,
+        'The source or profile changed, or another job is being created.' => copy.sourceChanged,
+        'Reopen the same file, audio stream and clock before resuming this job.' => copy.resumeBindingMismatch,
+        'This job uses its retained WAV.' => copy.wavJobNoSource,
+        'Choose a complete VOD file up to eight hours and an explicit audio stream.' => copy.completeVodRequired,
+        'A source job requires a local file or its owned loopback transport.' => copy.supportedTransportRequired,
+        'The job was saved under its original profile; switch back to resume it.' => copy.originalProfileResume,
+        _ => message,
+      };
     }
     return 'Subtitle operation failed: $error';
   }
@@ -3891,6 +3899,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final jobsCopy = Translations.of(context).videoControls.subtitleJobs;
     final localSpeech = SubtitleAiService.supportedPlatform;
     final providers = SubtitleAiService.availableProviderRequests;
     final liveProviders = providers
@@ -4259,14 +4268,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.queue_music_rounded),
-            title: const Text('Queue resumable WAV transcription'),
-            subtitle: const Text('Checkpointed windows, playhead priority, pause/resume, and power policy'),
+            title: Text(jobsCopy.queueWavTitle),
+            subtitle: Text(jobsCopy.queueWavDescription),
             onTap: _busy || !localSpeech || _revisionIdentity == null ? null : () => unawaited(_queueTranscription()),
           ),
           if (SubtitleReadAheadService.available) FocusableListTile(
             leading: const AppIcon(Symbols.queue_music_rounded),
-            title: const Text('Queue current source transcription'),
-            subtitle: const Text('Decode a complete VOD file with resumable text checkpoints and temporary audio'),
+            title: Text(jobsCopy.queueSourceTitle),
+            subtitle: Text(jobsCopy.queueSourceDescription),
             onTap: _busy || !localSpeech || _revisionIdentity == null ? null
                 : () => unawaited(_queueTranscription(useSource: true)),
           ),
@@ -4278,8 +4287,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.history_rounded),
-            title: const Text('Transcription jobs'),
-            subtitle: const Text('Manage this profile’s jobs and review complete or partial results'),
+            title: Text(jobsCopy.title),
+            subtitle: Text(jobsCopy.openJobsHelp),
             onTap: _busy ? null : () => unawaited(_manageTranscriptionJobs()),
           ),
           FocusableListTile(

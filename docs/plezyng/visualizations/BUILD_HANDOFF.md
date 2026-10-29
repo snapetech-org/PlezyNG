@@ -68,3 +68,11 @@ mpv extension, but still need their own SDK and physical audio qualification.
 No qualification, rights approval, production key or successful installed build
 is asserted by this handoff. See [the current ledger](IMPLEMENTATION_STATUS.md)
 for the remaining code/reference work as distinct from external qualification.
+
+The 2026-10-29 continuation also adds shared native legacy-image and renderer
+lifetime regression programs under `test/native/visualizer_*_test.cc`; the private
+Linux address-sanitizer job builds/runs them. Linux/Windows native CI stages the
+runtime before configuring the app runner. MilkRust's candidate job now prepares
+55 explicitly CC BY 4.0 CaYaDev presets with immutable provenance, in addition to
+the original studies and separately unresolved historical candidates. These
+entrypoints have not been executed in this source-only continuation.

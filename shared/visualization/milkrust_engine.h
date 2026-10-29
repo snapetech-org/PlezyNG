@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "milkrust.h"
+#include "legacy_image_decode.h"
 #if defined(_WIN32)
 #include <windows.h>
 #else
@@ -40,7 +41,7 @@ struct MilkRustApi {
       // loader's global search path. Resolve the sibling runtime from this
       // plugin's own installed directory (the webOS IPK stages both in app/lib).
       Dl_info module{};
-      if (dladdr(this, &module) != 0 && module.dli_fname) {
+      if (dladdr(reinterpret_cast<const void*>(&MilkRustApi::Shared), &module) != 0 && module.dli_fname) {
         const auto bundled = std::filesystem::path(module.dli_fname).parent_path() /
             "libmilkrust_native.so";
         library = dlopen(bundled.c_str(), RTLD_NOW | RTLD_LOCAL);
@@ -90,15 +91,13 @@ struct MilkRustApi {
     return std::string(reinterpret_cast<const char*>(bytes.data()));
   }
   static MilkRustApi& Shared() {
-    static MilkRustApi api;
-    return api;
+    // A quarantined driver call can outlive a host. Keep its code mapping for
+    // the process lifetime instead of unloading it beneath a render thread.
+    static auto* api = new MilkRustApi();
+    return *api;
   }
 };
 
-struct MilkRustImage {
-  uint32_t width = 0, height = 0;
-  std::vector<uint8_t> rgba;
-};
 using MilkRustImageDecoder = std::function<MilkRustImage(const std::filesystem::path&)>;
 
 // A render-thread object. Context and decoder ownership stay with the host.
@@ -137,7 +136,10 @@ class MilkRustEngine {
       const auto asset = Resolve(canonical_root, file.parent_path(), name);
       if (asset.empty()) continue;  // Engine reports a missing asset if the active stage needs it.
       if (std::filesystem::file_size(asset) > 16 * 1024 * 1024) throw std::runtime_error("Texture exceeds 16 MiB.");
-      const auto image = decode(asset);  // Decoder must enforce dimensions before allocation.
+      const auto extension = Fold(asset.extension().u8string());
+      const auto image = extension == ".dds" || extension == ".tga"
+          ? legacy_image::Decode(asset, extension == ".dds")
+          : decode(asset);  // Platform decoder must enforce dimensions before allocation.
       pixels += static_cast<uint64_t>(image.width) * image.height;
       if (!image.width || !image.height || image.width > 4096 || image.height > 4096 ||
           static_cast<uint64_t>(image.width) * image.height > 8 * 1024 * 1024 || pixels > 32 * 1024 * 1024 ||

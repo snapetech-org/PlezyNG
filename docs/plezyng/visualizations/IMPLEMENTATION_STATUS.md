@@ -85,3 +85,34 @@ existing source-only restriction; no workflow was dispatched for this change.
 The remaining work is broader than access to physical hardware: compiler/link
 verification, mpv artifact production/promotion, reference semantics, corpus
 qualification, rights decisions and production custody/publication are also open.
+
+## 2026-10-29 code-completion continuation
+
+- The app pins MilkRust `861c48b7ea20d93b97ac5e7eed3eaa94804b1cef`:
+  legacy matrices/constants/coordinate helpers and matched blur normalization
+  are present in both native GL and WebGL. The same branch now contains 55
+  unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
+  attribution/digests, alongside the 24 original CC0 studies. They remain
+  qualification candidates, not newly published catalog downloads.
+- All native MilkRust hosts share a bounded CPU decoder for legacy DDS
+  (DXT1/3/5 and masked 24/32-bit RGB) and TGA (truecolor/grayscale, raw/RLE and
+  orientation). This closes the prior gap where app import allowed those assets
+  but a platform codec could not read them. TV stb decoding also accepts GIF's
+  first frame. Unsupported DDS arrays/cubes/volumes/modern formats remain explicit.
+- Native render workers now capture shared state instead of a host `this`.
+  Two-second operation watchdogs report stalled rendering. Teardown disconnects
+  bounded PCM/Flutter callbacks before waiting up to 250 ms on the render
+  thread; an unfinished GPU/decoder call retains its context and state. A shared
+  admission guard prevents new sessions while a worker is quarantined and caps
+  concurrent workers at four. Android's potentially blocking surface publication
+  holds its own native-window lease. Linux's projectM/MilkRust worker has the same
+  lifetime boundary and no renderer call runs under its control mutex.
+- This is containment of renderer work, not an OS sandbox or a mechanism for
+  killing a stuck GPU driver. A driver that stalls the entire process/device can
+  still require an app/device restart. Borrowed PCM/Flutter notification callbacks
+  retain their bounded, non-GPU contract. In-flight owned Android publication may
+  complete after host teardown against its retained window, never a freed host.
+- Private CI source stages required MilkRust runtimes before Linux/Windows native
+  target builds and adds decoder/lifetime regression programs with sanitizers.
+  No build, tests, CI, archive generation, capture or device run was performed.
+  Static diff/JSON/Python-source checks do not replace these execution gates.

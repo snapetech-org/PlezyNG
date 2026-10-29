@@ -314,10 +314,13 @@ extern "C" JNIEXPORT jlong JNICALL JNI_NAME(create)(JNIEnv* env, jobject owner, 
     host->player = player;
     auto decoder = host->decoder;
     auto* window = host->window;
+    ANativeWindow_acquire(window);
+    auto window_lease = std::shared_ptr<ANativeWindow>(window, ANativeWindow_release);
     host->worker = std::make_unique<NativeWorker>(
         [] { return std::make_unique<EglContext>(); }, [decoder](const auto& path) { return decoder->Decode(path); },
         [player](mpv_plezy_audio_block* block) { return Tap().read(player, block, sizeof(*block)); },
-        [window, width = 0u, height = 0u](std::shared_ptr<const NativeFrame> frame) mutable {
+        [window_lease, width = 0u, height = 0u](std::shared_ptr<const NativeFrame> frame) mutable {
+          auto* window = window_lease.get();
           if ((width != frame->width || height != frame->height) &&
               ANativeWindow_setBuffersGeometry(window, frame->width, frame->height, WINDOW_FORMAT_RGBA_8888) < 0)
             throw std::runtime_error("Could not size the Android visualization surface.");
@@ -336,7 +339,7 @@ extern "C" JNIEXPORT jlong JNICALL JNI_NAME(create)(JNIEnv* env, jobject owner, 
                 frame->rgba.data() + static_cast<size_t>(y) * frame->width * 4, frame->width * 4,
                 static_cast<uint8_t*>(buffer.bits) + static_cast<size_t>(y) * buffer.stride * 4);
           if (ANativeWindow_unlockAndPost(window) < 0) throw std::runtime_error("Android frame presentation failed.");
-        });
+        }, true);
     std::lock_guard<std::mutex> lock(registry_mutex);
     if (registry.size() >= 4) throw std::runtime_error("Too many native visualization sessions.");
     const auto id = next_id.fetch_add(1);

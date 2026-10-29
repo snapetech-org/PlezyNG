@@ -42,6 +42,7 @@ inline void* Reallocate(void* pointer, size_t size) noexcept {
 #define STBI_ONLY_JPEG
 #define STBI_ONLY_BMP
 #define STBI_ONLY_TGA
+#define STBI_ONLY_GIF
 #define STBI_MAX_DIMENSIONS 4096
 #define STBI_MALLOC(size) plezy::visualization::image_detail::Allocate(size)
 #define STBI_REALLOC(pointer, size) plezy::visualization::image_detail::Reallocate(pointer, size)
@@ -54,6 +55,7 @@ inline void* Reallocate(void* pointer, size_t size) noexcept {
 #undef STBI_ONLY_JPEG
 #undef STBI_ONLY_BMP
 #undef STBI_ONLY_TGA
+#undef STBI_ONLY_GIF
 #undef STBI_MAX_DIMENSIONS
 #undef STBI_MALLOC
 #undef STBI_REALLOC
@@ -70,7 +72,7 @@ inline MilkRustImage DecodeBoundedImage(const std::filesystem::path& path) {
   int width = 0, height = 0, channels = 0;
   if (!stbi_info_from_memory(bytes.data(), static_cast<int>(bytes.size()), &width, &height, &channels) ||
       width < 1 || height < 1 || width > 4096 || height > 4096 || uint64_t(width) * height > 8 * 1024 * 1024)
-    throw std::runtime_error("Texture format or dimensions are unsupported (PNG, JPEG, BMP and TGA only).");
+    throw std::runtime_error("Texture format or dimensions are unsupported (PNG, JPEG, BMP, GIF and TGA only).");
   const int expected_width = width, expected_height = height;
   std::unique_ptr<stbi_uc, decltype(&stbi_image_free)> decoded(
       stbi_load_from_memory(bytes.data(), static_cast<int>(bytes.size()), &width, &height, &channels, 4), stbi_image_free);

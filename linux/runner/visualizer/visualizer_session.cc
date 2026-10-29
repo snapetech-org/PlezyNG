@@ -20,6 +20,7 @@
 
 #include "../../../shared/visualization/milkrust_engine.h"
 #include "../../../shared/visualization/pcm_resampler.h"
+#include "../../../shared/visualization/render_thread.h"
 
 namespace {
 using Clock = std::chrono::steady_clock;
@@ -131,8 +132,8 @@ struct ProjectMApi {
   }
 };
 ProjectMApi& Api() {
-  static ProjectMApi api;
-  return api;
+  static auto* api = new ProjectMApi(); // Quarantined driver calls retain this mapping.
+  return *api;
 }
 
 // An independent surfaceless Mesa EGL display avoids sharing or altering
@@ -342,27 +343,172 @@ struct Engine {
 
 namespace plezy::visualization {
 struct VisualizerSession::Impl {
+  struct Work {
+    std::shared_ptr<FrameState> frames = std::make_shared<FrameState>();
+    AudioReader reader;
+    const std::string engine_name;
+    mutable std::mutex mutex;
+    std::condition_variable condition;
+    bool stopping = false, paused = true;
+    int width = 768, height = 432;
+    double transition_seconds = 3;
+    std::string path, root, state = "starting", error;
+    uint64_t preset_serial = 0;
+    uint32_t dropped = 0;
+    std::mutex reader_mutex;
+    bool reader_closed = false;
+    RenderWatchdog watchdog;
+    Work(AudioReader callback, std::string engine):reader(std::move(callback)),engine_name(std::move(engine)) {}
+    void Stop() {
+      { std::lock_guard<std::mutex> lock(mutex); stopping = true; }
+      condition.notify_all();
+      std::lock_guard<std::mutex> callback(reader_mutex);
+      reader_closed = true; reader = {};
+    }
+    int Read(mpv_plezy_audio_block* block) {
+      std::lock_guard<std::mutex> callback(reader_mutex);
+      return reader_closed ? 0 : reader(block);
+    }
+    void State(const std::string& value, const std::string& reason = {}) {
+      std::lock_guard<std::mutex> lock(mutex);
+      if (stopping) return;
+      state = value;
+      error = reason;
+    }
+    void Run() {
+      try {
+        const auto dependency = VisualizerSession::DependencyError(engine_name);
+        if (!dependency.empty()) throw std::runtime_error(dependency);
+        OffscreenContext graphics;
+        { RenderWatchdog::Operation operation(watchdog); graphics.Initialize(); }
+        std::string load_error;  // Callback target must outlive Engine destruction.
+        Engine engine(engine_name == "milkrust");
+        uint64_t loaded_serial = 0;
+        uint32_t generation = 0;
+        PcmResampler resampler;
+        std::vector<float> pcm;
+        auto audio_at = Clock::time_point{};
+        for (;;) {
+          auto started = Clock::now();
+          std::string requested_path, requested_root;
+          uint64_t serial;
+          int w, h;
+          double transition;
+          bool pause_requested;
+          { std::lock_guard<std::mutex> lock(mutex); pause_requested = paused; }
+          if (pause_requested && engine.Has()) {
+            RenderWatchdog::Operation operation(watchdog);
+            engine.Pause(true);
+          }
+          {
+            std::unique_lock<std::mutex> lock(mutex);
+            condition.wait(lock, [this] { return stopping || (!paused && !path.empty()); });
+            if (stopping) break;
+            requested_path = path;
+            requested_root = root;
+            serial = preset_serial;
+            w = width;
+            h = height;
+            transition = transition_seconds;
+          }
+          RenderWatchdog::Operation operation(watchdog);
+          graphics.Resize(w, h);
+          mpv_plezy_audio_block block{};
+          bool audio_received = false;
+          for (int n = 0; n < 32; ++n) {
+            const int result = Read(&block);
+            if (result == MPV_PLEZY_AUDIO_UNSUPPORTED) {
+              State("unavailable", "The active audio output cannot provide visualization PCM.");
+              audio_received = false;
+              audio_at = Clock::time_point{};
+              break;
+            }
+            if (result < 0) throw std::runtime_error("The music PCM tap was lost.");
+            if (result == 0) break;
+            if (block.generation != generation) {
+              engine.Reset();
+              generation = block.generation;
+              loaded_serial = 0;
+              resampler = PcmResampler();
+            }
+            if (!engine.Has()) engine.Create(&load_error);
+            engine.Resize(w, h);
+            if (loaded_serial != serial) {
+              load_error.clear();
+              engine.Load(requested_path, requested_root, transition, loaded_serial != 0);
+              if (!load_error.empty()) throw std::runtime_error(load_error);
+              loaded_serial = serial;
+            }
+            if (!resampler.Convert(block, &pcm)) {
+              State("unavailable", "This sample rate or speaker layout is not supported for analysis.");
+              audio_received = false;
+              audio_at = Clock::time_point{};
+              break;
+            }
+            engine.Pcm(pcm, generation);
+            audio_received = true;
+            {
+              std::lock_guard<std::mutex> lock(mutex);
+              dropped = block.dropped_frames;
+            }
+          }
+          if (audio_received) audio_at = Clock::now();
+          if (engine.Has() && loaded_serial == serial && Clock::now() - audio_at < std::chrono::milliseconds(250)) {
+            engine.Pause(false);
+            engine.Resize(w, h);
+            engine.Render(graphics.framebuffer, w, h);
+            auto frame = std::make_shared<Frame>();
+            frame->width = w;
+            frame->height = h;
+            frame->pixels.resize(static_cast<size_t>(w) * h * 4);
+            glBindFramebuffer(GL_FRAMEBUFFER, graphics.framebuffer);
+            glPixelStorei(GL_PACK_ALIGNMENT, 1);
+            glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, frame->pixels.data());
+            if (glGetError() != GL_NO_ERROR) throw std::runtime_error("Visualization frame readback failed.");
+            const size_t stride = static_cast<size_t>(w) * 4;
+            for (int y = 0; y < h / 2; ++y)
+              std::swap_ranges(
+                  frame->pixels.begin() + y * stride, frame->pixels.begin() + (y + 1) * stride,
+                  frame->pixels.begin() + (h - y - 1) * stride);
+            {
+              std::lock_guard<std::mutex> control(mutex);
+              if (stopping || paused || preset_serial != serial) continue;
+              std::lock_guard<std::mutex> lock(frames->mutex);
+              frames->latest = std::move(frame);
+            }
+            frames->preset_serial.store(serial);
+            frames->serial.fetch_add(1);
+            State("rendering");
+          } else {
+            if (engine.Has()) engine.Pause(true);
+            std::lock_guard<std::mutex> lock(mutex);
+            if (!stopping && state != "unavailable") {
+              state = "waiting-audio";
+              error.clear();
+            }
+          }
+          std::unique_lock<std::mutex> lock(mutex);
+          condition.wait_until(lock, started + std::chrono::milliseconds(33), [this] { return stopping || paused; });
+          if (stopping) break;
+        }
+      } catch (const std::exception& ex) {
+        State("failed", ex.what());
+      } catch (...) {
+        State("failed", "The native visualization engine stopped unexpectedly.");
+      }
+    }
+  };
+  std::shared_ptr<Work> work;
   FlTextureRegistrar* registrar;
   PlezyBufferTexture* texture;
-  std::shared_ptr<FrameState> frames = std::make_shared<FrameState>();
-  AudioReader reader;
-  const std::string engine_name;
-  mutable std::mutex mutex;
-  std::condition_variable condition;
-  std::thread worker;
-  bool stopping = false, paused = true;
-  int width = 768, height = 432;
-  double transition_seconds = 3;
-  std::string path, root, state = "starting", error;
-  uint64_t preset_serial = 0;
-  uint32_t dropped = 0;
+  std::unique_ptr<RenderThread> worker;
   guint timer = 0;
   uint64_t marked_serial = 0;
 
   Impl(FlTextureRegistrar* r, AudioReader callback, std::string engine)
-      : registrar(FL_TEXTURE_REGISTRAR(g_object_ref(r))), reader(std::move(callback)), engine_name(std::move(engine)) {
+      : work(std::make_shared<Work>(std::move(callback), std::move(engine))), registrar(FL_TEXTURE_REGISTRAR(g_object_ref(r))) {
     texture = reinterpret_cast<PlezyBufferTexture*>(g_object_new(plezy_buffer_texture_get_type(), nullptr));
-    *texture->state = frames;
+    *texture->state = work->frames;
     if (!fl_texture_registrar_register_texture(registrar, FL_TEXTURE(texture))) {
       g_object_unref(texture);
       g_object_unref(registrar);
@@ -372,7 +518,7 @@ struct VisualizerSession::Impl {
         33,
         [](gpointer data) -> gboolean {
           auto* self = static_cast<Impl*>(data);
-          auto serial = self->frames->serial.load();
+          auto serial = self->work->frames->serial.load();
           if (serial != self->marked_serial) {
             self->marked_serial = serial;
             fl_texture_registrar_mark_texture_frame_available(self->registrar, FL_TEXTURE(self->texture));
@@ -381,7 +527,7 @@ struct VisualizerSession::Impl {
         },
         this);
     try {
-      worker = std::thread([this] { Run(); });
+      worker = std::make_unique<RenderThread>([state=work] { state->Run(); });
     } catch (...) {
       g_source_remove(timer);
       fl_texture_registrar_unregister_texture(registrar, FL_TEXTURE(texture));
@@ -392,134 +538,11 @@ struct VisualizerSession::Impl {
   }
   ~Impl() {
     if (timer) g_source_remove(timer);
-    {
-      std::lock_guard<std::mutex> lock(mutex);
-      stopping = true;
-    }
-    condition.notify_all();
-    if (worker.joinable()) worker.join();
+    work->Stop();
+    worker.reset();
     fl_texture_registrar_unregister_texture(registrar, FL_TEXTURE(texture));
     g_object_unref(texture);
     g_object_unref(registrar);
-  }
-  void State(const std::string& value, const std::string& reason = {}) {
-    std::lock_guard<std::mutex> lock(mutex);
-    state = value;
-    error = reason;
-  }
-  void Run() {
-    try {
-      const auto dependency = VisualizerSession::DependencyError(engine_name);
-      if (!dependency.empty()) throw std::runtime_error(dependency);
-      OffscreenContext graphics;
-      graphics.Initialize();
-      std::string load_error;  // Callback target must outlive Engine destruction.
-      Engine engine(engine_name == "milkrust");
-      uint64_t loaded_serial = 0;
-      uint32_t generation = 0;
-      PcmResampler resampler;
-      std::vector<float> pcm;
-      auto audio_at = Clock::time_point{};
-      for (;;) {
-        auto started = Clock::now();
-        std::string requested_path, requested_root;
-        uint64_t serial;
-        int w, h;
-        double transition;
-        {
-          std::unique_lock<std::mutex> lock(mutex);
-          if (paused && engine.Has()) engine.Pause(true);
-          condition.wait(lock, [this] { return stopping || (!paused && !path.empty()); });
-          if (stopping) break;
-          requested_path = path;
-          requested_root = root;
-          serial = preset_serial;
-          w = width;
-          h = height;
-          transition = transition_seconds;
-        }
-        graphics.Resize(w, h);
-        mpv_plezy_audio_block block{};
-        bool audio_received = false;
-        for (int n = 0; n < 32; ++n) {
-          const int result = reader(&block);
-          if (result == MPV_PLEZY_AUDIO_UNSUPPORTED) {
-            State("unavailable", "The active audio output cannot provide visualization PCM.");
-            audio_received = false;
-            audio_at = Clock::time_point{};
-            break;
-          }
-          if (result < 0) throw std::runtime_error("The music PCM tap was lost.");
-          if (result == 0) break;
-          if (block.generation != generation) {
-            engine.Reset();
-            generation = block.generation;
-            loaded_serial = 0;
-            resampler = PcmResampler();
-          }
-          if (!engine.Has()) engine.Create(&load_error);
-          engine.Resize(w, h);
-          if (loaded_serial != serial) {
-            load_error.clear();
-            engine.Load(requested_path, requested_root, transition, loaded_serial != 0);
-            if (!load_error.empty()) throw std::runtime_error(load_error);
-            loaded_serial = serial;
-          }
-          if (!resampler.Convert(block, &pcm)) {
-            State("unavailable", "This sample rate or speaker layout is not supported for analysis.");
-            audio_received = false;
-            audio_at = Clock::time_point{};
-            break;
-          }
-          engine.Pcm(pcm, generation);
-          audio_received = true;
-          {
-            std::lock_guard<std::mutex> lock(mutex);
-            dropped = block.dropped_frames;
-          }
-        }
-        if (audio_received) audio_at = Clock::now();
-        if (engine.Has() && loaded_serial == serial && Clock::now() - audio_at < std::chrono::milliseconds(250)) {
-          engine.Pause(false);
-          engine.Resize(w, h);
-          engine.Render(graphics.framebuffer, w, h);
-          auto frame = std::make_shared<Frame>();
-          frame->width = w;
-          frame->height = h;
-          frame->pixels.resize(static_cast<size_t>(w) * h * 4);
-          glBindFramebuffer(GL_FRAMEBUFFER, graphics.framebuffer);
-          glPixelStorei(GL_PACK_ALIGNMENT, 1);
-          glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, frame->pixels.data());
-          if (glGetError() != GL_NO_ERROR) throw std::runtime_error("Visualization frame readback failed.");
-          const size_t stride = static_cast<size_t>(w) * 4;
-          for (int y = 0; y < h / 2; ++y)
-            std::swap_ranges(
-                frame->pixels.begin() + y * stride, frame->pixels.begin() + (y + 1) * stride,
-                frame->pixels.begin() + (h - y - 1) * stride);
-          {
-            std::lock_guard<std::mutex> lock(frames->mutex);
-            frames->latest = std::move(frame);
-          }
-          frames->preset_serial.store(serial);
-          frames->serial.fetch_add(1);
-          State("rendering");
-        } else {
-          if (engine.Has()) engine.Pause(true);
-          std::lock_guard<std::mutex> lock(mutex);
-          if (state != "unavailable") {
-            state = "waiting-audio";
-            error.clear();
-          }
-        }
-        std::unique_lock<std::mutex> lock(mutex);
-        condition.wait_until(lock, started + std::chrono::milliseconds(33), [this] { return stopping || paused; });
-        if (stopping) break;
-      }
-    } catch (const std::exception& ex) {
-      State("failed", ex.what());
-    } catch (...) {
-      State("failed", "The native visualization engine stopped unexpectedly.");
-    }
   }
 };
 
@@ -544,21 +567,21 @@ bool VisualizerSession::LoadPreset(
     std::transform(
         extension.begin(), extension.end(), extension.begin(), [](unsigned char c) { return std::tolower(c); });
     if (relative.empty() || *relative.begin() == ".." ||
-        (extension != ".milk" && !(impl_->engine_name == "milkrust" && extension == ".milk2")) ||
+        (extension != ".milk" && !(impl_->work->engine_name == "milkrust" && extension == ".milk2")) ||
         !std::filesystem::is_regular_file(file) || std::filesystem::file_size(file) > 2 * 1024 * 1024)
       throw std::runtime_error("Select a supported preset within the installed library, no larger than 2 MB.");
     {
-      std::lock_guard<std::mutex> lock(impl_->mutex);
-      if (impl_->state == "failed" || impl_->stopping)
+      std::lock_guard<std::mutex> lock(impl_->work->mutex);
+      if (impl_->work->state == "failed" || impl_->work->stopping)
         throw std::runtime_error("Create a new visualization session to retry this preset.");
-      impl_->path = file.string();
-      impl_->root = base.string();
-      ++impl_->preset_serial;
-      impl_->transition_seconds = transition_seconds;
-      impl_->error.clear();
-      impl_->state = "loading";
+      impl_->work->path = file.string();
+      impl_->work->root = base.string();
+      ++impl_->work->preset_serial;
+      impl_->work->transition_seconds = transition_seconds;
+      impl_->work->error.clear();
+      impl_->work->state = "loading";
     }
-    impl_->condition.notify_all();
+    impl_->work->condition.notify_all();
     return true;
   } catch (const std::exception& ex) {
     *error = ex.what();
@@ -569,31 +592,37 @@ void VisualizerSession::Resize(int width, int height) {
   width = std::clamp(width, 1, 16384);
   height = std::clamp(height, 1, 16384);
   const double scale = std::min({1.0, 1280.0 / width, 720.0 / height});
-  std::lock_guard<std::mutex> lock(impl_->mutex);
-  impl_->width = std::max(1, static_cast<int>(width * scale));
-  impl_->height = std::max(1, static_cast<int>(height * scale));
+  std::lock_guard<std::mutex> lock(impl_->work->mutex);
+  impl_->work->width = std::max(1, static_cast<int>(width * scale));
+  impl_->work->height = std::max(1, static_cast<int>(height * scale));
 }
 void VisualizerSession::SetPaused(bool paused) {
   {
-    std::lock_guard<std::mutex> lock(impl_->mutex);
-    impl_->paused = paused;
+    std::lock_guard<std::mutex> lock(impl_->work->mutex);
+    impl_->work->paused = paused;
   }
-  impl_->condition.notify_all();
+  impl_->work->condition.notify_all();
 }
 FlValue* VisualizerSession::Status() const {
-  std::lock_guard<std::mutex> lock(impl_->mutex);
+  std::lock_guard<std::mutex> lock(impl_->work->mutex);
+  if (impl_->work->watchdog.Expired()) {
+    impl_->work->stopping = true;
+    impl_->work->state = "failed";
+    impl_->work->error = "Visualization rendering exceeded its deadline; playback can continue.";
+    impl_->work->condition.notify_all();
+  }
   FlValue* result = fl_value_new_map();
-  fl_value_set_string_take(result, "engine", fl_value_new_string(impl_->engine_name.c_str()));
-  const bool inactive = impl_->paused && impl_->state != "failed" && impl_->state != "unavailable";
-  fl_value_set_string_take(result, "state", fl_value_new_string(inactive ? "paused" : impl_->state.c_str()));
-  fl_value_set_string_take(result, "reason", fl_value_new_string(impl_->error.c_str()));
+  fl_value_set_string_take(result, "engine", fl_value_new_string(impl_->work->engine_name.c_str()));
+  const bool inactive = impl_->work->paused && impl_->work->state != "failed" && impl_->work->state != "unavailable";
+  fl_value_set_string_take(result, "state", fl_value_new_string(inactive ? "paused" : impl_->work->state.c_str()));
+  fl_value_set_string_take(result, "reason", fl_value_new_string(impl_->work->error.c_str()));
   fl_value_set_string_take(
       result, "hasFrame",
       fl_value_new_bool(
-          impl_->frames->serial.load() != 0 && impl_->frames->preset_serial.load() == impl_->preset_serial));
-  fl_value_set_string_take(result, "droppedFrames", fl_value_new_int(impl_->dropped));
-  fl_value_set_string_take(result, "width", fl_value_new_int(impl_->width));
-  fl_value_set_string_take(result, "height", fl_value_new_int(impl_->height));
+          !impl_->work->stopping && impl_->work->state != "failed" && impl_->work->frames->serial.load() != 0 && impl_->work->frames->preset_serial.load() == impl_->work->preset_serial));
+  fl_value_set_string_take(result, "droppedFrames", fl_value_new_int(impl_->work->dropped));
+  fl_value_set_string_take(result, "width", fl_value_new_int(impl_->work->width));
+  fl_value_set_string_take(result, "height", fl_value_new_int(impl_->work->height));
   return result;
 }
 }  // namespace plezy::visualization

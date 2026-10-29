@@ -411,6 +411,19 @@ jobs:
           flutter pub get --enforce-lockfile --no-example
           flutter build linux --debug --config-only --no-pub
 
+      - name: Stage required MilkRust runtime for the Linux runner build
+        run: python3 scripts/visualizer/build_runtime.py --platform linux --architectures x64 --output build/visualizer-native
+
+      - name: Check shared visualization decoding and worker lifetime
+        if: matrix.sanitizer == 'address'
+        run: |
+          clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
+            test/native/visualizer_legacy_image_test.cc -o "$RUNNER_TEMP/visualizer-image-test"
+          "$RUNNER_TEMP/visualizer-image-test"
+          clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
+            test/native/visualizer_render_thread_test.cc -o "$RUNNER_TEMP/visualizer-thread-test"
+          "$RUNNER_TEMP/visualizer-thread-test"
+
       - name: Configure Linux native reliability tests
         run: |
           cmake -S linux -B build/linux-native-${{ matrix.sanitizer }} -G Ninja \
@@ -741,7 +754,11 @@ jobs:
         shell: pwsh
         run: flutter build windows --debug --config-only --no-pub
 
-      - name: Configure Windows native reliability tests
+      - name: Stage required MilkRust runtime for the Windows runner build
+        shell: pwsh
+        run: python scripts/visualizer/build_runtime.py --platform windows --architectures "${{ matrix.arch }}" --output build/visualizer-native
+
+      - name: Configure Windows native reliability targets
         shell: pwsh
         run: |
           $buildDir = "build/windows/${{ matrix.arch }}"

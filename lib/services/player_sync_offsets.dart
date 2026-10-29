@@ -158,7 +158,7 @@ final class PlayerSyncOffsets extends ChangeNotifier {
     if (!force && stamp == _selectionStamp) return;
     _selectionStamp = stamp;
     final generation = _bindingGeneration, item = _item!;
-    bool current() => _bindingCurrent && generation == _bindingGeneration &&
+    bool selectionCurrent() => _bindingCurrent && generation == _bindingGeneration &&
         _source!.selectionStamp(_player) == stamp;
     final writes = playerSyncWrites[_player] ??= LatestAsyncWrite<String>();
     final futures = <Future<bool>>[];
@@ -167,6 +167,11 @@ final class PlayerSyncOffsets extends ChangeNotifier {
       if (onlyProperty != null && onlyProperty != property) continue;
       final selected = binding(property);
       if (!force && _appliedKeys.containsKey(property) && _appliedKeys[property] == selected?.key) continue;
+      // Track requested keys, including queued restoration. Returning A→B→A
+      // must enqueue A even when B has not finished writing its native value.
+      _appliedKeys[property] = selected?.key;
+      bool current() => _bindingCurrent && generation == _bindingGeneration &&
+          _source!.key(_player, property) == selected?.key;
       final value = selected == null ? null : LibrarySyncCorrections.read(_profileId!, selected.key);
       final delay = value?.delayMs ?? ScopedPlayerPrefs.resolve(switch (property) {
         audioProperty => ScopedPlayerPrefs.audioSyncOffset,
@@ -181,11 +186,10 @@ final class PlayerSyncOffsets extends ChangeNotifier {
         if (current() && property == subtitleProperty && _player.supportsSubtitleStepSync) {
           await _applySubtitleRate(rate, force: true, isCurrent: current);
         }
-        if (current()) _appliedKeys[property] = selected?.key;
       }));
     }
     await Future.wait(futures);
-    if (current()) notifyListeners();
+    if (selectionCurrent()) notifyListeners();
   }
 
   int get audioMs => _audioMs;

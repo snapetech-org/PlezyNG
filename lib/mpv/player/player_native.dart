@@ -721,7 +721,6 @@ class PlayerNative extends PlayerBase
   @override
   Future<void> seek(Duration position) async {
     if (_nativeCoreUnavailable) return;
-    ++_playbackTimelineGeneration;
     await runSeek(
       position,
       () => command(['seek', (sourcePositionFor(position).inMilliseconds / 1000.0).toString(), 'absolute']),
@@ -1114,10 +1113,14 @@ class PlayerNative extends PlayerBase
   /// mpv commands that relocate the playhead while computing their own
   /// destination, so Dart never learns where it landed up front (#1819).
   static const _playheadRelocatingCommands = {'sub-seek'};
+  static const _playbackTimelineChangingCommands = {'seek', 'sub-seek', 'frame-step', 'frame-back-step'};
 
   @override
   Future<void> command(List<String> args) async {
     if (_nativeCoreUnavailable) return;
+    if (args.isNotEmpty && _playbackTimelineChangingCommands.contains(args.first)) {
+      ++_playbackTimelineGeneration;
+    }
     await _ensureInitialized();
     // Re-checked after the await: initialization can fail, or the core can be
     // torn down, while this call is suspended. Announcing a jump that no

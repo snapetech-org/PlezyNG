@@ -486,7 +486,10 @@ val downloadAndroidLiteRtArtifacts = tasks.register("downloadAndroidLiteRtArtifa
         }
       } catch (error: Exception) {
         partial.delete()
-        throw GradleException("Could not stage pinned LiteRT artifact $name", error)
+        throw GradleException(
+          "Could not stage pinned LiteRT artifact $name (${error.javaClass.simpleName}: ${error.message})",
+          error
+        )
       }
     }
   }

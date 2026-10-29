@@ -14,6 +14,35 @@ inputs:
 runs:
   using: composite
   steps:
+    # The pinned action uses curl for its manifest and archive downloads. The
+    # Windows egress proxy can leave certificate revocation endpoints offline;
+    # keep Schannel verification enabled and tolerate only unavailable CRLs.
+    - name: Enable best-effort Schannel revocation for Flutter downloads
+      shell: bash
+      run: |
+        curl_path="$(command -v curl)"
+        if [[ -z "$curl_path" ]]; then
+          echo "curl is required to install the pinned Windows Flutter SDK." >&2
+          exit 1
+        fi
+        curl_version="$("$curl_path" --version)"
+        if ! grep -Eiq 'Schannel' <<<"$curl_version"; then
+          echo "The private Windows runner curl must use Schannel." >&2
+          exit 1
+        fi
+        curl_help="$("$curl_path" --help all 2>&1)"
+        if ! grep -q -- '--ssl-revoke-best-effort' <<<"$curl_help"; then
+          echo "The private Windows runner curl lacks --ssl-revoke-best-effort." >&2
+          exit 1
+        fi
+        wrapper_dir="$(cygpath -u "$RUNNER_TEMP")/plezy-curl-wrapper"
+        runner_wrapper_dir="$(cygpath -w "$wrapper_dir")"
+        mkdir -p "$wrapper_dir"
+        printf '%s\n' '#!/usr/bin/env bash' 'exec "$PLEZY_REAL_CURL" --ssl-revoke-best-effort "$@"' > "$wrapper_dir/curl"
+        chmod +x "$wrapper_dir/curl"
+        printf 'PLEZY_REAL_CURL=%s\n' "$curl_path" >> "$GITHUB_ENV"
+        printf '%s\n' "$runner_wrapper_dir" >> "$GITHUB_PATH"
+
     - name: Probe pinned Flutter release connectivity
       continue-on-error: true
       shell: bash
@@ -40,7 +69,7 @@ runs:
         fi
         archive_url="${FLUTTER_STORAGE_BASE_URL:-https://storage.googleapis.com}/flutter_infra_release/releases/$archive_path"
         set +e
-        curl --head --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 0 --output /dev/null --write-out 'Pinned Flutter archive HTTP %{http_code}; TLS verify %{ssl_verify_result}.\n' "$archive_url"
+        curl --ssl-revoke-best-effort --head --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 0 --output /dev/null --write-out 'Pinned Flutter archive HTTP %{http_code}; TLS verify %{ssl_verify_result}.\n' "$archive_url"
         archive_exit=$?
         set -e
         if [[ $archive_exit -ne 0 ]]; then

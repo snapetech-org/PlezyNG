@@ -16,14 +16,14 @@ import 'karaoke_session.dart';
 /// rules: explicit permission, a generation lease, bounded buffers, stop on
 /// background/interruption and no automatic microphone resume.
 class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
-  KaraokeAudio(this.session) { WidgetsBinding.instance.addObserver(this); session.addListener(_sessionChanged); }
+  KaraokeAudio(this.session) { WidgetsBinding.instance.addObserver(this); session.addListener(_sessionChanged); session.stopCapture=stop; }
   final KaraokeSession session;
   AudioRecorder? _recorder;
   AudioRecorder get _capture { if(!supported)throw UnsupportedError('Microphone capture is unavailable');return _recorder ??= AudioRecorder(); }
   StreamSubscription<Uint8List>? _samples;
   StreamSubscription<RecordState>? _state;
   Timer? _watchdog;
-  bool capturing=false,starting=false,_disposed=false,_pitchBusy=false;
+  bool capturing=false,starting=false,_disposed=false,_pitchBusy=false,_recordStarting=false,_writeFailed=false;
   int _generation=0,_lastPacket=0,_queuedBytes=0,droppedAnalysisFrames=0;
   double rms=0;
   double? midi;
@@ -36,7 +36,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
   final List<double> _window=[];
   RandomAccessFile? _dry;
   Future<void> _writing=Future.value();
-  Future<void>? _stopping;
+  Future<void>? _stopping,_finalizing;
   int _recordingLimit=512*1024*1024;
   Directory? _take;
   int _bytes=0;
@@ -50,7 +50,8 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     await _stopping;
     if(!supported)throw UnsupportedError('Local microphone capture is unavailable on this TV; use an external mixer or companion');
     if(capturing || starting)throw StateError('Microphone already active');
-    if(!session.hasPerformance)throw StateError('Start a performance before enabling a microphone');
+    if(!session.hasPerformance || !session.playing)throw StateError('Start a performance before enabling a microphone');
+    if(session.current?.singers.contains(singer)!=true)throw StateError('Choose a singer in the active request');
     final generation=++_generation; starting=true;_notify();
     try {
       if(!await _capture.hasPermission())throw StateError('Microphone permission denied');
@@ -68,7 +69,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
       if(_disposed || generation!=_generation) { await _recorder?.stop(); return; }
       capturing=true;_lastPacket=DateTime.now().millisecondsSinceEpoch;_window.clear();trace.clear();rangeSamples.clear();
       final song=session.track!;
-      score=song.canScore ? KaraokeScore(track:song,part:session.current?.part ?? song.parts.firstOrNull ?? '1',
+      score=song.canScore && session.party.game!='no-score' ? KaraokeScore(track:song,part:session.current?.part ?? song.parts.firstOrNull ?? '1',
         key:session.current!.key,tempo:session.current!.tempo,calibration:{'device':deviceId,'inputOffsetMs':inputOffsetMs,'calibrated':calibrated}) : null;
       _samples=stream.listen((bytes)=>_receive(bytes,generation),onError:(Object e){session.report(e);unawaited(stop());},onDone:()=>unawaited(stop()));
       _state=_capture.onStateChanged().listen((state){ if(state!=RecordState.record && capturing)unawaited(stop()); });
@@ -90,7 +91,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
         final copy=Uint8List.fromList(bytes),file=_dry!;
         _queuedBytes+=copy.length;_bytes+=copy.length;
         _writing=_writing.then((_)=>file.writeFrom(copy)).then<void>((_){_queuedBytes-=copy.length;}).catchError((Object e){
-          _queuedBytes=math.max(0,_queuedBytes-copy.length);session.report(e);unawaited(stopRecording());
+          _writeFailed=true;_queuedBytes=math.max(0,_queuedBytes-copy.length);session.report(e);unawaited(stopRecording());
         });
       }
     }
@@ -114,14 +115,17 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> setCalibration(int offset,{required bool measured}) async {
     if(offset.abs()>2000)throw ArgumentError('Calibration offset out of range');
-    inputOffsetMs=offset;calibrated=measured;
+    inputOffsetMs=offset;calibrated=measured;if(score!=null)score!.invalidated=true;
     final data=await session.store.read('audio-calibration') ?? {'schema':1,'routes':<String,dynamic>{}};
     final routes=Map<String,dynamic>.from(data['routes'] as Map);
     routes[deviceId ?? 'default']={'inputOffsetMs':offset,'calibrated':measured,'sampleRate':48000,'channels':1,'updated':DateTime.now().toUtc().toIso8601String()};
     data['routes']=routes;await session.store.write('audio-calibration',data);_notify();
   }
   Future<void> startRecording() async {
-    if(!capturing || recording || session.track==null)throw StateError('Enable a microphone before recording');
+    await _finalizing;
+    if(!capturing || recording || _recordStarting || session.track==null)throw StateError('Enable a microphone before recording');
+    final generation=_generation;_recordStarting=true;
+    try {
     final id=const Uuid().v4(),root=await session.store.directory;
     var used=0;
     final takes=Directory(p.join(root.path,'takes'));
@@ -137,7 +141,10 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     await File(p.join(dir.path,'take.json')).writeAsString(jsonEncode(metadata),flush:true);
     final file=await File(p.join(dir.path,'dry.wav')).open(mode:FileMode.write);
     await file.writeFrom(_wavHeader(0));
-    _take=dir;_takeMetadata=metadata;_bytes=0;_dry=file;_notify();
+    if(!capturing || generation!=_generation) {await file.close();await dir.delete(recursive:true);throw StateError('Microphone stopped before recording began');}
+    metadata['sourceStartMs']=session.positionMs.value;metadata['epoch']=session.epoch;metadata['lastEpoch']=session.epoch;
+    _take=dir;_takeMetadata=metadata;_bytes=0;_writeFailed=false;_dry=file;_notify();
+    } finally {_recordStarting=false;}
   }
   static Uint8List _wavHeader(int bytes) {
     final h=ByteData(44);
@@ -147,12 +154,15 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     h.setUint16(32,2,Endian.little);h.setUint16(34,16,Endian.little);word(36,'data');h.setUint32(40,bytes,Endian.little);
     return h.buffer.asUint8List();
   }
-  Future<void> stopRecording() async {
+  Future<void> stopRecording() => _finalizing ??= _stopRecording().whenComplete(()=>_finalizing=null);
+  Future<void> _stopRecording() async {
     final file=_dry,dir=_take,metadata=_takeMetadata;
     if(file==null || dir==null || metadata==null)return;
     _dry=null;_take=null;_takeMetadata=null;
-    await _writing;await file.setPosition(0);await file.writeFrom(_wavHeader(_bytes));await file.flush();await file.close();
-    metadata['complete']=true;metadata['frames']=_bytes~/2;metadata['score']=score?.result();
+    var written=0;
+    try {await _writing;written=math.max(0,await file.length()-44);written-=written%2;await file.truncate(written+44);await file.setPosition(0);await file.writeFrom(_wavHeader(written));await file.flush();}
+    finally {await file.close();}
+    metadata['complete']=!_writeFailed;metadata['frames']=written~/2;metadata['score']=_writeFailed ? null : score?.result();
     await File(p.join(dir.path,'take.json')).writeAsString(jsonEncode(metadata),flush:true);_notify();
   }
   void _sessionChanged() {
@@ -168,14 +178,17 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> stop() => _stopping ??= _stop().whenComplete(()=>_stopping=null);
   Future<void> _stop() async {
     _generation++;capturing=false;starting=false;
+    if(score!=null && singerId!=null && session.current!=null) {session.party.addResult(score!.result(),singerId:singerId!,requestId:session.current!.id);}
     _watchdog?.cancel();_watchdog=null;
     final samples=_samples;_samples=null;final state=_state;_state=null;
     await samples?.cancel();await state?.cancel();
-    await _recorder?.stop();await stopRecording();_window.clear();rms=0;midi=null;_notify();
+    try {await _recorder?.stop();} catch(e) {session.report(e);}
+    try {await stopRecording();} finally {score=null;_window.clear();rms=0;midi=null;_notify();}
+    await session.save();
   }
   @override void didChangeAppLifecycleState(AppLifecycleState state) { if(state!=AppLifecycleState.resumed)unawaited(stop()); }
   @override void dispose() {
-    _disposed=true;WidgetsBinding.instance.removeObserver(this);session.removeListener(_sessionChanged);
-    unawaited(stop().whenComplete(() async {await _recorder?.dispose();}));super.dispose();
+    _disposed=true;WidgetsBinding.instance.removeObserver(this);session.removeListener(_sessionChanged);if(session.stopCapture==stop)session.stopCapture=null;
+    unawaited(stop().whenComplete(() async {await _recorder?.dispose();}).catchError((Object e){session.report(e);}));super.dispose();
   }
 }

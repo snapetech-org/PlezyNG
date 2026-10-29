@@ -16,6 +16,7 @@ import 'karaoke_models.dart';
 import 'karaoke_packages.dart';
 import 'karaoke_store.dart';
 import 'karaoke_stem_mixer.dart';
+import 'karaoke_party.dart';
 
 class KaraokeConflict implements Exception {
   const KaraokeConflict(this.revision);
@@ -47,6 +48,8 @@ class KaraokeSession extends ChangeNotifier {
   final ValueNotifier<int> positionMs = ValueNotifier(0);
   late final Timer _clock;
   Future<void> _commands = Future.value();
+  Future<void>? _stoppingPlayback;
+  int _playbackGeneration=0;
   Player? _player;
   KaraokeStemMixer? mixer;
   VideoPlayerLease? _videoLease;
@@ -58,6 +61,8 @@ class KaraokeSession extends ChangeNotifier {
   bool _usingMusic = false, _started = false;
   KaraokeMode mode = KaraokeMode.sing;
   String? error;
+  KaraokeParty party=KaraokeParty();
+  Future<void> Function()? stopCapture;
   String authority = 'plezyng';
   String banner = '';
   int stageColor = 0xff101018;
@@ -69,13 +74,13 @@ class KaraokeSession extends ChangeNotifier {
   KaraokeTrack? get track => current == null ? null : catalog[current!.trackId];
   bool get playing => _started && (_usingMusic ? music.isPlaying : _player?.state.playing == true);
   bool get hasPerformance => _started;
-  int get durationMs => (_usingMusic ? music.duration?.inMilliseconds : _player?.state.duration.inMilliseconds) ?? track?.durationMs ?? 0;
+  int get durationMs {final actual=(_usingMusic ? music.duration?.inMilliseconds : _player?.state.duration.inMilliseconds) ?? 0;return actual>0 ? actual : track?.durationMs ?? 0;}
   Set<String> get pinned => {for(final r in requests) if({KaraokeRequestState.ready,KaraokeRequestState.pending,KaraokeRequestState.playing}.contains(r.state)) r.trackId};
 
   Future<void> _restore() async {
     try {
       final j = await store.read('session');
-      if(j == null) return;
+      if(j == null || _disposed) return;
       if(j['schema'] != 1) throw const FormatException('Unsupported karaoke session');
       for(final t in (j['catalog'] as List? ?? const [])) { final track=KaraokeTrack.fromJson(Map<String,dynamic>.from(t as Map)); catalog[track.id]=track; }
       singers.addAll((j['singers'] as List? ?? const []).map((s) => KaraokeSinger.fromJson(Map<String,dynamic>.from(s as Map))));
@@ -92,6 +97,7 @@ class KaraokeSession extends ChangeNotifier {
       banner=j['banner'] as String? ?? ''; stageColor=j['stageColor'] as int? ?? stageColor;
       stageTextScale=(j['stageTextScale'] as num?)?.toDouble().clamp(.75,2) ?? 1;
       displayOffsetMs=j['displayOffsetMs'] as int? ?? 0;
+      if(j['party'] is Map)party=KaraokeParty.fromJson(Map<String,dynamic>.from(j['party'] as Map));
       held=true; // Recovery always requires an intentional start/resume.
     } catch(e) { error='Could not restore karaoke session: $e'; }
     _notify();
@@ -100,13 +106,15 @@ class KaraokeSession extends ChangeNotifier {
     'catalog':catalog.values.map((t)=>t.toJson()).toList(),'singers':singers.map((s)=>s.toJson()).toList(),
     'requests':requests.map((r)=>r.toJson()).toList(),'turns':_turns,'lastTurn':_lastTurn,'turnNumber':_turnNumber,
     'receipts':_receipts,'setlists':setlists,'fairRotation':fairRotation,'allowExplicit':allowExplicit,'requireApproval':requireApproval,
-    'banner':banner,'stageColor':stageColor,'stageTextScale':stageTextScale,'displayOffsetMs':displayOffsetMs};
+    'party':party.toJson(),'banner':banner,'stageColor':stageColor,'stageTextScale':stageTextScale,'displayOffsetMs':displayOffsetMs};
   Future<void> save() => store.write('session',_snapshot());
   void _notify() { if(!_disposed) notifyListeners(); }
   void report(Object e) { error=e.toString(); _notify(); }
 
   Future<void> addTrack(KaraokeTrack value) async {
     await ready;
+    if(_disposed)throw StateError('Profile session closed');
+    if(current?.trackId==value.id && _started)await stopPlayback();
     if(catalog.length >= 2000 && !catalog.containsKey(value.id)) throw StateError('Karaoke catalog limit reached');
     catalog[value.id]=value; revision++; await save(); _notify();
   }
@@ -153,11 +161,17 @@ class KaraokeSession extends ChangeNotifier {
       if(!RegExp(r'^[a-zA-Z0-9_-]{8,128}$').hasMatch(id)) throw const FormatException('Invalid command ID');
       final fingerprint=sha256.convert(utf8.encode(jsonEncode([action,payload,guestSinger]))).toString();
       final prior=_receipts[id];
-      if(prior!=null) { if(prior['fingerprint']!=fingerprint) throw StateError('Command ID reused for different content'); return Map<String,dynamic>.from(prior['result'] as Map); }
+      if(prior!=null) { if(prior['fingerprint']!=fingerprint) throw StateError('Command ID reused for different content');await save();return Map<String,dynamic>.from(prior['result'] as Map); }
       if(expectedRevision!=revision) throw KaraokeConflict(revision);
-      if(guestSinger!=null && !{'request','cancel','favorite'}.contains(action)) throw StateError('Host permission required');
+      if(guestSinger!=null && !{'request','cancel','favorite','party'}.contains(action)) throw StateError('Host permission required');
       final response=<String,dynamic>{};
       switch(action) {
+        case 'party':
+          final operation=payload['operation'] as String;
+          if(guestSinger!=null && operation!='answer')throw StateError('Host permission required');
+          if(operation=='startQuestion' && _started)await pause();
+          if(operation=='mode') {await stopCapture?.call();epoch++;}
+          party.command(operation,Map<String,dynamic>.from(payload['data'] as Map? ?? {}),singerId:guestSinger);
         case 'singer':
           final name=(payload['name'] as String).trim();
           if(name.isEmpty || name.length>80 || singers.length>=64) throw const FormatException('Singer name/room limit');
@@ -222,7 +236,7 @@ class KaraokeSession extends ChangeNotifier {
       revision++; response['revision']=revision; response['epoch']=epoch;
       _receipts[id]={'fingerprint':fingerprint,'result':response};
       while(_receipts.length>512) { _receipts.remove(_receipts.keys.first); }
-      try { await save(); } catch(_) { _receipts.remove(id); rethrow; }
+      await save(); // Keep the receipt in memory if storage fails; a retry persists it before acknowledging.
       _notify(); return response;
     });
     _commands=future.then<void>((_){}).catchError((Object _){});
@@ -233,6 +247,9 @@ class KaraokeSession extends ChangeNotifier {
   Future<void> _start(KaraokeRequest request,{int resumeMs=0}) async {
     if(_started) throw StateError('Finish or stop the current performance first');
     await stopPlayback();
+    if(_disposed)throw StateError('Profile session closed');
+    final generation=++_playbackGeneration;
+    void checkActive() {if(_disposed || generation!=_playbackGeneration)throw StateError('Performance startup was canceled');}
     final song=catalog[request.trackId]!;
     current=request; positionMs.value=resumeMs; error=null;
     try {
@@ -240,29 +257,38 @@ class KaraokeSession extends ChangeNotifier {
         _usingMusic=true;
         music.setRepeatMode(MusicRepeatMode.off);
         await music.playFromList(tracks:[song.media!],playContext:MusicPlayContext(title:'Karaoke',kind:MusicPlayContextKind.tracks),initialPosition:Duration(milliseconds:resumeMs));
+        checkActive();
         if(music.status==MusicPlaybackStatus.error || music.currentTrack?.globalKey!=song.media!.globalKey) throw StateError('Music playback did not start');
       } else {
+        if(!song.hasLocalAudio && !song.assets.any((a)=>a.kind==KaraokeAssetKind.video))throw StateError('Render this MIDI rendition with an approved soundfont before singing');
         if((await packages.verify(song)).isNotEmpty) throw StateError('Package assets are missing or corrupt');
+        checkActive();
         await PlaybackCoordinator.instance.claimKaraoke();
+        checkActive();
         final media=song.assets.where((a)=>a.kind==KaraokeAssetKind.video).firstOrNull ??
           song.assets.where((a)=>a.kind==KaraokeAssetKind.instrumental).firstOrNull ?? song.assets.firstWhere((a)=>a.kind==KaraokeAssetKind.audio);
         if(media.kind==KaraokeAssetKind.video) {
-          _videoLease=await PlaybackCoordinator.instance.claimVideoSlot();
+          final lease=await PlaybackCoordinator.instance.claimVideoSlot();
+          if(_disposed || generation!=_playbackGeneration){lease.release();checkActive();}
+          _videoLease=lease;
           _player=Player(companionSession:_videoLease!.slot==VideoPlayerSlot.companion);
         } else { _player=Player.audio(); }
         final player=_player!;
+        PlaybackCoordinator.instance.registerKaraoke(stopPlayback);
         _subscriptions.add(player.streams.error.listen((e)=>report(e)));
         _subscriptions.add(player.streams.completed.listen((done) { if(done && _started) unawaited(_completeAtBoundary()); }));
         final subtitles=<SubtitleTrack>[];
         for(final a in song.assets.where((a)=>a.kind==KaraokeAssetKind.subtitle)) {
           subtitles.add(SubtitleTrack.uri((await store.asset(song.id,a.path)).uri.toString(),title:a.path,isDefault:true));
         }
+        checkActive();
         await player.open(Media((await store.asset(song.id,media.path)).uri.toString(),start:Duration(milliseconds:resumeMs)),play:false,externalSubtitles:subtitles);
+        checkActive();
         if(subtitles.isNotEmpty) await player.selectSubtitleTrack(subtitles.first);
         if(song.assets.where((a)=>{KaraokeAssetKind.instrumental,KaraokeAssetKind.leadVocal,KaraokeAssetKind.backingVocal,KaraokeAssetKind.duetVocal}.contains(a.kind)).length>1) {
           final candidate=KaraokeStemMixer(player,song,store);await candidate.initialize();mixer=candidate;
         }
-        await player.play();
+        checkActive();await player.play();checkActive();
       }
       _started=true; request.state=KaraokeRequestState.playing; held=false; epoch++;
       PlaybackCoordinator.instance.registerKaraoke(stopPlayback);
@@ -270,15 +296,15 @@ class KaraokeSession extends ChangeNotifier {
       _notify();
     } catch(_) { await stopPlayback(); request.state=KaraokeRequestState.ready; rethrow; }
   }
-  Future<void> pause() async { if(_usingMusic) { await music.pause(); } else { await _player?.pause(); } _notify(); }
-  Future<void> resume() async { if(_usingMusic) { await music.play(); } else { await _player?.play(); } _notify(); }
+  Future<void> pause() async { await stopCapture?.call();epoch++;if(_usingMusic) { await music.pause(); } else { await _player?.pause(); } _notify(); }
+  Future<void> resume() async { if(_disposed || !_started)throw StateError('No active performance');if(_usingMusic) { await music.play(); } else { await _player?.play(); } _notify(); }
   Future<void> seek(int ms) async {
     if(!_started) throw StateError('No performance');
     _undoSeek=positionMs.value;
     final target=Duration(milliseconds:ms.clamp(0,durationMs>0 ? durationMs : math.max(0,ms)));
     epoch++;
     if(_usingMusic) { await music.seek(target); } else { await _player?.seek(target); }
-    positionMs.value=target.inMilliseconds;
+    if(!_disposed)positionMs.value=target.inMilliseconds;_notify();
   }
   Future<void> undoSeek() async { final at=_undoSeek; if(at!=null) await seek(at); }
   Future<void> skipToSinging() async {
@@ -321,22 +347,35 @@ class KaraokeSession extends ChangeNotifier {
       _turns[s.id]=(_turns[s.id] ?? 0)+1; _lastTurn[s.id]=_turnNumber;
       if(!skipped) { s.history.insert(0,done.trackId); if(s.history.length>500)s.history.removeLast(); }
     }
-    current=null; positionMs.value=0;
+    current=null;if(!_disposed)positionMs.value=0;
   }
-  Future<void> stopPlayback() async {
+  Future<void> stopPlayback() {
+    _playbackGeneration++; // Invalidates open/resolve work before any await.
+    return _stoppingPlayback ??= _stopPlayback().whenComplete(()=>_stoppingPlayback=null);
+  }
+  Future<void> _stopPlayback() async {
     PlaybackCoordinator.instance.unregisterKaraoke(stopPlayback);
     _started=false;
-    for(final sub in _subscriptions) { await sub.cancel(); } _subscriptions.clear();
-    if(current?.state==KaraokeRequestState.playing) current!.state=KaraokeRequestState.ready;
-    final player=_player; _player=null; mixer=null;
-    try {
-      if(_usingMusic) {
-        if(music is MusicKaraokeControls) await (music as MusicKaraokeControls).resetKaraokeControls();
-        await music.pause();
-      }
-      await player?.dispose();
-    } finally { _usingMusic=false; _videoLease?.release(); _videoLease=null; }
-    loopStartMs=null; loopEndMs=null; _notify();
+    Object? failure;
+    Future<void> attempt(Future<void> Function() action) async {try {await action();}catch(e){failure ??= e;}}
+    await attempt(() async {await stopCapture?.call();});
+    final subscriptions=_subscriptions.toList();_subscriptions.clear();
+    for(final sub in subscriptions) {await attempt(sub.cancel);}
+    if(current?.state==KaraokeRequestState.playing)current!.state=KaraokeRequestState.ready;
+    final player=_player,lease=_videoLease,usingMusic=_usingMusic;
+    _player=null;mixer=null;_videoLease=null;_usingMusic=false;
+    if(usingMusic) {
+      await attempt(() async {if(music is MusicKaraokeControls)await (music as MusicKaraokeControls).resetKaraokeControls();});
+      await attempt(music.pause);
+    }
+    await attempt(() async {await player?.dispose();});lease?.release();
+    loopStartMs=null;loopEndMs=null;_notify();
+    if(failure!=null)report(failure!);
+  }
+  Future<void> changeStems(Map<String,double> gains) async {
+    final currentMixer=mixer;if(currentMixer==null)throw StateError('No aligned stems');
+    await stopCapture?.call();epoch++;
+    await currentMixer.apply(gains);_notify();
   }
   void _onMusic() { if(_usingMusic && !_disposed) _notify(); }
   void _tick() {
@@ -355,6 +394,7 @@ class KaraokeSession extends ChangeNotifier {
     _disposed=true; _clock.cancel(); music.removeListener(_onMusic);
     unawaited(save().catchError((Object _){}));
     unawaited(stopPlayback().catchError((Object _){}));
-    positionMs.dispose(); super.dispose();
+    // Async teardown may still read the final position; release it afterwards.
+    unawaited((_stoppingPlayback ?? Future<void>.value()).whenComplete(positionMs.dispose));super.dispose();
   }
 }

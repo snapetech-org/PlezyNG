@@ -9,6 +9,9 @@ import '../media/media_kind.dart';
 import '../providers/multi_server_provider.dart';
 import 'karaoke_models.dart';
 import 'karaoke_editor.dart';
+import 'karaoke_party_screen.dart';
+import 'karaoke_takes_screen.dart';
+import 'karaoke_takes.dart';
 import 'karaoke_preparation.dart';
 import 'karaoke_preparation_screen.dart';
 import 'karaoke_audio.dart';
@@ -76,7 +79,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
   }
   Future<void> _import() => _run(() async {
     final selection=await FilePicker.platform.pickFiles(allowMultiple:true,type:FileType.custom,
-      allowedExtensions:['zip','plezykaraoke','mp3','wav','ogg','flac','m4a','opus','mp4','mkv','webm','cdg','lrc','vtt','ttml','txt','ass','ssa','ttf','otf']);
+      allowedExtensions:['zip','plezykaraoke','mp3','wav','ogg','flac','m4a','opus','mp4','mkv','webm','cdg','lrc','vtt','ttml','txt','ass','ssa','ttf','otf','mid','midi','kar']);
     if(selection==null)return;
     final result=await s.packages.importFiles(selection.paths.whereType<String>().toList());
     await s.addTrack(result.track);
@@ -124,6 +127,8 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
     SingleActivator(LogicalKeyboardKey.escape):DismissIntent(),
   },child:Scaffold(appBar:AppBar(title:Text(tr('title')),actions:[
     IconButton(tooltip:tr('import'),onPressed:_busy ? null : _import,icon:const Icon(Icons.file_open)),
+    IconButton(tooltip:'Private takes',onPressed:()=>Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokeTakesScreen(session:s,client:_preparation))),icon:const Icon(Icons.mic_external_on)),
+    IconButton(tooltip:'Party rounds',onPressed:()=>Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokePartyScreen(session:s))),icon:const Icon(Icons.celebration)),
     IconButton(tooltip:tr('guest'),onPressed:_busy ? null : _guestRoom,icon:const Icon(Icons.qr_code)),
     IconButton(tooltip:tr('stage'),onPressed:_stage,icon:const Icon(Icons.fullscreen)),
     IconButton(tooltip:tr('stop'),onPressed:_busy ? null : ()=>_command('end'),icon:const Icon(Icons.stop_circle_outlined)),
@@ -162,6 +167,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
           onTap:_busy ? null : ()=>_request(track,start:!s.hasPerformance),trailing:PopupMenuButton<String>(onSelected:(action) async {
             switch(action) {
               case 'request': await _request(track);
+              case 'invite': await _run(()async{final file=await FilePicker.platform.saveFile(fileName:'${track.id}.plezyduet');if(file!=null)await KaraokeTakes(s).createInvitation(track,file,key:0,tempo:1,part:track.parts.lastOrNull ?? '2');});
               case 'prepare': if(mounted)await Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokePreparationScreen(session:s,track:track,client:_preparation)));
               case 'editor': if(mounted)await Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokeEditor(session:s,track:track)));
               case 'export': await _run(() async { final path=await FilePicker.platform.saveFile(fileName:'${track.id}.plezykaraoke'); if(path!=null) await s.packages.export(track,path); });
@@ -171,6 +177,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
             PopupMenuItem(value:'request',child:Text(tr('request'))),
             PopupMenuItem(value:'editor',child:Text(tr('editor'))),
             const PopupMenuItem(value:'prepare',child:Text('Prepare backing, timing and guidance')),
+            const PopupMenuItem(value:'invite',child:Text('Export private duet invitation')),
             if(track.assets.isNotEmpty) PopupMenuItem(value:'export',child:Text(tr('export'))),
             if(track.assets.isNotEmpty) PopupMenuItem(value:'verify',child:Text(tr('verify'))),
           ]));
@@ -219,11 +226,11 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
       if(s.mixer case final mixer?) ...[
         Text('Vocal mixer',style:Theme.of(context).textTheme.titleLarge),
         for(final stem in mixer.levels.entries) Row(children:[Expanded(child:Text(stem.key)),
-          IconButton(tooltip:'Mute stem',onPressed:()=>_run(() async { await mixer.apply({...mixer.levels,stem.key:0});setState((){}); }),icon:const Icon(Icons.volume_off)),
-          SizedBox(width:160,child:Slider(min:0,max:2,value:stem.value,onChanged:_busy ? null : (v)=>_run(() async { await mixer.apply({...mixer.levels,stem.key:v});setState((){}); }))),
+          IconButton(tooltip:'Mute stem',onPressed:()=>_run(() async { await s.changeStems({...mixer.levels,stem.key:0});setState((){}); }),icon:const Icon(Icons.volume_off)),
+          SizedBox(width:160,child:Slider(min:0,max:2,value:stem.value,onChanged:_busy ? null : (v)=>_run(() async { await s.changeStems({...mixer.levels,stem.key:v});setState((){}); }))),
         ]),
-        Wrap(spacing:12,children:[TextButton(onPressed:()=>_run(() async { await mixer.guide(true);setState((){}); }),child:const Text('Guide vocals')),
-          TextButton(onPressed:()=>_run(() async { await mixer.guide(false);setState((){}); }),child:const Text('Instrumental'))]),
+        Wrap(spacing:12,children:[TextButton(onPressed:()=>_run(() async { await s.changeStems({for(final e in mixer.levels.entries)e.key:e.key.startsWith('leadVocal') ? 1.0 : e.value});setState((){}); }),child:const Text('Guide vocals')),
+          TextButton(onPressed:()=>_run(() async { await s.changeStems({for(final e in mixer.levels.entries)e.key:e.key.startsWith('leadVocal') ? 0.0 : e.value});setState((){}); }),child:const Text('Instrumental'))]),
       ],
       KaraokeAudioPanel(session:s,audio:_audio,singer:_singer),
       Wrap(spacing:12,children:[

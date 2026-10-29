@@ -26,14 +26,14 @@ class KaraokeStore {
         if (await file.length() > 32 * 1024 * 1024) continue;
         final value = jsonDecode(await file.readAsString());
         if (value is Map<String, dynamic>) return value;
-      } on FormatException { continue; }
+      } on FormatException { continue; } on FileSystemException { continue; }
     }
     return null;
   }
   Future<void> write(String name, Map<String, dynamic> value) {
     _validateName(name);
     final encoded = jsonEncode(value);
-    if (encoded.length > 32 * 1024 * 1024) throw const FormatException('Karaoke state limit exceeded');
+    if (utf8.encode(encoded).length > 32 * 1024 * 1024) throw const FormatException('Karaoke state limit exceeded');
     final result = _writes.then((_) async {
       final dir = await directory;
       final file = File(p.join(dir.path, '$name.json'));
@@ -61,7 +61,7 @@ class KaraokeStore {
     }
     // Imports materialize regular files. Never follow links supplied by a package.
     var probe = target;
-    while (probe != base) {
+    while (probe == base || p.isWithin(base, probe)) {
       if (await FileSystemEntity.type(probe, followLinks: false) == FileSystemEntityType.link) {
         throw const FormatException('Karaoke asset is a symbolic link');
       }

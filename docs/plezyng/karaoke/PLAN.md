@@ -113,3 +113,9 @@ P0 contracts and package identity; P1 home karaoke; P2 party hosting; P3 audio/m
 - Companion workers implement waveform extraction, local Demucs separation, ordered forced alignment, isolated-vocal pitch proposals, estimated musical analysis, approved-soundfont MIDI rendering and take mix rendering.
 - External codecs, model files and companion execution are prerequisites; none are installed, started or validated by this change.
 - Existing no-tests/builds/analyzers/CI constraint remains in force.
+
+### Implementation checkpoint 4 — 2026-10-29
+
+Source added for PPQ MIDI/KAR chart import, private take recovery/review/production, fixed-rendition duet invitation/response validation, host-authored phone quizzes, private score records, tournament brackets and the versioned host integration endpoint. The provider contract negotiates capabilities and rechecks entitlement but no commercial provider adapter or contract is supplied. Remote-clock logic is a protocol component, not a deployed remote room. Teams/cooperative/battle/medley still need their gameplay integration.
+
+Source review corrected unbounded MIDI reads, same-tick tempo ordering, quiz authorization before playback mutation, interrupted WAV preservation, no-score capture behavior, capture finalization after plugin failure, and local playback cancellation/cleanup. No tests, builds, analyzer or CI were run, per the standing instruction. Code presence is not hardware qualification.

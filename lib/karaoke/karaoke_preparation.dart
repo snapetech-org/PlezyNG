@@ -136,7 +136,7 @@ class KaraokePreparation {
       final notes=(j['notes'] as List).map((n)=>KaraokeNote.fromJson(Map<String,dynamic>.from(n as Map))).toList();
       final value=track.withLyrics(track.lyrics,chart:notes,reviewed:false);await session.addTrack(value);return value;
     }
-    if(kind=='separate') {
+    if(kind=='separate' || kind=='midi') {
       if(track.media!=null)throw StateError('Attach original audio as a local package before publishing stems');
       final id=const Uuid().v4(),staging=await Directory(p.join(dir.path,'package-$id')).create();
       final assets=<KaraokeAsset>[];
@@ -144,7 +144,7 @@ class KaraokePreparation {
         final destination=File(p.join(staging.path,asset.path));await destination.parent.create(recursive:true);
         await (await session.store.asset(track.id,asset.path)).copy(destination.path);assets.add(asset);
       }
-      for(final name in ['lead.wav','instrumental.wav']) {
+      for(final name in [if(kind=='separate')'lead.wav','instrumental.wav']) {
         final file=await File(p.join(dir.path,name)).copy(p.join(staging.path,'generated-$name'));
         assets.add(KaraokeAsset(path:p.basename(file.path),sha256:(await sha256.bind(file.openRead()).first).toString(),bytes:await file.length(),
           kind:name=='lead.wav' ? KaraokeAssetKind.leadVocal : KaraokeAssetKind.instrumental,clockId:id));

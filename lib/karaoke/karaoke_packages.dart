@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 import '../media/lyrics.dart';
 import 'karaoke_formats.dart';
+import 'karaoke_midi.dart';
 import 'karaoke_models.dart';
 import 'karaoke_store.dart';
 
@@ -38,7 +39,7 @@ class KaraokePackages {
     final root = await store.directory;
     final stage = await Directory(p.join(root.path, 'staging', const Uuid().v4())).create(recursive: true);
     try {
-      if (paths.length == 1 && {'.zip','.plezykaraoke'}.contains(p.extension(paths.first).toLowerCase())) {
+      if (paths.length == 1 && {'.zip','.plezykaraoke','.plezytake'}.contains(p.extension(paths.first).toLowerCase())) {
         final source = paths.first, target = stage.path;
         await Isolate.run(() => _extract(source, target));
       } else {
@@ -65,7 +66,7 @@ class KaraokePackages {
         track = KaraokeTrack.fromJson(track.toJson()..['chartReviewed'] = false);
       } else {
         final files = await stage.list(recursive: true, followLinks: false).where((f) => f is File).cast<File>().toList();
-        final audio = files.where((f) => {'.mp3','.wav','.ogg','.flac','.m4a','.opus','.mp4','.mkv','.webm'}.contains(p.extension(f.path).toLowerCase())).toList();
+        final audio = files.where((f) => {'.mp3','.wav','.ogg','.flac','.m4a','.opus','.mp4','.mkv','.webm','.mid','.midi','.kar'}.contains(p.extension(f.path).toLowerCase())).toList();
         if (audio.length != 1) throw const FormatException('Choose one backing audio/video file, or supply a manifest for stems');
         final text = files.where((f) => {'.lrc','.vtt','.ttml','.txt'}.contains(p.extension(f.path).toLowerCase())).toList();
         if (text.length > 1) throw const FormatException('Choose one lyric source, or supply a manifest');
@@ -75,10 +76,15 @@ class KaraokePackages {
           parsed = KaraokeFormats.parse(await text.first.readAsString(), p.extension(text.first.path));
           warnings.addAll(parsed.warnings);
         }
+        if({'.mid','.midi','.kar'}.contains(p.extension(audio.first.path).toLowerCase())) {
+          if(await audio.first.length()>16*1024*1024)throw const FormatException('MIDI exceeds 16 MiB');
+          parsed=parseKaraokeMidi(await audio.first.readAsBytes());warnings.addAll(parsed.warnings);
+        }
         final assets = <KaraokeAsset>[];
         for (final file in files) {
           final ext = p.extension(file.path).toLowerCase();
           final kind = switch (ext) {
+            '.mid' || '.midi' || '.kar' => KaraokeAssetKind.midi,
             '.cdg' => KaraokeAssetKind.cdg,
             '.ass' || '.ssa' => KaraokeAssetKind.subtitle,
             '.ttf' || '.otf' => KaraokeAssetKind.font,
@@ -111,7 +117,7 @@ class KaraokePackages {
         }
       }
       if (total > maxPackageBytes || await diskUsage() + total > quotaBytes) throw const FileSystemException('Karaoke storage quota exceeded');
-      if (!track.assets.any((a) => {KaraokeAssetKind.audio,KaraokeAssetKind.instrumental,KaraokeAssetKind.video}.contains(a.kind))) {
+      if (!track.assets.any((a) => {KaraokeAssetKind.audio,KaraokeAssetKind.instrumental,KaraokeAssetKind.video,KaraokeAssetKind.midi}.contains(a.kind))) {
         throw const FormatException('Package has no backing media');
       }
       final destination = Directory(p.join(root.path, 'packages', track.id));

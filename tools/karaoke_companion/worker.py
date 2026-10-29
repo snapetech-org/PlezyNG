@@ -175,20 +175,48 @@ def render(inputs, out, params):
     vocal = number(params, "vocalGain", 1, 0, 2)
     wet = number(params, "echoWet", 0, 0, .6)
     gate = number(params, "gate", 0, 0, .2)
-    if params.get("timelineChanged"): raise ValueError("Split takes at timeline changes before rendering; the original dry take is preserved")
     voice_filters = f"atrim=start={max(0,trim+offset):.6f}:duration={length:.6f},asetpts=PTS-STARTPTS,volume={vocal:.5f}"
     if offset+trim < 0: voice_filters += f",adelay={round(-(offset+trim)*1000)}:all=1"
     if gate > 0: voice_filters += f",agate=threshold={gate:.5f}"
     voice_filters += ",acompressor=threshold=0.25:ratio=3:attack=10:release=100"
     if wet > 0: voice_filters += f",aecho=0.8:0.9:120:{wet:.4f}"
-    graph = (f"[0:a]atrim=start={start+trim*tempo:.6f},asetpts=PTS-STARTPTS,rubberband=tempo={tempo:.6f}:pitch={2**(key/12):.8f},"
-             f"volume={backing:.5f}[back];[1:a]{voice_filters}[voice];[back][voice]amix=inputs=2:duration=shortest:normalize=0,"
-             "alimiter=limit=0.95:level=0[mix]")
+    timeline = params.get("timeline", [])
+    if not isinstance(timeline, list) or len(timeline) > 200: raise ValueError("Take timeline exceeds segment limit")
+    sample_rate = number(params, "sampleRate", 48000, 48000, 48000)
+    take_duration = duration(inputs[1])
+    length = min(length, take_duration-trim)
+    if length <= 0: raise ValueError("Trim starts after the take ends")
+    points = [{"frame": 0, "sourceMs": start*1000, "key": key, "tempo": tempo}]
+    for point in timeline:
+        frame = number(point, "frame", 0, 0, take_duration*sample_rate)
+        if frame < points[-1]["frame"]: raise ValueError("Take timeline is not ordered")
+        normalized = {"frame": frame, "sourceMs": number(point, "sourceMs", 0, 0, 1800000),
+                      "key": number(point, "key", key, -12, 12), "tempo": number(point, "tempo", tempo, .5, 2)}
+        if frame == points[-1]["frame"]: points[-1] = normalized
+        else: points.append(normalized)
+    segments = []
+    for i, point in enumerate(points):
+        original_start = point["frame"]/sample_rate
+        left = max(trim, original_start)
+        right = min(trim+length, points[i+1]["frame"]/sample_rate if i+1 < len(points) else take_duration)
+        if right > left:
+            segments.append((left, right, point["sourceMs"]/1000+(left-original_start)*point["tempo"], point["tempo"], point["key"]))
+    if not segments: raise ValueError("No renderable timeline segments")
+    chains = [f"[0:a]asplit={len(segments)}"+"".join(f"[input{i}]" for i in range(len(segments)))]
+    for i, (left, right, source, speed, transposition) in enumerate(segments):
+        seconds = right-left
+        chains.append(f"[input{i}]atrim=start={source:.6f}:duration={seconds*speed:.6f},asetpts=PTS-STARTPTS,"
+                      f"rubberband=tempo={speed:.6f}:pitch={2**(transposition/12):.8f},apad,atrim=duration={seconds:.6f},"
+                      f"afade=t=in:d=0.015,afade=t=out:st={max(0,seconds-.015):.6f}:d=0.015[segment{i}]")
+    chains.append("".join(f"[segment{i}]" for i in range(len(segments)))+f"concat=n={len(segments)}:v=0:a=1,volume={backing:.5f}[back]")
+    chains += [f"[1:a]{voice_filters}[voice]", "[back][voice]amix=inputs=2:duration=shortest:normalize=0,alimiter=limit=0.95:level=0[mix]"]
+    graph = ";".join(chains)
     video = params.get("video") is True
     filters = ["-filter_complex", graph, "-map", "[mix]", "-t", str(length)]
     if video:
         if len(inputs) < 3: raise ValueError("Video export needs an approved camera/video asset")
-        filters += ["-map", "2:v:0", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", "-movflags", "+faststart"]
+        filters += ["-map", "2:v:0", "-vf", f"trim=start={trim:.6f},setpts=PTS-STARTPTS,scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2",
+                    "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", "-movflags", "+faststart"]
     else: filters += ["-c:a", "pcm_s24le"]
     ffmpeg(inputs, filters, out / ("performance.mp4" if video else "performance.wav"))
     write_json(out / "recipe.json", {"schema": 1, "recipe": params, "dryPreserved": True, "assisted": wet > 0})
@@ -216,7 +244,7 @@ def main():
     elif kind == "render": render(inputs, out, params)
     elif kind == "midi":
         if not args.soundfont or not args.soundfont.is_file(): raise ValueError("Configure an approved local soundfont first")
-        run(["fluidsynth", "-ni", "-F", str(out / "instrumental.wav"), "-r", "48000", str(args.soundfont), str(inputs[0])])
+        run(["fluidsynth", "-ni", "-T", "wav", "-F", str(out / "instrumental.wav"), "-r", "48000", str(args.soundfont), str(inputs[0])])
     else: raise ValueError("Unsupported preparation operation")
     files = []
     for file in out.iterdir():

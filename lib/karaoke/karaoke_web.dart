@@ -9,7 +9,7 @@ const karaokeGuestHtml=r'''<!doctype html>
 <section id="join"><p>Join this karaoke room. Microphone access is optional and separate.</p><form id="joinForm"><label>Your name <input id="name" maxlength="80" autocomplete="nickname" required></label><button>Join room</button></form></section>
 <main id="room" hidden><nav aria-label="Karaoke views"><button data-view="book">Songbook</button><button data-view="waiting">Queue</button><button data-view="stage">Stage</button><button id="leave">Leave</button></nav>
 <section id="book"><h2>Choose a song</h2><form id="search" class="row"><input id="query" aria-label="Search songs" placeholder="Title or artist" maxlength="200"><button>Search</button></form><label>Key <select id="key" aria-label="Key in semitones"></select></label><div id="songs"></div><button id="more" hidden>More songs</button></section>
-<section id="waiting" hidden><h2>Singer rotation</h2><div id="queue"></div><div id="host" class="row" hidden><button data-command="pause">Pause</button><button data-command="resume">Resume</button><button data-command="restart">Restart</button><button data-command="finish">Finish song</button><button data-command="end">End performance</button></div></section>
+<section id="waiting" hidden><div id="quiz"></div><h2>Singer rotation</h2><div id="queue"></div><div id="host" class="row" hidden><button data-command="pause">Pause</button><button data-command="resume">Resume</button><button data-command="restart">Restart</button><button data-command="finish">Finish song</button><button data-command="end">End performance</button></div></section>
 <section id="stage" hidden><p id="banner"></p><p id="title" class="muted"></p><div id="lyric" dir="auto"></div><p id="next" dir="auto"></p><small id="translation"></small><progress id="progress" value="0" max="1" aria-label="Song progress"></progress><p><button id="fullscreen">Full screen</button></p></section>
 <button id="retry" hidden>Retry last action</button></main>
 <script>
@@ -54,6 +54,10 @@ $('search').onsubmit=e=>{e.preventDefault();search(true);};$('more').onclick=()=
 async function refresh(){if(!credentials)return;try{const result=await api('/api/state');state=result.data;anchor=performance.now();anchorPosition=state.positionMs+(state.playing?result.rtt*.5*state.tempo:0);
  $('title').textContent=state.track?state.track.title+' · '+state.track.artist:'Waiting for the next singer';$('banner').textContent=state.banner;
  const key=(state.track?.id||'')+':'+state.revision;if(key!==lyricKey){lyricKey=key;lyrics=state.track?(await api('/api/lyrics')).data.lines:[];}
+ $('quiz').replaceChildren();const question=state.party?.question;if(question){$('quiz').append(node('h2',question.prompt));
+ for(let i=0;i<question.options.length;i++){const b=button(question.options[i],()=>command('party',{operation:'answer',data:{index:question.index,option:i}}));
+ b.disabled=question.revealed||Date.now()>question.closesMs||credentials.role!=='singer';$('quiz').append(b);}
+ if(question.revealed)$('quiz').append(node('p','Answer: '+question.options[question.answer]));}
  $('queue').replaceChildren();for(const r of state.queue){const row=node('div');row.className='queue';row.append(node('strong',r.title),node('p',r.singers.join(' + ')+' · '+r.state+' · ~'+Math.ceil(r.waitMs/60000)+' min'));
  if(r.mine&&['pending','ready'].includes(r.state))row.append(button('Cancel',()=>command('cancel',{requestId:r.id})));
  if(credentials.role==='host'&&['pending','ready'].includes(r.state)){row.append(button(r.state==='pending'?'Approve':'Start',()=>command(r.state==='pending'?'approve':'start',{requestId:r.id})),button('Reject',()=>command('cancel',{requestId:r.id})));}$('queue').append(row);}

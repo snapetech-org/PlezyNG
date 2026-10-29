@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'karaoke_models.dart';
+import 'karaoke_integrations.dart';
 import 'karaoke_session.dart';
 import 'karaoke_web.dart';
 
@@ -116,6 +117,12 @@ class KaraokeRoomServer extends ChangeNotifier {
       final grant=_grants[token];
       if(grant==null || grant.expires.isBefore(DateTime.now())) { response.statusCode=401; response.write(jsonEncode({'error':'Invitation expired or revoked'})); return; }
       if(!_allow('grant:$token')) { response.statusCode=429; return; }
+      if(path=='/api/integration') {
+        if(grant.role!=KaraokeRoomRole.host){response.statusCode=403;return;}
+        final bridge=KaraokeIntegrationBridge(session);
+        if(r.method=='GET'){response.write(jsonEncode(bridge.hello()));return;}
+        if(r.method=='POST'){response.write(jsonEncode(await bridge.execute(await _body(r),hostAuthorized:true)));return;}
+      }
       if(r.method=='GET' && path=='/api/lyrics') { response.write(jsonEncode(session.track?.lyrics.toJson() ?? {'synced':false,'lines':[]})); return; }
       if(r.method=='GET' && path=='/api/state') { response.write(jsonEncode(_state(grant))); return; }
       if(r.method=='GET' && path=='/api/catalog') {
@@ -131,7 +138,7 @@ class KaraokeRoomServer extends ChangeNotifier {
       if(r.method=='POST' && path=='/api/command') {
         if(grant.role==KaraokeRoomRole.display) { response.statusCode=403; return; }
         final body=await _body(r),action=body['action'] as String;
-        if(grant.role==KaraokeRoomRole.host && !{'request','cancel','approve','absent','reorder','start','pause','resume','restart','seek','finish','end','controls','settings','favorite'}.contains(action)) {
+        if(grant.role==KaraokeRoomRole.host && !{'request','cancel','approve','absent','reorder','start','pause','resume','restart','seek','finish','end','controls','settings','favorite','party'}.contains(action)) {
           response.statusCode=403; return;
         }
         final result=await session.command(body['id'] as String,body['revision'] as int,action,
@@ -174,7 +181,7 @@ class KaraokeRoomServer extends ChangeNotifier {
       'serverTimeMs':DateTime.now().millisecondsSinceEpoch,'playing':s.playing,'positionMs':s.positionMs.value,'durationMs':s.durationMs,
       'key':s.current?.key ?? 0,'tempo':s.current?.tempo ?? 1,'banner':s.banner,'stageColor':s.stageColor,
       'track':t==null ? null : {'id':t.id,'title':t.title,'artist':t.artist,'offsetMs':t.lyricOffsetMs+s.displayOffsetMs},
-      'role':grant.role.name,'singerId':grant.singer,
+      'role':grant.role.name,'singerId':grant.singer,'party':s.party.view(),
       'singers':grant.role==KaraokeRoomRole.host ? s.singers.map((p)=>{'id':p.id,'name':p.name,'absent':p.absent}).toList() : null,
       'queue':[for(final r in s.requests) if({KaraokeRequestState.pending,KaraokeRequestState.ready,KaraokeRequestState.playing}.contains(r.state)) {
         'id':r.id,'title':s.catalog[r.trackId]?.title ?? '', 'singers':r.singers.map((id)=>s.singers.where((p)=>p.id==id).firstOrNull?.name ?? '').toList(),

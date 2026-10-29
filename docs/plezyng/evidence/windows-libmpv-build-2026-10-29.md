@@ -1,5 +1,9 @@
 # Windows x64 and ARM64 libmpv cross-builds — 2026-10-29
 
+This file records the earlier patch-0156 packages. The current local rebuild
+with patch 0157 is documented in
+[windows-libmpv-pme-0157-2026-10-29.md](windows-libmpv-pme-0157-2026-10-29.md).
+
 ## Result
 
 The Windows x64 and ARM64 libmpv packages built locally from `mpv-build` commit

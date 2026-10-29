@@ -2,12 +2,8 @@
 
 ## [Unreleased]
 
-- Add optional Steam Families management with separate temporary QR authorization, reviewed membership/invitation changes, preferred game copies, live permission rechecks, single-use confirmation and profile/session retirement. Keep older servers on the confirmed Steam destination; live service qualification remains required.
-- Add opt-in direct Vulkan Pyrowave output on Android, Wayland and Windows, plus native Apple Metal HDR output. Gate HDR10 on actual decoder/surface/display capabilities, retain conventional-codec fallback and report observed chroma; SDK and physical display qualification remain required.
-- Add paired encrypted Steam internet traversal with WSS relay fallback, and separately authorized AppID-scoped Cloud file operations. Relay deployment and Valve-approved Cloud configuration are required before activation.
-
+- Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.
-
 - Repair combined application compilation across visualizer and subtitle archive extraction, IPTV, catalog search, motion and player settings. Preserve bounded archive writes, stale-operation guards and subtitle timing, use shared icon styling, and explicitly track untranslated messages as English fallbacks.
 - Add an optional Brandfetch hotlink fallback for official connector logos, with curated provider domains and approval gates for AllDebrid and TorBox.
 - Add attributed Amazon and Xbox marks to their matching external destinations.
@@ -16,12 +12,14 @@
 - Apply the CI native formatting toolchain to C/C++/Objective-C and Kotlin sources; no behavior change.
 - Resolve newly added Apple plugins into the iOS, macOS and tvOS CocoaPods locks so deployment-mode installs succeed in release builds.
 - Omit Watchmode availability rows whose links are all unsafe or invalid, so the Links screen never shows a provider it cannot open.
+- Add a player-neutral bounded PCM capture contract and capability-gated Linux, Windows, Apple, and Android MPV live-caption bridges alongside Android ExoPlayer; patched MPV runtimes and target-device qualification remain required, and accelerator placement remains explicitly unverified per operation.
 - Add opt-in experimental motion processing across MPV, Apple VideoToolbox, Android LiteRT/QNN, and desktop PME, with capability reporting and platform qualification limits documented separately.
 - Retarget the active current-display motion-compensation filter when mpv reports a display-rate change.
 - Serialize motion-processing configuration and health-monitor fallback changes so stale MPV updates cannot overwrite newer settings.
 - Serialize per-player motion-provider transitions, power and thermal fallbacks, and teardown so stale async work cannot override newer requests.
 - Fix the pinned Windows ML 2.4.89 package SHA-256 so Windows runtime downloads pass integrity verification.
 - Keep CPU-only motion providers out of real-time Neural readiness until playback timing is qualified.
+- Add an optional pinned OpenVINO Plugin EP runtime for Linux Intel GPUs/NPUs, and allow Qualcomm HTP context preparation to select SoC/model subsets, record QAIRT/calibration provenance, and package only checksum-verified contexts built with the matching QAIRT SDK; partial target sets remain an explicit opt-in.
 - Add experimental native MilkRust visualization hosts across Linux, Windows, Apple and Android, with same-player PCM routing, profile-scoped engine selection, and optional SHA-256-checked desktop runtime/source packaging with notices; compiled engines are not in current releases and platform behavior remains unqualified.
 
 - Add profile-scoped Real-Debrid, AllDebrid, Premiumize and TorBox connections, Stremio add-on imports, cloud/server canonical libraries, renewable shared playback, scheduled preparation, and optional native libtorrent streaming; live-provider and packaged-device qualification remains open.
@@ -29,6 +27,10 @@
 - Add a Watchmode title-availability adapter behind server-side credentials and an explicit commercial-approval gate, plus an iOS-only Apple MusicKit catalog/playback pilot behind a build flag; provider, account and device qualification remains open.
 
 - Clear Watchmode availability rows and loading state when the title Links screen changes profiles.
+
+- Add optional Steam Families management with separate temporary QR authorization, reviewed membership/invitation changes, preferred game copies, live permission rechecks, single-use confirmation and profile/session retirement. Keep older servers on the confirmed Steam destination; live service qualification remains required.
+- Add opt-in direct Vulkan Pyrowave output on Android, Wayland and Windows, plus native Apple Metal HDR output. Gate HDR10 on actual decoder/surface/display capabilities, retain conventional-codec fallback and report observed chroma; SDK and physical display qualification remain required.
+- Add paired encrypted Steam internet traversal with WSS relay fallback, and separately authorized AppID-scoped Cloud file operations. Relay deployment and Valve-approved Cloud configuration are required before activation.
 
 - Bound Steam startup and first-frame waits; retry unsupported HEVC with H.264, normalize Android/Linux codec framing, and wait for decoder shutdown before reconnecting. Serialize native source preparation and include transitive crypto archives in Apple builds.
 
@@ -47,10 +49,6 @@
 - Add capability-negotiated Steam Input and game-properties actions on paired computers, plus confirmed Cloud files and Families destinations in the existing adaptive Steam menu.
 
 - Add an embedded Linux Steam receiver with OS-keyring pairing, dedicated H.264/HEVC and PCM decoding, retained Flutter textures, controller seats, connection details and acknowledged reconnect; bundle its fixed GStreamer plugins with Linux releases.
-
-
-
-
 
 - Export Whisper token timestamps as cue-linked word/token timing records in reviewed subtitle JSON; unsupported accelerators clearly return cue timing without word records.
 
@@ -185,6 +183,9 @@
 - Retain previous server results when a new search is cancelled, while preserving indexed Files and Seerr results.
 - Route Windows x64 native CI through the private Packer JIT workflow allowlist.
 - Lock iOS, macOS and tvOS CocoaPods dependencies for CI, and retain root dependency overrides when resolving tvOS packages.
+- Fix clean tvOS CocoaPods setup, Android 17 preview SDK provisioning, and short-path Apple native-asset builds on private JIT runners.
+- Fix the macOS native reliability target to import the `PlezyNG` app module.
+- Require Android host native-test tools to be provisioned on the private runner before CI starts.
 - Include the Steam audio labels in the explicit English fallback manifest used by strict localization checks.
 - Set ThreadSanitizer ASLR entropy through the disposable runner's authorized sysctl.
 - Prepare an ephemeral default keychain for the optional Xcode cloud-signing path for iOS App Store builds.
@@ -225,6 +226,7 @@ This release gathers PlezyNG’s feature work since the fork, platform expansion
 
 - Add one-command native dependency refresh and all-platform private-JIT release orchestration.
 - Reuse complete, checksum-verified native platform groups after another platform fails, while requiring the full artifact set before updating app dependencies.
+- Bind release builds and configured publication workflows to the exact main commit, and resolve pinned Apple packages before native CI tests.
 - Validate all platform assets before publishing and dispatch configured release channels through the private-JIT orchestrator.
 - Include ARM webOS and Tizen tester builds in versioned releases, with pinned SDK and host-tool setup for Android, webOS and Tizen.
 - Provision pinned Android SDK packages and install hash-verified Python/Ninja plus host prerequisites for Android, webOS and Tizen private JIT builds.

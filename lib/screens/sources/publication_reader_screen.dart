@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:flutter_tts/flutter_tts.dart';
+import '../../services/speech_output_service.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -96,7 +96,6 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
   bool _autoJoinScheduled = false;
   Timer? _saveTimer;
   Future<void> _writes = Future.value();
-  FlutterTts? _tts;
   bool get pdf => !_streamingComic && p.extension(widget.file.name).toLowerCase() == '.pdf';
   bool get _previewOnly => widget.file.sampleOnly;
   bool get valid =>
@@ -829,17 +828,17 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
       text = (await _js('visibleText')) as String? ?? '';
     }
     if (text.trim().isEmpty || !valid) return;
-    _tts ??= FlutterTts();
-    _tts!.setCompletionHandler(_onSpeechEnded);
-    _tts!.setErrorHandler((_) => _onSpeechEnded());
-    await _tts!.setSpeechRate(.5);
-    if (widget.entry.language.isNotEmpty) await _tts!.setLanguage(widget.entry.language);
     if (valid) {
       setState(() => _speaking = true);
       _syncReaderWorkspaceAudioCapability();
       final id = _workspaceSessionId;
       if (id != null) await _workspaceController?.setAudibleSession(id);
-      await _tts!.speak(text);
+      try {
+        await SpeechOutputService.instance.speak(this, text, language: widget.entry.language, onEnded: _onSpeechEnded);
+      } catch (_) {
+        _onSpeechEnded();
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('The device speech engine could not read this page.')));
+      }
     }
   }
 
@@ -850,7 +849,7 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
   }
 
   Future<void> _stopSpeech() async {
-    await _tts?.stop();
+    await SpeechOutputService.instance.stop(this);
     if (Platform.isLinux && valid && _server != null) {
       try {
         await _js('stopSpeech');

@@ -3361,7 +3361,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         final profileId = profiles.activeId;
         final isSourceCurrent = widget.isRevisionIdentityCurrent;
         final lane = choice == _SubtitleReviewChoice.overlayPrimary ? 0 : 1;
-        final track = SubtitleOverlayTrack(cues: reviewedCues, words: reviewedWordTimings, title: operationLabel, regions: regions,
+        final track = SubtitleOverlayTrack(cues: reviewedCues, words: reviewedWordTimings, title: operationLabel, regions: regions, language: operationLanguageCode,
           isCurrent: () => profiles.activeId == profileId && isSourceCurrent?.call() != false);
         track.position = lane == 0 ? .9 : .12;
         SubtitleOverlayService.attach(widget.player, lane, track);

@@ -740,3 +740,16 @@ adapters with explicit host model installation, not measured research outcomes.
 No benefit/accuracy/spatial-direction/speaker-identity claim is made. Model
 adaptation, audiovisual reasoning, synchronized dubbing, and automatic OCR-region
 detection remain separate work. Runtime and artifact qualification remain open.
+
+## Spoken subtitle source update
+
+Either reviewed app-overlay lane can drive optional system TTS with explicit
+speech rate and original-audio ducking. Playback pause, seek, cue end, overlay
+removal and identity replacement cancel speech. Volume restoration is leased
+and leaves deliberate viewer volume changes intact. Publication reading and
+subtitle speech share one serialized native speech owner; pending cancellation
+prevents a queued request from starting later. Long text is chunked below native
+engine request limits. Linux uses explicitly installed espeak-ng. Device speech
+engines determine their own offline/network policy; Tizen, webOS and tvOS do not
+advertise this native path. This is accessible spoken text, not lip-synchronized
+dubbing. Source was reviewed without executing tests, builds, models or CI.

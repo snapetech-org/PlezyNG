@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../mpv/mpv.dart';
 import '../../../services/subtitle_overlay_service.dart';
+import '../../../services/subtitle_speech_service.dart';
+import '../../../services/speech_output_service.dart';
 
 Future<void> showSubtitleOverlayControls(BuildContext context, Player player) async {
   final session = SubtitleOverlayService.forPlayer(player);
@@ -14,6 +16,11 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
         for (var index = 0; index < 2; index++) if (session.lanes[index] case final SubtitleOverlayTrack track) ...[
           ListTile(title: Text('${index + 1}: ${track.title}'), trailing: IconButton(tooltip: 'Remove overlay',
             onPressed: () => change(() => session.lanes[index] = null), icon: const Icon(Icons.close))),
+          if (SpeechOutputService.supported) TextButton(onPressed: () async {
+            final speech = SubtitleSpeechService.instance;
+            if (speech.isSpeaking(track)) { await speech.stop(); } else { await speech.start(player, track); }
+            if (context.mounted) update(() {});
+          }, child: Text(SubtitleSpeechService.instance.isSpeaking(track) ? 'Stop spoken subtitles' : 'Speak this overlay')),
           Text('Size ${track.fontSize.round()}'), Slider(value: track.fontSize, min: 16, max: 64,
             onChanged: (v) => change(() => track.fontSize = v)),
           Text('Vertical position ${(track.position * 100).round()}%'), Slider(value: track.position, min: .05, max: .95,
@@ -37,6 +44,16 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
             }),
           SwitchListTile(title: const Text('Highlight timed words'), subtitle: const Text('Requires original word/token timings; singing accuracy is not assumed.'),
             value: track.karaoke, onChanged: track.words.isEmpty ? null : (v) => change(() => track.karaoke = v)),
+        ],
+        if (SpeechOutputService.supported) ...[
+          const Text('Speech uses the device engine (or installed espeak-ng on Linux). Its network policy is controlled by that engine. '
+            'Speech stops at cue boundaries and may truncate lines that cannot fit; it does not change playback speed.'),
+          Text('Speech rate ${(SubtitleSpeechService.instance.rate * 100).round()}%'),
+          Slider(value: SubtitleSpeechService.instance.rate, min: .1, max: 1,
+            onChanged: (v) => update(() => SubtitleSpeechService.instance.rate = v)),
+          Text('Keep ${(SubtitleSpeechService.instance.duck * 100).round()}% of original audio while speaking'),
+          Slider(value: SubtitleSpeechService.instance.duck, min: 0, max: 1,
+            onChanged: (v) => update(() => SubtitleSpeechService.instance.duck = v)),
         ],
         SwitchListTile(title: const Text('Cover burned captions in a bottom band'),
           subtitle: const Text('Opaque cover on this screen only. It hides picture detail; it does not reconstruct the background or edit the video.'),

@@ -678,7 +678,7 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
         FocusableListTile(
           leading: const AppIcon(Symbols.auto_awesome_rounded),
           title: const Text('Generate, sync, or translate subtitles'),
-          subtitle: const Text('Generate, sync, and translate WAV-based subtitle tracks'),
+          subtitle: const Text('Playback captions, source analysis, files, translation and timing review'),
           onTap: () => OverlaySheetController.of(context).push(
             builder: (_) => SubtitleAiSheet(
               player: player,

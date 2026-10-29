@@ -20,6 +20,7 @@ abstract final class SubtitleNativeHandoffService {
   static final Expando<_NativeSubtitleFiles> _owners = Expando();
 
   static ({Uint8List bytes, int clipped}) export(Player player, SubtitleOverlayTrack track) {
+    if (track.positionToSourceMs != null) throw UnsupportedError('A moving live timeline cannot be attached as a fixed native subtitle file');
     final session = SubtitleOverlayService.forPlayer(player);
     if (!session.current || !track.isCurrent() || !session.lanes.contains(track)) {
       throw StateError('The selected subtitle session changed');

@@ -3,7 +3,7 @@ part of '../../video_player_screen.dart';
 extension _VideoPlayerSubtitleSources on VideoPlayerScreenState {
   Future<SubtitleAnalysisSource> _openSubtitleAnalysisSource() async {
     final core = player, item = _currentMetadata, session = _playbackSession;
-    if (core == null || widget.isLive || _shuttingDown) throw StateError('Open a seekable library item first.');
+    if (core == null || _shuttingDown) throw StateError('Open a library item first.');
     final profiles = context.read<ActiveProfileProvider>(), profile = context.read<ActiveProfileProvider>().activeId;
     final mediaGeneration = core is PlayerMediaSessionIdentity ? core.mediaSessionGeneration : null;
     final mediaIndex = _effectiveSelectedMediaIndex, mediaSourceId = session?.mediaSourceId;
@@ -11,6 +11,30 @@ extension _VideoPlayerSubtitleSources on VideoPlayerScreenState {
         _currentMetadata.globalKey == item.globalKey && identical(_playbackSession, session) &&
         profiles.activeId == profile && (mediaGeneration == null ||
           (core as PlayerMediaSessionIdentity).mediaSessionGeneration == mediaGeneration);
+    if (widget.isLive) {
+      final liveSession = _live.session;
+      final streamGeneration = _live.streamGeneration;
+      bool liveCurrent() => current() && liveSession != null && identical(_live.session, liveSession) &&
+          streamGeneration == _live.streamGeneration;
+      final opened = Uri.tryParse(await core.getProperty('path') ?? '');
+      if (!liveCurrent() || opened == null || !const {'http', 'https'}.contains(opened.scheme)) {
+        throw UnsupportedError('This live player does not expose an owned HLS source');
+      }
+      final gateway = SourceStreamGateway(valid: liveCurrent);
+      try {
+        final uri = await gateway.registerUri(opened, headers: liveSession is IptvLiveTvPlaybackSession
+            ? liveSession.streamHeaders : const <String, String>{});
+        if (!liveCurrent()) throw StateError('The live source changed');
+        return SubtitleAnalysisSource(uri: uri, identity: sourceDigest('$profile:${item.globalKey}:live:$streamGeneration'),
+          isCurrent: liveCurrent, close: gateway.close, liveEpochForPosition: (positionMs) {
+            if (!liveCurrent()) return null;
+            final currentPosition = core.currentPosition;
+            final position = _live.playbackPosition(currentPosition);
+            return position.active && position.epoch?.isFinite == true
+                ? (position.epoch! * 1000).round() + positionMs - currentPosition.inMilliseconds : null;
+          });
+      } catch (_) { await gateway.close(); rethrow; }
+    }
     if (_isOfflinePlayback) return SubtitleAnalysisSource.localPlayer(core, current);
     final client = _getOnlineMediaServerClient(context);
     if (client == null) return SubtitleAnalysisSource.localPlayer(core, current);

@@ -21,7 +21,7 @@ with `[skip ci]`. Existing native dependency pins were not fabricated or promote
 | Area | Implemented source paths | Remaining boundary |
 | --- | --- | --- |
 | Transcription and translation | Local whisper.cpp CPU/optional compiled desktop CUDA/Vulkan; Sherpa provider requests with fallback; ML Kit and desktop Argos; selected-range work; durable WAV jobs; reviewed glossary/memory/model translation; cross-language sync and word timings. | Runtime/provider reports do not prove per-operation GPU/NPU execution. TV/accelerator packages and language quality need qualification. |
-| Live/DVR | Ordered PCM consumption, seek generation retirement, immutable finalized cues, bounded retained history, ExoPlayer source-frame clocks and moving DVR origin rebasing, optional late-text display, overlapping stable-prefix agreement with explicit provisional text, backend-grid DVR delay and opt-in delay hold. | No general future-audio live ingestion or engine-native incremental decoding. Local-agreement recognition is implemented but unqualified. Delay hold seeks the viewer, not a second live decoder. Clock/output routes remain unqualified. |
+| Live/DVR | Ordered PCM consumption, seek generation retirement, immutable finalized cues, bounded retained history, ExoPlayer source-frame clocks and moving DVR origin rebasing, optional late-text display, overlapping stable-prefix agreement with explicit provisional text, backend-grid DVR delay and opt-in delay hold; bounded completed-HLS-segment analysis on desktop/TV through owned source access. | No unrestricted future-audio live ingestion or engine-native incremental decoding. HLS needs explicit program timestamps, an active (possibly estimated) playback epoch, and the packaged TV or desktop FFmpeg decoder. Local-agreement recognition is implemented but unqualified. Delay hold seeks the viewer, not a second live decoder. Clock/output routes remain unqualified. |
 | Playback/source access | Android Media3 pre-speed PCM processor; native MPV bridges; Tizen tap; Android MediaExtractor/MediaCodec and Apple AVAssetReader analysis bridges plus desktop FFmpeg read-ahead via renewable standalone/library source leases; explicit companion staging of eligible current VOD files on IO platforms. | Current locked MPV libraries lack the ordered ABI. webOS NDL has no direct PCM tap; there is no browser Player. Android/Apple native readers and source-built Tizen/webOS audio helpers are implemented. Native format support, TV subprocess policy, shipped helper artifacts and device behavior remain unqualified. Companion staging is limited to complete, accessible files up to 1 GiB/one hour; playlists/live/protected sources are refused. |
 | Import and attachment | Existing format conversion/archive/drop/share flows; Plex/Jellyfin/Emby upload; managed standalone native text attachment; adapter-owned folder discovery for local/network/cloud sources and DLNA metadata-linked text resources. | Backend format limits still apply. Non-MPV attachment refuses saved affine corrections. Vendor-only DLNA caption tags and catalogue-specific sources without a file listing remain unsupported. |
 | App rendering | Two independent text lanes, per-profile/lane appearance defaults, installed-family/script fallback, original word highlights, fixed authored sign regions, stable optional scene-region avoidance, manual burned-caption cover, focused-pane density limit, spoken subtitles with explicit duck/rate. | App styling is not a replacement for native ASS/bitmap rendering. HDR luminance, font shaping and output paths are unqualified. Centered contain/cover/stretch/zoom geometry and screen/video anchoring are implemented; renderer/output qualification, ruby/vertical typography, new closed-caption service semantics and localized new controls remain open. |
@@ -1002,3 +1002,38 @@ still absent: this is independent VOD source decoding, not a claim that NDL
 exposes its rendered audio. Native codec coverage, subprocess permissions,
 resource cost and TV package execution have not been qualified. No build or CI
 was run, and no resulting binary checksum has been invented.
+
+### Completed HLS segment analysis and moving DVR clocks
+
+The source owner can now expose its currently opened live HLS URL through a
+separate loopback gateway without re-tuning, requesting a server seek, changing
+audio selection, or rebuilding the audible stream. `SubtitleHlsAnalysis` follows
+at most three playlist levels, takes an explicit audio-rendition/variant ordinal,
+and reads only complete segments with `EXT-X-PROGRAM-DATE-TIME`. It supports
+explicit/continued segment byte ranges and initialization sections. Encrypted
+segments, gaps, ambiguous clocks, and missing program timestamps are refused;
+low-latency partial segments are not treated as complete audio. Clock semantics
+follow [RFC 8216](https://www.rfc-editor.org/rfc/rfc8216#section-4.3.2.6).
+
+At most 32 segments / 64 seconds / 128 MiB are staged as an immutable, all-local
+VOD playlist. The decoder receives no upstream URLs or credentials. Segment reads
+have time and size bounds, exact range checks, no redirects or proxies, and
+source-change cancellation. The existing CPU/provider-aware inference queue
+handles these windows. Read-ahead stays within two minutes of the viewer and
+only reads audio already present in the playlist. Source program timestamps are
+kept on cues; a live overlay maps the active player clock to that source clock
+for each display lookup. Stale/opening clock mappings suppress the overlay.
+
+This allows a delayed DVR viewer to receive prepared captions without an
+additional audible player. It does not establish a confirmed video-to-epoch
+mapping: the UI labels alignment as estimated, and fixed-clock native/Cast/VTT
+handoff is refused for these dynamic tracks. Linux/Windows/macOS need installed
+FFmpeg; TV source builds enable the HLS demuxer in the packaged helper. Mobile
+HLS analysis and arbitrary live protocols remain outside this path. The locked
+MPV ABI and webOS NDL tap status are unchanged. No decoder or stream was executed.
+
+Read-ahead now protects an initially empty overlay lane against replacement
+during inference, reindexes cached cues while retaining stable IDs, sorts word
+timings before correspondence, and bounds cue/word/text retention. Evicting a
+live analysis window also evicts its segment completion markers, so seeking
+back into still-available DVR content can prepare that window again.

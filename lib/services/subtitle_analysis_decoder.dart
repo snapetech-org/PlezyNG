@@ -14,6 +14,7 @@ final class SubtitleAnalysisDecoder {
   static const _channel = MethodChannel('com.plezy/subtitle_analysis');
   static const _tv = bool.fromEnvironment('PLEZY_TIZEN') || bool.fromEnvironment('PLEZY_WEBOS');
   static bool get available => _tv || Platform.isAndroid || Platform.isIOS || Platform.isMacOS || Platform.isLinux || Platform.isWindows;
+  static bool get hlsAvailable => _tv || Platform.isLinux || Platform.isWindows || Platform.isMacOS;
   static Future<String>? _packagedHelper;
   String? _id;
   Process? _process;
@@ -30,12 +31,13 @@ final class SubtitleAnalysisDecoder {
   }
 
   Future<void> decode({required Uri uri, required int startMs, required int endMs, required int audioOrdinal,
-      required File destination, required bool Function() isCurrent}) async {
+      required File destination, required bool Function() isCurrent, bool localHlsSnapshot = false}) async {
     if (_id != null) throw StateError('This analysis decoder is already in use');
     if (uri.userInfo.isNotEmpty || uri.hasFragment || !(uri.scheme == 'file' && uri.host.isEmpty || uri.scheme == 'http' && uri.host == '127.0.0.1') ||
         startMs < 0 || endMs <= startMs || endMs > 28800000 || endMs - startMs > 64000 || audioOrdinal < 0 || audioOrdinal > 63) {
       throw const FormatException('Invalid owned media source or bounded analysis window');
     }
+    if (localHlsSnapshot && (!hlsAvailable || uri.scheme != 'file')) throw UnsupportedError('A local HLS snapshot requires the separate FFmpeg decoder');
     final random = Random.secure();
     final id = List.generate(16, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
     _id = id; _cancelled = false;
@@ -43,7 +45,7 @@ final class SubtitleAnalysisDecoder {
     final guard = Timer.periodic(const Duration(milliseconds: 250), (_) { if (!current()) unawaited(cancel()); });
     try {
       if (!current()) throw StateError('Analysis source changed');
-      if (!_tv && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)) {
+      if (!localHlsSnapshot && !_tv && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)) {
         try {
           final capabilities = await _channel.invokeMapMethod<String, dynamic>('capabilities').timeout(const Duration(seconds: 3));
           if (capabilities?['version'] != 1) throw UnsupportedError('Native analysis decoder is not installed');
@@ -68,10 +70,12 @@ final class SubtitleAnalysisDecoder {
       final process = await Process.start(executable, [
         '-nostdin', '-hide_banner', '-loglevel', 'error', '-y', '-rw_timeout', '20000000',
         '-protocol_whitelist', uri.scheme == 'file' ? 'file,pipe' : 'http,tcp,pipe',
-        '-format_whitelist', 'matroska,webm,mov,avi,mp3,wav,flac,ogg,aac,ac3,eac3,mpegts,mpeg',
+        '-format_whitelist', '${localHlsSnapshot ? 'hls,' : ''}matroska,webm,mov,avi,mp3,wav,flac,ogg,aac,ac3,eac3,mpegts,mpeg',
+        if (localHlsSnapshot) ...['-allowed_extensions', 'm3u8,ts,m4s,mp4'],
         '-threads', '2', '-filter_threads', '1',
         '-ss', (startMs/1000).toStringAsFixed(3), '-i', uri.scheme == 'file' ? uri.toFilePath() : uri.toString(),
         '-map', '0:a:$audioOrdinal', '-vn', '-sn', '-t', ((endMs-startMs)/1000).toStringAsFixed(3),
+        if (localHlsSnapshot) ...['-af', 'aresample=async=1:first_pts=0'],
         '-ac', '1', '-ar', '16000', '-c:a', 'pcm_s16le', '-f', 'wav', '-fs', '2100000', destination.path,
       ], runInShell: false, includeParentEnvironment: false, environment: {
         for (final entry in Platform.environment.entries)

@@ -50,7 +50,7 @@ def build(args):
         '--disable-debug', '--disable-doc', '--disable-stripping', '--disable-asm', '--enable-small',
         '--disable-everything', '--disable-programs', '--enable-ffmpeg', '--disable-avdevice', '--disable-swscale',
         '--enable-network', '--enable-protocol=file,http,tcp,pipe',
-        '--enable-demuxer=matroska,mov,avi,mp3,wav,flac,ogg,aac,ac3,eac3,mpegts,mpeg,aiff,caf',
+        '--enable-demuxer=hls,matroska,mov,avi,mp3,wav,flac,ogg,aac,ac3,eac3,mpegts,mpeg,aiff,caf',
         '--enable-decoder=aac,aac_fixed,ac3,eac3,dca,flac,mp3,mp3float,opus,vorbis,alac,pcm_s16le,pcm_s16be,pcm_s24le,pcm_s24be,pcm_s32le,pcm_s32be,pcm_f32le,pcm_f32be',
         '--enable-parser=aac,aac_latm,ac3,dca,flac,mpegaudio,opus,vorbis',
         '--enable-encoder=pcm_s16le', '--enable-muxer=wav',

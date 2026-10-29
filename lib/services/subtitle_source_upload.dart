@@ -27,6 +27,7 @@ abstract final class SubtitleSourceUpload {
     final timer = Timer.periodic(const Duration(milliseconds: 250), (_) { if (!current()) client.close(force: true); });
     try {
       if (!current()) throw StateError('Source copy cancelled');
+      if (source.liveEpochForPosition != null) throw UnsupportedError('Live sources cannot be uploaded as complete media files');
       if (source.durationMs != null && source.durationMs! > 3600000) throw UnsupportedError('The companion accepts an opened media file up to one hour');
       if (source.timelineOffsetMs < 0 || source.timelineOffsetMs > 7 * 3600000) throw UnsupportedError('Source time offset exceeds the companion bound');
       final root = await getTemporaryDirectory();

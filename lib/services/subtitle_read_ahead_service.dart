@@ -9,6 +9,7 @@ import '../mpv/player/player_media_session_identity.dart';
 import '../mpv/player/subtitle_pcm_capture_source.dart';
 import 'subtitle_analysis_source.dart';
 import 'subtitle_analysis_decoder.dart';
+import 'subtitle_hls_analysis.dart';
 import 'subtitle_ai_service.dart';
 import 'subtitle_inference_scheduler.dart';
 import 'subtitle_overlay_service.dart';
@@ -38,6 +39,9 @@ class SubtitleReadAheadService extends ChangeNotifier {
   final Map<int, List<SubtitleCue>> _windows = {};
   final Map<int, List<SubtitleWordTiming>> _words = {};
   SubtitleOverlayTrack? _published;
+  SubtitleHlsAnalysis? _hls;
+  final Map<String, int> _completedSegments = {};
+  DateTime _lastLivePoll = DateTime.fromMillisecondsSinceEpoch(0);
   String status = 'Stopped';
   bool get running => _player != null;
   bool get busy => _busy;
@@ -51,11 +55,13 @@ class SubtitleReadAheadService extends ChangeNotifier {
 
   Future<void> start(Player player, {required Future<SubtitleAnalysisSource> Function() open,
     required bool Function() isCurrent, required int audioOrdinal, String? language, String? profileId,
-    SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu}) async {
+    SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu, int hlsRendition = 0}) async {
     if (!available) throw UnsupportedError('A separate local analysis decoder is not installed on this platform.');
     if (running || _busy) throw StateError('Stop the current read-ahead job first.');
-    if (player is SubtitlePcmCaptureSource && player.isLivePlayback) throw UnsupportedError('This decoder requires seekable VOD.');
-    if (!player.state.seekable || audioOrdinal < 0 || audioOrdinal > 63) throw ArgumentError('A seekable source and audio stream are required.');
+    final live = player is SubtitlePcmCaptureSource && player.isLivePlayback;
+    if ((!live && !player.state.seekable) || audioOrdinal < 0 || audioOrdinal > 63 || hlsRendition < 0 || hlsRendition > 63) {
+      throw ArgumentError('A seekable VOD or program-timestamped live source and audio stream are required.');
+    }
     final epoch = ++_generation;
     _player = player;
     _mediaGeneration = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
@@ -66,6 +72,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
     _profileId = profileId;
     _provider = provider;
     _windows.clear(); _words.clear(); _published = SubtitleOverlayService.forPlayer(player).lanes[0];
+    _completedSegments.clear(); _lastLivePoll = DateTime.fromMillisecondsSinceEpoch(0);
     try {
       final source = await open();
       if (epoch != _generation) { await source.close(); return; }
@@ -75,6 +82,10 @@ class SubtitleReadAheadService extends ChangeNotifier {
       if (uri.scheme != 'file' && !(uri.scheme == 'http' && uri.host == '127.0.0.1')) {
         throw UnsupportedError('Decoder access must be through the owning local transport.');
       }
+      if (source.liveEpochForPosition != null) {
+        if (!SubtitleAnalysisDecoder.hlsAvailable) throw UnsupportedError('Live HLS analysis requires the packaged TV or desktop FFmpeg decoder');
+        _hls = SubtitleHlsAnalysis(uri, () => _current(epoch), rendition: hlsRendition);
+      } else if (live) { throw UnsupportedError('This live source does not provide program-clock analysis access'); }
       status = 'Preparing captions ahead of the playhead. Initial speech may finish late.';
       _timer = Timer.periodic(const Duration(seconds: 1), (_) => unawaited(_tick(epoch)));
       notifyListeners();
@@ -85,6 +96,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
   Future<void> stop() async {
     ++_generation;
     _timer?.cancel(); _timer = null;
+    _hls?.close(); _hls = null;
     await _decoder.cancel();
     final source = _source; _source = null;
     _player = null; _valid = null;
@@ -102,7 +114,8 @@ class SubtitleReadAheadService extends ChangeNotifier {
     }
     final player = _player!;
     final overlay = SubtitleOverlayService.forPlayer(player);
-    if (_published != null && !identical(overlay.lanes[0], _published)) { await stop(); return; }
+    if (!identical(overlay.lanes[0], _published)) { await stop(); return; }
+    if (_hls != null) { await _tickLive(epoch); return; }
     final offset = _source!.timelineOffsetMs;
     final now = (player.currentPosition.inMilliseconds - offset).clamp(0, 28800000).toInt();
     final duration = _source!.durationMs ?? player.state.duration.inMilliseconds - offset;
@@ -146,26 +159,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
       _words[index] = [for (final word in result.wordTimings) SubtitleWordTiming(
         startMs: word.startMs + decodeStart + offset, endMs: word.endMs + decodeStart + offset,
         text: word.text, confidence: word.confidence, unit: word.unit)];
-      // Keep up to 240 windows (2 hours) around current playhead, 8 MiB text.
-      while (_windows.length > 240 || _windows.values.expand((v) => v).fold<int>(0, (n, c) => n + c.text.length) > 2 * 1024 * 1024) {
-        final farthest = _windows.keys.reduce((a, b) => (a - first).abs() > (b - first).abs() ? a : b);
-        _windows.remove(farthest); _words.remove(farthest);
-      }
-      final all = _windows.values.expand((v) => v).toList()..sort((a, b) => a.startMs.compareTo(b.startMs));
-      final validity = _valid!, source = _source!;
-      final track = SubtitleOverlayTrack(cues: all,
-        words: SubtitleWordTimingBuilder.attachCueIndices(_words.values.expand((v) => v).toList(), all),
-        title: 'Prepared playback captions', profileId: _profileId, language: result.detectedLanguage, isCurrent: () => validity() && source.isCurrent());
-      final previous = _published;
-      if (previous != null) {
-        track.applyAppearance(previous.appearance());
-        track.delayMs = previous.delayMs;
-        track.avoidObjects = previous.avoidObjects;
-      }
-      // Refuse to overwrite a lane the user edited/replaced during inference.
-      if (_published != null && !identical(overlay.lanes[0], _published)) { await stop(); return; }
-      _published = track;
-      SubtitleOverlayService.attach(player, 0, track, restoreAppearance: previous == null);
+      await _publish(epoch, first, result.detectedLanguage);
       status = 'Prepared ${_windows.length} windows; ${result.runtimeProvider}. Placement remains unverified.';
     } catch (error) {
       if (epoch == _generation) {
@@ -178,5 +172,101 @@ class SubtitleReadAheadService extends ChangeNotifier {
       if (temporary != null) { try { await temporary.delete(recursive: true); } catch (_) {} }
       _busy = false; notifyListeners();
     }
+  }
+
+  Future<void> _tickLive(int epoch) async {
+    if (DateTime.now().difference(_lastLivePoll).inSeconds < 3) return;
+    _lastLivePoll = DateTime.now();
+    final player = _player!, source = _source!, hls = _hls!;
+    final now = source.liveEpochForPosition!(player.currentPosition.inMilliseconds);
+    if (now == null) { status = 'Waiting for an active live playback clock'; notifyListeners(); return; }
+    final seek = player is SubtitlePcmCaptureSource ? player.playbackTimelineGeneration : null;
+    bool current() => _current(epoch) && (seek == null || (player as SubtitlePcmCaptureSource).playbackTimelineGeneration == seek);
+    _busy = true;
+    Directory? temporary;
+    try {
+      final segments = await hls.segments();
+      if (!current()) return;
+      final first = segments.indexWhere((segment) => !segment.gap && segment.endMs > now - 10000 &&
+          segment.startMs < now + 120000 && !_completedSegments.containsKey(segment.key));
+      if (first < 0) {
+        status = 'Waiting for complete HLS audio near or ahead of playback. Program-clock alignment is estimated.';
+        return;
+      }
+      final selected = <SubtitleHlsSegment>[];
+      var duration = 0;
+      for (final segment in segments.skip(first)) {
+        if (selected.length >= 32 || duration >= 30000 || duration + segment.durationMs > 64000 ||
+            segment.gap || segment.discontinuity != segments[first].discontinuity ||
+            segment.startMs >= now + 120000 || _completedSegments.containsKey(segment.key) ||
+            selected.isNotEmpty && (segment.startMs - selected.last.endMs).abs() > 250) break;
+        selected.add(segment); duration += segment.durationMs;
+      }
+      if (selected.isEmpty || duration < 1000) return;
+      temporary = await (await getTemporaryDirectory()).createTemp('subtitle_live_analysis_');
+      status = 'Reading ${selected.length} completed live segments through the source transport'; notifyListeners();
+      final manifest = await hls.stage(selected, temporary);
+      if (!current()) return;
+      final wav = File('${temporary.path}/window.wav');
+      await _decoder.decode(uri: manifest.uri, startMs: 0, endMs: duration, audioOrdinal: _audioOrdinal,
+        destination: wav, isCurrent: current, localHlsSnapshot: true);
+      if (!current()) return;
+      status = 'Recognizing completed live audio; the audible player is unchanged'; notifyListeners();
+      final result = await SubtitleAiService.instance.transcribeWav(wav.path,
+        provider: _provider, languageCode: _language, allowEmpty: true, numThreads: 2,
+        priority: SubtitleWorkPriority.readAhead, isCurrent: current);
+      if (!current()) return;
+      final anchor = selected.first.startMs;
+      _windows[anchor] = [for (final cue in result.cues)
+        if (cue.startMs < duration && cue.endMs > cue.startMs) SubtitleCue(index: cue.index,
+          startMs: anchor + cue.startMs, endMs: anchor + cue.endMs.clamp(0, duration).toInt(), text: cue.text)];
+      _words[anchor] = [for (final word in result.wordTimings)
+        if (word.startMs < duration && word.endMs > word.startMs) SubtitleWordTiming(startMs: anchor + word.startMs,
+          endMs: anchor + word.endMs.clamp(0, duration).toInt(), text: word.text, confidence: word.confidence, unit: word.unit)];
+      for (final segment in selected) { _completedSegments[segment.key] = anchor; }
+      await _publish(epoch, now, result.detectedLanguage);
+      status = 'Prepared live/DVR captions from complete HLS segments; ${result.runtimeProvider}. '
+          'Program-clock alignment remains estimated; protected or untimestamped streams are refused.';
+    } catch (error) {
+      if (_current(epoch)) {
+        await stop();
+        status = error is UnsupportedError ? error.message?.toString() ?? 'This live source cannot be analyzed'
+            : error is FormatException ? error.message : 'Live analysis stopped: a segment, decoder or model was unavailable.';
+      }
+    } finally {
+      await _decoder.cancel();
+      if (temporary != null) { try { await temporary.delete(recursive: true); } catch (_) {} }
+      _busy = false; notifyListeners();
+    }
+  }
+
+  Future<void> _publish(int epoch, int center, String? language) async {
+    if (!_current(epoch)) return;
+    final player = _player!, source = _source!, validity = _valid!;
+    final overlay = SubtitleOverlayService.forPlayer(player);
+    // Includes an initially empty lane: a user selection during inference wins.
+    if (!identical(overlay.lanes[0], _published)) { await stop(); return; }
+    while (_windows.length > 240 ||
+        _windows.values.fold<int>(0, (n, cues) => n + cues.length) > 49000 ||
+        _words.values.fold<int>(0, (n, words) => n + words.length) > 240000 ||
+        _windows.values.expand((v) => v).fold<int>(0, (n, c) => n + c.text.length) > 2 * 1024 * 1024) {
+      final farthest = _windows.keys.reduce((a, b) => (a - center).abs() > (b - center).abs() ? a : b);
+      _windows.remove(farthest); _words.remove(farthest);
+      _completedSegments.removeWhere((_, window) => window == farthest);
+    }
+    final sorted = _windows.values.expand((v) => v).toList()..sort((a, b) => a.startMs.compareTo(b.startMs));
+    final all = [for (var i = 0; i < sorted.length; i++) SubtitleCue(index: i + 1, startMs: sorted[i].startMs,
+      endMs: sorted[i].endMs, text: sorted[i].text, cueId: sorted[i].stableId)];
+    final words = _words.values.expand((v) => v).toList()..sort((a, b) => a.startMs.compareTo(b.startMs));
+    final track = SubtitleOverlayTrack(cues: all, words: SubtitleWordTimingBuilder.attachCueIndices(words, all),
+      title: source.liveEpochForPosition == null ? 'Prepared playback captions' : 'Live program-clock captions (estimated)',
+      profileId: _profileId, language: language, positionToSourceMs: source.liveEpochForPosition,
+      isCurrent: () => validity() && source.isCurrent());
+    final previous = _published;
+    if (previous != null) {
+      track.applyAppearance(previous.appearance()); track.delayMs = previous.delayMs; track.avoidObjects = previous.avoidObjects;
+    }
+    _published = track;
+    SubtitleOverlayService.attach(player, 0, track, restoreAppearance: previous == null);
   }
 }

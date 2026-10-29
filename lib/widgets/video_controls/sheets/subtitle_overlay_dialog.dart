@@ -39,7 +39,8 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
               if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Appearance saved for this profile and lane. Timing and scene placement stay with this track.')));
             } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not save caption appearance.'))); }
           }, child: const Text('Use this appearance for future tracks')),
-          Wrap(spacing: 8, children: [TextButton(onPressed: () async {
+          if (track.positionToSourceMs != null) const Text('This live overlay follows the moving program clock. Fixed-file export, Cast and native snapshot attachment are unavailable.'),
+          if (track.positionToSourceMs == null) Wrap(spacing: 8, children: [TextButton(onPressed: () async {
             try {
               final snapshot = SubtitleNativeHandoffService.export(player, track);
               if (!context.mounted || !await _confirmSnapshot(context, snapshot.clipped, attach: false)) return;
@@ -57,7 +58,7 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player) as
             } catch (_) { if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('The native renderer could not attach this caption snapshot.'))); }
           }, child: const Text('Move snapshot to native subtitles'))]),
           if (track.avoidRegions.isNotEmpty) SwitchListTile(title: const Text('Avoid reviewed scene regions'),
-            subtitle: const Text('Uses single-frame model proposals at cue boundaries. Placement can be wrong; authored signs keep their positions.'),
+            subtitle: const Text('Uses reviewed single-frame or sampled temporal proposals at cue boundaries. Placement can be wrong; authored signs keep their positions.'),
             value: track.avoidObjects, onChanged: (value) => change(() => track.avoidObjects = value)),
           Text('Size ${track.fontSize.round()}'), Slider(value: track.fontSize, min: 16, max: 64,
             onChanged: (v) => change(() => track.fontSize = v)),

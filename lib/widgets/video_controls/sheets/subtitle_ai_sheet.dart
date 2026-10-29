@@ -1303,18 +1303,33 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final service = SubtitleReadAheadService.instance;
     if (service.running) { await service.stop(); return; }
     final input = TextEditingController(text: '0');
+    final rendition = TextEditingController(text: '0');
+    final live = widget.player is SubtitlePcmCaptureSource && (widget.player as SubtitlePcmCaptureSource).isLivePlayback;
+    var selectedRendition = 0;
     final ordinal = await showDialog<int>(context: context, builder: (context) => AlertDialog(
       title: const Text('Prepare captions ahead of playback'),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        const Text('A separate native decoder on Android/Apple, packaged audio decoder on TVs, or installed FFmpeg on desktop reads the current source through its owning transport. '
+        Text(live ? 'Live analysis uses the packaged TV or desktop FFmpeg decoder to read completed HLS segments. '
+          'It requires program timestamps and an active live-clock mapping, which remains an estimate. '
+          'It can prepare captions ahead when you watch behind the live edge; it does not predict future speech. '
+          'Protected, untimestamped and non-HLS sources are refused. This uses additional bandwidth and replaces app overlay 1.'
+          : 'A separate native decoder on Android/Apple, packaged audio decoder on TVs, or installed FFmpeg on desktop reads the current source through its owning transport. '
           'This may use additional bandwidth. It prepares about two minutes ahead and replaces app overlay 1. '
           'Choose the audio stream in file order (0 is the first); native player track IDs may use a different numbering scheme.'),
         TextField(controller: input, keyboardType: TextInputType.number,
           decoration: const InputDecoration(labelText: 'Audio stream ordinal (0–63)')),
+        if (live) TextField(controller: rendition, keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'HLS audio rendition / variant ordinal (0–63)',
+            helperText: 'Playlist order, independent of player IDs. Verify the spoken language.')),
       ]), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-        FilledButton(onPressed: () { final value = int.tryParse(input.text); if (value != null && value >= 0 && value <= 63) Navigator.pop(context, value); },
+        FilledButton(onPressed: () {
+          final value = int.tryParse(input.text), variant = int.tryParse(rendition.text);
+          if (value != null && value >= 0 && value <= 63 && variant != null && variant >= 0 && variant <= 63) {
+            selectedRendition = variant; Navigator.pop(context, value);
+          }
+        },
           child: const Text('Start local analysis'))]));
-    input.dispose();
+    input.dispose(); rendition.dispose();
     if (ordinal == null || !mounted) return;
     _requireCurrentOperationIdentity();
     final profiles = context.read<ActiveProfileProvider>();
@@ -1327,7 +1342,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         player.state.track.audio?.id == audio;
     await service.start(player, open: widget.openAnalysisSource ?? () => SubtitleAnalysisSource.localPlayer(player, current),
       isCurrent: current, audioOrdinal: ordinal, profileId: profile, language: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
-      provider: _liveProvider);
+      provider: _liveProvider, hlsRendition: selectedRendition);
   });
 
   Future<void> _captureLivePlayback() => _run(() async {

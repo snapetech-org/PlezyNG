@@ -13,7 +13,7 @@ import 'subtitle_word_timing.dart';
 class SubtitleOverlayTrack {
   SubtitleOverlayTrack({required List<SubtitleCue> cues, List<SubtitleWordTiming> words = const [],
     required this.title, required this.isCurrent, Map<String, Rect> regions = const {}, this.language,
-    this.profileId, Map<String, List<Rect>> avoidRegions = const {}})
+    this.profileId, this.positionToSourceMs, Map<String, List<Rect>> avoidRegions = const {}})
       : cues = List.unmodifiable(List<SubtitleCue>.of(cues)..sort((a, b) => a.startMs.compareTo(b.startMs))),
         words = List.unmodifiable(words), regions = Map.unmodifiable(regions),
         avoidRegions = Map.unmodifiable(avoidRegions.map((key, value) => MapEntry(key, List<Rect>.unmodifiable(value)))) {
@@ -44,6 +44,9 @@ class SubtitleOverlayTrack {
   final Map<String, List<Rect>> avoidRegions;
   final Map<String, Rect> regions;
   final bool Function() isCurrent;
+  /// Live tracks retain absolute source timestamps across a moving DVR origin.
+  /// Export to a fixed native/file clock needs a separate, explicit snapshot.
+  final int? Function(int playerPositionMs)? positionToSourceMs;
   final Map<int, int> _ends = {};
   int _build(int node, int lo, int hi) {
     if (hi - lo == 1) return _ends[node] = cues[lo].endMs;
@@ -136,7 +139,10 @@ class SubtitleOverlayTrack {
 
   List<SubtitleCue> between(int startMs, int endMs, {int limit = 12}) {
     if (limit < 1 || limit > 64 || endMs <= startMs) return const [];
-    final from = startMs - delayMs, until = endMs - delayMs;
+    final a = positionToSourceMs == null ? startMs : positionToSourceMs!(startMs);
+    final b = positionToSourceMs == null ? endMs : positionToSourceMs!(endMs);
+    if (a == null || b == null || b <= a) return const [];
+    final from = a - delayMs, until = b - delayMs;
     final active = <SubtitleCue>[];
     void visit(int node, int lo, int hi) {
       if (active.length >= limit || lo >= hi || cues[lo].startMs >= until || (_ends[node] ?? 0) <= from) return;
@@ -150,6 +156,7 @@ class SubtitleOverlayTrack {
 
   List<InlineSpan> spans(SubtitleCue cue, int positionMs) {
     final text = plain(cue.text);
+    final sourceMs = positionToSourceMs == null ? positionMs : positionToSourceMs!(positionMs);
     final timing = _words[cue.stableId];
     if (!karaoke || timing == null) return [TextSpan(text: text)];
     // Match the original string in order. A changed/uncertain token cannot
@@ -161,7 +168,7 @@ class SubtitleOverlayTrack {
       final found = text.indexOf(word.text, offset);
       if (found < 0) return [TextSpan(text: text)];
       result.add(TextSpan(text: text.substring(offset, found)));
-      final active = positionMs - delayMs >= word.startMs && positionMs - delayMs < word.endMs;
+      final active = sourceMs != null && sourceMs - delayMs >= word.startMs && sourceMs - delayMs < word.endMs;
       result.add(TextSpan(text: word.text, style: active
           ? const TextStyle(color: Colors.yellow, backgroundColor: Colors.black) : null));
       offset = found + word.text.length;

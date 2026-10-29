@@ -36,6 +36,7 @@ class SubtitleHandoffService {
   Future<void> start(Player player, List<SubtitleOverlayTrack> tracks) async {
     await stop();
     if (tracks.isEmpty || tracks.length > 2) throw ArgumentError('Choose one or two subtitle overlays.');
+    if (tracks.any((track) => track.positionToSourceMs != null)) throw UnsupportedError('Live program-clock overlays do not expose a fixed WebVTT track');
     final epoch = ++_generation;
     final interfaces = await NetworkInterface.list(includeLoopback: false, type: InternetAddressType.IPv4);
     if (epoch != _generation) return;

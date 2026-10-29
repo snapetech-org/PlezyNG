@@ -3288,6 +3288,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleDefaultsTransfer$en subtitleDefaultsTransfer = Translations$videoControls$subtitleDefaultsTransfer$en.internal(_root);
 	late final Translations$videoControls$subtitleDiscovery$en subtitleDiscovery = Translations$videoControls$subtitleDiscovery$en.internal(_root);
 	late final Translations$videoControls$subtitleCompanionJobs$en subtitleCompanionJobs = Translations$videoControls$subtitleCompanionJobs$en.internal(_root);
+	late final Translations$videoControls$subtitleStudy$en subtitleStudy = Translations$videoControls$subtitleStudy$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
@@ -13633,6 +13634,151 @@ class Translations$videoControls$subtitleCompanionJobs$en {
 
 }
 
+// Path: videoControls.subtitleStudy
+class Translations$videoControls$subtitleStudy$en {
+	Translations$videoControls$subtitleStudy$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Transcript study'
+	String get title => 'Transcript study';
+
+	/// en: 'Search dialogue'
+	String get searchLabel => 'Search dialogue';
+
+	/// en: 'Replay uses the selected transcript’s source times. Use a synchronized transcript for this media and audio track.'
+	String get description => 'Replay uses the selected transcript’s source times. Use a synchronized transcript for this media and audio track.';
+
+	/// en: 'Hide future dialogue'
+	String get hideFuture => 'Hide future dialogue';
+
+	/// en: 'Pause after line'
+	String get pauseAfterLine => 'Pause after line';
+
+	/// en: 'Repeat selected line'
+	String get repeatLine => 'Repeat selected line';
+
+	/// en: 'Lead-in ${milliseconds} ms'
+	String leadIn({required Object milliseconds}) => 'Lead-in ${milliseconds} ms';
+
+	/// en: 'Loop gap ${milliseconds} ms'
+	String loopGap({required Object milliseconds}) => 'Loop gap ${milliseconds} ms';
+
+	/// en: '${milliseconds} ms'
+	String milliseconds({required Object milliseconds}) => '${milliseconds} ms';
+
+	/// en: 'Playback could not pause at this cue.'
+	String get pauseAtCueFailed => 'Playback could not pause at this cue.';
+
+	/// en: 'Replaying cue ${index}'
+	String replayingCue({required Object index}) => 'Replaying cue ${index}';
+
+	/// en: 'This player could not replay the cue.'
+	String get replayCueFailed => 'This player could not replay the cue.';
+
+	/// en: 'Look up a word or phrase'
+	String get lookupTitle => 'Look up a word or phrase';
+
+	/// en: 'Word or phrase to look up'
+	String get lookupInput => 'Word or phrase to look up';
+
+	/// en: 'Opens English Wiktionary in your browser and sends only the term you enter. Copying text remains available offline.'
+	String get lookupPrivacy => 'Opens English Wiktionary in your browser and sends only the term you enter. Copying text remains available offline.';
+
+	/// en: 'Offline dictionaries'
+	String get offlineDictionaries => 'Offline dictionaries';
+
+	/// en: 'Open dictionary'
+	String get openDictionary => 'Open dictionary';
+
+	/// en: 'This device cannot open a dictionary browser. Copy the term for lookup on another device.'
+	String get dictionaryBrowserUnavailable => 'This device cannot open a dictionary browser. Copy the term for lookup on another device.';
+
+	/// en: 'The dictionary could not be opened.'
+	String get dictionaryOpenFailed => 'The dictionary could not be opened.';
+
+	/// en: 'Save phrase or bookmark'
+	String get bookmarkTitle => 'Save phrase or bookmark';
+
+	/// en: 'Phrase, meaning, or note'
+	String get bookmarkInput => 'Phrase, meaning, or note';
+
+	/// en: 'Save'
+	String get saveAction => 'Save';
+
+	/// en: 'Saved with this media item and source time.'
+	String get bookmarkSaved => 'Saved with this media item and source time.';
+
+	/// en: 'Bookmark could not be saved (100 per item maximum).'
+	String get bookmarkFailed => 'Bookmark could not be saved (100 per item maximum).';
+
+	/// en: 'Save a phrase or bookmark first.'
+	String get savePhraseFirst => 'Save a phrase or bookmark first.';
+
+	/// en: 'Export phrases for flashcards'
+	String get exportTitle => 'Export phrases for flashcards';
+
+	/// en: 'The phrase export could not be saved.'
+	String get exportFailed => 'The phrase export could not be saved.';
+
+	/// en: 'Phrase / note'
+	String get phraseNoteHeader => 'Phrase / note';
+
+	/// en: 'Source title'
+	String get sourceTitleHeader => 'Source title';
+
+	/// en: 'Time (ms)'
+	String get timeMsHeader => 'Time (ms)';
+
+	/// en: 'Source identity'
+	String get sourceIdentityHeader => 'Source identity';
+
+	/// en: 'Saved phrases'
+	String get savedPhrasesTitle => 'Saved phrases';
+
+	/// en: 'No saved phrases for this item.'
+	String get noSavedPhrases => 'No saved phrases for this item.';
+
+	/// en: 'Go to source time'
+	String get goToSourceTime => 'Go to source time';
+
+	/// en: 'Delete phrase'
+	String get deletePhrase => 'Delete phrase';
+
+	/// en: 'The bookmark could not be replayed.'
+	String get bookmarkReplayFailed => 'The bookmark could not be replayed.';
+
+	/// en: 'The phrase could not be deleted.'
+	String get deletePhraseFailed => 'The phrase could not be deleted.';
+
+	/// en: 'Stop loop'
+	String get stopLoop => 'Stop loop';
+
+	/// en: 'Saved phrases'
+	String get savedPhrasesAction => 'Saved phrases';
+
+	/// en: 'Export phrases'
+	String get exportPhrases => 'Export phrases';
+
+	/// en: 'Replay cue ${index}'
+	String replayCue({required Object index}) => 'Replay cue ${index}';
+
+	/// en: 'Look up a word or phrase'
+	String get lookupTooltip => 'Look up a word or phrase';
+
+	/// en: 'Copy cue text'
+	String get copyCueText => 'Copy cue text';
+
+	/// en: 'Save phrase or bookmark'
+	String get savePhraseTooltip => 'Save phrase or bookmark';
+
+	/// en: 'No transcript cues match this search.'
+	String get noMatchingCues => 'No transcript cues match this search.';
+
+}
+
 // Path: videoControls.subtitleRoles
 class Translations$videoControls$subtitleRoles$en {
 	Translations$videoControls$subtitleRoles$en.internal(this._root);
@@ -17743,6 +17889,51 @@ extension on Translations {
 			'videoControls.subtitleCompanionJobs.ocrAuto' => 'Detect caption text regions',
 			'videoControls.subtitleCompanionJobs.sceneReview' => 'Review audiovisual context',
 			'videoControls.subtitleCompanionJobs.singingAlign' => 'Align lyrics to singing',
+			'videoControls.subtitleStudy.title' => 'Transcript study',
+			'videoControls.subtitleStudy.searchLabel' => 'Search dialogue',
+			'videoControls.subtitleStudy.description' => 'Replay uses the selected transcript’s source times. Use a synchronized transcript for this media and audio track.',
+			'videoControls.subtitleStudy.hideFuture' => 'Hide future dialogue',
+			'videoControls.subtitleStudy.pauseAfterLine' => 'Pause after line',
+			'videoControls.subtitleStudy.repeatLine' => 'Repeat selected line',
+			'videoControls.subtitleStudy.leadIn' => ({required Object milliseconds}) => 'Lead-in ${milliseconds} ms',
+			'videoControls.subtitleStudy.loopGap' => ({required Object milliseconds}) => 'Loop gap ${milliseconds} ms',
+			'videoControls.subtitleStudy.milliseconds' => ({required Object milliseconds}) => '${milliseconds} ms',
+			'videoControls.subtitleStudy.pauseAtCueFailed' => 'Playback could not pause at this cue.',
+			'videoControls.subtitleStudy.replayingCue' => ({required Object index}) => 'Replaying cue ${index}',
+			'videoControls.subtitleStudy.replayCueFailed' => 'This player could not replay the cue.',
+			'videoControls.subtitleStudy.lookupTitle' => 'Look up a word or phrase',
+			'videoControls.subtitleStudy.lookupInput' => 'Word or phrase to look up',
+			'videoControls.subtitleStudy.lookupPrivacy' => 'Opens English Wiktionary in your browser and sends only the term you enter. Copying text remains available offline.',
+			'videoControls.subtitleStudy.offlineDictionaries' => 'Offline dictionaries',
+			'videoControls.subtitleStudy.openDictionary' => 'Open dictionary',
+			'videoControls.subtitleStudy.dictionaryBrowserUnavailable' => 'This device cannot open a dictionary browser. Copy the term for lookup on another device.',
+			'videoControls.subtitleStudy.dictionaryOpenFailed' => 'The dictionary could not be opened.',
+			'videoControls.subtitleStudy.bookmarkTitle' => 'Save phrase or bookmark',
+			'videoControls.subtitleStudy.bookmarkInput' => 'Phrase, meaning, or note',
+			'videoControls.subtitleStudy.saveAction' => 'Save',
+			'videoControls.subtitleStudy.bookmarkSaved' => 'Saved with this media item and source time.',
+			'videoControls.subtitleStudy.bookmarkFailed' => 'Bookmark could not be saved (100 per item maximum).',
+			'videoControls.subtitleStudy.savePhraseFirst' => 'Save a phrase or bookmark first.',
+			'videoControls.subtitleStudy.exportTitle' => 'Export phrases for flashcards',
+			'videoControls.subtitleStudy.exportFailed' => 'The phrase export could not be saved.',
+			'videoControls.subtitleStudy.phraseNoteHeader' => 'Phrase / note',
+			'videoControls.subtitleStudy.sourceTitleHeader' => 'Source title',
+			'videoControls.subtitleStudy.timeMsHeader' => 'Time (ms)',
+			'videoControls.subtitleStudy.sourceIdentityHeader' => 'Source identity',
+			'videoControls.subtitleStudy.savedPhrasesTitle' => 'Saved phrases',
+			'videoControls.subtitleStudy.noSavedPhrases' => 'No saved phrases for this item.',
+			'videoControls.subtitleStudy.goToSourceTime' => 'Go to source time',
+			'videoControls.subtitleStudy.deletePhrase' => 'Delete phrase',
+			'videoControls.subtitleStudy.bookmarkReplayFailed' => 'The bookmark could not be replayed.',
+			'videoControls.subtitleStudy.deletePhraseFailed' => 'The phrase could not be deleted.',
+			'videoControls.subtitleStudy.stopLoop' => 'Stop loop',
+			'videoControls.subtitleStudy.savedPhrasesAction' => 'Saved phrases',
+			'videoControls.subtitleStudy.exportPhrases' => 'Export phrases',
+			'videoControls.subtitleStudy.replayCue' => ({required Object index}) => 'Replay cue ${index}',
+			'videoControls.subtitleStudy.lookupTooltip' => 'Look up a word or phrase',
+			'videoControls.subtitleStudy.copyCueText' => 'Copy cue text',
+			'videoControls.subtitleStudy.savePhraseTooltip' => 'Save phrase or bookmark',
+			'videoControls.subtitleStudy.noMatchingCues' => 'No transcript cues match this search.',
 			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
 			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
 			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',

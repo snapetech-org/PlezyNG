@@ -87,7 +87,7 @@ final class SubtitleAiService {
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
 
   static bool get supportedPlatform {
-    if (_tizenBuild) return SubtitleWhisperCppService.supportedPlatform;
+    if (_tizenBuild || _webOsBuild) return SubtitleWhisperCppService.supportedPlatform;
     return !kIsWeb &&
         !_webOsBuild &&
         !_tvOsBuild &&
@@ -95,7 +95,7 @@ final class SubtitleAiService {
   }
 
   static List<SubtitleInferenceProvider> get availableProviderRequests {
-    if (_tizenBuild) return const [SubtitleInferenceProvider.cpu];
+    if (_tizenBuild || _webOsBuild) return const [SubtitleInferenceProvider.cpu];
     if (Platform.isAndroid) {
       return const [SubtitleInferenceProvider.cpu, SubtitleInferenceProvider.qnn, SubtitleInferenceProvider.rknn];
     }

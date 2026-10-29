@@ -1258,6 +1258,9 @@ void _registerAppLicenses() {
     yield LicenseEntryWithLineBreaks(const [
       'Provider artwork',
     ], await rootBundle.loadString('assets/provider_marks/NOTICE.txt'));
+    yield LicenseEntryWithLineBreaks(const [
+      'flutter_whisper_ggml and whisper.cpp (MIT)',
+    ], await rootBundle.loadString('assets/licenses/FlutterWhisperGGML_MIT.txt'));
   });
   if (const bool.fromEnvironment('PLEZY_WEBOS')) {
     LicenseRegistry.addLicense(() async* {

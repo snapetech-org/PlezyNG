@@ -35,6 +35,8 @@ final class SubtitleGlossaryRevision {
 
 abstract final class SubtitleTranslationService {
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
+  static const bool _tizenBuild = bool.fromEnvironment('PLEZY_TIZEN');
+  static const bool _webOsBuild = bool.fromEnvironment('PLEZY_WEBOS');
   static final RegExp _numericTokenPattern = RegExp(r'\d+(?:[.,:/-]\d+)*');
   static final RegExp _protectedSubtitleSpanPattern = RegExp(
     r'^[ \t]*(?:[-–—][ \t]*)?\p{Lu}[\p{Lu}\p{N}_. \x27-]{0,31}:(?=[ \t])|<[^>]{0,160}>|\{[^}]{0,160}\}|\\[Nnh]|(?:[Hh][Tt][Tt][Pp][Ss]?://|[Ww][Ww][Ww]\.|[Mm][Aa][Ii][Ll][Tt][Oo]:)[^\s<>{}]+',
@@ -44,7 +46,11 @@ abstract final class SubtitleTranslationService {
 
   static bool get mobilePlatformSupported => !kIsWeb && !_tvOsBuild && (Platform.isAndroid || Platform.isIOS);
 
-  static bool get desktopPlatformSupported => !kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
+  static bool get desktopPlatformSupported =>
+      !kIsWeb &&
+      !_tizenBuild &&
+      !_webOsBuild &&
+      (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
 
   static bool get platformSupported => mobilePlatformSupported || desktopPlatformSupported;
 

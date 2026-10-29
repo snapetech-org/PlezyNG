@@ -30,6 +30,7 @@ RUNTIME_LIBRARIES = (
 REQUIRED_NATIVE_LIBRARIES = (
     "libapp.so",
     "libplezy_torrent.so",
+    "libflutter_whisper_plugin.so",
     "libflutter_secure_storage_webos_plugin.so",
     "libshared_preferences_webos_plugin.so",
     "libvideo_player_drm_plugin.so",
@@ -213,6 +214,54 @@ def verify_arm_elf(data: bytes, name: str) -> None:
         raise ValueError(f"{name} has ELF machine {machine}; expected ARM (40)")
 
 
+def verify_arm_elf_exports(data: bytes, name: str, required: set[str]) -> None:
+    """Require public, defined ELF32 dynamic symbols used by Dart FFI."""
+    if len(data) < 52 or data[:4] != b"\x7fELF" or data[4:6] != b"\x01\x01":
+        raise ValueError(f"{name} is not a little-endian ELF32 shared library")
+    section_offset = struct.unpack_from("<I", data, 32)[0]
+    section_size, section_count = struct.unpack_from("<HH", data, 46)
+    if section_size != 40 or section_count == 0:
+        raise ValueError(f"{name} has unsupported or missing ELF section metadata")
+    if section_offset + section_size * section_count > len(data):
+        raise ValueError(f"{name} has a truncated ELF section table")
+
+    sections = [
+        struct.unpack_from("<IIIIIIIIII", data, section_offset + index * section_size)
+        for index in range(section_count)
+    ]
+    found: set[str] = set()
+    for section in sections:
+        if section[1] != 11:  # SHT_DYNSYM
+            continue
+        string_index = section[6]
+        entry_size = section[9]
+        if string_index >= len(sections) or entry_size < 16 or section[5] % entry_size:
+            raise ValueError(f"{name} has malformed dynamic symbol metadata")
+        strings_section = sections[string_index]
+        if strings_section[1] != 3:  # SHT_STRTAB
+            raise ValueError(f"{name} dynamic symbols do not link to a string table")
+        strings_start = strings_section[4]
+        strings_end = strings_start + strings_section[5]
+        symbols_start = section[4]
+        symbols_end = symbols_start + section[5]
+        if strings_end > len(data) or symbols_end > len(data):
+            raise ValueError(f"{name} has a truncated dynamic symbol or string table")
+
+        for offset in range(symbols_start, symbols_end, entry_size):
+            string_offset, _, _, info, _, section_index = struct.unpack_from("<IIIBBH", data, offset)
+            if string_offset >= strings_section[5] or section_index == 0 or info >> 4 not in (1, 2):
+                continue
+            start = strings_start + string_offset
+            end = data.find(b"\0", start, strings_end)
+            if end < 0:
+                raise ValueError(f"{name} has an unterminated dynamic symbol name")
+            found.add(data[start:end].decode("ascii", errors="replace"))
+
+    missing = required - found
+    if missing:
+        raise ValueError(f"{name} is missing public dynamic symbols: {sorted(missing)!r}")
+
+
 def load_lock() -> dict[str, object]:
     try:
         return json.loads(LOCK_PATH.read_text(encoding="utf-8"))
@@ -342,6 +391,20 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
         expected_libraries = lock["lgArtifacts"]["runtimeLibraries"]
         if name in expected_libraries and sha256(contents) != expected_libraries[name]:
             raise ValueError(f"{name} differs from the pinned runtime library")
+        if name == "libflutter_whisper_plugin.so":
+            verify_arm_elf_exports(
+                contents,
+                name,
+                {"fw_device_count", "fw_create", "fw_transcribe_v2"},
+            )
+
+    whisper_runtime = lock.get("whisperRuntime")
+    if (
+        not isinstance(whisper_runtime, dict)
+        or whisper_runtime.get("backend") != "CPU-only"
+        or whisper_runtime.get("playbackCapture") is not False
+    ):
+        raise ValueError("webOS Whisper must remain CPU-only and WAV-only")
 
     packaged_notice = selected[notice_path]
     if packaged_notice != LICENSE_ASSET.read_bytes():

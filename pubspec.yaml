@@ -259,6 +259,7 @@ flutter:
     - assets/licenses/Steam_NATIVE.txt
     - assets/licenses/SpatialAudioBridge.txt
     - assets/licenses/LGFlutterWebOSRuntimeNotice.txt
+    - assets/licenses/FlutterWhisperGGML_MIT.txt
     - assets/licenses/dart_smb2_NOTICE.txt
     - assets/licenses/AMSMB2_NOTICE.txt
     - assets/licenses/AMSMB2_MIT_LICENSE.txt

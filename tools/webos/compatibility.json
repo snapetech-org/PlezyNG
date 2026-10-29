@@ -39,6 +39,14 @@
       ]
     }
   },
+  "whisperRuntime": {
+    "package": "flutter_whisper_ggml",
+    "version": "0.0.2",
+    "archiveSha256": "a37a1f51f6617d0beae9ce907a25c361f782cfe76d56e9c8001257a3091d2b57",
+    "archiveUrl": "https://pub.dev/api/archives/flutter_whisper_ggml-0.0.2.tar.gz",
+    "backend": "CPU-only",
+    "playbackCapture": false
+  },
   "engineBuild": {
     "hostArgs": "tools/webos/engine-args-host.gn",
     "armArgs": "tools/webos/engine-args-arm.gn",

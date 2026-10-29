@@ -60,12 +60,17 @@ final class SubtitleWhisperCppService {
   static const bool _tizenBuild = bool.fromEnvironment('PLEZY_TIZEN');
   static const bool _webOsBuild = bool.fromEnvironment('PLEZY_WEBOS');
   static bool? _tizenWhisperRuntimeState;
+  static bool? _webOsWhisperRuntimeState;
 
   static bool get supportedPlatform {
     if (_tizenBuild) return _tizenWhisperRuntimeAvailable;
+    if (_webOsBuild) return _webOsWhisperRuntimeAvailable;
     return !_tvOsBuild &&
-        !_webOsBuild &&
-        (Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isMacOS || Platform.isLinux);
+        (Platform.isAndroid ||
+            Platform.isIOS ||
+            Platform.isWindows ||
+            Platform.isMacOS ||
+            Platform.isLinux);
   }
 
   static bool get _tizenWhisperRuntimeAvailable => _tizenWhisperRuntimeState ??= _probeTizenWhisperRuntime();
@@ -74,7 +79,21 @@ final class SubtitleWhisperCppService {
     try {
       ffi.DynamicLibrary.open(
         'libflutter_whisper_plugin.so',
-      ).lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>('fw_version');
+      ).lookup<ffi.NativeFunction<ffi.Int32 Function()>>('fw_device_count');
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static bool get _webOsWhisperRuntimeAvailable =>
+      _webOsWhisperRuntimeState ??= _probeWebOsWhisperRuntime();
+
+  static bool _probeWebOsWhisperRuntime() {
+    try {
+      ffi.DynamicLibrary.open(
+        'libflutter_whisper_plugin.so',
+      ).lookup<ffi.NativeFunction<ffi.Int32 Function()>>('fw_device_count');
       return true;
     } catch (_) {
       return false;

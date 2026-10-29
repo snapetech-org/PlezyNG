@@ -31,10 +31,10 @@ READ_SIZE = 1024 * 1024
 # The broker requires 40 GiB while the Mac is idle. Keep this per-job SDK
 # cache under RUNNER_TEMP so the worker removes it after each job and restores
 # that idle capacity before it dispatches another Apple job. Flutter 3.47.1's
-# 2.1 GiB archive and extracted SDK fit within 11 GiB of install headroom while
+# 2.1 GiB archive and extracted SDK fit within 10 GiB of install headroom while
 # retaining the 30 GiB minimum needed during the job.
 MIN_FREE_BYTES = 30 * 1024**3
-INSTALL_HEADROOM_BYTES = 11 * 1024**3
+INSTALL_HEADROOM_BYTES = 10 * 1024**3
 CONTENT_RANGE_RE = re.compile(r"^bytes (\d+)-(\d+)/(\d+)$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 

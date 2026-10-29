@@ -26,14 +26,14 @@ from scripts.cache_macos_flutter_sdk import (
 
 
 class FlutterSdkCacheTest(unittest.TestCase):
-    def test_per_job_install_reserves_space_but_fits_current_mac_capacity(self) -> None:
+    def test_per_job_install_reserves_space_and_fits_current_mac_capacity(self) -> None:
         self.assertEqual(MIN_FREE_BYTES, 30 * 1024**3)
-        self.assertEqual(INSTALL_HEADROOM_BYTES, 11 * 1024**3)
+        self.assertEqual(INSTALL_HEADROOM_BYTES, 10 * 1024**3)
 
-        require_install_headroom(int(41.9 * 1024**3))
+        require_install_headroom(int(40.9 * 1024**3))
 
-        with self.assertRaisesRegex(RuntimeError, "41 GiB free"):
-            require_install_headroom(int(40.9 * 1024**3))
+        with self.assertRaisesRegex(RuntimeError, "40 GiB free"):
+            require_install_headroom(int(39.9 * 1024**3))
 
     def test_flutter_sdk_cache_must_be_inside_the_current_job_temp_directory(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

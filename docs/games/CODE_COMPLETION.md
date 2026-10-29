@@ -53,6 +53,16 @@ does not replace the SDK build and real-device acceptance cases in
   Flutter overlay and Android native controls. Defaults and 48-pixel minimum hit
   targets stay intact. Changes apply when the next stream opens.
 
+- Explicit microphone sharing now captures on Android (AudioRecord), Windows
+  (WASAPI), Linux (GStreamer) and iOS/macOS (AVAudioEngine). OS permission and
+  current input ownership gate capture; 10 ms Opus frames use the authenticated
+  Steam transport. Fixed-size buffers, bounded queues, stale-generation checks
+  and a transport channel lifetime guard protect capture and teardown. The
+  visible toolbar indicator distinguishes starting from actual submission.
+  Leaving input ownership, opening a dialog, backgrounding or disconnecting
+  mutes; capture never resumes automatically. tvOS reports unavailable and does
+  not advertise microphone capture. See [STEAM_MICROPHONE.md](STEAM_MICROPHONE.md).
+
 ## Remaining contracts and qualification
 
 - Cloud settings: public Steamworks exposes account-wide read access and an
@@ -61,7 +71,7 @@ does not replace the SDK build and real-device acceptance cases in
 - Steam Input game-side glyph/action APIs and automatic Together invites belong
   to the game SDK, not an arbitrary receiver. The implemented receiver layout and
   host overlay flows do not impersonate game AppIDs.
-- Rumble/gyro, microphone forwarding and unrestricted drag-to-position touch
+- Rumble/gyro and unrestricted drag-to-position touch
   editing are not implemented. They require additional platform/device plumbing;
   they are not relabeled as hardware-only qualification. Steam game-side glyph
   and action-set integration also needs the game's own cooperation.
@@ -98,3 +108,9 @@ The final input pass expands verification to 141 Steam Flutter tests and 16
 Android JVM tests, while retaining the native build/test and strict Linux/Windows
 adapter checks. See [VALIDATION.md](VALIDATION.md#code-follow-through--2026-10-29)
 for the exact distinction between source checks and platform qualification.
+
+The microphone checkpoint additionally passes 26 receiver/ownership Flutter
+tests, the standard analyzer, 42 native tests (one display case skipped), Android
+Java API 36 compilation, and Windows runtime/test executable links. The runtime
+suite now includes concurrent microphone channel removal and lease invalidation;
+the audio suite decodes real 10 ms Opus packets at every supported input rate.

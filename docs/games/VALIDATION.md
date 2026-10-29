@@ -637,3 +637,22 @@ No Apple SDK, Android release package, MSVC execution, hardware HDR/chroma,
 production relay deployment or live Valve account mutation is claimed. Follow
 [CODE_COMPLETION.md](CODE_COMPLETION.md) for the remaining contract/code boundaries
 and [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md) for exact-commit build cases.
+
+## Microphone source checkpoint — 2026-10-29
+
+- 26 receiver/ownership Flutter tests pass, including late-start revocation,
+  permission/device rejection, explicit opt-in and dialog/lease muting.
+- Standard analyzer passes with zero diagnostics.
+- 42 native tests pass; one independent display test is skipped. Real Opus
+  round trips cover mono/stereo at 8/12/16/24/48 kHz, split frames and buffer
+  clearing. Runtime tests race capture submission against 100 host channel
+  start/stop cycles and reject expired leases and overlapping capture workers.
+- Android Steam Java compiles against API 36 with the same 20 deprecation
+  warnings. Windows MinGW compiles and links the WASAPI implementation into
+  the receiver test executable. Linux adapter syntax checks pass under Werror.
+- Apple capture, microphone entitlements/privacy text and tvOS availability
+  guards are source-integrated; Apple SDK compilation is still required.
+
+Kotlin/Gradle/NDK, MSVC, signed Apple builds and permission/device/Steam-host
+qualification remain handoff checks. No live microphone or user audio was
+accessed during these source tests.

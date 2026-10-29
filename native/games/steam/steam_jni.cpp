@@ -176,6 +176,45 @@ extern "C" JNIEXPORT jlong JNICALL JNI(create)(JNIEnv*, jclass) {
   registry.emplace(id, std::make_shared<Runtime>());
   return id;
 }
+extern "C" JNIEXPORT jlongArray JNICALL JNI(microphoneBegin)(JNIEnv* env, jclass, jlong id) {
+  auto runtime = get(id);
+  if (!runtime) return nullptr;
+  const auto lease = runtime->beginMicrophone();
+  if (!lease) return nullptr;
+  auto result = env->NewLongArray(3);
+  if (!result) {
+    runtime->finishMicrophone(lease.epoch);
+    return nullptr;
+  }
+  const jlong values[] = {static_cast<jlong>(lease.epoch), lease.rate, lease.channels};
+  env->SetLongArrayRegion(result, 0, 3, values);
+  return result;
+}
+extern "C" JNIEXPORT jboolean JNICALL JNI(microphoneCurrent)(JNIEnv*, jclass, jlong id, jlong epoch) {
+  auto runtime = get(id);
+  return runtime && runtime->microphoneCurrent(static_cast<uint64_t>(epoch));
+}
+extern "C" JNIEXPORT jboolean JNICALL
+JNI(microphonePcm)(JNIEnv* env, jclass, jlong id, jlong epoch, jshortArray pcm, jint count) {
+  auto runtime = get(id);
+  if (!runtime || !pcm || count < 1 || count > 11520 || env->GetArrayLength(pcm) < count) return JNI_FALSE;
+  std::array<int16_t, 11520> samples{};
+  env->GetShortArrayRegion(pcm, 0, count, samples.data());
+  const bool sent =
+      !env->ExceptionCheck() && runtime->microphonePcm(static_cast<uint64_t>(epoch), samples.data(), count);
+  samples.fill(0);
+  return sent;
+}
+extern "C" JNIEXPORT void JNICALL JNI(microphoneFinish)(JNIEnv*, jclass, jlong id, jlong epoch) {
+  if (auto runtime = get(id)) runtime->finishMicrophone(static_cast<uint64_t>(epoch));
+}
+extern "C" JNIEXPORT void JNICALL JNI(microphoneMute)(JNIEnv*, jclass, jlong id) {
+  if (auto runtime = get(id)) runtime->muteMicrophone();
+}
+extern "C" JNIEXPORT jint JNICALL JNI(microphoneState)(JNIEnv*, jclass, jlong id) {
+  auto runtime = get(id);
+  return runtime ? runtime->microphoneState() : 0;
+}
 extern "C" JNIEXPORT void JNICALL JNI(cancel)(JNIEnv*, jclass, jlong id) {
   if (auto r = get(id)) r->cancel();
 }

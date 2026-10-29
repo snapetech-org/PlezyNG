@@ -11845,6 +11845,27 @@ class Translations$games$en {
 
 	/// en: 'Applied when the next Steam stream opens. Button labels and actions stay the same; hit targets stay at least 48 pixels. Center controls keep their position.'
 	String get touchAppearanceHelp => 'Applied when the next Steam stream opens. Button labels and actions stay the same; hit targets stay at least 48 pixels. Center controls keep their position.';
+
+	/// en: 'Microphone muted'
+	String get microphoneMuted => 'Microphone muted';
+
+	/// en: 'Starting microphone…'
+	String get microphoneStarting => 'Starting microphone…';
+
+	/// en: 'Microphone shared with Steam'
+	String get microphoneActive => 'Microphone shared with Steam';
+
+	/// en: 'Share microphone'
+	String get microphoneEnable => 'Share microphone';
+
+	/// en: 'Send live microphone audio to this paired Steam computer for game and voice chat. Recording stops when you leave the stream, open a dialog, or switch input ownership. You must turn it on again. Use headphones to avoid feedback.'
+	String get microphoneHelp => 'Send live microphone audio to this paired Steam computer for game and voice chat. Recording stops when you leave the stream, open a dialog, or switch input ownership. You must turn it on again. Use headphones to avoid feedback.';
+
+	/// en: 'The microphone could not start. Check device permissions, the input device and the host’s Remote Play microphone setting, then try again.'
+	String get microphoneFailed => 'The microphone could not start. Check device permissions, the input device and the host’s Remote Play microphone setting, then try again.';
+
+	/// en: 'Mute microphone'
+	String get microphoneMute => 'Mute microphone';
 }
 
 // Path: deepLinks
@@ -18848,6 +18869,13 @@ extension on Translations {
 			'games.touchOpacity' => 'Steam touch control opacity',
 			'games.swapTouchSides' => 'Swap Steam controller sides',
 			'games.touchAppearanceHelp' => 'Applied when the next Steam stream opens. Button labels and actions stay the same; hit targets stay at least 48 pixels. Center controls keep their position.',
+			'games.microphoneMuted' => 'Microphone muted',
+			'games.microphoneStarting' => 'Starting microphone…',
+			'games.microphoneActive' => 'Microphone shared with Steam',
+			'games.microphoneEnable' => 'Share microphone',
+			'games.microphoneHelp' => 'Send live microphone audio to this paired Steam computer for game and voice chat. Recording stops when you leave the stream, open a dialog, or switch input ownership. You must turn it on again. Use headphones to avoid feedback.',
+			'games.microphoneFailed' => 'The microphone could not start. Check device permissions, the input device and the host’s Remote Play microphone setting, then try again.',
+			'games.microphoneMute' => 'Mute microphone',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

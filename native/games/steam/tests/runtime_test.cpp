@@ -15,11 +15,19 @@
 extern "C" {
 #include "hid/provider.h"
 #include "protobuf/discovery.pb-c.h"
+#include "session/channels/ch_data_microphone.h"
 #include "session/frame_tracker.h"
 }
 using namespace plezy::steam;
 namespace plezy::steam {
 struct RuntimeTest {
+  static void microphoneSession(Runtime& runtime, IHS_Session* session) {
+    runtime.session_ = session;
+    if (session) {
+      static const IHS_StreamMicrophoneCallbacks callbacks{Runtime::microphoneStart, Runtime::microphoneStop};
+      IHS_SessionSetMicrophoneCallbacks(session, &callbacks, &runtime);
+    }
+  }
   static void target(Runtime& runtime, uint32_t numerator, uint32_t denominator, uint32_t reasons, int32_t bitrate) {
     Runtime::videoFramerate(nullptr, numerator, denominator, reasons, &runtime);
     Runtime::videoBitrate(nullptr, bitrate, &runtime);
@@ -197,7 +205,76 @@ void controllerMappings() {
   runtime.padSeat(1, {}, 1);
   assert(RuntimeTest::pad(runtime, 0)->buttons == 2 && RuntimeTest::pad(runtime, 1)->buttons == 1);
 }
+void microphoneOwnership() {
+  Runtime runtime;
+  assert(runtime.microphoneState() == 0 && !runtime.beginMicrophone());
+  uint8_t key[32]{};
+  IHS_ClientConfig config{1, key, "microphone test"};
+  IHS_SessionInfo info{};
+  assert(IHS_IPAddressFromString(&info.address.ip, "127.0.0.1"));
+  info.address.port = 27036;
+  auto* session = IHS_SessionCreate(&config, &info);
+  assert(session);
+  RuntimeTest::microphoneSession(runtime, session);
+  CStartAudioDataMsg format = CSTART_AUDIO_DATA_MSG__INIT;
+  format.channel = 8;
+  format.frequency = 48000;
+  format.channels = 1;
+  format.codec = k_EStreamAudioCodecOpus;
+  auto* channel = IHS_SessionChannelDataMicrophoneCreate(session, &format);
+  IHS_SessionChannelAdd(session, channel);
+  assert(runtime.microphoneState() == 1);  // Host request cannot open capture.
+  auto lease = runtime.beginMicrophone();
+  assert(lease && lease.rate == 48000 && lease.channels == 1);
+  assert(!runtime.beginMicrophone());  // One capture worker per session.
+  int16_t pcm[480]{};
+  assert(runtime.microphonePcm(lease.epoch, pcm, 480));
+  assert(runtime.microphoneState() == 3);
+  runtime.muteMicrophone();
+  assert(!runtime.microphoneCurrent(lease.epoch));
+  assert(!runtime.microphonePcm(lease.epoch, pcm, 480));
+  assert(!runtime.beginMicrophone());  // Old worker must acknowledge retirement.
+  runtime.finishMicrophone(lease.epoch);
+  auto next = runtime.beginMicrophone();
+  assert(next && next.epoch != lease.epoch);
+  runtime.finishMicrophone(lease.epoch);  // A late old worker cannot mute the new capture.
+  assert(runtime.microphoneCurrent(next.epoch));
+  InputState input(1);
+  input.enabled(runtime, true);
+  input.enabled(runtime, false);
+  assert(!runtime.microphoneCurrent(next.epoch));
+  runtime.finishMicrophone(next.epoch);
+  next = runtime.beginMicrophone();
+  assert(next);
+  IHS_SessionChannelRemove(session, static_cast<IHS_SessionChannelId>(8));
+  assert(runtime.microphoneState() == 0);
+  assert(!runtime.microphonePcm(next.epoch, pcm, 480));
+  runtime.finishMicrophone(next.epoch);
+  // Capture submission races host start/stop. The transport's dedicated
+  // microphone guard must prevent access to a freed/moved channel.
+  std::atomic<bool> running{true};
+  auto sender = std::async(std::launch::async, [&] {
+    uint8_t opus[] = {0xf8, 0xff, 0xfe};
+    while (running) {
+      IHS_SessionSendMicrophoneData(session, opus, sizeof(opus));
+      std::this_thread::yield();
+    }
+  });
+  for (int i = 0; i < 100; ++i) {
+    IHS_SessionChannelAdd(session, IHS_SessionChannelDataMicrophoneCreate(session, &format));
+    std::this_thread::yield();
+    IHS_SessionChannelRemove(session, static_cast<IHS_SessionChannelId>(8));
+  }
+  running = false;
+  sender.get();
+  format.frequency = 44100;
+  IHS_SessionChannelAdd(session, IHS_SessionChannelDataMicrophoneCreate(session, &format));
+  assert(runtime.microphoneState() == 0 && !runtime.beginMicrophone());
+  RuntimeTest::microphoneSession(runtime, nullptr);
+  IHS_SessionDestroy(session);
+}
 int main() {
+  microphoneOwnership();
   controllerMappings();
   assert(validInputText(u8"日本語 Ελληνικά 🙂\n"));
   assert(validInputText(std::string(512, 'x')));

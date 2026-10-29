@@ -44,6 +44,7 @@ void Runtime::cancel() {
     cancelled_ = true;
   }
   condition_.notify_all();
+  muteMicrophone();
 }
 void Runtime::finish(int result) {
   std::lock_guard<std::mutex> lock(mutex_);
@@ -210,10 +211,12 @@ int Runtime::run(
       videoSubmit,
       [](IHS_Session*, const IHS_VideoEpochInfo*, void* ctx) { static_cast<Runtime*>(ctx)->clearFrames(); }};
   static const IHS_StreamAudioCallbacks audioCallbacks{audioStart, audioSubmit, audioStop};
+  static const IHS_StreamMicrophoneCallbacks microphoneCallbacks{microphoneStart, microphoneStop};
   IHS_SessionSetSessionCallbacks(session, &sessionCallbacks, &context);
   IHS_SessionSetVideoCallbacks(session, &videoCallbacks, this);
   IHS_SessionSetVideoTrackingIdentity(session, credentials.device);
   IHS_SessionSetAudioCallbacks(session, &audioCallbacks, this);
+  if (options.microphone) IHS_SessionSetMicrophoneCallbacks(session, &microphoneCallbacks, this);
   for (int seat = 0; seat < options.controllerCount; ++seat)
     IHS_SessionHIDAddProvider(session, makeController(pads_[seat], static_cast<unsigned>(seat)));
   {
@@ -221,6 +224,7 @@ int Runtime::run(
     session_ = session;
   }
   result = IHS_SessionConnect(session) ? awaitSession(std::chrono::seconds(30), std::chrono::seconds(12)) : -1;
+  muteMicrophone();
   // Stop accepting input before teardown, but never hold apiMutex_ while joining
   // a callback thread: renderer completion can arrive during shutdown.
   {
@@ -232,6 +236,80 @@ int Runtime::run(
   IHS_SessionDestroy(session);
   sink_.reset();
   return result;
+}
+int Runtime::microphoneStart(IHS_Session*, const IHS_StreamAudioConfig* config, void* context) {
+  auto* self = static_cast<Runtime*>(context);
+  std::lock_guard<std::mutex> lock(self->microphoneMutex_);
+  ++self->microphoneEpoch_;
+  self->microphoneEnabled_ = self->microphoneSending_ = false;
+  self->microphoneRate_ = self->microphoneChannels_ = 0;
+  self->microphone_.reset();
+  if (self->cancelled_ || !config || config->codec != IHS_StreamAudioCodecOpus || config->codecDataLen > 65536 ||
+      !self->microphone_.start(config->frequency, config->channels))
+    return -1;
+  self->microphoneRate_ = config->frequency;
+  self->microphoneChannels_ = config->channels;
+  return 0;
+}
+void Runtime::microphoneStop(IHS_Session*, void* context) {
+  auto* self = static_cast<Runtime*>(context);
+  std::lock_guard<std::mutex> lock(self->microphoneMutex_);
+  ++self->microphoneEpoch_;
+  self->microphoneEnabled_ = self->microphoneSending_ = false;
+  self->microphoneRate_ = self->microphoneChannels_ = 0;
+  self->microphone_.reset();
+}
+MicrophoneLease Runtime::beginMicrophone() {
+  std::lock_guard<std::mutex> api(apiMutex_);
+  std::lock_guard<std::mutex> lock(microphoneMutex_);
+  if (!session_ || cancelled_ || !microphoneRate_ || microphoneCapture_) return {};
+  microphone_.clear();
+  microphoneEnabled_ = true;
+  microphoneSending_ = false;
+  microphoneCapture_ = ++microphoneEpoch_;
+  return {microphoneCapture_, microphoneRate_, microphoneChannels_};
+}
+bool Runtime::microphoneCurrent(uint64_t epoch) {
+  std::lock_guard<std::mutex> lock(microphoneMutex_);
+  return epoch && epoch == microphoneEpoch_ && microphoneEnabled_ && !cancelled_;
+}
+bool Runtime::microphonePcm(uint64_t epoch, const int16_t* samples, size_t count) {
+  // The same lock order is used by beginMicrophone. Transport callbacks only
+  // acquire microphoneMutex_; they never join capture workers.
+  std::lock_guard<std::mutex> api(apiMutex_);
+  std::lock_guard<std::mutex> lock(microphoneMutex_);
+  if (!session_ || cancelled_ || !epoch || epoch != microphoneEpoch_ || !microphoneEnabled_) return false;
+  const bool ok = microphone_.push(samples, count, [this](const uint8_t* packet, size_t length) {
+    const bool sent = IHS_SessionSendMicrophoneData(session_, packet, length);
+    if (sent) microphoneSending_ = true;
+    return sent;
+  });
+  if (!ok) {
+    microphoneEnabled_ = microphoneSending_ = false;
+    microphone_.clear();
+  }
+  return ok;
+}
+void Runtime::finishMicrophone(uint64_t epoch) {
+  std::lock_guard<std::mutex> lock(microphoneMutex_);
+  if (microphoneCapture_ != epoch || !epoch) return;
+  microphoneCapture_ = 0;
+  if (microphoneEpoch_ == epoch) {
+    ++microphoneEpoch_;
+    microphoneEnabled_ = microphoneSending_ = false;
+    microphone_.clear();
+  }
+}
+void Runtime::muteMicrophone() {
+  std::lock_guard<std::mutex> lock(microphoneMutex_);
+  ++microphoneEpoch_;
+  microphoneEnabled_ = microphoneSending_ = false;
+  microphone_.clear();
+}
+int Runtime::microphoneState() {
+  std::lock_guard<std::mutex> lock(microphoneMutex_);
+  if (cancelled_ || !microphoneRate_) return 0;
+  return microphoneEnabled_ ? (microphoneSending_ ? 3 : 2) : 1;
 }
 int Runtime::videoStart(IHS_Session*, const IHS_StreamVideoConfig* c, void* ctx) {
   auto* self = static_cast<Runtime*>(ctx);

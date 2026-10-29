@@ -10,6 +10,7 @@
 #include <map>
 #include <stdexcept>
 #include <thread>
+#include "SteamAppleMicrophone.h"
 #include "SteamAppleSink.h"
 #include "steam_input.h"
 
@@ -592,6 +593,9 @@ struct Session : std::enable_shared_from_this<Session> {
             }
             auto options = self->options;
             options.audioChannels = channels;
+#if TARGET_OS_TV
+            options.microphone = false;
+#endif
             options.hdr10 = options.hdr10 && pyrowave;
             int result = r->run(resolved, credentials, self->game, hevc, pyrowave, sink, options);
             {
@@ -725,6 +729,38 @@ void Session::method(FlutterMethodCall* call, FlutterResult reply) {
     return;
   }
   std::lock_guard<std::mutex> lock(mutex);
+  if ([method isEqualToString:@"requestMicrophonePermission"]) {
+#if TARGET_OS_TV
+    reply(@NO);
+#else
+    const auto status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+    if (status == AVAuthorizationStatusNotDetermined) {
+      [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio
+                               completionHandler:^(BOOL granted) {
+                                 mainQueue([reply, granted] { reply(@(granted)); });
+                               }];
+    } else {
+      reply(@(status == AVAuthorizationStatusAuthorized));
+    }
+#endif
+    return;
+  }
+  if ([method isEqualToString:@"getMicrophoneState"]) {
+#if TARGET_OS_TV
+    reply(@0);
+#else
+    reply(@(runtime ? runtime->microphoneState() : 0));
+#endif
+    return;
+  }
+  if ([method isEqualToString:@"setMicrophoneEnabled"]) {
+    const bool enable = boolean(arguments(call.arguments), @"enabled");
+    if (!enable && runtime) runtime->muteMicrophone();
+    reply(
+        @(!enable || (runtime && active && runtime->metrics().epoch == renderedEpoch && input.isEnabled() &&
+                      startMicrophoneCapture(runtime))));
+    return;
+  }
   if ([method isEqualToString:@"inputText"]) {
     auto args = arguments(call.arguments);
     id encoded = args[@"text"];

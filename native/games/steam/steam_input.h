@@ -13,9 +13,13 @@ class InputState {
  public:
   explicit InputState(unsigned count) : count_(std::clamp(count, 1u, 4u)) {}
   void enabled(Runtime& runtime, bool value) {
-    if (!value) reset(runtime);
+    if (!value) {
+      runtime.muteMicrophone();
+      reset(runtime);
+    }
     enabled_ = value;
   }
+  bool isEnabled() const { return enabled_; }
   void button(Runtime& runtime, int64_t device, const std::string& name, bool down, bool assistance = false) {
     if (!enabled_) return;
     const auto key = normalize(name);
@@ -138,6 +142,7 @@ class InputState {
     emit(runtime, 0);
   }
   void reset(Runtime& runtime) {
+    runtime.muteMicrophone();
     assistance_ = {};
     for (unsigned seat = 0; seat < count_; ++seat) {
       pads_[seat] = {};

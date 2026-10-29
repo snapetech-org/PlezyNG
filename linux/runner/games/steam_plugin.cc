@@ -15,6 +15,7 @@
 #include "../mpv/wayland_video_surface.h"
 #include "steam_gstreamer.h"
 #include "steam_input.h"
+#include "steam_microphone_capture.h"
 #include "steam_vulkan_sink.h"
 
 using namespace plezy::steam;
@@ -635,6 +636,25 @@ void Session::method(FlMethodCall* call) {
     return;
   }
   std::lock_guard<std::mutex> lock(mutex);
+  if (method == "requestMicrophonePermission") {
+    g_autoptr(FlValue) result = fl_value_new_bool(true);  // OS/device access is checked when opening the source.
+    ok(call, result);
+    return;
+  }
+  if (method == "getMicrophoneState") {
+    g_autoptr(FlValue) result = fl_value_new_int(runtime ? runtime->microphoneState() : 0);
+    ok(call, result);
+    return;
+  }
+  if (method == "setMicrophoneEnabled") {
+    const bool enable = boolean(args, "enabled");
+    if (!enable && runtime) runtime->muteMicrophone();
+    const bool accepted = !enable || (runtime && active && runtime->metrics().epoch == renderedEpoch &&
+                                      input.isEnabled() && startMicrophoneCapture(runtime));
+    g_autoptr(FlValue) result = fl_value_new_bool(accepted);
+    ok(call, result);
+    return;
+  }
   if (method == "inputText") {
     auto* value = field(args, "text");
     if (!value || fl_value_get_type(value) != FL_VALUE_TYPE_UINT8_LIST || fl_value_get_length(value) > 512)

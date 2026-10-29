@@ -16,6 +16,8 @@
     public void setControllerDeviceState(int, java.util.Map, java.util.Map);
     public void disconnectController(int);
     public boolean inputText(byte[]);
+    public int getMicrophoneState();
+    public boolean setMicrophoneEnabled(boolean);
     public void inputKey(java.lang.String, boolean);
     public void resetInput();
     public void close();

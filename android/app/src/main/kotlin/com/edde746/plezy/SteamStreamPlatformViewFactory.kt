@@ -14,14 +14,43 @@ import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
 /** Flutter adapter for the optional retained Steam view in the :steam module. */
-internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMessenger) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMessenger, private val activity: android.app.Activity) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
   companion object {
     const val VIEW_TYPE = "com.plezy/games/steam_stream"
+    private const val MICROPHONE_PERMISSION = 27039
   }
 
   private val sessions = mutableMapOf<String, Session>()
+  private var microphonePermission: MethodChannel.Result? = null
+
+  fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, results: IntArray): Boolean {
+    if (requestCode != MICROPHONE_PERMISSION) return false
+    val granted = permissions.size == 1 && permissions[0] == android.Manifest.permission.RECORD_AUDIO &&
+      results.size == 1 && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED
+    microphonePermission?.success(granted)
+    microphonePermission = null
+    return true
+  }
+
+  private fun requestMicrophonePermission(result: MethodChannel.Result) {
+    if (activity.checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+      result.success(true)
+    } else if (microphonePermission != null || activity.isFinishing || activity.isDestroyed) {
+      result.success(false)
+    } else {
+      microphonePermission = result
+      try {
+        activity.requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), MICROPHONE_PERMISSION)
+      } catch (_: RuntimeException) {
+        microphonePermission = null
+        result.success(false)
+      }
+    }
+  }
 
   fun closeAll() {
+    microphonePermission?.success(false)
+    microphonePermission = null
     sessions.values.toList().forEach { it.close() }
     sessions.clear()
   }
@@ -104,6 +133,19 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
           return
         }
         when (call.method) {
+          "requestMicrophonePermission" -> {
+            requestMicrophonePermission(result)
+            return
+          }
+          "getMicrophoneState" -> {
+            result.success(target.javaClass.getMethod("getMicrophoneState").invoke(target))
+            return
+          }
+          "setMicrophoneEnabled" -> {
+            result.success(target.javaClass.getMethod("setMicrophoneEnabled", booleanType)
+              .invoke(target, call.argument<Boolean>("enabled") == true) == true)
+            return
+          }
           "disconnect" -> {
             close()
             Thread({

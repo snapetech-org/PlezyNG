@@ -4,8 +4,10 @@
 
 #include "SteamWindowsSink.h"
 #include "red_h264.h"
+#include "steam_microphone_capture.h"
 
 int main() {
+  assert(!plezy::steam::startMicrophoneCapture(nullptr));
   using namespace plezy::steam;
   // Windows N without the Media Feature Pack is an unsupported deployment,
   // not a passing receiver test. CI must actually have a decoder installed.

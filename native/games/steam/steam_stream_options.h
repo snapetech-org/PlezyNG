@@ -7,6 +7,7 @@ struct StreamOptions {
   int controllerCount = 1;
   int audioChannels = 2;
   bool hdr10 = false;  // Actual qualified native output, not merely a preference.
+  bool microphone = true;  // Native capture availability; consent is separate.
   // Current request bounds, not the decoder's theoretical limits.
   bool valid() const {
     return width >= 640 && width <= 3840 && height >= 360 && height <= 2160 && width % 2 == 0 && height % 2 == 0 &&

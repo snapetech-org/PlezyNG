@@ -154,6 +154,8 @@ public final class SteamStreamView
   }
 
   public void setInputEnabled(boolean enabled) {
+    if (!enabled && handle != 0)
+      NativeSteam.microphoneMute(handle);
     if (inputEnabled == enabled)
       return;
     if (!enabled)
@@ -234,6 +236,21 @@ public final class SteamStreamView
   public boolean inputText(byte[] utf8) {
     return inputEnabled && !stopping && handle != 0 && utf8 != null && utf8.length <= 512
         && NativeSteam.textUtf8(handle, utf8);
+  }
+  public int getMicrophoneState() {
+    return stopping || handle == 0 ? 0 : NativeSteam.microphoneState(handle);
+  }
+  public boolean setMicrophoneEnabled(boolean enabled) {
+    long source = handle;
+    if (!enabled) {
+      if (source != 0)
+        NativeSteam.microphoneMute(source);
+      return true;
+    }
+    return inputEnabled && !stopping && source != 0 && "playing".equals(sessionState)
+        && context.checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+        == android.content.pm.PackageManager.PERMISSION_GRANTED
+        && SteamMicrophone.start(source);
   }
   public void inputKey(String name, boolean down) {
     if (!inputEnabled || stopping)
@@ -576,6 +593,8 @@ public final class SteamStreamView
   }
 
   private void releaseInput() {
+    if (handle != 0)
+      NativeSteam.microphoneMute(handle);
     controls.reset();
     controller.reset();
     controllerSeats.reset();

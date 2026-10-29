@@ -224,3 +224,11 @@ See [DESKTOP_HDR.md](DESKTOP_HDR.md) for output gating, lifecycle and the device
 - Change touch opacity and swap controller sides in profile settings. Start a
   new stream on Android and a texture receiver; verify unchanged labels/actions,
   independent multi-touch release, physical minimum targets and profile isolation.
+
+## Microphone forwarding
+
+Follow [STEAM_MICROPHONE.md](STEAM_MICROPHONE.md) on each built receiver. Verify
+permission denial/revocation, actual host voice input, all mute/lifetime paths,
+headset changes and simultaneous receiver playback. No local source test proves
+OS capture permissions or real host microphone negotiation. tvOS must show
+unavailable without prompting or advertising a microphone channel.

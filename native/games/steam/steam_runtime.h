@@ -13,6 +13,7 @@
 #include "steam_audio.h"
 #include "steam_controller_mapping.h"
 #include "steam_h26x.h"
+#include "steam_microphone.h"
 #include "steam_pyrowave.h"
 #include "steam_stream_options.h"
 extern "C" {
@@ -64,6 +65,11 @@ struct StreamMetrics {
   uint32_t fpsNumerator = 0, fpsDenominator = 0, fpsReasons = 0, targetBitrate = 0;
   IHS_SessionReliabilityStats reliability{};
 };
+struct MicrophoneLease {
+  uint64_t epoch = 0;
+  unsigned rate = 0, channels = 0;
+  explicit operator bool() const { return epoch != 0; }
+};
 IHS_HIDProvider* makeController(const std::shared_ptr<PadState>& state, unsigned seat = 0);
 
 // All frame callbacks run on transport threads. Implementations must enqueue
@@ -103,6 +109,14 @@ class Runtime {
   void mouse(float x, float y, int button, bool down);
   void mouseWheel(int direction);
   bool text(const std::string& value);
+  // Explicit per-session consent. A lease cannot survive mute, host format
+  // changes, ownership loss or cancellation. No platform capture occurs here.
+  MicrophoneLease beginMicrophone();
+  bool microphoneCurrent(uint64_t epoch);
+  bool microphonePcm(uint64_t epoch, const int16_t* samples, size_t count);
+  void finishMicrophone(uint64_t epoch);
+  void muteMicrophone();
+  int microphoneState();  // 0 unavailable, 1 muted, 2 starting, 3 sending.
   void frameComplete(uint32_t id, bool displayed);
   StreamMetrics metrics();
 
@@ -123,6 +137,8 @@ class Runtime {
   static int audioStart(IHS_Session*, const IHS_StreamAudioConfig*, void*);
   static int audioSubmit(IHS_Session*, IHS_Buffer*, void*);
   static void audioStop(IHS_Session*, void*);
+  static int microphoneStart(IHS_Session*, const IHS_StreamAudioConfig*, void*);
+  static void microphoneStop(IHS_Session*, void*);
   std::atomic<bool> cancelled_{false};
   std::mutex mutex_, apiMutex_;
   std::condition_variable condition_;
@@ -134,6 +150,11 @@ class Runtime {
   std::shared_ptr<Sink> sink_;
   std::array<std::shared_ptr<PadState>, 4> pads_;
   AudioDecoder audio_;
+  std::mutex microphoneMutex_;
+  MicrophoneEncoder microphone_;
+  uint64_t microphoneEpoch_ = 1, microphoneCapture_ = 0;
+  unsigned microphoneRate_ = 0, microphoneChannels_ = 0;
+  bool microphoneEnabled_ = false, microphoneSending_ = false;
   int requestedAudioChannels_ = 2;
   int requestedWidth_ = 1920, requestedHeight_ = 1080;
   bool pyrowaveEnabled_ = false;

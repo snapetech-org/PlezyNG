@@ -207,6 +207,13 @@ class SteamGameWorkspaceSession {
   final ValueNotifier<String> sessionState = ValueNotifier('connecting');
   final ValueNotifier<bool> inputAvailable = ValueNotifier(false);
   final ValueNotifier<int> inputResets = ValueNotifier(0);
+  // Native state: unavailable, muted, starting, actively sending. Consent is
+  // deliberately per-session and is never written to preferences.
+  final ValueNotifier<int> microphoneState = ValueNotifier(1);
+  Timer? _microphoneTimer;
+  int _microphoneRevision = 0;
+  bool _microphonePolling = false;
+  bool _microphoneStarting = false;
   MethodChannel? _channel;
   bool _audioEnabled = false;
   bool _inputEnabled = false;
@@ -260,12 +267,90 @@ class SteamGameWorkspaceSession {
     if (_disposed) return;
     _inputEnabled = enabled;
     final canInput = _canInput;
+    if (!canInput) muteMicrophone();
     _inputBinding.setEnabled(canInput);
     inputAvailable.value = canInput;
     if (!enabled) {
       await _invoke('resetInput');
     }
     await _invoke('setInputEnabled', {'enabled': canInput});
+  }
+
+  Future<bool> requestMicrophonePermission() async {
+    final channel = _channel;
+    if (!current || channel == null) return false;
+    try {
+      final granted = await channel.invokeMethod<bool>('requestMicrophonePermission');
+      return granted == true && current && _channel == channel;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void muteMicrophone() {
+    _microphoneRevision++;
+    _microphoneTimer?.cancel();
+    _microphoneTimer = null;
+    if (!_disposed) microphoneState.value = 1;
+    unawaited(_invoke('setMicrophoneEnabled', {'enabled': false}));
+  }
+
+  Future<bool> enableMicrophone() async {
+    if (_microphoneStarting) return false;
+    _microphoneStarting = true;
+    try {
+      return await _enableMicrophone();
+    } finally {
+      _microphoneStarting = false;
+    }
+  }
+
+  Future<bool> _enableMicrophone() async {
+    final channel = _channel, revision = ++_microphoneRevision;
+    if (!_canInput || channel == null) return false;
+    bool live() => _canInput && _channel == channel && revision == _microphoneRevision;
+    try {
+      final accepted = await channel
+          .invokeMethod<bool>('setMicrophoneEnabled', {'enabled': true})
+          .timeout(const Duration(seconds: 3));
+      if (accepted != true || !live()) {
+        await channel
+            .invokeMethod<bool>('setMicrophoneEnabled', {'enabled': false})
+            .timeout(const Duration(seconds: 2));
+        return false;
+      }
+      microphoneState.value = 2;
+      for (var attempt = 0; attempt < 40 && live(); attempt++) {
+        final state = await channel.invokeMethod<int>('getMicrophoneState').timeout(const Duration(seconds: 2));
+        if (!live()) break;
+        if (state == 3) {
+          microphoneState.value = 3;
+          _microphoneTimer?.cancel();
+          _microphoneTimer = Timer.periodic(const Duration(milliseconds: 500), (_) async {
+            if (_microphonePolling || !live()) return;
+            _microphonePolling = true;
+            try {
+              final state = await channel.invokeMethod<int>('getMicrophoneState').timeout(const Duration(seconds: 2));
+              if (live() && state != 3) muteMicrophone();
+            } catch (_) {
+              if (live()) muteMicrophone();
+            } finally {
+              _microphonePolling = false;
+            }
+          });
+          return true;
+        }
+        if (state != 2) break;
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+    } catch (_) {
+      // Recording is never retried automatically after uncertain delivery.
+    }
+    if (live()) muteMicrophone();
+    try {
+      await channel.invokeMethod<bool>('setMicrophoneEnabled', {'enabled': false}).timeout(const Duration(seconds: 2));
+    } catch (_) {}
+    return false;
   }
 
   void handleInput(GamepadEvent event) {
@@ -395,6 +480,7 @@ class SteamGameWorkspaceSession {
   void releaseTouchControls() => unawaited(_invoke('releaseTouchControls'));
 
   void resetInput() {
+    muteMicrophone();
     _inputRevision++;
     inputResets.value = _inputRevision;
     unawaited(_invoke('resetInput'));
@@ -404,6 +490,7 @@ class SteamGameWorkspaceSession {
   /// only its current value, never a captured lease from a different pane.
   Future<void> withInputSuspended(Future<void> Function() action) async {
     if (_disposed) return;
+    muteMicrophone();
     _inputSuspensions++;
     _inputBinding.setEnabled(false);
     inputAvailable.value = false;
@@ -570,6 +657,7 @@ class SteamGameWorkspaceSession {
       return;
     }
     if (state != 'playing') {
+      muteMicrophone();
       _mappingEpoch++;
       _mappingReady = _inputProfile.isDefault;
     }
@@ -683,6 +771,8 @@ class SteamGameWorkspaceSession {
     streamAspectRatio.dispose();
     inputAvailable.dispose();
     inputResets.dispose();
+    _microphoneTimer?.cancel();
+    microphoneState.dispose();
     internetPath.dispose();
     mappingFailed.dispose();
   }
@@ -958,6 +1048,44 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
     }
   }
 
+  Future<void> _toggleMicrophone() async {
+    final session = widget.session;
+    if (session.microphoneState.value >= 2) {
+      session.muteMicrophone();
+      return;
+    }
+    if (_detailsOpen) return;
+    setState(() => _detailsOpen = true);
+    var allowed = false;
+    var requested = false;
+    try {
+      await session.withInputSuspended(() async {
+        if (!mounted) return;
+        final confirmed = await showScopedDialog<bool>(
+          context: context,
+          builder: (dialog) => AlertDialog(
+            title: Text(t.games.microphoneEnable),
+            scrollable: true,
+            content: Text(t.games.microphoneHelp),
+            actions: [
+              DialogActionButton(label: t.common.cancel, onPressed: () => Navigator.pop(dialog, false)),
+              DialogActionButton(label: t.games.microphoneEnable, onPressed: () => Navigator.pop(dialog, true)),
+            ],
+          ),
+        );
+        if (confirmed == true && mounted && session.current) {
+          requested = true;
+          allowed = await session.requestMicrophonePermission();
+        }
+      });
+      if (requested && mounted && session.current && (!allowed || !await session.enableMicrophone()) && mounted) {
+        showErrorSnackBar(context, t.games.microphoneFailed);
+      }
+    } finally {
+      if (mounted) setState(() => _detailsOpen = false);
+    }
+  }
+
   @override
   void didUpdateWidget(covariant SteamGameWorkspaceSurface oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -1053,6 +1181,30 @@ class _SteamGameWorkspaceSurfaceState extends State<SteamGameWorkspaceSurface> {
                 : Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      ValueListenableBuilder<int>(
+                        valueListenable: session.microphoneState,
+                        builder: (_, microphone, _) {
+                          final active = microphone >= 2;
+                          final label = switch (microphone) {
+                            2 => t.games.microphoneStarting,
+                            3 => t.games.microphoneActive,
+                            _ => t.games.microphoneMuted,
+                          };
+                          final callback = active || !_detailsOpen ? _toggleMicrophone : null;
+                          return Semantics(
+                            liveRegion: true,
+                            child: FocusableButton(
+                              onPressed: callback,
+                              child: IconButton.filledTonal(
+                                tooltip: '$label\n${active ? t.games.microphoneMute : t.games.microphoneEnable}',
+                                isSelected: active,
+                                onPressed: callback,
+                                icon: AppIcon(active ? Symbols.mic_rounded : Symbols.mic_off_rounded),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                       FocusableButton(
                         onPressed: _detailsOpen ? null : _showSteamTools,
                         child: IconButton.filledTonal(

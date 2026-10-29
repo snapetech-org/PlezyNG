@@ -41,6 +41,75 @@ void main() {
 
   tearDown(() => messenger.setMockMethodCallHandler(channel, null));
 
+  test('microphone stays opt-in and mutes on lease loss and dialog suspension', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      if (call.method == 'setMicrophoneEnabled') return true;
+      if (call.method == 'getMicrophoneState') return 3;
+      if (call.method == 'requestMicrophonePermission') return true;
+      return null;
+    });
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await stream.setInputEnabled(true);
+    await state('playing');
+    expect(calls.where((c) => c.method == 'setMicrophoneEnabled' && (c.arguments as Map)['enabled'] == true), isEmpty);
+    expect(await stream.requestMicrophonePermission(), isTrue);
+    expect(await stream.enableMicrophone(), isTrue);
+    expect(stream.microphoneState.value, 3);
+    await stream.setInputEnabled(false);
+    expect(stream.microphoneState.value, 1);
+    await stream.setInputEnabled(true);
+    expect(stream.microphoneState.value, 1);
+    expect(await stream.enableMicrophone(), isTrue);
+    await stream.withInputSuspended(() async {
+      expect(stream.microphoneState.value, 1);
+    });
+    expect(stream.microphoneState.value, 1);
+    expect(
+      calls.where((c) => c.method == 'setMicrophoneEnabled' && (c.arguments as Map)['enabled'] == true),
+      hasLength(2),
+    );
+  });
+
+  test('late microphone start is revoked after the presentation loses ownership', () async {
+    final accepted = Completer<bool>();
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      if (call.method == 'setMicrophoneEnabled') {
+        if ((call.arguments as Map)['enabled'] == true) return accepted.future;
+        return true;
+      }
+      return null;
+    });
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await stream.setInputEnabled(true);
+    await state('playing');
+    final starting = stream.enableMicrophone();
+    stream.detach();
+    accepted.complete(true);
+    expect(await starting, isFalse);
+    expect(stream.microphoneState.value, 1);
+    expect(calls.lastWhere((c) => c.method == 'setMicrophoneEnabled').arguments, {'enabled': false});
+  });
+
+  test('microphone permission and device rejection do not report recording', () async {
+    messenger.setMockMethodCallHandler(channel, (call) async => call.method == 'getMicrophoneState' ? 1 : false);
+    final stream = session();
+    addTearDown(stream.dispose);
+    stream.attachPlatformView(99);
+    await stream.setInputEnabled(true);
+    await state('playing');
+    expect(await stream.requestMicrophonePermission(), isFalse);
+    expect(await stream.enableMicrophone(), isFalse);
+    expect(stream.microphoneState.value, 1);
+  });
+
   test('custom mapping gates input until acknowledgement and replays after fallback', () async {
     final commands = <MethodCall>[];
     var gate = Completer<bool>();

@@ -623,6 +623,13 @@
     "videoSettings.subtitlePreviousCue",
     "videoSettings.subtitleReplayCue",
     "videoSettings.subtitleReplayPreroll",
-    "videoSettings.subtitleUsePlaybackTime"
+    "videoSettings.subtitleUsePlaybackTime",
+    "games.microphoneMuted",
+    "games.microphoneStarting",
+    "games.microphoneActive",
+    "games.microphoneEnable",
+    "games.microphoneHelp",
+    "games.microphoneFailed",
+    "games.microphoneMute"
   ]
 }

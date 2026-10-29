@@ -4656,7 +4656,14 @@
     "sendText": "Send text",
     "touchOpacity": "Steam touch control opacity",
     "swapTouchSides": "Swap Steam controller sides",
-    "touchAppearanceHelp": "Applied when the next Steam stream opens. Button labels and actions stay the same; hit targets stay at least 48 pixels. Center controls keep their position."
+    "touchAppearanceHelp": "Applied when the next Steam stream opens. Button labels and actions stay the same; hit targets stay at least 48 pixels. Center controls keep their position.",
+    "microphoneMuted": "Microphone muted",
+    "microphoneStarting": "Starting microphone…",
+    "microphoneActive": "Microphone shared with Steam",
+    "microphoneEnable": "Share microphone",
+    "microphoneHelp": "Send live microphone audio to this paired Steam computer for game and voice chat. Recording stops when you leave the stream, open a dialog, or switch input ownership. You must turn it on again. Use headphones to avoid feedback.",
+    "microphoneFailed": "The microphone could not start. Check device permissions, the input device and the host’s Remote Play microphone setting, then try again.",
+    "microphoneMute": "Mute microphone"
   },
   "deepLinks": {
     "invalid": "This Plezy link isn't valid.",

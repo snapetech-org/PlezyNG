@@ -27,6 +27,7 @@
 
 #include "SteamWindowsSink.h"
 #include "steam_input.h"
+#include "steam_microphone_capture.h"
 #include "steam_plugin.h"
 #include "steam_vulkan_sink.h"
 
@@ -639,6 +640,20 @@ void Session::method(const Call& call, Reply reply) {
   }
   std::lock_guard<std::mutex> lock(mutex);
   const bool live = runtime && active && runtime->metrics().epoch == renderedEpoch;
+  if (method == "requestMicrophonePermission") {
+    reply->Success(Value(true));  // Windows microphone privacy is enforced by WASAPI at device activation.
+    return;
+  }
+  if (method == "getMicrophoneState") {
+    reply->Success(Value(runtime ? runtime->microphoneState() : 0));
+    return;
+  }
+  if (method == "setMicrophoneEnabled") {
+    const bool enable = boolean(args, "enabled");
+    if (!enable && runtime) runtime->muteMicrophone();
+    reply->Success(Value(!enable || (live && input.isEnabled() && startMicrophoneCapture(runtime))));
+    return;
+  }
   if (method == "inputText") {
     const auto* value = field(args, "text");
     const auto* bytes = value ? std::get_if<std::vector<uint8_t>>(value) : nullptr;

@@ -45,6 +45,12 @@ final class NativeSteam {
   static native void key(long handle, int usage, boolean down);
   static native void mouse(long handle, float x, float y, int button, boolean down);
   static native boolean textUtf8(long handle, byte[] text);
+  static native long[] microphoneBegin(long handle);
+  static native boolean microphoneCurrent(long handle, long epoch);
+  static native boolean microphonePcm(long handle, long epoch, short[] pcm, int count);
+  static native void microphoneFinish(long handle, long epoch);
+  static native void microphoneMute(long handle);
+  static native int microphoneState(long handle);
   static native void text(long handle, String text);
   static native void frameComplete(long handle, int id, boolean displayed);
   static native long[] metrics(long handle);

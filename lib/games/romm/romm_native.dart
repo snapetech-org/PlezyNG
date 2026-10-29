@@ -24,6 +24,7 @@ class _RetroBindings {
   late final height = library.lookupFunction<Int32 Function(), int Function()>('plezy_retro_height');
   late final frame = library.lookupFunction<Pointer<Uint8> Function(), Pointer<Uint8> Function()>('plezy_retro_frame');
   late final buttons = library.lookupFunction<Void Function(Int32,Int32), void Function(int,int)>('plezy_retro_buttons');
+  late final pauseAudio = library.lookupFunction<Void Function(Int32), void Function(int)>('plezy_retro_pause_audio');
   late final capture = library.lookupFunction<Int32 Function(Int32), int Function(int)>('plezy_retro_capture');
   late final snapshot = library.lookupFunction<Pointer<Uint8> Function(), Pointer<Uint8> Function()>('plezy_retro_snapshot');
   late final restore = library.lookupFunction<Int32 Function(Pointer<Uint8>,Int32,Int32), int Function(Pointer<Uint8>,int,int)>('plezy_retro_restore');
@@ -60,10 +61,13 @@ class RommNative extends ChangeNotifier {
   Uint8List? pixels;
   int width = 0, height = 0;
   String identity = '';
+  String failure = '';
   bool _closed = false, _retired = false, _ownsLease = false;
+  bool _closeRequested = false;
   Future<void>? _shutdown;
+  final _closedSignal = Completer<void>();
+  Future<void> get whenClosed => _closedSignal.future;
   static bool _leased = false;
-  final _portReady = Completer<void>();
   static Future<Set<String>> available() async {
     try {
       final api = _RetroBindings(), result = <String>{};
@@ -75,14 +79,18 @@ class RommNative extends ChangeNotifier {
     } catch (_) { return {}; }
   }
   Future<void> start(String core, String rom, String system, String saves) async {
+    if (_closed || _retired || _ownsLease) throw const RommFailure('romm.cancelled');
     if (_leased) throw const RommFailure('romm.busy');
     _leased = true; _ownsLease = true;
     final ready = Completer<void>();
     _events.listen((event) {
       final row = rommMap(event);
-      if (row['port'] is SendPort) { _commands = row['port'] as SendPort; if (!_portReady.isCompleted) _portReady.complete(); }
+      if (row['port'] is SendPort) { _commands = row['port'] as SendPort; if (_retired) _requestClose(); }
       if (row['ready'] == true) { identity = rommString(row['identity'], 512); if (!ready.isCompleted) ready.complete(); }
-      if (row['error'] == true && !ready.isCompleted) ready.completeError(const RommFailure('romm.nativeError'));
+      if (row['error'] == true && row['id'] == null) {
+        if (!ready.isCompleted) ready.completeError(const RommFailure('romm.nativeError'));
+        else if (!_closed && !_retired) { failure = 'romm.nativeError'; notifyListeners(); }
+      }
       if (row['pixels'] is TransferableTypedData) {
         if (!_closed && !_retired) {
           pixels = (row['pixels'] as TransferableTypedData).materialize().asUint8List();
@@ -95,7 +103,10 @@ class RommNative extends ChangeNotifier {
         if (row['error'] == true) pending?.completeError(const RommFailure('romm.nativeError'));
         else pending?.complete(row['data']);
       }
-      if (row['closed'] == true) _finishShutdown();
+      if (row['closed'] == true) {
+        if (!ready.isCompleted) ready.completeError(const RommFailure('romm.cancelled'));
+        _finishShutdown();
+      }
     });
     try {
       _worker = await Isolate.spawn(_retroWorker, {'port': _events.sendPort, 'core': _corePath(core), 'rom': rom, 'system': system, 'saves': saves});
@@ -117,6 +128,11 @@ class RommNative extends ChangeNotifier {
     final data = await _request('capture', {'state': state});
     return data is TransferableTypedData ? data.materialize().asUint8List() : null;
   }
+  Future<({Uint8List? sram, Uint8List? state})> captureProgress() async {
+    final data = rommMap(await _request('captureProgress'));
+    Uint8List? bytes(Object? value) => value is TransferableTypedData ? value.materialize().asUint8List() : null;
+    return (sram: bytes(data['sram']), state: bytes(data['state']));
+  }
   Future<void> restore(Uint8List bytes, {bool state = false}) async {
     await _request('restore', {'bytes': TransferableTypedData.fromList([bytes]), 'state': state});
   }
@@ -125,13 +141,14 @@ class RommNative extends ChangeNotifier {
     if (_closed) return;
     _retired = true;
     if (!_ownsLease) { _finishShutdown(); return; }
-    try {
-      await _portReady.future.timeout(const Duration(seconds: 5));
-      if (!_closed) await _request('close');
-    } catch (_) {
-      // A timed-out native call must not be killed mid-FFI. Its queued close
-      // still owns the lease until the worker explicitly acknowledges release.
-    }
+    _requestClose();
+    // Caller-owned UI deadlines never authorize deleting a live core's files.
+    // A late worker port also receives close, and the lease survives until ack.
+    await whenClosed;
+  }
+  void _requestClose() {
+    if (_closed || _closeRequested || _commands == null) return;
+    _closeRequested = true; _commands!.send({'action': 'close'});
   }
   void _finishShutdown() {
     if (_closed) return;
@@ -140,6 +157,7 @@ class RommNative extends ChangeNotifier {
     _events.close();
     for (final result in _pending.values) { if (!result.isCompleted) result.completeError(const RommFailure('romm.cancelled')); }
     _pending.clear(); _worker = null;
+    if (!_closedSignal.isCompleted) _closedSignal.complete();
   }
   @override void dispose() { unawaited(shutdown()); super.dispose(); }
 }
@@ -149,23 +167,31 @@ void _retroWorker(Map<String, Object?> args) {
   _RetroBindings? api;
   bool opened = false;
   Timer? clock;
-  bool framePending = false, paused = false;
+  bool framePending = false, paused = true;
   try {
     final binding = api = _RetroBindings();
-    final strings = ['core', 'rom', 'system', 'saves'].map((key) => binding.string(args[key] as String)).toList();
+    final strings = <Pointer<Uint8>>[];
     int result;
-    try { result = binding.open(strings[0], strings[1], strings[2], strings[3]); } finally { for (final ptr in strings) { binding.free(ptr); } }
+    try {
+      for (final key in ['core', 'rom', 'system', 'saves']) { strings.add(binding.string(args[key] as String)); }
+      result = binding.open(strings[0], strings[1], strings[2], strings[3]);
+    } finally { for (final ptr in strings) { binding.free(ptr); } }
     if (result != 1) throw const RommFailure('romm.nativeError');
     opened = true;
     out.send({'port': input.sendPort, 'ready': true, 'identity': binding.coreIdentity});
     final interval = Duration(microseconds: (1000000 / binding.fps().clamp(15, 120)).round());
     clock = Timer.periodic(interval, (_) {
       if (paused) return;
+      try {
       binding.run();
       final w = binding.width(), h = binding.height(), ptr = binding.frame();
       if (!framePending && ptr != nullptr && w > 0 && h > 0) {
         framePending = true;
         out.send({'width': w, 'height': h, 'pixels': TransferableTypedData.fromList([ptr.asTypedList(w * h * 4)])});
+      }
+      } catch (_) {
+        clock?.cancel(); binding.close(); opened = false;
+        out.send({'error': true, 'closed': true}); input.close();
       }
     });
     input.listen((event) {
@@ -174,11 +200,18 @@ void _retroWorker(Map<String, Object?> args) {
         Object? result;
         switch (row['action']) {
           case 'frameAck': framePending = false;
-          case 'pause': paused = row['paused'] == true; for (var port = 0; port < 4; port++) { binding.buttons(port, 0); }
+          case 'pause': paused = row['paused'] == true; binding.pauseAudio(paused ? 1 : 0); for (var port = 0; port < 4; port++) { binding.buttons(port, 0); }
           case 'input': binding.buttons(rommInt(row['port']), rommInt(row['buttons']));
           case 'capture':
             final size = binding.capture(row['state'] == true ? 1 : 0);
             if (size > 0) result = TransferableTypedData.fromList([binding.snapshot().asTypedList(size)]);
+          case 'captureProgress':
+            final progress = <String, Object?>{};
+            for (final state in [false, true]) {
+              final size = binding.capture(state ? 1 : 0);
+              if (size > 0) progress[state ? 'state' : 'sram'] = TransferableTypedData.fromList([binding.snapshot().asTypedList(size)]);
+            }
+            result = progress;
           case 'restore':
             final bytes = (row['bytes'] as TransferableTypedData).materialize().asUint8List();
             final data = binding.alloc(bytes.length);

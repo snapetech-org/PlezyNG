@@ -325,15 +325,20 @@ class RommStorage extends ChangeNotifier {
     check(); return Directory('${_root!.path}/native/${_key(game.key)}').create(recursive: true);
   }
   Future<void> keepNativeProgress(RommGame game, String core, Uint8List bytes, {bool state = false}) async {
-    check(); final key = '${game.key}:${game.identity}:$core';
+    check(); final key = '${game.key}:${game.identity}:${downloads[game.key]?['sha1']}:$core';
     final path = _path(key, state ? 'state' : 'sram');
     final temp = File('$path.next'); await temp.writeAsBytes(bytes, flush: true); check(); await temp.rename(path);
   }
   Future<Uint8List?> nativeProgress(RommGame game, String core, {bool state = false}) async {
-    check(); final file = File(_path('${game.key}:${game.identity}:$core', state ? 'state' : 'sram'));
+    check(); final file = File(_path('${game.key}:${game.identity}:${downloads[game.key]?['sha1']}:$core', state ? 'state' : 'sram'));
     if (!await file.exists()) return null;
     if (await file.length() > 128 * 1024 * 1024) throw const RommFailure('romm.invalidFile');
     final bytes = await file.readAsBytes(); check(); return bytes;
+  }
+  Future<void> clearNativeState(RommGame game, String core) async {
+    check(); final file = File(_path('${game.key}:${game.identity}:${downloads[game.key]?['sha1']}:$core', 'state'));
+    if (await file.exists()) await file.delete();
+    check();
   }
   @override void dispose() {
     if (_disposed) return;

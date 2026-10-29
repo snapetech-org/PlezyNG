@@ -58,6 +58,7 @@ struct Host {
   uint16_t buttons[4]{};
   double fps=60;
   bool initialized=false, loaded=false, audio_started=false;
+  bool audio_paused=true;
   ma_device device{};
   std::mutex audio_mutex;
   std::vector<int16_t> audio=std::vector<int16_t>(262144);
@@ -113,6 +114,7 @@ void video(const void* data,unsigned width,unsigned height,size_t pitch) {
 size_t audio_batch(const int16_t* data,size_t frames) {
   if(!host || !data) return frames;
   std::lock_guard<std::mutex> lock(host->audio_mutex);
+  if(host->audio_paused) return frames;
   for(size_t n=0;n<frames*2;n++) {
     const auto next=(host->write+1)%host->audio.size();
     if(next==host->read) host->read=(host->read+1)%host->audio.size();
@@ -125,7 +127,7 @@ void audio_callback(ma_device* device,void* out,const void*,ma_uint32 frames) {
   auto* h=static_cast<Host*>(device->pUserData);auto* dst=static_cast<int16_t*>(out);
   std::lock_guard<std::mutex> lock(h->audio_mutex);
   for(size_t n=0;n<static_cast<size_t>(frames)*2;n++) {
-    dst[n]=h->read==h->write?0:h->audio[h->read];
+    dst[n]=h->audio_paused||h->read==h->write?0:h->audio[h->read];
     if(h->read!=h->write) h->read=(h->read+1)%h->audio.size();
   }
 }
@@ -194,6 +196,11 @@ API int plezy_retro_width(){return host?static_cast<int>(host->width):0;}
 API int plezy_retro_height(){return host?static_cast<int>(host->height):0;}
 API const uint8_t* plezy_retro_frame(){return host&&!host->frame.empty()?host->frame.data():nullptr;}
 API void plezy_retro_buttons(int port,int buttons){if(host&&port>=0&&port<4)host->buttons[port]=static_cast<uint16_t>(buttons);}
+API void plezy_retro_pause_audio(int paused) {
+  if(!host)return;
+  std::lock_guard<std::mutex> lock(host->audio_mutex);
+  host->audio_paused=paused!=0;host->read=host->write;
+}
 API int plezy_retro_capture(int state) {
   if(!host||!host->loaded)return 0;
   size_t size=state?host->serialize_size():host->get_memory_size(RETRO_MEMORY_SAVE_RAM);

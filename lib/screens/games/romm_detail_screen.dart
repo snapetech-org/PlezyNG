@@ -54,7 +54,9 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
         title: Text(rommText(dialog, 'native')), children: [
           SimpleDialogOption(onPressed: () => Navigator.pop(dialog, 'resume'), child: Text(rommText(dialog, 'nativeCloudResume'))),
           SimpleDialogOption(onPressed: () => Navigator.pop(dialog, 'fresh'), child: Text(rommText(dialog, 'startFresh'))),
-          for (final save in [..._game.saves, ..._game.states].where((save) => save.emulator == 'plezy_libretro_${route.core}' && !save.missing))
+          for (final save in [..._game.saves, ..._game.states].where((save) =>
+            save.userId == widget.controller.connection(_game.connectionId).userId && save.romId == _game.id &&
+            save.emulator.startsWith('plezy_libretro_${route.core}_') && !save.missing))
             SimpleDialogOption(onPressed: () => Navigator.pop(dialog, '${save.state ? 't' : 's'}:${save.id}'),
               child: Text('${rommText(dialog, save.state ? 'loadState' : 'resume')} · ${isolateDisplayText(save.name)}')),
         ]));

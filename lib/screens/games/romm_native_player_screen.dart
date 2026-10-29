@@ -30,7 +30,8 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   final _runtime = RommNative();
   ui.Image? _frame;
   bool _decoding = false, _ready = false, _paused = false, _closing = false, _canPop = false, _touch = false, _capturing = false;
-  String _error = '', _lastHash = '';
+  String _error = '', _lastHash = '', _copyIdentity = '';
+  bool _exitPrompt = false;
   final _pads = <int, int>{};
   final _buttons = [0, 0, 0, 0];
   final _axes = [0, 0, 0, 0];
@@ -38,6 +39,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   Timer? _autosave;
   Directory? _sessionDirectory;
   bool get live => mounted && widget.controller.current;
+  String get _emulator => 'plezy_libretro_${widget.core}_${_copyIdentity.substring(5, 17)}';
   @override void initState() {
     super.initState(); WidgetsBinding.instance.addObserver(this); _runtime.addListener(_newFrame);
     widget.controller.addListener(_profile);
@@ -53,10 +55,10 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   }
   void _profile() { if (!widget.controller.current) { _release(); _runtime.pause(true); unawaited(_runtime.shutdown()); } }
   @override void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed && _ready) {
+    if (state != AppLifecycleState.resumed) {
       _release(); _runtime.pause(true); _paused = true;
       GamepadService.instance.releaseWorkspaceInputOwner(this);
-      unawaited(_save().catchError((_) {})); if (mounted) setState(() {});
+      if (_ready) unawaited(_save().catchError((_) {})); if (mounted) setState(() {});
     }
   }
   Future<void> _start() async {
@@ -73,6 +75,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       }
       final directory = await storage.nativeDirectory(widget.game);
       final rom = await storage.file(widget.game);
+      _copyIdentity = 'sha1:${storage.downloads[widget.game.key]!['sha1']}';
       final session = _sessionDirectory = await Directory('${directory.path}/session-${const Uuid().v4()}').create();
       final copy = File('${session.path}/game.$extension');
       // Core APIs receive only a profile-owned immutable copy of verified bytes.
@@ -92,11 +95,22 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       }
       if (!live) return;
       setState(() => _ready = true);
-      await widget.controller.played(widget.game);
+      _runtime.pause(_paused);
+      try { await widget.controller.played(widget.game); } catch (_) { /* Playback does not depend on history persistence. */ }
+      if (!live) return;
       _autosave = Timer.periodic(const Duration(seconds: 45), (_) => unawaited(_save().catchError((error) {
         if (live) setState(() => _error = error is RommFailure ? error.code : 'romm.saveFailed');
       })));
-    } catch (error) { _runtime.pause(true); if (live) setState(() => _error = error is RommFailure ? error.code : 'romm.nativeError'); }
+    } catch (error) {
+      _runtime.pause(true);
+      if (live) setState(() { _ready = false; _paused = true; _error = error is RommFailure ? error.code : 'romm.nativeError'; });
+    } finally {
+      if (!live || !_ready) {
+        _autosave?.cancel();
+        GamepadService.instance.releaseWorkspaceInputOwner(this);
+        unawaited(_runtime.shutdown().then((_) => _removeSession()));
+      }
+    }
   }
   Future<void> _cloudResume() async {
     RommGame remote;
@@ -105,14 +119,18 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       return; // Local-first automatic resume remains available offline.
     }
     if (!live || remote.identity != widget.game.identity) throw const RommFailure('romm.copyMismatch');
-    final engine = 'plezy_libretro_${widget.core}';
-    final states = remote.states.where((s) => widget.saveId == null && (widget.stateId == null || s.id == widget.stateId) && s.emulator == engine && !s.missing).toList()
+    final engine = _emulator;
+    final source = widget.controller.connection(widget.game.connectionId);
+    final states = remote.states.where((s) => s.userId == source.userId && s.romId == widget.game.id && widget.saveId == null && (widget.stateId == null || s.id == widget.stateId) && s.emulator == engine && !s.missing).toList()
       ..sort((a,b) => (b.updatedAt ?? DateTime(1970)).compareTo(a.updatedAt ?? DateTime(1970)));
-    final saves = remote.saves.where((s) => (widget.saveId == null || s.id == widget.saveId) && s.emulator == engine && !s.missing).toList()
+    final saves = remote.saves.where((s) => s.userId == source.userId && s.romId == widget.game.id && (widget.saveId == null || s.id == widget.saveId) && s.emulator == engine && !s.missing).toList()
       ..sort((a,b) => (b.updatedAt ?? DateTime(1970)).compareTo(a.updatedAt ?? DateTime(1970)));
     if (widget.stateId != null && states.isEmpty || widget.saveId != null && saves.isEmpty) throw const RommFailure('romm.notFound');
     final api = await widget.controller.client(widget.game.connectionId);
-    if (states.isNotEmpty) {
+    // A newer SRAM upload must not be hidden by an older cloud save state.
+    final useState = states.isNotEmpty && (widget.stateId != null || saves.isEmpty ||
+      !(saves.first.updatedAt ?? DateTime(1970)).isAfter(states.first.updatedAt ?? DateTime(1970)));
+    if (useState) {
       final bytes = await api.saveBytes(states.first);
       const marker = 'PLZYRETRO1\n';
       if (bytes.length <= marker.length || String.fromCharCodes(bytes.take(marker.length)) != marker) throw const RommFailure('romm.coreVersionDifferent');
@@ -122,16 +140,33 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       final offset = newline + 1;
       if (length < 1 || length > 4096 || offset + length >= bytes.length) throw const RommFailure('romm.invalidFile');
       final metadata = rommMap(jsonDecode(utf8.decode(bytes.sublist(offset, offset + length))));
-      if (metadata['format'] != 'plezy-libretro-state-v1' || metadata['core'] != _runtime.identity || metadata['rom'] != widget.game.identity) {
+      if (metadata['format'] != 'plezy-libretro-state-v2' || metadata['core'] != _runtime.identity ||
+          metadata['rom'] != widget.game.identity || metadata['file'] != _copyIdentity) {
         throw const RommFailure('romm.coreVersionDifferent');
       }
       if (!live) return;
-      await _runtime.restore(Uint8List.sublistView(bytes, offset + length), state: true);
+      final snapshot = Uint8List.sublistView(bytes, offset + length);
+      await _runtime.restore(snapshot, state: true);
+      await widget.controller.storage.keepNativeProgress(widget.game, _runtime.identity, snapshot, state: true);
     } else if (saves.isNotEmpty) {
-      final bytes = await api.saveBytes(saves.first); if (live) await _runtime.restore(bytes);
+      final save = saves.first;
+      final bytes = await api.saveBytes(save, deviceId: source.deviceId);
+      final hash = md5.convert(bytes).toString();
+      if (save.hash.isNotEmpty && hash != save.hash) throw const RommFailure('romm.checksumFailed');
+      if (!live) return;
+      await _runtime.restore(bytes);
+      await widget.controller.storage.clearNativeState(widget.game, _runtime.identity);
+      await widget.controller.storage.keepNativeProgress(widget.game, _runtime.identity, bytes);
+      await widget.controller.storage.rememberSaveBaseline(widget.game, save);
+      try { await api.acknowledgeSave(save, source.deviceId, hash); } catch (_) { /* Local progress is already durable; a later upload can surface a conflict. */ }
     }
   }
   void _newFrame() {
+    if (live && _runtime.failure.isNotEmpty) {
+      _release(); GamepadService.instance.releaseWorkspaceInputOwner(this);
+      setState(() { _error = _runtime.failure; _ready = false; _paused = true; });
+      return;
+    }
     final bytes = _runtime.pixels; if (!live || bytes == null || _decoding) return;
     _decoding = true;
     ui.decodeImageFromPixels(bytes, _runtime.width, _runtime.height, ui.PixelFormat.rgba8888, (image) {
@@ -198,7 +233,8 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     _capturing = true;
     try {
       final storage = widget.controller.storage;
-      final sram = await _runtime.capture(), snapshot = await _runtime.capture(state: true);
+      final progress = await _runtime.captureProgress();
+      final sram = progress.sram, snapshot = progress.state;
       if (!live) return;
       if (sram != null) await storage.keepNativeProgress(widget.game, _runtime.identity, sram);
       if (snapshot != null) await storage.keepNativeProgress(widget.game, _runtime.identity, snapshot, state: true);
@@ -209,10 +245,10 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       final nativeState = state || sram == null;
       // State files carry their own exact core/version/ROM envelope. Browser
       // and streamed cores cannot accidentally interpret these as their states.
-      final header = utf8.encode(jsonEncode({'format': 'plezy-libretro-state-v1', 'core': _runtime.identity, 'rom': widget.game.identity}));
+      final header = utf8.encode(jsonEncode({'format': 'plezy-libretro-state-v2', 'core': _runtime.identity, 'rom': widget.game.identity, 'file': _copyIdentity}));
       final envelope = BytesBuilder()..add(utf8.encode('PLZYRETRO1\n'))..add(utf8.encode('${header.length}\n'))..add(header)..add(bytes);
       final id = await storage.enqueue(game: widget.game, bytes: nativeState ? envelope.takeBytes() : bytes,
-        emulator: 'plezy_libretro_${widget.core}', core: _runtime.identity, state: nativeState, slot: 'autosave');
+        emulator: _emulator, core: _runtime.identity, state: nativeState, slot: '$_emulator-autosave');
       _lastHash = hash;
       try { await storage.sync(id); } catch (_) { if (live) setState(() => _error = 'romm.savedLocally'); }
     } finally { _capturing = false; }
@@ -232,22 +268,25 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     _runtime.pause(true); _release();
     try {
       if (save && _ready) await _save(state: true);
-      await _runtime.shutdown();
+      await _runtime.shutdown().timeout(const Duration(seconds: 20));
       await _removeSession();
       if (live) { setState(() => _canPop = true); Navigator.pop(context); }
     } catch (error) { if (live) setState(() { _error = error is RommFailure ? error.code : 'romm.saveFailed'; _paused = true; }); }
     finally { if (mounted) setState(() => _closing = false); }
   }
   Future<void> _askExit() async {
-    if (_closing) return;
+    if (_closing || _exitPrompt || !live) return;
+    _exitPrompt = true;
     _runtime.pause(true); _release(); GamepadService.instance.releaseWorkspaceInputOwner(this);
+    try {
     final save = await showDialog<bool>(context: context, builder: (dialog) => AlertDialog(title: Text(rommText(dialog, 'exitConfirm')),
       content: Text(rommText(dialog, 'saveExitHelp')), actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'continue'))),
         TextButton(onPressed: () => Navigator.pop(dialog, false), child: Text(rommText(dialog, 'exitWithoutSaving'))),
         FilledButton(onPressed: () => Navigator.pop(dialog, true), child: Text(rommText(dialog, 'saveAndExit')))]));
     if (!live) return;
     if (save != null) await _exit(save);
-    else { _runtime.pause(_paused); if (!_paused) GamepadService.instance.setWorkspaceInputOwner(this); }
+    else { _runtime.pause(_paused); if (!_paused && _ready) GamepadService.instance.setWorkspaceInputOwner(this); }
+    } finally { _exitPrompt = false; }
   }
   Widget _touchButton(String label, int id) => Semantics(label: label, button: true, child: Listener(
     onPointerDown: (_) => _button(0, id, true), onPointerUp: (_) => _button(0, id, false), onPointerCancel: (_) => _button(0, id, false),

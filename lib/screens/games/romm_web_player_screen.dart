@@ -37,7 +37,6 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
   bool _exitPrompt = false, _retrying = false, _retiring = false;
   final _web = GlobalKey<RommWebSurfaceState>();
   Timer? _snapshot;
-  final _started = DateTime.now();
   bool get _live => mounted && widget.controller.current && widget.controller.hasConnection(widget.game.connectionId);
   bool get _ejs => widget.route.engine == RommEngine.emulatorJs;
   @override void initState() {
@@ -202,9 +201,9 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
         baseHash: saves.firstOrNull?.hash ?? '');
       if (!state) _lastCapture = hash;
       // The fsynced local version survives a failed upload and a profile switch.
-      try { await widget.controller.storage.sync(id); } catch (_) {
+      unawaited(widget.controller.storage.sync(id).catchError((_) {
         if (_live && _closing) showSnackBar(context, rommText(context, 'savedLocally'));
-      }
+      }));
     } finally { _capturing = false; }
   }
   Future<void> _finish(bool save) async {
@@ -218,10 +217,9 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
         await _capture(state: true); await _capture();
       }
       if (!_live) return;
-      try {
-        final api = await widget.controller.client(widget.game.connectionId);
-        await api.recordPlay(widget.game, widget.controller.connection(widget.game.connectionId).deviceId, _started, DateTime.now());
-      } catch (_) { /* Save completion is independent of playtime bookkeeping. */ }
+      // RomM's browser player and streaming lifecycle own their play history.
+      // Recording this Flutter page's lifetime double-counts those sessions and
+      // counts time spent in the launch screen as gameplay.
       if (_live) { setState(() => _canPop = true); Navigator.pop(context); }
     } catch (error) { if (_live) setState(() => _error = error is RommFailure ? error.code : 'romm.saveFailed'); }
     finally { if (_live) setState(() => _closing = false); }

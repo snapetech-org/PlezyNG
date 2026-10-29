@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / 'native/games/romm'
@@ -41,7 +42,7 @@ def build(platform):
                    '-DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO',
                    '-DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO',
                    '-DCMAKE_XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT=dwarf-with-dsym',
-                   '-DFETCHCONTENT_BASE_DIR=' + str(ROOT / 'build/romm/dependencies')]
+                   '-DFETCHCONTENT_BASE_DIR=' + str(out / 'dependencies')]
         if platform != 'macos':
             command += ['-DCMAKE_SYSTEM_NAME=' + ('iOS' if platform == 'ios' else 'tvOS')]
         run(*command)
@@ -50,13 +51,24 @@ def build(platform):
     if len(frameworks) != len(specs):
         raise RuntimeError('Missing native framework slices')
     destination.parent.mkdir(parents=True, exist_ok=True)
-    if destination.exists():
-        shutil.rmtree(destination)
-    args = ['xcodebuild', '-create-xcframework']
-    for framework in frameworks:
-        args += ['-framework', framework]
-    run(*args, '-output', destination)
-    stamp.write_text(fingerprint)
+    with tempfile.TemporaryDirectory(prefix='plezy-retro-', dir=destination.parent) as temporary:
+        prepared = Path(temporary) / destination.name
+        args = ['xcodebuild', '-create-xcframework']
+        for framework in frameworks:
+            args += ['-framework', framework]
+        run(*args, '-output', prepared)
+        backup = Path(temporary) / 'previous.xcframework'
+        if destination.exists():
+            destination.rename(backup)
+        try:
+            prepared.rename(destination)
+        except OSError:
+            if backup.exists():
+                backup.rename(destination)
+            raise
+    next_stamp = stamp.with_suffix('.next')
+    next_stamp.write_text(fingerprint)
+    next_stamp.replace(stamp)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

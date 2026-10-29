@@ -30,6 +30,7 @@ class _RetroBindings {
   late final close = library.lookupFunction<Void Function(), void Function()>('plezy_retro_close');
   late final run = library.lookupFunction<Void Function(), void Function()>('plezy_retro_run');
   late final fps = library.lookupFunction<Double Function(), double Function()>('plezy_retro_fps');
+  late final aspect = library.lookupFunction<Double Function(), double Function()>('plezy_retro_aspect');
   late final identity = library.lookupFunction<Pointer<Uint8> Function(), Pointer<Uint8> Function()>('plezy_retro_identity');
   late final width = library.lookupFunction<Int32 Function(), int Function()>('plezy_retro_width');
   late final height = library.lookupFunction<Int32 Function(), int Function()>('plezy_retro_height');
@@ -71,6 +72,7 @@ class RommNative extends ChangeNotifier {
   int _sequence = 0;
   Uint8List? pixels;
   int width = 0, height = 0;
+  double aspectRatio = 0;
   String identity = '';
   String failure = '';
   bool _closed = false, _retired = false, _ownsLease = false;
@@ -105,6 +107,8 @@ class RommNative extends ChangeNotifier {
       if (row['pixels'] is TransferableTypedData) {
         if (!_closed && !_retired) {
           pixels = (row['pixels'] as TransferableTypedData).materialize().asUint8List();
+          final aspect = row['aspect'];
+          aspectRatio = aspect is double && aspect.isFinite && aspect > 0 && aspect <= 8 ? aspect : 0;
           width = rommInt(row['width']); height = rommInt(row['height']); notifyListeners();
         }
         _commands?.send({'action': 'frameAck'});
@@ -198,7 +202,7 @@ void _retroWorker(Map<String, Object?> args) {
       final w = binding.width(), h = binding.height(), ptr = binding.frame();
       if (!framePending && ptr != nullptr && w > 0 && h > 0) {
         framePending = true;
-        out.send({'width': w, 'height': h, 'pixels': TransferableTypedData.fromList([ptr.asTypedList(w * h * 4)])});
+        out.send({'width': w, 'height': h, 'aspect': binding.aspect(), 'pixels': TransferableTypedData.fromList([ptr.asTypedList(w * h * 4)])});
       }
       } catch (_) {
         clock?.cancel(); binding.close(); opened = false;

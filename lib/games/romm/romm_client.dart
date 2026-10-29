@@ -172,12 +172,14 @@ class RommClient {
   Future<void> setProgress(RommGame game, Map<String, dynamic> props, {bool played = false}) async {
     await json('PUT', 'roms/${game.id}/props', query: {if (played) 'update_last_played': true}, body: props);
   }
-  Future<void> recordPlay(RommGame game, String deviceId, DateTime start, DateTime end) async {
-    if (end.difference(start).inSeconds < 1) return;
+  Future<void> recordPlay(RommGame game, String deviceId, DateTime start, DateTime end, {int? durationMs}) async {
+    final elapsed = end.difference(start).inMilliseconds;
+    final played = (durationMs ?? elapsed).clamp(0, elapsed < 0 ? 0 : elapsed);
+    if (elapsed < 1000 || played < 1000) return;
     await json('POST', 'play-sessions', body: {if (deviceId.isNotEmpty) 'device_id': deviceId,
       'sessions': [{'rom_id': game.id, 'start_time': start.toUtc().toIso8601String(),
         'end_time': end.toUtc().toIso8601String(),
-        'duration_ms': end.difference(start).inMilliseconds.clamp(0, 86400000)}]});
+        'duration_ms': played}]});
   }
   Future<Uint8List> asset(String path, {int maximum = 12 * 1024 * 1024, bool externalImage = false}) async {
     final candidate = Uri.tryParse(path);

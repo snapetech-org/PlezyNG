@@ -8,6 +8,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <filesystem>
+#include <map>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -53,15 +55,16 @@ struct Host {
   void (*set_input_state)(retro_input_state_t){};
   void (*set_controller_port_device)(unsigned,unsigned){};
   std::string system_dir, save_dir, path, identity;
+  std::map<std::string,std::string> variables;
   std::vector<uint8_t> rom, frame, snapshot;
   uint32_t width=0,height=0,pixel_format=RETRO_PIXEL_FORMAT_0RGB1555;
   uint16_t buttons[4]{};
-  double fps=60;
+  double fps=60,aspect=0;
   bool initialized=false, loaded=false, audio_started=false;
   bool audio_paused=true;
   ma_device device{};
   std::mutex audio_mutex;
-  std::vector<int16_t> audio=std::vector<int16_t>(262144);
+  std::vector<int16_t> audio=std::vector<int16_t>(32768);
   size_t read=0,write=0;
 };
 Host* host=nullptr;
@@ -77,13 +80,35 @@ bool environment(unsigned command, void* data) {
     }
     case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY: *static_cast<const char**>(data)=host->system_dir.c_str(); return true;
     case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY: *static_cast<const char**>(data)=host->save_dir.c_str(); return true;
-    case RETRO_ENVIRONMENT_GET_VARIABLE: static_cast<retro_variable*>(data)->value=nullptr; return false;
+    case RETRO_ENVIRONMENT_GET_VARIABLE: {
+      auto* variable=static_cast<retro_variable*>(data);
+      const auto found=host->variables.find(variable->key?variable->key:"");
+      variable->value=found==host->variables.end()?nullptr:found->second.c_str();
+      return variable->value!=nullptr;
+    }
     case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE: *static_cast<bool*>(data)=false; return true;
-    case RETRO_ENVIRONMENT_SET_VARIABLES: return true; // Cores use their documented defaults.
+    case RETRO_ENVIRONMENT_SET_VARIABLES: {
+      host->variables.clear();
+      const auto* variable=static_cast<const retro_variable*>(data);
+      if(!variable)return false;
+      for(size_t n=0;n<256 && variable[n].key;n++) {
+        if(!variable[n].value)continue;
+        const std::string value=variable[n].value;
+        const auto start=value.find("; ");
+        if(start==std::string::npos)continue;
+        const auto end=value.find('|',start+2);
+        host->variables.emplace(variable[n].key,value.substr(start+2,end==std::string::npos?end:end-start-2));
+      }
+      return true;
+    }
     case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS: return true;
     case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME: return true;
     case RETRO_ENVIRONMENT_GET_INPUT_BITMASKS: return true;
-    case RETRO_ENVIRONMENT_SET_GEOMETRY: return true;
+    case RETRO_ENVIRONMENT_SET_GEOMETRY: {
+      const auto aspect=static_cast<retro_game_geometry*>(data)->aspect_ratio;
+      host->aspect=std::isfinite(aspect)&&aspect>0&&aspect<=8?aspect:0;
+      return true;
+    }
     case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE: *static_cast<int*>(data)=3; return true;
     default: return false; // In particular: no HW context, executable or VFS access.
   }
@@ -115,10 +140,12 @@ size_t audio_batch(const int16_t* data,size_t frames) {
   if(!host || !data) return frames;
   std::lock_guard<std::mutex> lock(host->audio_mutex);
   if(host->audio_paused) return frames;
-  for(size_t n=0;n<frames*2;n++) {
-    const auto next=(host->write+1)%host->audio.size();
-    if(next==host->read) host->read=(host->read+1)%host->audio.size();
-    host->audio[host->write]=data[n];host->write=next;
+  for(size_t n=0;n<frames;n++) {
+    // Keep stereo frames together even when the queue overruns. Dropping one
+    // sample swaps left/right channels until the next pause flush.
+    const auto next=(host->write+2)%host->audio.size();
+    if(next==host->read) host->read=(host->read+2)%host->audio.size();
+    host->audio[host->write]=data[n*2];host->audio[host->write+1]=data[n*2+1];host->write=next;
   }
   return frames;
 }
@@ -133,7 +160,7 @@ void audio_callback(ma_device* device,void* out,const void*,ma_uint32 frames) {
 }
 void poll() {}
 int16_t input(unsigned port,unsigned device,unsigned,unsigned id) {
-  if(!host || port>=4 || device!=RETRO_DEVICE_JOYPAD) return 0;
+  if(!host || port>=4 || (device&RETRO_DEVICE_MASK)!=RETRO_DEVICE_JOYPAD) return 0;
   if(id==RETRO_DEVICE_ID_JOYPAD_MASK) return static_cast<int16_t>(host->buttons[port]);
   return id<16 && (host->buttons[port]&(1u<<id)) ? 1:0;
 }
@@ -172,7 +199,7 @@ API int plezy_retro_open(const char* core,const char* rom,const char* system,con
   host->identity=std::string(info.library_name?info.library_name:"")+"/"+(info.library_version?info.library_version:"");
   retro_game_info game{};game.path=host->path.c_str();
   if(!info.need_fullpath) {
-    std::ifstream input(host->path,std::ios::binary|std::ios::ate);
+    std::ifstream input(std::filesystem::u8path(host->path),std::ios::binary|std::ios::ate);
     const auto size=input.tellg();
     if(!input || size<=0 || size>134217728) {cleanup();return 0;}
     host->rom.resize(static_cast<size_t>(size));input.seekg(0);input.read(reinterpret_cast<char*>(host->rom.data()),size);
@@ -181,6 +208,7 @@ API int plezy_retro_open(const char* core,const char* rom,const char* system,con
   if(!host->load_game(&game)) {cleanup();return 0;}host->loaded=true;
   for(unsigned p=0;p<4;p++) host->set_controller_port_device(p,RETRO_DEVICE_JOYPAD);
   retro_system_av_info av{};host->get_system_av_info(&av);
+  host->aspect=std::isfinite(av.geometry.aspect_ratio)&&av.geometry.aspect_ratio>0&&av.geometry.aspect_ratio<=8?av.geometry.aspect_ratio:0;
   host->fps=std::isfinite(av.timing.fps)?std::clamp(av.timing.fps,15.0,120.0):60.0;
   if(!std::isfinite(av.timing.sample_rate)||av.timing.sample_rate<8000||av.timing.sample_rate>192000){cleanup();return 0;}
   auto config=ma_device_config_init(ma_device_type_playback);config.playback.format=ma_format_s16;config.playback.channels=2;
@@ -191,6 +219,7 @@ API int plezy_retro_open(const char* core,const char* rom,const char* system,con
 }
 API void plezy_retro_run() { if(host&&host->loaded) host->run(); }
 API double plezy_retro_fps() {return host?host->fps:60;}
+API double plezy_retro_aspect() {return host?host->aspect:0;}
 API const char* plezy_retro_identity() { return host?host->identity.c_str():""; }
 API int plezy_retro_width(){return host?static_cast<int>(host->width):0;}
 API int plezy_retro_height(){return host?static_cast<int>(host->height):0;}

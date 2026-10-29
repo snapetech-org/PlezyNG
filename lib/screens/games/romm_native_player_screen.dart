@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:universal_gamepad/universal_gamepad.dart';
 import '../../games/romm/romm_controller.dart';
+import '../../games/romm/romm_capabilities.dart';
 import '../../games/romm/romm_models.dart';
 import '../../games/romm/romm_native.dart';
 import '../../games/romm/romm_text.dart';
@@ -34,6 +35,9 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   bool _decoding = false, _ready = false, _paused = false, _closing = false, _canPop = false, _touch = false, _capturing = false;
   String _error = '', _lastHash = '', _copyIdentity = '';
   bool _exitPrompt = false, _retiring = false, _starting = true;
+  bool _restoring = false, _recorded = false;
+  final _playtime = Stopwatch();
+  DateTime? _playStarted;
   final _pads = <int, int>{};
   final _buttons = [0, 0, 0, 0];
   final _axes = [0, 0, 0, 0];
@@ -50,7 +54,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     widget.controller.retainPlayer(this, widget.game.connectionId);
     widget.controller.addListener(_profile);
     GamepadService.instance.registerWorkspaceInputHandler(this, _input, onNativeKeyEvent: _key,
-      onReset: (_) => _release(), rawTvosControllerInput: true);
+      onReset: _resetInput, rawTvosControllerInput: true);
     // Keep slots current even while a pause dialog owns navigation input.
     _connections = Gamepad.instance.connectionEvents.listen((event) {
       if (event.connected) return;
@@ -61,7 +65,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   }
   void _profile() {
     if (live || _retiring) return;
-    _retiring = true; _autosave?.cancel(); _release(); _runtime.pause(true);
+    _retiring = true; _autosave?.cancel(); _release(); _playtime.stop(); _runtime.pause(true);
     GamepadService.instance.releaseWorkspaceInputOwner(this);
     unawaited(_runtime.shutdown());
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -71,7 +75,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   }
   @override void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) {
-      _release(); _runtime.pause(true); _paused = true;
+      _release(); _paused = true; _applyPause();
       GamepadService.instance.releaseWorkspaceInputOwner(this);
       if (_ready) unawaited(_save().catchError((_) {})); if (mounted) setState(() {});
     }
@@ -85,7 +89,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       if (!live) return;
       final name = rommString(storage.downloads[widget.game.key]?['name'], 1024);
       final extension = name.split('.').last.toLowerCase();
-      if (!{'sfc', 'smc', 'gb', 'gbc', 'gba', 'nes', 'bin', 'md', 'gen', 'sms', 'gg'}.contains(extension)) {
+      if (!rommNativeCartridge(widget.core, name)) {
         throw const RommFailure('romm.unsupportedArchive');
       }
       final directory = await storage.nativeDirectory(widget.game);
@@ -113,14 +117,14 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       }
       if (!live) return;
       setState(() => _ready = true);
-      _runtime.pause(_paused || _exitPrompt || _closing);
+      _applyPause();
       try { await widget.controller.played(widget.game); } catch (_) { /* Playback does not depend on history persistence. */ }
       if (!live) return;
       _autosave = Timer.periodic(const Duration(seconds: 45), (_) => unawaited(_save().catchError((error) {
         if (live) setState(() => _error = error is RommFailure ? error.code : 'romm.saveFailed');
       })));
     } catch (error) {
-      _runtime.pause(true);
+      _playtime.stop(); _runtime.pause(true);
       if (live) setState(() { _ready = false; _paused = true; _error = error is RommFailure ? error.code : 'romm.nativeError'; });
     } finally {
       if (mounted) setState(() => _starting = false);
@@ -181,7 +185,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   }
   void _newFrame() {
     if (live && _runtime.failure.isNotEmpty) {
-      _release(); GamepadService.instance.releaseWorkspaceInputOwner(this);
+      _release(); _playtime.stop(); GamepadService.instance.releaseWorkspaceInputOwner(this);
       setState(() { _error = _runtime.failure; _ready = false; _paused = true; });
       return;
     }
@@ -190,7 +194,8 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     ui.decodeImageFromPixels(bytes, _runtime.width, _runtime.height, ui.PixelFormat.rgba8888, (image) {
       _decoding = false;
       if (!live) { image.dispose(); return; }
-      final old = _frame; setState(() => _frame = image); old?.dispose();
+      final old = _frame; setState(() => _frame = image);
+      if (old != null) WidgetsBinding.instance.addPostFrameCallback((_) => old.dispose());
     });
   }
   static const _mapping = <GamepadButton, int>{GamepadButton.b: 0, GamepadButton.y: 1, GamepadButton.back: 2,
@@ -258,12 +263,26 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     _keys.clear(); _touches.clear();
     for (var port = 0; port < 4; port++) { _buttons[port] = 0; _axes[port] = 0; _runtime.input(port, 0); }
   }
+  void _resetInput(WorkspaceGameInputResetReason reason) {
+    _release();
+    if (live && {WorkspaceGameInputResetReason.windowFocusLost, WorkspaceGameInputResetReason.applicationInactive}.contains(reason)) {
+      setState(() => _paused = true); _applyPause();
+      GamepadService.instance.releaseWorkspaceInputOwner(this);
+    }
+  }
+  void _applyPause() {
+    final paused = !_ready || _paused || _exitPrompt || _closing || _restoring;
+    _runtime.pause(paused);
+    if (paused) _playtime.stop();
+    else { _playStarted ??= DateTime.now(); _playtime.start(); }
+  }
   void _pause() {
-    _release(); setState(() => _paused = !_paused); _runtime.pause(_paused);
+    if (!_ready || _closing || _exitPrompt || _restoring || !live) return;
+    _release(); setState(() => _paused = !_paused); _applyPause();
     if (_paused) GamepadService.instance.releaseWorkspaceInputOwner(this); else GamepadService.instance.setWorkspaceInputOwner(this);
   }
-  Future<void> _save({bool state = false}) async {
-    if (!_ready || _capturing) { if (_closing) throw const RommFailure('romm.saveInProgress'); return; }
+  Future<void> _save({bool state = false, bool allowSramFallback = false}) async {
+    if (!_ready || _capturing) { if (_closing || state) throw const RommFailure('romm.saveInProgress'); return; }
     _capturing = true;
     try {
       final storage = widget.controller.storage;
@@ -272,10 +291,10 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       if (!live) return;
       if (sram == null && snapshot == null) throw const RommFailure('romm.saveFailed');
       await storage.keepNativeSnapshot(widget.game, _runtime.identity, sram: sram, state: snapshot, fileHash: _fileHash);
-      final bytes = state || sram == null ? snapshot : sram;
+      final bytes = state || sram == null ? snapshot ?? (allowSramFallback ? sram : null) : sram;
       if (bytes == null) throw const RommFailure('romm.saveFailed');
       final hash = sha256.convert(bytes).toString(); if (hash == _lastHash && !state) return;
-      final nativeState = state || sram == null;
+      final nativeState = snapshot != null && (state || sram == null);
       // State files carry their own exact core/version/ROM envelope. Browser
       // and streamed cores cannot accidentally interpret these as their states.
       final header = utf8.encode(jsonEncode({'format': 'plezy-libretro-state-v2', 'core': _runtime.identity, 'rom': widget.game.identity, 'file': _copyIdentity}));
@@ -283,26 +302,28 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       final id = await storage.enqueue(game: widget.game, bytes: nativeState ? envelope.takeBytes() : bytes,
         emulator: _emulator, core: _runtime.identity, state: nativeState, slot: '$_emulator-autosave', nativeFileHash: _fileHash);
       _lastHash = hash;
-      try { await storage.sync(id); } catch (_) { if (live) setState(() => _error = 'romm.savedLocally'); }
+      // Exiting waits for durable local bytes, not for network availability.
+      unawaited(storage.sync(id).catchError((_) { if (live) setState(() => _error = 'romm.savedLocally'); }));
     } finally { _capturing = false; }
   }
   Future<void> _loadState() async {
     if (!_ready || _capturing || _closing) return;
-    _release(); _runtime.pause(true);
+    _capturing = true; _restoring = true; _release(); _applyPause();
     try {
       final bytes = await widget.controller.storage.nativeProgress(widget.game, _runtime.identity, state: true, fileHash: _fileHash);
       if (bytes == null) throw const RommFailure('romm.noLocalSave');
-      if (live) await _runtime.restore(bytes, state: true);
+      if (live) { await _runtime.restore(bytes, state: true); _lastHash = ''; }
     } catch (error) { if (live) setState(() => _error = error is RommFailure ? error.code : 'romm.nativeError'); }
-    finally { if (live) _runtime.pause(_paused); }
+    finally { _capturing = false; _restoring = false; if (live) _applyPause(); }
   }
   Future<void> _exit(bool save) async {
     if (_closing) return; setState(() => _closing = true);
-    _runtime.pause(true); _release();
+    _applyPause(); _release();
     try {
-      if (save && _ready) await _save(state: true);
+      if (save && _ready) await _save(state: true, allowSramFallback: true);
       await _runtime.shutdown().timeout(const Duration(seconds: 20));
       await _removeSession();
+      unawaited(_recordPlay());
       if (live) { setState(() => _canPop = true); Navigator.pop(context); }
     } catch (error) { if (live) setState(() { _error = error is RommFailure ? error.code : 'romm.saveFailed'; _paused = true; }); }
     finally { if (mounted) setState(() => _closing = false); }
@@ -310,7 +331,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   Future<void> _askExit() async {
     if (_closing || _exitPrompt || !live) return;
     _exitPrompt = true;
-    _runtime.pause(true); _release(); GamepadService.instance.releaseWorkspaceInputOwner(this);
+    _applyPause(); _release(); GamepadService.instance.releaseWorkspaceInputOwner(this);
     try {
     final save = await rommDialog<bool>(context: context, controller: widget.controller, connectionId: widget.game.connectionId, builder: (dialog) => AlertDialog(title: Text(rommText(dialog, 'exitConfirm')),
       content: Text(rommText(dialog, 'saveExitHelp')), actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'continue'))),
@@ -318,8 +339,10 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
         FilledButton(onPressed: () => Navigator.pop(dialog, true), child: Text(rommText(dialog, 'saveAndExit')))]));
     if (!live) return;
     if (save != null) await _exit(save);
-    else { _runtime.pause(_paused); if (!_paused && _ready) GamepadService.instance.setWorkspaceInputOwner(this); }
-    } finally { _exitPrompt = false; }
+    } finally {
+      _exitPrompt = false;
+      if (live && !_canPop) { _applyPause(); if (!_paused && _ready) GamepadService.instance.setWorkspaceInputOwner(this); }
+    }
   }
   Widget _touchButton(String label, int id) => Semantics(label: label, button: true, child: Listener(
     onPointerDown: (event) => _touchInput(event.pointer, id, true), onPointerUp: (event) => _touchInput(event.pointer, id, false), onPointerCancel: (event) => _touchInput(event.pointer, id, false),
@@ -329,7 +352,19 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     final directory = _sessionDirectory; _sessionDirectory = null;
     if (directory != null) { try { await directory.delete(recursive: true); } on FileSystemException { /* A later cleanup may remove an interrupted copy. */ } }
   }
+  Future<void> _recordPlay() async {
+    _playtime.stop();
+    final start = _playStarted;
+    if (_recorded || start == null || !widget.controller.current) return;
+    _recorded = true;
+    final end = DateTime.now(), duration = _playtime.elapsedMilliseconds;
+    try {
+      final api = await widget.controller.client(widget.game.connectionId);
+      await api.recordPlay(widget.game, widget.controller.connection(widget.game.connectionId).deviceId, start, end, durationMs: duration);
+    } catch (_) { /* Metadata cannot hold a saved game open. */ }
+  }
   @override void dispose() {
+    unawaited(_recordPlay());
     widget.controller.releasePlayer(this);
     unawaited(_connections?.cancel());
     unawaited(_runtime.shutdown().then((_) => _removeSession()));
@@ -350,12 +385,14 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     child: Scaffold(
     appBar: AppBar(title: Text(isolateDisplayText(widget.game.name)), leading: IconButton(onPressed: _askExit, icon: const Icon(Icons.arrow_back)), actions: [
       IconButton(onPressed: _ready ? _pause : null, tooltip: rommText(context, _paused ? 'continue' : 'pause'), icon: Icon(_paused ? Icons.play_arrow : Icons.pause)),
-      IconButton(onPressed: () => setState(() => _touch = !_touch), tooltip: rommText(context, 'touchControls'), icon: const Icon(Icons.gamepad)),
+      IconButton(onPressed: () { setState(() => _touch = !_touch); if (!_touch) { _touches.clear(); _emitInput(0); } }, tooltip: rommText(context, 'touchControls'), icon: const Icon(Icons.gamepad)),
       IconButton(onPressed: !_ready || _closing ? null : _loadState, tooltip: rommText(context, 'loadState'), icon: const Icon(Icons.restore)),
       IconButton(onPressed: !_ready || _closing ? null : () => _save(state: true).catchError((_) { if (live) setState(() => _error = 'romm.saveFailed'); }), tooltip: rommText(context, 'saveState'), icon: const Icon(Icons.save)),
     ]), body: Column(children: [
       if (_starting || _closing) const LinearProgressIndicator(), if (_error.isNotEmpty) Padding(padding: const EdgeInsets.all(8), child: Text(rommText(context, _error))),
-      Expanded(child: Center(child: _frame == null ? Text(rommText(context, 'starting')) : RawImage(image: _frame, fit: BoxFit.contain, filterQuality: FilterQuality.none))),
+      Expanded(child: Center(child: _frame == null ? Text(rommText(context, 'starting')) : AspectRatio(
+        aspectRatio: _runtime.aspectRatio > 0 ? _runtime.aspectRatio : _frame!.width / _frame!.height,
+        child: RawImage(image: _frame, fit: BoxFit.fill, filterQuality: FilterQuality.none)))),
       if (_touch && _ready && !_paused) SafeArea(top: false, child: Padding(padding: const EdgeInsets.all(12), child: Wrap(spacing: 10, runSpacing: 10, children: [
         for (final entry in {'up': 4, 'down': 5, 'left': 6, 'right': 7, 'select': 2, 'start': 3}.entries) _touchButton(rommText(context, entry.key), entry.value),
         for (final entry in {'B': 0, 'Y': 1, 'A': 8, 'X': 9, 'L': 10, 'R': 11}.entries) _touchButton(entry.key, entry.value),

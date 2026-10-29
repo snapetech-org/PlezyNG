@@ -43,8 +43,7 @@ class RommCapabilities {
     for (final core in nativeCores) {
       if (!(rommNativeCorePlatforms[core] ?? const []).contains(platform)) continue;
       final name = offlineAvailable && offlineFileName.isNotEmpty ? offlineFileName : game.fileName;
-      final extension = name.split('.').last.toLowerCase();
-      final eligible = {'sfc', 'smc', 'gb', 'gbc', 'gba', 'nes', 'bin', 'md', 'gen', 'sms', 'gg'}.contains(extension) &&
+      final eligible = rommNativeCartridge(core, name) &&
         (offlineAvailable || game.files.length <= 1);
       result.add(RommRoute(RommEngine.native, core: core, available: eligible, reason: eligible ? '' : 'romm.unsupportedArchive'));
     }
@@ -61,6 +60,19 @@ class RommCapabilities {
 /// Initially packaged software-rendered cores. The runtime reports the cores
 /// actually present; this mapping alone never enables a native Play action.
 const rommNativeCorePlatforms = <String, List<String>>{
-  'snes9x': ['snes', 'sfam'], 'gambatte': ['gb', 'gbc'], 'mgba': ['gba', 'gb', 'gbc'],
-  'fceumm': ['nes', 'famicom'], 'genesis_plus_gx': ['genesis', 'sms', 'gamegear'],
+  'snes9x': ['snes', 'sfam', 'super-nintendo-original-european-version', 'super-famicom-shvc-001',
+    'super-famicom-jr-model-shvc-101', 'new-style-super-nes-model-sns-101'],
+  'gambatte': ['gb', 'gbc', 'game-boy-pocket', 'game-boy-light'],
+  'mgba': ['gba', 'gb', 'gbc', 'game-boy-pocket', 'game-boy-light', 'game-boy-adavance-sp', 'game-boy-micro'],
+  'fceumm': ['nes', 'famicom', 'game-televisison', 'new-style-nes'],
+  'genesis_plus_gx': ['genesis', 'sms', 'gamegear', 'sega-mark-iii', 'sega-game-box-9', 'sega-master-system-ii',
+    'master-system-super-compact', 'master-system-girl', 'sega-mega-drive-2-slash-genesis', 'sega-mega-jet', 'mega-pc', 'tera-drive', 'sega-nomad'],
 };
+
+bool rommNativeCartridge(String core, String name) {
+  const extensions = <String, Set<String>>{
+    'snes9x': {'sfc', 'smc'}, 'gambatte': {'gb', 'gbc'}, 'mgba': {'gba', 'gb', 'gbc'},
+    'fceumm': {'nes'}, 'genesis_plus_gx': {'bin', 'md', 'gen', 'sms', 'gg'},
+  };
+  return name.contains('.') && (extensions[core]?.contains(name.split('.').last.toLowerCase()) ?? false);
+}

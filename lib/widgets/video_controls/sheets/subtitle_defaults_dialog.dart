@@ -12,6 +12,7 @@ import '../../../services/settings_service.dart';
 import '../../../services/subtitle_font_store.dart';
 import '../../../services/subtitle_portable_defaults.dart';
 import '../../../services/subtitle_selection_rules.dart';
+import 'subtitle_defaults_cloud_dialog.dart';
 
 class SubtitleDefaultsDialog extends StatefulWidget {
   const SubtitleDefaultsDialog({super.key});
@@ -24,6 +25,7 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
   String? _profile, _error, _message;
   bool _initialized = false, _busy = true;
   SubtitlePortableDefaults? _currentDefaults, _incoming;
+  SubtitleDefaultsCloudReview? _cloudReview;
   bool get _current => mounted && _profile != null && _profiles?.activeId == _profile;
 
   @override
@@ -69,6 +71,7 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
     if (chosen == null) return;
     _check();
     _incoming = null;
+    _cloudReview = null;
     if (chosen.files.length != 1 || chosen.files.single.size > SubtitlePortableDefaults.maximumBytes) {
       throw const FormatException('Choose one caption defaults file, at most 16 KiB.');
     }
@@ -86,6 +89,32 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
     _incoming = SubtitlePortableDefaults.decode(bytes.takeBytes());
     _capture();
     _message = 'Preview loaded. Choose each group to import after comparing it with the current defaults.';
+  });
+
+  Future<void> _cloud() => _run(() async {
+    _check();
+    final review = await showDialog<SubtitleDefaultsCloudReview>(context: context,
+      builder: (_) => SubtitleDefaultsCloudDialog(profileId: _profile!, isCurrent: () => _current));
+    if (review == null) return;
+    _check(); _incoming = review.defaults; _cloudReview = review; _capture();
+    _message = 'Shared defaults loaded for preview. Import each group locally or explicitly choose this whole preset as the shared version.';
+  });
+
+  Future<void> _chooseShared() => _run(() async {
+    _check(); final review = _cloudReview;
+    if (review == null) return;
+    final confirmed = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
+      title: const Text('Use this shared defaults version?'),
+      content: const Text('Publish the entire previewed preset as the choice among the shared versions you saw. '
+        'This does not apply its groups locally. Later unseen edits can create a new conflict. '
+        'Local defaults and older cloud blobs remain available.'), actions: [
+      TextButton(onPressed: () => Navigator.pop(context, false), child: Text(Translations.of(context).common.cancel)),
+      FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Use shared version'))]));
+    if (confirmed != true) return;
+    _check(); final choices = await review.chooseShared();
+    _cloudReview = null;
+    _message = choices.length > 1 ? 'A new concurrent edit arrived. Pull and preview the remaining shared versions.'
+        : 'Shared choice published. Local defaults are unchanged until you import a group.';
   });
 
   Future<void> _import(int? lane) => _run(() async {
@@ -153,6 +182,7 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
         Wrap(spacing: 8, children: [
           TextButton(onPressed: _busy || !_current || current == null ? null : _export, child: const Text('Export saved defaults')),
           TextButton(onPressed: _busy || !_current ? null : _preview, child: const Text('Open defaults for preview')),
+          TextButton(onPressed: _busy || !_current ? null : _cloud, child: const Text('Share through configured cloud')),
           if (incoming != null) TextButton(onPressed: _busy || !_current ? null : () => _run(() async { _capture(); }),
             child: const Text('Refresh current defaults')),
         ]),
@@ -172,6 +202,8 @@ class _SubtitleDefaultsDialogState extends State<SubtitleDefaultsDialog> {
             const Text('Profile subtitle roles'), Text('Current: ${_roles(current.roles)}'), Text('Incoming: ${_roles(incoming.roles)}'),
             FilledButton(onPressed: _busy || !_current ? null : () => _import(null), child: const Text('Import profile role defaults')),
           ]))),
+          if (_cloudReview != null) TextButton(onPressed: _busy || !_current ? null : _chooseShared,
+            child: const Text('Use the previewed shared version')),
         ],
       ]))), actions: [TextButton(onPressed: _busy ? null : () => Navigator.pop(context),
         child: Text(Translations.of(context).common.close))]));

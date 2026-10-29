@@ -9,6 +9,7 @@ import '../sources/source_models.dart';
 import '../sources/sync/sync_document.dart';
 import '../sources/sync/sync_store.dart';
 import 'subtitle_revision_service.dart';
+import 'subtitle_portable_defaults.dart';
 
 class SubtitleSyncChoice {
   SubtitleSyncChoice(this.version, this.digest, this.bytes, this.parts);
@@ -25,14 +26,28 @@ class SubtitleSyncChoice {
 /// There is no background selection, playback mutation, or wall-clock winner.
 class SubtitleCloudSync {
   SubtitleCloudSync({required this.repository, required this.identity,
-    required this.store, required String code, required this.check}) : cipher = SyncCipher(code);
+    required this.store, required String code, required this.check, this.defaults = false})
+      : cipher = _cipher(code, defaults);
   final SourceRepository repository;
   final SubtitleRevisionIdentity identity;
   final SyncStore store;
   final SyncCipher cipher;
   final void Function() check;
+  final bool defaults;
+  static SyncCipher _cipher(String code, bool defaults) {
+    if (!defaults) return SyncCipher(code);
+    // A purpose-derived key keeps profile presets in a separate encrypted
+    // namespace even if a viewer accidentally reuses a revision pairing code.
+    final key = Hmac(sha256, SyncCipher.decodeCode(code)).convert(utf8.encode('plezyng.subtitle-defaults.v1')).bytes;
+    return SyncCipher(base64UrlEncode(key));
+  }
+  static SubtitleRevisionIdentity defaultsIdentity(String profileId) => SubtitleRevisionIdentity(
+    profileId: profileId, serverId: 'plezyng.subtitle-defaults.v1', ratingKey: 'profile-defaults', mediaIndex: 0);
   static final _active = <String>{};
-  static final _record = sourceDigest('plezyng.subtitle-choice.v1');
+  String get _choiceType => defaults ? 'plezyng.subtitle-defaults-choice.v1' : 'plezyng.subtitle-choice.v1';
+  String get _partType => defaults ? 'plezyng.subtitle-defaults-part.v1' : 'plezyng.subtitle-part.v1';
+  String get _record => sourceDigest(_choiceType);
+  int get _maximumBytes => defaults ? SubtitlePortableDefaults.maximumBytes : SubtitleRevisionService.maximumRevisionBytes;
   static const _chunkBytes = 1024 * 1024;
   static final _hex = RegExp(r'^[0-9a-f]{64}$');
   String get _cacheKey => 'subtitle-sync-cache.v1:${identity.storageKey}:${cipher.namespace}';
@@ -71,14 +86,14 @@ class SubtitleCloudSync {
     check(); await repository.savePreference(identity.profileId, 'subtitle-sync-device.v1', {'id': id}); check(); return id;
   }
 
-  static List<SubtitleSyncChoice> _choices(SyncDocument document) {
+  List<SubtitleSyncChoice> _choices(SyncDocument document) {
     if (document.records.keys.any((key) => key != _record)) throw const FormatException('Not a subtitle synchronization document');
     return [for (final version in document.records[_record] ?? <SyncVersion>[]) _choice(version)];
   }
-  static SubtitleSyncChoice _choice(SyncVersion version) {
+  SubtitleSyncChoice _choice(SyncVersion version) {
     final value = version.value, bytes = version.value['bytes'], digest = version.value['digest'], parts = version.value['parts'];
-    if (value['type'] != 'plezyng.subtitle-choice.v1' || digest is! String || !_hex.hasMatch(digest) ||
-        bytes is! int || bytes < 1 || bytes > SubtitleRevisionService.maximumRevisionBytes || parts is! List ||
+    if (value['type'] != _choiceType || digest is! String || !_hex.hasMatch(digest) ||
+        bytes is! int || bytes < 1 || bytes > _maximumBytes || parts is! List ||
         parts.length != (bytes + _chunkBytes - 1) ~/ _chunkBytes ||
         parts.any((part) => part is! String || !_hex.hasMatch(part))) throw const FormatException('Invalid subtitle sync asset descriptor');
     return SubtitleSyncChoice(version, digest, bytes, parts.cast<String>());
@@ -95,8 +110,8 @@ class SubtitleCloudSync {
   String _blobNamespace(String digest) => sourceDigest('${cipher.namespace}:subtitle-blob:$digest').substring(0, 24);
   String _blobName(String digest, int index) => SyncFile.filename(_blobNamespace(digest), digest.substring(0, 32), index + 1);
 
-  Future<Map<String, dynamic>> _upload(SubtitleRevision revision) async {
-    final bytes = _content(revision);
+  Future<Map<String, dynamic>> _upload(Uint8List bytes) async {
+    if (bytes.isEmpty || bytes.length > _maximumBytes) throw const FormatException('Subtitle sync asset size limit');
     final digest = sha256.convert(bytes).toString();
     final parts = <String>[];
     final files = await store.list(_blobNamespace(digest)); check();
@@ -113,21 +128,21 @@ class SubtitleCloudSync {
         continue;
       }
       final payload = SyncDocument({_record: [SyncVersion({digest.substring(0, 32): index + 1}, {
-        'type': 'plezyng.subtitle-part.v1', 'digest': digest, 'index': index, 'sha256': hash, 'data': base64Encode(chunk),
+        'type': _partType, 'digest': digest, 'index': index, 'sha256': hash, 'data': base64Encode(chunk),
       })]});
       final encrypted = await cipher.seal(payload, name); check();
       await store.create(name, encrypted); check();
     }
-    return {'type': 'plezyng.subtitle-choice.v1', 'digest': digest, 'bytes': bytes.length, 'parts': parts};
+    return {'type': _choiceType, 'digest': digest, 'bytes': bytes.length, 'parts': parts};
   }
   Future<Uint8List> _readChunk(SyncFile file, String digest, int index, String expectedHash, int expectedBytes) async {
     check();
     final document = await cipher.open(await store.read(file), file.name); check();
     if (document.records.length != 1 || document.records[_record]?.length != 1) throw const FormatException('Invalid subtitle asset chunk');
     final value = document.records[_record]!.single.value;
-    if (file.name != _blobName(digest, index) || value['type'] != 'plezyng.subtitle-part.v1' || value['digest'] != digest ||
+    if (file.name != _blobName(digest, index) || value['type'] != _partType || value['digest'] != digest ||
         value['index'] != index || value['sha256'] != expectedHash || value['data'] is! String ||
-        (value['data'] as String).length > 1400000) throw const FormatException('Subtitle asset chunk identity mismatch');
+        (value['data'] as String).length > ((expectedBytes + 2) ~/ 3) * 4) throw const FormatException('Subtitle asset chunk identity mismatch');
     final bytes = base64Decode(value['data'] as String);
     if (bytes.length != expectedBytes || sha256.convert(bytes).toString() != expectedHash) throw const FormatException('Subtitle asset chunk is corrupt');
     return bytes;
@@ -135,12 +150,17 @@ class SubtitleCloudSync {
 
   /// Publish only a user-selected reviewed revision. Pull alone can propagate
   /// already known causal metadata but never imports or selects a caption.
-  Future<List<SubtitleSyncChoice>> synchronize({SubtitleRevision? publish}) => _exclusive(() async {
+  Future<List<SubtitleSyncChoice>> synchronize({SubtitleRevision? publish, SubtitlePortableDefaults? publishDefaults}) => _exclusive(() async {
+    if (defaults && publish != null || !defaults && publishDefaults != null) {
+      throw ArgumentError('The content does not match this subtitle synchronization channel');
+    }
     final cache = await _load(), device = await _device();
-    if (publish != null) {
+    if (publish != null || publishDefaults != null) {
       // Complete immutable blobs first. A failed upload does not leave a
       // durable register pointing to missing chunks or claim offline success.
-      final descriptor = await _upload(publish);
+      final bytes = publish != null ? _content(publish) : Uint8List.fromList(utf8.encode(
+        canonicalSyncJson(jsonDecode(utf8.decode(publishDefaults!.encode())))));
+      final descriptor = await _upload(bytes);
       if (cache.observed != descriptor['digest']) {
         final version = cache.document.edit(_record, device, descriptor, cache.basis);
         cache.basis = version.clock; cache.observed = descriptor['digest'] as String;
@@ -190,7 +210,7 @@ class SubtitleCloudSync {
     return _choices(cache.document);
   });
 
-  Future<SubtitleRevision> download(SubtitleSyncChoice choice) => _exclusive(() async {
+  Future<Uint8List> _download(SubtitleSyncChoice choice) => _exclusive(() async {
     final cache = await _load(); _requireChoice(cache, choice);
     final listed = await store.list(_blobNamespace(choice.digest)); check();
     if (listed.length > 256) throw const FormatException('Subtitle chunk generation limit');
@@ -203,8 +223,18 @@ class SubtitleCloudSync {
     }
     final content = bytes.takeBytes();
     if (content.length != choice.bytes || sha256.convert(content).toString() != choice.digest) throw const FormatException('Subtitle asset digest mismatch');
-    final revision = SubtitleRevision.fromJson(jsonDecode(utf8.decode(content, allowMalformed: false))); check(); return revision;
+    check(); return content;
   });
+  Future<SubtitleRevision> download(SubtitleSyncChoice choice) async {
+    if (defaults) throw StateError('This channel contains caption defaults');
+    final content = await _download(choice);
+    final revision = SubtitleRevision.fromJson(jsonDecode(utf8.decode(content, allowMalformed: false))); check(); return revision;
+  }
+  Future<SubtitlePortableDefaults> downloadDefaults(SubtitleSyncChoice choice) async {
+    if (!defaults) throw StateError('This channel contains subtitle revisions');
+    final content = await _download(choice);
+    final result = SubtitlePortableDefaults.decode(content); check(); return result;
+  }
   void _requireChoice(_SubtitleSyncCache cache, SubtitleSyncChoice choice) {
     if (!_choices(cache.document).any((value) => value.digest == choice.digest &&
         canonicalSyncJson(value.version.clock) == canonicalSyncJson(choice.version.clock))) {
@@ -214,6 +244,7 @@ class SubtitleCloudSync {
 
   /// Import adds history under its existing retention limit and never changes playback.
   Future<void> importRevision(SubtitleSyncChoice choice, SubtitleRevision revision) => _exclusive(() async {
+    if (defaults) throw StateError('This channel contains caption defaults');
     final cache = await _load(); _requireChoice(cache, choice);
     if (sha256.convert(_content(revision)).toString() != choice.digest) throw const FormatException('Reviewed sync content changed');
     check();

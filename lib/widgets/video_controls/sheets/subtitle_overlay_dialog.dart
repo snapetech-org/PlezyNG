@@ -209,6 +209,9 @@ Future<void> showSubtitleOverlayControls(BuildContext context, Player player, {
               await onDownloadChanged?.call();
               if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text('Removed your saved captions for this download. Current playback is unchanged.')));
+            } catch (_) {
+              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Could not remove the saved captions. Retry from this download.')));
             } finally { if (context.mounted) update(() => exportingPackage = false); }
           }, child: const Text('Remove saved captions from this download')),
         ],

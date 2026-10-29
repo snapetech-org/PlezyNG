@@ -72,7 +72,7 @@ abstract final class SubtitleDownloadAssets {
     }
     List<double> rect(Rect r) => [r.left, r.top, r.width, r.height];
     final document = <String, Object?>{'schema': 1, 'version': binding.version, 'partOffsetMs': binding.partOffsetMs,
-      'lane': lane, 'revision': revision.toJson(), 'appearance': appearance, 'delayMs': delay,
+      'lane': lane, 'revision': revision.toJson(), 'appearance': appearance, 'delayMs': delay, 'reviewed': track.reviewed,
       'regions': {for (final entry in track.regions.entries) entry.key: rect(entry.value)},
       'avoidRegions': {for (final entry in track.avoidRegions.entries) entry.key: entry.value.map(rect).toList()},
       'avoidObjects': track.avoidObjects,
@@ -157,7 +157,7 @@ abstract final class SubtitleDownloadAssets {
       avoid[e.key as String] = (e.value as List).map(rect).toList();
     }
     final track = SubtitleOverlayTrack(cues: revision.cues, words: revision.wordTimings,
-      title: revision.operation, language: revision.languageCode, profileId: binding.profileId, reviewed: true,
+      title: revision.operation, language: revision.languageCode, profileId: binding.profileId, reviewed: document['reviewed'] == true,
       regions: regions, avoidRegions: avoid, isCurrent: isCurrent);
     track.applyAppearance(document['appearance'] as Map<String, dynamic>);
     track.delayMs = document['delayMs'] as int;

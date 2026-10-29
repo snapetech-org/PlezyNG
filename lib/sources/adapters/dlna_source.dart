@@ -13,6 +13,8 @@ class DlnaSourceAdapter extends SourceAdapter {
 
   static const _soapEnvelopeNs = 'http://schemas.xmlsoap.org/soap/envelope/';
   static const _requestedCount = 200;
+  static const _secNamespace = 'http://www.sec.co.kr/';
+  static const _pvNamespace = 'http://www.pv.com/pvns/';
   _DlnaService? _service;
   static const _subtitlePrefix = 'plezy-dlna-subtitle:';
   @override
@@ -29,7 +31,7 @@ class DlnaSourceAdapter extends SourceAdapter {
 
   String _resourceKey(_DlnaResource resource) => sourceDigest(jsonEncode([
     resource.uri.scheme, resource.uri.host.toLowerCase(), resource.uri.port,
-    resource.uri.path, resource.mimeType.toLowerCase(),
+    resource.uri.path, resource.subtitleExtension ?? resource.mimeType.toLowerCase(),
   ]));
 
   PublicationFile _subtitleFile(String objectId, String title, _DlnaResource resource) => PublicationFile(
@@ -178,6 +180,30 @@ class DlnaSourceAdapter extends SourceAdapter {
     }
 
     final resources = <_DlnaResource>[];
+    void caption(String? raw, String? declaredType) {
+      if (raw == null || raw.trim().isEmpty || raw.length > 8192) return;
+      // Vendor metadata is only an advertised candidate. It receives the same
+      // source authority and bounded import checks as ordinary DIDL resources.
+      // No filename guessing, HEAD probing or cross-host access is introduced.
+      try {
+        final uri = service.base.resolve(raw.trim());
+        _validateSameHost(uri);
+        final name = uri.pathSegments.isEmpty ? '' : uri.pathSegments.last;
+        var type = declaredType?.trim().toLowerCase() ?? '';
+        if (type.startsWith('.')) type = type.substring(1);
+        type = switch (type) {
+          'application/x-subrip' || 'application/srt' || 'text/srt' => 'srt',
+          'text/vtt' => 'vtt', 'text/ass' || 'text/x-ass' => 'ass',
+          'text/ssa' || 'text/x-ssa' => 'ssa', _ => type,
+        };
+        if (type.isEmpty && isSourceTextSubtitle(name)) type = name.split('.').last.toLowerCase();
+        if (!const {'srt', 'vtt', 'ass', 'ssa'}.contains(type)) return;
+        if (isSourceTextSubtitle(name) && name.split('.').last.toLowerCase() != type) return;
+        resources.add(_DlnaResource(uri, type == 'vtt' ? 'text/vtt' : 'text/$type',
+          isSourceTextSubtitle(name) ? name : '$title.$type', SourceItemKind.unknown, null, null));
+      } on SourceException catch (_) { /* Optional caption links cannot widen source authority. */ }
+      on FormatException catch (_) { /* Malformed optional metadata does not hide playable media. */ }
+    }
     for (final res in element.children.whereType<XmlElement>().where((child) => child.name.local == 'res')) {
       final url = res.innerText.trim();
       if (url.isEmpty) continue;
@@ -191,6 +217,13 @@ class DlnaSourceAdapter extends SourceAdapter {
       final duration = _durationMs(res.getAttribute('duration'));
       final size = int.tryParse(res.getAttribute('size') ?? '');
       resources.add(_DlnaResource(resourceUri, mimeType, name, kind, size, duration));
+      caption(res.getAttribute('subtitleFileUri', namespaceUri: _pvNamespace),
+          res.getAttribute('subtitleFileType', namespaceUri: _pvNamespace));
+    }
+    for (final child in element.children.whereType<XmlElement>()) {
+      if (child.namespaceUri == _secNamespace && const {'CaptionInfo', 'CaptionInfoEx'}.contains(child.name.local)) {
+        caption(child.innerText, child.getAttribute('type', namespaceUri: _secNamespace) ?? child.getAttribute('type'));
+      }
     }
     resources.sort((a, b) => (b.size ?? 0).compareTo(a.size ?? 0));
     final mediaClass = (_descendantText(element, 'class') ?? '').toLowerCase();
@@ -203,7 +236,12 @@ class DlnaSourceAdapter extends SourceAdapter {
               mediaClass.contains('audio') && resource.mimeType.startsWith('audio/'),
         )
         .firstOrNull;
-    final subtitles = resources.where((resource) => resource.subtitleExtension != null).take(128).toList(growable: false);
+    // Servers commonly advertise the same URL through res, SEC and PV at once.
+    // Collapse only exact URL/format duplicates. Different signed URLs with an
+    // ambiguous renewal key still fail in _resource rather than choosing one.
+    final captionUrls = <String>{};
+    final subtitles = resources.where((resource) => resource.subtitleExtension != null &&
+      captionUrls.add('${resource.uri}\u0000${resource.subtitleExtension}')).take(128).toList(growable: false);
     if (preferred == null) {
       if (subtitles.isEmpty) return null;
       return _DlnaObject(entry: SourceEntry(sourceId: source.id, id: id, title: title,

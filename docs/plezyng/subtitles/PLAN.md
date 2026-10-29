@@ -1260,3 +1260,20 @@ review accepts wording changes only for the same cue IDs/times. Excluding an
 image cue keeps before/after source pairing aligned with retained IDs. Image
 bundles include the research metadata and clock basis, while the returned host
 baseline remains separately identified. No models or evaluation jobs were run.
+
+## DLNA vendor links and handoff ownership
+
+DLNA discovery also reads namespaced SEC CaptionInfo/CaptionInfoEx and PV
+subtitleFileUri/subtitleFileType metadata for supported text formats. Advertised
+links stay on the source's validated host and use existing bounded source reads;
+there is no filename or header probing. Exact URL/format duplicates collapse,
+while ambiguous renewable resource identities still fail explicitly. Invalid
+optional vendor links do not hide an otherwise playable resource. This follows
+[Kodi's advertised metadata](https://github.com/xbmc/xbmc/blob/master/xbmc/network/upnp/UPnPInternal.cpp)
+and [Gerbera's documented SEC/PV fields](https://docs.gerbera.io/en/stable/supported-devices.html).
+
+Second-screen/WebVTT leases now bind the opened part offset and revoke on a
+clock-basis change. Cached WebVTT includes that offset in its key. Retaining and
+restoring download captions preserves the reviewed/unreviewed state rather
+than turning an inference result into an accepted track. Failed explicit removal
+reports an error. Protocol, receiver and storage behavior remain unrun.

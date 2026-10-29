@@ -21,15 +21,17 @@ class SubtitleHandoffService {
   String? _token;
   DateTime? expires;
   int _generation = 0, _inflight = 0, _requests = 0;
+  int? _partOffsetMs;
   DateTime _rateWindow = DateTime.now();
-  final Map<int, ({int delay, List<int> bytes})> _vtt = {};
+  final Map<int, ({int delay, int offset, List<int> bytes})> _vtt = {};
   bool get running => _server != null;
   List<String> get urls => _server == null ? [] : [for (final address in _addresses)
     Uri(scheme: 'http', host: address, port: _server!.port, path: '/$_token/').toString()];
   List<({String title, String url})> get trackUrls => [for (final base in urls) for (var i = 0; i < _tracks.length; i++)
     (title: _tracks[i].title, url: Uri.parse(base).resolve('track/$i.vtt').toString())];
   bool get _current {
-    try { return _session?.current == true && _tracks.isNotEmpty && _tracks.every((t) => _session!.lanes.contains(t) && t.isCurrent()); }
+    try { return _session?.current == true && _partOffsetMs == _player?.timelineOffset.inMilliseconds &&
+        _tracks.isNotEmpty && _tracks.every((t) => _session!.lanes.contains(t) && t.isCurrent()); }
     catch (_) { return false; }
   }
 
@@ -44,6 +46,7 @@ class SubtitleHandoffService {
       if (NetworkMediaStreamPolicy.isPrivateIPv4(address)) address.address}.toList();
     if (_addresses.isEmpty) throw const SocketException('No private IPv4 network is available.');
     _player = player; _session = SubtitleOverlayService.forPlayer(player); _tracks = List.unmodifiable(tracks);
+    _partOffsetMs = player.timelineOffset.inMilliseconds;
     if (!_current) { await stop(); throw StateError('The selected subtitle session changed.'); }
     // Preflight both derived assets before opening a listener.
     late HttpServer server;
@@ -63,7 +66,7 @@ class SubtitleHandoffService {
     ++_generation;
     _expiry?.cancel(); _guard?.cancel(); _expiry = null; _guard = null;
     final server = _server; _server = null;
-    _player = null; _session = null; _tracks = []; _addresses = []; _token = null; expires = null; _vtt.clear();
+    _player = null; _partOffsetMs = null; _session = null; _tracks = []; _addresses = []; _token = null; expires = null; _vtt.clear();
     await server?.close(force: true);
   }
   static String _time(int ms) => '${(ms ~/ 3600000).toString().padLeft(2, '0')}:'
@@ -72,7 +75,7 @@ class SubtitleHandoffService {
   List<int> _asset(int index) {
     final track = _tracks[index], offset = _player!.timelineOffset.inMilliseconds;
     final cached = _vtt[index];
-    if (cached != null && cached.delay == track.delayMs) return cached.bytes;
+    if (cached != null && cached.delay == track.delayMs && cached.offset == offset) return cached.bytes;
     final output = StringBuffer('WEBVTT\n\nNOTE Plain text from a reviewed PlezyNG overlay. Times follow the open file.\n\n');
     for (final cue in track.cues) {
       final start = cue.startMs + track.delayMs - offset, end = cue.endMs + track.delayMs - offset;
@@ -84,7 +87,7 @@ class SubtitleHandoffService {
     }
     final bytes = utf8.encode(output.toString());
     if (bytes.length > 5 * 1024 * 1024) throw const FormatException('Shared subtitle exceeds 5 MiB.');
-    _vtt[index] = (delay: track.delayMs, bytes: bytes);
+    _vtt[index] = (delay: track.delayMs, offset: offset, bytes: bytes);
     return bytes;
   }
   Future<void> _serve(HttpRequest request) async {

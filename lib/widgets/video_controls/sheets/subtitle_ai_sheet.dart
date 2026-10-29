@@ -28,6 +28,7 @@ import '../../../services/subtitle_editing_service.dart';
 import '../../../services/subtitle_waveform_service.dart';
 import '../../../services/subtitle_companion_service.dart';
 import '../../../services/subtitle_translation_service.dart';
+import '../../../services/subtitle_translation_memory.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_playback_transcription_service.dart';
 import '../../../services/subtitle_revision_service.dart';
@@ -39,6 +40,7 @@ import 'base_video_control_sheet.dart';
 import 'subtitle_jobs_dialog.dart';
 import 'subtitle_waveform_editor.dart';
 import 'subtitle_companion_jobs_dialog.dart';
+import 'subtitle_study_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -184,6 +186,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   bool _allowMobileData = false;
   bool _requestTranslationCuda = false;
   bool _bilingualTranslation = false;
+  bool _useTranslationMemory = false;
   bool _useSeriesGlossary = false;
   final TextEditingController _glossaryController = TextEditingController();
   final Map<String, String> _glossaryDrafts = <String, String>{};
@@ -936,6 +939,32 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       builder: (context) => _CapturedTranscriptDialog(player: widget.player, service: service),
     );
   }
+
+  Future<void> _studySubtitle({bool saved = false}) => _run(() async {
+    final identity = _operationRevisionIdentity;
+    late final List<SubtitleCue> cues;
+    late final String title;
+    if (saved) {
+      final transcript = await _chooseSavedTranscript();
+      if (transcript == null || !mounted) return;
+      if (transcript.storageKey != identity?.storageKey) {
+        throw StateError('Open the transcript’s original media item to replay its source times.');
+      }
+      cues = transcript.loadedRevision.cues;
+      title = transcript.mediaTitle;
+    } else {
+      final selected = await _pickSubtitleCues();
+      if (selected == null || !mounted) return;
+      cues = selected.$1;
+      title = identity?.mediaTitle ?? selected.$2;
+    }
+    _requireCurrentOperationIdentity();
+    await showDialog<void>(context: context, builder: (_) => SubtitleStudyDialog(
+      player: widget.player, cues: cues, title: title,
+      identityKey: identity?.storageKey,
+      isCurrent: () => mounted && _operationIdentityIsCurrent,
+    ));
+  });
 
   Future<void> _saveCapturedTranscript(SubtitlePlaybackTranscriptionService service) => _run(() async {
     if (widget.isRevisionIdentityCurrent?.call() == false) {
@@ -2359,8 +2388,21 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           ? 'Starting local translation…'
           : 'Preparing on-device language models…',
     );
-    final result = await SubtitleTranslationService.translateCues(
-      cues: selected.$1,
+    final memoryIdentity = _operationRevisionIdentity?.storageKey;
+    final memoryEnabled = _useTranslationMemory && profileId != null && memoryIdentity != null;
+    final memoryNamespace = SubtitleTranslationMemory.namespace(
+      source: _sourceLanguage.bcpCode, target: _targetLanguage.bcpCode,
+      engine: SubtitleTranslationService.desktopPlatformSupported ? 'argos-local' : 'mlkit-local',
+      glossary: glossary, bilingual: _bilingualTranslation,
+    );
+    final remembered = memoryEnabled ? await SubtitleTranslationMemory.lookup(
+      profileId: profileId!, namespace: memoryNamespace, cues: selected.$1,
+    ) : <String, String>{};
+    final pending = selected.$1.where((cue) => !remembered.containsKey(cue.stableId)).toList();
+    final generated = pending.isEmpty
+        ? const SubtitleTranslationResult(cues: [], backendLabel: 'Reviewed translation memory', fellBackToCpu: false, qualityWarnings: [])
+        : await SubtitleTranslationService.translateCues(
+      cues: pending,
       sourceLanguage: _sourceLanguage,
       targetLanguage: _targetLanguage,
       allowMobileData: _allowMobileData,
@@ -2371,6 +2413,20 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         if (mounted) setState(() => _status = 'Translating cue $completed of $total on this device…');
       },
     );
+    final byId = {for (final cue in generated.cues) cue.stableId: cue};
+    final result = SubtitleTranslationResult(
+      cues: selected.$1.map((source) {
+        final text = remembered[source.stableId];
+        if (text == null) return byId[source.stableId] ?? (throw StateError('Translation omitted a cue.'));
+        return SubtitleCue(index: source.index, startMs: source.startMs, endMs: source.endMs, text: text, cueId: source.stableId);
+      }).toList(growable: false),
+      backendLabel: generated.backendLabel, fellBackToCpu: generated.fellBackToCpu,
+      qualityWarnings: [
+        ...generated.qualityWarnings,
+        if (remembered.isNotEmpty) '${remembered.length} reviewed translations reused with exact source-context and glossary matches. '
+            'Local translators do not expose their model revision; review the reused text before saving.',
+      ],
+    );
     _requireSubtitleCueIdentityPreserved(selected.$1, result.cues);
     if (!await _writeAndApply(
       result.cues,
@@ -2378,6 +2434,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       operationLanguageCode: _targetLanguage.bcpCode,
       sourceCues: selected.$1,
       reviewWarnings: result.qualityWarnings,
+      onAcceptedReview: !memoryEnabled ? null : (reviewed) => SubtitleTranslationMemory.remember(
+        profileId: profileId!, namespace: memoryNamespace, source: selected.$1, reviewed: reviewed,
+        backendLabel: result.backendLabel, itemIdentity: memoryIdentity!,
+      ),
     )) {
       return;
     }
@@ -2664,6 +2724,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     List<SubtitleWordTiming> wordTimings = const <SubtitleWordTiming>[],
     SubtitleRevisionDraft? resumeDraft,
     SubtitleRevisionIdentity? resumeIdentity,
+    Future<void> Function(List<SubtitleCue>)? onAcceptedReview,
   }) async {
     if (cues.isEmpty || cues.length > SubtitleRetimer.maximumCueCount) {
       throw const FormatException('Subtitle result has no cues or exceeds the 50000 cue processing bound.');
@@ -2672,6 +2733,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       throw StateError('Source and output cue counts do not match; no subtitle was attached.');
     }
     var reviewedCues = List<SubtitleCue>.from(cues);
+    Future<void> rememberAcceptedReview() async {
+      if (onAcceptedReview == null) return;
+      try { await onAcceptedReview(List<SubtitleCue>.unmodifiable(reviewedCues)); }
+      catch (_) {
+        if (mounted) setState(() => _revisionStatus = 'The subtitle was saved, but translation memory could not be updated.');
+      }
+    }
     final originalCuesById = <String, SubtitleCue>{for (final cue in cues) cue.stableId: cue};
     var reviewedWordTimings = SubtitleWordTimingBuilder.attachCueIndices(wordTimings, reviewedCues).toList();
     var invalidatedWordTimingCount = 0;
@@ -3021,6 +3089,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         identity: draftIdentity,
       );
       if (revisionSaved) await clearReviewDraft();
+      await rememberAcceptedReview();
       if (mounted) setState(() => _status = 'Reviewed subtitle exported as SRT.');
       return false;
     }
@@ -3093,6 +3162,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         identity: draftIdentity,
       );
       if (revisionSaved) await clearReviewDraft();
+      await rememberAcceptedReview();
       if (mounted) setState(() => _status = 'Reviewed subtitle exported as versioned cue JSON.');
       return false;
     }
@@ -3156,6 +3226,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       identity: draftIdentity,
     );
     if (revisionSaved) await clearReviewDraft();
+    await rememberAcceptedReview();
     return true;
   }
 
@@ -3611,6 +3682,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             onTap: _busy ? null : () => unawaited(_transformSubtitles()),
           ),
           FocusableListTile(
+            leading: const AppIcon(Symbols.replay_rounded),
+            title: const Text('Study a subtitle transcript'),
+            subtitle: const Text('Search, replay, pause after lines, loop with gaps, and save phrases from a matching subtitle'),
+            onTap: _busy ? null : () => unawaited(_studySubtitle()),
+          ),
+          if (_revisionIdentity != null) FocusableListTile(
+            leading: const AppIcon(Symbols.history_rounded),
+            title: const Text('Study a saved transcript'),
+            subtitle: const Text('Reuse this item’s saved speech transcript and source times'),
+            onTap: _busy ? null : () => unawaited(_studySubtitle(saved: true)),
+          ),
+          FocusableListTile(
             leading: const AppIcon(Symbols.graphic_eq_rounded),
             title: const Text('Waveform and spectrogram editor'),
             subtitle: const Text('Edit cue anchors against a matching WAV interval up to five minutes'),
@@ -3649,6 +3732,19 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             onTap: _busy ? null : () => unawaited(_synchronizeToReference(repairCuts: true)),
           ),
           if (_translationSupported) ...[
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Reuse and remember reviewed translations'),
+              subtitle: const Text('Profile-local exact text/context and glossary matches. Only accepted results are remembered; model revisions are not reported.'),
+              value: _useTranslationMemory,
+              onChanged: _busy ? null : (value) => setState(() => _useTranslationMemory = value),
+            ),
+            TextButton(onPressed: _busy ? null : () => _run(() async {
+              final profile = _activeProfileId;
+              if (profile == null) return;
+              await SubtitleTranslationMemory.clear(profile);
+              if (mounted) setState(() => _status = 'Reviewed translation memory cleared for this profile.');
+            }), child: const Text('Clear this profile’s translation memory')),
             const Divider(height: 24),
             Text('Local subtitle translation', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),

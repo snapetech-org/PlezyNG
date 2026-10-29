@@ -1552,12 +1552,11 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
               onPressed: () => sourceAction(context, () => _openExternalSubtitleSync(s)),
               icon: const AppIcon(Symbols.sync_rounded),
             ),
-          if (s.video &&
-              !s.isLiveInput &&
+          if (!s.isLiveInput &&
               s.player?.playerType == 'mpv' &&
               s.player?.supportedLocalSubtitleExtensions.contains('srt') == true)
             IconButton(
-              tooltip: 'Generate, sync, or translate subtitles',
+              tooltip: 'Generate, sync, translate, or study a transcript',
               onPressed: () => _openSourceSubtitleAi(s),
               icon: const AppIcon(Symbols.auto_awesome_rounded),
             ),

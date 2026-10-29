@@ -10,6 +10,8 @@ import math
 import wave
 from collections import Counter
 
+MAX_INPUT_BYTES = 100 * 1024**2
+
 
 def validate(value, cues):
     if not isinstance(value, dict) or value.get('schema') != 'plezyng.microphone-array.v1' or value.get('rawSynchronizedCapture') is not True:
@@ -91,7 +93,10 @@ def run(folder, job, progress):
         raise ValueError('array_requires_distinct_well_conditioned_noncoplanar_geometry')
     calibration_digest = hashlib.sha256(json.dumps(config, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     evidence = []
-    with wave.open(str(folder/'input.media'), 'rb') as source:
+    source_path = folder/'input.media'
+    if source_path.stat().st_size > MAX_INPUT_BYTES:
+        raise ValueError('array_wav_exceeds_100_mib')
+    with wave.open(str(source_path), 'rb') as source:
         rate, channels, frames = source.getframerate(), source.getnchannels(), source.getnframes()
         if (source.getcomptype() != 'NONE' or source.getsampwidth() != 2 or channels != len(positions) or
                 not 16000 <= rate <= 48000 or not 0 < frames <= 120*rate):

@@ -931,11 +931,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           allowedExtensions: task == 'sound_localize' ? const ['wav'] : null);
         if (selected == null || selected.files.isEmpty || !mounted) return;
         final file = selected.files.first;
-        if (file.size <= 0 || file.size > SubtitleCompanionService.maximumInputBytes) throw const FormatException('Choose media up to 1 GiB and within the task duration limit.');
+        final maximumInputBytes = task == 'sound_localize'
+            ? SubtitleCompanionService.maximumMicrophoneArrayBytes : SubtitleCompanionService.maximumInputBytes;
+        if (file.size <= 0 || file.size > maximumInputBytes) throw FormatException(task == 'sound_localize'
+            ? 'Choose an original multichannel WAV no larger than 100 MiB.'
+            : 'Choose media up to 1 GiB and within the task duration limit.');
         path = file.path;
         if (path == null) {
           final bytes = file.bytes;
-          if (bytes == null || bytes.length > 256 * 1024 * 1024) throw const FormatException('The picker did not expose a bounded local media file.');
+          if (bytes == null || bytes.length > maximumInputBytes) throw const FormatException('The picker did not expose a bounded local media file.');
           final temp = await getTemporaryDirectory();
           path = p.join(temp.path, 'subtitle_companion_${DateTime.now().microsecondsSinceEpoch}.media');
           await File(path).writeAsBytes(bytes, flush: true);

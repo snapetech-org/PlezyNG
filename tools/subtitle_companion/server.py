@@ -29,7 +29,7 @@ from text_adapters import TEXT_TASKS, SCRIPT_MODES, MODES, capabilities as trans
 
 from research import MEDIA_TASKS
 from lyric_research import validate_syllables
-from microphone_array import validate as validate_microphone_array
+from microphone_array import MAX_INPUT_BYTES as MAX_ARRAY_INPUT, validate as validate_microphone_array
 from dubbing import voice_config, capabilities as synthesis_capabilities
 from visual_research import vision_capabilities
 from scene_objects import capabilities as scene_object_capabilities
@@ -121,7 +121,8 @@ class Store:
             if not isinstance(value.get(key), str) or not HEX.fullmatch(value[key]):
                 raise ValueError("invalid_identity")
         size = value.get("audioBytes", 0)
-        if type(size) is not int or size < 0 or size > MAX_INPUT or (task not in TEXT_TASKS and size < 1) or (task in TEXT_TASKS and size != 0):
+        input_limit = MAX_ARRAY_INPUT if task == 'sound_localize' else MAX_INPUT
+        if type(size) is not int or size < 0 or size > input_limit or (task not in TEXT_TASKS and size < 1) or (task in TEXT_TASKS and size != 0):
             raise ValueError("input_limit")
         language = value.get("language")
         if language is not None and (not isinstance(language, str) or not re.fullmatch(r"[a-z]{2,3}", language)):
@@ -490,7 +491,8 @@ class Handler(BaseHTTPRequestHandler):
                 if vision is not None: tasks.append("scene_review")
                 if scene_detector is not None and shutil.which(os.environ.get('PLEZY_FFPROBE', 'ffprobe')):
                     tasks.append('scene_track')
-            self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT, "captionRelay": 1,
+            self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
+                             "maxMicrophoneArrayBytes": MAX_ARRAY_INPUT, "captionRelay": 1,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
                              "sceneMotionTracking": vision is not None and installed("cv2"),
                              "sceneObjectTracking": scene_detector is not None, "sceneObjectDetector": scene_detector,
@@ -579,7 +581,8 @@ class Handler(BaseHTTPRequestHandler):
             if action == "audio" and self.command == "PUT":
                 if job["state"] not in {"awaiting_audio", "failed"} or identifier in store.processes:
                     raise ValueError("audio_already_staged")
-                if self.length() != job["audioBytes"]:
+                input_limit = MAX_ARRAY_INPUT if job["task"] == 'sound_localize' else MAX_INPUT
+                if self.length(input_limit) != job["audioBytes"]:
                     raise ValueError("audio_length_mismatch")
                 job["state"] = "uploading"
                 store.save(job)
@@ -657,11 +660,11 @@ class Handler(BaseHTTPRequestHandler):
             with store.lock:
                 store.uploads.discard(identifier)
 
-    def length(self):
+    def length(self, maximum=MAX_INPUT):
         if self.headers.get("Transfer-Encoding"):
             raise ValueError("content_length_required")
         length = int(self.headers.get("Content-Length", "0"))
-        if not 0 <= length <= MAX_INPUT:
+        if not 0 <= length <= maximum:
             raise ValueError("input_limit")
         return length
 

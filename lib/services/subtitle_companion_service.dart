@@ -64,6 +64,7 @@ final class SubtitleCompanionService {
   static final _digest = RegExp(r'^[0-9a-f]{64}$');
   static final _id = RegExp(r'^[0-9a-f]{32}$');
   static const maximumInputBytes = 1024 * 1024 * 1024;
+  static const maximumMicrophoneArrayBytes = 100 * 1024 * 1024;
   static const textTasks = {'translate', 'translate_model', 'script_convert', 'reading', 'dubbing'};
   static final Map<String, (Uri, String)> _sessionPairings = {};
 
@@ -239,8 +240,11 @@ final class SubtitleCompanionService {
     if (soundStereoEvidence && caps['soundStereoEvidence'] != true) throw UnsupportedError('Update the companion for stereo evidence');
     final input = mediaPath == null ? null : File(mediaPath);
     final length = input == null ? 0 : await input.length();
-    if (length > maximumInputBytes || (!textTasks.contains(task) && length <= 0) || (textTasks.contains(task) && length != 0)) {
-      throw const FormatException('Choose a media file up to 1 GiB and within the task duration limit.');
+    final inputLimit = task == 'sound_localize' ? maximumMicrophoneArrayBytes : maximumInputBytes;
+    if (length > inputLimit || (!textTasks.contains(task) && length <= 0) || (textTasks.contains(task) && length != 0)) {
+      throw FormatException(task == 'sound_localize'
+          ? 'Choose an original multichannel WAV no larger than 100 MiB.'
+          : 'Choose a media file up to 1 GiB and within the task duration limit.');
     }
     final audioDigest = input == null ? sha256.convert(const <int>[]).toString() : (await sha256.bind(input.openRead()).first).toString();
     final body = <String, Object?>{

@@ -18,6 +18,8 @@ three dimensions, have a condition number at most 30, and microphone separations
 between 3 cm and 2 m. Planar/linear arrays are rejected rather than hiding their
 direction ambiguities. Raw position components are bounded to ±2 m, declared
 latencies to ±5000 µs, and sound speed to 300–380 m/s. Channel polarity is ±1.
+The uploaded WAV is capped at 100 MiB, slightly above the 92.16 MB maximum raw
+PCM payload for eight channels at 48 kHz over two minutes.
 
 The worker scans 256 ms windows at 128 ms steps. All microphone pairs use a
 300–6000 Hz bounded GCC-PHAT delay estimate, declared electronic-delay removal,

@@ -200,6 +200,13 @@ jobs:
         working-directory: packages/wakelock_plus
         run: flutter test test/wakelock_plus_linux_plugin_test.dart
 
+      - name: Configure Flutter Chrome executable
+        working-directory: tools/reader-tests
+        run: |
+          browser_path="$(node -p "require('playwright').chromium.executablePath()")"
+          test -x "$browser_path"
+          printf 'CHROME_EXECUTABLE=%s\n' "$browser_path" >> "$GITHUB_ENV"
+
       - name: Run wakelock_plus Chrome tests
         working-directory: packages/wakelock_plus
         run: flutter test --platform chrome --dart-define=WEB_PLUGIN_TESTS=true test/wakelock_plus_web_plugin_test.dart

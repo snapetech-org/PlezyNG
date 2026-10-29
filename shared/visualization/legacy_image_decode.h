@@ -91,7 +91,7 @@ inline MilkRustImage Dds(const std::vector<uint8_t>& bytes) {
     }
     const size_t tight=size_t(width)*(bits/8);
     const size_t pitch=(Read(bytes,8,4)&8)?Read(bytes,20,4):tight;
-    if (pitch<tight || pitch>16*1024*1024 || pitch*height>bytes.size()-128)
+    if (pitch<tight || pitch>16*1024*1024 || pitch>(bytes.size()-128)/height)
       throw std::runtime_error("Truncated DDS row layout.");
     for (size_t y=0; y<height; ++y) for (size_t x=0; x<width; ++x) {
       const auto value=Read(bytes,128+y*pitch+x*(bits/8),bits/8);

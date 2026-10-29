@@ -2,7 +2,7 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `819dc540d3d7714cb75cc7795b97d1c3b62e6f88`; the exact dependency
+pins MilkRust `482368909e979d3e25fd6e62b62ec285b82bd088`; the exact dependency
 contract is in `native/visualizer/sources.lock.json`. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
@@ -17,8 +17,8 @@ moderate for source integration; compiled behavior and device fidelity are unkno
 | --- | --- | --- |
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
 | HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/arrays/matrices/control flow, bounded errors | Corpus coverage, remaining emitter/environment semantics and reference fidelity |
-| Shader resources | Three blur levels, original deterministic 2D/3D noise, mipmaps, sampler state, q/frame/random/texture uniforms | Reference noise/blur/uniform behavior and target limits |
-| `.milk2` | Saved wrapper, two independent states, saved progress/direction/randoms and procedural masks for documented names | Exact MilkDrop3 mask/progress semantics and executable extensions |
+| Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
+| `.milk2` | Saved wrapper, two independent states, saved progress/direction/randoms, independent masks and preserved explicitly disabled sprite blocks | Exact MilkDrop3 mask/progress semantics and executable extensions |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
 | Library/UI | Search, notices, favorites, playlists, import, download/cancel/retry/update/remove, offline receipts and controls | Executed user flows, accessibility, TV focus, localization and performance |
@@ -89,7 +89,7 @@ qualification, rights decisions and production custody/publication are also open
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `819dc540d3d7714cb75cc7795b97d1c3b62e6f88`:
+- The app pins MilkRust `482368909e979d3e25fd6e62b62ec285b82bd088`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -128,3 +128,30 @@ qualification, rights decisions and production custody/publication are also open
   binds actual dimensions for named textures. Native dependency lookup strips
   sampler addressing prefixes to load the correct asset. These are source fixes;
   the first compiler/driver runs are still outstanding.
+
+## Final source checkpoint for this continuation
+
+- The source pin above includes bounded Rust DDS/TGA decoding for WebGL, static
+  raster header admission before browser decode, reserved aggregate texture
+  budgets, and context restoration that rebuilds GPU resources from retained
+  preset/assets. CPU equation state survives; unavailable feedback history resets.
+- The HLSL compiler now initializes user globals after the host fragment inputs,
+  including array/struct defaults and constant integer array bounds. This closes
+  illegal uniform-initializer and unbound-custom-global cases; reference corpus
+  conformance is still unmeasured.
+- `.milk2` honors explicit `sprite=0` with well-formed disabled trailer blocks,
+  preserving them on export. Active sprite equations/layers/blends remain gated.
+  Independently authored pattern masks still are not exact MilkDrop3 semantics.
+- Native DDS row validation avoids multiplication overflow on 32-bit TV targets.
+  Regression source covers excessive pitch in addition to color/alpha/orientation.
+- Current main at `804a1cc658bba6f2bfb336c0b347b100bf9858ca` is merged, preserving
+  its catalog/UI/platform/CI fixes. The decoder formatting conflict was resolved
+  while retaining GIF support. No unrelated working checkout was modified.
+
+**Code-completion boundary:** this is not 100% implementation of every community
+preset. Exact saved-pair masks and active embedded sprite semantics still need
+an authoritative, compatible implementation/reference; other corpus exceptions
+must remain visible through compiler/import/render diagnostics. These are separate
+from first builds, mpv binary promotion, physical qualification, report generation
+and owner-held signing custody. The latter steps cannot be replaced with source
+claims, fabricated checksums, invented rights approvals or an empty trust root.

@@ -42,6 +42,8 @@ int main() {
     U32(rgb,92,0xff0000); U32(rgb,96,0xff00); U32(rgb,100,0xff);
     rgb[128]=3; rgb[129]=2; rgb[130]=1; rgb[132]=6; rgb[133]=5; rgb[134]=4;
     image=Dds(rgb); Require(image.rgba[0]==1 && image.rgba[4]==4 && image.rgba[7]==255);
+    auto huge_pitch=rgb; U32(huge_pitch,20,8*1024*1024); U32(huge_pitch,12,512);
+    Reject([&] { Dds(huge_pitch); });  // Reject before a 32-bit row-size multiplication can wrap.
     U32(rgb,96,0xff0000); Reject([&] { Dds(rgb); });
     bc1.resize(131); Reject([&] { Dds(bc1); });
     auto oversized=DdsBlock(0x31545844,8); U32(oversized,16,0xffffffff);

@@ -46,7 +46,8 @@ mpv extension, but still need their own SDK and physical audio qualification.
 
 1. Build/test the pinned MilkRust native and browser compiler/renderer on private
    JIT. The browser `test:hlsl` corpus exercises typed helpers, loops, arrays,
-   matrices, entry semantics, blur/noise resources and rejected inputs. It emits
+   matrices, writable globals, entry semantics, blur/noise resources, legacy TGA
+   uploads, WebGL context restoration and rejected inputs. It emits
    compiler/driver evidence only, not a visual fidelity certification.
 2. Build the app packages using the paths above and the promoted PCM artifacts.
    Verify installed runtime/notices/source, actual PCM, preset import/download,
@@ -55,8 +56,9 @@ mpv extension, but still need their own SDK and physical audio qualification.
 3. Run reference/corpus/device comparisons before marking any advertised preset
    qualified. Unknown HLSL, legacy-format and exact `.milk2` behavior stays open;
    this build pass does not resolve missing implementation semantics.
-4. MilkRust's candidate workflow packages the original CC0 study sources and the
-   separate rights-review-required converted candidates. Pending inventories are
+4. MilkRust's candidate workflow packages the original CC0 study sources, the
+   pinned CC BY 4.0 CaYaDev sources, and separate rights-review-required converted
+   candidates. Pending inventories are
    deliberately non-promotable. Resolve rights and attach actual per-preset
    evidence for every required target before creating release entries.
 5. Run the keyless catalog preflight. Provision owner-held signing custody and

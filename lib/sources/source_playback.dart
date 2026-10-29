@@ -16,6 +16,8 @@ import '../services/playback_coordinator.dart';
 import '../services/settings_service.dart';
 import '../services/subtitle_analysis_source.dart';
 import '../services/subtitle_manual_live_clock.dart';
+import '../services/subtitle_book_timeline.dart';
+import '../services/subtitle_revision_service.dart';
 import '../services/track_selection_service.dart';
 import '../services/music/music_hardware_transport.dart';
 import '../services/player_sync_offsets.dart';
@@ -654,6 +656,40 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   bool get hasCompleteTimeline => List.generate(files.length, (i) => _durations[i] ?? 0).every((d) => d > 0);
   int get durationMs => List.generate(files.length, (i) => _durations[i] ?? 0).fold(0, (a, b) => a + b);
   int get positionMs => _offset + currentFilePositionMs;
+
+  bool get canUseBookTranscript => _valid && !video && !isTransientInput && !_liveInput && !isSamplePreview &&
+      hasCompleteTimeline && files.isNotEmpty && files.length <= 256 && durationMs <= 7 * 24 * 3600000;
+
+  SubtitleBookTimeline bookTranscriptTimeline() {
+    if (!canUseBookTranscript || entry == null || _profile == null) throw const SourceException(SourceFailure.unsupported);
+    final item = entry!, profile = _profile!, generation = _generation, edition = progress?.edition;
+    final order = List<int>.of(_queueOrder);
+    final fingerprints = [for (final index in order) files[index].fingerprint];
+    final durations = [for (final index in order) _durations[index]!];
+    bool current() => canUseBookTranscript && entry == item && _profile == profile && _generation == generation &&
+        progress?.edition == edition && _queueOrder.length == order.length &&
+        List.generate(order.length, (i) => order[i] >= 0 && order[i] < files.length && _queueOrder[i] == order[i] &&
+          files[order[i]].fingerprint == fingerprints[i] && _durations[order[i]] == durations[i]).every((value) => value);
+    final parts = <SubtitleBookPart>[];
+    var offset = 0;
+    for (var i = 0; i < order.length; i++) {
+      final index = order[i];
+      parts.add(SubtitleBookPart(fileIndex: index, title: files[index].name, startMs: offset, durationMs: durations[i],
+        identity: SubtitleRevisionIdentity(profileId: profile, serverId: 'source:${item.sourceId}',
+          ratingKey: '${item.id}:${fingerprints[i]}', mediaIndex: index, mediaTitle: item.title,
+          sourceLabel: SubtitleRevisionService.privacySafeSourceLabel('Source', item.sourceId))));
+      offset += durations[i];
+    }
+    return SubtitleBookTimeline(title: item.displayTitle, parts: parts, isCurrent: current, positionMs: () => positionMs, changes: this,
+      seek: (index, filePositionMs) => _serialize(() async {
+        // Recheck inside the command queue so a later book cannot receive a
+        // delayed transcript seek from an earlier dialog.
+        if (!current()) throw const SourceException(SourceFailure.cancelled);
+        final part = parts.firstWhere((part) => part.fileIndex == index);
+        if (filePositionMs < 0 || filePositionMs >= part.durationMs) throw const SourceException(SourceFailure.invalidData);
+        await _seek(part.startMs + filePositionMs);
+      }));
+  }
 
   Future<void> toggleQueueShuffle() => _serialize(() async {
     if (!canUseDirectQueueControls || _queueOrder.length < 2) return;

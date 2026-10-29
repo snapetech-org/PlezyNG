@@ -60,6 +60,7 @@ import 'source_widgets.dart';
 import '../../widgets/video_controls/sheets/picture_adjustments_sheet.dart';
 import '../../widgets/video_controls/sheets/subtitle_ai_sheet.dart';
 import '../../widgets/video_controls/sheets/subtitle_live_clock_dialog.dart';
+import '../../widgets/video_controls/sheets/subtitle_book_dialog.dart';
 import '../../widgets/subtitle_caption_overlay.dart';
 import '../../services/pip_service.dart';
 import '../../widgets/video_controls/widgets/sync_offset_control.dart';
@@ -1609,6 +1610,11 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
               onPressed: () => _openSourceSubtitleAi(s),
               icon: const AppIcon(Symbols.auto_awesome_rounded),
             ),
+          if (s.canUseBookTranscript) IconButton(tooltip: 'Combine saved transcripts on the book clock', icon: const Icon(Icons.menu_book),
+            onPressed: () => sourceAction(context, () async {
+              final timeline = s.bookTranscriptTimeline();
+              await showDialog<void>(context: context, builder: (_) => SubtitleBookDialog(timeline: timeline));
+            })),
           if (s.isTransientInput && s.player?.playerType == 'mpv')
             IconButton(
               tooltip: t.fileInfo.title,

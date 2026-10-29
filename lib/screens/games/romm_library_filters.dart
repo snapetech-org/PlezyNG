@@ -34,7 +34,7 @@ class RommLibraryFilters extends StatelessWidget {
         ],
       ]),
       if (c.busy) const LinearProgressIndicator(),
-      for (final error in c.errors.entries) Padding(padding: const EdgeInsets.only(top: 8), child: Text(
+      for (final error in c.errors.entries.where((entry) => c.hasConnection(entry.key))) Padding(padding: const EdgeInsets.only(top: 8), child: Text(
         '${isolateDisplayText(c.connection(error.key).name)}: ${rommText(context, error.value)} ${rommText(context, 'cached')}',
         semanticsLabel: rommText(context, error.value))),
     ]));

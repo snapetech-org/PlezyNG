@@ -58,14 +58,14 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
           SimpleDialogOption(onPressed: () => Navigator.pop(dialog, 'fresh'), child: Text(rommText(dialog, 'startFresh'))),
           for (final save in [..._game.saves, ..._game.states].where((save) =>
             save.userId == widget.controller.connection(_game.connectionId).userId && save.romId == _game.id &&
-            save.emulator.startsWith('plezy_libretro_${route.core}_') && !save.missing))
+            save.emulator.startsWith(rommNativeEmulatorPrefix(route.core)) && !save.missing))
             SimpleDialogOption(onPressed: () => Navigator.pop(dialog, '${save.state ? 't' : 's'}:${save.id}'),
               child: Text('${rommText(dialog, save.state ? 'loadState' : 'resume')} · ${isolateDisplayText(save.name)}')),
         ]));
       if (resume == null || !live) return;
       await rommPush<void>(context, widget.controller, RommNativePlayerScreen(controller: widget.controller, game: _game, core: route.core, resume: resume != 'fresh',
         saveId: resume.startsWith('s:') ? int.tryParse(resume.substring(2)) : null,
-        stateId: resume.startsWith('t:') ? int.tryParse(resume.substring(2)) : null));
+        stateId: resume.startsWith('t:') ? int.tryParse(resume.substring(2)) : null), connectionId: _game.connectionId);
       if (live) unawaited(_refresh()); return;
     }
     int? stateId, saveId, memoryCardId;
@@ -105,7 +105,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
     }
     if (!live) return;
     await rommPush<void>(context, widget.controller, RommWebPlayerScreen(controller: widget.controller, game: _game, route: route,
-      stateId: stateId, saveId: saveId, memoryCardId: memoryCardId, multiplayer: multiplayer));
+      stateId: stateId, saveId: saveId, memoryCardId: memoryCardId, multiplayer: multiplayer), connectionId: _game.connectionId);
     if (live) unawaited(_refresh());
     } finally { if (live) setState(() => _launching = false); }
   }
@@ -123,7 +123,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
     if (!live) return;
     if (bytes.length < 5 || String.fromCharCodes(bytes.take(5)) != '%PDF-') throw const RommFailure('romm.invalidFile');
     await rommPush<void>(context, widget.controller, Scaffold(appBar: AppBar(title: Text(rommText(context, 'manual'))),
-      body: PdfViewer.data(bytes, sourceName: 'romm-${_game.id}.pdf')));
+      body: PdfViewer.data(bytes, sourceName: 'romm-${_game.id}.pdf')), connectionId: _game.connectionId);
   }
   Future<void> _join() async {
     final data = await (await widget.controller.client(_game.connectionId)).getMap('streaming/sessions/joinable');
@@ -135,7 +135,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
     if (selected == null || !live) return;
     final game = await (await widget.controller.client(_game.connectionId)).game(_game.connectionId, rommInt(selected['rom_id']));
     if (live) await rommPush<void>(context, widget.controller, RommWebPlayerScreen(controller: widget.controller, game: game,
-      route: const RommRoute(RommEngine.stream), joinPlatform: rommString(selected['platform'], 128), joinContainer: rommString(selected['container'], 512)));
+      route: const RommRoute(RommEngine.stream), joinPlatform: rommString(selected['platform'], 128), joinContainer: rommString(selected['container'], 512)), connectionId: _game.connectionId);
   }
   @override Widget build(BuildContext context) => AnimatedBuilder(animation: widget.controller, builder: (context, _) {
     final c = widget.controller, storage = c.storage;
@@ -158,7 +158,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
         Wrap(spacing: 8, runSpacing: 8, children: [
           OutlinedButton.icon(onPressed: _loading ? null : _refresh, icon: const Icon(Icons.refresh), label: Text(rommText(context, 'refresh'))),
           OutlinedButton.icon(onPressed: () => _run(() => c.favorite(_game)), icon: Icon(c.favorites.contains(_game.key) ? Icons.favorite : Icons.favorite_border), label: Text(rommText(context, 'favorite'))),
-          OutlinedButton(onPressed: () => rommPush<void>(context, c, RommSavesScreen(controller: c, game: _game)), child: Text(rommText(context, 'saves'))),
+          OutlinedButton(onPressed: () => rommPush<void>(context, c, RommSavesScreen(controller: c, game: _game), connectionId: _game.connectionId), child: Text(rommText(context, 'saves'))),
           if (_game.manual.isNotEmpty) OutlinedButton(onPressed: _loading ? null : () => _run(_manual), child: Text(rommText(context, 'manual'))),
           OutlinedButton(onPressed: () async {
             await Clipboard.setData(ClipboardData(text: RommLink.game(c.connection(_game.connectionId), _game).uri.toString()));
@@ -221,7 +221,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
       for (final id in _game.siblingIds) SliverToBoxAdapter(child: FocusableListTile(title: Text('${rommText(context, 'variants')} #$id'),
         onTap: _loading ? null : () => _run(() async {
           final game = await (await c.client(_game.connectionId)).game(_game.connectionId, id);
-          if (live) await rommPush<void>(context, c, RommDetailScreen(controller: c, game: game));
+          if (live) await rommPush<void>(context, c, RommDetailScreen(controller: c, game: game), connectionId: _game.connectionId);
         }))),
     ]);
   });

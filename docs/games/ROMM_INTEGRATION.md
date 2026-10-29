@@ -70,7 +70,7 @@ Start-from-beginning is an explicit alternative. Archives, disc sets, firmware-
 dependent systems and GPU-rendered cores use server/browser routes in this
 initial native adapter; they are not mislabeled as supported native cartridges.
 
-Disconnect refuses while a source has pending save uploads or active downloads,
+Disconnect refuses while a source has an open player, pending save uploads or active downloads,
 so unsynced progress remains reachable. Pending versions can be exported or
 explicitly deleted from the Saves screen. Successful refreshes retry the outbox;
 uploads for the same slot are serialized and unknown hashes are treated as
@@ -80,6 +80,9 @@ The browser-origin registry retains every port assigned to a profile/source,
 including ports replaced after a collision. Registry replacement is atomic,
 with a separate cross-process lock. Linux browser operations carry a surface
 owner ID, preventing a retired page from closing or changing a newer player.
+Retries recreate plugin WebViews with the new bootstrap URL. Keyboard, touch,
+D-pad and stick controls retain separate held-input state, so releasing one
+input source does not release a button still held by another.
 
 ## Platform packaging
 

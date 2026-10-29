@@ -59,26 +59,32 @@ class RommWebSurfaceState extends State<RommWebSurface> {
   }
   @override void deactivate() { if (_native) { visible(false).catchError((_) {}); } super.deactivate(); }
   @override void activate() { super.activate(); if (_native) { visible(true).catchError((_) {}); } }
+  @override void didUpdateWidget(RommWebSurface oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.url != widget.url) _controller = null;
+  }
   @override void dispose() { if (_native) { RommWebSurface.channel.invokeMethod<void>('close', {'owner': _owner}).catchError((_) {}); } super.dispose(); }
   @override Widget build(BuildContext context) {
     if (_native) return LayoutBuilder(builder: (context, constraints) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _layout());
       return SizedBox.expand(key: _bounds);
     });
+    final expectedUrl = widget.url;
     return InAppWebView(
+      key: ValueKey(expectedUrl),
       initialUrlRequest: URLRequest(url: WebUri(widget.url.toString())),
       initialSettings: InAppWebViewSettings(javaScriptEnabled: true, allowsInlineMediaPlayback: true,
         mediaPlaybackRequiresUserGesture: false, javaScriptCanOpenWindowsAutomatically: false,
         supportMultipleWindows: false, allowFileAccess: false, allowContentAccess: false,
         useShouldOverrideUrlLoading: true, javaScriptHandlersForMainFrameOnly: true,
         javaScriptBridgeForMainFrameOnly: true, javaScriptBridgeOriginAllowList: {widget.url.origin}),
-      onWebViewCreated: (controller) => _controller = controller,
+      onWebViewCreated: (controller) { if (mounted && expectedUrl == widget.url) _controller = controller; },
       shouldOverrideUrlLoading: (_, action) async {
         final uri = Uri.tryParse(action.request.url?.toString() ?? '');
         return uri != null && widget.permits(uri) ? NavigationActionPolicy.ALLOW : NavigationActionPolicy.CANCEL;
       },
-      onReceivedError: (_, request, error) { if (request.isForMainFrame == true) widget.onError(); },
-      onReceivedHttpError: (_, request, response) { if (request.isForMainFrame == true) widget.onError(); },
+      onReceivedError: (_, request, error) { if (mounted && expectedUrl == widget.url && request.isForMainFrame == true) widget.onError(); },
+      onReceivedHttpError: (_, request, response) { if (mounted && expectedUrl == widget.url && request.isForMainFrame == true) widget.onError(); },
       onPermissionRequest: (_, request) async => PermissionResponse(resources: request.resources, action: PermissionResponseAction.DENY),
     );
   }

@@ -21,6 +21,7 @@ import '../../focus/focusable_text_field.dart';
 import 'game_card.dart';
 import 'romm_connections_screen.dart';
 import 'romm_detail_screen.dart';
+import 'romm_session_page.dart';
 import 'romm_library_filters.dart';
 import '../../games/steam_inventory_exchange.dart';
 import '../../games/steam_host_actions.dart';
@@ -585,7 +586,8 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   Future<void> _details(LibraryGame initial) async {
     if (initial.romm != null) {
       final romm = _romm;
-      if (romm != null && romm.current) await _page<void>((_) => RommDetailScreen(controller: romm, game: initial.romm!));
+      if (romm != null && romm.current) await rommPush<void>(context, romm,
+        RommDetailScreen(controller: romm, game: initial.romm!), connectionId: initial.romm!.connectionId);
       return;
     }
     final c = _controller;

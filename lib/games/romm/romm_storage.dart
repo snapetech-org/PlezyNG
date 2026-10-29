@@ -46,7 +46,11 @@ class RommStorage extends ChangeNotifier {
       final manifest = File('${_root!.path}/manifest.json');
       if (!await manifest.exists()) { changed(); return; }
       if (await manifest.length() > 16 * 1024 * 1024) throw const RommFailure('romm.responseTooLarge');
-      final data = rommMap(jsonDecode(await manifest.readAsString())); check();
+      final decoded = jsonDecode(await manifest.readAsString()); check();
+      if (decoded is! Map) throw const RommFailure('romm.invalidResponse');
+      final data = rommMap(decoded);
+      if (data['downloads'] is! List || data['pending'] is! List ||
+          rommList(data['downloads']).length > 2000 || rommList(data['pending']).length > 500) throw const RommFailure('romm.invalidResponse');
       for (final e in rommMap(data['browserPorts']).entries) { final port = rommInt(e.value); if (port >= 1024 && port <= 65535) browserPorts[e.key] = port; }
       _uploadedHashes.addAll(rommMap(data['uploadedHashes']).map((key, value) => MapEntry(key, rommString(value, 128))));
       quota = rommInt(data['quota'], quota).clamp(1024 * 1024 * 1024, 1024 * 1024 * 1024 * 1024);
@@ -141,12 +145,15 @@ class RommStorage extends ChangeNotifier {
     }
     changed();
   }
-  Future<void> forgetConnectionDownloads(String id) async {
+  void requireNoPendingWork(String id) {
     check();
     // Keep pending progress reachable through its source until it is synced,
     // exported/deleted, or explicitly resolved by the owner.
     if (pending.values.any((row) => row['connectionId'] == id) || _saveReservations.isNotEmpty) throw const RommFailure('romm.pendingSaves');
     if (_downloadLocks.any((key) => key.startsWith('romm:$id:'))) throw const RommFailure('romm.downloadProgress');
+  }
+  Future<void> forgetConnectionDownloads(String id) async {
+    requireNoPendingWork(id);
     for (final row in downloads.values.where((row) => row['connectionId'] == id).toList()) {
       await remove(RommGame.fromJson(id, rommMap(row['game'])));
     }
@@ -231,16 +238,19 @@ class RommStorage extends ChangeNotifier {
     } catch (error) {
       failures[game.key] = error is RommFailure ? error.code : 'romm.connectionFailed'; rethrow;
     } finally {
-      await sink?.close(); api.close();
-      if (identical(_active[game.key], api)) _active.remove(game.key);
-      progress.remove(game.key); _reservations.remove(game.key); changed();
+      try { await sink?.close(); }
+      finally {
+        api.close();
+        if (identical(_active[game.key], api)) _active.remove(game.key);
+        progress.remove(game.key); _reservations.remove(game.key); changed();
+      }
     }
   }
   final _reservations = <String, int>{};
 
   /// Fsync bytes before reporting a local save. Every write is a separate version.
   Future<String> enqueue({required RommGame game, required Uint8List bytes, required String emulator,
-      required String core, bool state = false, String slot = 'autosave', String baseHash = ''}) async {
+      required String core, bool state = false, String slot = 'autosave', String baseHash = '', String nativeFileHash = ''}) async {
     check();
     if (bytes.isEmpty || bytes.length > 128 * 1024 * 1024 || pending.length + _saveReservations.length >= 500) throw const RommFailure('romm.invalidFile');
     final pendingBytes = pending.values.fold<int>(0, (n, row) => n + rommInt(row['size'])) + _saveReservations.values.fold<int>(0, (n, size) => n + size);
@@ -252,6 +262,7 @@ class RommStorage extends ChangeNotifier {
     await file.writeAsBytes(bytes, flush: true);
     pending[id] = {'id': id, 'connectionId': game.connectionId, 'userId': source.userId,
       'game': _manifestGame(game), 'identity': game.identity, 'emulator': emulator, 'core': core, 'state': state,
+      if (nativeFileHash.isNotEmpty) 'nativeFileHash': nativeFileHash,
       'slot': slot, 'baseHash': _uploadedHashes['${game.key}:$emulator:$slot'] ?? baseHash, 'hash': sha256.convert(bytes).toString(), 'contentHash': bytes.length >= 4 && bytes[0] == 0x50 && bytes[1] == 0x4b ? '' : md5.convert(bytes).toString(), 'size': bytes.length,
       'created': DateTime.now().toUtc().toIso8601String(), 'conflict': false};
     _saveReservations.remove(id);
@@ -267,9 +278,9 @@ class RommStorage extends ChangeNotifier {
   Future<void> discardPending(String id, {bool useServer = false}) async {
     check(); if (_syncing.contains(id)) throw const RommFailure('romm.saveInProgress');
     final row = pending[id];
-    if (useServer && row != null && rommString(row['emulator']).startsWith('plezy_libretro_')) {
+    if (useServer && row != null && rommHash(row['nativeFileHash'], 40).isNotEmpty) {
       final game = RommGame.fromJson(rommString(row['connectionId']), rommMap(row['game']));
-      final key = '${game.key}:${game.identity}:${downloads[game.key]?['sha1']}:${row['core']}';
+      final key = '${game.key}:${game.identity}:${row['nativeFileHash']}:${row['core']}';
       for (final suffix in ['sram', 'state', 'progress']) { final cached = File(_path(key, suffix)); if (await cached.exists()) await cached.delete(); }
     }
     pending.remove(id); await _persist(); final file = File(_path(id, 'save'));
@@ -344,14 +355,14 @@ class RommStorage extends ChangeNotifier {
   Future<Directory> nativeDirectory(RommGame game) async {
     check(); return Directory('${_root!.path}/native/${_key(game.key)}').create(recursive: true);
   }
-  String _nativeKey(RommGame game, String core) => '${game.key}:${game.identity}:${downloads[game.key]?['sha1']}:$core';
-  Future<void> keepNativeProgress(RommGame game, String core, Uint8List bytes, {bool state = false}) =>
-    keepNativeSnapshot(game, core, sram: state ? null : bytes, state: state ? bytes : null);
-  Future<void> keepNativeSnapshot(RommGame game, String core, {Uint8List? sram, Uint8List? state}) async {
+  String _nativeKey(RommGame game, String core, String fileHash) => '${game.key}:${game.identity}:${fileHash.isEmpty ? downloads[game.key]?['sha1'] : fileHash}:$core';
+  Future<void> keepNativeProgress(RommGame game, String core, Uint8List bytes, {bool state = false, String fileHash = ''}) =>
+    keepNativeSnapshot(game, core, sram: state ? null : bytes, state: state ? bytes : null, fileHash: fileHash);
+  Future<void> keepNativeSnapshot(RommGame game, String core, {Uint8List? sram, Uint8List? state, String fileHash = ''}) async {
     check();
     final a = sram?.length ?? 0, b = state?.length ?? 0;
     if (a + b == 0 || a > 128 * 1024 * 1024 || b > 128 * 1024 * 1024) throw const RommFailure('romm.invalidFile');
-    final path = _path(_nativeKey(game, core), 'progress'), temp = File('$path.next');
+    final path = _path(_nativeKey(game, core, fileHash), 'progress'), temp = File('$path.next');
     final header = Uint8List(16)..setAll(0, ascii.encode('PLZYPRG1'));
     ByteData.sublistView(header)..setUint32(8, a)..setUint32(12, b);
     final output = await temp.open(mode: FileMode.write);
@@ -363,8 +374,8 @@ class RommStorage extends ChangeNotifier {
     } finally { await output.close(); }
     check(); await temp.rename(path); // One commit keeps SRAM and state from the same emulated frame.
   }
-  Future<({Uint8List? sram, Uint8List? state})> nativeSnapshot(RommGame game, String core) async {
-    check(); final key = _nativeKey(game, core), file = File(_path(key, 'progress'));
+  Future<({Uint8List? sram, Uint8List? state})> nativeSnapshot(RommGame game, String core, {String fileHash = ''}) async {
+    check(); final key = _nativeKey(game, core, fileHash), file = File(_path(key, 'progress'));
     if (!await file.exists()) {
       Future<Uint8List?> legacy(String suffix) async {
         final old = File(_path(key, suffix)); if (!await old.exists()) return null;
@@ -382,8 +393,8 @@ class RommStorage extends ChangeNotifier {
     return (sram: a == 0 ? null : Uint8List.sublistView(bytes, 16, 16 + a),
       state: b == 0 ? null : Uint8List.sublistView(bytes, 16 + a));
   }
-  Future<Uint8List?> nativeProgress(RommGame game, String core, {bool state = false}) async {
-    final snapshot = await nativeSnapshot(game, core); return state ? snapshot.state : snapshot.sram;
+  Future<Uint8List?> nativeProgress(RommGame game, String core, {bool state = false, String fileHash = ''}) async {
+    final snapshot = await nativeSnapshot(game, core, fileHash: fileHash); return state ? snapshot.state : snapshot.sram;
   }
   @override void dispose() {
     if (_disposed) return;

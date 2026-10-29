@@ -9,6 +9,17 @@ import 'package:path/path.dart' as p;
 import 'romm_capabilities.dart';
 import 'romm_models.dart';
 
+String rommNativeEmulatorPrefix(String core) {
+  const ids = {'snes9x': 's9', 'gambatte': 'gb', 'mgba': 'mg', 'fceumm': 'fc', 'genesis_plus_gx': 'gx'};
+  final id = ids[core]; if (id == null) throw const RommFailure('romm.nativeUnavailable');
+  return 'plezy_${id}_';
+}
+String rommNativeEmulator(String core, String fileHash) {
+  if (rommHash(fileHash, 40).isEmpty) throw const RommFailure('romm.invalidFile');
+  // The complete file hash still fits RomM's 50-character emulator field.
+  return '${rommNativeEmulatorPrefix(core)}${fileHash.toLowerCase()}';
+}
+
 class _RetroBindings {
   _RetroBindings() : library = DynamicLibrary.open(Platform.isWindows ? '${p.dirname(Platform.resolvedExecutable)}/plezy_retro.dll' : Platform.isMacOS ? '${p.dirname(Platform.resolvedExecutable)}/../Frameworks/PlezyRetro.framework/PlezyRetro' : Platform.isIOS ? '${p.dirname(Platform.resolvedExecutable)}/Frameworks/PlezyRetro.framework/PlezyRetro' : Platform.isLinux ? '${p.dirname(Platform.resolvedExecutable)}/lib/libplezy_retro.so' : 'libplezy_retro.so');
   final DynamicLibrary library;

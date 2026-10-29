@@ -39,6 +39,7 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
   bool get _ejs => widget.route.engine == RommEngine.emulatorJs;
   @override void initState() {
     super.initState(); WidgetsBinding.instance.addObserver(this);
+    widget.controller.retainPlayer(this, widget.game.connectionId);
     widget.controller.addListener(_sessionChanged);
     // Native gamepad events must not navigate the library behind the webview.
     GamepadService.instance.registerWorkspaceInputHandler(this, (_) {}, onReset: (_) {});
@@ -235,6 +236,7 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
     catch (error) { if (_live) showErrorSnackBar(context, rommText(context, error is RommFailure ? error.code : 'connectionFailed')); }
   }
   @override void dispose() {
+    widget.controller.releasePlayer(this);
     widget.controller.removeListener(_sessionChanged); WidgetsBinding.instance.removeObserver(this);
     GamepadService.instance.unregisterWorkspaceInputHandler(this);
     _snapshot?.cancel(); _stream?.dispose(); unawaited(_proxy?.close()); super.dispose();

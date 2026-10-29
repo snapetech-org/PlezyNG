@@ -31,17 +31,21 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   ui.Image? _frame;
   bool _decoding = false, _ready = false, _paused = false, _closing = false, _canPop = false, _touch = false, _capturing = false;
   String _error = '', _lastHash = '', _copyIdentity = '';
-  bool _exitPrompt = false, _retiring = false;
+  bool _exitPrompt = false, _retiring = false, _starting = true;
   final _pads = <int, int>{};
   final _buttons = [0, 0, 0, 0];
   final _axes = [0, 0, 0, 0];
+  final _keys = <LogicalKeyboardKey, int>{};
+  final _touches = <int, int>{};
   StreamSubscription<GamepadConnectionEvent>? _connections;
   Timer? _autosave;
   Directory? _sessionDirectory;
   bool get live => mounted && widget.controller.current && widget.controller.hasConnection(widget.game.connectionId);
-  String get _emulator => 'plezy_libretro_${widget.core}_${_copyIdentity.substring(5, 17)}';
+  String get _fileHash => _copyIdentity.substring(5);
+  String get _emulator => rommNativeEmulator(widget.core, _fileHash);
   @override void initState() {
     super.initState(); WidgetsBinding.instance.addObserver(this); _runtime.addListener(_newFrame);
+    widget.controller.retainPlayer(this, widget.game.connectionId);
     widget.controller.addListener(_profile);
     GamepadService.instance.registerWorkspaceInputHandler(this, _input, onNativeKeyEvent: _key,
       onReset: (_) => _release(), rawTvosControllerInput: true);
@@ -49,7 +53,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     _connections = Gamepad.instance.connectionEvents.listen((event) {
       if (event.connected) return;
       final port = _pads.remove(event.gamepadId);
-      if (port != null) { _buttons[port] = 0; _axes[port] = 0; _runtime.input(port, 0); }
+      if (port != null) { _buttons[port] = 0; _axes[port] = 0; _emitInput(port); }
     }, onError: (Object _) => _release());
     GamepadService.instance.setWorkspaceInputOwner(this); unawaited(_start());
   }
@@ -89,14 +93,17 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       final copy = File('${session.path}/game.$extension');
       // Core APIs receive only a profile-owned immutable copy of verified bytes.
       await rom.copy(copy.path);
+      if ((await sha1.bind(copy.openRead()).first).toString() != _fileHash) {
+        throw const RommFailure('romm.downloadChanged');
+      }
       final firmware = await Directory('${directory.path}/system').create(recursive: true);
       if (!live) return;
       await _runtime.start(widget.core, copy.path, firmware.path, directory.path);
-      if (!live) { await _runtime.shutdown(); return; }
+      if (!live || _closing) { await _runtime.shutdown(); return; }
       if (widget.resume && (widget.stateId != null || widget.saveId != null)) {
         await _cloudResume();
       } else if (widget.resume) {
-        final snapshot = await storage.nativeSnapshot(widget.game, _runtime.identity);
+        final snapshot = await storage.nativeSnapshot(widget.game, _runtime.identity, fileHash: _fileHash);
         final sram = snapshot.sram, state = snapshot.state;
         if (sram != null) await _runtime.restore(sram);
         if (state != null) await _runtime.restore(state, state: true);
@@ -104,7 +111,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       }
       if (!live) return;
       setState(() => _ready = true);
-      _runtime.pause(_paused);
+      _runtime.pause(_paused || _exitPrompt || _closing);
       try { await widget.controller.played(widget.game); } catch (_) { /* Playback does not depend on history persistence. */ }
       if (!live) return;
       _autosave = Timer.periodic(const Duration(seconds: 45), (_) => unawaited(_save().catchError((error) {
@@ -114,6 +121,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       _runtime.pause(true);
       if (live) setState(() { _ready = false; _paused = true; _error = error is RommFailure ? error.code : 'romm.nativeError'; });
     } finally {
+      if (mounted) setState(() => _starting = false);
       if (!live || !_ready) {
         _autosave?.cancel();
         GamepadService.instance.releaseWorkspaceInputOwner(this);
@@ -156,7 +164,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       if (!live) return;
       final snapshot = Uint8List.sublistView(bytes, offset + length);
       await _runtime.restore(snapshot, state: true);
-      await widget.controller.storage.keepNativeProgress(widget.game, _runtime.identity, snapshot, state: true);
+      await widget.controller.storage.keepNativeProgress(widget.game, _runtime.identity, snapshot, state: true, fileHash: _fileHash);
     } else if (saves.isNotEmpty) {
       final save = saves.first;
       final bytes = await api.saveBytes(save, deviceId: source.deviceId);
@@ -164,7 +172,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       if (save.hash.isNotEmpty && hash != save.hash) throw const RommFailure('romm.checksumFailed');
       if (!live) return;
       await _runtime.restore(bytes);
-      await widget.controller.storage.keepNativeProgress(widget.game, _runtime.identity, bytes);
+      await widget.controller.storage.keepNativeProgress(widget.game, _runtime.identity, bytes, fileHash: _fileHash);
       await widget.controller.storage.rememberSaveBaseline(widget.game, save);
       try { await api.acknowledgeSave(save, source.deviceId, hash); } catch (_) { /* Local progress is already durable; a later upload can surface a conflict. */ }
     }
@@ -206,7 +214,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
         _axes[port] = (_axes[port] & ~((1 << 4) | (1 << 5))) |
           (event.value < -0.35 ? 1 << 4 : 0) | (event.value > 0.35 ? 1 << 5 : 0);
       }
-      _runtime.input(port, _buttons[port] | _axes[port]);
+      _emitInput(port);
     }
   }
   int? _port(int id) {
@@ -225,13 +233,29 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       LogicalKeyboardKey.enter: 3, LogicalKeyboardKey.keyX: 8, LogicalKeyboardKey.keyS: 9, LogicalKeyboardKey.keyQ: 10, LogicalKeyboardKey.keyW: 11,
       LogicalKeyboardKey.gameButtonA: 8, LogicalKeyboardKey.select: 8, LogicalKeyboardKey.gameButtonB: 0,
       LogicalKeyboardKey.gameButtonX: 9, LogicalKeyboardKey.gameButtonY: 1}[key];
-    if (button != null && !_paused) _button(0, button, down);
+    if (button != null && !_paused) {
+      if (down) _keys[key] = button; else _keys.remove(key);
+      _emitInput(0);
+    }
   }
   void _button(int port, int button, bool down) {
     if (down) _buttons[port] |= 1 << button; else _buttons[port] &= ~(1 << button);
-    _runtime.input(port, _buttons[port] | _axes[port]);
+    _emitInput(port);
   }
-  void _release() { for (var port = 0; port < 4; port++) { _buttons[port] = 0; _axes[port] = 0; _runtime.input(port, 0); } }
+  void _emitInput(int port) {
+    var held = _buttons[port] | _axes[port];
+    if (port == 0) { for (final button in [..._keys.values, ..._touches.values]) { held |= 1 << button; } }
+    _runtime.input(port, held);
+  }
+  void _touchInput(int pointer, int button, bool down) {
+    if (down && live && _ready && !_paused && !_closing) _touches[pointer] = button;
+    else _touches.remove(pointer);
+    _emitInput(0);
+  }
+  void _release() {
+    _keys.clear(); _touches.clear();
+    for (var port = 0; port < 4; port++) { _buttons[port] = 0; _axes[port] = 0; _runtime.input(port, 0); }
+  }
   void _pause() {
     _release(); setState(() => _paused = !_paused); _runtime.pause(_paused);
     if (_paused) GamepadService.instance.releaseWorkspaceInputOwner(this); else GamepadService.instance.setWorkspaceInputOwner(this);
@@ -245,7 +269,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       final sram = progress.sram, snapshot = progress.state;
       if (!live) return;
       if (sram == null && snapshot == null) throw const RommFailure('romm.saveFailed');
-      await storage.keepNativeSnapshot(widget.game, _runtime.identity, sram: sram, state: snapshot);
+      await storage.keepNativeSnapshot(widget.game, _runtime.identity, sram: sram, state: snapshot, fileHash: _fileHash);
       final bytes = state || sram == null ? snapshot : sram;
       if (bytes == null) throw const RommFailure('romm.saveFailed');
       final hash = sha256.convert(bytes).toString(); if (hash == _lastHash && !state) return;
@@ -255,7 +279,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       final header = utf8.encode(jsonEncode({'format': 'plezy-libretro-state-v2', 'core': _runtime.identity, 'rom': widget.game.identity, 'file': _copyIdentity}));
       final envelope = BytesBuilder()..add(utf8.encode('PLZYRETRO1\n'))..add(utf8.encode('${header.length}\n'))..add(header)..add(bytes);
       final id = await storage.enqueue(game: widget.game, bytes: nativeState ? envelope.takeBytes() : bytes,
-        emulator: _emulator, core: _runtime.identity, state: nativeState, slot: '$_emulator-autosave');
+        emulator: _emulator, core: _runtime.identity, state: nativeState, slot: '$_emulator-autosave', nativeFileHash: _fileHash);
       _lastHash = hash;
       try { await storage.sync(id); } catch (_) { if (live) setState(() => _error = 'romm.savedLocally'); }
     } finally { _capturing = false; }
@@ -264,7 +288,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     if (!_ready || _capturing || _closing) return;
     _release(); _runtime.pause(true);
     try {
-      final bytes = await widget.controller.storage.nativeProgress(widget.game, _runtime.identity, state: true);
+      final bytes = await widget.controller.storage.nativeProgress(widget.game, _runtime.identity, state: true, fileHash: _fileHash);
       if (bytes == null) throw const RommFailure('romm.noLocalSave');
       if (live) await _runtime.restore(bytes, state: true);
     } catch (error) { if (live) setState(() => _error = error is RommFailure ? error.code : 'romm.nativeError'); }
@@ -296,7 +320,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     } finally { _exitPrompt = false; }
   }
   Widget _touchButton(String label, int id) => Semantics(label: label, button: true, child: Listener(
-    onPointerDown: (_) => _button(0, id, true), onPointerUp: (_) => _button(0, id, false), onPointerCancel: (_) => _button(0, id, false),
+    onPointerDown: (event) => _touchInput(event.pointer, id, true), onPointerUp: (event) => _touchInput(event.pointer, id, false), onPointerCancel: (event) => _touchInput(event.pointer, id, false),
     child: Container(constraints: const BoxConstraints(minWidth: 52, minHeight: 52), alignment: Alignment.center,
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(26)), child: Text(label))));
   Future<void> _removeSession() async {
@@ -304,6 +328,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     if (directory != null) { try { await directory.delete(recursive: true); } on FileSystemException { /* A later cleanup may remove an interrupted copy. */ } }
   }
   @override void dispose() {
+    widget.controller.releasePlayer(this);
     unawaited(_connections?.cancel());
     unawaited(_runtime.shutdown().then((_) => _removeSession()));
     _autosave?.cancel(); _runtime.removeListener(_newFrame); _runtime.dispose(); _frame?.dispose();
@@ -327,7 +352,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       IconButton(onPressed: !_ready || _closing ? null : _loadState, tooltip: rommText(context, 'loadState'), icon: const Icon(Icons.restore)),
       IconButton(onPressed: !_ready || _closing ? null : () => _save(state: true).catchError((_) { if (live) setState(() => _error = 'romm.saveFailed'); }), tooltip: rommText(context, 'saveState'), icon: const Icon(Icons.save)),
     ]), body: Column(children: [
-      if (!_ready || _closing) const LinearProgressIndicator(), if (_error.isNotEmpty) Padding(padding: const EdgeInsets.all(8), child: Text(rommText(context, _error))),
+      if (_starting || _closing) const LinearProgressIndicator(), if (_error.isNotEmpty) Padding(padding: const EdgeInsets.all(8), child: Text(rommText(context, _error))),
       Expanded(child: Center(child: _frame == null ? Text(rommText(context, 'starting')) : RawImage(image: _frame, fit: BoxFit.contain, filterQuality: FilterQuality.none))),
       if (_touch && _ready && !_paused) SafeArea(top: false, child: Padding(padding: const EdgeInsets.all(12), child: Wrap(spacing: 10, runSpacing: 10, children: [
         for (final entry in {'up': 4, 'down': 5, 'left': 6, 'right': 7, 'select': 2, 'start': 3}.entries) _touchButton(rommText(context, entry.key), entry.value),

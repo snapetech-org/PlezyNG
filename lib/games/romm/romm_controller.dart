@@ -28,6 +28,8 @@ class RommController extends ChangeNotifier {
   final _sessionTokens = <String, String>{};
   final _next = <String, int?>{};
   final _covers = <String, Future<Uint8List?>>{};
+  final _players = <Object, String>{};
+  final _disconnecting = <String>{};
   Future<void> _writes = Future.value();
   bool _disposed = false, busy = false;
   int _queryGeneration = 0;
@@ -36,7 +38,9 @@ class RommController extends ChangeNotifier {
   RommCollection? collection;
   bool get current => !_disposed && sessionCurrent();
   bool get hasMore => _next.entries.any((e) => (source.isEmpty || e.key == source) && e.value != null);
-  bool hasConnection(String id) => connections.any((connection) => connection.id == id);
+  bool hasConnection(String id) => !_disconnecting.contains(id) && connections.any((connection) => connection.id == id);
+  void retainPlayer(Object owner, String source) { requireCurrent(); connection(source); _players[owner] = source; }
+  void releasePlayer(Object owner) { _players.remove(owner); }
   bool sessionOnly(String id) => _sessionTokens.containsKey(id);
   void requireCurrent() { if (!current) throw const RommFailure('romm.cancelled'); }
   void changed() { if (current) notifyListeners(); }
@@ -83,10 +87,11 @@ class RommController extends ChangeNotifier {
     return pending;
   }
 
-  RommConnection connection(String id) => connections.firstWhere((c) => c.id == id,
+  RommConnection connection(String id) => connections.firstWhere((c) => c.id == id && !_disconnecting.contains(id),
       orElse: () => throw const RommFailure('romm.notConnected'));
   Future<RommClient> client(String id) async {
     requireCurrent();
+    if (!hasConnection(id)) throw const RommFailure('romm.notConnected');
     final cached = _clients[id];
     if (cached != null && !cached.closed) return cached;
     final source = connection(id);
@@ -94,7 +99,7 @@ class RommController extends ChangeNotifier {
       ? await CredentialVault.reveal(source.credential) : null);
     requireCurrent();
     if (token == null || token.isEmpty) throw const RommFailure('romm.signInAgain');
-    if (!connections.contains(source)) throw const RommFailure('romm.cancelled');
+    if (!connections.contains(source) || !hasConnection(id)) throw const RommFailure('romm.cancelled');
     final existing = _clients[id];
     if (existing != null && !existing.closed) return existing;
     return _clients[id] = RommClient(source.base, token: token);
@@ -140,6 +145,11 @@ class RommController extends ChangeNotifier {
 
   Future<void> disconnect(String id) async {
     requireCurrent();
+    if (_players.containsValue(id)) throw const RommFailure('romm.saveExitHelp');
+    storage.requireNoPendingWork(id);
+    if (!_disconnecting.add(id)) return;
+    _queryGeneration++; busy = false; changed();
+    try {
     await storage.forgetConnectionDownloads(id);
     requireCurrent();
     _queryGeneration++; busy = false;
@@ -150,6 +160,7 @@ class RommController extends ChangeNotifier {
     _covers.removeWhere((k, _) => k.startsWith('romm:$id:'));
     if (source == id) { source = ''; platformId = null; collection = null; }
     await persist(); changed();
+    } finally { _disconnecting.remove(id); changed(); }
   }
 
   Future<void> refreshCapabilities(String id) async {
@@ -250,7 +261,7 @@ class RommController extends ChangeNotifier {
     notifyListeners(); // Retire nested player routes before destroying owned clients.
     storage.removeListener(changed); storage.dispose();
     for (final api in _clients.values) api.close();
-    _clients.clear(); _sessionTokens.clear(); _covers.clear();
+    _clients.clear(); _sessionTokens.clear(); _covers.clear(); _players.clear();
     super.dispose();
   }
 }

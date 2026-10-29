@@ -18,6 +18,7 @@ import '../../../profiles/active_profile_provider.dart';
 import '../../../mpv/player/player_media_session_identity.dart';
 import '../../../mpv/player/subtitle_pcm_capture_source.dart';
 import '../../../services/file_picker_service.dart';
+import '../../../services/subtitle_artifact_export.dart';
 import '../../../services/subtitle_ai_service.dart';
 import '../../../services/subtitle_placement_evidence.dart';
 import '../../../services/subtitle_retimer.dart';
@@ -1190,7 +1191,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           _requireCurrentOperationIdentity();
           final bytes = await service.artifactBytes(job['id'] as String, artifact);
           _requireCurrentOperationIdentity();
-          await FilePickerService.instance.saveFile(dialogTitle: 'Export scene observations', fileName: artifact.name,
+          await SubtitleArtifactExport.saveFile(dialogTitle: 'Export scene observations', fileName: artifact.name,
             bytes: bytes, type: FileType.custom, allowedExtensions: const ['jsonl']);
           _requireCurrentOperationIdentity();
         }
@@ -1207,7 +1208,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         _requireCurrentOperationIdentity();
         final bytes = await service.audioArtifact(job['id'] as String, artifact);
         _requireCurrentOperationIdentity();
-        await FilePickerService.instance.saveFile(dialogTitle: 'Export synthesized audio', fileName: artifact.name,
+        await SubtitleArtifactExport.saveFile(dialogTitle: 'Export synthesized audio', fileName: artifact.name,
           bytes: bytes, type: FileType.custom, allowedExtensions: const ['wav']);
         return;
       }
@@ -2409,7 +2410,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Future<void> _exportSubtitleRevision(SubtitleRevision revision) async {
-    final result = await FilePickerService.instance.saveFile(
+    final result = await SubtitleArtifactExport.saveFile(
       dialogTitle: t.videoControls.subtitleAiControls.historyRevisionSrtExportTitle,
       fileName: 'PlezyNG_revision_${revision.id}.srt',
       bytes: SubtitleSyncService.writeSrt(revision.cues),
@@ -2423,7 +2424,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _exportSubtitleRevisionJson(SubtitleRevision revision) async {
     final bytes = Uint8List.fromList(utf8.encode(const JsonEncoder.withIndent('  ').convert(revision.toJson())));
-    final result = await FilePickerService.instance.saveFile(
+    final result = await SubtitleArtifactExport.saveFile(
       dialogTitle: t.videoControls.subtitleAiControls.historyRevisionJsonExportTitle,
       fileName: 'PlezyNG_revision_${revision.id}.json',
       bytes: bytes,
@@ -2548,7 +2549,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (bytes.length > SubtitleRevisionService.maximumHistoryBundleBytes) {
       throw FormatException(copy.historyExportSizeLimit);
     }
-    final result = await FilePickerService.instance.saveFile(
+    final result = await SubtitleArtifactExport.saveFile(
       dialogTitle: copy.historyExportDialogTitle,
       fileName: 'PlezyNG_subtitle_history_${DateTime.now().microsecondsSinceEpoch}.json',
       bytes: bytes,
@@ -3763,7 +3764,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final bytes = SubtitleSyncService.writeSrt(reviewedCues);
     final originToken = _originTokenForOperation(operationLabel);
     if (choice == _SubtitleReviewChoice.exportSrt) {
-      final exportPath = await FilePickerService.instance.saveFile(
+      final exportPath = await SubtitleArtifactExport.saveFile(
         dialogTitle: copy.saveSrtTitle,
         fileName: 'PlezyNG_${originToken}_${DateTime.now().microsecondsSinceEpoch}.srt',
         bytes: bytes,
@@ -3839,7 +3840,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           }),
         ),
       );
-      final exportPath = await FilePickerService.instance.saveFile(
+      final exportPath = await SubtitleArtifactExport.saveFile(
         dialogTitle: copy.saveJsonTitle,
         fileName: 'PlezyNG_${originToken}_${DateTime.now().microsecondsSinceEpoch}.json',
         bytes: jsonBytes,

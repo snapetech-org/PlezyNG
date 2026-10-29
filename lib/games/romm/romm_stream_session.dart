@@ -84,6 +84,7 @@ class RommStreamSession extends ChangeNotifier {
     await api.json('POST', '$_path/$action', query: _params, body: body, timeout: const Duration(minutes: 2));
   }
   Future<void> finish({bool save = true}) async {
+    if (_starting && !save) { dispose(); return; } // A late successful claim releases itself.
     if (_starting || _ending) throw const RommFailure('romm.busy');
     if (!active || !owned) { active = false; return; }
     _ending = true; _revision++;

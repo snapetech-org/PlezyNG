@@ -28,6 +28,9 @@ class RommStorage extends ChangeNotifier {
   final _saveReservations = <String, int>{};
   final _downloadLocks = <String>{};
   final _uploadedHashes = <String, String>{};
+  final _partialSizes = <String, int>{};
+  final _partialGames = <String, Map<String, dynamic>>{};
+  Iterable<Map<String, dynamic>> get partialGames => _partialGames.values;
   final browserPorts = <String, int>{};
   Future<void> _writes = Future.value();
   static final _owners = <String, RommStorage>{};
@@ -48,8 +51,13 @@ class RommStorage extends ChangeNotifier {
   void changed() { if (live) notifyListeners(); }
   String _key(String value) => sha256.convert(utf8.encode(value)).toString();
   String _path(String id, String suffix) => '${_root!.path}/${_key(id)}.$suffix';
-  int get used => downloads.values.fold(0, (n, row) => n + rommInt(row['size']));
+  int get used => downloads.values.fold<int>(0, (n, row) => n + rommInt(row['size'])) + _partialSizes.values.fold<int>(0, (n, size) => n + size);
   bool available(RommGame game) => downloads[game.key]?['identity'] == game.identity;
+  bool hasPartial(RommGame game) => _partialSizes.containsKey(_key(game.key));
+  void _requireDownloadRoom(RommGame game) {
+    final keys = {...downloads.keys.map(_key), ..._partialSizes.keys, ..._partialGames.keys, ..._reservations.keys.map(_key)};
+    if (keys.length >= 2000 && !keys.contains(_key(game.key))) throw const RommFailure('romm.quotaExceeded');
+  }
   Future<void> load() => _track(_load());
   Future<void> _load() async {
     final previous = _owners[profileId];
@@ -84,9 +92,42 @@ class RommStorage extends ChangeNotifier {
       // Save bytes have their own small atomic journal. Recover a completed
       // byte write even if the aggregate manifest write was interrupted.
       final retired = <String>[];
+      var recoveredDownload = false;
       await for (final entity in _root!.list(followLinks: false)) {
         check();
-        if (entity is! File || !entity.path.endsWith('.pending')) continue;
+        if (entity is! File) continue;
+        final name = entity.uri.pathSegments.last;
+        if (RegExp(r'^[0-9a-f]{64}\.part$').hasMatch(name)) {
+          final hash = name.substring(0, 64);
+          _partialSizes[hash] = await entity.length();
+          final resume = File('${_root!.path}/$hash.resume');
+          if (await resume.exists() && await resume.length() < 16384) {
+            try {
+              final data = rommMap(jsonDecode(await resume.readAsString()));
+              final key = rommString(data['key'], 256);
+              final game = RommGame.fromJson(rommString(data['connectionId'], 128), rommMap(data['game']));
+              if (game.id > 0 && game.key == key && _key(key) == hash) _partialGames[hash] = data;
+            } on FormatException { /* Its bytes still count against the quota. */ }
+          }
+          continue;
+        }
+        if (RegExp(r'^[0-9a-f]{64}\.resume$').hasMatch(name) && await entity.length() < 16384) {
+          try {
+            final data = rommMap(jsonDecode(await entity.readAsString()));
+            final row = rommMap(data['download']), key = rommString(row['key'], 256);
+            final game = RommGame.fromJson(rommString(row['connectionId'], 128), rommMap(row['game']));
+            if (key.isNotEmpty && game.id > 0 && game.key == key && entity.path == _path(key, 'resume') &&
+                !await File(_path(key, 'part')).exists()) {
+              final file = File(_path(key, 'rom')), hash = rommHash(row['sha1'], 40);
+              if (hash.isNotEmpty && await file.exists() && await file.length() == rommInt(row['size']) &&
+                  (await sha1.bind(file.openRead()).first).toString() == hash) {
+                downloads[key] = row; recoveredDownload = true;
+              }
+            }
+          } on FormatException { /* An incomplete transfer remains retryable. */ }
+          continue;
+        }
+        if (!entity.path.endsWith('.pending')) continue;
         if (await entity.length() > 65536) throw const RommFailure('romm.invalidFile');
         final row = rommMap(jsonDecode(await entity.readAsString()));
         final id = rommString(row['id'], 128);
@@ -105,7 +146,7 @@ class RommStorage extends ChangeNotifier {
         if (!await file.exists() || await file.length() != rommInt(entry.value['size'])) failures[entry.key] = 'romm.checksumFailed';
       }
       check();
-      if (retired.isNotEmpty) {
+      if (retired.isNotEmpty || recoveredDownload) {
         await _persist();
         for (final id in retired) {
           try {
@@ -197,25 +238,33 @@ class RommStorage extends ChangeNotifier {
   Future<void> setQuota(int bytes) async {
     check(); quota = bytes.clamp(1024 * 1024 * 1024, 1024 * 1024 * 1024 * 1024); await _persist(); changed();
   }
-  Future<File> file(RommGame game) async {
+  Future<File> file(RommGame game) => _track(_file(game));
+  Future<File> _file(RommGame game) async {
     check();
+    if (!_downloadLocks.add(game.key)) throw const RommFailure('romm.busy');
+    try {
     if (!available(game)) throw const RommFailure('romm.notFound');
+    final row = downloads[game.key]!;
     final file = File(_path(game.key, 'rom'));
-    if (!await file.exists() || await file.length() != rommInt(downloads[game.key]!['size'])) {
+    if (!await file.exists() || await file.length() != rommInt(row['size'])) {
       downloads.remove(game.key); await _persist(); throw const RommFailure('romm.checksumFailed');
     }
-    if ((await sha1.bind(file.openRead()).first).toString() != downloads[game.key]!['sha1']) throw const RommFailure('romm.checksumFailed');
+    if ((await sha1.bind(file.openRead()).first).toString() != row['sha1']) throw const RommFailure('romm.checksumFailed');
     check(); return file;
+    } finally { _downloadLocks.remove(game.key); }
   }
   void cancel(String key) { _active.remove(key)?.close(); }
   Future<void> remove(RommGame game) => _track(_remove(game));
   Future<void> _remove(RommGame game) async {
-    check(); if (_downloadLocks.contains(game.key)) throw const RommFailure('romm.busy');
+    check(); if (!_downloadLocks.add(game.key)) throw const RommFailure('romm.busy');
+    try {
     downloads.remove(game.key); await _persist();
     for (final suffix in ['rom', 'part', 'resume']) {
       final file = File(_path(game.key, suffix)); if (await file.exists()) await file.delete();
     }
+    _partialSizes.remove(_key(game.key)); _partialGames.remove(_key(game.key));
     changed();
+    } finally { _downloadLocks.remove(game.key); }
   }
   void requireNoPendingWork(String id) {
     check();
@@ -227,6 +276,9 @@ class RommStorage extends ChangeNotifier {
   Future<void> forgetConnectionDownloads(String id) async {
     requireNoPendingWork(id);
     for (final row in downloads.values.where((row) => row['connectionId'] == id).toList()) {
+      await remove(RommGame.fromJson(id, rommMap(row['game'])));
+    }
+    for (final row in _partialGames.values.where((row) => row['connectionId'] == id).toList()) {
       await remove(RommGame.fromJson(id, rommMap(row['game'])));
     }
   }
@@ -242,26 +294,31 @@ class RommStorage extends ChangeNotifier {
   }
   Future<void> _download(RommGame game, {RommFile? selected}) async {
     check();
-    if (downloads.length >= 2000 && !downloads.containsKey(game.key)) throw const RommFailure('romm.quotaExceeded');
+    _requireDownloadRoom(game);
     if (!game.hasBytes) throw const RommFailure('romm.missing');
     if (selected == null && game.files.length > 1) throw const RommFailure('romm.chooseFile');
+    if (selected != null && !game.files.any((file) => file.id == selected.id && file.name == selected.name && file.size == selected.size)) throw const RommFailure('romm.copyMismatch');
     final file = selected ?? game.files.firstOrNull;
     final name = file?.name ?? game.fileName, size = file?.size ?? game.size;
     // Reserve all concurrent transfers in the limit, including resumed bytes.
-    final reserved = progress.keys.where((k) => k != game.key).fold<int>(0, (n, k) => n + rommInt(_reservations[k]));
-    if (size <= 0 || used + size + reserved > quota) throw const RommFailure('romm.quotaExceeded');
+    final key = _key(game.key), existingPartial = _partialSizes[_key(game.key)] ?? 0;
+    final reserved = _reservations.values.fold<int>(0, (n, size) => n + size);
+    if (size <= 0 || used - existingPartial + size + reserved > quota) throw const RommFailure('romm.quotaExceeded');
     final owner = await client(game.connectionId); check();
+    _requireDownloadRoom(game);
     final nowReserved = _reservations.values.fold<int>(0, (n, value) => n + value);
-    if (used + size + nowReserved > quota) throw const RommFailure('romm.quotaExceeded');
+    if (used - existingPartial + size + nowReserved > quota) throw const RommFailure('romm.quotaExceeded');
     _reservations[game.key] = size;
+    _partialSizes.remove(key);
+    _partialGames[key] = {'key': game.key, 'connectionId': game.connectionId, 'game': _manifestGame(game)};
     final api = RommClient(owner.base, token: owner.token);
-    _active[game.key] = api; _reservations[game.key] = size; failures.remove(game.key); progress[game.key] = 0; changed();
+    _active[game.key] = api; failures.remove(game.key); progress[game.key] = 0; changed();
     IOSink? sink;
     try {
       final part = File(_path(game.key, 'part')), resume = File(_path(game.key, 'resume'));
       final identity = '${game.identity}:${file?.id ?? 0}:$name:$size';
       Map<String, dynamic> previous = {};
-      if (await resume.exists() && await resume.length() < 4096) {
+      if (await resume.exists() && await resume.length() < 16384) {
         try { previous = rommMap(jsonDecode(await resume.readAsString())); } on FormatException { /* Restart. */ }
       }
       var offset = await part.exists() ? await part.length() : 0;
@@ -282,7 +339,7 @@ class RommStorage extends ChangeNotifier {
         await part.delete(); if (await resume.exists()) await resume.delete();
         throw const RommFailure('romm.downloadChanged');
       }
-      await resume.writeAsString(jsonEncode({'identity': identity, 'validator': nextValidator}), flush: true);
+      await resume.writeAsString(jsonEncode({..._partialGames[key]!, 'identity': identity, 'validator': nextValidator}), flush: true);
       sink = part.openWrite(mode: offset > 0 ? FileMode.append : FileMode.write);
       var received = offset, lastNotify = DateTime.now();
       await for (final chunk in response.timeout(const Duration(seconds: 45))) {
@@ -296,17 +353,24 @@ class RommStorage extends ChangeNotifier {
       }
       await sink.flush(); await sink.close(); sink = null; check(); api.requireCurrent();
       if (received != size) throw const RommFailure('romm.downloadChanged');
-      final expectedSha = (file?.sha1 ?? game.sha1).toLowerCase(), expectedMd5 = (file?.md5 ?? game.md5).toLowerCase();
+      final sameFile = game.files.length <= 1 && name == game.fileName && size == game.size;
+      final expectedSha = file?.sha1.isNotEmpty == true ? file!.sha1 : sameFile ? game.sha1 : '';
+      final expectedMd5 = file?.md5.isNotEmpty == true ? file!.md5 : sameFile ? game.md5 : '';
       final actualSha = (await sha1.bind(part.openRead()).first).toString();
       if (expectedSha.isNotEmpty && actualSha != expectedSha ||
           expectedMd5.isNotEmpty && (await md5.bind(part.openRead()).first).toString() != expectedMd5) {
         await part.delete(); throw const RommFailure('romm.checksumFailed');
       }
       check(); api.requireCurrent();
-      await part.rename(_path(game.key, 'rom'));
-      downloads[game.key] = {'key': game.key, 'identity': game.identity, 'size': size, 'name': name,
+      final row = <String, dynamic>{'key': game.key, 'identity': game.identity, 'size': size, 'name': name,
         'fileId': file?.id, 'sha1': actualSha, 'serverVerified': expectedSha.isNotEmpty || expectedMd5.isNotEmpty,
         'game': _manifestGame(game), 'connectionId': game.connectionId};
+      // Recover a successful rename if the process exits before the aggregate
+      // manifest is committed. Verify the renamed bytes before trusting it.
+      await resume.writeAsString(jsonEncode({..._partialGames[key]!, 'download': row}), flush: true);
+      await part.rename(_path(game.key, 'rom'));
+      downloads[game.key] = row;
+      _reservations.remove(game.key);
       await _persist(); if (await resume.exists()) await resume.delete();
     } catch (error) {
       failures[game.key] = error is RommFailure ? error.code : 'romm.connectionFailed'; rethrow;
@@ -315,7 +379,11 @@ class RommStorage extends ChangeNotifier {
       finally {
         api.close();
         if (identical(_active[game.key], api)) _active.remove(game.key);
-        progress.remove(game.key); _reservations.remove(game.key); changed();
+        try {
+          final part = File(_path(game.key, 'part'));
+          if (await part.exists()) _partialSizes[key] = await part.length();
+          else { _partialSizes.remove(key); _partialGames.remove(key); }
+        } finally { progress.remove(game.key); _reservations.remove(game.key); changed(); }
       }
     }
   }

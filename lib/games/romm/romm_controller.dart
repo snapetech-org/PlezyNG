@@ -43,9 +43,9 @@ class RommController extends ChangeNotifier {
   bool get hasMore => _next.entries.any((e) => (source.isEmpty || e.key == source) && e.value != null);
   List<RommGame> get visibleGames {
     final result = <String, RommGame>{for (final game in games) game.key: game};
-    // A refreshed first page is not the entire library. Keep downloaded games
-    // and unsynced progress reachable even when the server no longer lists them.
-    for (final row in [...storage.downloads.values, ...storage.pending.values]) {
+    // A refreshed first page is not the entire library. Keep downloads,
+    // interrupted transfers and unsynced progress reachable after a refresh.
+    for (final row in [...storage.downloads.values, ...storage.partialGames, ...storage.pending.values]) {
       final id = rommString(row['connectionId'], 128);
       if (!hasConnection(id) || source.isNotEmpty && source != id) continue;
       final game = RommGame.fromJson(id, rommMap(row['game']));

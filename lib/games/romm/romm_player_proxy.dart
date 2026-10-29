@@ -28,7 +28,7 @@ class RommPlayerProxy {
       throw const RommFailure('romm.invalidAddress');
     }
     final base = upstream.replace(path: upstream.path.endsWith('/') ? upstream.path : '/', query: null, fragment: null);
-    final proxy = RommPlayerProxy._(base, RommClient(base, token: token), current, _random());
+    final proxy = RommPlayerProxy._(base, RommClient(base, token: token, http: HttpClient()..autoUncompress = false), current, _random());
     proxy._server = await HttpServer.bind(InternetAddress.loopbackIPv4, port, shared: false);
     proxy._server!.listen((request) => unawaited(proxy._serve(request)), onError: (_) => proxy.close());
     return proxy;
@@ -111,10 +111,11 @@ class RommPlayerProxy {
         }
       }
       request.response.statusCode = response.statusCode;
-      for (final header in ['content-type', 'content-range', 'accept-ranges', 'etag', 'last-modified',
+      for (final header in ['content-type', 'content-encoding', 'content-range', 'accept-ranges', 'etag', 'last-modified',
           'cross-origin-opener-policy', 'cross-origin-embedder-policy', 'cross-origin-resource-policy']) {
         final value = response.headers.value(header); if (value != null) request.response.headers.set(header, value);
       }
+      if (response.contentLength >= 0) request.response.contentLength = response.contentLength;
       request.response.headers.set('cache-control', 'no-store');
       request.response.headers.set('referrer-policy', 'no-referrer');
       request.response.headers.set('x-content-type-options', 'nosniff');

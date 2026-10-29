@@ -94,30 +94,33 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
         }
         if (_live) await _streamChanged();
       } else {
-        RommPlayerProxy? proxy;
-        for (var attempt = 0; attempt < 12; attempt++) {
-          RommPlayerProxy candidate;
-          try {
-            candidate = await RommPlayerProxy.start(upstream: api.base, token: api.token,
-              port: attempt == 0 ? widget.controller.storage.browserPorts[widget.game.connectionId] ?? 0 : 0, current: () => _live);
-          } on SocketException {
-            if (attempt == 0) continue; // A previous origin can be busy after an interrupted session.
-            rethrow;
-          }
-          if (!_live) { await candidate.close(); return; }
-          try {
-            if (await widget.controller.storage.rememberBrowserPort(widget.game.connectionId, candidate.origin.port)) { proxy = candidate; break; }
-          } catch (_) { await candidate.close(); rethrow; }
-          await candidate.close();
-        }
-        if (proxy == null) throw const RommFailure('romm.connectionFailed');
+        final proxy = await _openProxy(upstream: api.base, token: api.token, owner: widget.game.connectionId);
         _proxy = proxy;
         if (!_live) { await proxy.close(); return; }
-        setState(() { _url = proxy!.bootstrap('/rom/${widget.game.id}/${widget.route.engine.path}'); _busy = false; });
+        setState(() { _url = proxy.bootstrap('/rom/${widget.game.id}/${widget.route.engine.path}'); _busy = false; });
         if (_ejs) _snapshot = Timer.periodic(const Duration(seconds: 45), (_) => unawaited(_capture().catchError((_) {})));
       }
       if (_live) { try { await widget.controller.played(widget.game); } catch (_) { /* Metadata persistence does not stop the player. */ } }
     } catch (error) { if (_live) setState(() { _error = error is RommFailure ? error.code : 'romm.connectionFailed'; _busy = false; }); }
+  }
+  Future<RommPlayerProxy> _openProxy({required Uri upstream, required String owner, String token = ''}) async {
+    for (var attempt = 0; attempt < 12; attempt++) {
+      if (!_live) throw const RommFailure('romm.cancelled');
+      RommPlayerProxy candidate;
+      try {
+        candidate = await RommPlayerProxy.start(upstream: upstream, token: token,
+          port: attempt == 0 ? widget.controller.storage.browserPorts[owner] ?? 0 : 0, current: () => _live);
+      } on SocketException {
+        if (attempt == 0) continue;
+        rethrow;
+      }
+      try {
+        if (!_live) throw const RommFailure('romm.cancelled');
+        if (await widget.controller.storage.rememberBrowserPort(owner, candidate.origin.port)) return candidate;
+      } catch (_) { await candidate.close(); rethrow; }
+      await candidate.close();
+    }
+    throw const RommFailure('romm.connectionFailed');
   }
   bool _openingRoom = false;
   Future<void> _retry() async {
@@ -153,7 +156,10 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
     try {
       final room = stream.room!;
       // The room is a separate trust boundary: never pass the RomM API token.
-      final proxy = await RommPlayerProxy.start(upstream: room.replace(path: '/', query: null), current: () => _live);
+      // Room pages also persist browser data. Reserve their origins separately
+      // from the library and from rooms belonging to other connected servers.
+      final owner = '${widget.game.connectionId}:room:${sha256.convert(utf8.encode(room.origin))}';
+      final proxy = await _openProxy(upstream: room.replace(path: '/', query: null), owner: owner);
       if (!_live || !identical(stream, _stream) || !stream.active || stream.room != room) { await proxy.close(); return; }
       _proxy = proxy;
       setState(() { _url = proxy.bootstrap('${room.path}${room.hasQuery ? '?${room.query}' : ''}'); _busy = false; _error = ''; });
@@ -275,7 +281,7 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
               TextButton(onPressed: () => _command('save-state', {'slot': slot}), child: Text('${rommText(context, 'saveState')} $slot')),
               TextButton(onPressed: () => _command('load-state', {'slot': slot}), child: Text('${rommText(context, 'loadState')} $slot'))],
           if (stream?.owned == true && cap['supports_disc_swap'] == true)
-            for (final file in widget.game.files) TextButton(onPressed: () => _command('swap-disc', {'file_id': file.id}), child: Text('${rommText(context, 'disc')}: ${isolateDisplayText(file.name)}')),
+            for (final file in widget.game.discFiles) TextButton(onPressed: () => _command('swap-disc', {'file_id': file.id}), child: Text('${rommText(context, 'disc')}: ${isolateDisplayText(file.name)}')),
           TextButton(onPressed: _closing ? null : _askExit, child: Text(rommText(context, 'close'))),
         ])),
         Expanded(child: _url == null ? Center(child: Text(rommText(context, _stream == null ? 'starting' : 'connectingStream')))

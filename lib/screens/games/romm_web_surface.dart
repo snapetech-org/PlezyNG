@@ -22,6 +22,8 @@ class RommWebSurface extends StatefulWidget {
   @override State<RommWebSurface> createState() => RommWebSurfaceState();
 }
 class RommWebSurfaceState extends State<RommWebSurface> {
+  static final _surfaces = <String, RommWebSurfaceState>{};
+  static bool _listening = false;
   InAppWebViewController? _controller;
   bool get _native => !(Platform.isAndroid || Platform.isIOS || Platform.isMacOS || Platform.isWindows);
   final _bounds = GlobalKey();
@@ -30,6 +32,20 @@ class RommWebSurfaceState extends State<RommWebSurface> {
   bool _visible = true;
   Uri? _loadedUrl;
   Rect? _lastBounds;
+  @override void initState() {
+    super.initState();
+    if (_native) {
+      _surfaces[_owner] = this;
+      if (!_listening) {
+        _listening = true;
+        RommWebSurface.channel.setMethodCallHandler((call) async {
+          if (call.method != 'loadError' || call.arguments is! String) return;
+          final surface = _surfaces[call.arguments];
+          if (surface?.mounted == true) surface!.widget.onError();
+        });
+      }
+    }
+  }
   Future<void> visible(bool value) async {
     _visible = value;
     if (_native && _attached) await RommWebSurface.channel.invokeMethod<void>('visible', {'owner': _owner, 'value': value ? 1 : 0});
@@ -44,6 +60,7 @@ class RommWebSurfaceState extends State<RommWebSurface> {
     final rect = box.localToGlobal(Offset.zero) & box.size;
     if (_attached && rect == _lastBounds && widget.url == _loadedUrl) return;
     _opening = true;
+    var completed = false;
     try {
       final url = widget.url;
       await RommWebSurface.channel.invokeMethod<void>(_attached && _loadedUrl == url ? 'resize' : 'open', {
@@ -54,8 +71,17 @@ class RommWebSurfaceState extends State<RommWebSurface> {
       if (!mounted) { await RommWebSurface.channel.invokeMethod<void>('close', {'owner': _owner}); return; }
       _attached = true; _lastBounds = rect; _loadedUrl = url;
       await visible(_visible);
+      completed = true;
     } catch (_) { if (mounted) widget.onError(); }
-    finally { _opening = false; }
+    finally {
+      _opening = false;
+      // A URL/layout update may arrive while the platform open call is pending.
+      // Schedule another layout instead of relying on an unrelated rebuild.
+      if (mounted && completed) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _layout());
+        WidgetsBinding.instance.ensureVisualUpdate();
+      }
+    }
   }
   @override void deactivate() { if (_native) { visible(false).catchError((_) {}); } super.deactivate(); }
   @override void activate() { super.activate(); if (_native) { visible(true).catchError((_) {}); } }
@@ -63,7 +89,11 @@ class RommWebSurfaceState extends State<RommWebSurface> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.url != widget.url) _controller = null;
   }
-  @override void dispose() { if (_native) { RommWebSurface.channel.invokeMethod<void>('close', {'owner': _owner}).catchError((_) {}); } super.dispose(); }
+  @override void dispose() {
+    _surfaces.remove(_owner);
+    if (_native) { RommWebSurface.channel.invokeMethod<void>('close', {'owner': _owner}).catchError((_) {}); }
+    super.dispose();
+  }
   @override Widget build(BuildContext context) {
     if (_native) return LayoutBuilder(builder: (context, constraints) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _layout());

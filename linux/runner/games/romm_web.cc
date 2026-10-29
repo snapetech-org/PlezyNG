@@ -4,7 +4,7 @@
 #include <string>
 
 namespace {
-struct Surface { GtkOverlay* overlay; GtkWidget* fixed=nullptr; WebKitWebView* web=nullptr; std::string origin,owner; };
+struct Surface { GtkOverlay* overlay; GtkWidget* fixed=nullptr; WebKitWebView* web=nullptr; std::string origin,owner; FlMethodChannel* channel=nullptr; };
 void respond(FlMethodCall* call,FlValue* value=nullptr) {
   g_autoptr(FlMethodResponse) response=FL_METHOD_RESPONSE(fl_method_success_response_new(value));
   fl_method_call_respond(call,response,nullptr);
@@ -25,14 +25,22 @@ double number(FlValue* args,const char* key) {
   return 0;
 }
 void close(Surface* surface) {
+  // Destroying a page can itself emit cancellation signals. Disconnect first
+  // so retirement cannot report a failure against its replacement.
+  if(surface->web)g_signal_handlers_disconnect_by_data(surface->web,surface);
   if(surface->fixed)gtk_widget_destroy(surface->fixed);
   surface->fixed=nullptr;surface->web=nullptr;surface->origin.clear();surface->owner.clear();
+}
+void loadError(Surface* surface,WebKitWebView* web) {
+  if(surface->web!=web || surface->owner.empty() || !surface->channel)return;
+  g_autoptr(FlValue) owner=fl_value_new_string(surface->owner.c_str());
+  fl_method_channel_invoke_method(surface->channel,"loadError",owner,nullptr,nullptr,nullptr);
 }
 bool permitted(Surface* surface,const char* url) {
   const std::string value=url?url:"";
   return value.rfind(surface->origin+"/",0)==0 || value==surface->origin;
 }
-gboolean policy(WebKitWebView*,WebKitPolicyDecision* decision,WebKitPolicyDecisionType type,gpointer user) {
+gboolean policy(WebKitWebView* web,WebKitPolicyDecision* decision,WebKitPolicyDecisionType type,gpointer user) {
   auto* surface=static_cast<Surface*>(user);
   if(type==WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION){webkit_policy_decision_ignore(decision);return TRUE;}
   if(type==WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION) {
@@ -40,6 +48,11 @@ gboolean policy(WebKitWebView*,WebKitPolicyDecision* decision,WebKitPolicyDecisi
     auto* action=webkit_navigation_policy_decision_get_navigation_action(nav);
     const char* uri=webkit_uri_request_get_uri(webkit_navigation_action_get_request(action));
     if(!permitted(surface,uri)){webkit_policy_decision_ignore(decision);return TRUE;}
+  }
+  if(type==WEBKIT_POLICY_DECISION_TYPE_RESPONSE) {
+    auto* response=WEBKIT_RESPONSE_POLICY_DECISION(decision);
+    if(webkit_response_policy_decision_is_main_frame_main_resource(response) &&
+       webkit_uri_response_get_status_code(webkit_response_policy_decision_get_response(response))>=400)loadError(surface,web);
   }
   return FALSE;
 }
@@ -80,6 +93,13 @@ void method(FlMethodChannel*,FlMethodCall* call,gpointer data) {
     webkit_settings_set_allow_file_access_from_file_urls(settings,FALSE);
     webkit_settings_set_allow_universal_access_from_file_urls(settings,FALSE);
     g_signal_connect(surface->web,"decide-policy",G_CALLBACK(policy),surface);
+    g_signal_connect(surface->web,"load-failed",G_CALLBACK(+[](WebKitWebView* web,WebKitLoadEvent,const gchar*,GError* error,gpointer user)->gboolean{
+      if(!g_error_matches(error,WEBKIT_NETWORK_ERROR,WEBKIT_NETWORK_ERROR_CANCELLED))loadError(static_cast<Surface*>(user),web);
+      return FALSE;
+    }),surface);
+    g_signal_connect(surface->web,"web-process-terminated",G_CALLBACK(+[](WebKitWebView* web,WebKitWebProcessTerminationReason,gpointer user){
+      loadError(static_cast<Surface*>(user),web);
+    }),surface);
     g_signal_connect(surface->web,"permission-request",G_CALLBACK(+[](WebKitWebView*,WebKitPermissionRequest* request,gpointer)->gboolean{
       webkit_permission_request_deny(request);return TRUE;
     }),nullptr);
@@ -112,5 +132,6 @@ void romm_web_register(FlPluginRegistrar* registrar,GtkOverlay* overlay) {
   auto* surface=new Surface{overlay,nullptr,nullptr,{}, {}};
   g_autoptr(FlStandardMethodCodec) codec=fl_standard_method_codec_new();
   g_autoptr(FlMethodChannel) channel=fl_method_channel_new(fl_plugin_registrar_get_messenger(registrar),"com.plezy/romm_web",FL_METHOD_CODEC(codec));
+  surface->channel=channel; // The channel's handler owns Surface; avoid a ref cycle.
   fl_method_channel_set_method_call_handler(channel,method,surface,[](gpointer value){auto* s=static_cast<Surface*>(value);close(s);delete s;});
 }

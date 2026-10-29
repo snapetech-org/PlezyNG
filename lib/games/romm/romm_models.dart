@@ -87,6 +87,31 @@ class RommGame {
   String get key => 'romm:$connectionId:$id';
   String get variant => [platformName, ...regions, ...languages, revision].where((s) => s.isNotEmpty).join(' · ');
   bool get hasBytes => !missing && !physical;
+  /// Keep disc controls aligned with RomM's utils.m3u.playlist_files: the
+  /// playlist and a descriptor's raw/audio companions are not swappable discs.
+  List<RommFile> get discFiles {
+    String extension(RommFile file) => file.name.split('.').last.toLowerCase();
+    const descriptors = {'cue', 'gdi', 'ccd', 'mds'};
+    const companions = {'bin', 'raw', 'img', 'sub', 'mdf', 'wav', 'ogg', 'flac', 'mp3'};
+    final discs = files.where((file) => file.id > 0 && extension(file) != 'm3u').toList();
+    if (discs.any((file) => descriptors.contains(extension(file)))) {
+      discs.removeWhere((file) => companions.contains(extension(file)));
+    }
+    final tag = RegExp(r'\((?:disc|disk|cd|disque)(?:\s*([0-9]+)[a-z]?|\s+([a-z]))(?:\s+of\s+[0-9]+)?\)', caseSensitive: false);
+    int? number(RommFile file) {
+      final match = tag.firstMatch(file.name);
+      if (match == null) return null;
+      return match.group(1) != null ? int.tryParse(match.group(1)!) : match.group(2)!.toLowerCase().codeUnitAt(0) - 96;
+    }
+    discs.sort((a, b) {
+      final x = number(a), y = number(b);
+      if (x == null && y != null) return 1;
+      if (x != null && y == null) return -1;
+      final order = (x ?? 0).compareTo(y ?? 0);
+      return order != 0 ? order : a.name.compareTo(b.name);
+    });
+    return discs;
+  }
   String get identity => sha1.isNotEmpty ? 'sha1:$sha1' : md5.isNotEmpty ? 'md5:$md5' : '$key:$size:$fileName';
   factory RommGame.fromJson(String connectionId, Map<String, dynamic> j) {
     final user = rommMap(j['rom_user']);

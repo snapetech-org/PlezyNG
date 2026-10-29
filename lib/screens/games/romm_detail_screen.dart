@@ -57,7 +57,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
           SimpleDialogOption(onPressed: () => Navigator.pop(dialog, 'resume'), child: Text(rommText(dialog, 'nativeCloudResume'))),
           SimpleDialogOption(onPressed: () => Navigator.pop(dialog, 'fresh'), child: Text(rommText(dialog, 'startFresh'))),
           for (final save in [..._game.saves, ..._game.states].where((save) =>
-            save.userId == widget.controller.connection(_game.connectionId).userId && save.romId == _game.id &&
+            save.id > 0 && save.userId == widget.controller.connection(_game.connectionId).userId && save.romId == _game.id &&
             save.emulator.startsWith(rommNativeEmulatorPrefix(route.core)) && !save.missing))
             SimpleDialogOption(onPressed: () => Navigator.pop(dialog, '${save.state ? 't' : 's'}:${save.id}'),
               child: Text('${rommText(dialog, save.state ? 'loadState' : 'resume')} · ${isolateDisplayText(save.name)}')),
@@ -74,22 +74,26 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
       await _run(() async {
         final api = await widget.controller.client(_game.connectionId);
         final picks = await api.getMap('streaming/states/${_game.id}');
-        final ids = rommList(picks['pickable']).map((v) => rommInt(v)).toSet();
-        final config = widget.controller.capabilities[_game.connectionId]?.streams.where((c) => c['emulator'] == route.core).firstOrNull;
+        final ids = rommList(picks['pickable']).map((v) => rommInt(v)).where((id) => id > 0).toSet();
+        final capabilities = widget.controller.capabilities[_game.connectionId];
+        final platform = capabilities?.slug(_game);
+        final config = capabilities?.streams.where((c) => c['emulator'] == route.core && c['platform'] == platform).firstOrNull;
+        final userId = widget.controller.connection(_game.connectionId).userId;
         final cards = config?['supports_memory_cards'] == true
-            ? rommList(await api.json('GET', 'memory-cards', query: {'emulator': route.core})).map(rommMap).toList() : <Map<String, dynamic>>[];
+            ? (await api.getList('memory-cards', query: {'emulator': route.core})).map(rommMap)
+                .where((card) => rommInt(card['id']) > 0 && card['user_id'] == userId && card['emulator'] == route.core).toList() : <Map<String, dynamic>>[];
         if (!live) return;
         final result = await rommDialog<bool>(context: context, controller: widget.controller, connectionId: _game.connectionId, builder: (dialog) => StatefulBuilder(builder: (dialog, update) => AlertDialog(
           title: Text(rommText(dialog, 'stream')), content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
             Text(rommText(dialog, 'compatibilityHelp')),
             DropdownButtonFormField<int>(initialValue: 0, isExpanded: true, decoration: InputDecoration(labelText: rommText(dialog, 'resume')),
               items: [DropdownMenuItem(value: 0, child: Text(rommText(dialog, 'startFresh'))),
-                for (final state in _game.states.where((s) => ids.contains(s.id))) DropdownMenuItem(value: state.id, child: Text(isolateDisplayText(state.name), overflow: TextOverflow.ellipsis))],
+                for (final state in _game.states.where((s) => ids.contains(s.id) && s.userId == userId && s.romId == _game.id && !s.missing)) DropdownMenuItem(value: state.id, child: Text(isolateDisplayText(state.name), overflow: TextOverflow.ellipsis))],
               onChanged: (value) => update(() => stateId = value == 0 ? null : value)),
             if (config?['supports_save_picker'] == true) DropdownButtonFormField<int>(initialValue: 0, isExpanded: true,
               decoration: InputDecoration(labelText: rommText(dialog, 'saves')),
               items: [DropdownMenuItem(value: 0, child: Text(rommText(dialog, 'automatic'))),
-                for (final save in _game.saves.where((s) => s.emulator == route.core)) DropdownMenuItem(value: save.id, child: Text(isolateDisplayText(save.name), overflow: TextOverflow.ellipsis))],
+                for (final save in _game.saves.where((s) => s.id > 0 && s.userId == userId && s.romId == _game.id && !s.missing && s.emulator == route.core)) DropdownMenuItem(value: save.id, child: Text(isolateDisplayText(save.name), overflow: TextOverflow.ellipsis))],
               onChanged: (value) => update(() => saveId = value == 0 ? null : value)),
             if (config?['supports_memory_cards'] == true) DropdownButtonFormField<int>(initialValue: 0, isExpanded: true,
               decoration: InputDecoration(labelText: rommText(dialog, 'memoryCard')),
@@ -202,7 +206,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
         Wrap(spacing: 8, children: [
           OutlinedButton(onPressed: downloading ? () => storage.cancel(_game.key) : _loading || !_game.hasBytes ? null : () => _run(_download),
             child: Text(rommText(context, downloading ? 'cancelDownload' : offline ? 'downloadAgain' : 'download'))),
-          if (offline) OutlinedButton(onPressed: _loading ? null : () => _run(() => storage.remove(_game)), child: Text(rommText(context, 'removeOffline'))),
+          if (storage.downloads.containsKey(_game.key) || storage.hasPartial(_game)) OutlinedButton(onPressed: _loading || downloading ? null : () => _run(() => storage.remove(_game)), child: Text(rommText(context, 'removeOffline'))),
         ]),
         if (offline) Text(rommText(context, storage.downloads[_game.key]?['serverVerified'] == true ? 'offline' : 'offlineUnverified')),
         const SizedBox(height: 20), Text(rommText(context, 'files'), style: Theme.of(context).textTheme.titleLarge),

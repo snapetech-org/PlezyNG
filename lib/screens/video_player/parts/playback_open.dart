@@ -992,6 +992,19 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
     bool primarySubtitleIsServerRendered = false,
     bool persistAutomaticSubtitleSelection = true,
   }) {
+    final correctionGeneration = _transitionGate.generation;
+    final correctionSession = _playbackSession;
+    PlayerSyncOffsets.of(forPlayer).bindLibrary(
+      source: correctionSession == null ? null : LibrarySyncSource.from(
+        item: metadata, info: _currentMediaInfo, versions: _availableVersions,
+        mediaIndex: _effectiveSelectedMediaIndex, transcoding: correctionSession.isTranscoding,
+        audioStreamId: correctionSession.audioStreamId,
+      ),
+      item: metadata,
+      profiles: context.read<ActiveProfileProvider>(),
+      isCurrent: () => mounted && player == forPlayer && _currentMetadata.globalKey == metadata.globalKey &&
+          _transitionGate.generation == correctionGeneration,
+    );
     return TrackManager(
       player: forPlayer,
       isActive: () => mounted && player == forPlayer,

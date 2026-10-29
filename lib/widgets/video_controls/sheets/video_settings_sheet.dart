@@ -688,6 +688,10 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
         : isSubtitle
         ? _subtitleSyncOffset
         : _audioSyncOffset;
+    final targetPlayer = widget.player;
+    final offsets = PlayerSyncOffsets.of(targetPlayer);
+    final correction = offsets.binding(propertyName);
+    final metadata = _state.metadata;
 
     // Created here so it can be passed as the overlay's initial focus target.
     // The creator disposes it after the overlay's lifecycle completes.
@@ -704,22 +708,30 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
           builder: (_) => _CompactSyncBar(
             title: title,
             icon: icon,
-            player: widget.player,
+            player: targetPlayer,
             propertyName: propertyName,
-            contentIdentity: _state.metadata?.globalKey,
+            contentIdentity: correction?.key ?? metadata?.globalKey,
+            correction: correction,
             initialOffset: initialOffset,
             sliderFocusNode: sliderFocusNode,
-            initialSubtitleRate: ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.subtitleSyncRate, _state.metadata),
+            initialSubtitleRate: offsets.subtitleRate,
             onSubtitleRateChanged: isSubtitle && !isSecondarySubtitle
-                ? (rate) => ScopedPlayerPrefs.write(ScopedPlayerPrefs.subtitleSyncRate, _state.metadata, rate)
+                ? (rate) async {
+                    correction?.checkCurrent();
+                    if (correction?.saved == true) { await correction!.save(rate: rate); }
+                    else { await ScopedPlayerPrefs.write(ScopedPlayerPrefs.subtitleSyncRate, metadata, rate,
+                      checkCurrent: correction?.checkCurrent); }
+                  }
                 : null,
             onOffsetChanged: (offset) async {
+              correction?.checkCurrent();
+              if (correction?.saved == true) { await correction!.save(delayMs: offset); return; }
               final pref = isSecondarySubtitle
                   ? ScopedPlayerPrefs.secondarySubtitleSyncOffset
                   : isSubtitle
                   ? ScopedPlayerPrefs.subtitleSyncOffset
                   : ScopedPlayerPrefs.audioSyncOffset;
-              await ScopedPlayerPrefs.write(pref, _state.metadata, offset);
+              await ScopedPlayerPrefs.write(pref, metadata, offset, checkCurrent: correction?.checkCurrent);
             },
           ),
         )
@@ -2737,6 +2749,7 @@ class _CompactSyncBar extends StatefulWidget {
   final Player player;
   final String propertyName;
   final String? contentIdentity;
+  final LibrarySyncBinding? correction;
   final int initialOffset;
   final double initialSubtitleRate;
   final Future<void> Function(double rate)? onSubtitleRateChanged;
@@ -2749,6 +2762,7 @@ class _CompactSyncBar extends StatefulWidget {
     required this.player,
     required this.propertyName,
     required this.contentIdentity,
+    this.correction,
     required this.initialOffset,
     required this.initialSubtitleRate,
     required this.onSubtitleRateChanged,
@@ -2763,6 +2777,37 @@ class _CompactSyncBar extends StatefulWidget {
 class _CompactSyncBarState extends State<_CompactSyncBar> {
   final _resetFocusNode = FocusNode(debugLabel: 'SyncResetButton');
   final _closeFocusNode = FocusNode(debugLabel: 'SyncCloseButton');
+  bool _savingCorrection = false;
+  int _resetControl = 0;
+  int? _restoredOffset;
+  double? _restoredRate;
+
+  Future<void> _toggleCorrection() async {
+    final correction = widget.correction;
+    if (correction == null || _savingCorrection) return;
+    setState(() => _savingCorrection = true);
+    try {
+      await correction.owner.settleEdits(widget.propertyName);
+      correction.checkCurrent();
+      final remove = correction.saved;
+      if (remove) { await correction.forget(); } else { await correction.save(); }
+      if (!mounted) return;
+      if (remove) {
+        final offsets = PlayerSyncOffsets.of(widget.player);
+        _restoredOffset = switch (widget.propertyName) {
+          PlayerSyncOffsets.audioProperty => offsets.audioMs,
+          PlayerSyncOffsets.secondarySubtitleProperty => offsets.secondarySubtitleMs,
+          _ => offsets.subtitleMs,
+        };
+        _restoredRate = offsets.subtitleRate;
+        ++_resetControl;
+      }
+    } catch (_) {
+      if (mounted) showAppSnackBar(context, 'Timing could not be saved for these tracks. Reopen the control.');
+    } finally {
+      if (mounted) setState(() => _savingCorrection = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -2780,20 +2825,39 @@ class _CompactSyncBarState extends State<_CompactSyncBar> {
         const SizedBox(width: 8),
         Text(widget.title, style: const TextStyle(fontWeight: .w600, fontSize: 14)),
         Expanded(
-          child: SyncOffsetControl(
-            player: widget.player,
-            propertyName: widget.propertyName,
-            contentIdentity: widget.contentIdentity,
-            initialOffset: widget.initialOffset,
-            initialSubtitleRate: widget.initialSubtitleRate,
-            onSubtitleRateChanged: widget.onSubtitleRateChanged,
-            onOffsetChanged: widget.onOffsetChanged,
-            sliderFocusNode: widget.sliderFocusNode,
-            resetFocusNode: _resetFocusNode,
-            closeFocusNode: _closeFocusNode,
+          child: ExcludeFocus(
+            excluding: _savingCorrection,
+            child: IgnorePointer(
+              ignoring: _savingCorrection,
+              child: SyncOffsetControl(
+                key: ValueKey(_resetControl),
+                player: widget.player,
+                propertyName: widget.propertyName,
+                contentIdentity: widget.contentIdentity,
+                isCurrent: widget.correction == null ? null : () => widget.correction!.current,
+                initialOffset: _restoredOffset ?? widget.initialOffset,
+                initialSubtitleRate: _restoredRate ?? widget.initialSubtitleRate,
+                onSubtitleRateChanged: widget.onSubtitleRateChanged,
+                onOffsetChanged: widget.onOffsetChanged,
+                sliderFocusNode: widget.sliderFocusNode,
+                resetFocusNode: _resetFocusNode,
+                closeFocusNode: _closeFocusNode,
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 8),
+        if (widget.correction != null)
+          ListenableBuilder(
+            listenable: widget.correction!.owner,
+            builder: (context, _) => IconButton(
+              tooltip: widget.correction!.saved
+                  ? 'Forget timing saved for this copy and selected tracks'
+                  : 'Save timing for this copy and selected tracks',
+              onPressed: _savingCorrection || !widget.correction!.current ? null : _toggleCorrection,
+              icon: Icon(widget.correction!.saved ? Icons.bookmark : Icons.bookmark_border),
+            ),
+          ),
         FocusableWrapper(
           focusNode: _closeFocusNode,
           onSelect: () => OverlaySheetController.of(context).close(),

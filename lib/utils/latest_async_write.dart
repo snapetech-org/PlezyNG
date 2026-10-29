@@ -7,6 +7,10 @@
 final class LatestAsyncWrite<K> {
   final Map<K, _LatestAsyncWriteState> _states = {};
 
+  /// Wait for the work already queued for a key without superseding its latest
+  /// intent. This is a snapshot; callers must separately stop new UI edits.
+  Future<void> settled(K key) => _states[key]?.tail ?? Future<void>.value();
+
   int begin(K key) {
     final state = _states.putIfAbsent(key, _LatestAsyncWriteState.new);
     return ++state.generation;

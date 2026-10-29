@@ -93,6 +93,7 @@ import '../services/offline_watch_sync_service.dart';
 import '../services/display_mode_service.dart';
 import '../services/media_control_router.dart';
 import '../services/player_sync_offsets.dart';
+import '../services/library_sync_correction.dart';
 import '../services/preferred_audio_device.dart';
 import '../services/scoped_player_prefs.dart';
 import '../sources/content_access.dart';
@@ -2850,6 +2851,8 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   @override
   void dispose() {
+    final syncPlayer = player;
+    if (syncPlayer != null) PlayerSyncOffsets.of(syncPlayer).unbindLibrary();
     final retiringExternalSource = _activeExternalPlaybackSource;
     _activeExternalPlaybackSource = null;
     _pendingExternalPlaybackSource = null;

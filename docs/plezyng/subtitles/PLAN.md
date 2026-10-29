@@ -349,7 +349,7 @@ All entries below are target requirements unless explicitly marked Existing. Exi
 | S08 | PR #53 estimates piecewise timing offsets from ASR/text-match discontinuities and reports match/discontinuity counts. It now returns unmatched subtitle/reference spans in their original clocks, with cue counts and review warnings. These spans do not prove edits or release fingerprints. | M7 |
 | S09 | The AI subtitle sheet can synchronize or repair cuts in a target SRT/VTT/ASS/SSA against a same- or cross-language reference without transcribing audio. Cross-language matching locally translates the target cue text into the selected reference language, then preserves the original wording while applying bounded matched timing. Match confidence is shown; translation quality and reference suitability remain viewer responsibilities. Source imports and cue matching stay bounded, and output is a separate SRT derivative. Automatic release-cut identification remains open. | M3 |
 | S10 | The paired companion now runs WhisperX CTC alignment for an explicitly matching spoken-language transcript in bounded, approximate cue windows. It returns cue-linked word scores and preserves original timing for unsupported/uncertain cues; the result reports those cue IDs and warnings. Model/language installation and quality qualification remain host responsibilities. | M5 |
-| S11 | Standalone MPV OpenSubtitles corrections persist by profile, edition, source-file fingerprint, subtitle digest, and selected audio descriptor; v1 manifests migrate with neutral timing. Main-library corrections remain title-scoped pending edition/audio/subtitle identity support. | M2 |
+| S11 | Standalone MPV OpenSubtitles corrections persist by profile, edition, source-file fingerprint, subtitle digest, and selected audio descriptor; v1 manifests migrate with neutral timing. Main-library sync bars now explicitly save profile/copy/part/audio/subtitle-bound delay and primary drift records, replay matching records after selection changes, and retain existing scoped settings as fallback. Server representation metadata identifies the copy; unchanged in-place remote content replacement remains undetectable. See LIBRARY-TIMING.md. | M2 |
 | S12 | Preview, undo, reset, one-cue alignment, two-anchor calibration, and corrected SRT/VTT plus simple ASS/SSA export are implemented for standalone MPV VOD imported assets. Export applies the active per-audio delay/rate; cues wholly before time zero require confirmation before omission. ASS/SSA timed karaoke, animation tags, and non-empty Effect fields are refused instead of damaged; ASS event times quantize to centiseconds. Bitmap export, structured provenance, and broader server-library export remain. Original imported assets remain immutable. | M2 |
 | S13 | Explicit FPS conversion offers all directions between 24000/1001, 24, and 25 fps, scales derived times by source/target rate, and refuses timed ASS effects it cannot preserve. Frame rate is not inferred from VFR media. Required fixture verification has not run, per owner instruction. | M2 |
 | S14 | Multipart, transcode starts, ads, discontinuities, and DVR seeks retain correct source-time mapping. | M3 |
@@ -1494,4 +1494,12 @@ The evidence review now localizes section labels, clock/provenance context,
 observation counts, export actions and bounded-export status. Model provenance
 and host warning details remain data supplied by the companion so diagnostic
 content is preserved for review.
+
+## Generated subtitle review localization — October 29, 2026
+
+The AI sheet's subtitle cue editor and generated-result review now use the
+central Slang catalog for cue search/editing, recovery prompts, timing caveats,
+export choices and attachment actions. The item-clock warning and explicit
+part-clipping confirmation remain visible. English fallbacks are registered;
+runtime behavior remains unqualified.
 

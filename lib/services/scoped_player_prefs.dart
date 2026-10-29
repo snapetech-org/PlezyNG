@@ -175,13 +175,15 @@ abstract final class ScopedPlayerPrefs {
   }
 
   /// Persist [value] for [item] at the property's configured scope.
-  static Future<void> write<T>(ScopedPlayerPref<T> pref, MediaItem? item, T value) async {
+  static Future<void> write<T>(ScopedPlayerPref<T> pref, MediaItem? item, T value,
+      {void Function()? checkCurrent}) async {
+    checkCurrent?.call();
     final svc = SettingsService.instance;
     final scope = svc.read(pref.scope);
     if (scope == PlayerSettingScope.off) return;
     final key = scopeKeyFor(scope, item);
     if (key == null) {
-      await svc.write(pref.global, value);
+      await svc.write(pref.global, value, checkCurrent: checkCurrent);
       return;
     }
     final entries = Map<String, dynamic>.from(_entriesFor(svc, pref.id));
@@ -191,7 +193,7 @@ abstract final class ScopedPlayerPrefs {
     };
     final store = Map<String, dynamic>.from(svc.read(SettingsService.scopedPlayerPrefValues));
     store[pref.id] = _prune(entries);
-    await svc.write(SettingsService.scopedPlayerPrefValues, store);
+    await svc.write(SettingsService.scopedPlayerPrefValues, store, checkCurrent: checkCurrent);
   }
 
   /// Inspect one explicit persistence level without consulting other levels.

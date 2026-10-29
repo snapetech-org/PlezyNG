@@ -29,6 +29,7 @@ import '../../../services/subtitle_waveform_service.dart';
 import '../../../services/subtitle_companion_service.dart';
 import '../../../services/subtitle_translation_service.dart';
 import '../../../services/subtitle_translation_memory.dart';
+import '../../../services/subtitle_text_importer.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_playback_transcription_service.dart';
 import '../../../services/subtitle_revision_service.dart';
@@ -41,6 +42,7 @@ import 'subtitle_jobs_dialog.dart';
 import 'subtitle_waveform_editor.dart';
 import 'subtitle_companion_jobs_dialog.dart';
 import 'subtitle_study_dialog.dart';
+import 'subtitle_import_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -339,17 +341,17 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     return path;
   }
 
-  Future<(List<SubtitleCue>, String)?> _pickSubtitleCues() async {
+  Future<(List<SubtitleCue>, String, List<String>)?> _pickSubtitleCues({bool preview = false}) async {
     final result = await FilePickerService.instance.pickFiles(
       type: FileType.custom,
-      allowedExtensions: const ['ass', 'srt', 'ssa', 'vtt'],
+      allowedExtensions: SubtitleTextImporter.extensions,
       withData: true,
     );
     if (!mounted || result == null || result.files.isEmpty) return null;
     final file = result.files.first;
     final extension = p.extension(file.name).toLowerCase();
-    if (!const {'.ass', '.srt', '.ssa', '.vtt'}.contains(extension)) {
-      throw const FormatException('Choose an SRT, VTT, ASS, or SSA text subtitle.');
+    if (!SubtitleTextImporter.extensions.contains(extension.replaceFirst('.', ''))) {
+      throw const FormatException('Choose a supported text subtitle format.');
     }
     if (file.size <= 0 || file.size > SubtitleRetimer.maximumInputBytes) {
       throw const FormatException('Subtitle input must be between 1 byte and 5 MiB.');
@@ -369,8 +371,23 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (bytes.isEmpty || bytes.lengthInBytes > SubtitleRetimer.maximumInputBytes) {
       throw const FormatException('Subtitle input must be between 1 byte and 5 MiB.');
     }
-    return (SubtitleRetimer.parseCues(sourceBytes: bytes, extension: extension), file.name);
+    SubtitleTextImport? imported;
+    if (!preview && SubtitleTextImporter.nativeTextExtensions.contains(extension)) {
+      try { imported = await SubtitleTextImporter.parseAsync(bytes, extension); }
+      on FormatException { /* Let the viewer explicitly select and preview an encoding. */ }
+    }
+    if (!mounted) return null;
+    imported ??= await showDialog<SubtitleTextImport>(context: context,
+      builder: (_) => SubtitleImportDialog(bytes: bytes, extension: extension, name: file.name));
+    if (imported == null) return null;
+    return (imported.cues, file.name, imported.warnings);
   }
+
+  Future<void> _importTextSubtitle() => _run(() async {
+    final selected = await _pickSubtitleCues(preview: true);
+    if (selected == null || !mounted) return;
+    await _writeAndApply(selected.$1, 'Imported text subtitle', reviewWarnings: selected.$3);
+  });
 
   Future<void> _transcribe() => _run(() async {
     final wavPath = await _pickWav();
@@ -3680,6 +3697,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             title: const Text('Reflow, correct, filter, or convert FPS'),
             subtitle: const Text('Preview reading limits, explicit spelling fixes, SDH/song/credit filters, and timing conversion'),
             onTap: _busy ? null : () => unawaited(_transformSubtitles()),
+          ),
+          FocusableListTile(
+            leading: const AppIcon(Symbols.subtitles_rounded),
+            title: const Text('Convert or repair subtitle text encoding'),
+            subtitle: const Text('Preview legacy encodings, TTML/IMSC text, SAMI, MicroDVD, SBV, LRC, or MPL2 as a separate SRT'),
+            onTap: _busy ? null : () => unawaited(_importTextSubtitle()),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.replay_rounded),

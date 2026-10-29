@@ -55,6 +55,8 @@ final class _DecodedSubtitleText {
 /// The exporter uses that affine transform, preserving cue payload,
 /// WebVTT cue settings, identifiers, and file line endings.
 abstract final class SubtitleRetimer {
+  static String decodeUnicode(List<int> bytes) => _decodeText(bytes).text;
+
   static _DecodedSubtitleText _decodeText(List<int> bytes) {
     if (bytes.any((byte) => byte < 0 || byte > 255)) {
       throw const FormatException('Subtitle contains a byte outside the 0–255 range.');

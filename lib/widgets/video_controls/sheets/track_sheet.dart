@@ -14,10 +14,14 @@ import '../../../media/media_kind.dart';
 import '../../../media/ids.dart';
 import '../../../services/settings_service.dart';
 import '../../../mpv/mpv.dart';
+import '../../../mpv/player/player_media_session_identity.dart';
 import '../../../services/file_picker_service.dart';
 import '../../../services/incoming_subtitle_share_service.dart';
 import '../../../services/playback_subtitle_resolver.dart';
 import '../../../services/subtitle_archive_importer.dart';
+import '../../../services/subtitle_retimer.dart';
+import '../../../services/subtitle_sync_service.dart';
+import '../../../services/subtitle_text_importer.dart';
 import '../../../services/track_selection_service.dart';
 import '../../../i18n/strings.g.dart';
 import '../../../i18n/presentation_formats.dart';
@@ -34,6 +38,7 @@ import 'sheet_selection_column.dart';
 import 'sheet_split_columns.dart';
 import 'subtitle_search_sheet.dart';
 import 'subtitle_ai_sheet.dart';
+import 'subtitle_import_dialog.dart';
 import 'subtitle_style_sheet.dart';
 import '../models/track_controls_state.dart';
 import '../helpers/track_filter_helper.dart';
@@ -725,7 +730,8 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
 }
 
 Future<void> _loadSubtitleFile(BuildContext context, Player player) async {
-  final supportedExtensions = player.supportedLocalSubtitleExtensions.toList()..sort();
+  final session = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
+  final supportedExtensions = _importableSubtitleExtensions(player).toList()..sort();
   final result = await FilePickerService.instance.pickFiles(
     type: FileType.custom,
     allowedExtensions: {
@@ -743,16 +749,44 @@ Future<void> _loadSubtitleFile(BuildContext context, Player player) async {
       await _validateDirectIdxSubtitlePair(pickedFile);
     }
     if (!context.mounted) return;
-    final selectedPath = SubtitleArchiveImporter.isSupportedArchiveName(pickedFile.name)
+    var selectedPath = SubtitleArchiveImporter.isSupportedArchiveName(pickedFile.name)
         ? await _selectArchivedSubtitle(context, pickedFile, supportedExtensions)
         : pickedFile.path;
     if (selectedPath == null || !context.mounted) return;
+    selectedPath = await _convertSubtitleForPlayer(context, player, selectedPath);
+    if (selectedPath == null || !context.mounted || player.disposed ||
+        (player is PlayerMediaSessionIdentity && player.mediaSessionGeneration != session)) return;
     await player.command(['sub-add', selectedPath, 'select']);
     if (context.mounted) OverlaySheetController.of(context).close();
   } catch (error, stackTrace) {
     appLogger.w('Could not load local subtitle file', error: error, stackTrace: stackTrace);
     if (context.mounted) showErrorSnackBar(context, t.videoControls.subtitleLoadFailed);
   }
+}
+
+Set<String> _importableSubtitleExtensions(Player player) => {
+  ...player.supportedLocalSubtitleExtensions,
+  if (!kIsWeb && player.supportedLocalSubtitleExtensions.contains('srt')) ...SubtitleTextImporter.extensions,
+};
+
+Future<String?> _convertSubtitleForPlayer(BuildContext context, Player player, String path) async {
+  final extension = p.extension(path).toLowerCase().replaceFirst('.', '');
+  if (player.supportedLocalSubtitleExtensions.contains(extension)) return path;
+  if (!player.supportedLocalSubtitleExtensions.contains('srt') || !SubtitleTextImporter.extensions.contains(extension)) {
+    throw const FormatException('This player cannot attach the selected subtitle format.');
+  }
+  final source = File(path);
+  final size = await source.length();
+  if (size <= 0 || size > SubtitleRetimer.maximumInputBytes) throw const FormatException('Text conversion input must be between 1 byte and 5 MiB.');
+  final bytes = await source.readAsBytes();
+  if (bytes.length != size || !context.mounted) return null;
+  final imported = await showDialog<SubtitleTextImport>(context: context,
+    builder: (_) => SubtitleImportDialog(bytes: bytes, extension: '.$extension', name: p.basename(path)));
+  if (imported == null || !context.mounted) return null;
+  final temporary = await getTemporaryDirectory();
+  final output = File(p.join(temporary.path, 'plezyng_imported_${DateTime.now().microsecondsSinceEpoch}.srt'));
+  await output.writeAsBytes(SubtitleSyncService.writeSrt(imported.cues), flush: true);
+  return output.path;
 }
 
 /// MPV opens a bitmap IDX subtitle through its neighboring SUB file. Reject
@@ -941,7 +975,7 @@ Future<void> _replayCurrentSubtitle(BuildContext context, Player player, {bool s
 }
 
 Future<void> _stageDroppedSubtitleFiles(BuildContext context, Player player, List<DropItemFile> files) async {
-  final supported = player.supportedLocalSubtitleExtensions;
+  final supported = _importableSubtitleExtensions(player);
   final candidates = files
       .where((file) {
         final extension = p.extension(file.name).toLowerCase().replaceFirst('.', '');
@@ -990,7 +1024,8 @@ Future<void> _importSharedSubtitleFiles(BuildContext context, Player player) asy
 
 Future<void> _importSubtitlePaths(BuildContext context, Player player, List<String> paths) async {
   if (paths.isEmpty || !context.mounted) return;
-  final supported = player.supportedLocalSubtitleExtensions.toList()..sort();
+  final session = player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null;
+  final supported = _importableSubtitleExtensions(player).toList()..sort();
   final candidates = <({String path, String name})>[];
   for (final path in paths) {
     final name = p.basename(path);
@@ -1053,7 +1088,10 @@ Future<void> _importSubtitlePaths(BuildContext context, Player player, List<Stri
         );
   if (chosen == null || !context.mounted) return;
   try {
-    await player.command(['sub-add', chosen.path, 'select']);
+    final path = await _convertSubtitleForPlayer(context, player, chosen.path);
+    if (path == null || !context.mounted || player.disposed ||
+        (player is PlayerMediaSessionIdentity && player.mediaSessionGeneration != session)) return;
+    await player.command(['sub-add', path, 'select']);
     if (context.mounted) OverlaySheetController.of(context).close();
   } catch (error, stackTrace) {
     appLogger.w('Could not import shared subtitle', error: error, stackTrace: stackTrace);

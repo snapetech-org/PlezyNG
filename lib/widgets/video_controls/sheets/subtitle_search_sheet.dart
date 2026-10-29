@@ -241,12 +241,12 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
       showSnackBar(
         context,
         rejected
-            ? 'Subtitle revision hidden from future suggestions.'
-            : 'Subtitle revision restored to search results.',
+            ? t.videoControls.subtitleAiControls.subtitleChoiceHiddenSuccess
+            : t.videoControls.subtitleAiControls.subtitleChoiceRestoredSuccess,
       );
     } catch (error, stackTrace) {
       appLogger.w('Could not update rejected subtitle revisions', error: error, stackTrace: stackTrace);
-      if (mounted) showSnackBar(context, 'Could not save the subtitle revision choice.');
+      if (mounted) showSnackBar(context, t.videoControls.subtitleAiControls.subtitleChoiceSaveFailed);
     }
   }
 
@@ -475,6 +475,7 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
   }
 
   Widget _buildResults() {
+    final choiceCopy = t.videoControls.subtitleAiControls;
     if (_isSearching) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -501,7 +502,7 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
             children: [
               Text(
                 _hiddenRejectedRevisionCount > 0
-                    ? 'All matching subtitle revisions are hidden.'
+                    ? choiceCopy.subtitleChoiceAllHidden
                     : t.videoControls.noSubtitlesFound,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
@@ -509,7 +510,14 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
               if (_hiddenRejectedRevisionCount > 0)
                 TextButton(
                   onPressed: _toggleRejectedRevisionVisibility,
-                  child: Text('Show $_hiddenRejectedRevisionCount hidden revision(s)'),
+                  child: Text(
+                    choiceCopy.subtitleChoiceShowHiddenCount(
+                      count: _hiddenRejectedRevisionCount,
+                      unit: _hiddenRejectedRevisionCount == 1
+                          ? choiceCopy.subtitleChoiceRevisionSingular
+                          : choiceCopy.subtitleChoiceRevisionsPlural,
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -527,8 +535,18 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
               onPressed: _toggleRejectedRevisionVisibility,
               child: Text(
                 _showRejectedRevisions
-                    ? 'Hide $_hiddenRejectedRevisionCount rejected revision(s)'
-                    : 'Show $_hiddenRejectedRevisionCount rejected revision(s)',
+                    ? choiceCopy.subtitleChoiceHideIgnoredCount(
+                        count: _hiddenRejectedRevisionCount,
+                        unit: _hiddenRejectedRevisionCount == 1
+                            ? choiceCopy.subtitleChoiceRevisionSingular
+                            : choiceCopy.subtitleChoiceRevisionsPlural,
+                      )
+                    : choiceCopy.subtitleChoiceShowIgnoredCount(
+                        count: _hiddenRejectedRevisionCount,
+                        unit: _hiddenRejectedRevisionCount == 1
+                            ? choiceCopy.subtitleChoiceRevisionSingular
+                            : choiceCopy.subtitleChoiceRevisionsPlural,
+                      ),
               ),
             ),
           ),
@@ -569,12 +587,14 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
                     titleSaysHearingImpaired(result.title) ||
                     titleSaysHearingImpaired(result.displayTitle))
                   t.fileInfo.flagHearingImpaired,
-                if (result.codec?.trim().isNotEmpty == true) 'Format ${result.codec!.toUpperCase()}',
-                if (result.providerTitle?.trim().isNotEmpty == true) 'Provider ${result.providerTitle!.trim()}',
+                if (result.codec?.trim().isNotEmpty == true)
+                  '${t.fileInfo.codec}: ${result.codec!.toUpperCase()}',
+                if (result.providerTitle?.trim().isNotEmpty == true)
+                  '${t.fileInfo.provider}: ${result.providerTitle!.trim()}',
                 if (result.displayTitle?.trim().isNotEmpty == true &&
                     result.displayTitle!.trim() != primaryTitle.trim())
                   result.displayTitle!.trim(),
-                if (isRejected) 'Ignored revision',
+                if (isRejected) choiceCopy.subtitleChoiceIgnoredTag,
               ];
               final trailingChildren = <Widget>[];
               if (context.tryGetMediaClientForServer(ServerId(widget.serverId))?.supportsRemoteSubtitlePreview == true &&
@@ -603,7 +623,9 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
                 if (result.key.trim().isNotEmpty) {
                   trailingChildren.add(
                     IconButton(
-                      tooltip: isRejected ? 'Show this subtitle revision again' : 'Hide this subtitle revision',
+                      tooltip: isRejected
+                          ? choiceCopy.subtitleChoiceShowAgainTooltip
+                          : choiceCopy.subtitleChoiceHideTooltip,
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),

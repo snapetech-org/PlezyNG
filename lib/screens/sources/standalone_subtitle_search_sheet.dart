@@ -244,7 +244,7 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
         _hiddenRejectedRevisionCount = filtered.hidden;
       });
     } catch (_) {
-      if (mounted) setState(() => _error = 'Could not save the subtitle revision choice.');
+      if (mounted) setState(() => _error = t.videoControls.subtitleAiControls.subtitleChoiceSaveFailed);
     }
   }
 
@@ -320,6 +320,7 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
 
   @override
   Widget build(BuildContext context) {
+    final choiceCopy = t.videoControls.subtitleAiControls;
     final media = MediaQuery.of(context);
     final bottom = media.viewInsets.bottom;
     final safeTop = math.max(media.padding.top, media.viewPadding.top);
@@ -417,8 +418,18 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
                           onPressed: _toggleRejectedRevisionVisibility,
                           child: Text(
                             _showRejectedRevisions
-                                ? 'Hide $_hiddenRejectedRevisionCount ignored revision(s)'
-                                : 'Show $_hiddenRejectedRevisionCount ignored revision(s)',
+                                ? choiceCopy.subtitleChoiceHideIgnoredCount(
+                                    count: _hiddenRejectedRevisionCount,
+                                    unit: _hiddenRejectedRevisionCount == 1
+                                        ? choiceCopy.subtitleChoiceRevisionSingular
+                                        : choiceCopy.subtitleChoiceRevisionsPlural,
+                                  )
+                                : choiceCopy.subtitleChoiceShowIgnoredCount(
+                                    count: _hiddenRejectedRevisionCount,
+                                    unit: _hiddenRejectedRevisionCount == 1
+                                        ? choiceCopy.subtitleChoiceRevisionSingular
+                                        : choiceCopy.subtitleChoiceRevisionsPlural,
+                                  ),
                           ),
                         ),
                       ),
@@ -432,14 +443,21 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
                                   children: [
                                     Text(
                                       _hiddenRejectedRevisionCount > 0
-                                          ? 'All matching subtitle revisions are hidden.'
+                                          ? choiceCopy.subtitleChoiceAllHidden
                                           : t.sourceSetup.subtitleNoMatches,
                                       textAlign: TextAlign.center,
                                     ),
                                     if (_hiddenRejectedRevisionCount > 0)
                                       TextButton(
                                         onPressed: _toggleRejectedRevisionVisibility,
-                                        child: Text('Show $_hiddenRejectedRevisionCount hidden revision(s)'),
+                                        child: Text(
+                                          choiceCopy.subtitleChoiceShowHiddenCount(
+                                            count: _hiddenRejectedRevisionCount,
+                                            unit: _hiddenRejectedRevisionCount == 1
+                                                ? choiceCopy.subtitleChoiceRevisionSingular
+                                                : choiceCopy.subtitleChoiceRevisionsPlural,
+                                          ),
+                                        ),
                                       ),
                                   ],
                                 ),
@@ -460,9 +478,10 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
                                 );
                                 final tags = <String>[
                                   ?languageDisplay,
-                                  if (result.codec?.isNotEmpty == true) 'Format ${result.codec!.toUpperCase()}',
+                                  if (result.codec?.isNotEmpty == true)
+                                    '${t.fileInfo.codec}: ${result.codec!.toUpperCase()}',
                                   if (result.providerTitle?.trim().isNotEmpty == true)
-                                    'Provider ${result.providerTitle!.trim()}',
+                                    '${t.fileInfo.provider}: ${result.providerTitle!.trim()}',
                                   if (result.hearingImpaired ||
                                       titleSaysHearingImpaired(result.title) ||
                                       titleSaysHearingImpaired(result.displayTitle))
@@ -475,7 +494,7 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
                                     t.sourceSetup.subtitleRating(
                                       rating: formatDecimal(result.score!, maximumDecimals: 1),
                                     ),
-                                  if (ignored) 'Ignored revision',
+                                  if (ignored) choiceCopy.subtitleChoiceIgnoredTag,
                                 ];
                                 final active = _downloading == result.key;
                                 return FocusableListTile(
@@ -498,8 +517,8 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
                                             if (result.key.trim().isNotEmpty)
                                               IconButton(
                                                 tooltip: ignored
-                                                    ? 'Show this subtitle revision again'
-                                                    : 'Hide this subtitle revision',
+                                                    ? choiceCopy.subtitleChoiceShowAgainTooltip
+                                                    : choiceCopy.subtitleChoiceHideTooltip,
                                                 visualDensity: VisualDensity.compact,
                                                 padding: EdgeInsets.zero,
                                                 constraints: const BoxConstraints(minWidth: 32, minHeight: 32),

@@ -15326,6 +15326,31 @@ class Translations$videoControls$subtitleAiControls$en {
 	/// en: 'An active profile is required to load glossary history.'
 	String get glossaryHistoryProfileRequired => 'An active profile is required to load glossary history.';
 
+	/// en: 'Subtitle revision hidden from future suggestions.'
+	String get subtitleChoiceHiddenSuccess => 'Subtitle revision hidden from future suggestions.';
+	/// en: 'Subtitle revision restored to search results.'
+	String get subtitleChoiceRestoredSuccess => 'Subtitle revision restored to search results.';
+	/// en: 'Could not save the subtitle revision choice.'
+	String get subtitleChoiceSaveFailed => 'Could not save the subtitle revision choice.';
+	/// en: 'All matching subtitle revisions are hidden.'
+	String get subtitleChoiceAllHidden => 'All matching subtitle revisions are hidden.';
+	/// en: 'Show ${count} hidden ${unit}'
+	String subtitleChoiceShowHiddenCount({required Object count, required Object unit}) => 'Show ${count} hidden ${unit}';
+	/// en: 'Hide ${count} ignored ${unit}'
+	String subtitleChoiceHideIgnoredCount({required Object count, required Object unit}) => 'Hide ${count} ignored ${unit}';
+	/// en: 'Show ${count} ignored ${unit}'
+	String subtitleChoiceShowIgnoredCount({required Object count, required Object unit}) => 'Show ${count} ignored ${unit}';
+	/// en: 'revision'
+	String get subtitleChoiceRevisionSingular => 'revision';
+	/// en: 'revisions'
+	String get subtitleChoiceRevisionsPlural => 'revisions';
+	/// en: 'Ignored revision'
+	String get subtitleChoiceIgnoredTag => 'Ignored revision';
+	/// en: 'Show this subtitle revision again'
+	String get subtitleChoiceShowAgainTooltip => 'Show this subtitle revision again';
+	/// en: 'Hide this subtitle revision'
+	String get subtitleChoiceHideTooltip => 'Hide this subtitle revision';
+
 }
 
 // Path: videoControls.subtitleLiveCapture
@@ -20187,6 +20212,18 @@ extension on Translations {
 			'videoControls.subtitleAiControls.glossaryTermUnitPlural' => 'terms',
 			'videoControls.subtitleAiControls.glossaryLoadedFrom' => ({required Object date}) => 'Loaded glossary version from ${date}. Save it to replace the current glossary.',
 			'videoControls.subtitleAiControls.glossaryHistoryProfileRequired' => 'An active profile is required to load glossary history.',
+			'videoControls.subtitleAiControls.subtitleChoiceHiddenSuccess' => 'Subtitle revision hidden from future suggestions.',
+			'videoControls.subtitleAiControls.subtitleChoiceRestoredSuccess' => 'Subtitle revision restored to search results.',
+			'videoControls.subtitleAiControls.subtitleChoiceSaveFailed' => 'Could not save the subtitle revision choice.',
+			'videoControls.subtitleAiControls.subtitleChoiceAllHidden' => 'All matching subtitle revisions are hidden.',
+			'videoControls.subtitleAiControls.subtitleChoiceShowHiddenCount' => ({required Object count, required Object unit}) => 'Show ${count} hidden ${unit}',
+			'videoControls.subtitleAiControls.subtitleChoiceHideIgnoredCount' => ({required Object count, required Object unit}) => 'Hide ${count} ignored ${unit}',
+			'videoControls.subtitleAiControls.subtitleChoiceShowIgnoredCount' => ({required Object count, required Object unit}) => 'Show ${count} ignored ${unit}',
+			'videoControls.subtitleAiControls.subtitleChoiceRevisionSingular' => 'revision',
+			'videoControls.subtitleAiControls.subtitleChoiceRevisionsPlural' => 'revisions',
+			'videoControls.subtitleAiControls.subtitleChoiceIgnoredTag' => 'Ignored revision',
+			'videoControls.subtitleAiControls.subtitleChoiceShowAgainTooltip' => 'Show this subtitle revision again',
+			'videoControls.subtitleAiControls.subtitleChoiceHideTooltip' => 'Hide this subtitle revision',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',

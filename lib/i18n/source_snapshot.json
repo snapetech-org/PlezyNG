@@ -5517,5 +5517,17 @@
   "videoControls.subtitleAiControls.glossaryTermUnitSingular": "9c8c8be40fd165e6",
   "videoControls.subtitleAiControls.glossaryTermUnitPlural": "a301bcb976ae3f71",
   "videoControls.subtitleAiControls.glossaryLoadedFrom": "b842eb2a92dc821b",
-  "videoControls.subtitleAiControls.glossaryHistoryProfileRequired": "2043a057f188762c"
+  "videoControls.subtitleAiControls.glossaryHistoryProfileRequired": "2043a057f188762c",
+  "videoControls.subtitleAiControls.subtitleChoiceHiddenSuccess": "a6db776577b74068",
+  "videoControls.subtitleAiControls.subtitleChoiceRestoredSuccess": "8b3436bb977722fb",
+  "videoControls.subtitleAiControls.subtitleChoiceSaveFailed": "a74ae7f9a0d07c4f",
+  "videoControls.subtitleAiControls.subtitleChoiceAllHidden": "c172db17bc93bae8",
+  "videoControls.subtitleAiControls.subtitleChoiceShowHiddenCount": "b7074bb689303f13",
+  "videoControls.subtitleAiControls.subtitleChoiceHideIgnoredCount": "7d2589f6ea6ae871",
+  "videoControls.subtitleAiControls.subtitleChoiceShowIgnoredCount": "93cf255d8635b257",
+  "videoControls.subtitleAiControls.subtitleChoiceRevisionSingular": "d4a057bb0019067f",
+  "videoControls.subtitleAiControls.subtitleChoiceRevisionsPlural": "1d7ea560e0c74cb1",
+  "videoControls.subtitleAiControls.subtitleChoiceIgnoredTag": "8a460d4ee9598b9d",
+  "videoControls.subtitleAiControls.subtitleChoiceShowAgainTooltip": "e2197470ffffb4d7",
+  "videoControls.subtitleAiControls.subtitleChoiceHideTooltip": "43c8210a4002bed6"
 }

@@ -2409,7 +2409,19 @@
       "glossaryTermUnitSingular": "term",
       "glossaryTermUnitPlural": "terms",
       "glossaryLoadedFrom": "Loaded glossary version from ${date}. Save it to replace the current glossary.",
-      "glossaryHistoryProfileRequired": "An active profile is required to load glossary history."
+      "glossaryHistoryProfileRequired": "An active profile is required to load glossary history.",
+      "subtitleChoiceHiddenSuccess": "Subtitle revision hidden from future suggestions.",
+      "subtitleChoiceRestoredSuccess": "Subtitle revision restored to search results.",
+      "subtitleChoiceSaveFailed": "Could not save the subtitle revision choice.",
+      "subtitleChoiceAllHidden": "All matching subtitle revisions are hidden.",
+      "subtitleChoiceShowHiddenCount": "Show ${count} hidden ${unit}",
+      "subtitleChoiceHideIgnoredCount": "Hide ${count} ignored ${unit}",
+      "subtitleChoiceShowIgnoredCount": "Show ${count} ignored ${unit}",
+      "subtitleChoiceRevisionSingular": "revision",
+      "subtitleChoiceRevisionsPlural": "revisions",
+      "subtitleChoiceIgnoredTag": "Ignored revision",
+      "subtitleChoiceShowAgainTooltip": "Show this subtitle revision again",
+      "subtitleChoiceHideTooltip": "Hide this subtitle revision"
     },
     "subtitleArchive": {
       "title": "External subtitle archive",

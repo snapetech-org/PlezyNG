@@ -63,6 +63,15 @@ class _RommPairDialogState extends State<RommPairDialog> {
   String _code = '', _deviceCode = '', _error = '';
   int _interval = 5, _generation = 0;
   bool _manual = false, _busy = false, _polling = false;
+  @override void initState() { super.initState(); widget.controller.addListener(_profileChanged); }
+  void _profileChanged() {
+    if (widget.controller.current) return;
+    _generation++; _poll?.cancel(); _pairClient?.close();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final route = ModalRoute.of(context); if (route?.isActive == true) route!.navigator?.removeRoute(route);
+    });
+  }
   bool _live(int epoch) => mounted && epoch == _generation && widget.controller.current;
   Future<void> _start() async {
     if (_busy) return;
@@ -115,6 +124,7 @@ class _RommPairDialogState extends State<RommPairDialog> {
     finally { _polling = false; }
   }
   @override void dispose() {
+    widget.controller.removeListener(_profileChanged);
     _generation++; _poll?.cancel(); _pairClient?.close();
     _address.dispose(); _name.dispose(); _token.dispose(); super.dispose();
   }

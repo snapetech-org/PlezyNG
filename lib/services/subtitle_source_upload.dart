@@ -80,7 +80,7 @@ abstract final class SubtitleSourceUpload {
       timer.cancel(); client.close(force: true);
       try { await output?.close(); } catch (_) {}
       if (!complete) { try { await target?.delete(); } catch (_) {} }
-      await source.close();
+      try { await source.close(); } catch (_) {}
     }
   }
 }

@@ -122,15 +122,17 @@ class SubtitleOverlayTrack {
   }
 
 
-  List<SubtitleCue> at(int positionMs) {
-    final time = positionMs - delayMs;
+  List<SubtitleCue> at(int positionMs) => between(positionMs, positionMs + 1, limit: 8);
+
+  List<SubtitleCue> between(int startMs, int endMs, {int limit = 12}) {
+    if (limit < 1 || limit > 64 || endMs <= startMs) return const [];
+    final from = startMs - delayMs, until = endMs - delayMs;
     final active = <SubtitleCue>[];
     void visit(int node, int lo, int hi) {
-      if (active.length >= 8 || lo >= hi || cues[lo].startMs > time || (_ends[node] ?? 0) <= time) return;
+      if (active.length >= limit || lo >= hi || cues[lo].startMs >= until || (_ends[node] ?? 0) <= from) return;
       if (hi - lo == 1) { active.add(cues[lo]); return; }
       final mid = (lo + hi) ~/ 2;
-      visit(node * 2, lo, mid);
-      visit(node * 2 + 1, mid, hi);
+      visit(node * 2, lo, mid); visit(node * 2 + 1, mid, hi);
     }
     visit(1, 0, cues.length);
     return active;

@@ -122,8 +122,7 @@ class SubtitleHandoffService {
             'id': i, 'title': _tracks[i].title, 'language': _tracks[i].language,
             'active': [for (final cue in _tracks[i].at(position)) SubtitleOverlayTrack.plain(cue.text)],
             // Read-only local context; no future dialogue is exposed in state.
-            'recent': [for (final cue in _tracks[i].cues.where((c) => c.startMs + _tracks[i].delayMs <= position &&
-              c.endMs + _tracks[i].delayMs >= position - 30000).take(12))
+            'recent': [for (final cue in _tracks[i].between(position - 30000, position + 1))
               {'timeMs': cue.startMs + _tracks[i].delayMs, 'text': SubtitleOverlayTrack.plain(cue.text)}],
           }]}));
       } else if (endpoint.isEmpty) {

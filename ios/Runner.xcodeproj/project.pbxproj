@@ -739,10 +739,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 28ABDA890783B15438AA8137 /* Pods-RunnerTests.debug.xcconfig */;
 			buildSettings = {
-				ARCHS[sdk=iphonesimulator*] = "$(ARCHS_STANDARD)";
+				"ARCHS[sdk=iphonesimulator*]" = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				EXCLUDED_ARCHS[sdk=iphonesimulator*] = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/../native/games/steam", "$(SRCROOT)/../.dart_tool/games/steam/ihslib/include", "$(SRCROOT)/../.dart_tool/games/steam/opus/include", "$(SRCROOT)/../.dart_tool/games/steam/pyrowave/metal");
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -763,10 +763,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3A9EF9720208222F20B1495D /* Pods-RunnerTests.release.xcconfig */;
 			buildSettings = {
-				ARCHS[sdk=iphonesimulator*] = "$(ARCHS_STANDARD)";
+				"ARCHS[sdk=iphonesimulator*]" = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				EXCLUDED_ARCHS[sdk=iphonesimulator*] = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/../native/games/steam", "$(SRCROOT)/../.dart_tool/games/steam/ihslib/include", "$(SRCROOT)/../.dart_tool/games/steam/opus/include", "$(SRCROOT)/../.dart_tool/games/steam/pyrowave/metal");
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -785,10 +785,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 792502911151E64A2B752567 /* Pods-RunnerTests.profile.xcconfig */;
 			buildSettings = {
-				ARCHS[sdk=iphonesimulator*] = "$(ARCHS_STANDARD)";
+				"ARCHS[sdk=iphonesimulator*]" = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				EXCLUDED_ARCHS[sdk=iphonesimulator*] = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				HEADER_SEARCH_PATHS = ("$(inherited)", "$(SRCROOT)/../native/games/steam", "$(SRCROOT)/../.dart_tool/games/steam/ihslib/include", "$(SRCROOT)/../.dart_tool/games/steam/opus/include", "$(SRCROOT)/../.dart_tool/games/steam/pyrowave/metal");
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;

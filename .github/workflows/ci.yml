@@ -601,6 +601,10 @@ jobs:
           test -f "$PODFILE_LOCK"
           shasum -a 256 "$PODFILE_LOCK" > "$RUNNER_TEMP/plezy-podfile-lock.sha256"
 
+      - name: Verify iOS Xcode project syntax
+        if: matrix.platform == 'iOS'
+        run: plutil -lint ios/Runner.xcodeproj/project.pbxproj
+
       - name: Prepare iOS Flutter build settings
         if: matrix.platform == 'iOS'
         run: flutter build ios --config-only --simulator --debug --no-pub

@@ -514,8 +514,9 @@ def require_pcm_receipts(platforms):
         evidence = value.get("capabilities", {})
         binaries = evidence.get("binaries", [])
         hashes = evidence.get("binarySha256", {})
+        architectures = evidence.get("binaryArchitectures", {})
         if (evidence.get("orderedSubtitlePcmAbi") != 1 or
-                evidence.get("inspectionSchema") != 2 or
+                evidence.get("inspectionSchema") != 3 or
                 evidence.get("requiredSymbols") != ["mpv_plezy_audio_tap_version", "mpv_plezy_audio_tap_enable",
                     "mpv_plezy_audio_tap_read", "mpv_plezy_audio_tap_read_next"] or
                 evidence.get("symbol") != "mpv_plezy_audio_tap_read_next" or
@@ -525,7 +526,11 @@ def require_pcm_receipts(platforms):
                 len(set(binaries)) != len(binaries) or
                 not isinstance(hashes, dict) or set(hashes) != set(binaries) or
                 any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value) for value in hashes.values()) or
-                count is not None and len(binaries) != count):
+                count is not None and len(binaries) != count or
+                not isinstance(architectures, dict) or set(architectures) != set(binaries) or
+                any(not isinstance(value, list) or not value or
+                    any(arch not in ('i386', 'armv7', 'arm64', 'arm64e', 'x86_64') for arch in value) or
+                    len(value) != len(set(value)) for value in architectures.values())):
             errors.append(f"{label}: missing or mismatched packaged ordered-PCM ABI receipt")
         return binaries if isinstance(binaries, list) else []
     for group, (library, variants) in expected.items():
@@ -534,17 +539,45 @@ def require_pcm_receipts(platforms):
             binaries = receipt(entry, group, 4)
             if {name.split('/')[1] for name in binaries if isinstance(name, str) and name.startswith('jni/') and len(name.split('/')) == 3} != variants:
                 errors.append("android: the ordered-PCM AAR must include all four ABI slices")
+            actual = entry.get('capabilities', {}).get('binaryArchitectures', {})
+            machines = {'arm64-v8a': 'arm64', 'armeabi-v7a': 'armv7', 'x86': 'i386', 'x86_64': 'x86_64'}
+            if set(binaries) != {f'jni/{abi}/libmpv.so' for abi in machines} or any(
+                    actual.get(f'jni/{abi}/libmpv.so') != [machine] for abi, machine in machines.items()):
+                errors.append('android: the packaged machines do not match the ABI directories')
         else:
             prebuilt = entry.get("prebuilt", {})
             if set(prebuilt) != variants:
                 errors.append(f"{group}: incomplete ordered-PCM platform variants")
             for variant, value in prebuilt.items():
                 receipt(value, f"{group}/{variant}", 1)
+                actual = value.get('capabilities', {}).get('binaryArchitectures', {})
+                machine = 'arm64' if variant == 'aarch64' else 'x86_64'
+                if not isinstance(actual, dict) or any(archs != [machine] for archs in actual.values()):
+                    errors.append(f'{group}/{variant}: packaged machine differs from the platform label')
     frameworks = platforms.get("apple", {}).get("libraries", {}).get("libmpv", {}).get("frameworks", {})
-    if not frameworks:
-        errors.append("apple: missing packaged libmpv frameworks")
+    if set(frameworks) != {'Libmpv'}:
+        errors.append("apple: expected the complete packaged Libmpv XCFramework")
     for name, value in frameworks.items():
-        receipt(value, f"apple/{name}")
+        binaries = receipt(value, f"apple/{name}")
+        evidence = value.get('capabilities', {})
+        slices, actual = evidence.get('appleSlices'), evidence.get('binaryArchitectures', {})
+        if not isinstance(slices, list) or not slices or len(slices) > 32:
+            errors.append('apple: missing packaged platform/architecture coverage')
+            continue
+        coverage, covered = set(), set()
+        for row in slices:
+            if (not isinstance(row, dict) or row.get('binary') not in actual or
+                    row['binary'] in covered or row.get('architectures') != actual[row['binary']] or
+                    not isinstance(row.get('platform'), str) or not isinstance(row.get('variant'), str)):
+                errors.append('apple: inconsistent packaged slice receipt')
+                continue
+            covered.add(row['binary'])
+            coverage.update((row['platform'], row['variant'], arch) for arch in row['architectures'])
+        required = {('ios', '', 'arm64'), ('ios', 'simulator', 'arm64'), ('ios', 'simulator', 'x86_64'),
+            ('ios', 'maccatalyst', 'arm64'), ('ios', 'maccatalyst', 'x86_64'), ('macos', '', 'arm64'), ('macos', '', 'x86_64'),
+            ('tvos', '', 'arm64'), ('tvos', '', 'arm64e'), ('tvos', 'simulator', 'arm64'), ('tvos', 'simulator', 'x86_64')}
+        if covered != set(binaries) or not required <= coverage:
+            errors.append('apple: the XCFramework lacks required device, simulator, Catalyst or macOS architectures')
 
 
 def build_lock() -> dict | None:

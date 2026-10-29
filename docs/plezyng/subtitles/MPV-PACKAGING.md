@@ -45,3 +45,12 @@ default symbol versions are accepted. Promotion and immutable-reuse checks rejec
 older one-symbol receipts. Inspector changes produce new content keys, so old
 archives cannot be silently relabelled. These are static package requirements;
 the ABI function has not been called and no artifact has been built here.
+
+Inspection schema 3 additionally reads ELF/PE machine headers and Apple's lipo
+architecture inventory. Android ABI directories and desktop variant names must
+match those machines. Apple XCFramework `AvailableLibraries` declarations must
+match every inspected binary and include iOS device/simulator, tvOS
+device/simulator, macOS and Mac Catalyst architectures (including the build's
+tvOS arm64e slice). Missing simulator/device slices cannot pass merely because
+the remaining slices export the ABI. Consumer promotion requires schema 3;
+older receipt-bearing artifacts are not silently promoted.

@@ -1243,7 +1243,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     }
   }
 
-  Future<SubtitleRevision?> _importSubtitleRevisionJson(SubtitleRevisionIdentity identity) async {
+  Future<List<SubtitleRevision>?> _importSubtitleRevisionJson(SubtitleRevisionIdentity identity) async {
     final picked = await FilePickerService.instance.pickFiles(
       type: FileType.custom,
       allowedExtensions: const ['json'],
@@ -1253,8 +1253,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final file = picked.files.first;
     if (p.extension(file.name).toLowerCase() != '.json' ||
         file.size <= 0 ||
-        file.size > SubtitleRevisionService.maximumRevisionBytes) {
-      throw const FormatException('Choose a subtitle revision JSON file no larger than 8 MiB.');
+        file.size > SubtitleRevisionService.maximumHistoryBundleBytes) {
+      throw const FormatException('Choose a subtitle history JSON file no larger than 32 MiB.');
     }
     Stream<List<int>>? source = file.readStream;
     if (source == null && file.path != null) {
@@ -1274,29 +1274,95 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     var received = 0;
     await for (final chunk in source) {
       received += chunk.length;
-      if (received > SubtitleRevisionService.maximumRevisionBytes) {
-        throw const FormatException('Subtitle revision JSON exceeds the 8 MiB import limit.');
+      if (received > SubtitleRevisionService.maximumHistoryBundleBytes) {
+        throw const FormatException('Subtitle history JSON exceeds the 32 MiB import limit.');
       }
       output.add(chunk);
     }
     if (received != file.size) {
       throw const FormatException('Subtitle revision JSON changed or was truncated while it was read.');
     }
-    if (received <= 0 || received > SubtitleRevisionService.maximumRevisionBytes) {
-      throw const FormatException('Subtitle revision JSON exceeds the 8 MiB import limit.');
+    if (received <= 0 || received > SubtitleRevisionService.maximumHistoryBundleBytes) {
+      throw const FormatException('Subtitle history JSON exceeds the 32 MiB import limit.');
     }
     final bytes = output.takeBytes();
     final decoded = jsonDecode(utf8.decode(bytes, allowMalformed: false));
-    final imported = SubtitleRevision.fromJson(_normalizeSubtitleRevisionImport(decoded));
-    final operation = 'Imported: ${imported.operation.runes.take(110).map(String.fromCharCode).join()}';
-    return SubtitleRevisionService.saveRevision(
-      identity: identity,
-      operation: operation,
-      languageCode: imported.languageCode,
-      cues: imported.cues,
-      wordTimings: imported.wordTimings,
-    );
+    final rawRevisions = switch (decoded) {
+      Map<String, dynamic> value when value['schema'] == 'plezyng.subtitle-history.v1' => value['revisions'],
+      _ => <Object?>[_normalizeSubtitleRevisionImport(decoded)],
+    };
+    if (rawRevisions is! List ||
+        rawRevisions.isEmpty ||
+        rawRevisions.length > SubtitleRevisionService.maximumRevisionsPerItem) {
+      throw const FormatException('Subtitle history JSON must contain between 1 and 12 valid revisions.');
+    }
+    final importedRevisions = rawRevisions
+        .map((record) => SubtitleRevision.fromJson(_normalizeSubtitleRevisionImport(record)))
+        .toList(growable: false);
+    if (importedRevisions.map((revision) => revision.id).toSet().length != importedRevisions.length) {
+      throw const FormatException('Subtitle history JSON contains duplicate revision records.');
+    }
+    final saved = <SubtitleRevision>[];
+    for (final imported in importedRevisions.reversed) {
+      saved.add(
+        await SubtitleRevisionService.saveRevision(
+          identity: identity,
+          operation: _importedSubtitleOperation(imported.operation),
+          languageCode: imported.languageCode,
+          cues: imported.cues,
+          wordTimings: imported.wordTimings,
+        ),
+      );
+    }
+    return saved.reversed.toList(growable: false);
   }
+
+  Future<void> _exportSubtitleHistoryJson(SubtitleRevisionIdentity identity) async {
+    final revisions = await SubtitleRevisionService.loadRevisions(identity);
+    if (revisions.isEmpty) {
+      if (mounted) setState(() => _revisionStatus = 'There is no saved subtitle history to export for this item.');
+      return;
+    }
+    final bytes = Uint8List.fromList(
+      utf8.encode(
+        const JsonEncoder.withIndent('  ').convert({
+          'schema': 'plezyng.subtitle-history.v1',
+          'generatedBy': 'PlezyNG',
+          'exportedAt': DateTime.now().toUtc().toIso8601String(),
+          'revisions': revisions.map((revision) => revision.toJson()).toList(growable: false),
+        }),
+      ),
+    );
+    if (bytes.length > SubtitleRevisionService.maximumHistoryBundleBytes) {
+      throw const FormatException('This subtitle history bundle exceeds the 32 MiB export limit.');
+    }
+    final result = await FilePickerService.instance.saveFile(
+      dialogTitle: 'Export subtitle revision history for another device',
+      fileName: 'PlezyNG_subtitle_history_${DateTime.now().microsecondsSinceEpoch}.json',
+      bytes: bytes,
+      type: FileType.custom,
+      allowedExtensions: const ['json'],
+    );
+    if (mounted && result != null) {
+      setState(() => _revisionStatus = 'Exported ${revisions.length} subtitle revisions for transfer to another device.');
+    }
+  }
+
+  Future<bool> _confirmSubtitleHistoryImport() async =>
+      await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Import subtitle history?'),
+          content: const Text(
+            'Imported revisions are added to this item on this device. The item keeps at most 12 revisions and 24 MiB, so its oldest entries may be removed.',
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Continue')),
+          ],
+        ),
+      ) ??
+      false;
 
   Object? _normalizeSubtitleRevisionImport(Object? value) {
     if (value is! Map<String, dynamic> || value['schema'] != 'plezyng.subtitle-cues.v3') return value;
@@ -1325,6 +1391,20 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     };
   }
 
+  String _importedSubtitleOperation(String value) {
+    const prefix = 'Imported: ';
+    final source = value.replaceFirst(RegExp(r'^(?:Imported: )+'), '');
+    final suffix = StringBuffer();
+    var codeUnits = 0;
+    for (final rune in source.runes) {
+      final runeLength = rune > 0xffff ? 2 : 1;
+      if (codeUnits + runeLength > 120 - prefix.length) break;
+      suffix.writeCharCode(rune);
+      codeUnits += runeLength;
+    }
+    return '$prefix${suffix.toString()}';
+  }
+
   String _formatRevisionDate(DateTime value) {
     final local = value.toLocal();
     String pad(int part) => part.toString().padLeft(2, '0');
@@ -1347,7 +1427,19 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           builder: (dialogContext, setDialogState) {
             final height = (MediaQuery.sizeOf(dialogContext).height - 220).clamp(240.0, 460.0).toDouble();
             return AlertDialog(
-              title: const Text('Subtitle revision history'),
+              title: Row(
+                children: [
+                  const Expanded(child: Text('Subtitle revision history')),
+                  IconButton(
+                    tooltip: 'Export history bundle',
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                      unawaited(_run(() => _exportSubtitleHistoryJson(identity)));
+                    },
+                    icon: const AppIcon(Symbols.file_download_rounded),
+                  ),
+                ],
+              ),
               content: SizedBox(
                 width: 620,
                 height: height,
@@ -1491,10 +1583,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 TextButton.icon(
                   onPressed: () async {
                     try {
+                      if (!await _confirmSubtitleHistoryImport() || !mounted || !dialogContext.mounted) return;
                       final imported = await _importSubtitleRevisionJson(identity);
                       if (imported != null && mounted && dialogContext.mounted) {
-                        setDialogState(() => revisions = [imported, ...revisions]);
-                        setState(() => _revisionStatus = 'Imported revision with stable cue IDs and word timings.');
+                        final refreshed = await SubtitleRevisionService.loadRevisions(identity);
+                        if (!mounted || !dialogContext.mounted) return;
+                        setDialogState(() => revisions = refreshed);
+                        setState(
+                          () => _revisionStatus =
+                              'Imported ${imported.length} subtitle revision${imported.length == 1 ? '' : 's'} into this item history.',
+                        );
                       }
                     } catch (error) {
                       if (mounted) setState(() => _error = _readableError(error));

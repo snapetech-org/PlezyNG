@@ -408,6 +408,7 @@ abstract final class SubtitleRevisionService {
   static const int maximumRevisionsPerItem = 12;
   static const int maximumRevisionBytes = 8 * 1024 * 1024;
   static const int maximumHistoryBytesPerItem = 24 * 1024 * 1024;
+  static const int maximumHistoryBundleBytes = 32 * 1024 * 1024;
   static const int maximumTotalRevisionFiles = 1000;
   static const int maximumTotalRevisionBytes = 256 * 1024 * 1024;
   static const int maximumTotalDraftFiles = 100;
@@ -427,6 +428,9 @@ abstract final class SubtitleRevisionService {
     final digest = sha256.convert(utf8.encode(normalizedIdentifier)).toString();
     return '$normalizedKind ${digest.substring(0, 8)}';
   }
+
+  static bool _isCapturedPlaybackTranscript(String operation) =>
+      operation.trim().replaceFirst(RegExp(r'^(?:Imported: )+'), '') == 'Captured playback transcript';
 
   /// Also binds optional original-language cues used for side-by-side review.
   static String reviewFingerprint(List<SubtitleCue> cues, {List<SubtitleCue>? sourceCues}) => sha256
@@ -572,7 +576,7 @@ abstract final class SubtitleRevisionService {
         await _writeItemMetadata(
           directory,
           identity,
-          transcript: operation.trim() == 'Captured playback transcript' && cues.length >= 3 ? revision : null,
+          transcript: _isCapturedPlaybackTranscript(operation) && cues.length >= 3 ? revision : null,
         );
       } finally {
         if (await temporary.exists()) await temporary.delete();
@@ -810,7 +814,7 @@ abstract final class SubtitleRevisionService {
     try {
       final revision = SubtitleRevision.fromJson(jsonDecode(await file.readAsString()));
       if (revision.id != transcript.transcriptId ||
-          revision.operation != 'Captured playback transcript' ||
+          !_isCapturedPlaybackTranscript(revision.operation) ||
           revision.cues.length < 3) {
         return null;
       }
@@ -851,7 +855,7 @@ abstract final class SubtitleRevisionService {
         if (revision.id != p.basenameWithoutExtension(file.path)) {
           throw const FormatException('Revision filename does not match its record.');
         }
-        if (revision.operation == 'Captured playback transcript' && revision.cues.length >= 3) {
+        if (_isCapturedPlaybackTranscript(revision.operation) && revision.cues.length >= 3) {
           pointers.add(_TranscriptPointer.fromRevision(revision));
           if (pointers.length >= maximumRevisionsPerItem) break;
         }

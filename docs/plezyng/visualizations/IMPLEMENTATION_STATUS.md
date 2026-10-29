@@ -2,7 +2,7 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `d0150a5c1c7d75324f53cad3fd0f0dfbaaed1806`; the exact dependency
+pins MilkRust `5a75ec77ed8d6b44793c2c2bc0bcd31883a90736`; the exact dependency
 contract is in `native/visualizer/sources.lock.json`. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
@@ -89,7 +89,7 @@ qualification, rights decisions and production custody/publication are also open
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `d0150a5c1c7d75324f53cad3fd0f0dfbaaed1806`:
+- The app pins MilkRust `5a75ec77ed8d6b44793c2c2bc0bcd31883a90736`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -117,6 +117,12 @@ qualification, rights decisions and production custody/publication are also open
   target builds and adds decoder/lifetime regression programs with sanitizers.
   No build, tests, CI, archive generation, capture or device run was performed.
   Static diff/JSON/Python-source checks do not replace these execution gates.
+
+- The engine pin now includes bounded HLSL function-macro stringification.
+  Token-boundary whitespace is retained, quotes/backslashes are escaped, and
+  expansion obeys the existing token/depth/byte budgets. The engine's source
+  ledger no longer lists stringification as an open compiler item. No native,
+  Emscripten, shader-compiler or pixel gate ran for this update.
 
 - Preset import now decodes UTF-8, BOM-marked UTF-16LE/BE and Windows-1252 before
   checking shader includes. Installed archive bytes stay unchanged. Malformed
@@ -264,8 +270,8 @@ and unknown in compiled/rendered behavior.
 
 This does **not** close the original universal-compatibility contract. Known code
 limits still include integer/Boolean and one-row/one-column matrices, arrays of
-arrays, macro stringification/resource-bearing structs and the restricted WGSL
-path. Exact MD3 saved masks (including versioned progress rules), non-default
+arrays, resource-bearing structs and the restricted WGSL path. Exact MD3 saved
+masks (including versioned progress rules), non-default
 SpriteRot controls, extended sprite alpha and layer/burn interactions remain
 reference-dependent. The checked official source still does not contain the
 saved-pattern implementation. Physical hardware alone cannot resolve that

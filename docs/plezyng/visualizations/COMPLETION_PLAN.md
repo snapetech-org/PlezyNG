@@ -347,7 +347,7 @@ completion contract satisfied.
 
 ## 2026-10-29 declarations, aggregate semantics and classic sprite checkpoint
 
-The app now selects MilkRust `d0150a5c1c7d75324f53cad3fd0f0dfbaaed1806`. Its compiler adds scoped
+The app now selects MilkRust `5a75ec77ed8d6b44793c2c2bc0bcd31883a90736`. Its compiler adds scoped
 aliases/numeric templates, flattened legacy aggregate initialization and casts,
 typed constant selections, GLSL name isolation and readonly destination checks.
 Classic sprite alpha/key/byte-color handling, persistent unwrapped rotation and
@@ -360,3 +360,14 @@ in the ledger. These are implementation/reference items, separate from unrun
 build/device checks, pack qualification, actual PCM artifact promotion and
 owner-held signing. No reference formula, qualifying image or artifact digest
 was substituted with an approximation or invented result.
+
+
+## 2026-10-29 macro stringification checkpoint
+
+The app pin now includes bounded function-like HLSL macro stringification,
+including token whitespace preservation, quote/backslash escaping and output
+budgets. This removes one known compiler-profile gap without changing the
+source-only validation boundary. Integer/Boolean and one-row/one-column
+matrices, arrays of arrays, resource-bearing structs, exact `.milk2` masks and
+remaining sprite semantics stay open. No compiler, GPU, build or device gate
+ran for this checkpoint.

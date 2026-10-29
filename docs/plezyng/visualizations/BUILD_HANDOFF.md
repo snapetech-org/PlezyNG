@@ -104,6 +104,13 @@ fragments through the existing include directory. Their license/provenance
 remains the vendored MIT notice plus local patch inventory.
 
 
+The current MilkRust pin `5a75ec77ed8d6b44793c2c2bc0bcd31883a90736` also
+contains bounded function-macro stringification with preserved token-boundary
+whitespace and escaped string tokens. Preserve this pin when building the native
+and Emscripten compiler. Its source was not compiled or executed during this
+source-only continuation.
+
+
 The declaration/aggregate continuation additionally wires
 `declarations.hlsl`, `identifiers.hlsl` and `aggregates.hlsl` into the same
 native/browser compiler controls. Their pixel assertions cover inferred arrays,

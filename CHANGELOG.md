@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Add optional Steam Families management with separate temporary QR authorization, reviewed membership/invitation changes, preferred game copies, live permission rechecks, single-use confirmation and profile/session retirement. Keep older servers on the confirmed Steam destination; live service qualification remains required.
+- Add opt-in direct Vulkan Pyrowave output on Android, Wayland and Windows, plus native Apple Metal HDR output. Gate HDR10 on actual decoder/surface/display capabilities, retain conventional-codec fallback and report observed chroma; SDK and physical display qualification remain required.
+- Add paired encrypted Steam internet traversal with WSS relay fallback, and separately authorized AppID-scoped Cloud file operations. Relay deployment and Valve-approved Cloud configuration are required before activation.
+
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.
 
 - Repair combined application compilation across visualizer and subtitle archive extraction, IPTV, catalog search, motion and player settings. Preserve bounded archive writes, stale-operation guards and subtitle timing, use shared icon styling, and explicitly track untranslated messages as English fallbacks.

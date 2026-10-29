@@ -2,7 +2,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
-/// Aperture for a native Steam video plane below the Linux Flutter window.
+/// Aperture for a native Steam video plane below the platform's Flutter UI.
 /// Geometry and visibility follow the rendered surface, including its retained
 /// Offstage owner. Input and accessibility remain in the ordinary Flutter tree.
 class SteamNativePlane extends LeafRenderObjectWidget {

@@ -2,7 +2,8 @@
 
 Current source checkpoint is [PR #81](https://github.com/snapetech-org/PlezyNG/pull/81):
 [Vulkan/HDR10](VULKAN_RECEIVER.md), [Cloud files](STEAM_CLOUD.md) and
-[paired internet streaming](STEAM_INTERNET.md). Its three checkpoint sections
+[paired internet streaming](STEAM_INTERNET.md), [Windows/Apple HDR](DESKTOP_HDR.md)
+and [Families management](STEAM_FAMILIES.md). Its checkpoint sections
 at the end record local evidence. Older platform milestones below are historical;
 they do not establish hardware HDR, current SDK builds or deployed service support.
 
@@ -504,3 +505,33 @@ local results and unknown in untested device/service/network behavior.
 - Seven Steam source-preparation and Apple archive-script tests pass.
 - Apple tests now decode HDR 4:2:0/4:4:4 into RGBA16Half, check actual half-float output and reject unannounced color changes. They require an Apple SDK and compatible GPU; no result is claimed here.
 - MSVC x64/ARM64, Apple SDK builds, Android NDK builds and physical HDR displays remain required. See [DESKTOP_HDR.md](DESKTOP_HDR.md).
+
+## Families and HDR follow-through — 2026-10-29
+
+- The full server `go test -race ./...` passes, including the new Families
+  policy, QR identity, one-use review, credential/redirect, account isolation,
+  shutdown cancellation and revocation cases.
+- Seven focused Flutter tests pass: four Families client cases, the explicit
+  review/acknowledgement/uncertain-result/retirement flow in normal and narrow
+  2x-text RTL layouts, and the existing Steam activity panel large-text case.
+  Review/editor/error transitions reset the scroll position; the test asserts
+  the actual controls are hit-testable before interacting.
+- Linux native rebuild and strict adapter/Wayland syntax checks pass. The
+  native suite reports 42 passes and one explicit hardware-dependent Vulkan
+  skip, with no failures.
+- The Windows MinGW Vulkan/Pyrowave runtime and five native executables rebuild
+  and link after correcting native Win32/Vulkan include ordering. These are
+  cross-build results, not Windows execution or MSVC validation.
+- Strict Windows adapter syntax checking and the standard Dart analyzer pass
+  with no diagnostics. Localization and strict normalization/usage checks pass:
+  37 locales, 4,309 messages, 20,556 explicit English fallback entries and no
+  unused translation keys. The fallback entries are not reviewed translations.
+- Apple HDR presentation failure now cancels the Pyrowave session so the
+  existing conventional-codec reconnect path can recover. Windows/Linux
+  diagnostics report chroma only after an actual GPU-presented frame.
+
+These tests use controlled Steam API responses and do not claim successful
+Families changes on live accounts. Current private-JIT SDK builds, real HDR
+output, relay deployment and Valve-approved Cloud scopes remain external gates.
+See [STEAM_FAMILIES.md](STEAM_FAMILIES.md) for the broader temporary-session trust
+model, explicit limits and live qualification cases.

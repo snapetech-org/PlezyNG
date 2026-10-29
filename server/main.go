@@ -2725,6 +2725,9 @@ func main() {
 	if err := httpSrv.Shutdown(ctx); err != nil {
 		log.Printf("http shutdown: %v", err)
 	}
+	familyShutdown, familyCancel := context.WithTimeout(context.Background(), 3*time.Second)
+	srv.oauth.closeSteamFamilies(familyShutdown)
+	familyCancel()
 	if err := srv.snap.flushAndStop(snapshotFlushTimeout); err != nil {
 		log.Printf("snapshot flush: %v", err)
 	}

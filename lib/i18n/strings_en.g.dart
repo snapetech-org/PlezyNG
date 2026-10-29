@@ -11605,6 +11605,93 @@ class Translations$games$en {
 
 	/// en: 'Encrypted relay · additional latency possible'
 	String get internetRelay => 'Encrypted relay · additional latency possible';
+
+	/// en: 'Authorize Steam Families'
+	String get familyAuthorize => 'Authorize Steam Families';
+
+	/// en: 'Approve a separate, temporary Steam session to manage your family here. Steam grants this session broader account access; PlezyNG uses it only for the family actions you review. Authorization is kept in memory for up to 10 minutes and retired when you close this dialog. No Steam password is requested.'
+	String get familyAuthorizeHelp => 'Approve a separate, temporary Steam session to manage your family here. Steam grants this session broader account access; PlezyNG uses it only for the family actions you review. Authorization is kept in memory for up to 10 minutes and retired when you close this dialog. No Steam password is requested.';
+
+	/// en: 'Scan this code with the Steam mobile app and approve only the PlezyNG request you just started. Use the same Steam account shown below. Never approve a code sent by someone else.'
+	String get familyScanHelp => 'Scan this code with the Steam mobile app and approve only the PlezyNG request you just started. Use the same Steam account shown below. Never approve a code sent by someone else.';
+
+	/// en: 'The session expired, Steam refused the request, or its outcome could not be verified. Refresh before reviewing another change. A submitted change is never retried automatically.'
+	String get familyRefreshRequired => 'The session expired, Steam refused the request, or its outcome could not be verified. Refresh before reviewing another change. A submitted change is never retried automatically.';
+
+	/// en: 'Review the family, account and role below. This can change access to shared games and may start Steam cooldowns. Steam may require another confirmation. A review expires after one minute.'
+	String get familyReviewHelp => 'Review the family, account and role below. This can change access to shared games and may start Steam cooldowns. Steam may require another confirmation. A review expires after one minute.';
+
+	/// en: 'I have checked the accounts and understand this change.'
+	String get familyAcknowledge => 'I have checked the accounts and understand this change.';
+
+	/// en: 'Complete the required confirmation in Steam, then refresh here.'
+	String get familyNeedsSteam => 'Complete the required confirmation in Steam, then refresh here.';
+
+	/// en: 'Change submitted to Steam. The current family is shown below.'
+	String get familySubmitted => 'Change submitted to Steam. The current family is shown below.';
+
+	/// en: 'Create family'
+	String get familyCreate => 'Create family';
+
+	/// en: 'Rename family'
+	String get familyRename => 'Rename family';
+
+	/// en: 'Invite member'
+	String get familyInvite => 'Invite member';
+
+	/// en: 'Cancel invitation'
+	String get familyCancelInvite => 'Cancel invitation';
+
+	/// en: 'Resend invitation'
+	String get familyResendInvite => 'Resend invitation';
+
+	/// en: 'Remove member'
+	String get familyRemove => 'Remove member';
+
+	/// en: 'Leave family'
+	String get familyLeave => 'Leave family';
+
+	/// en: 'Delete empty family'
+	String get familyDelete => 'Delete empty family';
+
+	/// en: 'Restore family'
+	String get familyRestore => 'Restore family';
+
+	/// en: 'Join family'
+	String get familyJoin => 'Join family';
+
+	/// en: 'Prefer this member’s copy'
+	String get familyPreferredLender => 'Prefer this member’s copy';
+
+	/// en: 'Family name'
+	String get familyName => 'Family name';
+
+	/// en: 'SteamID64'
+	String get familySteamId => 'SteamID64';
+
+	/// en: 'Family role'
+	String get familyRole => 'Family role';
+
+	/// en: 'Adult'
+	String get familyAdult => 'Adult';
+
+	/// en: 'Child'
+	String get familyChild => 'Child';
+
+	/// en: 'Review change'
+	String get familyReview => 'Review change';
+
+	/// en: 'You are not in a Steam family.'
+	String get familyNoFamily => 'You are not in a Steam family.';
+
+	/// en: 'Steam cooldown: up to ${days} days remaining.'
+	String familyCooldown({required Object days}) => 'Steam cooldown: up to ${days} days remaining.';
+
+	/// en: 'Invitations for you'
+	String get familyInvitations => 'Invitations for you';
+
+	/// en: 'Pending invitations'
+	String get familyPendingInvites => 'Pending invitations';
 }
 
 // Path: deepLinks
@@ -18528,6 +18615,35 @@ extension on Translations {
 			'games.internetStreamingHelp' => 'Use paired Companion computers away from home. Link the same Steam account and enable this on both devices, keep the computer’s Companion Remote server running, and import its installed games once. Connections prefer direct access, then use an encrypted relay. This shares your network address with the paired device and relay operator and can use substantial data. Internet streams use a compatible codec; Pyrowave and HDR remain local.',
 			'games.internetDirect' => 'Direct encrypted connection',
 			'games.internetRelay' => 'Encrypted relay · additional latency possible',
+			'games.familyAuthorize' => 'Authorize Steam Families',
+			'games.familyAuthorizeHelp' => 'Approve a separate, temporary Steam session to manage your family here. Steam grants this session broader account access; PlezyNG uses it only for the family actions you review. Authorization is kept in memory for up to 10 minutes and retired when you close this dialog. No Steam password is requested.',
+			'games.familyScanHelp' => 'Scan this code with the Steam mobile app and approve only the PlezyNG request you just started. Use the same Steam account shown below. Never approve a code sent by someone else.',
+			'games.familyRefreshRequired' => 'The session expired, Steam refused the request, or its outcome could not be verified. Refresh before reviewing another change. A submitted change is never retried automatically.',
+			'games.familyReviewHelp' => 'Review the family, account and role below. This can change access to shared games and may start Steam cooldowns. Steam may require another confirmation. A review expires after one minute.',
+			'games.familyAcknowledge' => 'I have checked the accounts and understand this change.',
+			'games.familyNeedsSteam' => 'Complete the required confirmation in Steam, then refresh here.',
+			'games.familySubmitted' => 'Change submitted to Steam. The current family is shown below.',
+			'games.familyCreate' => 'Create family',
+			'games.familyRename' => 'Rename family',
+			'games.familyInvite' => 'Invite member',
+			'games.familyCancelInvite' => 'Cancel invitation',
+			'games.familyResendInvite' => 'Resend invitation',
+			'games.familyRemove' => 'Remove member',
+			'games.familyLeave' => 'Leave family',
+			'games.familyDelete' => 'Delete empty family',
+			'games.familyRestore' => 'Restore family',
+			'games.familyJoin' => 'Join family',
+			'games.familyPreferredLender' => 'Prefer this member’s copy',
+			'games.familyName' => 'Family name',
+			'games.familySteamId' => 'SteamID64',
+			'games.familyRole' => 'Family role',
+			'games.familyAdult' => 'Adult',
+			'games.familyChild' => 'Child',
+			'games.familyReview' => 'Review change',
+			'games.familyNoFamily' => 'You are not in a Steam family.',
+			'games.familyCooldown' => ({required Object days}) => 'Steam cooldown: up to ${days} days remaining.',
+			'games.familyInvitations' => 'Invitations for you',
+			'games.familyPendingInvites' => 'Pending invitations',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',

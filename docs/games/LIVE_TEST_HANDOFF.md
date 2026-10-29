@@ -7,35 +7,40 @@ Branch: `codex/steam-vulkan-cloud-relay-20261028`
 ## What this handoff covers
 
 PRs #54 and #71 have merged. This follow-up adds native Vulkan/HDR10 reception,
-scoped Cloud file actions and paired internet streaming. Build the exact PR #81
+scoped Cloud file actions, paired internet streaming, Windows/Apple HDR and
+reviewed Families management. Build the exact PR #81
 head; earlier PRs and historical test results are not substitutes.
 
 Test the implemented receivers and connected library described below. The
-expanded request is **not fully code complete**. Do not convert the missing
-implementations into hardware sign-off items, or label this a release candidate.
+requested Families and Windows/Apple HDR source paths are integrated. The
+broader Steam roadmap still contains unsupported or unimplemented facilities;
+do not label this a release candidate or treat source integration as deployment.
 [VALIDATION.md](VALIDATION.md) records actual checks; historical results do not
 qualify a different commit. Record `git rev-parse HEAD` with every result.
 
 | Area | Implemented behavior to test | Still missing |
 | --- | --- | --- |
-| Windows | Media Foundation H.264/HEVC SDR, retained texture, XAudio2, Credential Manager and input | Current-head MSVC x64/ARM64 builds and device qualification; Vulkan HDR/Pyrowave output qualification |
+| Windows | Media Foundation H.264/HEVC SDR, retained texture, XAudio2, Credential Manager and input; opt-in Win32 Vulkan direct Pyrowave/HDR plane | Current-head MSVC x64/ARM64 builds and device qualification; Vulkan HDR/Pyrowave output qualification |
 | Linux/SteamOS | GStreamer H.264/HEVC SDR; opt-in Wayland Vulkan direct GPU Pyrowave 4:2:0/4:4:4 and gated HDR10; libsecret, surround and input | Packaged app, compositor/GPU/HDR and host qualification; X11 keeps the compatible SDR path |
 | macOS/iOS/iPadOS/tvOS | VideoToolbox/Core Audio, Keychain, retained texture; opt-in Metal Pyrowave SDR/HDR 4:2:0/4:4:4 on supported GPUs/displays | Current-head Apple SDK builds and device qualification; native Metal HDR output qualification |
 | Android/Android TV/Fire TV | H.264/HEVC SurfaceView, retained pane/activity, Opus, controller seats; opt-in native Vulkan direct GPU Pyrowave 4:2:0/4:4:4 and gated HDR10 | Current-head Gradle/NDK/release builds, GPU/display/color and host qualification |
 | Connected library | Canonical AppID cards with independent routes from several computers, inventory permissions, favorites and preferred routes | Real-host inventory/availability and large-library qualification |
-| Steam account/host features | Public catalog/achievements/news, optional social context; permissioned host actions; scoped Cloud listing/download/replace/delete; Families destination | Valve-issued Cloud approval/configuration and live qualification; global Cloud settings and programmatic Families mutations |
+| Steam account/host features | Public catalog/achievements/news, optional social context; permissioned host actions; scoped Cloud listing/download/replace/delete; separately authorized and reviewed Families mutations | Valve-issued Cloud approval/configuration, live Families and Cloud qualification; global Cloud settings |
 | Internet streaming | Paired same-Steam-account WSS relay, encrypted IPv4 UDP hole punching, automatic relay fallback and route diagnostics | Operator deployment, current platform builds, real NAT/CGNAT/mobile and throughput qualification; Pyrowave/HDR stay LAN-only |
 
-HDR is advertised only by the qualified Vulkan decoder/surface capability path;
-Windows and Apple SDR receivers do not advertise it. A successful
+HDR is advertised only by an opted-in Vulkan or Metal decoder/native-plane path
+that passes its runtime display and format probes. Conventional SDR receivers
+do not advertise it. A successful
 decoder probe, a visible menu entry, or a browser/Steam URI submission is not
 evidence of HDR, an installed game, a completed host action, or a changed account.
 Cloud OAuth writes require a Valve-issued client grant scoped to the relevant
 AppIDs; see [Valve OAuth](https://partner.steamgames.com/doc/webapi_overview/OAuth)
 and [ICloudService](https://partner.steamgames.com/doc/webapi/ICloudService).
-No documented, authorized general Steam Families mutation contract has been
-established for this application. Do not collect Steam passwords/cookies or
-ship a publisher key to fill that gap.
+Families uses a separate explicit user QR session, never catalog/OpenID
+authority, a publisher key or an existing cookie. Its Steam client-service
+contract is not a general third-party Steamworks API guarantee. Review the
+trust model and live cases in [STEAM_FAMILIES.md](STEAM_FAMILIES.md) before
+enabling it; the feature defaults off.
 
 ## Obtain a build of the exact commit
 

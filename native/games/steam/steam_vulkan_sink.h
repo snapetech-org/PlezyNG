@@ -23,6 +23,7 @@ class VulkanSink final : public Sink {
   bool ready();
   bool supportsHdr10() const;
   bool hdr10Active() const;
+  int chromaFormat() const;
   bool video(int, int, int, const uint8_t*, size_t) override;
   bool frame(const uint8_t*, size_t, uint32_t, bool) override;
   bool audio(int channels, int rate) override;

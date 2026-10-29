@@ -728,6 +728,7 @@ void Session::method(const Call& call, Reply reply) {
     put("hidInFlight", m.reliability.hidInFlight);
     put("decoderKind", m.codec == 9 && gpuSink ? 4 : 2);
     put("hdr10", gpuSink && gpuSink->hdr10Active() ? 1 : 0);
+    put("chromaFormat", gpuSink && m.codec == 9 ? gpuSink->chromaFormat() : 0);
     reply->Success(Value(metrics));
     return;
   } else {

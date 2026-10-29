@@ -504,7 +504,11 @@ struct Session : std::enable_shared_from_this<Session> {
       });
     if (hdr) {
       bool shown = false;
-      if (!plane || !plane->present(buffer, shown)) return false;
+      if (!plane || !plane->present(buffer, shown)) {
+        displayLost = true;
+        if (auto r = source.lock()) r->cancel();
+        return false;
+      }
       hdrPresented = shown;
       complete(shown);
       return true;

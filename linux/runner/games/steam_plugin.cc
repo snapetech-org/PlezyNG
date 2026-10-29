@@ -721,6 +721,7 @@ void Session::method(FlMethodCall* call) {
     put(v, "hidInFlight", m.reliability.hidInFlight);
     put(v, "decoderKind", nativeActive ? 5 : 2);
     put(v, "hdr10", gpuSink && gpuSink->hdr10Active() ? 1 : 0);
+    put(v, "chromaFormat", gpuSink && m.codec == 9 ? gpuSink->chromaFormat() : 0);
     ok(call, v);
     return;
   } else {

@@ -126,9 +126,13 @@ advertise the optional capability; older adapters retain their direct LAN flow.
 AppID-scoped Cloud files. Catalog identity admits a request but does not grant
 save access. The app reviews replacement/deletion, checks stale-file fingerprints
 and requires a refresh after ambiguous outcomes. Server configuration, Valve
-approval and live response/storage qualification remain prerequisites. Families
-membership and global Cloud settings have no implemented mutation contract;
-the confirmed account destinations stay available.
+approval and live response/storage qualification remain prerequisites.
+[STEAM_FAMILIES.md](STEAM_FAMILIES.md) documents separately authorized family
+membership/invitation changes and preferred game copies, with temporary QR
+authority, single-use reviews and live permission checks. This optional Steam
+client-service adapter is disabled by default pending live service qualification.
+Global Cloud settings have no implemented mutation contract; confirmed Steam
+account destinations remain available.
 
 ## Mobile controls and session quality
 

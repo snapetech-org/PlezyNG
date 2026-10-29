@@ -7,7 +7,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../focus/focusable_button.dart';
 import '../../games/steam_game_activity.dart';
 import '../../games/steam_cloud_client.dart';
+import '../../games/steam_families_client.dart';
 import 'steam_cloud_dialog.dart';
+import 'steam_families_dialog.dart';
 import '../../i18n/presentation_formats.dart';
 import '../../i18n/strings.g.dart';
 import '../../services/credential_vault.dart';
@@ -41,6 +43,8 @@ class _SteamGameActivityPanelState extends State<SteamGameActivityPanel> {
   final _proxy = OAuthProxyClient();
   final _retired = Completer<void>();
   SteamCloudClient? _cloudClient;
+  SteamFamiliesClient? _familiesClient;
+  bool _familiesLoading = false;
   bool _cloudLoading = false;
   SteamGameActivity? _activity;
   bool _loading = false, _failed = false, _relink = false, _friends = false;
@@ -51,6 +55,7 @@ class _SteamGameActivityPanelState extends State<SteamGameActivityPanel> {
     _proxy.dispose();
     if (!_retired.isCompleted) _retired.complete();
     unawaited(_cloudClient?.retire());
+    unawaited(_familiesClient?.retire());
     super.dispose();
   }
 
@@ -129,6 +134,51 @@ class _SteamGameActivityPanelState extends State<SteamGameActivityPanel> {
       await client.retire();
       if (identical(_cloudClient, client)) _cloudClient = null;
       if (current) setState(() => _cloudLoading = false);
+    }
+  }
+
+  Future<void> _families() async {
+    if (!current || _familiesLoading) return;
+    final encrypted = widget.protectedCredential, id = widget.steamId;
+    if (encrypted == null || id == null) {
+      widget.onLink();
+      return;
+    }
+    setState(() => _familiesLoading = true);
+    SteamFamiliesClient? client;
+    try {
+      final catalog = await CredentialVault.reveal(encrypted);
+      if (!current) return;
+      if (catalog == null) {
+        widget.onLink();
+        return;
+      }
+      client = SteamFamiliesClient(catalog: catalog, steamId: id);
+      _familiesClient = client;
+      final available = await client.available();
+      if (!current) return;
+      if (!available) {
+        await _open(SteamDestination.families);
+        return;
+      }
+      if (!mounted) return;
+      final activeClient = client;
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => SteamFamiliesDialog(
+          client: activeClient,
+          appId: widget.appId,
+          isCurrent: () => current,
+          retired: _retired.future,
+        ),
+      );
+    } catch (_) {
+      if (mounted && current) showErrorSnackBar(context, t.games.unavailable);
+    } finally {
+      await client?.retire();
+      if (identical(_familiesClient, client)) _familiesClient = null;
+      if (current) setState(() => _familiesLoading = false);
     }
   }
 
@@ -244,6 +294,8 @@ class _SteamGameActivityPanelState extends State<SteamGameActivityPanel> {
         ],
         if (widget.steamId != null && widget.protectedCredential != null)
           _button(t.games.steamCloudFiles, _cloudLoading ? null : _cloud),
+        if (widget.steamId != null && widget.protectedCredential != null)
+          _button(t.games.steamFamilies, _familiesLoading ? null : _families),
         AppMenuButton<SteamDestination>(
           tooltip: t.games.openInSteam,
           adaptiveSheet: true,

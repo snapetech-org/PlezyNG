@@ -123,6 +123,7 @@ func (s *oauthSession) pkceVerifier() string {
 
 type oauthProxy struct {
 	steamCloud         *steamCloudState
+	steamFamilies      *steamFamiliesState
 	steamCatalogGrants map[[32]byte]*steamCatalogGrant
 	steamContextActive int
 	baseURL            string
@@ -195,6 +196,7 @@ func oauthConfigFromEnv(clientIPs clientIPResolver) (*oauthProxy, bool) {
 	proxy := newOAuthProxy(base, services, clientIPs)
 	proxy.steamWebAPIKey = strings.TrimSpace(os.Getenv("STEAM_WEB_API_KEY"))
 	proxy.configureSteamCloud()
+	proxy.configureSteamFamilies()
 	return proxy, true
 }
 
@@ -211,6 +213,7 @@ func registerOAuthRoutes(mux *http.ServeMux, p *oauthProxy) {
 	mux.HandleFunc("/auth/steam/cloud/capabilities", p.handleSteamCloudCapabilities)
 	mux.HandleFunc("/auth/steam/cloud/start", p.handleSteamCloudStart)
 	mux.HandleFunc("/auth/steam/cloud/files", p.handleSteamCloudFiles)
+	mux.HandleFunc("/auth/steam/families", p.handleSteamFamilies)
 	mux.HandleFunc("/auth/start", p.handleStart)
 	mux.HandleFunc("/auth/result", p.handleResult)
 	mux.HandleFunc("/auth/done", p.handleDone)
@@ -624,6 +627,7 @@ func (p *oauthProxy) cleanup() {
 	now := time.Now()
 	p.mu.Lock()
 	p.cleanupSteamCloudLocked(now)
+	p.cleanupSteamFamiliesLocked(now)
 	for _, sess := range p.browserStates {
 		if now.Sub(sess.createdAt) > oauthSessionTTL {
 			p.removeSessionLocked(sess)

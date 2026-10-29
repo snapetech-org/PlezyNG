@@ -22,6 +22,7 @@ struct VulkanSink::Impl {
   uint64_t epoch = 0;
   bool stopping = false, initialized = false, available = false;
   std::atomic<bool> pyro{false}, hdrSupported{false}, hdrActive{false};
+  std::atomic<int> chroma{0};
   std::thread worker;
   Impl(
       std::shared_ptr<Sink> f, GpuWindow window, bool hdr, Prepare p, Complete c, Selected s,
@@ -101,7 +102,10 @@ struct VulkanSink::Impl {
       if (valid && target.permitted) {
         result = renderer.present(frame.bytes.data(), frame.bytes.size(), target.width, target.height);
         valid = result != PyrowaveDecodeStatus::invalid;
-        if (result == PyrowaveDecodeStatus::frame) hdrActive = renderer.hdr10Active();
+        if (result == PyrowaveDecodeStatus::frame) {
+          hdrActive = renderer.hdr10Active();
+          chroma = info.chroma444 ? 2 : 1;
+        }
       }
       complete(frame.id, w, h, valid && result == PyrowaveDecodeStatus::frame, target.permitted);
       if (!valid) {
@@ -131,6 +135,7 @@ bool VulkanSink::ready() {
 }
 bool VulkanSink::supportsHdr10() const { return impl_->hdrSupported; }
 bool VulkanSink::hdr10Active() const { return impl_->hdrActive; }
+int VulkanSink::chromaFormat() const { return impl_->chroma; }
 bool VulkanSink::video(int codec, int width, int height, const uint8_t* bytes, size_t length) {
   const bool pyro = codec == 9;
   impl_->selected(pyro);

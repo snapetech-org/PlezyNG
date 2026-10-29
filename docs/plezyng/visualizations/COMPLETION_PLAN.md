@@ -343,3 +343,20 @@ existing aggregate budget. Compiler and numerical GPU control sources accompany
 these implementations. The ledger retains unrun execution gates and the exact
 MilkDrop3/reference boundaries; this does not declare the universal-compatibility
 completion contract satisfied.
+
+
+## 2026-10-29 declarations, aggregate semantics and classic sprite checkpoint
+
+The app now selects MilkRust `d0150a5c1c7d75324f53cad3fd0f0dfbaaed1806`. Its compiler adds scoped
+aliases/numeric templates, flattened legacy aggregate initialization and casts,
+typed constant selections, GLSL name isolation and readonly destination checks.
+Classic sprite alpha/key/byte-color handling, persistent unwrapped rotation and
+scripted numeric selectors have corresponding source controls. The status ledger
+and build handoff identify their private-JIT acceptance inputs.
+
+The original completion criteria remain open for exact MD3 masks, non-default
+sprite fields/layer interactions and the remaining language/profile gaps listed
+in the ledger. These are implementation/reference items, separate from unrun
+build/device checks, pack qualification, actual PCM artifact promotion and
+owner-held signing. No reference formula, qualifying image or artifact digest
+was substituted with an approximation or invented result.

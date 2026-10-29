@@ -2,7 +2,7 @@
 
 Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins MilkRust `1fca8a4cee55607dc1f75021d4a35702eaee8d07`; the exact dependency
+pins MilkRust `d0150a5c1c7d75324f53cad3fd0f0dfbaaed1806`; the exact dependency
 contract is in `native/visualizer/sources.lock.json`. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
@@ -89,7 +89,7 @@ qualification, rights decisions and production custody/publication are also open
 
 ## 2026-10-29 code-completion continuation
 
-- The app pins MilkRust `1fca8a4cee55607dc1f75021d4a35702eaee8d07`:
+- The app pins MilkRust `d0150a5c1c7d75324f53cad3fd0f0dfbaaed1806`:
   legacy matrices/constants/coordinate helpers and matched blur normalization
   are present in both native GL and WebGL. The same branch now contains 55
   unchanged CaYaDev presets with explicit CC BY 4.0 terms and immutable per-file
@@ -237,3 +237,36 @@ MilkDrop3 saved-pattern semantics, reference-dependent non-default sprite
 controls, unqualified platform/content cells, real mpv artifact promotion and
 owner-held signing/publication. Confidence is moderate in source integration;
 compiled and rendered behavior remains unknown.
+
+
+## Declaration, aggregate and classic sprite checkpoint, 2026-10-29
+
+The current pin includes seven further engine source checkpoints:
+
+- HLSL scoped aliases, generic numeric spellings, grouped declarations, inferred
+  arrays and positive constant unroll hints.
+- Typed lexical constants, including vector/matrix selections, array elements,
+  nested fields and component arithmetic; invalid indices and overflow fail.
+- GLSL identifier isolation, indexed matrix scalar swizzles and Boolean scalar
+  replication, preserving the identity of user values and intrinsic calls.
+- Readonly initializer lowering, legacy flattened aggregate initialization and
+  scalar/aggregate casts, including arrays inside structs and `(Struct)0`.
+  Expansion is bounded; source expressions are evaluated once. Assignment,
+  increment and output-argument destinations must be writable.
+- Classic sprite alpha/key behavior, legacy byte color quantization, unwrapped
+  script rotation, and scripted selector conversion/clamping. A 30-case browser
+  source control covers modes 0–4 across alpha and color-key combinations.
+
+Native and browser regression sources accompany the changes. Static whitespace,
+JavaScript syntax and JSON checks passed; no compiler, GPU or device gate ran.
+Confidence is high in the recorded source identity, moderate in integration,
+and unknown in compiled/rendered behavior.
+
+This does **not** close the original universal-compatibility contract. Known code
+limits still include integer/Boolean and one-row/one-column matrices, arrays of
+arrays, macro stringification/resource-bearing structs and the restricted WGSL
+path. Exact MD3 saved masks (including versioned progress rules), non-default
+SpriteRot controls, extended sprite alpha and layer/burn interactions remain
+reference-dependent. The checked official source still does not contain the
+saved-pattern implementation. Physical hardware alone cannot resolve that
+missing reference or these remaining language features.

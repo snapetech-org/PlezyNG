@@ -102,3 +102,19 @@ syntax parsing does not exercise either compiler. Native and Emscripten build
 inputs include the new vendored numeric/intrinsic headers and implementation
 fragments through the existing include directory. Their license/provenance
 remains the vendored MIT notice plus local patch inventory.
+
+
+The declaration/aggregate continuation additionally wires
+`declarations.hlsl`, `identifiers.hlsl` and `aggregates.hlsl` into the same
+native/browser compiler controls. Their pixel assertions cover inferred arrays,
+scoped constants, writable state, reserved names, row-major reconstruction,
+nested struct/array casts, readonly storage and single-evaluation side effects.
+The invalid-input suite checks constant overflow/index bounds and readonly
+writes. Named texture-offset controls retain their constant-expression check.
+
+The sprite probe also includes 30 combinations of classic mode 0–4, source alpha
+and opaque-ARGB key matching. Preserve these pixel checks when running the
+private gate; source compilation cannot establish those results. These authored
+controls are not captures of the unavailable exact MD3 saved-pattern renderer.
+The native C++ and Emscripten builders already include the new aggregate headers
+and lowering fragments through their pinned vendored source directory.

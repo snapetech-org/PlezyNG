@@ -57,6 +57,42 @@ not expressly establish a blanket restriction on distributing a compiled
 model; the model's status and the approved-use-case scope should be confirmed
 with Google before packaging it.
 
+## Recheck during resumed work — 2026-10-28
+
+A second search of `/home/keith/Downloads` found no Google Tensor compiler
+archive or Tensor SDK wheel. The recent SDK-like files are six 51 MB
+`ai-litecore-ubuntu2404-v1.2.1*.tar.gz` archives (Samsung Exynos LiteCore),
+`v2.51.200.261021.zip` (2.97 GB) and `v2.44.0.260225.zip` (1.56 GB), whose
+contents identify them as Qualcomm QAIRT. The latest of these was downloaded
+at 21:18 local time; there is no later compiler archive in Downloads. The
+`ai-edge-litert-sdk-google-tensor-nightly` package is still absent from the
+active model-build environment.
+
+PlezyNG already has the Tensor AOT export route in
+`scripts/motion/export_android_litert_models.py` and pins the companion package
+in `scripts/motion/requirements-android-litert-google-tensor-aot.txt`. The
+exporter compiles the generated float TFLite graphs for Tensor_G5 and/or
+Tensor_G6. The Android runtime only selects a Google Tensor model record marked
+`execution: aot` that matches the device SoC, and it does not offer the Tensor
+provider through the generic JIT path. The route is ready for compiler-backed
+export, but there is still no AOT model record or connected Android device.
+
+Google's current [Tensor compilation guide](https://developers.google.com/edge/tensor-sdk/compilation-flags)
+describes AOT compilation of TFLite models; the [LiteRT NPU guide](https://developers.google.com/edge/litert/next/npu)
+says Google Tensor supports AOT through `CompiledModel` and does not support
+on-device JIT in beta. The [Tensor Beta setup guide](https://developers.google.com/edge/tensor-sdk/slm-compilation)
+requires both the approved compiler archive and
+`ai-edge-litert-sdk-google-tensor-nightly`. The public SDK page links to an
+access request form, not to a public compiler archive.
+
+The current [Tensor SDK terms](https://developers.google.com/edge/litert/next/tensor_ml_terms)
+limit use to Google-approved application use cases on Pixel or other
+Google-approved Tensor devices, prohibit redistributing the SDK without
+written authorization, and prohibit externally publishing Tensor performance
+data or cross-device benchmarks. The reviewed terms do not explicitly state a
+general rule for distribution of a compiled model; obtain clarification for
+the PlezyNG model pack and confirm the approved use case before distribution.
+
 ## Remaining gate
 
 - Locate and verify the user-reported compiler archive and install its

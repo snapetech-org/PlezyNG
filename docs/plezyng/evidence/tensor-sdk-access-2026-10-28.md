@@ -39,22 +39,27 @@ It is 971,251,948 bytes with SHA-256 `0be48d90a0040a946a9fb2774988d744c5b5edea19
 
 ## 1080p compiler failures
 
-ANVIL-S 1080p did not compile for Tensor_G5 or Tensor_G6. All 59 graph ops partitioned, then the compiler returned an `INTERNAL` error during target compilation. Tensor_G6 used half truncation and maximum sharding; Tensor_G5 was retried with both flags and still failed. Preserved logs are:
+ANVIL-S and ANVIL-M at 1080p failed target compilation for both Tensor_G5 and Tensor_G6. The S graph's 59 ops and the M graph's 74 ops each partitioned into one Google Tensor partition before the compiler returned an `INTERNAL` error. The exporter successfully created the float LiteRT model before the AOT plugin failed. The G5 attempts used half truncation; G6 used half truncation and maximum sharding. The earlier ANVIL-S G5 retry also used maximum sharding and still failed. No 1080p Tensor AOT record was produced. Preserved logs are:
 
 - `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/tensor-aot-work-20261029/1080p-anvil-s-google-tensor-g5.error`
 - `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/tensor-aot-work-20261029/1080p-anvil-s-google-tensor-g6.error`
 - `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/tensor-aot-work-20261029/1080p-anvil-s-google-tensor-g5-max.error`
+- `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/tensor-aot-m1080-attempt-20261029/g5.log` and `g5-internal.error`
+- `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/tensor-aot-m1080-attempt-20261029/g6.log` and `g6-internal.error`
 
-Google's [compilation FAQ](https://developers.google.com/edge/tensor-sdk/tensor-faqs) describes internal compiler crashes related to memory sharding and truncation for non-G5 targets and recommends half truncation plus maximum sharding. Those flags did not resolve this G6 compile. The G5 retry also failed, so the evidence does not establish a hard resolution limit or a successful 1080p workaround.
+The follow-up matrix used the exported fixed-shape LiteRT graphs directly and covered every documented combination of truncation (`auto`, `bfloat16`, `half`, `no_truncation`) and sharding (`minimal`, `moderate`, `extensive`, `maximum`) for ANVIL-S and ANVIL-M on Tensor_G5 and Tensor_G6: 64 combinations total. Every combination failed inside the Google compiler plugin with `INTERNAL`; none produced a Tensor AOT model. The [complete result manifest](tensor-1080-option-matrix-2026-10-29.tsv) records each option pair, log and diagnostic path, and diagnostic SHA-256. Full logs and plugin captures remain in task scratch at `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/`; four `no_truncation` plus `maximum` diagnostics from the first follow-up run are in the adjacent `tensor-aot-1080-no-truncation-maximum-20261029` directory.
+
+The M 1080p float intermediate remains at
+`/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/tensor-aot-m1080-output-20261029/anvil-m-1080p.tflite`; it is not a Tensor-compiled model. Google's [compilation FAQ](https://developers.google.com/edge/tensor-sdk/tensor-faqs) recommends half truncation plus maximum sharding for compiler memory failures on non-G5 targets, and suggests trying other options or optimizing the model when errors remain vague. The full documented truncation/sharding matrix did not resolve these graphs. Model-graph optimization and a compiler support request remain possible follow-ups; the results establish neither a hardware resolution ceiling nor a successful 1080p workaround.
 
 ## Device and distribution gates
 
 `adb devices -l` returned no attached devices. The APK has not been installed or run on a Pixel; Tensor provider ownership, NPU inference, visible output, quality, A/V sync, power, and thermal behavior remain unqualified. No Tensor inference performance data was collected.
 
-The current [Google Tensor SDK terms](https://developers.google.com/edge/litert/next/tensor_ml_terms) limit SDK use to Google-approved Pixel/Tensor use cases, restrict transfer of the SDK, and prohibit sharing or publishing Tensor performance data. The specific release-distribution permission for the compiled model and app has not been established. Keep the pack local until that question is resolved. No CI was used.
+The current [Google Tensor SDK terms](https://developers.google.com/edge/litert/next/tensor_ml_terms) define the permitted purpose as developing and optimizing on-device ML for Google-approved use cases of an application on Pixel or other Google-approved Tensor devices (section 2.6). They prohibit publishing Tensor comparison benchmarks (4.16), sharing or publishing Tensor performance data (4.17), and transferring the SDK without written authorization (4.18). The terms reviewed do not expressly settle redistribution of an AOT model produced by the compiler, and no approval record for this app use case is available here. Keep the pack local until the app-use approval and generated-model distribution scope are clarified. No CI was used.
 
 ## Remaining gates
 
 - Run the target-matched AOT models on an attached Pixel/Tensor device and qualify provider execution and visible playback.
-- Resolve the 1080p ANVIL-S compiler failures or document the supported Tensor resolution/model fallback.
+- On an attached Pixel/Tensor device, qualify the documented 1080p LiteRT GPU then MPV/normal-playback fallback; no device execution has been verified.
 - Establish whether the generated model may be included in a PlezyNG release under the accepted terms.

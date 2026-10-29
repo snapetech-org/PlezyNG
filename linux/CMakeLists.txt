@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.13)
 project(runner LANGUAGES CXX)
 
+# Set the relocatable bundle prefix before any subproject configures
+# GNUInstallDirs; otherwise it caches /usr/local paths during a fresh build.
+set(BUILD_BUNDLE_DIR "${PROJECT_BINARY_DIR}/bundle")
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "${BUILD_BUNDLE_DIR}" CACHE PATH "..." FORCE)
+endif()
+
 # Testing must be enabled at the project root so CTest can discover tests
 # registered by the runner subdirectory.
 include(CTest)
@@ -102,11 +109,6 @@ include(flutter/generated_plugins.cmake)
 # === Installation ===
 # By default, "installing" just makes a relocatable bundle in the build
 # directory.
-set(BUILD_BUNDLE_DIR "${PROJECT_BINARY_DIR}/bundle")
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX "${BUILD_BUNDLE_DIR}" CACHE PATH "..." FORCE)
-endif()
-
 # Start with a clean build bundle directory every time.
 install(CODE "
   file(REMOVE_RECURSE \"${BUILD_BUNDLE_DIR}/\")

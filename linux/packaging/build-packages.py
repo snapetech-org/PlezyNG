@@ -75,6 +75,11 @@ DISTROS = {
             "libva-x11-2",
             "libdrm2",
             "libgbm1",
+            # The pinned mpv build enables these backends but the loader is
+            # coupled to the host graphics driver and is intentionally not
+            # bundled by bundle-libs.sh.
+            "libvdpau1",
+            "libvulkan1",
             "libx11-6",
             "libx11-xcb1",
             "libxext6",
@@ -106,6 +111,8 @@ DISTROS = {
             "libva",
             "libdrm",
             "mesa-libgbm",
+            "libvdpau",
+            "vulkan-loader",
             "libX11",
             "libX11-xcb",
             "libXext",
@@ -133,6 +140,8 @@ DISTROS = {
             "libva",
             "libdrm",
             "mesa",
+            "libvdpau",
+            "vulkan-icd-loader",
             "libx11",
             "libxext",
             "libxcb",

@@ -5,6 +5,7 @@
 - Stage and validate the Android LiteRT provider JNI libraries and report the stable desktop PME model-pack ID.
 - Fall back to packaged LiteRT providers when Qualcomm HTP context preparation fails.
 - Fix the Linux native runner build with Flutter's mutable `FlValue` accessors.
+- Fix fresh Linux bundle install paths and declare the Vulkan/VDPAU host loaders required by the pinned mpv package.
 - Fix Linux builds with Flutter's mutable `FlValue` API, bundle `gio-launch-desktop` from `/usr/lib` hosts, and localize the Neural initialization status.
 - Refuse reused Qualcomm context output roots and atomically publish the manifest only after the full selected context set completes.
 - Prepare Qualcomm HTP contexts on hardened Linux hosts by preserving short temporary paths and clearing executable-stack requests only on generated host model libraries.

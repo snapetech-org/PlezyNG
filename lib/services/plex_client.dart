@@ -1604,6 +1604,7 @@ class PlexClient
     String? title,
     int mediaIndex = 0,
     String? mediaSourceId,
+    AbortController? abort,
     bool? perfectMatch,
     bool? forced,
     bool? hearingImpaired,
@@ -1611,6 +1612,7 @@ class PlexClient
     return _wrapListApiCall<SubtitleSearchResult>(
       () => _http.get(
         '/library/metadata/$ratingKey/subtitles',
+        abort: abort,
         queryParameters: {
           'language': language,
           if (title != null && title.isNotEmpty) 'title': title,
@@ -1641,9 +1643,11 @@ class PlexClient
     String? providerTitle,
     int mediaIndex = 0,
     String? mediaSourceId,
+    AbortController? abort,
   }) async {
     final response = await _http.put(
       '/library/metadata/$ratingKey/subtitles',
+        abort: abort,
       queryParameters: {
         'key': key,
         if (codec != null && codec.isNotEmpty) 'codec': codec,

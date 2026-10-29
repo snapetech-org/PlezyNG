@@ -81,6 +81,7 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
   String? _downloadingKey;
   int _searchGeneration = 0;
   AbortController? _previewAbort;
+  AbortController? _searchAbort, _downloadAbort;
   String? _previewingKey;
 
   bool _showLanguagePicker = false;
@@ -106,6 +107,8 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
   @override
   void dispose() {
     ++_searchGeneration;
+    _searchAbort?.abort();
+    _downloadAbort?.abort();
     _previewAbort?.abort();
     _debounceTimer?.cancel();
     _languageFocusNode.dispose();
@@ -116,17 +119,19 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
 
   Future<void> _search() async {
     if (!mounted) return;
-    _previewAbort?.abort();
+    _previewAbort?.abort(); _searchAbort?.abort(); _downloadAbort?.abort();
+    final abort = AbortController(); _searchAbort = abort; _downloadAbort = null;
+    final profiles = context.read<ActiveProfileProvider>(), profile = context.read<ActiveProfileProvider>().activeId;
     final generation = ++_searchGeneration;
     setState(() {
-      _isSearching = true;
+      _isSearching = true; _downloadingKey = null;
       _error = null;
     });
 
     try {
       final client = context.tryGetMediaClientForServer(ServerId(widget.serverId));
       if (client == null) {
-        if (!mounted || generation != _searchGeneration) return;
+        if (!mounted || generation != _searchGeneration || profiles.activeId != profile || abort.isAborted) return;
         setState(() => _isSearching = false);
         return;
       }
@@ -134,11 +139,12 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
       final language = _languageCode;
       final results = await client.searchSubtitles(
         widget.ratingKey,
+        abort: abort,
         language: language,
         title: title.isEmpty ? null : title,
         mediaIndex: widget.mediaIndex,
-      );
-      if (!mounted || generation != _searchGeneration) return;
+      ).timeout(const Duration(seconds: 15));
+      if (!mounted || generation != _searchGeneration || profiles.activeId != profile || abort.isAborted) return;
       setState(() {
         _allResults = results;
         final filtered = _filterRejectedResults(results);
@@ -147,11 +153,17 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
         _isSearching = false;
       });
     } catch (e) {
-      if (!mounted || generation != _searchGeneration) return;
+      if (!mounted || generation != _searchGeneration || profiles.activeId != profile || abort.isAborted) return;
       setState(() {
         _error = t.errors.searchFailed(error: localizedErrorReason(e));
         _isSearching = false;
       });
+    } finally {
+      abort.abort();
+      if (identical(_searchAbort, abort)) _searchAbort = null;
+      if (mounted && generation == _searchGeneration && profiles.activeId != profile) {
+        setState(() { _isSearching = false; _error = t.videoSettings.subtitleAutoCancelled; });
+      }
     }
   }
 
@@ -301,17 +313,22 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
 
   Future<void> _downloadSubtitle(SubtitleSearchResult result) async {
     if (_downloadingKey != null || _previewingKey != null) return;
+    final abort = AbortController(); _downloadAbort = abort;
+    final profiles = context.read<ActiveProfileProvider>(), profile = context.read<ActiveProfileProvider>().activeId;
+    final generation = _searchGeneration;
+    bool current() => mounted && !abort.isAborted && generation == _searchGeneration && profiles.activeId == profile;
     setState(() => _downloadingKey = result.key);
 
     try {
       final client = context.tryGetMediaClientForServer(ServerId(widget.serverId));
       if (client == null) {
-        if (!mounted) return;
+        if (!current()) return;
         setState(() => _downloadingKey = null);
         return;
       }
       final success = await client.downloadSubtitle(
         widget.ratingKey,
+        abort: abort,
         key: result.key,
         codec: result.codec ?? 'srt',
         language: result.languageCode ?? _languageCode,
@@ -319,11 +336,14 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
         forced: result.forced,
         providerTitle: result.providerTitle ?? '',
         mediaIndex: widget.mediaIndex,
-      );
+      ).timeout(const Duration(seconds: 20));
 
-      if (!mounted) return;
+      if (!current()) return;
 
       if (success) {
+        // The transport phase is finished. Local attachment has its own source
+        // and track-mutation guards; do not promise to cancel a native commit.
+        if (identical(_downloadAbort, abort)) setState(() => _downloadAbort = null);
         final outcome =
             await widget.onSubtitleDownloaded?.call(
               serverId: widget.serverId,
@@ -331,7 +351,7 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
               preferredLanguageCode: result.languageCode ?? _languageCode,
             ) ??
             SubtitleDownloadApplyOutcome.unavailable;
-        if (!mounted) return;
+        if (!current()) return;
         if (outcome == SubtitleDownloadApplyOutcome.applied) {
           showSuccessSnackBar(context, t.videoControls.subtitleDownloaded);
           OverlaySheetController.of(context).close();
@@ -344,9 +364,15 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
         setState(() => _downloadingKey = null);
       }
     } catch (e) {
-      if (!mounted) return;
+      if (!current()) return;
       showErrorSnackBar(context, t.videoControls.subtitleDownloadFailed);
       setState(() => _downloadingKey = null);
+    } finally {
+      abort.abort();
+      if (identical(_downloadAbort, abort)) _downloadAbort = null;
+      if (mounted && generation == _searchGeneration && _downloadingKey == result.key) {
+        setState(() => _downloadingKey = null);
+      }
     }
   }
 
@@ -468,6 +494,16 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
               ],
             ),
           ),
+          if (_searchAbort != null || _downloadAbort != null)
+            TextButton(onPressed: () {
+              if (_searchAbort == null && _downloadAbort == null) return;
+              ++_searchGeneration;
+              _searchAbort?.abort(); _downloadAbort?.abort();
+              _searchAbort = null; _downloadAbort = null;
+              setState(() { _isSearching = false; _downloadingKey = null; _error = t.videoSettings.subtitleAutoCancelled; });
+            }, child: Text(t.common.cancel)),
+          if (_error != null && !_isSearching && _downloadingKey == null)
+            TextButton(onPressed: _search, child: Text(t.videoSettings.subtitleAutoSearchAgain)),
           Expanded(child: _buildResults()),
         ],
       ),

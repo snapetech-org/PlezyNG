@@ -5715,5 +5715,14 @@
   "videoSettings.subtitleReviewIncoming": "796bc62677575839",
   "videoSettings.subtitleReviewReplace": "60e48ee5e54918f0",
   "videoSettings.subtitleReviewImportMemory": "78a5fc7aea6ecf09",
-  "videoSettings.subtitleReviewImportRejections": "7e1a56672083b857"
+  "videoSettings.subtitleReviewImportRejections": "7e1a56672083b857",
+  "videoSettings.subtitleAutoSearching": "5c5847b9b8b2140d",
+  "videoSettings.subtitleAutoDownloading": "d921a50eebfe401e",
+  "videoSettings.subtitleAutoRefreshing": "4b08d3794b73647e",
+  "videoSettings.subtitleAutoNoMatch": "c20ebbcd3e677125",
+  "videoSettings.subtitleAutoFailed": "115b3e12c6588524",
+  "videoSettings.subtitleAutoCancelled": "f36e509b82f64e75",
+  "videoSettings.subtitleAutoExpired": "1cc3243313367558",
+  "videoSettings.subtitleAutoSkip": "e7257186d8f7ad32",
+  "videoSettings.subtitleAutoSearchAgain": "e4eaa7c7fc79c8d2"
 }

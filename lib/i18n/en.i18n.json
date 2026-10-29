@@ -4552,7 +4552,16 @@
     "subtitleReviewIncoming": "Incoming: ${text}",
     "subtitleReviewReplace": "Use this incoming translation",
     "subtitleReviewImportMemory": "Import translation suggestions",
-    "subtitleReviewImportRejections": "Import hidden revisions"
+    "subtitleReviewImportRejections": "Import hidden revisions",
+    "subtitleAutoSearching": "Searching for a preferred-language subtitle…",
+    "subtitleAutoDownloading": "Downloading the preferred subtitle through your media server…",
+    "subtitleAutoRefreshing": "Waiting for the downloaded subtitle to appear…",
+    "subtitleAutoNoMatch": "A preferred subtitle could not be selected automatically. You can search and choose one.",
+    "subtitleAutoFailed": "Automatic subtitle retrieval was unavailable. Playback can continue; you can search again.",
+    "subtitleAutoCancelled": "Subtitle retrieval was cancelled. A download already accepted by the server may still finish there.",
+    "subtitleAutoExpired": "The 12-second subtitle startup limit was reached. Playback can continue; you can search again.",
+    "subtitleAutoSkip": "Skip subtitle retrieval",
+    "subtitleAutoSearchAgain": "Search subtitles again"
   },
   "performanceOverlay": {
     "color": "Color",

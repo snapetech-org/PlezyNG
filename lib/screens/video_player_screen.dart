@@ -23,6 +23,8 @@ import '../mpv/player/platform/player_android.dart';
 import '../services/subtitle_playback_transcription_service.dart';
 import '../widgets/subtitle_caption_overlay.dart';
 import '../services/subtitle_rejection_service.dart';
+import '../services/subtitle_automatic_fetch.dart';
+import '../widgets/subtitle_automatic_fetch_status.dart';
 import '../services/subtitle_selection_rules.dart';
 import '../models/subtitles/subtitle_search_result.dart';
 import '../mpv/player/player_native.dart';
@@ -837,6 +839,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// Prevent repeated provider searches for the same media source and language
   /// during track-driven reloads in one player session.
   final Set<String> _autoSubtitleFetchAttempts = <String>{};
+  final _autoSubtitleFetch = SubtitleAutomaticFetch();
   // Fired in parallel with MPV setup so the OS audio-focus negotiation
   // (~90ms on Android) doesn't sit on the critical path. Awaited before
   // `player.open()` so the semantics are unchanged — we just eat the cost
@@ -1306,6 +1309,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// (generation, player) pairs around. Reloads await the captured, bounded
   /// mutation drain at their replacement-open boundary.
   _PlaybackAttempt _beginPlaybackAttempt(Player currentPlayer, {bool isMediaReload = false}) {
+    _autoSubtitleFetch.reset();
     _playbackAttempt?.outcome.abort('superseded by a newer playback attempt');
     final trackMutationDrain = _trackManager?.invalidatePendingSelection() ?? Future<void>.value();
     final previousGeneration = _transitionGate.generation;
@@ -2851,6 +2855,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   @override
   void dispose() {
+    _autoSubtitleFetch.dispose();
     final syncPlayer = player;
     if (syncPlayer != null) PlayerSyncOffsets.of(syncPlayer).unbindLibrary();
     final retiringExternalSource = _activeExternalPlaybackSource;
@@ -3590,6 +3595,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     // No await until producers and all source-operation gates are closed.
     // Shared by accepted route exit and app shutdown, not resumable suspension.
     _isExiting.value = true;
+    _autoSubtitleFetch.cancel();
     _playbackIntentShouldPlay = false;
     // While the receipt can still tell this session apart from a replaced
     // one: the generation bump below would read as a replacement.

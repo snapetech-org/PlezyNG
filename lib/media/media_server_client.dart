@@ -920,6 +920,7 @@ abstract class MediaServerClient {
     String? title,
     int mediaIndex = 0,
     String? mediaSourceId,
+    AbortController? abort,
     bool? perfectMatch,
     bool? forced,
     bool? hearingImpaired,
@@ -939,6 +940,7 @@ abstract class MediaServerClient {
     String? providerTitle,
     int mediaIndex = 0,
     String? mediaSourceId,
+    AbortController? abort,
   });
 
   /// A provider-backed read without attaching anything to the library. Only

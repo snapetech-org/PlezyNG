@@ -20,19 +20,23 @@ mixin _JellyfinSubtitleSearchMethods on _JellyfinClientInternals {
     String? title,
     int mediaIndex = 0,
     String? mediaSourceId,
+    AbortController? abort,
     bool? perfectMatch,
     bool? forced,
     bool? hearingImpaired,
   }) async {
+    abort?.throwIfAborted();
     final sourceId = dialect == MediaBrowserDialect.emby
         ? await _resolveSubtitleMediaSourceId(ratingKey, mediaIndex: mediaIndex, mediaSourceId: mediaSourceId)
         : null;
 
+    abort?.throwIfAborted();
     final searchLanguage = dialect == MediaBrowserDialect.jellyfin
         ? LanguageCodes.getIso6392Code(language) ?? language
         : language;
     final response = await _http.get(
       '/Items/${_segment(ratingKey)}/RemoteSearch/Subtitles/${_segment(searchLanguage)}',
+      abort: abort,
       queryParameters: {
         'MediaSourceId': ?sourceId,
         if (dialect == MediaBrowserDialect.emby) 'IsPerfectMatch': ?perfectMatch,
@@ -104,13 +108,17 @@ mixin _JellyfinSubtitleSearchMethods on _JellyfinClientInternals {
     String? providerTitle,
     int mediaIndex = 0,
     String? mediaSourceId,
+    AbortController? abort,
   }) async {
+    abort?.throwIfAborted();
     final sourceId = dialect == MediaBrowserDialect.emby
         ? await _resolveSubtitleMediaSourceId(ratingKey, mediaIndex: mediaIndex, mediaSourceId: mediaSourceId)
         : null;
 
+    abort?.throwIfAborted();
     final response = await _http.post(
       '/Items/${_segment(ratingKey)}/RemoteSearch/Subtitles/${_segment(key)}',
+      abort: abort,
       queryParameters: {'MediaSourceId': ?sourceId},
     );
     throwIfHttpError(response);

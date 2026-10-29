@@ -7453,6 +7453,33 @@ class Translations$videoSettings$en {
 	/// en: 'Import hidden revisions'
 	String get subtitleReviewImportRejections => 'Import hidden revisions';
 
+	/// en: 'Searching for a preferred-language subtitle…'
+	String get subtitleAutoSearching => 'Searching for a preferred-language subtitle…';
+
+	/// en: 'Downloading the preferred subtitle through your media server…'
+	String get subtitleAutoDownloading => 'Downloading the preferred subtitle through your media server…';
+
+	/// en: 'Waiting for the downloaded subtitle to appear…'
+	String get subtitleAutoRefreshing => 'Waiting for the downloaded subtitle to appear…';
+
+	/// en: 'A preferred subtitle could not be selected automatically. You can search and choose one.'
+	String get subtitleAutoNoMatch => 'A preferred subtitle could not be selected automatically. You can search and choose one.';
+
+	/// en: 'Automatic subtitle retrieval was unavailable. Playback can continue; you can search again.'
+	String get subtitleAutoFailed => 'Automatic subtitle retrieval was unavailable. Playback can continue; you can search again.';
+
+	/// en: 'Subtitle retrieval was cancelled. A download already accepted by the server may still finish there.'
+	String get subtitleAutoCancelled => 'Subtitle retrieval was cancelled. A download already accepted by the server may still finish there.';
+
+	/// en: 'The 12-second subtitle startup limit was reached. Playback can continue; you can search again.'
+	String get subtitleAutoExpired => 'The 12-second subtitle startup limit was reached. Playback can continue; you can search again.';
+
+	/// en: 'Skip subtitle retrieval'
+	String get subtitleAutoSkip => 'Skip subtitle retrieval';
+
+	/// en: 'Search subtitles again'
+	String get subtitleAutoSearchAgain => 'Search subtitles again';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -22928,6 +22955,15 @@ extension on Translations {
 			'videoSettings.subtitleReviewReplace' => 'Use this incoming translation',
 			'videoSettings.subtitleReviewImportMemory' => 'Import translation suggestions',
 			'videoSettings.subtitleReviewImportRejections' => 'Import hidden revisions',
+			'videoSettings.subtitleAutoSearching' => 'Searching for a preferred-language subtitle…',
+			'videoSettings.subtitleAutoDownloading' => 'Downloading the preferred subtitle through your media server…',
+			'videoSettings.subtitleAutoRefreshing' => 'Waiting for the downloaded subtitle to appear…',
+			'videoSettings.subtitleAutoNoMatch' => 'A preferred subtitle could not be selected automatically. You can search and choose one.',
+			'videoSettings.subtitleAutoFailed' => 'Automatic subtitle retrieval was unavailable. Playback can continue; you can search again.',
+			'videoSettings.subtitleAutoCancelled' => 'Subtitle retrieval was cancelled. A download already accepted by the server may still finish there.',
+			'videoSettings.subtitleAutoExpired' => 'The 12-second subtitle startup limit was reached. Playback can continue; you can search again.',
+			'videoSettings.subtitleAutoSkip' => 'Skip subtitle retrieval',
+			'videoSettings.subtitleAutoSearchAgain' => 'Search subtitles again',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

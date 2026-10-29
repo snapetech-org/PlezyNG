@@ -22,6 +22,8 @@ import '../../../services/incoming_subtitle_share_service.dart';
 import '../../../services/playback_subtitle_resolver.dart';
 import '../../../services/subtitle_archive_importer.dart';
 import '../../../services/subtitle_retimer.dart';
+import '../../../services/subtitle_automatic_fetch.dart';
+import '../../subtitle_automatic_fetch_status.dart';
 import '../../../services/subtitle_sync_service.dart';
 import '../../../services/subtitle_text_importer.dart';
 import '../../../services/track_selection_service.dart';
@@ -625,23 +627,14 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
   }
 
   if (state.canSearchSubtitles) {
-    actions.add(
-      FocusableListTile(
-        leading: const AppIcon(Symbols.search_rounded),
-        title: Text(t.videoControls.searchSubtitles),
-        onTap: () {
-          OverlaySheetController.of(context).push(
-            builder: (_) => SubtitleSearchSheet(
-              ratingKey: state.ratingKey,
-              serverId: state.serverId!,
-              mediaIndex: state.selectedMediaIndex,
-              mediaTitle: state.mediaTitle,
-              onSubtitleDownloaded: state.onSubtitleDownloaded,
-            ),
-          );
-        },
-      ),
-    );
+    void searchAgain() => OverlaySheetController.of(context).push(
+      builder: (_) => SubtitleSearchSheet(ratingKey: state.ratingKey, serverId: state.serverId!,
+        mediaIndex: state.selectedMediaIndex, mediaTitle: state.mediaTitle,
+        onSubtitleDownloaded: state.onSubtitleDownloaded));
+    final automatic = SubtitleAutomaticFetch.forPlayer(player);
+    if (automatic != null) actions.add(SubtitleAutomaticFetchStatus(controller: automatic, onSearchAgain: searchAgain));
+    actions.add(FocusableListTile(leading: const AppIcon(Symbols.search_rounded),
+      title: Text(t.videoControls.searchSubtitles), onTap: searchAgain));
   }
 
   actions.add(

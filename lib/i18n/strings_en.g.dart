@@ -15162,6 +15162,50 @@ class Translations$videoControls$subtitleAiControls$en {
 	/// en: 'Send and process'
 	String get companionSendAndProcess => 'Send and process';
 
+
+	/// en: 'Playback changed before the saved transcript could be loaded. Reopen subtitle tools for the current item.'
+	String get savedTranscriptPlaybackChanged => 'Playback changed before the saved transcript could be loaded. Reopen subtitle tools for the current item.';
+	/// en: 'Saved transcript lookup needs a stable profile and media identity.'
+	String get savedTranscriptProfileRequired => 'Saved transcript lookup needs a stable profile and media identity.';
+	/// en: 'Save a watched-portion transcript before reusing one from this profile.'
+	String get savedTranscriptNoResults => 'Save a watched-portion transcript before reusing one from this profile.';
+	/// en: 'Choose a saved transcript'
+	String get savedTranscriptPickerTitle => 'Choose a saved transcript';
+	/// en: 'Search the 100 most recently saved transcripts in this profile.'
+	String get savedTranscriptPickerDescription => 'Search the 100 most recently saved transcripts in this profile.';
+	/// en: 'Search media, source, or language'
+	String get savedTranscriptSearchLabel => 'Search media, source, or language';
+	/// en: 'No saved transcripts match this search.'
+	String get savedTranscriptNoMatches => 'No saved transcripts match this search.';
+	/// en: '${source} · ${date} · ${count} cues'
+	String savedTranscriptSummary({required Object source, required Object date, required Object count}) => '${source} · ${date} · ${count} cues';
+	/// en: ' · ${language}'
+	String savedTranscriptLanguageSuffix({required Object language}) => ' · ${language}';
+	/// en: ' · this item'
+	String get savedTranscriptSameItem => ' · this item';
+	/// en: 'Subtitle languages for matching'
+	String get syncLanguageMatchTitle => 'Subtitle languages for matching';
+	/// en: 'Subtitle to synchronize'
+	String get syncSubtitleToSynchronize => 'Subtitle to synchronize';
+	/// en: 'Target subtitle language'
+	String get syncTargetSubtitleLanguage => 'Target subtitle language';
+	/// en: 'Reference subtitle'
+	String get syncReferenceSubtitle => 'Reference subtitle';
+	/// en: 'Transcript language'
+	String get syncTranscriptLanguage => 'Transcript language';
+	/// en: 'Choose different languages to use translated text for matching.'
+	String get syncDifferentLanguagesHint => 'Choose different languages to use translated text for matching.';
+	/// en: 'Translate transcript subtitles'
+	String get translateTranscriptTitle => 'Translate transcript subtitles';
+	/// en: 'Speech was identified as ${source}.'
+	String translateTranscriptSpeechIdentified({required Object source}) => 'Speech was identified as ${source}.';
+	/// en: 'Subtitle language'
+	String get translateTranscriptSubtitleLabel => 'Subtitle language';
+	/// en: 'This translates the captured portion locally and keeps its speech timings.'
+	String get translateTranscriptLocalDescription => 'This translates the captured portion locally and keeps its speech timings.';
+	/// en: 'Continue'
+	String get continueAction => 'Continue';
+
 }
 
 // Path: videoControls.subtitleLiveCapture
@@ -19943,6 +19987,27 @@ extension on Translations {
 			'videoControls.subtitleAiControls.companionHostBackends' => ({required Object tasks}) => 'Host backends: ${tasks}. Hardware placement is unverified.',
 			'videoControls.subtitleAiControls.companionForwardTextAndTranslate' => 'Forward text and translate',
 			'videoControls.subtitleAiControls.companionSendAndProcess' => 'Send and process',
+			'videoControls.subtitleAiControls.savedTranscriptPlaybackChanged' => 'Playback changed before the saved transcript could be loaded. Reopen subtitle tools for the current item.',
+			'videoControls.subtitleAiControls.savedTranscriptProfileRequired' => 'Saved transcript lookup needs a stable profile and media identity.',
+			'videoControls.subtitleAiControls.savedTranscriptNoResults' => 'Save a watched-portion transcript before reusing one from this profile.',
+			'videoControls.subtitleAiControls.savedTranscriptPickerTitle' => 'Choose a saved transcript',
+			'videoControls.subtitleAiControls.savedTranscriptPickerDescription' => 'Search the 100 most recently saved transcripts in this profile.',
+			'videoControls.subtitleAiControls.savedTranscriptSearchLabel' => 'Search media, source, or language',
+			'videoControls.subtitleAiControls.savedTranscriptNoMatches' => 'No saved transcripts match this search.',
+			'videoControls.subtitleAiControls.savedTranscriptSummary' => ({required Object source, required Object date, required Object count}) => '${source} · ${date} · ${count} cues',
+			'videoControls.subtitleAiControls.savedTranscriptLanguageSuffix' => ({required Object language}) => ' · ${language}',
+			'videoControls.subtitleAiControls.savedTranscriptSameItem' => ' · this item',
+			'videoControls.subtitleAiControls.syncLanguageMatchTitle' => 'Subtitle languages for matching',
+			'videoControls.subtitleAiControls.syncSubtitleToSynchronize' => 'Subtitle to synchronize',
+			'videoControls.subtitleAiControls.syncTargetSubtitleLanguage' => 'Target subtitle language',
+			'videoControls.subtitleAiControls.syncReferenceSubtitle' => 'Reference subtitle',
+			'videoControls.subtitleAiControls.syncTranscriptLanguage' => 'Transcript language',
+			'videoControls.subtitleAiControls.syncDifferentLanguagesHint' => 'Choose different languages to use translated text for matching.',
+			'videoControls.subtitleAiControls.translateTranscriptTitle' => 'Translate transcript subtitles',
+			'videoControls.subtitleAiControls.translateTranscriptSpeechIdentified' => ({required Object source}) => 'Speech was identified as ${source}.',
+			'videoControls.subtitleAiControls.translateTranscriptSubtitleLabel' => 'Subtitle language',
+			'videoControls.subtitleAiControls.translateTranscriptLocalDescription' => 'This translates the captured portion locally and keeps its speech timings.',
+			'videoControls.subtitleAiControls.continueAction' => 'Continue',
 			'videoControls.subtitleLiveCapture.dialogTitle' => 'Captured transcript',
 			'videoControls.subtitleLiveCapture.watchedPortionOnly' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'videoControls.subtitleLiveCapture.searchTranscript' => 'Search transcript',

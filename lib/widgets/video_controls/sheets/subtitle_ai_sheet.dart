@@ -1420,17 +1420,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   });
 
   Future<SavedSubtitleTranscript?> _chooseSavedTranscript() async {
+    final aiCopy = Translations.of(context).videoControls.subtitleAiControls;
     if (widget.isRevisionIdentityCurrent?.call() == false) {
-      throw StateError('Playback changed before the saved transcript could be loaded. Reopen subtitle tools for the current item.');
+      throw StateError(aiCopy.savedTranscriptPlaybackChanged);
     }
     final identity = _revisionIdentity;
-    if (identity == null) throw StateError('Saved transcript lookup needs a stable profile and media identity.');
+    if (identity == null) throw StateError(aiCopy.savedTranscriptProfileRequired);
     final transcripts = await SubtitleRevisionService.loadSavedTranscripts(
       profileId: identity.profileId,
       currentIdentity: identity,
     );
     if (transcripts.isEmpty) {
-      throw const FormatException('Save a watched-portion transcript before reusing one from this profile.');
+      throw FormatException(aiCopy.savedTranscriptNoResults);
     }
     if (!mounted) return null;
     final searchController = TextEditingController();
@@ -1447,21 +1448,21 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   (transcript.languageCode?.toLowerCase().contains(query) ?? false);
             }).toList(growable: false);
             return AlertDialog(
-              title: const Text('Choose a saved transcript'),
+              title: Text(aiCopy.savedTranscriptPickerTitle),
               content: SizedBox(
                 width: 560,
                 height: 420,
                 child: Column(
                   children: [
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Search the 100 most recently saved transcripts in this profile.'),
+                      child: Text(aiCopy.savedTranscriptPickerDescription),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: searchController,
-                      decoration: const InputDecoration(
-                        labelText: 'Search media, source, or language',
+                      decoration: InputDecoration(
+                        labelText: aiCopy.savedTranscriptSearchLabel,
                         prefixIcon: AppIcon(Symbols.search_rounded),
                       ),
                       onChanged: (_) => setDialogState(() {}),
@@ -1469,18 +1470,25 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     const SizedBox(height: 8),
                     Expanded(
                       child: visible.isEmpty
-                          ? const Center(child: Text('No saved transcripts match this search.'))
+                          ? Center(child: Text(aiCopy.savedTranscriptNoMatches))
                           : ListView.builder(
                               itemCount: visible.length,
                               itemBuilder: (context, index) {
                                 final transcript = visible[index];
-                                final language = transcript.languageCode == null ? '' : ' · ${transcript.languageCode}';
+                                final language = transcript.languageCode;
                                 final sameItem = transcript.storageKey == identity.storageKey;
                                 return ListTile(
                                   title: Text(transcript.mediaTitle),
                                   subtitle: Text(
-                                    '${transcript.sourceLabel} · ${_formatRevisionDate(transcript.createdAt)} · '
-                                    '${transcript.cueCount} cues$language${sameItem ? ' · this item' : ''}',
+                                    aiCopy.savedTranscriptSummary(
+                                      source: transcript.sourceLabel,
+                                      date: _formatRevisionDate(transcript.createdAt),
+                                      count: transcript.cueCount,
+                                    ) +
+                                        (language == null
+                                            ? ''
+                                            : aiCopy.savedTranscriptLanguageSuffix(language: language)) +
+                                        (sameItem ? aiCopy.savedTranscriptSameItem : ''),
                                   ),
                                   onTap: () => Navigator.of(dialogContext).pop(transcript),
                                 );
@@ -1597,6 +1605,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   Future<(TranslateLanguage, TranslateLanguage)?> _chooseCrossLanguagePair({
     TranslateLanguage? fixedReference,
   }) async {
+    final aiCopy = Translations.of(context).videoControls.subtitleAiControls;
     var reference = fixedReference ?? _targetLanguage;
     var source = fixedReference != null && _sourceLanguage == fixedReference
         ? SubtitleTranslationService.languages.firstWhere((language) => language != fixedReference)
@@ -1605,14 +1614,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          title: const Text('Subtitle languages for matching'),
+          title: Text(aiCopy.syncLanguageMatchTitle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<TranslateLanguage>(
                 initialValue: source,
-                decoration: const InputDecoration(
-                  labelText: fixedReference == null ? 'Subtitle to synchronize' : 'Target subtitle language',
+                decoration: InputDecoration(
+                  labelText: fixedReference == null ? aiCopy.syncSubtitleToSynchronize : aiCopy.syncTargetSubtitleLanguage,
                   border: OutlineInputBorder(),
                 ),
                 items: SubtitleTranslationService.languages
@@ -1631,8 +1640,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               const SizedBox(height: 12),
               DropdownButtonFormField<TranslateLanguage>(
                 initialValue: reference,
-                decoration: const InputDecoration(
-                  labelText: fixedReference == null ? 'Reference subtitle' : 'Transcript language',
+                decoration: InputDecoration(
+                  labelText: fixedReference == null ? aiCopy.syncReferenceSubtitle : aiCopy.syncTranscriptLanguage,
                   border: OutlineInputBorder(),
                 ),
                 items: SubtitleTranslationService.languages
@@ -1651,15 +1660,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               if (source == reference)
                 const Padding(
                   padding: EdgeInsets.only(top: 8),
-                  child: Text('Choose different languages to use translated text for matching.'),
+                  child: Text(aiCopy.syncDifferentLanguagesHint),
                 ),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(Translations.of(dialogContext).common.cancel)),
             FilledButton(
               onPressed: source == reference ? null : () => Navigator.of(dialogContext).pop((source, reference)),
-              child: const Text('Continue'),
+              child: Text(aiCopy.continueAction),
             ),
           ],
         ),
@@ -1668,6 +1677,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Future<TranslateLanguage?> _chooseTranscriptTranslationTarget(TranslateLanguage sourceLanguage) async {
+    final aiCopy = Translations.of(context).videoControls.subtitleAiControls;
     var targetLanguage = _targetLanguage == sourceLanguage
         ? SubtitleTranslationService.languages.firstWhere((language) => language != sourceLanguage)
         : _targetLanguage;
@@ -1675,16 +1685,17 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          title: const Text('Translate transcript subtitles'),
+          title: Text(aiCopy.translateTranscriptTitle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Speech was identified as ${SubtitleTranslationService.languageLabel(sourceLanguage)}.'),
+              Text(aiCopy.translateTranscriptSpeechIdentified(
+                source: SubtitleTranslationService.languageLabel(sourceLanguage))),
               const SizedBox(height: 10),
               DropdownButtonFormField<TranslateLanguage>(
                 initialValue: targetLanguage,
-                decoration: const InputDecoration(labelText: 'Subtitle language', border: OutlineInputBorder()),
+                decoration: InputDecoration(labelText: aiCopy.translateTranscriptSubtitleLabel, border: const OutlineInputBorder()),
                 items: SubtitleTranslationService.languages
                     .where((language) => language != sourceLanguage)
                     .map((language) => DropdownMenuItem(
@@ -1695,12 +1706,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 onChanged: (value) => setDialogState(() => targetLanguage = value ?? targetLanguage),
               ),
               const SizedBox(height: 8),
-              const Text('This translates the captured portion locally and keeps its speech timings.'),
+              Text(aiCopy.translateTranscriptLocalDescription),
             ],
           ),
           actions: [
             TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(t.common.cancel)),
-            FilledButton(onPressed: () => Navigator.of(dialogContext).pop(targetLanguage), child: const Text('Continue')),
+            FilledButton(onPressed: () => Navigator.of(dialogContext).pop(targetLanguage), child: Text(aiCopy.continueAction)),
           ],
         ),
       ),

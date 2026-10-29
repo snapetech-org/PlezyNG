@@ -28,6 +28,7 @@ import '../../utils/app_logger.dart';
 import '../../services/open_subtitles_client.dart';
 import '../../services/subtitle_revision_service.dart';
 import '../../services/subtitle_live_clock.dart';
+import '../../services/subtitle_standalone_dvr.dart';
 import '../../services/player_sync_offsets.dart';
 import '../../services/subtitle_retimer.dart';
 import '../../services/subtitle_text_importer.dart';
@@ -61,6 +62,7 @@ import 'source_widgets.dart';
 import '../../widgets/video_controls/sheets/picture_adjustments_sheet.dart';
 import '../../widgets/video_controls/sheets/subtitle_ai_sheet.dart';
 import '../../widgets/video_controls/sheets/subtitle_live_clock_dialog.dart';
+import '../../widgets/video_controls/sheets/subtitle_live_delay_dialog.dart';
 import '../../widgets/video_controls/sheets/subtitle_book_dialog.dart';
 import '../../widgets/subtitle_caption_overlay.dart';
 import '../../services/pip_service.dart';
@@ -386,6 +388,22 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _openStandaloneDvr(SourcePlayback playback) async {
+    final player = playback.player;
+    if (player == null || !playback.isLiveInput) return;
+    final profiles = context.read<ActiveProfileProvider>(), profile = context.read<ActiveProfileProvider>().activeId;
+    final entry = playback.entry, index = playback.fileIndex;
+    bool current() => mounted && !player.disposed && playback.player == player && playback.isLiveInput &&
+        playback.entry == entry && playback.fileIndex == index && profiles.activeId == profile;
+    final session = await SubtitleStandaloneDvr.open(player, current);
+    if (!current()) { session?.closeDialog(); return; }
+    if (session == null) throw StateError(Translations.of(context).videoControls.subtitleLive.noSeekableWindow);
+    try {
+      await showDialog<void>(context: context, builder: (_) => SubtitleLiveDelayDialog(player: player,
+        timeline: session.timeline, seek: session.seek, isCurrent: () => session.isCurrent));
+    } finally { session.closeDialog(); }
   }
 
   Future<void> _saveSubtitleToSource(
@@ -1613,6 +1631,8 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
               onPressed: () => _openSourceSubtitleAi(s),
               icon: const AppIcon(Symbols.auto_awesome_rounded),
             ),
+          if (s.isLiveInput) IconButton(tooltip: t.videoControls.subtitleLive.title,
+            icon: const Icon(Icons.history), onPressed: () => sourceAction(context, () => _openStandaloneDvr(s))),
           if (s.canUseBookTranscript) IconButton(tooltip: Translations.of(context).videoControls.subtitleBook.buttonTooltip, icon: const Icon(Icons.menu_book),
             onPressed: () => sourceAction(context, () async {
               final timeline = s.bookTranscriptTimeline();

@@ -24,7 +24,15 @@ the lease. No wall-clock time or manifest duration is used to invent an origin.
 The asynchronous bridge and timeline remain an estimated alignment.
 
 Only a non-placeholder, seekable backend window with a known duration supplies
-DVR expiry bounds. These bounds do not themselves enable standalone delay hold.
+DVR expiry bounds. Standalone live controls now expose the existing explicit
+5–120 second DVR delay/hold dialog when this backend supplies a seekable window.
+The native epoch seek re-reads the window at dispatch and refuses an expired
+target or generation. It uses millisecond positions and excludes the window's
+end; the app does not seek by a stale cached window offset. Targets and observed
+playback remain estimated, not frame-confirmed. A failed/expired request, a
+viewer seek, pause/rate/audio/source/profile change or stale clock stops hold.
+Closing the dialog keeps polling only while an explicitly enabled hold owns it;
+stopping the hold releases that clock. No source reload or output change occurs.
 Ads, backend fallback, terminal playback and missing clocks produce no mapping.
 Other backends still use the manual path. The native clock is independent of
 PCM routing, so using it does not change passthrough, tunneling or the output.

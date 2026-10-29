@@ -3825,6 +3825,17 @@ class ExoPlayerCore(private val activity: Activity) :
     return result
   }
 
+  fun seekSubtitleLiveEpoch(epochMs: Long, generation: Int): Long? {
+    val clock = subtitleLiveClock() ?: return null
+    if (generation != currentMediaGeneration) return null
+    val origin = clock["windowStartEpochMs"] as? Long ?: return null
+    val duration = clock["seekableDurationMs"] as? Long ?: return null
+    if (epochMs < origin || epochMs >= origin + duration) return null
+    val position = epochMs - origin
+    seekTo(position)
+    return position
+  }
+
   /** Captures only an already-decoded route; never changes audible output. */
   fun subtitlePcmCaptureAvailable(): Boolean {
     val player = exoPlayer ?: return false

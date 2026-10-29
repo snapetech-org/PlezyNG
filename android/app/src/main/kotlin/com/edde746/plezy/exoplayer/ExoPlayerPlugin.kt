@@ -277,6 +277,12 @@ open class ExoPlayerPlugin(
       "setSubtitlePcmCaptureEnabled" -> handleSetSubtitlePcmCaptureEnabled(call, result)
       "drainSubtitlePcmCapture" -> handleDrainSubtitlePcmCapture(result)
       "subtitleLiveClock" -> result.success(if (usingMpvFallback || fallbackInProgress) null else playerCore?.subtitleLiveClock())
+      "seekSubtitleLiveEpoch" -> {
+        val epoch = call.argument<Number>("epochMs")?.toLong()
+        val generation = call.argument<Number>("generation")?.toInt()
+        result.success(if (usingMpvFallback || fallbackInProgress || epoch == null || generation == null) null
+          else playerCore?.seekSubtitleLiveEpoch(epoch, generation))
+      }
       "getStats" -> handleGetStats(result)
       "getPlayerType" -> result.success(if (usingMpvFallback) "mpv" else "exoplayer")
       "setSubtitleStyle" -> handleSetSubtitleStyle(call, result)

@@ -55,8 +55,9 @@ class SubtitleDvrDelayService extends ChangeNotifier {
       if (timeline.seekStatus == LiveTvSeekStatus.failed) { stop('Delay hold stopped: the backend seek failed'); return; }
       final seekGeneration = player is SubtitlePcmCaptureSource ? (player as SubtitlePcmCaptureSource).playbackTimelineGeneration : null;
       final ownSeek = _requestAt != null;
-      if (!ownSeek && (seekGeneration != _seekGeneration || !player.state.playing || (player.state.rate - 1).abs() > .001 ||
-          timeline.seekStatus == LiveTvSeekStatus.pending || timeline.seekStatus == LiveTvSeekStatus.opening)) {
+      if (!player.state.playing || (player.state.rate - 1).abs() > .001 ||
+          !ownSeek && (seekGeneration != _seekGeneration || timeline.seekStatus == LiveTvSeekStatus.pending ||
+          timeline.seekStatus == LiveTvSeekStatus.opening)) {
         stop('Delay hold stopped: viewer playback control takes precedence'); return;
       }
       final window = timeline.seekable, edge = timeline.liveEdgeEpoch, playback = timeline.playback;

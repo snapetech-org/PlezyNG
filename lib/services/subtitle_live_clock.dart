@@ -110,6 +110,12 @@ class SubtitleBackendLiveClock implements SubtitleLiveClock {
     return (startMs: sample.windowStartEpochMs, endMs: sample.windowStartEpochMs + duration);
   }
 
+  Future<bool> seekEpoch(int epochMs) async {
+    final sample = _fresh, range = seekableEpochRange;
+    if (sample == null || range == null || epochMs < range.startMs || epochMs >= range.endMs) return false;
+    return await _backend.seekSubtitleLiveEpoch(epochMs, generation: sample.generation) && isCurrent;
+  }
+
   @override
   void retire() { _retired = true; _timer?.cancel(); _timer = null; _sample = null; _age.stop(); }
 }

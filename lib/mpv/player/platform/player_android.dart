@@ -633,6 +633,19 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   }
 
   @override
+  Future<bool> seekSubtitleLiveEpoch(int epochMs, {required int generation}) async {
+    if (disposed || !_isLive || _usingMpvFallback) return false;
+    final media = _mediaSessionGeneration, seek = ++_playbackTimelineGeneration;
+    final token = beginPlayheadRelocation();
+    announcePlayheadJump(null);
+    final position = await invoke<int>('seekSubtitleLiveEpoch', {'epochMs': epochMs, 'generation': generation});
+    if (position == null || disposed || media != _mediaSessionGeneration || _usingMpvFallback) return false;
+    commitPlayheadRelocation(token);
+    publishPlayheadRelocation(Duration(milliseconds: position) + timelineOffset, token: token);
+    return seek == _playbackTimelineGeneration;
+  }
+
+  @override
   Future<void> command(List<String> args) async {
     if (disposed || args.isEmpty || args.first != 'sub-add') return;
     if (args.length < 2) throw ArgumentError('sub-add requires a local file path.');

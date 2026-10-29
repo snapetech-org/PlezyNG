@@ -12,4 +12,7 @@ class SubtitleLiveClockSnapshot {
 
 abstract interface class SubtitleLiveClockSource implements PlayerMediaSessionIdentity {
   Future<SubtitleLiveClockSnapshot?> readSubtitleLiveClock();
+  /// The native side must re-read the current window and refuse expired
+  /// targets/generations before converting this epoch into a source position.
+  Future<bool> seekSubtitleLiveEpoch(int epochMs, {required int generation});
 }

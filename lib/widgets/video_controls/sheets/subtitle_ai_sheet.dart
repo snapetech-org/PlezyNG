@@ -1781,7 +1781,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       throw StateError('Source and output cue counts do not match; no subtitle was attached.');
     }
     final reviewedCues = List<SubtitleCue>.from(cues);
-    final reviewedWordTimings = SubtitleWordTimingBuilder.attachCueIndices(wordTimings, reviewedCues);
+    final originalCuesById = <String, SubtitleCue>{for (final cue in cues) cue.stableId: cue};
+    var reviewedWordTimings = SubtitleWordTimingBuilder.attachCueIndices(wordTimings, reviewedCues).toList();
+    var invalidatedWordTimingCount = 0;
     final undoHistory = <(int, SubtitleCue)>[];
     _lastResultUploadedToServer = false;
     _lastResultSavedToSource = false;
@@ -1853,7 +1855,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 Text(
                   reviewedWordTimings.isEmpty
                       ? 'This backend did not return token timestamps; cue timing remains available.'
-                      : 'JSON includes ${reviewedWordTimings.length} token-derived word timings. Whisper token confidence is not calibrated.',
+                      : 'JSON includes ${reviewedWordTimings.length} token-derived word timings. Editing a cue omits its linked spans so timings cannot become stale. Whisper token confidence is not calibrated.',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 TextButton.icon(
@@ -2004,6 +2006,21 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         widget.isRevisionIdentityCurrent?.call() == false) {
       throw StateError('Playback changed while the subtitle was being reviewed. Reopen subtitle tools for the current item.');
     }
+    final editedCueIds = <String>{};
+    for (final cue in reviewedCues) {
+      final original = originalCuesById[cue.stableId];
+      if (original != null &&
+          (original.startMs != cue.startMs || original.endMs != cue.endMs || original.text != cue.text)) {
+        editedCueIds.add(cue.stableId);
+      }
+    }
+    if (editedCueIds.isNotEmpty && reviewedWordTimings.isNotEmpty) {
+      final retainedWordTimings = reviewedWordTimings
+          .where((word) => word.cueId == null || !editedCueIds.contains(word.cueId))
+          .toList(growable: false);
+      invalidatedWordTimingCount = reviewedWordTimings.length - retainedWordTimings.length;
+      reviewedWordTimings = retainedWordTimings;
+    }
     final bytes = SubtitleSyncService.writeSrt(reviewedCues);
     final originToken = _originTokenForOperation(operationLabel);
     if (choice == _SubtitleReviewChoice.exportSrt) {
@@ -2039,18 +2056,26 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       final jsonBytes = Uint8List.fromList(
         utf8.encode(
           JsonEncoder.withIndent('  ').convert({
-            'schema': 'plezyng.subtitle-cues.v2',
+            'schema': 'plezyng.subtitle-cues.v3',
             'generatedBy': 'PlezyNG',
             'operation': operationLabel,
             'language': operationLanguageCode,
             'timebase': 'milliseconds',
             'createdAt': DateTime.now().toUtc().toIso8601String(),
             'cues': reviewedCues
-                .map((cue) => {'index': cue.index, 'startMs': cue.startMs, 'endMs': cue.endMs, 'text': cue.text})
+                .map(
+                  (cue) => {
+                    'cueId': cue.stableId,
+                    'index': cue.index,
+                    'startMs': cue.startMs,
+                    'endMs': cue.endMs,
+                    'text': cue.text,
+                  },
+                )
                 .toList(growable: false),
             'wordTimingAvailability': reviewedWordTimings.isEmpty
-                ? 'not-returned-by-backend'
-                : 'whisper-token-timestamps',
+                ? (wordTimings.isEmpty ? 'not-returned-by-backend' : 'omitted-after-cue-edits')
+                : (invalidatedWordTimingCount > 0 ? 'partial-after-cue-edits' : 'whisper-token-timestamps'),
             'wordTimings': reviewedWordTimings
                 .map(
                   (word) => {
@@ -2060,6 +2085,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     'unit': word.unit.name,
                     'probability': word.confidence,
                     'cueIndex': word.cueIndex,
+                    'cueId': word.cueId,
                   },
                 )
                 .toList(growable: false),

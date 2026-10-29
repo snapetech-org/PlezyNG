@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show compute;
 
 import '../../../services/file_picker_service.dart';
 import '../../../services/subtitle_companion_service.dart';
@@ -37,7 +38,7 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
     try {
       if (!widget.isCurrent()) throw StateError('The playback item changed');
       final result = widget.result;
-      final report = {'schema': 'plezyng.subtitle-research-review.v1', 'jobId': widget.jobId,
+      final report = <String, Object?>{'schema': 'plezyng.subtitle-research-review.v1', 'jobId': widget.jobId,
         'inputSha256': widget.inputDigest, 'itemTimeline': result.itemTimeline,
         'status': 'host-observations-before-viewer-edits', 'qualityQualified': false,
         'provenance': result.provenance, 'warnings': result.warnings, 'language': result.language,
@@ -53,8 +54,7 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
       };
       // Compact JSON leaves room for large, bounded motion observations. Image
       // descriptors are included; image pixels use the existing image export.
-      final bytes = Uint8List.fromList(utf8.encode(jsonEncode(report)));
-      if (bytes.length > 24 * 1024 * 1024) throw const FormatException('Research report exceeds 24 MiB');
+      final bytes = await compute(_encode, report);
       if (!widget.isCurrent()) throw StateError('The playback item changed');
       final saved = await FilePickerService.instance.saveFile(dialogTitle: 'Export research evidence',
         fileName: 'subtitle-research-${widget.jobId.substring(0, 8)}.json', bytes: bytes,
@@ -63,6 +63,12 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
     } catch (error) {
       if (mounted) setState(() => _status = error is FormatException ? error.message : 'Could not export this evidence');
     } finally { if (mounted) setState(() => _saving = false); }
+  }
+
+  static Uint8List _encode(Map<String, Object?> report) {
+    final bytes = Uint8List.fromList(utf8.encode(jsonEncode(report)));
+    if (bytes.length > 24 * 1024 * 1024) throw const FormatException('Research report exceeds 24 MiB');
+    return bytes;
   }
 
   Widget _observation(Object? value, int index) {
@@ -78,7 +84,8 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
   @override
   Widget build(BuildContext context) {
     final result = widget.result, sections = result.researchEvidence.entries.toList();
-    return AlertDialog(title: const Text('Review research evidence'), content: SizedBox(width: 760, height: 520,
+    return AlertDialog(title: const Text('Review research evidence'), content: SizedBox(width: 760,
+      height: (MediaQuery.sizeOf(context).height * .55).clamp(140.0, 520.0).toDouble(),
       child: ListView(children: [
         const Text('These are unqualified model outputs and measurements. Agreement, scores and region paths do not prove accuracy. '
           'Continue to review the caption wording and timing separately.'),

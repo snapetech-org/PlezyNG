@@ -30,6 +30,7 @@ final class IncomingSubtitleShareService {
     'mks',
     'mpl',
     'scc',
+    'scc',
     'smi',
     'srt',
     'ssa',

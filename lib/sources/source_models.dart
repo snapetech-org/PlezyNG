@@ -804,5 +804,10 @@ SourceItemKind classifySourceFile(String name, [String mime = '']) {
   return SourceItemKind.unknown;
 }
 
-/// Native text sidecars. Archives and bitmap pairs use explicit file import.
-bool isSourceTextSubtitle(String name) => const {'.srt', '.vtt', '.ass', '.ssa'}.contains(p.extension(name).toLowerCase());
+/// Native or explicitly convertible text sidecars. Discovery does not authorize
+/// attachment: non-native formats require the reviewed SRT conversion path.
+/// Archives and bitmap pairs still use explicit file import.
+bool isSourceTextSubtitle(String name) => const {
+  '.srt', '.vtt', '.ass', '.ssa', '.ttml', '.dfxp', '.imsc', '.xml',
+  '.smi', '.sami', '.sub', '.sbv', '.lrc', '.mpl', '.scc',
+}.contains(p.extension(name).toLowerCase());

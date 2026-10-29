@@ -239,7 +239,9 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     return SourceSubtitleDiscovery.discover(sources.adapter(item.sourceId), item, file, current);
   }
 
-  Future<void> attachSourceSubtitle(SourceSubtitleCandidate candidate, {required String expectedFileFingerprint}) async {
+  Future<void> attachSourceSubtitle(SourceSubtitleCandidate candidate, {required String expectedFileFingerprint,
+    Future<({String name, List<int> bytes})?> Function(String name, List<int> bytes)? reviewConversion,
+  }) async {
     final item = entry, native = player, profile = _profile, index = _fileIndex;
     if (!canDiscoverSourceSubtitles || item == null || native == null || profile == null ||
         files[index].fingerprint != expectedFileFingerprint) throw const SourceException(SourceFailure.cancelled);
@@ -247,9 +249,22 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     bool current() => _valid && entry == item && player == native && _profile == profile &&
         _fileEpoch == epoch && _generation == generation && _fileIndex == index &&
         index < files.length && files[index].fingerprint == expectedFileFingerprint;
-    final bytes = await SourceSubtitleDiscovery.read(sources.adapter(item.sourceId), candidate.file, current);
+    var bytes = await SourceSubtitleDiscovery.read(sources.adapter(item.sourceId), candidate.file, current);
     if (!current()) throw const SourceException(SourceFailure.cancelled);
-    await applyExternalSubtitle(name: candidate.file.name, bytes: bytes, expectedPlayer: native,
+    var name = candidate.file.name;
+    final extension = p.extension(name).toLowerCase();
+    if (!const {'.srt', '.vtt', '.ass', '.ssa'}.contains(extension) ||
+        !native.supportedLocalSubtitleExtensions.contains(extension.substring(1))) {
+      if (reviewConversion == null || !native.supportedLocalSubtitleExtensions.contains('srt')) {
+        throw const SourceException(SourceFailure.unsupported);
+      }
+      final converted = await reviewConversion(name, bytes);
+      if (!current()) throw const SourceException(SourceFailure.cancelled);
+      if (converted == null) return;
+      if (p.extension(converted.name).toLowerCase() != '.srt') throw const SourceException(SourceFailure.invalidData);
+      name = converted.name; bytes = converted.bytes;
+    }
+    await applyExternalSubtitle(name: name, bytes: bytes, expectedPlayer: native, expectedIsCurrent: current,
       expectedScope: edition == null ? null : (entryKey: item.key, edition: edition, fileIndex: index, fileFingerprint: expectedFileFingerprint));
   }
 
@@ -1059,6 +1074,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     bool forced = false,
     bool hearingImpaired = false,
     Player? expectedPlayer,
+    bool Function()? expectedIsCurrent,
     ({String entryKey, String edition, int fileIndex, String fileFingerprint})? expectedScope,
   }) => _serialize(() async {
     final native = player;
@@ -1071,6 +1087,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     if (expectedPlayer != null && native != expectedPlayer) {
       throw const SourceException(SourceFailure.cancelled);
     }
+    if (expectedIsCurrent?.call() == false) throw const SourceException(SourceFailure.cancelled);
     if (native.supportedLocalSubtitleExtensions.isEmpty || files.isEmpty || _fileIndex < 0 || _fileIndex >= files.length) {
       throw const SourceException(SourceFailure.unsupported);
     }
@@ -1106,7 +1123,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       edition: edition,
       generation: generation,
       fileEpoch: fileEpoch,
-    );
+    ) && expectedIsCurrent?.call() != false;
 
     final persistent = _persistProgress && !_liveInput && currentProgress != null && edition != null;
     if (!persistent) {

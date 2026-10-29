@@ -20,6 +20,9 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
   final _fps = TextEditingController();
   final _tail = TextEditingController(text: '2000');
   final _samiClass = TextEditingController();
+  final _sccOrigin = TextEditingController(text: '0');
+  int _sccChannel = 1;
+  bool _sccNtsc = true;
   String _encoding = 'unicode';
   SubtitleTextImport? _result;
   String? _error;
@@ -29,7 +32,7 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
   @override
   void initState() { super.initState(); unawaited(_preview()); }
   @override
-  void dispose() { ++_generation; _fps.dispose(); _tail.dispose(); _samiClass.dispose(); super.dispose(); }
+  void dispose() { ++_generation; _fps.dispose(); _tail.dispose(); _samiClass.dispose(); _sccOrigin.dispose(); super.dispose(); }
 
   void _invalidate() { ++_generation; setState(() { _result = null; _error = null; }); }
 
@@ -42,8 +45,11 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
       if (_fps.text.trim().isNotEmpty && fps == null) throw const FormatException('Enter a numeric frame rate.');
       final tail = int.tryParse(_tail.text.trim());
       if (tail == null) throw const FormatException('Enter the final cue duration in whole milliseconds.');
+      final origin = int.tryParse(_sccOrigin.text.trim());
+      if (origin == null) throw const FormatException('Enter the SCC clock origin in whole milliseconds.');
       final result = await SubtitleTextImporter.parseAsync(widget.bytes, widget.extension,
-        encoding: _encoding, framesPerSecond: fps, finalCueDurationMs: tail, samiClass: _samiClass.text);
+        encoding: _encoding, framesPerSecond: fps, finalCueDurationMs: tail, samiClass: _samiClass.text,
+        sccChannel: _sccChannel, sccNtsc: _sccNtsc, sccClockOriginMs: origin);
       if (mounted && generation == _generation) setState(() => _result = result);
     } catch (error) {
       if (mounted && generation == _generation) setState(() => _error = error is FormatException ? error.message.toString() : 'This file could not be decoded. Check its format and encoding.');
@@ -71,7 +77,22 @@ class _SubtitleImportDialogState extends State<SubtitleImportDialog> {
             onChanged: (_) => _invalidate()),
           if (const {'.smi', '.sami'}.contains(widget.extension)) TextField(controller: _samiClass, maxLength: 128,
             decoration: const InputDecoration(labelText: 'SAMI language class (blank selects first)', helperText: 'The preview lists the classes declared in the file.'), onChanged: (_) => _invalidate()),
-          if (const {'.smi', '.sami', '.lrc'}.contains(widget.extension)) TextField(controller: _tail, maxLength: 5,
+          if (widget.extension == '.scc') ...[
+            DropdownButtonFormField<int>(initialValue: _sccChannel,
+              decoration: const InputDecoration(labelText: 'Channel within the supplied SCC field'),
+              items: const [DropdownMenuItem(value: 1, child: Text('Channel 1')), DropdownMenuItem(value: 2, child: Text('Channel 2'))],
+              onChanged: _parsing ? null : (value) { _sccChannel = value ?? 1; _invalidate(); }),
+            DropdownButtonFormField<bool>(initialValue: _sccNtsc,
+              decoration: const InputDecoration(labelText: 'SCC frame clock'),
+              items: const [DropdownMenuItem(value: true, child: Text('30000/1001 fps (29.97)')),
+                DropdownMenuItem(value: false, child: Text('30 fps'))],
+              onChanged: _parsing ? null : (value) { _sccNtsc = value ?? true; _invalidate(); }),
+            TextField(controller: _sccOrigin, maxLength: 8, keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'SCC clock origin to subtract (ms)',
+                helperText: '0 preserves its clock. Set a known media origin; the first caption is not assumed to be time zero.'),
+              onChanged: (_) => _invalidate()),
+          ],
+          if (const {'.smi', '.sami', '.lrc', '.scc'}.contains(widget.extension)) TextField(controller: _tail, maxLength: 5,
             keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Final cue duration without a closing time (ms)'),
             onChanged: (_) => _invalidate()),
           const SizedBox(height: 10),

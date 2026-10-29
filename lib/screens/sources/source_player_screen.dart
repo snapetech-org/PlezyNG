@@ -28,6 +28,9 @@ import '../../services/open_subtitles_client.dart';
 import '../../services/subtitle_revision_service.dart';
 import '../../services/player_sync_offsets.dart';
 import '../../services/subtitle_retimer.dart';
+import '../../services/subtitle_text_importer.dart';
+import '../../services/subtitle_sync_service.dart';
+import '../../widgets/video_controls/sheets/subtitle_import_dialog.dart';
 import '../../sources/source_models.dart';
 import '../../sources/source_playback.dart';
 import '../../sources/source_subtitle_discovery.dart';
@@ -297,12 +300,19 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
       content: SizedBox(width: 600, height: 400, child: ListView(children: [
         const Text('Refresh searches this source’s media folder and named subtitle subfolders. Choose a file to attach a separate local copy. Originals stay on the source.'),
         if (result.limited) const Text('Search limit reached. Use explicit file import for other folders.'),
-        if (result.candidates.isEmpty) const Text('No matching SRT, VTT, ASS or SSA files were found.'),
+        if (result.candidates.isEmpty) const Text('No matching text subtitle files were found.'),
         for (final candidate in result.candidates) ListTile(title: Text(candidate.file.name), subtitle: Text(candidate.folder),
           onTap: () => Navigator.pop(context, candidate)),
       ])), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))]));
     if (chosen == null || !mounted || playback.entry != entry || playback.player != core) return;
-    await playback.attachSourceSubtitle(chosen, expectedFileFingerprint: fingerprint);
+    await playback.attachSourceSubtitle(chosen, expectedFileFingerprint: fingerprint, reviewConversion: (name, bytes) async {
+      if (!mounted) return null;
+      final converted = await showDialog<SubtitleTextImport>(context: context, builder: (_) =>
+        SubtitleImportDialog(bytes: bytes, extension: p.extension(name).toLowerCase(), name: name));
+      if (converted == null || !mounted) return null;
+      return (name: '${p.basenameWithoutExtension(name)}.converted.srt',
+        bytes: SubtitleSyncService.writeSrt(converted.cues));
+    });
   }
 
   void _openSourceSubtitleAi(SourcePlayback playback) {

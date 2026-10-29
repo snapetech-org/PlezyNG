@@ -76,7 +76,7 @@ class _SubtitleBookDialogState extends State<SubtitleBookDialog> {
         ? AlertDialog(title: Text(copy.sourceChangedTitle), actions: [TextButton(
           onPressed: () => Navigator.pop(context), child: Text(t.common.close))]) : StatefulBuilder(
       builder: (context, update) => AlertDialog(title: Text(copy.savedRevisionTitle(title: part.title)),
-        content: SizedBox(width: 620, height: 440, child: Column(children: [
+        content: SizedBox(width: 620, height: (MediaQuery.sizeOf(context).height - 180).clamp(240.0, 560.0).toDouble(), child: ListView(children: [
           Text(copy.fileClockInfo(start: Duration(milliseconds: part.startMs),
             duration: Duration(milliseconds: part.durationMs))),
           SwitchListTile(title: Text(copy.bookClockTitle), value: bookClock,
@@ -85,9 +85,7 @@ class _SubtitleBookDialogState extends State<SubtitleBookDialog> {
           CheckboxListTile(title: Text(copy.confirmationTitle),
             subtitle: Text(copy.confirmationHelp),
             value: confirmed, onChanged: (value) => update(() => confirmed = value == true)),
-          Expanded(child: ListView.builder(itemCount: revisions.length, itemBuilder: (context, index) {
-            final item = revisions[index];
-            return ListTile(title: Text(copy.revisionSummary(
+          for (final item in revisions) ListTile(title: Text(copy.revisionSummary(
                 operation: item.operation,
                 language: item.languageCode ?? copy.unspecifiedLanguage)),
               subtitle: Text(copy.revisionDetails(
@@ -96,8 +94,7 @@ class _SubtitleBookDialogState extends State<SubtitleBookDialog> {
                 firstCue: item.cues.isEmpty
                     ? copy.none
                     : Duration(milliseconds: item.cues.first.startMs))),
-              enabled: confirmed, onTap: !confirmed ? null : () => Navigator.pop(context, item));
-          })),
+              enabled: confirmed, onTap: !confirmed ? null : () => Navigator.pop(context, item)),
         ])), actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(t.common.cancel))],
       ))));
     if (revision == null || !mounted || !_current) return;
@@ -132,13 +129,13 @@ class _SubtitleBookDialogState extends State<SubtitleBookDialog> {
       (query.isEmpty || SubtitleRubyText.plain(cue.source.text).toLowerCase().contains(query))).toList();
     return PopScope(canPop: !_busy, child: AlertDialog(title: Text(copy.title(title: widget.timeline.title)),
       content: SizedBox(width: 760, height: (MediaQuery.sizeOf(context).height - 180).clamp(300.0, 700.0).toDouble(),
-        child: Column(children: [
+        child: CustomScrollView(slivers: [SliverToBoxAdapter(child: Column(children: [
           Text(copy.description),
-          Row(children: [Expanded(child: Text(copy.selectedSummary(
-              selected: _selected.length, total: widget.timeline.parts.length, cues: _cues.length))),
+          Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [Text(copy.selectedSummary(
+              selected: _selected.length, total: widget.timeline.parts.length, cues: _cues.length)),
             FilterChip(label: Text(copy.hideFutureText), selected: _hideFuture,
               onSelected: (value) => setState(() => _hideFuture = value))]),
-          SizedBox(height: 125, child: ListView.builder(itemCount: widget.timeline.parts.length,
+          SizedBox(height: 125, child: ListView.builder(primary: false, itemCount: widget.timeline.parts.length,
             itemBuilder: (context, index) {
               final part = widget.timeline.parts[index], selected = _selected[part.fileIndex];
               return ListTile(dense: true, title: Text(part.title, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -153,14 +150,14 @@ class _SubtitleBookDialogState extends State<SubtitleBookDialog> {
           TextField(controller: _search, maxLength: 128, decoration: InputDecoration(labelText: copy.searchSelected, counterText: ''),
             onChanged: (_) => setState(() {})),
           if (_message != null) Semantics(liveRegion: true, child: Text(_message!)),
-          Expanded(child: ListView.builder(itemCount: visible.length, itemBuilder: (context, index) {
+          ])), SliverList(delegate: SliverChildBuilderDelegate((context, index) {
             final cue = visible[index], text = SubtitleRubyText.plain(cue.source.text);
             return ListTile(title: SelectableText(text), subtitle: Text('${Duration(milliseconds: cue.startMs)} · ${cue.part.title}'),
               leading: IconButton(tooltip: copy.seekCue, icon: const Icon(Icons.play_arrow),
                 onPressed: _busy || !current ? null : () => _run(() => widget.timeline.seek(cue.part.fileIndex, cue.fileStartMs))),
               trailing: IconButton(tooltip: copy.copyCue, icon: const Icon(Icons.copy),
                 onPressed: () => Clipboard.setData(ClipboardData(text: text))));
-          })),
+          }, childCount: visible.length)),
         ])), actions: [TextButton(onPressed: _busy || !current || _cues.isEmpty ? null : _export, child: Text(copy.export)),
           TextButton(onPressed: _busy ? null : () => Navigator.pop(context), child: Text(t.common.close))],
     ));

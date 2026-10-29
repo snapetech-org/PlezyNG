@@ -14,7 +14,10 @@ the existing workflows and their explicit upload/model choices.
 
 The overlay follows the music owner's clock without opening, seeking, replacing
 or disposing its player. Artwork and visualizer views display captions; the
-provider lyrics view retains its own presentation. Compact panes honor the
+provider lyrics view retains its own presentation. After attaching a new current
+app lane through the tools, closing the sheet switches Now Playing out of the
+provider-lyrics view so the new captions are visible. Cancelling or only editing
+appearance leaves the current view unchanged. Compact panes honor the
 workspace's focused-caption policy. The audio surface does not register a video
 frame exporter, offer native subtitle attachment, or expose native HDR controls.
 Closing the tools or Now Playing leaves the queue owner in control.

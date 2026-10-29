@@ -640,7 +640,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
                 icon: AppIcon(Symbols.picture_in_picture_alt_rounded, fill: 1, color: tk.text),
               ),
             ),
-            MusicCaptionButton(service: service, color: tk.text),
+            MusicCaptionButton(service: service, color: tk.text, onCaptionsAttached: () {
+              if (mounted && _showLyrics) setState(() => _showLyrics = false);
+            }),
             _buildOverflowButton(track),
           ],
         ),

@@ -82,6 +82,7 @@ class _SubtitleOperationSnapshot {
     required this.revisionIdentity,
     required this.profileId,
     required this.audioId,
+    required this.timelineOffsetMs,
   });
 
   final Player player;
@@ -89,6 +90,7 @@ class _SubtitleOperationSnapshot {
   final SubtitleRevisionIdentity? revisionIdentity;
   final String? profileId;
   final String? audioId;
+  final int timelineOffsetMs;
 
   bool isCurrent({
     required Player currentPlayer,
@@ -98,6 +100,7 @@ class _SubtitleOperationSnapshot {
   }) {
     if (!identical(player, currentPlayer)) return false;
     if (currentPlayer.disposed || currentPlayer.state.track.audio?.id != audioId) return false;
+    if (currentPlayer.timelineOffset.inMilliseconds != timelineOffsetMs) return false;
     if (currentProfileId != profileId) return false;
     if (mediaSessionGeneration != null) {
       if (currentPlayer is! PlayerMediaSessionIdentity ||
@@ -298,6 +301,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       revisionIdentity: _revisionIdentity,
       profileId: _activeProfileId,
       audioId: player.state.track.audio?.id,
+      timelineOffsetMs: player.timelineOffset.inMilliseconds,
     );
     _operationSnapshot = snapshot;
     setState(() {
@@ -2414,12 +2418,26 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     }
   }
 
-  Future<List<SubtitleRevision>?> _importSubtitleRevisionJson(SubtitleRevisionIdentity identity) async {
+  Future<List<SubtitleRevision>?> _importSubtitleRevisionJson(SubtitleRevisionIdentity identity,
+      {required bool Function() isHistoryCurrent}) async {
+    final player = widget.player;
+    final snapshot = _SubtitleOperationSnapshot(player: player,
+      mediaSessionGeneration: player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null,
+      revisionIdentity: identity, profileId: _activeProfileId, audioId: player.state.track.audio?.id,
+      timelineOffsetMs: player.timelineOffset.inMilliseconds);
+    bool current() => mounted && isHistoryCurrent() && snapshot.isCurrent(currentPlayer: widget.player,
+      currentRevisionIdentity: _revisionIdentity, currentProfileId: _activeProfileId,
+      isRevisionIdentityCurrent: widget.isRevisionIdentityCurrent);
+    void requireCurrent() {
+      if (!current()) throw StateError('Playback or profile changed during subtitle history import.');
+    }
+    requireCurrent();
     final picked = await FilePickerService.instance.pickFiles(
       type: FileType.custom,
       allowedExtensions: const ['json'],
       withReadStream: true,
     );
+    requireCurrent();
     if (picked == null || picked.files.isEmpty) return null;
     final file = picked.files.first;
     if (p.extension(file.name).toLowerCase() != '.json' ||
@@ -2444,6 +2462,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final output = BytesBuilder(copy: false);
     var received = 0;
     await for (final chunk in source) {
+      requireCurrent();
       received += chunk.length;
       if (received > SubtitleRevisionService.maximumHistoryBundleBytes) {
         throw const FormatException('Subtitle history JSON exceeds the 32 MiB import limit.');
@@ -2475,6 +2494,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     }
     final saved = <SubtitleRevision>[];
     for (final imported in importedRevisions.reversed) {
+      requireCurrent();
       saved.add(
         await SubtitleRevisionService.saveRevision(
           identity: identity,
@@ -2483,6 +2503,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           cues: imported.cues,
           wordTimings: imported.wordTimings,
           onItemTimeline: imported.onItemTimeline,
+          isCurrent: current,
         ),
       );
     }
@@ -2590,10 +2611,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       setState(() => _revisionStatus = 'Revision history needs a stable profile and media item.');
       return;
     }
+    final historyPlayer = widget.player;
+    final historySnapshot = _SubtitleOperationSnapshot(player: historyPlayer,
+      mediaSessionGeneration: historyPlayer is PlayerMediaSessionIdentity ? historyPlayer.mediaSessionGeneration : null,
+      revisionIdentity: identity, profileId: _activeProfileId, audioId: historyPlayer.state.track.audio?.id,
+      timelineOffsetMs: historyPlayer.timelineOffset.inMilliseconds);
+    bool historyCurrent() => mounted && historySnapshot.isCurrent(currentPlayer: widget.player,
+      currentRevisionIdentity: _revisionIdentity, currentProfileId: _activeProfileId,
+      isRevisionIdentityCurrent: widget.isRevisionIdentityCurrent);
     try {
       var revisions = await SubtitleRevisionService.loadRevisions(identity);
       var draft = await SubtitleRevisionService.loadDraftForIdentity(identity);
-      if (!mounted || _revisionIdentity?.storageKey != identity.storageKey) return;
+      if (!historyCurrent()) return;
       await showDialog<void>(
         context: context,
         builder: (dialogContext) => StatefulBuilder(
@@ -2606,9 +2635,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   IconButton(
                     tooltip: t.videoControls.subtitleArchive.title,
                     onPressed: () {
+                      if (!historyCurrent()) return;
                       Navigator.of(dialogContext).pop();
                       unawaited(_run(() => showSubtitleArchiveDialog(context,
-                        identity: identity, isCurrent: () => mounted && _operationIdentityIsCurrent &&
+                        identity: identity, isCurrent: () => historyCurrent() && _operationIdentityIsCurrent &&
                             _revisionIdentity?.storageKey == identity.storageKey)));
                     },
                     icon: const AppIcon(Symbols.folder_open_rounded),
@@ -2767,8 +2797,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 TextButton.icon(
                   onPressed: () async {
                     try {
-                      if (!await _confirmSubtitleHistoryImport() || !mounted || !dialogContext.mounted) return;
-                      final imported = await _importSubtitleRevisionJson(identity);
+                      if (!historyCurrent() || !await _confirmSubtitleHistoryImport() ||
+                          !historyCurrent() || !dialogContext.mounted) return;
+                      final imported = await _importSubtitleRevisionJson(identity, isHistoryCurrent: historyCurrent);
                       if (imported != null && mounted && dialogContext.mounted) {
                         final refreshed = await SubtitleRevisionService.loadRevisions(identity);
                         if (!mounted || !dialogContext.mounted) return;

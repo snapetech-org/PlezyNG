@@ -10,14 +10,16 @@ import '../../services/driver_distraction.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../services/subtitle_analysis_source.dart';
 import '../../services/subtitle_revision_service.dart';
+import '../../services/subtitle_overlay_service.dart';
 import '../overlay_sheet.dart';
 import '../video_controls/sheets/subtitle_ai_sheet.dart';
 
 /// Borrows the queue owner's player. Closing this sheet never stops music.
 class MusicCaptionButton extends StatelessWidget {
-  const MusicCaptionButton({super.key, required this.service, this.color});
+  const MusicCaptionButton({super.key, required this.service, this.color, this.onCaptionsAttached});
   final MusicPlaybackService service;
   final Color? color;
+  final VoidCallback? onCaptionsAttached;
 
   Future<void> _open(BuildContext context, MusicSubtitleAccess access) async {
     final copy = Translations.of(context).videoControls.subtitleAiControls;
@@ -25,6 +27,7 @@ class MusicCaptionButton extends StatelessWidget {
     final profile = profiles.activeId;
     bool current() => access.isCurrent() && profiles.activeId == profile && automotivePlaybackAllowedNow();
     if (profile == null || !current()) return;
+    final originalLanes = List<SubtitleOverlayTrack?>.of(SubtitleOverlayService.forPlayer(access.player).lanes);
     Future<SubtitleAnalysisSource> openSource() async {
       if (!current()) throw StateError('The music track or profile changed.');
       final source = await access.openAnalysisSource();
@@ -44,6 +47,12 @@ class MusicCaptionButton extends StatelessWidget {
           ratingKey: 'music:${access.item.id}:${access.sourceIdentity}', mediaIndex: access.mediaIndex,
           mediaTitle: access.item.title, sourceLabel: copy.musicLibrary),
         isRevisionIdentityCurrent: current, openAnalysisSource: openSource));
+    if (!context.mounted || !current()) return;
+    final lanes = SubtitleOverlayService.forPlayer(access.player).lanes;
+    if (List.generate(lanes.length, (i) => i).any((i) => lanes[i] != null &&
+        !identical(lanes[i], originalLanes[i]) && lanes[i]!.isCurrent())) {
+      onCaptionsAttached?.call();
+    }
   }
 
   @override

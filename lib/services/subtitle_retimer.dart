@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 
+import 'subtitle_ass_timing.dart';
+
 /// A derived subtitle file whose cue times follow the active MPV timing
 /// correction. The source bytes are never modified.
 final class SubtitleRetimingResult {
@@ -152,7 +154,6 @@ abstract final class SubtitleRetimer {
   static final RegExp _timingLine = RegExp(r'^([ \t]*)(\S+)([ \t]+-->[ \t]+)(\S+)(.*)$');
   static final RegExp _assDialogueLine = RegExp(r'^\s*Dialogue\s*:', caseSensitive: false);
   static final RegExp _assTimeExpression = RegExp(r'^(\d{1,6}):([0-5]\d):([0-5]\d)\.(\d{2})$');
-  static final RegExp _assTimedTag = RegExp(r'\\(?:kf|ko|kt|k|t|move|fad|fade)(?=[0-9(]|$)', caseSensitive: false);
 
   /// Parses bounded SRT, WebVTT, ASS, or SSA timing and payload for an interactive cue
   /// picker. The source bytes remain untouched and cues retain display text.
@@ -291,6 +292,7 @@ abstract final class SubtitleRetimer {
         if (end <= start) throw const FormatException('Subtitle cue end must be after its start.');
 
         retimedCueCount++;
+        if (retimedCueCount > maximumCueCount) throw const FormatException('Subtitle has more than 50000 cues.');
         final transformedStart = (start * rate).round() + delayMs;
         final transformedEnd = (end * rate).round() + delayMs;
         if (transformedEnd <= 0) {
@@ -380,7 +382,8 @@ abstract final class SubtitleRetimer {
             .split(',')
             .map((field) => field.trim().toLowerCase())
             .toList();
-        if (!formatFields.contains('start') ||
+        if (formatFields.length > 64 || formatFields.toSet().length != formatFields.length ||
+            !formatFields.contains('start') ||
             !formatFields.contains('end') ||
             !formatFields.contains('text') ||
             formatFields.last != 'text') {
@@ -400,15 +403,7 @@ abstract final class SubtitleRetimer {
       final values = _splitAssFields(line.substring(colonIndex + 1), fields.length);
       final textIndex = fields.indexOf('text');
       final text = values[textIndex];
-      if (_assTimedTag.hasMatch(text)) {
-        throw const FormatException(
-          'ASS dialogue contains karaoke or animated timing tags and cannot be retimed safely.',
-        );
-      }
       final effectIndex = fields.indexOf('effect');
-      if (effectIndex >= 0 && values[effectIndex].trim().isNotEmpty) {
-        throw const FormatException('ASS dialogue effects cannot be retimed safely.');
-      }
       final startIndex = fields.indexOf('start');
       final endIndex = fields.indexOf('end');
       final start = _parseAssTime(values[startIndex].trim());
@@ -418,6 +413,7 @@ abstract final class SubtitleRetimer {
       }
       if (end <= start) throw const FormatException('ASS cue end must be after its start.');
       retimedCueCount++;
+      if (retimedCueCount > maximumCueCount) throw const FormatException('Subtitle has more than 50000 cues.');
 
       final transformedStart = (start * rate).round() + delayMs;
       final transformedEnd = (end * rate).round() + delayMs;
@@ -429,9 +425,16 @@ abstract final class SubtitleRetimer {
         throw const FormatException('Retimed subtitle cue is outside the supported range.');
       }
       final visibleStart = transformedStart < 0 ? 0 : transformedStart;
-      if (transformedEnd <= visibleStart) {
+      if ((transformedEnd / 10).round() <= (visibleStart / 10).round()) {
         throw const FormatException('Retimed subtitle cue has no visible duration.');
       }
+
+      final payload = SubtitleAssTiming.retime(text, rate);
+      if (transformedStart < 0 && (payload.timed || effectIndex >= 0 && values[effectIndex].trim().isNotEmpty)) {
+        throw const FormatException('Clipping the start of an animated ASS event would change its effect phase. Use a smaller negative delay.');
+      }
+      values[textIndex] = payload.text;
+      if (effectIndex >= 0) values[effectIndex] = SubtitleAssTiming.retimeEffect(values[effectIndex], rate);
 
       values[startIndex] = formatFieldTime(values[startIndex], visibleStart);
       values[endIndex] = formatFieldTime(values[endIndex], transformedEnd);
@@ -480,7 +483,8 @@ abstract final class SubtitleRetimer {
             .split(',')
             .map((field) => field.trim().toLowerCase())
             .toList();
-        if (!formatFields.contains('start') ||
+        if (formatFields.length > 64 || formatFields.toSet().length != formatFields.length ||
+            !formatFields.contains('start') ||
             !formatFields.contains('end') ||
             !formatFields.contains('text') ||
             formatFields.last != 'text') {

@@ -29,13 +29,32 @@ also verified the PDB/DLL symbol pairing. No CI was used.
 | Artifact | Size | SHA-256 |
 | --- | ---: | --- |
 | `libmpv-windows-38f824598751-x86_64.zip` | 42,040,297 bytes | `681757447ce30210b77bbac0600c9982d88cf8b834f240e09757a56b2cca0d79` |
-| `libmpv-windows-x86_64-symbols.zip` | 83,663,906 bytes | `7e0674f3978e0a7cf9795df09a9d39f263d3062b64b59c29b8b7db5c1b478587` |
+| `libmpv-windows-38f824598751-x86_64-symbols.zip` | 83,663,906 bytes | `7e0674f3978e0a7cf9795df09a9d39f263d3062b64b59c29b8b7db5c1b478587` |
 | `libmpv-windows-38f824598751-aarch64.zip` | 35,266,154 bytes | `49c856e07a90b2846981ea542c796a59ef821447c6bca6c6456c7c0a19d83089` |
-| `libmpv-windows-aarch64-symbols.zip` | 78,082,391 bytes | `049820fd8ae684052d33629240467c74f890bea5f6ad0854e24ffe37bd43ec59` |
+| `libmpv-windows-38f824598751-aarch64-symbols.zip` | 78,082,391 bytes | `049820fd8ae684052d33629240467c74f890bea5f6ad0854e24ffe37bd43ec59` |
 
 The files are retained under
 `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-build-windows-0157-native-20261029/dist/release/`.
 Build and package logs are in the same worktree's `build/windows/` directory.
+
+## Local pin candidate and asset availability
+
+The Windows manifest update is committed locally in `mpv-build` as
+`36f864900c63dc211f0d8d9977ea81b5841c4e14`; it has not been pushed. Running
+`scripts/set_native_revision.sh` against it generated a local PlezyNG lock
+preview under
+`/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/plezyng-mpv-lock-preview-20261029/`.
+The preview updates the shared native pin across 11 files. It points Windows
+to key `38f824598751`, Android to the existing AAR key `f9b1be38a527`, and
+Linux to the older key `52b991183e5f`.
+
+As checked on 2026-10-29, `snapetech-org/mpv-build` has no
+`binaries-windows` or `binaries-android` release, and its `binaries-linux`
+release exists with no assets. Apple release assets are present. The nine
+Android assets for the current manifest and four Linux assets for key
+`52b991183e5f` were staged locally from `edde746/mpv-build` and each SHA-256
+matches the manifest. The four new Windows assets are also staged locally.
+No release assets were uploaded and the PlezyNG lock remains unchanged.
 
 ## Limits
 

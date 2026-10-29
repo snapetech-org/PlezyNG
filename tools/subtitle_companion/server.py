@@ -28,6 +28,8 @@ from urllib.parse import urlsplit
 from text_adapters import TEXT_TASKS, SCRIPT_MODES, MODES, capabilities as translation_capabilities, provider_config
 
 from research import MEDIA_TASKS
+from dubbing import voice_config, capabilities as synthesis_capabilities
+from visual_research import vision_capabilities
 
 MAX_INPUT = 1024**3
 MAX_JSON = 5 * 1024**2
@@ -119,7 +121,7 @@ class Store:
         language = value.get("language")
         if language is not None and (not isinstance(language, str) or not re.fullmatch(r"[a-z]{2,3}", language)):
             raise ValueError("invalid_language")
-        if task in {"align"} | TEXT_TASKS and not language:
+        if task in {"align", "dub_mix"} | TEXT_TASKS and not language:
             raise ValueError("language_required")
         target = value.get("targetLanguage")
         if task in {"translate", "translate_model"} and (not isinstance(target, str) or not re.fullmatch(r"[a-z]{2,3}", target) or target == language):
@@ -127,7 +129,7 @@ class Store:
         if task == "align" and value.get("spokenLanguage") != language:
             raise ValueError("alignment_requires_matching_spoken_language")
         cues = value.get("cues", [])
-        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "completeness"} | TEXT_TASKS and not cues):
+        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "completeness", "dub_mix", "scene_review"} | TEXT_TASKS and not cues):
             raise ValueError("cue_limit")
         ids = set()
         for cue in cues:
@@ -139,6 +141,16 @@ class Store:
             start, end = cue.get("startMs"), cue.get("endMs")
             if type(start) is not int or type(end) is not int or not 0 <= start < end <= 8 * 3600000:
                 raise ValueError("invalid_cue_time")
+        duck_ratio = value.get("duckRatio", .25)
+        if type(duck_ratio) not in (int, float) or not 0 <= duck_ratio <= 1:
+            raise ValueError("invalid_duck_ratio")
+        voice_fingerprint = None
+        if task in {"dubbing", "dub_mix"}:
+            voice_fingerprint = synthesis_capabilities()["fingerprint"]
+            if value.get("voiceFingerprint") != voice_fingerprint:
+                raise ValueError("voice_changed_resubmit_after_review")
+            if len(cues) > 500 or max(c["endMs"] for c in cues) > 600000:
+                raise ValueError("dubbing_limit_ten_minutes_five_hundred_cues")
         track = value.get("audioTrack", 0)
         if type(track) is not int or not 0 <= track <= 63:
             raise ValueError("invalid_audio_track")
@@ -170,6 +182,14 @@ class Store:
             provider_fingerprint = config["fingerprint"]
             if value.get("translationProviderFingerprint") != provider_fingerprint:
                 raise ValueError("translation_provider_changed_resubmit_after_review")
+        vision_fingerprint = None
+        if task == "scene_review":
+            config = vision_capabilities()
+            if config is None or value.get("visionProviderFingerprint") != config["fingerprint"]:
+                raise ValueError("vision_provider_changed_resubmit_after_review")
+            vision_fingerprint = config["fingerprint"]
+            if len(cues) > 30 or max(c["endMs"] for c in cues) > 3600000:
+                raise ValueError("visual_review_limit_thirty_cues_one_hour")
         crop = value.get("crop", [0, 0.65, 1, 0.35])
         if not isinstance(crop, list) or len(crop) != 4 or any(type(n) not in (int, float) or not 0 <= n <= 1 for n in crop):
             raise ValueError("invalid_crop")
@@ -179,10 +199,10 @@ class Store:
         with self.lock:
             canonical = {"task": task, "identity": value["identity"], "audioDigest": value["audioDigest"],
                          "audioBytes": size, "language": language, "targetLanguage": target,
-                         "cues": cues, "audioTrack": track, "crop": crop,
+                         "cues": cues, "audioTrack": track, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
-                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint,
+                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint,
                          "translateToEnglish": task == "transcribe" and value.get("translateToEnglish") is True,
                          "preprocess": task in {"transcribe", "align", "diarize"} and value.get("preprocess") is True}
             fingerprint = hashlib.sha256(json.dumps(canonical, sort_keys=True).encode()).hexdigest()
@@ -352,6 +372,13 @@ class Handler(BaseHTTPRequestHandler):
                     tasks.append("sound_events")
                 if installed("whisperx"):
                     tasks.extend(["align", "diarize"])
+            synthesis = None
+            if installed("piper") and shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
+                try:
+                    synthesis = synthesis_capabilities()
+                    tasks.extend(["dubbing", "dub_mix"])
+                except (ValueError, OSError):
+                    pass
             if installed("argostranslate"):
                 tasks.append("translate")
             translation = translation_capabilities()
@@ -362,16 +389,43 @@ class Handler(BaseHTTPRequestHandler):
             if installed("pykakasi"):
                 tasks.append("reading")
             if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
-                tasks.extend(["ocr", "signs"])
+                tasks.extend(["ocr", "ocr_auto", "signs"])
             if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_SUBTITLE_DECODER", "plezy-subtitle-decode")):
                 tasks.append("bitmap_ocr")
+            vision = vision_capabilities()
             if shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
                 tasks.append("extract_text")
+                if vision is not None: tasks.append("scene_review")
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS,
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
-                             "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES),
+                             "visionProvider": vision, "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES),
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})
+            return
+        artifact_match = re.fullmatch(r"/v1/jobs/([0-9a-f]{32})/artifacts/([0-9a-f]{64})", path)
+        if artifact_match is not None and self.command == "GET":
+            identifier, digest = artifact_match.groups()
+            with store.lock:
+                job = store.jobs.get(identifier)
+                if job is None or job["scope"] != scope or job["state"] != "completed":
+                    self.reply(404, {"error": "not_found"}); return
+                folder = store.root / identifier
+                result = read_json(folder / "result.json", MAX_RESULT)
+                artifact = next((a for a in result.get("artifacts", []) if a.get("sha256") == digest and a.get("name") == "dubbed.wav"), None)
+                if artifact is None or not 44 < artifact.get("bytes", 0) <= 32 * 1024**2:
+                    self.reply(404, {"error": "not_found"}); return
+                target = folder / "dubbed.wav"
+                if target.is_symlink(): raise ValueError("invalid_audio_artifact")
+                with target.open("rb") as stream: data = stream.read(32 * 1024**2 + 1)
+                if len(data) != artifact["bytes"] or hashlib.sha256(data).hexdigest() != digest:
+                    raise ValueError("invalid_audio_artifact")
+            self.send_response(200)
+            self.send_header("Content-Type", "audio/wav")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.send_header("Connection", "close")
+            self.end_headers(); self.wfile.write(data); self.close_connection = True
             return
         image_match = re.fullmatch(r"/v1/jobs/([0-9a-f]{32})/evidence/([0-9a-f]{64})", path)
         if image_match is not None and self.command == "GET":

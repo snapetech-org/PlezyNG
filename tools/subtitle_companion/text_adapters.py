@@ -16,7 +16,7 @@ import ssl
 from urllib.parse import urlsplit
 from urllib.request import Request, build_opener, HTTPRedirectHandler, HTTPSHandler, ProxyHandler
 
-TEXT_TASKS = {"translate", "translate_model", "script_convert", "reading"}
+TEXT_TASKS = {"translate", "translate_model", "script_convert", "reading", "dubbing"}
 SCRIPT_MODES = {"s2t": "zh-Hant", "t2s": "zh-Hans", "s2tw": "zh-Hant-TW", "tw2s": "zh-Hans",
                 "s2hk": "zh-Hant-HK", "hk2s": "zh-Hans", "t2tw": "zh-Hant-TW", "t2hk": "zh-Hant-HK",
                 "s2twp": "zh-Hant-TW", "tw2sp": "zh-Hans"}
@@ -26,10 +26,10 @@ MODES = {"faithful": "Keep the source meaning, register, tone, ambiguity and int
 PROTECTED = re.compile(r"^[ \t]*(?:[-–—][ \t]*)?[A-Z][A-Z0-9_. '-]{0,31}:(?=[ \t])|<[^>]{0,160}>|\{[^}]{0,160}\}|\\[Nnh]|\r?\n|(?:https?://|www\.|mailto:)[^\s<>{}]+|\d+(?:[.,:/-]\d+)*", re.M | re.I)
 
 
-def provider_config():
-    endpoint = os.environ.get("PLEZY_TRANSLATION_URL", "").strip()
-    model = os.environ.get("PLEZY_TRANSLATION_MODEL", "").strip()
-    revision = os.environ.get("PLEZY_TRANSLATION_REVISION", "not-reported").strip()
+def provider_config(prefix='PLEZY_TRANSLATION'):
+    endpoint = os.environ.get(prefix + "_URL", "").strip()
+    model = os.environ.get(prefix + "_MODEL", "").strip()
+    revision = os.environ.get(prefix + "_REVISION", "not-reported").strip()
     parsed = urlsplit(endpoint)
     loopback = parsed.hostname in {"localhost", "127.0.0.1", "::1"}
     if (not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment or
@@ -38,7 +38,7 @@ def provider_config():
             not 1 <= len(model) <= 256 or not 1 <= len(revision) <= 256):
         raise ValueError("translation_provider_not_configured")
     _ = parsed.port  # Validate port syntax too.
-    languages = sorted(set(filter(None, os.environ.get("PLEZY_TRANSLATION_LANGUAGES", "").split(","))))
+    languages = sorted(set(filter(None, os.environ.get(prefix + "_LANGUAGES", "").split(","))))
     if any(not re.fullmatch(r"[a-z]{2,3}", code) for code in languages) or len(languages) > 200:
         raise ValueError("invalid_translation_language_catalogue")
     identity = {"endpoint": endpoint, "model": model, "declaredRevision": revision, "languages": languages, "adapter": 1}

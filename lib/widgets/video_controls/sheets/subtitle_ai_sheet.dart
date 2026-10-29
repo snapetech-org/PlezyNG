@@ -786,7 +786,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         throw const FormatException('The companion did not declare its translation destination.');
       }
       List<SubtitleCue> cues = const [];
-      if (task == 'align' || task == 'completeness' || textTask) {
+      if (task == 'align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || textTask) {
         final selected = await _pickSubtitleCues();
         if (selected == null || !mounted) return;
         cues = selected.$1;
@@ -810,6 +810,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       }
       if (!mounted) return;
       var preprocess = false;
+      var duckRatio = .25;
       var track = 0;
       var subtitleTrack = 0, bitmapTail = 2000;
       var translationMode = 'faithful', scriptConversion = 's2t', readingMode = 'hiragana';
@@ -860,6 +861,20 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   DropdownMenuItem(value: 'hepburn', child: Text('Original + Hepburn romanization line'))],
                 onChanged: (value) => update(() => readingMode = value ?? 'hiragana')),
             ],
+            if (task == 'scene_review') Text('The host will forward up to 30 chosen captions and one resized video frame per cue to:\n'
+              '${capabilities['visionProvider']}. This is explicitly unverified scene context; it cannot verify spoken words. '
+              'Original wording remains unless you select an alternative during image review.'),
+            if (task == 'ocr_auto') const Text('Find a repeatedly occupied text band using samples from the first two minutes. '
+              'This can select credits or signs; inspect the returned cue images before accepting.'),
+            if (task == 'dubbing' || task == 'dub_mix') ...[
+              Text('Synthesize a separate audio product from already-reviewed spoken-language subtitles. Maximum ten minutes / 500 cues. '
+                'This is a generic synthetic voice, not the original speaker or lip synchronization. '
+                'Voice: ${capabilities['synthesisVoice']}. The host voice fingerprint is bound to this request.'),
+              if (task == 'dub_mix') ...[
+                Text('Keep ${(duckRatio * 100).round()}% of original audio under synthesized speech'),
+                Slider(value: duckRatio, min: 0, max: 1, onChanged: (v) => update(() => duckRatio = v)),
+              ],
+            ],
             if (task == 'diarize') const Text('Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.'),
             if (path != null && task != 'ocr' && task != 'bitmap_ocr') ...[
               DropdownButtonFormField<int>(initialValue: track, decoration: const InputDecoration(labelText: 'Audio stream (zero based)'),
@@ -895,13 +910,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       _requireCurrentOperationIdentity();
       final id = await service.submit(task: task, identityKey: identity.storageKey, mediaPath: path, cues: cues,
         language: task == 'script_convert' ? 'zh' : task == 'reading' ? 'ja'
-            : task == 'align' || textTask || task == 'bitmap_ocr' ? _sourceLanguage.bcpCode.split('-').first
+            : task == 'align' || task == 'dub_mix' || textTask || task == 'bitmap_ocr' ? _sourceLanguage.bcpCode.split('-').first
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
         targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
         preprocess: preprocess, audioTrack: track, crop: [0, cropTop, 1, 1 - cropTop],
-        subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail,
+        subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
+        voiceFingerprint: (task == 'dubbing' || task == 'dub_mix') ? (capabilities['synthesisVoice'] as Map?)?['fingerprint'] as String? : null,
         translationMode: translationMode, scriptConversion: scriptConversion, readingMode: readingMode,
+        visionProviderFingerprint: task == 'scene_review' ? (capabilities['visionProvider'] as Map?)?['fingerprint'] as String? : null,
         translationProviderFingerprint: task == 'translate_model' ? (modelProvider as Map)['fingerprint'] as String : null,
         glossary: {'translate_model', 'transcribe', 'ensemble', 'separate'}.contains(task) ? _parseGlossary() : const {},
         onCreated: (id) { if (mounted) setState(() => _activeCompanionJob = id); },
@@ -933,6 +950,23 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       final identity = _operationRevisionIdentity;
       if (identity == null || job['identity'] != identity.storageKey) throw StateError('The job belongs to another item.');
       final result = await service.result(job['id'] as String, identityKey: identity.storageKey, audioDigest: job['audioDigest'] as String);
+      if (result.artifacts.isNotEmpty) {
+        final artifact = result.artifacts.single;
+        final export = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
+          title: const Text('Review synthesized audio result'),
+          content: SizedBox(width: 640, height: 350, child: ListView(children: [
+            const Text('Export a separate WAV to listen and review. No player audio is replaced automatically.'),
+            for (final warning in result.warnings) Text(warning),
+          ])), actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Close')),
+            FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Download and export WAV'))]));
+        if (export != true || !mounted) return;
+        _requireCurrentOperationIdentity();
+        final bytes = await service.audioArtifact(job['id'] as String, artifact);
+        _requireCurrentOperationIdentity();
+        await FilePickerService.instance.saveFile(dialogTitle: 'Export synthesized audio', fileName: artifact.name,
+          bytes: bytes, type: FileType.custom, allowedExtensions: const ['wav']);
+        return;
+      }
       var cues = result.cues;
       if (result.alternatives.isNotEmpty) {
         final selected = <String>{};
@@ -3645,6 +3679,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('translate_model', 'Translate with faithful, natural, or literal wording'),
             ('script_convert', 'Convert Chinese script or region variants'),
             ('reading', 'Add Japanese kana or romanization readings'),
+            ('dubbing', 'Synthesize a timed subtitle voice track'),
+            ('dub_mix', 'Mix synthesized subtitles with explicitly uploaded audio'),
+            ('scene_review', 'Review uncertain captions against scene images'),
+            ('ocr_auto', 'Find a burned-caption region and read it'),
             ('ocr', 'Extract burned captions from a video crop'),
             ('bitmap_ocr', 'Read PGS/VobSub images and correct OCR'),
           ]) FocusableListTile(leading: const AppIcon(Symbols.auto_awesome_rounded), title: Text(entry.$2),

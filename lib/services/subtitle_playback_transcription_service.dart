@@ -6,6 +6,7 @@ import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
 
 import '../mpv/player/subtitle_pcm_capture_source.dart';
 import 'subtitle_ai_service.dart';
+import 'subtitle_inference_scheduler.dart';
 import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_whisper_cpp_service.dart';
@@ -662,7 +663,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _setStatus('GPU live inference failed; continuing with CPU Whisper: $error');
   }
 
-  Future<dynamic> _transcribeWindowResult(whisper.FlutterWhisper session, Float32List samples) => session.transcribe(
+  Future<dynamic> _transcribeWindowResult(whisper.FlutterWhisper session, Float32List samples) => SubtitleInferenceScheduler.instance.run(() => session.transcribe(
     samples,
     config: whisper.WhisperTranscribeConfig(
       language: _languageCode,
@@ -671,7 +672,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       splitOnWord: true,
       noSpeechThreshold: 0.6,
     ),
-  );
+  ), priority: SubtitleWorkPriority.playback,
+    isCurrent: () => identical(_session, session) && _invalidCaptureSessionReason(_player) == null);
 
   void _mergeWordTiming(SubtitleWordTiming timing) {
     if (timing.text.isEmpty || timing.endMs <= timing.startMs) return;

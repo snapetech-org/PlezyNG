@@ -9,6 +9,7 @@ import '../mpv/player/player_media_session_identity.dart';
 import '../mpv/player/subtitle_pcm_capture_source.dart';
 import 'subtitle_analysis_source.dart';
 import 'subtitle_ai_service.dart';
+import 'subtitle_inference_scheduler.dart';
 import 'subtitle_overlay_service.dart';
 import 'subtitle_playback_transcription_service.dart';
 import 'subtitle_retimer.dart';
@@ -142,7 +143,9 @@ class SubtitleReadAheadService extends ChangeNotifier {
       if (seek != null && (player as SubtitlePcmCaptureSource).playbackTimelineGeneration != seek) return;
       status = 'Recognizing source audio ${start ~/ 1000}s'; notifyListeners();
       final result = await SubtitleAiService.instance.transcribeWav(wav.path,
-          provider: _provider, languageCode: _language, allowEmpty: true, numThreads: 2);
+          provider: _provider, languageCode: _language, allowEmpty: true, numThreads: 2,
+          priority: SubtitleWorkPriority.readAhead, isCurrent: () => _current(epoch) &&
+            (seek == null || (player as SubtitlePcmCaptureSource).playbackTimelineGeneration == seek));
       if (!_current(epoch) || seek != null && (player as SubtitlePcmCaptureSource).playbackTimelineGeneration != seek) return;
       final cues = <SubtitleCue>[];
       for (final cue in result.cues) {

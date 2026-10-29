@@ -92,11 +92,11 @@ def stop(process):
         pass
 
 
-def read_text(path):
+def read_tsv(path, psm=6):
     language = os.environ.get("PLEZY_TESSERACT_LANGUAGE", "eng")
     if not re.fullmatch(r"[A-Za-z0-9_+.-]{1,120}", language):
         raise ValueError("invalid_ocr_model_language")
-    process = subprocess.Popen(["tesseract", str(path), "stdout", "-l", language, "--psm", "6", "tsv"],
+    process = subprocess.Popen(["tesseract", str(path), "stdout", "-l", language, "--psm", str(psm), "tsv"],
                                stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     timer = threading.Timer(60, stop, (process,))
     timer.daemon = True
@@ -112,8 +112,13 @@ def read_text(path):
         stop(process)
         process.wait()
         process.stdout.close()
+    return output.decode("utf-8", errors="strict")
+
+
+def read_text(path):
+    output = read_tsv(path)
     lines, scores = {}, []
-    for row in csv.DictReader(io.StringIO(output.decode("utf-8", errors="strict")), delimiter="\t"):
+    for row in csv.DictReader(io.StringIO(output), delimiter="\t"):
         text = row.get("text", "").strip()
         score = float(row.get("conf", "-1"))
         if text and math.isfinite(score) and 0 <= score <= 100:

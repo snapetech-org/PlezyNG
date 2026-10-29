@@ -14,7 +14,7 @@ import subprocess
 import wave
 
 AUDIO_TASKS = {'ensemble', 'separate', 'sound_events', 'completeness'}
-MEDIA_TASKS = AUDIO_TASKS | {'extract_text', 'signs'}
+MEDIA_TASKS = AUDIO_TASKS | {'extract_text', 'signs', 'dub_mix', 'ocr_auto', 'scene_review'}
 
 
 def model_directory(variable):

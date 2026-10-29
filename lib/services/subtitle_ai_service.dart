@@ -13,6 +13,7 @@ import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 
 import '../utils/app_logger.dart';
 import 'subtitle_placement_evidence.dart';
+import 'subtitle_inference_scheduler.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
 import 'subtitle_wav_reader.dart';
@@ -231,7 +232,17 @@ final class SubtitleAiService {
   /// Transcribes the half-open [startMs, endMs) media-time range. A null end
   /// transcribes through the end of the file; output cue times stay on the
   /// original WAV timeline so partial results can merge with existing cues.
-  Future<SubtitleTranscriptionResult> transcribeWav(
+  Future<SubtitleTranscriptionResult> transcribeWav(String wavPath, {
+    SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu,
+    int startMs = 0, int? endMs, int numThreads = 2, bool translateToEnglish = false,
+    bool allowEmpty = false, String? languageCode,
+    SubtitleWorkPriority priority = SubtitleWorkPriority.foreground, bool Function()? isCurrent,
+    void Function(String phase, int received, int total)? onProgress,
+  }) => SubtitleInferenceScheduler.instance.run(() => _transcribeWav(wavPath, provider: provider,
+    startMs: startMs, endMs: endMs, numThreads: numThreads, translateToEnglish: translateToEnglish,
+    allowEmpty: allowEmpty, languageCode: languageCode, onProgress: onProgress), priority: priority, isCurrent: isCurrent);
+
+  Future<SubtitleTranscriptionResult> _transcribeWav(
     String wavPath, {
     SubtitleInferenceProvider provider = SubtitleInferenceProvider.cpu,
     int startMs = 0,

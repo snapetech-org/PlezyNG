@@ -796,3 +796,22 @@ a receiver can consume those URLs, but this does not claim automatic delivery
 of app overlays to Cast/PiP or Watch Together. HTTP requires a trusted local
 network; no media URL, server credentials, transcript telemetry or automatic
 room message is exposed. No tests, builds, runtime execution or CI were run.
+
+## Inference arbitration and additional research adapters
+
+Foreground WAV work, live PCM windows, read-ahead and durable jobs now use one
+priority queue for local inference. Playback wins at native-call boundaries;
+background work pauses briefly on reported memory pressure. Queue length and
+stale-start guards are bounded. This is scheduling policy, not measured thermal,
+power, accelerator-memory or real-time qualification.
+
+Companion source now includes automatic burned-text region proposals, explicit
+scene-image review against uncertain captions, and separate subtitle-driven
+Piper speech stems/mixes. Every visual model hypothesis retains baseline text
+until selected and reviewed against a digest-checked image. The separately
+configured vision destination is disclosed and bound to the request. Dubbing
+binds the installed voice/license fingerprint, caps work at ten minutes/500 cues,
+fits at no more than 2× speed, reports omitted overlong lines, and exports an
+integrity-checked WAV. CPU is explicit for Piper; no speaker identity, lip-sync,
+research accuracy or performance claim is made. These are implemented paths;
+quality evaluation, target hardware and native package execution remain open.

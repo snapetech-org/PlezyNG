@@ -182,6 +182,10 @@ def translate(folder, job):
 def ocr(folder, job):
     # Fixed-rate crops bound decode memory independently of the media resolution.
     # Keep one frame in memory and never create an unbounded image directory.
+    automatic_crop = job['task'] == 'ocr_auto'
+    if automatic_crop:
+        from visual_research import detect_region
+        job = {**job, 'crop': detect_region(folder, lambda phase_folder, phase, fraction: progress(phase_folder, phase, fraction))}
     x, y, w, h = job["crop"]
     filters = (f"crop=trunc(iw*{w}/2)*2:trunc(ih*{h}/2)*2:trunc(iw*{x}/2)*2:trunc(ih*{y}/2)*2,"
                "scale=960:240:force_original_aspect_ratio=decrease,pad=960:240:(ow-iw)/2:(oh-ih)/2,fps=2")
@@ -228,14 +232,14 @@ def ocr(folder, job):
                 break
             if len(data) != 960 * 240 or frame >= MAX_SECONDS * 2:
                 raise ValueError("video_duration_or_frame_limit")
-            result = subprocess.run(["tesseract", "stdin", "stdout", "-l", language, "--psm", "6", "tsv"],
-                                    input=b"P5\n960 240\n255\n" + bytes(data), stdout=subprocess.PIPE,
-                                    stderr=subprocess.DEVNULL, timeout=60)
-            if result.returncode or len(result.stdout) > 1024**2:
-                raise ValueError("ocr_failed")
+            from bitmap_ocr import read_tsv
+            ocr_input = folder / 'ocr_frame.pgm'
+            ocr_input.write_bytes(b"P5\n960 240\n255\n" + bytes(data))
+            output = read_tsv(ocr_input)
+            ocr_input.unlink(missing_ok=True)
             lines = {}
             confidences = []
-            for row in csv.DictReader(io.StringIO(result.stdout.decode("utf-8", errors="replace")), delimiter="\t"):
+            for row in csv.DictReader(io.StringIO(output), delimiter="\t"):
                 text = row.get("text", "").strip()
                 score = float(row.get("conf", "-1"))
                 if text and score >= 50:
@@ -262,7 +266,7 @@ def ocr(folder, job):
             process.wait()
         process.stdout.close()
     return {"cues": cues, "images": images, "wordTimings": [], "language": job.get("language") or "unknown", "durationMs": frame * 500,
-            "warnings": ["OCR samples a selected crop at 2 Hz; short captions, stylized text, and scene text can be missed or mistaken for dialogue.",
+            "warnings": [("Crop was chosen heuristically from repeated text rows in the first two minutes; it can select titles or signs. " if automatic_crop else "") + "OCR samples a selected crop at 2 Hz; short captions, stylized text, and scene text can be missed or mistaken for dialogue.",
                          "Timing is quantized to 500 ms and confidence is an uncalibrated OCR score. A representative unmodified crop image is retained for every emitted cue.",
                          "Sign tracks retain their chosen normalized region in app-overlay review. SRT export flattens position; crop images are resized evidence, not full-resolution video frames."]}
 
@@ -295,11 +299,19 @@ def main():
     elif task in {"script_convert", "reading"}:
         result = derivative(folder, job, progress)
         device = "host-text-cpu"
+    elif task in {"dubbing", "dub_mix"}:
+        from dubbing import run
+        result = run(folder, job, progress, original=decode_audio(folder, job) if task == "dub_mix" else None)
+        device = "piper-onnx-cpu-and-ffmpeg"
     elif task == "extract_text":
         from research import extract_text
         result = extract_text(folder, job, progress)
         device = "ffmpeg-subtitle-decoder-cpu"
-    elif task in {"ocr", "signs"}:
+    elif task == "scene_review":
+        from visual_research import scene_review
+        result = scene_review(folder, job, progress)
+        device = "configured-vision-provider-unreported"
+    elif task in {"ocr", "ocr_auto", "signs"}:
         result = ocr(folder, job)
         device = "tesseract-cpu"
     elif task == "bitmap_ocr":

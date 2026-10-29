@@ -260,3 +260,37 @@ API references: [SpeechBrain separation](https://github.com/speechbrain/speechbr
 [SepFormer model input contract](https://huggingface.co/speechbrain/sepformer-wsj02mix),
 [Transformers audio classification](https://huggingface.co/docs/transformers/main_classes/pipelines#transformers.AudioClassificationPipeline),
 [faster-whisper VAD](https://github.com/SYSTRAN/faster-whisper/blob/master/faster_whisper/vad.py).
+
+### Synthesized speech and explicit scene context
+
+`dubbing` accepts only reviewed, already-translated cues (no media upload);
+`dub_mix` also uploads matching media and ducks its selected audio stream by
+`duckRatio` (0–1). Both are bounded to ten minutes and 500 cues. Install the
+research requirements, configure an absolute local `PLEZY_PIPER_MODEL` ONNX
+path and `PLEZY_PIPER_LICENSE`, and retain its adjacent model configuration.
+The app displays the configured voice/license fingerprint before submission.
+The host refuses voice changes between submission and inference. Outputs are
+mono 16 kHz PCM WAV, at most 32 MiB. Timing fit uses FFmpeg atempo up to 2×;
+overlong utterances are omitted with cue-specific diagnostics. Overlap is mixed
+with peak attenuation. The original file is immutable. No voice identity,
+cloning, pronunciation quality or lip synchronization is asserted. Download
+only after reviewing warnings through `/v1/jobs/ID/artifacts/SHA256` or the SDK's
+`audio_artifact`; the app offers an explicit WAV export. An installed voice is
+not evidence of redistribution rights.
+
+`ocr_auto` samples up to eight frames across the first two minutes and chooses
+a repeatedly occupied text band. It can select credits or scenery; all normal
+OCR image correction and timing caveats still apply. Tesseract output is read
+with a strict 1 MiB bound and a kill deadline.
+
+`scene_review` accepts at most 30 explicitly chosen cue windows and uploaded
+video. Configure `PLEZY_VISION_URL` (chat/completions), `PLEZY_VISION_MODEL`,
+`PLEZY_VISION_REVISION`, and optionally `PLEZY_VISION_API_KEY`. This is a separate
+forwarding destination from text translation. Capabilities disclose it and the
+client binds its fingerprint before any job is sent. The adapter forwards one
+640×360 frame and caption per cue, uses no remote tools/code or redirects,
+retains source-image evidence, and returns hypotheses alongside unchanged
+baseline cues. A single image cannot establish spoken words. The app requires
+explicit alternative selection and image review. Compatible protocol shape is
+based on the primary [llama.cpp server documentation](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md).
+No model/provider was executed or qualified during source implementation.

@@ -14,7 +14,7 @@ import 'subtitle_word_timing.dart';
 
 final class SubtitleCompanionResult {
   const SubtitleCompanionResult({required this.cues, required this.wordTimings, required this.language,
-      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const [], this.alternatives = const {}, this.regions = const {}});
+      required this.warnings, required this.runtimeDevice, required this.cpuFallback, this.images = const [], this.sourceCues = const [], this.alternatives = const {}, this.regions = const {}, this.artifacts = const []});
   final List<SubtitleCue> cues;
   final List<SubtitleWordTiming> wordTimings;
   final String language;
@@ -25,6 +25,13 @@ final class SubtitleCompanionResult {
   final List<SubtitleCue> sourceCues;
   final Map<String, String> alternatives;
   final Map<String, Rect> regions;
+  final List<SubtitleCompanionArtifact> artifacts;
+}
+
+final class SubtitleCompanionArtifact {
+  const SubtitleCompanionArtifact(this.name, this.digest, this.bytes, this.mime);
+  final String name, digest, mime;
+  final int bytes;
 }
 
 final class SubtitleCompanionImage {
@@ -51,7 +58,7 @@ final class SubtitleCompanionService {
   static final _digest = RegExp(r'^[0-9a-f]{64}$');
   static final _id = RegExp(r'^[0-9a-f]{32}$');
   static const maximumInputBytes = 1024 * 1024 * 1024;
-  static const textTasks = {'translate', 'translate_model', 'script_convert', 'reading'};
+  static const textTasks = {'translate', 'translate_model', 'script_convert', 'reading', 'dubbing'};
   static final Map<String, (Uri, String)> _sessionPairings = {};
 
   static String _scope(String profileId) => sha256.convert(utf8.encode(profileId)).toString();
@@ -180,9 +187,9 @@ final class SubtitleCompanionService {
   Future<String> submit({required String task, required String identityKey, String? mediaPath,
     List<SubtitleCue> cues = const [], String? language, String? targetLanguage,
     bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0,
-    int finalBitmapDurationMs = 2000,
+    int finalBitmapDurationMs = 2000, double duckRatio = .25, String? voiceFingerprint,
     String translationMode = 'faithful', String scriptConversion = 's2t', String readingMode = 'hiragana',
-    String? translationProviderFingerprint, Map<String, String> glossary = const {},
+    String? translationProviderFingerprint, String? visionProviderFingerprint, Map<String, String> glossary = const {},
     List<double> crop = const [0, 0.65, 1, 0.35],
     void Function(String jobId)? onCreated, void Function(int sent, int total)? onUpload,
   }) async {
@@ -199,9 +206,9 @@ final class SubtitleCompanionService {
       'task': task, 'identity': identityKey, 'audioDigest': audioDigest, 'audioBytes': length,
       'language': language, 'spokenLanguage': language, 'targetLanguage': targetLanguage,
       'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop,
-      'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs,
+      'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs, 'duckRatio': duckRatio, 'voiceFingerprint': voiceFingerprint,
       'translationMode': translationMode, 'scriptConversion': scriptConversion, 'readingMode': readingMode,
-      'translationProviderFingerprint': translationProviderFingerprint, 'glossary': glossary,
+      'translationProviderFingerprint': translationProviderFingerprint, 'visionProviderFingerprint': visionProviderFingerprint, 'glossary': glossary,
       'cues': cues.map((cue) => {'cueId': cue.stableId, 'index': cue.index, 'startMs': cue.startMs,
         'endMs': cue.endMs, 'text': cue.text}).toList(),
     };
@@ -343,9 +350,40 @@ final class SubtitleCompanionService {
       if (alternativeBytes > 5 * 1024 * 1024) throw const FormatException('Recognition alternatives exceed limits.');
       alternatives[value['cueId'] as String] = value['text'] as String;
     }
-    return SubtitleCompanionResult(alternatives: Map.unmodifiable(alternatives), regions: Map.unmodifiable(regions), cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
+    final artifacts = <SubtitleCompanionArtifact>[];
+    final rawArtifacts = data['artifacts'] ?? const [];
+    if (rawArtifacts is! List || rawArtifacts.length > 1) throw const FormatException('Invalid companion artifacts.');
+    for (final rawArtifact in rawArtifacts) {
+      if (rawArtifact is! Map || rawArtifact['name'] != 'dubbed.wav' || rawArtifact['mime'] != 'audio/wav' ||
+          rawArtifact['bytes'] is! int || rawArtifact['bytes'] <= 44 || rawArtifact['bytes'] > 32 * 1024 * 1024 ||
+          rawArtifact['sha256'] is! String || !_digest.hasMatch(rawArtifact['sha256'])) {
+        throw const FormatException('The companion returned invalid audio artifact metadata.');
+      }
+      artifacts.add(SubtitleCompanionArtifact('dubbed.wav', rawArtifact['sha256'], rawArtifact['bytes'], 'audio/wav'));
+    }
+    return SubtitleCompanionResult(artifacts: List.unmodifiable(artifacts), alternatives: Map.unmodifiable(alternatives), regions: Map.unmodifiable(regions), cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
       language: label(data['language'], 24, 'unknown'), warnings: warnings,
       runtimeDevice: runtime, cpuFallback: data['cpuFallback'] == true, images: List.unmodifiable(images), sourceCues: List.unmodifiable(sourceCues));
+  }
+
+  Future<Uint8List> audioArtifact(String jobId, SubtitleCompanionArtifact artifact) async {
+    if (_closed || !_digest.hasMatch(artifact.digest) || artifact.bytes > 32 * 1024 * 1024) throw StateError('Audio artifact unavailable.');
+    final client = http.Client(); _requests.add(client);
+    try {
+      final request = http.Request('GET', endpoint.replace(path: '${_route(jobId)}/artifacts/${artifact.digest}'))..followRedirects = false;
+      request.headers.addAll(_headers);
+      final response = await client.send(request).timeout(const Duration(seconds: 30));
+      if (response.statusCode != 200 || response.headers['content-type'] != 'audio/wav' ||
+          response.contentLength != artifact.bytes) throw const FormatException('Invalid companion audio download.');
+      final builder = BytesBuilder(copy: false);
+      await for (final chunk in response.stream.timeout(const Duration(seconds: 30))) {
+        if (_closed || builder.length + chunk.length > artifact.bytes) throw const FormatException('Audio download exceeds its declared length.');
+        builder.add(chunk);
+      }
+      final bytes = builder.takeBytes();
+      if (bytes.length != artifact.bytes || sha256.convert(bytes).toString() != artifact.digest) throw const FormatException('Audio artifact integrity failed.');
+      return bytes;
+    } finally { _requests.remove(client); client.close(); }
   }
 
   Future<Uint8List> evidenceImage(String jobId, SubtitleCompanionImage image) async {

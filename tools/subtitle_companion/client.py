@@ -124,3 +124,18 @@ class CompanionClient:
             return data
         finally:
             connection.close()
+
+    def audio_artifact(self, job_id, artifact):
+        digest, size = artifact.get("sha256"), artifact.get("bytes")
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest) or type(size) is not int or not 44 < size <= 32 * 1024**2:
+            raise ValueError("Invalid audio artifact metadata")
+        connection = self._connection()
+        try:
+            connection.request("GET", self.route(job_id, f"artifacts/{digest}"), headers=self.headers)
+            response = connection.getresponse()
+            data = response.read(size + 1)
+            if response.status != 200 or len(data) != size or hashlib.sha256(data).hexdigest() != digest:
+                raise ValueError("Audio artifact failed integrity verification")
+            return data
+        finally:
+            connection.close()

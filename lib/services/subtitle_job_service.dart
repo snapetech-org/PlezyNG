@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import '../profiles/active_profile_provider.dart';
 import 'power_source_service.dart';
 import 'subtitle_ai_service.dart';
+import 'subtitle_inference_scheduler.dart';
 import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
@@ -422,6 +423,7 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
       final end = math.min(start + chunkMs, job.durationMs);
       final result = await SubtitleAiService.instance.transcribeWav(
         audio.path, provider: job.provider, languageCode: job.language,
+        priority: SubtitleWorkPriority.background, isCurrent: current,
         translateToEnglish: job.translateToEnglish, allowEmpty: true,
         startMs: math.max(0, start - _overlapMs), endMs: math.min(job.durationMs, end + _overlapMs),
         onProgress: (phase, received, total) {

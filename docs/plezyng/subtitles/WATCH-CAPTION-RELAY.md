@@ -54,6 +54,8 @@ Channel storage is memory-only: at most eight channels, 256 objects per channel,
 after six monotonic-clock hours; expired bytes are purged within 30 seconds.
 Server restart clears every channel. The creating profile may explicitly revoke
 a channel earlier. Stopping local reception does not revoke it for other viewers.
+The host's invite remains in the in-memory room controller after stopping so it
+can be reopened and revoked; the code is not saved to preferences or disk.
 Old asset chunks remain within the channel quota until expiry/revocation; no
 unbounded history or implicit storage expansion occurs. A full relay requires a
 new channel or expiry, and is reported rather than dropping caption revisions.

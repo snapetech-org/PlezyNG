@@ -36,6 +36,8 @@ class WatchSubtitleSync extends ChangeNotifier {
   WatchSubtitleContext? Function()? _readContext;
   SubtitleCloudSync? _sync;
   SubtitleCaptionRelayStore? _relayStore;
+  SubtitleCaptionRelayInvite? _relayInvite;
+  String? _relayOwnerProfileId;
   SubtitleOverlaySession? _session;
   SubtitleOverlayTrack? _installed;
   SubtitleOverlayTrack? _previous;
@@ -52,8 +54,23 @@ class WatchSubtitleSync extends ChangeNotifier {
   bool get publishing => _publishing;
   bool get automatic => _automatic;
   int get lane => _lane;
-  String? get relayChannel => _relayStore?.invite.channel;
-  SubtitleCaptionRelayInvite? get relayInvite => _relayStore?.invite;
+  String? get relayChannel => relayInvite?.channel;
+  SubtitleCaptionRelayInvite? get relayInvite => _relayInvite?.expired == true ? null : _relayInvite;
+  String? get relayOwnerProfileId => relayInvite == null ? null : _relayOwnerProfileId;
+
+  void rememberRelayInvite(SubtitleCaptionRelayInvite invite, {String? ownerProfileId}) {
+    if (_relayInvite?.channel != invite.channel) _relayOwnerProfileId = null;
+    _relayInvite = invite;
+    if (ownerProfileId != null) _relayOwnerProfileId = ownerProfileId;
+    _notify();
+  }
+
+  void clearRelayInvite(String channel) {
+    if (_relayInvite?.channel != channel) return;
+    _relayInvite = null;
+    _relayOwnerProfileId = null;
+    _notify();
+  }
 
   bool _current(int generation) {
     if (_disposed || generation != _generation || _context == null || _session?.current != true) return false;
@@ -80,6 +97,7 @@ class WatchSubtitleSync extends ChangeNotifier {
     if (sources.profileId != initial.profileId) throw StateError('The active profile changed.');
     if (relay == null && config == null) throw StateError('Configure a shared cloud folder or choose a companion caption channel.');
     if (relay != null && (relay.expired || relay.scope != initial.scope)) throw StateError('This caption code belongs to another room, host, media selection or room epoch.');
+    if (relay != null) rememberRelayInvite(relay);
     final sourceGeneration = sources.generation;
     // Domain-separated key for this room epoch, host and canonical descriptor.
     // Sharing a code across two rooms cannot expose either room's namespace.

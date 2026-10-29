@@ -26,7 +26,7 @@ class _WatchSubtitleDialogState extends State<WatchSubtitleDialog> {
   void initState() {
     super.initState();
     final sync = widget.room.captionSync, invite = widget.room.captionSync.relayInvite;
-    if (invite != null) {
+    if (invite != null && !invite.expired) {
       _companion = true; _code.text = invite.encode(); _lane = sync.lane;
       _automatic = sync.automatic; _confirmedEdition = sync.running;
     }
@@ -52,10 +52,17 @@ class _WatchSubtitleDialogState extends State<WatchSubtitleDialog> {
     setState(() { _starting = true; _error = null; });
     SubtitleCompanionService? service;
     try {
-      final initial = widget.room.captionContext;
-      if (initial == null || !initial.host) throw StateError('Join room playback as host first.');
-      bool current() => mounted && widget.room.captionContext?.localToken == initial.localToken && widget.room.isHost;
-      service = await SubtitleCompanionService.load(initial.profileId);
+      final sync = widget.room.captionSync, initial = widget.room.captionContext;
+      if (!revoke && (initial == null || !initial.host)) throw StateError('Join room playback as host first.');
+      final profileId = revoke ? sync.relayOwnerProfileId ?? initial?.profileId : initial!.profileId;
+      if (profileId == null) throw StateError('The profile that created this channel is unavailable.');
+      bool current() {
+        if (!mounted) return false;
+        final now = widget.room.captionContext;
+        return revoke ? now == null || now.profileId == profileId
+            : now?.localToken == initial?.localToken && widget.room.isHost;
+      }
+      service = await SubtitleCompanionService.load(profileId);
       if (service == null) throw StateError('Pair your companion in Subtitle tools before creating a caption channel.');
       if (!current()) throw StateError('The room changed.');
       if (revoke) {
@@ -68,14 +75,16 @@ class _WatchSubtitleDialogState extends State<WatchSubtitleDialog> {
             FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Revoke'))]));
         if (accepted != true || !current()) return;
         await service.revokeCaptionChannel(invite.channel);
-        if (widget.room.captionSync.relayChannel == invite.channel) widget.room.captionSync.stop(reason: 'Caption channel revoked');
+        if (sync.relayChannel == invite.channel) sync.stop(reason: 'Caption channel revoked');
+        sync.clearRelayInvite(invite.channel);
         if (mounted) setState(() => _code.clear());
       } else {
-        final invite = await SubtitleCaptionRelayInvite.create(service, initial.scope);
+        final invite = await SubtitleCaptionRelayInvite.create(service, initial!.scope);
         if (!current()) {
           try { await service.revokeCaptionChannel(invite.channel); } catch (_) { /* The six-hour expiry still applies. */ }
           throw StateError('The room changed before the channel was ready.');
         }
+        sync.rememberRelayInvite(invite, ownerProfileId: profileId);
         setState(() => _code.text = invite.encode());
       }
     } catch (error) {
@@ -103,7 +112,12 @@ class _WatchSubtitleDialogState extends State<WatchSubtitleDialog> {
             DropdownMenuItem(value: false, child: Text('Shared cloud folder')),
             DropdownMenuItem(value: true, child: Text('Expiring companion channel')),
           ], onChanged: sync.running || blocked ? null : (value) {
-            if (value != null) setState(() { _companion = value; _code.clear(); _confirmedEdition = false; });
+            if (value != null) setState(() {
+              _companion = value;
+              final invite = value ? sync.relayInvite : null;
+              _code.text = invite?.encode() ?? '';
+              _confirmedEdition = false;
+            });
           }),
           Text(_companion ? 'The host creates a channel on its paired companion and shares the caption code explicitly. '
             'Every participant must be able to reach the displayed HTTPS host. No shared cloud folder is required. '
@@ -126,6 +140,8 @@ class _WatchSubtitleDialogState extends State<WatchSubtitleDialog> {
             if (_companion && widget.room.isHost) ...[
               TextButton(onPressed: sync.running || blocked || _code.text.isNotEmpty ? null : () => _channel(),
                 child: const Text('Create 6-hour channel')),
+            ],
+            if (_companion && (widget.room.isHost || sync.relayOwnerProfileId != null)) ...[
               TextButton(onPressed: blocked || _code.text.isEmpty ? null : () => _channel(revoke: true),
                 child: const Text('Revoke companion channel')),
             ],

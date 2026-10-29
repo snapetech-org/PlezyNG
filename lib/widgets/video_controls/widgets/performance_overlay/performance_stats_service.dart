@@ -516,7 +516,16 @@ class PerformanceStatsService {
         (neuralGeneratedFrames != null && neuralGeneratedFrames > 0) ||
         nativeInterpolationStatus == 'active';
     final playbackPlayerType = player.playerType;
-    final reportedVideoOutput = videoResults?[13] ?? (playbackPlayerType == 'webos' ? 'webos-native' : null);
+    // TV media planes do not expose mpv's current-vo property. Identify the
+    // active native output without implying that the TV reported interpolation
+    // or a particular hardware decoder.
+    final reportedVideoOutput =
+        videoResults?[13] ??
+        switch (playbackPlayerType) {
+          'webos' => 'webos-native',
+          'tizen' => 'tizen-native',
+          _ => null,
+        };
     final videoWidth = _parseInt(results[1] ?? (webosDimensions.isEmpty ? null : webosDimensions[0]));
     final videoHeight = _parseInt(results[2] ?? (webosDimensions.length < 2 ? null : webosDimensions[1]));
     final sourceWidth = _parseInt(results[1]);

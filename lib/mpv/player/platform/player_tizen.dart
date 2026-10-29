@@ -35,6 +35,7 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
   List<SubtitleTrack> _externalSubtitles = const [];
   samsung.ClosedCaptionFile? _captions;
   int _generation = 0;
+  int _playbackTimelineGeneration = 0;
   bool _isLivePlayback = false;
   int _subtitleGeneration = 0;
   int? _sourceId;
@@ -58,6 +59,10 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
   String get playerType => 'tizen';
   @override
   int get mediaSessionGeneration => _generation;
+
+  @override
+  int get playbackTimelineGeneration => _playbackTimelineGeneration;
+
   @override
   bool get isLivePlayback => _isLivePlayback;
   @override
@@ -345,6 +350,7 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
   Future<void> seek(Duration position) async {
     final controller = _controller;
     if (disposed || _closing || controller == null || !controller.value.isInitialized) return;
+    ++_playbackTimelineGeneration;
     final generation = _generation;
     final rate = controller.value.playbackSpeed;
     final target = sourcePositionFor(position < Duration.zero ? Duration.zero : position);

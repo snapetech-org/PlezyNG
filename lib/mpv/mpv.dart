@@ -48,6 +48,7 @@ export '../models/audio_channel_limit.dart';
 export 'player/audio_rendering_mode.dart';
 export 'player/player.dart';
 export 'player/player_base.dart' show PlayerAudioFocusControl, PlayerAudioFocusOwnership;
+export 'player/player_media_session_identity.dart';
 export 'player/player_state.dart';
 export 'player/player_streams.dart';
 

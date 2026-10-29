@@ -26,6 +26,7 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   String _bufferTier = 'auto';
   bool _isLive = false;
   int _mediaSessionGeneration = 0;
+  int _playbackTimelineGeneration = 0;
   List<SubtitleTrack> _externalSubtitleMetadata = const [];
   int _bufferMb = 0;
   int _transcodeBufferSeconds = 0;
@@ -59,6 +60,9 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   /// Changes whenever a new item replaces the current media session.
   @override
   int get mediaSessionGeneration => _mediaSessionGeneration;
+
+  @override
+  int get playbackTimelineGeneration => _playbackTimelineGeneration;
 
   /// Subtitles are hidden through the player's visibility toggle. Sticky
   /// across media opens, like mpv's global `sub-visibility`, so an episode
@@ -323,7 +327,17 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   }
 
   @override
+  Future<void> dispose({bool preserveDisplayMode = false}) {
+    if (!disposed) {
+      ++_mediaSessionGeneration;
+      ++_playbackTimelineGeneration;
+    }
+    return super.dispose(preserveDisplayMode: preserveDisplayMode);
+  }
+
+  @override
   Future<void> seek(Duration position) async {
+    ++_playbackTimelineGeneration;
     await runSeek(position, () => invoke('seek', {'positionMs': sourcePositionFor(position).inMilliseconds}));
   }
 

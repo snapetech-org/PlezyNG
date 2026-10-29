@@ -55,11 +55,15 @@ class PlayerNative extends PlayerBase
 
   bool _hasSeenSegmentLoopSource = false;
   int _mediaSessionGeneration = 0;
+  int _playbackTimelineGeneration = 0;
   bool _isLivePlayback = false;
   ({int left, int top, int right, int bottom, double devicePixelRatio})? _pendingVideoRect;
 
   @override
   int get mediaSessionGeneration => _mediaSessionGeneration;
+
+  @override
+  int get playbackTimelineGeneration => _playbackTimelineGeneration;
 
   @override
   bool get isLivePlayback => _isLivePlayback;
@@ -717,6 +721,7 @@ class PlayerNative extends PlayerBase
   @override
   Future<void> seek(Duration position) async {
     if (_nativeCoreUnavailable) return;
+    ++_playbackTimelineGeneration;
     await runSeek(
       position,
       () => command(['seek', (sourcePositionFor(position).inMilliseconds / 1000.0).toString(), 'absolute']),
@@ -945,6 +950,8 @@ class PlayerNative extends PlayerBase
   Future<void> dispose({bool preserveDisplayMode = false}) {
     final existing = _disposeFuture;
     if (existing != null) return existing;
+    ++_mediaSessionGeneration;
+    ++_playbackTimelineGeneration;
     _disposing = true;
     final disposal = _disposeNative(preserveDisplayMode: preserveDisplayMode);
     _disposeFuture = disposal;

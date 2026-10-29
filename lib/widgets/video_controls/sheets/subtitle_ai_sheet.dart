@@ -14,6 +14,7 @@ import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 import '../../../mpv/mpv.dart';
 import '../../../media/ids.dart';
 import '../../../profiles/active_profile_provider.dart';
+import '../../../mpv/player/player_media_session_identity.dart';
 import '../../../mpv/player/subtitle_pcm_capture_source.dart';
 import '../../../services/file_picker_service.dart';
 import '../../../services/subtitle_ai_service.dart';
@@ -38,6 +39,34 @@ import 'base_video_control_sheet.dart';
 enum _SubtitleReviewChoice { discard, exportSrt, exportJson, player, serverAndPlayer, sourceAndPlayer }
 
 typedef SubtitleSourceSubtitleSaver = Future<void> Function(String name, Uint8List bytes, String languageCode);
+
+class _SubtitleOperationSnapshot {
+  const _SubtitleOperationSnapshot({
+    required this.player,
+    required this.mediaSessionGeneration,
+    required this.revisionIdentity,
+  });
+
+  final Player player;
+  final int? mediaSessionGeneration;
+  final SubtitleRevisionIdentity? revisionIdentity;
+
+  bool isCurrent({
+    required Player currentPlayer,
+    required SubtitleRevisionIdentity? currentRevisionIdentity,
+    required bool Function()? isRevisionIdentityCurrent,
+  }) {
+    if (!identical(player, currentPlayer)) return false;
+    if (mediaSessionGeneration != null) {
+      if (currentPlayer is! PlayerMediaSessionIdentity ||
+          currentPlayer.mediaSessionGeneration != mediaSessionGeneration) {
+        return false;
+      }
+    }
+    if (currentRevisionIdentity?.storageKey != revisionIdentity?.storageKey) return false;
+    return isRevisionIdentityCurrent?.call() != false;
+  }
+}
 
 const _subtitleUndoCheckpointPrefix = 'Undo checkpoint: ';
 
@@ -139,6 +168,7 @@ class SubtitleAiSheet extends StatefulWidget {
 }
 
 class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
+  _SubtitleOperationSnapshot? _operationSnapshot;
   bool _busy = false;
   bool _translateSpeechToEnglish = false;
   bool _translationSupported = false;
@@ -204,6 +234,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _run(Future<void> Function() operation) async {
     if (_busy) return;
+    final player = widget.player;
+    final snapshot = _SubtitleOperationSnapshot(
+      player: player,
+      mediaSessionGeneration: player is PlayerMediaSessionIdentity ? player.mediaSessionGeneration : null,
+      revisionIdentity: _revisionIdentity,
+    );
+    _operationSnapshot = snapshot;
     setState(() {
       _busy = true;
       _error = null;
@@ -216,8 +253,32 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (mounted) setState(() => _error = _readableError(error));
     } finally {
       await _deleteTemporaryWavCopies();
+      if (identical(_operationSnapshot, snapshot)) _operationSnapshot = null;
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  bool get _operationIdentityIsCurrent {
+    final snapshot = _operationSnapshot;
+    if (snapshot == null) return true;
+    return snapshot.isCurrent(
+      currentPlayer: widget.player,
+      currentRevisionIdentity: _revisionIdentity,
+      isRevisionIdentityCurrent: widget.isRevisionIdentityCurrent,
+    );
+  }
+
+  void _requireCurrentOperationIdentity() {
+    if (!_operationIdentityIsCurrent) {
+      throw StateError(
+        'Playback or profile changed while subtitle work was running. Reopen subtitle tools for the current item.',
+      );
+    }
+  }
+
+  SubtitleRevisionIdentity? get _operationRevisionIdentity {
+    final snapshot = _operationSnapshot;
+    return snapshot == null ? _revisionIdentity : snapshot.revisionIdentity;
   }
 
   Future<void> _deleteTemporaryWavCopies() async {
@@ -1210,8 +1271,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     required String operation,
     String? languageCode,
     required List<SubtitleWordTiming> wordTimings,
+    required SubtitleRevisionIdentity? identity,
   }) async {
-    final identity = _revisionIdentity;
     if (identity == null) {
       if (mounted) setState(() => _revisionStatus = 'Revision history needs an active profile and media item.');
       return false;
@@ -1280,8 +1341,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     required String operation,
     String? languageCode,
     required List<SubtitleWordTiming> wordTimings,
+    required SubtitleRevisionIdentity? identity,
   }) async {
-    final identity = _revisionIdentity;
     if (identity == null) {
       if (mounted) {
         setState(
@@ -1318,8 +1379,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     required String operation,
     String? languageCode,
     required List<SubtitleWordTiming> wordTimings,
+    required SubtitleRevisionIdentity? identity,
   }) async {
-    final identity = _revisionIdentity;
     if (identity == null || undoHistory.isEmpty) return;
 
     // The most recent pre-edit states are the most useful recovery points.
@@ -1345,17 +1406,22 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         operation: operation,
         languageCode: languageCode,
         wordTimings: wordTimings,
+        identity: identity,
       );
       if (!persisted) return;
       saved++;
     }
   }
 
-  Future<void> _restoreSubtitleRevision(SubtitleRevision revision) async {
+  Future<void> _restoreSubtitleRevision(SubtitleRevision revision, SubtitleRevisionIdentity expectedIdentity) async {
+    if (_operationRevisionIdentity?.storageKey != expectedIdentity.storageKey) {
+      throw StateError('The selected subtitle revision belongs to a different media item or profile.');
+    }
     final bytes = SubtitleSyncService.writeSrt(revision.cues);
     final directory = await getTemporaryDirectory();
     final path = p.join(directory.path, 'plezyng_revision_${revision.id}.srt');
     await File(path).writeAsBytes(bytes, flush: true);
+    _requireCurrentOperationIdentity();
     await widget.player.command(['sub-add', path, 'select']);
     if (mounted) {
       setState(() => _status = 'Attached reviewed revision from ${_formatRevisionDate(revision.createdAt)}.');
@@ -1567,7 +1633,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     try {
       var revisions = await SubtitleRevisionService.loadRevisions(identity);
       var draft = await SubtitleRevisionService.loadDraftForIdentity(identity);
-      if (!mounted) return;
+      if (!mounted || _revisionIdentity?.storageKey != identity.storageKey) return;
       await showDialog<void>(
         context: context,
         builder: (dialogContext) => StatefulBuilder(
@@ -1676,7 +1742,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                     TextButton.icon(
                                       onPressed: () {
                                         Navigator.of(dialogContext).pop();
-                                        unawaited(_run(() => _restoreSubtitleRevision(revision)));
+                                        unawaited(_run(() => _restoreSubtitleRevision(revision, identity)));
                                       },
                                       icon: AppIcon(
                                         revision.operation.startsWith(_subtitleUndoCheckpointPrefix)
@@ -2252,12 +2318,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     var reviewedWordTimings = SubtitleWordTimingBuilder.attachCueIndices(wordTimings, reviewedCues).toList();
     var invalidatedWordTimingCount = 0;
     final undoHistory = <(int, SubtitleCue)>[];
-    final draftIdentity = _revisionIdentity;
+    final snapshot = _operationSnapshot;
+    final draftIdentity = resumeIdentity ?? (snapshot == null ? _revisionIdentity : snapshot.revisionIdentity);
     final sourceFingerprint = SubtitleRevisionService.reviewFingerprint(cues, sourceCues: sourceCues);
     if (resumeDraft != null) {
       if (draftIdentity == null ||
           resumeIdentity == null ||
           draftIdentity.storageKey != resumeIdentity.storageKey ||
+          (snapshot != null && snapshot.revisionIdentity?.storageKey != resumeIdentity.storageKey) ||
           resumeDraft.sourceFingerprint != sourceFingerprint ||
           resumeDraft.operation != operationLabel) {
         throw StateError('This subtitle review draft no longer matches the active item or cue set.');
@@ -2546,10 +2614,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       await clearReviewDraft();
       return false;
     }
-    if (choice != _SubtitleReviewChoice.exportSrt &&
-        choice != _SubtitleReviewChoice.exportJson &&
-        widget.isRevisionIdentityCurrent?.call() == false) {
-      throw StateError('Playback changed while the subtitle was being reviewed. Reopen subtitle tools for the current item.');
+    if (choice != _SubtitleReviewChoice.exportSrt && choice != _SubtitleReviewChoice.exportJson) {
+      _requireCurrentOperationIdentity();
     }
     final editedCueIds = <String>{};
     for (final cue in reviewedCues) {
@@ -2587,12 +2653,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         operation: operationLabel,
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
+        identity: draftIdentity,
       );
       final revisionSaved = await _storeReviewedRevision(
         cues: reviewedCues,
         operation: operationLabel,
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
+        identity: draftIdentity,
       );
       if (revisionSaved) await clearReviewDraft();
       if (mounted) setState(() => _status = 'Reviewed subtitle exported as SRT.');
@@ -2657,12 +2725,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         operation: operationLabel,
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
+        identity: draftIdentity,
       );
       final revisionSaved = await _storeReviewedRevision(
         cues: reviewedCues,
         operation: operationLabel,
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
+        identity: draftIdentity,
       );
       if (revisionSaved) await clearReviewDraft();
       if (mounted) setState(() => _status = 'Reviewed subtitle exported as versioned cue JSON.');
@@ -2678,6 +2748,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (choice == _SubtitleReviewChoice.sourceAndPlayer) {
         final saveToSource = widget.onSaveToSource;
         if (saveToSource == null) throw StateError('This item cannot store a standalone subtitle sidecar.');
+        _requireCurrentOperationIdentity();
         await saveToSource('PlezyNG.$originToken.srt', bytes, operationLanguageCode?.trim() ?? '');
         _lastResultSavedToSource = true;
       } else {
@@ -2687,6 +2758,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           'plezyng_ai_${originToken}_${DateTime.now().microsecondsSinceEpoch}.srt',
         );
         await File(path).writeAsBytes(bytes, flush: true);
+        _requireCurrentOperationIdentity();
         await widget.player.command(['sub-add', path, 'select']);
       }
     } catch (error) {
@@ -2697,12 +2769,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           operation: operationLabel,
           languageCode: operationLanguageCode,
           wordTimings: reviewedWordTimings,
+          identity: draftIdentity,
         );
         await _storeReviewedRevision(
           cues: reviewedCues,
           operation: operationLabel,
           languageCode: operationLanguageCode,
           wordTimings: reviewedWordTimings,
+          identity: draftIdentity,
         );
         throw StateError('Uploaded to the server library, but could not attach the local copy: $error');
       }
@@ -2714,12 +2788,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       operation: operationLabel,
       languageCode: operationLanguageCode,
       wordTimings: reviewedWordTimings,
+      identity: draftIdentity,
     );
     final revisionSaved = await _storeReviewedRevision(
       cues: reviewedCues,
       operation: operationLabel,
       languageCode: operationLanguageCode,
       wordTimings: reviewedWordTimings,
+      identity: draftIdentity,
     );
     if (revisionSaved) await clearReviewDraft();
     return true;

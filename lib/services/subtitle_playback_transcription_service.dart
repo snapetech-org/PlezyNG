@@ -39,6 +39,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
   SubtitlePcmCaptureSource? _player;
   int? _playerGeneration;
+  int? _playerTimelineGeneration;
   String? _audioTrackId;
   whisper.FlutterWhisper? _session;
   Timer? _timer;
@@ -103,6 +104,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
     _starting = true;
     final startGeneration = player.mediaSessionGeneration;
+    final startTimelineGeneration = player.playbackTimelineGeneration;
     final startAudioTrackId = player.subtitlePcmAudioTrackId;
     SubtitleLiveWhisperRuntime? loadedRuntime;
     var captureEnabled = false;
@@ -136,6 +138,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       if (player.disposed ||
           player.isLivePlayback ||
           player.mediaSessionGeneration != startGeneration ||
+          player.playbackTimelineGeneration != startTimelineGeneration ||
           player.subtitlePcmAudioTrackId != startAudioTrackId) {
         throw StateError('Playback changed while Whisper was loading. Start live captions again.');
       }
@@ -146,6 +149,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       if (player.disposed ||
           player.isLivePlayback ||
           player.mediaSessionGeneration != startGeneration ||
+          player.playbackTimelineGeneration != startTimelineGeneration ||
           player.subtitlePcmAudioTrackId != startAudioTrackId) {
         throw StateError('Playback changed while live capture was starting. Start again on the current audio track.');
       }
@@ -156,6 +160,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       loadedRuntime = null;
       _player = player;
       _playerGeneration = startGeneration;
+      _playerTimelineGeneration = startTimelineGeneration;
       _audioTrackId = startAudioTrackId;
       _running = true;
       _startedAt = DateTime.now();
@@ -215,6 +220,16 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         _lastError == null &&
         _samples.length >= _windowSamples &&
         _invalidCaptureSessionReason(player) == null) {
+      final postDrainInvalidReason = _invalidCaptureSessionReason(player);
+      if (postDrainInvalidReason != null) {
+        _running = false;
+        _timer?.cancel();
+        _timer = null;
+        _discardCapturedTimeline();
+        _setStatus(postDrainInvalidReason);
+        unawaited(stop());
+        return;
+      }
       _startInference(finalChunk: false);
       final inference = _inferenceFuture;
       if (inference == null) break;
@@ -239,6 +254,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (session != null) await session.dispose();
     _player = null;
     _playerGeneration = null;
+    _playerTimelineGeneration = null;
     _audioTrackId = null;
     liveCaption.value = null;
 
@@ -260,6 +276,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (player == null) return 'Playback session ended; captured transcript was discarded.';
     if (player.disposed || player.isLivePlayback || player.mediaSessionGeneration != _playerGeneration) {
       return 'Playback session changed; captured transcript was discarded.';
+    }
+    if (player.playbackTimelineGeneration != _playerTimelineGeneration) {
+      return 'Playback position changed during capture; the partial transcript was discarded. Start capture again.';
     }
     if (player.subtitlePcmAudioTrackId != _audioTrackId) {
       return 'Selected audio track changed; captured transcript was discarded. Start capture again on the new track.';

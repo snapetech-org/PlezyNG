@@ -9,13 +9,14 @@ import 'package:video_player_drm/video_player.dart' as webos_media;
 import '../../../models/audio_channel_limit.dart';
 import '../../models.dart';
 import '../audio_rendering_mode.dart';
+import '../player_media_session_identity.dart';
 import '../player_base.dart';
 import 'webos_media_proxy.dart';
 
 /// LG's native webOS media pipeline, exposed through the official Flutter
 /// video-player plugin. webOS reports itself as Linux through `dart:io`, so it
 /// must be selected before the generic Linux MPV backend.
-class PlayerWebOS extends PlayerBase {
+class PlayerWebOS extends PlayerBase implements PlayerMediaSessionIdentity {
   PlayerWebOS({this.audioOnly = false}) : super(listenToNativeEvents: false);
 
   static const _methodChannel = MethodChannel('com.plezy/webos_media');
@@ -63,6 +64,9 @@ class PlayerWebOS extends PlayerBase {
   bool _subtitlesVisible = false;
 
   bool get hasVideoSurface => !audioOnly && _controller != null;
+
+  @override
+  int get mediaSessionGeneration => _generation;
 
   Widget videoSurface() {
     final controller = _controller;
@@ -343,6 +347,7 @@ class PlayerWebOS extends PlayerBase {
   @override
   Future<void> stop() async {
     if (disposed) return;
+    ++_generation;
     final sourceId = _sourceId;
     await _releaseSource();
     if (sourceId != null) handlePlayerEvent('end-file', {'sourceId': sourceId, 'reason': 'stop'});

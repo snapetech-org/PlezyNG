@@ -36,6 +36,10 @@ final class SubtitleGlossaryRevision {
 abstract final class SubtitleTranslationService {
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
   static final RegExp _numericTokenPattern = RegExp(r'\d+(?:[.,:/-]\d+)*');
+  static final RegExp _protectedSubtitleSpanPattern = RegExp(
+    r'<[^>]{0,160}>|\{[^}]{0,160}\}|\\[Nnh]|(?:https?://|www\.|mailto:)[^\s<>{}]+',
+    caseSensitive: false,
+  );
 
   static bool get mobilePlatformSupported => !kIsWeb && !_tvOsBuild && (Platform.isAndroid || Platform.isIOS);
 
@@ -522,7 +526,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     final protectedCues = <_ProtectedGlossary>[];
     final textToTranslate = <String>[];
     var protectedInputBytes = 0;
-    final markup = RegExp(r'<[^>]{0,160}>|\{[^}]{0,160}\}|\\[Nnh]');
+    final markup = _protectedSubtitleSpanPattern;
     for (final cue in cues) {
       final protected = _protectGlossaryMarkupAware(cue.text, glossary, cue.index);
       protectedInputBytes += utf8.encode(protected.text).length;
@@ -766,7 +770,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       markerPrefix += 'X';
     }
     final markers = <String, String>{};
-    final markup = RegExp(r'<[^>]{0,160}>|\{[^}]{0,160}\}|\\[Nnh]');
+    final markup = _protectedSubtitleSpanPattern;
 
     String protectPlainText(String text) {
       var protectedText = text;
@@ -812,7 +816,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       bilingual ? '$source\n$translation' : translation;
 
   static Future<String> _translateMarkupAware(OnDeviceTranslator translator, String source) async {
-    final markup = RegExp(r'<[^>]{0,160}>|\{[^}]{0,160}\}|\\[Nnh]');
+    final markup = _protectedSubtitleSpanPattern;
     final matches = markup.allMatches(source).toList(growable: false);
     if (matches.isEmpty) return translator.translateText(source);
 

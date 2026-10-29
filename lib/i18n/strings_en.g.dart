@@ -3442,6 +3442,42 @@ class Translations$videoControls$en {
 
 	/// en: 'This file could not be decoded. Check its format and encoding.'
 	String get subtitleImportDecodeError => 'This file could not be decoded. Check its format and encoding.';
+
+	/// en: 'Annotate the language of selected words'
+	String get subtitleLanguageAnnotateAction => 'Annotate the language of selected words';
+
+	/// en: 'Language of selected words'
+	String get subtitleLanguageDialogTitle => 'Language of selected words';
+
+	/// en: 'Language code'
+	String get subtitleLanguageCodeLabel => 'Language code';
+
+	/// en: 'en, ja, ar, zh-Hant-TW'
+	String get subtitleLanguageCodeHint => 'en, ja, ar, zh-Hant-TW';
+
+	/// en: 'This is your language annotation, not automatic recognition. It does not change the track language. Horizontal app captions use it for glyph locale and accessibility. JSON revisions and WebVTT sharing retain it; SRT/native snapshots flatten it. Ruby readings and vertical span shaping are not combined with these labels.'
+	String get subtitleLanguageDescription => 'This is your language annotation, not automatic recognition. It does not change the track language. Horizontal app captions use it for glyph locale and accessibility. JSON revisions and WebVTT sharing retain it; SRT/native snapshots flatten it. Ruby readings and vertical span shaping are not combined with these labels.';
+
+	/// en: 'The helper accepts plain text. For additional spans or existing markup, edit balanced <lang code>words</lang> tags directly in the cue editor.'
+	String get subtitleLanguageMarkupHelp => 'The helper accepts plain text. For additional spans or existing markup, edit balanced <lang code>words</lang> tags directly in the cue editor.';
+
+	/// en: 'Select the words in the cue text first.'
+	String get subtitleLanguageSelectFirst => 'Select the words in the cue text first.';
+
+	/// en: 'Use a language code with optional script and region, such as en or zh-Hant-TW.'
+	String get subtitleLanguageInvalidCode => 'Use a language code with optional script and region, such as en or zh-Hant-TW.';
+
+	/// en: 'Select plain cue text without existing markup. Edit existing language tags directly.'
+	String get subtitleLanguagePlainTextOnly => 'Select plain cue text without existing markup. Edit existing language tags directly.';
+
+	/// en: 'Select complete characters.'
+	String get subtitleLanguageCompleteCharacters => 'Select complete characters.';
+
+	/// en: 'The language annotation exceeds the cue bound.'
+	String get subtitleLanguageCueLimit => 'The language annotation exceeds the cue bound.';
+
+	/// en: 'Add language annotation'
+	String get subtitleLanguageAddAction => 'Add language annotation';
 }
 
 // Path: messages
@@ -15794,6 +15830,18 @@ extension on Translations {
 			'videoControls.subtitleImportTailRequired' => 'Enter the final cue duration in whole milliseconds.',
 			'videoControls.subtitleImportClockOriginRequired' => 'Enter the SCC clock origin in whole milliseconds.',
 			'videoControls.subtitleImportDecodeError' => 'This file could not be decoded. Check its format and encoding.',
+			'videoControls.subtitleLanguageAnnotateAction' => 'Annotate the language of selected words',
+			'videoControls.subtitleLanguageDialogTitle' => 'Language of selected words',
+			'videoControls.subtitleLanguageCodeLabel' => 'Language code',
+			'videoControls.subtitleLanguageCodeHint' => 'en, ja, ar, zh-Hant-TW',
+			'videoControls.subtitleLanguageDescription' => 'This is your language annotation, not automatic recognition. It does not change the track language. Horizontal app captions use it for glyph locale and accessibility. JSON revisions and WebVTT sharing retain it; SRT/native snapshots flatten it. Ruby readings and vertical span shaping are not combined with these labels.',
+			'videoControls.subtitleLanguageMarkupHelp' => 'The helper accepts plain text. For additional spans or existing markup, edit balanced <lang code>words</lang> tags directly in the cue editor.',
+			'videoControls.subtitleLanguageSelectFirst' => 'Select the words in the cue text first.',
+			'videoControls.subtitleLanguageInvalidCode' => 'Use a language code with optional script and region, such as en or zh-Hant-TW.',
+			'videoControls.subtitleLanguagePlainTextOnly' => 'Select plain cue text without existing markup. Edit existing language tags directly.',
+			'videoControls.subtitleLanguageCompleteCharacters' => 'Select complete characters.',
+			'videoControls.subtitleLanguageCueLimit' => 'The language annotation exceeds the cue bound.',
+			'videoControls.subtitleLanguageAddAction' => 'Add language annotation',
 			'messages.markedAsWatched' => 'Marked as watched',
 			'messages.markedAsUnwatched' => 'Marked as unwatched',
 			'messages.markedAsWatchedOffline' => 'Marked as watched (will sync when online)',

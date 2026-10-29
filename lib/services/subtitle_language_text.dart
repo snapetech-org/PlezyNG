@@ -23,6 +23,13 @@ class SubtitleLanguageRun {
   final SubtitleLanguageTag? language;
 }
 
+enum SubtitleLanguageTextIssue { invalidSelection, invalidCode, markupNotAllowed, incompleteCharacter, cueLimit }
+
+class SubtitleLanguageTextException implements Exception {
+  const SubtitleLanguageTextException(this.issue);
+  final SubtitleLanguageTextIssue issue;
+}
+
 /// Bounded, non-executable WebVTT language spans. Cue text remains the canonical
 /// representation in revisions, so edits, undo and sync preserve annotations.
 abstract final class SubtitleLanguageText {
@@ -75,18 +82,25 @@ abstract final class SubtitleLanguageText {
 
   static String annotate(String text, int start, int end, String tag) {
     final language = SubtitleLanguageTag.parse(tag.trim());
-    if (language == null) throw const FormatException('Use a language code with optional script and region, such as en or zh-Hant-TW.');
-    if (start < 0 || end <= start || end > text.length || text.length > 3900 ||
-        RegExp(r'<[^>]*>|\{[^}]*\}|&(?:[A-Za-z]+|#\d+|#x[0-9a-fA-F]+);').hasMatch(text)) {
-      throw const FormatException('Select plain cue text without existing markup. Edit existing language tags directly.');
+    if (language == null) throw const SubtitleLanguageTextException(SubtitleLanguageTextIssue.invalidCode);
+    if (start < 0 || end <= start || end > text.length) {
+      throw const SubtitleLanguageTextException(SubtitleLanguageTextIssue.invalidSelection);
+    }
+    if (text.length > 3900) throw const SubtitleLanguageTextException(SubtitleLanguageTextIssue.cueLimit);
+    if (RegExp(r'<[^>]*>|\{[^}]*\}|&(?:[A-Za-z]+|#\d+|#x[0-9a-fA-F]+);').hasMatch(text)) {
+      throw const SubtitleLanguageTextException(SubtitleLanguageTextIssue.markupNotAllowed);
     }
     bool splitsSurrogate(int index) => index > 0 && index < text.length &&
         text.codeUnitAt(index - 1) >= 0xd800 && text.codeUnitAt(index - 1) <= 0xdbff &&
         text.codeUnitAt(index) >= 0xdc00 && text.codeUnitAt(index) <= 0xdfff;
-    if (splitsSurrogate(start) || splitsSurrogate(end)) throw const FormatException('Select complete characters.');
+    if (splitsSurrogate(start) || splitsSurrogate(end)) {
+      throw const SubtitleLanguageTextException(SubtitleLanguageTextIssue.incompleteCharacter);
+    }
     String escape(String value) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
     final result = '${escape(text.substring(0, start))}<lang ${language.tag}>${escape(text.substring(start, end))}</lang>${escape(text.substring(end))}';
-    if (result.length > 4000 || parse(result) == null) throw const FormatException('The language annotation exceeds the cue bound.');
+    if (result.length > 4000 || parse(result) == null) {
+      throw const SubtitleLanguageTextException(SubtitleLanguageTextIssue.cueLimit);
+    }
     return result;
   }
 }

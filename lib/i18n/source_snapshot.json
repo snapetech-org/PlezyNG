@@ -4362,5 +4362,17 @@
   "videoControls.subtitleHdr.sdrReference": "3efdad0f31281397",
   "videoControls.subtitleHdr.useVideoMetadata": "68b8cf9f49d0a832",
   "videoControls.subtitleHdr.restoreOpening": "32269608176a0b35",
-  "videoControls.subtitleHdr.close": "d7cf5045c01b2eb9"
+  "videoControls.subtitleHdr.close": "d7cf5045c01b2eb9",
+  "videoControls.subtitleLanguageAddAction": "f6cc5a5f44ef3a42",
+  "videoControls.subtitleLanguageAnnotateAction": "5405925ebc4eb3d9",
+  "videoControls.subtitleLanguageCodeHint": "88ea742bbb7fb6fb",
+  "videoControls.subtitleLanguageCodeLabel": "2463a1490f068433",
+  "videoControls.subtitleLanguageCompleteCharacters": "9c9d0405e55dc6fb",
+  "videoControls.subtitleLanguageCueLimit": "b90ed97e19f6497b",
+  "videoControls.subtitleLanguageDescription": "a726961b38436b1f",
+  "videoControls.subtitleLanguageDialogTitle": "4d44e09773e0b4f8",
+  "videoControls.subtitleLanguageInvalidCode": "87fe9fed99dd2c78",
+  "videoControls.subtitleLanguageMarkupHelp": "138a26def8cb23fb",
+  "videoControls.subtitleLanguagePlainTextOnly": "72f7d003f2d63c3e",
+  "videoControls.subtitleLanguageSelectFirst": "534a4e9db039fc89"
 }

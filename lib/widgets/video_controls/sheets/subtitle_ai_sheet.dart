@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 
+import '../../../i18n/strings.g.dart';
 import '../../../mpv/mpv.dart';
 import '../../../media/ids.dart';
 import '../../../profiles/active_profile_provider.dart';
@@ -2926,7 +2927,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       decoration: const InputDecoration(labelText: 'Cue text', border: OutlineInputBorder()),
                     ),
                     TextButton(onPressed: () => tagSubtitleSelection(editorContext, textController),
-                      child: const Text('Annotate the language of selected words')),
+                      child: Text(Translations.of(editorContext).videoControls.subtitleLanguageAnnotateAction)),
                     const SizedBox(height: 10),
                     Row(
                       children: [

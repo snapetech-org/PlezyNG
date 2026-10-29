@@ -57,3 +57,6 @@ if(EXISTS "${LITERT_RUNTIME_LIBRARY}" AND EXISTS "${LITERT_CC_SDK_ROOT}/litert/c
     target_include_directories(plezy_litert_motion PRIVATE "${LITERT_CC_SDK_ROOT}")
     target_link_libraries(plezy_litert_motion litert_runtime android log)
 endif()
+
+# Software libretro runtime; Android core .so files live in the ABI's jniLibs directory.
+add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../../../../../native/games/romm" "${CMAKE_CURRENT_BINARY_DIR}/romm_native")

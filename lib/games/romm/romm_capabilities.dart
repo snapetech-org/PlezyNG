@@ -11,12 +11,12 @@ class RommCapabilities {
   bool get fresh => observedAt != null && DateTime.now().difference(observedAt!) < const Duration(minutes: 5);
   String slug(RommGame game) => rommString(rommMap(config['PLATFORMS_VERSIONS'])[game.platform], 128).isEmpty
       ? game.platform : rommString(rommMap(config['PLATFORMS_VERSIONS'])[game.platform], 128);
-  List<RommRoute> routes(RommGame game, {required bool browserAvailable, Set<String> nativeCores = const {}}) {
-    if (!game.hasBytes) return const [];
+  List<RommRoute> routes(RommGame game, {required bool browserAvailable, Set<String> nativeCores = const {}, bool offlineAvailable = false}) {
+    if (!game.hasBytes && !offlineAvailable) return const [];
     final platform = slug(game);
     final result = <RommRoute>[];
     void web(RommEngine engine, String flag, bool eligible, {String core = ''}) {
-      if (eligible && emulation[flag] == false) result.add(RommRoute(engine, core: core,
+      if (game.hasBytes && eligible && emulation[flag] == false) result.add(RommRoute(engine, core: core,
         available: browserAvailable && fresh, reason: !browserAvailable ? 'romm.browserUnavailable'
           : !fresh ? 'romm.refreshBeforePlay' : ''));
     }
@@ -29,7 +29,7 @@ class RommCapabilities {
     web(RommEngine.pico8, 'DISABLE_PICO8', platform == 'pico' &&
         (game.fileName.toLowerCase().endsWith('.p8') || game.fileName.toLowerCase().endsWith('.p8.png')));
     web(RommEngine.easyRpg, 'DISABLE_EASYRPG', platform == 'rpg-maker' && game.easyRpg);
-    for (final stream in streams.where((s) => s['platform'] == platform)) {
+    for (final stream in streams.where((s) => game.hasBytes && s['platform'] == platform)) {
       result.add(RommRoute(RommEngine.stream, core: rommString(stream['emulator'], 128),
         available: browserAvailable && fresh, reason: !browserAvailable ? 'romm.browserUnavailable'
           : !fresh ? 'romm.refreshBeforePlay' : ''));
@@ -51,5 +51,5 @@ class RommCapabilities {
 /// actually present; this mapping alone never enables a native Play action.
 const rommNativeCorePlatforms = <String, List<String>>{
   'snes9x': ['snes', 'sfam'], 'gambatte': ['gb', 'gbc'], 'mgba': ['gba', 'gb', 'gbc'],
-  'fceumm': ['nes', 'famicom', 'fds'], 'genesis_plus_gx': ['genesis', 'sms', 'gamegear', 'segacd'],
+  'fceumm': ['nes', 'famicom'], 'genesis_plus_gx': ['genesis', 'sms', 'gamegear'],
 };

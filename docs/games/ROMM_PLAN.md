@@ -18,17 +18,17 @@ No title-only matching silently merges editions, platforms or save data.
 
 | Area | Required behavior | Source status |
 | --- | --- | --- |
-| Connection | Scoped device authorization, code/QR, manual token compatibility, vault storage, reconnect and remove | pending |
-| Library | Native Games integration, paged search, platform/source/collection filters, covers, details, variants, favorites and recent play | pending |
-| Capability | Inspect exact file and server runtime configuration, explain missing bytes/firmware/runtime, choose browser/stream/native independently | pending |
-| Browser play | In-app player surface, authenticated same-origin transport, bounded resources, controller/touch, close/profile retirement, save handling | pending |
-| Stream play | RomM WebRTC player, server session ownership, launch/busy/failure states, resume/disc/memory-card controls, reconnect and save-and-exit | pending |
-| Saves | Exact-ROM and engine identities, list/import/export, conflicts/history, durable pending uploads and per-profile isolation | pending |
-| Offline/native | Verified downloads, bounded storage, cancellation/recovery, in-app native core host and packaged core recipes, compatible save sync | pending |
-| Ecosystem | Collections, metadata/art, screenshots/manuals, achievement progress with honest earning capability, multiplayer where supported | pending |
-| Handoff | Validated external game links, acquisition-to-index matching, no credentials in links, safe source/copy selection | pending |
-| Platforms | Explicit browser/native availability on desktop/mobile/TV, native packaging recipes and fallbacks that remain inside PlezyNG | pending |
-| Accessibility/localization | Keyboard/D-pad, large text, RTL, semantic state, stable translation keys with explicit English fallback provenance | pending |
+| Connection | Scoped device authorization, code/QR, manual token compatibility, vault storage, reconnect and remove | implemented in source; runtime validation pending |
+| Library | Native Games integration, paged search, platform/source/collection filters, covers, details, variants, favorites and recent play | implemented in source; runtime validation pending |
+| Capability | Inspect exact file and server runtime configuration, explain missing bytes/firmware/runtime, choose browser/stream/native independently | implemented in source; runtime validation pending |
+| Browser play | In-app player surface, authenticated same-origin transport, bounded resources, controller/touch, close/profile retirement, save handling | implemented in source; runtime validation pending |
+| Stream play | RomM WebRTC player, server session ownership, launch/busy/failure states, resume/disc/memory-card controls, reconnect and save-and-exit | implemented in source; runtime validation pending |
+| Saves | Exact-ROM and engine identities, list/import/export, conflicts/history, durable pending uploads and per-profile isolation | implemented in source; runtime validation pending |
+| Offline/native | Verified downloads, bounded storage, cancellation/recovery, in-app native core host and packaged core recipes, compatible save sync | implemented in source; runtime validation pending |
+| Ecosystem | Collections, metadata/art, screenshots/manuals, achievement progress with honest earning capability, multiplayer where supported | implemented in source; runtime validation pending |
+| Handoff | Validated external game links, acquisition-to-index matching, no credentials in links, safe source/copy selection | implemented in source; runtime validation pending |
+| Platforms | Explicit browser/native availability on desktop/mobile/TV, native packaging recipes and fallbacks that remain inside PlezyNG | implemented in source; runtime validation pending |
+| Accessibility/localization | Keyboard/D-pad, large text, RTL, semantic state, stable translation keys with explicit English fallback provenance | implemented in source; runtime validation pending |
 
 ## Implementation constraints
 
@@ -44,6 +44,16 @@ No title-only matching silently merges editions, platforms or save data.
   game title is never sufficient evidence of compatibility.
 - Native recipes pin dependencies and require approved private build agents.
   Platform adapters must report absent runtimes honestly until packaged.
+
+## Delivery notes
+
+Implementation and platform handoff are documented in [ROMM_INTEGRATION.md](ROMM_INTEGRATION.md).
+The native host is wired into platform build recipes; core binary staging and
+Apple signing remain explicit release inputs. The default core recipe excludes
+Snes9x and Genesis Plus GX pending distribution-license review. This is a
+source delivery, not a claim of tested device playback. TV platforms without an
+embedded browser expose only installed native routes. Browser netplay remains
+unadvertised because device tokens do not establish its session cookie.
 
 ## Acceptance handoff
 

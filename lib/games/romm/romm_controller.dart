@@ -23,6 +23,7 @@ class RommController extends ChangeNotifier {
   final capabilities = <String, RommCapabilities>{};
   final collections = <String, List<RommCollection>>{};
   final errors = <String, String>{};
+  final achievementProgress = <String, Map<String, dynamic>>{};
   final _clients = <String, RommClient>{};
   final _sessionTokens = <String, String>{};
   final _next = <String, int?>{};
@@ -56,6 +57,13 @@ class RommController extends ChangeNotifier {
     for (final id in ids) capabilities[id] = RommCapabilities.cached(rommMap(cached[id]));
     await storage.load();
     requireCurrent();
+    final cachedKeys = games.map((g) => g.key).toSet();
+    for (final row in storage.downloads.values) {
+      final id = rommString(row['connectionId'], 128);
+      if (!ids.contains(id)) continue;
+      final game = RommGame.fromJson(id, rommMap(row['game']));
+      if (cachedKeys.add(game.key)) games.add(game);
+    }
     storage.addListener(changed);
     changed();
   }
@@ -117,7 +125,7 @@ class RommController extends ChangeNotifier {
       if (!CredentialVault.isProtected(credential)) { credential = ''; _sessionTokens[id] = token; }
       final next = RommConnection(id: id, name: name.trim().isEmpty ? base.host : name.trim(),
         baseUrl: base.toString(), userId: uid, username: rommString(me['username'], 128),
-        deviceId: deviceId, credential: credential, scopes: scopes,
+        deviceId: deviceId.isEmpty ? rommString(me['current_device_id'], 128) : deviceId, credential: credential, scopes: scopes,
         version: rommString(rommMap(beat['SYSTEM'])['VERSION'], 64));
       connections.removeWhere((c) => c.id == id); connections.add(next);
       _clients.remove(id)?.close();
@@ -133,7 +141,7 @@ class RommController extends ChangeNotifier {
     _queryGeneration++; busy = false;
     _clients.remove(id)?.close(); _sessionTokens.remove(id);
     connections.removeWhere((c) => c.id == id); games.removeWhere((g) => g.connectionId == id);
-    capabilities.remove(id); collections.remove(id); errors.remove(id); _next.remove(id);
+    capabilities.remove(id); achievementProgress.remove(id); collections.remove(id); errors.remove(id); _next.remove(id);
     favorites.removeWhere((k) => k.startsWith('romm:$id:')); recent.removeWhere((k) => k.startsWith('romm:$id:'));
     _covers.removeWhere((k, _) => k.startsWith('romm:$id:'));
     if (source == id) { source = ''; platformId = null; collection = null; }
@@ -144,17 +152,22 @@ class RommController extends ChangeNotifier {
     final api = await client(id), me = await (await client(id)).me();
     requireCurrent();
     if (rommInt(me['id']) != connection(id).userId) throw const RommFailure('romm.accountMismatch');
+    achievementProgress[id] = rommMap(me['ra_progression']);
     final beat = await api.heartbeat(), config = await api.config();
     Map<String, dynamic> stream = {};
     try { stream = await api.streaming(); } on RommFailure catch (error) { if (error.status != 404 && error.status != 403) rethrow; }
     final platforms = await api.platforms();
     final lists = await api.collections();
     requireCurrent();
+    connection(id);
     capabilities[id] = RommCapabilities(version: rommString(rommMap(beat['SYSTEM'])['VERSION'], 64),
       emulation: rommMap(beat['EMULATION']), config: config,
       streams: stream['enabled'] == true ? rommList(stream['containers']).take(500).map(rommMap).toList() : [],
       platforms: platforms, observedAt: DateTime.now());
     collections[id] = lists;
+    final ownFavorites = lists.where((list) => list.favorite && list.userId == connection(id).userId);
+    favorites.removeWhere((key) => key.startsWith('romm:$id:'));
+    for (final list in ownFavorites) { favorites.addAll(list.romIds.map((romId) => 'romm:$id:$romId')); }
   }
 
   Future<void> refresh({String? search, String? connectionId, int? platform, RommCollection? list,
@@ -197,7 +210,12 @@ class RommController extends ChangeNotifier {
   }
   Future<void> favorite(RommGame game) async {
     requireCurrent();
-    if (!favorites.add(game.key)) favorites.remove(game.key);
+    final api = await client(game.connectionId), source = connection(game.connectionId);
+    var list = collections[source.id]?.where((list) => list.favorite && list.userId == source.userId).firstOrNull;
+    if (list == null) { list = await api.createFavorites(); collections.putIfAbsent(source.id, () => []).add(list); }
+    final add = !favorites.contains(game.key);
+    await api.collectionMembership(list, game.id, add); requireCurrent();
+    if (add) favorites.add(game.key); else favorites.remove(game.key);
     await persist(); changed();
   }
   Future<void> played(RommGame game) async {

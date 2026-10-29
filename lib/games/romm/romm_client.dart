@@ -79,10 +79,14 @@ class RommClient {
     Object? data;
     try { if (bytes.isNotEmpty) data = jsonDecode(utf8.decode(bytes)); } catch (_) { throw const RommFailure('romm.invalidResponse'); }
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final code = rommString(rommMap(data)['detail'], 80);
+      final detail = rommMap(data)['detail'];
+      if (response.statusCode == 428 && rommMap(detail)['code'] == 'memory_card_import_required') {
+        throw RommFailure(rommMap(detail)['outcome'] == 'unreadable' ? 'romm.cardUnreadable' : 'romm.cardImportRequired', status: 428);
+      }
+      final code = rommString(detail, 80);
       throw RommFailure({'authorization_pending', 'slow_down', 'access_denied', 'expired_token'}.contains(code)
           ? code : response.statusCode == 401 ? 'romm.signInAgain' : response.statusCode == 403
-          ? 'romm.permissionDenied' : response.statusCode == 409 ? 'romm.conflict'
+          ? 'romm.permissionDenied' : response.statusCode == 409 ? (path == 'streaming/sessions' ? 'romm.busy' : 'romm.conflict')
           : response.statusCode == 404 ? 'romm.notFound' : 'romm.serverError', status: response.statusCode);
     }
     return data;
@@ -126,6 +130,18 @@ class RommClient {
     }
     return result;
   }
+  Future<RommCollection> createFavorites() async {
+    final request = await open('POST', uri('api/collections', {'is_favorite': true, 'is_public': false}));
+    request.headers.set('content-type', 'application/x-www-form-urlencoded'); request.write('name=PlezyNG+Favorites');
+    final response = await request.close();
+    final bytes = await read(response);
+    if (response.statusCode < 200 || response.statusCode > 299) throw RommFailure('romm.permissionDenied', status: response.statusCode);
+    return RommCollection.fromJson(rommMap(jsonDecode(utf8.decode(bytes))), 'collection');
+  }
+  Future<void> collectionMembership(RommCollection collection, int romId, bool add) async {
+    if (collection.kind != 'collection' || int.tryParse(collection.id) == null) throw const RommFailure('romm.permissionDenied');
+    await json(add ? 'POST' : 'DELETE', 'collections/${collection.id}/roms', body: {'rom_ids': [romId]});
+  }
   Future<void> setProgress(RommGame game, Map<String, dynamic> props, {bool played = false}) async {
     await json('PUT', 'roms/${game.id}/props', query: {if (played) 'update_last_played': true}, body: props);
   }
@@ -136,8 +152,19 @@ class RommClient {
         'end_time': end.toUtc().toIso8601String(),
         'duration_ms': end.difference(start).inMilliseconds.clamp(0, 86400000)}]});
   }
-  Future<Uint8List> asset(String path, {int maximum = 12 * 1024 * 1024}) async {
-    final response = await (await open('GET', resource(path))).close();
+  Future<Uint8List> asset(String path, {int maximum = 12 * 1024 * 1024, bool externalImage = false}) async {
+    final candidate = Uri.tryParse(path);
+    if (externalImage && candidate != null && candidate.scheme == 'https' && candidate.host.isNotEmpty && candidate.userInfo.isEmpty && candidate.origin != base.origin) {
+      final public = HttpClient()..connectionTimeout = const Duration(seconds: 15);
+      try {
+        final request = await public.getUrl(candidate).timeout(const Duration(seconds: 20));
+        request.followRedirects = false; request.headers.set('accept', 'image/*');
+        final response = await request.close().timeout(const Duration(seconds: 20));
+        if (response.statusCode != 200 || response.headers.contentType?.primaryType != 'image') throw const RommFailure('romm.notFound');
+        return await read(response, maximum: maximum);
+      } finally { public.close(force: true); }
+    }
+    final response = await (await open('GET', resource(path))).close().timeout(const Duration(seconds: 30));
     if (response.statusCode != 200) throw RommFailure('romm.notFound', status: response.statusCode);
     return read(response, maximum: maximum);
   }
@@ -161,7 +188,7 @@ class RommClient {
     }
     final boundary = 'plezy${List.generate(24, (_) => Random.secure().nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
     final request = await open('POST', uri('api/${state ? 'states' : 'saves'}', {
-      'rom_id': romId, 'emulator': emulator, if (core.isNotEmpty && state) 'core': core,
+      'rom_id': romId, 'emulator': emulator,
       if (deviceId.isNotEmpty && !state) 'device_id': deviceId,
       if (!state) 'slot': slot, if (!state) 'autocleanup': false,
       if (!state) 'overwrite': overwrite, if (contentHash != null && !state) 'content_hash': contentHash,

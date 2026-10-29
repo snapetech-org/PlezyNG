@@ -47,7 +47,13 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
   Future<void> _play(RommRoute route) async {
     if (!live || !route.available) return;
     if (route.engine == RommEngine.native) {
-      await rommPush<void>(context, widget.controller, RommNativePlayerScreen(controller: widget.controller, game: _game, core: route.core));
+      final resume = await showDialog<bool>(context: context, builder: (dialog) => SimpleDialog(
+        title: Text(rommText(dialog, 'native')), children: [
+          SimpleDialogOption(onPressed: () => Navigator.pop(dialog, true), child: Text(rommText(dialog, 'nativeCloudResume'))),
+          SimpleDialogOption(onPressed: () => Navigator.pop(dialog, false), child: Text(rommText(dialog, 'startFresh'))),
+        ]));
+      if (resume == null || !live) return;
+      await rommPush<void>(context, widget.controller, RommNativePlayerScreen(controller: widget.controller, game: _game, core: route.core, resume: resume));
       if (live) unawaited(_refresh()); return;
     }
     int? stateId, saveId, memoryCardId;
@@ -58,6 +64,8 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
         final picks = await api.getMap('streaming/states/${_game.id}');
         final ids = rommList(picks['pickable']).map((v) => rommInt(v)).toSet();
         final config = widget.controller.capabilities[_game.connectionId]?.streams.where((c) => c['emulator'] == route.core).firstOrNull;
+        final cards = config?['supports_memory_cards'] == true
+            ? rommList(await api.json('GET', 'memory-cards', query: {'emulator': route.core})).map(rommMap).toList() : <Map<String, dynamic>>[];
         if (!live) return;
         final result = await showDialog<bool>(context: context, builder: (dialog) => StatefulBuilder(builder: (dialog, update) => AlertDialog(
           title: Text(rommText(dialog, 'stream')), content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -74,7 +82,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
             if (config?['supports_memory_cards'] == true) DropdownButtonFormField<int>(initialValue: 0, isExpanded: true,
               decoration: InputDecoration(labelText: rommText(dialog, 'memoryCard')),
               items: [DropdownMenuItem(value: 0, child: Text(rommText(dialog, 'automatic'))),
-                for (final save in _game.saves.where((s) => s.emulator == route.core && s.slot == 'memory-card')) DropdownMenuItem(value: save.id, child: Text(isolateDisplayText(save.name), overflow: TextOverflow.ellipsis))],
+                for (final card in cards) DropdownMenuItem(value: rommInt(card['id']), child: Text(isolateDisplayText(rommString(card['name'], 255)), overflow: TextOverflow.ellipsis))],
               onChanged: (value) => update(() => memoryCardId = value == 0 ? null : value)),
             SwitchListTile(title: Text(rommText(dialog, 'multiplayer')), value: multiplayer, onChanged: (v) => update(() => multiplayer = v)),
           ])), actions: [TextButton(onPressed: () => Navigator.pop(dialog, false), child: Text(rommText(dialog, 'cancel'))),
@@ -118,8 +126,12 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
   }
   @override Widget build(BuildContext context) => AnimatedBuilder(animation: widget.controller, builder: (context, _) {
     final c = widget.controller, storage = c.storage;
-    final routes = c.capabilities[_game.connectionId]?.routes(_game, browserAvailable: _browser, nativeCores: _cores) ?? <RommRoute>[];
+    final routes = c.capabilities[_game.connectionId]?.routes(_game, browserAvailable: _browser, nativeCores: _cores, offlineAvailable: storage.available(_game)) ?? <RommRoute>[];
     final downloading = storage.progress.containsKey(_game.key), offline = storage.available(_game);
+    final achievements = rommList(_game.achievements['achievements']).map(rommMap).toList();
+    final earned = rommList(c.achievementProgress[_game.connectionId]?['results']).map(rommMap)
+      .where((row) => row['rom_ra_id'] == _game.achievementId).firstOrNull;
+    final earnedIds = rommList(earned?['earned_achievements']).map((v) => rommMap(v)['id'].toString()).toSet();
     return FocusedScrollScaffold(title: Text(isolateDisplayText(_game.name)), slivers: [
       SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(20), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         FutureBuilder<Uint8List?>(future: c.cover(_game), builder: (context, cover) => cover.data == null ? const SizedBox.shrink()
@@ -139,12 +151,33 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
           }, child: Text(rommText(context, 'copyLink'))),
           if (_browser) OutlinedButton(onPressed: _loading ? null : () => _run(_join), child: Text(rommText(context, 'join'))),
         ]),
+        const SizedBox(height: 16),
+        SwitchListTile(title: Text(rommText(context, 'backlogged')), value: _game.userData['backlogged'] == true,
+          onChanged: _loading ? null : (value) => _run(() async {
+            await (await c.client(_game.connectionId)).setProgress(_game, {'backlogged': value});
+            final fresh = await c.detail(_game); if (live) setState(() => _game = fresh);
+          })),
+        SwitchListTile(title: Text(rommText(context, 'nowPlaying')), value: _game.userData['now_playing'] == true,
+          onChanged: _loading ? null : (value) => _run(() async {
+            await (await c.client(_game.connectionId)).setProgress(_game, {'now_playing': value});
+            final fresh = await c.detail(_game); if (live) setState(() => _game = fresh);
+          })),
+        DropdownButtonFormField<String>(key: ValueKey('${_game.key}:${_game.userData['status']}'),
+          initialValue: {'incomplete', 'finished', 'completed_100'}.contains(_game.userData['status']) ? _game.userData['status'] as String : '',
+          decoration: InputDecoration(labelText: rommText(context, 'status')),
+          items: [for (final entry in {'': 'unplayed', 'incomplete': 'playing', 'finished': 'completed', 'completed_100': 'completedAll'}.entries)
+            DropdownMenuItem(value: entry.key, child: Text(rommText(context, entry.value)))],
+          onChanged: _loading ? null : (value) => _run(() async {
+            await (await c.client(_game.connectionId)).setProgress(_game, {'status': value == '' ? null : value});
+            final fresh = await c.detail(_game); if (live) setState(() => _game = fresh);
+          })),
         const SizedBox(height: 20), Text(rommText(context, 'playWith'), style: Theme.of(context).textTheme.titleLarge),
         if (routes.isEmpty) Text(rommText(context, _game.hasBytes ? 'noRoute' : 'missing')),
         for (final route in routes) ListTile(title: Text('${rommText(context, route.engine.name)}${route.core.isEmpty ? '' : ' · ${route.core}'}'),
           subtitle: route.available ? null : Text(rommText(context, route.reason)), leading: const Icon(Icons.play_circle_outline),
           onTap: !route.available || _loading ? null : () => _play(route)),
         const SizedBox(height: 16), Text(rommText(context, 'firmwareHelp')),
+        const SizedBox(height: 8), Text(rommText(context, 'netplayHelp')),
         const SizedBox(height: 20), Text(rommText(context, 'storage'), style: Theme.of(context).textTheme.titleLarge),
         Text('${(storage.used / 1073741824).toStringAsFixed(1)} / ${(storage.quota / 1073741824).round()} GiB'),
         DropdownButton<int>(value: [5, 10, 25, 50, 100, 250].contains(storage.quota ~/ 1073741824) ? storage.quota ~/ 1073741824 : 10,
@@ -161,7 +194,11 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
         for (final file in _game.files) Text('${isolateDisplayText(file.name)} · ${(file.size / 1048576).toStringAsFixed(1)} MiB'),
         if (_game.achievementId > 0) ...[const SizedBox(height: 20), Text(rommText(context, 'achievements'), style: Theme.of(context).textTheme.titleLarge),
           Text(rommText(context, 'achievementsHelp')),
-          for (final entry in _game.achievements.entries.where((e) => e.value is num || e.value is String).take(12)) Text('${entry.key}: ${isolateDisplayText(entry.value.toString())}')],
+          Text('${rommText(context, 'achievementCount')}: ${rommInt(earned?['num_awarded'])} / ${achievements.length}'),
+          for (final achievement in achievements.take(100)) ListTile(
+            leading: Icon(earnedIds.contains(achievement['ra_id'].toString()) ? Icons.emoji_events : Icons.lock_outline),
+            title: Text(isolateDisplayText(rommString(achievement['title'], 500))),
+            subtitle: Text(isolateDisplayText(rommString(achievement['description'], 2000))))],
         if (_game.screenshots.isNotEmpty) ...[const SizedBox(height: 20), Text(rommText(context, 'screenshots'), style: Theme.of(context).textTheme.titleLarge),
           Wrap(spacing: 8, runSpacing: 8, children: [for (final path in _game.screenshots.take(12)) _RommScreenshot(controller: c, game: _game, path: path)])],
       ]))),
@@ -183,7 +220,7 @@ class _RommScreenshot extends StatefulWidget {
 }
 class _RommScreenshotState extends State<_RommScreenshot> {
   late final Future<Uint8List> _bytes = _load();
-  Future<Uint8List> _load() async => (await widget.controller.client(widget.game.connectionId)).asset(widget.path);
+  Future<Uint8List> _load() async => (await widget.controller.client(widget.game.connectionId)).asset(widget.path, externalImage: true);
   @override Widget build(BuildContext context) => FutureBuilder<Uint8List>(future: _bytes, builder: (context, snapshot) =>
     snapshot.data == null ? const SizedBox(width: 180, height: 100) : Image.memory(snapshot.data!, width: 240, height: 160, fit: BoxFit.contain,
       errorBuilder: (_, _, _) => const SizedBox.shrink()));

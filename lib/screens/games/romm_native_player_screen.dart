@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:crypto/crypto.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:universal_gamepad/universal_gamepad.dart';
@@ -13,12 +14,14 @@ import '../../games/romm/romm_native.dart';
 import '../../games/romm/romm_text.dart';
 import '../../i18n/presentation_formats.dart';
 import '../../services/gamepad_service.dart';
+import '../../services/playback_coordinator.dart';
 
 class RommNativePlayerScreen extends StatefulWidget {
-  const RommNativePlayerScreen({super.key, required this.controller, required this.game, required this.core});
+  const RommNativePlayerScreen({super.key, required this.controller, required this.game, required this.core, this.resume = true});
   final RommController controller;
   final RommGame game;
   final String core;
+  final bool resume;
   @override State<RommNativePlayerScreen> createState() => _RommNativePlayerScreenState();
 }
 class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with WidgetsBindingObserver {
@@ -29,6 +32,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   final _pads = <String, int>{};
   final _buttons = [0, 0, 0, 0];
   Timer? _autosave;
+  Directory? _sessionDirectory;
   bool get live => mounted && widget.controller.current;
   @override void initState() {
     super.initState(); WidgetsBinding.instance.addObserver(this); _runtime.addListener(_newFrame);
@@ -45,6 +49,8 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   }
   Future<void> _start() async {
     try {
+      await PlaybackCoordinator.instance.claimVideo();
+      if (!live) return;
       final storage = widget.controller.storage;
       if (!storage.available(widget.game)) await storage.download(widget.game);
       if (!live) return;
@@ -55,24 +61,57 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       }
       final directory = await storage.nativeDirectory(widget.game);
       final rom = await storage.file(widget.game);
-      final copy = File('${directory.path}/game.$extension');
+      final session = _sessionDirectory = await Directory('${directory.path}/session-${const Uuid().v4()}').create();
+      final copy = File('${session.path}/game.$extension');
       // Core APIs receive only a profile-owned immutable copy of verified bytes.
       await rom.copy(copy.path);
       final firmware = await Directory('${directory.path}/system').create(recursive: true);
       if (!live) return;
       await _runtime.start(widget.core, copy.path, firmware.path, directory.path);
       if (!live) { await _runtime.shutdown(); return; }
-      final sram = await storage.nativeProgress(widget.game, _runtime.identity);
-      if (sram != null) await _runtime.restore(sram);
-      final state = await storage.nativeProgress(widget.game, _runtime.identity, state: true);
-      if (state != null) await _runtime.restore(state, state: true);
+      if (widget.resume) {
+        final sram = await storage.nativeProgress(widget.game, _runtime.identity);
+        final state = await storage.nativeProgress(widget.game, _runtime.identity, state: true);
+        if (sram != null) await _runtime.restore(sram);
+        if (state != null) await _runtime.restore(state, state: true);
+        if (sram == null && state == null) await _cloudResume();
+      }
       if (!live) return;
       setState(() => _ready = true);
       await widget.controller.played(widget.game);
       _autosave = Timer.periodic(const Duration(seconds: 45), (_) => unawaited(_save().catchError((error) {
         if (live) setState(() => _error = error is RommFailure ? error.code : 'romm.saveFailed');
       })));
-    } catch (error) { if (live) setState(() => _error = error is RommFailure ? error.code : 'romm.nativeError'); }
+    } catch (error) { _runtime.pause(true); if (live) setState(() => _error = error is RommFailure ? error.code : 'romm.nativeError'); }
+  }
+  Future<void> _cloudResume() async {
+    RommGame remote;
+    try { remote = await widget.controller.detail(widget.game); } catch (_) { return; } // Offline starts stay available.
+    if (!live || remote.identity != widget.game.identity) throw const RommFailure('romm.copyMismatch');
+    final engine = 'plezy_libretro_${widget.core}';
+    final states = remote.states.where((s) => s.emulator == engine && !s.missing).toList()
+      ..sort((a,b) => (b.updatedAt ?? DateTime(1970)).compareTo(a.updatedAt ?? DateTime(1970)));
+    final saves = remote.saves.where((s) => s.emulator == engine && !s.missing).toList()
+      ..sort((a,b) => (b.updatedAt ?? DateTime(1970)).compareTo(a.updatedAt ?? DateTime(1970)));
+    final api = await widget.controller.client(widget.game.connectionId);
+    if (states.isNotEmpty) {
+      final bytes = await api.saveBytes(states.first);
+      const marker = 'PLZYRETRO1\n';
+      if (bytes.length <= marker.length || String.fromCharCodes(bytes.take(marker.length)) != marker) throw const RommFailure('romm.coreVersionDifferent');
+      final newline = bytes.indexOf(10, marker.length);
+      if (newline < 0 || newline > marker.length + 10) throw const RommFailure('romm.invalidFile');
+      final length = int.tryParse(String.fromCharCodes(bytes.sublist(marker.length, newline))) ?? 0;
+      final offset = newline + 1;
+      if (length < 1 || length > 4096 || offset + length >= bytes.length) throw const RommFailure('romm.invalidFile');
+      final metadata = rommMap(jsonDecode(utf8.decode(bytes.sublist(offset, offset + length))));
+      if (metadata['format'] != 'plezy-libretro-state-v1' || metadata['core'] != _runtime.identity || metadata['rom'] != widget.game.identity) {
+        throw const RommFailure('romm.coreVersionDifferent');
+      }
+      if (!live) return;
+      await _runtime.restore(Uint8List.sublistView(bytes, offset + length), state: true);
+    } else if (saves.isNotEmpty) {
+      final bytes = await api.saveBytes(saves.first); if (live) await _runtime.restore(bytes);
+    }
   }
   void _newFrame() {
     final bytes = _runtime.pixels; if (!live || bytes == null || _decoding) return;
@@ -100,7 +139,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   }
   void _key(KeyEvent event) {
     final key = event.logicalKey, down = event is! KeyUpEvent;
-    if (key == LogicalKeyboardKey.escape && event is KeyDownEvent) { _pause(); return; }
+    if ({LogicalKeyboardKey.escape, LogicalKeyboardKey.goBack}.contains(key) && event is KeyDownEvent) { _pause(); return; }
     final button = {LogicalKeyboardKey.arrowUp: 4, LogicalKeyboardKey.arrowDown: 5, LogicalKeyboardKey.arrowLeft: 6,
       LogicalKeyboardKey.arrowRight: 7, LogicalKeyboardKey.keyZ: 0, LogicalKeyboardKey.keyA: 1, LogicalKeyboardKey.shiftRight: 2,
       LogicalKeyboardKey.enter: 3, LogicalKeyboardKey.keyX: 8, LogicalKeyboardKey.keyS: 9, LogicalKeyboardKey.keyQ: 10, LogicalKeyboardKey.keyW: 11}[key];
@@ -145,6 +184,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     try {
       if (save && _ready) await _save(state: true);
       await _runtime.shutdown();
+      await _removeSession();
       if (live) { setState(() => _canPop = true); Navigator.pop(context); }
     } catch (error) { if (live) setState(() { _error = error is RommFailure ? error.code : 'romm.saveFailed'; _paused = true; }); }
     finally { if (mounted) setState(() => _closing = false); }
@@ -164,7 +204,12 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     onPointerDown: (_) => _button(0, id, true), onPointerUp: (_) => _button(0, id, false), onPointerCancel: (_) => _button(0, id, false),
     child: Container(constraints: const BoxConstraints(minWidth: 52, minHeight: 52), alignment: Alignment.center,
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(26)), child: Text(label))));
+  Future<void> _removeSession() async {
+    final directory = _sessionDirectory; _sessionDirectory = null;
+    if (directory != null) { try { await directory.delete(recursive: true); } on FileSystemException { /* A later cleanup may remove an interrupted copy. */ } }
+  }
   @override void dispose() {
+    unawaited(_runtime.shutdown().then((_) => _removeSession()));
     _autosave?.cancel(); _runtime.removeListener(_newFrame); _runtime.dispose(); _frame?.dispose();
     widget.controller.removeListener(_profile); WidgetsBinding.instance.removeObserver(this);
     GamepadService.instance.unregisterWorkspaceInputHandler(this); super.dispose();

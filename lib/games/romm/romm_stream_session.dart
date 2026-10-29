@@ -14,11 +14,11 @@ class RommStreamSession extends ChangeNotifier {
   bool get live => !_disposed && current();
   Map<String, Object?> get _params => {if (container.isNotEmpty) 'container': container, if (claim.isNotEmpty) 'claimed_at': claim};
   String get _path => 'streaming/sessions/${Uri.encodeComponent(platform)}';
-  Future<void> start(RommGame game, {int? stateId, int? saveId, int? memoryCardId, bool multiplayer = false}) async {
+  Future<void> start(RommGame game, {int? stateId, int? saveId, int? memoryCardId, bool multiplayer = false, String? cardImport}) async {
     if (!live || active) return;
     final result = rommMap(await api.json('POST', 'streaming/sessions', body: {'rom_id': game.id,
       if (stateId != null) 'state_id': stateId, if (saveId != null) 'save_id': saveId,
-      if (memoryCardId != null) 'memory_card_id': memoryCardId, 'multiplayer': multiplayer}));
+      if (memoryCardId != null) 'memory_card_id': memoryCardId, 'multiplayer': multiplayer, if (cardImport != null) 'card_import': cardImport}));
     platform = rommString(result['platform'], 128); container = rommString(result['container'], 512);
     claim = rommString(result['claimed_at'], 80);
     if (platform.isEmpty || container.isEmpty || claim.isEmpty) throw const RommFailure('romm.invalidResponse');

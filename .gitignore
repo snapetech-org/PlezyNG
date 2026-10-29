@@ -73,3 +73,7 @@ server/Caddyfile
 tools/lending_gateway/config.json
 __pycache__/
 *.pyc
+
+# RomM runtime/core artifacts are produced by private platform build lanes.
+/native/games/romm/apple/Frameworks/
+/native/games/romm/cores/

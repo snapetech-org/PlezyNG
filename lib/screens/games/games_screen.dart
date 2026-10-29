@@ -62,7 +62,8 @@ import 'steam_stream_diagnostics.dart';
 import 'steam_lan_install_dialog.dart';
 
 class GamesScreen extends StatefulWidget {
-  const GamesScreen({super.key});
+  const GamesScreen({super.key, this.initialRommLink});
+  final RommLink? initialRommLink;
   @override
   State<GamesScreen> createState() => _GamesScreenState();
 }
@@ -71,6 +72,8 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   GameLibraryController? _controller;
   RommController? _romm;
   Timer? _rommSearch;
+  bool _initialRommLinkOpened = false;
+  bool _rommLoadError = false;
   MultiviewWorkspaceController? _workspaceController;
   final Map<String, SteamGameWorkspaceSession> _workspaceGameSessions = <String, SteamGameWorkspaceSession>{};
   final _presentationRevision = ValueNotifier<int>(0);
@@ -125,7 +128,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
             sources.current(generation) &&
             !sources.blocked &&
             context.read<ActiveProfileProvider>().activeId == id &&
-            SettingsService.instance.read(SettingsService.showGamesTabForProfile(id)),
+            (widget.initialRommLink != null || SettingsService.instance.read(SettingsService.showGamesTabForProfile(id))),
         client: NativeGameStreamingClient(),
       );
       _controller = controller;
@@ -134,14 +137,22 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       if (!controller.current) return;
       final romm = _romm = RommController(repository: sources.repository, profileId: id, sessionCurrent: () => controller.current);
       romm.addListener(_changed);
-      await romm.load();
-      if (romm.current && romm.connections.isNotEmpty) unawaited(romm.refresh());
+      try {
+        await romm.load();
+        if (romm.current && romm.connections.isNotEmpty) unawaited(romm.refresh());
+      } catch (_) {
+        romm.removeListener(_changed); romm.dispose(); _romm = null; _rommLoadError = true;
+      }
       if (mounted && controller.current) {
         setState(() {
           _loading = false;
           _loadFailed = false;
         });
         if (PlatformDetector.supportsEmbeddedGameStreaming()) unawaited(_scan());
+        if (!_initialRommLinkOpened && widget.initialRommLink != null) {
+          _initialRommLinkOpened = true;
+          unawaited(_rommLink(widget.initialRommLink));
+        }
       }
     } catch (_) {
       if (mounted && epoch == _epoch) {
@@ -186,7 +197,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     _workspaceController = null;
     _rommSearch?.cancel(); _rommSearch = null;
     _romm?.removeListener(_changed);
-    _romm?.dispose(); _romm = null;
+    _romm?.dispose(); _romm = null; _rommLoadError = false;
     _controller?.removeListener(_changed);
     _controller?.dispose();
     _controller = null;
@@ -1321,10 +1332,20 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         // Acquisition links without an indexed ROM ID use external identity,
         // never a fuzzy title match or an arbitrary URL supplied in a link.
         final api = await romm.client(source.id);
-        final result = await api.getMap('roms', query: {'igdb_id': link.igdbId, 'limit': 100, 'group_by_meta_id': false});
-        final matches = rommList(result['items']).map((v) => RommGame.fromJson(source.id, rommMap(v))).where(link.matches).toList();
+        final result = await api.getMap('roms/by-metadata-provider', query: {'igdb_id': link.igdbId});
+        final first = RommGame.fromJson(source.id, result), candidates = <RommGame>[];
+        candidates.add(first);
+        for (final sibling in first.siblingIds.take(50)) {
+          candidates.add(await api.game(source.id, sibling));
+        }
+        final matches = candidates.where(link.matches).toList();
         if (matches.length == 1) game = matches.single;
-        else if (matches.length > 1) throw const RommFailure('romm.copyMismatch');
+        else if (matches.length > 1 && mounted && romm.current) {
+          game = await showDialog<RommGame>(context: context, builder: (dialog) => SimpleDialog(
+            title: Text(rommText(dialog, 'chooseCopy')), children: [for (final copy in matches)
+              SimpleDialogOption(onPressed: () => Navigator.pop(dialog, copy), child: Text(isolateDisplayText('${copy.name} · ${copy.variant}')))]));
+          if (game == null) return;
+        }
       }
       if (game == null) throw const RommFailure('romm.notIndexed');
       if (!link.matches(game)) throw const RommFailure('romm.copyMismatch');
@@ -1411,7 +1432,8 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       onUseAsController: (Platform.isAndroid || Platform.isIOS) && !PlatformDetector.isTV()
           ? (game) => _openLibraryGame(game, controllerOnly: true)
           : null,
-      catalogNotices: _catalogNotices(c.library),
+      catalogNotices: [..._catalogNotices(c.library), if (_rommLoadError) SliverToBoxAdapter(child: GameNotice(
+        title: rommText(context, 'title'), message: rommText(context, 'connectionFailed'), actionLabel: rommText(context, 'retry'), onAction: _retryLoad))],
       includePrimaryGames: _romm?.source.isEmpty ?? true,
       additionalGames: [for (final game in _romm?.games ?? <RommGame>[])
         if (_romm!.source.isEmpty || game.connectionId == _romm!.source)

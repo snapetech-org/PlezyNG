@@ -8,6 +8,9 @@
 
 #include "flutter/generated_plugin_registrant.h"
 #include "mpv/mpv_plugin.h"
+#ifdef PLEZY_ROMM_WEBKIT
+#include "games/romm_web.h"
+#endif
 #ifdef PLEZY_STEAM_RECEIVER
 #include "games/steam_plugin.h"
 #endif
@@ -83,7 +86,15 @@ static void my_application_activate(GApplication* application) {
   self->flutter_view = fl_view_new(project);
   enable_video_plane_transparency(window, self->flutter_view);
   gtk_widget_show(GTK_WIDGET(self->flutter_view));
+#ifdef PLEZY_ROMM_WEBKIT
+  GtkWidget* romm_overlay = gtk_overlay_new();
+  gtk_container_add(GTK_CONTAINER(romm_overlay), GTK_WIDGET(self->flutter_view));
+  gtk_container_add(GTK_CONTAINER(window), romm_overlay);
+  gtk_widget_show(romm_overlay);
+  romm_web_register(fl_plugin_registry_get_registrar_for_plugin(FL_PLUGIN_REGISTRY(self->flutter_view), "RommWeb"), GTK_OVERLAY(romm_overlay));
+#else
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(self->flutter_view));
+#endif
 
   // Register Flutter plugins.
   fl_register_plugins(FL_PLUGIN_REGISTRY(self->flutter_view));

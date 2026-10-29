@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add profile-scoped RomM libraries to Games: device pairing, native discovery and copy details, embedded browser and streamed play, durable save synchronization, verified offline files, a software libretro host, and portable game links. Native core artifacts and device playback require the documented private-build validation.
+
 - Fetch checksum-locked Windows native archives through verified Schannel curl on private JIT builds.
 - Resolve tvOS CocoaPods plugins from Flutter's resolved package paths without relying on iOS symlinks.
 - Stabilize Android and Windows validation on private CI runners, retry the pinned FFmpeg header download, and bypass the proxy for loopback tests.

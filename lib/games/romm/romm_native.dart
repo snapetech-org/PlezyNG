@@ -10,7 +10,7 @@ import 'romm_capabilities.dart';
 import 'romm_models.dart';
 
 class _RetroBindings {
-  _RetroBindings() : library = DynamicLibrary.open(Platform.isWindows ? 'plezy_retro.dll' : Platform.isMacOS ? '${p.dirname(Platform.resolvedExecutable)}/../Frameworks/libplezy_retro.dylib' : Platform.isIOS ? '${p.dirname(Platform.resolvedExecutable)}/Frameworks/libplezy_retro.dylib' : 'libplezy_retro.so');
+  _RetroBindings() : library = DynamicLibrary.open(Platform.isWindows ? '${p.dirname(Platform.resolvedExecutable)}/plezy_retro.dll' : Platform.isMacOS ? '${p.dirname(Platform.resolvedExecutable)}/../Frameworks/PlezyRetro.framework/PlezyRetro' : Platform.isIOS ? '${p.dirname(Platform.resolvedExecutable)}/Frameworks/PlezyRetro.framework/PlezyRetro' : Platform.isLinux ? '${p.dirname(Platform.resolvedExecutable)}/lib/libplezy_retro.so' : 'libplezy_retro.so');
   final DynamicLibrary library;
   late final alloc = library.lookupFunction<Pointer<Uint8> Function(Int32), Pointer<Uint8> Function(int)>('plezy_retro_alloc');
   late final free = library.lookupFunction<Void Function(Pointer<Uint8>), void Function(Pointer<Uint8>)>('plezy_retro_free');
@@ -41,10 +41,11 @@ class _RetroBindings {
 }
 String _corePath(String core) {
   if (!rommNativeCorePlatforms.containsKey(core)) throw const RommFailure('romm.nativeUnavailable');
+  if (Platform.operatingSystem == 'tizen') return '${core}_libretro.so';
   if (Platform.isAndroid) return 'lib${core}_libretro.so';
   final root = p.dirname(Platform.resolvedExecutable);
-  if (Platform.isMacOS) return '$root/../Frameworks/${core}_libretro.dylib';
-  if (Platform.isIOS) return '$root/Frameworks/${core}_libretro.dylib';
+  if (Platform.isMacOS) return '$root/../Frameworks/${core}_libretro.framework/${core}_libretro';
+  if (Platform.isIOS) return '$root/Frameworks/${core}_libretro.framework/${core}_libretro';
   return '$root/${Platform.isWindows ? '' : 'lib/'}${core}_libretro.${Platform.isWindows ? 'dll' : 'so'}';
 }
 
@@ -59,9 +60,10 @@ class RommNative extends ChangeNotifier {
   Uint8List? pixels;
   int width = 0, height = 0;
   String identity = '';
-  bool _closed = false, _retired = false;
+  bool _closed = false, _retired = false, _ownsLease = false;
+  Future<void>? _shutdown;
   static bool _leased = false;
-  Completer<void>? _ready;
+  final _portReady = Completer<void>();
   static Future<Set<String>> available() async {
     try {
       final api = _RetroBindings(), result = <String>{};
@@ -74,11 +76,11 @@ class RommNative extends ChangeNotifier {
   }
   Future<void> start(String core, String rom, String system, String saves) async {
     if (_leased) throw const RommFailure('romm.busy');
-    _leased = true;
-    final ready = _ready = Completer<void>();
+    _leased = true; _ownsLease = true;
+    final ready = Completer<void>();
     _events.listen((event) {
       final row = rommMap(event);
-      if (row['port'] is SendPort) _commands = row['port'] as SendPort;
+      if (row['port'] is SendPort) { _commands = row['port'] as SendPort; if (!_portReady.isCompleted) _portReady.complete(); }
       if (row['ready'] == true) { identity = rommString(row['identity'], 512); if (!ready.isCompleted) ready.complete(); }
       if (row['error'] == true && !ready.isCompleted) ready.completeError(const RommFailure('romm.nativeError'));
       if (row['pixels'] is TransferableTypedData) {
@@ -93,9 +95,15 @@ class RommNative extends ChangeNotifier {
         if (row['error'] == true) pending?.completeError(const RommFailure('romm.nativeError'));
         else pending?.complete(row['data']);
       }
+      if (row['closed'] == true) _finishShutdown();
     });
-    _worker = await Isolate.spawn(_retroWorker, {'port': _events.sendPort, 'core': _corePath(core), 'rom': rom, 'system': system, 'saves': saves});
-    try { await ready.future.timeout(const Duration(seconds: 30)); } catch (_) { unawaited(shutdown()); rethrow; }
+    try {
+      _worker = await Isolate.spawn(_retroWorker, {'port': _events.sendPort, 'core': _corePath(core), 'rom': rom, 'system': system, 'saves': saves});
+      await ready.future.timeout(const Duration(seconds: 30));
+    } catch (_) {
+      if (_worker == null) { if (!ready.isCompleted) ready.complete(); _finishShutdown(); }
+      unawaited(shutdown()); rethrow;
+    }
   }
   Future<Object?> _request(String action, [Map<String, Object?> args = const {}]) {
     if (_closed || _commands == null) throw const RommFailure('romm.nativeError');
@@ -112,14 +120,24 @@ class RommNative extends ChangeNotifier {
   Future<void> restore(Uint8List bytes, {bool state = false}) async {
     await _request('restore', {'bytes': TransferableTypedData.fromList([bytes]), 'state': state});
   }
-  Future<void> shutdown() async {
+  Future<void> shutdown() => _shutdown ??= _stop();
+  Future<void> _stop() async {
     if (_closed) return;
     _retired = true;
-    try { await _ready?.future.timeout(const Duration(seconds: 35)); } catch (_) { /* Failed launch reports through readiness. */ }
-    try { if (_commands != null) await _request('close'); } catch (_) { /* Exit listener cannot resurrect a closed page. */ }
-    _closed = true; _leased = false; _events.close();
-    // Do not kill a core inside an FFI call; its worker closes its audio device
-    // and exits after processing the close message.
+    if (!_ownsLease) { _finishShutdown(); return; }
+    try {
+      await _portReady.future.timeout(const Duration(seconds: 5));
+      if (!_closed) await _request('close');
+    } catch (_) {
+      // A timed-out native call must not be killed mid-FFI. Its queued close
+      // still owns the lease until the worker explicitly acknowledges release.
+    }
+  }
+  void _finishShutdown() {
+    if (_closed) return;
+    _closed = true; _retired = true;
+    if (_ownsLease) { _leased = false; _ownsLease = false; }
+    _events.close();
     for (final result in _pending.values) { if (!result.isCompleted) result.completeError(const RommFailure('romm.cancelled')); }
     _pending.clear(); _worker = null;
   }
@@ -127,6 +145,7 @@ class RommNative extends ChangeNotifier {
 }
 void _retroWorker(Map<String, Object?> args) {
   final out = args['port'] as SendPort, input = ReceivePort();
+  out.send({'port': input.sendPort});
   _RetroBindings? api;
   bool opened = false;
   Timer? clock;
@@ -166,10 +185,10 @@ void _retroWorker(Map<String, Object?> args) {
             if (data == nullptr) throw const RommFailure('romm.nativeError');
             try { data.asTypedList(bytes.length).setAll(0, bytes); if (binding.restore(data, bytes.length, row['state'] == true ? 1 : 0) != 1) throw const RommFailure('romm.nativeError'); }
             finally { binding.free(data); }
-          case 'close': clock?.cancel(); binding.close(); out.send({'id': id}); input.close(); Isolate.exit();
+          case 'close': clock?.cancel(); binding.close(); out.send({'id': id, 'closed': true}); input.close(); Isolate.exit();
         }
         if (id != null) out.send({'id': id, 'data': result});
       } catch (_) { if (id != null) out.send({'id': id, 'error': true}); }
     });
-  } catch (_) { clock?.cancel(); if (opened) api?.close(); out.send({'error': true}); input.close(); }
+  } catch (_) { clock?.cancel(); if (opened) api?.close(); out.send({'error': true, 'closed': true}); input.close(); }
 }

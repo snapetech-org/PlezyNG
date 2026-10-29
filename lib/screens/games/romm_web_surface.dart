@@ -1,12 +1,15 @@
 import 'dart:io';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../utils/platform_detector.dart';
 
 class RommWebSurface extends StatefulWidget {
-  const RommWebSurface({super.key, required this.url, required this.permits, required this.onError});
+  const RommWebSurface({super.key, required this.url, required this.partition, required this.permits, required this.onError});
   final Uri url;
+  final String partition;
   final bool Function(Uri) permits;
   final VoidCallback onError;
   static const channel = MethodChannel('com.plezy/romm_web');
@@ -23,6 +26,9 @@ class RommWebSurfaceState extends State<RommWebSurface> {
   final _bounds = GlobalKey();
   bool _attached = false, _opening = false;
   Rect? _lastBounds;
+  Future<void> visible(bool value) async {
+    if (_native && _attached) await RommWebSurface.channel.invokeMethod<void>('visible', {'value': value ? 1 : 0});
+  }
   Future<Object?> evaluate(String source) => _native
       ? RommWebSurface.channel.invokeMethod<Object?>('evaluate', {'script': source})
       : _controller?.evaluateJavascript(source: source) ?? Future.value();
@@ -35,13 +41,15 @@ class RommWebSurfaceState extends State<RommWebSurface> {
     _opening = true;
     try {
       await RommWebSurface.channel.invokeMethod<void>(_attached ? 'resize' : 'open', {
-        'url': widget.url.toString(), 'origin': widget.url.origin,
+        'url': widget.url.toString(), 'origin': widget.url.origin, 'partition': sha256.convert(utf8.encode(widget.partition)).toString(),
         'x': rect.left, 'y': rect.top, 'width': rect.width, 'height': rect.height,
       });
       _attached = true; _lastBounds = rect;
     } catch (_) { if (mounted) widget.onError(); }
     finally { _opening = false; }
   }
+  @override void deactivate() { if (_native) { visible(false).catchError((_) {}); } super.deactivate(); }
+  @override void activate() { super.activate(); if (_native) { visible(true).catchError((_) {}); } }
   @override void dispose() { if (_native) { RommWebSurface.channel.invokeMethod<void>('close').catchError((_) {}); } super.dispose(); }
   @override Widget build(BuildContext context) {
     if (_native) return LayoutBuilder(builder: (context, constraints) {

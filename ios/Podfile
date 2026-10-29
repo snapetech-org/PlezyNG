@@ -1,3 +1,7 @@
+unless system('python3', File.expand_path('../scripts/games/build_romm_apple.py', __dir__), 'ios')
+  raise 'RomM native framework build failed'
+end
+
 unless system('python3', File.expand_path('../scripts/p2p/build_apple.py', __dir__), 'ios')
   raise 'Native torrent framework build failed'
 end
@@ -35,6 +39,7 @@ Pod.const_set(:PICKER_MEDIA, false) unless Pod.const_defined?(:PICKER_MEDIA)
 flutter_ios_podfile_setup
 
 target 'Runner' do
+  pod 'plezy_romm_ios', :path => '../native/games/romm/apple'
   use_frameworks!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))

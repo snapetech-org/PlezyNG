@@ -9,11 +9,12 @@ import 'romm_models.dart';
 /// An expiring, one-use bootstrap installs a session cookie; Host, Origin and
 /// Fetch Metadata checks prevent other websites from borrowing this authority.
 class RommPlayerProxy {
-  RommPlayerProxy._(this.upstream, this._api, this.current, this._cookieName, this._secret);
+  RommPlayerProxy._(this.upstream, this._api, this.current, this._secret);
   final Uri upstream;
   final RommClient _api;
   final bool Function() current;
-  final String _cookieName, _secret;
+  final String _secret;
+  String get _cookieName => 'plezy_${_server!.port}';
   HttpServer? _server;
   final _sockets = <WebSocket>{};
   final _roomCookies = <String, String>{};
@@ -22,13 +23,13 @@ class RommPlayerProxy {
   Uri get origin => Uri(scheme: 'http', host: '127.0.0.1', port: _server!.port);
   bool get live => !_closed && current();
   static String _random() => base64Url.encode(List.generate(32, (_) => Random.secure().nextInt(256))).replaceAll('=', '');
-  static Future<RommPlayerProxy> start({required Uri upstream, String token = '', required bool Function() current}) async {
+  static Future<RommPlayerProxy> start({required Uri upstream, String token = '', int port = 0, required bool Function() current}) async {
     if (!{'http', 'https'}.contains(upstream.scheme) || upstream.host.isEmpty || upstream.userInfo.isNotEmpty) {
       throw const RommFailure('romm.invalidAddress');
     }
     final base = upstream.replace(path: upstream.path.endsWith('/') ? upstream.path : '/', query: null, fragment: null);
-    final proxy = RommPlayerProxy._(base, RommClient(base, token: token), current, 'plezy_${_random().substring(0, 12)}', _random());
-    proxy._server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0, shared: false);
+    final proxy = RommPlayerProxy._(base, RommClient(base, token: token), current, _random());
+    proxy._server = await HttpServer.bind(InternetAddress.loopbackIPv4, port, shared: false);
     proxy._server!.listen((request) => unawaited(proxy._serve(request)), onError: (_) => proxy.close());
     return proxy;
   }
@@ -38,7 +39,7 @@ class RommPlayerProxy {
     return origin.replace(path: '/__plezy_start', queryParameters: {'key': _secret});
   }
   String _destination = '/';
-  bool permits(Uri uri) => live && uri.origin == origin.origin;
+  bool permits(Uri uri) => live && {'http', 'https'}.contains(uri.scheme) && uri.origin == origin.origin;
   bool _authorized(HttpRequest request) => request.cookies.any((cookie) => cookie.name == _cookieName && cookie.value == _secret);
   Future<void> _serve(HttpRequest request) async {
     try {
@@ -63,11 +64,15 @@ class RommPlayerProxy {
       // Browser service workers cannot survive this session and intercept the
       // next account's player; native storage owns durable pending progress.
       if (request.headers.value('service-worker') == 'script') { request.response.statusCode = 403; return; }
-      final target = _api.uri(path.replaceFirst(RegExp('^/'), '')).replace(query: request.uri.hasQuery ? request.uri.query : null);
+      final relative = upstream.path != '/' && path.startsWith(upstream.path) ? path.substring(upstream.path.length) : path.replaceFirst(RegExp('^/'), '');
+      final target = _api.uri(relative).replace(query: request.uri.hasQuery ? request.uri.query : null);
       if (WebSocketTransformer.isUpgradeRequest(request)) {
+        // RomM's browser netplay needs a cookie session, not this API token.
+        // It is intentionally disabled; only credential-isolated stream rooms
+        // use the websocket relay.
+        if (_api.token.isNotEmpty) { request.response.statusCode = 403; return; }
         final remote = await WebSocket.connect(target.replace(scheme: target.scheme == 'https' ? 'wss' : 'ws').toString(),
-          headers: {if (_api.token.isNotEmpty) 'Authorization': 'Bearer ${_api.token}',
-            if (_roomCookies.isNotEmpty) 'Cookie': _roomCookies.entries.map((e) => '${e.key}=${e.value}').join('; '),
+          headers: {if (_roomCookies.isNotEmpty) 'Cookie': _roomCookies.entries.map((e) => '${e.key}=${e.value}').join('; '),
             'Origin': upstream.origin}, protocols: request.headers.value('sec-websocket-protocol')?.split(',').map((s) => s.trim()).toList())
           .timeout(const Duration(seconds: 20));
         if (!live) { await remote.close(); return; }

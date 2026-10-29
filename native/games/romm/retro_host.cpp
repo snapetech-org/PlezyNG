@@ -18,7 +18,12 @@
 #include <windows.h>
 #define API extern "C" __declspec(dllexport)
 using Module = HMODULE;
-static Module module_open(const char* path) { return LoadLibraryA(path); }
+static Module module_open(const char* path) {
+  const int size=MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,path,-1,nullptr,0);
+  if(size<=0)return nullptr;std::vector<wchar_t> wide(static_cast<size_t>(size));
+  if(!MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,path,-1,wide.data(),size))return nullptr;
+  return LoadLibraryW(wide.data());
+}
 static void* symbol(Module m, const char* n) { return reinterpret_cast<void*>(GetProcAddress(m,n)); }
 static void module_close(Module m) { FreeLibrary(m); }
 #else

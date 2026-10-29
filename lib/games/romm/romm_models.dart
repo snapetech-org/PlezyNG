@@ -140,11 +140,15 @@ class RommSave {
 }
 
 class RommCollection {
-  const RommCollection(this.id, this.name, this.kind, this.count);
+  const RommCollection(this.id, this.name, this.kind, this.count, {this.favorite = false, this.userId = 0, this.romIds = const {}});
   final String id, name, kind;
-  final int count;
+  final int count, userId;
+  final bool favorite;
+  final Set<int> romIds;
   factory RommCollection.fromJson(Map<String, dynamic> j, String kind) => RommCollection(
-    j['id'].toString(), rommString(j['name'], 400), kind, rommInt(j['rom_count']));
+    j['id'].toString(), rommString(j['name'], 400), kind, rommInt(j['rom_count']),
+    favorite: j['is_favorite'] == true, userId: rommInt(j['user_id']),
+    romIds: rommList(j['rom_ids']).take(100000).map((v) => rommInt(v)).where((v) => v > 0).toSet());
 }
 
 class RommPage {

@@ -15,6 +15,7 @@ import '../../games/romm/romm_text.dart';
 import '../../i18n/presentation_formats.dart';
 import '../../services/gamepad_service.dart';
 import '../../services/playback_coordinator.dart';
+import '../../utils/platform_detector.dart';
 
 class RommNativePlayerScreen extends StatefulWidget {
   const RommNativePlayerScreen({super.key, required this.controller, required this.game, required this.core, this.resume = true, this.stateId, this.saveId});
@@ -30,21 +31,31 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
   ui.Image? _frame;
   bool _decoding = false, _ready = false, _paused = false, _closing = false, _canPop = false, _touch = false, _capturing = false;
   String _error = '', _lastHash = '';
-  final _pads = <String, int>{};
+  final _pads = <int, int>{};
   final _buttons = [0, 0, 0, 0];
+  final _axes = [0, 0, 0, 0];
+  StreamSubscription<GamepadConnectionEvent>? _connections;
   Timer? _autosave;
   Directory? _sessionDirectory;
   bool get live => mounted && widget.controller.current;
   @override void initState() {
     super.initState(); WidgetsBinding.instance.addObserver(this); _runtime.addListener(_newFrame);
     widget.controller.addListener(_profile);
-    GamepadService.instance.registerWorkspaceInputHandler(this, _input, onNativeKeyEvent: _key, onReset: (_) => _release());
+    GamepadService.instance.registerWorkspaceInputHandler(this, _input, onNativeKeyEvent: _key,
+      onReset: (_) => _release(), rawTvosControllerInput: true);
+    // Keep slots current even while a pause dialog owns navigation input.
+    _connections = Gamepad.instance.connectionEvents.listen((event) {
+      if (event.connected) return;
+      final port = _pads.remove(event.gamepadId);
+      if (port != null) { _buttons[port] = 0; _axes[port] = 0; _runtime.input(port, 0); }
+    }, onError: (Object _) => _release());
     GamepadService.instance.setWorkspaceInputOwner(this); unawaited(_start());
   }
   void _profile() { if (!widget.controller.current) { _release(); _runtime.pause(true); unawaited(_runtime.shutdown()); } }
   @override void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed && _ready) {
       _release(); _runtime.pause(true); _paused = true;
+      GamepadService.instance.releaseWorkspaceInputOwner(this);
       unawaited(_save().catchError((_) {})); if (mounted) setState(() {});
     }
   }
@@ -133,30 +144,51 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     GamepadButton.start: 3, GamepadButton.dpadUp: 4, GamepadButton.dpadDown: 5, GamepadButton.dpadLeft: 6,
     GamepadButton.dpadRight: 7, GamepadButton.a: 8, GamepadButton.x: 9, GamepadButton.leftShoulder: 10, GamepadButton.rightShoulder: 11};
   void _input(GamepadEvent event) {
-    if (!_ready || _paused) return;
+    if (!_ready || _paused || _closing || !live) return;
+    if (event is GamepadButtonEvent && event.button == GamepadButton.guide) {
+      if (event.pressed) _pause();
+      return;
+    }
+    if (event is! GamepadButtonEvent && event is! GamepadAxisEvent) return;
+    final port = _port(event.gamepadId);
+    if (port == null) return;
     if (event is GamepadButtonEvent) {
-      final port = _pads.putIfAbsent(event.gamepadId.toString(), () => _pads.length);
-      final button = _mapping[event.button]; if (port < 4 && button != null) _button(port, button, event.pressed);
+      final button = _mapping[event.button]; if (button != null) _button(port, button, event.pressed);
     } else if (event is GamepadAxisEvent) {
-      final port = _pads.putIfAbsent(event.gamepadId.toString(), () => _pads.length);
-      if (port >= 4) return;
-      if (event.axis == GamepadAxis.leftStickX) { _button(port, 6, event.value < -0.35); _button(port, 7, event.value > 0.35); }
-      if (event.axis == GamepadAxis.leftStickY) { _button(port, 4, event.value < -0.35); _button(port, 5, event.value > 0.35); }
+      if (event.axis == GamepadAxis.leftStickX) {
+        _axes[port] = (_axes[port] & ~((1 << 6) | (1 << 7))) |
+          (event.value < -0.35 ? 1 << 6 : 0) | (event.value > 0.35 ? 1 << 7 : 0);
+      }
+      if (event.axis == GamepadAxis.leftStickY) {
+        _axes[port] = (_axes[port] & ~((1 << 4) | (1 << 5))) |
+          (event.value < -0.35 ? 1 << 4 : 0) | (event.value > 0.35 ? 1 << 5 : 0);
+      }
+      _runtime.input(port, _buttons[port] | _axes[port]);
     }
   }
+  int? _port(int id) {
+    final assigned = _pads[id]; if (assigned != null) return assigned;
+    for (var port = 0; port < 4; port++) {
+      if (!_pads.containsValue(port)) { _pads[id] = port; return port; }
+    }
+    return null;
+  }
   void _key(KeyEvent event) {
+    if (!_ready || _closing || !live) return;
     final key = event.logicalKey, down = event is! KeyUpEvent;
     if ({LogicalKeyboardKey.escape, LogicalKeyboardKey.goBack}.contains(key) && event is KeyDownEvent) { _pause(); return; }
     final button = {LogicalKeyboardKey.arrowUp: 4, LogicalKeyboardKey.arrowDown: 5, LogicalKeyboardKey.arrowLeft: 6,
       LogicalKeyboardKey.arrowRight: 7, LogicalKeyboardKey.keyZ: 0, LogicalKeyboardKey.keyA: 1, LogicalKeyboardKey.shiftRight: 2,
-      LogicalKeyboardKey.enter: 3, LogicalKeyboardKey.keyX: 8, LogicalKeyboardKey.keyS: 9, LogicalKeyboardKey.keyQ: 10, LogicalKeyboardKey.keyW: 11}[key];
+      LogicalKeyboardKey.enter: 3, LogicalKeyboardKey.keyX: 8, LogicalKeyboardKey.keyS: 9, LogicalKeyboardKey.keyQ: 10, LogicalKeyboardKey.keyW: 11,
+      LogicalKeyboardKey.gameButtonA: 8, LogicalKeyboardKey.select: 8, LogicalKeyboardKey.gameButtonB: 0,
+      LogicalKeyboardKey.gameButtonX: 9, LogicalKeyboardKey.gameButtonY: 1}[key];
     if (button != null && !_paused) _button(0, button, down);
   }
   void _button(int port, int button, bool down) {
     if (down) _buttons[port] |= 1 << button; else _buttons[port] &= ~(1 << button);
-    _runtime.input(port, _buttons[port]);
+    _runtime.input(port, _buttons[port] | _axes[port]);
   }
-  void _release() { for (var port = 0; port < 4; port++) { _buttons[port] = 0; _runtime.input(port, 0); } }
+  void _release() { for (var port = 0; port < 4; port++) { _buttons[port] = 0; _axes[port] = 0; _runtime.input(port, 0); } }
   void _pause() {
     _release(); setState(() => _paused = !_paused); _runtime.pause(_paused);
     if (_paused) GamepadService.instance.releaseWorkspaceInputOwner(this); else GamepadService.instance.setWorkspaceInputOwner(this);
@@ -226,12 +258,22 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
     if (directory != null) { try { await directory.delete(recursive: true); } on FileSystemException { /* A later cleanup may remove an interrupted copy. */ } }
   }
   @override void dispose() {
+    unawaited(_connections?.cancel());
     unawaited(_runtime.shutdown().then((_) => _removeSession()));
     _autosave?.cancel(); _runtime.removeListener(_newFrame); _runtime.dispose(); _frame?.dispose();
     widget.controller.removeListener(_profile); WidgetsBinding.instance.removeObserver(this);
     GamepadService.instance.unregisterWorkspaceInputHandler(this); super.dispose();
   }
-  @override Widget build(BuildContext context) => PopScope(canPop: _canPop, onPopInvokedWithResult: (popped, _) { if (!popped) unawaited(_askExit()); }, child: Scaffold(
+  @override Widget build(BuildContext context) => PopScope(canPop: _canPop, onPopInvokedWithResult: (popped, _) { if (!popped) unawaited(_askExit()); }, child: Focus(
+    autofocus: true,
+    onKeyEvent: (_, event) {
+      // Android bypasses GamepadService's global keyboard handler; Tizen uses
+      // its engine's key input. Handle those keys only while gameplay owns focus.
+      if (!(Platform.isAndroid || PlatformDetector.isTizenBuild()) || !_ready || _paused || _closing) return KeyEventResult.ignored;
+      if (!(Platform.isAndroid && event.deviceType == ui.KeyEventDeviceType.gamepad)) _key(event);
+      return KeyEventResult.handled;
+    },
+    child: Scaffold(
     appBar: AppBar(title: Text(isolateDisplayText(widget.game.name)), leading: IconButton(onPressed: _askExit, icon: const Icon(Icons.arrow_back)), actions: [
       IconButton(onPressed: _ready ? _pause : null, tooltip: rommText(context, _paused ? 'continue' : 'pause'), icon: Icon(_paused ? Icons.play_arrow : Icons.pause)),
       IconButton(onPressed: () => setState(() => _touch = !_touch), tooltip: rommText(context, 'touchControls'), icon: const Icon(Icons.gamepad)),
@@ -245,5 +287,5 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
         for (final entry in {'B': 0, 'Y': 1, 'A': 8, 'X': 9, 'L': 10, 'R': 11}.entries) _touchButton(entry.key, entry.value),
       ]))),
     ]),
-  ));
+  )));
 }

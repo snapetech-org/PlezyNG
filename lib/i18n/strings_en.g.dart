@@ -3278,6 +3278,8 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleBook$en subtitleBook = Translations$videoControls$subtitleBook$en.internal(_root);
 	late final Translations$videoControls$subtitleFonts$en subtitleFonts = Translations$videoControls$subtitleFonts$en.internal(_root);
 	late final Translations$videoControls$subtitleOverlays$en subtitleOverlays = Translations$videoControls$subtitleOverlays$en.internal(_root);
+	late final Translations$videoControls$subtitleLive$en subtitleLive = Translations$videoControls$subtitleLive$en.internal(_root);
+	late final Translations$videoControls$subtitleLyrics$en subtitleLyrics = Translations$videoControls$subtitleLyrics$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
 
@@ -12566,6 +12568,156 @@ class Translations$videoControls$subtitleOverlays$en {
 
 }
 
+// Path: videoControls.subtitleLive
+class Translations$videoControls$subtitleLive$en {
+	Translations$videoControls$subtitleLive$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Playback ended.'
+	String get playbackEnded => 'Playback ended.';
+
+	/// en: 'Delayed live / DVR playback'
+	String get title => 'Delayed live / DVR playback';
+
+	/// en: 'Choose how far behind the backend’s live edge to watch. This uses the available DVR buffer and its seek grid. It does not make future audio available to playback capture or guarantee captions arrive before dialogue.'
+	String get description => 'Choose how far behind the backend’s live edge to watch. This uses the available DVR buffer and its seek grid. It does not make future audio available to playback capture or guarantee captions arrive before dialogue.';
+
+	/// en: 'Hold the requested DVR delay'
+	String get holdTitle => 'Hold the requested DVR delay';
+
+	/// en: 'May seek at most once every 30 seconds when drift exceeds the backend grid. Stops on manual seek, pause, speed, media, audio or profile changes. It does not decode future audio.'
+	String get holdHelp => 'May seek at most once every 30 seconds when drift exceeds the backend grid. Stops on manual seek, pause, speed, media, audio or profile changes. It does not decode future audio.';
+
+	/// en: 'Holding ${seconds} seconds behind live'
+	String holdingStatus({required Object seconds}) => 'Holding ${seconds} seconds behind live';
+
+	/// en: 'Delay hold is off'
+	String get holdOff => 'Delay hold is off';
+
+	/// en: 'Waiting for the backend DVR window'
+	String get waitingWindow => 'Waiting for the backend DVR window';
+
+	/// en: 'Waiting for the requested DVR delay'
+	String get waitingRequestedDelay => 'Waiting for the requested DVR delay';
+
+	/// en: 'Delay hold stopped: playback, audio or profile changed'
+	String get stoppedPlaybackChanged => 'Delay hold stopped: playback, audio or profile changed';
+
+	/// en: 'Delay hold stopped: the backend seek failed'
+	String get stoppedSeekFailed => 'Delay hold stopped: the backend seek failed';
+
+	/// en: 'Delay hold stopped: viewer playback control takes precedence'
+	String get stoppedViewerControl => 'Delay hold stopped: viewer playback control takes precedence';
+
+	/// en: 'Delay hold stopped: no fresh backend DVR clock'
+	String get stoppedClockUnavailable => 'Delay hold stopped: no fresh backend DVR clock';
+
+	/// en: 'Delay hold stopped: another seek took control'
+	String get stoppedOtherSeek => 'Delay hold stopped: another seek took control';
+
+	/// en: 'Delay hold stopped: the backend did not confirm the requested delay'
+	String get stoppedUnconfirmed => 'Delay hold stopped: the backend did not confirm the requested delay';
+
+	/// en: 'Delay hold stopped: this backend no longer exposes a current DVR window'
+	String get stoppedWindowUnavailable => 'Delay hold stopped: this backend no longer exposes a current DVR window';
+
+	/// en: 'DVR delay status is unavailable. Refresh playback state.'
+	String get unknownHoldStatus => 'DVR delay status is unavailable. Refresh playback state.';
+
+	/// en: 'Requested delay: ${seconds} seconds'
+	String requestedDelay({required Object seconds}) => 'Requested delay: ${seconds} seconds';
+
+	/// en: 'Available target: ${seconds} seconds behind live.'
+	String availableTarget({required Object seconds}) => 'Available target: ${seconds} seconds behind live.';
+
+	/// en: 'Available target: ${seconds} seconds behind live (limited by the current DVR window).'
+	String availableTargetLimited({required Object seconds}) => 'Available target: ${seconds} seconds behind live (limited by the current DVR window).';
+
+	/// en: 'This session has no current seekable DVR window. Refresh after the backend has buffered more content.'
+	String get noSeekableWindow => 'This session has no current seekable DVR window. Refresh after the backend has buffered more content.';
+
+	/// en: 'Current delay: ${seconds} seconds.'
+	String currentDelay({required Object seconds}) => 'Current delay: ${seconds} seconds.';
+
+	/// en: 'The DVR window changed. Wait for its next update.'
+	String get windowChanged => 'The DVR window changed. Wait for its next update.';
+
+	/// en: 'Delay requested. The backend will report the resulting position.'
+	String get delayRequested => 'Delay requested. The backend will report the resulting position.';
+
+	/// en: 'Apply DVR delay'
+	String get applyDelay => 'Apply DVR delay';
+
+	/// en: 'Return to live'
+	String get returnLive => 'Return to live';
+
+	/// en: 'Pause a live frame with a known UTC program timestamp before starting source analysis.'
+	String get pauseKnownUtcFrame => 'Pause a live frame with a known UTC program timestamp before starting source analysis.';
+
+	/// en: 'Anchor this live frame to UTC'
+	String get anchorTitle => 'Anchor this live frame to UTC';
+
+	/// en: 'This standalone source exposes no automatic program clock. Enter the actual UTC program timestamp of the currently paused frame. Use a timestamp supplied by the program or another known reference. The current wall clock and playlist edge do not identify this frame.'
+	String get anchorDescription => 'This standalone source exposes no automatic program clock. Enter the actual UTC program timestamp of the currently paused frame. Use a timestamp supplied by the program or another known reference. The current wall clock and playlist edge do not identify this frame.';
+
+	/// en: 'Paused player position: ${milliseconds} ms'
+	String pausedPosition({required Object milliseconds}) => 'Paused player position: ${milliseconds} ms';
+
+	/// en: 'UTC program timestamp'
+	String get utcTimestamp => 'UTC program timestamp';
+
+	/// en: 'YYYY-MM-DDTHH:MM:SS.sssZ'
+	String get utcTimestampHint => 'YYYY-MM-DDTHH:MM:SS.sssZ';
+
+	/// en: 'This estimated mapping expires after 15 minutes and is invalidated by a seek, source change, timeline offset change or detected clock jump. Caption timing follows your anchor. No DVR bounds or automatic delay hold are inferred. Resume playback after starting analysis.'
+	String get anchorExpiryHelp => 'This estimated mapping expires after 15 minutes and is invalidated by a seek, source change, timeline offset change or detected clock jump. Caption timing follows your anchor. No DVR bounds or automatic delay hold are inferred. Resume playback after starting analysis.';
+
+	/// en: 'Use an actual UTC date and time ending in Z.'
+	String get invalidUtc => 'Use an actual UTC date and time ending in Z.';
+
+	/// en: 'Playback changed. Pause the frame and reopen this dialog.'
+	String get playbackChanged => 'Playback changed. Pause the frame and reopen this dialog.';
+
+	/// en: 'Use this program-time anchor'
+	String get useAnchor => 'Use this program-time anchor';
+
+}
+// Path: videoControls.subtitleLyrics
+class Translations$videoControls$subtitleLyrics$en {
+	Translations$videoControls$subtitleLyrics$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Supply sung syllable groups'
+	String get title => 'Supply sung syllable groups';
+
+	/// en: 'Insert | between the groups you want timed, for example Hel|lo world. Keep every original character, space and punctuation mark. Unchanged lines keep word timing. The host proposes a group only when its characters align in both audio views.'
+	String get description => 'Insert | between the groups you want timed, for example Hel|lo world. Keep every original character, space and punctuation mark. Unchanged lines keep word timing. The host proposes a group only when its characters align in both audio views.';
+
+	/// en: 'Cue ${cue}'
+	String cueLabel({required Object cue}) => 'Cue ${cue}';
+
+	/// en: 'This line already contains | and keeps word timing.'
+	String get delimiterPresent => 'This line already contains | and keeps word timing.';
+
+	/// en: 'Cue ${cue}: preserve the exact text and put letters or numbers in each group (up to 128).'
+	String invalidCue({required Object cue}) => 'Cue ${cue}: preserve the exact text and put letters or numbers in each group (up to 128).';
+
+	/// en: 'Use at most 4096 syllable groups per job.'
+	String get groupLimit => 'Use at most 4096 syllable groups per job.';
+
+	/// en: 'Syllable editing requires 1–120 lyric cues.'
+	String get cueLimit => 'Syllable editing requires 1–120 lyric cues.';
+
+	/// en: 'Use these groups'
+	String get useGroups => 'Use these groups';
+
+}
 // Path: videoControls.subtitleHdr
 class Translations$videoControls$subtitleHdr$en {
 	Translations$videoControls$subtitleHdr$en.internal(this._root);
@@ -16405,6 +16557,50 @@ extension on Translations {
 			'videoControls.subtitleHdr.optionsUnavailable' => 'This MPV package exposes no native HDR caption options.',
 			'videoControls.subtitleHdr.unavailablePlayer' => 'Native HDR controls are unavailable for this player.',
 			'videoControls.subtitleHdr.title' => 'Native HDR caption brightness',
+			'videoControls.subtitleLive.playbackEnded' => 'Playback ended.',
+			'videoControls.subtitleLive.title' => 'Delayed live / DVR playback',
+			'videoControls.subtitleLive.description' => 'Choose how far behind the backend’s live edge to watch. This uses the available DVR buffer and its seek grid. It does not make future audio available to playback capture or guarantee captions arrive before dialogue.',
+			'videoControls.subtitleLive.holdTitle' => 'Hold the requested DVR delay',
+			'videoControls.subtitleLive.holdHelp' => 'May seek at most once every 30 seconds when drift exceeds the backend grid. Stops on manual seek, pause, speed, media, audio or profile changes. It does not decode future audio.',
+			'videoControls.subtitleLive.holdingStatus' => ({required Object seconds}) => 'Holding ${seconds} seconds behind live',
+			'videoControls.subtitleLive.holdOff' => 'Delay hold is off',
+			'videoControls.subtitleLive.waitingWindow' => 'Waiting for the backend DVR window',
+			'videoControls.subtitleLive.waitingRequestedDelay' => 'Waiting for the requested DVR delay',
+			'videoControls.subtitleLive.stoppedPlaybackChanged' => 'Delay hold stopped: playback, audio or profile changed',
+			'videoControls.subtitleLive.stoppedSeekFailed' => 'Delay hold stopped: the backend seek failed',
+			'videoControls.subtitleLive.stoppedViewerControl' => 'Delay hold stopped: viewer playback control takes precedence',
+			'videoControls.subtitleLive.stoppedClockUnavailable' => 'Delay hold stopped: no fresh backend DVR clock',
+			'videoControls.subtitleLive.stoppedOtherSeek' => 'Delay hold stopped: another seek took control',
+			'videoControls.subtitleLive.stoppedUnconfirmed' => 'Delay hold stopped: the backend did not confirm the requested delay',
+			'videoControls.subtitleLive.stoppedWindowUnavailable' => 'Delay hold stopped: this backend no longer exposes a current DVR window',
+			'videoControls.subtitleLive.unknownHoldStatus' => 'DVR delay status is unavailable. Refresh playback state.',
+			'videoControls.subtitleLive.requestedDelay' => ({required Object seconds}) => 'Requested delay: ${seconds} seconds',
+			'videoControls.subtitleLive.availableTarget' => ({required Object seconds}) => 'Available target: ${seconds} seconds behind live.',
+			'videoControls.subtitleLive.availableTargetLimited' => ({required Object seconds}) => 'Available target: ${seconds} seconds behind live (limited by the current DVR window).',
+			'videoControls.subtitleLive.noSeekableWindow' => 'This session has no current seekable DVR window. Refresh after the backend has buffered more content.',
+			'videoControls.subtitleLive.currentDelay' => ({required Object seconds}) => 'Current delay: ${seconds} seconds.',
+			'videoControls.subtitleLive.windowChanged' => 'The DVR window changed. Wait for its next update.',
+			'videoControls.subtitleLive.delayRequested' => 'Delay requested. The backend will report the resulting position.',
+			'videoControls.subtitleLive.applyDelay' => 'Apply DVR delay',
+			'videoControls.subtitleLive.returnLive' => 'Return to live',
+			'videoControls.subtitleLive.pauseKnownUtcFrame' => 'Pause a live frame with a known UTC program timestamp before starting source analysis.',
+			'videoControls.subtitleLive.anchorTitle' => 'Anchor this live frame to UTC',
+			'videoControls.subtitleLive.anchorDescription' => 'This standalone source exposes no automatic program clock. Enter the actual UTC program timestamp of the currently paused frame. Use a timestamp supplied by the program or another known reference. The current wall clock and playlist edge do not identify this frame.',
+			'videoControls.subtitleLive.pausedPosition' => ({required Object milliseconds}) => 'Paused player position: ${milliseconds} ms',
+			'videoControls.subtitleLive.utcTimestamp' => 'UTC program timestamp',
+			'videoControls.subtitleLive.utcTimestampHint' => 'YYYY-MM-DDTHH:MM:SS.sssZ',
+			'videoControls.subtitleLive.anchorExpiryHelp' => 'This estimated mapping expires after 15 minutes and is invalidated by a seek, source change, timeline offset change or detected clock jump. Caption timing follows your anchor. No DVR bounds or automatic delay hold are inferred. Resume playback after starting analysis.',
+			'videoControls.subtitleLive.invalidUtc' => 'Use an actual UTC date and time ending in Z.',
+			'videoControls.subtitleLive.playbackChanged' => 'Playback changed. Pause the frame and reopen this dialog.',
+			'videoControls.subtitleLive.useAnchor' => 'Use this program-time anchor',
+			'videoControls.subtitleLyrics.title' => 'Supply sung syllable groups',
+			'videoControls.subtitleLyrics.description' => 'Insert | between the groups you want timed, for example Hel|lo world. Keep every original character, space and punctuation mark. Unchanged lines keep word timing. The host proposes a group only when its characters align in both audio views.',
+			'videoControls.subtitleLyrics.cueLabel' => ({required Object cue}) => 'Cue ${cue}',
+			'videoControls.subtitleLyrics.delimiterPresent' => 'This line already contains | and keeps word timing.',
+			'videoControls.subtitleLyrics.invalidCue' => ({required Object cue}) => 'Cue ${cue}: preserve the exact text and put letters or numbers in each group (up to 128).',
+			'videoControls.subtitleLyrics.groupLimit' => 'Use at most 4096 syllable groups per job.',
+			'videoControls.subtitleLyrics.cueLimit' => 'Syllable editing requires 1–120 lyric cues.',
+			'videoControls.subtitleLyrics.useGroups' => 'Use these groups',
 			'videoControls.subtitleHdr.open' => 'Native HDR caption brightness',
 			'videoControls.subtitleImportSourceEncoding' => 'Source encoding',
 			'videoControls.subtitleImportMicroDvdFps' => 'MicroDVD FPS (blank uses the file header)',

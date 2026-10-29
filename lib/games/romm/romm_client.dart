@@ -171,10 +171,17 @@ class RommClient {
   Uri content(RommGame game, {RommFile? file}) => uri(
     'api/roms/${game.id}/content/${Uri.encodeComponent(file?.name ?? game.fileName)}',
     {if (file != null) 'file_ids': file.id});
-  Future<Uint8List> saveBytes(RommSave save) async {
-    final response = await (await open('GET', uri('api/${save.state ? 'states' : 'saves'}/${save.id}/content'))).close();
+  Future<Uint8List> saveBytes(RommSave save, {String deviceId = ''}) async {
+    final response = await (await open('GET', uri('api/${save.state ? 'states' : 'saves'}/${save.id}/content', {
+      if (!save.state && deviceId.isNotEmpty) 'device_id': deviceId,
+      if (!save.state) 'optimistic': false,
+    }))).close().timeout(const Duration(seconds: 30));
     if (response.statusCode != 200) throw RommFailure('romm.notFound', status: response.statusCode);
     return read(response, maximum: 128 * 1024 * 1024);
+  }
+  Future<void> acknowledgeSave(RommSave save, String deviceId, String contentHash) async {
+    if (save.state || deviceId.isEmpty) return;
+    await json('POST', 'saves/${save.id}/downloaded', body: {'device_id': deviceId, 'content_hash': contentHash});
   }
 
   /// Upload creates a new version by default. Conflict overrides must be an
@@ -183,7 +190,8 @@ class RommClient {
       required Uint8List bytes, required String emulator, String core = '', String deviceId = '',
       String slot = 'autosave', String? contentHash, bool state = false, bool overwrite = false}) async {
     rommSafeFileName(name);
-    if (bytes.length > 128 * 1024 * 1024 || !RegExp(r'^[a-zA-Z0-9_.-]{1,100}$').hasMatch(emulator)) {
+    if (bytes.isEmpty || bytes.length > 128 * 1024 * 1024 || !RegExp(r'^[a-zA-Z0-9_.-]{1,50}$').hasMatch(emulator) ||
+        !RegExp(r'^[a-zA-Z0-9_.-]{1,255}$').hasMatch(slot)) {
       throw const RommFailure('romm.invalidFile');
     }
     final boundary = 'plezy${List.generate(24, (_) => Random.secure().nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';

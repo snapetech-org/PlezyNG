@@ -24,6 +24,8 @@ class RommStorage extends ChangeNotifier {
   final failures = <String, String>{};
   final _active = <String, RommClient>{};
   final _syncing = <String>{};
+  final _syncLineages = <String, Future<void>>{};
+  final _saveReservations = <String, int>{};
   final _downloadLocks = <String>{};
   final _uploadedHashes = <String, String>{};
   final browserPorts = <String, int>{};
@@ -63,7 +65,9 @@ class RommStorage extends ChangeNotifier {
     final operation = _writes.catchError((_) {}).then((_) async {
       if (!completeOwnedWrite) check();
       final temp = File('${_root!.path}/manifest.next');
-      await temp.writeAsString(jsonEncode({'quota': quota, 'uploadedHashes': _uploadedHashes, 'browserPorts': browserPorts, 'downloads': downloads.values.toList(), 'pending': pending.values.toList()}), flush: true);
+      final bytes = utf8.encode(jsonEncode({'quota': quota, 'uploadedHashes': _uploadedHashes, 'browserPorts': browserPorts, 'downloads': downloads.values.toList(), 'pending': pending.values.toList()}));
+      if (bytes.length > 16 * 1024 * 1024) throw const RommFailure('romm.responseTooLarge');
+      await temp.writeAsBytes(bytes, flush: true);
       if (!completeOwnedWrite) check();
       await temp.rename('${_root!.path}/manifest.json');
     });
@@ -79,18 +83,39 @@ class RommStorage extends ChangeNotifier {
       try {
         check();
         final registry = File('${_root!.parent.path}/browser-origins.json');
-        lock = await registry.open(mode: FileMode.append);
-        await lock.lock(FileLock.exclusive); await lock.setPosition(0);
-        final size = await lock.length();
+        // Lock a stable inode; replacing the registry is atomic and must not
+        // replace the file whose cross-process lock serializes its writers.
+        lock = await File('${registry.path}.lock').open(mode: FileMode.append);
+        await lock.lock(FileLock.exclusive);
+        final exists = await registry.exists();
+        final size = exists ? await registry.length() : 0;
         if (size > 1024 * 1024) throw const RommFailure('romm.invalidResponse');
-        final all = size == 0 ? <String, dynamic>{} : rommMap(jsonDecode(utf8.decode(await lock.read(size))));
+        if (exists && size == 0) throw const RommFailure('romm.invalidResponse');
+        final decoded = exists ? jsonDecode(await registry.readAsString()) : <String, dynamic>{};
+        if (decoded is! Map) throw const RommFailure('romm.invalidResponse');
+        final all = rommMap(decoded);
+        final reservations = <String, List<int>>{};
+        for (final entry in all.entries) {
+          final values = entry.value is int ? [entry.value] : entry.value;
+          if (values is! List || values.any((p) => p is! int || p < 1024 || p > 65535)) throw const RommFailure('romm.invalidResponse');
+          reservations[entry.key] = values.cast<int>();
+        }
         final owner = _key('$profileId:$connection');
-        if (all.entries.any((e) => e.key != owner && e.value == port)) { result.complete(false); return; }
-        all[owner] = port;
-        await lock.setPosition(0); await lock.truncate(0); await lock.writeFrom(utf8.encode(jsonEncode(all))); await lock.flush();
+        if (reservations.entries.any((e) => e.key != owner && e.value.contains(port))) { result.complete(false); return; }
+        final ports = reservations.putIfAbsent(owner, () => []);
+        if (!ports.contains(port)) ports.add(port);
+        final bytes = utf8.encode(jsonEncode(reservations));
+        if (bytes.length > 1024 * 1024) throw const RommFailure('romm.responseTooLarge');
+        final next = File('${registry.path}.next');
+        await next.writeAsBytes(bytes, flush: true); await next.rename(registry.path);
         browserPorts[connection] = port; await _persist(); result.complete(true);
       } catch (error, stack) { result.completeError(error, stack); }
-      finally { if (lock != null) { await lock.unlock(); await lock.close(); } }
+      finally {
+        if (lock != null) {
+          try { await lock.unlock(); } catch (_) { /* Closing also releases the lock. */ }
+          try { await lock.close(); } catch (_) { /* Preserve the registry result. */ }
+        }
+      }
     });
     return result.future;
   }
@@ -203,17 +228,21 @@ class RommStorage extends ChangeNotifier {
   Future<String> enqueue({required RommGame game, required Uint8List bytes, required String emulator,
       required String core, bool state = false, String slot = 'autosave', String baseHash = ''}) async {
     check();
-    if (bytes.isEmpty || bytes.length > 128 * 1024 * 1024 || pending.length >= 500) throw const RommFailure('romm.invalidFile');
-    final pendingBytes = pending.values.fold<int>(0, (n, row) => n + rommInt(row['size']));
+    if (bytes.isEmpty || bytes.length > 128 * 1024 * 1024 || pending.length + _saveReservations.length >= 500) throw const RommFailure('romm.invalidFile');
+    final pendingBytes = pending.values.fold<int>(0, (n, row) => n + rommInt(row['size'])) + _saveReservations.values.fold<int>(0, (n, size) => n + size);
     if (pendingBytes + bytes.length > 512 * 1024 * 1024) throw const RommFailure('romm.quotaExceeded');
     final source = connection(game.connectionId), id = const Uuid().v4();
+    _saveReservations[id] = bytes.length;
+    try {
     final file = File(_path(id, 'save'));
     await file.writeAsBytes(bytes, flush: true);
     pending[id] = {'id': id, 'connectionId': game.connectionId, 'userId': source.userId,
       'game': _manifestGame(game), 'identity': game.identity, 'emulator': emulator, 'core': core, 'state': state,
       'slot': slot, 'baseHash': _uploadedHashes['${game.key}:$emulator:$slot'] ?? baseHash, 'hash': sha256.convert(bytes).toString(), 'contentHash': bytes.length >= 4 && bytes[0] == 0x50 && bytes[1] == 0x4b ? '' : md5.convert(bytes).toString(), 'size': bytes.length,
       'created': DateTime.now().toUtc().toIso8601String(), 'conflict': false};
+    _saveReservations.remove(id);
     await _persist(completeOwnedWrite: true); changed(); return id;
+    } finally { _saveReservations.remove(id); }
   }
   Future<Uint8List> pendingBytes(String id) async {
     check(); final row = pending[id]; if (row == null) throw const RommFailure('romm.notFound');
@@ -228,7 +257,16 @@ class RommStorage extends ChangeNotifier {
   }
   Future<void> sync(String id, {bool keepBoth = false, bool replace = false}) async {
     check(); if (!_syncing.add(id)) return;
+    final pendingRow = pending[id];
+    if (pendingRow == null) { _syncing.remove(id); return; }
+    // Two versions of one slot must be compared and uploaded in order. A
+    // per-ID lock alone allows both to compare against the same server head.
+    final lineage = '${pendingRow['connectionId']}:${rommMap(pendingRow['game'])['id']}:${pendingRow['state']}:${pendingRow['emulator']}:${pendingRow['slot']}';
+    final previous = _syncLineages[lineage] ?? Future<void>.value();
+    final released = Completer<void>();
+    _syncLineages[lineage] = released.future;
     try {
+      await previous; check();
       final row = pending[id]; if (row == null) return;
       final source = connection(rommString(row['connectionId']));
       if (source.userId != row['userId']) throw const RommFailure('romm.accountMismatch');
@@ -237,10 +275,11 @@ class RommStorage extends ChangeNotifier {
       final remote = await api.game(source.id, game.id); check();
       if (remote.identity != row['identity']) throw const RommFailure('romm.copyMismatch');
       final state = row['state'] == true;
-      final matches = remote.saves.where((s) => s.emulator == row['emulator'] && s.slot == row['slot']).toList()
+      final matches = remote.saves.where((s) => !s.missing && s.userId == source.userId && s.romId == game.id && s.emulator == row['emulator'] && s.slot == row['slot']).toList()
         ..sort((a, b) => (b.updatedAt ?? DateTime(1970)).compareTo(a.updatedAt ?? DateTime(1970)));
-      if (!state && !keepBoth && !replace && matches.isNotEmpty &&
-          matches.first.hash != row['baseHash'] && matches.first.hash != row['contentHash']) {
+      final knownHashes = [row['baseHash'], row['contentHash'], _uploadedHashes['${game.key}:${row['emulator']}:${row['slot']}']]
+        .whereType<String>().where((hash) => hash.isNotEmpty).toSet();
+      if (!state && !keepBoth && !replace && matches.isNotEmpty && !knownHashes.contains(matches.first.hash)) {
         row['conflict'] = true; await _persist(); throw const RommFailure('romm.conflict');
       }
       final bytes = await pendingBytes(id); check();
@@ -255,12 +294,23 @@ class RommStorage extends ChangeNotifier {
     } catch (error) {
       if (error is RommFailure && error.status == 409 && pending[id] != null) { pending[id]!['conflict'] = true; await _persist(); }
       failures[id] = error is RommFailure ? error.code : 'romm.saveUploadFailed'; rethrow;
-    } finally { _syncing.remove(id); changed(); }
+    } finally {
+      released.complete();
+      if (identical(_syncLineages[lineage], released.future)) _syncLineages.remove(lineage);
+      _syncing.remove(id); changed();
+    }
   }
   Future<void> syncAll() async {
     for (final id in pending.keys.toList()) {
       check(); try { await sync(id); } catch (_) { /* Each version retains its failure and bytes. */ }
     }
+  }
+  Future<void> rememberSaveBaseline(RommGame game, RommSave save) async {
+    check();
+    if (save.state || save.hash.isEmpty || save.romId != game.id || save.userId != connection(game.connectionId).userId) return;
+    _uploadedHashes['${game.key}:${save.emulator}:${save.slot}'] = save.hash;
+    while (_uploadedHashes.length > 4096) { _uploadedHashes.remove(_uploadedHashes.keys.first); }
+    await _persist();
   }
   // Durable save/download manifests need identity, not artwork, achievement
   // catalogs or thousands of disc-file rows repeated for every saved version.

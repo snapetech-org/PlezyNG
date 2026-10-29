@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../games/romm/romm_controller.dart';
@@ -83,8 +84,14 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
       } else {
         RommPlayerProxy? proxy;
         for (var attempt = 0; attempt < 12; attempt++) {
-          final candidate = await RommPlayerProxy.start(upstream: api.base, token: api.token,
-            port: attempt == 0 ? widget.controller.storage.browserPorts[widget.game.connectionId] ?? 0 : 0, current: () => _live);
+          RommPlayerProxy candidate;
+          try {
+            candidate = await RommPlayerProxy.start(upstream: api.base, token: api.token,
+              port: attempt == 0 ? widget.controller.storage.browserPorts[widget.game.connectionId] ?? 0 : 0, current: () => _live);
+          } on SocketException {
+            if (attempt == 0) continue; // A previous origin can be busy after an interrupted session.
+            rethrow;
+          }
           if (!_live) { await candidate.close(); return; }
           try {
             if (await widget.controller.storage.rememberBrowserPort(widget.game.connectionId, candidate.origin.port)) { proxy = candidate; break; }
@@ -140,10 +147,11 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
       if (!state && encoded == _lastCapture) return;
       final core = rommString(data['core'], 100);
       if (!RegExp(r'^[A-Za-z0-9_.-]{1,100}$').hasMatch(core)) throw const RommFailure('romm.saveFailed');
-      final saves = widget.game.saves.where((s) => s.emulator == core && s.slot == 'autosave').toList()
+      final slot = 'plezy-$core-backup';
+      final saves = widget.game.saves.where((s) => s.emulator == core && s.slot == slot).toList()
         ..sort((a,b) => (b.updatedAt ?? DateTime(1970)).compareTo(a.updatedAt ?? DateTime(1970)));
       final id = await widget.controller.storage.enqueue(game: widget.game,
-        bytes: Uint8List.fromList(base64Decode(encoded)), emulator: core, core: core, state: state, slot: 'plezy-backup',
+        bytes: Uint8List.fromList(base64Decode(encoded)), emulator: core, core: core, state: state, slot: slot,
         baseHash: saves.firstOrNull?.hash ?? '');
       if (!state) _lastCapture = encoded;
       // The fsynced local version survives a failed upload and a profile switch.

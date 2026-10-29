@@ -50,7 +50,7 @@ class _RommSavesScreenState extends State<RommSavesScreen> {
         ])), actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'cancel'))),
           FilledButton(onPressed: () => Navigator.pop(dialog, true), child: Text(rommText(dialog, 'importSave')))]));
       if (accepted != true || !live) return;
-      if (!RegExp(r'^[a-zA-Z0-9_.-]{1,100}$').hasMatch(emulator.text) ||
+      if (!RegExp(r'^[a-zA-Z0-9_.-]{1,50}$').hasMatch(emulator.text) ||
           state && !RegExp(r'^[a-zA-Z0-9_.-]{1,100}$').hasMatch(core.text) ||
           !RegExp(r'^[a-zA-Z0-9_.-]{1,100}$').hasMatch(slot.text)) throw const RommFailure('romm.invalidFile');
       final picked = await FilePickerService.instance.pickFiles(withData: false);

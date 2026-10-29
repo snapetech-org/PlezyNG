@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import '../../games/romm/romm_controller.dart';
 import '../../games/romm/romm_models.dart';
@@ -159,36 +160,45 @@ class _RommWebPlayerScreenState extends State<RommWebPlayerScreen> with WidgetsB
     finally { _openingRoom = false; }
   }
   Future<void> _capture({bool state = false}) async {
-    if (!_live || !_ejs || _capturing || _web.currentState == null) return;
+    if (!_live || !_ejs || _capturing || _web.currentState == null) {
+      if (state) throw RommFailure(_capturing ? 'romm.saveInProgress' : 'romm.saveFailed');
+      return;
+    }
     _capturing = true;
     try {
       final raw = await _web.currentState!.evaluate('''(() => {
         const e = window.EJS_emulator, g = e && e.gameManager;
         if (!g || !window.EJS_core) return null;
+        if (Number(window.EJS_gameID) !== ${widget.game.id}) return JSON.stringify({mismatch:true});
         const value = ${state ? 'g.getState()' : 'g.getSaveFile(true)'};
         if (!value) return null;
         const a = new Uint8Array(value.buffer || value, value.byteOffset || 0, value.byteLength);
         if (!a.length || a.length > 33554432) return null;
         let s = ''; for (let i=0;i<a.length;i+=16384) s += String.fromCharCode(...a.subarray(i,i+16384));
         return JSON.stringify({core:String(window.EJS_core),bytes:btoa(s)});
-      })()''');
+      })()''').timeout(const Duration(seconds: 15));
       if (!_live) return;
       final data = rommMap(raw is String ? jsonDecode(raw) : raw);
+      // RomM is an SPA: its own navigation can switch games without changing
+      // this Flutter route. Never label those bytes with the original ROM ID.
+      if (data['mismatch'] == true) throw const RommFailure('romm.copyMismatch');
       final encoded = rommString(data['bytes'], 48 * 1024 * 1024);
       if (encoded.isEmpty) {
         if (state) throw const RommFailure('romm.saveFailed');
         return;
       }
-      if (!state && encoded == _lastCapture) return;
+      final bytes = Uint8List.fromList(base64Decode(encoded));
+      final hash = sha256.convert(bytes).toString();
+      if (!state && hash == _lastCapture) return;
       final core = rommString(data['core'], 100);
-      if (!RegExp(r'^[A-Za-z0-9_.-]{1,100}$').hasMatch(core)) throw const RommFailure('romm.saveFailed');
+      if (!RegExp(r'^[A-Za-z0-9_.-]{1,50}$').hasMatch(core)) throw const RommFailure('romm.saveFailed');
       final slot = 'plezy-$core-backup';
       final saves = widget.game.saves.where((s) => s.emulator == core && s.slot == slot).toList()
         ..sort((a,b) => (b.updatedAt ?? DateTime(1970)).compareTo(a.updatedAt ?? DateTime(1970)));
       final id = await widget.controller.storage.enqueue(game: widget.game,
-        bytes: Uint8List.fromList(base64Decode(encoded)), emulator: core, core: core, state: state, slot: slot,
+        bytes: bytes, emulator: core, core: core, state: state, slot: slot,
         baseHash: saves.firstOrNull?.hash ?? '');
-      if (!state) _lastCapture = encoded;
+      if (!state) _lastCapture = hash;
       // The fsynced local version survives a failed upload and a profile switch.
       try { await widget.controller.storage.sync(id); } catch (_) {
         if (_live && _closing) showSnackBar(context, rommText(context, 'savedLocally'));

@@ -1438,11 +1438,11 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       catalogNotices: [..._catalogNotices(c.library), if (_rommLoadError) SliverToBoxAdapter(child: GameNotice(
         title: rommText(context, 'title'), message: rommText(context, 'connectionFailed'), actionLabel: rommText(context, 'retry'), onAction: _retryLoad))],
       includePrimaryGames: _romm?.source.isEmpty ?? true,
-      additionalGames: [for (final game in _romm?.games ?? <RommGame>[])
+      additionalGames: [for (final game in _romm?.visibleGames ?? <RommGame>[])
         if (_romm!.source.isEmpty || game.connectionId == _romm!.source)
           LibraryGame(key: game.key, name: game.name, routes: const [], romm: game)],
       additionalFavorites: _romm?.favorites ?? const {},
-      additionalInstalled: {for (final game in _romm?.games ?? <RommGame>[]) if (_romm!.storage.available(game)) game.key},
+      additionalInstalled: {for (final game in _romm?.visibleGames ?? <RommGame>[]) if (_romm!.storage.available(game)) game.key},
       additionalRecent: _romm?.recent ?? const [],
       onSearchChanged: (query) {
         _rommSearch?.cancel();

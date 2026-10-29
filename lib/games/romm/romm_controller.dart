@@ -30,7 +30,10 @@ class RommController extends ChangeNotifier {
   final _covers = <String, Future<Uint8List?>>{};
   final _players = <Object, String>{};
   final _disconnecting = <String>{};
+  final _favoriteChanges = <String>{};
+  final _capabilityRequests = <String, int>{};
   Future<void> _writes = Future.value();
+  static final _profileWrites = <String, Future<void>>{};
   bool _disposed = false, busy = false;
   int _queryGeneration = 0;
   String query = '', source = '';
@@ -38,6 +41,21 @@ class RommController extends ChangeNotifier {
   RommCollection? collection;
   bool get current => !_disposed && sessionCurrent();
   bool get hasMore => _next.entries.any((e) => (source.isEmpty || e.key == source) && e.value != null);
+  List<RommGame> get visibleGames {
+    final result = <String, RommGame>{for (final game in games) game.key: game};
+    // A refreshed first page is not the entire library. Keep downloaded games
+    // and unsynced progress reachable even when the server no longer lists them.
+    for (final row in [...storage.downloads.values, ...storage.pending.values]) {
+      final id = rommString(row['connectionId'], 128);
+      if (!hasConnection(id) || source.isNotEmpty && source != id) continue;
+      final game = RommGame.fromJson(id, rommMap(row['game']));
+      if (game.id <= 0 || platformId != null && game.platformId != platformId ||
+          collection != null && !collection!.romIds.contains(game.id) ||
+          query.isNotEmpty && !game.name.toLowerCase().contains(query.toLowerCase())) continue;
+      result.putIfAbsent(game.key, () => game);
+    }
+    return result.values.toList();
+  }
   bool hasConnection(String id) => !_disconnecting.contains(id) && connections.any((connection) => connection.id == id);
   void retainPlayer(Object owner, String source) { requireCurrent(); connection(source); _players[owner] = source; }
   void releasePlayer(Object owner) { _players.remove(owner); }
@@ -46,10 +64,14 @@ class RommController extends ChangeNotifier {
   void changed() { if (current) notifyListeners(); }
 
   Future<void> load() async {
+    await _profileWrites[profileId]?.catchError((_) {});
     final data = await repository.preference(profileId, preferenceKey);
     requireCurrent();
     for (final row in rommList(data['connections']).take(12)) {
-      try { connections.add(RommConnection.fromJson(rommMap(row))); } catch (_) { /* Malformed persisted connection is not usable. */ }
+      try {
+        final connection = RommConnection.fromJson(rommMap(row));
+        if (!connections.any((existing) => existing.id == connection.id)) connections.add(connection);
+      } catch (_) { /* Malformed persisted connection is not usable. */ }
     }
     final ids = connections.map((s) => s.id).toSet();
     for (final row in rommList(data['games']).take(600)) {
@@ -74,7 +96,7 @@ class RommController extends ChangeNotifier {
   }
 
   Future<void> persist() {
-    final pending = _writes.catchError((_) {}).then((_) async {
+    final pending = (_profileWrites[profileId] ?? _writes).catchError((_) {}).then((_) async {
       requireCurrent();
       await repository.savePreference(profileId, preferenceKey, {
         'connections': connections.map((s) => s.toJson()).toList(),
@@ -83,7 +105,7 @@ class RommController extends ChangeNotifier {
         'capabilities': capabilities.map((id, cap) => MapEntry(id, cap.toJson())),
       });
     });
-    _writes = pending;
+    _writes = pending; _profileWrites[profileId] = pending;
     return pending;
   }
 
@@ -109,6 +131,8 @@ class RommController extends ChangeNotifier {
       String deviceId = '', List<String> scopes = const [], String? replaceId, bool Function()? allowed}) async {
     void checkAttempt() { requireCurrent(); if (allowed?.call() == false) throw const RommFailure('romm.cancelled'); }
     checkAttempt();
+    final replaced = replaceId == null ? null : connection(replaceId);
+    if (replaceId != null && _players.containsValue(replaceId)) throw const RommFailure('romm.saveExitHelp');
     if (token.isEmpty || token.length > 4096 || RegExp(r'[\s\x00-\x1f]').hasMatch(token)) {
       throw const RommFailure('romm.invalidToken');
     }
@@ -127,6 +151,10 @@ class RommController extends ChangeNotifier {
       try { credential = await CredentialVault.protect(token); }
       catch (_) { /* Unsupported vault: keep this session's token only. */ }
       checkAttempt();
+      if (replaceId != null && (!identical(replaced, connection(replaceId)) || _players.containsValue(replaceId))) {
+        throw const RommFailure('romm.busy');
+      }
+      if (replaceId == null && connections.length >= 12) throw const RommFailure('romm.connectionLimit');
       _sessionTokens.remove(id);
       _covers.removeWhere((key, _) => key.startsWith('romm:$id:'));
       if (!CredentialVault.isProtected(credential)) { credential = ''; _sessionTokens[id] = token; }
@@ -164,17 +192,19 @@ class RommController extends ChangeNotifier {
   }
 
   Future<void> refreshCapabilities(String id) async {
+    final original = connection(id), revision = (_capabilityRequests[id] ?? 0) + 1;
+    _capabilityRequests[id] = revision;
     final api = await client(id), me = await (await client(id)).me();
     requireCurrent();
     if (rommInt(me['id']) != connection(id).userId) throw const RommFailure('romm.accountMismatch');
-    achievementProgress[id] = rommMap(me['ra_progression']);
     final beat = await api.heartbeat(), config = await api.config();
     Map<String, dynamic> stream = {};
     try { stream = await api.streaming(); } on RommFailure catch (error) { if (error.status != 404 && error.status != 403) rethrow; }
     final platforms = await api.platforms();
     final lists = await api.collections();
     requireCurrent();
-    connection(id);
+    if (!identical(original, connection(id)) || _capabilityRequests[id] != revision) return;
+    achievementProgress[id] = rommMap(me['ra_progression']);
     capabilities[id] = RommCapabilities(version: rommString(rommMap(beat['SYSTEM'])['VERSION'], 64),
       emulation: rommMap(beat['EMULATION']), config: config,
       streams: stream['enabled'] == true ? rommList(stream['containers']).take(500).map(rommMap).toList() : [],
@@ -198,9 +228,11 @@ class RommController extends ChangeNotifier {
       for (final source in selected) {
         if (!current || epoch != _queryGeneration) return;
         if (more && _next[source.id] == null) continue;
+        if (!more) _next.remove(source.id);
         try {
           if (!more && (capabilities[source.id]?.fresh != true || !collections.containsKey(source.id) ||
               search == null && !changeFilter)) await refreshCapabilities(source.id);
+          if (!current || epoch != _queryGeneration) return;
           final page = await (await client(source.id)).games(source.id, search: query,
             offset: more ? _next[source.id] ?? 0 : 0, platformId: platformId, collection: collection);
           if (!current || epoch != _queryGeneration) return;
@@ -230,6 +262,9 @@ class RommController extends ChangeNotifier {
   }
   Future<void> favorite(RommGame game) async {
     requireCurrent();
+    if (!_favoriteChanges.add(game.connectionId)) throw const RommFailure('romm.busy');
+    _capabilityRequests[game.connectionId] = (_capabilityRequests[game.connectionId] ?? 0) + 1;
+    try {
     final api = await client(game.connectionId), source = connection(game.connectionId);
     var list = collections[source.id]?.where((list) => list.favorite && list.userId == source.userId).firstOrNull;
     if (list == null) { list = await api.createFavorites(); collections.putIfAbsent(source.id, () => []).add(list); }
@@ -237,6 +272,10 @@ class RommController extends ChangeNotifier {
     await api.collectionMembership(list, game.id, add); requireCurrent();
     if (add) favorites.add(game.key); else favorites.remove(game.key);
     await persist(); changed();
+    } finally {
+      _favoriteChanges.remove(game.connectionId);
+      _capabilityRequests[game.connectionId] = (_capabilityRequests[game.connectionId] ?? 0) + 1;
+    }
   }
   Future<void> played(RommGame game) async {
     requireCurrent();

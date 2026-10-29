@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
@@ -10,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
+import 'subtitle_wav_reader.dart';
 
 final class SubtitleWhisperResult {
   const SubtitleWhisperResult({
@@ -172,6 +174,7 @@ final class SubtitleWhisperCppService {
     int? endMs,
     bool translateToEnglish = false,
     bool allowEmpty = false,
+    int numThreads = 2,
     String? languageCode,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
@@ -217,6 +220,7 @@ final class SubtitleWhisperCppService {
         fellBackToCpu: true,
         languageCode: selectedLanguage,
         allowEmpty: allowEmpty,
+        numThreads: numThreads,
       );
     }
 
@@ -237,6 +241,7 @@ final class SubtitleWhisperCppService {
         fellBackToCpu: false,
         languageCode: selectedLanguage,
         allowEmpty: allowEmpty,
+        numThreads: numThreads,
       );
     } catch (error) {
       if (selectedDevice == null) rethrow;
@@ -255,6 +260,7 @@ final class SubtitleWhisperCppService {
         fellBackToCpu: true,
         languageCode: selectedLanguage,
         allowEmpty: allowEmpty,
+        numThreads: numThreads,
       );
     }
   }
@@ -272,6 +278,7 @@ final class SubtitleWhisperCppService {
     required bool fellBackToCpu,
     required String languageCode,
     required bool allowEmpty,
+    required int numThreads,
     void Function(String phase, int received, int total)? onProgress,
   }) async {
     final session = await whisper.FlutterWhisper.loadModel(
@@ -285,30 +292,35 @@ final class SubtitleWhisperCppService {
     );
     try {
       onProgress?.call(translated ? 'Translating audio to English' : 'Transcribing multilingual audio', 0, 0);
-      final result = await session.transcribeFile(
-        wavPath,
-        config: whisper.WhisperTranscribeConfig(
+      final boundedWindow = endMs - startMs <= 300000;
+      final inferenceConfig = whisper.WhisperTranscribeConfig(
           language: languageCode,
           translate: translated,
-          threads: Platform.numberOfProcessors.clamp(1, 8).toInt(),
+          threads: numThreads.clamp(1, 8).toInt(),
           noSpeechThreshold: 0.6,
           tokenTimestamps: true,
           splitOnWord: true,
-          offset: Duration(milliseconds: startMs),
+          offset: Duration(milliseconds: boundedWindow ? 0 : startMs),
           duration: Duration(milliseconds: endMs - startMs),
-        ),
-        onProgress: (progress) => onProgress?.call('Whisper inference', progress, 100),
       );
-      final wordTimings = SubtitleWordTimingBuilder.fromWhisperSegments(result.segments, durationMs: durationMs);
+      // transcribeFile may decode the whole input before applying its offset.
+      // Queue windows and selected intervals instead stream only their PCM,
+      // keeping native input memory bounded independently of the movie length.
+      final result = boundedWindow
+          ? await session.transcribe(await _readWindow(wavPath, startMs, endMs), config: inferenceConfig)
+          : await session.transcribeFile(wavPath, config: inferenceConfig,
+              onProgress: (progress) => onProgress?.call('Whisper inference', progress, 100));
+      final offsetMs = boundedWindow ? startMs : 0;
+      final wordTimings = SubtitleWordTimingBuilder.fromWhisperSegments(result.segments, durationMs: endMs, offsetMs: offsetMs);
       final cues = <SubtitleCue>[];
       for (final segment in result.segments) {
         final text = segment.text.trim().replaceAll(RegExp(r'\s+'), ' ');
-        final startRaw = segment.start.inMilliseconds;
-        if (text.isEmpty || text.length > _maximumCueCharacters || startRaw >= durationMs) continue;
-        final startMs = startRaw.clamp(0, durationMs).toInt();
-        final endMs = segment.end.inMilliseconds.clamp(startMs + 1, durationMs).toInt();
-        if (endMs <= startMs) continue;
-        cues.add(SubtitleCue(index: cues.length + 1, startMs: startMs, endMs: endMs, text: text));
+        final startRaw = offsetMs + segment.start.inMilliseconds;
+        final endRaw = offsetMs + segment.end.inMilliseconds;
+        if (text.isEmpty || text.length > _maximumCueCharacters || startRaw >= endMs || endRaw <= startMs) continue;
+        final cueStart = startRaw.clamp(startMs, endMs - 1).toInt();
+        final cueEnd = endRaw.clamp(cueStart + 1, endMs).toInt();
+        cues.add(SubtitleCue(index: cues.length + 1, startMs: cueStart, endMs: cueEnd, text: text));
         if (cues.length >= _maximumCues) break;
       }
       if (cues.isEmpty && !allowEmpty) throw const FormatException('Whisper did not produce any speech cues.');
@@ -330,6 +342,20 @@ final class SubtitleWhisperCppService {
       await session.dispose();
     }
   }
+
+  static Future<Float32List> _readWindow(String path, int startMs, int endMs) => Isolate.run(() async {
+    final reader = await SubtitleWavReader.open(path);
+    try {
+      final samples = Float32List((endMs - startMs) * 16);
+      var count = 0;
+      await reader.forEachMono16kChunk((chunk) async {
+        final length = chunk.length.clamp(0, samples.length - count).toInt();
+        samples.setRange(count, count + length, chunk);
+        count += length;
+      }, startMs: startMs, endMs: endMs);
+      return count == samples.length ? samples : Float32List.sublistView(samples, 0, count);
+    } finally { await reader.close(); }
+  });
 }
 
 abstract final class _WavDurationReader {

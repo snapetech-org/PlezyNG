@@ -731,6 +731,7 @@ Future<void> _loadSubtitleFile(BuildContext context, Player player) async {
     allowedExtensions: {
       ...supportedExtensions,
       if (!kIsWeb) ...{'zip', 'tar', 'tgz', 'gz'},
+      if (!kIsWeb && SubtitleArchiveImporter.supportsNative7Zip) '7z',
     }.toList()..sort(),
   );
   if (result == null || result.files.isEmpty || !context.mounted) return;
@@ -1066,7 +1067,7 @@ Future<String?> _selectArchivedSubtitle(
   List<String> supportedExtensions,
 ) async {
   final bytes = await SubtitleArchiveImporter.readPickedArchive(pickedFile);
-  final document = SubtitleArchiveImporter.open(
+  final document = await SubtitleArchiveImporter.openAsync(
     bytes,
     fileName: pickedFile.name,
     supportedExtensions: supportedExtensions.toSet(),

@@ -2650,7 +2650,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   String _originTokenForOperation(String operationLabel) {
     final normalized = operationLabel.toLowerCase();
     if (normalized.contains('translat')) return 'translated';
-    if (normalized.contains('sync') || normalized.contains('repair')) return 'synchronized';
+    if (normalized.contains('sync') || normalized.contains('repair') || normalized.contains('align') ||
+        normalized.contains('timing edit')) return 'synchronized';
     return 'generated';
   }
 

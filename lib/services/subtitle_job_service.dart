@@ -14,6 +14,7 @@ import 'subtitle_ai_service.dart';
 import 'subtitle_placement_evidence.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
+import 'subtitle_playback_transcription_service.dart';
 
 enum SubtitleJobState { queued, running, paused, completed, cancelled, failed }
 
@@ -359,6 +360,8 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     _pumping = true;
     try {
       while (_foreground) {
+        final live = SubtitlePlaybackTranscriptionService.instance;
+        if (live.isStarting || live.isRunning || live.hasActiveSession) break;
         SubtitleJob? selected;
         for (final job in List<SubtitleJob>.of(_jobs)) {
           if (job.state != SubtitleJobState.queued) continue;

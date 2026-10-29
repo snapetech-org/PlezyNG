@@ -265,6 +265,7 @@ final class SubtitleAiService {
         endMs: rangeEndMs,
         translateToEnglish: translateToEnglish,
         allowEmpty: allowEmpty,
+        numThreads: numThreads,
         languageCode: languageOverride,
         onProgress: onProgress,
       );

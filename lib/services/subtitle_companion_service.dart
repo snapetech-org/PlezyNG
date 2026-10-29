@@ -55,6 +55,11 @@ final class SubtitleCompanionService {
     }
     final key = _key(profileId);
     if (!remember) {
+      final settings = await SettingsService.getInstance();
+      if (settings.prefs.containsKey(key)) {
+        await CredentialKeyStore.write(key, '');
+        await settings.prefs.remove(key);
+      }
       _sessionPairings[key] = (uri, token);
       return;
     }
@@ -247,11 +252,13 @@ final class SubtitleCompanionService {
     }
     final warnings = (data['warnings'] as List? ?? const []).whereType<String>().take(100)
         .map((w) => w.length <= 4000 ? w : w.substring(0, 4000)).toList();
-    warnings.add('Companion ${data['runtimeDevice']}; per-operation placement is unverified. '
-        'Preprocessing: ${data['preprocessing']}.');
+    String label(Object? value, int bound, String fallback) => value is String && value.length <= bound ? value : fallback;
+    final runtime = label(data['runtimeDevice'], 256, 'unreported');
+    warnings.add('Companion $runtime; per-operation placement is unverified. '
+        'Preprocessing: ${label(data['preprocessing'], 120, 'unreported')}.');
     return SubtitleCompanionResult(cues: List.unmodifiable(cues), wordTimings: List.unmodifiable(words),
-      language: data['language'] as String? ?? 'unknown', warnings: warnings,
-      runtimeDevice: data['runtimeDevice'] as String? ?? 'unreported', cpuFallback: data['cpuFallback'] == true);
+      language: label(data['language'], 24, 'unknown'), warnings: warnings,
+      runtimeDevice: runtime, cpuFallback: data['cpuFallback'] == true);
   }
 
   void close() {

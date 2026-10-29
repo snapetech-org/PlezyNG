@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -32,6 +33,11 @@ abstract final class SubtitleArchiveImporter {
   static const int maximumCandidates = 256;
   static const int maximumMemberBytes = 32 * 1024 * 1024;
   static const int maximumCandidateBytes = 48 * 1024 * 1024;
+  static const _tizenBuild = bool.fromEnvironment('PLEZY_TIZEN');
+  static const _webOsBuild = bool.fromEnvironment('PLEZY_WEBOS');
+  static bool get supportsNative7Zip =>
+      !_tizenBuild && !_webOsBuild &&
+      (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
 
   static Future<Uint8List> readPickedArchive(PlatformFile file) async {
     if (file.size <= 0 || file.size > maximumArchiveBytes) {
@@ -74,10 +80,132 @@ abstract final class SubtitleArchiveImporter {
     return normalized.endsWith('.zip') ||
         normalized.endsWith('.tar') ||
         normalized.endsWith('.tar.gz') ||
-        normalized.endsWith('.tgz');
+        normalized.endsWith('.tgz') || (supportsNative7Zip && normalized.endsWith('.7z'));
   }
 
   static bool isLargeArchiveName(String fileName) => isSupportedArchiveName(fileName);
+
+  static Future<SubtitleArchiveDocument> openAsync(Uint8List bytes, {
+    required String fileName, required Set<String> supportedExtensions,
+  }) async {
+    if (!fileName.toLowerCase().endsWith('.7z')) {
+      return open(bytes, fileName: fileName, supportedExtensions: supportedExtensions);
+    }
+    if (!supportsNative7Zip) throw UnsupportedError('7z import needs the desktop 7-Zip runtime.');
+    if (bytes.length < 32 || bytes.length > maximumArchiveBytes ||
+        !List.generate(6, (i) => bytes[i]).asMap().entries.every((e) => e.value == const [0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c][e.key])) {
+      throw const FormatException('Choose a bounded 7z subtitle archive.');
+    }
+    final temp = await getTemporaryDirectory();
+    final directory = await Directory(p.join(temp.path, 'subtitle_7z_')).createTemp();
+    final elapsed = Stopwatch()..start();
+    try {
+      final input = File(p.join(directory.path, 'input.7z'));
+      await input.writeAsBytes(bytes, flush: true);
+      final listingBytes = await _run7Zip(['l', '-slt', '-sccUTF-8', '--', input.path], 4 * 1024 * 1024);
+      final listing = utf8.decode(listingBytes, allowMalformed: false).replaceAll('\r\n', '\n');
+      final split = listing.indexOf('\n----------\n');
+      if (split < 0 || !listing.substring(0, split).contains('Type = 7z')) {
+        throw const FormatException('The 7-Zip runtime did not return a valid 7z member listing.');
+      }
+      final records = <Map<String, String>>[];
+      var record = <String, String>{};
+      void flush() {
+        if (record.isEmpty) return;
+        records.add(record);
+        record = {};
+        if (records.length > maximumEntries) throw const FormatException('7z contains too many entries.');
+      }
+      for (final line in listing.substring(split + 12).split('\n')) {
+        if (line.isEmpty) { flush(); continue; }
+        final separator = line.indexOf(' = ');
+        if (separator <= 0) throw const FormatException('Ambiguous 7z member metadata.');
+        final key = line.substring(0, separator), value = line.substring(separator + 3);
+        if (record.containsKey(key)) throw const FormatException('Duplicate 7z metadata key.');
+        record[key] = value;
+      }
+      flush();
+      final names = <String>{};
+      final supported = supportedExtensions.map((e) => e.replaceFirst(RegExp(r'^\.'), '').toLowerCase()).toSet();
+      final candidates = <(String, int)>[];
+      var expanded = 0;
+      for (final entry in records) {
+        final name = _validateEntryName(entry['Path'] ?? '');
+        if (name.length > 1024 || name.contains(RegExp(r'[\r\n\x00-\x1f]')) || !names.add(name.toLowerCase())) {
+          throw const FormatException('7z contains unsafe or duplicate member names.');
+        }
+        if (entry.containsKey('Symbolic Link') || entry.containsKey('Hard Link') ||
+            RegExp(r'(^|\s)l[rwx-]{9}').hasMatch(entry['Attributes'] ?? '') || entry['Encrypted'] == '+') {
+          throw const FormatException('Encrypted or linked 7z members are not supported.');
+        }
+        if (entry['Folder'] == '+' || (entry['Attributes'] ?? '').startsWith('D')) continue;
+        final size = int.tryParse(entry['Size'] ?? '');
+        if (size == null || size < 0 || size > maximumMemberBytes) throw const FormatException('7z member exceeds 32 MiB.');
+        expanded += size;
+        if (expanded > maximumExpandedArchiveBytes) throw const FormatException('7z expanded data exceeds 64 MiB.');
+        // Refuse excessive dictionary declarations before starting extraction.
+        final method = entry['Method'] ?? '';
+        if (method != 'Copy' && !RegExp(r'\bLZMA2?:').hasMatch(method)) {
+          throw const FormatException('7z subtitle imports support Copy and LZMA/LZMA2 compression only.');
+        }
+        for (final match in RegExp(r'LZMA2?:(\d+)([kKmMgG]?)').allMatches(method)) {
+          final value = int.parse(match.group(1)!);
+          final unit = match.group(2)!.toLowerCase();
+          final tooLarge = unit.isEmpty ? value > 26 : unit == 'k' ? value > 65536 : unit == 'm' ? value > 64 : true;
+          if (tooLarge) throw const FormatException('7z dictionary exceeds the 64 MiB import policy.');
+        }
+        final extension = p.extension(name).replaceFirst('.', '').toLowerCase();
+        if (size > 0 && (supported.contains(extension) || extension == 'sub' && supported.contains('idx'))) {
+          candidates.add((name, size));
+          if (candidates.length > maximumCandidates * 2) throw const FormatException('Too many 7z subtitle candidates.');
+        }
+      }
+      final archive = Archive();
+      for (final candidate in candidates) {
+        if (elapsed.elapsed > const Duration(minutes: 2)) throw const FormatException('7z candidate inspection exceeded its total time budget.');
+        final content = await _run7Zip(['x', '-so', '-spd', '-mmt2', '-sccUTF-8', '--', input.path, candidate.$1], candidate.$2);
+        if (content.length != candidate.$2) throw const FormatException('7z member size changed during extraction.');
+        archive.addFile(ArchiveFile(candidate.$1, content.length, content));
+      }
+      return _documentForArchive(archive, bytes, supportedExtensions);
+    } finally { if (await directory.exists()) await directory.delete(recursive: true); }
+  }
+
+  static Future<Uint8List> _run7Zip(List<String> arguments, int bound) async {
+    final configured = Platform.environment['PLEZY_7ZIP']?.trim();
+    Process? process;
+    for (final executable in configured?.isNotEmpty == true ? [configured!] : ['7zz', '7z']) {
+      try { process = await Process.start(executable, arguments, runInShell: false); break; }
+      on ProcessException { continue; }
+    }
+    if (process == null) throw UnsupportedError('Install the official 7-Zip console runtime or set PLEZY_7ZIP to its executable.');
+    final child = process;
+    var timedOut = false;
+    final timer = Timer(const Duration(seconds: 45), () { timedOut = true; child.kill(ProcessSignal.sigkill); });
+    await child.stdin.close();
+    final stderrDone = child.stderr.drain<void>();
+    try {
+      final output = BytesBuilder(copy: false);
+      var length = 0;
+      await for (final block in child.stdout) {
+        length += block.length;
+        if (length > bound) {
+          child.kill(ProcessSignal.sigkill);
+          throw const FormatException('7z output exceeded its declared size bound.');
+        }
+        output.add(block);
+      }
+      final exit = await child.exitCode;
+      await stderrDone;
+      if (timedOut || exit != 0) throw const FormatException('7z import failed, was encrypted, or exceeded its time limit.');
+      return output.takeBytes();
+    } finally {
+      timer.cancel();
+      child.kill(ProcessSignal.sigkill);
+      await child.exitCode;
+      await stderrDone;
+    }
+  }
 
   static SubtitleArchiveDocument open(
     Uint8List bytes, {

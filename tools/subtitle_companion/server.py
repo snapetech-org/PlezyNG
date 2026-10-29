@@ -321,6 +321,7 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(404, {"error": "not_found"})
             return
         identifier, action = match.groups()
+        completed_result = None
         with store.lock:
             job = store.jobs.get(identifier)
             if job is None or job["scope"] != scope:
@@ -353,8 +354,7 @@ class Handler(BaseHTTPRequestHandler):
             elif action == "result" and self.command == "GET":
                 if job["state"] != "completed":
                     raise ValueError("result_not_ready")
-                self.reply(200, read_json(folder / "result.json", MAX_RESULT))
-                return
+                completed_result = read_json(folder / "result.json", MAX_RESULT)
             elif action is None and self.command == "GET":
                 self.reply(200, store.public(job))
                 return
@@ -368,6 +368,11 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 self.reply(405, {"error": "method_not_allowed"})
                 return
+        if completed_result is not None:
+            # A slow result download must not hold the queue lock and delay
+            # another client's cancellation request.
+            self.reply(200, completed_result)
+            return
         # A slow upload must not hold the queue lock or block cancellation.
         temporary = folder / "audio.part"
         try:

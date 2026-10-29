@@ -53,19 +53,19 @@ Map<String, SubtitleCue> _subtitleCuesByStableId(List<SubtitleCue> cues) {
 
 void _requireSubtitleCueIdentityPreserved(List<SubtitleCue> source, List<SubtitleCue> translated) {
   if (source.length != translated.length) {
-    throw const StateError('Translation changed the cue count; no synchronization was applied.');
+    throw const StateError('Translation changed the cue count; no output was attached.');
   }
   final sourceById = _subtitleCuesByStableId(source);
   final translatedById = _subtitleCuesByStableId(translated);
   if (sourceById.length != translatedById.length) {
-    throw const StateError('Translation changed cue identities; no synchronization was applied.');
+    throw const StateError('Translation changed cue identities; no output was attached.');
   }
   for (final entry in sourceById.entries) {
     final translatedCue = translatedById[entry.key];
     if (translatedCue == null ||
         translatedCue.startMs != entry.value.startMs ||
         translatedCue.endMs != entry.value.endMs) {
-      throw const StateError('Translation changed cue identity or timing; no synchronization was applied.');
+      throw const StateError('Translation changed cue identity or timing; no output was attached.');
     }
   }
 }
@@ -1481,16 +1481,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         if (mounted) setState(() => _status = 'Translating cue $completed of $total on this device…');
       },
     );
-    if (result.cues.length != selected.$1.length) {
-      throw StateError('Translation changed the cue count. No output was attached.');
-    }
-    for (var index = 0; index < result.cues.length; index++) {
-      final sourceCue = selected.$1[index];
-      final translatedCue = result.cues[index];
-      if (translatedCue.startMs != sourceCue.startMs || translatedCue.endMs != sourceCue.endMs) {
-        throw StateError('Translation changed cue timing at cue ${sourceCue.index}. No output was attached.');
-      }
-    }
+    _requireSubtitleCueIdentityPreserved(selected.$1, result.cues);
     if (!await _writeAndApply(
       result.cues,
       operationLabel: 'Translated subtitles',
@@ -1831,7 +1822,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Glossary check found ${reviewWarnings.length} possible mismatch${reviewWarnings.length == 1 ? '' : 'es'}. Review these cues before attaching.',
+                          'Translation review found ${reviewWarnings.length} possible mismatch${reviewWarnings.length == 1 ? '' : 'es'} in glossary terms or numbers. Review these cues before attaching.',
                           style: Theme.of(context).textTheme.labelMedium,
                         ),
                         const SizedBox(height: 4),

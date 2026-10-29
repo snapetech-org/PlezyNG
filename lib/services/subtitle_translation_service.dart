@@ -35,6 +35,7 @@ final class SubtitleGlossaryRevision {
 
 abstract final class SubtitleTranslationService {
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
+  static final RegExp _numericTokenPattern = RegExp(r'\d+(?:[.,:/-]\d+)*');
 
   static bool get mobilePlatformSupported => !kIsWeb && !_tvOsBuild && (Platform.isAndroid || Platform.isIOS);
 
@@ -461,7 +462,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
         }
         final machineText = await _translateMarkupAware(translator, protected.text);
         final translatedText = _restoreGlossary(machineText, protected.markers);
-        _collectGlossaryWarnings(source, translatedText, glossaryChecks, qualityWarnings);
+        _collectTranslationWarnings(source, translatedText, glossaryChecks, qualityWarnings);
         if (translatedText.trim().isEmpty) {
           throw FormatException('Translation returned empty text for cue ${source.index}.');
         }
@@ -593,7 +594,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
         output.write(piece.$1 ? translatedText[int.parse(piece.$2)] : piece.$2);
       }
       final restoredText = _restoreGlossary(output.toString(), protectedCues[cueIndex].markers);
-      _collectGlossaryWarnings(source, restoredText, glossaryChecks, qualityWarnings);
+      _collectTranslationWarnings(source, restoredText, glossaryChecks, qualityWarnings);
       if (restoredText.trim().isEmpty) {
         throw FormatException('Local translation returned invalid text for cue ${source.index}.');
       }
@@ -683,19 +684,43 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     }),
   );
 
-  static void _collectGlossaryWarnings(
+  static void _collectTranslationWarnings(
     SubtitleCue source,
     String translatedText,
     List<_GlossaryTermCheck> checks,
     List<String> warnings,
   ) {
     for (final check in checks) {
-      if (warnings.length >= 100) return;
+      if (warnings.length >= 100) break;
       if (check.sourcePattern.hasMatch(source.text) && !check.targetPattern.hasMatch(translatedText)) {
         warnings.add(
           'Cue ${source.index}: “${check.source}” may be missing its glossary translation “${check.target}”.',
         );
       }
+    }
+    if (warnings.length >= 100) return;
+
+    final translatedNumberCounts = <String, int>{};
+    for (final match in _numericTokenPattern.allMatches(translatedText)) {
+      final token = match.group(0)!;
+      translatedNumberCounts.update(token, (count) => count + 1, ifAbsent: () => 1);
+    }
+    final missingNumbers = <String>[];
+    for (final match in _numericTokenPattern.allMatches(source.text)) {
+      final token = match.group(0)!;
+      final remainingCount = translatedNumberCounts[token] ?? 0;
+      if (remainingCount == 0) {
+        missingNumbers.add(token);
+      } else {
+        translatedNumberCounts[token] = remainingCount - 1;
+      }
+    }
+    if (missingNumbers.isNotEmpty) {
+      final examples = missingNumbers.take(3).join(', ');
+      final remainder = missingNumbers.length > 3 ? ' (${missingNumbers.length - 3} more)' : '';
+      warnings.add(
+        'Cue ${source.index}: source number(s) $examples are missing or changed$remainder; verify quantities before attaching.',
+      );
     }
   }
 

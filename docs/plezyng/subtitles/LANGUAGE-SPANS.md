@@ -8,6 +8,10 @@ two/three-letter language codes, optional four-letter script and optional
 two-letter or three-digit region. Registry validity and actual language are not
 inferred. The track's overall language is unchanged.
 
+The annotation button, dialog, guidance and validation messages use the app's
+centralized Slang strings with an explicit English fallback. No translator
+review has been recorded yet.
+
 The parser limits a cue to 4000 characters, 256 markup tokens, 64 annotations and
 eight nested language levels. Unsupported/malformed annotations fall back to
 readable plain text in the overlay. Horizontal text spans carry both glyph

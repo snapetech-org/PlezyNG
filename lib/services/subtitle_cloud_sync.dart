@@ -20,7 +20,8 @@ class SubtitleSyncChoice {
   String get device => version.actor?.substring(0, 8) ?? 'combined';
 }
 
-/// Explicit, profile/item-paired synchronization of reviewed subtitle content.
+/// Explicit, profile/item-paired synchronization of reviewed subtitles and
+/// portable caption defaults.
 /// Reuses the existing AES-GCM envelope, causal register and source transports.
 /// Server IDs, source URLs, account credentials and media bytes are never sent.
 /// There is no background selection, playback mutation, or wall-clock winner.
@@ -151,7 +152,7 @@ class SubtitleCloudSync {
   /// Publish only a user-selected reviewed revision. Pull alone can propagate
   /// already known causal metadata but never imports or selects a caption.
   Future<List<SubtitleSyncChoice>> synchronize({SubtitleRevision? publish, SubtitlePortableDefaults? publishDefaults}) => _exclusive(() async {
-    if (defaults && publish != null || !defaults && publishDefaults != null) {
+    if ((defaults && publish != null) || (!defaults && publishDefaults != null)) {
       throw ArgumentError('The content does not match this subtitle synchronization channel');
     }
     final cache = await _load(), device = await _device();

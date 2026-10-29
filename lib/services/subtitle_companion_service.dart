@@ -65,6 +65,7 @@ final class SubtitleCompanionService {
   static final _id = RegExp(r'^[0-9a-f]{32}$');
   static const maximumInputBytes = 1024 * 1024 * 1024;
   static const maximumMicrophoneArrayBytes = 100 * 1024 * 1024;
+  static const maximumVocalNoteBytes = 4 * 1024 * 1024;
   static const textTasks = {'translate', 'translate_model', 'script_convert', 'reading', 'dubbing'};
   static final Map<String, (Uri, String)> _sessionPairings = {};
 
@@ -209,6 +210,7 @@ final class SubtitleCompanionService {
     String? translationProviderFingerprint, String? visionProviderFingerprint, Map<String, String> glossary = const {},
     Map<String, List<String>> lyricSyllables = const {}, bool lyricPitchEvidence = false,
     Map<String, dynamic>? microphoneArray,
+    bool isolatedLeadVocal = false,
     bool sceneObjectTracking = false, String? sceneDetectorFingerprint,
     List<double> crop = const [0, 0.65, 1, 0.35],
     void Function(String jobId)? onCreated, void Function(int sent, int total)? onUpload,
@@ -222,6 +224,12 @@ final class SubtitleCompanionService {
     if (sceneMotionTracking && caps['sceneMotionTracking'] != true) throw UnsupportedError('The companion has not installed local motion tracking');
     if (lyricSyllables.isNotEmpty && caps['lyricSyllables'] != true) throw UnsupportedError('Update the companion for supplied lyric syllables');
     if (lyricPitchEvidence && caps['lyricPitchEvidence'] != true) throw UnsupportedError('The companion has not installed lyric pitch analysis');
+    if (task == 'vocal_notes' && (caps['isolatedVocalNoteProposals'] != true || !isolatedLeadVocal ||
+        cues.isEmpty || cues.length > 120 || cues.any((cue) => cue.endMs > 120000 || cue.endMs - cue.startMs > 12000) ||
+        cues.fold<int>(0, (total, cue) => total + cue.endMs - cue.startMs) > 120000 || itemTimeline || timelineOffsetMs != 0 ||
+        preprocess || audioTrack != 0)) {
+      throw const FormatException('Solo-vocal notes need a declared isolated source and 1–120 file-clock cues, up to 12 seconds each and two minutes total.');
+    }
     if (task == 'sound_localize' && (caps['microphoneArrayLocalization'] != true || microphoneArray == null ||
         cues.isEmpty || cues.length > 60 || cues.any((cue) => cue.endMs > 120000 || (cue.endMs - cue.startMs) > 12000) ||
         cues.fold<int>(0, (total, cue) => total + (cue.endMs - cue.startMs)) > 120000 || itemTimeline || timelineOffsetMs != 0 ||
@@ -240,10 +248,12 @@ final class SubtitleCompanionService {
     if (soundStereoEvidence && caps['soundStereoEvidence'] != true) throw UnsupportedError('Update the companion for stereo evidence');
     final input = mediaPath == null ? null : File(mediaPath);
     final length = input == null ? 0 : await input.length();
-    final inputLimit = task == 'sound_localize' ? maximumMicrophoneArrayBytes : maximumInputBytes;
+    final inputLimit = task == 'sound_localize' ? maximumMicrophoneArrayBytes
+        : task == 'vocal_notes' ? maximumVocalNoteBytes : maximumInputBytes;
     if (length > inputLimit || (!textTasks.contains(task) && length <= 0) || (textTasks.contains(task) && length != 0)) {
       throw FormatException(task == 'sound_localize'
           ? 'Choose an original multichannel WAV no larger than 100 MiB.'
+          : task == 'vocal_notes' ? 'Choose an isolated mono vocal WAV no larger than 4 MiB.'
           : 'Choose a media file up to 1 GiB and within the task duration limit.');
     }
     final audioDigest = input == null ? sha256.convert(const <int>[]).toString() : (await sha256.bind(input.openRead()).first).toString();
@@ -254,6 +264,7 @@ final class SubtitleCompanionService {
       'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs, 'duckRatio': duckRatio, 'voiceFingerprint': voiceFingerprint,
       'lyricSyllables': lyricSyllables, 'lyricPitchEvidence': lyricPitchEvidence,
       'microphoneArray': microphoneArray,
+      'isolatedLeadVocal': isolatedLeadVocal,
       'sceneObjectTracking': sceneObjectTracking, 'sceneDetectorFingerprint': sceneDetectorFingerprint,
       'translationMode': translationMode, 'scriptConversion': scriptConversion, 'readingMode': readingMode,
       'translationProviderFingerprint': translationProviderFingerprint, 'visionProviderFingerprint': visionProviderFingerprint, 'glossary': glossary,
@@ -300,7 +311,7 @@ final class SubtitleCompanionService {
     }
     final evidence = <String, Object?>{
       for (final key in const ['coverageEvidence', 'ensembleEvidence', 'soundEvidence', 'lyricTimingEvidence', 'lyricSyllableEvidence', 'lyricPitchEvidence',
-        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'soundLocalizationEvidence', 'synthesisEvidence'])
+        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'soundLocalizationEvidence', 'vocalNoteEvidence', 'synthesisEvidence'])
         if (data[key] != null) key: data[key],
     };
     final provenance = <String, Object?>{

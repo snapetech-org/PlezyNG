@@ -621,3 +621,12 @@ bounded, unqualified far-field direction evidence without editing captions.
 It is separate from stereo soundtrack evidence. The optional dependency is
 `requirements-array.txt`; no installation or qualification was run here.
 See [microphone-array bounds and calibration format](../../docs/plezyng/subtitles/MICROPHONE-ARRAY.md).
+
+## Isolated solo-vocal note review
+
+`vocal_notes` uses local librosa pYIN/YIN consistency on an explicitly declared
+isolated solo vocal, with no automatic mixing, resampling or source substitution.
+Input is mono 16 kHz PCM16 WAV, up to two minutes / 4 MiB. Cues retain their
+wording and timing. The app offers individual note selection, corrections and
+separate digest-bound reviewed JSON export; no proposal is selected by default.
+See [bounds, human review and remaining qualification](../../docs/plezyng/subtitles/VOCAL-NOTES.md).

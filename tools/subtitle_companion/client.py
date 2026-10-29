@@ -79,6 +79,8 @@ class CompanionClient:
     def create(self, *, task, identity, media=None, **options):
         if task == 'sound_localize' and self.capabilities().get('microphoneArrayLocalization') is not True:
             raise ValueError('companion_microphone_array_localization_unavailable')
+        if task == 'vocal_notes' and self.capabilities().get('isolatedVocalNoteProposals') is not True:
+            raise ValueError('companion_solo_vocal_note_proposals_unavailable')
         if options.get('sceneObjectTracking', False) or task == 'scene_track':
             caps = self.capabilities()
             detector = caps.get('sceneObjectDetector')
@@ -109,8 +111,9 @@ class CompanionClient:
         size = 0
         if path:
             size = path.stat().st_size
-            if not 0 < size <= 1024**3:
-                raise ValueError("Input exceeds the 1 GiB limit")
+            limit = 100*1024**2 if task == 'sound_localize' else 4*1024**2 if task == 'vocal_notes' else 1024**3
+            if not 0 < size <= limit:
+                raise ValueError(f"Input exceeds the {limit//1024**2} MiB task limit")
             with path.open("rb") as stream:
                 for block in iter(lambda: stream.read(1024 * 1024), b""):
                     digest.update(block)

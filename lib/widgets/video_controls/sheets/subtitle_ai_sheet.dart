@@ -893,7 +893,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         throw const FormatException('The companion did not declare its translation destination.');
       }
       List<SubtitleCue> cues = const [];
-      if (task == 'align' || task == 'singing_align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || task == 'scene_track' || task == 'sound_localize' || textTask) {
+      if (task == 'align' || task == 'singing_align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || task == 'scene_track' || task == 'sound_localize' || task == 'vocal_notes' || textTask) {
         final selected = await _pickSubtitleCues();
         if (selected == null || !mounted) return;
         cues = selected.$1;
@@ -927,14 +927,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (!textTask && !useCurrentSource) {
         if (task == 'bitmap_ocr' && mounted) setState(() => _status = 'Choose PGS SUP, a video container, or a ZIP containing one matching VobSub IDX/SUB pair.');
         final selected = await FilePickerService.instance.pickFiles(
-          type: task == 'sound_localize' ? FileType.custom : FileType.any,
-          allowedExtensions: task == 'sound_localize' ? const ['wav'] : null);
+          type: task == 'sound_localize' || task == 'vocal_notes' ? FileType.custom : FileType.any,
+          allowedExtensions: task == 'sound_localize' || task == 'vocal_notes' ? const ['wav'] : null);
         if (selected == null || selected.files.isEmpty || !mounted) return;
         final file = selected.files.first;
         final maximumInputBytes = task == 'sound_localize'
-            ? SubtitleCompanionService.maximumMicrophoneArrayBytes : SubtitleCompanionService.maximumInputBytes;
+            ? SubtitleCompanionService.maximumMicrophoneArrayBytes
+            : task == 'vocal_notes' ? SubtitleCompanionService.maximumVocalNoteBytes : SubtitleCompanionService.maximumInputBytes;
         if (file.size <= 0 || file.size > maximumInputBytes) throw FormatException(task == 'sound_localize'
             ? 'Choose an original multichannel WAV no larger than 100 MiB.'
+            : task == 'vocal_notes' ? 'Choose an isolated mono vocal WAV no larger than 4 MiB.'
             : 'Choose media up to 1 GiB and within the task duration limit.');
         path = file.path;
         if (path == null) {
@@ -957,6 +959,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var sceneObjectTracking = false;
       var lyricSyllables = <String, List<String>>{};
       var lyricPitchEvidence = false;
+      var isolatedLeadVocal = false;
       var duckRatio = .25;
       var track = 0;
       var subtitleTrack = 0, bitmapTail = 2000;
@@ -1074,7 +1077,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             if (task == 'diarize') const Text('Speaker numbers are anonymous clusters and can be wrong. The host may require separately licensed model access.'),
             if (task == 'sound_localize') const Text('All original WAV channels are analyzed together, without resampling or preprocessing. '
               'At most 60 file-clock cues, 12 seconds per cue and two minutes total. Geometry and capture quality are checked on the host; there is no stereo-mix fallback.'),
-            if (path != null && task != 'ocr' && task != 'bitmap_ocr' && task != 'sound_localize') ...[
+            if (task == 'vocal_notes') CheckboxListTile(value: isolatedLeadVocal,
+              onChanged: (v) => update(() => isolatedLeadVocal = v == true),
+              title: const Text('This is an isolated solo vocal on its original file clock.'),
+              subtitle: const Text('Mono 16 kHz PCM16 WAV, up to two minutes; matching file-clock cues, at most 12 seconds each. '
+                'No accompaniment, harmony, time stretching or automatic source substitution. Note proposals need individual review and export; lyrics stay unchanged.')),
+            if (path != null && task != 'ocr' && task != 'bitmap_ocr' && task != 'sound_localize' && task != 'vocal_notes') ...[
               DropdownButtonFormField<int>(initialValue: track, decoration: const InputDecoration(labelText: 'Audio stream (zero based)'),
                 items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text('Audio stream $i'))),
                 onChanged: (value) => update(() => track = value ?? 0)),
@@ -1101,7 +1109,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             Text('Host backends: ${(capabilities['tasks'] as List).join(', ')}. Hardware placement is unverified.'),
           ]))),
           actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(task == 'translate_model' ? 'Forward text and translate' : 'Send and process'))],
+            FilledButton(onPressed: task == 'vocal_notes' && !isolatedLeadVocal ? null : () => Navigator.pop(dialogContext, true),
+              child: Text(task == 'translate_model' ? 'Forward text and translate' : 'Send and process'))],
         ),
       ));
       if (accepted != true || !mounted) return;
@@ -1116,6 +1125,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         lyricSyllables: lyricSyllables, lyricPitchEvidence: lyricPitchEvidence,
         microphoneArray: microphoneArray,
+        isolatedLeadVocal: isolatedLeadVocal,
         sceneObjectTracking: sceneObjectTracking,
         sceneDetectorFingerprint: sceneObjectTracking || task == 'scene_track'
             ? (capabilities['sceneObjectDetector'] as Map?)?['fingerprint'] as String? : null,
@@ -4089,6 +4099,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('signs', aiCopy.companionSigns),
             ('align', aiCopy.companionAlign),
             ('singing_align', aiCopy.companionSingingAlign),
+            ('vocal_notes', 'Review isolated solo-vocal notes (experimental)'),
             ('diarize', aiCopy.companionDiarize),
             ('translate', aiCopy.companionTranslate),
             ('translate_model', aiCopy.companionTranslateModel),

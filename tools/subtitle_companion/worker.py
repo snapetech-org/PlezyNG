@@ -341,6 +341,10 @@ def main():
         from microphone_array import run
         result = run(folder, job, progress)
         device = 'numpy-cpu-native-channel-pcm'
+    elif task == 'vocal_notes':
+        from vocal_notes import run
+        result = run(folder, job, progress)
+        device = 'librosa-pyin-yin-cpu'
     elif task in {"ocr", "ocr_auto", "signs"}:
         result = ocr(folder, job)
         device = "tesseract-cpu"

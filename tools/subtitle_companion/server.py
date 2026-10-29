@@ -30,6 +30,7 @@ from text_adapters import TEXT_TASKS, SCRIPT_MODES, MODES, capabilities as trans
 from research import MEDIA_TASKS
 from lyric_research import validate_syllables
 from microphone_array import MAX_INPUT_BYTES as MAX_ARRAY_INPUT, validate as validate_microphone_array
+from vocal_notes import MAX_INPUT_BYTES as MAX_VOCAL_INPUT, validate as validate_vocal_notes
 from dubbing import voice_config, capabilities as synthesis_capabilities
 from visual_research import vision_capabilities
 from scene_objects import capabilities as scene_object_capabilities
@@ -121,7 +122,7 @@ class Store:
             if not isinstance(value.get(key), str) or not HEX.fullmatch(value[key]):
                 raise ValueError("invalid_identity")
         size = value.get("audioBytes", 0)
-        input_limit = MAX_ARRAY_INPUT if task == 'sound_localize' else MAX_INPUT
+        input_limit = MAX_ARRAY_INPUT if task == 'sound_localize' else MAX_VOCAL_INPUT if task == 'vocal_notes' else MAX_INPUT
         if type(size) is not int or size < 0 or size > input_limit or (task not in TEXT_TASKS and size < 1) or (task in TEXT_TASKS and size != 0):
             raise ValueError("input_limit")
         language = value.get("language")
@@ -135,7 +136,7 @@ class Store:
         if task in {"align", "singing_align"} and value.get("spokenLanguage") != language:
             raise ValueError("alignment_requires_matching_spoken_language")
         cues = value.get("cues", [])
-        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "singing_align", "completeness", "dub_mix", "scene_review", "scene_track", "sound_localize"} | TEXT_TASKS and not cues):
+        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "singing_align", "completeness", "dub_mix", "scene_review", "scene_track", "sound_localize", "vocal_notes"} | TEXT_TASKS and not cues):
             raise ValueError("cue_limit")
         ids = set()
         for cue in cues:
@@ -189,6 +190,12 @@ class Store:
             microphone_array = validate_microphone_array(value.get('microphoneArray'), cues)
         elif value.get('microphoneArray') is not None:
             raise ValueError('microphone_calibration_requires_array_task')
+        isolated_vocal = value.get('isolatedLeadVocal', False)
+        if type(isolated_vocal) is not bool or isolated_vocal and task != 'vocal_notes':
+            raise ValueError('isolated_vocal_declaration_requires_note_task')
+        if task == 'vocal_notes':
+            if importlib.util.find_spec('librosa') is None: raise ValueError('vocal_note_runtime_unavailable')
+            validate_vocal_notes(value)
         subtitle_track = value.get("subtitleTrack", 0)
         if type(subtitle_track) is not int or not 0 <= subtitle_track <= 63:
             raise ValueError("invalid_subtitle_track")
@@ -266,6 +273,7 @@ class Store:
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "lyricSyllables": lyric_syllables, "lyricPitchEvidence": lyric_pitch,
                          "microphoneArray": microphone_array,
+                         "isolatedLeadVocal": isolated_vocal,
                          "sceneObjectTracking": object_tracking, "sceneDetectorFingerprint": object_fingerprint,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
                          "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions, "sceneAudioEvidence": audio_evidence, "sceneMotionTracking": motion_tracking,
@@ -452,6 +460,7 @@ class Handler(BaseHTTPRequestHandler):
             installed = lambda module: importlib.util.find_spec(module) is not None
             tasks = []
             if installed('numpy'): tasks.append('sound_localize')
+            if installed('numpy') and installed('librosa'): tasks.append('vocal_notes')
             if installed("faster_whisper") and shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
                 tasks.extend(["transcribe", "completeness"])
                 if os.environ.get("PLEZY_SECOND_WHISPER_MODEL"):
@@ -502,6 +511,7 @@ class Handler(BaseHTTPRequestHandler):
                              "lyricSyllables": 'singing_align' in tasks,
                              "lyricPitchEvidence": 'singing_align' in tasks and installed('librosa'),
                              "microphoneArrayLocalization": 'sound_localize' in tasks,
+                             "isolatedVocalNoteProposals": 'vocal_notes' in tasks,
                              "modelDownloadsAllowed": os.environ.get("PLEZY_ALLOW_MODEL_DOWNLOADS") == "1",
                              "visionProvider": vision, "sceneAudioEvidence": vision is not None and vision['audioEvidence'], "synthesisVoice": synthesis, "translationProvider": translation, "scriptConversions": list(SCRIPT_MODES), "readingModes": ["hiragana", "hepburn", "ruby"],
                              "placementEvidence": "unverified", "mediaAccess": "explicit-file-upload-only"})
@@ -581,7 +591,7 @@ class Handler(BaseHTTPRequestHandler):
             if action == "audio" and self.command == "PUT":
                 if job["state"] not in {"awaiting_audio", "failed"} or identifier in store.processes:
                     raise ValueError("audio_already_staged")
-                input_limit = MAX_ARRAY_INPUT if job["task"] == 'sound_localize' else MAX_INPUT
+                input_limit = MAX_ARRAY_INPUT if job["task"] == 'sound_localize' else MAX_VOCAL_INPUT if job["task"] == 'vocal_notes' else MAX_INPUT
                 if self.length(input_limit) != job["audioBytes"]:
                     raise ValueError("audio_length_mismatch")
                 job["state"] = "uploading"

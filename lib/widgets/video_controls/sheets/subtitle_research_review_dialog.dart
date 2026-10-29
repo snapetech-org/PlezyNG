@@ -9,6 +9,7 @@ import '../../../i18n/strings.g.dart';
 import '../../../services/file_picker_service.dart';
 import '../../../services/subtitle_companion_service.dart';
 import '../../../services/subtitle_overlay_service.dart';
+import 'subtitle_vocal_notes_dialog.dart';
 
 /// Review host observations separately from the later editable caption draft.
 /// Export records the returned baseline, not a claim that the viewer accepted it.
@@ -43,6 +44,7 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
       'sceneAudioEvidence' => copy.sceneAudioEvidence,
       'sceneMotionEvidence' => copy.sceneMotionObservations,
       'sceneObjectEvidence' => copy.sceneObjectObservations,
+      'soundLocalizationEvidence' => copy.soundLocalizationEvidence,
       'synthesisEvidence' => copy.synthesizedLineFit,
       _ => copy.unknownSection(name: key.replaceAllMapped(RegExp(r'([A-Z])'), (m) => ' ${m[1]}')),
     };
@@ -108,6 +110,10 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
       height: (MediaQuery.sizeOf(context).height * .55).clamp(140.0, 520.0).toDouble(),
       child: ListView(children: [
         Text(copy.description),
+        if (result.researchEvidence.containsKey('vocalNoteEvidence')) TextButton(onPressed: _saving ? null : () async {
+          await showSubtitleVocalNoteReview(context, result: result, jobId: widget.jobId,
+            inputDigest: widget.inputDigest, isCurrent: widget.isCurrent);
+        }, child: const Text('Select, correct and export solo-vocal notes')),
         const SizedBox(height: 12),
         Text(copy.clockSummary(clock: result.itemTimeline ? copy.itemTimeline : copy.uploadedFileTimeline,
           digest: widget.inputDigest)),

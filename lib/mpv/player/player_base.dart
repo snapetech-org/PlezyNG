@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart' show listEquals, protected, visibleForT
 import 'package:flutter/services.dart';
 
 import '../../models/audio_channel_limit.dart';
+import '../../services/subtitle_inference_scheduler.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/track_label_builder.dart';
 import '../font_loader.dart';
@@ -303,7 +304,14 @@ abstract class PlayerBase
     _streams = createStreams();
     if (listenToNativeEvents) _setupEventListener();
     _logSubscription = logController.stream.listen(_forwardToAppLogger);
+    SubtitleInferenceScheduler.instance.registerPlayer(this,
+      active: () => !_disposed && state.isActive && state.tracks.video.any((track) => track.id != 'auto' && track.id != 'no'),
+      thermal: () => _disposed ? Future<String?>.value(null) : subtitleInferenceThermalStatus());
   }
+
+  /// Unknown on backends without an OS thermal bridge. No cooling capacity is
+  /// inferred from a missing report.
+  Future<String?> subtitleInferenceThermalStatus() async => null;
 
   void _forwardToAppLogger(PlayerLog log) {
     final message = '[$logPrefix:${log.prefix}] ${log.text}'.trimRight();
@@ -1848,6 +1856,7 @@ abstract class PlayerBase
   Future<void> dispose({bool preserveDisplayMode = false}) async {
     if (_disposed) return;
     _disposed = true;
+    SubtitleInferenceScheduler.instance.unregisterPlayer(this);
 
     final channelName = eventChannel.name;
     if (!_listenToNativeEvents) {

@@ -57,6 +57,7 @@ final class SubtitleJob {
   int _wordCount = 0;
   int _generation = 0;
   bool _audioVerified = false;
+  DateTime? _resourceRetryAfter;
   String _runtime = '';
   bool _fallback = false;
   String _detectedLanguage = 'unknown';
@@ -366,6 +367,7 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
         SubtitleJob? selected;
         for (final job in List<SubtitleJob>.of(_jobs)) {
           if (job.state != SubtitleJobState.queued) continue;
+          if (job._resourceRetryAfter?.isAfter(DateTime.now()) == true) continue;
           if (job.idleOnly && (job._playbackBusy?.call() ?? true)) {
             job._message = 'Waiting for playback to stop (reopen this item to report playback state).';
             continue;
@@ -466,6 +468,12 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
       job._state = job.completedChunks == job.chunkCount ? SubtitleJobState.completed : SubtitleJobState.queued;
       job._message = job._state == SubtitleJobState.completed ? 'All audio windows saved; review before attachment.' : null;
       await _persist(job);
+    } on SubtitleInferenceDeferred catch (error) {
+      if (!current()) return;
+      job._state = SubtitleJobState.queued;
+      job._message = error.reason;
+      job._resourceRetryAfter = DateTime.now().add(const Duration(seconds: 15));
+      try { await _persist(job); } catch (_) {}
     } catch (_) {
       if (!current()) return;
       job._state = SubtitleJobState.failed;

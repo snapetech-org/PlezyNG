@@ -52,6 +52,7 @@ import 'subtitle_import_dialog.dart';
 import 'subtitle_bitmap_review_dialog.dart';
 import 'subtitle_discovery_dialog.dart';
 import 'subtitle_cloud_sync_dialog.dart';
+import 'subtitle_resource_dialog.dart';
 
 /// Reviewable local subtitle operations. The source file is never modified;
 /// every generated, translated, or synchronized result is written to a new
@@ -4061,6 +4062,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             title: const Text('Queue resumable WAV transcription'),
             subtitle: const Text('Checkpointed windows, playhead priority, pause/resume, and power policy'),
             onTap: _busy || !localSpeech || _revisionIdentity == null ? null : () => unawaited(_queueTranscription()),
+          ),
+          FocusableListTile(
+            leading: const AppIcon(Symbols.settings_rounded),
+            title: const Text('Local subtitle resources'),
+            subtitle: const Text('Power, heat, memory pressure and multiview admission controls'),
+            onTap: () => unawaited(showDialog<void>(context: context, builder: (_) => const SubtitleResourceDialog())),
           ),
           FocusableListTile(
             leading: const AppIcon(Symbols.history_rounded),

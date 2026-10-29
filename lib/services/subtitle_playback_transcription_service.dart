@@ -47,6 +47,11 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   String? _audioTrackId;
   bool Function()? _isProfileIdentityCurrent;
   whisper.FlutterWhisper? _session;
+  SubtitleModelLease? _modelLease;
+  String? _resourceStopReason;
+  Future<SubtitleTranscriptionResult?>? _stopping;
+  Completer<void>? _startDone;
+  bool _startCancelled = false;
   Timer? _timer;
   Future<void>? _inferenceFuture;
   bool _running = false;
@@ -131,23 +136,31 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (selectedLanguage != 'auto' && !RegExp(r'^[a-z]{2,3}$').hasMatch(selectedLanguage)) {
       throw ArgumentError.value(languageCode, 'languageCode', 'Use a two or three letter language code or auto.');
     }
-    if (_starting || _running || _session != null) {
+    if (_starting || _running || _session != null || _stopping != null) {
       throw StateError('A live subtitle capture session is already active.');
     }
     if (!await player.subtitlePcmCaptureAvailable()) {
       throw UnsupportedError('This player build does not expose decoded PCM to live subtitles.');
     }
-    if (_starting || _running || _session != null) {
+    if (_starting || _running || _session != null || _stopping != null) {
       throw StateError('A live subtitle capture session is already active.');
     }
 
     _starting = true;
+    _startDone = Completer<void>();
+    _startCancelled = false;
     final startGeneration = player.mediaSessionGeneration;
     final startTimelineGeneration = player.playbackTimelineGeneration;
     final startAudioTrackId = player.subtitlePcmAudioTrackId;
     SubtitleLiveWhisperRuntime? loadedRuntime;
     var captureEnabled = false;
     try {
+      _resourceStopReason = null;
+      bool current() => !_startCancelled && !player.disposed && player.mediaSessionGeneration == startGeneration &&
+          player.playbackTimelineGeneration == startTimelineGeneration &&
+          player.subtitlePcmAudioTrackId == startAudioTrackId && _profileIsCurrent(isProfileIdentityCurrent);
+      _modelLease = await SubtitleInferenceScheduler.instance.reserveModel(this,
+        isCurrent: current, onReleaseRequested: _releaseForResources);
       _setStatus('Loading the local Whisper model…');
       _lastError = null;
       _languageCode = selectedLanguage;
@@ -173,13 +186,15 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _recentTranscript = null;
       liveCaption.value = null;
 
-      loadedRuntime = await SubtitleWhisperCppService.instance.loadLiveSession(
+      loadedRuntime = await SubtitleInferenceScheduler.instance.run(() => SubtitleWhisperCppService.instance.loadLiveSession(
         requestGpu: provider == SubtitleInferenceProvider.desktopGpu,
         onProgress: (phase, received, total) {
           onProgress?.call(phase, received, total);
           _setStatus(phase);
         },
-      );
+      ), priority: SubtitleWorkPriority.playback, modelOwner: this, isCurrent: current);
+      if (_startCancelled) throw StateError('Live subtitle startup was cancelled.');
+      if (_modelLease?.revoked == true) throw SubtitleInferenceDeferred(_resourceStopReason ?? 'Model loading was stopped to release resources.');
       if (player.disposed ||
           player.mediaSessionGeneration != startGeneration ||
           player.playbackTimelineGeneration != startTimelineGeneration ||
@@ -203,6 +218,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         throw StateError('The active profile changed while live capture was starting. Start again.');
       }
 
+      if (_startCancelled) throw StateError('Live subtitle startup was cancelled.');
+      if (_modelLease?.revoked == true) throw SubtitleInferenceDeferred(_resourceStopReason ?? 'Live captions were stopped to release resources.');
       _session = loadedRuntime.session;
       _runtimeProvider = loadedRuntime.runtimeProvider;
       _fellBackToCpu = loadedRuntime.fellBackToCpu;
@@ -226,15 +243,28 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           await player.setSubtitlePcmCaptureEnabled(false);
         } catch (_) {}
       }
-      await loadedRuntime?.session.dispose();
+      try { await loadedRuntime?.session.dispose(); } finally { _modelLease?.release(); _modelLease = null; }
       _setStatus('Could not start live captions: $error');
       rethrow;
     } finally {
       _starting = false;
+      _startDone?.complete(); _startDone = null;
     }
   }
 
-  Future<SubtitleTranscriptionResult?> stop() async {
+  void _releaseForResources(String reason) {
+    _resourceStopReason = reason;
+    if (_starting) return; // The loader checks revocation before enabling PCM.
+    unawaited(stop().then<void>((_) {}, onError: (Object error, StackTrace stack) { _setStatus(reason); }));
+  }
+
+  Future<SubtitleTranscriptionResult?> stop() => _stopping ??= _stop().whenComplete(() => _stopping = null);
+
+  Future<SubtitleTranscriptionResult?> _stop() async {
+    if (_starting) {
+      _startCancelled = true;
+      await _startDone?.future;
+    }
     _timer?.cancel();
     _timer = null;
     final player = _player;
@@ -274,6 +304,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (invalidReason != null) _discardCapturedTimeline();
 
     while (invalidReason == null &&
+        _resourceStopReason == null &&
         _lastError == null &&
         _samples.length >= _windowSamples &&
         _invalidCaptureSessionReason(player) == null) {
@@ -285,6 +316,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       if (invalidReason != null) _discardCapturedTimeline();
     }
     if (invalidReason == null &&
+        _resourceStopReason == null &&
         _lastError == null &&
         _samples.length >= _minimumFinalSamples &&
         _invalidCaptureSessionReason(player) == null) {
@@ -298,7 +330,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (invalidReason == null) _publishTranscript();
     final session = _session;
     _session = null;
-    if (session != null) await session.dispose();
+    try { if (session != null) await session.dispose(); } finally { _modelLease?.release(); _modelLease = null; }
     _player = null;
     _playerGeneration = null;
     _playerTimelineGeneration = null;
@@ -307,6 +339,10 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     liveCaption.value = null;
     _resetPartial();
 
+    if (_resourceStopReason != null) {
+      _setStatus('$_resourceStopReason Completed cues remain available for review.');
+      return _recentTranscript;
+    }
     if (_lastError != null) {
       _setStatus('Capture ended with an inference error: $_lastError');
       throw StateError('Live subtitle transcription failed: $_lastError');
@@ -344,6 +380,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   bool _isCurrentInference(int generation) =>
+      _modelLease?.revoked != true &&
       generation == _audioGeneration &&
       _player?.playbackTimelineGeneration == _playerTimelineGeneration &&
       _invalidCaptureSessionReason(_player) == null;
@@ -622,6 +659,10 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           }
         })
         .catchError((Object error) {
+          if (error is SubtitleInferenceDeferred) {
+            _releaseForResources(error.reason);
+            return;
+          }
           _lastError = error;
           _running = false;
           _timer?.cancel();
@@ -629,6 +670,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           final player = _player;
           if (player != null) unawaited(player.setSubtitlePcmCaptureEnabled(false));
           _setStatus('Whisper inference failed: $error');
+          unawaited(stop().then<void>((_) {}, onError: (Object error, StackTrace stack) {}));
         })
         .whenComplete(() {
           _inferenceFuture = null;
@@ -651,6 +693,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       result = await _transcribeWindowResult(session, samples, generation);
     } on Object catch (error) {
       if (!_isCurrentInference(generation)) return;
+      if (error is SubtitleInferenceDeferred) rethrow;
       if (_requestedProvider != SubtitleInferenceProvider.desktopGpu ||
           _fellBackToCpu ||
           !identical(session, _session)) {
@@ -697,7 +740,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     final failedSession = _session;
     _session = null;
     await failedSession?.dispose();
-    final fallback = await SubtitleWhisperCppService.instance.loadLiveSession();
+    final fallback = await SubtitleInferenceScheduler.instance.run(() => SubtitleWhisperCppService.instance.loadLiveSession(),
+      priority: SubtitleWorkPriority.playback, modelOwner: this,
+      isCurrent: () => _resourceStopReason == null && _invalidCaptureSessionReason(_player) == null);
     if (_invalidCaptureSessionReason(_player) != null) {
       await fallback.session.dispose();
       return;
@@ -717,7 +762,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       splitOnWord: true,
       noSpeechThreshold: 0.6,
     ),
-  ), priority: SubtitleWorkPriority.playback,
+  ), priority: SubtitleWorkPriority.playback, modelOwner: this,
     isCurrent: () => identical(_session, session) && _isCurrentInference(generation));
 
   void _mergeWordTiming(SubtitleWordTiming timing) {

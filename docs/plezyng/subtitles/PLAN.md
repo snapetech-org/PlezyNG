@@ -792,10 +792,30 @@ room message is exposed. No tests, builds, runtime execution or CI were run.
 ## Inference arbitration and additional research adapters
 
 Foreground WAV work, live PCM windows, read-ahead and durable jobs now use one
-priority queue for local inference. Playback wins at native-call boundaries;
-background work pauses briefly on reported memory pressure. Queue length and
-stale-start guards are bounded. This is scheduling policy, not measured thermal,
-power, accelerator-memory or real-time qualification.
+priority queue for local speech inference. Playback wins at native-call boundaries;
+a retained live model now holds an exclusive resident-model lease, including
+loading, CPU fallback and disposal. Queued work cannot load a second speech
+model while that lease is owned. Cancellation during startup waits for the
+loader to return and dispose before releasing the slot.
+
+Lifecycle-owned player registrations report active video count and, where the
+existing native MPV bridge supports it, OS thermal tiers. Read-ahead/background
+admission pauses at moderate heat, OS memory pressure, or multiple active video
+players (configurable). Severe heat and an optional process-RSS soft admission
+limit block all new speech operations. OS memory pressure or severe heat asks a
+live owner to release its model at the next safe boundary; completed cues remain
+reviewable. Non-interruptible native calls are allowed to return. Deferred jobs
+retry without marking a window completed; source/profile/seek cancellation is
+swept even while another native call is running.
+
+The resource dialog persists app-wide read-ahead external-power policy,
+multiview policy and an optional RSS threshold, and reports observed/unknown
+power, thermal and RSS state. Unknown power waits only when external power was
+explicitly required. RSS is process-wide, not a model allocation or free GPU
+memory, and its threshold is not a hard allocation cap. Translation, shaders,
+DV, motion interpolation, games and device-wide GPU residency do not share a
+measured allocator through this scheduler. This is source admission policy, not
+measured thermal, power, accelerator-memory or real-time qualification.
 
 Companion source now includes automatic burned-text region proposals, explicit
 scene-image review against uncertain captions, and separate subtitle-driven

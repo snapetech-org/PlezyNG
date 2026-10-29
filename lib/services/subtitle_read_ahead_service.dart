@@ -133,6 +133,8 @@ class SubtitleReadAheadService extends ChangeNotifier {
     _busy = true;
     Directory? temporary;
     try {
+      await SubtitleInferenceScheduler.instance.run(() async {}, priority: SubtitleWorkPriority.readAhead,
+        isCurrent: () => _current(epoch) && (seek == null || (player as SubtitlePcmCaptureSource).playbackTimelineGeneration == seek));
       temporary = await (await getTemporaryDirectory()).createTemp('subtitle_analysis_');
       final wav = File('${temporary.path}/window.wav');
       status = 'Decoding ${start ~/ 1000}–${end ~/ 1000}s through the source transport'; notifyListeners();
@@ -161,6 +163,8 @@ class SubtitleReadAheadService extends ChangeNotifier {
         text: word.text, confidence: word.confidence, unit: word.unit)];
       await _publish(epoch, first, result.detectedLanguage);
       status = 'Prepared ${_windows.length} windows; ${result.runtimeProvider}. Placement remains unverified.';
+    } on SubtitleInferenceDeferred catch (error) {
+      if (_current(epoch)) status = error.reason;
     } catch (error) {
       if (epoch == _generation) {
         await stop();
@@ -203,6 +207,7 @@ class SubtitleReadAheadService extends ChangeNotifier {
         selected.add(segment); duration += segment.durationMs;
       }
       if (selected.isEmpty || duration < 1000) return;
+      await SubtitleInferenceScheduler.instance.run(() async {}, priority: SubtitleWorkPriority.readAhead, isCurrent: current);
       temporary = await (await getTemporaryDirectory()).createTemp('subtitle_live_analysis_');
       status = 'Reading ${selected.length} completed live segments through the source transport'; notifyListeners();
       final manifest = await hls.stage(selected, temporary);
@@ -227,6 +232,8 @@ class SubtitleReadAheadService extends ChangeNotifier {
       await _publish(epoch, now, result.detectedLanguage);
       status = 'Prepared live/DVR captions from complete HLS segments; ${result.runtimeProvider}. '
           'Program-clock alignment remains estimated; protected or untimestamped streams are refused.';
+    } on SubtitleInferenceDeferred catch (error) {
+      if (_current(epoch)) status = error.reason;
     } catch (error) {
       if (_current(epoch)) {
         await stop();

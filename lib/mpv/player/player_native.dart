@@ -1645,6 +1645,9 @@ class PlayerNative extends PlayerBase
     return null;
   }
 
+  @override
+  Future<String?> subtitleInferenceThermalStatus() => getMotionProcessingThermalStatus();
+
   /// Copies the licensed, SDK-built HTP skeleton from APK assets next to the
   /// verified ANVIL context file and returns the directory used by QNN.
   Future<String?> prepareAndroidAnvilRuntime({String? contextPath, required String modelId}) async {

@@ -104,3 +104,12 @@ P0 contracts and package identity; P1 home karaoke; P2 party hosting; P3 audio/m
 - Reference-chart scoring, pitch trace and comfortable-range estimation. Seeking/settings invalidate competitive passes. No unreviewed chart is scored.
 - Added OS permission descriptions and Linux package prerequisites. New dependency lock entries are pinned to published package metadata; dependency resolution and platform packaging have not run.
 - Remaining work includes multichannel routing/monitoring, editor, preparation, production/collaboration, games, provider integration and locale completion.
+
+## Implementation batch 3 — editing, mixing and preparation
+
+- Connected the lyric/note editor, tap timing, part/translation fields, undo/redo, LRC/VTT export, chart review and shared subtitle revision history.
+- Local stems use one MPV filter graph with explicit rendition clock identity, guide-vocal controls, headroom and a limiter.
+- Added authenticated companion/client code for cancellable jobs, durable submission IDs, private credential storage, checksummed transfers, recoverable results and reviewed application.
+- Companion workers implement waveform extraction, local Demucs separation, ordered forced alignment, isolated-vocal pitch proposals, estimated musical analysis, approved-soundfont MIDI rendering and take mix rendering.
+- External codecs, model files and companion execution are prerequisites; none are installed, started or validated by this change.
+- Existing no-tests/builds/analyzers/CI constraint remains in force.

@@ -8,6 +8,9 @@ import '../media/media_item.dart';
 import '../media/media_kind.dart';
 import '../providers/multi_server_provider.dart';
 import 'karaoke_models.dart';
+import 'karaoke_editor.dart';
+import 'karaoke_preparation.dart';
+import 'karaoke_preparation_screen.dart';
 import 'karaoke_audio.dart';
 import 'karaoke_audio_panel.dart';
 import 'karaoke_session.dart';
@@ -42,6 +45,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
   String? _singer;
   bool _busy=false,_offline=false,_duet=false;
   int _tab=0;
+  late final KaraokePreparation _preparation=KaraokePreparation(widget.session);
   late final KaraokeAudio _audio=KaraokeAudio(widget.session);
   late final KaraokeRoomServer _room=KaraokeRoomServer(widget.session);
   KaraokeSession get s=>widget.session;
@@ -49,7 +53,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
   @override void initState() { super.initState(); unawaited(_initialize()); }
   Future<void> _initialize() async { await s.ready; if(mounted)setState(()=>_singer=s.singers.firstOrNull?.id); }
   @override void dispose() {
-    _query.dispose(); _room.dispose(); _audio.dispose();
+    _query.dispose(); _room.dispose(); _audio.dispose(); _preparation.dispose();
     unawaited(s.stopPlayback().then((_)=>s.save()).catchError(s.report));
     super.dispose();
   }
@@ -158,11 +162,15 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
           onTap:_busy ? null : ()=>_request(track,start:!s.hasPerformance),trailing:PopupMenuButton<String>(onSelected:(action) async {
             switch(action) {
               case 'request': await _request(track);
+              case 'prepare': if(mounted)await Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokePreparationScreen(session:s,track:track,client:_preparation)));
+              case 'editor': if(mounted)await Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokeEditor(session:s,track:track)));
               case 'export': await _run(() async { final path=await FilePicker.platform.saveFile(fileName:'${track.id}.plezykaraoke'); if(path!=null) await s.packages.export(track,path); });
               case 'verify': await _run(() async { final missing=await s.packages.verify(track); if(missing.isNotEmpty) throw StateError(missing.join(', ')); });
             }
           },itemBuilder:(_)=>[
             PopupMenuItem(value:'request',child:Text(tr('request'))),
+            PopupMenuItem(value:'editor',child:Text(tr('editor'))),
+            const PopupMenuItem(value:'prepare',child:Text('Prepare backing, timing and guidance')),
             if(track.assets.isNotEmpty) PopupMenuItem(value:'export',child:Text(tr('export'))),
             if(track.assets.isNotEmpty) PopupMenuItem(value:'verify',child:Text(tr('verify'))),
           ]));
@@ -207,6 +215,15 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
         ValueListenableBuilder<int>(valueListenable:s.positionMs,builder:(context,position,_)=>Slider(
           min:0,max:s.durationMs>0 ? s.durationMs.toDouble() : 1,value:position.toDouble().clamp(0,s.durationMs>0 ? s.durationMs.toDouble() : 1),
           onChanged:_busy || !s.hasPerformance ? null : (v)=>_command('seek',{'positionMs':v.round()}))),
+      ],
+      if(s.mixer case final mixer?) ...[
+        Text('Vocal mixer',style:Theme.of(context).textTheme.titleLarge),
+        for(final stem in mixer.levels.entries) Row(children:[Expanded(child:Text(stem.key)),
+          IconButton(tooltip:'Mute stem',onPressed:()=>_run(() async { await mixer.apply({...mixer.levels,stem.key:0});setState((){}); }),icon:const Icon(Icons.volume_off)),
+          SizedBox(width:160,child:Slider(min:0,max:2,value:stem.value,onChanged:_busy ? null : (v)=>_run(() async { await mixer.apply({...mixer.levels,stem.key:v});setState((){}); }))),
+        ]),
+        Wrap(spacing:12,children:[TextButton(onPressed:()=>_run(() async { await mixer.guide(true);setState((){}); }),child:const Text('Guide vocals')),
+          TextButton(onPressed:()=>_run(() async { await mixer.guide(false);setState((){}); }),child:const Text('Instrumental'))]),
       ],
       KaraokeAudioPanel(session:s,audio:_audio,singer:_singer),
       Wrap(spacing:12,children:[

@@ -11,9 +11,9 @@ class KaraokeAsset {
   final String sha256;
   final int bytes;
   final KaraokeAssetKind kind;
-  final String? part;
-  const KaraokeAsset({required this.path, required this.sha256, required this.bytes, required this.kind, this.part});
-  Map<String, dynamic> toJson() => {'path': path, 'sha256': sha256, 'bytes': bytes, 'kind': kind.name, 'part': part};
+  final String? part, clockId;
+  const KaraokeAsset({required this.path, required this.sha256, required this.bytes, required this.kind, this.part, this.clockId});
+  Map<String, dynamic> toJson() => {'path': path, 'sha256': sha256, 'bytes': bytes, 'kind': kind.name, 'part': part, 'clockId': clockId};
   factory KaraokeAsset.fromJson(Map<String, dynamic> j) {
     final path = j['path'] as String;
     if (path.isEmpty || path.length > 512 || path.contains('\\') || path.startsWith('/') ||
@@ -26,7 +26,7 @@ class KaraokeAsset {
       throw const FormatException('Invalid karaoke asset identity');
     }
     return KaraokeAsset(path: path, sha256: hash, bytes: bytes,
-      kind: KaraokeAssetKind.values.byName(j['kind'] as String), part: j['part'] as String?);
+      kind: KaraokeAssetKind.values.byName(j['kind'] as String), part: j['part'] as String?, clockId: j['clockId'] as String?);
   }
 }
 

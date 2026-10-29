@@ -15,6 +15,7 @@ import '../services/playback_coordinator.dart';
 import 'karaoke_models.dart';
 import 'karaoke_packages.dart';
 import 'karaoke_store.dart';
+import 'karaoke_stem_mixer.dart';
 
 class KaraokeConflict implements Exception {
   const KaraokeConflict(this.revision);
@@ -47,6 +48,7 @@ class KaraokeSession extends ChangeNotifier {
   late final Timer _clock;
   Future<void> _commands = Future.value();
   Player? _player;
+  KaraokeStemMixer? mixer;
   VideoPlayerLease? _videoLease;
   KaraokeRequest? current;
   int revision = 0, epoch = 0, _turnNumber = 0, _savedAt = 0;
@@ -257,6 +259,9 @@ class KaraokeSession extends ChangeNotifier {
         }
         await player.open(Media((await store.asset(song.id,media.path)).uri.toString(),start:Duration(milliseconds:resumeMs)),play:false,externalSubtitles:subtitles);
         if(subtitles.isNotEmpty) await player.selectSubtitleTrack(subtitles.first);
+        if(song.assets.where((a)=>{KaraokeAssetKind.instrumental,KaraokeAssetKind.leadVocal,KaraokeAssetKind.backingVocal,KaraokeAssetKind.duetVocal}.contains(a.kind)).length>1) {
+          final candidate=KaraokeStemMixer(player,song,store);await candidate.initialize();mixer=candidate;
+        }
         await player.play();
       }
       _started=true; request.state=KaraokeRequestState.playing; held=false; epoch++;
@@ -270,7 +275,7 @@ class KaraokeSession extends ChangeNotifier {
   Future<void> seek(int ms) async {
     if(!_started) throw StateError('No performance');
     _undoSeek=positionMs.value;
-    final target=Duration(milliseconds:ms.clamp(0,math.max(durationMs,ms)));
+    final target=Duration(milliseconds:ms.clamp(0,durationMs>0 ? durationMs : math.max(0,ms)));
     epoch++;
     if(_usingMusic) { await music.seek(target); } else { await _player?.seek(target); }
     positionMs.value=target.inMilliseconds;
@@ -323,7 +328,7 @@ class KaraokeSession extends ChangeNotifier {
     _started=false;
     for(final sub in _subscriptions) { await sub.cancel(); } _subscriptions.clear();
     if(current?.state==KaraokeRequestState.playing) current!.state=KaraokeRequestState.ready;
-    final player=_player; _player=null;
+    final player=_player; _player=null; mixer=null;
     try {
       if(_usingMusic) {
         if(music is MusicKaraokeControls) await (music as MusicKaraokeControls).resetKaraokeControls();

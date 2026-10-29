@@ -18,7 +18,8 @@ import 'karaoke_session.dart';
 class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
   KaraokeAudio(this.session) { WidgetsBinding.instance.addObserver(this); session.addListener(_sessionChanged); }
   final KaraokeSession session;
-  final AudioRecorder _recorder=AudioRecorder();
+  AudioRecorder? _recorder;
+  AudioRecorder get _capture { if(!supported)throw UnsupportedError('Microphone capture is unavailable');return _recorder ??= AudioRecorder(); }
   StreamSubscription<Uint8List>? _samples;
   StreamSubscription<RecordState>? _state;
   Timer? _watchdog;
@@ -42,7 +43,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
   Map<String,dynamic>? _takeMetadata;
   bool get recording=>_dry!=null;
   bool get supported=>!PlatformDetector.isAppleTVSync() && !PlatformDetector.isTizenBuild() && !PlatformDetector.isWebOSBuild();
-  Future<List<InputDevice>> devices() async => supported ? _recorder.listInputDevices() : [];
+  Future<List<InputDevice>> devices() async => supported ? _capture.listInputDevices() : [];
   void _notify() { if(!_disposed)notifyListeners(); }
 
   Future<void> start({required String singer,InputDevice? device}) async {
@@ -52,25 +53,25 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     if(!session.hasPerformance)throw StateError('Start a performance before enabling a microphone');
     final generation=++_generation; starting=true;_notify();
     try {
-      if(!await _recorder.hasPermission())throw StateError('Microphone permission denied');
+      if(!await _capture.hasPermission())throw StateError('Microphone permission denied');
       if(_disposed || generation!=_generation || !session.hasPerformance)return;
-      if(!await _recorder.isEncoderSupported(AudioEncoder.pcm16bits))throw UnsupportedError('This capture backend cannot provide PCM');
+      if(!await _capture.isEncoderSupported(AudioEncoder.pcm16bits))throw UnsupportedError('This capture backend cannot provide PCM');
       if(_disposed || generation!=_generation)return;
       singerId=singer;deviceId=device?.id;
       final route=await session.store.read('audio-calibration');
       final saved=(route?['routes'] as Map?)?[deviceId ?? 'default'] as Map?;
       inputOffsetMs=(saved?['inputOffsetMs'] as int? ?? 0).clamp(-2000,2000); calibrated=saved?['calibrated']==true;
-      final stream=await _recorder.startStream(RecordConfig(encoder:AudioEncoder.pcm16bits,sampleRate:48000,numChannels:1,
+      final stream=await _capture.startStream(RecordConfig(encoder:AudioEncoder.pcm16bits,sampleRate:48000,numChannels:1,
         device:device,autoGain:false,echoCancel:false,noiseSuppress:false,streamBufferSize:1920,
         androidConfig:const AndroidRecordConfig(manageBluetooth:false,audioSource:AndroidAudioSource.unprocessed),
         audioInterruption:AudioInterruptionMode.pause));
-      if(_disposed || generation!=_generation) { await _recorder.stop(); return; }
+      if(_disposed || generation!=_generation) { await _recorder?.stop(); return; }
       capturing=true;_lastPacket=DateTime.now().millisecondsSinceEpoch;_window.clear();trace.clear();rangeSamples.clear();
       final song=session.track!;
       score=song.canScore ? KaraokeScore(track:song,part:session.current?.part ?? song.parts.firstOrNull ?? '1',
         key:session.current!.key,tempo:session.current!.tempo,calibration:{'device':deviceId,'inputOffsetMs':inputOffsetMs,'calibrated':calibrated}) : null;
       _samples=stream.listen((bytes)=>_receive(bytes,generation),onError:(Object e){session.report(e);unawaited(stop());},onDone:()=>unawaited(stop()));
-      _state=_recorder.onStateChanged().listen((state){ if(state!=RecordState.record && capturing)unawaited(stop()); });
+      _state=_capture.onStateChanged().listen((state){ if(state!=RecordState.record && capturing)unawaited(stop()); });
       _watchdog=Timer.periodic(const Duration(seconds:1),(_) {
         if(DateTime.now().millisecondsSinceEpoch-_lastPacket>3000) { session.report('Microphone stopped delivering audio. Reconnect and enable it again.'); unawaited(stop()); }
       });
@@ -170,11 +171,11 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     _watchdog?.cancel();_watchdog=null;
     final samples=_samples;_samples=null;final state=_state;_state=null;
     await samples?.cancel();await state?.cancel();
-    await _recorder.stop();await stopRecording();_window.clear();rms=0;midi=null;_notify();
+    await _recorder?.stop();await stopRecording();_window.clear();rms=0;midi=null;_notify();
   }
   @override void didChangeAppLifecycleState(AppLifecycleState state) { if(state!=AppLifecycleState.resumed)unawaited(stop()); }
   @override void dispose() {
     _disposed=true;WidgetsBinding.instance.removeObserver(this);session.removeListener(_sessionChanged);
-    unawaited(stop().whenComplete(_recorder.dispose));super.dispose();
+    unawaited(stop().whenComplete(() async {await _recorder?.dispose();}));super.dispose();
   }
 }

@@ -3289,6 +3289,7 @@ class Translations$videoControls$en {
 	late final Translations$videoControls$subtitleDiscovery$en subtitleDiscovery = Translations$videoControls$subtitleDiscovery$en.internal(_root);
 	late final Translations$videoControls$subtitleCompanionJobs$en subtitleCompanionJobs = Translations$videoControls$subtitleCompanionJobs$en.internal(_root);
 	late final Translations$videoControls$subtitleStudy$en subtitleStudy = Translations$videoControls$subtitleStudy$en.internal(_root);
+	late final Translations$videoControls$subtitleCloudSync$en subtitleCloudSync = Translations$videoControls$subtitleCloudSync$en.internal(_root);
 	late final Translations$videoControls$subtitlePreview$en subtitlePreview = Translations$videoControls$subtitlePreview$en.internal(_root);
 	late final Translations$videoControls$subtitleHdr$en subtitleHdr = Translations$videoControls$subtitleHdr$en.internal(_root);
 	late final Translations$videoControls$pipErrors$en pipErrors = Translations$videoControls$pipErrors$en.internal(_root);
@@ -13779,6 +13780,160 @@ class Translations$videoControls$subtitleStudy$en {
 
 }
 
+// Path: videoControls.subtitleCloudSync
+class Translations$videoControls$subtitleCloudSync$en {
+	Translations$videoControls$subtitleCloudSync$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Sync reviewed subtitles across devices'
+	String get title => 'Sync reviewed subtitles across devices';
+
+	/// en: 'Uses your configured Sources cloud-sync account and folder, with a separate encrypted namespace for this track. The pairing code is its encryption key. Keep it private and keep a recovery copy. Sync is explicit; nothing is attached automatically.'
+	String get description => 'Uses your configured Sources cloud-sync account and folder, with a separate encrypted namespace for this track. The pairing code is its encryption key. Keep it private and keep a recovery copy. Sync is explicit; nothing is attached automatically.';
+
+	/// en: 'The subtitle profile or media item changed.'
+	String get profileOrMediaChanged => 'The subtitle profile or media item changed.';
+
+	/// en: 'Subtitle sync failed. Check the paired code, cloud source, folder and network.'
+	String get syncFailed => 'Subtitle sync failed. Check the paired code, cloud source, folder and network.';
+
+	/// en: 'The pairing code or shared data could not be read. Check the code and cloud folder.'
+	String get invalidPairingOrCloudData => 'The pairing code or shared data could not be read. Check the code and cloud folder.';
+
+	/// en: 'Configure a cloud sync source and folder in Sources → Sync first.'
+	String get configureCloudSource => 'Configure a cloud sync source and folder in Sources → Sync first.';
+
+	/// en: 'Save this item’s pairing code first.'
+	String get savePairingFirst => 'Save this item’s pairing code first.';
+
+	/// en: 'Choose a supported cloud sync source.'
+	String get supportedCloudSource => 'Choose a supported cloud sync source.';
+
+	/// en: 'The subtitle sync destination changed.'
+	String get destinationChanged => 'The subtitle sync destination changed.';
+
+	/// en: 'Pair this subtitle track?'
+	String get pairTitle => 'Pair this subtitle track?';
+
+	/// en: 'Use a new code for each subtitle track. Enter the same code on your other device while opening the same edition, part and audio. The app cannot prove that two devices opened the same cut. Anyone with the code and access to the cloud folder can read and change the shared track.'
+	String get pairDescription => 'Use a new code for each subtitle track. Enter the same code on your other device while opening the same edition, part and audio. The app cannot prove that two devices opened the same cut. Anyone with the code and access to the cloud folder can read and change the shared track.';
+
+	/// en: 'Save pairing'
+	String get savePairing => 'Save pairing';
+
+	/// en: 'Paired locally. No subtitle has been uploaded or selected.'
+	String get pairedLocally => 'Paired locally. No subtitle has been uploaded or selected.';
+
+	/// en: 'Choose a reviewed local revision first.'
+	String get chooseReviewedRevision => 'Choose a reviewed local revision first.';
+
+	/// en: 'Publish the selected revision?'
+	String get publishTitle => 'Publish the selected revision?';
+
+	/// en: 'Encrypted subtitle text and timings will be written to your configured cloud folder. Media and account credentials are excluded. Concurrent edits stay visible as conflicts. Immutable content chunks remain in that folder for recovery even after a newer revision is chosen.'
+	String get publishDescription => 'Encrypted subtitle text and timings will be written to your configured cloud folder. Media and account credentials are excluded. Concurrent edits stay visible as conflicts. Immutable content chunks remain in that folder for recovery even after a newer revision is chosen.';
+
+	/// en: 'Publish'
+	String get publishAction => 'Publish';
+
+	/// en: '${count} concurrent versions. Preview them and explicitly choose a shared winner, or retain the conflict.'
+	String concurrentVersions({required Object count}) => '${count} concurrent versions. Preview them and explicitly choose a shared winner, or retain the conflict.';
+
+	/// en: 'No shared subtitle is published yet.'
+	String get noSharedSubtitle => 'No shared subtitle is published yet.';
+
+	/// en: 'Shared metadata synchronized. Playback and local revisions are unchanged.'
+	String get metadataSynchronized => 'Shared metadata synchronized. Playback and local revisions are unchanged.';
+
+	/// en: 'Preview and verify this revision first.'
+	String get previewAndVerifyFirst => 'Preview and verify this revision first.';
+
+	/// en: 'Import this revision?'
+	String get importTitle => 'Import this revision?';
+
+	/// en: '${cues} cues; ${clock} clock. Confirm the edition, part, selected audio and clock match this item. This adds a local history revision without changing playback. Normal history retention still applies. Concurrent shared versions remain unresolved.'
+	String importDescription({required Object cues, required Object clock}) => '${cues} cues; ${clock} clock. Confirm the edition, part, selected audio and clock match this item. This adds a local history revision without changing playback. Normal history retention still applies. Concurrent shared versions remain unresolved.';
+
+	/// en: 'item timeline'
+	String get itemClock => 'item timeline';
+
+	/// en: 'opened-file timeline'
+	String get openedFileClock => 'opened-file timeline';
+
+	/// en: 'Import to history'
+	String get importAction => 'Import to history';
+
+	/// en: 'Imported. Open subtitle history to review or attach it.'
+	String get importedStatus => 'Imported. Open subtitle history to review or attach it.';
+
+	/// en: 'Preview this version before choosing it.'
+	String get previewBeforeResolve => 'Preview this version before choosing it.';
+
+	/// en: 'Use this shared version?'
+	String get resolveTitle => 'Use this shared version?';
+
+	/// en: 'This resolves the concurrent versions currently shown in favor of this content. Local revision histories are retained. An unseen edit from an offline device can create a new conflict later.'
+	String get resolveDescription => 'This resolves the concurrent versions currently shown in favor of this content. Local revision histories are retained. An unseen edit from an offline device can create a new conflict later.';
+
+	/// en: 'Use this version'
+	String get useThisVersion => 'Use this version';
+
+	/// en: 'A new concurrent edit arrived. Review the remaining choices.'
+	String get newConflict => 'A new concurrent edit arrived. Review the remaining choices.';
+
+	/// en: 'The shared choice was published. Playback is unchanged.'
+	String get sharedChoicePublished => 'The shared choice was published. Playback is unchanged.';
+
+	/// en: 'Subtitle pairing code'
+	String get codeLabel => 'Subtitle pairing code';
+
+	/// en: 'New track code'
+	String get newTrackCode => 'New track code';
+
+	/// en: 'Pairing code copied. The clipboard may be available to other apps.'
+	String get codeCopied => 'Pairing code copied. The clipboard may be available to other apps.';
+
+	/// en: 'Copy code'
+	String get copyCode => 'Copy code';
+
+	/// en: 'Item disconnected. Cloud content and local history were retained.'
+	String get disconnectedStatus => 'Item disconnected. Cloud content and local history were retained.';
+
+	/// en: 'Disconnect item'
+	String get disconnectItem => 'Disconnect item';
+
+	/// en: '${operation} · ${cues} cues'
+	String revisionSummary({required Object operation, required Object cues}) => '${operation} · ${cues} cues';
+
+	/// en: 'Pull shared versions'
+	String get pullVersions => 'Pull shared versions';
+
+	/// en: 'Publish selected revision'
+	String get publishRevision => 'Publish selected revision';
+
+	/// en: 'Device ${device} · ${kib} KiB · ${digest}'
+	String choiceSummary({required Object device, required Object kib, required Object digest}) => 'Device ${device} · ${kib} KiB · ${digest}';
+
+	/// en: '${language} · ${cues} cues · ${clock} clock'
+	String previewSummary({required Object language, required Object cues, required Object clock}) => '${language} · ${cues} cues · ${clock} clock';
+
+	/// en: 'Unknown language'
+	String get unknownLanguage => 'Unknown language';
+
+	/// en: 'Download and preview'
+	String get downloadPreview => 'Download and preview';
+
+	/// en: 'Import to history'
+	String get importToHistory => 'Import to history';
+
+	/// en: '${start}–${end}s  ${text}'
+	String cuePreview({required Object start, required Object end, required Object text}) => '${start}–${end}s  ${text}';
+
+}
+
 // Path: videoControls.subtitleRoles
 class Translations$videoControls$subtitleRoles$en {
 	Translations$videoControls$subtitleRoles$en.internal(this._root);
@@ -17934,6 +18089,54 @@ extension on Translations {
 			'videoControls.subtitleStudy.copyCueText' => 'Copy cue text',
 			'videoControls.subtitleStudy.savePhraseTooltip' => 'Save phrase or bookmark',
 			'videoControls.subtitleStudy.noMatchingCues' => 'No transcript cues match this search.',
+			'videoControls.subtitleCloudSync.title' => 'Sync reviewed subtitles across devices',
+			'videoControls.subtitleCloudSync.description' => 'Uses your configured Sources cloud-sync account and folder, with a separate encrypted namespace for this track. The pairing code is its encryption key. Keep it private and keep a recovery copy. Sync is explicit; nothing is attached automatically.',
+			'videoControls.subtitleCloudSync.profileOrMediaChanged' => 'The subtitle profile or media item changed.',
+			'videoControls.subtitleCloudSync.syncFailed' => 'Subtitle sync failed. Check the paired code, cloud source, folder and network.',
+			'videoControls.subtitleCloudSync.invalidPairingOrCloudData' => 'The pairing code or shared data could not be read. Check the code and cloud folder.',
+			'videoControls.subtitleCloudSync.configureCloudSource' => 'Configure a cloud sync source and folder in Sources → Sync first.',
+			'videoControls.subtitleCloudSync.savePairingFirst' => 'Save this item’s pairing code first.',
+			'videoControls.subtitleCloudSync.supportedCloudSource' => 'Choose a supported cloud sync source.',
+			'videoControls.subtitleCloudSync.destinationChanged' => 'The subtitle sync destination changed.',
+			'videoControls.subtitleCloudSync.pairTitle' => 'Pair this subtitle track?',
+			'videoControls.subtitleCloudSync.pairDescription' => 'Use a new code for each subtitle track. Enter the same code on your other device while opening the same edition, part and audio. The app cannot prove that two devices opened the same cut. Anyone with the code and access to the cloud folder can read and change the shared track.',
+			'videoControls.subtitleCloudSync.savePairing' => 'Save pairing',
+			'videoControls.subtitleCloudSync.pairedLocally' => 'Paired locally. No subtitle has been uploaded or selected.',
+			'videoControls.subtitleCloudSync.chooseReviewedRevision' => 'Choose a reviewed local revision first.',
+			'videoControls.subtitleCloudSync.publishTitle' => 'Publish the selected revision?',
+			'videoControls.subtitleCloudSync.publishDescription' => 'Encrypted subtitle text and timings will be written to your configured cloud folder. Media and account credentials are excluded. Concurrent edits stay visible as conflicts. Immutable content chunks remain in that folder for recovery even after a newer revision is chosen.',
+			'videoControls.subtitleCloudSync.publishAction' => 'Publish',
+			'videoControls.subtitleCloudSync.concurrentVersions' => ({required Object count}) => '${count} concurrent versions. Preview them and explicitly choose a shared winner, or retain the conflict.',
+			'videoControls.subtitleCloudSync.noSharedSubtitle' => 'No shared subtitle is published yet.',
+			'videoControls.subtitleCloudSync.metadataSynchronized' => 'Shared metadata synchronized. Playback and local revisions are unchanged.',
+			'videoControls.subtitleCloudSync.previewAndVerifyFirst' => 'Preview and verify this revision first.',
+			'videoControls.subtitleCloudSync.importTitle' => 'Import this revision?',
+			'videoControls.subtitleCloudSync.importDescription' => ({required Object cues, required Object clock}) => '${cues} cues; ${clock} clock. Confirm the edition, part, selected audio and clock match this item. This adds a local history revision without changing playback. Normal history retention still applies. Concurrent shared versions remain unresolved.',
+			'videoControls.subtitleCloudSync.itemClock' => 'item timeline',
+			'videoControls.subtitleCloudSync.openedFileClock' => 'opened-file timeline',
+			'videoControls.subtitleCloudSync.importAction' => 'Import to history',
+			'videoControls.subtitleCloudSync.importedStatus' => 'Imported. Open subtitle history to review or attach it.',
+			'videoControls.subtitleCloudSync.previewBeforeResolve' => 'Preview this version before choosing it.',
+			'videoControls.subtitleCloudSync.resolveTitle' => 'Use this shared version?',
+			'videoControls.subtitleCloudSync.resolveDescription' => 'This resolves the concurrent versions currently shown in favor of this content. Local revision histories are retained. An unseen edit from an offline device can create a new conflict later.',
+			'videoControls.subtitleCloudSync.useThisVersion' => 'Use this version',
+			'videoControls.subtitleCloudSync.newConflict' => 'A new concurrent edit arrived. Review the remaining choices.',
+			'videoControls.subtitleCloudSync.sharedChoicePublished' => 'The shared choice was published. Playback is unchanged.',
+			'videoControls.subtitleCloudSync.codeLabel' => 'Subtitle pairing code',
+			'videoControls.subtitleCloudSync.newTrackCode' => 'New track code',
+			'videoControls.subtitleCloudSync.codeCopied' => 'Pairing code copied. The clipboard may be available to other apps.',
+			'videoControls.subtitleCloudSync.copyCode' => 'Copy code',
+			'videoControls.subtitleCloudSync.disconnectedStatus' => 'Item disconnected. Cloud content and local history were retained.',
+			'videoControls.subtitleCloudSync.disconnectItem' => 'Disconnect item',
+			'videoControls.subtitleCloudSync.revisionSummary' => ({required Object operation, required Object cues}) => '${operation} · ${cues} cues',
+			'videoControls.subtitleCloudSync.pullVersions' => 'Pull shared versions',
+			'videoControls.subtitleCloudSync.publishRevision' => 'Publish selected revision',
+			'videoControls.subtitleCloudSync.choiceSummary' => ({required Object device, required Object kib, required Object digest}) => 'Device ${device} · ${kib} KiB · ${digest}',
+			'videoControls.subtitleCloudSync.previewSummary' => ({required Object language, required Object cues, required Object clock}) => '${language} · ${cues} cues · ${clock} clock',
+			'videoControls.subtitleCloudSync.unknownLanguage' => 'Unknown language',
+			'videoControls.subtitleCloudSync.downloadPreview' => 'Download and preview',
+			'videoControls.subtitleCloudSync.importToHistory' => 'Import to history',
+			'videoControls.subtitleCloudSync.cuePreview' => ({required Object start, required Object end, required Object text}) => '${start}–${end}s  ${text}',
 			'videoControls.subtitlePreview.buttonTooltip' => 'Preview text before downloading',
 			'videoControls.subtitlePreview.title' => 'Preview provider subtitles',
 			'videoControls.subtitlePreview.fallbackTitle' => 'Provider subtitle',

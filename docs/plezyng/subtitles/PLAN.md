@@ -1480,3 +1480,11 @@ task/state values retain a readable fallback; host phase text and error codes
 remain backend diagnostics. The accepted task set is fully mapped, including
 translation, OCR, research and lyric-alignment jobs.
 
+## Subtitle cloud-sync localization — October 29, 2026
+
+The reviewed-revision cloud-sync dialog now routes pairing, encrypted publish,
+preview/import, concurrent-version resolution and their statuses through the
+generated Slang catalog. Cloud destination and pairing checks remain explicit;
+the dialog does not attach imported text automatically. English base-locale
+fallbacks are registered while translations remain pending.
+

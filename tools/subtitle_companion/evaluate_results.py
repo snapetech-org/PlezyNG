@@ -17,6 +17,8 @@ import re
 import statistics
 import unicodedata
 
+from evaluate_diagnostics import DiagnosticBudget, diagnostics
+
 
 MAX_FILE = 8 * 1024**2
 MAX_TOTAL = 64 * 1024**2
@@ -36,6 +38,7 @@ class Inputs:
         self.bytes = 0
         self.cells = 0
         self.hashes = {}
+        self.diagnostic_budget = DiagnosticBudget()
 
     def read(self, name):
         if not isinstance(name, str) or not name or len(name) > 1024 or Path(name).is_absolute():
@@ -134,7 +137,7 @@ def timing(reference, output, pairs):
             'bothEdgesWithin250Ms': sum(abs(a) <= 250 and abs(b) <= 250 for a, b in zip(starts, ends))}
 
 
-def score(inputs, reference, value, duration, normalization):
+def score(inputs, reference, value, duration, normalization, reference_value):
     words, characters, cues = transcript(value, normalization, duration)
     a, b, _ = reference
     elapsed = value.get('inferenceWallMs')
@@ -143,7 +146,8 @@ def score(inputs, reference, value, duration, normalization):
     return {'wordEdits': inputs.distance(a, words), 'referenceWords': len(a), 'hypothesisWords': len(words),
             'characterEdits': inputs.distance(b, characters), 'referenceCharacters': len(b),
             'inferenceWallMs': elapsed, 'realTimeFactor': elapsed / duration if elapsed is not None else None,
-            'timing': timing(reference[2], cues, value.get('timingPairs'))}
+            'timing': timing(reference[2], cues, value.get('timingPairs')),
+            'diagnostics': diagnostics(reference_value, value, inputs.diagnostic_budget)}
 
 
 def rates(row):
@@ -169,6 +173,11 @@ def evaluate(inputs, manifest):
     normalization = manifest.get('normalization', 'exact')
     if normalization not in {'exact', 'nfkc_casefold'}:
         raise ValueError('unknown_normalization')
+    required_diagnostics = manifest.get('requiredDiagnostics', [])
+    if (not isinstance(required_diagnostics, list) or len(required_diagnostics) > 3 or
+            any(not isinstance(v, str) or v not in {'streaming', 'calibration', 'telemetry'} for v in required_diagnostics) or
+            len(set(required_diagnostics)) != len(required_diagnostics)):
+        raise ValueError('invalid_required_diagnostics')
     cases = manifest.get('cases')
     if not isinstance(cases, list) or not 1 <= len(cases) <= 1000:
         raise ValueError('case_limit')
@@ -190,7 +199,7 @@ def evaluate(inputs, manifest):
             references.add(reference_digest)
             reference = transcript(reference_value, normalization, duration)
             for model in ('baseline', 'candidate'):
-                row[model] = rates(score(inputs, reference, inputs.read(case.get(model)), duration, normalization))
+                row[model] = rates(score(inputs, reference, inputs.read(case.get(model)), duration, normalization, reference_value))
             row['status'] = 'measured-pair'
         except (ValueError, OSError, UnicodeError, TypeError, KeyError) as error:
             row['status'] = 'not-measured'
@@ -200,6 +209,12 @@ def evaluate(inputs, manifest):
         rows.append(row)
     baseline, candidate = summarize(rows, 'baseline'), summarize(rows, 'candidate')
     paired = baseline['pairedCases']
+    diagnostic_coverage = {name: {model: sum(row.get('status') == 'measured-pair' and
+        row[model]['diagnostics'][name]['status'] == 'measured' for row in rows) for model in ('baseline', 'candidate')}
+        for name in ('streaming', 'calibration', 'telemetry')}
+    paired_diagnostics = {name: sum(row.get('status') == 'measured-pair' and all(
+        row[model]['diagnostics'][name]['status'] == 'measured' for model in ('baseline', 'candidate')) for row in rows)
+        for name in diagnostic_coverage}
     rtf_deltas = [row['candidate']['realTimeFactor'] - row['baseline']['realTimeFactor'] for row in rows
                   if row.get('status') == 'measured-pair' and row['baseline']['realTimeFactor'] is not None and
                   row['candidate']['realTimeFactor'] is not None]
@@ -207,19 +222,25 @@ def evaluate(inputs, manifest):
             'manifestSchema': manifest['schema'], 'normalization': normalization,
             'lexicalPolicy': 'cue order or explicit text; markup/ruby readings removed; whitespace words; non-whitespace Unicode code points; punctuation retained',
             'inputHashes': {hashlib.sha256(name.encode()).hexdigest(): digest for name, digest in sorted(inputs.hashes.items())},
-            'casesRequested': len(cases), 'pairedCasesMeasured': paired, 'complete': paired == len(cases),
+            'casesRequested': len(cases), 'pairedCasesMeasured': paired, 'lexicallyComplete': paired == len(cases),
+            'complete': paired == len(cases) and all(paired_diagnostics[name] == len(cases) for name in required_diagnostics),
+            'requiredDiagnostics': required_diagnostics, 'diagnosticCoverage': diagnostic_coverage,
+            'pairedDiagnosticCases': paired_diagnostics,
             'baseline': baseline, 'candidate': candidate,
             'pairedWerDelta': candidate['wer'] - baseline['wer'] if baseline['wer'] is not None else None,
             'pairedCerDelta': candidate['cer'] - baseline['cer'] if baseline['cer'] is not None else None,
             'pairedRtfCases': len(rtf_deltas), 'pairedRtfDeltaMedian': statistics.median(rtf_deltas) if rtf_deltas else None,
-            'cases': rows, 'limits': {'inputBytes': inputs.bytes, 'editDistanceCells': inputs.cells},
+            'cases': rows, 'limits': {'inputBytes': inputs.bytes, 'editDistanceCells': inputs.cells,
+                                    'streamingEditDistanceCells': inputs.diagnostic_budget.cells},
             'warnings': ['Only fully measured baseline/candidate pairs enter aggregates; inspect omitted cases before comparing.',
                 'Empty references retain insertion counts; their individual error rates are undefined, not zero.',
                 'Repeated reference text is flagged, not treated as proof that audio recordings are duplicated or independent.',
                 'Whitespace WER is not linguistically segmented WER for every script. Cue order does not solve overlapping-speaker scoring.',
                 'Timing matches are supplied correspondences, not independently verified alignment or coverage.',
                 'Inference wall time and input duration are supplied measurements, not independent device telemetry.',
-                'No confidence calibration, held-out independence, playback/power measurement or model promotion is established by this report.']}
+                'Optional streaming clocks, confidence correctness labels and device/process telemetry are supplied observations, not independently collected evidence.',
+                'Diagnostic coverage counts do not establish comparable units, collection policy, devices or operating conditions; inspect each case before comparison.',
+                'No held-out independence, causal quality gain, device qualification or model promotion is established by this report.']}
 
 
 def main():

@@ -57,8 +57,11 @@ class MpvPlayer {
   // Disposes mpv and the video window.
   void Dispose();
   static bool VisualizationTapAvailable();
+  static bool SubtitlePcmCaptureAvailable();
   int SetVisualizationTap(bool enabled);
   int ReadVisualizationAudio(mpv_plezy_audio_block* block);
+  int SetSubtitlePcmCaptureEnabled(bool enabled);
+  int ReadSubtitlePcmCapture(mpv_plezy_audio_block* block);
 
   // Returns true if mpv is initialized.
   bool IsInitialized() const { return mpv_ != nullptr; }

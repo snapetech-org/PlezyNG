@@ -4,11 +4,14 @@
 
 #include "media_player.h"
 
+#include <media_format.h>
+#include <media_packet.h>
 #include <system_info.h>
 #include <unistd.h>
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <sstream>
 
 #include "log.h"
@@ -57,6 +60,26 @@ static bool IsTizenCorePlatform() {
   return is_tizen_core;
 }
 
+static std::string Base64Encode(const std::vector<uint8_t> &bytes) {
+  static constexpr char kAlphabet[] =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  std::string encoded;
+  encoded.reserve(((bytes.size() + 2) / 3) * 4);
+  for (size_t offset = 0; offset < bytes.size(); offset += 3) {
+    const uint32_t first = bytes[offset];
+    const uint32_t second = offset + 1 < bytes.size() ? bytes[offset + 1] : 0;
+    const uint32_t third = offset + 2 < bytes.size() ? bytes[offset + 2] : 0;
+    const uint32_t value = (first << 16) | (second << 8) | third;
+    encoded.push_back(kAlphabet[(value >> 18) & 0x3f]);
+    encoded.push_back(kAlphabet[(value >> 12) & 0x3f]);
+    encoded.push_back(offset + 1 < bytes.size() ? kAlphabet[(value >> 6) & 0x3f]
+                                               : '=');
+    encoded.push_back(offset + 2 < bytes.size() ? kAlphabet[value & 0x3f]
+                                               : '=');
+  }
+  return encoded;
+}
+
 MediaPlayer::MediaPlayer(flutter::BinaryMessenger *messenger,
                          FlutterDesktopViewRef flutter_view)
     : VideoPlayer(messenger, flutter_view) {}
@@ -86,6 +109,7 @@ int64_t MediaPlayer::Create(const std::string &uri,
 
   url_ = uri;
   create_message_ = create_message;
+  audio_only_ = flutter_common::GetValue(create_message.player_options(), "plezyAudioOnly", false);
 
   int ret = player_create(&player_);
   if (ret != PLAYER_ERROR_NONE) {
@@ -141,7 +165,7 @@ int64_t MediaPlayer::Create(const std::string &uri,
     return -1;
   }
 
-  ret = player_set_display_visible(player_, true);
+  ret = player_set_display_visible(player_, !audio_only_);
   if (ret != PLAYER_ERROR_NONE) {
     LOG_ERROR("[MediaPlayer] player_set_display_visible failed : %s.",
               get_error_message(ret));
@@ -183,6 +207,14 @@ int64_t MediaPlayer::Create(const std::string &uri,
     return -1;
   }
 
+  // The Tizen player exposes one decoded-PCM callback. Audio-only sessions
+  // attach the visualizer tap; video sessions register the opt-in subtitle tap.
+  if (audio_only_) {
+    if (!pcm_) pcm_ = std::make_shared<VisualizerPcm>();
+    pcm_->Attach(player_, drm_type != 0);
+  } else {
+    ConfigureSubtitlePcmCapture();
+  }
   return player_id_;
 }
 
@@ -203,6 +235,147 @@ int MediaPlayer::Prepare() {
   }
 
   return 0;
+}
+
+bool MediaPlayer::ConfigureSubtitlePcmCapture() {
+  if (!player_ || drm_manager_ || audio_only_) return false;
+
+  media_format_h format = nullptr;
+  int ret = media_format_create(&format);
+  if (ret != MEDIA_PACKET_ERROR_NONE || !format) {
+    LOG_WARN("[MediaPlayer] Could not allocate PCM capture format: %s.",
+             get_error_message(ret));
+    return false;
+  }
+
+  ret = media_format_set_audio_mime(format, MEDIA_FORMAT_PCM_S16LE);
+  if (ret == MEDIA_PACKET_ERROR_NONE) {
+    ret = media_format_set_audio_channel(format, 1);
+  }
+  if (ret == MEDIA_PACKET_ERROR_NONE) {
+    ret = media_format_set_audio_samplerate(format, kSubtitlePcmSampleRate);
+  }
+  if (ret == MEDIA_PACKET_ERROR_NONE) {
+    ret = player_set_media_packet_audio_frame_decoded_cb(
+        player_, format, PLAYER_AUDIO_EXTRACT_DEINTERLEAVE,
+        OnAudioPcmDecoded, this);
+  }
+  media_format_unref(format);
+
+  subtitle_pcm_callback_registered_ = ret == PLAYER_ERROR_NONE;
+  subtitle_pcm_capture_available_.store(subtitle_pcm_callback_registered_);
+  if (!subtitle_pcm_callback_registered_) {
+    LOG_INFO("[MediaPlayer] Decoded PCM capture unavailable: %s.",
+             get_error_message(ret));
+  }
+  return subtitle_pcm_callback_registered_;
+}
+
+bool MediaPlayer::SubtitlePcmCaptureAvailable() const {
+  return subtitle_pcm_capture_available_.load();
+}
+
+bool MediaPlayer::SetSubtitlePcmCaptureEnabled(bool enabled) {
+  if (!subtitle_pcm_capture_available_.load() || !player_) return false;
+  if (enabled) {
+    ClearSubtitlePcmCapture();
+    subtitle_pcm_capture_enabled_.store(true);
+  } else {
+    subtitle_pcm_capture_enabled_.store(false);
+  }
+  return true;
+}
+
+std::string MediaPlayer::DrainSubtitlePcmCaptureJson() {
+  std::deque<CapturedAudioPacket> packets;
+  {
+    std::lock_guard<std::mutex> lock(subtitle_pcm_mutex_);
+    packets.swap(subtitle_pcm_packets_);
+    subtitle_pcm_bytes_ = 0;
+  }
+
+  std::ostringstream json;
+  json << '[';
+  bool first = true;
+  for (const auto &packet : packets) {
+    if (packet.pcm.empty()) continue;
+    if (!first) json << ',';
+    first = false;
+    json << "{\"presentationTimeUs\":" << packet.presentation_time_us
+         << ",\"sampleRate\":" << kSubtitlePcmSampleRate
+         << ",\"channels\":1,\"encoding\":\"pcm16\",\"pcmBase64\":\""
+         << Base64Encode(packet.pcm) << "\"}";
+  }
+  json << ']';
+  return json.str();
+}
+
+void MediaPlayer::ClearSubtitlePcmCapture() {
+  std::lock_guard<std::mutex> lock(subtitle_pcm_mutex_);
+  subtitle_pcm_packets_.clear();
+  subtitle_pcm_bytes_ = 0;
+}
+
+void MediaPlayer::WaitForAudioCallbacks() {
+  std::unique_lock<std::mutex> lock(subtitle_pcm_mutex_);
+  subtitle_pcm_callbacks_idle_.wait(lock,
+                                   [this] { return audio_callbacks_active_ == 0; });
+}
+
+void MediaPlayer::OnAudioPcmDecoded(media_packet_h packet, void *user_data) {
+  MediaPlayer *self = static_cast<MediaPlayer *>(user_data);
+  if (!self) {
+    if (packet) media_packet_destroy(packet);
+    return;
+  }
+
+  {
+    std::lock_guard<std::mutex> lock(self->subtitle_pcm_mutex_);
+    ++self->audio_callbacks_active_;
+  }
+
+  if (packet && self->subtitle_pcm_capture_enabled_.load()) {
+    uint64_t presentation_time_ns = 0;
+    uint64_t buffer_size = 0;
+    void *buffer = nullptr;
+    const bool valid =
+        media_packet_get_pts(packet, &presentation_time_ns) ==
+            MEDIA_PACKET_ERROR_NONE &&
+        media_packet_get_buffer_size(packet, &buffer_size) ==
+            MEDIA_PACKET_ERROR_NONE &&
+        media_packet_get_buffer_data_ptr(packet, &buffer) ==
+            MEDIA_PACKET_ERROR_NONE &&
+        buffer && buffer_size > 0 &&
+        buffer_size <= kSubtitlePcmCaptureMaxBytes;
+    if (valid) {
+      CapturedAudioPacket captured;
+      captured.presentation_time_us = presentation_time_ns / 1000;
+      const auto *bytes = static_cast<const uint8_t *>(buffer);
+      captured.pcm.assign(bytes, bytes + buffer_size);
+      std::lock_guard<std::mutex> lock(self->subtitle_pcm_mutex_);
+      if (self->subtitle_pcm_capture_enabled_.load()) {
+        while (!self->subtitle_pcm_packets_.empty() &&
+               self->subtitle_pcm_bytes_ + captured.pcm.size() >
+                   kSubtitlePcmCaptureMaxBytes) {
+          self->subtitle_pcm_bytes_ -=
+              self->subtitle_pcm_packets_.front().pcm.size();
+          self->subtitle_pcm_packets_.pop_front();
+        }
+        if (captured.pcm.size() <= kSubtitlePcmCaptureMaxBytes) {
+          self->subtitle_pcm_bytes_ += captured.pcm.size();
+          self->subtitle_pcm_packets_.push_back(std::move(captured));
+        }
+      }
+    }
+  }
+
+  if (packet) media_packet_destroy(packet);
+  {
+    std::lock_guard<std::mutex> lock(self->subtitle_pcm_mutex_);
+    if (--self->audio_callbacks_active_ == 0) {
+      self->subtitle_pcm_callbacks_idle_.notify_all();
+    }
+  }
 }
 
 void MediaPlayer::Dispose() {
@@ -250,6 +423,7 @@ bool MediaPlayer::Play() {
     return false;
   }
   if (state == PLAYER_STATE_PLAYING) {
+    if (pcm_) pcm_->Playing(true);
     LOG_INFO("[MediaPlayer] Player already playing.");
     return true;
   }
@@ -261,6 +435,7 @@ bool MediaPlayer::Play() {
   }
 
   SendIsPlayingState(true);
+  if (pcm_) pcm_->Playing(true);
   return true;
 }
 
@@ -277,6 +452,7 @@ bool MediaPlayer::Pause() {
     return false;
   }
   if (state != PLAYER_STATE_PLAYING) {
+    if (pcm_) pcm_->Playing(false);
     LOG_INFO("[MediaPlayer] Player already not playing (state=%d).", state);
     return true;
   }
@@ -286,6 +462,7 @@ bool MediaPlayer::Pause() {
     return false;
   }
   SendIsPlayingState(false);
+  if (pcm_) pcm_->Playing(false);
   return true;
 }
 
@@ -322,6 +499,7 @@ bool MediaPlayer::SetPlaybackSpeed(double speed) {
               get_error_message(ret));
     return false;
   }
+  if (pcm_) pcm_->Rate(speed);
   return true;
 }
 
@@ -335,12 +513,14 @@ bool MediaPlayer::SeekTo(int64_t position, SeekCompletedCallback callback) {
 
   on_seek_completed_ = std::move(callback);
   is_seeking_ = true;
+  if (pcm_) pcm_->Seeking(true);
 
   int ret =
       player_set_play_position(player_, position, true, OnSeekCompleted, this);
   if (ret != PLAYER_ERROR_NONE) {
     on_seek_completed_ = nullptr;
     is_seeking_ = false;
+    if (pcm_) pcm_->Seeking(false);
     LOG_ERROR("[MediaPlayer] player_set_play_position failed: %s.",
               get_error_message(ret));
     return false;
@@ -674,6 +854,8 @@ bool MediaPlayer::SetTrackSelection(int32_t track_id, std::string track_type) {
     return false;
   }
 
+  if (pcm_ && track_type == "audio") pcm_->Discontinuity();
+
   return true;
 }
 
@@ -761,6 +943,21 @@ bool MediaPlayer::StopAndDestroy() {
       success = false;
     }
   }
+
+  subtitle_pcm_capture_enabled_.store(false);
+  if (subtitle_pcm_callback_registered_) {
+    const int unset_result =
+        player_unset_media_packet_audio_frame_decoded_cb(player_);
+    if (unset_result != PLAYER_ERROR_NONE) {
+      LOG_WARN("[MediaPlayer] Failed to unset decoded PCM callback: %s.",
+               get_error_message(unset_result));
+    }
+    subtitle_pcm_callback_registered_ = false;
+    subtitle_pcm_capture_available_.store(false);
+    WaitForAudioCallbacks();
+  }
+  ClearSubtitlePcmCapture();
+  if (pcm_) pcm_->Detach(player_);
 
   if (player_state != PLAYER_STATE_NONE && player_state != PLAYER_STATE_IDLE) {
     if (player_unprepare(player_) != PLAYER_ERROR_NONE) {
@@ -939,6 +1136,13 @@ void MediaPlayer::OnPrepared(void *user_data) {
     return;
   }
 
+  // The documented audio-only setter requires READY/PLAYING/PAUSED, not
+  // IDLE. Hide the plane during creation, then disable video rendering here.
+  if (self->audio_only_) {
+    const int result = player_set_audio_only(self->player_, true);
+    if (result != PLAYER_ERROR_NONE) LOG_INFO("[MediaPlayer] Audio-only mode unavailable: %d", result);
+  }
+
   if (self->is_restored_) {
     self->ResetEventDispatchState();
     LOG_INFO("[MediaPlayer] Event dispatch state reset for restored player.");
@@ -960,9 +1164,13 @@ void MediaPlayer::OnBuffering(int percent, void *user_data) {
   }
 
   if (percent == 100) {
+    player_state_e state = PLAYER_STATE_NONE;
+    if (self->pcm_ && player_get_state(self->player_, &state) == PLAYER_ERROR_NONE)
+      self->pcm_->Playing(state == PLAYER_STATE_PLAYING);
     self->SendBufferingEnd();
     self->is_buffering_ = false;
   } else if (!self->is_buffering_ && percent <= 5) {
+    if (self->pcm_) self->pcm_->Playing(false);
     self->SendBufferingStart();
     self->is_buffering_ = true;
   } else {
@@ -984,6 +1192,7 @@ void MediaPlayer::OnSeekCompleted(void *user_data) {
   auto on_seek_completed = std::move(self->on_seek_completed_);
   self->on_seek_completed_ = nullptr;
   self->is_seeking_ = false;
+  if (self->pcm_) self->pcm_->Seeking(false);
 
   if (on_seek_completed) {
     on_seek_completed();
@@ -1018,6 +1227,7 @@ void MediaPlayer::OnInterrupted(player_interrupted_code_e code,
   }
 
   self->SendIsPlayingState(false);
+  if (self->pcm_) self->pcm_->Playing(false);
   LOG_ERROR("[MediaPlayer] Interrupt code: %d.", code);
 }
 
@@ -1033,6 +1243,7 @@ void MediaPlayer::OnError(int error_code, void *user_data) {
   }
 
   self->SendError("Media Player error", get_error_message(error_code));
+  if (self->pcm_) self->pcm_->Playing(false);
 }
 
 void MediaPlayer::OnSubtitleUpdated(unsigned long duration, char *text,

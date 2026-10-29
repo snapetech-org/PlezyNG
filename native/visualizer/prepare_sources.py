@@ -38,6 +38,8 @@ def prepare(name, root, lock, here, platform):
     if hashlib.sha256(patch.read_bytes()).hexdigest() != spec['patchSha256']:
         raise SystemExit(f'{name}: patch digest does not match sources.lock.json')
     destination = checkout(name, root, spec)
+    build = None
+    mpv_patch_in_series = False
     for path, expected in spec.get('submodules', {}).items():
         git(destination, 'submodule', 'update', '--init', '--', path)
         if git(destination / path, 'rev-parse', 'HEAD') != expected:
@@ -47,6 +49,12 @@ def prepare(name, root, lock, here, platform):
         versions = json.loads((build / 'versions.json').read_text())
         if versions['components']['mpv']['commit'] != spec['commit']:
             raise SystemExit('mpv-build manifest does not match the locked mpv source')
+        build_patch_relative = lock['appMpvBuild'].get('orderedPcmPatch')
+        if not build_patch_relative:
+            raise SystemExit('mpv-build lock does not identify its ordered PCM patch')
+        build_patch = build / build_patch_relative
+        if not build_patch.is_file() or hashlib.sha256(build_patch.read_bytes()).hexdigest() != spec['patchSha256']:
+            raise SystemExit('mpv-build ordered PCM patch does not match the app source lock')
         seen = set()
         for series in ['common', platform]:
             manifest = build / 'patches' / 'mpv' / f'series.{series}'
@@ -58,14 +66,23 @@ def prepare(name, root, lock, here, platform):
                     raise SystemExit(f'Invalid or duplicate patch in {manifest}: {filename}')
                 seen.add(filename)
                 git(destination, 'apply', str(build / 'patches' / 'mpv' / 'pool' / filename))
+                if (build / 'patches' / 'mpv' / 'pool' / filename).resolve() == build_patch.resolve():
+                    mpv_patch_in_series = True
         print(f'mpv: composed {len(seen)} locked common/{platform} source patches')
+        if not mpv_patch_in_series:
+            raise SystemExit('ordered PCM patch is not present in the locked mpv-build patch series')
         if platform == 'android':
             bridge = here / lock['appMpvBuild']['androidBridgePatch']
             if hashlib.sha256(bridge.read_bytes()).hexdigest() != lock['appMpvBuild']['androidBridgePatchSha256']:
                 raise SystemExit('Android session bridge patch digest mismatch')
-            git(build, 'apply', str(bridge))
-            print('mpv-build: prepared the Android session-leased visualization bridge')
-    git(destination, 'apply', str(patch))
+            bridge_source = build / 'platforms/android/lib/src/main/cpp/session.cpp'
+            bridge_text = bridge_source.read_text()
+            for symbol in ('plezy_android_subtitle_capture_read_next', 'mpv_plezy_audio_tap_read_next'):
+                if symbol not in bridge_text:
+                    raise SystemExit(f'mpv-build Android source is missing {symbol}')
+            print('mpv-build: verified the Android session-leased visualization bridge')
+    if name != 'mpv':
+        git(destination, 'apply', str(patch))
     print(f'{name}: prepared {spec["commit"]} with {spec["patch"]}')
 
 

@@ -10,6 +10,7 @@
 #endif
 #include "../../visualization/native_worker.h"
 #include <dlfcn.h>
+#include <cstring>
 
 using namespace plezy::visualization;
 struct mpv_handle;
@@ -18,7 +19,9 @@ struct TapApi {
   int (*version)() = reinterpret_cast<int(*)()>(dlsym(RTLD_DEFAULT, "mpv_plezy_audio_tap_version"));
   int (*enable)(mpv_handle*, int) = reinterpret_cast<int(*)(mpv_handle*, int)>(dlsym(RTLD_DEFAULT, "mpv_plezy_audio_tap_enable"));
   int (*read)(mpv_handle*, double, mpv_plezy_audio_block*, size_t) = reinterpret_cast<int(*)(mpv_handle*, double, mpv_plezy_audio_block*, size_t)>(dlsym(RTLD_DEFAULT, "mpv_plezy_audio_tap_read"));
+  int (*read_next)(mpv_handle*, mpv_plezy_audio_block*, size_t) = reinterpret_cast<int(*)(mpv_handle*, mpv_plezy_audio_block*, size_t)>(dlsym(RTLD_DEFAULT, "mpv_plezy_audio_tap_read_next"));
   bool available() const { return version && enable && read && version() == MPV_PLEZY_AUDIO_TAP_ABI; }
+  bool subtitle_available() const { return version && enable && read_next && version() == MPV_PLEZY_AUDIO_TAP_ABI; }
 };
 TapApi& Tap() { static TapApi api; return api; }
 class AppleContext final : public NativeContext {
@@ -145,6 +148,32 @@ int PlezyVisualizationTapEnable(void* player, BOOL enabled) {
 int PlezyVisualizationTapRead(void* player, double pts, void* output, size_t size) {
   return player && std::isfinite(pts) && size == sizeof(mpv_plezy_audio_block) && Tap().available()
       ? Tap().read(static_cast<mpv_handle*>(player), pts, static_cast<mpv_plezy_audio_block*>(output), size) : (std::isfinite(pts) ? MPV_PLEZY_AUDIO_UNSUPPORTED : 0);
+}
+BOOL PlezySubtitlePcmCaptureAvailable(void) { return Tap().subtitle_available(); }
+int PlezySubtitlePcmCaptureEnable(void* player, BOOL enabled) {
+  return player && Tap().subtitle_available()
+      ? Tap().enable(static_cast<mpv_handle*>(player), enabled ? 1 : 0) : MPV_PLEZY_AUDIO_UNSUPPORTED;
+}
+int PlezySubtitlePcmCaptureReadNext(void* player, double* pts, uint32_t* frames, uint32_t* sample_rate,
+                                    uint32_t* channels, uint32_t* dropped_frames, void* samples,
+                                    size_t sample_capacity) {
+  if (!player || !pts || !frames || !sample_rate || !channels || !dropped_frames || !samples ||
+      !Tap().subtitle_available()) return MPV_PLEZY_AUDIO_UNSUPPORTED;
+  mpv_plezy_audio_block block{};
+  const int result = Tap().read_next(static_cast<mpv_handle*>(player), &block, sizeof(block));
+  if (result <= 0) return result;
+  if (!std::isfinite(block.pts) || block.frames == 0 || block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES ||
+      block.sample_rate == 0 || block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS)
+    return MPV_PLEZY_AUDIO_UNSUPPORTED;
+  const size_t sample_bytes = static_cast<size_t>(block.frames) * block.channels * sizeof(float);
+  if (sample_bytes > sample_capacity) return MPV_PLEZY_AUDIO_UNSUPPORTED;
+  std::memcpy(samples, block.samples, sample_bytes);
+  *pts = block.pts;
+  *frames = block.frames;
+  *sample_rate = block.sample_rate;
+  *channels = block.channels;
+  *dropped_frames = block.dropped_frames;
+  return 1;
 }
 @implementation PlezyMilkRustHost {
   std::unique_ptr<NativeWorker> _worker;

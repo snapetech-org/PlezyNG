@@ -38,6 +38,12 @@ abstract interface class PlayerAudioFocusControl {
   Future<void> setAudioFocusEnabled(bool enabled);
 }
 
+/// A player whose exact music output can be bound to the native preset host.
+/// Renderer and codec availability are negotiated separately by that host.
+abstract interface class NativeVisualizationAudioSource {
+  bool get nativeVisualizationAudioReady;
+}
+
 extension PlayerAudioFocusOwnership on Player {
   Future<void> setWorkspaceAudioFocusEnabled(bool enabled) async {
     final current = this;
@@ -107,7 +113,7 @@ abstract class PlayerBase
   /// Issue-time id for anything that asks the playhead to move — a seek
   /// request, a relocation claim, a source install. Monotonic, so it also
   /// orders [runSeek] calls inside a group.
-  final int _playheadOperations = 0;
+  int _playheadOperations = 0;
 
   /// The newest operation the backend actually accepted. A completion may only
   /// speak for the playhead while nothing newer has been accepted; asking is
@@ -165,7 +171,7 @@ abstract class PlayerBase
   /// destination cannot be read back, and then to [publishPlayheadRelocation]
   /// when there is a destination to report.
   @protected
-  int beginPlayheadRelocation() => _playheadOperations;
+  int beginPlayheadRelocation() => ++_playheadOperations;
 
   /// Record that a claimed relocation actually moved the playhead, even though
   /// its destination could not be read back.
@@ -1094,7 +1100,7 @@ abstract class PlayerBase
       _deferredRelocation = (token: token, position: position);
       return;
     }
-    final writer = token ?? _playheadOperations;
+    final writer = token ?? ++_playheadOperations;
     _takeOperationOwnership(writer);
     _lastPositionWriter = writer;
     _activeSeekGroup = null;
@@ -1196,7 +1202,7 @@ abstract class PlayerBase
     _outgoingSourcePosition = Duration(milliseconds: _frozenOutgoingPositionMs ?? _lastReportedPositionMs);
     _frozenOutgoingPositionMs = null;
     _lastReportedPositionMs = 0;
-    _takeOperationOwnership(_playheadOperations);
+    _takeOperationOwnership(++_playheadOperations);
     _activeSeekGroup = null;
     // A gapless advance starts the new source at its beginning, which is known
     // rather than guessed. Published unconditionally: the alternative is to
@@ -1274,7 +1280,7 @@ abstract class PlayerBase
       bufferRanges: const [],
       hasRenderedFrame: false,
     );
-    _takeOperationOwnership(_playheadOperations);
+    _takeOperationOwnership(++_playheadOperations);
     _lastPositionWriter = _playheadOperations;
     _activeSeekGroup = null;
     completedController.add(false);
@@ -1316,7 +1322,7 @@ abstract class PlayerBase
       bufferRanges: snapshot.bufferRanges,
       hasRenderedFrame: snapshot.hasRenderedFrame,
     );
-    _takeOperationOwnership(_playheadOperations);
+    _takeOperationOwnership(++_playheadOperations);
     _lastPositionWriter = _playheadOperations;
     _activeSeekGroup = null;
     completedController.add(snapshot.completed);
@@ -1656,7 +1662,7 @@ abstract class PlayerBase
   Future<void> runSeek(Duration position, Future<void> Function() seekFn) async {
     if (_disposed) return;
 
-    final request = _playheadOperations;
+    final request = ++_playheadOperations;
     // Measures how much media time playback could legitimately have covered
     // while the command was in flight; a fixed media-time window cannot tell a
     // fast-rate advance from a stale pre-seek tick.

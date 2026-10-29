@@ -121,6 +121,8 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
       handleSetVideoZoom(call: call, result: result)
     case "isInitialized":
       result(playerCore?.isInitialized ?? false)
+    case "subtitlePcmCaptureAvailable", "setSubtitlePcmCaptureEnabled", "drainSubtitlePcmCapture":
+      handleSubtitlePcmCapture(call: call, result: result)
     case "updateFrame":
       handleUpdateFrame(result: result)
     case "setLogLevel":

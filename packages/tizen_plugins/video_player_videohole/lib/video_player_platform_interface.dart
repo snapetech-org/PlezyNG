@@ -131,6 +131,15 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('setTrackSelection() has not been implemented.');
   }
 
+  /// Whether the current native player can expose bounded decoded PCM.
+  Future<bool> subtitlePcmCaptureAvailable(int playerId) async => false;
+
+  /// Starts or stops the opt-in bounded PCM queue.
+  Future<bool> setSubtitlePcmCaptureEnabled(int playerId, bool enabled) async => false;
+
+  /// Drains timestamped PCM packets from the bounded capture queue.
+  Future<List<Map<String, Object?>>> drainSubtitlePcmCapture(int playerId) async => const [];
+
   /// Sets the playback speed to a [speed] value indicating the playback rate.
   Future<void> setPlaybackSpeed(int playerId, double speed) {
     throw UnimplementedError('setPlaybackSpeed() has not been implemented.');
@@ -345,8 +354,7 @@ class VideoEvent {
   }
 
   @override
-  int get hashCode =>
-      eventType.hashCode ^ duration.hashCode ^ size.hashCode ^ buffered.hashCode ^ text.hashCode;
+  int get hashCode => eventType.hashCode ^ duration.hashCode ^ size.hashCode ^ buffered.hashCode ^ text.hashCode;
 }
 
 /// Type of the event.
@@ -455,10 +463,7 @@ class DurationRange {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DurationRange &&
-          runtimeType == other.runtimeType &&
-          start == other.start &&
-          end == other.end;
+      other is DurationRange && runtimeType == other.runtimeType && start == other.start && end == other.end;
 
   @override
   int get hashCode => start.hashCode ^ end.hashCode;

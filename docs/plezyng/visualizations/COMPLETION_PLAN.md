@@ -65,6 +65,15 @@ Keep community assets canonical in MilkRust; PlezyNG pins the catalog and downlo
 
 # Completion contract
 
+2026-10-28 continuation: signed delivery now has a committed public-root
+configuration path and a publisher gate requiring immutable per-preset/device
+qualification evidence. These are source mechanisms, not passed release gates.
+See [catalog release configuration](CATALOG_RELEASE.md) and
+[remaining TV integration](TV_HOST_INTEGRATION.md) for the concrete outstanding
+work. Full HLSL and non-Fade `.milk2` rendering remain incomplete. The earlier
+no-tests/builds/CI/captures/benchmarks/device-qualification restriction remains
+active; all subsequent source checkpoints use `[skip ci]`.
+
 “All community presets” is an engineering target, not an unbounded claim about every future file. Establish a versioned corpus that includes every current imported file plus representative MilkDrop 1, MilkDrop 2, MilkDrop 3 double presets, texture dependencies, fragments and converted formats. Preserve arbitrary local import so users are not limited to curated packs.
 
 Every discovered file must receive a result: discovered, readable, parsed, compiled, rendered, visually reviewed, failed, or excluded with a reason. Report counts per format, engine, platform and corpus hash. A parse success, nonempty frame, fallback drawing, or static shader translation must never be called faithful rendering.
@@ -253,3 +262,18 @@ produced native artifacts, qualified broader downloadable packs, production
 catalog key custody/publication, or V9/V10. No builds, tests, CI jobs, GPU captures
 or device qualification were executed for these increments. See
 [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the evidence ledger.
+
+
+## Tizen source continuation after PR #74 closure, 2026-10-28
+
+Closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) added the
+Samsung same-player PCM/EGL/texture path, source-generation protection, app
+capability routing and explicit artifact/source/notice packaging inputs. Its
+source is retained on current-main
+[PR #78](https://github.com/snapetech-org/PlezyNG/pull/78) for re-review. This
+preserves the original plan; V1 remains open for
+SDK/device qualification, webOS and context-loss/hang handling. Tizen's current
+source limits are normal-speed S16LE stereo and PNG/JPEG/BMP/TGA texture
+decoding. Full HLSL, other `.milk2` patterns, qualified broader packs and
+production key custody/publication remain open. No tests, builds, CI, captures
+or device qualification ran.

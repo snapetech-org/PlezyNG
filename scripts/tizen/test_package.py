@@ -1,5 +1,6 @@
 """Package boundary tests. Synthetic archives are never installable TV builds."""
 import json
+import hashlib
 from pathlib import Path
 import struct
 import subprocess
@@ -54,6 +55,62 @@ class PackageTest(unittest.TestCase):
         self.assertEqual(report['sha256'], package.sha256(path))
         self.assertTrue(report['signature_files_present'])
         self.assertFalse(report['hardware_qualified'])
+
+    def visualizer_fixture(self, arch='arm'):
+        content = {'libmilkrust_native.so': elf(arch), 'milkrust-source.tar.gz': b'synthetic source, not a build',
+                   'MILKRUST-NOTICES.txt': b'synthetic fixture notice'}
+        pin = json.loads((package.ROOT / 'native/visualizer/sources.lock.json').read_text())['milkrust']
+        metadata = {'schemaVersion': 1, 'abi': 1, 'sourceRevision': pin['commit'], 'target': f'tizen-{arch}',
+                    'runnerPolicy': 'private-ephemeral-jit',
+                    'buildRun': 'https://github.com/snapetech-org/MilkRust/actions/runs/123'}
+        for name, (key, _) in package.VISUALIZER_FILES.items():
+            metadata[key] = hashlib.sha256(content[name]).hexdigest()
+        raw = json.dumps(metadata).encode()
+        entries = {'res/visualizer/milkrust-native.json': raw}
+        entries.update({('lib/' if name.endswith('.so') else 'res/visualizer/') + name: value
+                        for name, value in content.items()})
+        return metadata, raw, content, entries
+
+    def test_visualizer_requires_complete_runtime_source_notice_bundle(self):
+        _, _, _, entries = self.visualizer_fixture()
+        report = package.inspect_package(self.archive(extra=entries), 'arm')['visualizer']
+        self.assertFalse(report['hardwareQualified'])
+        self.assertFalse(report['catalogueEligible'])
+        for missing in entries:
+            with self.subTest(missing=missing), self.assertRaisesRegex(ValueError, 'Incomplete'):
+                package.inspect_package(self.archive(extra=entries, omit=missing), 'arm')
+        for name in entries:
+            if name.endswith('.json'):
+                continue
+            altered = {**entries, name: entries[name] + b'tampered'}
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'digest mismatch'):
+                package.inspect_package(self.archive(extra=altered), 'arm')
+        with self.assertRaisesRegex(ValueError, 'duplicate MilkRust'):
+            package.inspect_package(self.archive(extra={**entries, 'other/libmilkrust_native.so': elf()}), 'arm')
+
+    def test_visualizer_stage_requires_reviewed_digest_pin_and_tv_architecture(self):
+        metadata, raw, content, _ = self.visualizer_fixture()
+        bundle, destination = self.root / 'visualizer', self.root / 'staged'
+        bundle.mkdir()
+        manifest = bundle / 'milkrust-native.json'
+        manifest.write_bytes(raw)
+        for name, data in content.items():
+            (bundle / name).write_bytes(data)
+        reviewed = hashlib.sha256(raw).hexdigest()
+        with self.assertRaisesRegex(ValueError, 'reviewed digest'):
+            package.stage_visualizer(package.ROOT, destination, bundle, '0' * 64, 'arm')
+        package.stage_visualizer(package.ROOT, destination, bundle, reviewed, 'arm')
+        self.assertEqual((destination / 'tizen/lib/libmilkrust_native.so').read_bytes(), content['libmilkrust_native.so'])
+        metadata['sourceRevision'] = '0' * 40
+        manifest.write_text(json.dumps(metadata))
+        with self.assertRaisesRegex(ValueError, 'app source pin'):
+            package.stage_visualizer(package.ROOT, destination, bundle, package.sha256(manifest), 'arm')
+        metadata, _, _, _ = self.visualizer_fixture()
+        (bundle / 'libmilkrust_native.so').write_bytes(elf('x64'))
+        metadata['librarySha256'] = package.sha256(bundle / 'libmilkrust_native.so')
+        manifest.write_text(json.dumps(metadata))
+        with self.assertRaisesRegex(ValueError, 'wrong TV architecture'):
+            package.stage_visualizer(package.ROOT, destination, bundle, package.sha256(manifest), 'arm')
 
     def test_emulator_or_mixed_abi_cannot_pass_as_tv(self):
         for path in (self.archive(arch='x64', manifest=self.manifest),):

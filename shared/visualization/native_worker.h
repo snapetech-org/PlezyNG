@@ -12,6 +12,7 @@
 namespace plezy::visualization {
 struct NativeFrame {
   uint32_t width = 0, height = 0;
+  uint32_t audio_generation = 0;
   uint64_t preset_serial = 0;
   std::vector<uint8_t> rgba;
 };
@@ -19,6 +20,7 @@ struct NativeStatus {
   std::string state = "starting", reason;
   uint64_t preset_serial = 0, frame_serial = 0;
   uint32_t dropped = 0;
+  uint32_t audio_generation = 0;
   int width = 0, height = 0;
   bool has_frame = false;
 };
@@ -192,6 +194,7 @@ class NativeWorker {
             frame->width = width;
             frame->height = height;
             frame->preset_serial = serial;
+            frame->audio_generation = generation;
             engine->Capture(width, height, elapsed, frame->rgba);
             bool current;
             {
@@ -201,6 +204,7 @@ class NativeWorker {
                 status_.state = "rendering";
                 status_.reason.clear();
                 status_.preset_serial = serial;
+                status_.audio_generation = generation;
                 ++status_.frame_serial;
               }
             }

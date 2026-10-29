@@ -89,7 +89,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   bool get hasNativeVisualizationAudio {
     final player = _player;
-    return !_disposed && player is PlayerNative && player.isAudioCoreReady;
+    return !_disposed &&
+        player is NativeVisualizationAudioSource &&
+        (player as NativeVisualizationAudioSource).nativeVisualizationAudioReady;
   }
 
   MusicPlaybackServiceImpl({

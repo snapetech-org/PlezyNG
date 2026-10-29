@@ -49,6 +49,11 @@ static std::shared_ptr<VideoPlayer> GetPlayer(int64_t player_id) {
   return nullptr;
 }
 
+std::shared_ptr<VisualizerPcm> GetVisualizationPcm(int64_t player_id) {
+  const auto player = GetPlayer(player_id);
+  return player ? player->VisualizationPcm() : nullptr;
+}
+
 static flutter::EncodableValue EncodableValueFromJson(const json& j) {
   if (j.is_null()) {
     return flutter::EncodableValue();
@@ -356,6 +361,22 @@ int ffi_set_track_selection(int64_t player_id, int64_t track_id,
     return -1;
   }
   return player->SetTrackSelection(track_id, std::string(track_type)) ? 0 : -1;
+}
+
+int ffi_subtitle_pcm_capture_available(int64_t player_id) {
+  auto player = video_player_videohole_tizen::GetPlayer(player_id);
+  return player && player->SubtitlePcmCaptureAvailable() ? 1 : 0;
+}
+
+int ffi_set_subtitle_pcm_capture_enabled(int64_t player_id, bool enabled) {
+  auto player = video_player_videohole_tizen::GetPlayer(player_id);
+  return player && player->SetSubtitlePcmCaptureEnabled(enabled) ? 0 : -1;
+}
+
+const char* ffi_drain_subtitle_pcm_capture(int64_t player_id) {
+  auto player = video_player_videohole_tizen::GetPlayer(player_id);
+  if (!player) return nullptr;
+  return strdup(player->DrainSubtitlePcmCaptureJson().c_str());
 }
 
 int ffi_set_display_geometry(int64_t player_id, int32_t x, int32_t y,

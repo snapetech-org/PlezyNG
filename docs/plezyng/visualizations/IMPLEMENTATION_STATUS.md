@@ -37,7 +37,7 @@ Updated: 2026-10-28. The original plan and signed-catalog source were merged via
 | Package | Current source state | Remaining exit evidence or work |
 | --- | --- | --- |
 | V0 Audit/harness | Identified false-positive and denominator paths repaired | Regenerate the full corpus ledger, account for every original omission, reference/negative-control runs |
-| V1 Native integration | Linux projectM/MilkRust and Windows, Apple, Android MilkRust host source | Compiler/device evidence on every host; webOS/Tizen PCM+texture hosts; context-loss recovery |
+| V1 Native integration | Linux projectM/MilkRust and Windows, Apple, Android MilkRust host source | Compiler/device evidence on every host; webOS PCM+texture host; Tizen SDK/device validation; context-loss recovery |
 | V2 Audio | Optional patched PCM ABI with Linux/Windows/Apple consumers and Android AAR admission bridge source | Patched artifacts on each platform; timing, seeks, gapless, layout/rate/speed, passthrough and overload qualification; qualify original-scene live statistics |
 | V3 Parser/VM | Targeted syntax/EEL fixes, input/depth/work limits and checked frame failures | Full state/reference/RNG/encoding conformance; bounded parser/evaluator coverage |
 | V4 MilkRust rendering | Native C ABI/GL renderer and experimental WebGL; real saved-pair parser and uniform Fade candidate path | Qualified native renderer, complete HLSL, stage/feedback/transition fidelity, all `.milk2` patterns and remaining formats |
@@ -50,7 +50,7 @@ Updated: 2026-10-28. The original plan and signed-catalog source were merged via
 
 ## Native boundaries that prevent a release claim
 
-The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS and Android/TV now have native MilkRust host source; none has been compiled or device-qualified in this session. webOS and Tizen still lack their required host paths. Storage/import availability and engine availability are separate.
+The Linux host requires the patched dependencies and Mesa surfaceless EGL. Default binary artifacts have not gained these extensions. Windows, macOS, iOS/tvOS and Android/TV now have native MilkRust host source; none has been compiled or device-qualified in this session. Tizen has unbuilt same-player PCM/EGL/texture host source retained from closed PR #74 on continuation [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78). webOS still lacks a supported PCM source and renderer host. Storage/import availability and engine availability are separate.
 
 The in-process renderer catches exceptions, but cannot contain a hung shader compiler or GPU driver. Teardown joins the worker and can therefore block in that case. Process isolation/watchdog behavior, resource budgets and driver recovery remain required work before claiming arbitrary community inputs are safely supported.
 
@@ -93,8 +93,66 @@ download or fabricate production artifacts.
 
 
 The Tizen and webOS runners currently delegate audio to their Samsung/LG media
-backends rather than the mpv core used by the new hosts. A decoded-PCM callback
-and texture/lifecycle bridge in those backends is still required; copying the
-Linux mpv host would not attach it to those playback streams. Native-engine
-acknowledgements are now also bundled in Flutter's license registry, independently
-of per-pack rights and content notices.
+backends rather than the mpv core used by the new hosts. Tizen's host source
+attaches to a Samsung PCM callback; webOS's integrated LG player exposes no such
+callback in this repository. A decoded-PCM callback and texture/lifecycle bridge
+in those backends is still required; copying the Linux mpv host would not attach
+it to those playback streams. The webOS investigation also records why the
+public NDL feed API and the system-only `com.webos.service.audiooutput` API do
+not provide that callback, and the replacement audio-core contract still
+required. Native-engine acknowledgements are now also bundled in Flutter's
+license registry, independently of per-pack rights and content notices.
+
+## Catalog release follow-up
+
+PR #61 has merged. The follow-up compiles one reviewed public trust root across
+all app platforms, adds a release sequence floor, and requires signed report
+metadata for broader pack downloads. The MilkRust publisher now checks exact
+archive/preset evidence and the private JIT/device matrix before promoting a
+broader pack. The library labels the authored fixtures as unqualified and links
+broader qualification reports. See [catalog release configuration](CATALOG_RELEASE.md).
+Empty production keys, absent qualification evidence and the source-only
+execution restriction still prevent a production delivery claim. Full HLSL,
+non-Fade `.milk2` patterns and webOS/Tizen PCM/texture hosts remain implementation
+work; none is completed by adding publication gates.
+
+The current MilkRust source pin is `c622b0f6614c62bf55abacf334b464487bb97256`.
+It adds bounded native/WebGL lowering for legacy `tex2D`/`tex`, `tex2Dlod`,
+`tex2Dbias`, `tex2Dproj` and `tex2Dgrad` calls, including nested sampling and
+known sampler bindings. Full HLSL/runtime/resource compatibility remains open;
+unsupported resource models, control flow, matrices, functions and runtime
+semantics are not covered, and no GPU fidelity comparison has run. The saved
+non-Fade `.milk2` patterns remain blocked. The qualification matrix matches the
+actual 32-bit ARM webOS/Tizen package targets and also covers Android armv7.
+The [TV integration investigation](TV_HOST_INTEGRATION.md) records the concrete
+same-player PCM and native texture work still required. PR #69 and its branch
+were closed/deleted externally during implementation. The follow-up is
+preserved on `codex/visualizer-catalog-checkpoint-20261028` without reopening
+the closed PR. Production trust remains empty and no broader pack or platform
+has been newly qualified.
+The qualification matrix now matches the actual 32-bit ARM webOS/Tizen package
+targets and also covers Android armv7. The [TV integration investigation](TV_HOST_INTEGRATION.md)
+records the concrete same-player PCM and native texture work still required.
+PR #69 and its branch were closed/deleted externally during implementation.
+The follow-up is preserved on `codex/visualizer-catalog-checkpoint-20261028`
+without reopening the closed PR. Production trust remains empty and no
+broader pack or platform has been newly qualified.
+
+## Samsung native host source retained after PR #74 closed
+
+Closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) added
+synchronized same-player PCM, exact player-ID binding, GLES 3 rendering,
+bounded image decoding, leased Flutter pixel buffers and optional runtime/source/
+notice packaging with an independently reviewed manifest digest. That PR was
+closed without merging; this continuation branch carries its source forward for
+re-review. App readiness admits a bound Samsung music player. Regression source
+covers binding cancellation, missing-host fallback and artifact tampering.
+
+The implementation is uncompiled and unrun. Normal-speed S16LE stereo and
+PNG/JPEG/BMP/TGA are the current Tizen host limits. The callback teardown contract,
+SDK/firmware availability, driver hangs and physical TV behavior remain open.
+No platform or broader pack gained qualification; production trust is still
+empty. The previous checkpoint branch was also deleted remotely. Tizen source
+is retained on current-main [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78);
+see
+[TV_HOST_INTEGRATION.md](TV_HOST_INTEGRATION.md) for the current source contract.

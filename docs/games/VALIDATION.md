@@ -535,3 +535,37 @@ Families changes on live accounts. Current private-JIT SDK builds, real HDR
 output, relay deployment and Valve-approved Cloud scopes remain external gates.
 See [STEAM_FAMILIES.md](STEAM_FAMILIES.md) for the broader temporary-session trust
 model, explicit limits and live qualification cases.
+
+## Fixed-base application integration — 2026-10-29
+
+The PR branch incorporates base `ac97859268aeddde1c112628debaac4ccc496c34`.
+Integration repairs keep the newer player-neutral subtitle capture interface
+supplied with position/duration, explicitly narrow optional native audio and
+PCM capabilities, expose the app-owned Tizen native handle without using a
+test-only API, restore the missing base64 import and check widget lifetime after
+asynchronous subtitle validation. Changed Dart sources are formatted with the
+repository toolchain. These changes preserve the source features on that fixed
+base; this checkpoint does not merge or deploy the PR.
+
+The existing playback regression tests also exposed a constant operation ID:
+every seek, relocation and source change reused zero. Restoring monotonic IDs
+allows accepted newer operations to supersede stale completions without letting
+a rejected request take ownership.
+
+- All 88 native-player bridge and Tizen tests pass after this repair, including
+  overlapping, rejected and out-of-order seeks and source retirement.
+- A separate 119-test regression run passes for music playback, music
+  visualization, signed visualization catalogs, subtitle archive imports and
+  source playback.
+- All 29 selected Steam card, Families client/dialog, activity, real localhost
+  internet-tunnel fixture and retained workspace/texture tests pass on the
+  reconciled source. This includes narrow 2x-text RTL confirmation and native
+  plane/texture recovery. Together these three non-overlapping runs contain
+  236 passing Flutter tests; they do not qualify the entire application suite.
+- The standard Dart analyzer passes with zero diagnostics. Localization checks
+  pass for 37 locales, 4,309 messages and 20,556 explicitly recorded English
+  fallbacks; these counts do not imply reviewed translations.
+- Formatting passes for all 51 changed authored Dart files. Earlier interrupted
+  or compiler-memory-limited test attempts are excluded from the passing totals.
+  The successful focused runs used a task-local bounded compiler launcher;
+  shared SDK files and repository checks were not altered.

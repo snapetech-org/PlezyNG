@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert' show jsonDecode, jsonEncode, utf8;
+import 'dart:convert' show base64Decode, jsonDecode, jsonEncode, utf8;
 import 'dart:ffi' as ffi;
 import 'dart:isolate' show RawReceivePort, ReceivePort;
 
@@ -150,8 +150,7 @@ class DurationMessage {
     final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
     return DurationMessage(
       playerId: jsonMap['playerId'] as int,
-      durationRange:
-          (jsonMap['durationRange'] as List<dynamic>?)?.map((e) => (e as num).toInt()).toList(),
+      durationRange: (jsonMap['durationRange'] as List<dynamic>?)?.map((e) => (e as num).toInt()).toList(),
     );
   }
 }
@@ -195,12 +194,19 @@ typedef _FFISetLoopingDart = int Function(int, bool);
 typedef _FFIGetTrackInfoNative = ffi.Pointer<ffi.Char> Function(ffi.Int64, ffi.Pointer<ffi.Char>);
 typedef _FFIGetTrackInfoDart = ffi.Pointer<ffi.Char> Function(int, ffi.Pointer<ffi.Char>);
 
-typedef _FFISetTrackSelectionNative = ffi.Int32 Function(
-    ffi.Int64, ffi.Int64, ffi.Pointer<ffi.Char>);
+typedef _FFISetTrackSelectionNative = ffi.Int32 Function(ffi.Int64, ffi.Int64, ffi.Pointer<ffi.Char>);
 typedef _FFISetTrackSelectionDart = int Function(int, int, ffi.Pointer<ffi.Char>);
 
-typedef _FFISetDisplayGeometryNative = ffi.Int32 Function(
-    ffi.Int64, ffi.Int32, ffi.Int32, ffi.Int32, ffi.Int32);
+typedef _FFISubtitlePcmAvailableNative = ffi.Int32 Function(ffi.Int64);
+typedef _FFISubtitlePcmAvailableDart = int Function(int);
+
+typedef _FFISetSubtitlePcmEnabledNative = ffi.Int32 Function(ffi.Int64, ffi.Bool);
+typedef _FFISetSubtitlePcmEnabledDart = int Function(int, bool);
+
+typedef _FFIDrainSubtitlePcmNative = ffi.Pointer<ffi.Char> Function(ffi.Int64);
+typedef _FFIDrainSubtitlePcmDart = ffi.Pointer<ffi.Char> Function(int);
+
+typedef _FFISetDisplayGeometryNative = ffi.Int32 Function(ffi.Int64, ffi.Int32, ffi.Int32, ffi.Int32, ffi.Int32);
 typedef _FFISetDisplayGeometryDart = int Function(int, int, int, int, int);
 
 typedef _FFISetDisplayRotateNative = ffi.Int32 Function(ffi.Int64, ffi.Int32);
@@ -263,6 +269,9 @@ class VideoPlayerFFIBindings {
   late int Function(int, bool) _ffiSetLooping;
   late ffi.Pointer<ffi.Char> Function(int, ffi.Pointer<ffi.Char>) _ffiGetTrackInfo;
   late int Function(int, int, ffi.Pointer<ffi.Char>) _ffiSetTrackSelection;
+  late int Function(int) _ffiSubtitlePcmCaptureAvailable;
+  late int Function(int, bool) _ffiSetSubtitlePcmCaptureEnabled;
+  late ffi.Pointer<ffi.Char> Function(int) _ffiDrainSubtitlePcmCapture;
   late int Function(int, int, int, int, int) _ffiSetDisplayGeometry;
   late int Function(int, int) _ffiSetDisplayRotate;
   late int Function(int) _ffiSuspend;
@@ -289,52 +298,36 @@ class VideoPlayerFFIBindings {
     try {
       _lib = ffi.DynamicLibrary.process();
 
-      _ffiInitialize = _lib!
-          .lookup<ffi.NativeFunction<_FFIInitializeNative>>('ffi_initialize')
-          .asFunction<_FFIInitializeDart>();
+      _ffiInitialize =
+          _lib!.lookup<ffi.NativeFunction<_FFIInitializeNative>>('ffi_initialize').asFunction<_FFIInitializeDart>();
 
-      _ffiCreate = _lib!
-          .lookup<ffi.NativeFunction<_FFICreateNative>>('ffi_create')
-          .asFunction<_FFICreateDart>();
+      _ffiCreate = _lib!.lookup<ffi.NativeFunction<_FFICreateNative>>('ffi_create').asFunction<_FFICreateDart>();
 
-      _ffiPrepare = _lib!
-          .lookup<ffi.NativeFunction<_FFIPrepareNative>>('ffi_prepare')
-          .asFunction<_FFIPrepareDart>();
+      _ffiPrepare = _lib!.lookup<ffi.NativeFunction<_FFIPrepareNative>>('ffi_prepare').asFunction<_FFIPrepareDart>();
 
-      _ffiDispose = _lib!
-          .lookup<ffi.NativeFunction<_FFIDisposeNative>>('ffi_dispose')
-          .asFunction<_FFIDisposeDart>();
+      _ffiDispose = _lib!.lookup<ffi.NativeFunction<_FFIDisposeNative>>('ffi_dispose').asFunction<_FFIDisposeDart>();
 
-      _ffiPlay =
-          _lib!.lookup<ffi.NativeFunction<_FFIPlayNative>>('ffi_play').asFunction<_FFIPlayDart>();
+      _ffiPlay = _lib!.lookup<ffi.NativeFunction<_FFIPlayNative>>('ffi_play').asFunction<_FFIPlayDart>();
 
-      _ffiPause = _lib!
-          .lookup<ffi.NativeFunction<_FFIPauseNative>>('ffi_pause')
-          .asFunction<_FFIPauseDart>();
+      _ffiPause = _lib!.lookup<ffi.NativeFunction<_FFIPauseNative>>('ffi_pause').asFunction<_FFIPauseDart>();
 
-      _ffiSeekTo = _lib!
-          .lookup<ffi.NativeFunction<_FFISeekToNative>>('ffi_seek_to')
-          .asFunction<_FFISeekToDart>();
+      _ffiSeekTo = _lib!.lookup<ffi.NativeFunction<_FFISeekToNative>>('ffi_seek_to').asFunction<_FFISeekToDart>();
 
-      _ffiGetPosition = _lib!
-          .lookup<ffi.NativeFunction<_FFIGetPositionNative>>('ffi_get_position')
-          .asFunction<_FFIGetPositionDart>();
+      _ffiGetPosition =
+          _lib!.lookup<ffi.NativeFunction<_FFIGetPositionNative>>('ffi_get_position').asFunction<_FFIGetPositionDart>();
 
-      _ffiGetDuration = _lib!
-          .lookup<ffi.NativeFunction<_FFIGetDurationNative>>('ffi_get_duration')
-          .asFunction<_FFIGetDurationDart>();
+      _ffiGetDuration =
+          _lib!.lookup<ffi.NativeFunction<_FFIGetDurationNative>>('ffi_get_duration').asFunction<_FFIGetDurationDart>();
 
-      _ffiSetVolume = _lib!
-          .lookup<ffi.NativeFunction<_FFISetVolumeNative>>('ffi_set_volume')
-          .asFunction<_FFISetVolumeDart>();
+      _ffiSetVolume =
+          _lib!.lookup<ffi.NativeFunction<_FFISetVolumeNative>>('ffi_set_volume').asFunction<_FFISetVolumeDart>();
 
       _ffiSetPlaybackSpeed = _lib!
           .lookup<ffi.NativeFunction<_FFISetPlaybackSpeedNative>>('ffi_set_playback_speed')
           .asFunction<_FFISetPlaybackSpeedDart>();
 
-      _ffiSetLooping = _lib!
-          .lookup<ffi.NativeFunction<_FFISetLoopingNative>>('ffi_set_looping')
-          .asFunction<_FFISetLoopingDart>();
+      _ffiSetLooping =
+          _lib!.lookup<ffi.NativeFunction<_FFISetLoopingNative>>('ffi_set_looping').asFunction<_FFISetLoopingDart>();
 
       _ffiGetTrackInfo = _lib!
           .lookup<ffi.NativeFunction<_FFIGetTrackInfoNative>>('ffi_get_track_info')
@@ -344,6 +337,24 @@ class VideoPlayerFFIBindings {
           .lookup<ffi.NativeFunction<_FFISetTrackSelectionNative>>('ffi_set_track_selection')
           .asFunction<_FFISetTrackSelectionDart>();
 
+      _ffiSubtitlePcmCaptureAvailable = _lib!
+          .lookup<ffi.NativeFunction<_FFISubtitlePcmAvailableNative>>(
+            'ffi_subtitle_pcm_capture_available',
+          )
+          .asFunction<_FFISubtitlePcmAvailableDart>();
+
+      _ffiSetSubtitlePcmCaptureEnabled = _lib!
+          .lookup<ffi.NativeFunction<_FFISetSubtitlePcmEnabledNative>>(
+            'ffi_set_subtitle_pcm_capture_enabled',
+          )
+          .asFunction<_FFISetSubtitlePcmEnabledDart>();
+
+      _ffiDrainSubtitlePcmCapture = _lib!
+          .lookup<ffi.NativeFunction<_FFIDrainSubtitlePcmNative>>(
+            'ffi_drain_subtitle_pcm_capture',
+          )
+          .asFunction<_FFIDrainSubtitlePcmDart>();
+
       _ffiSetDisplayGeometry = _lib!
           .lookup<ffi.NativeFunction<_FFISetDisplayGeometryNative>>('ffi_set_display_geometry')
           .asFunction<_FFISetDisplayGeometryDart>();
@@ -352,17 +363,12 @@ class VideoPlayerFFIBindings {
           .lookup<ffi.NativeFunction<_FFISetDisplayRotateNative>>('ffi_set_display_rotate')
           .asFunction<_FFISetDisplayRotateDart>();
 
-      _ffiSuspend = _lib!
-          .lookup<ffi.NativeFunction<_FFISuspendNative>>('ffi_suspend')
-          .asFunction<_FFISuspendDart>();
+      _ffiSuspend = _lib!.lookup<ffi.NativeFunction<_FFISuspendNative>>('ffi_suspend').asFunction<_FFISuspendDart>();
 
-      _ffiRestore = _lib!
-          .lookup<ffi.NativeFunction<_FFIRestoreNative>>('ffi_restore')
-          .asFunction<_FFIRestoreDart>();
+      _ffiRestore = _lib!.lookup<ffi.NativeFunction<_FFIRestoreNative>>('ffi_restore').asFunction<_FFIRestoreDart>();
 
-      _ffiSetActivate = _lib!
-          .lookup<ffi.NativeFunction<_FFISetActivateNative>>('ffi_set_activate')
-          .asFunction<_FFISetActivateDart>();
+      _ffiSetActivate =
+          _lib!.lookup<ffi.NativeFunction<_FFISetActivateNative>>('ffi_set_activate').asFunction<_FFISetActivateDart>();
 
       _ffiSetDeactivate = _lib!
           .lookup<ffi.NativeFunction<_FFISetDeactivateNative>>('ffi_set_deactivate')
@@ -372,9 +378,8 @@ class VideoPlayerFFIBindings {
           .lookup<ffi.NativeFunction<_FFISetMixWithOthersNative>>('ffi_set_mix_with_others')
           .asFunction<_FFISetMixWithOthersDart>();
 
-      _ffiFreeString = _lib!
-          .lookup<ffi.NativeFunction<_FFIFreeStringNative>>('ffi_free_string')
-          .asFunction<_FFIFreeStringDart>();
+      _ffiFreeString =
+          _lib!.lookup<ffi.NativeFunction<_FFIFreeStringNative>>('ffi_free_string').asFunction<_FFIFreeStringDart>();
 
       _ffiRegisterDartPort = _lib!
           .lookup<ffi.NativeFunction<_FFIRegisterEventPortNative>>('ffi_register_dart_port')
@@ -645,6 +650,41 @@ class VideoPlayerVideoholeFFIApi {
     }
   }
 
+  bool subtitlePcmCaptureAvailable(int playerId) {
+    final bindings = VideoPlayerFFIBindings.instance;
+    if (!bindings.isLoaded) bindings.load();
+    return bindings._ffiSubtitlePcmCaptureAvailable(playerId) == 1;
+  }
+
+  bool setSubtitlePcmCaptureEnabled(int playerId, bool enabled) {
+    final bindings = VideoPlayerFFIBindings.instance;
+    if (!bindings.isLoaded) bindings.load();
+    return bindings._ffiSetSubtitlePcmCaptureEnabled(playerId, enabled) == 0;
+  }
+
+  List<Map<String, Object?>> drainSubtitlePcmCapture(int playerId) {
+    final bindings = VideoPlayerFFIBindings.instance;
+    if (!bindings.isLoaded) bindings.load();
+    final ptr = bindings._ffiDrainSubtitlePcmCapture(playerId);
+    if (ptr == ffi.nullptr) return const [];
+    try {
+      final bytes = ptr.cast<ffi.Uint8>();
+      var length = 0;
+      while (bytes[length] != 0) {
+        length++;
+      }
+      final decoded = jsonDecode(utf8.decode(bytes.asTypedList(length)));
+      if (decoded is! List) return const [];
+      return decoded.whereType<Map<String, dynamic>>().map((packet) {
+        final encoded = packet.remove('pcmBase64');
+        if (encoded is String) packet['pcm'] = Uint8List.fromList(base64Decode(encoded));
+        return packet.cast<String, Object?>();
+      }).toList(growable: false);
+    } finally {
+      bindings._ffiFreeString(ptr);
+    }
+  }
+
   /// Sets whether audio should mix with other audio sources.
   int setMixWithOthers(bool mixWithOthers) {
     final VideoPlayerFFIBindings bindings = VideoPlayerFFIBindings.instance;
@@ -688,8 +728,7 @@ void ffiInitializeApiDL() {
   }
 
   try {
-    _ffiInitializeApiDlPtr =
-        lib.lookup<ffi.NativeFunction<_FFIInitializeApiDlNative>>('ffi_initialize_api_dl');
+    _ffiInitializeApiDlPtr = lib.lookup<ffi.NativeFunction<_FFIInitializeApiDlNative>>('ffi_initialize_api_dl');
   } catch (e) {
     throw PlatformException(
       code: 'FFI_API_DL_LOOKUP_FAILED',
@@ -697,8 +736,7 @@ void ffiInitializeApiDL() {
     );
   }
 
-  final int result = _ffiInitializeApiDlPtr!
-      .asFunction<_FFIInitializeApiDlDart>()(ffi.NativeApi.initializeApiDLData);
+  final int result = _ffiInitializeApiDlPtr!.asFunction<_FFIInitializeApiDlDart>()(ffi.NativeApi.initializeApiDLData);
   if (result != 0) {
     throw PlatformException(
       code: 'FFI_API_DL_INITIALIZATION_FAILED',

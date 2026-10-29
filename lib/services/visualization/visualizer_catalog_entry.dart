@@ -2,6 +2,9 @@ import 'dart:convert';
 
 /// An immutable pack authorized by an app pin or a verified signed catalog.
 class VisualizerPackCatalogEntry {
+  static const sampleFixtureId = 'milkrust-sample-pack';
+  static const sampleFixtureVersion = '0.1.0';
+  static const sampleFixtureSha256 = '175a042deb4edb224055a6334f67a1c492f32e447dc3c90a54f22849c43a27df';
   const VisualizerPackCatalogEntry({
     required this.id,
     required this.name,
@@ -17,6 +20,7 @@ class VisualizerPackCatalogEntry {
     required this.sourceUrl,
     this.searchText = '',
     this.bundledAsset,
+    this.qualification = const VisualizerPackQualification(),
   });
 
   final String id;
@@ -33,6 +37,7 @@ class VisualizerPackCatalogEntry {
   final String sourceUrl;
   final String searchText;
   final String? bundledAsset;
+  final VisualizerPackQualification qualification;
 
   String get fileName => '$id-$version.rmpack';
 
@@ -53,6 +58,7 @@ class VisualizerPackCatalogEntry {
     'sourceUrl': sourceUrl,
     'searchText': searchText,
     'distributionStatus': 'redistributable',
+    'qualification': qualification.toJson(),
   };
 
   bool sameArtifact(VisualizerPackCatalogEntry other) =>
@@ -139,21 +145,22 @@ class VisualizerPackCatalogEntry {
       presetCount: count('presetCount', 2500),
       sourceUrl: source,
       searchText: search,
+      qualification: VisualizerPackQualification.fromJson(value['qualification']),
     );
   }
 
   static const available = <VisualizerPackCatalogEntry>[
     VisualizerPackCatalogEntry(
-      id: 'milkrust-sample-pack',
+      id: sampleFixtureId,
       name: 'MilkRust Sample Pack',
-      version: '0.1.0',
+      version: sampleFixtureVersion,
       license: 'CC0-1.0',
       description: 'Two MilkRust-authored sample presets. No third-party assets.',
       contentNotice:
           'MilkRust-authored sample content dedicated under CC0-1.0. No third-party presets or textures are included.',
       archiveUrl:
           'https://raw.githubusercontent.com/snapetech-org/MilkRust/de41e50c9d04c0b7c2de03f472c71720e1e9fda0/content/downloads/milkrust-sample-pack-0.1.0.rmpack',
-      sha256: '175a042deb4edb224055a6334f67a1c492f32e447dc3c90a54f22849c43a27df',
+      sha256: sampleFixtureSha256,
       archiveBytes: 2927,
       expandedBytes: 5467,
       presetCount: 2,
@@ -161,6 +168,83 @@ class VisualizerPackCatalogEntry {
           'https://github.com/snapetech-org/MilkRust/tree/de41e50c9d04c0b7c2de03f472c71720e1e9fda0/examples/sample-pack',
       searchText: 'Warm Scope Blue Shape scope geometry shape fixture',
       bundledAsset: 'assets/visualizer/milkrust-sample-pack-0.1.0.rmpack',
+      qualification: VisualizerPackQualification(status: 'sample-fixture-only'),
     ),
   ];
+}
+
+/// Describes a reviewed report for these archive bytes, not every future engine
+/// or device. Old installed receipts may lack it and remain unassessed.
+class VisualizerPackQualification {
+  const VisualizerPackQualification({
+    this.status = 'unassessed',
+    this.targets = const [],
+    this.reportUrl,
+    this.reportSha256,
+  });
+  final String status;
+  final List<String> targets;
+  final String? reportUrl;
+  final String? reportSha256;
+
+  static const requiredTargets = <String>{
+    'linux-x64',
+    'linux-arm64',
+    'windows-x64',
+    'windows-arm64',
+    'macos-x64',
+    'macos-arm64',
+    'ios-arm64',
+    'tvos-arm64',
+    'android-arm64',
+    'android-armv7',
+    'android-x64',
+    'webos-arm',
+    'tizen-arm',
+  };
+
+  String get label => switch (status) {
+    'sample-fixture-only' => 'Sample fixtures · rendering not qualified',
+    'qualified' => 'Qualification report covers ${targets.length} platform targets',
+    _ => 'Rendering qualification unavailable',
+  };
+
+  Map<String, Object> toJson() => {
+    'status': status,
+    'targets': targets,
+    'reportUrl': ?reportUrl,
+    'reportSha256': ?reportSha256,
+  };
+
+  factory VisualizerPackQualification.fromJson(Object? value) {
+    if (value == null) return const VisualizerPackQualification();
+    if (value is! Map<String, dynamic> || value['status'] is! String || value['targets'] is! List) {
+      throw const FormatException('Invalid pack qualification');
+    }
+    final status = value['status'] as String, raw = value['targets'] as List;
+    if (status == 'unassessed' || status == 'sample-fixture-only') {
+      if (raw.isNotEmpty || value['reportUrl'] != null || value['reportSha256'] != null) {
+        throw const FormatException('Unqualified pack cannot claim tested targets');
+      }
+      return VisualizerPackQualification(status: status);
+    }
+    if (status != 'qualified' ||
+        raw.length != requiredTargets.length ||
+        raw.any((t) => t is! String || !requiredTargets.contains(t)) ||
+        raw.toSet().length != requiredTargets.length ||
+        value['reportUrl'] is! String ||
+        value['reportSha256'] is! String ||
+        !RegExp(
+          r'^https://raw\.githubusercontent\.com/snapetech-org/MilkRust/[a-f0-9]{40}/content/qualification/reports/[A-Za-z0-9_-]+\.json$',
+        ).hasMatch(value['reportUrl'] as String) ||
+        !RegExp(r'^[a-f0-9]{64}$').hasMatch(value['reportSha256'] as String)) {
+      throw const FormatException('Incomplete pack qualification report');
+    }
+    return VisualizerPackQualification(
+      status: status,
+      targets: List.unmodifiable(raw.cast<String>()),
+      reportUrl: value['reportUrl'] as String,
+      reportSha256: value['reportSha256'] as String,
+    );
+  }
 }

@@ -734,6 +734,11 @@ Future<void> _loadSubtitleFile(BuildContext context, Player player) async {
   final pickedFile = result.files.first;
 
   try {
+    final isArchive = SubtitleArchiveImporter.isSupportedArchiveName(pickedFile.name);
+    if (!isArchive && p.extension(pickedFile.name).toLowerCase() == '.idx') {
+      await _validateDirectIdxSubtitlePair(pickedFile);
+    }
+    if (!context.mounted) return;
     final selectedPath = SubtitleArchiveImporter.isSupportedArchiveName(pickedFile.name)
         ? await _selectArchivedSubtitle(context, pickedFile, supportedExtensions)
         : pickedFile.path;
@@ -743,6 +748,41 @@ Future<void> _loadSubtitleFile(BuildContext context, Player player) async {
   } catch (error, stackTrace) {
     appLogger.w('Could not load local subtitle file', error: error, stackTrace: stackTrace);
     if (context.mounted) showErrorSnackBar(context, t.videoControls.subtitleLoadFailed);
+  }
+}
+
+/// MPV opens a bitmap IDX subtitle through its neighboring SUB file. Reject
+/// incomplete or oversized pairs before asking the native player to load them.
+Future<void> _validateDirectIdxSubtitlePair(PlatformFile indexFile) async {
+  final indexPath = indexFile.path;
+  if (indexPath == null) {
+    throw const FormatException('IDX subtitles require a local path and a matching SUB file.');
+  }
+  final index = File(indexPath);
+  final indexBytes = await index.length();
+  if (indexBytes <= 0 ||
+      indexBytes > SubtitleArchiveImporter.maximumMemberBytes ||
+      (indexFile.size > 0 && indexBytes != indexFile.size)) {
+    throw const FormatException('The IDX subtitle is empty, too large, or changed while it was selected.');
+  }
+
+  final stem = p.withoutExtension(indexPath);
+  File? sub;
+  for (final extension in const ['.sub', '.SUB']) {
+    final candidate = File('$stem$extension');
+    if (await candidate.exists()) {
+      sub = candidate;
+      break;
+    }
+  }
+  if (sub == null) {
+    throw const FormatException('The selected IDX subtitle needs a matching SUB file in the same folder.');
+  }
+  final subBytes = await sub.length();
+  if (subBytes <= 0 ||
+      subBytes > SubtitleArchiveImporter.maximumMemberBytes ||
+      indexBytes + subBytes > SubtitleArchiveImporter.maximumCandidateBytes) {
+    throw const FormatException('The paired IDX/SUB subtitle is empty or exceeds the import size limit.');
   }
 }
 

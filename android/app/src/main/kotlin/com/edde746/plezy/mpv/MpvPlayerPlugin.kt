@@ -21,12 +21,15 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.security.MessageDigest
 import java.util.concurrent.CancellationException
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.ZipFile
+import kotlin.math.roundToLong
 
 private const val LITERT_RUNTIME_VERSION = "2.3.0"
 private val LITERT_OPENVINO_RUNTIME_LIBRARIES = listOf(
@@ -337,6 +340,68 @@ open class MpvPlayerPlugin(
     old?.close()
   }
 
+  private fun handleSubtitlePcmCapture(call: MethodCall, result: MethodChannel.Result) {
+    if (call.method == "subtitlePcmCaptureAvailable") {
+      val session = playerCore?.subtitlePcmCaptureSessionId()
+      result.success(!audioOnly && session != null && MilkRustNativeBridge.loadError == null &&
+        MilkRustNativeBridge.subtitlePcmCaptureAvailable())
+      return
+    }
+    if (audioOnly || MilkRustNativeBridge.loadError != null) {
+      result.error("SUBTITLE_PCM_UNAVAILABLE", MilkRustNativeBridge.loadError ?: "The video MPV session is not available.", null)
+      return
+    }
+    val session = playerCore?.subtitlePcmCaptureSessionId()
+    if (session == null) {
+      result.error("SUBTITLE_PCM_UNAVAILABLE", "The video MPV session is not available.", null)
+      return
+    }
+    try {
+      when (call.method) {
+        "setSubtitlePcmCaptureEnabled" -> {
+          val enabled = call.argument<Boolean>("enabled")
+          if (enabled == null) {
+            result.error("INVALID_ARGS", "An enabled boolean is required.", null)
+            return
+          }
+          result.success(MilkRustNativeBridge.subtitlePcmCaptureEnable(session, enabled) >= 0)
+        }
+        "drainSubtitlePcmCapture" -> {
+          val packets = ArrayList<Map<String, Any>>(32)
+          for (index in 0 until 32) {
+            val encoded = MilkRustNativeBridge.subtitlePcmCaptureRead(session) ?: break
+            if (encoded.size < 24) continue
+            val header = ByteBuffer.wrap(encoded).order(ByteOrder.nativeOrder())
+            val pts = header.double
+            val frames = header.int
+            val sampleRate = header.int
+            val channels = header.int
+            val droppedFrames = header.int
+            if (!pts.isFinite() || frames !in 1..512 || sampleRate !in 8000..384000 || channels !in 1..8) continue
+            val ptsUs = pts * 1_000_000.0
+            if (!ptsUs.isFinite() || ptsUs < Long.MIN_VALUE.toDouble() || ptsUs >= Long.MAX_VALUE.toDouble()) continue
+            val sampleBytes = frames * channels * Float.SIZE_BYTES
+            if (sampleBytes != header.remaining()) continue
+            val pcm = ByteArray(sampleBytes)
+            header.get(pcm)
+            packets.add(mapOf(
+              "presentationTimeUs" to ptsUs.roundToLong(),
+              "sampleRate" to sampleRate,
+              "channels" to channels,
+              "encoding" to "float32",
+              "pcm" to pcm,
+              "droppedFrames" to droppedFrames.toLong()
+            ))
+          }
+          result.success(packets)
+        }
+        else -> result.notImplemented()
+      }
+    } catch (error: Exception) {
+      result.error("SUBTITLE_PCM_NATIVE", error.message ?: "Native PCM capture failed.", null)
+    }
+  }
+
   private fun handleVisualizer(call: MethodCall, result: MethodChannel.Result) {
     fun unavailable(): String {
       if (!audioOnly || playerCore?.visualizationSessionId() == null) return "Initialize the music player before opening a preset."
@@ -391,6 +456,10 @@ open class MpvPlayerPlugin(
   }
 
   override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+    if (call.method.startsWith("subtitlePcmCapture")) {
+      handleSubtitlePcmCapture(call, result)
+      return
+    }
     if (call.method.startsWith("visualizer")) {
       handleVisualizer(call, result)
       return

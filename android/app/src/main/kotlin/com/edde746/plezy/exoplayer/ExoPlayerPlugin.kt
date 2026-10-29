@@ -3,6 +3,7 @@ package com.edde746.plezy.exoplayer
 import android.app.Activity
 import android.util.Log
 import com.edde746.plezy.libass.media.AssHandler
+import com.edde746.plezy.mpv.MilkRustNativeBridge
 import com.edde746.plezy.mpv.MpvPlayerCore
 import com.edde746.plezy.mpv.completeMpvPropertyNotInitialized
 import com.edde746.plezy.mpv.completeMpvPropertyResult
@@ -18,8 +19,11 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.concurrent.CancellationException
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.roundToLong
 
 open class ExoPlayerPlugin(
   private val methodChannelName: String = "com.plezy/exo_player"
@@ -269,6 +273,7 @@ open class ExoPlayerPlugin(
           playerCore?.isInitialized ?: false
         }
       )
+      "subtitlePcmCaptureAvailable" -> handleSubtitlePcmCaptureAvailable(result)
       "setSubtitlePcmCaptureEnabled" -> handleSetSubtitlePcmCaptureEnabled(call, result)
       "drainSubtitlePcmCapture" -> handleDrainSubtitlePcmCapture(result)
       "getStats" -> handleGetStats(result)
@@ -1364,8 +1369,24 @@ open class ExoPlayerPlugin(
     result.success(null)
   }
 
+  private fun handleSubtitlePcmCaptureAvailable(result: MethodChannel.Result) {
+    if (fallbackInProgress) {
+      result.success(false)
+      return
+    }
+    if (usingMpvFallback) {
+      val session = mpvCore?.subtitlePcmCaptureSessionId()
+      val available = session != null &&
+        MilkRustNativeBridge.loadError == null &&
+        MilkRustNativeBridge.subtitlePcmCaptureAvailable()
+      result.success(available)
+      return
+    }
+    result.success(playerCore?.isInitialized == true)
+  }
+
   private fun handleSetSubtitlePcmCaptureEnabled(call: MethodCall, result: MethodChannel.Result) {
-    if (usingMpvFallback || fallbackInProgress) {
+    if (fallbackInProgress) {
       result.success(false)
       return
     }
@@ -1374,15 +1395,74 @@ open class ExoPlayerPlugin(
       result.error("INVALID_ARGS", "Missing 'enabled'", null)
       return
     }
+    if (usingMpvFallback) {
+      val session = mpvCore?.subtitlePcmCaptureSessionId()
+      if (session == null || MilkRustNativeBridge.loadError != null ||
+        !MilkRustNativeBridge.subtitlePcmCaptureAvailable()
+      ) {
+        result.success(false)
+        return
+      }
+      try {
+        result.success(MilkRustNativeBridge.subtitlePcmCaptureEnable(session, enabled) >= 0)
+      } catch (error: Exception) {
+        result.error("SUBTITLE_PCM_NATIVE", error.message ?: "Native PCM capture failed.", null)
+      }
+      return
+    }
     result.success(playerCore?.setSubtitlePcmCaptureEnabled(enabled) ?: false)
   }
 
   private fun handleDrainSubtitlePcmCapture(result: MethodChannel.Result) {
-    if (usingMpvFallback || fallbackInProgress) {
-      result.success(emptyList<Map<String, Any>>())
+    if (fallbackInProgress) {
+      result.error("SUBTITLE_PCM_UNAVAILABLE", "The player backend is switching.", null)
       return
     }
-    result.success(playerCore?.drainSubtitlePcmCapture() ?: emptyList<Map<String, Any>>())
+    if (!usingMpvFallback) {
+      result.success(playerCore?.drainSubtitlePcmCapture() ?: emptyList<Map<String, Any>>())
+      return
+    }
+
+    val session = mpvCore?.subtitlePcmCaptureSessionId()
+    if (session == null || MilkRustNativeBridge.loadError != null ||
+      !MilkRustNativeBridge.subtitlePcmCaptureAvailable()
+    ) {
+      result.error("SUBTITLE_PCM_UNAVAILABLE", "The Android MPV capture bridge is unavailable.", null)
+      return
+    }
+    try {
+      val packets = ArrayList<Map<String, Any>>(32)
+      for (index in 0 until 32) {
+        val encoded = MilkRustNativeBridge.subtitlePcmCaptureRead(session) ?: break
+        if (encoded.size < 24) continue
+        val header = ByteBuffer.wrap(encoded).order(ByteOrder.nativeOrder())
+        val pts = header.double
+        val frames = header.int
+        val sampleRate = header.int
+        val channels = header.int
+        val droppedFrames = header.int
+        if (!pts.isFinite() || frames !in 1..512 || sampleRate !in 8000..384000 || channels !in 1..8) continue
+        val ptsUs = pts * 1_000_000.0
+        if (!ptsUs.isFinite() || ptsUs < Long.MIN_VALUE.toDouble() || ptsUs >= Long.MAX_VALUE.toDouble()) continue
+        val sampleBytes = frames * channels * Float.SIZE_BYTES
+        if (sampleBytes != header.remaining()) continue
+        val pcm = ByteArray(sampleBytes)
+        header.get(pcm)
+        packets.add(
+          mapOf(
+            "presentationTimeUs" to ptsUs.roundToLong(),
+            "sampleRate" to sampleRate,
+            "channels" to channels,
+            "encoding" to "float32",
+            "pcm" to pcm,
+            "droppedFrames" to droppedFrames.toLong().and(0xffff_ffffL),
+          )
+        )
+      }
+      result.success(packets)
+    } catch (error: Exception) {
+      result.error("SUBTITLE_PCM_NATIVE", error.message ?: "Native PCM capture failed.", null)
+    }
   }
 
   private fun handleGetStats(result: MethodChannel.Result) {

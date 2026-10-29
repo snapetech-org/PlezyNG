@@ -8,13 +8,19 @@
 #include <flutter/plugin_registrar.h>
 #include <player.h>
 
+#include <atomic>
+#include <condition_variable>
+#include <deque>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "drm_manager.h"
 #include "ftpw_video_player_videohole.h"
 #include "video_player.h"
+#include "visualizer_pcm.h"
 
 namespace video_player_videohole_tizen {
 
@@ -47,11 +53,18 @@ class MediaPlayer : public VideoPlayer {
   bool Restore(const CreateMessage *restore_message,
                int64_t resume_time) override;
   bool SetDisplayRotate(int64_t rotation) override;
+  bool SubtitlePcmCaptureAvailable() const override;
+  bool SetSubtitlePcmCaptureEnabled(bool enabled) override;
+  std::string DrainSubtitlePcmCaptureJson() override;
+  std::shared_ptr<VisualizerPcm> VisualizationPcm() const override { return pcm_; }
 
  private:
   std::pair<int64_t, int64_t> GetLiveDuration();
   bool IsLive();
   bool SetDisplay();
+  bool ConfigureSubtitlePcmCapture();
+  void ClearSubtitlePcmCapture();
+  void WaitForAudioCallbacks();
   bool SetDrm(const std::string &uri, int drm_type,
               const std::string &license_server_url);
   bool StopAndDestroy();
@@ -66,6 +79,7 @@ class MediaPlayer : public VideoPlayer {
   static void OnError(int error_code, void *user_data);
   static void OnSubtitleUpdated(unsigned long duration, char *text,
                                 void *user_data);
+  static void OnAudioPcmDecoded(media_packet_h packet, void *user_data);
   static bool OnDrmSecurityInitComplete(int *drm_handle, unsigned int length,
                                         unsigned char *pssh_data,
                                         void *user_data);
@@ -73,6 +87,8 @@ class MediaPlayer : public VideoPlayer {
                                  int data_length, void *user_data);
 
   player_h player_ = nullptr;
+  bool audio_only_ = false;
+  std::shared_ptr<VisualizerPcm> pcm_;
   std::unique_ptr<DrmManager> drm_manager_;
   bool is_buffering_ = false;
   SeekCompletedCallback on_seek_completed_;
@@ -85,6 +101,20 @@ class MediaPlayer : public VideoPlayer {
   int32_t pre_display_roi_y_ = 0;
   int32_t pre_display_roi_width_ = 1;
   int32_t pre_display_roi_height_ = 1;
+  struct CapturedAudioPacket {
+    uint64_t presentation_time_us = 0;
+    std::vector<uint8_t> pcm;
+  };
+  static constexpr size_t kSubtitlePcmCaptureMaxBytes = 768 * 1024;
+  static constexpr int kSubtitlePcmSampleRate = 16000;
+  std::atomic<bool> subtitle_pcm_capture_available_{false};
+  std::atomic<bool> subtitle_pcm_capture_enabled_{false};
+  bool subtitle_pcm_callback_registered_ = false;
+  mutable std::mutex subtitle_pcm_mutex_;
+  std::condition_variable subtitle_pcm_callbacks_idle_;
+  std::deque<CapturedAudioPacket> subtitle_pcm_packets_;
+  size_t subtitle_pcm_bytes_ = 0;
+  size_t audio_callbacks_active_ = 0;
 };
 
 }  // namespace video_player_videohole_tizen

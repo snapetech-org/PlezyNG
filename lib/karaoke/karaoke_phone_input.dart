@@ -38,10 +38,11 @@ class KaraokePhoneInputs {
         if(used>8*1024*1024*1024-128*1024*1024)throw StateError('Private take storage quota reached');
         final dir=await Directory(p.join(takes.path,id)).create(recursive:true);lease.directory=dir;
         lease.metadata={'schema':1,'id':id,'renditionId':song.id,'singerId':singer,'key':request.key,'tempo':request.tempo,
-          'sourceStartMs':session.positionMs.value,'epoch':session.epoch,'inputOffsetMs':0,'calibrated':false,'sampleRate':16000,
+          'sourceStartMs':session.positionMs.value,'epoch':session.epoch,'part':request.parts[singer] ?? request.part,'inputOffsetMs':0,'calibrated':false,'sampleRate':16000,
           'channels':1,'created':DateTime.now().toUtc().toIso8601String(),'private':true,'complete':false,'dryFile':'dry.wav',
           'scoreRules':KaraokeScore.rulesVersion,'timeline':[],
-          if(session.duetInvitation?['renditionId']==song.id)...{'invitationId':session.duetInvitation!['id'],'part':session.duetInvitation!['part'],'digests':session.duetInvitation!['digests']},'input':'phone','latencyQuality':'unmeasured'};
+          if(session.duetInvitation?['renditionId']==song.id)...{'invitationId':session.duetInvitation!['id'],
+            'part':request.parts[singer] ?? request.part ?? session.duetInvitation!['part'],'digests':session.duetInvitation!['digests']},'input':'phone','latencyQuality':'unmeasured'};
         await File(p.join(dir.path,'take.json')).writeAsString(jsonEncode(lease.metadata),flush:true);
         lease.file=await File(p.join(dir.path,'dry.wav')).open(mode:FileMode.write);await lease.file!.writeFrom(_header(0));
       }

@@ -123,3 +123,7 @@ Source review corrected unbounded MIDI reads, same-tick tempo ordering, quiz aut
 ### Implementation checkpoint 5 — 2026-10-29
 
 Added group part assignment, venue controls, setlist queueing, collection import/export and catalog printing, offline package audit/eviction, local instrumental filler, host-authored tournament/medley controls, private phone input over trusted HTTPS, bounded PCM recording, lyric editor section cues, partner-take production, and a single-owner music queue snapshot/restore path. Companion uploads and completed jobs now have storage accounting and explicit deletion; stage analysis reads are coalesced. These remain source implementations: no relay, provider adapter, platform casting, multichannel monitor route, or device qualification is supplied. No tests, builds, analyzers or CI were run.
+
+### Implementation checkpoint 6 — 2026-10-29
+
+Completed a source-only integration pass for idempotent companion job deletion and retry URL handling, per-job output-space reservation and partial-job cleanup, local music queue restoration, coalesced stage-analysis reads, and duet owner/response provenance. Hosts can link a prior matching private take to an invitation; response mixes require the same invitation and rendition settings with complementary part metadata. No tests, builds, analyzers or CI were run.

@@ -134,11 +134,12 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     if(_recordingLimit<10*1024*1024)throw StateError('Private take storage quota reached');
     final dir=await Directory(p.join(root.path,'takes',id)).create(recursive:true);
     final metadata=<String,dynamic>{'schema':1,'id':id,'renditionId':session.track!.id,'singerId':singerId,
-      'key':session.current!.key,'tempo':session.current!.tempo,'sourceStartMs':session.positionMs.value,
+      'key':session.current!.key,'tempo':session.current!.tempo,'part':session.current!.parts[singerId] ?? session.current!.part,'sourceStartMs':session.positionMs.value,
       'epoch':session.epoch,'inputOffsetMs':inputOffsetMs,'calibrated':calibrated,'sampleRate':48000,'channels':1,
       'created':DateTime.now().toUtc().toIso8601String(),'private':true,'complete':false,'dryFile':'dry.wav',
       'scoreRules':KaraokeScore.rulesVersion,'timeline':<Map<String,dynamic>>[],
-      if(session.duetInvitation?['renditionId']==session.track!.id)...{'invitationId':session.duetInvitation!['id'],'part':session.duetInvitation!['part'],'digests':session.duetInvitation!['digests']}};
+      if(session.duetInvitation?['renditionId']==session.track!.id)...{'invitationId':session.duetInvitation!['id'],
+        'part':session.current!.parts[singerId] ?? session.current!.part ?? session.duetInvitation!['part'],'digests':session.duetInvitation!['digests']}};
     await File(p.join(dir.path,'take.json')).writeAsString(jsonEncode(metadata),flush:true);
     final file=await File(p.join(dir.path,'dry.wav')).open(mode:FileMode.write);
     await file.writeFrom(_wavHeader(0));

@@ -53,6 +53,7 @@ class PlaybackCoordinator {
   void unregisterKaraoke(Future<void> Function() stop) {
     if (_stopKaraoke == stop) _stopKaraoke = null;
   }
+  bool get hasKaraokeSession => _stopKaraoke != null;
   Future<void> claimKaraoke() async {
     await _stopNarration?.call();
     await _stopFileSession?.call();

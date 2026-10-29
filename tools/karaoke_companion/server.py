@@ -63,7 +63,7 @@ class Jobs:
         limit = 4 * MAX_ASSET
         reserved = 0
         for job_id, state in self.states.items():
-            if state.get("status") not in {"queued", "running"}: continue
+            if state.get("status") not in {"queued", "running"} and job_id not in self.processes: continue
             directory = self.jobs / job_id
             used = sum(f.stat().st_size for f in directory.rglob("*") if f.is_file() and not f.is_symlink()) if directory.exists() else 0
             reserved += max(0, limit - used)
@@ -121,7 +121,8 @@ class Jobs:
         with self.lock:
             state = self.states.get(job_id)
             if state is None: raise KeyError(job_id)
-            if state["status"] in {"queued", "running"}: raise ValueError("Cancel and wait for a job before removing it")
+            if state["status"] in {"queued", "running"} or job_id in self.processes:
+                raise ValueError("Cancel and wait for the worker to stop before removing this job")
             request_path = self.jobs / job_id / "request.json"
             try: assets = json.loads(request_path.read_text()).get("assets", [])
             except (OSError, ValueError): assets = []
@@ -256,7 +257,9 @@ class Handler(BaseHTTPRequestHandler):
                 job_id = path[2]
                 if len(path) == 3:
                     if method == "DELETE":
-                        if urlsplit(self.path).query == 'delete=1': return self.reply(200, jobs.remove(job_id))
+                        if urlsplit(self.path).query == 'delete=1':
+                            try: return self.reply(200, jobs.remove(job_id))
+                            except KeyError: return self.reply(200, {"id": job_id, "status": "removed"})
                         return self.reply(200, jobs.cancel(job_id))
                     if method == "GET":
                         with jobs.lock: state = dict(jobs.states[job_id])

@@ -64,6 +64,9 @@ class KaraokeTakes {
     if(partners.length>3)throw StateError('A group mix supports four isolated takes');
     for(final partner in partners){if(partner.metadata['mergeApproved']!=true || !partner.complete ||
       partner.metadata['renditionId']!=track.id || partner.metadata['key']!=take.metadata['key'] || partner.metadata['tempo']!=take.metadata['tempo'] ||
+      take.metadata['invitationId']==null || partner.metadata['invitationId']!=take.metadata['invitationId'] ||
+      jsonEncode(partner.metadata['digests'])!=jsonEncode(take.metadata['digests']) ||
+      (track.parts.length>1 && take.metadata['part']!=null && partner.metadata['part']==take.metadata['part']) ||
       (partner.metadata['timeline'] as List? ?? []).isNotEmpty || (take.metadata['timeline'] as List? ?? []).isNotEmpty)throw StateError('Approve matching uninterrupted duet responses before mixing');}
     await saveRecipe(take,recipe);
     final result=await client.submit('render',[input,take.dry,...partners.map((p)=>p.dry),if(camera!=null)camera],{
@@ -89,13 +92,15 @@ class KaraokeTakes {
   }
   Future<void> createInvitation(KaraokeTrack track,String destination,{required double key,required double tempo,required String part}) async {
     if(!track.hasLocalAudio || (await session.packages.verify(track)).isNotEmpty)throw StateError('Duet invitations require a verified local backing package');
-    if(!key.isFinite || key.abs()>12 || !tempo.isFinite || tempo<.5 || tempo>2 || part.isEmpty || part.length>80)throw const FormatException('Invalid duet settings');
+    if(!key.isFinite || key.abs()>12 || !tempo.isFinite || tempo<.5 || tempo>2 || part.isEmpty || part.length>80 || (track.parts.isNotEmpty && !track.parts.contains(part)))throw const FormatException('Invalid duet settings');
+    final ownerPart=track.parts.where((value)=>value!=part).firstOrNull ?? (part=='1' ? '2' : '1');
     final id=const Uuid().v4();
     final invitation={'schema':'plezyng.karaoke-duet.v1','id':id,'renditionId':track.id,'songId':track.songId,
       'digests':track.assets.where((a)=>a.kind==KaraokeAssetKind.audio || a.kind==KaraokeAssetKind.instrumental).map((a)=>a.sha256).toList(),
-      'title':track.title,'key':key,'tempo':tempo,'part':part,'expires':DateTime.now().toUtc().add(const Duration(days:14)).toIso8601String(),
+      'title':track.title,'key':key,'tempo':tempo,'part':part,'ownerPart':ownerPart,'expires':DateTime.now().toUtc().add(const Duration(days:14)).toIso8601String(),
       'mergeApprovalRequired':true,'private':true};
     await session.store.write('duet-$id',invitation);await File(destination).writeAsString(jsonEncode(invitation),flush:true);
+    session.duetInvitation={...invitation,'part':ownerPart,'invitedPart':part,'owner':true};await session.save();
   }
   Future<void> acceptInvitation(String path) async {
     final file=File(path);if(await file.length()>65536)throw const FormatException('Invitation too large');
@@ -111,7 +116,7 @@ class KaraokeTakes {
     if(digests.isEmpty || digests.length!=(invitation['digests'] as List).length || !(invitation['digests'] as List).every(digests.contains) ||
       (await session.packages.verify(track)).isNotEmpty)throw StateError('Invitation backing checksums do not match');
     if(session.hasPerformance)await session.stopPlayback();
-    await session.store.write('duet-$id',invitation);session.duetInvitation=invitation;
+    await session.store.write('duet-$id',invitation);session.duetInvitation=invitation;await session.save();
   }
   Future<KaraokeTake> importResponse(String path) async {
     final result=await session.packages.importFiles([path]);
@@ -131,6 +136,19 @@ class KaraokeTakes {
       metadata['id']=id;metadata['mergeApproved']=false;metadata['private']=true;metadata['score']=null;
       await File(p.join(dir.path,'take.json')).writeAsString(jsonEncode(metadata),flush:true);return KaraokeTake(dir,metadata);
     } finally {await session.packages.evict(result.track.id,pinned:session.pinned);}
+  }
+  Future<void> linkToInvitation(KaraokeTake take) async {
+    final invitation=session.duetInvitation;
+    if(invitation==null || invitation['owner']!=true || invitation['renditionId']!=take.metadata['renditionId'] || !take.complete)
+      throw StateError('A completed take and matching host invitation are required');
+    if(DateTime.parse(invitation['expires'] as String).isBefore(DateTime.now()))throw StateError('This duet invitation expired');
+    if(take.metadata['key']!=invitation['key'] || take.metadata['tempo']!=invitation['tempo'])
+      throw StateError('This take does not match the invitation key and tempo');
+    final part=take.metadata['part'] as String? ?? invitation['part'] as String;
+    if(part==invitation['invitedPart'])throw StateError('Choose a take from the complementary singer part');
+    take.metadata['invitationId']=invitation['id'];take.metadata['digests']=List<String>.from(invitation['digests'] as List);take.metadata['part']=part;
+    take.metadata['private']=true;
+    await File(p.join(take.directory.path,'take.json')).writeAsString(jsonEncode(take.metadata),flush:true);
   }
   Future<void> markListened(KaraokeTake take) async {take.metadata['listened']=true;await File(p.join(take.directory.path,'take.json')).writeAsString(jsonEncode(take.metadata),flush:true);}
   Future<void> approveMerge(KaraokeTake take) async {

@@ -39,6 +39,7 @@ abstract final class SubtitleTextImporter {
       'subtitleImportUnsupportedFormat': c.subtitleImportUnsupportedFormat,
       'subtitleImportNoCues': c.subtitleImportNoCues,
       'subtitleImportOutputLimit': c.subtitleImportOutputLimit,
+      'subtitleImportDecodeError': c.subtitleImportDecodeError,
       'subtitleImportClockInvalid': c.subtitleImportClockInvalid,
       'subtitleImportEncodingWarning': c.subtitleImportEncodingWarning(encoding: '{encoding}'),
       'subtitleImportMicroDvdLineLimit': c.subtitleImportMicroDvdLineLimit,
@@ -124,7 +125,17 @@ abstract final class SubtitleTextImporter {
     String encoding = 'unicode', double? framesPerSecond, int finalCueDurationMs = 2000, String? samiClass,
     int sccChannel = 1, bool sccNtsc = true, int sccClockOriginMs = 0, Map<String, String>? localizedMessages,
   }) {
-    final text = SubtitleTextCodec.decode(bytes, encoding: encoding);
+    if (bytes.isEmpty || bytes.length > SubtitleRetimer.maximumInputBytes) {
+      throw FormatException(_message(localizedMessages, 'subtitleImportBinaryOrOversized',
+        'Decoded subtitle is binary or exceeds the 5 MiB text bound.'));
+    }
+    late final String text;
+    try {
+      text = SubtitleTextCodec.decode(bytes, encoding: encoding);
+    } on FormatException {
+      throw FormatException(_message(localizedMessages, 'subtitleImportDecodeError',
+        'This file could not be decoded. Check its format and encoding.'));
+    }
     if (text.contains('\u0000') || utf8.encode(text).length > SubtitleRetimer.maximumInputBytes) {
       throw FormatException(_message(localizedMessages, 'subtitleImportBinaryOrOversized', 'Decoded subtitle is binary or exceeds the 5 MiB text bound.'));
     }
@@ -148,7 +159,12 @@ abstract final class SubtitleTextImporter {
       cues.add(SubtitleCue(index: cues.length + 1, startMs: start, endMs: end, text: value));
     }
     if (nativeTextExtensions.contains(format)) {
-      cues.addAll(SubtitleRetimer.parseCues(sourceBytes: utf8.encode(text), extension: format));
+      try {
+        cues.addAll(SubtitleRetimer.parseCues(sourceBytes: utf8.encode(text), extension: format));
+      } on FormatException {
+        throw FormatException(_message(localizedMessages, 'subtitleImportCueInvalid',
+          'Subtitle has invalid times or a cue over 4000 characters.'));
+      }
       if (format == '.ass' || format == '.ssa') warnings.add(_message(localizedMessages, 'subtitleImportAssFlattenWarning',
         'Editing or translation creates an SRT derivative. Native ASS styling, fonts and animation are not preserved by SRT.'));
     } else if (const {'.ttml', '.dfxp', '.imsc', '.xml'}.contains(format)) {

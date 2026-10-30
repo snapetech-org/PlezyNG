@@ -449,6 +449,13 @@ open class MpvPlayerPlugin(
           require(width in 1..16384 && height in 1..16384) { "Invalid visualization dimensions." }
           current.resize(width.toInt(), height.toInt())
         }
+        "visualizerSetMouse" -> current.setMouseState(
+          checkNotNull(call.argument<Boolean>("down")),
+          checkNotNull(call.argument<Number>("x")).toDouble(),
+          checkNotNull(call.argument<Number>("y")).toDouble(),
+          checkNotNull(call.argument<Number>("dx")).toDouble(),
+          checkNotNull(call.argument<Number>("dy")).toDouble(),
+        )
         "visualizerSetPaused" -> current.pause(checkNotNull(call.argument<Boolean>("paused")))
         "visualizerStatus" -> {
           result.success(current.status())

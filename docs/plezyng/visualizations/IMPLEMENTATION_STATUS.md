@@ -21,8 +21,8 @@ runners may be used. Compiled behavior and device fidelity remain unknown.
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
 | HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/numeric arrays up to 16 dimensions and 4096 elements/all numeric matrix shapes/control flow; bounded 1D/2D/3D resource arrays with constant or side-effect-free dynamic selection, grouped declarations and direct global resource-struct fields | Compiler/corpus execution and reference fidelity; function-local resource arrays, nested resource-bearing structs, dynamic/advanced sampler state and resource kinds outside the declared profile remain explicit failures |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
-| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, real Created/version and URL preambles preserved, duplicate headers use the last value and numeric fields consume the compatible prefix, incomplete wrappers fall back to classic parsing, trailing sprites only with explicit `sprite=1` (otherwise preserved and inert), saved state carry, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
-| Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
+| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, real Created/version and URL preambles preserved, duplicate headers use the last value and numeric fields consume the compatible prefix, incomplete wrappers fall back to classic parsing, trailing sprites only with explicit `sprite=1` (otherwise preserved and inert), saved state carry, all eleven native/WebGL sprite blend modes/layers and bounded GIF/APNG/WebP animation | Reference pixel comparison for final compositing and sprite filtering/layer order |
+| Browser texture decode | Static PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; animated GIF/APNG/WebP use bounded Rust decoding on the WASM thread, full-frame upload, frame delays and loop selection | Browser CSP integration, codec/GPU execution, animation regressions and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Preset changes | Every native MilkRust bridge forwards the selected 0–10 second duration to a bounded display fade from the last published frame; zero cuts immediately; audio generation changes clear history | Executed switching, resize/pause and rapid-selection coverage; this is a frozen-frame fade, not a second continuously running old preset |
 | Renderer containment | Packaged MilkRust helper on Linux/Windows/macOS/Tizen/webOS and private Android/Android TV service; Linux projectM shares the desktop helper; bounded native IPC, process termination and retry admission | First builds, injected-fault execution, installed helper discovery/signing and device-wide GPU recovery |
@@ -123,9 +123,9 @@ corpus qualification, rights decisions and production custody/publication are al
 - All native MilkRust hosts share a bounded CPU decoder for legacy DDS
   (DXT1/3/5 and masked 24/32-bit RGB) and TGA (truecolor/grayscale, raw/RLE and
   orientation). This closes the prior gap where app import allowed those assets
-  but a platform codec could not read them. Animated GIF frames use MilkRust's
-  bounded decoder and disposal/timing path through ABI v2. Unsupported DDS
-  arrays/cubes/volumes and animated PNG/WebP remain explicit.
+  but a platform codec could not read them. Animated GIF, APNG and WebP frames
+  use MilkRust's bounded disposal/timing path; native WebP and PNG assets also
+  use the shared Rust decoder. Unsupported DDS arrays/cubes/volumes remain explicit.
 - Native render workers now capture shared state instead of a host `this`.
   Two-second operation watchdogs report stalled rendering. Teardown disconnects
   bounded PCM/Flutter callbacks before waiting up to 250 ms on the render
@@ -699,3 +699,20 @@ new artifact requirements. Source parsing/whitespace checks passed. SDK builds,
 fault tests, firmware execution policy, installed textures and playback
 continuity remain unverified. iOS/tvOS still need a qualified platform recovery
 policy; no helper promises recovery from a device-wide driver/kernel fault.
+
+
+## 2026-10-30 bounded APNG and WebP image paths
+
+MilkRust PR #20 now decodes APNG and animated WebP through bounded shared Rust
+paths. Native hosts pass encoded PNG/WebP to ABI v2; native static PNG/WebP use
+the same decoder. WebGL keeps static PNG/WebP in its disposable browser worker
+and decodes animated frames in WASM. The app import gate admits APNG/WebP only
+after frame-count, canvas-dimension, and aggregate-pixel checks. PNG frame
+compositing handles source/over blend, disposal, poster frames and play counts;
+WebP frames retain disposal, duration and finite/infinite loops. Third-party
+notices cover the added decoder crates, and the workspace Rust floor is now
+1.80.1.
+
+Source-only implementation is committed. The new native/WASM decoders, app
+import route, malformed-image behavior, frame upload and reference pixels have
+not been built or run. This does not qualify visuals or driver recovery.

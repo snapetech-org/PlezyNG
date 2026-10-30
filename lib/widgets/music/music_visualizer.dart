@@ -83,6 +83,8 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   int _profileRequestId = 0;
   Duration? _lastElapsed;
   double _phaseSeconds = 0;
+  double _pointerX = 0.5, _pointerY = 0.5;
+  bool _pointerDown = false;
   final VisualizerSession _native = VisualizerSession();
   final ValueNotifier<int> _optionsRevision = ValueNotifier(0);
   VisualizerPackStore? _store;
@@ -596,6 +598,30 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   static double _energyFromSpectrum(AudioSpectrumSample sample) =>
       (0.18 + sample.normalizedCentroid * 0.52 + sample.flatness * 0.24).clamp(0.08, 1.0).toDouble();
 
+  void _handleNativePointer(PointerEvent event, Size size, {bool? down}) {
+    if (_native.engine != 'milkrust' || size.width <= 0 || size.height <= 0) return;
+    final position = event.localPosition;
+    final x = (position.dx / size.width).clamp(0.0, 1.0).toDouble();
+    final y = (position.dy / size.height).clamp(0.0, 1.0).toDouble();
+    final nextDown = down ?? event.buttons != 0;
+    final dx = (event.delta.dx / size.width).clamp(-1.0, 1.0).toDouble();
+    final dy = (event.delta.dy / size.height).clamp(-1.0, 1.0).toDouble();
+    _pointerX = x;
+    _pointerY = y;
+    _pointerDown = nextDown;
+    _native.setMouseState(down: nextDown, x: x, y: y, dx: dx, dy: dy);
+  }
+
+  Widget _nativePointerSurface(Size size, Widget child) => Listener(
+    behavior: HitTestBehavior.opaque,
+    onPointerDown: (event) => _handleNativePointer(event, size, down: true),
+    onPointerMove: (event) => _handleNativePointer(event, size),
+    onPointerHover: (event) => _handleNativePointer(event, size, down: false),
+    onPointerUp: (event) => _handleNativePointer(event, size, down: false),
+    onPointerCancel: (event) => _handleNativePointer(event, size, down: false),
+    child: child,
+  );
+
   @override
   Widget build(BuildContext context) {
     final tk = tokens(context);
@@ -628,7 +654,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(tk.radiusLg),
-            child: Stack(
+            child: _nativePointerSurface(
+             Size(constraints.maxWidth, constraints.maxHeight),
+             Stack(
               fit: StackFit.expand,
               children: [
                 Positioned.fill(
@@ -659,6 +687,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                 ),
               ],
             ),
+           ),
           ),
         );
       },
@@ -870,7 +899,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                         builder: (context, constraints) {
                           _resizeNative(constraints, MediaQuery.devicePixelRatioOf(context));
                           final tk = tokens(context);
-                          return Stack(
+                          return _nativePointerSurface(
+                            Size(constraints.maxWidth, constraints.maxHeight),
+                            Stack(
                             fit: StackFit.expand,
                             children: [
                               if (_native.hasFrame && _native.textureId != null)
@@ -918,6 +949,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                                 ),
                               ),
                             ],
+                            ),
                           );
                         },
                       ),

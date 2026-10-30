@@ -1,6 +1,23 @@
 cmake_minimum_required(VERSION 3.21)
 project(plezy LANGUAGES CXX)
 
+# The locked auto_updater Windows plugin declares WinSparkle with FetchContent.
+# CI prefetches the official pinned archive with Schannel curl because CMake's
+# downloader cannot use the private proxy's best-effort revocation setting.
+set(PLEZYNG_WINSPARKLE_SOURCE_DIR "$ENV{PLEZYNG_WINSPARKLE_SOURCE_DIR}")
+if(NOT PLEZYNG_WINSPARKLE_SOURCE_DIR STREQUAL "")
+  file(TO_CMAKE_PATH "${PLEZYNG_WINSPARKLE_SOURCE_DIR}" PLEZYNG_WINSPARKLE_SOURCE_DIR)
+  if(NOT IS_ABSOLUTE "${PLEZYNG_WINSPARKLE_SOURCE_DIR}" OR
+     NOT IS_DIRECTORY "${PLEZYNG_WINSPARKLE_SOURCE_DIR}" OR
+     NOT EXISTS "${PLEZYNG_WINSPARKLE_SOURCE_DIR}/include/winsparkle.h" OR
+     NOT EXISTS "${PLEZYNG_WINSPARKLE_SOURCE_DIR}/x64/Release/WinSparkle.lib" OR
+     NOT EXISTS "${PLEZYNG_WINSPARKLE_SOURCE_DIR}/ARM64/Release/WinSparkle.lib")
+    message(FATAL_ERROR "PLEZYNG_WINSPARKLE_SOURCE_DIR must name the verified WinSparkle 0.9.2 source tree")
+  endif()
+  set(FETCHCONTENT_SOURCE_DIR_WINSPARKLE "${PLEZYNG_WINSPARKLE_SOURCE_DIR}" CACHE PATH
+    "Verified local source for the locked auto_updater WinSparkle dependency" FORCE)
+endif()
+
 # libmpv comes from our unified build repository
 # (https://github.com/edde746/mpv-build), which publishes per-commit,
 # content-addressed dev packages in the classic mpv-dev shape:

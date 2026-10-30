@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Guard the architecture matrices and release contract in build.yml."""
 
+import json
 from pathlib import Path
 import re
 import sys
@@ -24,6 +25,10 @@ WINDOWS_MPV_DOWNLOADER = WORKFLOW.parents[2] / "windows/tool/download-pinned-mpv
 WINDOWS_SIMDUTF_DOWNLOADER = (
     WORKFLOW.parents[2] / "windows/tool/download-pinned-simdutf.ps1"
 )
+WINDOWS_WINSPARKLE_DOWNLOADER = (
+    WORKFLOW.parents[2] / "windows/tool/download-pinned-winsparkle.ps1"
+)
+WINDOWS_TOOLCHAIN_LOCK = WORKFLOW.parents[2] / "windows/tool/build-toolchain.lock.json"
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
 WEBOS_RELEASE_GATE = ROOT / "tools/webos/check_release_eligibility.py"
@@ -183,6 +188,16 @@ windows_simdutf_downloader = (
     else ""
 )
 windows_simdutf_downloader_normalized = windows_simdutf_downloader.replace("\\", "/")
+windows_winsparkle_downloader = (
+    WINDOWS_WINSPARKLE_DOWNLOADER.read_text(encoding="utf-8")
+    if WINDOWS_WINSPARKLE_DOWNLOADER.is_file()
+    else ""
+)
+windows_winsparkle_downloader_normalized = windows_winsparkle_downloader.replace("\\", "/")
+windows_toolchain_lock = {}
+if WINDOWS_TOOLCHAIN_LOCK.is_file():
+    windows_toolchain_lock = json.loads(WINDOWS_TOOLCHAIN_LOCK.read_text(encoding="utf-8"))
+windows_winsparkle_pin = windows_toolchain_lock.get("winSparkle", {})
 require(
     "URL_HASH SHA256=${MPV_SHA256}" in windows_mpv_block,
     "Windows libmpv fetch must keep URL_HASH enforcement",
@@ -213,6 +228,14 @@ require(
     and "URL_HASH SHA256=9fe4d6f515724a55c8de88fee4463e0890a1abe2267cda13c4b5d245d58039e6"
     in windows_cmake,
     "Windows simdutf must support the predownloaded archive and retain its pinned SHA-256",
+)
+require(
+    "PLEZYNG_WINSPARKLE_SOURCE_DIR" in windows_cmake
+    and "FETCHCONTENT_SOURCE_DIR_WINSPARKLE" in windows_cmake
+    and "include/winsparkle.h" in windows_cmake
+    and "x64/Release/WinSparkle.lib" in windows_cmake
+    and "ARM64/Release/WinSparkle.lib" in windows_cmake,
+    "Windows CMake must use and validate the checksum-verified WinSparkle source override",
 )
 require(bool(windows_mpv_downloader), "missing pinned Windows MPV download helper")
 for expected in (
@@ -249,6 +272,41 @@ for forbidden in ("--ssl-no-revoke", "--insecure"):
         forbidden not in windows_simdutf_downloader,
         f"Windows simdutf bootstrap must not use {forbidden}",
     )
+require(bool(windows_winsparkle_downloader), "missing pinned Windows WinSparkle download helper")
+for expected in (
+    "build-toolchain.lock.json",
+    "winSparkle",
+    "github.com",
+    "/vslavik/winsparkle/releases/download/v$version/$filename",
+    "HTTPS_PROXY",
+    "--proxy",
+    "--ssl-revoke-best-effort",
+    "Schannel",
+    "Get-FileHash -Algorithm SHA256",
+    "Expand-Archive",
+    "include/winsparkle.h",
+    "x64/Release/WinSparkle.lib",
+    "ARM64/Release/WinSparkle.lib",
+    "PLEZYNG_WINSPARKLE_SOURCE_DIR=",
+):
+    require(
+        expected in windows_winsparkle_downloader_normalized,
+        f"Windows WinSparkle bootstrap must keep: {expected}",
+    )
+for forbidden in ("--ssl-no-revoke", "--insecure"):
+    require(
+        forbidden not in windows_winsparkle_downloader,
+        f"Windows WinSparkle bootstrap must not use {forbidden}",
+    )
+require(
+    windows_winsparkle_pin.get("version") == "0.9.2"
+    and windows_winsparkle_pin.get("filename") == "WinSparkle-0.9.2.zip"
+    and windows_winsparkle_pin.get("url")
+    == "https://github.com/vslavik/winsparkle/releases/download/v0.9.2/WinSparkle-0.9.2.zip"
+    and windows_winsparkle_pin.get("sha256")
+    == "2a5facf5a22056edf7afc4d0a4bf05620b7aa7cc1619c3078b281e374cdb9996",
+    "Windows WinSparkle release pin must match its verified official 0.9.2 archive",
+)
 windows_download_step = named_step(
     windows, "Download and verify pinned Windows libmpv archive"
 )
@@ -272,6 +330,19 @@ require(
     < windows.find("name: Download and verify pinned Windows simdutf source archive")
     < windows.find("name: Configure repository updater trust root"),
     "Windows release builds must predownload and verify simdutf before CMake configures",
+)
+windows_winsparkle_download_step = named_step(
+    windows, "Download and verify pinned Windows WinSparkle archive"
+)
+windows_winsparkle_download_step_normalized = windows_winsparkle_download_step.replace(
+    "\\", "/"
+)
+require(
+    "windows/tool/download-pinned-winsparkle.ps1" in windows_winsparkle_download_step_normalized
+    and windows.find("name: Download and verify pinned Windows simdutf source archive")
+    < windows.find("name: Download and verify pinned Windows WinSparkle archive")
+    < windows.find("name: Configure repository updater trust root"),
+    "Windows release builds must predownload and verify WinSparkle before CMake configures",
 )
 require(
     "sourceforge" not in windows_cmake,
@@ -367,6 +438,19 @@ require(
     < windows_ci.find("name: Download and verify pinned Windows simdutf source archive")
     < windows_ci.find("name: Prepare Flutter Windows configuration"),
     "Windows native CI must predownload and verify simdutf before CMake configures",
+)
+windows_ci_winsparkle_download_step = named_step(
+    windows_ci, "Download and verify pinned Windows WinSparkle archive"
+)
+windows_ci_winsparkle_download_step_normalized = windows_ci_winsparkle_download_step.replace(
+    "\\", "/"
+)
+require(
+    "windows/tool/download-pinned-winsparkle.ps1" in windows_ci_winsparkle_download_step_normalized
+    and windows_ci.find("name: Download and verify pinned Windows simdutf source archive")
+    < windows_ci.find("name: Download and verify pinned Windows WinSparkle archive")
+    < windows_ci.find("name: Prepare Flutter Windows configuration"),
+    "Windows native CI must predownload and verify WinSparkle before CMake configures",
 )
 
 linux = job("build-linux")

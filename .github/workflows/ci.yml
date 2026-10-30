@@ -897,6 +897,10 @@ jobs:
         shell: pwsh
         run: .\windows\tool\download-pinned-simdutf.ps1
 
+      - name: Download and verify pinned Windows WinSparkle archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-winsparkle.ps1
+
       - name: Prepare Flutter Windows configuration
         shell: pwsh
         run: flutter build windows --debug --config-only --no-pub

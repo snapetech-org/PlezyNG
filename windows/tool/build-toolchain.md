@@ -15,9 +15,12 @@ pwsh -File windows/tool/prepare-build-toolchain.ps1 -IncludeInstaller -VerifyOnl
 
 The script provisions NuGet 7.9.0 and, when requested, Inno Setup 6.7.3. It
 checks the committed SHA-256 and Windows Authenticode publisher before executing
-either download. It never installs unversioned Chocolatey packages. The private
-Windows image must already provide PowerShell 7.2+, .NET Framework, and 7-Zip.
-The native compilers and Windows SDK remain image prerequisites.
+either download. The Windows CI and release workflows also use
+`download-pinned-winsparkle.ps1` to fetch WinSparkle 0.9.2 through Schannel curl,
+verify the committed archive digest, and expose its extracted source tree to
+CMake. It never installs unversioned Chocolatey packages. The private Windows
+image must already provide PowerShell 7.2+, .NET Framework, and 7-Zip. The native
+compilers and Windows SDK remain image prerequisites.
 
 GitHub Actions receives the NuGet directory through `GITHUB_PATH`, and the tool
 paths through `PLEZY_NUGET_EXE`, `PLEZY_INNO_SETUP_COMPILER`, and

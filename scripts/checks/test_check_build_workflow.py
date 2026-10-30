@@ -15,6 +15,8 @@ SETUP_FLUTTER_GIT = ROOT / ".github/actions/setup-flutter-git/action.yml"
 WINDOWS_CMAKE = ROOT / "windows/CMakeLists.txt"
 WINDOWS_MPV_DOWNLOADER = ROOT / "windows/tool/download-pinned-mpv.ps1"
 WINDOWS_SIMDUTF_DOWNLOADER = ROOT / "windows/tool/download-pinned-simdutf.ps1"
+WINDOWS_WINSPARKLE_DOWNLOADER = ROOT / "windows/tool/download-pinned-winsparkle.ps1"
+WINDOWS_TOOLCHAIN_LOCK = ROOT / "windows/tool/build-toolchain.lock.json"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
@@ -49,6 +51,18 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             )
             simdutf_downloader_fixture.write_text(
                 WINDOWS_SIMDUTF_DOWNLOADER.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            winsparkle_downloader_fixture = (
+                Path(directory) / "windows/tool/download-pinned-winsparkle.ps1"
+            )
+            winsparkle_downloader_fixture.write_text(
+                WINDOWS_WINSPARKLE_DOWNLOADER.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            lock_fixture = Path(directory) / "windows/tool/build-toolchain.lock.json"
+            lock_fixture.write_text(
+                WINDOWS_TOOLCHAIN_LOCK.read_text(encoding="utf-8"),
                 encoding="utf-8",
             )
             return subprocess.run(

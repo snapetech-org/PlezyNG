@@ -18,5 +18,12 @@
     "provenance": "https://jrsoftware.org/isdl.php",
     "signatureDocumentation": "https://jrsoftware.org/isdl-verify.php",
     "verification": "The vendor download page links this latest Inno Setup 6 release and identifies Pyrsys B.V. as publisher. The complete download SHA-256 agrees with the GitHub release asset digest and vendor .issig file. Windows provisioning additionally requires valid Authenticode."
+  },
+  "winSparkle": {
+    "version": "0.9.2",
+    "filename": "WinSparkle-0.9.2.zip",
+    "url": "https://github.com/vslavik/winsparkle/releases/download/v0.9.2/WinSparkle-0.9.2.zip",
+    "sha256": "2a5facf5a22056edf7afc4d0a4bf05620b7aa7cc1619c3078b281e374cdb9996",
+    "provenance": "Official v0.9.2 GitHub release asset; SHA-256 matches the GitHub release API digest and an independent hash of the complete ZIP."
   }
 }

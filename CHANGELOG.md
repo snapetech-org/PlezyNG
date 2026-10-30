@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Prefetch and checksum-verify the pinned WinSparkle source through Schannel curl before Windows CMake configuration.
 - Restore Android CI coverage for MPV Dolby Vision preference routing and fallback playback stats after Activity detachment.
 - Route the checksum-pinned simdutf CMake archive through verified Schannel curl on Windows private JIT runners while retaining FetchContent hash verification.
 - Ensure the vendored iOS, tvOS, and macOS torrent XCFrameworks have concrete CocoaPods targets, and inspect the generated iOS Pods project in CI diagnostics.

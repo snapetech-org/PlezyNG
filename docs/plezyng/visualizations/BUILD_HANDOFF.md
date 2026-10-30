@@ -434,3 +434,23 @@ so `SamplerState` parameters in helper overloads do not collide with global
 state names. Run native overload/alias/compiler tests, the browser HLSL harness
 and Emscripten delivery. This source has not been compiled or tested; the
 connected GitHub Actions tools expose no dispatch for the required private job.
+
+## 2026-10-30 download recovery and adaptive quality source closure
+
+Pack downloads now persist up to eight bounded partial archives (256 MiB total)
+with immutable catalog identity and strong ETags. Explicit retry sends Range and
+If-Range, checks the exact Content-Range/length/ETag, and restarts cleanly when
+identity cannot be confirmed. Startup recovery does no networking. Saved progress,
+resume/retry and discard controls are present; checksum, catalog reauthorization,
+extraction and atomic activation remain mandatory before selection.
+
+Native desktop workers now have a 1920×1080/60 FPS ceiling and mobile/TV retain
+1280×720/30 FPS. A shared 60-frame p90 controller adapts resolution, uses ten-second
+recovery hysteresis, and reduces desktop cadence to 30 FPS at minimum scale.
+The helper's bounded message envelope now accommodates 1080p RGBA, and Linux's
+Flutter notification cadence supports the desktop budget. Shader loading and
+paused time do not enter steady-state cost samples.
+
+Source regression cases cover quality reduction/recovery and the expanded IPC
+frame bound. No tests or builds were executed. These implementation items are
+closed separately from device performance, compiler and recovery validation.

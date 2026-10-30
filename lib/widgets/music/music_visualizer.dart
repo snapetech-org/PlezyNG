@@ -589,7 +589,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   void _resizeNative(BoxConstraints constraints, double pixelRatio) {
     final width = constraints.maxWidth * pixelRatio, height = constraints.maxHeight * pixelRatio;
     if (!width.isFinite || !height.isFinite || width <= 0 || height <= 0) return;
-    final scale = math.min(1.0, math.min(1280 / width, 720 / height)) * _resolutionScale;
+    final scale = math.min(1.0, math.min(1920 / width, 1080 / height)) * _resolutionScale;
     _native.resize(width * scale, height * scale);
   }
 

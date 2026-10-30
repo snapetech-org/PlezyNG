@@ -123,7 +123,7 @@ void ProtocolCases() {
   Reject([&] { DecodeHeader(invalid); }, "Unknown command accepted");
   invalid = expected; invalid[12] = 0;
   Reject([&] { DecodeHeader(invalid); }, "Zero sequence accepted");
-  invalid = expected; invalid[16] = 1; invalid[18] = 0x40;
+  invalid = expected; invalid[16] = 1; invalid[18] = 0x80;
   Reject([&] { DecodeHeader(invalid); }, "Oversized header accepted");
   Bytes values; U32(values, 0x87654321); Float(values, -0.0f); Double(values, 123.25); Text(values, "preset/texture");
   Reader reader(values);
@@ -132,7 +132,7 @@ void ProtocolCases() {
   Reject([&] { Text(values, std::string(32769, 'a')); }, "Unbounded path accepted");
   Reject([&] { Text(values, std::string("a\0b", 3)); }, "NUL path accepted");
   Reject([&] { FrameBytes(0, 720); }, "Empty capture accepted");
-  Reject([&] { FrameBytes(1281, 720); }, "Oversized capture accepted");
+  Reject([&] { FrameBytes(1921, 1080); }, "Oversized capture accepted");
   Require(DecodeHeader(EncodeHeader(uint32_t(Command::Present), 1, 8)).command == 8, "Presentation command was lost");
 }
 void ProcessCases() {
@@ -142,8 +142,8 @@ void ProcessCases() {
     client->Pcm(audio.data(), audio.size() / 2, 7);
     client->SetMouseState(true, 0.25, 0.75, -0.5, 0.5);
     client->Pause(true); client->Pause(false);
-    std::vector<uint8_t> frame; client->Capture(1280, 720, 0, frame);
-    Require(frame.size() == 1280 * 720 * 4 && frame.front() == 79 && frame.back() == 79, "Frame payload changed");
+    std::vector<uint8_t> frame; client->Capture(1920, 1080, 0, frame);
+    Require(frame.size() == 1920 * 1080 * 4 && frame.front() == 79 && frame.back() == 79, "Frame payload changed");
     float invalid[]{std::numeric_limits<float>::infinity(), 0};
     Reject([&] { client->Pcm(invalid, 1, 7); }, "Non-finite PCM accepted");
     Reject([&] { client->Capture(1, 1, std::numeric_limits<double>::quiet_NaN(), frame); }, "Invalid render clock accepted");

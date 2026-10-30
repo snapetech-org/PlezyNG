@@ -35,6 +35,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
     reason: 'Checking native renderer…',
   );
   List<VisualizerInstalledPack> _installed = const [];
+  Map<String, VisualizerPackDownload> _pendingDownloads = const {};
   List<VisualizerImportedPack> _communityPacks = const [];
   List<String> _imports = const [];
   Set<String> _favorites = <String>{};
@@ -120,6 +121,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
         _store.importedPresets(),
         _store.importedPacks(),
         _store.favoriteIds(),
+        _store.pendingDownloads(),
       ]);
       if (!mounted) return;
       setState(() {
@@ -127,6 +129,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
         _imports = results[1] as List<String>;
         _communityPacks = results[2] as List<VisualizerImportedPack>;
         _favorites = results[3] as Set<String>;
+        _pendingDownloads = {for (final download in results[4] as List<VisualizerPackDownload>) download.identity: download};
         _loading = false;
       });
     } catch (error) {
@@ -177,7 +180,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       _busy = true;
       _workingPackId = entry.id;
       _installCancellation = cancellation;
-      _progress = 0;
+      _progress = _pendingDownloads[entry.identity]?.progress ?? 0;
       _failure = null;
     });
     try {
@@ -194,6 +197,12 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
     } catch (error) {
       if (mounted) setState(() => _failure = error.toString());
     } finally {
+      try {
+        final pending = await _store.pendingDownloads();
+        if (mounted) setState(() => _pendingDownloads = {for (final item in pending) item.identity: item});
+      } on Object {
+        // Preserve the original installation failure; recovery is retried on open.
+      }
       if (mounted) {
         setState(() {
           _busy = false;
@@ -577,6 +586,11 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(entry.description, style: Theme.of(context).textTheme.bodyMedium),
+                                    Text('${(entry.archiveBytes / (1024 * 1024)).toStringAsFixed(1)} MB download · '
+                                        '${(entry.expandedBytes / (1024 * 1024)).toStringAsFixed(1)} MB installed'),
+                                    if (_pendingDownloads[entry.identity] case final pending?)
+                                      Text('${(pending.progress * 100).floor()}% saved · '
+                                          '${pending.resumable ? "Ready to resume" : "Retry starts a new download"}'),
                                     Text(entry.qualification.label, style: Theme.of(context).textTheme.bodySmall),
                                     if (entry.qualification.reportUrl != null)
                                       TextButton(
@@ -652,10 +666,27 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                             label: Text(
                                               entry.bundledAsset != null
                                                   ? 'Restore included pack'
+                                                  : _pendingDownloads.containsKey(entry.identity)
+                                                  ? (_pendingDownloads[entry.identity]!.resumable ? 'Resume download' : 'Retry download')
                                                   : olderIds.contains(entry.id)
                                                   ? 'Download update'
                                                   : t.downloads.downloadNow,
                                             ),
+                                          ),
+                                        if (_pendingDownloads.containsKey(entry.identity) && _workingPackId != entry.id)
+                                          TextButton(
+                                            onPressed: _busy ? null : () async {
+                                              setState(() => _busy = true);
+                                              try {
+                                                await _store.discardDownload(_pendingDownloads[entry.identity]!.sha256);
+                                                await _refresh();
+                                              } on Object catch (error) {
+                                                if (mounted) setState(() => _failure = error.toString());
+                                              } finally {
+                                                if (mounted) setState(() => _busy = false);
+                                              }
+                                            },
+                                            child: const Text('Discard saved download'),
                                           ),
                                         IconButton(
                                           tooltip: _favorites.contains(_packFavoriteKey(entry.id, entry.version))

@@ -13,10 +13,12 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'visualizer_content_limits.dart';
+import 'visualizer_pack_download.dart';
 import 'visualizer_catalog_entry.dart';
 import 'visualizer_signed_catalog.dart';
 
 export 'visualizer_catalog_entry.dart';
+export 'visualizer_pack_download.dart' show VisualizerPackDownload;
 
 class VisualizerInstalledPack {
   const VisualizerInstalledPack({required this.entry, required this.path});
@@ -122,6 +124,15 @@ class VisualizerPackStore {
   bool canDownload(VisualizerPackCatalogEntry entry) => _catalog.authorizes(entry);
   Future<void> refreshCatalog() => _catalog.refresh();
 
+  Future<VisualizerPackDownloader> _downloader() async =>
+      VisualizerPackDownloader(Directory(p.join((await _root()).path, 'downloads')), _client);
+
+  Future<List<VisualizerPackDownload>> pendingDownloads() =>
+      _assetOperation(() async => (await _downloader()).pending());
+
+  Future<void> discardDownload(String sha256) =>
+      _assetOperation(() async => (await _downloader()).discard(sha256));
+
   final http.Client _client;
   final String? profileId;
   static Future<Directory>? _rootFuture;
@@ -182,7 +193,8 @@ class VisualizerPackStore {
     final root = Directory(p.join(support.path, 'visualizer'));
     await root.create(recursive: true);
     // Runs once at process startup, before any mutation can create a stage.
-    // A killed download restarts cleanly; a killed replacement restores its
+    // Legacy partial files are removed; resumable downloads have a separate journal.
+    // A killed replacement restores its
     // previous complete version before the installed library is enumerated.
     for (final lane in ['packs', 'community-packs']) {
       final packs = Directory(p.join(root.path, lane));
@@ -822,7 +834,9 @@ class VisualizerPackStore {
     final root = await _root();
     final packsRoot = Directory(p.join(root.path, 'packs'));
     await packsRoot.create(recursive: true);
-    final download = File(p.join(packsRoot.path, '${entry.fileName}.partial'));
+    var download = File(p.join(packsRoot.path, '${entry.fileName}.partial'));
+    final downloader = await _downloader();
+    var downloaded = false;
     final stage = Directory(p.join(packsRoot.path, '.stage-${entry.id}-${entry.version}'));
     final target = Directory(p.join(packsRoot.path, entry.id, entry.version));
     final backup = Directory('${target.path}.previous');
@@ -838,46 +852,16 @@ class VisualizerPackStore {
         }
         await download.writeAsBytes(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes), flush: true);
       } else {
-        final uri = Uri.parse(entry.archiveUrl);
-        if (uri.scheme != 'https' || uri.host != 'raw.githubusercontent.com') {
-          throw const VisualizerPackException('The pack catalog contains an untrusted download host.');
-        }
-        final request = http.AbortableRequest(
-          'GET',
-          uri,
+        download = await downloader.download(
+          entry,
           abortTrigger: cancellation == null
               ? requestAbort.abortTrigger
               : Future.any([requestAbort.abortTrigger, cancellation.abortTrigger]),
+          checkCancellation: checkCancellation,
+          onProgress: onProgress,
         );
-        request.followRedirects = false; // The app pins the origin as well as the digest.
-        final response = await _client.send(request).timeout(const Duration(seconds: 30));
-        if (response.statusCode != HttpStatus.ok) {
-          throw VisualizerPackException('Pack download failed with HTTP ${response.statusCode}.');
-        }
-        final announcedLength = response.contentLength;
-        if (announcedLength != null && (announcedLength != entry.archiveBytes || announcedLength > maxArchiveBytes)) {
-          throw const VisualizerPackException('The downloaded pack size does not match its catalog entry.');
-        }
-        final sink = download.openWrite();
-        var received = 0;
-        try {
-          await for (final chunk in response.stream.timeout(const Duration(seconds: 30))) {
-            checkCancellation();
-            received += chunk.length;
-            if (received > maxArchiveBytes || received > entry.archiveBytes) {
-              throw const VisualizerPackException('The pack archive exceeds its size limit.');
-            }
-            sink.add(chunk);
-            if (entry.archiveBytes > 0) onProgress?.call(received / entry.archiveBytes);
-          }
-          await sink.flush();
-        } finally {
-          await sink.close();
-        }
-        if (received != entry.archiveBytes) {
-          throw const VisualizerPackException('The downloaded pack is incomplete.');
-        }
       }
+      downloaded = true;
       final digest = await sha256.bind(download.openRead()).first;
       checkCancellation();
       if (digest.toString() != entry.sha256) {
@@ -924,7 +908,13 @@ class VisualizerPackStore {
       rethrow;
     } finally {
       requestAbort.cancel();
-      if (await download.exists()) await download.delete();
+      if (entry.bundledAsset != null) {
+        if (await download.exists()) await download.delete();
+      } else if (downloaded) {
+        // Completed archives are removed after activation or validation failure.
+        // Interrupted transfers retain their bounded journal for explicit retry.
+        await downloader.discard(entry.sha256);
+      }
     }
   }
 

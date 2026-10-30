@@ -70,6 +70,33 @@ void AwaitRetired(NativeWorker& worker) {
 int main() {
   try {
     {
+      RenderQuality quality(RenderBudget::Desktop());
+      quality.Resize(3840, 2160);
+      Require(quality.Size() == std::make_pair(1920, 1080), "Desktop render cap is incorrect.");
+      auto now = RenderQuality::Clock::now();
+      quality.ResetTiming(now);
+      for (int window = 1; window <= 6; ++window) {
+        now += std::chrono::seconds(2);
+        for (int sample = 0; sample < 60; ++sample) quality.Observe(40, now);
+      }
+      Require(quality.Size() == std::make_pair(960, 540) && quality.FramesPerSecond() == 30,
+          "Sustained render cost did not reduce scale and cadence.");
+      for (int window = 0; window < 6; ++window) {
+        now += std::chrono::seconds(11);
+        for (int sample = 0; sample < 60; ++sample) quality.Observe(2, now);
+      }
+      Require(quality.Size() == std::make_pair(1920, 1080) && quality.FramesPerSecond() == 60,
+          "Sustained headroom did not restore desktop quality.");
+      RenderQuality constrained;
+      constrained.Resize(3840, 2160);
+      Require(constrained.Size() == std::make_pair(1280, 720) && constrained.FramesPerSecond() == 30,
+          "Constrained hosts exceeded their budget.");
+      // One compilation-like outlier must not reduce a healthy steady-state tier.
+      constrained.ResetTiming(now);
+      for (int sample = 0; sample < 60; ++sample) constrained.Observe(sample == 0 ? 1500 : 2, now + std::chrono::seconds(3));
+      Require(constrained.Size() == std::make_pair(1280, 720), "A single outlier changed render quality.");
+    }
+    {
       auto probe = std::make_shared<Probe>(); auto worker = Worker(probe);
       worker->Load("fixture.milk", ".");
       Require(worker->PauseAndDrain(), "A hidden session must already be quiescent.");

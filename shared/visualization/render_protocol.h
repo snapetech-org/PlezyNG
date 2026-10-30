@@ -13,8 +13,8 @@ namespace plezy::visualization::render_protocol {
 constexpr uint32_t kMagic = 0x50565231;
 constexpr uint32_t kVersion = 2;
 constexpr size_t kHeaderSize = 20;
-constexpr uint32_t kMaxMessage = 4 * 1024 * 1024;
-constexpr uint32_t kMaxWidth = 1280, kMaxHeight = 720;
+constexpr uint32_t kMaxMessage = 8 * 1024 * 1024;
+constexpr uint32_t kMaxWidth = 1920, kMaxHeight = 1080;
 constexpr uint32_t kMaxPcmFrames = 4096;
 constexpr uint32_t kCanPresent = 1;
 constexpr uint32_t kReply = 0x80000000;
@@ -83,7 +83,7 @@ inline Header DecodeHeader(const Bytes& bytes) {
 }
 inline size_t FrameBytes(uint32_t width, uint32_t height) {
   if (!width || !height || width > kMaxWidth || height > kMaxHeight)
-    throw std::runtime_error("Visualization helper frame exceeds the 1280 by 720 limit.");
+    throw std::runtime_error("Visualization helper frame exceeds the 1920 by 1080 limit.");
   return size_t(width) * height * 4;
 }
 }  // namespace plezy::visualization::render_protocol

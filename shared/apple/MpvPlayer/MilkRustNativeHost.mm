@@ -233,7 +233,13 @@ int PlezySubtitlePcmCaptureReadNext(void* player, double* pts, uint32_t* frames,
         [permit = _permit] { return std::make_unique<AppleContext>(permit); }, DecodeImage,
 #endif
         [reader](mpv_plezy_audio_block* block) { return reader(block, sizeof(*block)); },
-        [slot, available](std::shared_ptr<const NativeFrame> frame) { Publish(slot, *frame); available(); });
+        [slot, available](std::shared_ptr<const NativeFrame> frame) { Publish(slot, *frame); available(); }, false,
+#if TARGET_OS_OSX
+        RenderBudget::Desktop()
+#else
+        RenderBudget::Constrained()
+#endif
+    );
 #if !TARGET_OS_OSX
     __weak PlezyMilkRustHost* weakSelf = self;
     auto* center = NSNotificationCenter.defaultCenter;

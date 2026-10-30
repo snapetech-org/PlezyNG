@@ -111,7 +111,11 @@ alive through Flutter's copy callback. Rendering and PCM ingestion stay native;
 the Dart controller sends control commands and polls status at 2 Hz. Sessions
 have monotonic leases so stale widget disposal cannot destroy a newer session.
 
-The renderer requests at most 1280×720 at 30 FPS. It performs GPU readback and
+Desktop hosts request at most 1920×1080 at 60 FPS; mobile and TV hosts retain
+1280×720 at 30 FPS. A shared controller reduces render scale when the rolling
+90th-percentile capture/presentation cost exceeds its frame budget, and restores
+quality only after sustained headroom. Desktop can fall back to 30 FPS at its
+minimum scale. These are implementation budgets, not measured device performance. It performs GPU readback and
 a native copy, not GPU texture sharing. This is a provisional integration path
 whose cost must be measured before acceptance. Mesa surfaceless EGL is required;
 drivers without it report unavailable. There is no universal Linux GPU claim.

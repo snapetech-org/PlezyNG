@@ -12,6 +12,7 @@
 #include "pcm_resampler.h"
 #include "preset_transition.h"
 #include "render_thread.h"
+#include "render_quality.h"
 
 namespace plezy::visualization {
 struct NativeFrame {
@@ -45,9 +46,9 @@ class NativeWorker {
     return extension == ".milk" || extension == ".milk2";
   }
   struct WorkerState {
-    WorkerState(BackendFactory backend, AudioReader audio, Publish publish, bool owned_publish)
+    WorkerState(BackendFactory backend, AudioReader audio, Publish publish, bool owned_publish, RenderBudget budget)
         : backend_(std::move(backend)), audio_(std::move(audio)),
-          publish_(std::move(publish)), owned_publish_(owned_publish) {}
+          publish_(std::move(publish)), owned_publish_(owned_publish), quality_(budget) {}
     void Stop() {
       std::function<void()> cancel;
       { std::lock_guard<std::mutex> lock(mutex_); stopping_ = true; cancel = cancel_; }
@@ -83,10 +84,8 @@ class NativeWorker {
     void Resize(int width, int height) {
       if (width < 1 || height < 1 || width > 16384 || height > 16384)
         throw std::runtime_error("Invalid visualization dimensions.");
-      const double scale = std::min({1.0, 1280.0 / width, 720.0 / height});
       std::lock_guard<std::mutex> lock(mutex_);
-      width_ = std::max(1, static_cast<int>(width * scale));
-      height_ = std::max(1, static_cast<int>(height * scale));
+      quality_.Resize(width, height);
     }
     void Pause(bool paused) {
       {
@@ -149,8 +148,7 @@ class NativeWorker {
           condition_.notify_all();
         }
         result = status_;
-        result.width = width_;
-        result.height = height_;
+
         result.has_frame = !stopping_ && result.state != "failed" && result.frame_serial != 0 && result.preset_serial == serial_;
         if (paused_ && result.state != "failed" && result.state != "unavailable") result.state = "paused";
       }
@@ -168,7 +166,6 @@ class NativeWorker {
     std::condition_variable condition_;
     bool stopping_ = false, paused_ = true, mouse_down_ = false, mouse_click_pending_ = false;
     bool active_ = false, quiescent_ = true;
-    int width_ = 768, height_ = 432;
     double mouse_x_ = 0.5, mouse_y_ = 0.5, mouse_dx_ = 0, mouse_dy_ = 0;
     uint64_t serial_ = 0;
     double transition_seconds_ = 3;
@@ -177,6 +174,7 @@ class NativeWorker {
     std::mutex callback_mutex_;
     bool callbacks_closed_ = false;
     const bool owned_publish_;
+    RenderQuality quality_;
     RenderWatchdog watchdog_;
     struct Work {
       WorkerState& state;
@@ -234,6 +232,7 @@ class NativeWorker {
             if (paused_) {
               tick = {};
               audio_at = {};
+              quality_.ResetTiming();
               if (engine && !quiescent_ && !stopping_) {
                 active_ = true;
                 lock.unlock();
@@ -249,8 +248,9 @@ class NativeWorker {
             path = path_;
             root = root_;
             serial = serial_;
-            width = width_;
-            height = height_;
+            const auto size = quality_.Size();
+            width = size.first;
+            height = size.second;
             transition_seconds = transition_seconds_;
             active_ = true;
             quiescent_ = false;
@@ -346,6 +346,7 @@ class NativeWorker {
                 mouse_dx_ = 0;
                 mouse_dy_ = 0;
               }
+              const auto render_started = Clock::now();
               engine->SetMouseState(mouse_down, mouse_x, mouse_y, mouse_dx, mouse_dy);
               engine->Capture(width, height, elapsed, frame->rgba);
               transition.Apply(frame->rgba, width, height, elapsed);
@@ -361,6 +362,8 @@ class NativeWorker {
                 if (current) {
                   status_.state = "rendering";
                   status_.reason.clear();
+                  status_.width = width;
+                  status_.height = height;
                   status_.preset_serial = serial;
                   status_.audio_generation = generation;
                   ++status_.frame_serial;
@@ -369,6 +372,8 @@ class NativeWorker {
               if (current) {
                 last_frame = frame;
                 PublishFrame(std::move(frame));
+                std::lock_guard<std::mutex> lock(mutex_);
+                quality_.Observe(std::chrono::duration<double, std::milli>(Clock::now() - render_started).count());
               }
             } else {
               tick = {};
@@ -376,7 +381,7 @@ class NativeWorker {
             }
           }
           std::unique_lock<std::mutex> lock(mutex_);
-          condition_.wait_until(lock, started + std::chrono::milliseconds(33), [this, serial] {
+          condition_.wait_until(lock, started + quality_.Interval(), [this, serial] {
             return stopping_ || paused_ || serial_ != serial;
           });
           if (stopping_) break;
@@ -399,12 +404,13 @@ class NativeWorker {
   // owned_publish is only for sinks that retain all resources they access;
   // borrowed registrar/player pointers must use the default guarded path.
   NativeWorker(ContextFactory context, MilkRustImageDecoder decoder, AudioReader audio, Publish publish,
-               bool owned_publish = false)
+               bool owned_publish = false, RenderBudget budget = RenderBudget::Constrained())
       : NativeWorker([context=std::move(context), decoder=std::move(decoder)] {
           return std::make_unique<LocalRenderBackend>(context(), decoder);
-        }, std::move(audio), std::move(publish), owned_publish) {}
-  NativeWorker(BackendFactory backend, AudioReader audio, Publish publish, bool owned_publish = false)
-      : state_(std::make_shared<WorkerState>(std::move(backend), std::move(audio), std::move(publish), owned_publish)),
+        }, std::move(audio), std::move(publish), owned_publish, budget) {}
+  NativeWorker(BackendFactory backend, AudioReader audio, Publish publish, bool owned_publish = false,
+               RenderBudget budget = RenderBudget::Constrained())
+      : state_(std::make_shared<WorkerState>(std::move(backend), std::move(audio), std::move(publish), owned_publish, budget)),
         worker_([state=state_] { state->Run(); }) {}
   ~NativeWorker() { Stop(); }
   NativeWorker(const NativeWorker&) = delete;

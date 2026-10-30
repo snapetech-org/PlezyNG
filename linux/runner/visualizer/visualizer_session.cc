@@ -17,6 +17,7 @@
 #include "../../../shared/visualization/pcm_resampler.h"
 #include "../../../shared/visualization/preset_transition.h"
 #include "../../../shared/visualization/render_thread.h"
+#include "../../../shared/visualization/render_quality.h"
 
 namespace {
 using Clock = std::chrono::steady_clock;
@@ -124,6 +125,7 @@ struct VisualizerSession::Impl {
     std::condition_variable condition;
     bool stopping = false, paused = true;
     int width = 768, height = 432;
+    RenderQuality quality{RenderBudget::Desktop()};
     double transition_seconds = 3;
     bool mouse_down = false, mouse_click_pending = false;
     double mouse_x = 0.5, mouse_y = 0.5, mouse_dx = 0, mouse_dy = 0;
@@ -166,14 +168,14 @@ struct VisualizerSession::Impl {
         std::vector<float> pcm;
         auto audio_at = Clock::time_point{};
         for (;;) {
-          auto started = Clock::now();
+          auto started = Clock::time_point{};
           std::string requested_path, requested_root;
           uint64_t serial;
           int w, h;
           double transition;
           bool pause_requested, mouse_down;
           double mouse_x, mouse_y, mouse_dx, mouse_dy;
-          { std::lock_guard<std::mutex> lock(mutex); pause_requested = paused; }
+          { std::lock_guard<std::mutex> lock(mutex); pause_requested = paused; if (paused) quality.ResetTiming(); }
           if (pause_requested && engine.Has()) {
             RenderWatchdog::Operation operation(watchdog);
             engine.Pause(true);
@@ -185,8 +187,10 @@ struct VisualizerSession::Impl {
             requested_path = path;
             requested_root = root;
             serial = preset_serial;
-            w = width;
-            h = height;
+            const auto size = quality.Size();
+            w = size.first;
+            h = size.second;
+            started = Clock::now();
             transition = transition_seconds;
           }
           RenderWatchdog::Operation operation(watchdog);
@@ -255,12 +259,16 @@ struct VisualizerSession::Impl {
               this->mouse_dx = 0;
               this->mouse_dy = 0;
             }
+            const auto render_started = Clock::now();
             engine.SetMouseState(mouse_down, mouse_x, mouse_y, mouse_dx, mouse_dy);
             engine.Capture(w, h, frame->pixels);
             if (engine.native) fade.Apply(frame->pixels, w, h, engine.elapsed);
             {
               std::lock_guard<std::mutex> control(mutex);
               if (stopping || paused || preset_serial != serial) continue;
+              width = w;
+              height = h;
+              quality.Observe(std::chrono::duration<double, std::milli>(Clock::now() - render_started).count());
               std::lock_guard<std::mutex> lock(frames->mutex);
               last_frame = frame;
               frames->latest = std::move(frame);
@@ -277,7 +285,7 @@ struct VisualizerSession::Impl {
             }
           }
           std::unique_lock<std::mutex> lock(mutex);
-          condition.wait_until(lock, started + std::chrono::milliseconds(33), [this] { return stopping || paused; });
+          condition.wait_until(lock, started + quality.Interval(), [this, serial] { return stopping || paused || preset_serial != serial; });
           if (stopping) break;
         }
       } catch (const std::exception& ex) {
@@ -304,7 +312,7 @@ struct VisualizerSession::Impl {
       throw std::runtime_error("Flutter rejected the visualization texture.");
     }
     timer = g_timeout_add(
-        33,
+        16,
         [](gpointer data) -> gboolean {
           auto* self = static_cast<Impl*>(data);
           auto serial = self->work->frames->serial.load();
@@ -379,10 +387,8 @@ bool VisualizerSession::LoadPreset(
 void VisualizerSession::Resize(int width, int height) {
   width = std::clamp(width, 1, 16384);
   height = std::clamp(height, 1, 16384);
-  const double scale = std::min({1.0, 1280.0 / width, 720.0 / height});
   std::lock_guard<std::mutex> lock(impl_->work->mutex);
-  impl_->work->width = std::max(1, static_cast<int>(width * scale));
-  impl_->work->height = std::max(1, static_cast<int>(height * scale));
+  impl_->work->quality.Resize(width, height);
 }
 void VisualizerSession::SetMouseState(bool down, double x, double y, double dx, double dy) {
   if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(dx) || !std::isfinite(dy))

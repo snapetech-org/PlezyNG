@@ -150,3 +150,12 @@ The current engine source lock is MilkRust
 `sampler`/`sampler2D` arrays now expand to separately named images alongside
 `Texture1D`/`Texture2D` arrays. No build, compiler run or renderer check has
 been executed for this source increment.
+
+
+## 2026-10-30 resource-array struct-field continuation
+
+The current MilkRust pin is `d3b3f507bcb40a809d797db03ec55efd3e439bd4`.
+Constant-index Texture1D/Texture2D and legacy sampler/sampler2D arrays now
+support direct fields on global resource structs, mapping each element to an
+instance/field-specific image binding. No build, corpus compiler run or renderer
+check has been executed for this path.

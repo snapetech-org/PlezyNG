@@ -18,9 +18,12 @@ excluded. Only digests and bounded numeric timing records are persisted.
 
 This is **representation metadata identity**, not a digest of the remote video
 or subtitle bytes. An in-place replacement with identical metadata is not
-detectable here. Remote subtitle content receipts and transfer of native timing
-corrections remain separate work. The existing standalone asset path retains
-its stronger downloaded-subtitle content digest. Existing global/library/title
+detectable here. Library corrections now have a separate explicit, bounded JSON
+file transfer that requires the exact represented copy, backend and selected
+tracks; it does not auto-publish or change live playback. See
+[NATIVE-TIMING-TRANSFER.md](NATIVE-TIMING-TRANSFER.md). Remote subtitle content
+receipts remain separate work. The existing standalone asset path retains its
+stronger downloaded-subtitle content digest. Existing global/library/title
 settings are not migrated or erased; unmatched records fall back to them.
 
 There are at most 300 records and 256 KiB per profile, with oldest records

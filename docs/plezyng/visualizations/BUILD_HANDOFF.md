@@ -313,3 +313,8 @@ forward prototypes, literal resource-array arguments, recursion/capture failures
 and the specialization budget. Existing sampler-helper overloads without custom
 state retain the typed path and have a regression source. Compilation and these
 controls remain unrun; do not infer passing results from the pin update.
+
+
+## MilkRust noise resource checkpoint
+
+Build and qualify MilkRust `f7de4f66b718e11fbc86a0d2ea5354389b8feb62` on compatible private JIT runners. The noise generator now mirrors MilkDrop's physical texture dimensions, quality-specific cubic expansion order and single-level texture setup in native GL and WebGL. Compare rendered samples against the reference; random seeding remains deterministic in MilkRust while the reference seeds from its runtime clock. No compiler, browser, GPU, or pixel result is available for this pin.

@@ -29,7 +29,6 @@ class VisualizerSession extends ChangeNotifier {
   double transitionSeconds = 3;
   bool _mouseDown = false;
   double _mouseX = 0.5, _mouseY = 0.5, _mouseDx = 0, _mouseDy = 0;
-  int _mouseRevision = 0;
   Timer? _mouseTimer;
   String _state = 'idle', _reason = '', _engine = 'projectm';
   String get engine => _engine;
@@ -164,9 +163,8 @@ class VisualizerSession extends ChangeNotifier {
     _mouseDown = down;
     _mouseX = x.clamp(0.0, 1.0).toDouble();
     _mouseY = y.clamp(0.0, 1.0).toDouble();
-    _mouseDx = dx.clamp(-1.0, 1.0).toDouble();
-    _mouseDy = dy.clamp(-1.0, 1.0).toDouble();
-    _mouseRevision++;
+    _mouseDx = (_mouseDx + dx).clamp(-1.0, 1.0).toDouble();
+    _mouseDy = (_mouseDy + dy).clamp(-1.0, 1.0).toDouble();
     if (_mouseTimer?.isActive == true) return;
     _mouseTimer = Timer(const Duration(milliseconds: 16), () {
       _mouseTimer = null;
@@ -176,18 +174,16 @@ class VisualizerSession extends ChangeNotifier {
 
   Future<void> _sendMouseState() async {
     if (_closed || _sessionId == null || _engine != 'milkrust') return;
-    final revision = _mouseRevision;
+    final dx = _mouseDx, dy = _mouseDy;
+    _mouseDx = 0;
+    _mouseDy = 0;
     await _call<void>('visualizerSetMouse', {
       'down': _mouseDown,
       'x': _mouseX,
       'y': _mouseY,
-      'dx': _mouseDx,
-      'dy': _mouseDy,
+      'dx': dx,
+      'dy': dy,
     });
-    if (revision == _mouseRevision) {
-      _mouseDx = 0;
-      _mouseDy = 0;
-    }
   }
 
   void setPaused(bool paused) {
@@ -256,7 +252,6 @@ class VisualizerSession extends ChangeNotifier {
     _mouseDown = false;
     _mouseDx = 0;
     _mouseDy = 0;
-    _mouseRevision++;
     if (_sessionId != null) {
       try {
         await _call<void>('visualizerDispose');

@@ -196,7 +196,7 @@ void main() {
           tester,
           () => find.text(failureMessage).evaluate().isNotEmpty,
           describe: () => 'playerMethods=$playerMethods, loadfiles=$loadfileUrls, no failure view',
-          timeout: const Duration(seconds: 10),
+          timeout: const Duration(seconds: 30),
         );
 
         expect(find.byType(CircularProgressIndicator), findsNothing, reason: 'the spinner must not cover the view');

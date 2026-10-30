@@ -116,12 +116,16 @@ void main() {
     final navigator = GlobalKey<NavigatorState>();
     final key = GlobalKey<VideoPlayerScreenState>();
     final loadfileUrls = <String>[];
+    final playerMethods = <String>[];
     var stops = 0;
+    const playerChannelBase = 'com.plezy/mpv_player/playback_open_failure_test';
 
     await withMockPlayerChannels(
-      methodChannelName: 'com.plezy/mpv_player',
-      eventChannelName: 'com.plezy/mpv_player/events',
+      methodChannelName: playerChannelBase,
+      eventChannelName: '$playerChannelBase/events',
+      channelNameBase: playerChannelBase,
       methodHandler: (call) async {
+        playerMethods.add(call.method);
         if (call.method == 'initialize') return true;
         if (call.method != 'command') return null;
         final args = (call.arguments as Map?)?['args'];
@@ -191,7 +195,7 @@ void main() {
         await pumpUntil(
           tester,
           () => find.text(failureMessage).evaluate().isNotEmpty,
-          describe: () => 'loadfiles=$loadfileUrls, no failure view',
+          describe: () => 'playerMethods=$playerMethods, loadfiles=$loadfileUrls, no failure view',
         );
 
         expect(find.byType(CircularProgressIndicator), findsNothing, reason: 'the spinner must not cover the view');

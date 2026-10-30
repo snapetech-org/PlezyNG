@@ -106,11 +106,15 @@ void main() {
     final navigator = GlobalKey<NavigatorState>();
     final key = GlobalKey<VideoPlayerScreenState>();
     final loadfileUrls = <String>[];
+    final playerMethods = <String>[];
+    const playerChannelBase = 'com.plezy/mpv_player/playback_open_throw_test';
 
     await withMockPlayerChannels(
-      methodChannelName: 'com.plezy/mpv_player',
-      eventChannelName: 'com.plezy/mpv_player/events',
+      methodChannelName: playerChannelBase,
+      eventChannelName: '$playerChannelBase/events',
+      channelNameBase: playerChannelBase,
       methodHandler: (call) async {
+        playerMethods.add(call.method);
         if (call.method == 'initialize') return true;
         if (call.method != 'command') return null;
         final args = (call.arguments as Map?)?['args'];
@@ -164,7 +168,7 @@ void main() {
         await pumpUntil(
           tester,
           () => find.textContaining('loadfile failed').evaluate().isNotEmpty,
-          describe: () => 'loadfiles=$loadfileUrls, no failure view',
+          describe: () => 'playerMethods=$playerMethods, loadfiles=$loadfileUrls, no failure view',
           timeout: const Duration(seconds: 10),
         );
         final failureMessage = find.textContaining('loadfile failed');

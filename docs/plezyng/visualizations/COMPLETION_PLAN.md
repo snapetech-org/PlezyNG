@@ -706,3 +706,12 @@ corresponding helper source. Native and packaging regression sources were added;
 only source parsing/whitespace checks ran. iOS/tvOS recovery remains a platform
 constraint, and all builds, firmware execution, corpus/fidelity, new mpv binary
 promotion and release qualification remain open.
+
+
+## 2026-10-30 MilkRust source pin — animated images and runtime noise
+
+The PlezyNG lock now points to MilkRust `0f2db0a47edada49ec0273ae514922b9bee3513f` (ABI v2). This source checkpoint
+adds bounded APNG and animated WebP decoding and runtime-seeded noise generation in
+both native GL and WebGL. The deterministic generator remains available for offline
+callers. No build, test, browser render, native render or device qualification was
+performed; all execution remains assigned to compatible private ephemeral JIT runners.

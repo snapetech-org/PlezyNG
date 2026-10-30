@@ -360,3 +360,13 @@ and an unreaped child blocks retry. A startup failure reports unavailable/failed
 without local rendering fallback. Test pointer input, display fades, seek/track
 generations and texture leases against the existing music session. Firmware
 policy, performance and device-wide recovery remain qualification gates.
+
+
+## 2026-10-30 MilkRust source pin update
+
+Build the exact locked engine revision `0f2db0a47edada49ec0273ae514922b9bee3513f` (ABI v2). It adds bounded APNG and
+animated WebP decoding and per-renderer runtime-seeded noise shared by native GL and
+WebGL, with deterministic noise available to offline tooling. The current source lock
+still records `source-only-unqualified`; do not promote a runtime receipt or pack from
+this pin until the private JIT compiler, native/browser decoder and renderer checks,
+reference comparisons, and target-device runs have been completed.

@@ -716,3 +716,16 @@ notices cover the added decoder crates, and the workspace Rust floor is now
 Source-only implementation is committed. The new native/WASM decoders, app
 import route, malformed-image behavior, frame upload and reference pixels have
 not been built or run. This does not qualify visuals or driver recovery.
+
+
+## 2026-10-30 current MilkRust source pin — APNG/WebP and noise generation
+
+The app lock now pins MilkRust `0f2db0a47edada49ec0273ae514922b9bee3513f` (ABI v2). The engine includes bounded
+APNG and animated WebP decoding through the shared Rust path, native static PNG/WebP
+decoding, and per-renderer runtime-seeded built-in noise generation shared by native
+GL and WebGL. A deterministic noise generator remains available for offline callers.
+
+This pin is source-only and unqualified. Builds, decoder/import execution, browser and
+native rendering, reference-pixel comparisons, and device runs remain unperformed on
+the compatible private JIT runners. Noise pixel identity and platform recovery are not
+claimed by this source checkpoint.

@@ -998,6 +998,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var duckRatio = .25;
       var track = 0;
       var subtitleTrack = 0, bitmapTail = 2000;
+      var broadcastKind = 'cea708', broadcastService = 1;
+      int? broadcastProgram;
+      var teletextEnabled = false, teletextPage = 888;
       var translationMode = 'faithful', scriptConversion = 's2t', readingMode = 'hiragana';
       var cropTop = task == 'caption_reconstruct' ? .8 : .65;
       var cropLeft = 0.0, cropWidth = 1.0, cropHeight = task == 'caption_reconstruct' ? .15 : .35;
@@ -1115,7 +1118,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               onChanged: (v) => update(() => isolatedLeadVocal = v == true),
               title: Text(aiCopy.vocalNoteTaskDeclarationTitle),
               subtitle: Text(aiCopy.vocalNoteTaskDeclarationDescription)),
-            if (path != null && task != 'ocr' && task != 'bitmap_ocr' && task != 'sound_localize' && task != 'vocal_notes') ...[
+            if (path != null && task != 'ocr' && task != 'bitmap_ocr' && task != 'sound_localize' && task != 'vocal_notes' && task != 'closed_captions') ...[
               DropdownButtonFormField<int>(initialValue: track, decoration: InputDecoration(labelText: aiCopy.companionAudioStreamLabel),
                 items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text(aiCopy.companionAudioStreamItem(index: i)))),
                 onChanged: (value) => update(() => track = value ?? 0)),
@@ -1167,8 +1170,35 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             if (task == 'caption_reconstruct') CheckboxListTile(contentPadding: EdgeInsets.zero,
               value: reconstructionConsent, title: Text(t.videoSettings.subtitleReconstructionConsent),
               onChanged: (value) => update(() => reconstructionConsent = value == true)),
+            if (task == 'closed_captions') ...[
+              Text(t.videoSettings.subtitleBroadcastHelp),
+              DropdownButtonFormField<String>(initialValue: broadcastKind,
+                decoration: InputDecoration(labelText: t.videoSettings.subtitleBroadcastKind),
+                items: const [DropdownMenuItem(value: 'cea708', child: Text('CEA-708')),
+                  DropdownMenuItem(value: 'cea608', child: Text('CEA-608'))],
+                onChanged: (value) => update(() { broadcastKind = value ?? 'cea708'; broadcastService = 1; })),
+              DropdownButtonFormField<int>(key: ValueKey(broadcastKind), initialValue: broadcastService,
+                decoration: InputDecoration(labelText: t.videoSettings.subtitleBroadcastService),
+                items: List.generate(broadcastKind == 'cea608' ? 4 : 63, (index) => DropdownMenuItem(value: index + 1,
+                  child: Text(broadcastKind == 'cea608' ? 'CC${index + 1}' : '${index + 1}'))),
+                onChanged: (value) => update(() => broadcastService = value ?? 1)),
+              TextFormField(keyboardType: TextInputType.number, maxLength: 5,
+                decoration: InputDecoration(labelText: t.videoSettings.subtitleBroadcastProgram),
+                onChanged: (value) => update(() => broadcastProgram = value.trim().isEmpty ? null : int.tryParse(value) ?? -1)),
+            ],
             if (task == 'bitmap_ocr' || task == 'extract_text') ...[
               if (task == 'bitmap_ocr') Text(aiCopy.companionBitmapOcrDescription),
+              if (task == 'bitmap_ocr' && capabilities['bitmapDecoder'] is Map &&
+                  (capabilities['bitmapDecoder'] as Map)['dvb'] == true) Text(t.videoSettings.subtitleBroadcastDvb),
+              if (task == 'bitmap_ocr' && capabilities['bitmapDecoder'] is Map &&
+                  (capabilities['bitmapDecoder'] as Map)['teletext'] == true) ...[
+                SwitchListTile(contentPadding: EdgeInsets.zero, title: Text(t.videoSettings.subtitleTeletextPage),
+                  subtitle: Text(t.videoSettings.subtitleTeletextHelp), value: teletextEnabled,
+                  onChanged: (value) => update(() => teletextEnabled = value)),
+                if (teletextEnabled) TextFormField(initialValue: '$teletextPage', keyboardType: TextInputType.number, maxLength: 3,
+                  decoration: InputDecoration(labelText: t.videoSettings.subtitleTeletextPage),
+                  onChanged: (value) => update(() => teletextPage = int.tryParse(value) ?? -1)),
+              ],
               DropdownButtonFormField<int>(initialValue: subtitleTrack, decoration: InputDecoration(labelText: aiCopy.companionSubtitleStreamLabel),
                 items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text(aiCopy.companionSubtitleStreamItem(index: i)))),
                 onChanged: (value) => update(() => subtitleTrack = value ?? 0)),
@@ -1195,6 +1225,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
         preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, sceneAudioEvidence: sceneAudioEvidence, sceneMotionTracking: sceneMotionTracking, signMotionTracking: signMotionTracking, crop: task == 'signs' || task == 'caption_reconstruct' ? [cropLeft, cropTop, cropWidth, cropHeight] : [0, cropTop, 1, 1 - cropTop],
+        broadcastKind: broadcastKind, broadcastService: broadcastService, broadcastProgram: broadcastProgram,
+        teletextPage: teletextEnabled ? teletextPage : null,
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         lyricSyllables: lyricSyllables, lyricPitchEvidence: lyricPitchEvidence,
         microphoneArray: microphoneArray,
@@ -4292,6 +4324,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('sound_localize', aiCopy.companionSoundLocalization),
             ('completeness', aiCopy.companionCompleteness),
             ('extract_text', aiCopy.companionExtractText),
+            ('closed_captions', t.videoSettings.subtitleBroadcast),
             ('signs', aiCopy.companionSigns),
             ('caption_reconstruct', t.videoSettings.subtitleReconstruction),
             ('align', aiCopy.companionAlign),

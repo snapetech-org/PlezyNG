@@ -326,6 +326,10 @@ def main():
         from dubbing import run
         result = run(folder, job, progress, original=decode_audio(folder, job) if task == "dub_mix" else None)
         device = "piper-onnx-cpu-and-ffmpeg"
+    elif task == 'closed_captions':
+        from broadcast_captions import run
+        result = run(folder, job, progress)
+        device = 'ccextractor-cpu'
     elif task == "extract_text":
         from research import extract_text
         result = extract_text(folder, job, progress)

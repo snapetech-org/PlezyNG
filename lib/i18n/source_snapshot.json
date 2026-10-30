@@ -5789,5 +5789,13 @@
   "videoSettings.subtitleTimingSavedForNextOpen": "9bd3e3167f31bb3b",
   "videoSettings.subtitleTimingImportUndone": "c4f784f7121eee54",
   "videoSettings.subtitleTimingTransferFailed": "8127800e4d181b2a",
-  "videoSettings.subtitleNotMarkedForced": "d0352b6eb15759af"
+  "videoSettings.subtitleNotMarkedForced": "d0352b6eb15759af",
+  "videoSettings.subtitleBroadcast": "d914b8db779921c3",
+  "videoSettings.subtitleBroadcastHelp": "d9f3c1d5982cbc2a",
+  "videoSettings.subtitleBroadcastKind": "60d6763fe82728bd",
+  "videoSettings.subtitleBroadcastService": "4da9ade8b737f06c",
+  "videoSettings.subtitleBroadcastProgram": "fbb888f530618476",
+  "videoSettings.subtitleBroadcastDvb": "4ff1066afdcb8155",
+  "videoSettings.subtitleTeletextPage": "aef9927fad862f8c",
+  "videoSettings.subtitleTeletextHelp": "782875c9e62f4d8d"
 }

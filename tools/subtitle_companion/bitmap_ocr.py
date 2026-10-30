@@ -9,6 +9,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import io
+import json
 import math
 import os
 from pathlib import Path
@@ -131,12 +132,30 @@ def read_text(path):
     return text, sum(scores) / len(scores) if scores else 0.0
 
 
+def decoder_capabilities():
+    try:
+        result = subprocess.run([os.environ.get('PLEZY_SUBTITLE_DECODER', 'plezy-subtitle-decode'), '--capabilities'],
+            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=5)
+        if result.returncode or len(result.stdout) > 4096: return None
+        value = json.loads(result.stdout)
+        if value.get('protocol') != 1 or value.get('revision') != 2: return None
+        return {'revision': 2, 'dvb': value.get('dvb') is True, 'teletext': value.get('teletext') is True}
+    except (OSError, subprocess.TimeoutExpired, ValueError, AttributeError):
+        return None
+
+
 def run(folder, job, progress):
     source = prepare_input(folder)
     evidence = folder / "evidence"
     shutil.rmtree(evidence, ignore_errors=True)
     evidence.mkdir(mode=0o700)
-    process = subprocess.Popen([os.environ.get("PLEZY_SUBTITLE_DECODER", "plezy-subtitle-decode"), str(source), str(job["subtitleTrack"])],
+    command = [os.environ.get("PLEZY_SUBTITLE_DECODER", "plezy-subtitle-decode"), str(source), str(job["subtitleTrack"])]
+    page = job.get('teletextPage')
+    if page is not None:
+        capabilities = decoder_capabilities()
+        if capabilities is None or not capabilities['teletext']: raise ValueError('teletext_bitmap_decoder_unavailable')
+        command.append(str(page))
+    process = subprocess.Popen(command,
                                stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
     timer = threading.Timer(4 * 3600, stop, (process,))
     timer.daemon = True

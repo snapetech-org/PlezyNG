@@ -79,6 +79,14 @@ class CompanionClient:
     def create(self, *, task, identity, media=None, **options):
         if options.get('signMotionTracking', False) and (task != 'signs' or self.capabilities().get('signMotionTracking') is not True):
             raise ValueError('companion_sign_motion_unavailable')
+        if task == 'closed_captions':
+            from broadcast_captions import validate
+            validate(options)
+            if task not in self.capabilities().get('tasks', []): raise ValueError('companion_broadcast_decoder_unavailable')
+        if options.get('teletextPage') is not None:
+            decoder = self.capabilities().get('bitmapDecoder')
+            if task != 'bitmap_ocr' or not isinstance(decoder, dict) or decoder.get('teletext') is not True:
+                raise ValueError('companion_teletext_decoder_unavailable')
         if task == 'caption_reconstruct':
             from caption_reconstruction import validate
             validate(options)

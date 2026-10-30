@@ -45,6 +45,7 @@ class _SubtitleResearchReviewDialogState extends State<SubtitleResearchReviewDia
       'sceneMotionEvidence' => copy.sceneMotionObservations,
       'signMotionEvidence' => _t.videoSettings.subtitleSignMotion,
       'reconstructionEvidence' => _t.videoSettings.subtitleReconstruction,
+      'broadcastEvidence' => _t.videoSettings.subtitleBroadcast,
       'sceneObjectEvidence' => copy.sceneObjectObservations,
       'soundLocalizationEvidence' => copy.soundLocalizationEvidence,
       'vocalNoteEvidence' => copy.vocalNoteEvidenceSection,

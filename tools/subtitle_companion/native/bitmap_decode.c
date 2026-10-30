@@ -1,4 +1,5 @@
-/* Decode PGS/VobSub through FFmpeg, exporting palette-aware RGBA and original
+/* Decode PGS/VobSub/DVB and one explicit teletext page through FFmpeg,
+ * exporting palette-aware RGBA and original
  * display intervals. No OCR/model/network code lives in this helper.
  * Wire format (little endian): "PLZYBMP1", then repeated display records:
  * int64 start_ms, int64 end_ms (-1 means until next display), uint32 rect_count;
@@ -14,6 +15,7 @@
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>
 #include <libavutil/mem.h>
+#include <libavutil/opt.h>
 #include <libavutil/time.h>
 #ifdef _WIN32
 #include <fcntl.h>
@@ -38,11 +40,23 @@ static void i64(int64_t value) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 3) return 2;
+    if (argc == 2 && strcmp(argv[1], "--capabilities") == 0) {
+        printf("{\"protocol\":1,\"revision\":2,\"dvb\":%s,\"teletext\":%s}\n",
+            avcodec_find_decoder(AV_CODEC_ID_DVB_SUBTITLE) ? "true" : "false",
+            avcodec_find_decoder(AV_CODEC_ID_DVB_TELETEXT) ? "true" : "false");
+        return fflush(stdout) == 0 ? 0 : 3;
+    }
+    if (argc != 3 && argc != 4) return 2;
     char *endarg = NULL;
     errno = 0;
     long requested = strtol(argv[2], &endarg, 10);
     if (errno || !endarg || *endarg || requested < 0 || requested > 63) return 2;
+    long teletext_page = 0;
+    if (argc == 4) {
+        errno = 0; endarg = NULL;
+        teletext_page = strtol(argv[3], &endarg, 10);
+        if (errno || !endarg || *endarg || teletext_page < 100 || teletext_page > 899) return 2;
+    }
 #ifdef _WIN32
     _setmode(_fileno(stdout), _O_BINARY);
 #endif
@@ -72,13 +86,19 @@ int main(int argc, char **argv) {
     if (stream_index < 0) goto cleanup;
     AVStream *stream = format->streams[stream_index];
     enum AVCodecID codec_id = stream->codecpar->codec_id;
-    if (codec_id != AV_CODEC_ID_HDMV_PGS_SUBTITLE && codec_id != AV_CODEC_ID_DVD_SUBTITLE) goto cleanup;
+    if (codec_id != AV_CODEC_ID_HDMV_PGS_SUBTITLE && codec_id != AV_CODEC_ID_DVD_SUBTITLE &&
+        codec_id != AV_CODEC_ID_DVB_SUBTITLE && codec_id != AV_CODEC_ID_DVB_TELETEXT) goto cleanup;
+    if ((codec_id == AV_CODEC_ID_DVB_TELETEXT) != (teletext_page != 0)) goto cleanup;
     const AVCodec *codec = avcodec_find_decoder(codec_id);
     if (!codec || !(decoder = avcodec_alloc_context3(codec))) goto cleanup;
     if (avcodec_parameters_to_context(decoder, stream->codecpar) < 0) goto cleanup;
     decoder->pkt_timebase = stream->time_base;
     decoder->max_pixels = MAX_PIXELS;
     decoder->thread_count = 1;
+    if (codec_id == AV_CODEC_ID_DVB_TELETEXT &&
+        (av_opt_set(decoder->priv_data, "txt_page", argv[3], 0) < 0 ||
+         av_opt_set(decoder->priv_data, "txt_format", "bitmap", 0) < 0 ||
+         av_opt_set_int(decoder->priv_data, "txt_chop_top", 0, 0) < 0)) goto cleanup;
     if (avcodec_open2(decoder, codec, NULL) < 0 || !(packet = av_packet_alloc())) goto cleanup;
     const int standalone = strcmp(format->iformat->name, "sup") == 0 || strcmp(format->iformat->name, "vobsub") == 0;
     const int64_t origin = !standalone && format->start_time != AV_NOPTS_VALUE ? format->start_time : 0;

@@ -7672,6 +7672,30 @@ class Translations$videoSettings$en {
 	/// en: 'Not marked forced'
 	String get subtitleNotMarkedForced => 'Not marked forced';
 
+	/// en: 'Extract a broadcast caption service'
+	String get subtitleBroadcast => 'Extract a broadcast caption service';
+
+	/// en: 'Choose CEA-608 CC1–CC4 or one CEA-708 service. The installed companion decoder extracts up to the first hour into a separate SRT for review. Native caption windows, colors, positions and roll-up behavior are flattened. Check the language and timing before accepting. Multi-program transport streams need an explicit program number.'
+	String get subtitleBroadcastHelp => 'Choose CEA-608 CC1–CC4 or one CEA-708 service. The installed companion decoder extracts up to the first hour into a separate SRT for review. Native caption windows, colors, positions and roll-up behavior are flattened. Check the language and timing before accepting. Multi-program transport streams need an explicit program number.';
+
+	/// en: 'Caption standard'
+	String get subtitleBroadcastKind => 'Caption standard';
+
+	/// en: 'Caption service or channel'
+	String get subtitleBroadcastService => 'Caption service or channel';
+
+	/// en: 'Transport-stream program (optional, 1–65535)'
+	String get subtitleBroadcastProgram => 'Transport-stream program (optional, 1–65535)';
+
+	/// en: 'This decoder also accepts a selected DVB bitmap subtitle stream. Image/text review still applies.'
+	String get subtitleBroadcastDvb => 'This decoder also accepts a selected DVB bitmap subtitle stream. Image/text review still applies.';
+
+	/// en: 'Decode one teletext page'
+	String get subtitleTeletextPage => 'Decode one teletext page';
+
+	/// en: 'Choose the teletext subtitle stream below and enter its page number (100–899). The decoder preserves page images for OCR review. It does not merge every page into the same track.'
+	String get subtitleTeletextHelp => 'Choose the teletext subtitle stream below and enter its page number (100–899). The decoder preserves page images for OCR review. It does not merge every page into the same track.';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -23220,6 +23244,14 @@ extension on Translations {
 			'videoSettings.subtitleTimingImportUndone' => 'The saved correction was restored.',
 			'videoSettings.subtitleTimingTransferFailed' => 'The correction could not be transferred. Check its file size, values and matching copy/tracks, then preview again. A concurrent saved edit is preserved.',
 			'videoSettings.subtitleNotMarkedForced' => 'Not marked forced',
+			'videoSettings.subtitleBroadcast' => 'Extract a broadcast caption service',
+			'videoSettings.subtitleBroadcastHelp' => 'Choose CEA-608 CC1–CC4 or one CEA-708 service. The installed companion decoder extracts up to the first hour into a separate SRT for review. Native caption windows, colors, positions and roll-up behavior are flattened. Check the language and timing before accepting. Multi-program transport streams need an explicit program number.',
+			'videoSettings.subtitleBroadcastKind' => 'Caption standard',
+			'videoSettings.subtitleBroadcastService' => 'Caption service or channel',
+			'videoSettings.subtitleBroadcastProgram' => 'Transport-stream program (optional, 1–65535)',
+			'videoSettings.subtitleBroadcastDvb' => 'This decoder also accepts a selected DVB bitmap subtitle stream. Image/text review still applies.',
+			'videoSettings.subtitleTeletextPage' => 'Decode one teletext page',
+			'videoSettings.subtitleTeletextHelp' => 'Choose the teletext subtitle stream below and enter its page number (100–899). The decoder preserves page images for OCR review. It does not merge every page into the same track.',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

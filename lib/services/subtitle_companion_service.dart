@@ -205,6 +205,7 @@ final class SubtitleCompanionService {
   Future<String> submit({required String task, required String identityKey, String? mediaPath,
     List<SubtitleCue> cues = const [], String? language, String? targetLanguage,
     bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0, int timelineOffsetMs = 0, bool itemTimeline = false, bool soundStereoEvidence = false, bool sceneTemporalRegions = false, bool sceneAudioEvidence = false, bool sceneMotionTracking = false, bool signMotionTracking = false,
+    String broadcastKind = 'cea708', int broadcastService = 1, int? broadcastProgram, int? teletextPage,
     int finalBitmapDurationMs = 2000, double duckRatio = .25, String? voiceFingerprint,
     String translationMode = 'faithful', String scriptConversion = 's2t', String readingMode = 'hiragana',
     String? translationProviderFingerprint, String? visionProviderFingerprint, Map<String, String> glossary = const {},
@@ -225,6 +226,15 @@ final class SubtitleCompanionService {
     if (sceneMotionTracking && caps['sceneMotionTracking'] != true) throw UnsupportedError('The companion has not installed local motion tracking');
     if (lyricSyllables.isNotEmpty && caps['lyricSyllables'] != true) throw UnsupportedError('Update the companion for supplied lyric syllables');
     if (lyricPitchEvidence && caps['lyricPitchEvidence'] != true) throw UnsupportedError('The companion has not installed lyric pitch analysis');
+    if (task == 'closed_captions' && (!const {'cea608', 'cea708'}.contains(broadcastKind) ||
+        broadcastService < 1 || broadcastService > (broadcastKind == 'cea608' ? 4 : 63) ||
+        broadcastProgram != null && (broadcastProgram < 1 || broadcastProgram > 65535))) {
+      throw const FormatException('Choose a valid CEA service and optional transport-stream program.');
+    }
+    if (teletextPage != null && (task != 'bitmap_ocr' || teletextPage < 100 || teletextPage > 899 ||
+        caps['bitmapDecoder'] is! Map || (caps['bitmapDecoder'] as Map)['teletext'] != true)) {
+      throw const FormatException('Teletext requires an updated bitmap decoder and one explicit page from 100 to 899.');
+    }
     if (task == 'caption_reconstruct' && (!reconstructionConsent || itemTimeline || timelineOffsetMs != 0 ||
         preprocess || cues.isEmpty || cues.length > 120 || crop.length != 4 ||
         crop.any((n) => !n.isFinite || n < 0 || n > 1) || crop[2] * crop[3] > .2 ||
@@ -272,7 +282,8 @@ final class SubtitleCompanionService {
       'task': task, 'identity': identityKey, 'audioDigest': audioDigest, 'audioBytes': length,
       'language': language, 'spokenLanguage': language, 'targetLanguage': targetLanguage,
       'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop, 'timelineOffsetMs': timelineOffsetMs, 'itemTimeline': itemTimeline, 'soundStereoEvidence': soundStereoEvidence, 'sceneTemporalRegions': sceneTemporalRegions, 'sceneAudioEvidence': sceneAudioEvidence, 'sceneMotionTracking': sceneMotionTracking, 'signMotionTracking': signMotionTracking,
-      'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs, 'duckRatio': duckRatio, 'voiceFingerprint': voiceFingerprint,
+      'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs, 'teletextPage': teletextPage,
+      'broadcastKind': broadcastKind, 'broadcastService': broadcastService, 'broadcastProgram': broadcastProgram, 'duckRatio': duckRatio, 'voiceFingerprint': voiceFingerprint,
       'lyricSyllables': lyricSyllables, 'lyricPitchEvidence': lyricPitchEvidence,
       'microphoneArray': microphoneArray,
       'isolatedLeadVocal': isolatedLeadVocal, 'reconstructionConsent': reconstructionConsent,
@@ -322,7 +333,7 @@ final class SubtitleCompanionService {
     }
     final evidence = <String, Object?>{
       for (final key in const ['coverageEvidence', 'ensembleEvidence', 'soundEvidence', 'lyricTimingEvidence', 'lyricSyllableEvidence', 'lyricPitchEvidence',
-        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'signMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'soundLocalizationEvidence', 'vocalNoteEvidence', 'synthesisEvidence', 'reconstructionEvidence'])
+        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'signMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'soundLocalizationEvidence', 'vocalNoteEvidence', 'synthesisEvidence', 'reconstructionEvidence', 'broadcastEvidence'])
         if (data[key] != null) key: data[key],
     };
     final provenance = <String, Object?>{

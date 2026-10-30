@@ -14,7 +14,7 @@ import subprocess
 import wave
 
 AUDIO_TASKS = {'ensemble', 'separate', 'sound_events', 'completeness'}
-MEDIA_TASKS = AUDIO_TASKS | {'extract_text', 'signs', 'dub_mix', 'ocr_auto', 'scene_review', 'scene_track', 'singing_align', 'sound_localize', 'vocal_notes', 'caption_reconstruct'}
+MEDIA_TASKS = AUDIO_TASKS | {'extract_text', 'signs', 'dub_mix', 'ocr_auto', 'scene_review', 'scene_track', 'singing_align', 'sound_localize', 'vocal_notes', 'caption_reconstruct', 'closed_captions'}
 
 
 def harmonic_view(audio):

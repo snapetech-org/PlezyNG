@@ -36,6 +36,8 @@ from visual_research import vision_capabilities
 from scene_objects import capabilities as scene_object_capabilities
 from caption_channels import CaptionChannels, RelayError
 from caption_reconstruction import validate as validate_reconstruction
+from broadcast_captions import validate as validate_broadcast
+from bitmap_ocr import decoder_capabilities
 
 MAX_INPUT = 1024**3
 MAX_JSON = 5 * 1024**2
@@ -183,7 +185,7 @@ class Store:
         item_timeline = value.get("itemTimeline", timeline_offset != 0)
         if type(item_timeline) is not bool or timeline_offset and not item_timeline:
             raise ValueError("invalid_source_clock")
-        if item_timeline and task not in {"transcribe", "diarize", "ensemble", "separate", "sound_events", "extract_text", "ocr", "ocr_auto", "signs", "bitmap_ocr"}:
+        if item_timeline and task not in {"transcribe", "diarize", "ensemble", "separate", "sound_events", "extract_text", "ocr", "ocr_auto", "signs", "bitmap_ocr", "closed_captions"}:
             raise ValueError("source_time_offset_requires_generation_task")
         track = value.get("audioTrack", 0)
         if type(track) is not int or not 0 <= track <= 63:
@@ -204,6 +206,15 @@ class Store:
         subtitle_track = value.get("subtitleTrack", 0)
         if type(subtitle_track) is not int or not 0 <= subtitle_track <= 63:
             raise ValueError("invalid_subtitle_track")
+        broadcast_kind, broadcast_service, broadcast_program = validate_broadcast(value)
+        if task == 'closed_captions' and not shutil.which(os.environ.get('PLEZY_CCEXTRACTOR', 'ccextractor')):
+            raise ValueError('broadcast_decoder_unavailable')
+        teletext_page = value.get('teletextPage')
+        if teletext_page is not None:
+            if task != 'bitmap_ocr' or type(teletext_page) is not int or not 100 <= teletext_page <= 899:
+                raise ValueError('invalid_teletext_page')
+            decoder = decoder_capabilities()
+            if decoder is None or not decoder['teletext']: raise ValueError('teletext_bitmap_decoder_unavailable')
         bitmap_tail = value.get("finalBitmapDurationMs", 2000)
         if type(bitmap_tail) is not int or not 100 <= bitmap_tail <= 30000:
             raise ValueError("invalid_final_bitmap_duration")
@@ -287,7 +298,8 @@ class Store:
             canonical = {"task": task, "identity": value["identity"], "audioDigest": value["audioDigest"],
                          "audioBytes": size, "language": language, "targetLanguage": target,
                          "cues": cues, "audioTrack": track, "timelineOffsetMs": timeline_offset, "itemTimeline": item_timeline, "soundStereoEvidence": stereo_evidence, "crop": crop, "duckRatio": duck_ratio, "voiceFingerprint": voice_fingerprint,
-                         "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
+                         "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail, "teletextPage": teletext_page,
+                         "broadcastKind": broadcast_kind, "broadcastService": broadcast_service, "broadcastProgram": broadcast_program,
                          "lyricSyllables": lyric_syllables, "lyricPitchEvidence": lyric_pitch,
                          "microphoneArray": microphone_array,
                          "isolatedLeadVocal": isolated_vocal, "reconstructionConsent": reconstruction_consent,
@@ -514,6 +526,9 @@ class Handler(BaseHTTPRequestHandler):
                 tasks.extend(["ocr", "ocr_auto", "signs"])
             if shutil.which("tesseract") and shutil.which(os.environ.get("PLEZY_SUBTITLE_DECODER", "plezy-subtitle-decode")):
                 tasks.append("bitmap_ocr")
+            if shutil.which(os.environ.get('PLEZY_CCEXTRACTOR', 'ccextractor')):
+                tasks.append('closed_captions')
+            bitmap_decoder = decoder_capabilities() if 'bitmap_ocr' in tasks else None
             vision = vision_capabilities()
             scene_detector = scene_object_capabilities()
             if shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
@@ -525,7 +540,7 @@ class Handler(BaseHTTPRequestHandler):
                     tasks.append('scene_track')
             self.reply(200, {"version": 1, "tasks": tasks, "qualified": False, "maxInputBytes": MAX_INPUT,
                              "maxMicrophoneArrayBytes": MAX_ARRAY_INPUT, "captionRelay": 1,
-                             "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
+                             "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "bitmapDecoder": bitmap_decoder, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
                              "sceneMotionTracking": vision is not None and installed("cv2"),
                              "signMotionTracking": 'signs' in tasks and installed('cv2'),
                              "sceneObjectTracking": scene_detector is not None, "sceneObjectDetector": scene_detector,

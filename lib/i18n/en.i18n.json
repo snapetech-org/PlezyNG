@@ -4625,7 +4625,15 @@
     "subtitleTimingSavedForNextOpen": "The correction was saved for the next open or track restoration. Current playback is unchanged.",
     "subtitleTimingImportUndone": "The saved correction was restored.",
     "subtitleTimingTransferFailed": "The correction could not be transferred. Check its file size, values and matching copy/tracks, then preview again. A concurrent saved edit is preserved.",
-    "subtitleNotMarkedForced": "Not marked forced"
+    "subtitleNotMarkedForced": "Not marked forced",
+    "subtitleBroadcast": "Extract a broadcast caption service",
+    "subtitleBroadcastHelp": "Choose CEA-608 CC1–CC4 or one CEA-708 service. The installed companion decoder extracts up to the first hour into a separate SRT for review. Native caption windows, colors, positions and roll-up behavior are flattened. Check the language and timing before accepting. Multi-program transport streams need an explicit program number.",
+    "subtitleBroadcastKind": "Caption standard",
+    "subtitleBroadcastService": "Caption service or channel",
+    "subtitleBroadcastProgram": "Transport-stream program (optional, 1–65535)",
+    "subtitleBroadcastDvb": "This decoder also accepts a selected DVB bitmap subtitle stream. Image/text review still applies.",
+    "subtitleTeletextPage": "Decode one teletext page",
+    "subtitleTeletextHelp": "Choose the teletext subtitle stream below and enter its page number (100–899). The decoder preserves page images for OCR review. It does not merge every page into the same track."
   },
   "performanceOverlay": {
     "color": "Color",

@@ -19,6 +19,7 @@ class VisualizerPackCatalogEntry {
     required this.presetCount,
     required this.sourceUrl,
     this.searchText = '',
+    this.kind = 'presets',
     this.bundledAsset,
     this.qualification = const VisualizerPackQualification(),
   });
@@ -36,6 +37,7 @@ class VisualizerPackCatalogEntry {
   final int presetCount;
   final String sourceUrl;
   final String searchText;
+  final String kind;
   final String? bundledAsset;
   final VisualizerPackQualification qualification;
 
@@ -55,6 +57,7 @@ class VisualizerPackCatalogEntry {
     'archiveBytes': archiveBytes,
     'expandedBytes': expandedBytes,
     'presetCount': presetCount,
+    if (kind != 'presets') 'kind': kind,
     'sourceUrl': sourceUrl,
     'searchText': searchText,
     'distributionStatus': 'redistributable',
@@ -103,6 +106,10 @@ class VisualizerPackCatalogEntry {
       return number;
     }
 
+    final kind = value['kind'] ?? 'presets';
+    if (!['presets', 'textures'].contains(kind) || (kind == 'textures' && value['presetCount'] != 0)) {
+      throw const FormatException('Invalid pack kind or texture-pack preset count');
+    }
     final id = field('id', 80), version = field('version', 80);
     final component = RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$');
     for (final part in [id, version]) {
@@ -142,7 +149,8 @@ class VisualizerPackCatalogEntry {
       sha256: digest,
       archiveBytes: count('archiveBytes', 32 * 1024 * 1024),
       expandedBytes: count('expandedBytes', 64 * 1024 * 1024),
-      presetCount: count('presetCount', 2500),
+      presetCount: kind == 'textures' && value['presetCount'] == 0 ? 0 : count('presetCount', 2500),
+      kind: kind as String,
       sourceUrl: source,
       searchText: search,
       qualification: VisualizerPackQualification.fromJson(value['qualification']),

@@ -297,7 +297,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
   Future<void> _importCommunityPack() async {
     final result = await FilePickerService.instance.pickFiles(
       type: FileType.custom,
-      allowedExtensions: const ['rmpack'],
+      allowedExtensions: const ['rmpack', 'zip'],
       withData: false,
     );
     if (result == null || result.files.isEmpty || !mounted) return;
@@ -316,7 +316,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       _failure = null;
     });
     try {
-      final pack = await _store.importPackFile(sourcePath, picked.size);
+      final pack = picked.name.toLowerCase().endsWith('.zip')
+          ? await _store.importPresetArchiveFile(sourcePath, picked.size)
+          : await _store.importPackFile(sourcePath, picked.size);
       await _refresh();
       if (!mounted) return;
       ScaffoldMessenger.maybeOf(
@@ -574,7 +576,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                             children: [
                                               Text(entry.name, style: Theme.of(context).textTheme.titleMedium),
                                               Text(
-                                                '${entry.version} · ${entry.license} · ${entry.presetCount} presets',
+                                                '${entry.version} · ${entry.license} · ${entry.kind == "textures" ? "Shared textures" : "${entry.presetCount} presets"}',
                                                 style: Theme.of(
                                                   context,
                                                 ).textTheme.bodySmall?.copyWith(color: tk.textMuted),
@@ -631,7 +633,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                       spacing: 8,
                                       runSpacing: 4,
                                       children: [
-                                        if (installedIds.contains(entry.id))
+                                        if (installedIds.contains(entry.id) && entry.kind != 'textures')
                                           FilledButton.icon(
                                             onPressed: _busy
                                                 ? null
@@ -742,7 +744,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                           OutlinedButton.icon(
                             onPressed: _busy || !_store.isStorageSupported ? null : _importCommunityPack,
                             icon: const AppIcon(Symbols.folder_open_rounded, size: 18),
-                            label: const Text('Import .rmpack (check files and notices)'),
+                            label: const Text('Import .rmpack or ZIP (check files and notices)'),
                           ),
                           if (_communityPacks.isEmpty)
                             Padding(

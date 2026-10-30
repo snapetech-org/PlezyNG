@@ -11,7 +11,7 @@ abstract final class VisualizerContentLimits {
   static const maxImagePixels = 8 * 1024 * 1024;
   static const maxPackImagePixels = 32 * 1024 * 1024;
   static const imageExtensions = {'.png', '.jpg', '.jpeg', '.jfif', '.bmp', '.tga', '.gif', '.webp', '.dds'};
-  static const _dataExtensions = {'.milk', '.milk2', '.json', '.txt', '.md', '.license'};
+  static const _dataExtensions = {'.milk', '.milk2', '.shape', '.wave', '.json', '.txt', '.md', '.license'};
   static const _maxAnimationFrames = 120;
   static const _maxAnimationPixels = 16 * 1024 * 1024;
 

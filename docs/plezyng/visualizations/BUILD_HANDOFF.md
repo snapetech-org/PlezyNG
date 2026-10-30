@@ -479,3 +479,29 @@ PlezyNG now locks MilkRust PR #20 at `d7a646af44dc1fbd8d328bf607eaceaa63a46534` 
 ## MilkRust initialized resource alias shape check
 
 Build exact lock revision `86f48b621737aebfbed05b40869f357ebebe4b6f` (ABI v2) on the compatible private JIT runner. Run the Rust compiler/core suite, native HLSL tests, browser HLSL harness and Emscripten delivery. New source cases cover Texture1D-to-Texture2D aggregate alias rejection despite shared sampler lowering and Texture2D scalar/vector-width mismatch. Preserve failures and keep qualification at source-only until these checks and platform rendering gates pass. No executable validation has been run for this pin.
+
+## 2026-10-30 library authoring and dependency source closure
+
+The library now imports bounded ordinary ZIP folders as local-only copies and
+exports a selected preset with its assets, original notices and hash provenance.
+It can compose .shape/.wave fragments into a new classic-preset copy without
+editing the installed source, and export individual indexed objects with
+equations and unknown fields preserved. Object slots are allocated deterministically;
+mixed formats, remote includes, oversized sources and exhausted slots fail.
+
+Manifest thumbnails are loaded only from the verified library with explicit
+encoded-byte and pixel budgets. Missing previews retain the ordinary library
+entry. Shared texture packs use exact version/integrity pins, alias-aware
+private render views for either engine, bounded aggregate assets and reconstructed
+reference counts. Removal or same-version replacement cannot invalidate another
+installed pack's pin. Dependency copies remain shared; disposable render views
+count against the library quota. Authorized dependencies are fetched only during
+an explicit installation, never while browsing or starting playback.
+
+The publisher validates texture-only catalogs and requires nonempty per-texture
+qualification evidence on every existing target. This adds source paths; it does
+not fabricate qualification or a production signature. Regression source covers
+fragment preservation, unsafe inputs, dependency identities and zero-preset
+texture catalogs. No build or test ran. The local workspace became unavailable
+during this checkpoint; final source was recovered and reviewed through the
+repository connection.

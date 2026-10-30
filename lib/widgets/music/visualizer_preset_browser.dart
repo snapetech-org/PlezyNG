@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import '../../services/file_picker_service.dart';
 import '../../services/visualization/visualizer_pack_store.dart';
 import '../../services/visualization/visualizer_session.dart';
+import '../../services/visualization/visualizer_content_limits.dart';
 
 class VisualizerSelection {
   const VisualizerSelection(this.preset, this.playlist, {this.engine});
@@ -196,6 +197,41 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
     }
   }
 
+  Future<void> _exportPreset(VisualizerPresetFile preset, {String? fragmentKind}) async {
+    try {
+      final bytes = fragmentKind == null
+          ? await widget.store.exportPreset(preset)
+          : await widget.store.exportFragments(preset, fragmentKind);
+      await FilePickerService.instance.saveFile(
+        dialogTitle: fragmentKind == null ? 'Export preset with assets and notices' : 'Export $fragmentKind fragments',
+        fileName: fragmentKind == null ? 'visualizer-preset.zip' : 'visualizer-$fragmentKind-fragments.zip',
+        bytes: bytes, type: FileType.custom, allowedExtensions: ['zip'],
+      );
+    } on Object catch (error) {
+      if (mounted) setState(() => _error = error.toString());
+    }
+  }
+
+  Future<void> _compose(VisualizerPresetFile preset) async {
+    try {
+      final picked = await FilePickerService.instance.pickFiles(type: FileType.custom,
+          allowedExtensions: ['shape', 'wave'], withData: false);
+      if (picked == null || picked.files.isEmpty || !mounted) return;
+      final file = picked.files.single;
+      if (file.path == null || file.size > VisualizerContentLimits.maxPresetBytes) {
+        throw const VisualizerPackException('Choose a readable fragment of at most 2 MiB.');
+      }
+      final bytes = await File(file.path!).openRead(0, VisualizerContentLimits.maxPresetBytes + 1)
+          .fold<List<int>>([], (all, chunk) => all..addAll(chunk));
+      final created = await widget.store.composeFragment(preset, file.name, bytes);
+      if (!mounted) return;
+      Navigator.pop(context, VisualizerSelection(created, [created],
+          engine: widget.capability.engine.startsWith('milkrust') ? 'milkrust' : 'projectm'));
+    } on Object catch (error) {
+      if (mounted) setState(() => _error = error.toString());
+    }
+  }
+
   void _details(VisualizerPresetFile preset) {
     showDialog<void>(
       context: context,
@@ -332,7 +368,13 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
                         final preset = visible[index];
                         final canPlay = widget.capability.available && widget.capability.accepts(preset);
                         return ListTile(
-                          leading: AppIcon(canPlay ? Symbols.play_circle_rounded : Symbols.info_rounded),
+                          leading: preset.thumbnailPath == null
+                              ? AppIcon(canPlay ? Symbols.play_circle_rounded : Symbols.info_rounded)
+                              : SizedBox(width: 56, height: 40, child: Image.file(
+                                  File(preset.thumbnailPath!), fit: BoxFit.cover, cacheWidth: 112,
+                                  semanticLabel: 'Preset preview',
+                                  errorBuilder: (_, __, ___) => const AppIcon(Symbols.graphic_eq_rounded),
+                                )),
                           title: Text(preset.title, maxLines: 2, overflow: TextOverflow.ellipsis),
                           subtitle: Text(
                             [
@@ -368,6 +410,22 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
                                 tooltip: _favorites.contains(preset.id) ? 'Remove favorite' : 'Add favorite',
                                 onPressed: () => _favorite(preset),
                                 icon: AppIcon(Symbols.favorite_rounded, fill: _favorites.contains(preset.id) ? 1 : 0),
+                              ),
+                              PopupMenuButton<String>(
+                                tooltip: 'Copy, export and compose preset',
+                                icon: const AppIcon(Symbols.more_vert_rounded),
+                                onSelected: (action) {
+                                  if (action == 'compose') { _compose(preset); }
+                                  else { _exportPreset(preset, fragmentKind: action == 'preset' ? null : action); }
+                                },
+                                itemBuilder: (_) => [
+                                  const PopupMenuItem(value: 'preset', child: Text('Export preset, assets and notices')),
+                                  if (preset.supportsProjectM) ...[
+                                    const PopupMenuItem(value: 'compose', child: Text('Add shape or wave to a new copy')),
+                                    const PopupMenuItem(value: 'shape', child: Text('Export shape fragments')),
+                                    const PopupMenuItem(value: 'wave', child: Text('Export wave fragments')),
+                                  ],
+                                ],
                               ),
                               IconButton(
                                 tooltip: 'Preset details and notices',

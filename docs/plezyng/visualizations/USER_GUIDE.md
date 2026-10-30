@@ -32,7 +32,7 @@ Remove a pack or loose import in the library manager. Removing a pinned pack rem
 
 Imports reject executable asset types, shader includes, ambiguous portable paths, unsupported image layouts and missing declared dependencies. Preset files are capped at 2 MB. Texture headers are checked before activation: 4096 pixels per side, 8 megapixels per image and 32 megapixels per pack. Animated GIF, PNG (APNG), and WebP animations are charged by every decoded frame (up to 120 frames and 16 megapixels per animation). The installed library is capped at 512 MB; remove unused packs or older versions to make room. These checks do not establish native decoder/driver isolation.
 
-The Linux integration uses native pixel-buffer readback at up to 1920×1080/60 FPS on desktop, or 1280×720/30 FPS on mobile and TV, with automatic resolution adjustment; performance and driver behavior have not been qualified. Native host source now exists for the other listed platforms, including Tizen and webOS, but is uncompiled and unqualified; existing release binaries have not gained those hosts. Unsupported HLSL/resource and preset-format cases, reference-pixel parity, production signed-catalog delivery, broader qualified community packs, previews and physical-device validation remain open. The implementation status document records the complete remaining gates.
+The Linux integration uses native pixel-buffer readback at up to 1920×1080/60 FPS on desktop, or 1280×720/30 FPS on mobile and TV, with automatic resolution adjustment; performance and driver behavior have not been qualified. Native host source now exists for the other listed platforms, including Tizen and webOS, but is uncompiled and unqualified; existing release binaries have not gained those hosts. Unsupported HLSL/resource and preset-format cases, reference-pixel parity, production signed-catalog delivery, broader qualified community packs and physical-device validation remain open. The implementation status document records the complete remaining gates.
 
 ## Pack catalog updates
 
@@ -66,3 +66,22 @@ resolution after sustained slow frames and restores it gradually after ten
 seconds of headroom. Desktop starts with a 60 FPS budget and can reduce to 30;
 mobile and TV retain a 30 FPS budget. Lower resolution also remains available
 as a user preference. These ceilings are not performance guarantees.
+
+## Copies, fragments and shared textures
+
+Each preset's menu offers export with assets and notices. The ZIP is a local
+folder copy with hash provenance; it does not grant redistribution rights or
+become a signed catalog artifact. Import .rmpack or ZIP accepts these folder
+exports with the same size, path and image limits as folder import.
+
+For a classic preset, Add shape or wave to a new copy imports a .shape/.wave
+fragment into unused object slots, preserving equations and source assets. The
+installed preset remains unchanged. Shape and wave export carries the indexed
+objects plus the original assets/notices. Saved double presets remain selectable
+but must be split into a classic source before this object-editing action.
+
+Texture-only packs are shared by exact version and integrity hash. Installation
+may fetch an authorized required texture pack; local-only dependencies must be
+imported first. Remove dependent preset packs before deleting their textures.
+A changed dependency must use a new version while installed presets reference
+the old bytes. Available manifest thumbnails appear beside preset titles.

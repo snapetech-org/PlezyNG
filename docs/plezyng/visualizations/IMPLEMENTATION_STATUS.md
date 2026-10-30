@@ -873,3 +873,29 @@ The runtime lock now pins MilkRust `d7a646af44dc1fbd8d328bf607eaceaa63a46534` (A
 ## 2026-10-30 initialized resource alias shape guard
 
 PlezyNG now pins MilkRust `86f48b621737aebfbed05b40869f357ebebe4b6f` (ABI v2). Global resource-only struct aggregate aliases must match the source texture dimension and scalar/vector component width. Regression sources cover Texture1D versus Texture2D (which share the legacy GLSL sampler type) and float versus float4 element widths. The source remains unbuilt and unrun; private JIT compiler and renderer qualification remain pending.
+
+## 2026-10-30 library authoring and dependency source closure
+
+The library now imports bounded ordinary ZIP folders as local-only copies and
+exports a selected preset with its assets, original notices and hash provenance.
+It can compose .shape/.wave fragments into a new classic-preset copy without
+editing the installed source, and export individual indexed objects with
+equations and unknown fields preserved. Object slots are allocated deterministically;
+mixed formats, remote includes, oversized sources and exhausted slots fail.
+
+Manifest thumbnails are loaded only from the verified library with explicit
+encoded-byte and pixel budgets. Missing previews retain the ordinary library
+entry. Shared texture packs use exact version/integrity pins, alias-aware
+private render views for either engine, bounded aggregate assets and reconstructed
+reference counts. Removal or same-version replacement cannot invalidate another
+installed pack's pin. Dependency copies remain shared; disposable render views
+count against the library quota. Authorized dependencies are fetched only during
+an explicit installation, never while browsing or starting playback.
+
+The publisher validates texture-only catalogs and requires nonempty per-texture
+qualification evidence on every existing target. This adds source paths; it does
+not fabricate qualification or a production signature. Regression source covers
+fragment preservation, unsafe inputs, dependency identities and zero-preset
+texture catalogs. No build or test ran. The local workspace became unavailable
+during this checkpoint; final source was recovered and reviewed through the
+repository connection.

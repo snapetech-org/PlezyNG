@@ -565,3 +565,8 @@ adds source checks only; official-renderer pixel comparison remains open.
 ## 2026-10-30 MilkDrop saved-mask alpha correction
 
 MilkRust PR #20 now pins `ba314ab686586f67c06fed09a8036bba03778938`, ABI v2. Its saved `.milk2` masks now clamp each vertex mix, truncate to the reference D3D9 8-bit alpha, and upload the same 65x49 R8 field in native GL and WebGL before triangle interpolation. This replaces the earlier full-precision packed field. Regression source covers the byte count and truncation endpoints; it has not run. The latest MilkRust commit has no attached Actions run. PlezyNG's build and CI workflows still require manual dispatch, and the connected GitHub tool exposes no dispatch action. Builds must remain on the required private JIT runners.
+
+
+## 2026-10-30 raw finite MilkDrop 3 header values
+
+MilkRust PR #20 now preserves finite float-range `.milk2` progress and random headers raw, including values outside [0, 1]. The cosine variable blend and scene weights use raw progress; only each saved-mask vertex mix is clamped before D3D9 byte truncation. Parser, carried-state, serialization, render-mask and interpolation regression sources were added. The engine pin is `324aee73cef1b6350df1668c340e4b6b6465ca14` (ABI v2). Builds, test execution, and reference captures remain unrun.

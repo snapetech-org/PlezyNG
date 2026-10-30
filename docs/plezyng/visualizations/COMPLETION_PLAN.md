@@ -616,3 +616,8 @@ and reference-pixel behavior still has no evidence.
 ## 2026-10-30 saved-mask vertex alpha correction
 
 MilkRust now clamps each saved transition mix at the mesh vertex, truncates it to the D3D9 8-bit alpha byte, and interpolates that R8 field across the 64x48 mesh in native GL and WebGL. This replaces the prior full-precision packed alpha path, which diverged from the compatible reference. The app source lock pins MilkRust `ba314ab686586f67c06fed09a8036bba03778938`; the source regression remains unrun. Private build, browser/native pixel comparison, and target-device qualification remain open.
+
+
+## 2026-10-30 raw finite MilkDrop 3 header values
+
+MilkRust PR #20 now preserves finite float-range `.milk2` progress and random headers raw, including values outside [0, 1]. The cosine variable blend and scene weights use raw progress; only each saved-mask vertex mix is clamped before D3D9 byte truncation. Parser, carried-state, serialization, render-mask and interpolation regression sources were added. The engine pin is `324aee73cef1b6350df1668c340e4b6b6465ca14` (ABI v2). Builds, test execution, and reference captures remain unrun.

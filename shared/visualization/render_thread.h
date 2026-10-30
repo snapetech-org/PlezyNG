@@ -42,15 +42,19 @@ class RenderThread {
   ~RenderThread() { Join(); }
   RenderThread(const RenderThread&)=delete;
   RenderThread& operator=(const RenderThread&)=delete;
-  void Join() {
-    if (!thread_.joinable()) return;
+  bool Join() {
+    if (!thread_.joinable()) {
+      std::lock_guard<std::mutex> lock(completion_->mutex);
+      return completion_->done;
+    }
     std::unique_lock<std::mutex> lock(completion_->mutex);
     if (completion_->condition.wait_for(lock,std::chrono::milliseconds(250),[&] { return completion_->done; })) {
-      lock.unlock(); thread_.join();
+      lock.unlock(); thread_.join(); return true;
     } else {
       completion_->quarantined=true;
       { auto& pool=Pool(); std::lock_guard<std::mutex> admission(pool.mutex); ++pool.quarantined; }
       thread_.detach();
+      return false;
     }
   }
 };

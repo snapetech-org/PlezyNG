@@ -231,7 +231,8 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
         } else {
           transition = 3
         }
-        try texture.host.loadPreset(path, root: root, transitionSeconds: transition)
+        try texture.host.loadPreset(path, root: root, transitionSeconds: transition,
+          allowInterrupted: args["allowInterrupted"] as? Bool ?? false)
       case "visualizerResize":
         guard let width = args["width"] as? Int, let height = args["height"] as? Int,
           width > 0, height > 0, width <= 16384, height <= 16384

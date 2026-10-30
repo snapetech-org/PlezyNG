@@ -115,10 +115,11 @@ class VisualizerSession extends ChangeNotifier {
   Future<T?> _call<T>(String method, [Map<String, Object?> args = const {}]) =>
       _channel.invokeMethod<T>(method, {'sessionId': _sessionId, ...args});
 
-  Future<void> load(VisualizerPresetFile preset) => _enqueue(() async {
+  Future<void> load(VisualizerPresetFile preset, {bool automatic = false}) => _enqueue(() async {
     if (_closed) return;
     if (!accepts(preset)) throw StateError('The selected engine does not accept this preset format.');
-    // A failed native worker has exited. Retry with a new worker and GL context.
+    // Retire the old lease; native admission rejects a retry while its renderer
+    // is still quarantined or its helper process has not exited.
     if (_state == 'failed' || _state == 'unavailable') await _release();
     _preset = preset;
     _state = 'loading';
@@ -145,6 +146,7 @@ class VisualizerSession extends ChangeNotifier {
       'path': preset.path,
       'root': preset.root,
       'transitionSeconds': transitionSeconds.clamp(0, 10).toDouble(),
+      'allowInterrupted': !automatic,
     });
     if (_engine == 'milkrust') await _sendMouseState();
     await _call<void>('visualizerSetPaused', {'paused': _paused});

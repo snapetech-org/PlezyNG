@@ -102,6 +102,23 @@ class NativeWorker {
       }
       condition_.notify_all();
     }
+    bool PauseAndDrain(std::chrono::milliseconds timeout) {
+      Pause(true);
+      std::unique_lock<std::mutex> lock(mutex_);
+      const bool completed = condition_.wait_for(lock, timeout, [this] {
+        return (!active_ && quiescent_) || stopping_ || status_.state == "failed";
+      });
+      if (completed && !stopping_ && status_.state != "failed") return true;
+      stopping_ = true;
+      if (status_.state != "failed")
+        status_.reason = "Visualization did not pause in time. Choose an original scene; restart the app if the renderer remains busy.";
+      status_.state = "failed";
+      auto cancel = cancel_;
+      lock.unlock();
+      condition_.notify_all();
+      if (cancel) cancel();
+      return false;
+    }
     void SetMouseState(bool down, double x, double y, double dx, double dy) {
       if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(dx) || !std::isfinite(dy))
         throw std::runtime_error("Invalid native mouse input.");
@@ -150,6 +167,7 @@ class NativeWorker {
     mutable std::mutex mutex_;
     std::condition_variable condition_;
     bool stopping_ = false, paused_ = true, mouse_down_ = false, mouse_click_pending_ = false;
+    bool active_ = false, quiescent_ = true;
     int width_ = 768, height_ = 432;
     double mouse_x_ = 0.5, mouse_y_ = 0.5, mouse_dx_ = 0, mouse_dy_ = 0;
     uint64_t serial_ = 0;
@@ -160,6 +178,16 @@ class NativeWorker {
     bool callbacks_closed_ = false;
     const bool owned_publish_;
     RenderWatchdog watchdog_;
+    struct Work {
+      WorkerState& state;
+      RenderWatchdog::Operation operation;
+      explicit Work(WorkerState& owner) : state(owner), operation(owner.watchdog_) {}
+      ~Work() {
+        std::lock_guard<std::mutex> lock(state.mutex_);
+        state.active_ = false;
+        state.condition_.notify_all();
+      }
+    };
     int Read(mpv_plezy_audio_block* block) {
       std::lock_guard<std::mutex> lock(callback_mutex_);
       return callbacks_closed_ ? 0 : audio_(block);
@@ -182,19 +210,9 @@ class NativeWorker {
     }
    public:
     void Run() noexcept {
+      std::unique_ptr<RenderBackend> engine;
       try {
-        auto engine = [this] {
-          RenderWatchdog::Operation operation(watchdog_);
-          return backend_();
-        }();
-        if (!engine) throw std::runtime_error("No visualization renderer.");
-        std::function<void()> early_cancel;
-        {
-          std::lock_guard<std::mutex> lock(mutex_);
-          cancel_ = engine->Cancellation();
-          if (stopping_) early_cancel = cancel_;
-        }
-        if (early_cancel) early_cancel();
+        bool engine_paused = true;
         bool initialized = false;
         PresetTransition transition;
         std::shared_ptr<const NativeFrame> last_frame;
@@ -216,6 +234,15 @@ class NativeWorker {
             if (paused_) {
               tick = {};
               audio_at = {};
+              if (engine && !quiescent_ && !stopping_) {
+                active_ = true;
+                lock.unlock();
+                Work work(*this);
+                engine->Pause(true);
+                engine_paused = true;
+                { std::lock_guard<std::mutex> done(mutex_); quiescent_ = true; }
+                continue;
+              }
             }
             condition_.wait(lock, [this] { return stopping_ || (!paused_ && serial_); });
             if (stopping_) break;
@@ -225,11 +252,31 @@ class NativeWorker {
             width = width_;
             height = height_;
             transition_seconds = transition_seconds_;
+            active_ = true;
+            quiescent_ = false;
           }
-          RenderWatchdog::Operation operation(watchdog_);
+          Work work(*this);
+          if (!engine) {
+            // Hidden/backgrounded sessions must not create a graphics context.
+            engine = backend_();
+            if (!engine) throw std::runtime_error("No visualization renderer.");
+            std::function<void()> early_cancel;
+            {
+              std::lock_guard<std::mutex> lock(mutex_);
+              cancel_ = engine->Cancellation();
+              if (stopping_) early_cancel = cancel_;
+            }
+            if (early_cancel) early_cancel();
+            continue; // Recheck pause/stop before submitting any preset work.
+          }
+          if (engine_paused) { engine->Pause(false); engine_paused = false; }
           const auto started = Clock::now();
           bool received = false, unsupported = false;
           for (int reads = 0; reads < 32; ++reads) {
+            {
+              std::lock_guard<std::mutex> lock(mutex_);
+              if (stopping_ || paused_ || serial_ != serial) break;
+            }
             mpv_plezy_audio_block block{};
             const int result = Read(&block);
             if (result == MPV_PLEZY_AUDIO_UNSUPPORTED) {
@@ -238,6 +285,10 @@ class NativeWorker {
             }
             if (result < 0) throw std::runtime_error("The music PCM tap was lost.");
             if (result == 0) break;
+            {
+              std::lock_guard<std::mutex> lock(mutex_);
+              if (stopping_ || paused_ || serial_ != serial) break;
+            }
             if (!initialized || generation != block.generation) {
               engine->Reset();
               initialized = true;
@@ -335,6 +386,11 @@ class NativeWorker {
       } catch (...) {
         State("failed", "The native renderer stopped unexpectedly.");
       }
+      condition_.notify_all();
+      // Publish failure before destruction, which may itself enter a driver.
+      // Apple contexts wait for foreground before deleting graphics resources.
+      RenderWatchdog::Operation teardown(watchdog_);
+      engine.reset();
     }
   };
   std::shared_ptr<WorkerState> state_;
@@ -353,12 +409,15 @@ class NativeWorker {
   ~NativeWorker() { Stop(); }
   NativeWorker(const NativeWorker&) = delete;
   NativeWorker& operator=(const NativeWorker&) = delete;
-  void Stop() { state_->Stop(); worker_.Join(); }
+  bool Stop() { state_->Stop(); return worker_.Join(); }
   void Load(const std::string& path, const std::string& root, double transition_seconds = 3) {
     state_->Load(path, root, transition_seconds);
   }
   void Resize(int width, int height) { state_->Resize(width, height); }
   void Pause(bool paused) { state_->Pause(paused); }
+  bool PauseAndDrain(std::chrono::milliseconds timeout = std::chrono::milliseconds(250)) {
+    return state_->PauseAndDrain(timeout);
+  }
   void SetMouseState(bool down, double x, double y, double dx, double dy) {
     state_->SetMouseState(down, x, y, dx, dy);
   }

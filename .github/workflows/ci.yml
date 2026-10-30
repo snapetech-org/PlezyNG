@@ -450,6 +450,9 @@ jobs:
             test/native/visualizer_render_thread_test.cc -o "$RUNNER_TEMP/visualizer-thread-test"
           "$RUNNER_TEMP/visualizer-thread-test"
           clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
+            test/native/visualizer_native_worker_test.cc -ldl -o "$RUNNER_TEMP/visualizer-worker-test"
+          "$RUNNER_TEMP/visualizer-worker-test"
+          clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
             test/native/visualizer_preset_transition_test.cc -o "$RUNNER_TEMP/visualizer-transition-test"
           "$RUNNER_TEMP/visualizer-transition-test"
           clang++ -std=c++17 -D_GNU_SOURCE -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
@@ -706,12 +709,19 @@ jobs:
               output.write(f"APPLE_TEST_DESTINATION={destination}\n")
           PY
 
-      - name: Check macOS visualization process isolation
+      - name: Check macOS visualization isolation and Apple recovery persistence
         if: matrix.platform == 'macOS'
         run: |
           xcrun clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
             test/native/visualizer_render_process_test.cc -o "$RUNNER_TEMP/visualizer-process-test"
           "$RUNNER_TEMP/visualizer-process-test"
+          xcrun clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
+            test/native/visualizer_native_worker_test.cc -o "$RUNNER_TEMP/visualizer-worker-test"
+          "$RUNNER_TEMP/visualizer-worker-test"
+          xcrun clang++ -std=c++17 -fobjc-arc -framework Foundation -pthread \
+            -fsanitize=address,undefined -fno-omit-frame-pointer \
+            test/native/visualizer_apple_recovery_test.mm -o "$RUNNER_TEMP/visualizer-recovery-test"
+          "$RUNNER_TEMP/visualizer-recovery-test"
 
       - name: Run Apple native reliability tests
         run: |

@@ -73,8 +73,12 @@ ANativeWindow publication run in that service. Socket shutdown and a separate
 service Handler terminate it; retry admission remains occupied until Binder
 death confirms retirement. Tizen/webOS now use a packaged helper with socket
 cancellation and child admission tracking; their parent sends no PID-based
-termination signal. iOS/tvOS retain bounded thread teardown and quarantine;
-their driver calls remain in the app process. A helper does not contain a
+termination signal. iOS/tvOS defer graphics startup until a preset is visible,
+drain work on native inactive notifications, and gate context startup/destruction
+on foreground state. A persistent journal prevents automatic restoration/cycling
+of an interrupted preset; explicit selection/reload may retry after native
+admission permits it. Thread teardown remains bounded and quarantined, and
+driver calls remain in the app process. A helper does not contain a
 device-wide GPU/kernel fault or provide a filesystem/security sandbox. Private
 JIT fault tests and installed-device recovery checks remain unrun.
 
@@ -716,6 +720,32 @@ notices cover the added decoder crates, and the workspace Rust floor is now
 Source-only implementation is committed. The new native/WASM decoders, app
 import route, malformed-image behavior, frame upload and reference pixels have
 not been built or run. This does not qualify visuals or driver recovery.
+
+## 2026-10-30 Apple lifecycle and interrupted-preset recovery
+
+The shared native worker now creates its backend only after a preset is selected
+and rendering is resumed. Its bounded pause operation waits for pending work and
+a backend drain, records timeout as failure, preserves earlier failure reasons,
+and reports whether teardown actually retired the worker. Android forwards this
+pause to its isolated renderer; local GL hosts finish pending commands on the
+owning worker. PCM loops recheck pause/stop before submitting each block.
+
+iOS/tvOS subscribe directly to UIKit inactive/active notifications. Startup waits
+for foreground or cancellation, and graphics destruction waits for foreground
+on the retained worker. Before GPU startup/resume the host atomically writes and
+flushes an owner-tagged recovery record. An interrupted process or failed drain
+blocks automatic restore and timed selection of that path; explicit selection
+and Reload may retry. A healthy drain after a rendered frame clears the block.
+Stale host acknowledgements cannot clear a newer host's record. Records and
+failure history are bounded; unreadable state blocks automatic loading.
+
+This is a mobile recovery policy, not out-of-process rendering. A driver call
+already in flight may still stall or terminate the app. Context cleanup deferred
+while inactive keeps native admission occupied until it retires. Native worker,
+thread-retirement, Foundation journal and Dart retry regression sources are
+registered for private JIT. They have not been compiled or executed. Confidence:
+moderate in source integration; SDK behavior and device recovery remain unknown.
+
 
 
 ## 2026-10-30 current MilkRust source pin — APNG/WebP and noise generation

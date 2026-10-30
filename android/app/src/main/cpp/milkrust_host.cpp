@@ -200,6 +200,7 @@ class SurfaceBackend final : public RenderBackend {
       : window_(std::move(window)), renderer_(std::make_unique<EglContext>(),
           [decoder](const auto& path) { return decoder->Decode(path); }) {}
   void Reset() override { renderer_.Reset(); }
+  void Pause(bool paused) override { renderer_.Pause(paused); }
   void Load(const std::string& path, const std::string& root, double duration) override { renderer_.Load(path, root, duration); }
   void Pcm(const float* samples, size_t frames, uint32_t generation) override { renderer_.Pcm(samples, frames, generation); }
   void Capture(uint32_t width, uint32_t height, double seconds, std::vector<uint8_t>& rgba) override {

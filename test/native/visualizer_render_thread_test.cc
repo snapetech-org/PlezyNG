@@ -22,7 +22,8 @@ int main() {
     { std::unique_lock<std::mutex> lock(gate->mutex);
       Require(gate->condition.wait_for(lock,std::chrono::seconds(5),[&] { return gate->started; })); }
     const auto start=Clock::now();
-    blocked.Join();
+    Require(!blocked.Join());
+    Require(!blocked.Join()); // A detached worker is not a completed worker.
     Require(Clock::now()-start<std::chrono::seconds(2));
     Require(!lifetime.expired());
     bool rejected=false;
@@ -37,7 +38,7 @@ int main() {
       catch (const std::runtime_error&) { std::this_thread::sleep_for(std::chrono::milliseconds(1)); }
     }
     Require(recovered && lifetime.expired());
-    blocked.Join(); // Repeated stop is safe after quarantine/recovery.
+    Require(blocked.Join()); // Completion is observable after quarantine/recovery.
     std::cout << "Render thread lifetime regressions passed\n";
   } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

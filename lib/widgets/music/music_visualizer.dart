@@ -322,7 +322,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       final selected = byPath[prefs['selected']];
       if (selected != null && _native.accepts(selected) && _nativeSourceReady) {
         if (!_playlist.any((file) => file.id == selected.id)) _playlist.add(selected);
-        await _native.load(selected);
+        await _native.load(selected, automatic: true);
       }
       if (!mounted || generation != _preferenceGeneration) return;
       setState(() {});
@@ -376,24 +376,24 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       return;
     }
     _presetTimer ??= Timer.periodic(Duration(seconds: _intervalSeconds), (_) {
-      if (_native.state == 'rendering') _stepPreset(1);
+      if (_native.state == 'rendering') _stepPreset(1, automatic: true);
     });
   }
 
-  Future<void> _selectPreset(VisualizerSelection selection) async {
+  Future<void> _selectPreset(VisualizerSelection selection, {bool automatic = false}) async {
     if (!_nativeSourceReady) return;
     ++_preferenceGeneration; // A late restore must not replace a user selection.
     _playlist = selection.playlist;
     if (selection.engine != null) await _native.setEngine(selection.engine!);
     if (!mounted) return;
     _syncTicker();
-    await _native.load(selection.preset);
+    await _native.load(selection.preset, automatic: automatic);
     if (!mounted) return;
     _savePreferences();
     _syncTicker();
   }
 
-  void _stepPreset(int direction) {
+  void _stepPreset(int direction, {bool automatic = false}) {
     if (!_native.active || _playlist.isEmpty) {
       widget.onPresetChanged(direction < 0 ? widget.preset.previous : widget.preset.next);
       return;
@@ -401,7 +401,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
     final current = _playlist.indexWhere((file) => file.id == _native.preset?.id);
     final offset = _shuffle && _playlist.length > 1 ? 1 + _random.nextInt(_playlist.length - 1) : direction;
     final index = (current + offset) % _playlist.length;
-    unawaited(_selectPreset(VisualizerSelection(_playlist[index], _playlist)));
+    unawaited(_selectPreset(VisualizerSelection(_playlist[index], _playlist), automatic: automatic));
   }
 
   Future<void> _originalScenes() async {

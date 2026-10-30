@@ -361,6 +361,25 @@ without local rendering fallback. Test pointer input, display fades, seek/track
 generations and texture leases against the existing music session. Firmware
 policy, performance and device-wide recovery remain qualification gates.
 
+## Apple lifecycle and interrupted-preset recovery gate
+
+The Linux sanitizer job and macOS native job now include
+`test/native/visualizer_native_worker_test.cc`; macOS also compiles the
+Foundation-only `visualizer_apple_recovery_test.mm` with ARC. These sources cover
+lazy graphics startup, healthy pause/resume, blocked capture/drain, bounded
+retirement, quarantine admission, original error retention, process interruption,
+owner tokens, corruption recovery and bounded history. Flutter's session suite
+checks automatic-load refusal and explicit retry through a fresh lease.
+
+On private iOS/tvOS SDK builds and devices, exercise native inactive notifications
+before Dart responds, context creation racing backgrounding, safe pause/resume,
+close while inactive, foreground retirement, process termination while rendering,
+restart restoration, timed cycling to an interrupted preset and explicit Reload.
+Confirm music continuity and original-scene access. The implementation cannot
+cancel an in-flight mobile driver call or contain a device/kernel fault. None of
+these checks has run in this workspace.
+
+
 
 ## 2026-10-30 MilkRust source pin update
 

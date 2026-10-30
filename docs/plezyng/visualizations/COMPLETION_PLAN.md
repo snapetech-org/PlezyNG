@@ -707,6 +707,19 @@ only source parsing/whitespace checks ran. iOS/tvOS recovery remains a platform
 constraint, and all builds, firmware execution, corpus/fidelity, new mpv binary
 promotion and release qualification remain open.
 
+## 2026-10-30 Apple recovery source closure
+
+The iOS/tvOS platform policy is now implemented: lazy graphics creation,
+native lifecycle pause/drain, foreground-gated creation/destruction, bounded
+retirement/quarantine and persistent interruption recovery. Automatic restoration
+and timed preset changes cannot retry a recorded interrupted preset; explicit
+selection/reload can retry subject to native admission. Shared native, Apple
+Foundation and Dart regression sources are wired into the private JIT gates.
+This closes the missing policy implementation, while mobile driver cancellation,
+SDK/device recovery qualification and the plan's build/conformance/release gates
+remain distinct. No new build or test result is claimed.
+
+
 
 ## 2026-10-30 MilkRust source pin — animated images and runtime noise
 

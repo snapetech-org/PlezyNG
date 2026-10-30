@@ -24,6 +24,8 @@ The options menu provides Original scenes, preset lock, shuffle, automatic-chang
 
 Native rendering pauses with music, backgrounding, a hidden view, or reduced motion. Presets may contain rapid flashes or intense movement. When a preset fails or fresh audio is unavailable, the original scene appears with the status reason; Reload retries with a new worker after an engine failure.
 
+On iOS and tvOS, an interrupted MilkRust session prevents that preset from loading automatically on restart or during timed changes. Choose Reload preset or select it in the library to retry explicitly. If the renderer remains busy, choose an original scene and wait for recovery or restart the app.
+
 Remove a pack or loose import in the library manager. Removing a pinned pack removes its installed versions; playlist references can remain and are skipped when their files are missing. Downloading or importing files does not alter the six original scenes.
 
 ## Current limits

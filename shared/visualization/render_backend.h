@@ -9,6 +9,13 @@ class NativeContext {
   virtual ~NativeContext() = default;
   virtual milkrust_gl_loader Loader() const = 0;
   virtual bool IsGles() const = 0;
+  // Mobile hosts may defer graphics destruction while the app is backgrounded.
+  virtual void PrepareDestroy() {}
+  virtual void Drain() {
+    const auto finish = reinterpret_cast<void (*)()>(Loader()("glFinish"));
+    if (!finish) throw std::runtime_error("The graphics context cannot finish pending visualization work.");
+    finish();
+  }
 };
 
 // All methods except the returned cancellation function belong to one worker.
@@ -41,6 +48,11 @@ class LocalRenderBackend final : public RenderBackend {
       : context_(std::move(context)), decoder_(std::move(decoder)) {
     if (!context_) throw std::runtime_error("No native graphics context.");
   }
+  ~LocalRenderBackend() override {
+    context_->PrepareDestroy();
+    engine_.reset();
+  }
+  void Pause(bool paused) override { if (paused) context_->Drain(); }
   void Reset() override {
     engine_.reset();
     engine_ = std::make_unique<MilkRustEngine>(context_->Loader(), context_->IsGles());

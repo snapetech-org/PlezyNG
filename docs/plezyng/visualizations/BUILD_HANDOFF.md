@@ -217,3 +217,12 @@ non-default saved multipliers, position and scale values near their clamp
 limits, all sprite sampler profiles, and animated assets on the private JIT
 runner. Reference-pixel and device qualification remain required. No run was
 available for this source-only checkpoint.
+
+
+## 2026-10-30 final sprite source pin
+
+Build and run MilkRust PR #20 at `60b65d0d4ef1cea5130843628880d9155e085097` on the private JIT runner. Include
+scripted repeat multipliers, offset and scale clamp boundaries, Wrap/Clamp/
+Mirror, min/mag/mip filters, color keys, animated sprites, and saved blend
+fixtures. Then capture reference images; none of those checks has run for this
+pin.

@@ -278,10 +278,12 @@ abstract final class VisualizerContentLimits {
             case 'VP8X':
               if (offset != 12 || canvasWidth != null || length != 10) malformed();
               animated = (bytes[dataOffset] & 2) != 0;
-              canvasWidth = u24(dataOffset + 4) + 1;
-              canvasHeight = u24(dataOffset + 7) + 1;
-              width = canvasWidth;
-              height = canvasHeight;
+              final parsedWidth = u24(dataOffset + 4) + 1;
+              final parsedHeight = u24(dataOffset + 7) + 1;
+              canvasWidth = parsedWidth;
+              canvasHeight = parsedHeight;
+              width = parsedWidth;
+              height = parsedHeight;
             case 'ANIM':
               if (!animated || sawAnimationControl || length != 6) malformed();
               sawAnimationControl = true;
@@ -292,15 +294,17 @@ abstract final class VisualizerContentLimits {
               final frameWidth = u24(dataOffset + 6) + 1;
               final frameHeight = u24(dataOffset + 9) + 1;
               final flags = bytes[dataOffset + 15];
-              if (canvasWidth == null || canvasHeight == null ||
+              final canvasW = canvasWidth;
+              final canvasH = canvasHeight;
+              if (canvasW == null || canvasH == null ||
                   frameWidth == 0 || frameHeight == 0 ||
-                  x + frameWidth > canvasWidth || y + frameHeight > canvasHeight ||
+                  x + frameWidth > canvasW || y + frameHeight > canvasH ||
                   (flags & 0xfc) != 0) {
                 malformed();
               }
               frames++;
               if (frames > _maxAnimationFrames ||
-                  canvasWidth * canvasHeight * frames > _maxAnimationPixels) {
+                  canvasW * canvasH * frames > _maxAnimationPixels) {
                 throw const FormatException('Animated WebP exceeds its decoded frame or pixel budget.');
               }
             case 'VP8 ':

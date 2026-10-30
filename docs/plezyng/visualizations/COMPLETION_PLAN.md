@@ -583,3 +583,13 @@ remain unperformed; this is a source checkpoint, not a conformance result.
 ## 2026-10-30 legacy effect sampler-state lowering
 
 The source lock now pins MilkRust `2e81e049d3dc996d469304e7cdf3e93d0996dbf5`, ABI v2. The HLSL profile supports all eight standard point/linear static `SamplerState` Filter combinations and independent address axes. Legacy `sampler_state` blocks bind one `Texture = <identifier>` and support independent Point/Linear min and mag filters plus None/Point/Linear mip filtering, lowered for direct supported `tex*` calls through a shared 96-mode native/WebGL sampler table. Sampler reflection includes offset sampling, 3D fetch and texture-size intrinsics. Grouped declarations, dynamic state, unsupported properties and state escape remain compile failures. This is implementation progress only; no build, test, render capture, or device qualification has run.
+
+
+## 2026-10-30 MilkRust mirrored sampler and sprite filter checkpoint
+
+The source lock pins MilkRust `7d7ed901bb105f9ad23431caa25e9f97e095a1bc`, ABI v2. Static and legacy sampler
+profiles now cover independent min/mag/mip filtering and per-axis
+Wrap/Clamp/Mirror addressing across 324 shared profiles, with a separate
+animated-sprite profile. The WebGL saved-sprite pass now applies the same
+per-texture profile as native GL. Builds, tests, reference captures, and device
+runs remain unperformed; this is source implementation, not qualification.

@@ -44,6 +44,10 @@ int milkrust_texture_gif(
 int milkrust_texture_png(
     milkrust_handle handle, const uint8_t* name, size_t name_length,
     const uint8_t* encoded, size_t length);
+/* Upload bounded encoded WebP, including animated files. */
+int milkrust_texture_webp(
+    milkrust_handle handle, const uint8_t* name, size_t name_length,
+    const uint8_t* encoded, size_t length);
 /* Supply local wall-clock fields before each render. Weekday is Sunday=0. */
 int milkrust_set_clock(
     milkrust_handle handle, int32_t year, uint32_t month, uint32_t day, uint32_t weekday,

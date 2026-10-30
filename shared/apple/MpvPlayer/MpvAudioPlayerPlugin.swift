@@ -244,6 +244,16 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
           result(FlutterError(code: "INVALID_ARGS", message: "A paused boolean is required.", details: nil)); return
         }
         texture.host.setPaused(paused)
+      case "visualizerSetMouse":
+        guard let down = args["down"] as? Bool,
+          let x = args["x"] as? NSNumber, CFGetTypeID(x) != CFBooleanGetTypeID(),
+          let y = args["y"] as? NSNumber, CFGetTypeID(y) != CFBooleanGetTypeID(),
+          let dx = args["dx"] as? NSNumber, CFGetTypeID(dx) != CFBooleanGetTypeID(),
+          let dy = args["dy"] as? NSNumber, CFGetTypeID(dy) != CFBooleanGetTypeID(),
+          x.doubleValue.isFinite, y.doubleValue.isFinite, dx.doubleValue.isFinite, dy.doubleValue.isFinite else {
+          result(FlutterError(code: "INVALID_ARGS", message: "Finite mouse state is required.", details: nil)); return
+        }
+        texture.host.setMouseState(down, x: x.doubleValue, y: y.doubleValue, dx: dx.doubleValue, dy: dy.doubleValue)
       case "visualizerStatus": result(texture.host.status()); return
       default: result(FlutterMethodNotImplemented); return
       }

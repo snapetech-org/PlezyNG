@@ -77,7 +77,12 @@ template<typename F> void Reject(F action, const char* message) {
       const bool wrong = header.command == uint32_t(Command::Capture) && mode == "sequence";
       auto bytes = EncodeHeader(header.command | kReply, header.sequence + (wrong ? 1 : 0), response.size());
       bytes.insert(bytes.end(), response.begin(), response.end());
-      pipe.Write(bytes, RenderPipe::Deadline::max());
+      if (mode == "fragmented" && header.command == uint32_t(Command::Capture)) {
+        for (const auto byte : bytes) {
+          pipe.Write(Bytes{byte}, RenderPipe::Deadline::max());
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+      } else { pipe.Write(bytes, RenderPipe::Deadline::max()); }
     }
   } catch (...) { std::_Exit(3); }
 }
@@ -141,6 +146,12 @@ void ProcessCases() {
     Reject([&] { client->Capture(2, 2, 0, frame); }, "Helper fault was accepted");
     Require(RenderPipe::Clock::now() - started < std::chrono::seconds(4), "Helper fault exceeded the parent deadline");
     Require(frame.empty(), "Invalid helper published a partial frame");
+  }
+  {
+    auto client = Client(); client->Reset(); client->Load("fragmented", "fixture");
+    std::vector<uint8_t> frame; client->Capture(3, 2, 0, frame);
+    Require(frame.size() == 24 && std::all_of(frame.begin(), frame.end(), [](uint8_t value) { return value == 79; }),
+        "Fragmented pipe transfers changed the completed frame");
   }
   {
     auto client = Client(); client->Reset(); client->Load("hang", "fixture");

@@ -77,18 +77,21 @@ class RenderPipe {
     while (offset < size) {
       if (deadline != Deadline::max() && Clock::now() >= deadline)
         throw std::runtime_error("Visualization helper exceeded its response deadline.");
-      ResetEvent(pending->operation.hEvent);
+      const HANDLE event = pending->operation.hEvent;
+      pending->operation = {};
+      pending->operation.hEvent = event;
+      ResetEvent(event);
       DWORD transferred = 0;
       const auto count = static_cast<DWORD>(size - offset);
       const BOOL complete = input
-          ? WriteFile(handle_, pending->bytes.data() + offset, count, &transferred, &pending->operation)
-          : ReadFile(handle_, pending->bytes.data() + offset, count, &transferred, &pending->operation);
+          ? WriteFile(handle_, pending->bytes.data() + offset, count, nullptr, &pending->operation)
+          : ReadFile(handle_, pending->bytes.data() + offset, count, nullptr, &pending->operation);
       if (!complete) {
         if (GetLastError() != ERROR_IO_PENDING) throw std::runtime_error("Visualization helper disconnected.");
         Await(pending, deadline);
-        if (!GetOverlappedResult(handle_, &pending->operation, &transferred, FALSE))
-          throw std::runtime_error("Visualization helper disconnected.");
       }
+      if (!GetOverlappedResult(handle_, &pending->operation, &transferred, FALSE))
+        throw std::runtime_error("Visualization helper disconnected.");
       if (!transferred || transferred > size - offset) throw std::runtime_error("Invalid visualization IPC transfer.");
       offset += transferred;
     }

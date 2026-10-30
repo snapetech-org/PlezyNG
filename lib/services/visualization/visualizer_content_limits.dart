@@ -62,20 +62,68 @@ abstract final class VisualizerContentLimits {
             ascii.decode(bytes.sublist(12, 16), allowInvalid: true) != 'IHDR') {
           malformed();
         }
-        width = data.getUint32(16);
-        height = data.getUint32(20);
+        width = be32(16);
+        height = be32(20);
+        if (width <= 0 || height <= 0 || width > maxImageDimension ||
+            height > maxImageDimension || width * height > maxImagePixels) {
+          malformed();
+        }
+        var animationFrames = 0;
+        var frameControls = 0;
+        var sawIdat = false;
+        var sawImageData = false;
+        var sawIend = false;
+        var firstControlBeforeIdat = false;
         var offset = 8;
-        while (offset + 8 <= bytes.length) {
+        while (offset < bytes.length) {
+          if (offset + 8 > bytes.length) malformed();
           final length = be32(offset);
+          if (length > bytes.length - offset - 12) malformed();
+          final dataOffset = offset + 8;
           final end = offset + 12 + length;
           final type = ascii.decode(bytes.sublist(offset + 4, offset + 8), allowInvalid: true);
-          if (type == 'acTL' || type == 'fcTL' || type == 'fdAT') {
-            throw const FormatException('Animated PNG textures are not supported. Use a static PNG or GIF.');
+          switch (type) {
+            case 'IHDR':
+              if (offset != 8) malformed();
+            case 'acTL':
+              if (length != 8 || animationFrames != 0 || sawIdat) malformed();
+              animationFrames = be32(dataOffset);
+              if (animationFrames == 0 || animationFrames > _maxAnimationFrames ||
+                  width * height * animationFrames > _maxAnimationPixels) {
+                throw const FormatException('Animated PNG exceeds its declared frame or pixel budget.');
+              }
+            case 'fcTL':
+              if (animationFrames == 0 || length != 26) malformed();
+              final frameWidth = be32(dataOffset + 4);
+              final frameHeight = be32(dataOffset + 8);
+              final x = be32(dataOffset + 12);
+              final y = be32(dataOffset + 16);
+              if (frameWidth == 0 || frameHeight == 0 ||
+                  x + frameWidth > width || y + frameHeight > height) {
+                malformed();
+              }
+              frameControls++;
+              if (frameControls > animationFrames) malformed();
+              if (!sawIdat && frameControls == 1) firstControlBeforeIdat = true;
+            case 'IDAT':
+              sawIdat = true;
+              sawImageData = true;
+            case 'fdAT':
+              if (animationFrames == 0 || frameControls == 0 || length < 4) malformed();
+              sawImageData = true;
+            case 'IEND':
+              if (length != 0 || end != bytes.length) malformed();
+              sawIend = true;
           }
-          if (end < offset || end > bytes.length) malformed();
           offset = end;
+          if (sawIend) break;
         }
-        if (offset != bytes.length) malformed();
+        if (!sawIend || !sawIdat || !sawImageData) malformed();
+        if (animationFrames != 0) {
+          if (frameControls != animationFrames) malformed();
+          return width * height * animationFrames;
+        }
+        if (frameControls != 0) malformed();
       case '.jpg' || '.jpeg' || '.jfif':
         if (!prefix([0xff, 0xd8])) malformed();
         var offset = 2;

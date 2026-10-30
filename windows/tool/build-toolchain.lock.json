@@ -25,5 +25,12 @@
     "url": "https://github.com/vslavik/winsparkle/releases/download/v0.9.2/WinSparkle-0.9.2.zip",
     "sha256": "2a5facf5a22056edf7afc4d0a4bf05620b7aa7cc1619c3078b281e374cdb9996",
     "provenance": "Official v0.9.2 GitHub release asset; SHA-256 matches the GitHub release API digest and an independent hash of the complete ZIP."
+  },
+  "sdl3": {
+    "version": "3.2.8",
+    "filename": "SDL3-3.2.8.zip",
+    "url": "https://github.com/libsdl-org/SDL/releases/download/release-3.2.8/SDL3-3.2.8.zip",
+    "sha256": "7f8ff5c8246db4145301bc122601a5f8cef25ee2c326eddb3e88668849c61ddf",
+    "provenance": "Official libsdl-org/SDL release-3.2.8 asset. SHA-256 was computed from the complete 17,255,185-byte archive downloaded from the official release URL on 2026-10-30."
   }
 }

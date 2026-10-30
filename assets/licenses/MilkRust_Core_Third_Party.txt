@@ -29,6 +29,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+## PNG/APNG decoding dependencies
+
+MilkRust uses `png` 0.17.16 from
+[image-rs/image-png](https://github.com/image-rs/image-png) for bounded static
+PNG and APNG decoding. Its locked Rust deflate backend also distributes
+`bitflags` 1.3.2, `cfg-if` 1.0.4, `crc32fast` 1.5.1, `fdeflate` 0.3.7,
+`flate2` 1.1.10, `miniz_oxide` 0.8.9 and 0.9.1, `adler2` 2.0.1, and
+`simd-adler32` 0.3.10. This distribution elects their MIT terms where an
+alternative license is offered. The MIT license text above applies to these
+components as well.
+
+Copyright notices for these crates:
+
+- `png`: Copyright (c) 2015 nwin; The image-rs Developers.
+- `bitflags`: Copyright (c) 2014 The Rust Project Developers.
+- `cfg-if` and `flate2`: Copyright (c) 2014 Alex Crichton.
+- `crc32fast`: Copyright (c) 2018 Sam Rijs, Alex Crichton and contributors.
+- `fdeflate`: Copyright (c) The image-rs Developers.
+- `miniz_oxide`: Copyright 2013-2014 RAD Game Tools and Valve Software;
+  Copyright 2010-2014 Rich Geldreich and Tenacious Software LLC;
+  Copyright (c) 2017 Frommi; Copyright (c) 2017-2026 oyvindln and
+  miniz_oxide contributors.
+- `adler2`: Copyright (c) Jonas Schievink and oyvindln.
+- `simd-adler32`: Copyright (c) Marvin Countryman.
+
 ## MilkDrop 3 saved blend and sprite behavior
 
 The saved blend-pattern equations in `src/milk2_mask.rs` are a clean-room port of

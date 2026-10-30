@@ -141,3 +141,12 @@ The current engine source lock is MilkRust
 `Texture1D`/`Texture2D` arrays into named bindings for constant-index supported
 resource methods. Keep corpus compiler, native and Emscripten checks on the
 required private JIT runners; none has been run for this checkpoint.
+
+
+## 2026-10-30 legacy sampler-array continuation
+
+The current engine source lock is MilkRust
+`3673eca589dd65c7e24c04edaed7eb4faa989c55`. Constant-index global
+`sampler`/`sampler2D` arrays now expand to separately named images alongside
+`Texture1D`/`Texture2D` arrays. No build, compiler run or renderer check has
+been executed for this source increment.

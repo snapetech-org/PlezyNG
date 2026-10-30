@@ -27,6 +27,10 @@ class VisualizerSession extends ChangeNotifier {
   bool _paused = true;
   int _width = 768, _height = 432;
   double transitionSeconds = 3;
+  bool _mouseDown = false;
+  double _mouseX = 0.5, _mouseY = 0.5, _mouseDx = 0, _mouseDy = 0;
+  int _mouseRevision = 0;
+  Timer? _mouseTimer;
   String _state = 'idle', _reason = '', _engine = 'projectm';
   String get engine => _engine;
   String get engineLabel => _engine == 'milkrust' ? 'MilkRust native' : 'projectM 4.1.8';
@@ -143,10 +147,48 @@ class VisualizerSession extends ChangeNotifier {
       'root': preset.root,
       'transitionSeconds': transitionSeconds.clamp(0, 10).toDouble(),
     });
+    if (_engine == 'milkrust') await _sendMouseState();
     await _call<void>('visualizerSetPaused', {'paused': _paused});
     _poll ??= Timer.periodic(const Duration(milliseconds: 500), (_) => _pollStatus());
     _changed();
   });
+
+  void setMouseState({
+    required bool down,
+    required double x,
+    required double y,
+    required double dx,
+    required double dy,
+  }) {
+    if (_closed || _engine != 'milkrust' || !x.isFinite || !y.isFinite || !dx.isFinite || !dy.isFinite) return;
+    _mouseDown = down;
+    _mouseX = x.clamp(0.0, 1.0).toDouble();
+    _mouseY = y.clamp(0.0, 1.0).toDouble();
+    _mouseDx = dx.clamp(-1.0, 1.0).toDouble();
+    _mouseDy = dy.clamp(-1.0, 1.0).toDouble();
+    _mouseRevision++;
+    if (_mouseTimer?.isActive == true) return;
+    _mouseTimer = Timer(const Duration(milliseconds: 16), () {
+      _mouseTimer = null;
+      unawaited(_enqueue(_sendMouseState));
+    });
+  }
+
+  Future<void> _sendMouseState() async {
+    if (_closed || _sessionId == null || _engine != 'milkrust') return;
+    final revision = _mouseRevision;
+    await _call<void>('visualizerSetMouse', {
+      'down': _mouseDown,
+      'x': _mouseX,
+      'y': _mouseY,
+      'dx': _mouseDx,
+      'dy': _mouseDy,
+    });
+    if (revision == _mouseRevision) {
+      _mouseDx = 0;
+      _mouseDy = 0;
+    }
+  }
 
   void setPaused(bool paused) {
     if (_closed || _paused == paused) return;
@@ -209,6 +251,12 @@ class VisualizerSession extends ChangeNotifier {
   Future<void> _release() async {
     _poll?.cancel();
     _poll = null;
+    _mouseTimer?.cancel();
+    _mouseTimer = null;
+    _mouseDown = false;
+    _mouseDx = 0;
+    _mouseDy = 0;
+    _mouseRevision++;
     if (_sessionId != null) {
       try {
         await _call<void>('visualizerDispose');

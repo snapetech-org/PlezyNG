@@ -670,3 +670,9 @@ entrypoints are committed source, not executed evidence. Android/iOS/tvOS/TV loc
 driver containment, device-wide GPU recovery, compiler/corpus/reference runs,
 real mpv artifacts, content qualification and signing custody remain separate
 open gates; this checkpoint does not claim universal completion.
+
+The paired HLSL checkpoint `c58b53cb8b2c41fefd016df25c0d57a96bd8221b` closes static sampler-state
+forwarding through global-bound helper calls and corrects the mutable declaration
+cursor. It adds native and browser regression sources under bounded expansion,
+while keeping dynamic/advanced resource features explicit. PlezyNG pins this
+revision. Execution, reference captures and the release gates above remain open.

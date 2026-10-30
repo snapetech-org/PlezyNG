@@ -19,7 +19,7 @@ runners may be used. Compiled behavior and device fidelity remain unknown.
 | Area | Current implementation | Evidence still required |
 | --- | --- | --- |
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
-| HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/numeric arrays up to 16 dimensions and 4096 elements/all numeric matrix shapes/control flow; bounded 1D/2D/3D resource arrays with constant or side-effect-free dynamic selection, grouped declarations and direct global resource-struct fields | Compiler/corpus execution and reference fidelity; function-local resource arrays, nested resource-bearing structs, custom sampler state and resource kinds outside the declared profile remain explicit failures |
+| HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/numeric arrays up to 16 dimensions and 4096 elements/all numeric matrix shapes/control flow; bounded 1D/2D/3D resource arrays with constant or side-effect-free dynamic selection, grouped declarations and direct global resource-struct fields | Compiler/corpus execution and reference fidelity; function-local resource arrays, nested resource-bearing structs, dynamic/advanced sampler state and resource kinds outside the declared profile remain explicit failures |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
 | `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, real Created/version and URL preambles preserved, duplicate headers use the last value and numeric fields consume the compatible prefix, incomplete wrappers fall back to classic parsing, trailing sprites only with explicit `sprite=1` (otherwise preserved and inert), saved state carry, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
 | Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
@@ -631,3 +631,16 @@ recovery, chunked PCM and both backend handshakes. Linux/macOS sanitizer and
 Windows native CI entrypoints include them. Whitespace and shell parsing were
 checked; no compilation, test, workflow or signing operation ran for this change.
 Source review gives moderate implementation confidence; runtime recovery is unknown.
+
+## 2026-10-30 static shader-state forwarding
+
+The engine pin is `c58b53cb8b2c41fefd016df25c0d57a96bd8221b`. Initialized sampler state now remains
+attached to its actual texture through bounded helper specialization, including
+nested calls and legacy `sampler_state` blocks. Numeric arguments remain ordinary
+single-evaluation inputs. Capture, recursion, ambiguous overloads and dynamic state
+escape produce explicit diagnostics; the existing typed helper path is preserved
+when no initialized state is present. A changing sampler-declaration cursor is
+now mutable, fixing a source-level Rust compile error. Native regressions and
+browser clamp/wrap pixel controls are authored and unrun. Full profile limits
+remain in MilkRust's `docs/HLSL_COMPATIBILITY.md`; no universal HLSL or fidelity
+claim follows from this pin.

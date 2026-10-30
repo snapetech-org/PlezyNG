@@ -305,3 +305,11 @@ crash, malformed response, and recovery. Also qualify real shader compile/decode
 stalls and playback continuity on each packaged desktop target. A killed helper
 cannot guarantee recovery of a wedged device/kernel driver. All new cases remain
 unrun in this source checkpoint.
+
+The current engine pin is `c58b53cb8b2c41fefd016df25c0d57a96bd8221b`. The next private compiler/browser
+run must include static-state forwarding through nested helpers and the new
+clamp/wrap pixel controls, numeric argument side effects, legacy `sampler_state`,
+forward prototypes, literal resource-array arguments, recursion/capture failures
+and the specialization budget. Existing sampler-helper overloads without custom
+state retain the typed path and have a regression source. Compilation and these
+controls remain unrun; do not infer passing results from the pin update.

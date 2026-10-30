@@ -190,8 +190,10 @@ capture or a passed runtime test.
 
 ## 2026-10-30 source pin update
 
-The exact MilkRust source lock is now  `13ca31660acf3717e229543d51ea21d514bdc69d`. It includes the corrected
+The exact MilkRust source lock is now `13ca31660acf3717e229543d51ea21d514bdc69d`. It includes the corrected
 carried-random `.milk2` mask input, global static HLSL sampler-state lowering with independent U/V/W Wrap/Clamp
-modes, reference-source paired-tap blur kernels in native GL/WebGL, and bounded legacy effect-file sampler_state blocks that bind named textures and matching point/linear filters.
+modes, reference-source paired-tap blur kernels in native GL/WebGL, and bounded
+legacy effect-file sampler_state blocks that bind named textures and matching
+point/linear filters.
 Run compiler, renderer, and reference-image work only on the required private
 JIT runners. This source update has not been built or tested.

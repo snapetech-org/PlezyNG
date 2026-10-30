@@ -223,7 +223,7 @@ available for this source-only checkpoint.
 
 ## 2026-10-30 final sprite source pin
 
-Build and run MilkRust PR #20 at `1eaf8e5b902ae8a8b940c3e1bf2ecca71d232613` on the private JIT runner. Include
+Build and run MilkRust PR #20 at `ee9a0353b4b968dc02a2e6f475b2699592e099c3` on the private JIT runner. Include
 classic `.milk` default-on sprites, `.milk2` absent/zero/one sprite flags,
 BOM-prefixed wrappers, scripted repeat multipliers, offset and scale clamp
 boundaries, Wrap/Clamp/Mirror, min/mag/mip filters, color keys, animated sprites,
@@ -233,4 +233,9 @@ this pin.
 
 ## 2026-10-30 latest MilkRust source pin
 
-The app source lock advances to MilkRust `1eaf8e5b902ae8a8b940c3e1bf2ecca71d232613`, including BOM-aware `.milk2` wrapper detection and explicit `sprite=1` gating for trailing saved sprites. The user has requested private builds; the connector has no workflow-dispatch operation and this repository's CI/build entrypoints are manual. No build/test result is available yet. Use the private JIT runner only.
+The app source lock advances to MilkRust `ee9a0353b4b968dc02a2e6f475b2699592e099c3`, including BOM-aware `.milk2` wrapper detection and explicit `sprite=1` gating for trailing saved sprites. The user has requested private builds; the connector has no workflow-dispatch operation and this repository's CI/build entrypoints are manual. No build/test result is available yet. Use the private JIT runner only.
+
+
+## 2026-10-30 real-file MilkDrop 3 pin
+
+Build and run MilkRust PR #20 at `ee9a0353b4b968dc02a2e6f475b2699592e099c3` on the private JIT runner. Cover Created/version and URL preambles, duplicate headers, numeric-prefix values, incomplete-marker fallback, BOM-prefixed complete wrappers, and explicit `.milk2` sprite enablement. No build or test is available for this pin; the GitHub connector currently exposes no workflow-dispatch action.

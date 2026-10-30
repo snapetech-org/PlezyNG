@@ -132,3 +132,12 @@ results. These authored controls are not captures of the MilkDrop3 reference
 renderer.
 The native C++ and Emscripten builders already include the new aggregate headers
 and lowering fragments through their pinned vendored source directory.
+
+
+## 2026-10-30 HLSL resource-array source checkpoint
+
+The current engine source lock is MilkRust
+`2c51a7882971eb9fe6b2b043b8cfa6627e63cbe2`. It expands bounded global
+`Texture1D`/`Texture2D` arrays into named bindings for constant-index supported
+resource methods. Keep corpus compiler, native and Emscripten checks on the
+required private JIT runners; none has been run for this checkpoint.

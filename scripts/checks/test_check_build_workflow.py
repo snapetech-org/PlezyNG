@@ -14,6 +14,7 @@ WORKFLOW = ROOT / ".github/workflows/build.yml"
 SETUP_FLUTTER_GIT = ROOT / ".github/actions/setup-flutter-git/action.yml"
 WINDOWS_CMAKE = ROOT / "windows/CMakeLists.txt"
 WINDOWS_MPV_DOWNLOADER = ROOT / "windows/tool/download-pinned-mpv.ps1"
+WINDOWS_SIMDUTF_DOWNLOADER = ROOT / "windows/tool/download-pinned-simdutf.ps1"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
@@ -41,6 +42,13 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             downloader_fixture.parent.mkdir(parents=True)
             downloader_fixture.write_text(
                 WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            simdutf_downloader_fixture = (
+                Path(directory) / "windows/tool/download-pinned-simdutf.ps1"
+            )
+            simdutf_downloader_fixture.write_text(
+                WINDOWS_SIMDUTF_DOWNLOADER.read_text(encoding="utf-8"),
                 encoding="utf-8",
             )
             return subprocess.run(

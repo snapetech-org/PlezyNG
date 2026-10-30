@@ -229,6 +229,11 @@ void MpvPlayerPlugin::HandleVisualizerMethod(
       auto paused = value ? std::get_if<bool>(value) : nullptr;
       if (!paused) throw std::runtime_error("A paused boolean is required.");
       worker.Pause(*paused);
+    } else if (method == "visualizerSetMouse") {
+      auto value = arg("down");
+      auto down = value ? std::get_if<bool>(value) : nullptr;
+      if (!down) throw std::runtime_error("A mouse button state is required.");
+      worker.SetMouseState(*down, number("x", 0.5), number("y", 0.5), number("dx", 0), number("dy", 0));
     } else if (method == "visualizerStatus") {
       const auto status = worker.Status();
       result->Success(

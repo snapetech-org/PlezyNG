@@ -5,8 +5,12 @@ import 'subtitle_retimer.dart';
 /// Conservative sentence-fragment grouping and reviewed duration-weighted text
 /// layout. It does not align translated words to speech or infer speaker identity.
 final class SubtitleSentenceGroup {
-  SubtitleSentenceGroup(List<SubtitleCue> cues) : cues = List.unmodifiable(cues);
+  SubtitleSentenceGroup(List<SubtitleCue> cues, List<int> cueIndices)
+      : cues = List.unmodifiable(cues), cueIndices = List.unmodifiable(cueIndices) {
+    if (cues.isEmpty || cues.length != cueIndices.length) throw ArgumentError('Sentence group cues and indexes must match.');
+  }
   final List<SubtitleCue> cues;
+  final List<int> cueIndices;
   SubtitleCue get input => SubtitleCue(index: cues.first.index, startMs: cues.first.startMs,
     endMs: cues.last.endMs, text: cues.length == 1 ? cues.first.text
         : cues.map((cue) => cue.text.trim().replaceAll(RegExp(r'\s+'), ' ')).join(' '),
@@ -20,8 +24,10 @@ final class SubtitleSentenceLayout {
   static List<SubtitleSentenceGroup> group(List<SubtitleCue> cues) {
     final output = <SubtitleSentenceGroup>[];
     var active = <SubtitleCue>[];
+    var activeIndices = <int>[];
     var characters = 0;
-    for (final cue in cues) {
+    for (var cueIndex = 0; cueIndex < cues.length; cueIndex++) {
+      final cue = cues[cueIndex];
       if (cue.endMs <= cue.startMs || cue.startMs < 0) throw const FormatException('Invalid sentence cue clock.');
       final text = cue.text.trim();
       final previous = active.isEmpty ? null : active.last;
@@ -31,19 +37,22 @@ final class SubtitleSentenceLayout {
           cue.startMs >= previous.endMs && cue.startMs - previous.endMs <= 350 &&
           cue.endMs - active.first.startMs <= 12000 && characters + text.length + 1 <= 2400;
       if (!canJoin && active.isNotEmpty) {
-        output.add(SubtitleSentenceGroup(active));
+        output.add(SubtitleSentenceGroup(active, activeIndices));
         active = [];
+        activeIndices = [];
         characters = 0;
       }
       active.add(cue);
+      activeIndices.add(cueIndex);
       characters += text.length + 1;
       if (_sentenceEnd.hasMatch(text) || _authored.hasMatch(text)) {
-        output.add(SubtitleSentenceGroup(active));
+        output.add(SubtitleSentenceGroup(active, activeIndices));
         active = [];
+        activeIndices = [];
         characters = 0;
       }
     }
-    if (active.isNotEmpty) output.add(SubtitleSentenceGroup(active));
+    if (active.isNotEmpty) output.add(SubtitleSentenceGroup(active, activeIndices));
     return List.unmodifiable(output);
   }
 

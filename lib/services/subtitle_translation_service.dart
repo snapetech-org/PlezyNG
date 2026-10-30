@@ -414,9 +414,18 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     required bool requestDesktopCuda, required bool bilingual, required Map<String, String> glossary,
     required int charactersPerSecond, void Function(int completed, int total)? onProgress,
   }) async {
-    final groups = SubtitleSentenceLayout.group(cues);
+    var groups = SubtitleSentenceLayout.group(cues);
+    var groupingSkippedForInputBound = false;
+    var groupInputs = groups.map((group) => group.input).toList(growable: false);
+    final groupedInputBytes = groupInputs.fold<int>(0, (sum, cue) => sum + utf8.encode(cue.text).length);
+    if (groupedInputBytes > SubtitleRetimer.maximumInputBytes) {
+      groupingSkippedForInputBound = true;
+      groups = List<SubtitleSentenceGroup>.generate(cues.length,
+        (index) => SubtitleSentenceGroup([cues[index]], [index]), growable: false);
+      groupInputs = groups.map((group) => group.input).toList(growable: false);
+    }
     final progressMidpoint = cues.length ~/ 2;
-    final translated = await translateCues(cues: groups.map((group) => group.input).toList(),
+    final translated = await translateCues(cues: groupInputs,
       sourceLanguage: sourceLanguage, targetLanguage: targetLanguage, allowMobileData: allowMobileData,
       requestDesktopCuda: requestDesktopCuda, glossary: glossary,
       onProgress: (completed, total) {
@@ -427,30 +436,42 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     if (translated.cues.length != groups.length) {
       throw StateError('Sentence translation changed the group count.');
     }
-    final output = <String, String>{}, fallback = <SubtitleCue>[];
+    final output = List<String?>.filled(cues.length, null), fallback = <(int, SubtitleCue)>[];
     var redistributed = 0;
     for (var groupIndex = 0; groupIndex < groups.length; groupIndex++) {
       final group = groups[groupIndex];
       final text = translated.cues[groupIndex].text;
       final parts = SubtitleSentenceLayout.distribute(group, text,
         protectedTerms: glossary.values, charactersPerSecond: charactersPerSecond);
-      if (parts == null) { fallback.addAll(group.cues); continue; }
+      if (parts == null) {
+        for (var index = 0; index < group.cues.length; index++) {
+          fallback.add((group.cueIndices[index], group.cues[index]));
+        }
+        continue;
+      }
       if (group.cues.length > 1) redistributed++;
-      for (var index = 0; index < group.cues.length; index++) output[group.cues[index].stableId] = parts[index];
+      for (var index = 0; index < group.cues.length; index++) output[group.cueIndices[index]] = parts[index];
     }
-    final retry = fallback.isEmpty ? null : await translateCues(cues: fallback,
+    final retry = fallback.isEmpty ? null : await translateCues(cues: fallback.map((entry) => entry.$2).toList(growable: false),
       sourceLanguage: sourceLanguage, targetLanguage: targetLanguage, allowMobileData: allowMobileData,
-      requestDesktopCuda: requestDesktopCuda, glossary: glossary);
+      requestDesktopCuda: requestDesktopCuda, glossary: glossary,
+      onProgress: (completed, total) {
+        if (total <= 0) return;
+        final bounded = completed.clamp(0, total).toInt();
+        final progressTail = cues.length - progressMidpoint;
+        onProgress?.call(progressMidpoint + progressTail * bounded ~/ total, cues.length);
+      });
     if (retry != null) {
       if (retry.cues.length != fallback.length) throw StateError('Cue fallback changed the cue count.');
       for (var index = 0; index < retry.cues.length; index++) {
-        output[fallback[index].stableId] = retry.cues[index].text;
+        output[fallback[index].$1] = retry.cues[index].text;
       }
     }
     final result = <SubtitleCue>[];
     var bytes = 0;
-    for (final cue in cues) {
-      final translatedText = output[cue.stableId];
+    for (var cueIndex = 0; cueIndex < cues.length; cueIndex++) {
+      final cue = cues[cueIndex];
+      final translatedText = output[cueIndex];
       if (translatedText == null) throw StateError('Sentence translation omitted a cue.');
       final text = _composeBilingual(cue.text, translatedText, bilingual);
       bytes += utf8.encode(text).length;
@@ -463,7 +484,8 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     return SubtitleTranslationResult(cues: List.unmodifiable(result), backendLabel: translated.backendLabel,
       fellBackToCpu: translated.fellBackToCpu || retry?.fellBackToCpu == true,
       qualityWarnings: List.unmodifiable([
-        t.videoSettings.subtitleSentenceReview(groups: redistributed, fallback: fallback.length),
+        t.videoSettings.subtitleSentenceReview(groups: redistributed,
+          fallback: fallback.length + (groupingSkippedForInputBound ? cues.length : 0)),
         ...translated.qualityWarnings.take(50), ...?retry?.qualityWarnings.take(49),
       ]));
   }

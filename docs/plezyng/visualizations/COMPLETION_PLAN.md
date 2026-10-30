@@ -593,3 +593,12 @@ Wrap/Clamp/Mirror addressing across 324 shared profiles, with a separate
 animated-sprite profile. The WebGL saved-sprite pass now applies the same
 per-texture profile as native GL. Builds, tests, reference captures, and device
 runs remain unperformed; this is source implementation, not qualification.
+
+
+## 2026-10-30 saved-sprite semantics follow-up
+
+The source lock now pins MilkRust `e0752db79a5b74668c4f1c9303630817ca120dec`, ABI v2. Equation repeat values
+are clamped before applying saved repeat multipliers; position and scale values
+are clamped before adding their saved offsets. WebGL sprite sampling matches
+native GL's static sampler profiles. This remains unbuilt and visually
+unqualified; run the paired runner and reference fixtures before promotion.

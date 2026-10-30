@@ -565,3 +565,16 @@ blend masks. Both GPU hosts key their shared mask cache by the effective carried
 header registers. Process-start omitted registers remain zero, and partial
 headers inherit preceding values. This is source integration, not a reference
 capture or a passed runtime test.
+
+## 2026-10-30 mask, sampler-state and blur source checkpoint
+
+PlezyNG now pins MilkRust `35db92c3ecbf1aefe76bdbb7176db5dc7a934de4`, ABI v2. The engine uses effective
+carried `random_1..5` values for all saved `.milk2` masks, including zero
+process-start defaults and inheritance for partial headers. The HLSL compiler
+lowers global static `SamplerState` declarations with point/linear filtering
+and uniform active-axis Wrap/Clamp addressing through the shared native/WebGL
+sampler bindings. Native GL and WebGL use the reference-source paired-tap blur
+kernels, source-sized offsets, per-level range transforms, and first-level edge
+darkening. Mixed active-axis and advanced sampler states remain explicit
+compiler failures. Builds, tests, reference-pixel comparisons, and device runs
+remain unperformed; this is a source checkpoint, not a conformance result.

@@ -251,16 +251,19 @@ abstract final class VisualizerContentLimits {
           malformed();
         }
         int? canvasWidth, canvasHeight;
-        var seenFrame = false;
+        var animated = false;
+        var sawAnimationControl = false;
+        var sawStaticFrame = false;
+        var frames = 0;
         int u24(int offset) => bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16);
-        void acceptFrame(int frameWidth, int frameHeight) {
-          if (seenFrame ||
+        void acceptStaticFrame(int frameWidth, int frameHeight) {
+          if (sawStaticFrame ||
               (canvasWidth != null && (canvasWidth != frameWidth || canvasHeight != frameHeight))) {
             malformed();
           }
           width = frameWidth;
           height = frameHeight;
-          seenFrame = true;
+          sawStaticFrame = true;
         }
 
         var offset = 12;
@@ -271,32 +274,56 @@ abstract final class VisualizerContentLimits {
           final dataOffset = offset + 8;
           final end = dataOffset + length + (length & 1);
           if (end < dataOffset || end > bytes.length) malformed();
-          if (kind == 'ANIM' || kind == 'ANMF') {
-            throw const FormatException('Animated WebP textures are not supported. Use a static image or GIF.');
-          }
-          if (kind == 'VP8X') {
-            if (offset != 12 || canvasWidth != null || length != 10) malformed();
-            if ((bytes[dataOffset] & 2) != 0) {
-              throw const FormatException('Animated WebP textures are not supported. Use a static image or GIF.');
-            }
-            canvasWidth = u24(dataOffset + 4) + 1;
-            canvasHeight = u24(dataOffset + 7) + 1;
-            width = canvasWidth;
-            height = canvasHeight;
-          } else if (kind == 'VP8 ') {
-            if (length < 10 ||
-                !List.generate(3, (i) => bytes[dataOffset + 3 + i] == [0x9d, 0x01, 0x2a][i]).every((v) => v)) {
-              malformed();
-            }
-            acceptFrame(u16(dataOffset + 6) & 0x3fff, u16(dataOffset + 8) & 0x3fff);
-          } else if (kind == 'VP8L') {
-            if (length < 5 || bytes[dataOffset] != 0x2f) malformed();
-            final packed = u32(dataOffset + 1);
-            acceptFrame((packed & 0x3fff) + 1, ((packed >> 14) & 0x3fff) + 1);
+          switch (kind) {
+            case 'VP8X':
+              if (offset != 12 || canvasWidth != null || length != 10) malformed();
+              animated = (bytes[dataOffset] & 2) != 0;
+              canvasWidth = u24(dataOffset + 4) + 1;
+              canvasHeight = u24(dataOffset + 7) + 1;
+              width = canvasWidth;
+              height = canvasHeight;
+            case 'ANIM':
+              if (!animated || sawAnimationControl || length != 6) malformed();
+              sawAnimationControl = true;
+            case 'ANMF':
+              if (!animated || !sawAnimationControl || length < 16 || sawStaticFrame) malformed();
+              final x = u24(dataOffset) * 2;
+              final y = u24(dataOffset + 3) * 2;
+              final frameWidth = u24(dataOffset + 6) + 1;
+              final frameHeight = u24(dataOffset + 9) + 1;
+              final flags = bytes[dataOffset + 15];
+              if (canvasWidth == null || canvasHeight == null ||
+                  frameWidth == 0 || frameHeight == 0 ||
+                  x + frameWidth > canvasWidth || y + frameHeight > canvasHeight ||
+                  (flags & 0xfc) != 0) {
+                malformed();
+              }
+              frames++;
+              if (frames > _maxAnimationFrames ||
+                  canvasWidth * canvasHeight * frames > _maxAnimationPixels) {
+                throw const FormatException('Animated WebP exceeds its decoded frame or pixel budget.');
+              }
+            case 'VP8 ':
+              if (animated || length < 10 ||
+                  !List.generate(3, (i) => bytes[dataOffset + 3 + i] == [0x9d, 0x01, 0x2a][i]).every((v) => v)) {
+                malformed();
+              }
+              acceptStaticFrame(u16(dataOffset + 6) & 0x3fff, u16(dataOffset + 8) & 0x3fff);
+            case 'VP8L':
+              if (animated || length < 5 || bytes[dataOffset] != 0x2f) malformed();
+              final packed = u32(dataOffset + 1);
+              acceptStaticFrame((packed & 0x3fff) + 1, ((packed >> 14) & 0x3fff) + 1);
           }
           offset = end;
         }
-        if (!seenFrame) malformed();
+        if (animated) {
+          if (!sawAnimationControl || frames == 0 || sawStaticFrame ||
+              canvasWidth == null || canvasHeight == null) {
+            malformed();
+          }
+          return width * height * frames;
+        }
+        if (!sawStaticFrame) malformed();
       default:
         throw const FormatException('Unsupported texture format.');
     }

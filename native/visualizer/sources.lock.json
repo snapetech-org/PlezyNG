@@ -29,7 +29,7 @@
   "milkrust": {
     "repository": "https://github.com/snapetech-org/MilkRust.git",
     "ref": "refs/pull/20/head",
-    "commit": "994e09dbec15702b03126011f1dcc21d7461f124",
+    "commit": "d7a646af44dc1fbd8d328bf607eaceaa63a46534",
     "abi": 2,
     "crate": "milkrust-native",
     "license": "AGPL-3.0-only",

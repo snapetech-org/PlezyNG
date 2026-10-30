@@ -469,3 +469,8 @@ standard per-frame `blendmode` the upstream default 0 and 0..4 clamp; the
 11-entry static `SpriteBlend` table is an explicit engine extension. No compiler,
 build, test or device qualification has run for this revision. Keep the lock
 `source-only-unqualified` until compatible private JIT and target checks complete.
+
+
+## 2026-10-30 latest HLSL resource support pin
+
+PlezyNG now locks MilkRust PR #20 at `d7a646af44dc1fbd8d328bf607eaceaa63a46534` (ABI v2). This source revision adds bounded global resource-only struct aggregate aliases for type-compatible global texture bindings; computed, mixed numeric/resource, local and mismatched forms fail closed. The matching native regression source is present but unrun. Keep `source-only-unqualified` until the compatible private JIT jobs and platform qualification complete.

@@ -847,3 +847,8 @@ paused time do not enter steady-state cost samples.
 Source regression cases cover quality reduction/recovery and the expanded IPC
 frame bound. No tests or builds were executed. These implementation items are
 closed separately from device performance, compiler and recovery validation.
+
+
+## 2026-10-30 resource-bearing HLSL helper arguments
+
+PlezyNG now pins MilkRust `1ab258e889d1932395e22015c383695611b918a5` (ABI v2). HLSL helper functions may take a direct resource-bearing struct parameter when each call supplies an unambiguous global struct instance. Specialization substitutes the global binding before ESSL lowering; local and dynamic resource-bearing struct arguments fail closed. Native regression source covers the global and local cases. The pin remains `source-only-unqualified`: the latest engine commit has no attached Actions run, and the connected GitHub tool exposes no workflow-dispatch operation for the required private JIT jobs. No build, test, compiler execution, render or device qualification was performed.

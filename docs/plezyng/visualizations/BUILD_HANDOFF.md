@@ -454,3 +454,8 @@ paused time do not enter steady-state cost samples.
 Source regression cases cover quality reduction/recovery and the expanded IPC
 frame bound. No tests or builds were executed. These implementation items are
 closed separately from device performance, compiler and recovery validation.
+
+
+## MilkRust direct resource-struct helper checkpoint
+
+Build exact lock revision `1ab258e889d1932395e22015c383695611b918a5` (ABI v2) on the compatible private JIT. It adds bounded specialization for helper parameters whose structs directly contain resources and whose arguments resolve to global struct instances. Local and dynamic arguments fail closed. Run the Rust compiler/core suite, native HLSL suite, browser HLSL harness and Emscripten delivery. The regression source covers both accepted global and rejected local arguments. No run is attached to this revision; the connected GitHub tools do not expose workflow dispatch. Keep the runtime lock `source-only-unqualified` until those checks and later rendering/device gates have evidence.

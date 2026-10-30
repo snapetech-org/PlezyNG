@@ -773,3 +773,8 @@ alias namespace. This preserves same-named `SamplerState` parameters across
 overloads while retaining static global alias chains and type validation.
 Native source regressions are present but unrun. The pin remains
 `source-only-unqualified`.
+
+
+## 2026-10-30 resource-bearing HLSL helper arguments
+
+MilkRust PR #20 now supports helper parameters whose structs directly contain opaque resources, specialized against unambiguous global struct instances. Local or dynamic resource-bearing struct arguments remain unsupported and fail closed. PlezyNG's source lock now pins `1ab258e889d1932395e22015c383695611b918a5` (ABI v2). Source and regression updates are committed; private-JIT build, compiler execution, browser rendering and reference comparison remain unrun because no workflow-dispatch action is available through the connected GitHub tools. This closes the direct-struct helper source gap only; nested resource-bearing structs, other unsupported resource forms and the plan's execution/qualification requirements remain open.

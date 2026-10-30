@@ -121,11 +121,26 @@ class SubtitleDefaultsAutoSync extends ChangeNotifier with WidgetsBindingObserve
       if (!enabled) { _status(SubtitleDefaultsSyncState.off); return; }
       final config = sources.syncConfig, identity = SubtitleCloudSync.defaultsIdentity(profile);
       final code = await SubtitleCloudSync.pairedCode(sources.repository, identity); check();
+      Future<void> disableForPairingChange() async {
+        await sources.repository.updatePreferenceAtomically(profile, _key, (current) {
+          check();
+          if (canonicalSyncJson(current) != canonicalSyncJson(journal)) {
+            throw StateError('Caption synchronization policy changed.');
+          }
+          return {'enabled': false};
+        });
+        check();
+        enabled = false;
+      }
       if (config == null || code == null || journal['destination'] != _destination(config.sourceId, config.folder, code)) {
+        await disableForPairingChange(); check();
         _status(SubtitleDefaultsSyncState.unavailable); return;
       }
       final adapter = sources.adapter(config.sourceId);
-      if (!ProviderSyncStore.supports(adapter.source.kind)) { _status(SubtitleDefaultsSyncState.unavailable); return; }
+      if (!ProviderSyncStore.supports(adapter.source.kind)) {
+        await disableForPairingChange(); check();
+        _status(SubtitleDefaultsSyncState.unavailable); return;
+      }
       bool current() { try { check(); return true; } catch (_) { return false; } }
       final service = SubtitleCloudSync(repository: sources.repository, identity: identity, defaults: true,
         store: ProviderSyncStore(adapter, folder: config.folder, check: check), code: code, check: check);

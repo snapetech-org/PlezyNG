@@ -281,3 +281,7 @@ browser capture, or device run; use only compatible private JIT runners.
 Native hosts can call MilkRustEngine::SetMouseState before rendering; platform
 pointer-event wiring is still pending. No build, test, or device run is attached to this
 source checkpoint; use only compatible private JIT runners.
+
+## 2026-10-30 Current native pointer-input route
+
+The source lock pins MilkRust `ffb4d4b97d1e92bdb6b4852077aff37710d46201` (ABI v2). Validate inline/fullscreen mouse and touch input on Android, Apple, Linux, and Windows: coordinates remain normalized, coalesced movement deltas are delivered once per rendered frame, button edges reach `mousedown`/`mouseclick`, and focus loss does not leave a button stuck. Build and device runs are still pending on compatible private JIT runners. The local workspace has no Cargo executable or repository checkout; the GitHub connector has no manual Actions-dispatch operation.

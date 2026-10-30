@@ -939,7 +939,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
     _longPressTimer = null;
   }
 
-  String get _syncTitle => widget.propertyName == PlayerSyncOffsets.subtitleProperty
+  String get _syncTitle => widget.propertyName != PlayerSyncOffsets.audioProperty
       ? t.videoSettings.subtitleSync
       : t.videoSettings.audioSync;
 
@@ -1030,11 +1030,14 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
 
   Widget _buildStepButton({
     required IconData icon,
+    required String label,
     required VoidCallback onTap,
     required VoidCallback onLongPressStart,
   }) {
     return FocusableWrapper(
       onSelect: onTap,
+      semanticLabel: label,
+      semanticValue: formatSyncOffset(_currentOffset),
       borderRadius: 18,
       autoScroll: false,
       useBackgroundFocus: true,
@@ -1059,6 +1062,8 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
   @override
   Widget build(BuildContext context) {
     final sliderValue = _currentOffset.clamp(_sliderMin, _sliderMax);
+    final canReset = _currentOffset != 0 ||
+        (_canUseSubtitleDriftCorrection && (_currentSubtitleRate - 1).abs() > 0.000000001);
     final supportsCueSync =
         widget.player.supportsSubtitleStepSync &&
         (widget.propertyName == PlayerSyncOffsets.subtitleProperty ||
@@ -1073,6 +1078,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
             children: [
               _buildStepButton(
                 icon: Symbols.remove_rounded,
+                label: t.accessibility.decreaseValue(label: _syncTitle),
                 onTap: _decrementOffset,
                 onLongPressStart: _startLongPressDecrement,
               ),
@@ -1081,6 +1087,8 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
                   data: SliderTheme.of(context).copyWith(tickMarkShape: SliderTickMarkShape.noTickMark),
                   child: FocusableSlider(
                     focusNode: widget.sliderFocusNode,
+                    semanticLabel: _syncTitle,
+                    semanticFormatterCallback: formatSyncOffset,
                     value: sliderValue,
                     min: _sliderMin,
                     max: _sliderMax,
@@ -1095,6 +1103,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
               ),
               _buildStepButton(
                 icon: Symbols.add_rounded,
+                label: t.accessibility.increaseValue(label: _syncTitle),
                 onTap: _incrementOffset,
                 onLongPressStart: _startLongPressIncrement,
               ),
@@ -1103,21 +1112,28 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
               const SizedBox(width: 8),
               FocusableWrapper(
                 focusNode: widget.resetFocusNode,
-                onSelect: _currentOffset != 0 ? _resetOffset : null,
+                onSelect: canReset ? _resetOffset : null,
+                semanticLabel: '${t.common.reset} · $_syncTitle',
+                semanticValue: _canUseSubtitleDriftCorrection
+                    ? '${formatSyncOffset(_currentOffset)} · ${formatPercent(_currentSubtitleRate)}'
+                    : formatSyncOffset(_currentOffset),
                 borderRadius: 18,
                 autoScroll: false,
                 useBackgroundFocus: true,
-                child: GestureDetector(
-                  onTap: _currentOffset != 0 ? _resetOffset : null,
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    alignment: .center,
-                    child: AppIcon(
-                      Symbols.restart_alt_rounded,
-                      fill: 1,
-                      color: _currentOffset != 0 ? tokens(context).text : tokens(context).textMuted,
-                      size: 22,
+                child: Tooltip(
+                  message: t.common.reset,
+                  child: GestureDetector(
+                    onTap: canReset ? _resetOffset : null,
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      alignment: .center,
+                      child: AppIcon(
+                        Symbols.restart_alt_rounded,
+                        fill: 1,
+                        color: canReset ? tokens(context).text : tokens(context).textMuted,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ),

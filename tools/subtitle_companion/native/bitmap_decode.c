@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
     decoder->max_pixels = MAX_PIXELS;
     decoder->thread_count = 1;
     if (codec_id == AV_CODEC_ID_DVB_TELETEXT &&
-        (av_opt_set(decoder->priv_data, "txt_page", argv[3], 0) < 0 ||
+        (!decoder->priv_data || av_opt_set(decoder->priv_data, "txt_page", argv[3], 0) < 0 ||
          av_opt_set(decoder->priv_data, "txt_format", "bitmap", 0) < 0 ||
          av_opt_set_int(decoder->priv_data, "txt_chop_top", 0, 0) < 0)) goto cleanup;
     if (avcodec_open2(decoder, codec, NULL) < 0 || !(packet = av_packet_alloc())) goto cleanup;

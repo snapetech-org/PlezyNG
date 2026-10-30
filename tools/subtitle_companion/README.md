@@ -645,3 +645,23 @@ Input is mono 16 kHz PCM16 WAV, up to two minutes / 4 MiB. Cues retain their
 wording and timing. The app offers individual note selection, corrections and
 separate digest-bound reviewed JSON export; no proposal is selected by default.
 See [bounds, human review and remaining qualification](../../docs/plezyng/subtitles/VOCAL-NOTES.md).
+
+## Additional reviewable source adapters (October 30)
+
+- Signs: explicit rectangular crop and optional local 12 Hz texture tracking for
+  inputs up to two minutes; complete sampled paths propose a fixed envelope,
+  while lost paths retain the selected region. See
+  [SIGN-MOTION](../../docs/plezyng/subtitles/SIGN-MOTION.md).
+- Burned-caption reconstruction: an explicitly consented 0.5–30-second derivative
+  with bounded mask, before/after evidence, clip-clock SRT and separate video ZIP.
+  Spatial fill invents pixels; it is not original-background recovery. See
+  [CAPTION-RECONSTRUCTION](../../docs/plezyng/subtitles/CAPTION-RECONSTRUCTION.md).
+- Broadcast captions: an installed `ccextractor` (or `PLEZY_CCEXTRACTOR`) supplies
+  one explicitly selected CEA-608/708 service and optional TS program. The native
+  bitmap helper source adds DVB and one explicit libzvbi teletext page. New helper
+  capability discovery keeps teletext controls hidden for older binaries. See
+  [BROADCAST-CAPTIONS](../../docs/plezyng/subtitles/BROADCAST-CAPTIONS.md).
+
+These paths retain the existing authenticated upload, input identity, bounded
+job result, cancellation/deletion and explicit app review contracts. No new
+model, decoder, helper build or qualification run was performed in this pass.

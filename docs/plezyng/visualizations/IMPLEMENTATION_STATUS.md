@@ -899,3 +899,10 @@ fragment preservation, unsafe inputs, dependency identities and zero-preset
 texture catalogs. No build or test ran. The local workspace became unavailable
 during this checkpoint; final source was recovered and reviewed through the
 repository connection.
+
+
+## 2026-10-30 current MilkRust source pin — corpus accounting
+
+The runtime source lock now pins MilkRust `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2), preserving the texture-only pack schema/delivery work and initialized resource-struct aliases while adding source-shape validation and complete compatibility-report accounting. The compiler rejects resource aliases whose original texture dimensions or scalar/vector element widths differ. The CLI retains every discovered preset path, reports bounded traversal failures, separates input-limit rejections from I/O errors, and reports empty roots. The report generator preserves file and per-preset outcomes, reconciles every manifest path against discovery, and records missing/unlisted paths and scan/read/decode failures.
+
+New Rust and Node regression sources cover these cases. The checked-in community summary was not regenerated; its historical 37-file discrepancy still needs a full private-runner report. Builds, tests and rendering remain unqualified, and this tooling change does not close the renderer/profile gaps.

@@ -505,3 +505,8 @@ fragment preservation, unsafe inputs, dependency identities and zero-preset
 texture catalogs. No build or test ran. The local workspace became unavailable
 during this checkpoint; final source was recovered and reviewed through the
 repository connection.
+
+
+## MilkRust corpus-accounting source pin
+
+Build exact lock revision `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2) on the compatible private JIT runner. Run the Rust workspace/compiler suite, CLI compatibility-report tests, `npm run test:content-report`, and the full community compatibility report. Confirm every discovered CLI entry is retained, the manifest merge accounts for missing/unlisted preset paths, directory/input/read/decode diagnostics are present, and the generated summary's file accounting is complete or lists each remaining exception. The checked-in generated summary remains historical until this run. No executable validation has been performed for this pin.

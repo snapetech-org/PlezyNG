@@ -778,3 +778,8 @@ Native source regressions are present but unrun. The pin remains
 ## 2026-10-30 resource-bearing HLSL helper arguments
 
 MilkRust PR #20 now supports helper parameters whose structs directly contain opaque resources, specialized against unambiguous global struct instances. Local or dynamic resource-bearing struct arguments remain unsupported and fail closed. PlezyNG's source lock now pins `1ab258e889d1932395e22015c383695611b918a5` (ABI v2). Source and regression updates are committed; private-JIT build, compiler execution, browser rendering and reference comparison remain unrun because no workflow-dispatch action is available through the connected GitHub tools. This closes the direct-struct helper source gap only; nested resource-bearing structs, other unsupported resource forms and the plan's execution/qualification requirements remain open.
+
+
+## 2026-10-30 corpus accounting source continuation
+
+PlezyNG now pins MilkRust `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2). The compatibility CLI uses bounded traversal, records directory/symlink/input-limit/I/O outcomes, and emits one status per discovered preset file. Its report generator checks that entry count matches the denominator, joins results to the manifest, and preserves missing, unlisted and duplicate paths plus per-preset diagnostics. Temporary sample names map back to original manifest paths. Pack inventory/hash errors are bounded and explicit. Regression sources are authored but unrun. The historical generated summary still needs regeneration on the required private JIT runner to explain its 37-file mismatch; no compatibility count is updated by source changes alone.

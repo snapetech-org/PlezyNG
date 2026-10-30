@@ -383,11 +383,12 @@ these checks has run in this workspace.
 
 ## 2026-10-30 MilkRust source pin update
 
-Build the exact locked engine revision `e940530aa1904f145f7f7006ada9d7ef9fb3ce2d` (ABI v2). It adds bounded APNG and animated WebP decoding, the Texture2D Gather family and
-static Texture2D comparison sampling in the bounded HLSL profile, plus per-renderer
-runtime-seeded noise shared by native GL and WebGL. Deterministic noise remains
-available to offline tooling. Comparison sampling includes the implicit-LOD
-`SampleCmp` path but remains unqualified for pixel parity. The current source lock
+Build the exact locked engine revision `893a04399b5e02db8d201701a72f8c4a3ce61791` (ABI v2). It adds bounded APNG and animated WebP decoding, the Texture2D Gather family and
+static Texture1D/Texture2D comparison sampling in the bounded HLSL profile, plus
+per-renderer runtime-seeded noise shared by native GL and WebGL. Texture1D comparison
+sampling uses the center row and requires a one-row asset for parity. Deterministic
+noise remains available to offline tooling. Comparison sampling includes the
+implicit-LOD `SampleCmp` path but remains unqualified for pixel parity. The current source lock
 still records `source-only-unqualified`; do not promote a runtime receipt or pack from
 this pin until the private JIT compiler, native/browser decoder and renderer checks,
 reference comparisons, and target-device runs have been completed.

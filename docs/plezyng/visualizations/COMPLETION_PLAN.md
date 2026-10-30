@@ -729,6 +729,10 @@ bounded HLSL profile, and runtime-seeded noise in native GL and WebGL. The
 deterministic generator remains available for offline callers. No build, test, browser render, native render or device qualification was
 performed; all execution remains assigned to compatible private ephemeral JIT runners.
 
-## 2026-10-30 MilkRust comparison-sampling source pin
+## 2026-10-30 earlier MilkRust comparison-sampling source pin
 
-The PlezyNG lock now points to MilkRust `e940530aa1904f145f7f7006ada9d7ef9fb3ce2d` (ABI v2). This checkpoint adds bounded Texture2D `GatherCmp`, `GatherCmpRed`, `SampleCmp` and `SampleCmpLevelZero` lowering for statically initialized comparison samplers, including point/linear filtering and implicit LOD from derivatives. The compiler profile is still limited to Texture2D and statically declared states; exact reference-pixel parity, builds, tests and target-device qualification remain open. The source lock stays `source-only-unqualified`.
+At that checkpoint, the PlezyNG lock pointed to MilkRust `e940530aa1904f145f7f7006ada9d7ef9fb3ce2d` (ABI v2). It added bounded Texture2D `GatherCmp`, `GatherCmpRed`, `SampleCmp` and `SampleCmpLevelZero` lowering for statically initialized comparison samplers, including point/linear filtering and implicit LOD from derivatives. Exact reference-pixel parity, builds, tests and target-device qualification remained open.
+
+## 2026-10-30 Texture1D comparison-sampling source pin
+
+The PlezyNG lock now points to MilkRust `893a04399b5e02db8d201701a72f8c4a3ce61791` (ABI v2). Texture1D `SampleCmp` and `SampleCmpLevelZero` use the existing center-row mapping and scalar literal offset path, requiring a one-row backing image for parity; Texture2D GatherCmp remains supported. Texture3D/cube comparison calls, exact pixel parity, builds, tests and target-device qualification remain open. The source lock remains `source-only-unqualified`.

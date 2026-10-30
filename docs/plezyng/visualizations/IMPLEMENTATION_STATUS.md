@@ -761,8 +761,12 @@ native rendering, reference-pixel comparisons, and device runs remain unperforme
 the compatible private JIT runners. Noise pixel identity and mobile recovery behavior remain unqualified; the Apple
 lifecycle and interrupted-preset source policy is implemented but not device-tested.
 
-## 2026-10-30 MilkRust comparison-sampling source checkpoint
+## 2026-10-30 earlier MilkRust comparison-sampling source checkpoint
 
-The app lock now pins MilkRust `e940530aa1904f145f7f7006ada9d7ef9fb3ce2d` (ABI v2). This source adds Texture2D `GatherCmp`, `GatherCmpRed`, `SampleCmp` and `SampleCmpLevelZero` for statically initialized comparison samplers. The implementation covers all eight comparison functions, the supported point/linear min/mag/mip profiles, Wrap/Clamp/Mirror addressing and literal int2 offsets. It compares red-channel texels before filtering and computes implicit LOD from texture-coordinate derivatives. Other texture dimensions, dynamic state and exact pixel parity remain open.
+At that earlier checkpoint, the app lock pinned MilkRust `e940530aa1904f145f7f7006ada9d7ef9fb3ce2d` (ABI v2). This source adds Texture2D `GatherCmp`, `GatherCmpRed`, `SampleCmp` and `SampleCmpLevelZero` for statically initialized comparison samplers. The implementation covers all eight comparison functions, the supported point/linear min/mag/mip profiles, Wrap/Clamp/Mirror addressing and literal int2 offsets. It compares red-channel texels before filtering and computes implicit LOD from texture-coordinate derivatives. Other texture dimensions, dynamic state and exact pixel parity remain open.
 
 The pin remains `source-only-unqualified`. There is no Actions run for the new MilkRust revision, and the connected GitHub tool has no workflow-dispatch action for PlezyNG's private JIT jobs. No build, test, render or device qualification was performed for this checkpoint.
+
+## 2026-10-30 Texture1D comparison-sampling source checkpoint
+
+The app lock now pins MilkRust `893a04399b5e02db8d201701a72f8c4a3ce61791` (ABI v2). Texture1D `SampleCmp` and `SampleCmpLevelZero` now share the bounded comparison filter and implicit-LOD path with Texture2D, using the existing center-row mapping and a scalar literal offset. A one-row backing image is required for Texture1D parity; GatherCmp remains Texture2D-only. Texture3D/cube comparison methods remain unsupported. The pin remains `source-only-unqualified`; no build, test, render or device qualification ran for this source update.

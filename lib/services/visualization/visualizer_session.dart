@@ -160,6 +160,7 @@ class VisualizerSession extends ChangeNotifier {
     required double dy,
   }) {
     if (_closed || _engine != 'milkrust' || !x.isFinite || !y.isFinite || !dx.isFinite || !dy.isFinite) return;
+    final wasDown = _mouseDown;
     _mouseDown = !_paused && down;
     _mouseX = x.clamp(0.0, 1.0).toDouble();
     _mouseY = y.clamp(0.0, 1.0).toDouble();
@@ -170,6 +171,12 @@ class VisualizerSession extends ChangeNotifier {
       _mouseDx = (_mouseDx + dx).clamp(-1.0, 1.0).toDouble();
       _mouseDy = (_mouseDy + dy).clamp(-1.0, 1.0).toDouble();
     }
+    if (!_paused && !wasDown && _mouseDown) {
+      _mouseTimer?.cancel();
+      _mouseTimer = null;
+      unawaited(_enqueue(() => _sendMouseState(downOverride: true)));
+      return;
+    }
     if (_mouseTimer?.isActive == true) return;
     _mouseTimer = Timer(const Duration(milliseconds: 16), () {
       _mouseTimer = null;
@@ -177,13 +184,13 @@ class VisualizerSession extends ChangeNotifier {
     });
   }
 
-  Future<void> _sendMouseState() async {
+  Future<void> _sendMouseState({bool? downOverride}) async {
     if (_closed || _sessionId == null || _engine != 'milkrust') return;
     final dx = _mouseDx, dy = _mouseDy;
     _mouseDx = 0;
     _mouseDy = 0;
     await _call<void>('visualizerSetMouse', {
-      'down': _mouseDown,
+      'down': downOverride ?? _mouseDown,
       'x': _mouseX,
       'y': _mouseY,
       'dx': dx,

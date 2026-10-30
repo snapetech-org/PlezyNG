@@ -2818,8 +2818,9 @@ class MpvPlayerCore private constructor(
       emitLog("info", "dv-route", change)
       if (p == null) {
         // The internal property-writer constructor is a deterministic test
-        // seam for a file-less initialized core. Match the no-track route a
-        // real player uses before a file has supplied DV profile metadata.
+        // seam for a file-less initialized core. Match the decoder-options
+        // decision a real no-track route makes before DV profile metadata is
+        // available; renderer bookkeeping needs an actual player.
         val routing = dvRouting()
         writeDvDecoderOptions(
           GpuVoPolicy.dvDecoderOptions(

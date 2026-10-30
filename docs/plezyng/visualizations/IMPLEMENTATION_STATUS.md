@@ -570,3 +570,8 @@ MilkRust PR #20 now pins `ba314ab686586f67c06fed09a8036bba03778938`, ABI v2. Its
 ## 2026-10-30 raw finite MilkDrop 3 header values
 
 MilkRust PR #20 now preserves finite float-range `.milk2` progress and random headers raw, including values outside [0, 1]. The cosine variable blend and scene weights use raw progress; only each saved-mask vertex mix is clamped before D3D9 byte truncation. Parser, carried-state, serialization, render-mask and interpolation regression sources were added. The engine pin is `324aee73cef1b6350df1668c340e4b6b6465ca14` (ABI v2). Builds, test execution, and reference captures remain unrun.
+
+
+## 2026-10-30 MilkDrop host input blending
+
+MilkRust PR #20 now pins `361a4a0c96408bf63760b914cbc508e4fb0494a3` (ABI v2). The engine binds standard `mousex`, `mousey`, `mousedown`, and per-runtime rising-edge `mouseclick` variables, along with frame-clock-derived `year` through `totalseconds`. Saved-pair rendering cosine-mixes mouse positions and clock registers and snaps buttons at the reference threshold. Source regressions cover binding, click edges, mixing and snapping; no build or test has run.

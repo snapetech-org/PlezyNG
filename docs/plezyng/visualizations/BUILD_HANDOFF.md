@@ -260,3 +260,8 @@ The app lock now pins MilkRust `ba314ab686586f67c06fed09a8036bba03778938` with A
 ## 2026-10-30 raw finite MilkDrop 3 header values
 
 MilkRust PR #20 now preserves finite float-range `.milk2` progress and random headers raw, including values outside [0, 1]. The cosine variable blend and scene weights use raw progress; only each saved-mask vertex mix is clamped before D3D9 byte truncation. Parser, carried-state, serialization, render-mask and interpolation regression sources were added. The engine pin is `324aee73cef1b6350df1668c340e4b6b6465ca14` (ABI v2). Builds, test execution, and reference captures remain unrun.
+
+
+## Current MilkRust pin — MilkDrop host inputs
+
+The source lock pins MilkRust `361a4a0c96408bf63760b914cbc508e4fb0494a3` (ABI v2). It adds standard MilkDrop mouse and clock registers, a shared rising-edge `mouseclick`, and reference-style saved-pair blending for these host values. The added regression sources are unrun. This workspace has no Cargo toolchain or project checkout; the connector reports no Actions run for the engine commit. Use the compatible private JIT runner; the connected GitHub tool does not expose manual workflow dispatch.

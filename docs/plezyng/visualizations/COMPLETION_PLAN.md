@@ -74,9 +74,12 @@ configuration path and a publisher gate requiring immutable per-preset/device
 qualification evidence. These are source mechanisms, not passed release gates.
 See [catalog release configuration](CATALOG_RELEASE.md) and
 [remaining TV integration](TV_HOST_INTEGRATION.md) for the concrete outstanding
-work. Full HLSL and non-Fade `.milk2` rendering remain incomplete. The earlier
-no-tests/builds/CI/captures/benchmarks/device-qualification restriction remains
-active; all subsequent source checkpoints use `[skip ci]`.
+work. Full HLSL and non-Fade `.milk2` rendering remain incomplete. The source-only
+restriction recorded in this handoff was superseded by the user's 2026-10-30
+instruction to continue code work and attempt builds. Build, test, scan and
+package jobs must still use compatible private ephemeral JIT runners; public
+hosted runners and fallback are prohibited. Missing private capacity is a
+provisioning blocker, not permission to bypass runner policy.
 
 “All community presets” is an engineering target, not an unbounded claim about every future file. Establish a versioned corpus that includes every current imported file plus representative MilkDrop 1, MilkDrop 2, MilkDrop 3 double presets, texture dependencies, fragments and converted formats. Preserve arbitrary local import so users are not limited to curated packs.
 
@@ -621,3 +624,8 @@ MilkRust now clamps each saved transition mix at the mesh vertex, truncates it t
 ## 2026-10-30 raw finite MilkDrop 3 header values
 
 MilkRust PR #20 now preserves finite float-range `.milk2` progress and random headers raw, including values outside [0, 1]. The cosine variable blend and scene weights use raw progress; only each saved-mask vertex mix is clamped before D3D9 byte truncation. Parser, carried-state, serialization, render-mask and interpolation regression sources were added. The engine pin is `324aee73cef1b6350df1668c340e4b6b6465ca14` (ABI v2). Builds, test execution, and reference captures remain unrun.
+
+
+## 2026-10-30 MilkDrop host input blending
+
+MilkRust PR #20 now binds standard mouse aliases (`mousex`, `mousey`, `mousedown`, `mouseclick`) and deterministic frame-clock values from `year` through `totalseconds`. One rising-edge `mouseclick` sample is shared by both active preset scopes. Saved-pair rendering cosine-mixes mouse positions and clock fields and snaps buttons at the reference shader-dependent threshold; temporary mixed values are restored after rendering. Source regression cases cover host binding, click edges, interpolation and snap behavior. The app source lock pins MilkRust `361a4a0c96408bf63760b914cbc508e4fb0494a3` (ABI v2). Builds and tests remain unrun; continue on compatible private JIT runners only.

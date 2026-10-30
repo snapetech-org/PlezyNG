@@ -636,6 +636,11 @@ void VisualizerSession::SetPaused(bool paused) {
   {
     std::lock_guard<std::mutex> lock(impl_->work->mutex);
     impl_->work->paused = paused;
+    if (paused) {
+      impl_->work->mouse_down = false;
+      impl_->work->mouse_dx = 0;
+      impl_->work->mouse_dy = 0;
+    }
   }
   impl_->work->condition.notify_all();
 }

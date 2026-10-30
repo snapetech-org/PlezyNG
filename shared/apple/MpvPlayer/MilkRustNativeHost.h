@@ -27,6 +27,7 @@ int PlezySubtitlePcmCaptureReadNext(
 - (BOOL)loadPreset:(NSString*)path root:(NSString*)root transitionSeconds:(double)transitionSeconds
              error:(NSError* _Nullable* _Nullable)error;
 - (void)resizeWidth:(NSInteger)width height:(NSInteger)height;
+- (void)setMouseState:(BOOL)down x:(double)x y:(double)y dx:(double)dx dy:(double)dy;
 - (void)setPaused:(BOOL)paused;
 - (NSDictionary<NSString*, id>*)status;
 - (nullable CVPixelBufferRef)copyPixelBuffer CF_RETURNS_RETAINED;

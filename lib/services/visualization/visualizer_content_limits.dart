@@ -322,7 +322,9 @@ abstract final class VisualizerContentLimits {
         }
         if (animated) {
           if (!sawAnimationControl || frames == 0 || sawStaticFrame ||
-              canvasWidth == null || canvasHeight == null) {
+              canvasWidth == null || canvasHeight == null ||
+              width <= 0 || height <= 0 || width > maxImageDimension ||
+              height > maxImageDimension || width * height > maxImagePixels) {
             malformed();
           }
           return width * height * frames;

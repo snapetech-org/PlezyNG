@@ -208,3 +208,12 @@ On the private JIT runners, build and run compiler/resource regressions, then
 capture native and WebGL sprites for point/linear filters, mip settings, each
 address mode, color keys, and animated images. No build or capture has run for
 this source checkpoint.
+
+
+## 2026-10-30 saved-sprite clamp-order handoff
+
+The current MilkRust pin is `e0752db79a5b74668c4f1c9303630817ca120dec`. Verify scripted repeat values with
+non-default saved multipliers, position and scale values near their clamp
+limits, all sprite sampler profiles, and animated assets on the private JIT
+runner. Reference-pixel and device qualification remain required. No run was
+available for this source-only checkpoint.

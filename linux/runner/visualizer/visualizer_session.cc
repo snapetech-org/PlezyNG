@@ -330,6 +330,9 @@ struct Engine {
       offset += count;
     }
   }
+  void SetMouseState(bool down, double x, double y, double dx, double dy) {
+    if (rust) rust->SetMouseState(down, x, y, dx, dy);
+  }
   void Render(uint32_t fbo, int width, int height) {
     if (rust) {
       const auto now = Clock::now();
@@ -353,6 +356,8 @@ struct VisualizerSession::Impl {
     bool stopping = false, paused = true;
     int width = 768, height = 432;
     double transition_seconds = 3;
+    bool mouse_down = false;
+    double mouse_x = 0.5, mouse_y = 0.5, mouse_dx = 0, mouse_dy = 0;
     std::string path, root, state = "starting", error;
     uint64_t preset_serial = 0;
     uint32_t dropped = 0;
@@ -397,7 +402,8 @@ struct VisualizerSession::Impl {
           uint64_t serial;
           int w, h;
           double transition;
-          bool pause_requested;
+          bool pause_requested, mouse_down;
+          double mouse_x, mouse_y, mouse_dx, mouse_dy;
           { std::lock_guard<std::mutex> lock(mutex); pause_requested = paused; }
           if (pause_requested && engine.Has()) {
             RenderWatchdog::Operation operation(watchdog);
@@ -413,6 +419,13 @@ struct VisualizerSession::Impl {
             w = width;
             h = height;
             transition = transition_seconds;
+            mouse_down = this->mouse_down;
+            mouse_x = this->mouse_x;
+            mouse_y = this->mouse_y;
+            mouse_dx = this->mouse_dx;
+            mouse_dy = this->mouse_dy;
+            this->mouse_dx = 0;
+            this->mouse_dy = 0;
           }
           RenderWatchdog::Operation operation(watchdog);
           graphics.Resize(w, h);
@@ -465,6 +478,7 @@ struct VisualizerSession::Impl {
           if (engine.Has() && loaded_serial == serial && Clock::now() - audio_at < std::chrono::milliseconds(250)) {
             engine.Pause(false);
             engine.Resize(w, h);
+            engine.SetMouseState(mouse_down, mouse_x, mouse_y, mouse_dx, mouse_dy);
             engine.Render(graphics.framebuffer, w, h);
             auto frame = std::make_shared<Frame>();
             frame->width = w;
@@ -606,6 +620,17 @@ void VisualizerSession::Resize(int width, int height) {
   std::lock_guard<std::mutex> lock(impl_->work->mutex);
   impl_->work->width = std::max(1, static_cast<int>(width * scale));
   impl_->work->height = std::max(1, static_cast<int>(height * scale));
+}
+void VisualizerSession::SetMouseState(bool down, double x, double y, double dx, double dy) {
+  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(dx) || !std::isfinite(dy))
+    throw std::runtime_error("Invalid native mouse input.");
+  std::lock_guard<std::mutex> lock(impl_->work->mutex);
+  if (impl_->work->stopping) return;
+  impl_->work->mouse_down = down;
+  impl_->work->mouse_x = std::clamp(x, 0.0, 1.0);
+  impl_->work->mouse_y = std::clamp(y, 0.0, 1.0);
+  impl_->work->mouse_dx = std::clamp(dx, -1.0, 1.0);
+  impl_->work->mouse_dy = std::clamp(dy, -1.0, 1.0);
 }
 void VisualizerSession::SetPaused(bool paused) {
   {

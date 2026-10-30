@@ -611,3 +611,8 @@ and documentation agree on equation-first clamp order, saved position/scale
 offsets, repeat multipliers, and shared native/WebGL min/mag/mip and address
 profiles. This closes the identified source/documentation mismatches; compiled
 and reference-pixel behavior still has no evidence.
+
+
+## 2026-10-30 saved-mask vertex alpha correction
+
+MilkRust now clamps each saved transition mix at the mesh vertex, truncates it to the D3D9 8-bit alpha byte, and interpolates that R8 field across the 64x48 mesh in native GL and WebGL. This replaces the prior full-precision packed alpha path, which diverged from the compatible reference. The app source lock pins MilkRust `ba314ab686586f67c06fed09a8036bba03778938`; the source regression remains unrun. Private build, browser/native pixel comparison, and target-device qualification remain open.

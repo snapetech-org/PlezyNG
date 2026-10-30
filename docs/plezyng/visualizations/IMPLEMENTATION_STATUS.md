@@ -560,3 +560,8 @@ generator is checked against the published Lactea 4x2 `(a,c)` table for all
 sprite keys inside the two preset bodies; classic `.milk` keeps its existing
 first-value/default-on behavior. These regression sources have not run. This
 adds source checks only; official-renderer pixel comparison remains open.
+
+
+## 2026-10-30 MilkDrop saved-mask alpha correction
+
+MilkRust PR #20 now pins `ba314ab686586f67c06fed09a8036bba03778938`, ABI v2. Its saved `.milk2` masks now clamp each vertex mix, truncate to the reference D3D9 8-bit alpha, and upload the same 65x49 R8 field in native GL and WebGL before triangle interpolation. This replaces the earlier full-precision packed field. Regression source covers the byte count and truncation endpoints; it has not run. The latest MilkRust commit has no attached Actions run. PlezyNG's build and CI workflows still require manual dispatch, and the connected GitHub tool exposes no dispatch action. Builds must remain on the required private JIT runners.

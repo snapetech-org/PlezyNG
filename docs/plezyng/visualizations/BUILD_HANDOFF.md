@@ -250,3 +250,8 @@ ignore preset-body `sprite` records. Build and run this exact revision on the
 private JIT runner when a run can be started; capture native and WebGL reference
 images separately. No run is attached to this revision, and pixel parity is not
 claimed.
+
+
+## Current MilkRust pin — saved-mask alpha correction
+
+The app lock now pins MilkRust `ba314ab686586f67c06fed09a8036bba03778938` with ABI v2. Its 65x49 saved-pattern alpha field follows D3D9's clamp-and-truncate-to-byte behavior and is uploaded as R8 in both native GL and WebGL. The source control is unrun. Do not treat the engine pin as a built artifact: the connected GitHub tool exposes no manual workflow-dispatch action, and all builds must use compatible private ephemeral JIT runners.

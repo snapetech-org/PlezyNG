@@ -602,3 +602,12 @@ are clamped before applying saved repeat multipliers; position and scale values
 are clamped before adding their saved offsets. WebGL sprite sampling matches
 native GL's static sampler profiles. This remains unbuilt and visually
 unqualified; run the paired runner and reference fixtures before promotion.
+
+
+## 2026-10-30 sprite source contract alignment
+
+The engine lock now pins MilkRust `60b65d0d4ef1cea5130843628880d9155e085097`, ABI v2. Its sprite implementation
+and documentation agree on equation-first clamp order, saved position/scale
+offsets, repeat multipliers, and shared native/WebGL min/mag/mip and address
+profiles. This closes the identified source/documentation mismatches; compiled
+and reference-pixel behavior still has no evidence.

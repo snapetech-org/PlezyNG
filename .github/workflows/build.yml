@@ -1603,6 +1603,13 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup Java
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          architecture: ${{ matrix.arch == 'arm64' && 'aarch64' || 'x64' }}
+
       - name: Provision and verify pinned Windows build tools
         shell: pwsh
         run: |

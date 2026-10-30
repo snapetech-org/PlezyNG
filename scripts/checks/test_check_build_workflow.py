@@ -94,6 +94,27 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("architecture matrix checks passed", result.stdout)
 
+    def test_windows_release_build_requires_native_jdk_for_jni(self) -> None:
+        prefix, windows = self._workflow().split("  build-windows:\n", 1)
+        java_step = (
+            '      - name: Setup Java\n'
+            '        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5\n'
+            '        with:\n'
+            '          distribution: "temurin"\n'
+            '          java-version: "21"\n'
+            "          architecture: ${{ matrix.arch == 'arm64' && 'aarch64' || 'x64' }}\n"
+        )
+        self.assertIn(java_step, windows)
+        workflow = prefix + "  build-windows:\n" + windows.replace(java_step, "", 1)
+
+        result = self._run(workflow)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "Windows release builds must provision pinned native JDK 21 for JNI",
+            result.stderr,
+        )
+
     def test_windows_arm_flutter_without_release_tag_is_rejected(self) -> None:
         action = self._action().replace(
             'git -C $root fetch --depth 1 origin "refs/tags/${version}:refs/tags/${version}"',

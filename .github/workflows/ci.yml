@@ -846,6 +846,13 @@ jobs:
           .\windows\tool\prepare-build-toolchain.ps1
           .\windows\tool\prepare-build-toolchain.ps1 -VerifyOnly
 
+      - name: Setup Java
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          architecture: ${{ matrix.arch == 'arm64' && 'aarch64' || 'x64' }}
+
       - name: Verify provisioned ARM64 7-Zip
         if: matrix.arch == 'arm64'
         shell: pwsh

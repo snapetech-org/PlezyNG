@@ -63,6 +63,19 @@ def named_step(block: str, name: str) -> str:
     return match.group(0) if match else ""
 
 
+def validate_windows_jni_jdk(block: str, context: str) -> None:
+    setup_java = named_step(block, "Setup Java")
+    require(
+        "uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5"
+        in setup_java
+        and 'distribution: "temurin"' in setup_java
+        and 'java-version: "21"' in setup_java
+        and "architecture: ${{ matrix.arch == 'arm64' && 'aarch64' || 'x64' }}"
+        in setup_java,
+        f"{context} must provision pinned native JDK 21 for JNI",
+    )
+
+
 def validate_windows_signing(block: str) -> None:
     install = named_step(block, "Install dependencies")
     signing = named_step(block, "Sign installer for WinSparkle (EdDSA)")
@@ -130,6 +143,7 @@ for legacy_job in (
     require(f"  {legacy_job}:\n" not in text, f"legacy job {legacy_job} must stay removed")
 
 windows = job("build-windows")
+validate_windows_jni_jdk(windows, "Windows release builds")
 require(
     '"group":"packer-windows"' in windows
     and '"Windows","X64"' in windows
@@ -842,6 +856,7 @@ require(
 )
 
 windows_native = job_block(ci_text, "windows-native-test")
+validate_windows_jni_jdk(windows_native, "Windows native CI")
 windows_ci_flutter_cache_key = re.search(
     r'(?m)^\s*cache-key:\s*["\']?([^"\'\s]+)["\']?\s*$',
     windows_native,

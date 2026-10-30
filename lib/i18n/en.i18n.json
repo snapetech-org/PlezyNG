@@ -4594,7 +4594,13 @@
     "subtitleSignMotionHelp": "For videos up to two minutes, follow local image texture at 12 samples per second. Background texture can be mistaken for the sign. Review the observed path; only complete paths propose a fixed caption region. Captions do not animate along the path.",
     "subtitleCropLeft": "Region left: ${percent}%",
     "subtitleCropWidth": "Region width: ${percent}%",
-    "subtitleCropHeight": "Region height: ${percent}%"
+    "subtitleCropHeight": "Region height: ${percent}%",
+    "subtitleReconstruction": "Create a burned-caption reconstruction preview",
+    "subtitleReconstructionHelp": "Choose a mask covering the burned captions (at most 20% of the frame). During the selected cue intervals, local spatial filling invents replacement pixels. This can erase picture details, smear or flicker. Input must be unrotated, square-pixel 8-bit BT.709 SDR. The separate preview is up to 960×540 at 12 fps, with optional AAC stereo and a separate caption file.",
+    "subtitleReconstructionConsent": "I want a separate masked derivative and understand that it cannot recover the original background.",
+    "subtitleReconstructionExportHelp": "The ZIP contains a video preview, a clip-relative caption file, the mask, before/after images and a provenance report. Review the whole clip before using it. Spatial filling invents pixels; it may damage picture detail or flicker. Current playback is unchanged.",
+    "subtitleReconstructionExport": "Export reconstruction preview ZIP",
+    "subtitleReconstructionInterval": "Select up to thirty seconds on the uploaded file clock. Only intersecting supplied cues are retained, clipped to this range. Their words will be exported as a separate caption file; their intervals control when the selected image region is filled."
   },
   "performanceOverlay": {
     "color": "Color",

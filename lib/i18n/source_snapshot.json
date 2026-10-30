@@ -5758,5 +5758,11 @@
   "videoSettings.subtitleSignMotionHelp": "8a6f1e547f462a28",
   "videoSettings.subtitleCropLeft": "ff7062e87b12d545",
   "videoSettings.subtitleCropWidth": "6a6599c18499af1d",
-  "videoSettings.subtitleCropHeight": "2034ae8ba956b04a"
+  "videoSettings.subtitleCropHeight": "2034ae8ba956b04a",
+  "videoSettings.subtitleReconstruction": "2ccbf079b06b631e",
+  "videoSettings.subtitleReconstructionHelp": "871d2f28609226b8",
+  "videoSettings.subtitleReconstructionConsent": "344c2e08a3b97569",
+  "videoSettings.subtitleReconstructionExportHelp": "e2e9d2684a07a501",
+  "videoSettings.subtitleReconstructionExport": "4ddd5778d045087a",
+  "videoSettings.subtitleReconstructionInterval": "e4950f2a46f6abe9"
 }

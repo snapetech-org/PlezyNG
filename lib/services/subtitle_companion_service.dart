@@ -210,7 +210,7 @@ final class SubtitleCompanionService {
     String? translationProviderFingerprint, String? visionProviderFingerprint, Map<String, String> glossary = const {},
     Map<String, List<String>> lyricSyllables = const {}, bool lyricPitchEvidence = false,
     Map<String, dynamic>? microphoneArray,
-    bool isolatedLeadVocal = false,
+    bool isolatedLeadVocal = false, bool reconstructionConsent = false,
     bool sceneObjectTracking = false, String? sceneDetectorFingerprint,
     List<double> crop = const [0, 0.65, 1, 0.35],
     void Function(String jobId)? onCreated, void Function(int sent, int total)? onUpload,
@@ -225,6 +225,14 @@ final class SubtitleCompanionService {
     if (sceneMotionTracking && caps['sceneMotionTracking'] != true) throw UnsupportedError('The companion has not installed local motion tracking');
     if (lyricSyllables.isNotEmpty && caps['lyricSyllables'] != true) throw UnsupportedError('Update the companion for supplied lyric syllables');
     if (lyricPitchEvidence && caps['lyricPitchEvidence'] != true) throw UnsupportedError('The companion has not installed lyric pitch analysis');
+    if (task == 'caption_reconstruct' && (!reconstructionConsent || itemTimeline || timelineOffsetMs != 0 ||
+        preprocess || cues.isEmpty || cues.length > 120 || crop.length != 4 ||
+        crop.any((n) => !n.isFinite || n < 0 || n > 1) || crop[2] * crop[3] > .2 ||
+        crop[0] + crop[2] > 1 || crop[1] + crop[3] > 1 || crop[2] < .05 || crop[3] < .05 ||
+        cues.map((c) => c.endMs).reduce((a, b) => a > b ? a : b) -
+            cues.map((c) => c.startMs).reduce((a, b) => a < b ? a : b) > 30000)) {
+      throw const FormatException('Reconstruction requires explicit consent, a mask within 20% of the frame and up to 120 file-clock cues spanning at most thirty seconds.');
+    }
     if (task == 'vocal_notes' && (caps['isolatedVocalNoteProposals'] != true || !isolatedLeadVocal ||
         cues.isEmpty || cues.length > 120 || cues.any((cue) => cue.endMs > 120000 || cue.endMs - cue.startMs > 12000) ||
         cues.fold<int>(0, (total, cue) => total + cue.endMs - cue.startMs) > 120000 || itemTimeline || timelineOffsetMs != 0 ||
@@ -265,7 +273,7 @@ final class SubtitleCompanionService {
       'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs, 'duckRatio': duckRatio, 'voiceFingerprint': voiceFingerprint,
       'lyricSyllables': lyricSyllables, 'lyricPitchEvidence': lyricPitchEvidence,
       'microphoneArray': microphoneArray,
-      'isolatedLeadVocal': isolatedLeadVocal,
+      'isolatedLeadVocal': isolatedLeadVocal, 'reconstructionConsent': reconstructionConsent,
       'sceneObjectTracking': sceneObjectTracking, 'sceneDetectorFingerprint': sceneDetectorFingerprint,
       'translationMode': translationMode, 'scriptConversion': scriptConversion, 'readingMode': readingMode,
       'translationProviderFingerprint': translationProviderFingerprint, 'visionProviderFingerprint': visionProviderFingerprint, 'glossary': glossary,
@@ -312,7 +320,7 @@ final class SubtitleCompanionService {
     }
     final evidence = <String, Object?>{
       for (final key in const ['coverageEvidence', 'ensembleEvidence', 'soundEvidence', 'lyricTimingEvidence', 'lyricSyllableEvidence', 'lyricPitchEvidence',
-        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'signMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'soundLocalizationEvidence', 'vocalNoteEvidence', 'synthesisEvidence'])
+        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'signMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'soundLocalizationEvidence', 'vocalNoteEvidence', 'synthesisEvidence', 'reconstructionEvidence'])
         if (data[key] != null) key: data[key],
     };
     final provenance = <String, Object?>{
@@ -461,7 +469,7 @@ final class SubtitleCompanionService {
     final rawArtifacts = data['artifacts'] ?? const [];
     if (rawArtifacts is! List || rawArtifacts.length > 1) throw const FormatException('Invalid companion artifacts.');
     for (final rawArtifact in rawArtifacts) {
-      const kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson'};
+      const kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson', 'caption-reconstruction.zip': 'application/zip'};
       if (rawArtifact is! Map || !kinds.containsKey(rawArtifact['name']) || rawArtifact['mime'] != kinds[rawArtifact['name']] ||
           rawArtifact['bytes'] is! int || rawArtifact['bytes'] <= 0 || rawArtifact['bytes'] > 32 * 1024 * 1024 ||
           rawArtifact['sha256'] is! String || !_digest.hasMatch(rawArtifact['sha256'])) {
@@ -481,7 +489,7 @@ final class SubtitleCompanionService {
   }
 
   Future<Uint8List> artifactBytes(String jobId, SubtitleCompanionArtifact artifact) async {
-    const kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson'};
+    const kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson', 'caption-reconstruction.zip': 'application/zip'};
     if (_closed || kinds[artifact.name] != artifact.mime || !kinds.containsKey(artifact.name) ||
         !_digest.hasMatch(artifact.digest) || artifact.bytes <= 0 || artifact.bytes > 32 * 1024 * 1024) {
       throw StateError('Companion artifact unavailable.');

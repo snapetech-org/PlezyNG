@@ -342,6 +342,10 @@ def main():
         from microphone_array import run
         result = run(folder, job, progress)
         device = 'numpy-cpu-native-channel-pcm'
+    elif task == 'caption_reconstruct':
+        from caption_reconstruction import run
+        result = run(folder, job, progress)
+        device = 'opencv-spatial-inpainting-and-ffmpeg-cpu'
     elif task == 'vocal_notes':
         from vocal_notes import run
         result = run(folder, job, progress)

@@ -7579,6 +7579,24 @@ class Translations$videoSettings$en {
 	/// en: 'Region height: ${percent}%'
 	String subtitleCropHeight({required int percent}) => 'Region height: ${percent}%';
 
+	/// en: 'Create a burned-caption reconstruction preview'
+	String get subtitleReconstruction => 'Create a burned-caption reconstruction preview';
+
+	/// en: 'Choose a mask covering the burned captions (at most 20% of the frame). During the selected cue intervals, local spatial filling invents replacement pixels. This can erase picture details, smear or flicker. Input must be unrotated, square-pixel 8-bit BT.709 SDR. The separate preview is up to 960×540 at 12 fps, with optional AAC stereo and a separate caption file.'
+	String get subtitleReconstructionHelp => 'Choose a mask covering the burned captions (at most 20% of the frame). During the selected cue intervals, local spatial filling invents replacement pixels. This can erase picture details, smear or flicker. Input must be unrotated, square-pixel 8-bit BT.709 SDR. The separate preview is up to 960×540 at 12 fps, with optional AAC stereo and a separate caption file.';
+
+	/// en: 'I want a separate masked derivative and understand that it cannot recover the original background.'
+	String get subtitleReconstructionConsent => 'I want a separate masked derivative and understand that it cannot recover the original background.';
+
+	/// en: 'The ZIP contains a video preview, a clip-relative caption file, the mask, before/after images and a provenance report. Review the whole clip before using it. Spatial filling invents pixels; it may damage picture detail or flicker. Current playback is unchanged.'
+	String get subtitleReconstructionExportHelp => 'The ZIP contains a video preview, a clip-relative caption file, the mask, before/after images and a provenance report. Review the whole clip before using it. Spatial filling invents pixels; it may damage picture detail or flicker. Current playback is unchanged.';
+
+	/// en: 'Export reconstruction preview ZIP'
+	String get subtitleReconstructionExport => 'Export reconstruction preview ZIP';
+
+	/// en: 'Select up to thirty seconds on the uploaded file clock. Only intersecting supplied cues are retained, clipped to this range. Their words will be exported as a separate caption file; their intervals control when the selected image region is filled.'
+	String get subtitleReconstructionInterval => 'Select up to thirty seconds on the uploaded file clock. Only intersecting supplied cues are retained, clipped to this range. Their words will be exported as a separate caption file; their intervals control when the selected image region is filled.';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -23096,6 +23114,12 @@ extension on Translations {
 			'videoSettings.subtitleCropLeft' => ({required int percent}) => 'Region left: ${percent}%',
 			'videoSettings.subtitleCropWidth' => ({required int percent}) => 'Region width: ${percent}%',
 			'videoSettings.subtitleCropHeight' => ({required int percent}) => 'Region height: ${percent}%',
+			'videoSettings.subtitleReconstruction' => 'Create a burned-caption reconstruction preview',
+			'videoSettings.subtitleReconstructionHelp' => 'Choose a mask covering the burned captions (at most 20% of the frame). During the selected cue intervals, local spatial filling invents replacement pixels. This can erase picture details, smear or flicker. Input must be unrotated, square-pixel 8-bit BT.709 SDR. The separate preview is up to 960×540 at 12 fps, with optional AAC stereo and a separate caption file.',
+			'videoSettings.subtitleReconstructionConsent' => 'I want a separate masked derivative and understand that it cannot recover the original background.',
+			'videoSettings.subtitleReconstructionExportHelp' => 'The ZIP contains a video preview, a clip-relative caption file, the mask, before/after images and a provenance report. Review the whole clip before using it. Spatial filling invents pixels; it may damage picture detail or flicker. Current playback is unchanged.',
+			'videoSettings.subtitleReconstructionExport' => 'Export reconstruction preview ZIP',
+			'videoSettings.subtitleReconstructionInterval' => 'Select up to thirty seconds on the uploaded file clock. Only intersecting supplied cues are retained, clipped to this range. Their words will be exported as a separate caption file; their intervals control when the selected image region is filled.',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

@@ -35,6 +35,7 @@ from dubbing import voice_config, capabilities as synthesis_capabilities
 from visual_research import vision_capabilities
 from scene_objects import capabilities as scene_object_capabilities
 from caption_channels import CaptionChannels, RelayError
+from caption_reconstruction import validate as validate_reconstruction
 
 MAX_INPUT = 1024**3
 MAX_JSON = 5 * 1024**2
@@ -90,6 +91,8 @@ class Store:
                 (folder / "audio.part").unlink(missing_ok=True)
                 (folder / "analysis.wav").unlink(missing_ok=True)
                 (folder / "ocr_input.png").unlink(missing_ok=True)
+                (folder / 'reconstruction-video.part.mp4').unlink(missing_ok=True)
+                (folder / 'reconstruction-preview.mp4').unlink(missing_ok=True)
                 shutil.rmtree(folder / "bitmap_input", ignore_errors=True)
             except (ValueError, KeyError, OSError, TypeError):
                 # Do not turn malformed records into jobs or execute their paths.
@@ -136,7 +139,7 @@ class Store:
         if task in {"align", "singing_align"} and value.get("spokenLanguage") != language:
             raise ValueError("alignment_requires_matching_spoken_language")
         cues = value.get("cues", [])
-        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "singing_align", "completeness", "dub_mix", "scene_review", "scene_track", "sound_localize", "vocal_notes"} | TEXT_TASKS and not cues):
+        if not isinstance(cues, list) or len(cues) > 50000 or (task in {"align", "singing_align", "completeness", "dub_mix", "scene_review", "scene_track", "sound_localize", "vocal_notes", "caption_reconstruct"} | TEXT_TASKS and not cues):
             raise ValueError("cue_limit")
         ids = set()
         for cue in cues:
@@ -202,6 +205,13 @@ class Store:
         bitmap_tail = value.get("finalBitmapDurationMs", 2000)
         if type(bitmap_tail) is not int or not 100 <= bitmap_tail <= 30000:
             raise ValueError("invalid_final_bitmap_duration")
+        reconstruction_consent = value.get('reconstructionConsent', False)
+        if type(reconstruction_consent) is not bool or reconstruction_consent and task != 'caption_reconstruct':
+            raise ValueError('invalid_reconstruction_consent')
+        if task == 'caption_reconstruct':
+            if importlib.util.find_spec('cv2') is None or not shutil.which(os.environ.get('PLEZY_FFPROBE', 'ffprobe')):
+                raise ValueError('reconstruction_runtime_unavailable')
+            validate_reconstruction(value)
         mode = value.get("translationMode", "faithful")
         conversion = value.get("scriptConversion", "s2t")
         reading = value.get("readingMode", "hiragana")
@@ -276,7 +286,7 @@ class Store:
                          "subtitleTrack": subtitle_track, "finalBitmapDurationMs": bitmap_tail,
                          "lyricSyllables": lyric_syllables, "lyricPitchEvidence": lyric_pitch,
                          "microphoneArray": microphone_array,
-                         "isolatedLeadVocal": isolated_vocal,
+                         "isolatedLeadVocal": isolated_vocal, "reconstructionConsent": reconstruction_consent,
                          "sceneObjectTracking": object_tracking, "sceneDetectorFingerprint": object_fingerprint,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
                          "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions, "sceneAudioEvidence": audio_evidence, "sceneMotionTracking": motion_tracking, "signMotionTracking": sign_motion,
@@ -338,6 +348,8 @@ class Store:
                     self.save(job)
                 (folder / "analysis.wav").unlink(missing_ok=True)
                 (folder / "ocr_input.png").unlink(missing_ok=True)
+                (folder / 'reconstruction-video.part.mp4').unlink(missing_ok=True)
+                (folder / 'reconstruction-preview.mp4').unlink(missing_ok=True)
                 shutil.rmtree(folder / "bitmap_input", ignore_errors=True)
             self.wake.set()
 
@@ -500,6 +512,8 @@ class Handler(BaseHTTPRequestHandler):
             scene_detector = scene_object_capabilities()
             if shutil.which(os.environ.get("PLEZY_FFMPEG", "ffmpeg")):
                 tasks.append("extract_text")
+                if installed('cv2') and shutil.which(os.environ.get('PLEZY_FFPROBE', 'ffprobe')):
+                    tasks.append('caption_reconstruct')
                 if vision is not None: tasks.append("scene_review")
                 if scene_detector is not None and shutil.which(os.environ.get('PLEZY_FFPROBE', 'ffprobe')):
                     tasks.append('scene_track')
@@ -529,7 +543,7 @@ class Handler(BaseHTTPRequestHandler):
                     self.reply(404, {"error": "not_found"}); return
                 folder = store.root / identifier
                 result = read_json(folder / "result.json", MAX_RESULT)
-                kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson'}
+                kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson', 'caption-reconstruction.zip': 'application/zip'}
                 artifact = next((a for a in result.get("artifacts", []) if a.get("sha256") == digest and
                     a.get("name") in kinds and a.get('mime') == kinds[a['name']]), None)
                 if artifact is None or not 0 < artifact.get("bytes", 0) <= 32 * 1024**2:

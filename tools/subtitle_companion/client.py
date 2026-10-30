@@ -77,6 +77,13 @@ class CompanionClient:
         return f"/v1/jobs/{job_id}" + (f"/{action}" if action else "")
 
     def create(self, *, task, identity, media=None, **options):
+        if options.get('signMotionTracking', False) and (task != 'signs' or self.capabilities().get('signMotionTracking') is not True):
+            raise ValueError('companion_sign_motion_unavailable')
+        if task == 'caption_reconstruct':
+            from caption_reconstruction import validate
+            validate(options)
+            if task not in self.capabilities().get('tasks', []):
+                raise ValueError('companion_caption_reconstruction_unavailable')
         if task == 'sound_localize' and self.capabilities().get('microphoneArrayLocalization') is not True:
             raise ValueError('companion_microphone_array_localization_unavailable')
         if task == 'vocal_notes' and self.capabilities().get('isolatedVocalNoteProposals') is not True:
@@ -177,7 +184,7 @@ class CompanionClient:
 
     def artifact(self, job_id, artifact):
         digest, size = artifact.get("sha256"), artifact.get("bytes")
-        kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson'}
+        kinds = {'dubbed.wav': 'audio/wav', 'scene-tracks.jsonl': 'application/x-ndjson', 'caption-reconstruction.zip': 'application/zip'}
         if (artifact.get('name') not in kinds or artifact.get('mime') != kinds[artifact['name']] or
                 not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest) or type(size) is not int or not 0 < size <= 32 * 1024**2):
             raise ValueError("Invalid artifact metadata")

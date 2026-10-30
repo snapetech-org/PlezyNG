@@ -659,13 +659,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     );
   });
 
-  Future<SubtitleAudioInterval?> _chooseAudioInterval(int durationMs) async {
+  Future<SubtitleAudioInterval?> _chooseAudioInterval(int durationMs, {int initialSpanMs = 60000,
+      int? maximumSpanMs, String? title, String? description}) async {
     final copy = Translations.of(context).videoControls.subtitleAiControls;
     if (durationMs <= 0) throw FormatException(copy.audioDurationUnavailable);
     final playbackPositionMs = widget.player.currentPosition.inMilliseconds;
-    final latestStartMs = (durationMs - 60000).clamp(0, durationMs - 1).toInt();
+    final latestStartMs = (durationMs - initialSpanMs).clamp(0, durationMs - 1).toInt();
     final startMs = playbackPositionMs.clamp(0, latestStartMs).toInt();
-    final endMs = (startMs + 60000).clamp(startMs + 1, durationMs).toInt();
+    final endMs = (startMs + initialSpanMs).clamp(startMs + 1, durationMs).toInt();
     final startController = TextEditingController(text: SubtitleAudioInterval.formatTimecode(startMs));
     final endController = TextEditingController(text: SubtitleAudioInterval.formatTimecode(endMs));
     String? error;
@@ -674,12 +675,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         context: context,
         builder: (dialogContext) => StatefulBuilder(
           builder: (dialogContext, setDialogState) => AlertDialog(
-            title: Text(copy.audioIntervalTitle),
+            title: Text(title ?? copy.audioIntervalTitle),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(copy.audioIntervalDescription),
+                Text(description ?? copy.audioIntervalDescription),
                 const SizedBox(height: 12),
                 TextField(
                   controller: startController,
@@ -707,7 +708,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     endController.text,
                     durationMs: durationMs,
                   );
-                  if (interval == null) {
+                  if (interval == null || maximumSpanMs != null && interval.endMs - interval.startMs > maximumSpanMs) {
                     setDialogState(() => error = copy.invalidAudioInterval);
                     return;
                   }
@@ -915,11 +916,23 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         throw const FormatException('The companion did not declare its translation destination.');
       }
       List<SubtitleCue> cues = const [];
-      if (task == 'align' || task == 'singing_align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || task == 'scene_track' || task == 'sound_localize' || task == 'vocal_notes' || textTask) {
+      if (task == 'align' || task == 'singing_align' || task == 'completeness' || task == 'dub_mix' || task == 'scene_review' || task == 'scene_track' || task == 'sound_localize' || task == 'vocal_notes' || task == 'caption_reconstruct' || textTask) {
         final selected = await _pickSubtitleCues();
         if (selected == null || !mounted) return;
         cues = selected.$1;
         if (task == 'scene_track' && cues.length > 5000) throw const FormatException('Whole-file tracking accepts at most 5000 cues.');
+      }
+      if (task == 'caption_reconstruct') {
+        final interval = await _chooseAudioInterval(cues.map((c) => c.endMs).reduce((a, b) => a > b ? a : b),
+          initialSpanMs: 30000, maximumSpanMs: 30000, title: t.videoSettings.subtitleReconstruction,
+          description: t.videoSettings.subtitleReconstructionInterval);
+        if (interval == null || !mounted) return;
+        if (interval.endMs - interval.startMs > 30000) throw const FormatException('Choose at most thirty seconds for the video derivative.');
+        cues = [for (final cue in cues) if (cue.startMs < interval.endMs && cue.endMs > interval.startMs)
+          SubtitleCue(index: cue.index, cueId: cue.stableId, text: cue.text,
+            startMs: cue.startMs < interval.startMs ? interval.startMs : cue.startMs,
+            endMs: cue.endMs > interval.endMs ? interval.endMs : cue.endMs)];
+        if (cues.isEmpty || cues.length > 120) throw const FormatException('Choose an interval containing 1–120 caption cues.');
       }
       String? path;
       var timelineOffsetMs = 0;
@@ -977,6 +990,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var sceneAudioEvidence = false;
       var sceneMotionTracking = false;
       var signMotionTracking = false;
+      var reconstructionConsent = false;
       var sceneObjectTracking = false;
       var lyricSyllables = <String, List<String>>{};
       var lyricPitchEvidence = false;
@@ -985,8 +999,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var track = 0;
       var subtitleTrack = 0, bitmapTail = 2000;
       var translationMode = 'faithful', scriptConversion = 's2t', readingMode = 'hiragana';
-      var cropTop = 0.65;
-      var cropLeft = 0.0, cropWidth = 1.0, cropHeight = 0.35;
+      var cropTop = task == 'caption_reconstruct' ? .8 : .65;
+      var cropLeft = 0.0, cropWidth = 1.0, cropHeight = task == 'caption_reconstruct' ? .15 : .35;
       final accepted = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, update) => AlertDialog(
           title: Text(task == 'vocal_notes' ? aiCopy.sendVocalNotesTitle
@@ -1105,7 +1119,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               DropdownButtonFormField<int>(initialValue: track, decoration: InputDecoration(labelText: aiCopy.companionAudioStreamLabel),
                 items: List.generate(16, (i) => DropdownMenuItem(value: i, child: Text(aiCopy.companionAudioStreamItem(index: i)))),
                 onChanged: (value) => update(() => track = value ?? 0)),
-              SwitchListTile(title: Text(aiCopy.companionPreprocessTitle), subtitle: Text(aiCopy.companionPreprocessDescription),
+              if (task != 'caption_reconstruct') SwitchListTile(title: Text(aiCopy.companionPreprocessTitle), subtitle: Text(aiCopy.companionPreprocessDescription),
                 value: preprocess, onChanged: (value) => update(() => preprocess = value)),
             ],
             if (task == 'signs' && capabilities['signMotionTracking'] == true)
@@ -1113,15 +1127,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 title: Text(t.videoSettings.subtitleSignMotion),
                 subtitle: Text(t.videoSettings.subtitleSignMotionHelp),
                 value: signMotionTracking, onChanged: (v) => update(() => signMotionTracking = v)),
-            if (task == 'ocr' || task == 'signs') ...[
-              Text(aiCopy.companionBurnedOcrDescription),
+            if (task == 'ocr' || task == 'signs' || task == 'caption_reconstruct') ...[
+              Text(task == 'caption_reconstruct' ? t.videoSettings.subtitleReconstructionHelp : aiCopy.companionBurnedOcrDescription),
               Text(aiCopy.companionCropDescription(percent: (cropTop * 100).round())),
               Slider(value: cropTop, min: 0, max: 0.9, divisions: 18, label: '${(cropTop * 100).round()}%',
                 onChanged: (value) => update(() {
                   cropTop = value;
                   cropHeight = cropHeight.clamp(0.05, 1 - cropTop).toDouble();
                 })),
-              if (task == 'signs') ...[
+              if (task == 'signs' || task == 'caption_reconstruct') ...[
                 Text(t.videoSettings.subtitleCropLeft(percent: (cropLeft * 100).round())),
                 Slider(value: cropLeft, min: 0, max: .9, divisions: 18, onChanged: (value) => update(() {
                   cropLeft = value;
@@ -1135,6 +1149,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   onChanged: (value) => update(() => cropHeight = value)),
               ],
             ],
+            if (task == 'caption_reconstruct') CheckboxListTile(contentPadding: EdgeInsets.zero,
+              value: reconstructionConsent, title: Text(t.videoSettings.subtitleReconstructionConsent),
+              onChanged: (value) => update(() => reconstructionConsent = value == true)),
             if (task == 'bitmap_ocr' || task == 'extract_text') ...[
               if (task == 'bitmap_ocr') Text(aiCopy.companionBitmapOcrDescription),
               DropdownButtonFormField<int>(initialValue: subtitleTrack, decoration: InputDecoration(labelText: aiCopy.companionSubtitleStreamLabel),
@@ -1150,7 +1167,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             Text(aiCopy.companionHostBackends(tasks: (capabilities['tasks'] as List).join(', '))),
           ]))),
           actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(Translations.of(dialogContext).common.cancel)),
-            FilledButton(onPressed: task == 'vocal_notes' && !isolatedLeadVocal ? null : () => Navigator.pop(dialogContext, true),
+            FilledButton(onPressed: task == 'vocal_notes' && !isolatedLeadVocal || task == 'caption_reconstruct' && !reconstructionConsent ? null : () => Navigator.pop(dialogContext, true),
               child: Text(task == 'translate_model' ? aiCopy.companionForwardTextAndTranslate : aiCopy.companionSendAndProcess))],
         ),
       ));
@@ -1162,11 +1179,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
         targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
-        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, sceneAudioEvidence: sceneAudioEvidence, sceneMotionTracking: sceneMotionTracking, signMotionTracking: signMotionTracking, crop: task == 'signs' ? [cropLeft, cropTop, cropWidth, cropHeight] : [0, cropTop, 1, 1 - cropTop],
+        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, sceneAudioEvidence: sceneAudioEvidence, sceneMotionTracking: sceneMotionTracking, signMotionTracking: signMotionTracking, crop: task == 'signs' || task == 'caption_reconstruct' ? [cropLeft, cropTop, cropWidth, cropHeight] : [0, cropTop, 1, 1 - cropTop],
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         lyricSyllables: lyricSyllables, lyricPitchEvidence: lyricPitchEvidence,
         microphoneArray: microphoneArray,
-        isolatedLeadVocal: isolatedLeadVocal,
+        isolatedLeadVocal: isolatedLeadVocal, reconstructionConsent: reconstructionConsent,
         sceneObjectTracking: sceneObjectTracking,
         sceneDetectorFingerprint: sceneObjectTracking || task == 'scene_track'
             ? (capabilities['sceneObjectDetector'] as Map?)?['fingerprint'] as String? : null,
@@ -1212,6 +1229,20 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           isCurrent: () => mounted && _operationIdentityIsCurrent));
         if (reviewed != true || !mounted) return;
         _requireCurrentOperationIdentity();
+      }
+      if (result.artifacts.isNotEmpty && result.artifacts.single.name == 'caption-reconstruction.zip') {
+        final accepted = await showDialog<bool>(context: context, builder: (context) => AlertDialog(
+          title: Text(t.videoSettings.subtitleReconstruction), content: Text(t.videoSettings.subtitleReconstructionExportHelp),
+          actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t.common.cancel)),
+            FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(t.videoSettings.subtitleReconstructionExport))]));
+        if (accepted != true || !mounted) return;
+        _requireCurrentOperationIdentity();
+        final artifact = result.artifacts.single;
+        final bytes = await service.artifactBytes(job['id'] as String, artifact);
+        _requireCurrentOperationIdentity();
+        await SubtitleArtifactExport.saveFile(dialogTitle: t.videoSettings.subtitleReconstructionExport,
+          fileName: artifact.name, bytes: bytes, type: FileType.custom, allowedExtensions: const ['zip']);
+        return;
       }
       if (result.artifacts.isNotEmpty && result.artifacts.single.name == 'scene-tracks.jsonl') {
         final artifact = result.artifacts.single;
@@ -4247,6 +4278,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ('completeness', aiCopy.companionCompleteness),
             ('extract_text', aiCopy.companionExtractText),
             ('signs', aiCopy.companionSigns),
+            ('caption_reconstruct', t.videoSettings.subtitleReconstruction),
             ('align', aiCopy.companionAlign),
             ('singing_align', aiCopy.companionSingingAlign),
             ('vocal_notes', aiCopy.companionVocalNotes),

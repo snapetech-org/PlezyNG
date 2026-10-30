@@ -525,3 +525,12 @@ position/scale offsets now follow the pinned behavior source's clamp order.
 WebGL sprite sampling also uses the shared filter and address profile. The
 corrections and existing source assertions remain unexecuted; pixel parity is
 still open.
+
+
+## 2026-10-30 current sprite source contract
+
+The exact MilkRust source lock is `60b65d0d4ef1cea5130843628880d9155e085097`, ABI v2. Saved-sprite equation
+clamps, offsets and repeat multiplication now match the recorded behavior
+source, and the sprite implementation documentation matches the shared native
+and WebGL sampler profile. The changes have not been built, run, or reference
+compared.

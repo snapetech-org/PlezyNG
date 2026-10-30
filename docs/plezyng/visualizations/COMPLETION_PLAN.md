@@ -793,3 +793,8 @@ MilkRust PR #20 commit 7a83ea328be14c4c9acddb24079ef8ac2658b45a now lowers scala
 ## 2026-10-30 immutable local resource-struct alias source continuation
 
 MilkRust PR #20 now includes commit 1cfb07306f0ced0b93f5d8aa13e4d5f55782b103 (ABI v2). A local resource-only struct copy initialized directly from a matching global instance is normalized to that binding before opaque-resource specialization. The rewrite is restricted to direct declarations in a function or shader body and rejects mutation, shadowing, mixed structs, computed/aggregate initializers and uninitialized locals. PlezyNG pins this source revision. No compiler, build, test, browser, render or device run was performed for this checkpoint.
+
+
+## 2026-10-30 statically indexed local opaque-array source continuation
+
+MilkRust PR #20 now includes commit 467adacec200d0fd5551cf5b5c9dee9d0621f750 (ABI v2). Fully initialized function-body or shader-body opaque arrays of 1–15 entries normalize to matching global resource/sampler bindings when every use has a literal index. Computed/partial initialization, dynamic indices, writes, shadowing and nested-scope declarations remain unsupported. PlezyNG pins this revision. No compiler, build, test, render or device run was performed for this checkpoint.

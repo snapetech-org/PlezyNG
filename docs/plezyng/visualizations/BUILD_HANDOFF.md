@@ -1,12 +1,12 @@
 # Visualization build and release handoff
 
-This document describes the committed entrypoints. It is not an execution log.
-The user has authorized builds for this continuation; do not apply the earlier
-source-only restriction. Build/package jobs must run on compatible private
-ephemeral JIT, with existing trust isolation. No build or test has run because
-the connected GitHub tool exposes no workflow-dispatch action. The CI and build
-workflows in this repository require manual dispatch. Do not use public runners
-or publish releases solely because this handoff exists.
+The requested code gate is complete; see [SOURCE_COMPLETION.md](SOURCE_COMPLETION.md).
+This document describes the next validation and delivery work, not an execution
+log. The latest user instruction does not require tests for code completion.
+No build, test, converter run, driver capture or device qualification is claimed.
+Build/test/package/release execution must still use compatible private ephemeral
+JIT runners and existing trust isolation. Release publication remains gated by
+actual evidence and provisioning.
 
 ## Runtime build inputs
 
@@ -522,6 +522,21 @@ PlezyNG locks MilkRust 7a83ea328be14c4c9acddb24079ef8ac2658b45a. The connected G
 ## 2026-10-30 immutable local resource-struct alias source continuation
 
 MilkRust PR #20 now includes commit 1cfb07306f0ced0b93f5d8aa13e4d5f55782b103 (ABI v2). A local resource-only struct copy initialized directly from a matching global instance is normalized to that binding before opaque-resource specialization. The rewrite is restricted to direct declarations in a function or shader body and rejects mutation, shadowing, mixed structs, computed/aggregate initializers and uninitialized locals. PlezyNG pins this source revision. No compiler, build, test, browser, render or device run was performed for this checkpoint.
+
+## Completion checkpoint validation inputs
+
+The MilkRust pin `f4d2e8c5c009f915cc356b5f29ab8ff382720d0f` includes the declarative Butterchurn converter,
+its numeric VM intrinsics, schema/profile validation and Python/Rust regression
+sources. The Linux private-JIT CI lane now discovers `tools/tests/test_*.py`.
+The candidate workflow converts supported equations and shader stages, preserving
+a rejection row for each unsupported source. Run it before updating any converted
+count; no generation count changed during source implementation.
+
+App regressions cover profile-aware engine negotiation and four-slot fragment
+composition. Exercise these with the earlier resumable-download, texture-pack,
+native-quality, isolation and lifecycle sources. Produce real binary digests
+and qualification reports before promotion; source completion does not fill
+those fields.
 
 
 ## 2026-10-30 statically indexed local opaque-array source continuation

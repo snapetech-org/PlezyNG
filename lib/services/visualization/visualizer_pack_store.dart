@@ -45,11 +45,15 @@ class VisualizerPresetFile {
     this.license = '',
     this.notice = '',
     this.thumbnailPath,
+    this.requiresMilkRust = false,
   });
   final String id, title, path, root, libraryPath, packName, author, license, notice;
   final List<String> tags;
   final String? thumbnailPath;
-  bool get supportsProjectM => p.extension(path).toLowerCase() == '.milk';
+  final bool requiresMilkRust;
+  bool get isClassicPreset => p.extension(path).toLowerCase() == '.milk';
+  bool get supportsProjectM => isClassicPreset && !requiresMilkRust;
+  bool get supportsMilkRust => isClassicPreset || p.extension(path).toLowerCase() == '.milk2';
   String get searchText => '$title $packName $author ${tags.join(' ')}'.toLowerCase();
 }
 
@@ -414,6 +418,9 @@ class VisualizerPackStore {
       final relative = safeArchivePath(item['file'] as String);
       final file = await _resolvePreset(resolved.path, relative);
       final asset = assets[relative];
+      VisualizerContentLimits.checkEngineRequirement(item);
+      final requiresMilkRust = item['requiredEngine'] == 'milkrust' ||
+          await _presetRequiresMilkRust(file);
       String? thumbnail;
       if (item['thumbnail'] is String) {
         try {
@@ -443,6 +450,7 @@ class VisualizerPackStore {
           license: asset?['license'] is String ? asset!['license'] as String : manifest['license'] as String,
           notice: manifest['contentNotice'] as String,
           thumbnailPath: thumbnail,
+          requiresMilkRust: requiresMilkRust,
         ),
       );
     }
@@ -455,6 +463,7 @@ class VisualizerPackStore {
     final root = await Directory(p.join(library, 'imports')).resolveSymbolicLinks();
     final file = await _resolvePreset(root, name);
     return VisualizerPresetFile(
+      requiresMilkRust: await _presetRequiresMilkRust(file),
       id: 'preset:$name',
       title: p.basenameWithoutExtension(name).replaceFirst(RegExp(r'^[a-f0-9]{12,64}-'), ''),
       path: file,
@@ -602,6 +611,11 @@ class VisualizerPackStore {
     result.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
     return result;
   }
+
+  static Future<bool> _presetRequiresMilkRust(String path) async =>
+      VisualizerContentLimits.presetRequiresMilkRust(
+        await _readBounded(File(path), VisualizerContentLimits.maxPresetBytes),
+      );
 
   static Future<String> _resolvePreset(String root, String relative) async {
     final safe = safeArchivePath(relative);
@@ -1498,6 +1512,7 @@ class VisualizerPackStore {
       if (preset is! Map<String, dynamic> || preset['file'] is! String) {
         throw const VisualizerPackException('A preset entry is malformed.');
       }
+      VisualizerContentLimits.checkEngineRequirement(preset);
       final relative = safeArchivePath(preset['file'] as String);
       if (!presetPaths.add(relative) ||
           !assetPaths.contains(relative) ||

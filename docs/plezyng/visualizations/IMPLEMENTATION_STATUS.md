@@ -6,13 +6,15 @@ pins the current MilkRust PR #20 source revision in `native/visualizer/sources.l
 contract is in that file. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
-**This is implemented source, not a verified working release or universal
-compatibility result.** The user's 2026-10-30 instruction supersedes the earlier
-source-only restriction and authorizes private builds. No build or test has run:
-MilkRust PR #20 has no Actions run for the current source revision, and PlezyNG's
-CI and build workflows require `workflow_dispatch`; the connected GitHub tool
-exposes no workflow-dispatch action. Only compatible private ephemeral JIT
-runners may be used. Compiled behavior and device fidelity remain unknown.
+**Code implementation: 100% complete for the documented legacy profile and
+app workflow.** [SOURCE_COMPLETION.md](SOURCE_COMPLETION.md) maps the completed
+source to V0–V10 and defines the separate pending validation/delivery gates.
+The user's current instruction does not require test execution to close the
+code gate. No build, test, conversion run or device run is claimed. Source
+completion does not establish universal compatibility or a working release.
+All executable acceptance work remains assigned to compatible private
+ephemeral JIT runners.
+
 
 ## Source delivered
 
@@ -916,6 +918,22 @@ MilkRust PR #20 commit 7a83ea328be14c4c9acddb24079ef8ac2658b45a now lowers scala
 ## 2026-10-30 immutable local resource-struct alias source continuation
 
 MilkRust PR #20 now includes commit 1cfb07306f0ced0b93f5d8aa13e4d5f55782b103 (ABI v2). A local resource-only struct copy initialized directly from a matching global instance is normalized to that binding before opaque-resource specialization. The rewrite is restricted to direct declarations in a function or shader body and rejects mutation, shadowing, mixed structs, computed/aggregate initializers and uninitialized locals. PlezyNG pins this source revision. No compiler, build, test, browser, render or device run was performed for this checkpoint.
+
+## 2026-10-30 source completion closure
+
+The app pins MilkRust `f4d2e8c5c009f915cc356b5f29ab8ff382720d0f` (ABI v2), including bounded Butterchurn numeric
+equations and generated-GLSL conversion into the typed compiler. The converter
+retains both shader stages, original/transformed hashes and a portable
+`butterchurn-numeric-v1` requirement. The app rejects unknown requirements,
+keeps converted presets on the explicitly selected MilkRust engine, and
+preserves this requirement through loose-file and ZIP round trips.
+
+Durable resumable downloads, adaptive native quality, immutable shared texture
+dependencies, texture-only packs, alias resolution, optional bounded previews,
+ZIP/preset/assets/notices export and shape/wave composition/export are committed.
+Composition now stops at the four supported custom-object slots. The code gate
+is complete; the build, conformance, corpus, device, artifact and publication
+gates remain unrun/unfulfilled as listed in SOURCE_COMPLETION.md.
 
 
 ## 2026-10-30 statically indexed local opaque-array source continuation

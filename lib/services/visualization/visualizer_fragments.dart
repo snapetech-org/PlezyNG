@@ -54,8 +54,8 @@ abstract final class VisualizerFragments {
     }
     final objects = parse(source, kind), lines = <String>[parent, '; User-composed $kind fragments'];
     for (final key in objects.keys.toList()..sort()) {
-      final available = List.generate(64, (i) => i).where((index) => !occupied.contains(index));
-      if (available.isEmpty) throw const FormatException('The preset has no free object slots.');
+      final available = List.generate(4, (i) => i).where((index) => !occupied.contains(index));
+      if (available.isEmpty) throw const FormatException('The preset has no free slots among its four supported objects.');
       final index = available.first;
       occupied.add(index);
       lines.add('${kind}code_${index}_enabled=1');

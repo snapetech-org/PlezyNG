@@ -11,7 +11,7 @@ class VisualizerCapabilities {
   final String reason;
   final String engine;
   bool accepts(VisualizerPresetFile preset) =>
-      preset.supportsProjectM || (engine.startsWith('milkrust') && preset.path.toLowerCase().endsWith('.milk2'));
+      engine.startsWith('milkrust') ? preset.supportsMilkRust : preset.supportsProjectM;
 }
 
 /// Control and diagnostics only. PCM and pixel buffers stay in the native host.
@@ -34,7 +34,7 @@ class VisualizerSession extends ChangeNotifier {
   String get engine => _engine;
   String get engineLabel => _engine == 'milkrust' ? 'MilkRust native' : 'projectM 4.1.8';
   bool accepts(VisualizerPresetFile preset) =>
-      preset.supportsProjectM || (_engine == 'milkrust' && preset.path.toLowerCase().endsWith('.milk2'));
+      _engine == 'milkrust' ? preset.supportsMilkRust : preset.supportsProjectM;
 
   Future<void> setEngine(String engine) => _enqueue(() async {
     if (_closed || _engine == engine) return;

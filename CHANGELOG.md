@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Complete visualizer source integration: native MilkRust and saved MilkDrop 3 patterns/sprites, bounded Butterchurn conversion, resumable preset downloads, shared texture packs, preset/fragment ZIP workflows, and adaptive render quality. Builds, device qualification, runtime artifact promotion and signed-catalog release remain pending.
+
 - Fix the Linux native runner build with Flutter's mutable `FlValue` accessors.
 - Quote the Windows Flutter cache key so GitHub can parse and dispatch CI workflows.
 - Prepare the checksum-verified Flutter SDK in each Mac JIT job's temporary APFS workspace with resumable parallel downloads.

@@ -245,7 +245,9 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
               if (preset.license.isNotEmpty) 'License: ${preset.license}',
               if (preset.notice.isNotEmpty) 'Content notice: ${preset.notice}',
               if (preset.tags.isNotEmpty) 'Tags: ${preset.tags.join(', ')}',
-              preset.supportsProjectM
+              preset.requiresMilkRust
+                  ? 'Converted preset. Select MilkRust to use its numeric conversion profile.'
+                  : preset.supportsProjectM
                   ? 'Classic .milk candidate. Rendering fidelity depends on the selected engine and is not yet qualified.'
                   : 'MilkRust implements the documented saved .milk2 patterns and sprite fields. Pixel parity is not yet qualified; unsupported shaders and trailer extensions fail with diagnostics.',
               if (!widget.capability.available) widget.capability.reason,
@@ -420,7 +422,7 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
                                 },
                                 itemBuilder: (_) => [
                                   const PopupMenuItem(value: 'preset', child: Text('Export preset, assets and notices')),
-                                  if (preset.supportsProjectM) ...[
+                                  if (preset.isClassicPreset) ...[
                                     const PopupMenuItem(value: 'compose', child: Text('Add shape or wave to a new copy')),
                                     const PopupMenuItem(value: 'shape', child: Text('Export shape fragments')),
                                     const PopupMenuItem(value: 'wave', child: Text('Export wave fragments')),

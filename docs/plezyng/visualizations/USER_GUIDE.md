@@ -85,3 +85,19 @@ may fetch an authorized required texture pack; local-only dependencies must be
 imported first. Remove dependent preset packs before deleting their textures.
 A changed dependency must use a new version while installed presets reference
 the old bytes. Available manifest thumbnails appear beside preset titles.
+
+## Converted presets and fragment limits
+
+Presets converted from Butterchurn JSON carry a MilkRust requirement. Select
+MilkRust before loading them; projectM selection will show them as unavailable.
+The requirement stays with the preset when exported to ZIP and re-imported.
+Unknown conversion-profile versions are rejected with a clear import error.
+
+A classic preset has four custom shape slots and four custom wave slots.
+Composition creates a new private copy and uses an unused slot. If all four
+slots already contain records, composition reports that there is no free slot.
+Existing records, including disabled ones, are preserved.
+
+The source implementation is complete for the documented workflow. Installed
+builds, physical-device behavior and downloadable release availability still
+depend on the build/qualification/promotion steps in BUILD_HANDOFF.md.

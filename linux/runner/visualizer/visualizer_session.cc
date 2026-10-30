@@ -356,7 +356,7 @@ struct VisualizerSession::Impl {
     bool stopping = false, paused = true;
     int width = 768, height = 432;
     double transition_seconds = 3;
-    bool mouse_down = false;
+    bool mouse_down = false, mouse_click_pending = false;
     double mouse_x = 0.5, mouse_y = 0.5, mouse_dx = 0, mouse_dy = 0;
     std::string path, root, state = "starting", error;
     uint64_t preset_serial = 0;
@@ -419,7 +419,8 @@ struct VisualizerSession::Impl {
             w = width;
             h = height;
             transition = transition_seconds;
-            mouse_down = this->mouse_down;
+            mouse_down = this->mouse_down || this->mouse_click_pending;
+            this->mouse_click_pending = false;
             mouse_x = this->mouse_x;
             mouse_y = this->mouse_y;
             mouse_dx = this->mouse_dx;
@@ -626,7 +627,13 @@ void VisualizerSession::SetMouseState(bool down, double x, double y, double dx, 
     throw std::runtime_error("Invalid native mouse input.");
   std::lock_guard<std::mutex> lock(impl_->work->mutex);
   if (impl_->work->stopping) return;
-  impl_->work->mouse_down = down;
+  if (impl_->work->paused) {
+    impl_->work->mouse_down = false;
+    impl_->work->mouse_click_pending = false;
+  } else {
+    if (down && !impl_->work->mouse_down) impl_->work->mouse_click_pending = true;
+    impl_->work->mouse_down = down;
+  }
   impl_->work->mouse_x = std::clamp(x, 0.0, 1.0);
   impl_->work->mouse_y = std::clamp(y, 0.0, 1.0);
   impl_->work->mouse_dx = std::clamp(impl_->work->mouse_dx + dx, -1.0, 1.0);
@@ -638,6 +645,7 @@ void VisualizerSession::SetPaused(bool paused) {
     impl_->work->paused = paused;
     if (paused) {
       impl_->work->mouse_down = false;
+      impl_->work->mouse_click_pending = false;
       impl_->work->mouse_dx = 0;
       impl_->work->mouse_dy = 0;
     }

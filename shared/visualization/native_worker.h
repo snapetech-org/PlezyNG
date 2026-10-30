@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
+#include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <condition_variable>
 #include <memory>
 #include <mutex>
@@ -97,6 +99,17 @@ class NativeWorker {
       }
       condition_.notify_all();
     }
+    void SetMouseState(bool down, double x, double y, double dx, double dy) {
+      if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(dx) || !std::isfinite(dy))
+        throw std::runtime_error("Invalid native mouse input.");
+      std::lock_guard<std::mutex> lock(mutex_);
+      if (stopping_) return;
+      mouse_down_ = down;
+      mouse_x_ = std::clamp(x, 0.0, 1.0);
+      mouse_y_ = std::clamp(y, 0.0, 1.0);
+      mouse_dx_ = std::clamp(dx, -1.0, 1.0);
+      mouse_dy_ = std::clamp(dy, -1.0, 1.0);
+    }
     NativeStatus Status() {
       std::lock_guard<std::mutex> lock(mutex_);
       if (watchdog_.Expired()) {
@@ -121,8 +134,9 @@ class NativeWorker {
     Publish publish_;
     mutable std::mutex mutex_;
     std::condition_variable condition_;
-    bool stopping_ = false, paused_ = true;
+    bool stopping_ = false, paused_ = true, mouse_down_ = false;
     int width_ = 768, height_ = 432;
+    double mouse_x_ = 0.5, mouse_y_ = 0.5, mouse_dx_ = 0, mouse_dy_ = 0;
     uint64_t serial_ = 0;
     double transition_seconds_ = 3;
     std::string path_, root_;
@@ -173,6 +187,8 @@ class NativeWorker {
           uint64_t serial;
           int width, height;
           double transition_seconds;
+          bool mouse_down;
+          double mouse_x, mouse_y, mouse_dx, mouse_dy;
           {
             std::unique_lock<std::mutex> lock(mutex_);
             if (paused_) {
@@ -187,6 +203,13 @@ class NativeWorker {
             width = width_;
             height = height_;
             transition_seconds = transition_seconds_;
+            mouse_down = mouse_down_;
+            mouse_x = mouse_x_;
+            mouse_y = mouse_y_;
+            mouse_dx = mouse_dx_;
+            mouse_dy = mouse_dy_;
+            mouse_dx_ = 0;
+            mouse_dy_ = 0;
           }
           RenderWatchdog::Operation operation(watchdog_);
           const auto started = Clock::now();
@@ -244,6 +267,7 @@ class NativeWorker {
               frame->height = height;
               frame->preset_serial = serial;
               frame->audio_generation = generation;
+              engine->SetMouseState(mouse_down, mouse_x, mouse_y, mouse_dx, mouse_dy);
               engine->Capture(width, height, elapsed, frame->rgba);
               transition.Apply(frame->rgba, width, height, elapsed);
               bool current;
@@ -298,6 +322,9 @@ class NativeWorker {
   }
   void Resize(int width, int height) { state_->Resize(width, height); }
   void Pause(bool paused) { state_->Pause(paused); }
+  void SetMouseState(bool down, double x, double y, double dx, double dy) {
+    state_->SetMouseState(down, x, y, dx, dy);
+  }
   NativeStatus Status() const { return state_->Status(); }
 };
 }  // namespace plezy::visualization

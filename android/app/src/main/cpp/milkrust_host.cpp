@@ -397,6 +397,14 @@ extern "C" JNIEXPORT void JNICALL JNI_NAME(resize)(JNIEnv* env, jobject, jlong i
     Error(env, ex);
   }
 }
+extern "C" JNIEXPORT void JNICALL JNI_NAME(setMouseState)(
+    JNIEnv* env, jobject, jlong id, jboolean down, jdouble x, jdouble y, jdouble dx, jdouble dy) {
+  try {
+    Find(id)->worker->SetMouseState(down == JNI_TRUE, x, y, dx, dy);
+  } catch (const std::exception& ex) {
+    Error(env, ex);
+  }
+}
 extern "C" JNIEXPORT void JNICALL JNI_NAME(pause)(JNIEnv* env, jobject, jlong id, jboolean paused) {
   try {
     Find(id)->worker->Pause(paused);

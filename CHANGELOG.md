@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Add a private-JIT validation mode that builds only the Windows ARM64 app artifact without packaging or creating a release.
 - Install the GStreamer runtime plugins required to build Linux release bundles with Steam decoder support.
 - Provision native Temurin JDK 21 on private Windows CI and release runners so CMake can
   resolve JNI.

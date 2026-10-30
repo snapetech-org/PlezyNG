@@ -2309,7 +2309,7 @@ class SourceStreamGateway {
       var response = await ref.adapter.transport.send(
         'GET',
         lease.uri,
-        headers: {...lease.headers, 'Range': ?range},
+        headers: {...lease.headers, 'Range': ?range, if (range != null) 'Accept-Encoding': 'identity'},
         redirects: true,
         abort: _abort.future,
       );
@@ -2321,13 +2321,20 @@ class SourceStreamGateway {
         response = await ref.adapter.transport.send(
           'GET',
           lease.uri,
-          headers: {...lease.headers, 'Range': ?range},
+          headers: {...lease.headers, 'Range': ?range, if (range != null) 'Accept-Encoding': 'identity'},
           redirects: true,
           abort: _abort.future,
         );
       }
       if (response.statusCode < 200 || response.statusCode >= 300) await response.stream.listen(null).cancel();
       SourceTransport.check(response.statusCode);
+      // Range validators and offsets must describe the stored representation.
+      // HttpClient may already have inflated an unexpected encoded response;
+      // never forward those bytes as the original range to hashes/decoders.
+      if (range != null && (response.headers['content-encoding'] ?? 'identity').toLowerCase().trim() != 'identity') {
+        await response.stream.listen(null).cancel();
+        throw const SourceException(SourceFailure.invalidData);
+      }
       request.response.statusCode = response.statusCode;
       request.response.headers.set('Cache-Control', 'no-store');
       for (final name in [
@@ -2570,7 +2577,7 @@ class SourceStreamGateway {
       var upstream = await transport.send(
         request.method,
         currentUri,
-        headers: {...currentHeaders, HttpHeaders.rangeHeader: ?range},
+        headers: {...currentHeaders, HttpHeaders.rangeHeader: ?range, if (range != null) 'Accept-Encoding': 'identity'},
         redirects: true,
         abort: _abort.future,
       );
@@ -2590,10 +2597,14 @@ class SourceStreamGateway {
         upstream = await transport.send(
           request.method,
           currentUri,
-          headers: {...currentHeaders, HttpHeaders.rangeHeader: ?range},
+          headers: {...currentHeaders, HttpHeaders.rangeHeader: ?range, if (range != null) 'Accept-Encoding': 'identity'},
           redirects: true,
           abort: _abort.future,
         );
+      }
+      if (range != null && (upstream.headers['content-encoding'] ?? 'identity').toLowerCase().trim() != 'identity') {
+        await upstream.stream.listen(null).cancel();
+        throw const SourceException(SourceFailure.invalidData);
       }
       request.response.statusCode = upstream.statusCode;
       request.response.headers.set(HttpHeaders.cacheControlHeader, 'no-store');

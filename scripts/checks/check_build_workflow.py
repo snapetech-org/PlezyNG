@@ -28,6 +28,9 @@ WINDOWS_SIMDUTF_DOWNLOADER = (
 WINDOWS_WINSPARKLE_DOWNLOADER = (
     WORKFLOW.parents[2] / "windows/tool/download-pinned-winsparkle.ps1"
 )
+WINDOWS_SDL3_DOWNLOADER = (
+    WORKFLOW.parents[2] / "windows/tool/download-pinned-sdl3.ps1"
+)
 WINDOWS_TOOLCHAIN_LOCK = WORKFLOW.parents[2] / "windows/tool/build-toolchain.lock.json"
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
@@ -194,10 +197,17 @@ windows_winsparkle_downloader = (
     else ""
 )
 windows_winsparkle_downloader_normalized = windows_winsparkle_downloader.replace("\\", "/")
+windows_sdl3_downloader = (
+    WINDOWS_SDL3_DOWNLOADER.read_text(encoding="utf-8")
+    if WINDOWS_SDL3_DOWNLOADER.is_file()
+    else ""
+)
+windows_sdl3_downloader_normalized = windows_sdl3_downloader.replace("\\", "/")
 windows_toolchain_lock = {}
 if WINDOWS_TOOLCHAIN_LOCK.is_file():
     windows_toolchain_lock = json.loads(WINDOWS_TOOLCHAIN_LOCK.read_text(encoding="utf-8"))
 windows_winsparkle_pin = windows_toolchain_lock.get("winSparkle", {})
+windows_sdl3_pin = windows_toolchain_lock.get("sdl3", {})
 require(
     "URL_HASH SHA256=${MPV_SHA256}" in windows_mpv_block,
     "Windows libmpv fetch must keep URL_HASH enforcement",
@@ -236,6 +246,12 @@ require(
     and "x64/Release/WinSparkle.lib" in windows_cmake
     and "ARM64/Release/WinSparkle.lib" in windows_cmake,
     "Windows CMake must use and validate the checksum-verified WinSparkle source override",
+)
+require(
+    "PLEZYNG_SDL3_SOURCE_DIR" in windows_cmake
+    and "FETCHCONTENT_SOURCE_DIR_SDL3" in windows_cmake
+    and "include/SDL3/SDL.h" in windows_cmake,
+    "Windows CMake must use and validate the checksum-verified SDL3 source override",
 )
 require(bool(windows_mpv_downloader), "missing pinned Windows MPV download helper")
 for expected in (
@@ -298,6 +314,31 @@ for forbidden in ("--ssl-no-revoke", "--insecure"):
         forbidden not in windows_winsparkle_downloader,
         f"Windows WinSparkle bootstrap must not use {forbidden}",
     )
+require(bool(windows_sdl3_downloader), "missing pinned Windows SDL3 download helper")
+for expected in (
+    "build-toolchain.lock.json",
+    "sdl3",
+    "github.com",
+    "/libsdl-org/SDL/releases/download/release-$version/$filename",
+    "HTTPS_PROXY",
+    "--proxy",
+    "--ssl-revoke-best-effort",
+    "Schannel",
+    "Get-FileHash -Algorithm SHA256",
+    "Expand-Archive",
+    "CMakeLists.txt",
+    "include/SDL3/SDL.h",
+    "PLEZYNG_SDL3_SOURCE_DIR=",
+):
+    require(
+        expected in windows_sdl3_downloader_normalized,
+        f"Windows SDL3 bootstrap must keep: {expected}",
+    )
+for forbidden in ("--ssl-no-revoke", "--insecure"):
+    require(
+        forbidden not in windows_sdl3_downloader,
+        f"Windows SDL3 bootstrap must not use {forbidden}",
+    )
 require(
     windows_winsparkle_pin.get("version") == "0.9.2"
     and windows_winsparkle_pin.get("filename") == "WinSparkle-0.9.2.zip"
@@ -306,6 +347,15 @@ require(
     and windows_winsparkle_pin.get("sha256")
     == "2a5facf5a22056edf7afc4d0a4bf05620b7aa7cc1619c3078b281e374cdb9996",
     "Windows WinSparkle release pin must match its verified official 0.9.2 archive",
+)
+require(
+    windows_sdl3_pin.get("version") == "3.2.8"
+    and windows_sdl3_pin.get("filename") == "SDL3-3.2.8.zip"
+    and windows_sdl3_pin.get("url")
+    == "https://github.com/libsdl-org/SDL/releases/download/release-3.2.8/SDL3-3.2.8.zip"
+    and windows_sdl3_pin.get("sha256")
+    == "7f8ff5c8246db4145301bc122601a5f8cef25ee2c326eddb3e88668849c61ddf",
+    "Windows SDL3 release pin must match its verified official 3.2.8 archive",
 )
 windows_download_step = named_step(
     windows, "Download and verify pinned Windows libmpv archive"
@@ -344,14 +394,26 @@ require(
     < windows.find("name: Configure repository updater trust root"),
     "Windows release builds must predownload and verify WinSparkle before CMake configures",
 )
+windows_sdl3_download_step = named_step(
+    windows, "Download and verify pinned Windows SDL3 archive"
+)
+windows_sdl3_download_step_normalized = windows_sdl3_download_step.replace("\\", "/")
+require(
+    "windows/tool/download-pinned-sdl3.ps1" in windows_sdl3_download_step_normalized
+    and windows.find("name: Download and verify pinned Windows WinSparkle archive")
+    < windows.find("name: Download and verify pinned Windows SDL3 archive")
+    < windows.find("name: Configure repository updater trust root"),
+    "Windows release builds must predownload and verify SDL3 before CMake configures",
+)
 require(
     "sourceforge" not in windows_cmake,
     "Windows libmpv fetch must not regress to the unpinned sourceforge download",
 )
 windows_native_cache = named_step(windows, "Cache Windows native dependencies")
 require(
-    "hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json')" in windows_native_cache,
-    "Windows native cache identity must include the mpv-build lock",
+    "hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json', 'windows/tool/build-toolchain.lock.json')"
+    in windows_native_cache,
+    "Windows native cache identity must include the MPV and toolchain locks",
 )
 require(
     re.search(
@@ -451,6 +513,19 @@ require(
     < windows_ci.find("name: Download and verify pinned Windows WinSparkle archive")
     < windows_ci.find("name: Prepare Flutter Windows configuration"),
     "Windows native CI must predownload and verify WinSparkle before CMake configures",
+)
+windows_ci_sdl3_download_step = named_step(
+    windows_ci, "Download and verify pinned Windows SDL3 archive"
+)
+windows_ci_sdl3_download_step_normalized = windows_ci_sdl3_download_step.replace(
+    "\\", "/"
+)
+require(
+    "windows/tool/download-pinned-sdl3.ps1" in windows_ci_sdl3_download_step_normalized
+    and windows_ci.find("name: Download and verify pinned Windows WinSparkle archive")
+    < windows_ci.find("name: Download and verify pinned Windows SDL3 archive")
+    < windows_ci.find("name: Prepare Flutter Windows configuration"),
+    "Windows native CI must predownload and verify SDL3 before CMake configures",
 )
 
 linux = job("build-linux")

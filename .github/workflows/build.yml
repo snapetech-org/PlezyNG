@@ -1614,7 +1614,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ matrix.native_cache_path }}
-          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-windows-native-${{ matrix.arch }}-${{ hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json') }}
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-windows-native-${{ matrix.arch }}-${{ hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json', 'windows/tool/build-toolchain.lock.json') }}
 
       - name: Setup Flutter
         id: setup_flutter_windows
@@ -1710,6 +1710,10 @@ jobs:
       - name: Download and verify pinned Windows WinSparkle archive
         shell: pwsh
         run: .\windows\tool\download-pinned-winsparkle.ps1
+
+      - name: Download and verify pinned Windows SDL3 archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-sdl3.ps1
 
       - name: Configure repository updater trust root
         shell: pwsh

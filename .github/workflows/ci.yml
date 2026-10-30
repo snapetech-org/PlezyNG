@@ -901,6 +901,10 @@ jobs:
         shell: pwsh
         run: .\windows\tool\download-pinned-winsparkle.ps1
 
+      - name: Download and verify pinned Windows SDL3 archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-sdl3.ps1
+
       - name: Prepare Flutter Windows configuration
         shell: pwsh
         run: flutter build windows --debug --config-only --no-pub

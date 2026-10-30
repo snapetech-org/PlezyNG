@@ -18,6 +18,23 @@ if(NOT PLEZYNG_WINSPARKLE_SOURCE_DIR STREQUAL "")
     "Verified local source for the locked auto_updater WinSparkle dependency" FORCE)
 endif()
 
+# universal_gamepad fetches SDL3 with CMake's downloader, which cannot apply
+# Schannel's best-effort certificate revocation option for the private proxy.
+# CI and release jobs prefetch the official pinned archive and pass this source
+# directory to FetchContent instead.
+set(PLEZYNG_SDL3_SOURCE_DIR "$ENV{PLEZYNG_SDL3_SOURCE_DIR}")
+if(NOT PLEZYNG_SDL3_SOURCE_DIR STREQUAL "")
+  file(TO_CMAKE_PATH "${PLEZYNG_SDL3_SOURCE_DIR}" PLEZYNG_SDL3_SOURCE_DIR)
+  if(NOT IS_ABSOLUTE "${PLEZYNG_SDL3_SOURCE_DIR}" OR
+     NOT IS_DIRECTORY "${PLEZYNG_SDL3_SOURCE_DIR}" OR
+     NOT EXISTS "${PLEZYNG_SDL3_SOURCE_DIR}/CMakeLists.txt" OR
+     NOT EXISTS "${PLEZYNG_SDL3_SOURCE_DIR}/include/SDL3/SDL.h")
+    message(FATAL_ERROR "PLEZYNG_SDL3_SOURCE_DIR must name the verified SDL3 3.2.8 source tree")
+  endif()
+  set(FETCHCONTENT_SOURCE_DIR_SDL3 "${PLEZYNG_SDL3_SOURCE_DIR}" CACHE PATH
+    "Verified local source for universal_gamepad's locked SDL3 dependency" FORCE)
+endif()
+
 # libmpv comes from our unified build repository
 # (https://github.com/edde746/mpv-build), which publishes per-commit,
 # content-addressed dev packages in the classic mpv-dev shape:

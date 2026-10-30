@@ -629,8 +629,8 @@ void VisualizerSession::SetMouseState(bool down, double x, double y, double dx, 
   impl_->work->mouse_down = down;
   impl_->work->mouse_x = std::clamp(x, 0.0, 1.0);
   impl_->work->mouse_y = std::clamp(y, 0.0, 1.0);
-  impl_->work->mouse_dx = std::clamp(dx, -1.0, 1.0);
-  impl_->work->mouse_dy = std::clamp(dy, -1.0, 1.0);
+  impl_->work->mouse_dx = std::clamp(impl_->work->mouse_dx + dx, -1.0, 1.0);
+  impl_->work->mouse_dy = std::clamp(impl_->work->mouse_dy + dy, -1.0, 1.0);
 }
 void VisualizerSession::SetPaused(bool paused) {
   {

@@ -93,6 +93,8 @@ class Store:
                 (folder / "ocr_input.png").unlink(missing_ok=True)
                 (folder / 'reconstruction-video.part.mp4').unlink(missing_ok=True)
                 (folder / 'reconstruction-preview.mp4').unlink(missing_ok=True)
+                if job["state"] != "completed":
+                    (folder / 'caption-reconstruction.zip').unlink(missing_ok=True)
                 shutil.rmtree(folder / "bitmap_input", ignore_errors=True)
             except (ValueError, KeyError, OSError, TypeError):
                 # Do not turn malformed records into jobs or execute their paths.
@@ -209,7 +211,9 @@ class Store:
         if type(reconstruction_consent) is not bool or reconstruction_consent and task != 'caption_reconstruct':
             raise ValueError('invalid_reconstruction_consent')
         if task == 'caption_reconstruct':
-            if importlib.util.find_spec('cv2') is None or not shutil.which(os.environ.get('PLEZY_FFPROBE', 'ffprobe')):
+            if (importlib.util.find_spec('cv2') is None or
+                    not shutil.which(os.environ.get('PLEZY_FFMPEG', 'ffmpeg')) or
+                    not shutil.which(os.environ.get('PLEZY_FFPROBE', 'ffprobe'))):
                 raise ValueError('reconstruction_runtime_unavailable')
             validate_reconstruction(value)
         mode = value.get("translationMode", "faithful")
@@ -350,6 +354,8 @@ class Store:
                 (folder / "ocr_input.png").unlink(missing_ok=True)
                 (folder / 'reconstruction-video.part.mp4').unlink(missing_ok=True)
                 (folder / 'reconstruction-preview.mp4').unlink(missing_ok=True)
+                if job["state"] != "completed":
+                    (folder / 'caption-reconstruction.zip').unlink(missing_ok=True)
                 shutil.rmtree(folder / "bitmap_input", ignore_errors=True)
             self.wake.set()
 

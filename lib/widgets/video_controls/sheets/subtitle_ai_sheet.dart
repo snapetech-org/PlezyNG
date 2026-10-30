@@ -1133,7 +1133,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               Slider(value: cropTop, min: 0, max: 0.9, divisions: 18, label: '${(cropTop * 100).round()}%',
                 onChanged: (value) => update(() {
                   cropTop = value;
-                  cropHeight = cropHeight.clamp(0.05, 1 - cropTop).toDouble();
+                  final heightLimit = task == 'caption_reconstruct'
+                      ? ((1 - cropTop) < .2 / cropWidth ? 1 - cropTop : .2 / cropWidth)
+                      : 1 - cropTop;
+                  cropHeight = cropHeight.clamp(0.05, heightLimit).toDouble();
                 })),
               if (task == 'signs' || task == 'caption_reconstruct') ...[
                 Text(t.videoSettings.subtitleCropLeft(percent: (cropLeft * 100).round())),
@@ -1142,10 +1145,22 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   cropWidth = cropWidth.clamp(.05, 1 - cropLeft).toDouble();
                 })),
                 Text(t.videoSettings.subtitleCropWidth(percent: (cropWidth * 100).round())),
-                Slider(value: cropWidth, min: .05, max: 1 - cropLeft,
-                  onChanged: (value) => update(() => cropWidth = value)),
+                Slider(value: cropWidth, min: .05,
+                  max: task == 'caption_reconstruct'
+                      ? ((1 - cropLeft) < .2 / cropHeight ? 1 - cropLeft : .2 / cropHeight)
+                      : 1 - cropLeft,
+                  onChanged: (value) => update(() {
+                    cropWidth = value;
+                    if (task == 'caption_reconstruct') {
+                      final heightLimit = (1 - cropTop) < .2 / cropWidth ? 1 - cropTop : .2 / cropWidth;
+                      cropHeight = cropHeight.clamp(.05, heightLimit).toDouble();
+                    }
+                  })),
                 Text(t.videoSettings.subtitleCropHeight(percent: (cropHeight * 100).round())),
-                Slider(value: cropHeight, min: .05, max: 1 - cropTop,
+                Slider(value: cropHeight, min: .05,
+                  max: task == 'caption_reconstruct'
+                      ? ((1 - cropTop) < .2 / cropWidth ? 1 - cropTop : .2 / cropWidth)
+                      : 1 - cropTop,
                   onChanged: (value) => update(() => cropHeight = value)),
               ],
             ],

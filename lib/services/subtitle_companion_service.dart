@@ -230,8 +230,10 @@ final class SubtitleCompanionService {
         crop.any((n) => !n.isFinite || n < 0 || n > 1) || crop[2] * crop[3] > .2 ||
         crop[0] + crop[2] > 1 || crop[1] + crop[3] > 1 || crop[2] < .05 || crop[3] < .05 ||
         cues.map((c) => c.endMs).reduce((a, b) => a > b ? a : b) -
+            cues.map((c) => c.startMs).reduce((a, b) => a < b ? a : b) < 500 ||
+        cues.map((c) => c.endMs).reduce((a, b) => a > b ? a : b) -
             cues.map((c) => c.startMs).reduce((a, b) => a < b ? a : b) > 30000)) {
-      throw const FormatException('Reconstruction requires explicit consent, a mask within 20% of the frame and up to 120 file-clock cues spanning at most thirty seconds.');
+      throw const FormatException('Reconstruction requires explicit consent, a mask within 20% of the frame and 1–120 file-clock cues spanning 0.5–30 seconds.');
     }
     if (task == 'vocal_notes' && (caps['isolatedVocalNoteProposals'] != true || !isolatedLeadVocal ||
         cues.isEmpty || cues.length > 120 || cues.any((cue) => cue.endMs > 120000 || cue.endMs - cue.startMs > 12000) ||

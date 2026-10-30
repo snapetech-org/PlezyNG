@@ -20,6 +20,7 @@ Implemented adapters:
 | `reading` | pykakasi | Japanese inline kana annotations or original + Hepburn romanization, as a separate SRT |
 | `ocr` | FFmpeg, Tesseract language data | Burned-caption crop sampled at 2 Hz with temporal deduplication and OCR-score metadata |
 | `bitmap_ocr` | Native helper below, FFmpeg development SDK, Tesseract language data | PGS/VobSub display decoding, original RGBA PNG evidence, cue image/text correction and evidence ZIP export |
+| `caption_reconstruct` | OpenCV, FFmpeg, ffprobe | Explicitly consented, short lossy video derivative using a viewer-selected mask and file-clock cues; see [limits and output contents](../../docs/plezyng/subtitles/CAPTION-RECONSTRUCTION.md) |
 
 This is source implementation, not device qualification. `capabilities` reports
 installed adapters with `qualified: false`. A CPU/CUDA invocation is not proof
@@ -256,6 +257,14 @@ installed or executed during implementation.
   path proposes a fixed placement envelope; background texture can be followed
   by mistake, and captions never animate along the path. Motion quality and
   sign identity are not qualified.
+- `caption_reconstruct`: a separate derivative made from a chosen matching
+  media file and 1–120 selected file-clock cues spanning 0.5–30 seconds. The
+  viewer chooses an image mask covering at most 20% of the frame and confirms
+  consent before upload. OpenCV Navier–Stokes spatial fill invents pixels; it
+  cannot recover the source background. The output is a lossy 960×540 maximum,
+  12 fps preview with separate clip-clock SRT and before/after/mask evidence.
+  It is never attached to playback or written over the input. See
+  [CAPTION-RECONSTRUCTION.md](../../docs/plezyng/subtitles/CAPTION-RECONSTRUCTION.md).
 
 Recognition now accepts the existing glossary's source keys as explicit hotword
 hints. Hints do not force recognized spelling and are not model adaptation.

@@ -1,9 +1,9 @@
 # Visualization build and release handoff
 
 This document describes the committed entrypoints. It is not an execution log.
-The current user request includes build work. Every build/test/package job must
+This continuation is source-only. Every subsequent build/test/package job must
 run on compatible private ephemeral JIT, with the existing trust isolation.
-This workspace has no runner/workflow dispatch control. Do not publish releases
+No build, test or workflow was run for this checkpoint. Do not publish releases
 solely because this handoff exists.
 
 ## Runtime build inputs
@@ -159,3 +159,22 @@ Constant-index Texture1D/Texture2D and legacy sampler/sampler2D arrays now
 support direct fields on global resource structs, mapping each element to an
 instance/field-specific image binding. No build, corpus compiler run or renderer
 check has been executed for this path.
+
+
+## 2026-10-30 numeric arrays and native transitions
+
+The exact engine source lock is now
+`518a6c4e5164cbbd01fb13358060dbc282085409`. The browser HLSL gate includes
+`arrays.hlsl` (multidimensional copies, row slices, side-effecting indices,
+function returns and nested matrix structs) and expanded `aggregates.hlsl`
+(integer/Boolean matrix initialization and flattened-field cursor alignment).
+Run these pixel controls with the existing native rejection/limit suite; none
+has been executed here. The pin also preserves bounded dynamic 1D/2D/3D resource
+array support and corrects its mixed inclusive/exclusive token-edit ranges.
+
+The private Linux sanitizer job additionally builds and runs
+`test/native/visualizer_preset_transition_test.cc`. Exercise the public load
+method with zero/default/ten-second durations on every platform, including
+rapid changes, pause, resize and audio-generation reset. MilkRust uses a frozen
+last-frame display fade; projectM retains its own live transition. Verify the
+Kotlin/JNI and Swift/Objective-C selectors in their respective platform builds.

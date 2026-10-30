@@ -17,7 +17,7 @@ internal object MilkRustNativeBridge {
   external fun dependencyError(): String
   external fun create(playerSession: Long, surface: Surface): Long
   external fun destroy(handle: Long)
-  external fun load(handle: Long, path: String, root: String)
+  external fun load(handle: Long, path: String, root: String, transitionSeconds: Double)
   external fun resize(handle: Long, width: Int, height: Int)
   external fun pause(handle: Long, paused: Boolean)
   external fun status(handle: Long): Array<String>
@@ -74,7 +74,8 @@ internal class MilkRustVisualizer(registry: TextureRegistry, playerSession: Long
       throw error
     }
   }
-  fun load(path: String, root: String) = MilkRustNativeBridge.load(handle, path, root)
+  fun load(path: String, root: String, transitionSeconds: Double) =
+    MilkRustNativeBridge.load(handle, path, root, transitionSeconds)
   fun resize(width: Int, height: Int) = MilkRustNativeBridge.resize(handle, width, height)
   fun pause(paused: Boolean) = MilkRustNativeBridge.pause(handle, paused)
   fun status(): Map<String, Any> {

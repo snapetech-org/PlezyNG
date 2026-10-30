@@ -230,3 +230,16 @@ values via `PLEZY_VISUALIZER_MILKRUST_LIBRARY`, `PLEZY_VISUALIZER_MILKRUST_SHA25
 `PLEZY_VISUALIZER_MILKRUST_SOURCE_SHA256`. The standard build uses its generated
 receipt instead. Missing artifacts fail configuration unless an explicitly
 non-visualization build sets `PLEZY_VISUALIZER_REQUIRE_MILKRUST=OFF`.
+
+
+### Native preset transition duration
+
+All MilkRust platform bridges pass the selected `transitionSeconds` to the
+shared display transition (default 3, finite range 0–10). Linux uses the same
+blend helper after its readback. The helper retains only the last published
+RGBA image and blends it into the new running preset; it does not run the old
+preset in parallel. The render clock pauses with audio/rendering, rapid changes
+start from the last displayed mix, resize uses normalized sampling, and PCM
+generation resets discard history. Zero requests a hard cut. Linux projectM
+continues using its own soft-cut implementation. The authored native regression
+is part of the private Linux sanitizer job and has not been run here.

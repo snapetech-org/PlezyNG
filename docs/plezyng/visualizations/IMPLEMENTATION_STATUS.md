@@ -1,16 +1,16 @@
 # Visualizer implementation status
 
-Updated 2026-10-29. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
+Updated 2026-10-30. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
 pins the current MilkRust PR #20 source revision in `native/visualizer/sources.lock.json`; the exact dependency
 contract is in that file. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
 **This is implemented source, not a verified working release or universal
-compatibility result.** The user has now requested builds. Repository policy
-requires private ephemeral JIT runners; this workspace has no runner-dispatch
-control, so no build, test, pack generation, capture, benchmark or device result
-is recorded for this checkpoint. Compiled behavior and device fidelity remain
+compatibility result.** This continuation retains the recorded source-only
+restriction: no build, test, CI dispatch, pack generation, capture, benchmark or
+device run was performed. Repository policy requires private ephemeral JIT
+runners for subsequent execution. Compiled behavior and device fidelity remain
 unknown.
 
 ## Source delivered
@@ -18,11 +18,12 @@ unknown.
 | Area | Current implementation | Evidence still required |
 | --- | --- | --- |
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
-| HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/one-dimensional arrays/all numeric matrix shapes/control flow, bounded errors; constant-index Texture1D/Texture2D and sampler/sampler2D arrays lower globally and on global resource-struct fields | Compiler/corpus execution and reference fidelity; dynamic/grouped arrays, Texture3D/sampler3D arrays, function-scope arrays, nested resource-bearing structs, and arrays of arrays remain outside the declared profile |
+| HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/numeric arrays up to 16 dimensions and 4096 elements/all numeric matrix shapes/control flow; bounded 1D/2D/3D resource arrays with constant or side-effect-free dynamic selection, grouped declarations and direct global resource-struct fields | Compiler/corpus execution and reference fidelity; function-local resource arrays, nested resource-bearing structs, custom sampler state and resource kinds outside the declared profile remain explicit failures |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
 | `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, default-on trailing sprites (`sprite=0` disables), saved progress/direction/randoms carried across `.milk2` loads and ordinary single-preset soft cuts, sprite flips/alpha/rotation/offset/repeat fields, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
 | Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
+| Preset changes | Every native MilkRust bridge forwards the selected 0–10 second duration to a bounded display fade from the last published frame; zero cuts immediately; audio generation changes clear history | Executed switching, resize/pause and rapid-selection coverage; this is a frozen-frame fade, not a second continuously running old preset |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
 | Library/UI | Search, notices, favorites, playlists, import, download/cancel/retry/update/remove, offline receipts and controls | Executed user flows, accessibility, TV focus, localization and performance |
 | Content | Existing offline CC0 fixture, 24 original CC0 studies and 55 unchanged CC BY 4.0 CaYaDev presets with pinned provenance; historical candidates remain rights-review-required | Archive builds, rights review and per-preset/target qualification before catalog promotion |
@@ -86,8 +87,7 @@ private key was invented.
 promotion and evidence needed. [CATALOG_RELEASE.md](CATALOG_RELEASE.md) records
 public-root provisioning without private keys in source. All executable work
 must use compatible private ephemeral JIT runners under `AGENTS.md`. The current
-user request includes builds, but no runner/workflow dispatch control is
-available in this workspace; no workflow was dispatched for this checkpoint.
+continuation is source-only; no workflow was dispatched for this checkpoint.
 
 The remaining work is broader than access to physical hardware: compiler/link
 verification, mpv artifact production/promotion, reference-pixel conformance,
@@ -462,3 +462,25 @@ resource-bearing structs remain fail-closed. PlezyNG now pins MilkRust
 
 This is source-only work. The new compiler path has not been built, tested or
 qualified on native/WebGL renderers.
+
+
+## 2026-10-30 numeric-array and native transition completion
+
+The source lock now pins MilkRust `518a6c4e5164cbbd01fb13358060dbc282085409`,
+which includes numeric arrays up to 16 dimensions with a 4096-element storage
+limit, canonical ESSL row structs, typed copies/slices/function returns,
+multidimensional brace/cast/default initialization, and corrected integer and
+Boolean matrix aggregate cursors/defaults. The bounded dynamic resource-array
+work is preserved. A follow-up fixes inclusive/exclusive token-edit range types
+in that lowering path. Authored compiler and browser pixel controls remain unrun.
+
+Native preset switching now consumes `transitionSeconds` on Linux, Windows,
+Apple, Android, Tizen and webOS. MilkRust fades a retained published frame into
+the newly running preset using its paused render clock. Rapid changes capture
+the last displayed mixture; resizing samples the retained image at normalized
+coordinates; a zero duration cuts immediately; audio generation changes clear
+history. This does not keep the old preset's equations alive and does not claim
+MilkDrop reference soft-cut equivalence. Linux projectM keeps its engine-owned
+transition. Shared C++ cases cover blending, pauses, rapid changes, resize,
+cancellation and invalid duration/frame data, and are registered in the private
+Linux sanitizer job. Only source inspection and `git diff --check` were performed.

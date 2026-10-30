@@ -167,6 +167,14 @@ void MpvPlayerPlugin::HandleVisualizerMethod(
     if (auto p = std::get_if<int64_t>(value)) return *p;
     return fallback;
   };
+  auto number = [&arg](const char* key, double fallback) -> double {
+    const auto* value = arg(key);
+    if (!value) return fallback;
+    if (const auto* p = std::get_if<double>(value)) return *p;
+    if (const auto* p = std::get_if<int32_t>(value)) return *p;
+    if (const auto* p = std::get_if<int64_t>(value)) return static_cast<double>(*p);
+    throw std::runtime_error(std::string("Invalid number: ") + key);
+  };
   const auto& method = call.method_name();
   const auto engine = string("engine", "projectm");
   auto reason = [&]() -> std::string {
@@ -211,7 +219,7 @@ void MpvPlayerPlugin::HandleVisualizerMethod(
     if (method == "visualizerDispose")
       DisposeVisualizer();
     else if (method == "visualizerLoad")
-      worker.Load(string("path"), string("root"));
+      worker.Load(string("path"), string("root"), number("transitionSeconds", 3));
     else if (method == "visualizerResize") {
       const auto width = integer("width"), height = integer("height");
       if (width < 1 || height < 1 || width > 16384 || height > 16384) throw std::runtime_error("Invalid dimensions.");

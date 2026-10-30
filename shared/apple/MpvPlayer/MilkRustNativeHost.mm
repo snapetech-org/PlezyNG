@@ -191,9 +191,10 @@ int PlezySubtitlePcmCaptureReadNext(void* player, double* pts, uint32_t* frames,
   } catch (const std::exception& ex) { SetError(error, ex); return nil; }
   return self;
 }
-- (BOOL)loadPreset:(NSString*)path root:(NSString*)root error:(NSError**)error {
+- (BOOL)loadPreset:(NSString*)path root:(NSString*)root transitionSeconds:(double)transitionSeconds
+             error:(NSError**)error {
   try { if (!_worker) throw std::runtime_error("Visualization session has ended.");
-    _worker->Load(path.UTF8String, root.UTF8String); return YES;
+    _worker->Load(path.UTF8String, root.UTF8String, transitionSeconds); return YES;
   } catch (const std::exception& ex) { SetError(error, ex); return NO; }
 }
 - (void)resizeWidth:(NSInteger)width height:(NSInteger)height {

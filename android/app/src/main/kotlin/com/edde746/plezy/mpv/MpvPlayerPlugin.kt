@@ -438,7 +438,11 @@ open class MpvPlayerPlugin(
       }
       when (call.method) {
         "visualizerDispose" -> disposeVisualizer()
-        "visualizerLoad" -> current.load(checkNotNull(call.argument<String>("path")), checkNotNull(call.argument<String>("root")))
+        "visualizerLoad" -> current.load(
+          checkNotNull(call.argument<String>("path")),
+          checkNotNull(call.argument<String>("root")),
+          call.argument<Number>("transitionSeconds")?.toDouble() ?: 3.0,
+        )
         "visualizerResize" -> {
           val width = checkNotNull(call.argument<Number>("width")).toLong()
           val height = checkNotNull(call.argument<Number>("height")).toLong()

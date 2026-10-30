@@ -8,6 +8,7 @@
 
 #include "milkrust_engine.h"
 #include "pcm_resampler.h"
+#include "preset_transition.h"
 #include "render_thread.h"
 
 namespace plezy::visualization {
@@ -60,17 +61,20 @@ class NativeWorker {
       audio_ = {};
       if (!owned_publish_) publish_ = {};
     }
-    void Load(const std::string& path, const std::string& root) {
+    void Load(const std::string& path, const std::string& root, double transition_seconds) {
       if (path.empty() || root.empty() || path.size() > 32768 || root.size() > 32768)
         throw std::runtime_error("A bounded preset path and pack root are required.");
       if (!NativeWorker::IsPresetPath(std::filesystem::u8path(path)))
         throw std::runtime_error("Native MilkRust accepts .milk and supported .milk2 presets.");
+      if (!PresetTransition::ValidDuration(transition_seconds))
+        throw std::runtime_error("Preset transition must be between zero and ten seconds.");
       {
         std::lock_guard<std::mutex> lock(mutex_);
         if (stopping_ || status_.state == "failed")
           throw std::runtime_error("Create a new visualization session to retry.");
         path_ = path;
         root_ = root;
+        transition_seconds_ = transition_seconds;
         ++serial_;
         status_.state = "loading";
         status_.reason.clear();
@@ -120,6 +124,7 @@ class NativeWorker {
     bool stopping_ = false, paused_ = true;
     int width_ = 768, height_ = 432;
     uint64_t serial_ = 0;
+    double transition_seconds_ = 3;
     std::string path_, root_;
     NativeStatus status_;
     std::mutex callback_mutex_;
@@ -155,6 +160,8 @@ class NativeWorker {
         }();
         if (!context) throw std::runtime_error("No native graphics context.");
         std::unique_ptr<MilkRustEngine> engine;  // Destroy before its context.
+        PresetTransition transition;
+        std::shared_ptr<const NativeFrame> last_frame;
         PcmResampler resampler;
         std::vector<float> stereo;
         uint32_t generation = 0;
@@ -165,6 +172,7 @@ class NativeWorker {
           std::string path, root;
           uint64_t serial;
           int width, height;
+          double transition_seconds;
           {
             std::unique_lock<std::mutex> lock(mutex_);
             if (paused_) {
@@ -178,6 +186,7 @@ class NativeWorker {
             serial = serial_;
             width = width_;
             height = height_;
+            transition_seconds = transition_seconds_;
           }
           RenderWatchdog::Operation operation(watchdog_);
           const auto started = Clock::now();
@@ -195,9 +204,15 @@ class NativeWorker {
               engine = std::make_unique<MilkRustEngine>(context->Loader(), context->IsGles());
               generation = block.generation;
               loaded = 0;
+              transition.Clear();
+              last_frame.reset();
               resampler = PcmResampler();
             }
             if (loaded != serial) {
+              if (last_frame)
+                transition.Start(last_frame->rgba, last_frame->width, last_frame->height, transition_seconds);
+              else
+                transition.Clear();
               engine->Load(std::filesystem::u8path(path), std::filesystem::u8path(root), decoder_);
               loaded = serial;
               elapsed = 0;
@@ -230,6 +245,7 @@ class NativeWorker {
               frame->preset_serial = serial;
               frame->audio_generation = generation;
               engine->Capture(width, height, elapsed, frame->rgba);
+              transition.Apply(frame->rgba, width, height, elapsed);
               bool current;
               {
                 std::lock_guard<std::mutex> lock(mutex_);
@@ -242,7 +258,10 @@ class NativeWorker {
                   ++status_.frame_serial;
                 }
               }
-              if (current) PublishFrame(std::move(frame));
+              if (current) {
+                last_frame = frame;
+                PublishFrame(std::move(frame));
+              }
             } else {
               tick = {};
               State("waiting-audio");
@@ -274,7 +293,9 @@ class NativeWorker {
   NativeWorker(const NativeWorker&) = delete;
   NativeWorker& operator=(const NativeWorker&) = delete;
   void Stop() { state_->Stop(); worker_.Join(); }
-  void Load(const std::string& path, const std::string& root) { state_->Load(path, root); }
+  void Load(const std::string& path, const std::string& root, double transition_seconds = 3) {
+    state_->Load(path, root, transition_seconds);
+  }
   void Resize(int width, int height) { state_->Resize(width, height); }
   void Pause(bool paused) { state_->Pause(paused); }
   NativeStatus Status() const { return state_->Status(); }

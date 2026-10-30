@@ -382,9 +382,10 @@ extern "C" JNIEXPORT void JNICALL JNI_NAME(destroy)(JNIEnv* env, jobject, jlong 
     Error(env, ex);
   }
 }
-extern "C" JNIEXPORT void JNICALL JNI_NAME(load)(JNIEnv* env, jobject, jlong id, jstring path, jstring root) {
+extern "C" JNIEXPORT void JNICALL JNI_NAME(load)(JNIEnv* env, jobject, jlong id, jstring path, jstring root,
+                                               jdouble transition_seconds) {
   try {
-    Find(id)->worker->Load(Utf8(env, path), Utf8(env, root));
+    Find(id)->worker->Load(Utf8(env, path), Utf8(env, root), transition_seconds);
   } catch (const std::exception& ex) {
     Error(env, ex);
   }

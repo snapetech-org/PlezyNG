@@ -205,6 +205,14 @@ int64_t Integer(const Map* arguments, const char* key) {
   }
   throw std::runtime_error(std::string("Missing integer: ") + key);
 }
+double Number(const Map* arguments, const char* key, double fallback) {
+  const auto* value = Argument(arguments, key);
+  if (!value) return fallback;
+  if (const auto* number = std::get_if<double>(value)) return *number;
+  if (const auto* number = std::get_if<int32_t>(value)) return *number;
+  if (const auto* number = std::get_if<int64_t>(value)) return static_cast<double>(*number);
+  throw std::runtime_error(std::string("Invalid number: ") + key);
+}
 std::string String(const Map* arguments, const char* key) {
   const auto* value = Argument(arguments, key);
   const auto* text = value ? std::get_if<std::string>(value) : nullptr;
@@ -286,7 +294,8 @@ struct VisualizerHost::Impl {
         result->Error("VISUALIZER_STALE", "The visualization session has expired."); return;
       }
       if (method == "visualizerDispose") { binding->RenderActive(false); session.reset(); }
-      else if (method == "visualizerLoad") session->worker->Load(String(args, "path"), String(args, "root"));
+      else if (method == "visualizerLoad")
+        session->worker->Load(String(args, "path"), String(args, "root"), Number(args, "transitionSeconds", 3));
       else if (method == "visualizerResize") {
         const auto width = Integer(args, "width"), height = Integer(args, "height");
         if (width < 1 || height < 1 || width > 16384 || height > 16384) throw std::runtime_error("Invalid dimensions.");

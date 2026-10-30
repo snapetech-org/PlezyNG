@@ -440,7 +440,7 @@ jobs:
       - name: Stage required MilkRust runtime for the Linux runner build
         run: python3 scripts/visualizer/build_runtime.py --platform linux --architectures x64 --output build/visualizer-native
 
-      - name: Check shared visualization decoding and worker lifetime
+      - name: Check shared visualization decoding, transitions and worker lifetime
         if: matrix.sanitizer == 'address'
         run: |
           clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
@@ -449,6 +449,9 @@ jobs:
           clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
             test/native/visualizer_render_thread_test.cc -o "$RUNNER_TEMP/visualizer-thread-test"
           "$RUNNER_TEMP/visualizer-thread-test"
+          clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
+            test/native/visualizer_preset_transition_test.cc -o "$RUNNER_TEMP/visualizer-transition-test"
+          "$RUNNER_TEMP/visualizer-transition-test"
 
       - name: Configure Linux native reliability tests
         run: |
@@ -1044,3 +1047,4 @@ jobs:
           path: ${{ github.workspace }}/packages/plezy-linux-x64.*
           if-no-files-found: error
           retention-days: 7
+

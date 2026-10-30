@@ -1,3 +1,5 @@
+import CoreFoundation
+
 #if os(iOS) || os(tvOS)
   import Flutter
 #elseif os(macOS)
@@ -219,7 +221,17 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
             FlutterError(code: "INVALID_ARGS", message: "A preset path and pack root are required.", details: nil));
           return
         }
-        try texture.host.loadPreset(path, root: root)
+        let transition: Double
+        if let value = args["transitionSeconds"] {
+          guard let number = value as? NSNumber, CFGetTypeID(number) != CFBooleanGetTypeID() else {
+            result(FlutterError(code: "INVALID_ARGS", message: "A numeric transition duration is required.", details: nil))
+            return
+          }
+          transition = number.doubleValue
+        } else {
+          transition = 3
+        }
+        try texture.host.loadPreset(path, root: root, transitionSeconds: transition)
       case "visualizerResize":
         guard let width = args["width"] as? Int, let height = args["height"] as? Int,
           width > 0, height > 0, width <= 16384, height <= 16384

@@ -20,6 +20,7 @@
 
 #include "../../../shared/visualization/milkrust_engine.h"
 #include "../../../shared/visualization/pcm_resampler.h"
+#include "../../../shared/visualization/preset_transition.h"
 #include "../../../shared/visualization/render_thread.h"
 
 namespace {
@@ -383,6 +384,8 @@ struct VisualizerSession::Impl {
         { RenderWatchdog::Operation operation(watchdog); graphics.Initialize(); }
         std::string load_error;  // Callback target must outlive Engine destruction.
         Engine engine(engine_name == "milkrust");
+        PresetTransition fade;
+        std::shared_ptr<const Frame> last_frame;
         uint64_t loaded_serial = 0;
         uint32_t generation = 0;
         PcmResampler resampler;
@@ -429,12 +432,18 @@ struct VisualizerSession::Impl {
               engine.Reset();
               generation = block.generation;
               loaded_serial = 0;
+              fade.Clear();
+              last_frame.reset();
               resampler = PcmResampler();
             }
             if (!engine.Has()) engine.Create(&load_error);
             engine.Resize(w, h);
             if (loaded_serial != serial) {
               load_error.clear();
+              if (engine.native && last_frame)
+                fade.Start(last_frame->pixels, last_frame->width, last_frame->height, transition);
+              else
+                fade.Clear();
               engine.Load(requested_path, requested_root, transition, loaded_serial != 0);
               if (!load_error.empty()) throw std::runtime_error(load_error);
               loaded_serial = serial;
@@ -470,10 +479,12 @@ struct VisualizerSession::Impl {
               std::swap_ranges(
                   frame->pixels.begin() + y * stride, frame->pixels.begin() + (y + 1) * stride,
                   frame->pixels.begin() + (h - y - 1) * stride);
+            if (engine.native) fade.Apply(frame->pixels, w, h, engine.elapsed);
             {
               std::lock_guard<std::mutex> control(mutex);
               if (stopping || paused || preset_serial != serial) continue;
               std::lock_guard<std::mutex> lock(frames->mutex);
+              last_frame = frame;
               frames->latest = std::move(frame);
             }
             frames->preset_serial.store(serial);

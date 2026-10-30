@@ -49,17 +49,28 @@ public class PlezyPreparationPlugin: NSObject, FlutterPlugin {
         try? schedule(subtitles: subtitles)
         let engine = FlutterEngine(name: subtitles ? "plezy.subtitle.jobs" : "plezy.preparation", project: nil, allowHeadlessExecution: true)
         var finished = false
+        var expirationTimer: DispatchWorkItem?
         let channel = FlutterMethodChannel(name: subtitles ? "org.plezy/subtitle.worker" : "org.plezy/preparation.worker", binaryMessenger: engine.binaryMessenger)
         func finish(_ success: Bool) {
             guard !finished else { return }
             finished = true
+            expirationTimer?.cancel()
             channel.setMethodCallHandler(nil)
             task.setTaskCompleted(success: success)
             engine.destroyContext()
         }
         task.expirationHandler = { DispatchQueue.main.async {
-            if subtitles { channel.invokeMethod("stop", arguments: nil) }
-            finish(false)
+            guard !finished else { return }
+            if subtitles {
+                channel.invokeMethod("stop", arguments: nil)
+                // Let cooperative Whisper cancellation unwind and report
+                // completion before destroying its Flutter engine.
+                let cleanup = DispatchWorkItem { finish(false) }
+                expirationTimer = cleanup
+                DispatchQueue.main.asyncAfter(deadline: .now() + 15, execute: cleanup)
+            } else {
+                finish(false)
+            }
         } }
         channel.setMethodCallHandler { call, result in
             guard call.method == "complete" else { result(FlutterMethodNotImplemented); return }

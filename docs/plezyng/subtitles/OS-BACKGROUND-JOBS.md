@@ -8,6 +8,10 @@ Desktop workers start hidden with `--plezy-subtitle-worker`. Remote-media
 preparation keeps its own task identifiers, network requirement and entry point.
 Subtitle work does not require network access and cannot download a model.
 
+Only CPU and desktop GPU Whisper jobs are eligible because the native session
+supports cooperative cancellation; accelerator requests with uninterruptible
+inference stay in the foreground. Jobs requiring confirmed playback idle also
+stay in the foreground because the headless worker cannot observe every player.
 The worker has a five-minute admission budget and processes retained WAVs in
 the same bounded 30-second windows/checkpoint format as the foreground queue.
 Only the last active, authorized profile can run; switching profiles retires that

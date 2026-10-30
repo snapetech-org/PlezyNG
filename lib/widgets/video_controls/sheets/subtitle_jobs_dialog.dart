@@ -78,6 +78,7 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
         'Waiting for confirmed external power.' => copy.waitingPower,
         'Preparing transcription' => copy.preparing,
         'Install the selected speech model in the foreground first.' => backgroundCopy.subtitleBackgroundModelRequired,
+        'OS subtitle scheduling is unavailable on this device. The job remains available in the app.' => backgroundCopy.subtitleBackgroundUnavailable,
         'All audio windows saved; review before attachment.' => copy.allAudioSaved,
         'This window could not finish. Completed windows are saved; resume to retry.' => copy.windowFailed,
         _ => copy.statusUnavailable,
@@ -125,7 +126,8 @@ class _SubtitleJobsDialogState extends State<SubtitleJobsDialog> {
                         title: Text(backgroundCopy.subtitleBackgroundJobs),
                         subtitle: job.idleOnly ? Text(backgroundCopy.subtitleBackgroundIdleNote) : null,
                         value: job.backgroundAllowed,
-                        onChanged: _working ? null : (value) => _action(() => service.allowBackground(job, value)),
+                        onChanged: _working || job.idleOnly || !job.backgroundSupported ? null
+                            : (value) => _action(() => service.allowBackground(job, value)),
                       ),
                       Wrap(spacing: 8, children: [
                         if (job.state == SubtitleJobState.running || job.state == SubtitleJobState.queued)

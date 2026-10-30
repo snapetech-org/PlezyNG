@@ -29,9 +29,15 @@ final class SubtitleJobSchedule {
     final gate = await SubtitleJobOwnership.acquire(Directory(p.join(root.path, 'scheduling')));
     if (gate == null) return;
     try {
+      final authorized = await SubtitleJobActivity.authorizedProfile();
+      if (authorized == null) {
+        await PreparationScheduler.cancelSubtitles();
+        return;
+      }
       var profiles = 0;
       await for (final directory in root.list(followLinks: false)) {
         if (directory is! Directory || !RegExp(r'^[0-9a-f]{64}$').hasMatch(p.basename(directory.path))) continue;
+        if (p.basename(directory.path) != authorized) continue;
         if (++profiles > 64) return;
         if (await SubtitleJobActivity.isRevoked(p.basename(directory.path))) continue;
         final owner = await SubtitleJobOwnership.acquire(directory);

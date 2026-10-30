@@ -29,7 +29,10 @@ Future<bool> runSubtitleBackgroundWorker(bool Function() allowed) async {
   const budget = Duration(minutes: 5);
   var active = false, probing = false, retired = false;
   final authorizedProfile = await SubtitleJobActivity.authorizedProfile();
-  if (authorizedProfile == null) return true;
+  if (authorizedProfile == null) {
+    await SubtitleJobSchedule.cancelWhenIdle();
+    return true;
+  }
   Future<void> refreshActivity() async {
     if (probing) return;
     probing = true;

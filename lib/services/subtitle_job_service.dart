@@ -81,6 +81,7 @@ final class SubtitleJob {
 
   SubtitleJobState get state => _state;
   String? get message => _message;
+  bool get backgroundSupported => provider.supportsCooperativeCancellation;
   int get chunkCount => (durationMs / SubtitleJobService.chunkMs).ceil();
   int get completedChunks => _completed.length;
   double get progress => completedChunks / chunkCount;
@@ -270,7 +271,8 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
             sourceBindingKey: source?['binding'] as String?, audioOrdinal: source?['audioOrdinal'] as int?,
             timelineOffsetMs: source?['timelineOffsetMs'] as int? ?? 0,
           );
-          job._backgroundAllowed = !revoked && !job.usesSourceDecoder && json['backgroundAllowed'] == true;
+          job._backgroundAllowed = !revoked && !job.usesSourceDecoder && !job.idleOnly &&
+              job.backgroundSupported && json['backgroundAllowed'] == true;
           job._state = SubtitleJobState.values.byName(json['state'] as String);
           if (job.state == SubtitleJobState.running || job.state == SubtitleJobState.queued) {
             job._state = job.backgroundAllowed ? SubtitleJobState.queued : SubtitleJobState.paused;
@@ -454,6 +456,10 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     }
   }
 
+  Future<bool> _scheduleBackgroundWork() async {
+    try { return await SubtitleJobSchedule.schedule(); } on Object { return false; }
+  }
+
   Future<void> allowBackground(SubtitleJob job, bool allowed) async {
     await ready;
     _requireOwnership();
@@ -461,6 +467,12 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     bool current() => epoch == _profileEpoch && _foreground && _root != null && _jobs.contains(job);
     if (!_jobs.contains(job) || job.usesSourceDecoder || job.terminal) {
       throw StateError('Only a retained-WAV job can be scheduled in the background.');
+    }
+    if (allowed && job.idleOnly) {
+      throw StateError('A headless worker cannot confirm that playback is idle.');
+    }
+    if (allowed && !job.backgroundSupported) {
+      throw StateError('This accelerator request cannot be cancelled safely in the background.');
     }
     if (allowed && !await SubtitleAiService.instance.isProviderModelInstalled(job.provider)) {
       throw StateError('Install the selected speech model in the foreground first.');
@@ -470,7 +482,7 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     if (!current()) throw StateError('The profile changed.');
     job._backgroundAllowed = allowed;
     await _persist(job);
-    if (allowed && !await SubtitleJobSchedule.schedule()) {
+    if (allowed && !await _scheduleBackgroundWork()) {
       if (!current()) throw StateError('The profile changed.');
       job._backgroundAllowed = false;
       await _persist(job);
@@ -506,8 +518,12 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
       job._playhead = playheadMs;
       job._playbackBusy = playbackBusy;
       await _setState(job, SubtitleJobState.queued);
-      if (job.backgroundAllowed && !await SubtitleJobSchedule.schedule()) {
-        throw StateError('OS subtitle scheduling is unavailable on this device.');
+      if (job.backgroundAllowed && !await _scheduleBackgroundWork()) {
+        if (_jobs.contains(job) && epoch == _profileEpoch) {
+          job._backgroundAllowed = false;
+          job._message = 'OS subtitle scheduling is unavailable on this device. The job remains available in the app.';
+          await _persist(job);
+        }
       }
       _wake();
     } finally { if (!claimed) await source?.close(); }
@@ -783,13 +799,12 @@ final class SubtitleJobService extends ChangeNotifier with WidgetsBindingObserve
     try {
       await service._load(key, 0);
       if (service._ownership == null || service.loadError != null) return false;
-      final queue = service._jobs.where((job) => job.backgroundAllowed &&
-          !job.usesSourceDecoder && job.state == SubtitleJobState.queued).toList();
+      final queue = service._jobs.where((job) => job.backgroundAllowed && job.backgroundSupported &&
+          !job.usesSourceDecoder && !job.idleOnly && job.state == SubtitleJobState.queued).toList();
       while (queue.isNotEmpty && service._workerMayRun!()) {
         final job = queue.removeAt(0);
         // A headless engine cannot establish that every playback owner is idle.
         // Unknown is never treated as idle, including background audio playback.
-        if (job.idleOnly) continue;
         if (job.chargingOnly && await PowerSourceService.isConnected().timeout(
             const Duration(seconds: 5), onTimeout: () => null) != true) continue;
         if (!service._workerMayRun!()) break;

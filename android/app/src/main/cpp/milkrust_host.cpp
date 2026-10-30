@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "../../../../../shared/visualization/native_worker.h"
+#include "../../../../../shared/visualization/render_helper.h"
+#include "../../../../../shared/visualization/render_socket.h"
 
 using namespace plezy::visualization;
 namespace {
@@ -39,7 +41,7 @@ TapApi& Tap() {
 }
 std::string DependencyError() {
   if (!Tap().available()) return "This mpv AAR lacks the session-leased visualization PCM bridge v1.";
-  return MilkRustApi::Shared().error;
+  return {}; // The remote service validates the renderer ABI during its handshake.
 }
 class EglContext final : public NativeContext {
  public:
@@ -189,15 +191,54 @@ struct JavaDecoder {
     return image;
   }
 };
+class SurfaceBackend final : public RenderBackend {
+  std::shared_ptr<ANativeWindow> window_;
+  LocalRenderBackend renderer_;
+  uint32_t width_ = 0, height_ = 0;
+ public:
+  SurfaceBackend(std::shared_ptr<ANativeWindow> window, const std::shared_ptr<JavaDecoder>& decoder)
+      : window_(std::move(window)), renderer_(std::make_unique<EglContext>(),
+          [decoder](const auto& path) { return decoder->Decode(path); }) {}
+  void Reset() override { renderer_.Reset(); }
+  void Load(const std::string& path, const std::string& root, double duration) override { renderer_.Load(path, root, duration); }
+  void Pcm(const float* samples, size_t frames, uint32_t generation) override { renderer_.Pcm(samples, frames, generation); }
+  void Capture(uint32_t width, uint32_t height, double seconds, std::vector<uint8_t>& rgba) override {
+    renderer_.Capture(width, height, seconds, rgba);
+  }
+  void SetMouseState(bool down, double x, double y, double dx, double dy) override { renderer_.SetMouseState(down, x, y, dx, dy); }
+  bool CanPresent() const override { return true; }
+  void Present(uint32_t width, uint32_t height, const std::vector<uint8_t>& rgba) override {
+    if (rgba.size() != render_protocol::FrameBytes(width, height)) throw std::runtime_error("Invalid Android presentation frame.");
+    auto* window = window_.get();
+    if ((width_ != width || height_ != height) &&
+        ANativeWindow_setBuffersGeometry(window, width, height, WINDOW_FORMAT_RGBA_8888) < 0)
+      throw std::runtime_error("Could not size the Android visualization surface.");
+    width_ = width; height_ = height;
+    ANativeWindow_Buffer buffer{};
+    if (ANativeWindow_lock(window, &buffer, nullptr) < 0) throw std::runtime_error("Android visualization surface was lost.");
+    if (buffer.width != static_cast<int32_t>(width) || buffer.height != static_cast<int32_t>(height) || buffer.stride < buffer.width) {
+      ANativeWindow_unlockAndPost(window);
+      throw std::runtime_error("Android surface dimensions changed.");
+    }
+    for (uint32_t y = 0; y < height; ++y)
+      std::copy_n(rgba.data() + static_cast<size_t>(y) * width * 4, width * 4,
+          static_cast<uint8_t*>(buffer.bits) + static_cast<size_t>(y) * buffer.stride * 4);
+    if (ANativeWindow_unlockAndPost(window) < 0) throw std::runtime_error("Android frame presentation failed.");
+  }
+};
+struct HelperDescriptor {
+  int value = -1;
+  ~HelperDescriptor() { if (value >= 0) close(value); }
+  int Release() { const int result = value; value = -1; return result; }
+};
 struct Host {
   uint64_t player = 0;
-  ANativeWindow* window = nullptr;
-  std::shared_ptr<JavaDecoder> decoder;
+  std::function<void()> cancel;
   std::unique_ptr<NativeWorker> worker;
   ~Host() {
+    if (cancel) cancel(); // Also interrupts a handshake before the worker publishes its callback.
     worker.reset();
     if (player && Tap().available()) Tap().enable(player, 0);
-    if (window) ANativeWindow_release(window);
   }
 };
 std::mutex registry_mutex;
@@ -317,55 +358,46 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI_NAME(subtitlePcmCaptureRead)(JNIEnv*
     return nullptr;
   }
 }
-extern "C" JNIEXPORT jlong JNICALL JNI_NAME(create)(JNIEnv* env, jobject owner, jlong player, jobject surface) {
+extern "C" JNIEXPORT void JNICALL JNI_NAME(startHelper)(JNIEnv* env, jobject owner, jint channel, jobject surface) {
+  HelperDescriptor descriptor;
+  try {
+    if (channel < 0) throw std::runtime_error("Invalid renderer service socket.");
+    descriptor.value = fcntl(channel, F_DUPFD_CLOEXEC, 3);
+    if (descriptor.value < 0) throw std::runtime_error("Could not retain renderer service socket.");
+    auto decoder = std::make_shared<JavaDecoder>(env, owner);
+    auto* acquired = ANativeWindow_fromSurface(env, surface);
+    if (!acquired) throw std::runtime_error("No Android visualization surface.");
+    auto window = std::shared_ptr<ANativeWindow>(acquired, ANativeWindow_release);
+    auto lease = std::make_shared<HelperDescriptor>(); lease->value = descriptor.Release();
+    std::thread([lease, decoder, window] {
+      RunRenderHelper(lease->Release(), [decoder, window](render_protocol::Backend kind) -> std::unique_ptr<RenderBackend> {
+        if (kind != render_protocol::Backend::MilkRust) throw std::runtime_error("Android supports MilkRust rendering.");
+        return std::make_unique<SurfaceBackend>(window, decoder);
+      });
+    }).detach();
+  } catch (const std::exception& ex) { Error(env, ex); }
+}
+extern "C" JNIEXPORT jlong JNICALL JNI_NAME(create)(JNIEnv* env, jobject, jlong player, jint channel) {
   try {
     const auto unavailable = DependencyError();
     if (!unavailable.empty()) throw std::runtime_error(unavailable);
     auto host = std::make_shared<Host>();
-    host->decoder = std::make_shared<JavaDecoder>(env, owner);
-    host->window = ANativeWindow_fromSurface(env, surface);
-    if (!host->window) throw std::runtime_error("No Android visualization surface.");
+    auto connection = std::make_shared<RenderConnection>(ConnectRenderSocket(channel));
+    host->cancel = connection->cancel;
     if (player <= 0 || Tap().enable(player, 1) < 0)
       throw std::runtime_error("Could not attach to the music session PCM.");
     host->player = player;
-    auto decoder = host->decoder;
-    auto* window = host->window;
-    ANativeWindow_acquire(window);
-    auto window_lease = std::shared_ptr<ANativeWindow>(window, ANativeWindow_release);
     host->worker = std::make_unique<NativeWorker>(
-        [] { return std::make_unique<EglContext>(); }, [decoder](const auto& path) { return decoder->Decode(path); },
+        [connection] { return std::make_unique<RemoteRenderBackend>(std::move(*connection), render_protocol::Backend::MilkRust, true); },
         [player](mpv_plezy_audio_block* block) { return Tap().read(player, block, sizeof(*block)); },
-        [window_lease, width = 0u, height = 0u](std::shared_ptr<const NativeFrame> frame) mutable {
-          auto* window = window_lease.get();
-          if ((width != frame->width || height != frame->height) &&
-              ANativeWindow_setBuffersGeometry(window, frame->width, frame->height, WINDOW_FORMAT_RGBA_8888) < 0)
-            throw std::runtime_error("Could not size the Android visualization surface.");
-          width = frame->width;
-          height = frame->height;
-          ANativeWindow_Buffer buffer{};
-          if (ANativeWindow_lock(window, &buffer, nullptr) < 0)
-            throw std::runtime_error("Android visualization surface was lost.");
-          if (buffer.width != static_cast<int32_t>(frame->width) ||
-              buffer.height != static_cast<int32_t>(frame->height) || buffer.stride < buffer.width) {
-            ANativeWindow_unlockAndPost(window);
-            throw std::runtime_error("Android surface dimensions changed.");
-          }
-          for (uint32_t y = 0; y < frame->height; ++y)
-            std::copy_n(
-                frame->rgba.data() + static_cast<size_t>(y) * frame->width * 4, frame->width * 4,
-                static_cast<uint8_t*>(buffer.bits) + static_cast<size_t>(y) * buffer.stride * 4);
-          if (ANativeWindow_unlockAndPost(window) < 0) throw std::runtime_error("Android frame presentation failed.");
-        }, true);
+        [](std::shared_ptr<const NativeFrame>) {});
     std::lock_guard<std::mutex> lock(registry_mutex);
     if (registry.size() >= 4) throw std::runtime_error("Too many native visualization sessions.");
     const auto id = next_id.fetch_add(1);
     if (id <= 0) throw std::runtime_error("Native session identity exhausted.");
     registry.emplace(id, std::move(host));
     return id;
-  } catch (const std::exception& ex) {
-    Error(env, ex);
-    return 0;
-  }
+  } catch (const std::exception& ex) { Error(env, ex); return 0; }
 }
 extern "C" JNIEXPORT void JNICALL JNI_NAME(destroy)(JNIEnv* env, jobject, jlong id) {
   try {

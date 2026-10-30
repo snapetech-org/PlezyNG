@@ -417,7 +417,7 @@ open class MpvPlayerPlugin(
     try {
       if (call.method == "visualizerCapabilities") {
         val reason = unavailable()
-        result.success(mapOf("available" to reason.isEmpty(), "reason" to reason, "engine" to "milkrust-native-abi1", "audioTap" to reason.isEmpty()))
+        result.success(mapOf("available" to reason.isEmpty(), "reason" to reason, "engine" to "milkrust-native-abi2", "audioTap" to reason.isEmpty()))
         return
       }
       if (call.method == "visualizerCreate") {
@@ -426,7 +426,7 @@ open class MpvPlayerPlugin(
         val registry = checkNotNull(textureRegistry) { "Flutter texture registry is unavailable." }
         val player = checkNotNull(playerCore?.visualizationSessionId()) { "Music session ended." }
         disposeVisualizer()
-        val created = MilkRustVisualizer(registry, player)
+        val created = MilkRustVisualizer(checkNotNull(applicationContext), registry, player)
         visualizer = created
         result.success(mapOf("sessionId" to visualizerSessionId, "textureId" to created.textureId))
         return

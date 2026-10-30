@@ -25,7 +25,7 @@ runners may be used. Compiled behavior and device fidelity remain unknown.
 | Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Preset changes | Every native MilkRust bridge forwards the selected 0–10 second duration to a bounded display fade from the last published frame; zero cuts immediately; audio generation changes clear history | Executed switching, resize/pause and rapid-selection coverage; this is a frozen-frame fade, not a second continuously running old preset |
-| Desktop containment | Packaged MilkRust helper on Linux/Windows/macOS; Linux projectM shares the helper; bounded native IPC, process termination and retry admission | First builds, injected-fault execution, installed helper discovery/signing and device-wide GPU recovery |
+| Renderer containment | Packaged MilkRust helper on Linux/Windows/macOS and private Android/Android TV service; Linux projectM shares the desktop helper; bounded native IPC, process termination and retry admission | First builds, injected-fault execution, installed helper discovery/signing and device-wide GPU recovery |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
 | Library/UI | Search, notices, favorites, playlists, import, download/cancel/retry/update/remove, offline receipts and controls | Executed user flows, accessibility, TV focus, localization and performance |
 | Content | Existing offline CC0 fixture, 24 original CC0 studies and 55 unchanged CC BY 4.0 CaYaDev presets with pinned provenance; historical candidates remain rights-review-required | Archive builds, rights review and per-preset/target qualification before catalog promotion |
@@ -67,8 +67,12 @@ inherited socket, parent-death monitoring and SIGKILL (Linux uses pidfds). New
 sessions are refused while a terminated helper remains alive. Linux requires
 glibc 2.34+ and a kernel with pidfd support. There is no in-process desktop fallback.
 
-Android, iOS/tvOS, Tizen and webOS retain bounded thread teardown and quarantine;
-their driver calls remain in the app process. A helper does not contain a
+Android/Android TV now bind a non-exported service in a private app process.
+The player owns its mpv PCM lease and transitions; EGL, shader/image work and
+ANativeWindow publication run in that service. Socket shutdown and a separate
+service Handler terminate it; retry admission remains occupied until Binder
+death confirms retirement. iOS/tvOS, Tizen and webOS retain bounded thread
+teardown and quarantine; their driver calls remain in the app process. A helper does not contain a
 device-wide GPU/kernel fault or provide a filesystem/security sandbox. Private
 JIT fault tests and installed-device recovery checks remain unrun.
 
@@ -97,8 +101,7 @@ private key was invented.
 [BUILD_HANDOFF.md](BUILD_HANDOFF.md) identifies the build entrypoints, artifact
 promotion and evidence needed. [CATALOG_RELEASE.md](CATALOG_RELEASE.md) records
 public-root provisioning without private keys in source. All executable work
-must use compatible private ephemeral JIT runners under `AGENTS.md`. The current
-The user has since explicitly requested a build. No Action run is attached to
+must use compatible private ephemeral JIT runners under `AGENTS.md`. The user has since explicitly requested a build. No Action run is attached to
 the latest MilkRust revision, and PlezyNG's build workflows require manual
 dispatch; the connected GitHub tool exposes no workflow-dispatch action. No
 public runner may be used under repository policy.
@@ -644,6 +647,28 @@ now mutable, fixing a source-level Rust compile error. Native regressions and
 browser clamp/wrap pixel controls are authored and unrun. Full profile limits
 remain in MilkRust's `docs/HLSL_COMPATIBILITY.md`; no universal HLSL or fidelity
 claim follows from this pin.
+
+## 2026-10-30 Android renderer service
+
+The shared transport client is now separate from desktop spawning. Protocol v2
+negotiates optional surface presentation and bounds both captured and presented
+RGBA frames. Android's one-time Messenger handshake passes a socket and Surface;
+per-frame PCM/controls/pixels remain native socket traffic, outside Dart/Binder.
+The private service runs setup off its main Handler and enforces a five-second
+startup deadline. Each native request retains a two-second deadline. No renderer
+executes in the player process and there is no local fallback. This is process
+isolation, not a filesystem sandbox or protection against a device-wide fault.
+
+The parent queues startup controls, preserves short pointer clicks, retains the
+mpv session lease, and keeps a retiring service's admission lease until Binder
+death. Native socket cancellation holds a duplicate FD so Java FD reuse cannot
+target another connection. Surface publication and its potentially blocking
+lock/post now execute in the service after the player's display transition.
+This adds a bounded RGBA round trip; device bandwidth and performance need
+measurement. Native test sources cover presentation capability, payload bounds,
+hung publication, cancellation and FD reuse. An Android instrumentation source
+checks manifest separation, stop-before-start, malformed startup and rebinding
+without loading GL/mpv. None has run; compiled/runtime confidence remains unknown.
 
 
 ## 2026-10-30 MilkRust noise resource checkpoint

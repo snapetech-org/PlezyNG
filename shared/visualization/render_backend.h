@@ -21,6 +21,8 @@ class RenderBackend {
   virtual void Pcm(const float* samples, size_t frames, uint32_t generation) = 0;
   virtual void Capture(uint32_t width, uint32_t height, double seconds, std::vector<uint8_t>& rgba) = 0;
   virtual std::function<void()> Cancellation() const { return {}; }
+  virtual bool CanPresent() const { return false; }
+  virtual void Present(uint32_t, uint32_t, const std::vector<uint8_t>&) {}
   virtual void Pause(bool) {}
   virtual void SetMouseState(bool, double, double, double, double) {}
 };

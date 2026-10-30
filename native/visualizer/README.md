@@ -222,8 +222,9 @@ source and dependency notices with any distribution that includes the engine.
 The full engine license is in `notices/MilkRust-AGPL-3.0.txt`.
 
 Desktop GL compilation and image decode execute in the packaged helper with
-two-second IPC deadlines and OS process termination. Mobile/TV GL compilation and
-Android native-window presentation can still block their retained worker.
+two-second IPC deadlines and OS process termination. Android GL compilation and native-window publication run in a private service
+process with bounded socket requests. Other mobile/TV GL compilation can still
+block its retained worker.
 Exception handling alone does not impose a driver timeout. Qualification must cover
 backgrounding, surface/context loss, seek generation reset, pixel leases during
 unregister, repeated create/dispose, multichannel audio and passthrough. Process
@@ -267,7 +268,7 @@ inherited handles and uses a kill-on-close job; POSIX closes unrelated descripto
 monitors parent disconnection and uses SIGKILL, with pidfd signaling on Linux.
 Retry is refused while a terminated child is still alive. Linux requires glibc
 2.34+ and pidfd support. The helper is not a filesystem sandbox, and cannot recover
-a device-wide GPU/kernel hang. Mobile/TV retains the local backend.
+a device-wide GPU/kernel hang. iOS/tvOS, Tizen and webOS retain the local backend.
 
 Desktop CMake installs `plezy_visualizer_helper[.exe]` beside the app; Xcode builds
 and signs it in `Contents/MacOS` with the app's signing identity. The executable
@@ -275,3 +276,23 @@ is resolved beside the running app, never through PATH. Dependency/capability
 failures from the helper are reported explicitly. Authored process regression
 cases run through the existing private Linux/macOS sanitizer and Windows native
 CI paths; no executable verification has occurred for this change.
+
+### Android bound renderer service
+
+`MilkRustRendererService` is non-exported and runs in `:milkrust_visualizer` with
+the app UID, so installed private packs remain readable. It is not an Android
+isolated-UID service or a filesystem sandbox. Messenger passes only the startup
+Surface/socket and lifecycle messages. `render_remote.h` is the shared protocol
+client; `render_socket.h` owns stable socket duplicates and shutdown cancellation.
+Protocol v2 adds negotiated presentation after the parent's frozen-frame fade,
+keeping ANativeWindow lock/post outside the player process. The extra bounded
+RGBA round trip requires device performance qualification.
+
+Service setup runs outside its main Handler; STOP and the startup watchdog can
+terminate the process even during initialization. The native helper monitors
+socket closure independently of rendering. The parent preserves its mpv lease,
+queues controls during binding and refuses overlapping sessions until the old
+Binder dies. No player-side PID kill or local renderer fallback is used. The
+existing JNI keep rule covers the new entry point. Android instrumentation
+source verifies service packaging, death and rebind without a GPU; native fault
+cases cover presentation and stable-FD cancellation. All remain unrun.

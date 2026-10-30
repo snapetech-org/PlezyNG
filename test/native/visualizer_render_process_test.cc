@@ -2,6 +2,9 @@
 // A real child process implements deliberate protocol faults without loading
 // MilkRust or a GPU. Parent-side deadlines must survive each failure.
 #include "../../shared/visualization/render_process.h"
+#if !defined(_WIN32)
+#include "../../shared/visualization/render_socket.h"
+#endif
 #include <iostream>
 #include <cstdlib>
 #if defined(__linux__)
@@ -41,6 +44,7 @@ template<typename F> void Reject(F action, const char* message) {
       Bytes response; U32(response, 0);
       if (header.command == uint32_t(Command::Hello)) {
         const auto kind = reader.U32(); reader.End(); U32(response, kind); U32(response, kind == 0 ? MILKRUST_ABI_VERSION : 0);
+        U32(response, kind == uint32_t(Backend::MilkRust) ? kCanPresent : 0);
       }
       if (header.command == uint32_t(Command::Load)) { mode = reader.Text(); reader.Text(); reader.Double(); reader.End(); }
       if (header.command == uint32_t(Command::Pcm)) {
@@ -56,6 +60,13 @@ template<typename F> void Reject(F action, const char* message) {
       if (header.command == uint32_t(Command::Pause)) {
         Require(reader.U32() <= 1, "Pause payload changed"); reader.End();
         if (mode == "ack") response.push_back(1);
+      }
+      if (header.command == uint32_t(Command::Present)) {
+        if (mode == "hang-present") for (;;) std::this_thread::sleep_for(std::chrono::seconds(1));
+        const auto width = reader.U32(), height = reader.U32();
+        Require(payload.size() == 8 + FrameBytes(width, height), "Presentation size changed");
+        Require(std::all_of(payload.begin() + 8, payload.end(), [](uint8_t value) { return value == 79; }),
+            "Presentation pixels changed");
       }
       if (header.command == uint32_t(Command::Capture)) {
         if (mode == "hang") for (;;) std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -86,10 +97,10 @@ template<typename F> void Reject(F action, const char* message) {
     }
   } catch (...) { std::_Exit(3); }
 }
-std::unique_ptr<IsolatedRenderBackend> Client(Backend backend = Backend::MilkRust) {
+std::unique_ptr<IsolatedRenderBackend> Client(Backend backend = Backend::MilkRust, bool present = false) {
   const auto deadline = RenderPipe::Clock::now() + std::chrono::seconds(5);
   for (;;) {
-    try { return std::make_unique<IsolatedRenderBackend>(render_process_detail::ExecutablePath(), backend); }
+    try { return std::make_unique<IsolatedRenderBackend>(render_process_detail::ExecutablePath(), backend, present); }
     catch (const std::exception& error) {
       if (std::string(error.what()).find("still terminating") == std::string::npos || RenderPipe::Clock::now() >= deadline) throw;
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -97,7 +108,7 @@ std::unique_ptr<IsolatedRenderBackend> Client(Backend backend = Backend::MilkRus
   }
 }
 void ProtocolCases() {
-  const Bytes expected{0x31, 0x52, 0x56, 0x50, 1, 0, 0, 0, 5, 0, 0, 0, 7, 0, 0, 0, 3, 0, 0, 0};
+  const Bytes expected{0x31, 0x52, 0x56, 0x50, 2, 0, 0, 0, 5, 0, 0, 0, 7, 0, 0, 0, 3, 0, 0, 0};
   Require(EncodeHeader(uint32_t(Command::Capture), 7, 3) == expected, "Header wire format changed");
   const auto header = DecodeHeader(expected);
   Require(header.command == 5 && header.sequence == 7 && header.size == 3, "Header decode differs");
@@ -105,9 +116,9 @@ void ProtocolCases() {
     Reject([&] { DecodeHeader(Bytes(expected.begin(), expected.begin() + length)); }, "Truncated header accepted");
   auto invalid = expected; invalid[0] = 0;
   Reject([&] { DecodeHeader(invalid); }, "Foreign protocol accepted");
-  invalid = expected; invalid[4] = 2;
+  invalid = expected; invalid[4] = 1;
   Reject([&] { DecodeHeader(invalid); }, "Wrong protocol version accepted");
-  invalid = expected; invalid[8] = 8;
+  invalid = expected; invalid[8] = 9;
   Reject([&] { DecodeHeader(invalid); }, "Unknown command accepted");
   invalid = expected; invalid[12] = 0;
   Reject([&] { DecodeHeader(invalid); }, "Zero sequence accepted");
@@ -121,6 +132,7 @@ void ProtocolCases() {
   Reject([&] { Text(values, std::string("a\0b", 3)); }, "NUL path accepted");
   Reject([&] { FrameBytes(0, 720); }, "Empty capture accepted");
   Reject([&] { FrameBytes(1281, 720); }, "Oversized capture accepted");
+  Require(DecodeHeader(EncodeHeader(uint32_t(Command::Present), 1, 8)).command == 8, "Presentation command was lost");
 }
 void ProcessCases() {
   {
@@ -174,8 +186,60 @@ void ProcessCases() {
     std::vector<uint8_t> frame; projectm->Capture(2, 2, 0, frame);
     Require(frame.size() == 16, "projectM handshake changed");
   }
+  Reject([&] { Client(Backend::ProjectM, true); }, "Missing surface-presentation capability accepted");
+  {
+    auto client = Client(Backend::MilkRust, true); client->Reset(); client->Load("healthy", "fixture");
+    Require(client->CanPresent(), "Surface presentation was not negotiated");
+    std::vector<uint8_t> frame; client->Capture(1280, 720, 0, frame);
+    client->Present(1280, 720, frame);
+    Reject([&] { client->Present(1, 1, frame); }, "Mismatched presentation frame accepted");
+    Reject([&] { client->Present(0, 0, {}); }, "Empty presentation accepted");
+  }
+  for (bool cancelEarly : {false, true}) {
+    auto client = Client(Backend::MilkRust, true); client->Reset(); client->Load("hang-present", "fixture");
+    const auto cancel = client->Cancellation();
+    std::thread stop;
+    if (cancelEarly) stop = std::thread([cancel] { std::this_thread::sleep_for(std::chrono::milliseconds(40)); cancel(); });
+    const auto started = RenderPipe::Clock::now();
+    bool rejected = false;
+    try { client->Present(2, 2, Bytes(16, 79)); } catch (const std::exception&) { rejected = true; }
+    if (stop.joinable()) stop.join();
+    Require(rejected && RenderPipe::Clock::now() - started < std::chrono::seconds(cancelEarly ? 1 : 4),
+        "Surface publication blocked the player beyond its deadline");
+  }
   auto recovered = Client(); recovered->Reset(); recovered->Load("healthy", "fixture");
 }
+#if !defined(_WIN32)
+void SocketCases() {
+  // Android binds a private service rather than spawning an executable. The
+  // parent must retain socket identity even after Java closes/reuses its FD.
+  int sockets[2]; Require(socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) == 0, "Socketpair failed");
+  auto connection = ConnectRenderSocket(sockets[0]);
+  RenderPipe peer(sockets[1]);
+  const int original = sockets[0];
+  int unrelated[2]; Require(socketpair(AF_UNIX, SOCK_STREAM, 0, unrelated) == 0, "Second socketpair failed");
+  // Replace atomically; a concurrent child reaper cannot change the FD chosen
+  // for this reuse control by closing another descriptor between operations.
+  Require(dup2(unrelated[0], original) == original, "FD reuse control failed");
+  close(unrelated[0]);
+  RenderPipe independent(original), independentPeer(unrelated[1]);
+  const auto cancel = connection.cancel;
+  auto moved = std::make_unique<RenderConnection>(std::move(connection));
+  const auto deadline = RenderPipe::Clock::now() + std::chrono::seconds(1);
+  peer.Write(Bytes{1, 2, 3}, deadline);
+  Require(moved->pipe->Read(3, deadline) == Bytes({1, 2, 3}), "Java FD closure lost the native connection");
+  std::thread stop([cancel] { std::this_thread::sleep_for(std::chrono::milliseconds(40)); cancel(); });
+  bool rejected = false; const auto started = RenderPipe::Clock::now();
+  try { moved->pipe->Read(1, RenderPipe::Deadline::max()); } catch (const std::exception&) { rejected = true; }
+  stop.join();
+  Require(rejected && RenderPipe::Clock::now() - started < std::chrono::seconds(1), "Socket cancellation did not wake a blocked read");
+  Reject([&] { peer.Read(1, RenderPipe::Clock::now() + std::chrono::seconds(1)); }, "Cancellation did not close the helper endpoint");
+  independent.Write(Bytes{4, 5}, RenderPipe::Clock::now() + std::chrono::seconds(1));
+  Require(independentPeer.Read(2, RenderPipe::Clock::now() + std::chrono::seconds(1)) == Bytes({4, 5}),
+      "Cancellation affected a reused Java descriptor");
+  moved.reset(); cancel(); // Cancellation remains safe after transport retirement.
+}
+#endif
 }
 int main(int argc, char** argv) {
   if (argc == 3 && std::string(argv[1]) == "--plezy-render-pipe") {
@@ -193,6 +257,9 @@ int main(int argc, char** argv) {
   }
   try {
     ProtocolCases(); ProcessCases();
+#if !defined(_WIN32)
+    SocketCases();
+#endif
     std::cout << "Isolated visualization protocol and process cases passed\n";
   } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

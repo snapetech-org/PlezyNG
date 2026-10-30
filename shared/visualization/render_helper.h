@@ -3,7 +3,7 @@
 #include "render_backend.h"
 #include "render_pipe.h"
 #include <cstdlib>
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__ANDROID__)
 #include <csignal>
 #include <sys/prctl.h>
 #endif
@@ -16,7 +16,7 @@ namespace plezy::visualization {
     const std::function<std::unique_ptr<RenderBackend>(render_protocol::Backend)>& create) {
   using namespace render_protocol;
   try {
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__ANDROID__)
     const auto parent = getppid();
     if (parent <= 1 || prctl(PR_SET_PDEATHSIG, SIGKILL) != 0 || getppid() != parent) std::_Exit(2);
 #endif
@@ -41,7 +41,7 @@ namespace plezy::visualization {
     for (;;) {
       const auto header = DecodeHeader(pipe.Read(kHeaderSize, RenderPipe::Deadline::max()));
       if ((header.command & kReply) || previous == UINT32_MAX || header.sequence != previous + 1 ||
-          header.size > 2 * 32768 + 16) std::_Exit(2);
+          header.size > (header.command == uint32_t(Command::Present) ? kMaxWidth * kMaxHeight * 4 + 8 : 2 * 32768 + 16)) std::_Exit(2);
       previous = header.sequence;
       const auto payload = pipe.Read(header.size, RenderPipe::Clock::now() + std::chrono::seconds(2));
       Reader reader(payload);
@@ -60,7 +60,8 @@ namespace plezy::visualization {
               throw std::runtime_error(MilkRustApi::Shared().error);
             engine = create(static_cast<Backend>(kind)).release();
             if (!engine) throw std::runtime_error("Could not create the isolated visualization renderer.");
-            hello = true; U32(response, kind); U32(response, kind == uint32_t(Backend::MilkRust) ? MILKRUST_ABI_VERSION : 0); break;
+            hello = true; U32(response, kind); U32(response, kind == uint32_t(Backend::MilkRust) ? MILKRUST_ABI_VERSION : 0);
+            U32(response, engine->CanPresent() ? kCanPresent : 0); break;
           }
           case Command::Reset:
             reader.End();
@@ -89,6 +90,14 @@ namespace plezy::visualization {
             engine->Capture(width, height, seconds, response);
             if (response.size() != expected) throw std::runtime_error("Isolated renderer returned an invalid pixel count.");
             break;
+          }
+          case Command::Present: {
+            const auto width = reader.U32(), height = reader.U32();
+            const auto expected = FrameBytes(width, height);
+            if (!loaded || !engine->CanPresent() || payload.size() != expected + 8)
+              throw std::runtime_error("Invalid isolated presentation request.");
+            const Bytes rgba(payload.begin() + 8, payload.end());
+            engine->Present(width, height, rgba); break;
           }
           case Command::Mouse: {
             const auto down = reader.U32();

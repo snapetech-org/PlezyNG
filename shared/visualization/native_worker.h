@@ -302,6 +302,11 @@ class NativeWorker {
               {
                 std::lock_guard<std::mutex> lock(mutex_);
                 current = !paused_ && !stopping_ && serial_ == serial;
+              }
+              if (current) engine->Present(width, height, frame->rgba);
+              {
+                std::lock_guard<std::mutex> lock(mutex_);
+                current = current && !paused_ && !stopping_ && serial_ == serial;
                 if (current) {
                   status_.state = "rendering";
                   status_.reason.clear();

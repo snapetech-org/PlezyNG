@@ -294,7 +294,8 @@ phase. Verify the helper architecture, dependent runtime lookup, and macOS neste
 signature in the final installed artifact. Linux requires glibc 2.34+ and pidfd
 support; missing helper/OS support produces an explicit failure, without local
 rendering fallback. projectM's pinned framebuffer API is checked inside the Linux
-helper. Mobile/TV hosts still use local rendering with thread quarantine.
+helper. iOS/tvOS, Tizen and webOS still use local rendering with thread quarantine;
+Android/Android TV use the private service described below.
 
 The `visualizer_render_process_test.cc` source needs no GPU or MilkRust library:
 it starts itself as a fault-injecting child. Private Linux/macOS sanitizer jobs
@@ -313,6 +314,26 @@ forward prototypes, literal resource-array arguments, recursion/capture failures
 and the specialization budget. Existing sampler-helper overloads without custom
 state retain the typed path and have a regression source. Compilation and these
 controls remain unrun; do not infer passing results from the pin update.
+
+## Android renderer service verification
+
+Build all selected ABIs and both debug/minified Android variants on private JIT.
+The manifest must retain the non-exported `:milkrust_visualizer` service and R8
+must preserve `MilkRustNativeBridge` JNI names (the existing keep rule covers
+`startHelper`). Run `MilkRustRendererServiceTest` on a private emulator/device;
+it verifies process separation and restart without requiring the MilkRust/mpv
+libraries or a GPU context. The native protocol regression now also checks v2
+presentation, a hung native-window equivalent and socket cancellation after FD
+reuse. No test/build was executed for this checkpoint.
+
+With produced mpv artifacts, exercise close during bind/setup/compile/capture/
+presentation, process death, rapid reopen, background/foreground, surface loss,
+rotation, quick clicks and queued controls. A retry may report that retirement
+is still pending until Binder confirms death. Check that player audio continues
+while killing only the renderer service; verify private preset/texture access
+in that process. Measure the bounded capture/present RGBA round trip at 1280x720
+and 30 fps before approving Android/TV performance. Device-wide GPU/kernel
+faults remain outside process-isolation guarantees.
 
 
 ## MilkRust noise resource checkpoint

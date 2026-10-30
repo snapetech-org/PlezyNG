@@ -678,6 +678,19 @@ while keeping dynamic/advanced resource features explicit. PlezyNG pins this
 revision. Execution, reference captures and the release gates above remain open.
 
 
+## 2026-10-30 Android process-isolation source checkpoint
+
+Android/Android TV now run EGL, MilkRust and native-window presentation in a
+non-exported private service process. The player retains the leased mpv PCM tap
+and display transition, using versioned bounded native socket requests. Startup
+and request deadlines, self-termination, Binder-confirmed retry admission and
+queued controls are implemented. Desktop and Android share protocol v2; native
+fault and Android service-boundary regression sources were added but not run.
+iOS/tvOS, Tizen and webOS remain local with bounded teardown/quarantine. Installed
+artifact tests, private-JIT builds, reference fidelity and device-wide GPU
+recovery remain distinct gates; this checkpoint does not close those gates.
+
+
 ## 2026-10-30 MilkRust noise resource source checkpoint
 
 The app source lock pins MilkRust `aeaf9147f4dce6e1f5b13c182e444a7dc368421b`, ABI v2. Native GL and WebGL now generate built-in noise with the compatible physical dimensions, low-frequency quality lattice, X/Y/Z cubic interpolation order, packed channels, and one-level texture state. Stable fixed seeds keep source output reproducible; the compatible reference reseeds from its runtime clock, so pixel identity still requires reference captures. No build or GPU comparison has been run.

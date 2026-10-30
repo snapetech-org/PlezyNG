@@ -11,13 +11,14 @@
 
 namespace plezy::visualization::render_protocol {
 constexpr uint32_t kMagic = 0x50565231;
-constexpr uint32_t kVersion = 1;
+constexpr uint32_t kVersion = 2;
 constexpr size_t kHeaderSize = 20;
 constexpr uint32_t kMaxMessage = 4 * 1024 * 1024;
 constexpr uint32_t kMaxWidth = 1280, kMaxHeight = 720;
 constexpr uint32_t kMaxPcmFrames = 4096;
+constexpr uint32_t kCanPresent = 1;
 constexpr uint32_t kReply = 0x80000000;
-enum class Command : uint32_t { Hello = 1, Reset, Load, Pcm, Capture, Pause, Mouse };
+enum class Command : uint32_t { Hello = 1, Reset, Load, Pcm, Capture, Pause, Mouse, Present };
 enum class Backend : uint32_t { MilkRust = 0, ProjectM = 1 };
 using Bytes = std::vector<uint8_t>;
 inline void U32(Bytes& out, uint32_t value) {
@@ -76,7 +77,7 @@ inline Header DecodeHeader(const Bytes& bytes) {
   if (reader.U32() != kMagic || reader.U32() != kVersion) throw std::runtime_error("Visualization helper protocol differs.");
   Header header{reader.U32(), reader.U32(), reader.U32()}; reader.End();
   const auto command = header.command & ~kReply;
-  if (!header.sequence || header.size > kMaxMessage || command < uint32_t(Command::Hello) || command > uint32_t(Command::Mouse))
+  if (!header.sequence || header.size > kMaxMessage || command < uint32_t(Command::Hello) || command > uint32_t(Command::Present))
     throw std::runtime_error("Invalid visualization helper header.");
   return header;
 }

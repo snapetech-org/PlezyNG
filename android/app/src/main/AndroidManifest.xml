@@ -55,6 +55,12 @@
             android:foregroundServiceType="mediaPlayback" />
         <!-- Driver-distraction state on Android Automotive OS. Optional: the platform library is
              absent on every other form factor, and CarRestrictionsMonitor falls back silently. -->
+        <service
+            android:name="com.edde746.plezy.mpv.MilkRustRendererService"
+            android:process=":milkrust_visualizer"
+            android:exported="false"
+            android:stopWithTask="true" />
+
         <uses-library android:name="android.car" android:required="false" />
         <!-- Qualcomm DSP RPC is a vendor library used by the optional QNN HTP runtime. -->
         <uses-native-library android:name="libcdsprpc.so" android:required="false" />

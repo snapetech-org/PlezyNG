@@ -510,3 +510,10 @@ repository connection.
 ## MilkRust corpus-accounting source pin
 
 Build exact lock revision `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2) on the compatible private JIT runner. Run the Rust workspace/compiler suite, CLI compatibility-report tests, `npm run test:content-report`, and the full community compatibility report. Confirm every discovered CLI entry is retained, the manifest merge accounts for missing/unlisted preset paths, directory/input/read/decode diagnostics are present, and the generated summary's file accounting is complete or lists each remaining exception. The checked-in generated summary remains historical until this run. No executable validation has been performed for this pin.
+
+
+## 2026-10-30 nested resource-struct source continuation
+
+MilkRust PR #20 now lowers scalar texture fields nested through plain structs when accessed through a global instance. The compiler preserves the leaf's original dimension and element width, resolves full dotted binding paths, and specializes resource-bearing helper parameters to the same global object. Regression sources cover direct rendering access, helper forwarding, reflected binding names and nested aggregate initializer rejection. Nested resource arrays and nested sampler-state propagation remain unsupported. This is a source checkpoint only; the compiler, build, browser and native render gates remain pending.
+
+PlezyNG locks MilkRust 2ca03eceee63ad5c9a6f9a3d99ef0bfb257e8d57. Build the updated exact engine pin after this source change on a compatible private ephemeral JIT runner. Run the MilkRust HLSL compiler tests and browser compiler/pixel harness, including nested texture-struct access and helper forwarding. This checkpoint has no build or test result and does not claim reference-image parity.

@@ -783,3 +783,8 @@ MilkRust PR #20 now supports helper parameters whose structs directly contain op
 ## 2026-10-30 corpus accounting source continuation
 
 PlezyNG now pins MilkRust `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2). The compatibility CLI uses bounded traversal, records directory/symlink/input-limit/I/O outcomes, and emits one status per discovered preset file. Its report generator checks that entry count matches the denominator, joins results to the manifest, and preserves missing, unlisted and duplicate paths plus per-preset diagnostics. Temporary sample names map back to original manifest paths. Pack inventory/hash errors are bounded and explicit. Regression sources are authored but unrun. The historical generated summary still needs regeneration on the required private JIT runner to explain its 37-file mismatch; no compatibility count is updated by source changes alone.
+
+
+## 2026-10-30 nested resource-struct source continuation
+
+MilkRust PR #20 commit 2ca03eceee63ad5c9a6f9a3d99ef0bfb257e8d57 now lowers scalar texture fields nested through plain structs when accessed through a global instance. The compiler preserves the leaf's original dimension and element width, resolves full dotted binding paths, and specializes resource-bearing helper parameters to the same global object. Regression sources cover direct rendering access, helper forwarding, reflected binding names and nested aggregate initializer rejection. Nested resource arrays and nested sampler-state propagation remain unsupported. This is a source checkpoint only; the compiler, build, browser and native render gates remain pending.

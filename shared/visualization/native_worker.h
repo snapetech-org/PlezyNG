@@ -215,7 +215,8 @@ class NativeWorker {
             width = width_;
             height = height_;
             transition_seconds = transition_seconds_;
-            mouse_down = mouse_down_;
+            mouse_down = mouse_down_ || mouse_click_pending_;
+            mouse_click_pending_ = false;
             mouse_x = mouse_x_;
             mouse_y = mouse_y_;
             mouse_dx = mouse_dx_;

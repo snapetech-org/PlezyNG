@@ -604,7 +604,7 @@ remove unused pointer fields  final VisualizerSession _native = VisualizerSessio
     final nextDown = down ?? event.buttons != 0;
     final dx = (event.delta.dx / size.width).clamp(-1.0, 1.0).toDouble();
     final dy = (event.delta.dy / size.height).clamp(-1.0, 1.0).toDouble();
-remove unused pointer assignments    _native.setMouseState(down: nextDown, x: x, y: y, dx: dx, dy: dy);
+    _native.setMouseState(down: nextDown, x: x, y: y, dx: dx, dy: dy);
   }
 
   Widget _nativePointerSurface(Size size, Widget child) => Listener(

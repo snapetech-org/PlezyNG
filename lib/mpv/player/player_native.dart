@@ -1,4 +1,4 @@
-import 'dart:async' show Stream, StreamController, unawaited;
+import 'dart:async' show Stream, StreamController, Zone, runZoned, unawaited;
 import 'dart:convert';
 import 'dart:io' show Platform;
 
@@ -103,6 +103,20 @@ class PlayerNative extends PlayerBase
     if (_pendingVideoRect == rect) _pendingVideoRect = null;
   }
 
+  static const Object _channelNameBaseZoneKey = #playerNativeChannelNameBase;
+
+  /// Runs a widget test with an isolated player channel base. Native channel
+  /// ownership is keyed by event-channel name; a test whose prior screen is
+  /// still settling must not inherit that unrelated owner.
+  @visibleForTesting
+  static Future<T> runWithChannelNameBaseForTesting<T>(String channelNameBase, Future<T> Function() body) =>
+      runZoned(body, zoneValues: {_channelNameBaseZoneKey: channelNameBase});
+
+  static String _channelBase(bool companionSession) {
+    final testBase = Zone.current[_channelNameBaseZoneKey] as String?;
+    return '${testBase ?? 'com.plezy/mpv_player'}${companionSession ? '/workspace' : ''}';
+  }
+
   /// Video player on the default mpv channels/core.
   ///
   /// [hardwareDecoding] mirrors the session's hardware-decoding setting so
@@ -111,8 +125,8 @@ class PlayerNative extends PlayerBase
   /// sessions, gpu-next for software ones (see
   /// MpvPlayerCore.initialVideoOutput; #2010). Other platforms ignore it.
   PlayerNative({this._hardwareDecoding = true, bool companionSession = false, super.listenToNativeEvents = true})
-    : methodChannel = MethodChannel('com.plezy/mpv_player${companionSession ? '/workspace' : ''}'),
-      eventChannel = EventChannel('com.plezy/mpv_player${companionSession ? '/workspace' : ''}/events'),
+    : methodChannel = MethodChannel(_channelBase(companionSession)),
+      eventChannel = EventChannel('${_channelBase(companionSession)}/events'),
       audioOnly = false,
       _exclusiveAudio = true;
 

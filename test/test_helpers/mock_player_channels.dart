@@ -1,11 +1,13 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/mpv/player/player_native.dart';
 
 /// Installs mock method/event channel handlers for a native player for the
 /// duration of [testBody], then removes them.
 Future<void> withMockPlayerChannels({
   required String methodChannelName,
   required String eventChannelName,
+  String? channelNameBase,
   Future<Object?> Function(MethodCall call)? methodHandler,
   Future<Object?> Function(MethodCall call)? eventHandler,
   required Future<void> Function() testBody,
@@ -29,7 +31,11 @@ Future<void> withMockPlayerChannels({
   messenger.setMockMethodCallHandler(eventChannel, eventHandler ?? (call) async => null);
 
   try {
-    await testBody();
+    if (channelNameBase == null) {
+      await testBody();
+    } else {
+      await PlayerNative.runWithChannelNameBaseForTesting(channelNameBase, testBody);
+    }
   } finally {
     messenger.setMockMethodCallHandler(methodChannel, null);
     messenger.setMockMethodCallHandler(eventChannel, null);

@@ -233,6 +233,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   bool _requestTranslationCuda = false;
   bool _bilingualTranslation = false;
   bool _useTranslationMemory = false;
+  bool _sentenceContextTranslation = false;
+  int _sentenceReadingSpeed = 20;
   bool _useSeriesGlossary = false;
   final TextEditingController _glossaryController = TextEditingController();
   final Map<String, String> _glossaryDrafts = <String, String>{};
@@ -3081,7 +3083,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           : 'Preparing on-device language models…',
     );
     final memoryIdentity = _operationRevisionIdentity?.storageKey;
-    final memoryEnabled = _useTranslationMemory && profileId != null && memoryIdentity != null;
+    final memoryEnabled = _useTranslationMemory && !_sentenceContextTranslation && profileId != null && memoryIdentity != null;
     final memoryNamespace = SubtitleTranslationMemory.namespace(
       source: _sourceLanguage.bcpCode, target: _targetLanguage.bcpCode,
       engine: SubtitleTranslationService.desktopPlatformSupported ? 'argos-local' : 'mlkit-local',
@@ -3105,6 +3107,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       allowMobileData: _allowMobileData,
       requestDesktopCuda: _requestTranslationCuda,
       bilingual: _bilingualTranslation,
+      sentenceContext: _sentenceContextTranslation, charactersPerSecond: _sentenceReadingSpeed,
       glossary: glossary,
       onProgress: (completed, total) {
         if (mounted) setState(() => _status = 'Translating cue $completed of $total on this device…');
@@ -3127,7 +3130,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     _requireSubtitleCueIdentityPreserved(selected.$1, result.cues);
     if (!await _writeAndApply(
       result.cues,
-      operationLabel: 'Translated subtitles',
+      operationLabel: _sentenceContextTranslation ? 'Sentence-context translated subtitles' : 'Translated subtitles',
       operationLanguageCode: _targetLanguage.bcpCode,
       sourceCues: selected.$1,
       reviewWarnings: result.qualityWarnings,
@@ -4582,12 +4585,25 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             onTap: _busy ? null : () => unawaited(_synchronizeToReference(repairCuts: true)),
           ),
           if (_translationSupported) ...[
+            SwitchListTile(contentPadding: EdgeInsets.zero,
+              title: Text(t.videoSettings.subtitleSentenceContext),
+              subtitle: Text(t.videoSettings.subtitleSentenceHelp),
+              value: _sentenceContextTranslation,
+              onChanged: _busy ? null : (value) => setState(() {
+                _sentenceContextTranslation = value;
+                if (value) _useTranslationMemory = false;
+              })),
+            if (_sentenceContextTranslation) ...[
+              Text(t.videoSettings.subtitleSentenceReadingLimit(rate: _sentenceReadingSpeed)),
+              Slider(value: _sentenceReadingSpeed.toDouble(), min: 5, max: 60, divisions: 55,
+                onChanged: _busy ? null : (value) => setState(() => _sentenceReadingSpeed = value.round())),
+            ],
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(aiCopy.reuseTranslationMemory),
               subtitle: Text(aiCopy.translationMemoryDescription),
               value: _useTranslationMemory,
-              onChanged: _busy ? null : (value) => setState(() => _useTranslationMemory = value),
+              onChanged: _busy || _sentenceContextTranslation ? null : (value) => setState(() => _useTranslationMemory = value),
             ),
             TextButton(onPressed: _busy ? null : () => _run(() async {
               final profile = _activeProfileId;

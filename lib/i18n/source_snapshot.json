@@ -5749,5 +5749,9 @@
   "videoSettings.subtitleBackendCheckAgrees": "f0db0d7e472a70ce",
   "videoSettings.subtitleBackendCheckDiffers": "2b311bd06a6e8f81",
   "videoSettings.subtitleBackendCheckUnknown": "0a1ed8fcc343c686",
-  "videoSettings.subtitleBackendCheckRuntime": "5402b78080ab33e7"
+  "videoSettings.subtitleBackendCheckRuntime": "5402b78080ab33e7",
+  "videoSettings.subtitleSentenceContext": "d35b5ea4c648caca",
+  "videoSettings.subtitleSentenceHelp": "f154daa54fb176e3",
+  "videoSettings.subtitleSentenceReadingLimit": "724976a87e33b57b",
+  "videoSettings.subtitleSentenceReview": "3005623964bb5a84"
 }

@@ -10,6 +10,7 @@ import '../utils/platform_detector.dart';
 import 'settings_service.dart';
 import 'subtitle_language_text.dart';
 import 'subtitle_retimer.dart';
+import 'subtitle_sentence_layout.dart';
 
 /// Subtitle text translated on-device, using ML Kit on mobile or an optional
 /// locally installed Argos Translate runtime on desktop.
@@ -407,6 +408,66 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     return true;
   }
 
+  static Future<SubtitleTranslationResult> _translateSentences({
+    required List<SubtitleCue> cues, required TranslateLanguage sourceLanguage,
+    required TranslateLanguage targetLanguage, required bool allowMobileData,
+    required bool requestDesktopCuda, required bool bilingual, required Map<String, String> glossary,
+    required int charactersPerSecond, void Function(int completed, int total)? onProgress,
+  }) async {
+    final groups = SubtitleSentenceLayout.group(cues);
+    final progressMidpoint = cues.length ~/ 2;
+    final translated = await translateCues(cues: groups.map((group) => group.input).toList(),
+      sourceLanguage: sourceLanguage, targetLanguage: targetLanguage, allowMobileData: allowMobileData,
+      requestDesktopCuda: requestDesktopCuda, glossary: glossary,
+      onProgress: (completed, total) {
+        if (total <= 0) return;
+        final bounded = completed.clamp(0, total).toInt();
+        onProgress?.call(progressMidpoint * bounded ~/ total, cues.length);
+      });
+    if (translated.cues.length != groups.length) {
+      throw StateError('Sentence translation changed the group count.');
+    }
+    final output = <String, String>{}, fallback = <SubtitleCue>[];
+    var redistributed = 0;
+    for (var groupIndex = 0; groupIndex < groups.length; groupIndex++) {
+      final group = groups[groupIndex];
+      final text = translated.cues[groupIndex].text;
+      final parts = SubtitleSentenceLayout.distribute(group, text,
+        protectedTerms: glossary.values, charactersPerSecond: charactersPerSecond);
+      if (parts == null) { fallback.addAll(group.cues); continue; }
+      if (group.cues.length > 1) redistributed++;
+      for (var index = 0; index < group.cues.length; index++) output[group.cues[index].stableId] = parts[index];
+    }
+    final retry = fallback.isEmpty ? null : await translateCues(cues: fallback,
+      sourceLanguage: sourceLanguage, targetLanguage: targetLanguage, allowMobileData: allowMobileData,
+      requestDesktopCuda: requestDesktopCuda, glossary: glossary);
+    if (retry != null) {
+      if (retry.cues.length != fallback.length) throw StateError('Cue fallback changed the cue count.');
+      for (var index = 0; index < retry.cues.length; index++) {
+        output[fallback[index].stableId] = retry.cues[index].text;
+      }
+    }
+    final result = <SubtitleCue>[];
+    var bytes = 0;
+    for (final cue in cues) {
+      final translatedText = output[cue.stableId];
+      if (translatedText == null) throw StateError('Sentence translation omitted a cue.');
+      final text = _composeBilingual(cue.text, translatedText, bilingual);
+      bytes += utf8.encode(text).length;
+      if (text.length > 4000 || bytes > SubtitleRetimer.maximumInputBytes) {
+        throw FormatException(t.videoControls.subtitleAiControls.translationOutputLimit);
+      }
+      result.add(SubtitleCue(index: cue.index, startMs: cue.startMs, endMs: cue.endMs, text: text, cueId: cue.stableId));
+    }
+    onProgress?.call(cues.length, cues.length);
+    return SubtitleTranslationResult(cues: List.unmodifiable(result), backendLabel: translated.backendLabel,
+      fellBackToCpu: translated.fellBackToCpu || retry?.fellBackToCpu == true,
+      qualityWarnings: List.unmodifiable([
+        t.videoSettings.subtitleSentenceReview(groups: redistributed, fallback: fallback.length),
+        ...translated.qualityWarnings.take(50), ...?retry?.qualityWarnings.take(49),
+      ]));
+  }
+
   static Future<SubtitleTranslationResult> translateCues({
     required List<SubtitleCue> cues,
     required TranslateLanguage sourceLanguage,
@@ -414,6 +475,7 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
     bool allowMobileData = false,
     bool requestDesktopCuda = false,
     bool bilingual = false,
+    bool sentenceContext = false, int charactersPerSecond = 20,
     Map<String, String> glossary = const {},
     void Function(int completed, int total)? onProgress,
   }) async {
@@ -437,6 +499,15 @@ json.dump(translated, sys.stdout, ensure_ascii=False)
       throw FormatException(t.videoControls.subtitleAiControls.translationTextLimit);
     }
 
+    if (sentenceContext) {
+      if (cues.map((cue) => cue.stableId).toSet().length != cues.length) {
+        throw const FormatException('Sentence translation requires distinct cue identities.');
+      }
+      if (charactersPerSecond < 5 || charactersPerSecond > 60) throw const FormatException('Invalid sentence reading limit.');
+      return _translateSentences(cues: cues, sourceLanguage: sourceLanguage, targetLanguage: targetLanguage,
+        allowMobileData: allowMobileData, requestDesktopCuda: requestDesktopCuda, bilingual: bilingual,
+        glossary: normalizedGlossary, charactersPerSecond: charactersPerSecond, onProgress: onProgress);
+    }
     if (desktopPlatformSupported) {
       return _translateWithArgos(
         cues: cues,

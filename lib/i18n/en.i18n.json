@@ -4585,7 +4585,11 @@
     "subtitleBackendCheckAgrees": "The recognized words match the entered text after ignoring case and repeated spaces. This one sample is not a quality benchmark.",
     "subtitleBackendCheckDiffers": "The recognized text differs from the entered text. Review both; no quality score is inferred.",
     "subtitleBackendCheckUnknown": "No reference was supplied. Recognition quality is unknown. The exported report includes the recognized text and sample digest.",
-    "subtitleBackendCheckRuntime": "Requested: ${requested} · Runtime: ${runtime} · CPU fallback: ${fallback}"
+    "subtitleBackendCheckRuntime": "Requested: ${requested} · Runtime: ${runtime} · CPU fallback: ${fallback}",
+    "subtitleSentenceContext": "Translate connected sentence fragments",
+    "subtitleSentenceHelp": "Translate up to six nearby plain-text cues together, then distribute the words within the original cue times for review. Word placement is approximate. Groups that cannot fit fall back to independent translation. Reviewed translation memory is disabled for this mode.",
+    "subtitleSentenceReadingLimit": "Reading limit: ${rate} characters per second",
+    "subtitleSentenceReview": "${groups} sentence groups were redistributed within unchanged cue times. Word placement is approximate and needs review. ${fallback} cues fell back to independent translation. The reading limit is chosen by the viewer and has not been qualified by language."
   },
   "performanceOverlay": {
     "color": "Color",

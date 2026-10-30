@@ -7552,6 +7552,18 @@ class Translations$videoSettings$en {
 	/// en: 'Requested: ${requested} · Runtime: ${runtime} · CPU fallback: ${fallback}'
 	String subtitleBackendCheckRuntime({required String requested, required String runtime, required String fallback}) => 'Requested: ${requested} · Runtime: ${runtime} · CPU fallback: ${fallback}';
 
+	/// en: 'Translate connected sentence fragments'
+	String get subtitleSentenceContext => 'Translate connected sentence fragments';
+
+	/// en: 'Translate up to six nearby plain-text cues together, then distribute the words within the original cue times for review. Word placement is approximate. Groups that cannot fit fall back to independent translation. Reviewed translation memory is disabled for this mode.'
+	String get subtitleSentenceHelp => 'Translate up to six nearby plain-text cues together, then distribute the words within the original cue times for review. Word placement is approximate. Groups that cannot fit fall back to independent translation. Reviewed translation memory is disabled for this mode.';
+
+	/// en: 'Reading limit: ${rate} characters per second'
+	String subtitleSentenceReadingLimit({required int rate}) => 'Reading limit: ${rate} characters per second';
+
+	/// en: '${groups} sentence groups were redistributed within unchanged cue times. Word placement is approximate and needs review. ${fallback} cues fell back to independent translation. The reading limit is chosen by the viewer and has not been qualified by language.'
+	String subtitleSentenceReview({required int groups, required int fallback}) => '${groups} sentence groups were redistributed within unchanged cue times. Word placement is approximate and needs review. ${fallback} cues fell back to independent translation. The reading limit is chosen by the viewer and has not been qualified by language.';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -23060,6 +23072,10 @@ extension on Translations {
 			'videoSettings.subtitleBackendCheckDiffers' => 'The recognized text differs from the entered text. Review both; no quality score is inferred.',
 			'videoSettings.subtitleBackendCheckUnknown' => 'No reference was supplied. Recognition quality is unknown. The exported report includes the recognized text and sample digest.',
 			'videoSettings.subtitleBackendCheckRuntime' => ({required String requested, required String runtime, required String fallback}) => 'Requested: ${requested} · Runtime: ${runtime} · CPU fallback: ${fallback}',
+			'videoSettings.subtitleSentenceContext' => 'Translate connected sentence fragments',
+			'videoSettings.subtitleSentenceHelp' => 'Translate up to six nearby plain-text cues together, then distribute the words within the original cue times for review. Word placement is approximate. Groups that cannot fit fall back to independent translation. Reviewed translation memory is disabled for this mode.',
+			'videoSettings.subtitleSentenceReadingLimit' => ({required int rate}) => 'Reading limit: ${rate} characters per second',
+			'videoSettings.subtitleSentenceReview' => ({required int groups, required int fallback}) => '${groups} sentence groups were redistributed within unchanged cue times. Word placement is approximate and needs review. ${fallback} cues fell back to independent translation. The reading limit is chosen by the viewer and has not been qualified by language.',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

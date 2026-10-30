@@ -239,3 +239,14 @@ The app source lock advances to MilkRust `ee9a0353b4b968dc02a2e6f475b2699592e099
 ## 2026-10-30 real-file MilkDrop 3 pin
 
 Build and run MilkRust PR #20 at `ee9a0353b4b968dc02a2e6f475b2699592e099c3` on the private JIT runner. Cover Created/version and URL preambles, duplicate headers, numeric-prefix values, incomplete-marker fallback, BOM-prefixed complete wrappers, and explicit `.milk2` sprite enablement. No build or test is available for this pin; the GitHub connector currently exposes no workflow-dispatch action.
+
+
+## 2026-10-30 MilkRust mask and sprite source checkpoint
+
+The app's exact MilkRust source lock is `551bb46ffbccbe1c0fa0defd5480b240e9efab54` (ABI v2). Its saved-pair mask control
+checks all 30 pattern formulas against the published Lactea 4x2 vertex table;
+the sprite regression controls now cover duplicate `.milk2` header flags and
+ignore preset-body `sprite` records. Build and run this exact revision on the
+private JIT runner when a run can be started; capture native and WebGL reference
+images separately. No run is attached to this revision, and pixel parity is not
+claimed.

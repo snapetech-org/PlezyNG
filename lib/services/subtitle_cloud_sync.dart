@@ -244,6 +244,18 @@ class SubtitleCloudSync {
     final content = await _download(choice);
     final result = SubtitlePortableDefaults.decode(content); check(); return result;
   }
+  /// Advance causal context after importing a sole observed defaults version.
+  /// This never selects between concurrent versions or publishes a new preset.
+  Future<void> acknowledgeDefaults(SubtitleSyncChoice choice) => _exclusive(() async {
+    if (!defaults) throw SubtitleCloudSyncException(t.videoControls.subtitleCloudSync.syncWrongDefaultsChannel);
+    final cache = await _load(); _requireChoice(cache, choice);
+    if (_choices(cache.document).length != 1) {
+      throw SubtitleCloudSyncException(t.videoControls.subtitleCloudSync.syncChoicesChanged);
+    }
+    cache.basis = Map.of(choice.version.clock); cache.observed = choice.digest;
+    await _save(cache);
+  });
+
   void _requireChoice(_SubtitleSyncCache cache, SubtitleSyncChoice choice) {
     if (!_choices(cache.document).any((value) => value.digest == choice.digest &&
         canonicalSyncJson(value.version.clock) == canonicalSyncJson(choice.version.clock))) {

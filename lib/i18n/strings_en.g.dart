@@ -7597,6 +7597,33 @@ class Translations$videoSettings$en {
 	/// en: 'Select up to thirty seconds on the uploaded file clock. Only intersecting supplied cues are retained, clipped to this range. Their words will be exported as a separate caption file; their intervals control when the selected image region is filled.'
 	String get subtitleReconstructionInterval => 'Select up to thirty seconds on the uploaded file clock. Only intersecting supplied cues are retained, clipped to this range. Their words will be exported as a separate caption file; their intervals control when the selected image region is filled.';
 
+	/// en: 'Synchronize saved caption defaults automatically'
+	String get subtitleDefaultsAuto => 'Synchronize saved caption defaults automatically';
+
+	/// en: 'While the app is active, check this paired folder every five minutes. Publish saved changes and import a sole shared change only when local defaults still match the last common version. Different initial settings or concurrent edits require preview and an explicit choice. This changes defaults for future tracks; current captions stay as they are.'
+	String get subtitleDefaultsAutoHelp => 'While the app is active, check this paired folder every five minutes. Publish saved changes and import a sole shared change only when local defaults still match the last common version. Different initial settings or concurrent edits require preview and an explicit choice. This changes defaults for future tracks; current captions stay as they are.';
+
+	/// en: 'Automatic synchronization is off.'
+	String get subtitleDefaultsAutoOff => 'Automatic synchronization is off.';
+
+	/// en: 'Waiting for the next check.'
+	String get subtitleDefaultsAutoWaiting => 'Waiting for the next check.';
+
+	/// en: 'Synchronizing paired defaults…'
+	String get subtitleDefaultsAutoRunning => 'Synchronizing paired defaults…';
+
+	/// en: 'Saved defaults match the observed shared version.'
+	String get subtitleDefaultsAutoSynced => 'Saved defaults match the observed shared version.';
+
+	/// en: 'Defaults differ or have concurrent versions. Pull the shared versions and use the existing preview to choose; automatic import is paused.'
+	String get subtitleDefaultsAutoConflict => 'Defaults differ or have concurrent versions. Pull the shared versions and use the existing preview to choose; automatic import is paused.';
+
+	/// en: 'Synchronization is unavailable. Check the connection, profile and pairing. A changed folder or code requires a new opt-in.'
+	String get subtitleDefaultsAutoUnavailable => 'Synchronization is unavailable. Check the connection, profile and pairing. A changed folder or code requires a new opt-in.';
+
+	/// en: 'Check paired defaults now'
+	String get subtitleDefaultsAutoRefresh => 'Check paired defaults now';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -23120,6 +23147,15 @@ extension on Translations {
 			'videoSettings.subtitleReconstructionExportHelp' => 'The ZIP contains a video preview, a clip-relative caption file, the mask, before/after images and a provenance report. Review the whole clip before using it. Spatial filling invents pixels; it may damage picture detail or flicker. Current playback is unchanged.',
 			'videoSettings.subtitleReconstructionExport' => 'Export reconstruction preview ZIP',
 			'videoSettings.subtitleReconstructionInterval' => 'Select up to thirty seconds on the uploaded file clock. Only intersecting supplied cues are retained, clipped to this range. Their words will be exported as a separate caption file; their intervals control when the selected image region is filled.',
+			'videoSettings.subtitleDefaultsAuto' => 'Synchronize saved caption defaults automatically',
+			'videoSettings.subtitleDefaultsAutoHelp' => 'While the app is active, check this paired folder every five minutes. Publish saved changes and import a sole shared change only when local defaults still match the last common version. Different initial settings or concurrent edits require preview and an explicit choice. This changes defaults for future tracks; current captions stay as they are.',
+			'videoSettings.subtitleDefaultsAutoOff' => 'Automatic synchronization is off.',
+			'videoSettings.subtitleDefaultsAutoWaiting' => 'Waiting for the next check.',
+			'videoSettings.subtitleDefaultsAutoRunning' => 'Synchronizing paired defaults…',
+			'videoSettings.subtitleDefaultsAutoSynced' => 'Saved defaults match the observed shared version.',
+			'videoSettings.subtitleDefaultsAutoConflict' => 'Defaults differ or have concurrent versions. Pull the shared versions and use the existing preview to choose; automatic import is paused.',
+			'videoSettings.subtitleDefaultsAutoUnavailable' => 'Synchronization is unavailable. Check the connection, profile and pairing. A changed folder or code requires a new opt-in.',
+			'videoSettings.subtitleDefaultsAutoRefresh' => 'Check paired defaults now',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

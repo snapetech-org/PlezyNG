@@ -5764,5 +5764,14 @@
   "videoSettings.subtitleReconstructionConsent": "344c2e08a3b97569",
   "videoSettings.subtitleReconstructionExportHelp": "e2e9d2684a07a501",
   "videoSettings.subtitleReconstructionExport": "4ddd5778d045087a",
-  "videoSettings.subtitleReconstructionInterval": "e4950f2a46f6abe9"
+  "videoSettings.subtitleReconstructionInterval": "e4950f2a46f6abe9",
+  "videoSettings.subtitleDefaultsAuto": "8ae797440347ac9c",
+  "videoSettings.subtitleDefaultsAutoHelp": "0689328489e5dad1",
+  "videoSettings.subtitleDefaultsAutoOff": "841be3db5aa99d50",
+  "videoSettings.subtitleDefaultsAutoWaiting": "64bb11b7158a74c4",
+  "videoSettings.subtitleDefaultsAutoRunning": "a7f1824ac43233eb",
+  "videoSettings.subtitleDefaultsAutoSynced": "59cbb84592c8403c",
+  "videoSettings.subtitleDefaultsAutoConflict": "31e504171afdc2d8",
+  "videoSettings.subtitleDefaultsAutoUnavailable": "fb3a30c1c49df016",
+  "videoSettings.subtitleDefaultsAutoRefresh": "d9eec7fefc246000"
 }

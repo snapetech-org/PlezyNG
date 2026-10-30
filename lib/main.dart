@@ -43,6 +43,7 @@ import 'services/remote_streams/remote_preparation_worker.dart';
 import 'services/subtitle_background_worker.dart';
 import 'services/subtitle_job_ownership.dart';
 import 'services/subtitle_job_service.dart';
+import 'services/subtitle_defaults_auto_sync.dart';
 import 'services/assistive_technology_service.dart';
 import 'services/device_performance.dart';
 import 'services/cast_media_service.dart';
@@ -1946,6 +1947,14 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
             final controller = previous!;
             controller.attachProfile(active.activeId, blocked: active.isBinding || !active.lastBindingSucceeded);
             return controller;
+          },
+        ),
+        ChangeNotifierProxyProvider<SourceController, SubtitleDefaultsAutoSync>(
+          lazy: false,
+          create: (_) => SubtitleDefaultsAutoSync(),
+          update: (_, sources, previous) {
+            previous!.bind(sources);
+            return previous;
           },
         ),
         // Download provider. Downloads are shared, but sync rules are scoped to

@@ -190,11 +190,11 @@ capture or a passed runtime test.
 
 ## 2026-10-30 source pin update
 
-The exact MilkRust source lock is now `6fa904570482bb2324dfa64bbb7321e143ef0c9e`. It includes the corrected
+The exact MilkRust source lock is now `2e81e049d3dc996d469304e7cdf3e93d0996dbf5`. It includes the corrected
 carried-random `.milk2` mask input, global static HLSL sampler-state lowering with independent U/V/W Wrap/Clamp
 modes, reference-source paired-tap blur kernels in native GL/WebGL, and bounded
-legacy effect-file sampler_state blocks that bind named textures and matching
-point/linear filters. Sampler reflection includes offset sampling, 3D fetch and
-texture-size intrinsics.
+legacy effect-file sampler_state blocks with independent min/mag/mip filters.
+Native/WebGL use 96 shared sampler modes; reflection covers offset sampling,
+3D fetch and texture-size intrinsics.
 Run compiler, renderer, and reference-image work only on the required private
 JIT runners. This source update has not been built or tested.

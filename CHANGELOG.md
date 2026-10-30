@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Restore Android CI coverage for MPV Dolby Vision preference routing and fallback playback stats after Activity detachment.
 - Route the checksum-pinned simdutf CMake archive through verified Schannel curl on Windows private JIT runners while retaining FetchContent hash verification.
 - Ensure the vendored iOS, tvOS, and macOS torrent XCFrameworks have concrete CocoaPods targets, and inspect the generated iOS Pods project in CI diagnostics.
 - Fetch checksum-locked Windows native archives through verified Schannel curl on private JIT builds.

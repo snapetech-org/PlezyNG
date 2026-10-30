@@ -89,6 +89,33 @@ def build(args):
         bundle = work / "bundle"
         bundle.mkdir()
         shutil.copyfile(library, bundle / library.name)
+        run("cmake", "-S", ROOT / "native/visualizer/tv-helper", "-B", work / "helper",
+            f"-DCMAKE_TOOLCHAIN_FILE={toolchain}", "-DCMAKE_BUILD_TYPE=Release")
+        run("cmake", "--build", work / "helper", "--config", "Release")
+        helper = work / "helper/plezy_visualizer_helper"
+        helper_header = helper.read_bytes()[:20]
+        if (len(helper_header) != 20 or helper_header[:4] != b"\x7fELF"
+                or helper_header[4:6] != bytes([elf_class, 1])
+                or struct.unpack_from("<H", helper_header, 18)[0] != machine):
+            raise ValueError("Visualization helper has the wrong ELF architecture")
+        shutil.copyfile(helper, bundle / helper.name)
+        (bundle / helper.name).chmod(0o755)
+        host_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        if not re.fullmatch(r"[a-f0-9]{40}", host_revision):
+            raise ValueError("Invalid visualization host revision")
+        if subprocess.check_output(["git", "status", "--porcelain", "--", "shared/visualization", "native/visualizer"], cwd=ROOT):
+            raise ValueError("Visualization host sources must match their committed archive")
+        with (bundle / "visualizer-host-source.tar.gz").open("wb") as file:
+            with gzip.GzipFile(filename="", fileobj=file, mode="wb", mtime=0) as compressed:
+                archive = subprocess.Popen(["git", "archive", "--format=tar", f"--prefix=plezy-visualizer-{host_revision}/",
+                    host_revision, "--", "LICENSE", "shared/visualization", "native/visualizer"], cwd=ROOT, stdout=subprocess.PIPE)
+                assert archive.stdout is not None
+                try:
+                    shutil.copyfileobj(archive.stdout, compressed)
+                finally:
+                    archive.stdout.close()
+                if archive.wait() != 0:
+                    raise ValueError("Could not archive corresponding visualization host source")
         with (bundle / "milkrust-source.tar.gz").open("wb") as file:
             with gzip.GzipFile(filename="", fileobj=file, mode="wb", mtime=0) as compressed:
                 archive = subprocess.Popen(["git", "archive", "--format=tar", f"--prefix=milkrust-{lock['commit']}/", lock["commit"], "--", "Cargo.toml", "Cargo.lock", "LICENSE", "LICENSE-SCOPE.md", "README.md", "crates", "docs", "tools"], cwd=source, stdout=subprocess.PIPE)
@@ -102,13 +129,16 @@ def build(args):
         notices = (ROOT / "native/visualizer/notices/MilkRust-AGPL-3.0.txt").read_text()
         notices += "\n\nHLSLParser (MIT):\n" + (source / "crates/milkrust-hlsl/vendor/hlslparser/LICENSE").read_text()
         notices += "\n\nMilkRust core third-party notices:\n" + (source / "crates/milkrust-core/THIRD_PARTY_NOTICES.md").read_text()
+        notices += "\n\nThe PlezyNG visualization helper is AGPL-3.0-only. Corresponding host source and stb_image notices are in visualizer-host-source.tar.gz.\n"
         (bundle / "MILKRUST-NOTICES.txt").write_text(notices)
-        metadata = {"schemaVersion": 1, "abi": lock["abi"], "target": f"tizen-{args.arch}",
+        metadata = {"schemaVersion": 2, "abi": lock["abi"], "target": f"tizen-{args.arch}",
+            "renderProtocol": 2, "hostSourceRevision": host_revision,
             "sourceRevision": lock["commit"], "buildRun": f"https://github.com/snapetech-org/PlezyNG/actions/runs/{run_id}",
             "runnerPolicy": "private-ephemeral-jit", "rustToolchain": rust, "rustTarget": target,
             "toolchainSha256": sha(toolchain), "compilerSha256": sha(tools["CMAKE_CXX_COMPILER"]),
             "librarySha256": sha(bundle / library.name), "sourceArchiveSha256": sha(bundle / "milkrust-source.tar.gz"),
-            "noticesSha256": sha(bundle / "MILKRUST-NOTICES.txt")}
+            "noticesSha256": sha(bundle / "MILKRUST-NOTICES.txt"),
+            "helperSha256": sha(bundle / helper.name), "hostSourceArchiveSha256": sha(bundle / "visualizer-host-source.tar.gz")}
         (bundle / "milkrust-native.json").write_text(json.dumps(metadata, sort_keys=True, indent=2) + "\n")
         bundle.rename(output)
     print(sha(output / "milkrust-native.json"))

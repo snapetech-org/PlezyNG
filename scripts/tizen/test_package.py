@@ -49,7 +49,10 @@ class PackageTest(unittest.TestCase):
         path = self.root / 'fixture.tpk'
         with zipfile.ZipFile(path, 'w') as archive:
             for name, content in entries.items():
-                archive.writestr(name, content)
+                info = zipfile.ZipInfo(name)
+                info.create_system = 3
+                info.external_attr = (0o100755 if name == 'lib/plezy_visualizer_helper' else 0o100644) << 16
+                archive.writestr(info, content)
         return path
 
     def test_report_is_structural_not_hardware_qualification(self):
@@ -62,16 +65,18 @@ class PackageTest(unittest.TestCase):
 
     def visualizer_fixture(self, arch='arm'):
         content = {'libmilkrust_native.so': elf(arch), 'milkrust-source.tar.gz': b'synthetic source, not a build',
+                   'plezy_visualizer_helper': elf(arch), 'visualizer-host-source.tar.gz': b'synthetic host source',
                    'MILKRUST-NOTICES.txt': b'synthetic fixture notice'}
         pin = json.loads((package.ROOT / 'native/visualizer/sources.lock.json').read_text())['milkrust']
-        metadata = {'schemaVersion': 1, 'abi': 2, 'sourceRevision': pin['commit'], 'target': f'tizen-{arch}',
+        metadata = {'schemaVersion': 2, 'renderProtocol': 2, 'hostSourceRevision': 'a' * 40,
+                    'abi': 2, 'sourceRevision': pin['commit'], 'target': f'tizen-{arch}',
                     'runnerPolicy': 'private-ephemeral-jit',
                     'buildRun': 'https://github.com/snapetech-org/MilkRust/actions/runs/123'}
         for name, (key, _) in package.VISUALIZER_FILES.items():
             metadata[key] = hashlib.sha256(content[name]).hexdigest()
         raw = json.dumps(metadata).encode()
         entries = {'res/visualizer/milkrust-native.json': raw}
-        entries.update({('lib/' if name.endswith('.so') else 'res/visualizer/') + name: value
+        entries.update({('lib/' if name.endswith('.so') or name == 'plezy_visualizer_helper' else 'res/visualizer/') + name: value
                         for name, value in content.items()})
         return metadata, raw, content, entries
 
@@ -91,6 +96,18 @@ class PackageTest(unittest.TestCase):
                 package.inspect_package(self.archive(extra=altered), 'arm')
         with self.assertRaisesRegex(ValueError, 'duplicate MilkRust'):
             package.inspect_package(self.archive(extra={**entries, 'other/libmilkrust_native.so': elf()}), 'arm')
+        with self.assertRaisesRegex(ValueError, 'duplicate visualization helper'):
+            package.inspect_package(self.archive(extra={**entries, 'other/plezy_visualizer_helper': elf()}), 'arm')
+
+    def test_visualizer_rejects_old_helper_protocol(self):
+        metadata, _, _, _ = self.visualizer_fixture()
+        metadata['renderProtocol'] = 1
+        with self.assertRaisesRegex(ValueError, 'identity, ABI or build provenance'):
+            package.visualizer_metadata(json.dumps(metadata).encode(), 'arm')
+        metadata['renderProtocol'] = 2
+        metadata['schemaVersion'] = 1
+        with self.assertRaisesRegex(ValueError, 'identity, ABI or build provenance'):
+            package.visualizer_metadata(json.dumps(metadata).encode(), 'arm')
 
     def test_visualizer_stage_requires_reviewed_digest_pin_and_tv_architecture(self):
         metadata, raw, content, _ = self.visualizer_fixture()
@@ -105,6 +122,7 @@ class PackageTest(unittest.TestCase):
             package.stage_visualizer(package.ROOT, destination, bundle, '0' * 64, 'arm')
         package.stage_visualizer(package.ROOT, destination, bundle, reviewed, 'arm')
         self.assertEqual((destination / 'tizen/lib/libmilkrust_native.so').read_bytes(), content['libmilkrust_native.so'])
+        self.assertEqual((destination / 'tizen/lib/plezy_visualizer_helper').stat().st_mode & 0o777, 0o755)
         metadata['sourceRevision'] = '0' * 40
         manifest.write_text(json.dumps(metadata))
         with self.assertRaisesRegex(ValueError, 'app source pin'):

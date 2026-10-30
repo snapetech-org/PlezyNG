@@ -37,16 +37,22 @@ REQUIRED_NATIVE_LIBRARIES = (
 )
 VISUALIZER_MANIFEST = str(APP_ROOT / "visualizer/milkrust-native.json")
 VISUALIZER_LIBRARY = str(APP_ROOT / "lib/libmilkrust_native.so")
+VISUALIZER_HELPER = str(APP_ROOT / "lib/plezy_visualizer_helper")
+VISUALIZER_HOST_SOURCE = str(APP_ROOT / "visualizer/visualizer-host-source.tar.gz")
 VISUALIZER_SOURCE = str(APP_ROOT / "visualizer/milkrust-source.tar.gz")
 VISUALIZER_NOTICES = str(APP_ROOT / "visualizer/MILKRUST-NOTICES.txt")
 VISUALIZER_ARTIFACTS = {
     VISUALIZER_MANIFEST,
+    VISUALIZER_HELPER,
+    VISUALIZER_HOST_SOURCE,
     VISUALIZER_LIBRARY,
     VISUALIZER_SOURCE,
     VISUALIZER_NOTICES,
 }
 VISUALIZER_FILES = {
     VISUALIZER_LIBRARY: ("librarySha256", 256 * 1024 * 1024),
+    VISUALIZER_HELPER: ("helperSha256", 32 * 1024 * 1024),
+    VISUALIZER_HOST_SOURCE: ("hostSourceArchiveSha256", 64 * 1024 * 1024),
     VISUALIZER_SOURCE: ("sourceArchiveSha256", 256 * 1024 * 1024),
     VISUALIZER_NOTICES: ("noticesSha256", 1024 * 1024),
 }
@@ -199,6 +205,10 @@ def read_tar_members(
                     raise ValueError(f"unsupported special file in IPK tar archive: {name!r}")
                 if PurePosixPath(name).name == "libmilkrust_native.so" and name != VISUALIZER_LIBRARY:
                     raise ValueError("unexpected or duplicate MilkRust runtime location in webOS IPK")
+                if PurePosixPath(name).name == "plezy_visualizer_helper" and name != VISUALIZER_HELPER:
+                    raise ValueError("unexpected or duplicate visualization helper location in webOS IPK")
+                if name == VISUALIZER_HELPER and member.mode != 0o755:
+                    raise ValueError("visualization helper is not executable")
                 if validate_app_layout:
                     if not (name in allowed_directories or name.startswith(app_prefix) or name.startswith(package_prefix)):
                         raise ValueError(f"unexpected path in PlezyNG IPK: {name!r}")
@@ -249,7 +259,9 @@ def inspect_visualizer(entries: dict[str, bytes]) -> dict[str, object]:
     if (
         not isinstance(manifest, dict)
         or type(manifest.get("schemaVersion")) is not int
-        or manifest.get("schemaVersion") != 1
+        or manifest.get("schemaVersion") != 2
+        or manifest.get("renderProtocol") != 2
+        or not re.fullmatch(r"[0-9a-f]{40}", str(manifest.get("hostSourceRevision", "")))
         or type(manifest.get("abi")) is not int
         or manifest.get("abi") != 2
         or manifest.get("target") != "webos-arm"
@@ -273,6 +285,7 @@ def inspect_visualizer(entries: dict[str, bytes]) -> dict[str, object]:
         if sha256(data) != manifest[digest_key]:
             raise ValueError(f"MilkRust package digest mismatch: {path}")
     verify_arm_elf(entries[VISUALIZER_LIBRARY], "libmilkrust_native.so")
+    verify_arm_elf(entries[VISUALIZER_HELPER], "plezy_visualizer_helper")
     return {
         **manifest,
         "manifestSha256": sha256(manifest_bytes),

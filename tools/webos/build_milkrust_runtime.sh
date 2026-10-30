@@ -164,6 +164,19 @@ PY
 
 mkdir -m 700 -- "$BUNDLE_DIR"
 install -m 0644 -- "$LIBRARY" "$BUNDLE_DIR/libmilkrust_native.so"
+cmake -S "$ROOT/native/visualizer/tv-helper" -B "$TASK_ROOT/visualizer-helper-build" \
+  -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=arm \
+  "-DCMAKE_CXX_COMPILER=$CXX" "-DCMAKE_SYSROOT=$TARGET_SYSROOT" \
+  "-DCMAKE_CXX_FLAGS=-march=armv7-a -marm -mfpu=neon -mfloat-abi=softfp" >&2
+cmake --build "$TASK_ROOT/visualizer-helper-build" --config Release >&2
+install -m 0755 -- "$TASK_ROOT/visualizer-helper-build/plezy_visualizer_helper" "$BUNDLE_DIR/plezy_visualizer_helper"
+HOST_REVISION="$(git -C "$ROOT" rev-parse HEAD)"
+if [[ ! "$HOST_REVISION" =~ ^[0-9a-f]{40}$ || -n "$(git -C "$ROOT" status --porcelain -- shared/visualization native/visualizer)" ]]; then
+  echo "Visualization host sources must match their committed archive." >&2
+  exit 1
+fi
+git -C "$ROOT" archive --format=tar --prefix="plezy-visualizer-$HOST_REVISION/" "$HOST_REVISION" -- LICENSE shared/visualization native/visualizer |
+  gzip --no-name --best > "$BUNDLE_DIR/visualizer-host-source.tar.gz"
 git -C "$TASK_SOURCE" archive --format=tar --prefix="milkrust-$SOURCE_REVISION/" "$SOURCE_REVISION" -- Cargo.toml Cargo.lock LICENSE LICENSE-SCOPE.md README.md crates docs tools |
   gzip --no-name --best > "$BUNDLE_DIR/milkrust-source.tar.gz"
 install -m 0644 -- "$ROOT/native/visualizer/notices/MilkRust-AGPL-3.0.txt" "$BUNDLE_DIR/MILKRUST-NOTICES.txt"
@@ -172,23 +185,32 @@ install -m 0644 -- "$ROOT/native/visualizer/notices/MilkRust-AGPL-3.0.txt" "$BUN
   cat "$TASK_SOURCE/crates/milkrust-hlsl/vendor/hlslparser/LICENSE"
   printf '\n\nMilkRust core third-party notices:\n'
   cat "$TASK_SOURCE/crates/milkrust-core/THIRD_PARTY_NOTICES.md"
+  printf '\n\nThe PlezyNG visualization helper is AGPL-3.0-only. Corresponding host source and stb_image notices are in visualizer-host-source.tar.gz.\n'
 } >> "$BUNDLE_DIR/MILKRUST-NOTICES.txt"
 
-"$WEBOS_PYTHON_BIN" - "$BUNDLE_DIR" "$SOURCE_REVISION" "$ABI" "$RUST_TOOLCHAIN" "$RUST_TARGET" "$RUNNER_POLICY" "$GITHUB_RUN_ID" <<'PY'
+"$WEBOS_PYTHON_BIN" - "$BUNDLE_DIR" "$SOURCE_REVISION" "$ABI" "$RUST_TOOLCHAIN" "$RUST_TARGET" "$RUNNER_POLICY" "$GITHUB_RUN_ID" "$HOST_REVISION" <<'PY'
 import hashlib
 import json
+import struct
 import sys
 from pathlib import Path
 
 bundle = Path(sys.argv[1])
-source_revision, abi, toolchain, target, runner_policy, run_id = sys.argv[2:]
+source_revision, abi, toolchain, target, runner_policy, run_id, host_revision = sys.argv[2:]
+header = (bundle / "plezy_visualizer_helper").read_bytes()[:20]
+if len(header) != 20 or header[:4] != b"\x7fELF" or header[4:6] != b"\x01\x01" or struct.unpack_from("<H", header, 18)[0] != 40:
+    raise SystemExit("Visualization helper is not a little-endian ARM ELF32 executable.")
 names = {
     "librarySha256": "libmilkrust_native.so",
     "sourceArchiveSha256": "milkrust-source.tar.gz",
     "noticesSha256": "MILKRUST-NOTICES.txt",
+    "helperSha256": "plezy_visualizer_helper",
+    "hostSourceArchiveSha256": "visualizer-host-source.tar.gz",
 }
 manifest = {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
+    "renderProtocol": 2,
+    "hostSourceRevision": host_revision,
     "abi": int(abi),
     "target": "webos-arm",
     "sourceRevision": source_revision,
@@ -204,7 +226,7 @@ for key, filename in names.items():
 )
 PY
 
-if [[ "$(find "$BUNDLE_DIR" -mindepth 1 -maxdepth 1 -type f | wc -l)" -ne 4 ]]; then
+if [[ "$(find "$BUNDLE_DIR" -mindepth 1 -maxdepth 1 -type f | wc -l)" -ne 6 ]]; then
   echo "MilkRust bundle is missing required artifacts or contains unexpected files." >&2
   exit 1
 fi

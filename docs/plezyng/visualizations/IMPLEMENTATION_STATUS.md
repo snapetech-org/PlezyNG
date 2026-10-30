@@ -25,7 +25,7 @@ runners may be used. Compiled behavior and device fidelity remain unknown.
 | Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Preset changes | Every native MilkRust bridge forwards the selected 0–10 second duration to a bounded display fade from the last published frame; zero cuts immediately; audio generation changes clear history | Executed switching, resize/pause and rapid-selection coverage; this is a frozen-frame fade, not a second continuously running old preset |
-| Renderer containment | Packaged MilkRust helper on Linux/Windows/macOS and private Android/Android TV service; Linux projectM shares the desktop helper; bounded native IPC, process termination and retry admission | First builds, injected-fault execution, installed helper discovery/signing and device-wide GPU recovery |
+| Renderer containment | Packaged MilkRust helper on Linux/Windows/macOS/Tizen/webOS and private Android/Android TV service; Linux projectM shares the desktop helper; bounded native IPC, process termination and retry admission | First builds, injected-fault execution, installed helper discovery/signing and device-wide GPU recovery |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
 | Library/UI | Search, notices, favorites, playlists, import, download/cancel/retry/update/remove, offline receipts and controls | Executed user flows, accessibility, TV focus, localization and performance |
 | Content | Existing offline CC0 fixture, 24 original CC0 studies and 55 unchanged CC BY 4.0 CaYaDev presets with pinned provenance; historical candidates remain rights-review-required | Archive builds, rights review and per-preset/target qualification before catalog promotion |
@@ -71,8 +71,10 @@ Android/Android TV now bind a non-exported service in a private app process.
 The player owns its mpv PCM lease and transitions; EGL, shader/image work and
 ANativeWindow publication run in that service. Socket shutdown and a separate
 service Handler terminate it; retry admission remains occupied until Binder
-death confirms retirement. iOS/tvOS, Tizen and webOS retain bounded thread
-teardown and quarantine; their driver calls remain in the app process. A helper does not contain a
+death confirms retirement. Tizen/webOS now use a packaged helper with socket
+cancellation and child admission tracking; their parent sends no PID-based
+termination signal. iOS/tvOS retain bounded thread teardown and quarantine;
+their driver calls remain in the app process. A helper does not contain a
 device-wide GPU/kernel fault or provide a filesystem/security sandbox. Private
 JIT fault tests and installed-device recovery checks remain unrun.
 
@@ -674,3 +676,26 @@ without loading GL/mpv. None has run; compiled/runtime confidence remains unknow
 ## 2026-10-30 MilkRust noise resource checkpoint
 
 The source lock now pins MilkRust `aeaf9147f4dce6e1f5b13c182e444a7dc368421b` (ABI v2). Its built-in 2D/3D noise textures now use MilkDrop's physical dimensions, quality-specific cubic expansion in the same axis order, packed channel generation, and a single mip level in native GL and WebGL. The source keeps deterministic fixed seeds rather than the reference's runtime-clock reseeding, so exact noise pixels remain unqualified. No build, renderer execution, or reference capture was run for this checkpoint.
+
+## 2026-10-30 Tizen/webOS renderer helpers
+
+Both TV hosts now send controls, PCM and bounded RGBA frames through protocol v2
+to a packaged `lib/plezy_visualizer_helper`. EGL/GLES, MilkRust loading, shader
+compilation and image decoding execute there. The parent retains the existing
+Samsung/SoLoud audio binding and Flutter pixel leases. The helper monitors socket
+closure independently of rendering and exits without graphics teardown; the
+parent refuses retries while an old child remains unreaped. This transport does
+not require glibc 2.34 or pidfds and never signals a PID from the player. Child
+startup closes inherited nonstandard descriptors and sets parent-death SIGKILL.
+Both hosts now also handle normalized pointer controls and latched quick clicks.
+
+TV runtime builders compile the helper with the selected SDK and produce its
+corresponding PlezyNG source archive. TV manifest schema v2 requires protocol v2,
+engine/helper/source/notices digests and host source revision. TPK/IPK staging
+and inspection require the helper at its canonical executable location and
+reject incomplete, altered or wrong-architecture bundles. Linux fault-test
+source covers the older-kernel transport; package regression sources cover the
+new artifact requirements. Source parsing/whitespace checks passed. SDK builds,
+fault tests, firmware execution policy, installed textures and playback
+continuity remain unverified. iOS/tvOS still need a qualified platform recovery
+policy; no helper promises recovery from a device-wide driver/kernel fault.

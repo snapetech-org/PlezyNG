@@ -30,6 +30,8 @@ DESCRIPTION = "Plex media client for LG webOS TVs."
 ROOT = Path(__file__).resolve().parents[2]
 VISUALIZER_FILES = {
     "libmilkrust_native.so": ("librarySha256", 256 * 1024 * 1024),
+    "plezy_visualizer_helper": ("helperSha256", 32 * 1024 * 1024),
+    "visualizer-host-source.tar.gz": ("hostSourceArchiveSha256", 64 * 1024 * 1024),
     "milkrust-source.tar.gz": ("sourceArchiveSha256", 256 * 1024 * 1024),
     "MILKRUST-NOTICES.txt": ("noticesSha256", 1024 * 1024),
 }
@@ -151,7 +153,9 @@ def _validate_visualizer_manifest(raw: bytes) -> dict[str, object]:
     if (
         not isinstance(data, dict)
         or type(data.get("schemaVersion")) is not int
-        or data.get("schemaVersion") != 1
+        or data.get("schemaVersion") != 2
+        or data.get("renderProtocol") != 2
+        or not re.fullmatch(r"[0-9a-f]{40}", str(data.get("hostSourceRevision", "")))
         or type(data.get("abi")) is not int
         or data.get("abi") != 2
         or data.get("target") != "webos-arm"
@@ -201,7 +205,7 @@ def _stage_visualizer(app_dir: Path, bundle_path: Path, expected_manifest_sha256
             raise PackageError(f"MilkRust artifact is missing, linked or outside the size limit: {name}")
         if _sha256(path) != data[digest_key]:
             raise PackageError(f"MilkRust artifact digest mismatch: {name}")
-        if name.endswith(".so") and _elf_machine(path) != 40:
+        if (name.endswith(".so") or name == "plezy_visualizer_helper") and _elf_machine(path) != 40:
             raise PackageError("MilkRust runtime must be little-endian ARM ELF32 for webOS TVs")
 
     lib_dir = app_dir / "lib"
@@ -209,14 +213,16 @@ def _stage_visualizer(app_dir: Path, bundle_path: Path, expected_manifest_sha256
     if lib_dir.is_symlink() or not lib_dir.is_dir() or resource_dir.exists() or resource_dir.is_symlink():
         raise PackageError("MilkRust target path is linked, missing its library directory, or already occupied")
     runtime = lib_dir / "libmilkrust_native.so"
-    if runtime.exists() or runtime.is_symlink():
+    helper = lib_dir / "plezy_visualizer_helper"
+    if runtime.exists() or runtime.is_symlink() or helper.exists() or helper.is_symlink():
         raise PackageError("An unreviewed MilkRust runtime already exists in the app directory")
 
     resource_dir.mkdir(mode=0o755)
     shutil.copyfile(manifest, resource_dir / manifest.name)
     for name in VISUALIZER_FILES:
-        destination = runtime if name.endswith(".so") else resource_dir / name
+        destination = lib_dir / name if name.endswith(".so") or name == "plezy_visualizer_helper" else resource_dir / name
         shutil.copyfile(bundle / name, destination)
+        destination.chmod(0o755 if name == "plezy_visualizer_helper" else 0o644)
     return data
 
 
@@ -382,7 +388,7 @@ def package(
         raise PackageError("Specify both the MilkRust bundle and its manifest SHA-256")
     if visualizer_native is not None:
         _stage_visualizer(app_real, visualizer_native, visualizer_manifest_sha256 or "")
-    elif (app_real / "lib/libmilkrust_native.so").exists() or (app_real / "visualizer").exists():
+    elif (app_real / "lib/libmilkrust_native.so").exists() or (app_real / "lib/plezy_visualizer_helper").exists() or (app_real / "visualizer").exists():
         raise PackageError("MilkRust files must be supplied only through the reviewed artifact input")
     if sorted(path.name for path in expected_data_root.iterdir()) != ["usr"]:
         raise PackageError("IPK staging data tree must contain only usr/")

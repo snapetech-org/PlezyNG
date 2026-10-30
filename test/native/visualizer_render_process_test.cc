@@ -9,6 +9,7 @@
 #include <cstdlib>
 #if defined(__linux__)
 #include <sys/prctl.h>
+#include "../../shared/visualization/render_tv_process.h"
 #endif
 using namespace plezy::visualization;
 using namespace plezy::visualization::render_protocol;
@@ -240,6 +241,40 @@ void SocketCases() {
   moved.reset(); cancel(); // Cancellation remains safe after transport retirement.
 }
 #endif
+#if defined(__linux__)
+std::unique_ptr<TvRenderBackend> TvClient() {
+  const auto deadline = RenderPipe::Clock::now() + std::chrono::seconds(5);
+  for (;;) {
+    try { return std::make_unique<TvRenderBackend>(render_process_detail::ExecutablePath()); }
+    catch (const std::exception& error) {
+      if (std::string(error.what()).find("still terminating") == std::string::npos || RenderPipe::Clock::now() >= deadline) throw;
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+  }
+}
+void TvProcessCases() {
+  for (const char* mode : {"healthy", "hang", "crash", "healthy"}) {
+    auto client = TvClient(); client->Reset(); client->Load(mode, "fixture");
+    std::vector<uint8_t> frame;
+    if (std::string(mode) == "healthy") {
+      client->Capture(3, 2, 0, frame);
+      Require(frame.size() == 24 && frame.front() == 79, "TV helper lost a complete frame");
+    } else {
+      const auto started = RenderPipe::Clock::now();
+      Reject([&] { client->Capture(3, 2, 0, frame); }, "TV helper fault was accepted");
+      Require(RenderPipe::Clock::now() - started < std::chrono::seconds(4), "TV helper fault exceeded its deadline");
+    }
+  }
+  auto client = TvClient(); client->Reset(); client->Load("hang", "fixture");
+  const auto cancel = client->Cancellation();
+  std::thread stop([cancel] { std::this_thread::sleep_for(std::chrono::milliseconds(40)); cancel(); });
+  bool rejected = false; std::vector<uint8_t> frame;
+  const auto started = RenderPipe::Clock::now();
+  try { client->Capture(2, 2, 0, frame); } catch (const std::exception&) { rejected = true; }
+  stop.join();
+  Require(rejected && RenderPipe::Clock::now() - started < std::chrono::seconds(1), "TV socket shutdown waited for the GPU");
+}
+#endif
 }
 int main(int argc, char** argv) {
   if (argc == 3 && std::string(argv[1]) == "--plezy-render-pipe") {
@@ -259,6 +294,9 @@ int main(int argc, char** argv) {
     ProtocolCases(); ProcessCases();
 #if !defined(_WIN32)
     SocketCases();
+#endif
+#if defined(__linux__)
+    TvProcessCases();
 #endif
     std::cout << "Isolated visualization protocol and process cases passed\n";
   } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }

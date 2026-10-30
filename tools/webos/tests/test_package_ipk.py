@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import hashlib
 import json
 import os
 import sys
@@ -52,7 +53,9 @@ class PackageIpkTests(unittest.TestCase):
 
     def test_milkrust_provenance_accepts_private_plezyng_build_run(self) -> None:
         manifest = {
-            "schemaVersion": 1,
+            "schemaVersion": 2,
+            "renderProtocol": 2,
+            "hostSourceRevision": "a" * 40,
             "abi": 2,
             "target": "webos-arm",
             "sourceRevision": json.loads(
@@ -63,8 +66,50 @@ class PackageIpkTests(unittest.TestCase):
             "librarySha256": "0" * 64,
             "sourceArchiveSha256": "1" * 64,
             "noticesSha256": "2" * 64,
+            "helperSha256": "3" * 64,
+            "hostSourceArchiveSha256": "4" * 64,
         }
         package_ipk._validate_visualizer_manifest(json.dumps(manifest).encode("utf-8"))
+
+    def test_helper_bundle_is_verified_and_staged_executable(self) -> None:
+        with tempfile.TemporaryDirectory(dir=os.environ["PLEZY_WEBOS_TEST_TMP"]) as temporary:
+            root = Path(temporary)
+            _, app = make_staging_tree(root)
+            (app / "lib").mkdir()
+            bundle = root / "renderer"
+            bundle.mkdir()
+            content = {name: make_elf32_arm() if name.endswith(".so") or name == "plezy_visualizer_helper" else b"source/notices fixture"
+                       for name in package_ipk.VISUALIZER_FILES}
+            manifest = {
+                "schemaVersion": 2, "renderProtocol": 2, "hostSourceRevision": "a" * 40,
+                "abi": 2, "target": "webos-arm", "runnerPolicy": "private-ephemeral-jit",
+                "sourceRevision": json.loads((package_ipk.ROOT / "native/visualizer/sources.lock.json").read_text())["milkrust"]["commit"],
+                "buildRun": "https://github.com/snapetech-org/PlezyNG/actions/runs/123",
+            }
+            for name, data in content.items():
+                (bundle / name).write_bytes(data)
+                manifest[package_ipk.VISUALIZER_FILES[name][0]] = hashlib.sha256(data).hexdigest()
+            raw = json.dumps(manifest).encode()
+            (bundle / "milkrust-native.json").write_bytes(raw)
+            reviewed = hashlib.sha256(raw).hexdigest()
+            (bundle / "plezy_visualizer_helper").unlink()
+            with self.assertRaisesRegex(package_ipk.PackageError, "complete reviewed bundle"):
+                package_ipk._stage_visualizer(app, bundle, reviewed)
+            (bundle / "plezy_visualizer_helper").write_bytes(b"altered")
+            with self.assertRaisesRegex(package_ipk.PackageError, "digest mismatch"):
+                package_ipk._stage_visualizer(app, bundle, reviewed)
+            (bundle / "plezy_visualizer_helper").write_bytes(content["plezy_visualizer_helper"])
+            package_ipk._stage_visualizer(app, bundle, reviewed)
+            self.assertEqual((app / "lib/plezy_visualizer_helper").stat().st_mode & 0o777, 0o755)
+            self.assertEqual((app / "visualizer/visualizer-host-source.tar.gz").read_bytes(), content["visualizer-host-source.tar.gz"])
+            entries = {str(verify_package.APP_ROOT / "visualizer/milkrust-native.json"): raw}
+            for name, data in content.items():
+                folder = "lib" if name.endswith(".so") or name == "plezy_visualizer_helper" else "visualizer"
+                entries[str(verify_package.APP_ROOT / folder / name)] = data
+            self.assertFalse(verify_package.inspect_visualizer(entries)["hardwareQualified"])
+            for name in entries:
+                with self.subTest(missing=name), self.assertRaisesRegex(ValueError, "incomplete"):
+                    verify_package.inspect_visualizer({key: value for key, value in entries.items() if key != name})
 
     def test_control_parser_rejects_duplicate_fields(self) -> None:
         with self.assertRaisesRegex(ValueError, "repeats field 'Package'"):

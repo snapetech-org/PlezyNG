@@ -694,3 +694,15 @@ recovery remain distinct gates; this checkpoint does not close those gates.
 ## 2026-10-30 MilkRust noise resource source checkpoint
 
 The app source lock pins MilkRust `aeaf9147f4dce6e1f5b13c182e444a7dc368421b`, ABI v2. Native GL and WebGL now generate built-in noise with the compatible physical dimensions, low-frequency quality lattice, X/Y/Z cubic interpolation order, packed channels, and one-level texture state. Stable fixed seeds keep source output reproducible; the compatible reference reseeds from its runtime clock, so pixel identity still requires reference captures. No build or GPU comparison has been run.
+
+
+## 2026-10-30 Tizen/webOS process boundary
+
+TV renderer work now runs in the packaged helper, using bounded protocol v2
+requests and socket-driven process retirement without a parent PID kill. Host
+audio ownership, frame leases and pointer input remain connected. TV SDK build
+recipes and schema-v2 package gates include the executable, exact digests and
+corresponding helper source. Native and packaging regression sources were added;
+only source parsing/whitespace checks ran. iOS/tvOS recovery remains a platform
+constraint, and all builds, firmware execution, corpus/fidelity, new mpv binary
+promotion and release qualification remain open.

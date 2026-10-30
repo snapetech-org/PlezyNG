@@ -223,8 +223,8 @@ The full engine license is in `notices/MilkRust-AGPL-3.0.txt`.
 
 Desktop GL compilation and image decode execute in the packaged helper with
 two-second IPC deadlines and OS process termination. Android GL compilation and native-window publication run in a private service
-process with bounded socket requests. Other mobile/TV GL compilation can still
-block its retained worker.
+process with bounded socket requests. Tizen/webOS compilation and decode run in their packaged helper. iOS/tvOS GL
+compilation can still block its retained worker.
 Exception handling alone does not impose a driver timeout. Qualification must cover
 backgrounding, surface/context loss, seek generation reset, pixel leases during
 unregister, repeated create/dispose, multichannel audio and passthrough. Process
@@ -268,7 +268,7 @@ inherited handles and uses a kill-on-close job; POSIX closes unrelated descripto
 monitors parent disconnection and uses SIGKILL, with pidfd signaling on Linux.
 Retry is refused while a terminated child is still alive. Linux requires glibc
 2.34+ and pidfd support. The helper is not a filesystem sandbox, and cannot recover
-a device-wide GPU/kernel hang. iOS/tvOS, Tizen and webOS retain the local backend.
+a device-wide GPU/kernel hang. iOS/tvOS retain the local backend.
 
 Desktop CMake installs `plezy_visualizer_helper[.exe]` beside the app; Xcode builds
 and signs it in `Contents/MacOS` with the app's signing identity. The executable
@@ -296,3 +296,23 @@ Binder dies. No player-side PID kill or local renderer fallback is used. The
 existing JNI keep rule covers the new entry point. Android instrumentation
 source verifies service packaging, death and rebind without a GPU; native fault
 cases cover presentation and stable-FD cancellation. All remain unrun.
+
+### Tizen/webOS helper packages
+
+`render_tv_process.h` supports the older Linux firmware used by these TV hosts.
+It forks only to close inherited nonstandard descriptors, install a parent-death
+signal and exec the packaged helper; child setup never calls the inherited C++
+allocator or renderer. Requests use the shared remote client. Cancellation
+shuts down a stable socket, letting the independent helper monitor exit even
+when rendering stalls. Parent retirement uses nonblocking child reaping and
+blocks retry while that child remains alive; it sends no PID-based kill.
+
+`native/visualizer/tv-helper/CMakeLists.txt` builds `tv_helper.cc` with the selected
+SDK. The runtime builders emit six files: the engine, helper, two corresponding
+source archives, combined notices and schema-v2 provenance. The helper lives in
+`lib/` beside the engine; lookup handles webOS shared plugins and Tizen static
+plugins in `bin/`. TPK/IPK staging and inspection enforce executable mode,
+architecture, protocol and digests. The player retains its PCM/session and
+Flutter pixel leases; both TV control handlers now forward pointer state.
+Firmware permissions, package installation, GL and recovery are unverified.
+There is no in-process fallback if child startup fails.

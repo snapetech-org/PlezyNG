@@ -31,6 +31,8 @@ WHISPER_GGML_SHA256 = 'a37a1f51f6617d0beae9ce907a25c361f782cfe76d56e9c8001257a30
 
 VISUALIZER_FILES = {
     'libmilkrust_native.so': ('librarySha256', 256 * 1024 * 1024),
+    'plezy_visualizer_helper': ('helperSha256', 32 * 1024 * 1024),
+    'visualizer-host-source.tar.gz': ('hostSourceArchiveSha256', 64 * 1024 * 1024),
     'milkrust-source.tar.gz': ('sourceArchiveSha256', 256 * 1024 * 1024),
     'MILKRUST-NOTICES.txt': ('noticesSha256', 1024 * 1024),
 }
@@ -40,7 +42,8 @@ def visualizer_metadata(raw, arch):
     if not raw or len(raw) > 65536:
         raise ValueError('Invalid MilkRust artifact manifest size')
     data = json.loads(raw)
-    if (not isinstance(data, dict) or data.get('schemaVersion') != 1 or data.get('abi') != 2
+    if (not isinstance(data, dict) or data.get('schemaVersion') != 2 or data.get('renderProtocol') != 2
+            or not re.fullmatch(r'[0-9a-f]{40}', str(data.get('hostSourceRevision', ''))) or data.get('abi') != 2
             or data.get('target') != f'tizen-{arch}'
             or not re.fullmatch(r'[0-9a-f]{40}', str(data.get('sourceRevision', '')))
             or data.get('runnerPolicy') != 'private-ephemeral-jit'
@@ -69,7 +72,7 @@ def stage_visualizer(source, destination, bundle, manifest_digest, arch):
         path = bundle / name
         if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size <= limit or sha256(path) != data[key]:
             raise ValueError(f'MilkRust artifact mismatch: {name}')
-        if name.endswith('.so'):
+        if name.endswith('.so') or name == 'plezy_visualizer_helper':
             with path.open('rb') as stream:
                 if elf_arch(stream.read(64)) != arch:
                     raise ValueError('MilkRust library has the wrong TV architecture')
@@ -78,8 +81,9 @@ def stage_visualizer(source, destination, bundle, manifest_digest, arch):
     (destination / 'tizen/lib').mkdir(parents=True, exist_ok=True)
     shutil.copyfile(manifest, resource / manifest.name)
     for name in VISUALIZER_FILES:
-        target = destination / 'tizen/lib' / name if name.endswith('.so') else resource / name
+        target = destination / 'tizen/lib' / name if name.endswith('.so') or name == 'plezy_visualizer_helper' else resource / name
         shutil.copyfile(bundle / name, target)
+        target.chmod(0o755 if name == 'plezy_visualizer_helper' else 0o644)
     return data
 
 
@@ -89,7 +93,11 @@ def inspect_visualizer(archive, names, arch):
     runtimes = sorted(name for name in names if PurePosixPath(name).name == 'libmilkrust_native.so')
     if runtimes and runtimes != [library]:
         raise ValueError('Unexpected or duplicate MilkRust runtime location')
-    artifacts = {manifest, library, 'res/visualizer/milkrust-source.tar.gz', 'res/visualizer/MILKRUST-NOTICES.txt'}
+    helpers = sorted(name for name in names if PurePosixPath(name).name == 'plezy_visualizer_helper')
+    if helpers and helpers != ['lib/plezy_visualizer_helper']:
+        raise ValueError('Unexpected or duplicate visualization helper location')
+    artifacts = {manifest, *('lib/' + name if name.endswith('.so') or name == 'plezy_visualizer_helper'
+        else 'res/visualizer/' + name for name in VISUALIZER_FILES)}
     if not artifacts.intersection(names):
         return None
     if not artifacts.issubset(names):
@@ -98,13 +106,19 @@ def inspect_visualizer(archive, names, arch):
         raise ValueError('MilkRust manifest exceeds its size limit')
     data = visualizer_metadata(archive.read(manifest), arch)
     for name, (key, limit) in VISUALIZER_FILES.items():
-        entry = library if name.endswith('.so') else f'res/visualizer/{name}'
+        entry = f'lib/{name}' if name.endswith('.so') or name == 'plezy_visualizer_helper' else f'res/visualizer/{name}'
         if not 0 < archive.getinfo(entry).file_size <= limit:
             raise ValueError('MilkRust package resource exceeds its size limit')
         with archive.open(entry) as stream:
             digest = hashlib.file_digest(stream, 'sha256').hexdigest()
         if digest != data[key]:
             raise ValueError(f'MilkRust package digest mismatch: {name}')
+        if name == 'plezy_visualizer_helper':
+            if not (archive.getinfo(entry).external_attr >> 16) & 0o111:
+                raise ValueError('Visualization helper is not executable')
+            with archive.open(entry) as stream:
+                if elf_arch(stream.read(64)) != arch:
+                    raise ValueError('Visualization helper has the wrong TV architecture')
     return {**data, 'hardwareQualified': False, 'catalogueEligible': False}
 
 
@@ -482,6 +496,8 @@ def build(args):
             raise ValueError('Expected exactly one newly built TPK')
         native_report = json.loads((Path(args.native) / 'native-build.json').read_text())
         report = inspect_package(packages[0], args.arch, required_libraries={'libflutter_whisper_plugin.so'})
+        if report['visualizer'] is None:
+            raise ValueError('The Tizen SDK omitted the required visualization helper/runtime bundle')
         with zipfile.ZipFile(packages[0]) as archive:
             whisper_members = [name for name in archive.namelist()
                                if PurePosixPath(name).name == 'libflutter_whisper_plugin.so']

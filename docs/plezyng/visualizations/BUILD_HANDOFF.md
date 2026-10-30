@@ -294,8 +294,8 @@ phase. Verify the helper architecture, dependent runtime lookup, and macOS neste
 signature in the final installed artifact. Linux requires glibc 2.34+ and pidfd
 support; missing helper/OS support produces an explicit failure, without local
 rendering fallback. projectM's pinned framebuffer API is checked inside the Linux
-helper. iOS/tvOS, Tizen and webOS still use local rendering with thread quarantine;
-Android/Android TV use the private service described below.
+helper. iOS/tvOS still use local rendering with thread quarantine. Android/Android TV
+use the private service below; Tizen/webOS use their packaged helper below.
 
 The `visualizer_render_process_test.cc` source needs no GPU or MilkRust library:
 it starts itself as a fault-injecting child. Private Linux/macOS sanitizer jobs
@@ -339,3 +339,24 @@ faults remain outside process-isolation guarantees.
 ## MilkRust noise resource checkpoint
 
 Build and qualify MilkRust `aeaf9147f4dce6e1f5b13c182e444a7dc368421b` on compatible private JIT runners. The noise generator now mirrors MilkDrop's physical texture dimensions, quality-specific cubic expansion order and single-level texture setup in native GL and WebGL. Compare rendered samples against the reference; random seeding remains deterministic in MilkRust while the reference seeds from its runtime clock. No compiler, browser, GPU, or pixel result is available for this pin.
+
+## Tizen/webOS helper verification
+
+Rebuild TV bundles: manifest schema v1 is no longer accepted for these targets.
+Schema v2 includes `plezy_visualizer_helper`, its digest, protocol version 2 and
+`visualizer-host-source.tar.gz` with the host revision/digest. Existing Tizen and
+webOS runtime builders compile it through the pinned SDK; packaging stages it
+as executable `lib/plezy_visualizer_helper` beside `libmilkrust_native.so`. The
+TPK/IPK inspectors check the complete bundle, canonical paths, mode, architecture
+and hashes. Source checks passed; no SDK build or package was produced.
+
+On private JIT, run the expanded native process test on Linux plus the Tizen and
+webOS package regressions. On Samsung/LG devices, verify native child execution
+policy, EGL pbuffer access, runtime lookup, inherited-descriptor closure, preset
+file access, startup with the firmware's descriptor limit, cancellation during
+compile/decode/capture, player death, close/reopen and continued audio. The
+parent never signals a possibly reused PID: socket closure drives helper exit,
+and an unreaped child blocks retry. A startup failure reports unavailable/failed
+without local rendering fallback. Test pointer input, display fades, seek/track
+generations and texture leases against the existing music session. Firmware
+policy, performance and device-wide recovery remain qualification gates.

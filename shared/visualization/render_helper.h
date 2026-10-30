@@ -9,7 +9,7 @@
 #endif
 
 namespace plezy::visualization {
-// This entry point runs only in the packaged helper executable. On channel
+// This entry point runs only in a packaged helper or private service process. On channel
 // closure or protocol failure, exit the process without invoking a potentially
 // stuck graphics destructor. The parent also enforces a per-request deadline.
 [[noreturn]] inline void RunRenderHelper(RenderPipe::Handle channel,

@@ -1946,6 +1946,7 @@
     "videoSettings.subtitleExportSuccess",
     "videoSettings.subtitleMultiAnchorHelp",
     "videoSettings.subtitleNextCue",
+    "videoSettings.subtitleNotMarkedForced",
     "videoSettings.subtitlePlaybackTime",
     "videoSettings.subtitlePlaybackTimeAnchor1",
     "videoSettings.subtitlePlaybackTimeAnchor2",

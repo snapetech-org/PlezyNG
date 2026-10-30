@@ -7669,6 +7669,9 @@ class Translations$videoSettings$en {
 	/// en: 'The correction could not be transferred. Check its file size, values and matching copy/tracks, then preview again. A concurrent saved edit is preserved.'
 	String get subtitleTimingTransferFailed => 'The correction could not be transferred. Check its file size, values and matching copy/tracks, then preview again. A concurrent saved edit is preserved.';
 
+	/// en: 'Not marked forced'
+	String get subtitleNotMarkedForced => 'Not marked forced';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -23216,6 +23219,7 @@ extension on Translations {
 			'videoSettings.subtitleTimingSavedForNextOpen' => 'The correction was saved for the next open or track restoration. Current playback is unchanged.',
 			'videoSettings.subtitleTimingImportUndone' => 'The saved correction was restored.',
 			'videoSettings.subtitleTimingTransferFailed' => 'The correction could not be transferred. Check its file size, values and matching copy/tracks, then preview again. A concurrent saved edit is preserved.',
+			'videoSettings.subtitleNotMarkedForced' => 'Not marked forced',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

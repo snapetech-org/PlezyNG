@@ -4624,7 +4624,8 @@
     "subtitleTimingExported": "The current correction was exported.",
     "subtitleTimingSavedForNextOpen": "The correction was saved for the next open or track restoration. Current playback is unchanged.",
     "subtitleTimingImportUndone": "The saved correction was restored.",
-    "subtitleTimingTransferFailed": "The correction could not be transferred. Check its file size, values and matching copy/tracks, then preview again. A concurrent saved edit is preserved."
+    "subtitleTimingTransferFailed": "The correction could not be transferred. Check its file size, values and matching copy/tracks, then preview again. A concurrent saved edit is preserved.",
+    "subtitleNotMarkedForced": "Not marked forced"
   },
   "performanceOverlay": {
     "color": "Color",

@@ -5788,5 +5788,6 @@
   "videoSettings.subtitleTimingExported": "0afa645f93415cc8",
   "videoSettings.subtitleTimingSavedForNextOpen": "9bd3e3167f31bb3b",
   "videoSettings.subtitleTimingImportUndone": "c4f784f7121eee54",
-  "videoSettings.subtitleTimingTransferFailed": "8127800e4d181b2a"
+  "videoSettings.subtitleTimingTransferFailed": "8127800e4d181b2a",
+  "videoSettings.subtitleNotMarkedForced": "d0352b6eb15759af"
 }

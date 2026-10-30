@@ -703,7 +703,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
     controller
         .show(
           alignment: .topCenter,
-          constraints: const BoxConstraints(maxHeight: 80, maxWidth: 900),
+          constraints: BoxConstraints(maxHeight: (MediaQuery.sizeOf(context).height * .5).clamp(160.0, 340.0).toDouble(), maxWidth: 900),
           initialFocusNode: sliderFocusNode,
           builder: (_) => _CompactSyncBar(
             title: title,
@@ -2821,36 +2821,11 @@ class _CompactSyncBarState extends State<_CompactSyncBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const SizedBox(width: 16),
+    return SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
+      Padding(padding: const EdgeInsets.fromLTRB(16, 4, 12, 0), child: Row(children: [
         AppIcon(widget.icon, fill: 1, color: tokens(context).textMuted, size: 20),
         const SizedBox(width: 8),
-        Text(widget.title, style: const TextStyle(fontWeight: .w600, fontSize: 14)),
-        Expanded(
-          child: ExcludeFocus(
-            excluding: _savingCorrection,
-            child: IgnorePointer(
-              ignoring: _savingCorrection,
-              child: SyncOffsetControl(
-                key: ValueKey(_resetControl),
-                player: widget.player,
-                propertyName: widget.propertyName,
-                contentIdentity: widget.contentIdentity,
-                allowFileTools: widget.allowFileTools,
-                isCurrent: widget.correction == null ? null : () => widget.correction!.current,
-                initialOffset: _restoredOffset ?? widget.initialOffset,
-                initialSubtitleRate: _restoredRate ?? widget.initialSubtitleRate,
-                onSubtitleRateChanged: widget.onSubtitleRateChanged,
-                onOffsetChanged: widget.onOffsetChanged,
-                sliderFocusNode: widget.sliderFocusNode,
-                resetFocusNode: _resetFocusNode,
-                closeFocusNode: _closeFocusNode,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
+        Expanded(child: Text(widget.title, style: const TextStyle(fontWeight: .w600, fontSize: 14))),
         if (widget.correction != null)
           ListenableBuilder(
             listenable: widget.correction!.owner,
@@ -2879,8 +2854,28 @@ class _CompactSyncBarState extends State<_CompactSyncBar> {
             ),
           ),
         ),
-        const SizedBox(width: 12),
-      ],
-    );
+      ])),
+      ExcludeFocus(
+            excluding: _savingCorrection,
+            child: IgnorePointer(
+              ignoring: _savingCorrection,
+              child: SyncOffsetControl(
+                key: ValueKey(_resetControl),
+                player: widget.player,
+                propertyName: widget.propertyName,
+                contentIdentity: widget.contentIdentity,
+                allowFileTools: widget.allowFileTools,
+                isCurrent: widget.correction == null ? null : () => widget.correction!.current,
+                initialOffset: _restoredOffset ?? widget.initialOffset,
+                initialSubtitleRate: _restoredRate ?? widget.initialSubtitleRate,
+                onSubtitleRateChanged: widget.onSubtitleRateChanged,
+                onOffsetChanged: widget.onOffsetChanged,
+                sliderFocusNode: widget.sliderFocusNode,
+                resetFocusNode: _resetFocusNode,
+                closeFocusNode: _closeFocusNode,
+              ),
+            ),
+          ),
+    ]));
   }
 }

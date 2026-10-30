@@ -618,7 +618,8 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
               final detailParts = <String>[
                 ?languageDisplay,
                 if (result.forced || titleSaysForced(result.title) || titleSaysForced(result.displayTitle))
-                  t.fileInfo.flagForced,
+                  t.fileInfo.flagForced
+                else t.videoSettings.subtitleNotMarkedForced,
                 if (result.hearingImpaired ||
                     titleSaysHearingImpaired(result.title) ||
                     titleSaysHearingImpaired(result.displayTitle))

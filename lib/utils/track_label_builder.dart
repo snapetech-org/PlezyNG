@@ -189,6 +189,7 @@ class TrackLabelBuilder {
     // append the accessibility label only when that marker comes from the
     // secondary display-title metadata.
     final hearingImpaired = titleSaysHearingImpaired(cleanedDisplayTitle) && !titleSaysHearingImpaired(cleanedTitle);
+    final effectiveForced = forced || titleSaysForced(cleanedTitle) || titleSaysForced(cleanedDisplayTitle);
     return _compose(
       languageDisplay: resolveTrackLanguageDisplay(language: language, languageCode: languageCode),
       title: origin ?? cleanedTitle,
@@ -197,10 +198,11 @@ class TrackLabelBuilder {
       techParts: [
         if (codec != null && codec.isNotEmpty) CodecUtils.formatSubtitleCodec(codec),
         if (hearingImpaired) t.fileInfo.flagHearingImpaired,
+        if (!effectiveForced) t.videoSettings.subtitleNotMarkedForced,
       ],
       fallbackLabel: (n) => t.videoControls.subtitleTrack(n: n),
       index: index,
-      forced: forced || titleSaysForced(cleanedTitle),
+      forced: effectiveForced,
     );
   }
 

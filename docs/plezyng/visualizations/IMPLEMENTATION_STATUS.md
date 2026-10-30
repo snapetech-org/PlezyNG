@@ -868,3 +868,8 @@ private JIT compiler/build tests and reference/device rendering remain pending.
 ## 2026-10-30 global resource-struct initializer support
 
 The runtime lock now pins MilkRust `d7a646af44dc1fbd8d328bf607eaceaa63a46534` (ABI v2). Global resource-only structs accept direct aggregate initializers that alias compatible global texture bindings, including helper specialization over multiple global instances. Mixed numeric/resource, computed, local and mismatched-resource initializers fail closed. The change adds Rust source regressions but has not been built or run; the private runner and device checks remain open.
+
+
+## 2026-10-30 initialized resource alias shape guard
+
+PlezyNG now pins MilkRust `86f48b621737aebfbed05b40869f357ebebe4b6f` (ABI v2). Global resource-only struct aggregate aliases must match the source texture dimension and scalar/vector component width. Regression sources cover Texture1D versus Texture2D (which share the legacy GLSL sampler type) and float versus float4 element widths. The source remains unbuilt and unrun; private JIT compiler and renderer qualification remain pending.

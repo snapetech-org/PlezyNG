@@ -474,3 +474,8 @@ build, test or device qualification has run for this revision. Keep the lock
 ## 2026-10-30 latest HLSL resource support pin
 
 PlezyNG now locks MilkRust PR #20 at `d7a646af44dc1fbd8d328bf607eaceaa63a46534` (ABI v2). This source revision adds bounded global resource-only struct aggregate aliases for type-compatible global texture bindings; computed, mixed numeric/resource, local and mismatched forms fail closed. The matching native regression source is present but unrun. Keep `source-only-unqualified` until the compatible private JIT jobs and platform qualification complete.
+
+
+## MilkRust initialized resource alias shape check
+
+Build exact lock revision `86f48b621737aebfbed05b40869f357ebebe4b6f` (ABI v2) on the compatible private JIT runner. Run the Rust compiler/core suite, native HLSL tests, browser HLSL harness and Emscripten delivery. New source cases cover Texture1D-to-Texture2D aggregate alias rejection despite shared sampler lowering and Texture2D scalar/vector-width mismatch. Preserve failures and keep qualification at source-only until these checks and platform rendering gates pass. No executable validation has been run for this pin.

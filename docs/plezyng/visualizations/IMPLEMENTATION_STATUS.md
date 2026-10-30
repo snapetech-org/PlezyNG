@@ -21,7 +21,7 @@ runners may be used. Compiled behavior and device fidelity remain unknown.
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
 | HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/numeric arrays up to 16 dimensions and 4096 elements/all numeric matrix shapes/control flow; bounded 1D/2D/3D resource arrays with constant or side-effect-free dynamic selection, grouped declarations and direct global resource-struct fields | Compiler/corpus execution and reference fidelity; function-local resource arrays, nested resource-bearing structs, dynamic/advanced sampler state and resource kinds outside the declared profile remain explicit failures |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
-| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, real Created/version and URL preambles preserved, duplicate headers use the last value and numeric fields consume the compatible prefix, incomplete wrappers fall back to classic parsing, trailing sprites only with explicit `sprite=1` (otherwise preserved and inert), saved state carry, all eleven native/WebGL sprite blend modes/layers and bounded GIF/APNG/WebP animation | Reference pixel comparison for final compositing and sprite filtering/layer order |
+| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, real Created/version and URL preambles preserved, duplicate headers use the last value and numeric fields consume the compatible prefix, incomplete wrappers fall back to classic parsing, trailing sprites only with explicit `sprite=1` (otherwise preserved and inert), saved state carry, five upstream dynamic sprite blend modes (default 0; truncate and clamp each frame), optional 11-entry `SpriteBlend` engine extension and layers, and bounded GIF/APNG/WebP animation | Reference pixel comparison for final compositing and sprite filtering/layer order |
 | Browser texture decode | Static PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; animated GIF/APNG/WebP use bounded Rust decoding on the WASM thread, full-frame upload, frame delays and loop selection | Browser CSP integration, codec/GPU execution, animation regressions and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Preset changes | Every native MilkRust bridge forwards the selected 0–10 second duration to a bounded display fade from the last published frame; zero cuts immediately; audio generation changes clear history | Executed switching, resize/pause and rapid-selection coverage; this is a frozen-frame fade, not a second continuously running old preset |
@@ -178,7 +178,8 @@ corpus qualification, rights decisions and production custody/publication are al
 - Classic `.milk` saved sprites remain enabled by default unless `sprite=0`.
   Trailing `.milk2` blocks execute only with explicit `sprite=1`; missing or
   zero flags preserve them as inert source. Active sprite equations/layers and
-  all eleven saved blend modes have bounded native/WebGL paths. GPU
+  upstream `blendmode` uses five modes with dynamic per-frame semantics. The
+  optional static `SpriteBlend` table and modes 5–10 are engine extensions. GPU
   interpolation/compositing and sprite filtering still need reference-pixel qualification.
 - Native DDS row validation avoids multiplication overflow on 32-bit TV targets.
   Regression source covers excessive pitch in addition to color/alpha/orientation.
@@ -852,3 +853,13 @@ closed separately from device performance, compiler and recovery validation.
 ## 2026-10-30 resource-bearing HLSL helper arguments
 
 PlezyNG now pins MilkRust `1ab258e889d1932395e22015c383695611b918a5` (ABI v2). HLSL helper functions may take a direct resource-bearing struct parameter when each call supplies an unambiguous global struct instance. Specialization substitutes the global binding before ESSL lowering; local and dynamic resource-bearing struct arguments fail closed. Native regression source covers the global and local cases. The pin remains `source-only-unqualified`: the latest engine commit has no attached Actions run, and the connected GitHub tool exposes no workflow-dispatch operation for the required private JIT jobs. No build, test, compiler execution, render or device qualification was performed.
+
+
+## 2026-10-30 upstream sprite blend contract correction
+
+MilkRust PR #20 now pins `994e09dbec15702b03126011f1dcc21d7461f124` (ABI v2).
+Standard MilkDrop sprite `blendmode` defaults to 0, is evaluated after each
+frame's sprite equations, truncates to int, and clamps to 0..4. Explicit
+`SpriteBlend` selects the optional MilkRust 11-entry table; modes 5..10 are
+engine extensions. The app lock and this summary match that behavior. The
+private JIT compiler/build tests and reference/device rendering remain pending.

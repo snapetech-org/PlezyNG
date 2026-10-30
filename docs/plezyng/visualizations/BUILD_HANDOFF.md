@@ -459,3 +459,13 @@ closed separately from device performance, compiler and recovery validation.
 ## MilkRust direct resource-struct helper checkpoint
 
 Build exact lock revision `1ab258e889d1932395e22015c383695611b918a5` (ABI v2) on the compatible private JIT. It adds bounded specialization for helper parameters whose structs directly contain resources and whose arguments resolve to global struct instances. Local and dynamic arguments fail closed. Run the Rust compiler/core suite, native HLSL suite, browser HLSL harness and Emscripten delivery. The regression source covers both accepted global and rejected local arguments. No run is attached to this revision; the connected GitHub tools do not expose workflow dispatch. Keep the runtime lock `source-only-unqualified` until those checks and later rendering/device gates have evidence.
+
+
+## 2026-10-30 latest engine pin
+
+The app lock now points to MilkRust PR #20 revision
+`994e09dbec15702b03126011f1dcc21d7461f124` (ABI v2). The source correction gives
+standard per-frame `blendmode` the upstream default 0 and 0..4 clamp; the
+11-entry static `SpriteBlend` table is an explicit engine extension. No compiler,
+build, test or device qualification has run for this revision. Keep the lock
+`source-only-unqualified` until compatible private JIT and target checks complete.

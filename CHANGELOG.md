@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Install the GStreamer runtime plugins required to build Linux release bundles with Steam decoder support.
 - Provision native Temurin JDK 21 on private Windows CI and release runners so CMake can
   resolve JNI.
 - Prefetch and checksum-verify the pinned WinSparkle source through Schannel curl before Windows CMake configuration.

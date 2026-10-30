@@ -653,3 +653,7 @@ The MilkRust WebAssembly API accepts validated local clock fields, and its brows
 ## 2026-10-30 native MilkRust pointer input API
 
 MilkRust's ABI v2 now accepts finite mouse coordinates/deltas and a binary button state; the shared Plezy adapter exposes them through SetMouseState. Platform views do not yet route pointer or touch events into this method. The app lock pins MilkRust `ee0d836a118615fa58eb9125d7b8b2fc23014b24`. Native build and input regression remain pending on the compatible private JIT runners.
+
+## 2026-10-30 native pointer input source checkpoint
+
+The Flutter visualizer now routes mouse/touch pointer state through the inline and fullscreen surfaces to the native MilkRust ABI on Android, Apple, Linux, and Windows. UI and native queues coalesce movement deltas, and the native worker consumes them once per rendered frame. The PlezyNG source lock pins MilkRust `ffb4d4b97d1e92bdb6b4852077aff37710d46201`. Source routing is present; native build/input regressions and device checks remain open under the private-JIT requirement. This does not close exact renderer parity or release gates.

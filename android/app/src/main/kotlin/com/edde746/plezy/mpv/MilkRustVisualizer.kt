@@ -19,6 +19,7 @@ internal object MilkRustNativeBridge {
   external fun destroy(handle: Long)
   external fun load(handle: Long, path: String, root: String, transitionSeconds: Double)
   external fun resize(handle: Long, width: Int, height: Int)
+  external fun setMouseState(handle: Long, down: Boolean, x: Double, y: Double, dx: Double, dy: Double)
   external fun pause(handle: Long, paused: Boolean)
   external fun status(handle: Long): Array<String>
   external fun subtitlePcmCaptureAvailable(): Boolean
@@ -77,6 +78,8 @@ internal class MilkRustVisualizer(registry: TextureRegistry, playerSession: Long
   fun load(path: String, root: String, transitionSeconds: Double) =
     MilkRustNativeBridge.load(handle, path, root, transitionSeconds)
   fun resize(width: Int, height: Int) = MilkRustNativeBridge.resize(handle, width, height)
+  fun setMouseState(down: Boolean, x: Double, y: Double, dx: Double, dy: Double) =
+    MilkRustNativeBridge.setMouseState(handle, down, x, y, dx, dy)
   fun pause(paused: Boolean) = MilkRustNativeBridge.pause(handle, paused)
   fun status(): Map<String, Any> {
     val values = MilkRustNativeBridge.status(handle)

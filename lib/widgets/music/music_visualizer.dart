@@ -83,9 +83,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   int _profileRequestId = 0;
   Duration? _lastElapsed;
   double _phaseSeconds = 0;
-  double _pointerX = 0.5, _pointerY = 0.5;
-  bool _pointerDown = false;
-  final VisualizerSession _native = VisualizerSession();
+remove unused pointer fields  final VisualizerSession _native = VisualizerSession();
   final ValueNotifier<int> _optionsRevision = ValueNotifier(0);
   VisualizerPackStore? _store;
   String? _profileId;
@@ -606,10 +604,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
     final nextDown = down ?? event.buttons != 0;
     final dx = (event.delta.dx / size.width).clamp(-1.0, 1.0).toDouble();
     final dy = (event.delta.dy / size.height).clamp(-1.0, 1.0).toDouble();
-    _pointerX = x;
-    _pointerY = y;
-    _pointerDown = nextDown;
-    _native.setMouseState(down: nextDown, x: x, y: y, dx: dx, dy: dy);
+remove unused pointer assignments    _native.setMouseState(down: nextDown, x: x, y: y, dx: dx, dy: dy);
   }
 
   Widget _nativePointerSurface(Size size, Widget child) => Listener(

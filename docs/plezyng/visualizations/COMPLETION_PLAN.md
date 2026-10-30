@@ -519,3 +519,13 @@ grouped arrays, `sampler3D` arrays, arrays in function scopes and arrays in
 resource-bearing structs remain unsupported. PlezyNG pins MilkRust
 `3673eca589dd65c7e24c04edaed7eb4faa989c55`. The compiler and renderer path
 remain unrun under the source-only restriction.
+
+
+## 2026-10-30 resource-array struct-field continuation
+
+MilkRust PR #20 now expands constant-index Texture1D/Texture2D and legacy
+sampler/sampler2D array fields declared on global resource-struct instances.
+Bindings include the object and field names. Dynamic arrays, function-local
+arrays, Texture3D/sampler3D arrays and nested resource-bearing structs remain
+unsupported. PlezyNG pins MilkRust `d3b3f507bcb40a809d797db03ec55efd3e439bd4`.
+The implementation remains unbuilt and unqualified under the source-only rule.

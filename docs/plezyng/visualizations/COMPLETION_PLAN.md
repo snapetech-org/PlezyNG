@@ -788,3 +788,8 @@ PlezyNG now pins MilkRust `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2). T
 ## 2026-10-30 nested resource-struct source continuation
 
 MilkRust PR #20 commit 7a83ea328be14c4c9acddb24079ef8ac2658b45a now lowers scalar texture fields nested through plain structs when accessed through a global instance. The compiler preserves leaf dimension/element width, resolves full dotted paths, specializes resource-bearing helpers to global instances, and dispatches literal and side-effect-free dynamic indices for bounded resource arrays nested through those paths. Regression sources cover direct/helper access, static/dynamic array selection, binding reflection and rejected nested aggregate initializers. Function-local arrays, nested aggregate initializers and nested sampler-state propagation remain unsupported. This is source only; compiler, browser, native render and device gates remain pending.
+
+
+## 2026-10-30 immutable local resource-struct alias source continuation
+
+MilkRust PR #20 now includes commit 1cfb07306f0ced0b93f5d8aa13e4d5f55782b103 (ABI v2). A local resource-only struct copy initialized directly from a matching global instance is normalized to that binding before opaque-resource specialization. The rewrite is restricted to direct declarations in a function or shader body and rejects mutation, shadowing, mixed structs, computed/aggregate initializers and uninitialized locals. PlezyNG pins this source revision. No compiler, build, test, browser, render or device run was performed for this checkpoint.

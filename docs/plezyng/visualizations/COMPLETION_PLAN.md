@@ -763,3 +763,13 @@ Unresolved aliases and aliases between ordinary/comparison state types fail
 explicitly. Regression source covers these cases and all comparison-gather
 channels. No build, test, renderer run, pixel comparison or device qualification
 was performed; the lock remains `source-only-unqualified`.
+
+
+## 2026-10-30 MilkRust sampler-state alias follow-up
+
+PlezyNG pins MilkRust `81593b2657c9de2bd6ea4f1903a9f992a3572800` (ABI v2). Global alias type collection now
+checks brace and parenthesis scope, keeping helper parameters out of the global
+alias namespace. This preserves same-named `SamplerState` parameters across
+overloads while retaining static global alias chains and type validation.
+Native source regressions are present but unrun. The pin remains
+`source-only-unqualified`.

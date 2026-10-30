@@ -424,3 +424,13 @@ No build or test run exists for this engine pin; the GitHub connector does not
 expose workflow dispatch for the private JIT jobs. Reference pixels, native
 and browser driver behavior, device recovery and artifact promotion remain
 separate acceptance gates.
+
+
+## MilkRust sampler-state alias follow-up
+
+Build exact lock revision `81593b2657c9de2bd6ea4f1903a9f992a3572800` (ABI v2) on the compatible private JIT
+runner. The global alias collector now checks both brace and parenthesis depth,
+so `SamplerState` parameters in helper overloads do not collide with global
+state names. Run native overload/alias/compiler tests, the browser HLSL harness
+and Emscripten delivery. This source has not been compiled or tested; the
+connected GitHub Actions tools expose no dispatch for the required private job.

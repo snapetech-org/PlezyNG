@@ -812,3 +812,18 @@ This is source implementation only. No Rust/C++ build, compiler suite,
 browser run, render, reference-pixel comparison or device run was performed.
 The connected GitHub actions expose no workflow-dispatch operation, and the
 PR's private JIT runners remain the required execution environment.
+
+
+## 2026-10-30 MilkRust sampler-state alias follow-up
+
+The source lock pins MilkRust `81593b2657c9de2bd6ea4f1903a9f992a3572800` (ABI v2). Static global ordinary and
+comparison sampler aliases preserve their target profile, including forward
+chains, while helper parameters are excluded from global alias tracking. This
+avoids collisions between same-named sampler parameters in overloads and keeps
+the alias model limited to actual global declarations. Existing native source
+regressions cover helper overloads, channel gather variants, aliases, unresolved
+targets and ordinary/comparison type mismatches.
+
+No build, test, render, reference comparison or device check was performed.
+The private JIT workflow still has no connected dispatch action; this remains
+an unqualified source pin.

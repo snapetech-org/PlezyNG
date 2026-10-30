@@ -599,3 +599,7 @@ MilkRust now exposes validated local clock fields through its WebAssembly API. T
 ## 2026-10-30 MilkRust browser clock and native pointer inputs
 
 The app source lock now pins MilkRust `ee0d836a118615fa58eb9125d7b8b2fc23014b24` (ABI v2), which adds validated WebAssembly host-clock injection for the browser SDK and a native mouse-input setter. The shared C++ adapter loads and exposes normalized pointer state for native platform hosts. No platform view currently supplies pointer events to that setter; that wiring remains a source task. No build, test, browser capture, or device run is attached.
+
+## 2026-10-30 MilkRust native pointer route
+
+PlezyNG now routes inline and fullscreen Flutter mouse/touch events through Android, Apple, Linux, and Windows native hosts to MilkRust ABI v2. Event deltas are coalesced and accumulated across the UI and native queues, then consumed once by the next rendered frame. A malformed Dart handler token found during review was corrected. The source lock pins MilkRust `ffb4d4b97d1e92bdb6b4852077aff37710d46201`. Native build, input regressions, and device checks remain unrun; source delivery is not input qualification.

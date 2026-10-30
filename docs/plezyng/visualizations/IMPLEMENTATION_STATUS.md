@@ -496,11 +496,12 @@ capture or a passed runtime test.
 
 ## 2026-10-30 current MilkRust source checkpoint
 
-The source lock pins MilkRust `13ca31660acf3717e229543d51ea21d514bdc69d`, ABI v2. Saved-mask formulas consume
+The source lock pins MilkRust `6fa904570482bb2324dfa64bbb7321e143ef0c9e`, ABI v2. Saved-mask formulas consume
 effective carried random registers directly. Global static HLSL sampler states
 support point/linear filters and independent U/V/W Wrap/Clamp addressing.
 Legacy effect-file sampler_state blocks bind one texture and matching point/linear
-filters, with direct tex* calls lowered to the same aliases;
+filters, with direct tex* calls lowered to the same aliases. Reflection
+covers offset sampling, 3D fetch and texture-size intrinsics;
 anisotropic, mirror/border, separate min/mag/mip modes, and dynamic state
 propagation remain outside the profile. Native GL and WebGL now use MilkDrop's paired-tap blur weights,
 source-texel offsets, nested range transforms, and first-level edge darkening.

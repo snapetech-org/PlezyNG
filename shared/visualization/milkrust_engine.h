@@ -26,7 +26,7 @@ struct MilkRustApi {
   // clang-format off
 #define DECLARE(name) decltype(&milkrust_##name) name = nullptr;
   DECLARE(abi_version) DECLARE(create) DECLARE(load) DECLARE(texture_names)
-  DECLARE(texture) DECLARE(texture_gif) DECLARE(pcm) DECLARE(set_clock) DECLARE(render) DECLARE(render_rgba) DECLARE(destroy) DECLARE(last_error)
+  DECLARE(texture) DECLARE(texture_gif) DECLARE(pcm) DECLARE(set_clock) DECLARE(set_mouse) DECLARE(render) DECLARE(render_rgba) DECLARE(destroy) DECLARE(last_error)
 #undef DECLARE
       // clang-format on
       MilkRustApi() {
@@ -64,7 +64,7 @@ struct MilkRustApi {
     if (!name) { error = "Native MilkRust lacks the required ABI v2 symbols."; return; }
 #endif
     LOAD(abi_version) LOAD(create) LOAD(load) LOAD(texture_names) LOAD(texture) LOAD(texture_gif)
-    LOAD(pcm) LOAD(set_clock) LOAD(render) LOAD(render_rgba) LOAD(destroy) LOAD(last_error)
+    LOAD(pcm) LOAD(set_clock) LOAD(set_mouse) LOAD(render) LOAD(render_rgba) LOAD(destroy) LOAD(last_error)
 #undef LOAD
         // clang-format on
         if (abi_version() != MILKRUST_ABI_VERSION) error = "Native MilkRust ABI version does not match the app.";
@@ -172,6 +172,9 @@ class MilkRustEngine {
       Check(api_.pcm(handle_, stereo + offset * 2, count, generation));
       offset += count;
     }
+  }
+  void SetMouseState(bool down, double x, double y, double dx, double dy) {
+    Check(api_.set_mouse(handle_, down ? 1 : 0, x, y, dx, dy));
   }
   void Render(uint32_t framebuffer, uint32_t width, uint32_t height, double seconds) {
     SetLocalClock();

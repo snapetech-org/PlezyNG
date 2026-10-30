@@ -568,7 +568,7 @@ capture or a passed runtime test.
 
 ## 2026-10-30 mask, sampler-state and blur source checkpoint
 
-PlezyNG now pins MilkRust  `13ca31660acf3717e229543d51ea21d514bdc69d`, ABI v2. The engine uses effective
+PlezyNG now pins MilkRust `13ca31660acf3717e229543d51ea21d514bdc69d`, ABI v2. The engine uses effective
 carried `random_1..5` values for all saved `.milk2` masks, including zero
 process-start defaults and inheritance for partial headers. The HLSL compiler
 lowers global static `SamplerState` declarations with point/linear filtering and

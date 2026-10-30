@@ -73,7 +73,6 @@ abstract final class VisualizerContentLimits {
         var sawIdat = false;
         var sawImageData = false;
         var sawIend = false;
-        var firstControlBeforeIdat = false;
         var offset = 8;
         while (offset < bytes.length) {
           if (offset + 8 > bytes.length) malformed();
@@ -104,7 +103,6 @@ abstract final class VisualizerContentLimits {
               }
               frameControls++;
               if (frameControls > animationFrames) malformed();
-              if (!sawIdat && frameControls == 1) firstControlBeforeIdat = true;
             case 'IDAT':
               sawIdat = true;
               sawImageData = true;

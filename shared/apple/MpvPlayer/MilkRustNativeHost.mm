@@ -200,6 +200,9 @@ int PlezySubtitlePcmCaptureReadNext(void* player, double* pts, uint32_t* frames,
 - (void)resizeWidth:(NSInteger)width height:(NSInteger)height {
   if (_worker && width >= 1 && height >= 1 && width <= 16384 && height <= 16384) _worker->Resize(static_cast<int>(width), static_cast<int>(height));
 }
+- (void)setMouseState:(BOOL)down x:(double)x y:(double)y dx:(double)dx dy:(double)dy {
+  if (_worker) _worker->SetMouseState(down, x, y, dx, dy);
+}
 - (void)setPaused:(BOOL)paused { if (_worker) _worker->Pause(paused); }
 - (NSDictionary<NSString*,id>*)status {
   if (!_worker) return @{@"state":@"disposed", @"hasFrame":@NO};

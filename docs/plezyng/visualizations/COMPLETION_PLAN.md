@@ -736,3 +736,17 @@ At that checkpoint, the PlezyNG lock pointed to MilkRust `e940530aa1904f145f7f70
 ## 2026-10-30 Texture1D comparison-sampling source pin
 
 The PlezyNG lock now points to MilkRust `893a04399b5e02db8d201701a72f8c4a3ce61791` (ABI v2). Texture1D `SampleCmp` and `SampleCmpLevelZero` use the existing center-row mapping and scalar literal offset path, requiring a one-row backing image for parity; Texture2D GatherCmp remains supported. Texture3D/cube comparison calls, exact pixel parity, builds, tests and target-device qualification remain open. The source lock remains `source-only-unqualified`.
+
+## 2026-10-30 integrated HLSL source continuation
+
+The engine lock now points to `893a04399b5e02db8d201701a72f8c4a3ce61791`. Static helper
+specialization retains numeric overloads/prototypes and supports forwarding
+between overloads. A typed call-graph validator rejects actual recursion.
+Grouped resource initializers, comparison-only state forwarding, generated
+texture-binding reflection and comparison resource-array result types are
+implemented with native/compiler and browser pixel regression sources.
+
+The earlier Apple lifecycle/interruption checkpoint is also committed. This
+updates the implementation for the declared profile; the original plan's
+private-runner compile/test, reference/corpus, runtime-artifact and release
+acceptance requirements remain unfulfilled. Only source checks ran here.

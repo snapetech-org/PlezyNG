@@ -770,3 +770,26 @@ The pin remains `source-only-unqualified`. There is no Actions run for the new M
 ## 2026-10-30 Texture1D comparison-sampling source checkpoint
 
 The app lock now pins MilkRust `893a04399b5e02db8d201701a72f8c4a3ce61791` (ABI v2). Texture1D `SampleCmp` and `SampleCmpLevelZero` now share the bounded comparison filter and implicit-LOD path with Texture2D, using the existing center-row mapping and a scalar literal offset. A one-row backing image is required for Texture1D parity; GatherCmp remains Texture2D-only. Texture3D/cube comparison methods remain unsupported. The pin remains `source-only-unqualified`; no build, test, render or device qualification ran for this source update.
+
+## 2026-10-30 integrated shader overload and comparison-binding checkpoint
+
+The app pins MilkRust `893a04399b5e02db8d201701a72f8c4a3ce61791`, ABI v2, preserving the
+animated-image, runtime-noise and Texture2D gather/comparison changes. Global
+resource groups retain each initializer/array independently. Static resource
+helpers preserve numeric overloads, different arities, prototypes and calls
+between overloads; ordinary arguments are evaluated once. The typed call graph
+rejects actual direct/indirect recursion before GLSL generation.
+
+Comparison-only state now activates helper specialization. Generated
+Gather/GatherCmp/SampleCmp bindings are included in resource discovery, and
+comparison resource-array dispatch preserves scalar versus four-component
+results. The bounded HLSL profile still has explicit resource/language limits;
+this does not assert universal DirectX compatibility or reference-pixel parity.
+
+Native compiler and browser pixel regression sources cover these paths. This
+continuation passed source whitespace, JavaScript syntax and app JSON/workflow
+YAML parsing. No compiler, unit test, GPU or device execution has occurred.
+Confidence is moderate in integrated source behavior and unknown for platform
+execution. The existing private-only workflows require manual dispatch, which
+the connected GitHub tools do not expose. The original build, mpv artifact,
+conformance, content and production-release gates remain open.

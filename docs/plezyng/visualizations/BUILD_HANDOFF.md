@@ -392,3 +392,18 @@ implicit-LOD `SampleCmp` path but remains unqualified for pixel parity. The curr
 still records `source-only-unqualified`; do not promote a runtime receipt or pack from
 this pin until the private JIT compiler, native/browser decoder and renderer checks,
 reference comparisons, and target-device runs have been completed.
+
+## Integrated shader overload and comparison-binding gate
+
+Use the lock's MilkRust `893a04399b5e02db8d201701a72f8c4a3ce61791` source (ABI v2). Run the
+native HLSL/core suites and `tools/smoke-hlsl.mjs` on private JIT. Added controls
+cover numeric resource-helper overloads and arities, renamed forward parameters,
+same-name overload forwarding, typed recursion rejection, grouped ordinary and
+comparison state, reflection of generated texture bindings, comparison array
+result widths, Gather component order, comparison-before-filter and single
+argument evaluation. Exercise both native compiler and Emscripten delivery.
+
+Also run the Apple lifecycle/journal and shared worker regressions described
+above, followed by the platform lifecycle/device matrix. Source checks passed;
+none of these compiler/test/renderer checks has run. Current build acceptance
+cannot be inferred from source commits or from earlier workflow revisions.

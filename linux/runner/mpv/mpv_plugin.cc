@@ -1172,6 +1172,13 @@ static FlMethodResponse* visualizer_method(MpvPlugin* self, const char* method, 
     auto* value = arg(name);
     return value && fl_value_get_type(value) == FL_VALUE_TYPE_INT ? fl_value_get_int(value) : fallback;
   };
+  auto number = [&arg](const char* name) -> double {
+    auto* value = arg(name);
+    if (!value) throw std::runtime_error(std::string("Missing mouse value: ") + name);
+    if (fl_value_get_type(value) == FL_VALUE_TYPE_FLOAT) return fl_value_get_float(value);
+    if (fl_value_get_type(value) == FL_VALUE_TYPE_INT) return static_cast<double>(fl_value_get_int(value));
+    throw std::runtime_error(std::string("Invalid mouse value: ") + name);
+  };
   auto* requested_engine = arg("engine");
   const std::string engine = requested_engine && fl_value_get_type(requested_engine) == FL_VALUE_TYPE_STRING
                                  ? fl_value_get_string(requested_engine)
@@ -1235,6 +1242,11 @@ static FlMethodResponse* visualizer_method(MpvPlugin* self, const char* method, 
     if (!paused || fl_value_get_type(paused) != FL_VALUE_TYPE_BOOL)
       return failure("INVALID_ARGS", "A paused boolean is required.");
     self->visualizer->SetPaused(fl_value_get_bool(paused));
+  } else if (strcmp(method, "visualizerSetMouse") == 0) {
+    auto* down = arg("down");
+    if (!down || fl_value_get_type(down) != FL_VALUE_TYPE_BOOL)
+      return failure("INVALID_ARGS", "A mouse button state is required.");
+    self->visualizer->SetMouseState(fl_value_get_bool(down), number("x"), number("y"), number("dx"), number("dy"));
   } else if (strcmp(method, "visualizerStatus") == 0) {
     g_autoptr(FlValue) result = self->visualizer->Status();
     return FL_METHOD_RESPONSE(fl_method_success_response_new(result));

@@ -568,7 +568,7 @@ capture or a passed runtime test.
 
 ## 2026-10-30 mask, sampler-state and blur source checkpoint
 
-PlezyNG now pins MilkRust `40bc023accbd81c727ab4df076e0bf647d7ae7de`, ABI v2. The engine uses effective
+PlezyNG now pins MilkRust  `13ca31660acf3717e229543d51ea21d514bdc69d`, ABI v2. The engine uses effective
 carried `random_1..5` values for all saved `.milk2` masks, including zero
 process-start defaults and inheritance for partial headers. The HLSL compiler
 lowers global static `SamplerState` declarations with point/linear filtering and
@@ -578,3 +578,8 @@ kernels, source-sized offsets, per-level range transforms, and first-level edge
 darkening. Anisotropic, mirror/border, separate min/mag/mip and dynamic sampler states
 remain explicit compiler failures. Builds, tests, reference-pixel comparisons, and device runs
 remain unperformed; this is a source checkpoint, not a conformance result.
+
+
+## 2026-10-30 legacy effect sampler-state lowering
+
+The source lock now pins MilkRust `13ca31660acf3717e229543d51ea21d514bdc69d`, ABI v2. The HLSL profile accepts bounded global legacy `sampler_state` blocks with a `Texture = <identifier>` binding, matching effective point/linear min/mag/mip filters, and independent Wrap/Clamp axes. Direct supported `tex*` first arguments route through the same per-resource native/WebGL sampler aliases. Unsupported properties, differing filter modes, grouped declarations, and state escape remain compile failures. This is implementation progress only; no build, test, render capture, or device qualification has run.

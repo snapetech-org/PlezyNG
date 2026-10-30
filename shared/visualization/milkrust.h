@@ -43,6 +43,10 @@ int milkrust_texture_gif(
 int milkrust_set_clock(
     milkrust_handle handle, int32_t year, uint32_t month, uint32_t day, uint32_t weekday,
     uint32_t hour, uint32_t minute, uint32_t second, uint32_t milliseconds);
+/* Per-frame pointer input; coordinates are normalized to [0,1]. */
+int milkrust_set_mouse(
+    milkrust_handle handle, int32_t mouse_down, double mouse_x, double mouse_y,
+    double mouse_dx, double mouse_dy);
 /* Interleaved float stereo at 44100 Hz. At most 4096 frames/call. A new generation
  * discards pre-seek audio. Call from the render consumer, never the real-time AO.
  */

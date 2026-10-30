@@ -9,6 +9,9 @@
 #import <OpenGLES/EAGL.h>
 #endif
 #include "../../visualization/native_worker.h"
+#if TARGET_OS_OSX
+#include "../../visualization/render_process.h"
+#endif
 #include <dlfcn.h>
 #include <cstring>
 
@@ -76,7 +79,7 @@ template<typename T> struct CFValue {
   ~CFValue() { if (value) CFRelease(value); }
   CFValue(const CFValue&) = delete;
 };
-MilkRustImage DecodeImage(const std::filesystem::path& path) {
+[[maybe_unused]] MilkRustImage DecodeImage(const std::filesystem::path& path) {
   @autoreleasepool {
     const auto length = std::filesystem::file_size(path);
     if (!length || length > 16*1024*1024) throw std::runtime_error("Texture exceeds its encoded byte budget.");
@@ -179,13 +182,26 @@ int PlezySubtitlePcmCaptureReadNext(void* player, double* pts, uint32_t* frames,
   std::unique_ptr<NativeWorker> _worker;
   std::shared_ptr<AppleFrames> _frames;
 }
-+ (NSString*)dependencyError { return [NSString stringWithUTF8String:MilkRustApi::Shared().error.c_str()] ?: @"Native engine unavailable"; }
++ (NSString*)dependencyError {
+#if TARGET_OS_OSX
+  const auto reason = IsolatedRenderBackend::DependencyError();
+#else
+  const auto reason = MilkRustApi::Shared().error;
+#endif
+  return [NSString stringWithUTF8String:reason.c_str()] ?: @"Native engine unavailable";
+}
 - (instancetype)initWithAudioReader:(int (^)(void*, size_t))reader frameAvailable:(void (^)(void))available error:(NSError**)error {
   self = [super init]; if (!self) return nil;
   try {
-    if (!MilkRustApi::Shared().error.empty()) throw std::runtime_error(MilkRustApi::Shared().error);
+    NSString* unavailable = [PlezyMilkRustHost dependencyError];
+    if (unavailable.length) throw std::runtime_error(unavailable.UTF8String);
     _frames = std::make_shared<AppleFrames>(); auto slot = _frames;
-    _worker = std::make_unique<NativeWorker>([] { return std::make_unique<AppleContext>(); }, DecodeImage,
+    _worker = std::make_unique<NativeWorker>(
+#if TARGET_OS_OSX
+        [] { return std::make_unique<IsolatedRenderBackend>(); },
+#else
+        [] { return std::make_unique<AppleContext>(); }, DecodeImage,
+#endif
         [reader](mpv_plezy_audio_block* block) { return reader(block, sizeof(*block)); },
         [slot, available](std::shared_ptr<const NativeFrame> frame) { Publish(slot, *frame); available(); });
   } catch (const std::exception& ex) { SetError(error, ex); return nil; }

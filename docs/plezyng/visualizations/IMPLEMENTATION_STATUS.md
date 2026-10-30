@@ -25,6 +25,7 @@ runners may be used. Compiled behavior and device fidelity remain unknown.
 | Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Preset changes | Every native MilkRust bridge forwards the selected 0–10 second duration to a bounded display fade from the last published frame; zero cuts immediately; audio generation changes clear history | Executed switching, resize/pause and rapid-selection coverage; this is a frozen-frame fade, not a second continuously running old preset |
+| Desktop containment | Packaged MilkRust helper on Linux/Windows/macOS; Linux projectM shares the helper; bounded native IPC, process termination and retry admission | First builds, injected-fault execution, installed helper discovery/signing and device-wide GPU recovery |
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
 | Library/UI | Search, notices, favorites, playlists, import, download/cancel/retry/update/remove, offline receipts and controls | Executed user flows, accessibility, TV focus, localization and performance |
 | Content | Existing offline CC0 fixture, 24 original CC0 studies and 55 unchanged CC BY 4.0 CaYaDev presets with pinned provenance; historical candidates remain rights-review-required | Archive builds, rights review and per-preset/target qualification before catalog promotion |
@@ -40,8 +41,8 @@ binary lock/verification metadata must be promoted from their real digests.
 Inventing replacement checksums cannot close this dependency. Missing PCM APIs
 remain an explicit unavailable capability and preserve normal playback.
 
-Linux uses a worker-owned Mesa EGL/GLES 3 context. Windows requires GL 3.3;
-macOS selects CGL 4.1; iOS/tvOS/Android/TV use ES 3. Apple now links static
+Linux uses helper-owned Mesa EGL/GLES 3 contexts. Windows requires helper-owned GL 3.3;
+macOS selects helper-owned CGL 4.1; iOS/tvOS/Android/TV use ES 3. Apple now links static
 MilkRust archives using strong ABI references instead of relying on exported
 `dlsym` symbols. Runtime bundles include the pinned compiler's MIT notice.
 Android Gradle stages every selected ABI before asset/native merging; desktop
@@ -58,9 +59,18 @@ has been built or physically qualified here.
 
 All hosts keep PCM/pixels out of per-frame Dart method channels, serialize
 controls, preserve session leases and suspend hidden/paused rendering. The
-in-process worker uses bounded teardown with retained shared state and quarantine
-admission after a stall. This does not isolate a graphics driver that hangs the
-entire process or device. Compiler budgets are input limits, not process isolation.
+desktop worker exchanges PCM, controls and bounded RGBA frames with a packaged
+helper process. Requests have a two-second deadline; timeout, malformed replies
+and disposal terminate that helper without entering graphics teardown. Windows
+uses a kill-on-close job and restricted handle inheritance; POSIX uses a dedicated
+inherited socket, parent-death monitoring and SIGKILL (Linux uses pidfds). New
+sessions are refused while a terminated helper remains alive. Linux requires
+glibc 2.34+ and a kernel with pidfd support. There is no in-process desktop fallback.
+
+Android, iOS/tvOS, Tizen and webOS retain bounded thread teardown and quarantine;
+their driver calls remain in the app process. A helper does not contain a
+device-wide GPU/kernel fault or provide a filesystem/security sandbox. Private
+JIT fault tests and installed-device recovery checks remain unrun.
 
 ## Compatibility and content boundaries
 
@@ -603,3 +613,21 @@ The app source lock now pins MilkRust `ee0d836a118615fa58eb9125d7b8b2fc23014b24`
 ## 2026-10-30 MilkRust native pointer route
 
 PlezyNG now routes inline and fullscreen Flutter mouse/touch events through Android, Apple, Linux, and Windows native hosts to MilkRust ABI v2. Event deltas are coalesced and accumulated across the UI and native queues, then consumed once by the next rendered frame. A button-down edge is latched for one frame, preserving taps shorter than the coalescing interval, and pause clears held or pending input. The MilkRust browser SDK also validates/clamps pointer state, accumulates deltas, and preserves short clicks until a render. A malformed Dart handler token found during review was corrected. The source lock pins MilkRust `e6da67bed512068086179b11724e656a24f5288b`. Local `cargo build --locked -p milkrust-native` and `flutter build linux` attempts stopped before compilation because the toolchains are unavailable. Native build, input regressions, and device checks remain unrun; source delivery is not input qualification.
+
+## 2026-10-30 desktop process isolation
+
+The native backend interface separates local mobile/TV rendering from disposable
+desktop helpers. Both Linux engines, Windows MilkRust and macOS MilkRust use the
+shared protocol: versioned little-endian headers, matching request IDs, bounded
+paths/PCM/frame sizes and finite numeric inputs. Partial frames never publish.
+Clock, generation, pointer state, pause and preset-transition behavior remain
+connected; pending clicks/deltas are consumed only when a frame is rendered.
+CMake installs the Linux/Windows executable beside the app. Xcode builds the
+macOS helper into Contents/MacOS and signs it with the enclosing build identity.
+
+Regression sources inject crashes, hangs, oversized/truncated replies, wrong IDs,
+wrong frame lengths and malformed acknowledgements; they cover cancellation,
+recovery, chunked PCM and both backend handshakes. Linux/macOS sanitizer and
+Windows native CI entrypoints include them. Whitespace and shell parsing were
+checked; no compilation, test, workflow or signing operation ran for this change.
+Source review gives moderate implementation confidence; runtime recovery is unknown.

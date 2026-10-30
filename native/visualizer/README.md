@@ -132,8 +132,8 @@ parity remains unqualified.
 The controller serializes loads and disposal, handles missing plugins, and
 shows original scenes while a native preset has no current frame or has failed.
 Player/profile teardown stops the worker before detaching the PCM tap. A native
-driver or compiler hang is **not contained** by this in-process worker: joining
-it can block teardown. Process isolation/watchdog behavior remains a release gate
+driver or compiler hang now triggers helper termination on desktop; mobile/TV
+workers retain bounded thread teardown and quarantine. Verified recovery remains a release gate
 for arbitrary community inputs. Exceptions are not a substitute for that gate.
 
 Promotion still requires the private-JIT build and publication, updated app
@@ -160,9 +160,9 @@ The app source now includes these hosts:
 
 | Platform | Graphics and Flutter output | Playback lease |
 | --- | --- | --- |
-| Linux | Existing surfaceless EGL/GLES 3 and pixel-buffer texture | Existing mpv native mutex and cached playback PTS |
-| Windows | Dedicated hidden WGL 3.2 core context, WIC images, leased Flutter RGBA buffers | Same-player tap under native mutex; worker stops before disposal |
-| macOS | Dedicated CGL 4.1 core context, ImageIO, retained CVPixelBuffer | `MpvPlayerCoreBase` lifecycle lock and internal PTS observation |
+| Linux | Helper-owned surfaceless EGL/GLES 3 and host pixel-buffer texture | Existing mpv native mutex and cached playback PTS |
+| Windows | Helper-owned hidden WGL 3.3 core context, WIC images, leased Flutter RGBA buffers | Same-player tap under native mutex; worker stops before disposal |
+| macOS | Helper-owned CGL 4.1 core context, ImageIO, retained CVPixelBuffer | `MpvPlayerCoreBase` lifecycle lock and internal PTS observation |
 | iOS/tvOS | Dedicated EAGL ES 3 context, ImageIO, retained CVPixelBuffer | Same Apple lifecycle lease |
 | Android/Android TV | EGL ES 3 pbuffer, bounded BitmapFactory decoding, SurfaceTexture native window | AAR `SessionGuard` admission lease; opaque session ID |
 
@@ -221,8 +221,10 @@ have verified digests. Package the AGPL-3.0-only MilkRust notice, exact correspo
 source and dependency notices with any distribution that includes the engine.
 The full engine license is in `notices/MilkRust-AGPL-3.0.txt`.
 
-The in-process GL compiler and Android native-window presentation can block in
-a driver. Exception handling does not impose a timeout. Qualification must cover
+Desktop GL compilation and image decode execute in the packaged helper with
+two-second IPC deadlines and OS process termination. Mobile/TV GL compilation and
+Android native-window presentation can still block their retained worker.
+Exception handling alone does not impose a driver timeout. Qualification must cover
 backgrounding, surface/context loss, seek generation reset, pixel leases during
 unregister, repeated create/dispose, multichannel audio and passthrough. Process
 isolation or platform-specific recovery remains a release gate for untrusted
@@ -248,3 +250,28 @@ start from the last displayed mix, resize uses normalized sampling, and PCM
 generation resets discard history. Zero requests a hard cut. Linux projectM
 continues using its own soft-cut implementation. The authored native regression
 is part of the private Linux sanitizer job and has not been run here.
+
+### Desktop helper protocol and packaging
+
+`render_backend.h` defines the worker backend. `render_process.h` implements the
+desktop client and `render_helper.h` the helper loop. MilkRust uses it on Linux,
+Windows and macOS; Linux projectM uses the same protocol. The player stays in the
+app process, sending native PCM and receiving top-down RGBA through a dedicated
+inherited pipe/socket. No PCM or pixels enter per-frame Dart channels. Controls
+include reset, load/transition duration, pause and pointer input. Pack/root paths,
+finite numbers, message lengths, dimensions and reply sequence IDs are bounded.
+
+Timeout, invalid reply and disposal kill the helper. The helper exits without
+unwinding GPU destructors on protocol failure or parent death. Windows restricts
+inherited handles and uses a kill-on-close job; POSIX closes unrelated descriptors,
+monitors parent disconnection and uses SIGKILL, with pidfd signaling on Linux.
+Retry is refused while a terminated child is still alive. Linux requires glibc
+2.34+ and pidfd support. The helper is not a filesystem sandbox, and cannot recover
+a device-wide GPU/kernel hang. Mobile/TV retains the local backend.
+
+Desktop CMake installs `plezy_visualizer_helper[.exe]` beside the app; Xcode builds
+and signs it in `Contents/MacOS` with the app's signing identity. The executable
+is resolved beside the running app, never through PATH. Dependency/capability
+failures from the helper are reported explicitly. Authored process regression
+cases run through the existing private Linux/macOS sanitizer and Windows native
+CI paths; no executable verification has occurred for this change.

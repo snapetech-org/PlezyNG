@@ -440,7 +440,7 @@ jobs:
       - name: Stage required MilkRust runtime for the Linux runner build
         run: python3 scripts/visualizer/build_runtime.py --platform linux --architectures x64 --output build/visualizer-native
 
-      - name: Check shared visualization decoding, transitions and worker lifetime
+      - name: Check shared visualization decoding, transitions and isolation
         if: matrix.sanitizer == 'address'
         run: |
           clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
@@ -452,6 +452,9 @@ jobs:
           clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
             test/native/visualizer_preset_transition_test.cc -o "$RUNNER_TEMP/visualizer-transition-test"
           "$RUNNER_TEMP/visualizer-transition-test"
+          clang++ -std=c++17 -D_GNU_SOURCE -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
+            test/native/visualizer_render_process_test.cc -ldl -o "$RUNNER_TEMP/visualizer-process-test"
+          "$RUNNER_TEMP/visualizer-process-test"
 
       - name: Configure Linux native reliability tests
         run: |
@@ -703,6 +706,13 @@ jobs:
               output.write(f"APPLE_TEST_DESTINATION={destination}\n")
           PY
 
+      - name: Check macOS visualization process isolation
+        if: matrix.platform == 'macOS'
+        run: |
+          xcrun clang++ -std=c++17 -pthread -fsanitize=address,undefined -fno-omit-frame-pointer \
+            test/native/visualizer_render_process_test.cc -o "$RUNNER_TEMP/visualizer-process-test"
+          "$RUNNER_TEMP/visualizer-process-test"
+
       - name: Run Apple native reliability tests
         run: |
           result_bundle="$RUNNER_TEMP/apple-native-reliability.xcresult"
@@ -803,7 +813,8 @@ jobs:
           cmake -S windows -B $buildDir `
             -DPLEZY_STEAM_TESTS=ON `
             -DPLEZY_BUILD_MPV_PROPERTY_CONTRACT_TESTS=ON `
-            -DPLEZY_BUILD_DISPLAY_RECOVERY_TESTS=ON
+            -DPLEZY_BUILD_DISPLAY_RECOVERY_TESTS=ON `
+            -DPLEZY_BUILD_VISUALIZER_PROCESS_TESTS=ON
 
       - name: Build Windows native reliability tests
         shell: pwsh
@@ -818,7 +829,8 @@ jobs:
             plezy_windows_sink_test `
             plezy_h26x_test `
             plezy_audio_test `
-            plezy_pyrowave_test
+            plezy_pyrowave_test `
+            visualizer_render_process_test
 
       - name: Run Windows native reliability tests
         shell: pwsh

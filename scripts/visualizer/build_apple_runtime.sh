@@ -26,3 +26,24 @@ mkdir -p "$destination"
 cp "$bundle/assets/visualizer-notices/MILKRUST-NOTICES.txt" "$destination/"
 cp "$bundle/assets/visualizer-notices/milkrust-source.tar.gz" "$destination/"
 cp "$bundle/milkrust-build.json" "$destination/"
+
+if [[ "$target_platform" == macos ]]; then
+  helper_dir="${TARGET_BUILD_DIR:?}/${EXECUTABLE_FOLDER_PATH:?}"
+  mkdir -p "$helper_dir"
+  helper="$helper_dir/plezy_visualizer_helper"
+  helper_arches=()
+  for arch in ${ARCHS:?}; do helper_arches+=(-arch "$arch"); done
+  xcrun --sdk macosx clang++ -std=c++17 -fobjc-arc -Wno-deprecated-declarations \
+    "${helper_arches[@]}" -isysroot "$(xcrun --sdk macosx --show-sdk-path)" \
+    "-mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET:?}" \
+    "$repo_root/shared/apple/MpvPlayer/MilkRustRenderHelper.mm" \
+    "$bundle/libmilkrust_native.a" -o "$helper" \
+    -framework Foundation -framework CoreFoundation -framework CoreGraphics \
+    -framework ImageIO -framework OpenGL -framework Security -liconv -lresolv
+  if [[ "${CODE_SIGNING_ALLOWED:-YES}" == YES ]]; then
+    helper_identity="${EXPANDED_CODE_SIGN_IDENTITY:--}"
+    helper_stamp=(--timestamp)
+    if [[ "$helper_identity" == '-' ]]; then helper_stamp=(--timestamp=none); fi
+    codesign --force --sign "$helper_identity" --options runtime "${helper_stamp[@]}" "$helper"
+  fi
+fi

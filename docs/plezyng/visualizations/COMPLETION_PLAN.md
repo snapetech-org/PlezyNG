@@ -1,7 +1,7 @@
 # PlezyNG visualization and community preset implementation plan
 
 The original audit and dated checkpoints below are preserved. For the current
-2026-10-29 implementation, use [the status ledger](IMPLEMENTATION_STATUS.md) and
+2026-10-30 implementation, use [the status ledger](IMPLEMENTATION_STATUS.md) and
 [build handoff](BUILD_HANDOFF.md); historical gaps below are not current claims.
 
 PlezyNG has a working set of six original music scenes, but the requested MilkDrop-compatible engine and downloadable community-preset library are not integrated. MilkRust contains reusable engine work and a substantial imported corpus; its existing compatibility totals do not establish faithful rendering.
@@ -657,3 +657,16 @@ MilkRust's ABI v2 now accepts finite mouse coordinates/deltas and a binary butto
 ## 2026-10-30 native pointer input source checkpoint
 
 The Flutter visualizer now routes mouse/touch pointer state through the inline and fullscreen surfaces to the native MilkRust ABI on Android, Apple, Linux, and Windows. UI and native queues coalesce movement deltas, and the native worker consumes them once per rendered frame. Button-down edges are latched for one frame so quick taps still reach `mouseclick`; pausing clears held or pending input. The browser SDK applies matching validation, delta accumulation, and quick-click latching. The PlezyNG source lock pins MilkRust `e6da67bed512068086179b11724e656a24f5288b`. Source routing is present; native build/input regressions and device checks remain open under the private-JIT requirement. This does not close exact renderer parity or release gates.
+
+## 2026-10-30 desktop containment source checkpoint
+
+Linux MilkRust/projectM and Windows/macOS MilkRust now run in packaged helper
+processes. Shared native IPC carries bounded PCM, RGBA and controls with matching
+sequence IDs and two-second response deadlines. Disposal and failure terminate
+the helper; unreaped helpers block retry. The host retains its player/session
+lease and published pixel ownership. Pointer input and display fades remain
+wired across the boundary. CMake/Xcode packaging and private-JIT fault-regression
+entrypoints are committed source, not executed evidence. Android/iOS/tvOS/TV local
+driver containment, device-wide GPU recovery, compiler/corpus/reference runs,
+real mpv artifacts, content qualification and signing custody remain separate
+open gates; this checkpoint does not claim universal completion.

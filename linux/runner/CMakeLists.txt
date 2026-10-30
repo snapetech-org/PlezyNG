@@ -35,6 +35,19 @@ pkg_check_modules(MPV REQUIRED IMPORTED_TARGET mpv)
 pkg_check_modules(EPOXY REQUIRED IMPORTED_TARGET epoxy)
 find_package(Threads REQUIRED)
 
+# Shader compilation, decoding and GL calls execute in this disposable process.
+pkg_check_modules(GDK_PIXBUF REQUIRED IMPORTED_TARGET gdk-pixbuf-2.0)
+add_executable(plezy_visualizer_helper "visualizer/render_helper.cc")
+apply_standard_settings(plezy_visualizer_helper)
+target_compile_features(plezy_visualizer_helper PRIVATE cxx_std_17)
+target_compile_definitions(${BINARY_NAME} PRIVATE _GNU_SOURCE)
+target_link_libraries(plezy_visualizer_helper PRIVATE
+  PkgConfig::EPOXY PkgConfig::EGL PkgConfig::GDK_PIXBUF Threads::Threads ${CMAKE_DL_LIBS})
+set_target_properties(plezy_visualizer_helper PROPERTIES
+  BUILD_RPATH "${CMAKE_SOURCE_DIR}/../build/visualizer-native")
+add_dependencies(${BINARY_NAME} plezy_visualizer_helper)
+include("${CMAKE_SOURCE_DIR}/../native/visualizer/process_tests.cmake")
+
 # Vendored wayland-scanner output for color-management-v1 (staging), which backs
 # HDR on the native video plane. Built separately because it is C (the runner is
 # C++ only) and generated, so it must not be held to -Wall -Werror.

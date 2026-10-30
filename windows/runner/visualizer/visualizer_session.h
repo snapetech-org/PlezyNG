@@ -11,6 +11,7 @@ class WindowsVisualizerSession {
   ~WindowsVisualizerSession();
   int64_t texture_id() const { return texture_id_; }
   NativeWorker& worker() { return *worker_; }
+  static std::string DependencyError();
 
  private:
   flutter::TextureRegistrar* registrar_;

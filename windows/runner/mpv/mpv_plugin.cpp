@@ -182,7 +182,7 @@ void MpvPlayerPlugin::HandleVisualizerMethod(
       return "Initialize the music player before opening a preset.";
     if (engine != "milkrust") return "Select native MilkRust on Windows; this host does not bundle projectM.";
     if (!MpvPlayer::VisualizationTapAvailable()) return "This mpv build lacks the visualization PCM tap ABI v1.";
-    return plezy::visualization::MilkRustApi::Shared().error;
+    return plezy::visualization::WindowsVisualizerSession::DependencyError();
   };
   if (method == "visualizerCapabilities") {
     const auto unavailable = reason();

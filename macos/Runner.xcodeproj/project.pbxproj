@@ -493,7 +493,7 @@
 			files = ();
 			inputPaths = ();
 			name = "Build MilkRust Runtime";
-			outputPaths = ("$(DERIVED_FILE_DIR)/plezy-milkrust/libmilkrust_native.a",);
+			outputPaths = ("$(DERIVED_FILE_DIR)/plezy-milkrust/libmilkrust_native.a", "$(TARGET_BUILD_DIR)/$(EXECUTABLE_FOLDER_PATH)/plezy_visualizer_helper",);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "bash \"$PROJECT_DIR/../scripts/visualizer/build_apple_runtime.sh\"";

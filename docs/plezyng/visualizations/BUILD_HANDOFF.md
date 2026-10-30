@@ -20,7 +20,7 @@ Receipts record source identity and file digests, never a qualification pass.
 
 | Target | Regular entrypoint | Required toolchain / artifact |
 | --- | --- | --- |
-| Linux x64/arm64 | `.github/workflows/build.yml` → `scripts/visualizer/build_runtime.py` → desktop CMake install | Matching architecture private worker, C++11, GL/GLES and runtime `.so` |
+| Linux x64/arm64 | `.github/workflows/build.yml` → `scripts/visualizer/build_runtime.py` → desktop CMake install | Matching architecture private worker, C++17, glibc 2.34+, pidfd-capable kernel, GL/GLES, runtime `.so` and helper executable |
 | Windows x64/arm64 | Same builder before Flutter/CMake | MSVC target tools and `milkrust_native.dll` |
 | Android | Workflow pre-stage plus Gradle `stageMilkRustRuntime` before merge tasks | Linux x64 private worker, pinned NDK 29.0.14206865; selected ARMv7/ARM64/x86/x64 JNI libraries |
 | macOS/iOS/tvOS | Runner Xcode `Build MilkRust Runtime` phase → `build_apple_runtime.sh` | Selected Xcode SDK/architectures; static archive, strong ABI links, C++/iconv |
@@ -285,3 +285,23 @@ source checkpoint; use only compatible private JIT runners.
 ## 2026-10-30 Current native pointer-input route
 
 The source lock pins MilkRust `e6da67bed512068086179b11724e656a24f5288b` (ABI v2). Validate inline/fullscreen mouse and touch input on Android, Apple, Linux, and Windows: coordinates remain normalized, coalesced movement deltas are delivered once per rendered frame, quick taps still raise `mouseclick`, and pause/focus loss does not leave a button stuck. The browser SDK validates and coalesces the same input before rendering. Build attempts for `cargo build --locked -p milkrust-native` and `flutter build linux` stopped before compilation because Cargo and Flutter are unavailable in this workspace. Compatible private JIT runners remain required; the latest PR heads have no Actions status or workflow runs, and the GitHub connector has no manual Actions-dispatch operation.
+
+## Desktop helper verification
+
+Build and install `plezy_visualizer_helper` alongside the Linux/Windows app; macOS
+uses `Contents/MacOS/plezy_visualizer_helper` from the existing runtime build
+phase. Verify the helper architecture, dependent runtime lookup, and macOS nested
+signature in the final installed artifact. Linux requires glibc 2.34+ and pidfd
+support; missing helper/OS support produces an explicit failure, without local
+rendering fallback. projectM's pinned framebuffer API is checked inside the Linux
+helper. Mobile/TV hosts still use local rendering with thread quarantine.
+
+The `visualizer_render_process_test.cc` source needs no GPU or MilkRust library:
+it starts itself as a fault-injecting child. Private Linux/macOS sanitizer jobs
+compile and run it; Windows native CMake/CTest enables it with
+`PLEZY_BUILD_VISUALIZER_PROCESS_TESTS=ON`. Cover normal frames and pointer/PCM
+payloads, reset, projectM selection, two-second deadlines, explicit cancellation,
+crash, malformed response, and recovery. Also qualify real shader compile/decode
+stalls and playback continuity on each packaged desktop target. A killed helper
+cannot guarantee recovery of a wedged device/kernel driver. All new cases remain
+unrun in this source checkpoint.

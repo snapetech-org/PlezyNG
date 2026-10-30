@@ -83,7 +83,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   int _profileRequestId = 0;
   Duration? _lastElapsed;
   double _phaseSeconds = 0;
-remove unused pointer fields  final VisualizerSession _native = VisualizerSession();
+  final VisualizerSession _native = VisualizerSession();
   final ValueNotifier<int> _optionsRevision = ValueNotifier(0);
   VisualizerPackStore? _store;
   String? _profileId;

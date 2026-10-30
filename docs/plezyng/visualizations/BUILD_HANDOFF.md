@@ -198,3 +198,13 @@ Native/WebGL use 96 shared sampler modes; reflection covers offset sampling,
 3D fetch and texture-size intrinsics.
 Run compiler, renderer, and reference-image work only on the required private
 JIT runners. This source update has not been built or tested.
+
+
+## 2026-10-30 MilkRust sampler parity handoff
+
+The pinned source is `7d7ed901bb105f9ad23431caa25e9f97e095a1bc`. The WebGL sprite pass now uses MilkRust's
+shared min/mag/mip and per-axis Wrap/Clamp/Mirror profile, matching native GL.
+On the private JIT runners, build and run compiler/resource regressions, then
+capture native and WebGL sprites for point/linear filters, mip settings, each
+address mode, color keys, and animated images. No build or capture has run for
+this source checkpoint.

@@ -643,3 +643,8 @@ Regression sources cover preset-clock reset and clock-value binding. No private
 build, test, renderer capture or device run has executed for this checkpoint;
 the GitHub connector exposes no manual workflow-dispatch operation, and the
 private JIT runner requirement remains in force.
+
+
+## 2026-10-30 MilkRust browser local clock injection
+
+The MilkRust WebAssembly API accepts validated local clock fields, and its browser SDK refreshes those values from the page's local date and time before each frame. Direct WebAssembly/stateless callers can supply the same fields through the setter. PlezyNG pins MilkRust `039725b4bfa0deee92d7b7364c953dbdfc4851e1` (ABI v2). Build and browser qualification remain pending on the compatible private JIT runners.

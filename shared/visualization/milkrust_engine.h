@@ -26,7 +26,7 @@ struct MilkRustApi {
   // clang-format off
 #define DECLARE(name) decltype(&milkrust_##name) name = nullptr;
   DECLARE(abi_version) DECLARE(create) DECLARE(load) DECLARE(texture_names)
-  DECLARE(texture) DECLARE(texture_gif) DECLARE(pcm) DECLARE(set_clock) DECLARE(set_mouse) DECLARE(render) DECLARE(render_rgba) DECLARE(destroy) DECLARE(last_error)
+  DECLARE(texture) DECLARE(texture_gif) DECLARE(texture_png) DECLARE(pcm) DECLARE(set_clock) DECLARE(set_mouse) DECLARE(render) DECLARE(render_rgba) DECLARE(destroy) DECLARE(last_error)
 #undef DECLARE
       // clang-format on
       MilkRustApi() {
@@ -63,7 +63,7 @@ struct MilkRustApi {
 #define LOAD(name) name = reinterpret_cast<decltype(name)>(Symbol("milkrust_" #name)); \
     if (!name) { error = "Native MilkRust lacks the required ABI v2 symbols."; return; }
 #endif
-    LOAD(abi_version) LOAD(create) LOAD(load) LOAD(texture_names) LOAD(texture) LOAD(texture_gif)
+    LOAD(abi_version) LOAD(create) LOAD(load) LOAD(texture_names) LOAD(texture) LOAD(texture_gif) LOAD(texture_png)
     LOAD(pcm) LOAD(set_clock) LOAD(set_mouse) LOAD(render) LOAD(render_rgba) LOAD(destroy) LOAD(last_error)
 #undef LOAD
         // clang-format on
@@ -138,6 +138,19 @@ class MilkRustEngine {
       const auto asset = Resolve(canonical_root, file.parent_path(), name);
       if (asset.empty()) continue;  // Engine reports a missing asset if the active stage needs it.
       const auto extension = Fold(asset.extension().u8string());
+      if (extension == ".png") {
+        const auto encoded_size = std::filesystem::file_size(asset);
+        if (!encoded_size || encoded_size > 16 * 1024 * 1024)
+          throw std::runtime_error("PNG exceeds 16 MiB or is empty.");
+        std::ifstream encoded_input(asset, std::ios::binary);
+        std::vector<uint8_t> encoded(static_cast<size_t>(encoded_size));
+        if (!encoded_input.read(reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
+            encoded_input.peek() != EOF)
+          throw std::runtime_error("PNG changed while loading.");
+        Check(api_.texture_png(handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(),
+                               encoded.data(), encoded.size()));
+        continue;
+      }
       if (extension == ".gif") {
         const auto encoded_size = std::filesystem::file_size(asset);
         if (!encoded_size || encoded_size > 16 * 1024 * 1024)

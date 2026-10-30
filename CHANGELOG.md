@@ -4,6 +4,23 @@
 
 - Complete visualizer source integration: native MilkRust and saved MilkDrop 3 patterns/sprites, bounded Butterchurn conversion, resumable preset downloads, shared texture packs, preset/fragment ZIP workflows, and adaptive render quality. Builds, device qualification, runtime artifact promotion and signed-catalog release remain pending.
 
+- Install the GStreamer runtime plugins required to build Linux release bundles with Steam decoder support.
+- Provision native Temurin JDK 21 on private Windows CI and release runners so CMake can
+  resolve JNI.
+- Prefetch and checksum-verify the pinned WinSparkle source through Schannel curl before Windows CMake configuration.
+- Prefetch checksum-locked Boost and libtorrent sources through verified Schannel curl before Windows CMake configuration.
+- Restore Android CI coverage for MPV Dolby Vision preference routing and fallback playback stats after Activity detachment.
+- Route the checksum-pinned simdutf CMake archive through verified Schannel curl on Windows private JIT runners while retaining FetchContent hash verification.
+- Ensure the vendored iOS, tvOS, and macOS torrent XCFrameworks have concrete CocoaPods targets, and inspect the generated iOS Pods project in CI diagnostics.
+- Fetch checksum-locked Windows native archives through verified Schannel curl on private JIT builds.
+- Materialize tvOS CocoaPods plugin symlinks from Flutter's resolved metadata so private runners use stable lockfile paths.
+- Create the Windows Vulkan runtime output directory before downloading the checksum-pinned runtime through verified Schannel curl.
+- Stabilize Android and Windows validation on private CI runners, retry the pinned FFmpeg header download, and bypass the proxy for loopback tests.
+- Fix Android Kotlin compilation by correcting a duplicate visibility modifier and implementing the shared video-surface method.
+- Restore Apple CI by quoting simulator-only Xcode project settings and keeping the macOS test plugin current with its shared protocol.
+- Bound Android Gradle and Kotlin daemon memory so private CI runners can complete Android tests and release builds.
+- Fix Android private-JIT builds for the sharing plugin and pinned LiteRT OpenVINO runtime downloads.
+- Keep Apple native tests on the simulator's native architecture and preserve the 30 GiB Mac JIT disk floor during Flutter setup.
 - Fix the Linux native runner build with Flutter's mutable `FlValue` accessors.
 - Quote the Windows Flutter cache key so GitHub can parse and dispatch CI workflows.
 - Prepare the checksum-verified Flutter SDK in each Mac JIT job's temporary APFS workspace with resumable parallel downloads.
@@ -11,6 +28,7 @@
 - Stabilize player startup assertions, install FFmpeg for unit tests, and retry transient Android Gradle fetch failures.
 - Fix Apple native configuration to use Boost headers from CMake's extracted source root.
 - Install GStreamer development packages for Linux native CI and set Git identity in codegen test clones.
+- Set the Linux bundle install prefix before configuring plugins so libtorrent's generated pkg-config install stays inside the bundle.
 - Fix Tizen subtitle PCM capture compilation by importing the base64 decoder.
 - Fix household issue-report build errors and use the shared app icon in the playback failure shortcut.
 - Align shared Apple Steam test wiring and native localization generation, normalize untranslated catalogs without claiming language review, and document receiver test evidence and outstanding implementation gates.

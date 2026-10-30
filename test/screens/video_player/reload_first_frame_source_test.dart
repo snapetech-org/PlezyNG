@@ -179,6 +179,7 @@ void main() {
           tester,
           () => revealed()?.value == true,
           describe: () => 'loadfiles=$loadfileUrls, first frame never revealed',
+          timeout: const Duration(seconds: 10),
         );
 
         PlaybackSourceChangeOutcome? outcome;

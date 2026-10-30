@@ -13,6 +13,15 @@ CHECKER = ROOT / "scripts/checks/check_build_workflow.py"
 WORKFLOW = ROOT / ".github/workflows/build.yml"
 SETUP_FLUTTER_GIT = ROOT / ".github/actions/setup-flutter-git/action.yml"
 WINDOWS_CMAKE = ROOT / "windows/CMakeLists.txt"
+WINDOWS_MPV_DOWNLOADER = ROOT / "windows/tool/download-pinned-mpv.ps1"
+WINDOWS_SIMDUTF_DOWNLOADER = ROOT / "windows/tool/download-pinned-simdutf.ps1"
+WINDOWS_WINSPARKLE_DOWNLOADER = ROOT / "windows/tool/download-pinned-winsparkle.ps1"
+WINDOWS_SDL3_DOWNLOADER = ROOT / "windows/tool/download-pinned-sdl3.ps1"
+WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER = (
+    ROOT / "windows/tool/download-pinned-torrent-dependencies.ps1"
+)
+WINDOWS_TOOLCHAIN_LOCK = ROOT / "windows/tool/build-toolchain.lock.json"
+PLEZY_TORRENT_CMAKE = ROOT / "packages/plezy_torrent/src/CMakeLists.txt"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
@@ -23,9 +32,8 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         cmake: str | None = None,
     ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory(prefix="plezy-build-workflow-test-") as directory:
-            # The checker resolves the shared bootstrap and the Windows CMake
-            # file beside the workflow, so the fixture has to mirror the real
-            # repository layout.
+            # The checker resolves Windows bootstrap files and the torrent
+            # CMake source beside the workflow, so the fixture mirrors them.
             github = Path(directory) / ".github"
             fixture = github / "workflows/build.yml"
             fixture.parent.mkdir(parents=True)
@@ -36,6 +44,51 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             cmake_fixture = Path(directory) / "windows/CMakeLists.txt"
             cmake_fixture.parent.mkdir(parents=True)
             cmake_fixture.write_text(cmake if cmake is not None else self._cmake(), encoding="utf-8")
+            downloader_fixture = Path(directory) / "windows/tool/download-pinned-mpv.ps1"
+            downloader_fixture.parent.mkdir(parents=True)
+            downloader_fixture.write_text(
+                WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            simdutf_downloader_fixture = (
+                Path(directory) / "windows/tool/download-pinned-simdutf.ps1"
+            )
+            simdutf_downloader_fixture.write_text(
+                WINDOWS_SIMDUTF_DOWNLOADER.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            winsparkle_downloader_fixture = (
+                Path(directory) / "windows/tool/download-pinned-winsparkle.ps1"
+            )
+            winsparkle_downloader_fixture.write_text(
+                WINDOWS_WINSPARKLE_DOWNLOADER.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            sdl3_downloader_fixture = Path(directory) / "windows/tool/download-pinned-sdl3.ps1"
+            sdl3_downloader_fixture.write_text(
+                WINDOWS_SDL3_DOWNLOADER.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            torrent_dependencies_downloader_fixture = (
+                Path(directory) / "windows/tool/download-pinned-torrent-dependencies.ps1"
+            )
+            torrent_dependencies_downloader_fixture.write_text(
+                WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            lock_fixture = Path(directory) / "windows/tool/build-toolchain.lock.json"
+            lock_fixture.write_text(
+                WINDOWS_TOOLCHAIN_LOCK.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            torrent_cmake_fixture = (
+                Path(directory) / "packages/plezy_torrent/src/CMakeLists.txt"
+            )
+            torrent_cmake_fixture.parent.mkdir(parents=True)
+            torrent_cmake_fixture.write_text(
+                PLEZY_TORRENT_CMAKE.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
             return subprocess.run(
                 [sys.executable, str(CHECKER), str(fixture)],
                 cwd=ROOT,
@@ -64,6 +117,45 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("architecture matrix checks passed", result.stdout)
+
+    def test_windows_release_requires_pinned_torrent_dependencies(self) -> None:
+        workflow = self._workflow()
+        step = (
+            "      - name: Download and verify pinned Windows torrent dependencies\n"
+            "        shell: pwsh\n"
+            "        run: .\\windows\\tool\\download-pinned-torrent-dependencies.ps1\n\n"
+        )
+        self.assertIn(step, workflow, "torrent dependency step changed")
+        workflow = workflow.replace(step, "", 1)
+
+        result = self._run(workflow)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "Windows release builds must predownload and verify Boost/libtorrent",
+            result.stderr,
+        )
+
+    def test_windows_release_build_requires_native_jdk_for_jni(self) -> None:
+        prefix, windows = self._workflow().split("  build-windows:\n", 1)
+        java_step = (
+            '      - name: Setup Java\n'
+            '        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5\n'
+            '        with:\n'
+            '          distribution: "temurin"\n'
+            '          java-version: "21"\n'
+            "          architecture: ${{ matrix.arch == 'arm64' && 'aarch64' || 'x64' }}\n"
+        )
+        self.assertIn(java_step, windows)
+        workflow = prefix + "  build-windows:\n" + windows.replace(java_step, "", 1)
+
+        result = self._run(workflow)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "Windows release builds must provision pinned native JDK 21 for JNI",
+            result.stderr,
+        )
 
     def test_windows_arm_flutter_without_release_tag_is_rejected(self) -> None:
         action = self._action().replace(
@@ -151,8 +243,12 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertIn("mpv-build lock", result.stderr)
 
     def test_windows_native_cache_without_lock_identity_is_rejected(self) -> None:
+        cache_identity = (
+            "hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json', "
+            "'windows/tool/build-toolchain.lock.json')"
+        )
         workflow = self._workflow().replace(
-            "hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json')",
+            cache_identity,
             "hashFiles('windows/CMakeLists.txt')",
             1,
         )

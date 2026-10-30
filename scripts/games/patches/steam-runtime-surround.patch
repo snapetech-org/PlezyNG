@@ -1,6 +1,6 @@
 --- a/include/ihslib/session.h
 +++ b/include/ihslib/session.h
-@@ -58,6 +58,8 @@
+@@ -58,4 +58,6 @@
      uint32_t maxFps;
      uint32_t maxBitrateKbps;
      IHS_StreamQuality quality;

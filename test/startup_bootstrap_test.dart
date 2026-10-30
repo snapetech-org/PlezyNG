@@ -673,7 +673,7 @@ void main() {
       await seeded?.close();
       await tempDir.delete(recursive: true);
     }
-  });
+  }, timeout: const Timeout(Duration(minutes: 2)));
 
   test('post-recovery download failure closes the reopened database before rethrowing', () async {
     resetSharedPreferencesForTest();

@@ -2810,17 +2810,36 @@ class MpvPlayerCore private constructor(
   /** Writes the DV decoder options the current routing inputs give the loaded file. */
   private fun reapplyDvDecoderOptions(change: String, onComplete: ((Result<Unit>) -> Unit)?) {
     submitMpvOperation(writeOperations, "DV conversion", { onComplete?.invoke(it) }) {
-      val p = player ?: throw CancellationException("MPV player unavailable")
-      val track = pendingVideoTrack(p)
+      val p = player
+      if (p == null && propertyWriterOverride == null) {
+        throw CancellationException("MPV player unavailable")
+      }
+      val track = p?.let { pendingVideoTrack(it) }
       emitLog("info", "dv-route", change)
-      // Decoder options alone are insufficient: disabling DV on P5 also
-      // needs a renderer that consumes RPU. Reuse the preloaded policy so
-      // a live change cannot leave plain IPT-PQ frames on the video plane.
-      if (usesMediaCodecVo) {
-        applyDvReshapePolicy(p, track)
-        applyFramedropPolicy()
-      } else if (!audioOnly) {
-        applySoftwareDvReshapeOutput(track)
+      if (p == null) {
+        // The internal property-writer constructor is a deterministic test
+        // seam for a file-less initialized core. Match the decoder-options
+        // decision a real no-track route makes before DV profile metadata is
+        // available; renderer bookkeeping needs an actual player.
+        val routing = dvRouting()
+        writeDvDecoderOptions(
+          GpuVoPolicy.dvDecoderOptions(
+            routing.conversionMode,
+            routing.displaySupportsDv,
+            dvProfile = null,
+            canPlayP5Natively = false
+          )
+        )
+      } else {
+        // Decoder options alone are insufficient: disabling DV on P5 also
+        // needs a renderer that consumes RPU. Reuse the preloaded policy so
+        // a live change cannot leave plain IPT-PQ frames on the video plane.
+        if (usesMediaCodecVo) {
+          applyDvReshapePolicy(p, track)
+          applyFramedropPolicy()
+        } else if (!audioOnly) {
+          applySoftwareDvReshapeOutput(track)
+        }
       }
     }
   }
@@ -3302,7 +3321,7 @@ class MpvPlayerCore private constructor(
     }
   }
 
-  fun setVideoRect(
+  override fun setVideoRect(
     left: Int,
     top: Int,
     right: Int,

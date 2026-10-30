@@ -70,7 +70,9 @@ class ExoPlayerPluginTest {
       awaitCompletion(result)
       assertNull(result.errorCode)
     }
-    assertEquals(listOf("dolby-vision-output" to "no", "hdr-sdr-conversion" to "player"), writes)
+    assertEquals(listOf("vd-lavc-o" to "dolby_vision=0,dv_p7_mode=strip"), writes)
+    val core = getField(plugin, "mpvCore") as MpvPlayerCore
+    assertEquals("player", getField(core, "hdrSdrConversionMode"))
   }
 
   @Test
@@ -94,7 +96,10 @@ class ExoPlayerPluginTest {
     }
 
     assertTrue("fallback getStats never completed", completed)
-    assertEquals(mapOf("playerType" to "mpv"), result.successValue)
+    val stats = result.successValue as Map<*, *>
+    assertEquals("mpv", stats["playerType"])
+    assertEquals(false, stats["videoUpscalingConfigured"])
+    assertEquals("off", stats["videoUpscalingStatus"])
   }
 
   @Test
@@ -927,7 +932,7 @@ class ExoPlayerPluginTest {
     writer: suspend (String, String) -> Unit
   ): ExoPlayerPlugin {
     val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
-    val core = MpvPlayerCore(activity, true, writer)
+    val core = MpvPlayerCore(activity, false, writer)
     return ExoPlayerPlugin().also { plugin ->
       setField(plugin, "activity", activity)
       setField(plugin, "mpvCore", core)

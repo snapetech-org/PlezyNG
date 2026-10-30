@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Guard the architecture matrices and release contract in build.yml."""
 
+import json
 from pathlib import Path
 import re
 import sys
@@ -20,6 +21,21 @@ WORKFLOW = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else DEFAULT_WORKFL
 SETUP_FLUTTER_GIT = WORKFLOW.parents[1] / "actions/setup-flutter-git/action.yml"
 SETUP_FLUTTER_WINDOWS = ROOT / ".github/actions/setup-flutter-windows/action.yml"
 WINDOWS_CMAKE = WORKFLOW.parents[2] / "windows/CMakeLists.txt"
+WINDOWS_MPV_DOWNLOADER = WORKFLOW.parents[2] / "windows/tool/download-pinned-mpv.ps1"
+WINDOWS_SIMDUTF_DOWNLOADER = (
+    WORKFLOW.parents[2] / "windows/tool/download-pinned-simdutf.ps1"
+)
+WINDOWS_WINSPARKLE_DOWNLOADER = (
+    WORKFLOW.parents[2] / "windows/tool/download-pinned-winsparkle.ps1"
+)
+WINDOWS_SDL3_DOWNLOADER = (
+    WORKFLOW.parents[2] / "windows/tool/download-pinned-sdl3.ps1"
+)
+WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER = (
+    WORKFLOW.parents[2] / "windows/tool/download-pinned-torrent-dependencies.ps1"
+)
+WINDOWS_TOOLCHAIN_LOCK = WORKFLOW.parents[2] / "windows/tool/build-toolchain.lock.json"
+PLEZY_TORRENT_CMAKE = WORKFLOW.parents[2] / "packages/plezy_torrent/src/CMakeLists.txt"
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
 WEBOS_RELEASE_GATE = ROOT / "tools/webos/check_release_eligibility.py"
@@ -49,6 +65,19 @@ def named_step(block: str, name: str) -> str:
     )
     require(match is not None, f"missing '{name}' step")
     return match.group(0) if match else ""
+
+
+def validate_windows_jni_jdk(block: str, context: str) -> None:
+    setup_java = named_step(block, "Setup Java")
+    require(
+        "uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5"
+        in setup_java
+        and 'distribution: "temurin"' in setup_java
+        and 'java-version: "21"' in setup_java
+        and "architecture: ${{ matrix.arch == 'arm64' && 'aarch64' || 'x64' }}"
+        in setup_java,
+        f"{context} must provision pinned native JDK 21 for JNI",
+    )
 
 
 def validate_windows_signing(block: str) -> None:
@@ -118,6 +147,7 @@ for legacy_job in (
     require(f"  {legacy_job}:\n" not in text, f"legacy job {legacy_job} must stay removed")
 
 windows = job("build-windows")
+validate_windows_jni_jdk(windows, "Windows release builds")
 require(
     '"group":"packer-windows"' in windows
     and '"Windows","X64"' in windows
@@ -168,6 +198,49 @@ for expected in (
 windows_cmake = WINDOWS_CMAKE.read_text(encoding="utf-8") if WINDOWS_CMAKE.is_file() else ""
 require(bool(windows_cmake), "missing windows/CMakeLists.txt")
 windows_mpv_block = windows_cmake.split("FetchContent_MakeAvailable(mpv_dev)", 1)[0]
+windows_mpv_downloader = (
+    WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8")
+    if WINDOWS_MPV_DOWNLOADER.is_file()
+    else ""
+)
+windows_simdutf_downloader = (
+    WINDOWS_SIMDUTF_DOWNLOADER.read_text(encoding="utf-8")
+    if WINDOWS_SIMDUTF_DOWNLOADER.is_file()
+    else ""
+)
+windows_simdutf_downloader_normalized = windows_simdutf_downloader.replace("\\", "/")
+windows_winsparkle_downloader = (
+    WINDOWS_WINSPARKLE_DOWNLOADER.read_text(encoding="utf-8")
+    if WINDOWS_WINSPARKLE_DOWNLOADER.is_file()
+    else ""
+)
+windows_winsparkle_downloader_normalized = windows_winsparkle_downloader.replace("\\", "/")
+windows_sdl3_downloader = (
+    WINDOWS_SDL3_DOWNLOADER.read_text(encoding="utf-8")
+    if WINDOWS_SDL3_DOWNLOADER.is_file()
+    else ""
+)
+windows_sdl3_downloader_normalized = windows_sdl3_downloader.replace("\\", "/")
+windows_torrent_dependencies_downloader = (
+    WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER.read_text(encoding="utf-8")
+    if WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER.is_file()
+    else ""
+)
+windows_torrent_dependencies_downloader_normalized = (
+    windows_torrent_dependencies_downloader.replace("\\", "/")
+)
+plezy_torrent_cmake = (
+    PLEZY_TORRENT_CMAKE.read_text(encoding="utf-8")
+    if PLEZY_TORRENT_CMAKE.is_file()
+    else ""
+)
+windows_toolchain_lock = {}
+if WINDOWS_TOOLCHAIN_LOCK.is_file():
+    windows_toolchain_lock = json.loads(WINDOWS_TOOLCHAIN_LOCK.read_text(encoding="utf-8"))
+windows_winsparkle_pin = windows_toolchain_lock.get("winSparkle", {})
+windows_sdl3_pin = windows_toolchain_lock.get("sdl3", {})
+windows_boost_pin = windows_toolchain_lock.get("boost", {})
+windows_libtorrent_pin = windows_toolchain_lock.get("libtorrent", {})
 require(
     "URL_HASH SHA256=${MPV_SHA256}" in windows_mpv_block,
     "Windows libmpv fetch must keep URL_HASH enforcement",
@@ -178,13 +251,284 @@ require(
     "Windows libmpv checksum must come from mpv-build.lock.json, not a literal",
 )
 require(
+    "MPV_LOCAL_ARCHIVE" in windows_mpv_block
+    and "PLEZYNG_MPV_ARCHIVE_PATH" in windows_mpv_block
+    and "set(MPV_DOWNLOAD_URL" in windows_mpv_block
+    and "URL_HASH SHA256=${MPV_SHA256}" in windows_mpv_block,
+    "Windows CMake must use a predownloaded MPV archive without dropping lockfile hash verification",
+)
+require(
+    "PLEZYNG_WINDOWS_CURL_PATH" in windows_cmake
+    and "sdk.lunarg.com" in windows_cmake
+    and "--ssl-revoke-best-effort" in windows_cmake
+    and "file(SHA256" in windows_cmake
+    and "VULKAN_RT_SHA256" in windows_cmake,
+    "Windows Vulkan runtime downloads must use verified Schannel curl and keep the pinned SHA-256",
+)
+require(
+    "SIMDUTF_LOCAL_ARCHIVE" in windows_cmake
+    and "PLEZYNG_SIMDUTF_ARCHIVE_PATH" in windows_cmake
+    and "URL_HASH SHA256=9fe4d6f515724a55c8de88fee4463e0890a1abe2267cda13c4b5d245d58039e6"
+    in windows_cmake,
+    "Windows simdutf must support the predownloaded archive and retain its pinned SHA-256",
+)
+require(
+    "PLEZYNG_WINSPARKLE_SOURCE_DIR" in windows_cmake
+    and "FETCHCONTENT_SOURCE_DIR_WINSPARKLE" in windows_cmake
+    and "include/winsparkle.h" in windows_cmake
+    and "x64/Release/WinSparkle.lib" in windows_cmake
+    and "ARM64/Release/WinSparkle.lib" in windows_cmake,
+    "Windows CMake must use and validate the checksum-verified WinSparkle source override",
+)
+require(
+    "PLEZYNG_SDL3_SOURCE_DIR" in windows_cmake
+    and "FETCHCONTENT_SOURCE_DIR_SDL3" in windows_cmake
+    and "include/SDL3/SDL.h" in windows_cmake,
+    "Windows CMake must use and validate the checksum-verified SDL3 source override",
+)
+require(
+    "PLEZYNG_BOOST_SOURCE_DIR" in windows_cmake
+    and "FETCHCONTENT_SOURCE_DIR_PLEZY_BOOST" in windows_cmake
+    and "boost/version.hpp" in windows_cmake
+    and "LICENSE_1_0.txt" in windows_cmake,
+    "Windows CMake must use and validate the checksum-verified Boost source override",
+)
+require(
+    "PLEZYNG_LIBTORRENT_SOURCE_DIR" in windows_cmake
+    and "FETCHCONTENT_SOURCE_DIR_LIBTORRENT" in windows_cmake
+    and "include/libtorrent/version.hpp" in windows_cmake
+    and "COPYING" in windows_cmake,
+    "Windows CMake must use and validate the checksum-verified libtorrent source override",
+)
+require(bool(windows_mpv_downloader), "missing pinned Windows MPV download helper")
+for expected in (
+    "[ValidateSet('x64', 'arm64')]",
+    "mpv-build.lock.json",
+    "github.com",
+    "HTTPS_PROXY",
+    "--proxy",
+    "--ssl-revoke-best-effort",
+    "Schannel",
+    "Get-FileHash -Algorithm SHA256",
+    "PLEZYNG_MPV_ARCHIVE_PATH=",
+    "PLEZYNG_WINDOWS_CURL_PATH=",
+):
+    require(expected in windows_mpv_downloader, f"Windows MPV bootstrap must keep: {expected}")
+require(bool(windows_simdutf_downloader), "missing pinned Windows simdutf download helper")
+for expected in (
+    "linux/packaging/native-inputs.json",
+    "inputs.simdutf",
+    "github.com",
+    "HTTPS_PROXY",
+    "--proxy",
+    "--ssl-revoke-best-effort",
+    "Schannel",
+    "Get-FileHash -Algorithm SHA256",
+    "PLEZYNG_SIMDUTF_ARCHIVE_PATH=",
+):
+    require(
+        expected in windows_simdutf_downloader_normalized,
+        f"Windows simdutf bootstrap must keep: {expected}",
+    )
+for forbidden in ("--ssl-no-revoke", "--insecure"):
+    require(
+        forbidden not in windows_simdutf_downloader,
+        f"Windows simdutf bootstrap must not use {forbidden}",
+    )
+require(bool(windows_winsparkle_downloader), "missing pinned Windows WinSparkle download helper")
+for expected in (
+    "build-toolchain.lock.json",
+    "winSparkle",
+    "github.com",
+    "/vslavik/winsparkle/releases/download/v$version/$filename",
+    "HTTPS_PROXY",
+    "--proxy",
+    "--ssl-revoke-best-effort",
+    "Schannel",
+    "Get-FileHash -Algorithm SHA256",
+    "Expand-Archive",
+    "include/winsparkle.h",
+    "x64/Release/WinSparkle.lib",
+    "ARM64/Release/WinSparkle.lib",
+    "PLEZYNG_WINSPARKLE_SOURCE_DIR=",
+):
+    require(
+        expected in windows_winsparkle_downloader_normalized,
+        f"Windows WinSparkle bootstrap must keep: {expected}",
+    )
+for forbidden in ("--ssl-no-revoke", "--insecure"):
+    require(
+        forbidden not in windows_winsparkle_downloader,
+        f"Windows WinSparkle bootstrap must not use {forbidden}",
+    )
+require(bool(windows_sdl3_downloader), "missing pinned Windows SDL3 download helper")
+for expected in (
+    "build-toolchain.lock.json",
+    "sdl3",
+    "github.com",
+    "/libsdl-org/SDL/releases/download/release-$version/$filename",
+    "HTTPS_PROXY",
+    "--proxy",
+    "--ssl-revoke-best-effort",
+    "Schannel",
+    "Get-FileHash -Algorithm SHA256",
+    "Expand-Archive",
+    "CMakeLists.txt",
+    "include/SDL3/SDL.h",
+    "PLEZYNG_SDL3_SOURCE_DIR=",
+):
+    require(
+        expected in windows_sdl3_downloader_normalized,
+        f"Windows SDL3 bootstrap must keep: {expected}",
+    )
+for forbidden in ("--ssl-no-revoke", "--insecure"):
+    require(
+        forbidden not in windows_sdl3_downloader,
+        f"Windows SDL3 bootstrap must not use {forbidden}",
+    )
+require(
+    bool(windows_torrent_dependencies_downloader),
+    "missing pinned Windows Boost/libtorrent download helper",
+)
+for expected in (
+    "build-toolchain.lock.json",
+    "boost",
+    "libtorrent",
+    "github.com",
+    "HTTPS_PROXY",
+    "--proxy",
+    "--ssl-revoke-best-effort",
+    "Schannel",
+    "Get-FileHash -Algorithm SHA256",
+    "cmake.exe",
+    "-E tar",
+    "xJf",
+    "xzf",
+    "boost/version.hpp",
+    "include/libtorrent/version.hpp",
+    "PLEZYNG_BOOST_SOURCE_DIR",
+    "PLEZYNG_LIBTORRENT_SOURCE_DIR",
+):
+    require(
+        expected in windows_torrent_dependencies_downloader_normalized,
+        f"Windows torrent dependency bootstrap must keep: {expected}",
+    )
+for forbidden in ("--ssl-no-revoke", "--insecure"):
+    require(
+        forbidden not in windows_torrent_dependencies_downloader,
+        f"Windows torrent dependency bootstrap must not use {forbidden}",
+    )
+require(
+    windows_winsparkle_pin.get("version") == "0.9.2"
+    and windows_winsparkle_pin.get("filename") == "WinSparkle-0.9.2.zip"
+    and windows_winsparkle_pin.get("url")
+    == "https://github.com/vslavik/winsparkle/releases/download/v0.9.2/WinSparkle-0.9.2.zip"
+    and windows_winsparkle_pin.get("sha256")
+    == "2a5facf5a22056edf7afc4d0a4bf05620b7aa7cc1619c3078b281e374cdb9996",
+    "Windows WinSparkle release pin must match its verified official 0.9.2 archive",
+)
+require(
+    windows_sdl3_pin.get("version") == "3.2.8"
+    and windows_sdl3_pin.get("filename") == "SDL3-3.2.8.zip"
+    and windows_sdl3_pin.get("url")
+    == "https://github.com/libsdl-org/SDL/releases/download/release-3.2.8/SDL3-3.2.8.zip"
+    and windows_sdl3_pin.get("sha256")
+    == "7f8ff5c8246db4145301bc122601a5f8cef25ee2c326eddb3e88668849c61ddf",
+    "Windows SDL3 release pin must match its verified official 3.2.8 archive",
+)
+require(
+    windows_boost_pin.get("version") == "1.86.0"
+    and windows_boost_pin.get("filename") == "boost-1.86.0-b2-nodocs.tar.xz"
+    and windows_boost_pin.get("url")
+    == "https://github.com/boostorg/boost/releases/download/boost-1.86.0/boost-1.86.0-b2-nodocs.tar.xz"
+    and windows_boost_pin.get("sha256")
+    == "a4d99d032ab74c9c5e76eddcecc4489134282245fffa7e079c5804b92b45f51d"
+    and f"URL {windows_boost_pin.get('url')}" in plezy_torrent_cmake
+    and f"URL_HASH SHA256={windows_boost_pin.get('sha256')}" in plezy_torrent_cmake,
+    "Windows Boost release pin must match the verified plezy_torrent source archive",
+)
+require(
+    windows_libtorrent_pin.get("version") == "2.0.11"
+    and windows_libtorrent_pin.get("filename") == "libtorrent-rasterbar-2.0.11.tar.gz"
+    and windows_libtorrent_pin.get("url")
+    == "https://github.com/arvidn/libtorrent/releases/download/v2.0.11/libtorrent-rasterbar-2.0.11.tar.gz"
+    and windows_libtorrent_pin.get("sha256")
+    == "f0db58580f4f29ade6cc40fa4ba80e2c9a70c90265cd77332d3cdec37ecf1e6d"
+    and f"URL {windows_libtorrent_pin.get('url')}" in plezy_torrent_cmake
+    and f"URL_HASH SHA256={windows_libtorrent_pin.get('sha256')}" in plezy_torrent_cmake,
+    "Windows libtorrent release pin must match the verified plezy_torrent source archive",
+)
+windows_download_step = named_step(
+    windows, "Download and verify pinned Windows libmpv archive"
+)
+windows_download_step_normalized = windows_download_step.replace("\\", "/")
+require(
+    "windows/tool/download-pinned-mpv.ps1" in windows_download_step_normalized
+    and "steps.setup_flutter_windows.outputs.windows_curl_path" in windows_download_step
+    and windows.find("name: Download and verify pinned Windows libmpv archive")
+    < windows.find("name: Configure repository updater trust root"),
+    "Windows release builds must download and verify MPV before CMake configures",
+)
+windows_simdutf_download_step = named_step(
+    windows, "Download and verify pinned Windows simdutf source archive"
+)
+windows_simdutf_download_step_normalized = windows_simdutf_download_step.replace(
+    "\\", "/"
+)
+require(
+    "windows/tool/download-pinned-simdutf.ps1" in windows_simdutf_download_step_normalized
+    and windows.find("name: Download and verify pinned Windows libmpv archive")
+    < windows.find("name: Download and verify pinned Windows simdutf source archive")
+    < windows.find("name: Configure repository updater trust root"),
+    "Windows release builds must predownload and verify simdutf before CMake configures",
+)
+windows_winsparkle_download_step = named_step(
+    windows, "Download and verify pinned Windows WinSparkle archive"
+)
+windows_winsparkle_download_step_normalized = windows_winsparkle_download_step.replace(
+    "\\", "/"
+)
+require(
+    "windows/tool/download-pinned-winsparkle.ps1" in windows_winsparkle_download_step_normalized
+    and windows.find("name: Download and verify pinned Windows simdutf source archive")
+    < windows.find("name: Download and verify pinned Windows WinSparkle archive")
+    < windows.find("name: Configure repository updater trust root"),
+    "Windows release builds must predownload and verify WinSparkle before CMake configures",
+)
+windows_sdl3_download_step = named_step(
+    windows, "Download and verify pinned Windows SDL3 archive"
+)
+windows_sdl3_download_step_normalized = windows_sdl3_download_step.replace("\\", "/")
+require(
+    "windows/tool/download-pinned-sdl3.ps1" in windows_sdl3_download_step_normalized
+    and windows.find("name: Download and verify pinned Windows WinSparkle archive")
+    < windows.find("name: Download and verify pinned Windows SDL3 archive")
+    < windows.find("name: Configure repository updater trust root"),
+    "Windows release builds must predownload and verify SDL3 before CMake configures",
+)
+windows_torrent_dependencies_download_step = named_step(
+    windows, "Download and verify pinned Windows torrent dependencies"
+)
+windows_torrent_dependencies_download_step_normalized = (
+    windows_torrent_dependencies_download_step.replace("\\", "/")
+)
+require(
+    "windows/tool/download-pinned-torrent-dependencies.ps1"
+    in windows_torrent_dependencies_download_step_normalized
+    and windows.find("name: Download and verify pinned Windows SDL3 archive")
+    < windows.find("name: Download and verify pinned Windows torrent dependencies")
+    < windows.find("name: Configure repository updater trust root"),
+    "Windows release builds must predownload and verify Boost/libtorrent before CMake configures",
+)
+require(
     "sourceforge" not in windows_cmake,
     "Windows libmpv fetch must not regress to the unpinned sourceforge download",
 )
 windows_native_cache = named_step(windows, "Cache Windows native dependencies")
 require(
-    "hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json')" in windows_native_cache,
-    "Windows native cache identity must include the mpv-build lock",
+    "hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json', 'windows/tool/build-toolchain.lock.json')"
+    in windows_native_cache,
+    "Windows native cache identity must include the MPV and toolchain locks",
 )
 require(
     re.search(
@@ -230,9 +574,87 @@ require(
     and "Remove-Item -LiteralPath $installRoot -Recurse -Force" in setup_flutter_windows
     and "throw 'Flutter setup failed three times" in setup_flutter_windows
     and "name: Probe pinned Flutter release connectivity" in setup_flutter_windows
-    and "curl --head --fail" in setup_flutter_windows
+    and "--ssl-revoke-best-effort" in setup_flutter_windows
+    and "--ssl-revoke-best-effort --head --fail" in setup_flutter_windows
+    and 'manifest="$("$PLEZY_REAL_CURL" --ssl-revoke-best-effort --fail' in setup_flutter_windows
+    and setup_flutter_windows.count("BASH_ENV: ${{ steps.windows_curl.outputs.bash_env }}") == 4
+    and setup_flutter_windows.count(
+        "PLEZY_REAL_CURL: ${{ steps.windows_curl.outputs.curl_path }}"
+    ) == 5
+    and 'curl() {' in setup_flutter_windows
+    and "name: Verify best-effort curl wrapper for Flutter setup" in setup_flutter_windows
+    and "PLEZY_REAL_CURL" in setup_flutter_windows
+    and "windows_curl_path:" in setup_flutter_windows
+    and "steps.windows_curl.outputs.windows_curl_path" in setup_flutter_windows
     and "--show-error" in setup_flutter_windows,
     "Windows Flutter setup must retry three times with a trusted cache key and fail closed",
+)
+
+windows_ci = job_block(ci_text, "windows-native-test")
+require(bool(windows_ci), "missing Windows native CI job")
+windows_ci_download_step = named_step(
+    windows_ci, "Download and verify pinned Windows libmpv archive"
+)
+windows_ci_download_step_normalized = windows_ci_download_step.replace("\\", "/")
+require(
+    "windows/tool/download-pinned-mpv.ps1" in windows_ci_download_step_normalized
+    and "steps.setup_flutter_windows.outputs.windows_curl_path" in windows_ci_download_step
+    and windows_ci.find("name: Download and verify pinned Windows libmpv archive")
+    < windows_ci.find("name: Prepare Flutter Windows configuration"),
+    "Windows native CI must predownload the hash-locked MPV archive before CMake",
+)
+windows_ci_simdutf_download_step = named_step(
+    windows_ci, "Download and verify pinned Windows simdutf source archive"
+)
+windows_ci_simdutf_download_step_normalized = windows_ci_simdutf_download_step.replace(
+    "\\", "/"
+)
+require(
+    "windows/tool/download-pinned-simdutf.ps1" in windows_ci_simdutf_download_step_normalized
+    and windows_ci.find("name: Download and verify pinned Windows libmpv archive")
+    < windows_ci.find("name: Download and verify pinned Windows simdutf source archive")
+    < windows_ci.find("name: Prepare Flutter Windows configuration"),
+    "Windows native CI must predownload and verify simdutf before CMake configures",
+)
+windows_ci_winsparkle_download_step = named_step(
+    windows_ci, "Download and verify pinned Windows WinSparkle archive"
+)
+windows_ci_winsparkle_download_step_normalized = windows_ci_winsparkle_download_step.replace(
+    "\\", "/"
+)
+require(
+    "windows/tool/download-pinned-winsparkle.ps1" in windows_ci_winsparkle_download_step_normalized
+    and windows_ci.find("name: Download and verify pinned Windows simdutf source archive")
+    < windows_ci.find("name: Download and verify pinned Windows WinSparkle archive")
+    < windows_ci.find("name: Prepare Flutter Windows configuration"),
+    "Windows native CI must predownload and verify WinSparkle before CMake configures",
+)
+windows_ci_sdl3_download_step = named_step(
+    windows_ci, "Download and verify pinned Windows SDL3 archive"
+)
+windows_ci_sdl3_download_step_normalized = windows_ci_sdl3_download_step.replace(
+    "\\", "/"
+)
+require(
+    "windows/tool/download-pinned-sdl3.ps1" in windows_ci_sdl3_download_step_normalized
+    and windows_ci.find("name: Download and verify pinned Windows WinSparkle archive")
+    < windows_ci.find("name: Download and verify pinned Windows SDL3 archive")
+    < windows_ci.find("name: Prepare Flutter Windows configuration"),
+    "Windows native CI must predownload and verify SDL3 before CMake configures",
+)
+windows_ci_torrent_dependencies_download_step = named_step(
+    windows_ci, "Download and verify pinned Windows torrent dependencies"
+)
+windows_ci_torrent_dependencies_download_step_normalized = (
+    windows_ci_torrent_dependencies_download_step.replace("\\", "/")
+)
+require(
+    "windows/tool/download-pinned-torrent-dependencies.ps1"
+    in windows_ci_torrent_dependencies_download_step_normalized
+    and windows_ci.find("name: Download and verify pinned Windows SDL3 archive")
+    < windows_ci.find("name: Download and verify pinned Windows torrent dependencies")
+    < windows_ci.find("name: Prepare Flutter Windows configuration"),
+    "Windows native CI must predownload and verify Boost/libtorrent before CMake configures",
 )
 
 linux = job("build-linux")
@@ -549,6 +971,7 @@ require(
 )
 
 windows_native = job_block(ci_text, "windows-native-test")
+validate_windows_jni_jdk(windows_native, "Windows native CI")
 windows_ci_flutter_cache_key = re.search(
     r'(?m)^\s*cache-key:\s*["\']?([^"\'\s]+)["\']?\s*$',
     windows_native,

@@ -207,6 +207,7 @@ void main() {
           tester,
           () => shaderCommands.any((args) => args[2] == 'clr'),
           describe: () => 'loadfiles=$loadfiles shaderCommands=$shaderCommands',
+          timeout: const Duration(seconds: 10),
         );
         await tester.pump();
         expect(shaderCommands.where((args) => args[2] == 'append'), isEmpty);

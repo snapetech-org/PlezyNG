@@ -72,7 +72,7 @@ env:
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
   LINUX_APT_PACKAGES: >
     clang cmake meson ninja-build pkg-config nasm libgtk-3-dev libsecret-1-dev libevdev-dev liblzma-dev
-    libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-libav gstreamer1.0-plugins-bad gstreamer1.0-plugins-good
+    libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-base gstreamer1.0-libav gstreamer1.0-plugins-bad gstreamer1.0-plugins-good
     libstdc++-12-dev libasound2-dev libass-dev libfreetype-dev libfontconfig-dev libfribidi-dev
     libharfbuzz-dev libepoxy-dev libegl-dev libgl-dev libgnutls28-dev libpipewire-0.3-dev
     libva-dev libvdpau-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev
@@ -1611,6 +1611,13 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup Java
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          architecture: ${{ matrix.arch == 'arm64' && 'aarch64' || 'x64' }}
+
       - name: Provision and verify pinned Windows build tools
         shell: pwsh
         run: |
@@ -1622,9 +1629,10 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ matrix.native_cache_path }}
-          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-windows-native-${{ matrix.arch }}-${{ hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json') }}
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-windows-native-${{ matrix.arch }}-${{ hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json', 'windows/tool/build-toolchain.lock.json') }}
 
       - name: Setup Flutter
+        id: setup_flutter_windows
         if: matrix.flutter_setup == 'action'
         uses: ./.github/actions/setup-flutter-windows
         with:
@@ -1703,6 +1711,28 @@ jobs:
         run: |
           flutter precache --windows
           .\windows\tool\install-patched-engine.ps1
+
+      - name: Download and verify pinned Windows libmpv archive
+        shell: pwsh
+        env:
+          PLEZYNG_WINDOWS_CURL_PATH: ${{ steps.setup_flutter_windows.outputs.windows_curl_path }}
+        run: .\windows\tool\download-pinned-mpv.ps1 -Architecture '${{ matrix.arch }}'
+
+      - name: Download and verify pinned Windows simdutf source archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-simdutf.ps1
+
+      - name: Download and verify pinned Windows WinSparkle archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-winsparkle.ps1
+
+      - name: Download and verify pinned Windows SDL3 archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-sdl3.ps1
+
+      - name: Download and verify pinned Windows torrent dependencies
+        shell: pwsh
+        run: .\windows\tool\download-pinned-torrent-dependencies.ps1
 
       - name: Configure repository updater trust root
         shell: pwsh

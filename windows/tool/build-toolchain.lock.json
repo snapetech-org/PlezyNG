@@ -18,5 +18,33 @@
     "provenance": "https://jrsoftware.org/isdl.php",
     "signatureDocumentation": "https://jrsoftware.org/isdl-verify.php",
     "verification": "The vendor download page links this latest Inno Setup 6 release and identifies Pyrsys B.V. as publisher. The complete download SHA-256 agrees with the GitHub release asset digest and vendor .issig file. Windows provisioning additionally requires valid Authenticode."
+  },
+  "winSparkle": {
+    "version": "0.9.2",
+    "filename": "WinSparkle-0.9.2.zip",
+    "url": "https://github.com/vslavik/winsparkle/releases/download/v0.9.2/WinSparkle-0.9.2.zip",
+    "sha256": "2a5facf5a22056edf7afc4d0a4bf05620b7aa7cc1619c3078b281e374cdb9996",
+    "provenance": "Official v0.9.2 GitHub release asset; SHA-256 matches the GitHub release API digest and an independent hash of the complete ZIP."
+  },
+  "sdl3": {
+    "version": "3.2.8",
+    "filename": "SDL3-3.2.8.zip",
+    "url": "https://github.com/libsdl-org/SDL/releases/download/release-3.2.8/SDL3-3.2.8.zip",
+    "sha256": "7f8ff5c8246db4145301bc122601a5f8cef25ee2c326eddb3e88668849c61ddf",
+    "provenance": "Official libsdl-org/SDL release-3.2.8 asset. SHA-256 was computed from the complete 17,255,185-byte archive downloaded from the official release URL on 2026-10-30."
+  },
+  "boost": {
+    "version": "1.86.0",
+    "filename": "boost-1.86.0-b2-nodocs.tar.xz",
+    "url": "https://github.com/boostorg/boost/releases/download/boost-1.86.0/boost-1.86.0-b2-nodocs.tar.xz",
+    "sha256": "a4d99d032ab74c9c5e76eddcecc4489134282245fffa7e079c5804b92b45f51d",
+    "provenance": "Official boostorg/boost 1.86.0 release asset; SHA-256 matches its published checksum file."
+  },
+  "libtorrent": {
+    "version": "2.0.11",
+    "filename": "libtorrent-rasterbar-2.0.11.tar.gz",
+    "url": "https://github.com/arvidn/libtorrent/releases/download/v2.0.11/libtorrent-rasterbar-2.0.11.tar.gz",
+    "sha256": "f0db58580f4f29ade6cc40fa4ba80e2c9a70c90265cd77332d3cdec37ecf1e6d",
+    "provenance": "Official arvidn/libtorrent v2.0.11 release asset; SHA-256 matches the source pin used by plezy_torrent."
   }
 }

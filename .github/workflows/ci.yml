@@ -40,7 +40,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          fetch-depth: 0
+          # Manual CI skips changelog range checks, so avoid fetching all history on ephemeral runners.
+          fetch-depth: ${{ github.event_name == 'workflow_dispatch' && 1 || 0 }}
           persist-credentials: false
 
       - name: Validate changelog entry
@@ -170,7 +171,7 @@ jobs:
       - name: Run tests
         run: |
           if [ -d "test" ] && [ "$(find test -name '*_test.dart' | wc -l)" -gt 0 ]; then
-            scripts/run_tests.sh
+            scripts/run_tests.sh -j 2
           else
             echo "No tests found, skipping test execution"
           fi
@@ -221,6 +222,7 @@ jobs:
 
   android-test:
     name: Android JVM and Native Tests
+    needs: test
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-android-test"]}}', github.run_id)) }}
     permissions:
@@ -337,6 +339,23 @@ jobs:
             if [[ "$status" -eq 0 ]]; then
               exit 0
             fi
+            echo "::group::Android Gradle failure resource diagnostics (attempt $attempt)"
+            date --iso-8601=seconds
+            free -h
+            df -h "$RUNNER_TEMP" "$GITHUB_WORKSPACE"
+            df -i "$RUNNER_TEMP" "$GITHUB_WORKSPACE"
+            for file in /proc/pressure/memory /proc/pressure/io \
+                        /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.high \
+                        /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.events; do
+              if [[ -r "$file" ]]; then
+                echo "== $file =="
+                cat "$file"
+              fi
+            done
+            dmesg --time-format=iso 2>/dev/null \
+              | grep -Ei 'out of memory|oom-kill|killed process' \
+              | tail -20
+            echo "::endgroup::"
             if ! grep -Eiq 'Could not (GET|download)|Read timed out|Connection reset|Connection timed out|UnknownHostException|Temporary failure in name resolution|No route to host|ProxyError|tunnel.*failed' "$log_file"; then
               exit "$status"
             fi
@@ -391,12 +410,14 @@ jobs:
 
   linux-native-test:
     name: Linux native reliability (${{ matrix.sanitizer }})
+    needs: [test, android-test, server]
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-linux-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include:
           - sanitizer: address
@@ -590,6 +611,23 @@ jobs:
           command -v cmake >/dev/null || brew install cmake
           cmake --version
 
+      - name: Build and verify iOS native torrent framework
+        if: matrix.platform == 'iOS'
+        run: |
+          python3 scripts/p2p/build_apple.py ios
+          framework=packages/plezy_torrent/ios/Frameworks/ios/PlezyTorrent.xcframework
+          test -f "$framework/Info.plist"
+          test -d "$framework/ios-arm64/PlezyTorrent.framework"
+          test -d "$framework/ios-arm64_x86_64-simulator/PlezyTorrent.framework"
+
+      - name: Build and verify macOS native torrent framework
+        if: matrix.platform == 'macOS'
+        run: |
+          python3 scripts/p2p/build_apple.py macos
+          framework=packages/plezy_torrent/macos/Frameworks/macos/PlezyTorrent.xcframework
+          test -f "$framework/Info.plist"
+          test -d "$framework/macos-arm64_x86_64/PlezyTorrent.framework"
+
       - name: Install CocoaPods
         shell: bash
         run: |
@@ -626,6 +664,10 @@ jobs:
           test -f "$PODFILE_LOCK"
           shasum -a 256 "$PODFILE_LOCK" > "$RUNNER_TEMP/plezy-podfile-lock.sha256"
 
+      - name: Verify iOS Xcode project syntax
+        if: matrix.platform == 'iOS'
+        run: plutil -lint ios/Runner.xcodeproj/project.pbxproj
+
       - name: Prepare iOS Flutter build settings
         if: matrix.platform == 'iOS'
         run: flutter build ios --config-only --simulator --debug --no-pub
@@ -658,6 +700,64 @@ jobs:
         if: matrix.platform != 'tvOS'
         working-directory: ${{ matrix.project_directory }}
         run: pod install --deployment
+
+      - name: Diagnose iOS torrent CocoaPods integration
+        if: matrix.platform == 'iOS'
+        run: |
+          python3 - <<'PY'
+          import json
+          import plistlib
+          from pathlib import Path
+
+          plugin = Path("ios/.symlinks/plugins/plezy_torrent/ios")
+          framework = Path("packages/plezy_torrent/ios/Frameworks/ios/PlezyTorrent.xcframework")
+          print(f"plugin_path={plugin.resolve(strict=False)} exists={plugin.exists()}")
+          print(f"framework_path={framework.resolve(strict=False)} exists={framework.exists()}")
+          info = framework / "Info.plist"
+          if info.is_file():
+              with info.open("rb") as source:
+                  plist = plistlib.load(source)
+              slices = [
+                  {key: item.get(key) for key in ("LibraryIdentifier", "SupportedPlatform", "SupportedPlatformVariant", "SupportedArchitectures")}
+                  for item in plist.get("AvailableLibraries", [])
+              ]
+              print(f"framework_slices={slices}")
+
+          podspec = Path("ios/Pods/Local Podspecs/plezy_torrent.podspec.json")
+          if podspec.is_file():
+              spec = json.loads(podspec.read_text(encoding="utf-8"))
+              print(f"vendored_frameworks={spec.get('vendored_frameworks')}")
+          else:
+              print(f"local_podspec_missing={podspec}")
+
+          support = Path("ios/Pods/Target Support Files")
+          for path in sorted(support.glob("*plezy_torrent*")):
+              print(f"pod_support_path={path}")
+              if path.is_dir():
+                  for child in sorted(path.rglob("*")):
+                      if child.is_file() and child.suffix in {".sh", ".xcfilelist", ".json"}:
+                          print(f"pod_support_file={child}")
+                          for number, line in enumerate(child.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                              if "PlezyTorrent" in line or "XCFrameworkIntermediates" in line:
+                                  print(f"{child}:{number}:{line[:240]}")
+
+          for path in sorted((support / "Pods-Runner").glob("Pods-Runner-frameworks*")):
+              print(f"runner_framework_support_file={path}")
+              if path.is_file():
+                  for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                      if "plezy_torrent" in line or "PlezyTorrent" in line or "XCFrameworkIntermediates" in line:
+                          print(f"{path}:{number}:{line[:240]}")
+
+          for project_name, project in (
+              ("Runner", Path("ios/Runner.xcodeproj/project.pbxproj")),
+              ("Pods", Path("ios/Pods/Pods.xcodeproj/project.pbxproj")),
+          ):
+              print(f"{project_name}_project_file={project} exists={project.is_file()}")
+              if project.is_file():
+                  for number, line in enumerate(project.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                      if any(token in line for token in ("plezy_torrent", "PlezyTorrent", "Copy XCFrameworks")):
+                          print(f"{project_name}_project:{number}:{line[:240]}")
+          PY
 
       - name: Install tvOS CocoaPods dependencies
         if: matrix.platform == 'tvOS'
@@ -724,6 +824,7 @@ jobs:
           "$RUNNER_TEMP/visualizer-recovery-test"
 
       - name: Run Apple native reliability tests
+        if: matrix.platform != 'macOS'
         run: |
           result_bundle="$RUNNER_TEMP/apple-native-reliability.xcresult"
           set +e
@@ -735,13 +836,27 @@ jobs:
             -disableAutomaticPackageResolution \
             -resultBundlePath "$result_bundle" \
             CODE_SIGNING_ALLOWED=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            ARCHS=arm64
           test_status=$?
           set -e
           if [ "$test_status" -ne 0 ]; then
             xcrun xcresulttool get test-results tests --path "$result_bundle"
           fi
           exit "$test_status"
+
+      - name: Build macOS application and XCTest bundle
+        if: matrix.platform == 'macOS'
+        run: |
+          xcodebuild build-for-testing \
+            -workspace "${{ matrix.workspace }}" \
+            -scheme Runner \
+            -configuration Debug \
+            -destination "$APPLE_TEST_DESTINATION" \
+            -disableAutomaticPackageResolution \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            ARCHS=arm64
 
   # packer-windows-jit-v1
   windows-native-test:
@@ -770,6 +885,13 @@ jobs:
           .\windows\tool\prepare-build-toolchain.ps1
           .\windows\tool\prepare-build-toolchain.ps1 -VerifyOnly
 
+      - name: Setup Java
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          architecture: ${{ matrix.arch == 'arm64' && 'aarch64' || 'x64' }}
+
       - name: Verify provisioned ARM64 7-Zip
         if: matrix.arch == 'arm64'
         shell: pwsh
@@ -779,6 +901,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'The pinned private image 7-Zip is not usable' }
 
       - name: Setup Flutter
+        id: setup_flutter_windows
         if: matrix.flutter_setup == 'action'
         uses: ./.github/actions/setup-flutter-windows
         with:
@@ -799,6 +922,8 @@ jobs:
       # shared_preferences_windows store write is the fix for #1732, so exercise
       # it here, on a real NTFS volume, against the real backend.
       - name: Run the vendored Windows preference store tests
+        env:
+          no_proxy: localhost,127.0.0.1,::1
         shell: pwsh
         run: flutter test test/services/prefs_store_atomic_write_windows_test.dart
 
@@ -807,6 +932,28 @@ jobs:
         run: |
           flutter precache --windows
           .\windows\tool\install-patched-engine.ps1
+
+      - name: Download and verify pinned Windows libmpv archive
+        shell: pwsh
+        env:
+          PLEZYNG_WINDOWS_CURL_PATH: ${{ steps.setup_flutter_windows.outputs.windows_curl_path }}
+        run: .\windows\tool\download-pinned-mpv.ps1 -Architecture '${{ matrix.arch }}'
+
+      - name: Download and verify pinned Windows simdutf source archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-simdutf.ps1
+
+      - name: Download and verify pinned Windows WinSparkle archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-winsparkle.ps1
+
+      - name: Download and verify pinned Windows SDL3 archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-sdl3.ps1
+
+      - name: Download and verify pinned Windows torrent dependencies
+        shell: pwsh
+        run: .\windows\tool\download-pinned-torrent-dependencies.ps1
 
       - name: Prepare Flutter Windows configuration
         shell: pwsh
@@ -883,6 +1030,7 @@ jobs:
 
   server:
     name: Server checks
+    needs: [test, android-test, analyze, dependency-check]
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-server"]}}', github.run_id)) }}
     permissions:
@@ -950,6 +1098,8 @@ jobs:
             clang cmake meson ninja-build pkg-config nasm libgtk-3-dev libsecret-1-dev liblzma-dev \
             libstdc++-12-dev libepoxy-dev libcurl4-openssl-dev libevdev-dev \
             libasound2-dev libass-dev libfreetype-dev libfontconfig-dev libfribidi-dev \
+            libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
+            gstreamer1.0-plugins-bad gstreamer1.0-libav \
             libharfbuzz-dev libegl-dev libgl-dev libgnutls28-dev libpipewire-0.3-dev \
             libva-dev libxkbcommon-dev libpulse-dev libdbus-1-dev libdrm-dev \
             libdisplay-info-dev libgbm-dev libwayland-dev wayland-protocols liblcms2-dev libmujs-dev \

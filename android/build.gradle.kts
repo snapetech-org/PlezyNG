@@ -35,6 +35,13 @@ subprojects {
                 compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
             }
         }
+        if (name == "receive_sharing_intent") {
+            // Upstream leaves Java at Android's default 11 target while current
+            // Kotlin Gradle Plugin inherits JDK 21 unless its target is explicit.
+            tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+                compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+            }
+        }
         extensions.configure<LibraryAndroidComponentsExtension> {
             finalizeDsl { extension ->
                 // Plugin modules can lag the app's Android tools even when

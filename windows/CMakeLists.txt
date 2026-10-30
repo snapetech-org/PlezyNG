@@ -1,6 +1,71 @@
 cmake_minimum_required(VERSION 3.21)
 project(plezy LANGUAGES CXX)
 
+# The locked auto_updater Windows plugin declares WinSparkle with FetchContent.
+# CI prefetches the official pinned archive with Schannel curl because CMake's
+# downloader cannot use the private proxy's best-effort revocation setting.
+set(PLEZYNG_WINSPARKLE_SOURCE_DIR "$ENV{PLEZYNG_WINSPARKLE_SOURCE_DIR}")
+if(NOT PLEZYNG_WINSPARKLE_SOURCE_DIR STREQUAL "")
+  file(TO_CMAKE_PATH "${PLEZYNG_WINSPARKLE_SOURCE_DIR}" PLEZYNG_WINSPARKLE_SOURCE_DIR)
+  if(NOT IS_ABSOLUTE "${PLEZYNG_WINSPARKLE_SOURCE_DIR}" OR
+     NOT IS_DIRECTORY "${PLEZYNG_WINSPARKLE_SOURCE_DIR}" OR
+     NOT EXISTS "${PLEZYNG_WINSPARKLE_SOURCE_DIR}/include/winsparkle.h" OR
+     NOT EXISTS "${PLEZYNG_WINSPARKLE_SOURCE_DIR}/x64/Release/WinSparkle.lib" OR
+     NOT EXISTS "${PLEZYNG_WINSPARKLE_SOURCE_DIR}/ARM64/Release/WinSparkle.lib")
+    message(FATAL_ERROR "PLEZYNG_WINSPARKLE_SOURCE_DIR must name the verified WinSparkle 0.9.2 source tree")
+  endif()
+  set(FETCHCONTENT_SOURCE_DIR_WINSPARKLE "${PLEZYNG_WINSPARKLE_SOURCE_DIR}" CACHE PATH
+    "Verified local source for the locked auto_updater WinSparkle dependency" FORCE)
+endif()
+
+# universal_gamepad fetches SDL3 with CMake's downloader, which cannot apply
+# Schannel's best-effort certificate revocation option for the private proxy.
+# CI and release jobs prefetch the official pinned archive and pass this source
+# directory to FetchContent instead.
+set(PLEZYNG_SDL3_SOURCE_DIR "$ENV{PLEZYNG_SDL3_SOURCE_DIR}")
+if(NOT PLEZYNG_SDL3_SOURCE_DIR STREQUAL "")
+  file(TO_CMAKE_PATH "${PLEZYNG_SDL3_SOURCE_DIR}" PLEZYNG_SDL3_SOURCE_DIR)
+  if(NOT IS_ABSOLUTE "${PLEZYNG_SDL3_SOURCE_DIR}" OR
+     NOT IS_DIRECTORY "${PLEZYNG_SDL3_SOURCE_DIR}" OR
+     NOT EXISTS "${PLEZYNG_SDL3_SOURCE_DIR}/CMakeLists.txt" OR
+     NOT EXISTS "${PLEZYNG_SDL3_SOURCE_DIR}/include/SDL3/SDL.h")
+    message(FATAL_ERROR "PLEZYNG_SDL3_SOURCE_DIR must name the verified SDL3 3.2.8 source tree")
+  endif()
+  set(FETCHCONTENT_SOURCE_DIR_SDL3 "${PLEZYNG_SDL3_SOURCE_DIR}" CACHE PATH
+    "Verified local source for universal_gamepad's locked SDL3 dependency" FORCE)
+endif()
+
+# plezy_torrent fetches Boost and libtorrent during CMake configuration. The
+# Windows CMake downloader cannot apply Schannel's best-effort revocation
+# setting for the private proxy, so CI and release jobs prefetch both verified
+# source archives and expose their extracted trees here.
+set(PLEZYNG_BOOST_SOURCE_DIR "$ENV{PLEZYNG_BOOST_SOURCE_DIR}")
+if(NOT PLEZYNG_BOOST_SOURCE_DIR STREQUAL "")
+  file(TO_CMAKE_PATH "${PLEZYNG_BOOST_SOURCE_DIR}" PLEZYNG_BOOST_SOURCE_DIR)
+  if(NOT IS_ABSOLUTE "${PLEZYNG_BOOST_SOURCE_DIR}" OR
+     NOT IS_DIRECTORY "${PLEZYNG_BOOST_SOURCE_DIR}" OR
+     NOT EXISTS "${PLEZYNG_BOOST_SOURCE_DIR}/boost/version.hpp" OR
+     NOT EXISTS "${PLEZYNG_BOOST_SOURCE_DIR}/LICENSE_1_0.txt")
+    message(FATAL_ERROR "PLEZYNG_BOOST_SOURCE_DIR must name the verified Boost 1.86.0 source tree")
+  endif()
+  set(FETCHCONTENT_SOURCE_DIR_PLEZY_BOOST "${PLEZYNG_BOOST_SOURCE_DIR}" CACHE PATH
+    "Verified local source for plezy_torrent's locked Boost dependency" FORCE)
+endif()
+
+set(PLEZYNG_LIBTORRENT_SOURCE_DIR "$ENV{PLEZYNG_LIBTORRENT_SOURCE_DIR}")
+if(NOT PLEZYNG_LIBTORRENT_SOURCE_DIR STREQUAL "")
+  file(TO_CMAKE_PATH "${PLEZYNG_LIBTORRENT_SOURCE_DIR}" PLEZYNG_LIBTORRENT_SOURCE_DIR)
+  if(NOT IS_ABSOLUTE "${PLEZYNG_LIBTORRENT_SOURCE_DIR}" OR
+     NOT IS_DIRECTORY "${PLEZYNG_LIBTORRENT_SOURCE_DIR}" OR
+     NOT EXISTS "${PLEZYNG_LIBTORRENT_SOURCE_DIR}/CMakeLists.txt" OR
+     NOT EXISTS "${PLEZYNG_LIBTORRENT_SOURCE_DIR}/include/libtorrent/version.hpp" OR
+     NOT EXISTS "${PLEZYNG_LIBTORRENT_SOURCE_DIR}/COPYING")
+    message(FATAL_ERROR "PLEZYNG_LIBTORRENT_SOURCE_DIR must name the verified libtorrent 2.0.11 source tree")
+  endif()
+  set(FETCHCONTENT_SOURCE_DIR_LIBTORRENT "${PLEZYNG_LIBTORRENT_SOURCE_DIR}" CACHE PATH
+    "Verified local source for plezy_torrent's locked libtorrent dependency" FORCE)
+endif()
+
 # libmpv comes from our unified build repository
 # (https://github.com/edde746/mpv-build), which publishes per-commit,
 # content-addressed dev packages in the classic mpv-dev shape:
@@ -39,6 +104,22 @@ if(PLEZYNG_DV_ENGINE_ARCHIVE)
   set(MPV_SHA256 "${PLEZYNG_DV_ENGINE_SHA256}")
 elseif(PLEZYNG_DV_ENGINE_SHA256)
   message(FATAL_ERROR "PLEZYNG_DV_ENGINE_SHA256 requires PLEZYNG_DV_ENGINE_ARCHIVE")
+endif()
+
+# CI downloads this archive with Schannel's best-effort revocation handling,
+# then CMake still verifies the same lockfile hash before extraction. CMake's
+# embedded downloader cannot apply curl's Schannel revocation option itself.
+if(NOT PLEZYNG_DV_ENGINE_ARCHIVE)
+  set(MPV_LOCAL_ARCHIVE "$ENV{PLEZYNG_MPV_ARCHIVE_PATH}")
+  if(NOT MPV_LOCAL_ARCHIVE STREQUAL "")
+    file(TO_CMAKE_PATH "${MPV_LOCAL_ARCHIVE}" MPV_LOCAL_ARCHIVE)
+    if(NOT IS_ABSOLUTE "${MPV_LOCAL_ARCHIVE}" OR
+       NOT EXISTS "${MPV_LOCAL_ARCHIVE}" OR
+       IS_DIRECTORY "${MPV_LOCAL_ARCHIVE}")
+      message(FATAL_ERROR "PLEZYNG_MPV_ARCHIVE_PATH must name an existing absolute archive")
+    endif()
+    set(MPV_DOWNLOAD_URL "${MPV_LOCAL_ARCHIVE}")
+  endif()
 endif()
 
 # Plain zips extract with CMake's built-in libarchive on every host arch, so
@@ -95,18 +176,55 @@ else()
 endif()
 set(VULKAN_RT_DIR "${CMAKE_BINARY_DIR}/vulkan-runtime")
 if(NOT EXISTS "${VULKAN_RT_DIR}/vulkan-1.dll" OR NOT EXISTS "${VULKAN_RT_DIR}/VulkanRT-License.txt")
+  file(MAKE_DIRECTORY "${VULKAN_RT_DIR}")
   set(VULKAN_RT_ZIP "${VULKAN_RT_DIR}/vulkan-runtime-components.zip")
   message(STATUS "Downloading Vulkan runtime (${VULKAN_RT_SLUG} ${VULKAN_RT_VERSION})...")
-  # sdk.lunarg.com rejects requests without a recognized User-Agent.
-  file(DOWNLOAD
-    "https://sdk.lunarg.com/sdk/download/${VULKAN_RT_VERSION}/${VULKAN_RT_SLUG}/vulkan-runtime-components.zip"
-    "${VULKAN_RT_ZIP}"
-    HTTPHEADER "User-Agent: curl/8.4.0"
-    EXPECTED_HASH SHA256=${VULKAN_RT_SHA256}
-    STATUS VULKAN_RT_DL_STATUS)
-  list(GET VULKAN_RT_DL_STATUS 0 VULKAN_RT_DL_RESULT)
-  if(NOT VULKAN_RT_DL_RESULT EQUAL 0)
-    message(FATAL_ERROR "Failed to download Vulkan runtime: ${VULKAN_RT_DL_STATUS}")
+  set(VULKAN_RT_URL
+    "https://sdk.lunarg.com/sdk/download/${VULKAN_RT_VERSION}/${VULKAN_RT_SLUG}/vulkan-runtime-components.zip")
+  set(VULKAN_RT_CURL_PATH "$ENV{PLEZYNG_WINDOWS_CURL_PATH}")
+  if(NOT VULKAN_RT_CURL_PATH STREQUAL "")
+    file(TO_CMAKE_PATH "${VULKAN_RT_CURL_PATH}" VULKAN_RT_CURL_PATH)
+    set(VULKAN_RT_PROXY "$ENV{HTTPS_PROXY}")
+    if(NOT EXISTS "${VULKAN_RT_CURL_PATH}" OR IS_DIRECTORY "${VULKAN_RT_CURL_PATH}" OR
+       VULKAN_RT_PROXY STREQUAL "")
+      message(FATAL_ERROR "The verified Windows curl and private JIT proxy are required for Vulkan runtime downloads")
+    endif()
+    execute_process(
+      COMMAND "${VULKAN_RT_CURL_PATH}"
+        --proxy "${VULKAN_RT_PROXY}"
+        --ssl-revoke-best-effort
+        --user-agent curl/8.4.0
+        --fail
+        --location
+        --silent
+        --show-error
+        --connect-timeout 20
+        --max-time 600
+        --retry 3
+        --output "${VULKAN_RT_ZIP}"
+        "${VULKAN_RT_URL}"
+      RESULT_VARIABLE VULKAN_RT_CURL_RESULT
+    )
+    if(NOT VULKAN_RT_CURL_RESULT EQUAL 0)
+      message(FATAL_ERROR "Failed to download Vulkan runtime through verified Schannel curl")
+    endif()
+    file(SHA256 "${VULKAN_RT_ZIP}" VULKAN_RT_ACTUAL_SHA256)
+    string(TOLOWER "${VULKAN_RT_ACTUAL_SHA256}" VULKAN_RT_ACTUAL_SHA256)
+    if(NOT VULKAN_RT_ACTUAL_SHA256 STREQUAL VULKAN_RT_SHA256)
+      message(FATAL_ERROR "Vulkan runtime SHA-256 mismatch: ${VULKAN_RT_ACTUAL_SHA256}")
+    endif()
+  else()
+    # sdk.lunarg.com rejects requests without a recognized User-Agent.
+    file(DOWNLOAD
+      "${VULKAN_RT_URL}"
+      "${VULKAN_RT_ZIP}"
+      HTTPHEADER "User-Agent: curl/8.4.0"
+      EXPECTED_HASH SHA256=${VULKAN_RT_SHA256}
+      STATUS VULKAN_RT_DL_STATUS)
+    list(GET VULKAN_RT_DL_STATUS 0 VULKAN_RT_DL_RESULT)
+    if(NOT VULKAN_RT_DL_RESULT EQUAL 0)
+      message(FATAL_ERROR "Failed to download Vulkan runtime: ${VULKAN_RT_DL_STATUS}")
+    endif()
   endif()
   execute_process(
     COMMAND "${CMAKE_COMMAND}" -E tar xf "${VULKAN_RT_ZIP}"
@@ -171,9 +289,24 @@ find_package(microsoft.windows.ai.machinelearning CONFIG REQUIRED
 # mpv strings are not guaranteed to be valid UTF-8; invalid bytes sent through
 # Flutter's StandardMessageCodec cause FormatException crashes.
 include(FetchContent)
+set(SIMDUTF_DOWNLOAD_URL
+  "https://github.com/simdutf/simdutf/releases/download/v6.4.2/singleheader.zip")
+set(SIMDUTF_LOCAL_ARCHIVE "$ENV{PLEZYNG_SIMDUTF_ARCHIVE_PATH}")
+if(NOT SIMDUTF_LOCAL_ARCHIVE STREQUAL "")
+  file(TO_CMAKE_PATH "${SIMDUTF_LOCAL_ARCHIVE}" SIMDUTF_LOCAL_ARCHIVE)
+  if(NOT IS_ABSOLUTE "${SIMDUTF_LOCAL_ARCHIVE}" OR
+     NOT EXISTS "${SIMDUTF_LOCAL_ARCHIVE}" OR
+     IS_DIRECTORY "${SIMDUTF_LOCAL_ARCHIVE}")
+    message(FATAL_ERROR "PLEZYNG_SIMDUTF_ARCHIVE_PATH must name an existing absolute archive")
+  endif()
+  # CI fetches this pinned archive with Schannel curl because CMake's downloader
+  # cannot apply curl's best-effort handling for the private proxy's unavailable
+  # CRL endpoint. FetchContent still checks the lockfile digest before extraction.
+  set(SIMDUTF_DOWNLOAD_URL "${SIMDUTF_LOCAL_ARCHIVE}")
+endif()
 FetchContent_Declare(
   simdutf
-  URL https://github.com/simdutf/simdutf/releases/download/v6.4.2/singleheader.zip
+  URL "${SIMDUTF_DOWNLOAD_URL}"
   URL_HASH SHA256=9fe4d6f515724a55c8de88fee4463e0890a1abe2267cda13c4b5d245d58039e6
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )

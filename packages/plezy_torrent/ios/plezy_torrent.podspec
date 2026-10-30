@@ -8,5 +8,6 @@ Pod::Spec.new do |s|
   s.author = { 'PlezyNG' => 'https://github.com/snapetech-org' }
   s.source = { :path => '.' }
   s.platform = :ios, '15.5'
+  s.source_files = 'Classes/PlezyNGTorrentPodAnchor.m'
   s.vendored_frameworks = 'Frameworks/ios/PlezyTorrent.xcframework'
 end

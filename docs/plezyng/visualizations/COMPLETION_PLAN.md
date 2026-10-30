@@ -508,3 +508,14 @@ arrays and resource arrays in structs remain explicit failures. PlezyNG's
 source lock pins MilkRust `2c51a7882971eb9fe6b2b043b8cfa6627e63cbe2`.
 The new source path has not been compiled or tested; private JIT validation and
 pixel qualification remain open.
+
+
+## 2026-10-30 legacy sampler-array continuation
+
+MilkRust PR #20 also supports global `sampler`/`sampler2D` arrays with literal
+bounds from 1 through 15. Constant decimal element access is expanded to
+individually named image bindings for legacy `tex*` intrinsics. Dynamic or
+grouped arrays, `sampler3D` arrays, arrays in function scopes and arrays in
+resource-bearing structs remain unsupported. PlezyNG pins MilkRust
+`3673eca589dd65c7e24c04edaed7eb4faa989c55`. The compiler and renderer path
+remain unrun under the source-only restriction.

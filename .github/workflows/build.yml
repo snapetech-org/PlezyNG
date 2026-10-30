@@ -1707,6 +1707,10 @@ jobs:
         shell: pwsh
         run: .\windows\tool\download-pinned-simdutf.ps1
 
+      - name: Download and verify pinned Windows WinSparkle archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-winsparkle.ps1
+
       - name: Configure repository updater trust root
         shell: pwsh
         env:

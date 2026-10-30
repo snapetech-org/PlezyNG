@@ -107,8 +107,8 @@ class NativeWorker {
       mouse_down_ = down;
       mouse_x_ = std::clamp(x, 0.0, 1.0);
       mouse_y_ = std::clamp(y, 0.0, 1.0);
-      mouse_dx_ = std::clamp(dx, -1.0, 1.0);
-      mouse_dy_ = std::clamp(dy, -1.0, 1.0);
+      mouse_dx_ = std::clamp(mouse_dx_ + dx, -1.0, 1.0);
+      mouse_dy_ = std::clamp(mouse_dy_ + dy, -1.0, 1.0);
     }
     NativeStatus Status() {
       std::lock_guard<std::mutex> lock(mutex_);

@@ -1,10 +1,12 @@
 # Visualization build and release handoff
 
 This document describes the committed entrypoints. It is not an execution log.
-This continuation is source-only. Every subsequent build/test/package job must
-run on compatible private ephemeral JIT, with the existing trust isolation.
-No build, test or workflow was run for this checkpoint. Do not publish releases
-solely because this handoff exists.
+The user has authorized builds for this continuation; do not apply the earlier
+source-only restriction. Build/package jobs must run on compatible private
+ephemeral JIT, with existing trust isolation. No build or test has run because
+the connected GitHub tool exposes no workflow-dispatch action. The CI and build
+workflows in this repository require manual dispatch. Do not use public runners
+or publish releases solely because this handoff exists.
 
 ## Runtime build inputs
 
@@ -221,8 +223,14 @@ available for this source-only checkpoint.
 
 ## 2026-10-30 final sprite source pin
 
-Build and run MilkRust PR #20 at `60b65d0d4ef1cea5130843628880d9155e085097` on the private JIT runner. Include
-scripted repeat multipliers, offset and scale clamp boundaries, Wrap/Clamp/
-Mirror, min/mag/mip filters, color keys, animated sprites, and saved blend
-fixtures. Then capture reference images; none of those checks has run for this
-pin.
+Build and run MilkRust PR #20 at `1eaf8e5b902ae8a8b940c3e1bf2ecca71d232613` on the private JIT runner. Include
+classic `.milk` default-on sprites, `.milk2` absent/zero/one sprite flags,
+BOM-prefixed wrappers, scripted repeat multipliers, offset and scale clamp
+boundaries, Wrap/Clamp/Mirror, min/mag/mip filters, color keys, animated sprites,
+and saved blend fixtures. Then capture reference images; no checks have run for
+this pin.
+
+
+## 2026-10-30 latest MilkRust source pin
+
+The app source lock advances to MilkRust `1eaf8e5b902ae8a8b940c3e1bf2ecca71d232613`, including BOM-aware `.milk2` wrapper detection and explicit `sprite=1` gating for trailing saved sprites. The user has requested private builds; the connector has no workflow-dispatch operation and this repository's CI/build entrypoints are manual. No build/test result is available yet. Use the private JIT runner only.

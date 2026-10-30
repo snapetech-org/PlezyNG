@@ -7,11 +7,12 @@ contract is in that file. The
 [original plan](COMPLETION_PLAN.md) remains the completion contract.
 
 **This is implemented source, not a verified working release or universal
-compatibility result.** This continuation retains the recorded source-only
-restriction: no build, test, CI dispatch, pack generation, capture, benchmark or
-device run was performed. Repository policy requires private ephemeral JIT
-runners for subsequent execution. Compiled behavior and device fidelity remain
-unknown.
+compatibility result.** The user's 2026-10-30 instruction supersedes the earlier
+source-only restriction and authorizes private builds. No build or test has run:
+MilkRust PR #20 has no Actions run for the current source revision, and PlezyNG's
+CI and build workflows require `workflow_dispatch`; the connected GitHub tool
+exposes no workflow-dispatch action. Only compatible private ephemeral JIT
+runners may be used. Compiled behavior and device fidelity remain unknown.
 
 ## Source delivered
 
@@ -20,7 +21,7 @@ unknown.
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
 | HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/numeric arrays up to 16 dimensions and 4096 elements/all numeric matrix shapes/control flow; bounded 1D/2D/3D resource arrays with constant or side-effect-free dynamic selection, grouped declarations and direct global resource-struct fields | Compiler/corpus execution and reference fidelity; function-local resource arrays, nested resource-bearing structs, custom sampler state and resource kinds outside the declared profile remain explicit failures |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
-| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, default-on trailing sprites (`sprite=0` disables), saved progress/direction/randoms carried across `.milk2` loads and ordinary single-preset soft cuts, sprite flips/alpha/rotation/offset/repeat fields, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
+| `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, trailing sprites only with explicit `sprite=1` (otherwise preserved and inert), saved progress/direction/randoms carried across `.milk2` loads and ordinary single-preset soft cuts, sprite flips/alpha/rotation/offset/repeat fields, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
 | Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
 | Platform hosts | Linux, Windows, Apple, Android/TV, Tizen and webOS host source | SDK builds, installed artifacts, audio ownership and lifecycle/device matrix |
 | Preset changes | Every native MilkRust bridge forwards the selected 0–10 second duration to a bounded display fade from the last published frame; zero cuts immediately; audio generation changes clear history | Executed switching, resize/pause and rapid-selection coverage; this is a frozen-frame fade, not a second continuously running old preset |
@@ -87,7 +88,10 @@ private key was invented.
 promotion and evidence needed. [CATALOG_RELEASE.md](CATALOG_RELEASE.md) records
 public-root provisioning without private keys in source. All executable work
 must use compatible private ephemeral JIT runners under `AGENTS.md`. The current
-continuation is source-only; no workflow was dispatched for this checkpoint.
+The user has since explicitly requested a build. No Action run is attached to
+the latest MilkRust revision, and PlezyNG's build workflows require manual
+dispatch; the connected GitHub tool exposes no workflow-dispatch action. No
+public runner may be used under repository policy.
 
 The remaining work is broader than access to physical hardware: compiler/link
 verification, mpv artifact production/promotion, reference-pixel conformance,
@@ -152,10 +156,11 @@ corpus qualification, rights decisions and production custody/publication are al
   including array/struct defaults and constant integer array bounds. This closes
   illegal uniform-initializer and unbound-custom-global cases; reference corpus
   conformance is still unmeasured.
-- `.milk2` honors explicit `sprite=0` with well-formed disabled trailer blocks,
-  preserving them on export. Active sprite equations/layers and all eleven saved
-  blend modes have bounded native/WebGL source paths; disabled blocks remain inert.
-  The GPU triangle interpolation/compositing and sprite filtering still need reference-pixel qualification.
+- Classic `.milk` saved sprites remain enabled by default unless `sprite=0`.
+  Trailing `.milk2` blocks execute only with explicit `sprite=1`; missing or
+  zero flags preserve them as inert source. Active sprite equations/layers and
+  all eleven saved blend modes have bounded native/WebGL paths. GPU
+  interpolation/compositing and sprite filtering still need reference-pixel qualification.
 - Native DDS row validation avoids multiplication overflow on 32-bit TV targets.
   Regression source covers excessive pitch in addition to color/alpha/orientation.
 - Current main at `804a1cc658bba6f2bfb336c0b347b100bf9858ca` is merged, preserving
@@ -534,3 +539,8 @@ clamps, offsets and repeat multiplication now match the recorded behavior
 source, and the sprite implementation documentation matches the shared native
 and WebGL sampler profile. The changes have not been built, run, or reference
 compared.
+
+
+## 2026-10-30 MilkDrop 3 saved-sprite flag correction
+
+MilkRust PR #20 now pins `1eaf8e5b902ae8a8b940c3e1bf2ecca71d232613`. Classic `.milk` saved sprites remain default-on, while a trailing `.milk2` sprite block executes only when the wrapper header explicitly contains `sprite=1`; absent or zero flags preserve the block without executing it. Wrapper detection also handles a BOM before the first marker. The prior source-only restriction has been superseded by the user's build instruction, but no build or test has run. The connected GitHub tool exposes no workflow-dispatch operation, and PlezyNG's CI/build workflows are manual; the required private JIT run remains outstanding.

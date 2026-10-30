@@ -18,7 +18,7 @@ unknown.
 | Area | Current implementation | Evidence still required |
 | --- | --- | --- |
 | Native engine | Rust C ABI, GL/GLES rendering, bounded PCM and RGBA capture, independent warp/composite stages and two saved-preset states | First compile/link, driver runs, reference captures and performance |
-| HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/one-dimensional arrays/all numeric matrix shapes/control flow, bounded errors; global constant-index Texture1D/Texture2D and sampler/sampler2D arrays lower to separate named bindings | Compiler/corpus execution and reference fidelity; dynamic/grouped arrays, Texture3D/sampler3D arrays, resource arrays in structs/function scopes, and arrays of arrays remain outside the declared profile |
+| HLSL | Pinned MIT typed legacy compiler, native C++ and Emscripten delivery, macros/functions/structs/one-dimensional arrays/all numeric matrix shapes/control flow, bounded errors; constant-index Texture1D/Texture2D and sampler/sampler2D arrays lower globally and on global resource-struct fields | Compiler/corpus execution and reference fidelity; dynamic/grouped arrays, Texture3D/sampler3D arrays, function-scope arrays, nested resource-bearing structs, and arrays of arrays remain outside the declared profile |
 | Shader resources | Three blur levels, original 2D/3D noise, mipmaps, sampler state, writable q/frame globals, matrices/hue/original-UV inputs and actual texture dimensions | Reference noise/blur/uniform behavior and target limits |
 | `.milk2` | Saved wrapper, two independent states, all 30 MIT-specified saved-pattern formulas with GPU interpolation over the 64×48 blend mesh, default-on trailing sprites (`sprite=0` disables), saved progress/direction/randoms carried across `.milk2` loads and ordinary single-preset soft cuts, sprite flips/alpha/rotation/offset/repeat fields, all eleven native/WebGL sprite blend modes/layers and bounded animated GIF frames | Reference pixel comparison for final compositing and sprite filtering/layer order |
 | Browser texture decode | PNG/JPEG/BMP/WebP use a disposable Web Worker with same-origin/blob fallback and timeout; GIF uses bounded Rust decoding on the WASM thread, full-frame upload and elapsed-time selection | Browser CSP integration, codec/GPU execution and browser-process OOM/driver containment |
@@ -449,3 +449,16 @@ fail-closed. PlezyNG now pins MilkRust
 
 This source update remains uncompiled and untested under the source-only
 restriction; private JIT compiler and renderer qualification remain open.
+
+
+## 2026-10-30 resource-array struct-field continuation
+
+Constant-index resource-array fields now lower for global struct instances in
+addition to top-level Texture1D/Texture2D and legacy sampler/sampler2D arrays.
+Each instance binds a distinct image per element using
+`<object>_<field>_<index>` names. Function-local arrays and nested
+resource-bearing structs remain fail-closed. PlezyNG now pins MilkRust
+`d3b3f507bcb40a809d797db03ec55efd3e439bd4` in `sources.lock.json`.
+
+This is source-only work. The new compiler path has not been built, tested or
+qualified on native/WebGL renderers.

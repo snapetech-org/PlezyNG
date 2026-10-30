@@ -723,8 +723,12 @@ remain distinct. No new build or test result is claimed.
 
 ## 2026-10-30 MilkRust source pin — animated images and runtime noise
 
-The PlezyNG lock now points to MilkRust `836cd3275681a697f16cca65e50037f7cdc61f5b` (ABI v2). This source checkpoint
+At that checkpoint, the PlezyNG lock pointed to MilkRust `836cd3275681a697f16cca65e50037f7cdc61f5b` (ABI v2). This source checkpoint
 adds bounded APNG and animated WebP decoding, Texture2D Gather lowering in the
 bounded HLSL profile, and runtime-seeded noise in native GL and WebGL. The
 deterministic generator remains available for offline callers. No build, test, browser render, native render or device qualification was
 performed; all execution remains assigned to compatible private ephemeral JIT runners.
+
+## 2026-10-30 MilkRust comparison-sampling source pin
+
+The PlezyNG lock now points to MilkRust `e940530aa1904f145f7f7006ada9d7ef9fb3ce2d` (ABI v2). This checkpoint adds bounded Texture2D `GatherCmp`, `GatherCmpRed`, `SampleCmp` and `SampleCmpLevelZero` lowering for statically initialized comparison samplers, including point/linear filtering and implicit LOD from derivatives. The compiler profile is still limited to Texture2D and statically declared states; exact reference-pixel parity, builds, tests and target-device qualification remain open. The source lock stays `source-only-unqualified`.

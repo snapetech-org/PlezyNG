@@ -748,9 +748,9 @@ moderate in source integration; SDK behavior and device recovery remain unknown.
 
 
 
-## 2026-10-30 current MilkRust source pin — APNG/WebP and noise generation
+## 2026-10-30 earlier MilkRust source pin — APNG/WebP and noise generation
 
-The app lock now pins MilkRust `836cd3275681a697f16cca65e50037f7cdc61f5b` (ABI v2). The engine includes bounded
+At that earlier checkpoint, the app lock pinned MilkRust `836cd3275681a697f16cca65e50037f7cdc61f5b` (ABI v2). The engine included bounded
 APNG and animated WebP decoding through the shared Rust path, native static PNG/WebP
 decoding, a bounded Texture2D Gather family in the HLSL compiler, and per-renderer
 runtime-seeded built-in noise shared by native GL and WebGL. A deterministic noise
@@ -760,3 +760,9 @@ This pin is source-only and unqualified. Builds, decoder/import execution, brows
 native rendering, reference-pixel comparisons, and device runs remain unperformed on
 the compatible private JIT runners. Noise pixel identity and mobile recovery behavior remain unqualified; the Apple
 lifecycle and interrupted-preset source policy is implemented but not device-tested.
+
+## 2026-10-30 MilkRust comparison-sampling source checkpoint
+
+The app lock now pins MilkRust `e940530aa1904f145f7f7006ada9d7ef9fb3ce2d` (ABI v2). This source adds Texture2D `GatherCmp`, `GatherCmpRed`, `SampleCmp` and `SampleCmpLevelZero` for statically initialized comparison samplers. The implementation covers all eight comparison functions, the supported point/linear min/mag/mip profiles, Wrap/Clamp/Mirror addressing and literal int2 offsets. It compares red-channel texels before filtering and computes implicit LOD from texture-coordinate derivatives. Other texture dimensions, dynamic state and exact pixel parity remain open.
+
+The pin remains `source-only-unqualified`. There is no Actions run for the new MilkRust revision, and the connected GitHub tool has no workflow-dispatch action for PlezyNG's private JIT jobs. No build, test, render or device qualification was performed for this checkpoint.

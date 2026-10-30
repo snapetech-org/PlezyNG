@@ -356,7 +356,7 @@ SPEC CHECKSUMS:
   pdfium_flutter: f29beeb612293cc42df95beee223a4925ce2458e
   permission_handler_apple: 92d754bbaa7361d436db2d6c3c1c2a0fdcec462e
   plezy_preparation: 1c43d4abad0d8f0c7fff0696c8c6ed20cbad09b4
-  plezy_torrent: e55c1b6a7ea2477c2b5f56d1bda9d7f7b96b38da
+  plezy_torrent: 646206c5854630107b208144991df32c209feddd
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
   Protobuf: 2520aae1505ff88eabfd6a0687ad3feace61640f

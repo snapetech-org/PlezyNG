@@ -4589,7 +4589,12 @@
     "subtitleSentenceContext": "Translate connected sentence fragments",
     "subtitleSentenceHelp": "Translate up to six nearby plain-text cues together, then distribute the words within the original cue times for review. Word placement is approximate. Groups that cannot fit fall back to independent translation. Reviewed translation memory is disabled for this mode.",
     "subtitleSentenceReadingLimit": "Reading limit: ${rate} characters per second",
-    "subtitleSentenceReview": "${groups} sentence groups were redistributed within unchanged cue times. Word placement is approximate and needs review. ${fallback} cues fell back to independent translation. The reading limit is chosen by the viewer and has not been qualified by language."
+    "subtitleSentenceReview": "${groups} sentence groups were redistributed within unchanged cue times. Word placement is approximate and needs review. ${fallback} cues fell back to independent translation. The reading limit is chosen by the viewer and has not been qualified by language.",
+    "subtitleSignMotion": "Track the selected sign region",
+    "subtitleSignMotionHelp": "For videos up to two minutes, follow local image texture at 12 samples per second. Background texture can be mistaken for the sign. Review the observed path; only complete paths propose a fixed caption region. Captions do not animate along the path.",
+    "subtitleCropLeft": "Region left: ${percent}%",
+    "subtitleCropWidth": "Region width: ${percent}%",
+    "subtitleCropHeight": "Region height: ${percent}%"
   },
   "performanceOverlay": {
     "color": "Color",

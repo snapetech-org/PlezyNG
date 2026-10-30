@@ -5753,5 +5753,10 @@
   "videoSettings.subtitleSentenceContext": "d35b5ea4c648caca",
   "videoSettings.subtitleSentenceHelp": "f154daa54fb176e3",
   "videoSettings.subtitleSentenceReadingLimit": "724976a87e33b57b",
-  "videoSettings.subtitleSentenceReview": "3005623964bb5a84"
+  "videoSettings.subtitleSentenceReview": "3005623964bb5a84",
+  "videoSettings.subtitleSignMotion": "6edc545b4e2277f7",
+  "videoSettings.subtitleSignMotionHelp": "8a6f1e547f462a28",
+  "videoSettings.subtitleCropLeft": "ff7062e87b12d545",
+  "videoSettings.subtitleCropWidth": "6a6599c18499af1d",
+  "videoSettings.subtitleCropHeight": "2034ae8ba956b04a"
 }

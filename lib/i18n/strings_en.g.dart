@@ -7564,6 +7564,21 @@ class Translations$videoSettings$en {
 	/// en: '${groups} sentence groups were redistributed within unchanged cue times. Word placement is approximate and needs review. ${fallback} cues fell back to independent translation. The reading limit is chosen by the viewer and has not been qualified by language.'
 	String subtitleSentenceReview({required int groups, required int fallback}) => '${groups} sentence groups were redistributed within unchanged cue times. Word placement is approximate and needs review. ${fallback} cues fell back to independent translation. The reading limit is chosen by the viewer and has not been qualified by language.';
 
+	/// en: 'Track the selected sign region'
+	String get subtitleSignMotion => 'Track the selected sign region';
+
+	/// en: 'For videos up to two minutes, follow local image texture at 12 samples per second. Background texture can be mistaken for the sign. Review the observed path; only complete paths propose a fixed caption region. Captions do not animate along the path.'
+	String get subtitleSignMotionHelp => 'For videos up to two minutes, follow local image texture at 12 samples per second. Background texture can be mistaken for the sign. Review the observed path; only complete paths propose a fixed caption region. Captions do not animate along the path.';
+
+	/// en: 'Region left: ${percent}%'
+	String subtitleCropLeft({required int percent}) => 'Region left: ${percent}%';
+
+	/// en: 'Region width: ${percent}%'
+	String subtitleCropWidth({required int percent}) => 'Region width: ${percent}%';
+
+	/// en: 'Region height: ${percent}%'
+	String subtitleCropHeight({required int percent}) => 'Region height: ${percent}%';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -23076,6 +23091,11 @@ extension on Translations {
 			'videoSettings.subtitleSentenceHelp' => 'Translate up to six nearby plain-text cues together, then distribute the words within the original cue times for review. Word placement is approximate. Groups that cannot fit fall back to independent translation. Reviewed translation memory is disabled for this mode.',
 			'videoSettings.subtitleSentenceReadingLimit' => ({required int rate}) => 'Reading limit: ${rate} characters per second',
 			'videoSettings.subtitleSentenceReview' => ({required int groups, required int fallback}) => '${groups} sentence groups were redistributed within unchanged cue times. Word placement is approximate and needs review. ${fallback} cues fell back to independent translation. The reading limit is chosen by the viewer and has not been qualified by language.',
+			'videoSettings.subtitleSignMotion' => 'Track the selected sign region',
+			'videoSettings.subtitleSignMotionHelp' => 'For videos up to two minutes, follow local image texture at 12 samples per second. Background texture can be mistaken for the sign. Review the observed path; only complete paths propose a fixed caption region. Captions do not animate along the path.',
+			'videoSettings.subtitleCropLeft' => ({required int percent}) => 'Region left: ${percent}%',
+			'videoSettings.subtitleCropWidth' => ({required int percent}) => 'Region width: ${percent}%',
+			'videoSettings.subtitleCropHeight' => ({required int percent}) => 'Region height: ${percent}%',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

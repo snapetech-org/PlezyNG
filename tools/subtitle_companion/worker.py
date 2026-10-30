@@ -208,12 +208,13 @@ def ocr(folder, job):
     if automatic_crop:
         from visual_research import detect_region
         job = {**job, 'crop': detect_region(folder, lambda phase_folder, phase, fraction: progress(phase_folder, phase, fraction))}
+    maximum_seconds = 120 if job.get('signMotionTracking') else MAX_SECONDS
     x, y, w, h = job["crop"]
     filters = (f"crop=trunc(iw*{w}/2)*2:trunc(ih*{h}/2)*2:trunc(iw*{x}/2)*2:trunc(ih*{y}/2)*2,"
                "scale=960:240:force_original_aspect_ratio=decrease,pad=960:240:(ow-iw)/2:(oh-ih)/2,fps=2")
     command = [os.environ.get("PLEZY_FFMPEG", "ffmpeg"), "-nostdin", "-hide_banner", "-loglevel", "error",
                "-protocol_whitelist", "file,pipe", "-format_whitelist", FORMATS, "-i", str(folder / "input.media"),
-               "-an", "-sn", "-vf", filters, "-t", str(MAX_SECONDS + 0.5), "-pix_fmt", "gray", "-f", "rawvideo", "pipe:1"]
+               "-an", "-sn", "-vf", filters, "-t", str(maximum_seconds + 0.5), "-pix_fmt", "gray", "-f", "rawvideo", "pipe:1"]
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
     from bitmap_ocr import png
     evidence = folder / 'evidence'
@@ -252,7 +253,7 @@ def ocr(folder, job):
                 data.extend(block)
             if not data:
                 break
-            if len(data) != 960 * 240 or frame >= MAX_SECONDS * 2:
+            if len(data) != 960 * 240 or frame >= maximum_seconds * 2:
                 raise ValueError("video_duration_or_frame_limit")
             from bitmap_ocr import read_tsv
             ocr_input = folder / 'ocr_frame.pgm'
@@ -278,7 +279,7 @@ def ocr(folder, job):
                     active = {"startMs": start, "endMs": end, "text": text,
                               "ocrConfidence": sum(confidences) / len(confidences), "crop": job["crop"], '_image': bytes(data)}
             frame += 1
-            progress(folder, "Reading caption crop (2 frames/second)", frame / (MAX_SECONDS * 2))
+            progress(folder, "Reading caption crop (2 frames/second)", frame / (maximum_seconds * 2))
         finish()
         if process.wait(timeout=30):
             raise ValueError("video_decode_failed")
@@ -347,7 +348,10 @@ def main():
         device = 'librosa-pyin-yin-cpu'
     elif task in {"ocr", "ocr_auto", "signs"}:
         result = ocr(folder, job)
-        device = "tesseract-cpu"
+        if job.get('signMotionTracking'):
+            from sign_motion import track
+            result = track(folder, job, result, progress)
+        device = "tesseract-and-opencv-cpu" if job.get('signMotionTracking') else "tesseract-cpu"
     elif task == "bitmap_ocr":
         from bitmap_ocr import run
         result = run(folder, job, progress)
@@ -381,6 +385,13 @@ def main():
             for item in result.get(collection, []):
                 for field in ("startMs", "endMs"):
                     if field in item: item[field] += offset
+        for observation in result.get('signMotionEvidence', []):
+            observation['startMs'] += offset
+            observation['endMs'] += offset
+            for sample in observation['samples']: sample['timeMs'] += offset
+            for window in observation['windows']:
+                window['startMs'] += offset
+                window['endMs'] += offset
         result["durationMs"] += offset
         result.setdefault("warnings", []).append(f"Generated times include the opened part offset of {offset} ms; output is on the item timeline.")
     result["timelineOffsetMs"] = offset

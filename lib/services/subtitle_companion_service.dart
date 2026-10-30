@@ -204,7 +204,7 @@ final class SubtitleCompanionService {
 
   Future<String> submit({required String task, required String identityKey, String? mediaPath,
     List<SubtitleCue> cues = const [], String? language, String? targetLanguage,
-    bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0, int timelineOffsetMs = 0, bool itemTimeline = false, bool soundStereoEvidence = false, bool sceneTemporalRegions = false, bool sceneAudioEvidence = false, bool sceneMotionTracking = false,
+    bool translateToEnglish = false, bool preprocess = false, int audioTrack = 0, int subtitleTrack = 0, int timelineOffsetMs = 0, bool itemTimeline = false, bool soundStereoEvidence = false, bool sceneTemporalRegions = false, bool sceneAudioEvidence = false, bool sceneMotionTracking = false, bool signMotionTracking = false,
     int finalBitmapDurationMs = 2000, double duckRatio = .25, String? voiceFingerprint,
     String translationMode = 'faithful', String scriptConversion = 's2t', String readingMode = 'hiragana',
     String? translationProviderFingerprint, String? visionProviderFingerprint, Map<String, String> glossary = const {},
@@ -221,6 +221,7 @@ final class SubtitleCompanionService {
     if ((itemTimeline || timelineOffsetMs != 0) && caps['sourceTimelineOffsets'] != true) throw UnsupportedError('Update the companion to preserve source timeline offsets');
     if (sceneTemporalRegions && caps['sceneTemporalRegions'] != true) throw UnsupportedError('Update the companion for temporal scene proposals');
     if (sceneAudioEvidence && caps['sceneAudioEvidence'] != true) throw UnsupportedError('The companion has not declared a joint audio/image provider');
+    if (signMotionTracking && (task != 'signs' || caps['signMotionTracking'] != true)) throw UnsupportedError('The companion has not installed sign-region motion tracking');
     if (sceneMotionTracking && caps['sceneMotionTracking'] != true) throw UnsupportedError('The companion has not installed local motion tracking');
     if (lyricSyllables.isNotEmpty && caps['lyricSyllables'] != true) throw UnsupportedError('Update the companion for supplied lyric syllables');
     if (lyricPitchEvidence && caps['lyricPitchEvidence'] != true) throw UnsupportedError('The companion has not installed lyric pitch analysis');
@@ -260,7 +261,7 @@ final class SubtitleCompanionService {
     final body = <String, Object?>{
       'task': task, 'identity': identityKey, 'audioDigest': audioDigest, 'audioBytes': length,
       'language': language, 'spokenLanguage': language, 'targetLanguage': targetLanguage,
-      'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop, 'timelineOffsetMs': timelineOffsetMs, 'itemTimeline': itemTimeline, 'soundStereoEvidence': soundStereoEvidence, 'sceneTemporalRegions': sceneTemporalRegions, 'sceneAudioEvidence': sceneAudioEvidence, 'sceneMotionTracking': sceneMotionTracking,
+      'translateToEnglish': translateToEnglish, 'preprocess': preprocess, 'audioTrack': audioTrack, 'crop': crop, 'timelineOffsetMs': timelineOffsetMs, 'itemTimeline': itemTimeline, 'soundStereoEvidence': soundStereoEvidence, 'sceneTemporalRegions': sceneTemporalRegions, 'sceneAudioEvidence': sceneAudioEvidence, 'sceneMotionTracking': sceneMotionTracking, 'signMotionTracking': signMotionTracking,
       'subtitleTrack': subtitleTrack, 'finalBitmapDurationMs': finalBitmapDurationMs, 'duckRatio': duckRatio, 'voiceFingerprint': voiceFingerprint,
       'lyricSyllables': lyricSyllables, 'lyricPitchEvidence': lyricPitchEvidence,
       'microphoneArray': microphoneArray,
@@ -311,7 +312,7 @@ final class SubtitleCompanionService {
     }
     final evidence = <String, Object?>{
       for (final key in const ['coverageEvidence', 'ensembleEvidence', 'soundEvidence', 'lyricTimingEvidence', 'lyricSyllableEvidence', 'lyricPitchEvidence',
-        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'soundLocalizationEvidence', 'vocalNoteEvidence', 'synthesisEvidence'])
+        'uncertainCueIds', 'sceneRegionTracks', 'sceneAudioEvidence', 'sceneMotionEvidence', 'signMotionEvidence', 'sceneObjectEvidence', 'sceneTitleEvidence', 'soundLocalizationEvidence', 'vocalNoteEvidence', 'synthesisEvidence'])
         if (data[key] != null) key: data[key],
     };
     final provenance = <String, Object?>{

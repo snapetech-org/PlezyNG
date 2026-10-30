@@ -976,6 +976,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var sceneTemporalRegions = false;
       var sceneAudioEvidence = false;
       var sceneMotionTracking = false;
+      var signMotionTracking = false;
       var sceneObjectTracking = false;
       var lyricSyllables = <String, List<String>>{};
       var lyricPitchEvidence = false;
@@ -985,6 +986,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       var subtitleTrack = 0, bitmapTail = 2000;
       var translationMode = 'faithful', scriptConversion = 's2t', readingMode = 'hiragana';
       var cropTop = 0.65;
+      var cropLeft = 0.0, cropWidth = 1.0, cropHeight = 0.35;
       final accepted = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, update) => AlertDialog(
           title: Text(task == 'vocal_notes' ? aiCopy.sendVocalNotesTitle
@@ -1106,11 +1108,32 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               SwitchListTile(title: Text(aiCopy.companionPreprocessTitle), subtitle: Text(aiCopy.companionPreprocessDescription),
                 value: preprocess, onChanged: (value) => update(() => preprocess = value)),
             ],
+            if (task == 'signs' && capabilities['signMotionTracking'] == true)
+              SwitchListTile(contentPadding: EdgeInsets.zero,
+                title: Text(t.videoSettings.subtitleSignMotion),
+                subtitle: Text(t.videoSettings.subtitleSignMotionHelp),
+                value: signMotionTracking, onChanged: (v) => update(() => signMotionTracking = v)),
             if (task == 'ocr' || task == 'signs') ...[
               Text(aiCopy.companionBurnedOcrDescription),
               Text(aiCopy.companionCropDescription(percent: (cropTop * 100).round())),
               Slider(value: cropTop, min: 0, max: 0.9, divisions: 18, label: '${(cropTop * 100).round()}%',
-                onChanged: (value) => update(() => cropTop = value)),
+                onChanged: (value) => update(() {
+                  cropTop = value;
+                  cropHeight = cropHeight.clamp(0.05, 1 - cropTop).toDouble();
+                })),
+              if (task == 'signs') ...[
+                Text(t.videoSettings.subtitleCropLeft(percent: (cropLeft * 100).round())),
+                Slider(value: cropLeft, min: 0, max: .9, divisions: 18, onChanged: (value) => update(() {
+                  cropLeft = value;
+                  cropWidth = cropWidth.clamp(.05, 1 - cropLeft).toDouble();
+                })),
+                Text(t.videoSettings.subtitleCropWidth(percent: (cropWidth * 100).round())),
+                Slider(value: cropWidth, min: .05, max: 1 - cropLeft,
+                  onChanged: (value) => update(() => cropWidth = value)),
+                Text(t.videoSettings.subtitleCropHeight(percent: (cropHeight * 100).round())),
+                Slider(value: cropHeight, min: .05, max: 1 - cropTop,
+                  onChanged: (value) => update(() => cropHeight = value)),
+              ],
             ],
             if (task == 'bitmap_ocr' || task == 'extract_text') ...[
               if (task == 'bitmap_ocr') Text(aiCopy.companionBitmapOcrDescription),
@@ -1139,7 +1162,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             : (_speechLanguageCode == 'auto' ? null : _speechLanguageCode),
         targetLanguage: task == 'translate' || task == 'translate_model' ? _targetLanguage.bcpCode.split('-').first : null,
         translateToEnglish: task == 'transcribe' && _translateSpeechToEnglish,
-        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, sceneAudioEvidence: sceneAudioEvidence, sceneMotionTracking: sceneMotionTracking, crop: [0, cropTop, 1, 1 - cropTop],
+        preprocess: preprocess, audioTrack: track, timelineOffsetMs: timelineOffsetMs, itemTimeline: useCurrentSource, soundStereoEvidence: soundStereoEvidence, sceneTemporalRegions: sceneTemporalRegions, sceneAudioEvidence: sceneAudioEvidence, sceneMotionTracking: sceneMotionTracking, signMotionTracking: signMotionTracking, crop: task == 'signs' ? [cropLeft, cropTop, cropWidth, cropHeight] : [0, cropTop, 1, 1 - cropTop],
         subtitleTrack: subtitleTrack, finalBitmapDurationMs: bitmapTail, duckRatio: duckRatio,
         lyricSyllables: lyricSyllables, lyricPitchEvidence: lyricPitchEvidence,
         microphoneArray: microphoneArray,

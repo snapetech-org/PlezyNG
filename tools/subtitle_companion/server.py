@@ -230,6 +230,9 @@ class Store:
         audio_evidence = value.get("sceneAudioEvidence", False)
         if type(audio_evidence) is not bool or audio_evidence and task != "scene_review":
             raise ValueError("invalid_scene_audio_evidence")
+        sign_motion = value.get('signMotionTracking', False)
+        if type(sign_motion) is not bool or sign_motion and (task != 'signs' or importlib.util.find_spec('cv2') is None):
+            raise ValueError('invalid_sign_motion_tracking')
         motion_tracking = value.get("sceneMotionTracking", False)
         if type(motion_tracking) is not bool or motion_tracking and task != "scene_review":
             raise ValueError("invalid_scene_motion_tracking")
@@ -276,7 +279,7 @@ class Store:
                          "isolatedLeadVocal": isolated_vocal,
                          "sceneObjectTracking": object_tracking, "sceneDetectorFingerprint": object_fingerprint,
                          "translationMode": mode, "scriptConversion": conversion, "readingMode": reading,
-                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions, "sceneAudioEvidence": audio_evidence, "sceneMotionTracking": motion_tracking,
+                         "glossary": glossary, "translationProviderFingerprint": provider_fingerprint, "visionProviderFingerprint": vision_fingerprint, "sceneTemporalRegions": temporal_regions, "sceneAudioEvidence": audio_evidence, "sceneMotionTracking": motion_tracking, "signMotionTracking": sign_motion,
                          "translateToEnglish": task == "transcribe" and value.get("translateToEnglish") is True,
                          "preprocess": task in {"transcribe", "align", "diarize"} and value.get("preprocess") is True}
             fingerprint = hashlib.sha256(json.dumps(canonical, sort_keys=True).encode()).hexdigest()
@@ -504,6 +507,7 @@ class Handler(BaseHTTPRequestHandler):
                              "maxMicrophoneArrayBytes": MAX_ARRAY_INPUT, "captionRelay": 1,
                              "maxDurationSeconds": 3600, "maxJobs": MAX_JOBS, "sourceTimelineOffsets": True, "soundStereoEvidence": True, "sceneTemporalRegions": True,
                              "sceneMotionTracking": vision is not None and installed("cv2"),
+                             "signMotionTracking": 'signs' in tasks and installed('cv2'),
                              "sceneObjectTracking": scene_detector is not None, "sceneObjectDetector": scene_detector,
                              "sceneTitleTracking": 'scene_track' in tasks,
                              "sceneTitleMaximumDurationSeconds": 8 * 3600,

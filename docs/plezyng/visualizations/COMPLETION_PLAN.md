@@ -529,3 +529,10 @@ Bindings include the object and field names. Dynamic arrays, function-local
 arrays, Texture3D/sampler3D arrays and nested resource-bearing structs remain
 unsupported. PlezyNG pins MilkRust `d3b3f507bcb40a809d797db03ec55efd3e439bd4`.
 The implementation remains unbuilt and unqualified under the source-only rule.
+
+
+## 2026-10-30 bounded dynamic resource-array source checkpoint
+
+MilkRust PR #20 now lowers global `Texture1D`/`Texture2D`/`Texture3D` arrays and legacy `sampler`/`sampler2D`/`sampler3D` arrays with literal bounds 1–15, including grouped declarations and direct fields on global resource structs. Literal access selects a named binding. Side-effect-free dynamic indices expand supported texture sampling, load and dimension methods across the bounded elements; legacy sampler arrays expand supported `tex*` calls when the array element is the first argument. Out-of-range dynamic reads return zero, and generated dispatch is capped at 512 KiB. Function-local arrays, nested resource-bearing structs, custom sampler states and the rest of the declared unsupported HLSL profile remain explicit failures.
+
+The PlezyNG source lock now pins MilkRust `1e5b7f37065b09a892ec51818d81b01eeb6d7a0f`, ABI v2. This source checkpoint has not been built or tested. Private JIT compile/test acceptance, compiler/driver execution, pixel comparison, artifact promotion and device qualification remain separate gates.

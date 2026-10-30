@@ -250,6 +250,12 @@ installed or executed during implementation.
   overlays preserve that region; SRT flattens it. Both burned-caption and sign
   OCR now preserve a representative resized grayscale image for every cue,
   within the 32 MiB image evidence budget, for the existing correction/export UI.
+  When OpenCV is installed, the paired client can explicitly request
+  `signMotionTracking`. This adds local 12 Hz texture tracking inside the
+  selected crop for at most two minutes / 120 OCR cues. Only a complete sampled
+  path proposes a fixed placement envelope; background texture can be followed
+  by mistake, and captions never animate along the path. Motion quality and
+  sign identity are not qualified.
 
 Recognition now accepts the existing glossary's source keys as explicit hotword
 hints. Hints do not force recognized spelling and are not model adaptation.

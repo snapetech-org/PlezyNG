@@ -549,3 +549,14 @@ MilkRust PR #20 now pins `ee9a0353b4b968dc02a2e6f475b2699592e099c3`. Classic `.m
 ## 2026-10-30 real-file MilkDrop 3 parsing correction
 
 The source lock now pins MilkRust `ee9a0353b4b968dc02a2e6f475b2699592e099c3`. Real `.milk2` Created/version and URL preambles are accepted and preserved; duplicate headers and numeric prefixes follow the compatible loader behavior. Incomplete marker sets fall back to ordinary preset parsing, and `.milk2` sprites remain inert unless `sprite=1`. No private JIT build or test has run for this pin; the connected GitHub tool exposes no workflow-dispatch action.
+
+
+## 2026-10-30 saved-mask controls and sprite header gate
+
+The app lock now pins MilkRust `551bb46ffbccbe1c0fa0defd5480b240e9efab54` (ABI v2). The shared saved-mask
+generator is checked against the published Lactea 4x2 `(a,c)` table for all
+30 patterns, including direction-sensitive variants. MilkRust also aligns the
+`.milk2` sprite enable gate with last-value-wins header parsing and ignores
+sprite keys inside the two preset bodies; classic `.milk` keeps its existing
+first-value/default-on behavior. These regression sources have not run. This
+adds source checks only; official-renderer pixel comparison remains open.

@@ -496,11 +496,11 @@ capture or a passed runtime test.
 
 ## 2026-10-30 current MilkRust source checkpoint
 
-The source lock pins MilkRust `35db92c3ecbf1aefe76bdbb7176db5dc7a934de4`, ABI v2. Saved-mask formulas consume
+The source lock pins MilkRust `40bc023accbd81c727ab4df076e0bf647d7ae7de`, ABI v2. Saved-mask formulas consume
 effective carried random registers directly. Global static HLSL sampler states
-support point/linear filters and uniform active-axis Wrap/Clamp addressing;
-mixed addressing, advanced modes, and dynamic state propagation remain outside
-the profile. Native GL and WebGL now use MilkDrop's paired-tap blur weights,
+support point/linear filters and independent U/V/W Wrap/Clamp addressing;
+anisotropic, mirror/border, separate min/mag/mip modes, and dynamic state
+propagation remain outside the profile. Native GL and WebGL now use MilkDrop's paired-tap blur weights,
 source-texel offsets, nested range transforms, and first-level edge darkening.
 No build, test, pixel comparison, or device qualification was run. Reference
 render parity and private-JIT execution remain open.

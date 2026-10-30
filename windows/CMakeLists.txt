@@ -224,9 +224,24 @@ find_package(microsoft.windows.ai.machinelearning CONFIG REQUIRED
 # mpv strings are not guaranteed to be valid UTF-8; invalid bytes sent through
 # Flutter's StandardMessageCodec cause FormatException crashes.
 include(FetchContent)
+set(SIMDUTF_DOWNLOAD_URL
+  "https://github.com/simdutf/simdutf/releases/download/v6.4.2/singleheader.zip")
+set(SIMDUTF_LOCAL_ARCHIVE "$ENV{PLEZYNG_SIMDUTF_ARCHIVE_PATH}")
+if(NOT SIMDUTF_LOCAL_ARCHIVE STREQUAL "")
+  file(TO_CMAKE_PATH "${SIMDUTF_LOCAL_ARCHIVE}" SIMDUTF_LOCAL_ARCHIVE)
+  if(NOT IS_ABSOLUTE "${SIMDUTF_LOCAL_ARCHIVE}" OR
+     NOT EXISTS "${SIMDUTF_LOCAL_ARCHIVE}" OR
+     IS_DIRECTORY "${SIMDUTF_LOCAL_ARCHIVE}")
+    message(FATAL_ERROR "PLEZYNG_SIMDUTF_ARCHIVE_PATH must name an existing absolute archive")
+  endif()
+  # CI fetches this pinned archive with Schannel curl because CMake's downloader
+  # cannot apply curl's best-effort handling for the private proxy's unavailable
+  # CRL endpoint. FetchContent still checks the lockfile digest before extraction.
+  set(SIMDUTF_DOWNLOAD_URL "${SIMDUTF_LOCAL_ARCHIVE}")
+endif()
 FetchContent_Declare(
   simdutf
-  URL https://github.com/simdutf/simdutf/releases/download/v6.4.2/singleheader.zip
+  URL "${SIMDUTF_DOWNLOAD_URL}"
   URL_HASH SHA256=9fe4d6f515724a55c8de88fee4463e0890a1abe2267cda13c4b5d245d58039e6
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )

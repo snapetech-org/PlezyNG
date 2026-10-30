@@ -21,6 +21,9 @@ SETUP_FLUTTER_GIT = WORKFLOW.parents[1] / "actions/setup-flutter-git/action.yml"
 SETUP_FLUTTER_WINDOWS = ROOT / ".github/actions/setup-flutter-windows/action.yml"
 WINDOWS_CMAKE = WORKFLOW.parents[2] / "windows/CMakeLists.txt"
 WINDOWS_MPV_DOWNLOADER = WORKFLOW.parents[2] / "windows/tool/download-pinned-mpv.ps1"
+WINDOWS_SIMDUTF_DOWNLOADER = (
+    WORKFLOW.parents[2] / "windows/tool/download-pinned-simdutf.ps1"
+)
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
 WEBOS_RELEASE_GATE = ROOT / "tools/webos/check_release_eligibility.py"
@@ -174,6 +177,11 @@ windows_mpv_downloader = (
     if WINDOWS_MPV_DOWNLOADER.is_file()
     else ""
 )
+windows_simdutf_downloader = (
+    WINDOWS_SIMDUTF_DOWNLOADER.read_text(encoding="utf-8")
+    if WINDOWS_SIMDUTF_DOWNLOADER.is_file()
+    else ""
+)
 require(
     "URL_HASH SHA256=${MPV_SHA256}" in windows_mpv_block,
     "Windows libmpv fetch must keep URL_HASH enforcement",
@@ -198,6 +206,13 @@ require(
     and "VULKAN_RT_SHA256" in windows_cmake,
     "Windows Vulkan runtime downloads must use verified Schannel curl and keep the pinned SHA-256",
 )
+require(
+    "SIMDUTF_LOCAL_ARCHIVE" in windows_cmake
+    and "PLEZYNG_SIMDUTF_ARCHIVE_PATH" in windows_cmake
+    and "URL_HASH SHA256=9fe4d6f515724a55c8de88fee4463e0890a1abe2267cda13c4b5d245d58039e6"
+    in windows_cmake,
+    "Windows simdutf must support the predownloaded archive and retain its pinned SHA-256",
+)
 require(bool(windows_mpv_downloader), "missing pinned Windows MPV download helper")
 for expected in (
     "[ValidateSet('x64', 'arm64')]",
@@ -212,6 +227,24 @@ for expected in (
     "PLEZYNG_WINDOWS_CURL_PATH=",
 ):
     require(expected in windows_mpv_downloader, f"Windows MPV bootstrap must keep: {expected}")
+require(bool(windows_simdutf_downloader), "missing pinned Windows simdutf download helper")
+for expected in (
+    "linux/packaging/native-inputs.json",
+    "inputs.simdutf",
+    "github.com",
+    "HTTPS_PROXY",
+    "--proxy",
+    "--ssl-revoke-best-effort",
+    "Schannel",
+    "Get-FileHash -Algorithm SHA256",
+    "PLEZYNG_SIMDUTF_ARCHIVE_PATH=",
+):
+    require(expected in windows_simdutf_downloader, f"Windows simdutf bootstrap must keep: {expected}")
+for forbidden in ("--ssl-no-revoke", "--insecure"):
+    require(
+        forbidden not in windows_simdutf_downloader,
+        f"Windows simdutf bootstrap must not use {forbidden}",
+    )
 windows_download_step = named_step(
     windows, "Download and verify pinned Windows libmpv archive"
 )
@@ -222,6 +255,19 @@ require(
     and windows.find("name: Download and verify pinned Windows libmpv archive")
     < windows.find("name: Configure repository updater trust root"),
     "Windows release builds must download and verify MPV before CMake configures",
+)
+windows_simdutf_download_step = named_step(
+    windows, "Download and verify pinned Windows simdutf source archive"
+)
+windows_simdutf_download_step_normalized = windows_simdutf_download_step.replace(
+    "\\", "/"
+)
+require(
+    "windows/tool/download-pinned-simdutf.ps1" in windows_simdutf_download_step_normalized
+    and windows.find("name: Download and verify pinned Windows libmpv archive")
+    < windows.find("name: Download and verify pinned Windows simdutf source archive")
+    < windows.find("name: Configure repository updater trust root"),
+    "Windows release builds must predownload and verify simdutf before CMake configures",
 )
 require(
     "sourceforge" not in windows_cmake,
@@ -304,6 +350,19 @@ require(
     and windows_ci.find("name: Download and verify pinned Windows libmpv archive")
     < windows_ci.find("name: Prepare Flutter Windows configuration"),
     "Windows native CI must predownload the hash-locked MPV archive before CMake",
+)
+windows_ci_simdutf_download_step = named_step(
+    windows_ci, "Download and verify pinned Windows simdutf source archive"
+)
+windows_ci_simdutf_download_step_normalized = windows_ci_simdutf_download_step.replace(
+    "\\", "/"
+)
+require(
+    "windows/tool/download-pinned-simdutf.ps1" in windows_ci_simdutf_download_step_normalized
+    and windows_ci.find("name: Download and verify pinned Windows libmpv archive")
+    < windows_ci.find("name: Download and verify pinned Windows simdutf source archive")
+    < windows_ci.find("name: Prepare Flutter Windows configuration"),
+    "Windows native CI must predownload and verify simdutf before CMake configures",
 )
 
 linux = job("build-linux")

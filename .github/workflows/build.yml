@@ -1703,6 +1703,10 @@ jobs:
           PLEZYNG_WINDOWS_CURL_PATH: ${{ steps.setup_flutter_windows.outputs.windows_curl_path }}
         run: .\windows\tool\download-pinned-mpv.ps1 -Architecture '${{ matrix.arch }}'
 
+      - name: Download and verify pinned Windows simdutf source archive
+        shell: pwsh
+        run: .\windows\tool\download-pinned-simdutf.ps1
+
       - name: Configure repository updater trust root
         shell: pwsh
         env:

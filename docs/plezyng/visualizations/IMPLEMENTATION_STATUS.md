@@ -594,3 +594,8 @@ private JIT runner requirement remains in force.
 ## 2026-10-30 MilkRust browser local clock injection
 
 MilkRust now exposes validated local clock fields through its WebAssembly API. The browser SDK supplies the page's local calendar and wall-clock values before each frame, matching the native adapter's host input. Direct WebAssembly callers still choose whether to call the setter. PlezyNG pins MilkRust `039725b4bfa0deee92d7b7364c953dbdfc4851e1` (ABI v2). This source checkpoint has no build, test, browser capture, or device run; use only the compatible private JIT runners.
+
+
+## 2026-10-30 MilkRust browser clock and native pointer inputs
+
+The app source lock now pins MilkRust `ee0d836a118615fa58eb9125d7b8b2fc23014b24` (ABI v2), which adds validated WebAssembly host-clock injection for the browser SDK and a native mouse-input setter. The shared C++ adapter loads and exposes normalized pointer state for native platform hosts. No platform view currently supplies pointer events to that setter; that wiring remains a source task. No build, test, browser capture, or device run is attached.

@@ -466,7 +466,7 @@ qualified on native/WebGL renderers.
 
 ## 2026-10-30 numeric-array and native transition completion
 
-The source lock now pins MilkRust `518a6c4e5164cbbd01fb13358060dbc282085409`,
+The source lock now pins MilkRust `8beb98b0c4441a73319ddc62b66437ea8451d3d3`,
 which includes numeric arrays up to 16 dimensions with a 4096-element storage
 limit, canonical ESSL row structs, typed copies/slices/function returns,
 multidimensional brace/cast/default initialization, and corrected integer and
@@ -484,3 +484,12 @@ MilkDrop reference soft-cut equivalence. Linux projectM keeps its engine-owned
 transition. Shared C++ cases cover blending, pauses, rapid changes, resize,
 cancellation and invalid duration/frame data, and are registered in the private
 Linux sanitizer job. Only source inspection and `git diff --check` were performed.
+
+
+## 2026-10-30 saved-pattern carried randomness
+
+The current pin also removes invented midpoint/seeded random inputs from saved
+blend masks. Both GPU hosts key their shared mask cache by the effective carried
+header registers. Process-start omitted registers remain zero, and partial
+headers inherit preceding values. This is source integration, not a reference
+capture or a passed runtime test.

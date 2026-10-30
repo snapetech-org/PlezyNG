@@ -164,7 +164,7 @@ check has been executed for this path.
 ## 2026-10-30 numeric arrays and native transitions
 
 The exact engine source lock is now
-`518a6c4e5164cbbd01fb13358060dbc282085409`. The browser HLSL gate includes
+`8beb98b0c4441a73319ddc62b66437ea8451d3d3`. The browser HLSL gate includes
 `arrays.hlsl` (multidimensional copies, row slices, side-effecting indices,
 function returns and nested matrix structs) and expanded `aggregates.hlsl`
 (integer/Boolean matrix initialization and flattened-field cursor alignment).
@@ -178,3 +178,12 @@ method with zero/default/ten-second durations on every platform, including
 rapid changes, pause, resize and audio-generation reset. MilkRust uses a frozen
 last-frame display fade; projectM retains its own live transition. Verify the
 Kotlin/JNI and Swift/Objective-C selectors in their respective platform builds.
+
+
+## 2026-10-30 saved-pattern carried randomness
+
+The current pin also removes invented midpoint/seeded random inputs from saved
+blend masks. Both GPU hosts key their shared mask cache by the effective carried
+header registers. Process-start omitted registers remain zero, and partial
+headers inherit preceding values. This is source integration, not a reference
+capture or a passed runtime test.

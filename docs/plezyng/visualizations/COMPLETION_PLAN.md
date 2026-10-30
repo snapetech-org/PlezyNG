@@ -540,7 +540,7 @@ The PlezyNG source lock now pins MilkRust `1e5b7f37065b09a892ec51818d81b01eeb6d7
 
 ## 2026-10-30 numeric-array and transition source checkpoint
 
-The app source lock pins MilkRust `518a6c4e5164cbbd01fb13358060dbc282085409`.
+The app source lock pins MilkRust `8beb98b0c4441a73319ddc62b66437ea8451d3d3`.
 Numeric multidimensional arrays now lower to canonical ESSL row structs within
 a 16-dimension/4096-element limit. Copies, row parameters, return values,
 brace/cast/default initialization and nested matrix fields share that layout.
@@ -556,3 +556,12 @@ immediately. This closes the missing control wiring; it is not live dual-preset
 soft-cut parity. Linux projectM retains its own transition implementation.
 Shared regression sources are registered with the existing private sanitizer
 job. No builds, tests or CI dispatch were performed under the source-only rule.
+
+
+## 2026-10-30 saved-pattern carried randomness
+
+The current pin also removes invented midpoint/seeded random inputs from saved
+blend masks. Both GPU hosts key their shared mask cache by the effective carried
+header registers. Process-start omitted registers remain zero, and partial
+headers inherit preceding values. This is source integration, not a reference
+capture or a passed runtime test.

@@ -644,3 +644,8 @@ now mutable, fixing a source-level Rust compile error. Native regressions and
 browser clamp/wrap pixel controls are authored and unrun. Full profile limits
 remain in MilkRust's `docs/HLSL_COMPATIBILITY.md`; no universal HLSL or fidelity
 claim follows from this pin.
+
+
+## 2026-10-30 MilkRust noise resource checkpoint
+
+The source lock now pins MilkRust `f7de4f66b718e11fbc86a0d2ea5354389b8feb62` (ABI v2). Its built-in 2D/3D noise textures now use MilkDrop's physical dimensions, quality-specific cubic expansion in the same axis order, packed channel generation, and a single mip level in native GL and WebGL. The source keeps deterministic fixed seeds rather than the reference's runtime-clock reseeding, so exact noise pixels remain unqualified. No build, renderer execution, or reference capture was run for this checkpoint.

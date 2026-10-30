@@ -35,6 +35,37 @@ if(NOT PLEZYNG_SDL3_SOURCE_DIR STREQUAL "")
     "Verified local source for universal_gamepad's locked SDL3 dependency" FORCE)
 endif()
 
+# plezy_torrent fetches Boost and libtorrent during CMake configuration. The
+# Windows CMake downloader cannot apply Schannel's best-effort revocation
+# setting for the private proxy, so CI and release jobs prefetch both verified
+# source archives and expose their extracted trees here.
+set(PLEZYNG_BOOST_SOURCE_DIR "$ENV{PLEZYNG_BOOST_SOURCE_DIR}")
+if(NOT PLEZYNG_BOOST_SOURCE_DIR STREQUAL "")
+  file(TO_CMAKE_PATH "${PLEZYNG_BOOST_SOURCE_DIR}" PLEZYNG_BOOST_SOURCE_DIR)
+  if(NOT IS_ABSOLUTE "${PLEZYNG_BOOST_SOURCE_DIR}" OR
+     NOT IS_DIRECTORY "${PLEZYNG_BOOST_SOURCE_DIR}" OR
+     NOT EXISTS "${PLEZYNG_BOOST_SOURCE_DIR}/boost/version.hpp" OR
+     NOT EXISTS "${PLEZYNG_BOOST_SOURCE_DIR}/LICENSE_1_0.txt")
+    message(FATAL_ERROR "PLEZYNG_BOOST_SOURCE_DIR must name the verified Boost 1.86.0 source tree")
+  endif()
+  set(FETCHCONTENT_SOURCE_DIR_PLEZY_BOOST "${PLEZYNG_BOOST_SOURCE_DIR}" CACHE PATH
+    "Verified local source for plezy_torrent's locked Boost dependency" FORCE)
+endif()
+
+set(PLEZYNG_LIBTORRENT_SOURCE_DIR "$ENV{PLEZYNG_LIBTORRENT_SOURCE_DIR}")
+if(NOT PLEZYNG_LIBTORRENT_SOURCE_DIR STREQUAL "")
+  file(TO_CMAKE_PATH "${PLEZYNG_LIBTORRENT_SOURCE_DIR}" PLEZYNG_LIBTORRENT_SOURCE_DIR)
+  if(NOT IS_ABSOLUTE "${PLEZYNG_LIBTORRENT_SOURCE_DIR}" OR
+     NOT IS_DIRECTORY "${PLEZYNG_LIBTORRENT_SOURCE_DIR}" OR
+     NOT EXISTS "${PLEZYNG_LIBTORRENT_SOURCE_DIR}/CMakeLists.txt" OR
+     NOT EXISTS "${PLEZYNG_LIBTORRENT_SOURCE_DIR}/include/libtorrent/version.hpp" OR
+     NOT EXISTS "${PLEZYNG_LIBTORRENT_SOURCE_DIR}/COPYING")
+    message(FATAL_ERROR "PLEZYNG_LIBTORRENT_SOURCE_DIR must name the verified libtorrent 2.0.11 source tree")
+  endif()
+  set(FETCHCONTENT_SOURCE_DIR_LIBTORRENT "${PLEZYNG_LIBTORRENT_SOURCE_DIR}" CACHE PATH
+    "Verified local source for plezy_torrent's locked libtorrent dependency" FORCE)
+endif()
+
 # libmpv comes from our unified build repository
 # (https://github.com/edde746/mpv-build), which publishes per-commit,
 # content-addressed dev packages in the classic mpv-dev shape:

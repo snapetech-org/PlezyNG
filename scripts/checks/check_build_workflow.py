@@ -31,7 +31,11 @@ WINDOWS_WINSPARKLE_DOWNLOADER = (
 WINDOWS_SDL3_DOWNLOADER = (
     WORKFLOW.parents[2] / "windows/tool/download-pinned-sdl3.ps1"
 )
+WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER = (
+    WORKFLOW.parents[2] / "windows/tool/download-pinned-torrent-dependencies.ps1"
+)
 WINDOWS_TOOLCHAIN_LOCK = WORKFLOW.parents[2] / "windows/tool/build-toolchain.lock.json"
+PLEZY_TORRENT_CMAKE = WORKFLOW.parents[2] / "packages/plezy_torrent/src/CMakeLists.txt"
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
 WEBOS_RELEASE_GATE = ROOT / "tools/webos/check_release_eligibility.py"
@@ -217,11 +221,26 @@ windows_sdl3_downloader = (
     else ""
 )
 windows_sdl3_downloader_normalized = windows_sdl3_downloader.replace("\\", "/")
+windows_torrent_dependencies_downloader = (
+    WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER.read_text(encoding="utf-8")
+    if WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER.is_file()
+    else ""
+)
+windows_torrent_dependencies_downloader_normalized = (
+    windows_torrent_dependencies_downloader.replace("\\", "/")
+)
+plezy_torrent_cmake = (
+    PLEZY_TORRENT_CMAKE.read_text(encoding="utf-8")
+    if PLEZY_TORRENT_CMAKE.is_file()
+    else ""
+)
 windows_toolchain_lock = {}
 if WINDOWS_TOOLCHAIN_LOCK.is_file():
     windows_toolchain_lock = json.loads(WINDOWS_TOOLCHAIN_LOCK.read_text(encoding="utf-8"))
 windows_winsparkle_pin = windows_toolchain_lock.get("winSparkle", {})
 windows_sdl3_pin = windows_toolchain_lock.get("sdl3", {})
+windows_boost_pin = windows_toolchain_lock.get("boost", {})
+windows_libtorrent_pin = windows_toolchain_lock.get("libtorrent", {})
 require(
     "URL_HASH SHA256=${MPV_SHA256}" in windows_mpv_block,
     "Windows libmpv fetch must keep URL_HASH enforcement",
@@ -266,6 +285,20 @@ require(
     and "FETCHCONTENT_SOURCE_DIR_SDL3" in windows_cmake
     and "include/SDL3/SDL.h" in windows_cmake,
     "Windows CMake must use and validate the checksum-verified SDL3 source override",
+)
+require(
+    "PLEZYNG_BOOST_SOURCE_DIR" in windows_cmake
+    and "FETCHCONTENT_SOURCE_DIR_PLEZY_BOOST" in windows_cmake
+    and "boost/version.hpp" in windows_cmake
+    and "LICENSE_1_0.txt" in windows_cmake,
+    "Windows CMake must use and validate the checksum-verified Boost source override",
+)
+require(
+    "PLEZYNG_LIBTORRENT_SOURCE_DIR" in windows_cmake
+    and "FETCHCONTENT_SOURCE_DIR_LIBTORRENT" in windows_cmake
+    and "include/libtorrent/version.hpp" in windows_cmake
+    and "COPYING" in windows_cmake,
+    "Windows CMake must use and validate the checksum-verified libtorrent source override",
 )
 require(bool(windows_mpv_downloader), "missing pinned Windows MPV download helper")
 for expected in (
@@ -354,6 +387,38 @@ for forbidden in ("--ssl-no-revoke", "--insecure"):
         f"Windows SDL3 bootstrap must not use {forbidden}",
     )
 require(
+    bool(windows_torrent_dependencies_downloader),
+    "missing pinned Windows Boost/libtorrent download helper",
+)
+for expected in (
+    "build-toolchain.lock.json",
+    "boost",
+    "libtorrent",
+    "github.com",
+    "HTTPS_PROXY",
+    "--proxy",
+    "--ssl-revoke-best-effort",
+    "Schannel",
+    "Get-FileHash -Algorithm SHA256",
+    "cmake.exe",
+    "-E tar",
+    "xJf",
+    "xzf",
+    "boost/version.hpp",
+    "include/libtorrent/version.hpp",
+    "PLEZYNG_BOOST_SOURCE_DIR",
+    "PLEZYNG_LIBTORRENT_SOURCE_DIR",
+):
+    require(
+        expected in windows_torrent_dependencies_downloader_normalized,
+        f"Windows torrent dependency bootstrap must keep: {expected}",
+    )
+for forbidden in ("--ssl-no-revoke", "--insecure"):
+    require(
+        forbidden not in windows_torrent_dependencies_downloader,
+        f"Windows torrent dependency bootstrap must not use {forbidden}",
+    )
+require(
     windows_winsparkle_pin.get("version") == "0.9.2"
     and windows_winsparkle_pin.get("filename") == "WinSparkle-0.9.2.zip"
     and windows_winsparkle_pin.get("url")
@@ -370,6 +435,28 @@ require(
     and windows_sdl3_pin.get("sha256")
     == "7f8ff5c8246db4145301bc122601a5f8cef25ee2c326eddb3e88668849c61ddf",
     "Windows SDL3 release pin must match its verified official 3.2.8 archive",
+)
+require(
+    windows_boost_pin.get("version") == "1.86.0"
+    and windows_boost_pin.get("filename") == "boost-1.86.0-b2-nodocs.tar.xz"
+    and windows_boost_pin.get("url")
+    == "https://github.com/boostorg/boost/releases/download/boost-1.86.0/boost-1.86.0-b2-nodocs.tar.xz"
+    and windows_boost_pin.get("sha256")
+    == "a4d99d032ab74c9c5e76eddcecc4489134282245fffa7e079c5804b92b45f51d"
+    and f"URL {windows_boost_pin.get('url')}" in plezy_torrent_cmake
+    and f"URL_HASH SHA256={windows_boost_pin.get('sha256')}" in plezy_torrent_cmake,
+    "Windows Boost release pin must match the verified plezy_torrent source archive",
+)
+require(
+    windows_libtorrent_pin.get("version") == "2.0.11"
+    and windows_libtorrent_pin.get("filename") == "libtorrent-rasterbar-2.0.11.tar.gz"
+    and windows_libtorrent_pin.get("url")
+    == "https://github.com/arvidn/libtorrent/releases/download/v2.0.11/libtorrent-rasterbar-2.0.11.tar.gz"
+    and windows_libtorrent_pin.get("sha256")
+    == "f0db58580f4f29ade6cc40fa4ba80e2c9a70c90265cd77332d3cdec37ecf1e6d"
+    and f"URL {windows_libtorrent_pin.get('url')}" in plezy_torrent_cmake
+    and f"URL_HASH SHA256={windows_libtorrent_pin.get('sha256')}" in plezy_torrent_cmake,
+    "Windows libtorrent release pin must match the verified plezy_torrent source archive",
 )
 windows_download_step = named_step(
     windows, "Download and verify pinned Windows libmpv archive"
@@ -418,6 +505,20 @@ require(
     < windows.find("name: Download and verify pinned Windows SDL3 archive")
     < windows.find("name: Configure repository updater trust root"),
     "Windows release builds must predownload and verify SDL3 before CMake configures",
+)
+windows_torrent_dependencies_download_step = named_step(
+    windows, "Download and verify pinned Windows torrent dependencies"
+)
+windows_torrent_dependencies_download_step_normalized = (
+    windows_torrent_dependencies_download_step.replace("\\", "/")
+)
+require(
+    "windows/tool/download-pinned-torrent-dependencies.ps1"
+    in windows_torrent_dependencies_download_step_normalized
+    and windows.find("name: Download and verify pinned Windows SDL3 archive")
+    < windows.find("name: Download and verify pinned Windows torrent dependencies")
+    < windows.find("name: Configure repository updater trust root"),
+    "Windows release builds must predownload and verify Boost/libtorrent before CMake configures",
 )
 require(
     "sourceforge" not in windows_cmake,
@@ -540,6 +641,20 @@ require(
     < windows_ci.find("name: Download and verify pinned Windows SDL3 archive")
     < windows_ci.find("name: Prepare Flutter Windows configuration"),
     "Windows native CI must predownload and verify SDL3 before CMake configures",
+)
+windows_ci_torrent_dependencies_download_step = named_step(
+    windows_ci, "Download and verify pinned Windows torrent dependencies"
+)
+windows_ci_torrent_dependencies_download_step_normalized = (
+    windows_ci_torrent_dependencies_download_step.replace("\\", "/")
+)
+require(
+    "windows/tool/download-pinned-torrent-dependencies.ps1"
+    in windows_ci_torrent_dependencies_download_step_normalized
+    and windows_ci.find("name: Download and verify pinned Windows SDL3 archive")
+    < windows_ci.find("name: Download and verify pinned Windows torrent dependencies")
+    < windows_ci.find("name: Prepare Flutter Windows configuration"),
+    "Windows native CI must predownload and verify Boost/libtorrent before CMake configures",
 )
 
 linux = job("build-linux")

@@ -16,6 +16,7 @@ WINDOWS_CMAKE = ROOT / "windows/CMakeLists.txt"
 WINDOWS_MPV_DOWNLOADER = ROOT / "windows/tool/download-pinned-mpv.ps1"
 WINDOWS_SIMDUTF_DOWNLOADER = ROOT / "windows/tool/download-pinned-simdutf.ps1"
 WINDOWS_WINSPARKLE_DOWNLOADER = ROOT / "windows/tool/download-pinned-winsparkle.ps1"
+WINDOWS_SDL3_DOWNLOADER = ROOT / "windows/tool/download-pinned-sdl3.ps1"
 WINDOWS_TOOLCHAIN_LOCK = ROOT / "windows/tool/build-toolchain.lock.json"
 
 
@@ -58,6 +59,11 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             )
             winsparkle_downloader_fixture.write_text(
                 WINDOWS_WINSPARKLE_DOWNLOADER.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            sdl3_downloader_fixture = Path(directory) / "windows/tool/download-pinned-sdl3.ps1"
+            sdl3_downloader_fixture.write_text(
+                WINDOWS_SDL3_DOWNLOADER.read_text(encoding="utf-8"),
                 encoding="utf-8",
             )
             lock_fixture = Path(directory) / "windows/tool/build-toolchain.lock.json"
@@ -201,8 +207,12 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertIn("mpv-build lock", result.stderr)
 
     def test_windows_native_cache_without_lock_identity_is_rejected(self) -> None:
+        cache_identity = (
+            "hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json', "
+            "'windows/tool/build-toolchain.lock.json')"
+        )
         workflow = self._workflow().replace(
-            "hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json')",
+            cache_identity,
             "hashFiles('windows/CMakeLists.txt')",
             1,
         )

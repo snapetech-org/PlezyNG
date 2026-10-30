@@ -496,3 +496,15 @@ available here. The declared HLSL/resource and image-format profile still
 rejects unsupported constructs explicitly; they are not claimed to have
 universal MilkDrop compatibility. Runtime artifacts, GPU-driver process
 isolation, pack rights/qualification and production signing remain open.
+
+
+## 2026-10-30 HLSL resource-array source checkpoint
+
+MilkRust PR #20 now lowers global `Texture1D` and `Texture2D` resource arrays
+with literal bounds 1–15 to separately named image bindings. Supported resource
+methods require constant decimal indices, with external assets named
+`<resource>_<index>`. Dynamic/grouped arrays, `Texture3D` arrays, function-local
+arrays and resource arrays in structs remain explicit failures. PlezyNG's
+source lock pins MilkRust `2c51a7882971eb9fe6b2b043b8cfa6627e63cbe2`.
+The new source path has not been compiled or tested; private JIT validation and
+pixel qualification remain open.

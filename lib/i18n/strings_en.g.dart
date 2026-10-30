@@ -7696,6 +7696,30 @@ class Translations$videoSettings$en {
 	/// en: 'Choose the teletext subtitle stream below and enter its page number (100–899). The decoder preserves page images for OCR review. It does not merge every page into the same track.'
 	String get subtitleTeletextHelp => 'Choose the teletext subtitle stream below and enter its page number (100–899). The decoder preserves page images for OCR review. It does not merge every page into the same track.';
 
+	/// en: 'Model-score review'
+	String get subtitleScoreReview => 'Model-score review';
+
+	/// en: 'Flag cues with low word, token or alignment scores for optional review. Scores are uncalibrated and differ between models; they do not measure correctness. Missing scores stay unknown. This setting never hides, deletes or changes captions.'
+	String get subtitleScoreHelp => 'Flag cues with low word, token or alignment scores for optional review. Scores are uncalibrated and differ between models; they do not measure correctness. Missing scores stay unknown. This setting never hides, deletes or changes captions.';
+
+	/// en: 'Flag cues with a span score below'
+	String get subtitleScoreThreshold => 'Flag cues with a span score below';
+
+	/// en: 'Show only cues below the score threshold'
+	String get subtitleScoreFlaggedOnly => 'Show only cues below the score threshold';
+
+	/// en: 'Review ${count} cues below the score threshold'
+	String subtitleScoreReviewCount({required int count}) => 'Review ${count} cues below the score threshold';
+
+	/// en: 'Uncalibrated scores: lowest ${minimum} · mean ${mean} · ${count} spans'
+	String subtitleScoreValues({required String minimum, required String mean, required int count}) => 'Uncalibrated scores: lowest ${minimum} · mean ${mean} · ${count} spans';
+
+	/// en: 'No linked score for this cue or its current edited wording and timing.'
+	String get subtitleScoreUnknown => 'No linked score for this cue or its current edited wording and timing.';
+
+	/// en: 'The model-score review setting applies for this session, but could not be saved for this profile.'
+	String get subtitleScoreSaveFailed => 'The model-score review setting applies for this session, but could not be saved for this profile.';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -23252,6 +23276,14 @@ extension on Translations {
 			'videoSettings.subtitleBroadcastDvb' => 'This decoder also accepts a selected DVB bitmap subtitle stream. Image/text review still applies.',
 			'videoSettings.subtitleTeletextPage' => 'Decode one teletext page',
 			'videoSettings.subtitleTeletextHelp' => 'Choose the teletext subtitle stream below and enter its page number (100–899). The decoder preserves page images for OCR review. It does not merge every page into the same track.',
+			'videoSettings.subtitleScoreReview' => 'Model-score review',
+			'videoSettings.subtitleScoreHelp' => 'Flag cues with low word, token or alignment scores for optional review. Scores are uncalibrated and differ between models; they do not measure correctness. Missing scores stay unknown. This setting never hides, deletes or changes captions.',
+			'videoSettings.subtitleScoreThreshold' => 'Flag cues with a span score below',
+			'videoSettings.subtitleScoreFlaggedOnly' => 'Show only cues below the score threshold',
+			'videoSettings.subtitleScoreReviewCount' => ({required int count}) => 'Review ${count} cues below the score threshold',
+			'videoSettings.subtitleScoreValues' => ({required String minimum, required String mean, required int count}) => 'Uncalibrated scores: lowest ${minimum} · mean ${mean} · ${count} spans',
+			'videoSettings.subtitleScoreUnknown' => 'No linked score for this cue or its current edited wording and timing.',
+			'videoSettings.subtitleScoreSaveFailed' => 'The model-score review setting applies for this session, but could not be saved for this profile.',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

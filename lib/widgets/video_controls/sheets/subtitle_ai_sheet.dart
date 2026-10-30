@@ -23,6 +23,7 @@ import '../../../services/subtitle_ai_service.dart';
 import '../../../services/subtitle_placement_evidence.dart';
 import '../../../services/subtitle_retimer.dart';
 import '../../../services/subtitle_word_timing.dart';
+import '../../../services/subtitle_score_review.dart';
 import '../../../services/subtitle_language_text.dart';
 import '../../../services/subtitle_sync_service.dart';
 import '../../../services/subtitle_interval_service.dart';
@@ -249,6 +250,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   SubtitleInferenceProvider _liveProvider = SubtitleInferenceProvider.cpu;
   String? _streamingModelManifest;
   String _speechLanguageCode = 'auto';
+  int _modelScoreThreshold = 0;
+  String? _modelScoreProfile;
+  bool _modelScoreLoaded = false;
+  bool _modelScoreSaving = false;
   TranslateLanguage _sourceLanguage = TranslateLanguage.english;
   TranslateLanguage _targetLanguage = TranslateLanguage.spanish;
 
@@ -269,6 +274,23 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (mounted) unawaited(_loadGlossaryForCurrentPair());
       if (mounted) unawaited(_loadSpeechLanguageForProfile());
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    String? profile;
+    try { profile = Provider.of<ActiveProfileProvider>(context).activeId; } catch (_) { }
+    if (!_modelScoreLoaded || profile != _modelScoreProfile) {
+      _modelScoreLoaded = true;
+      _modelScoreProfile = profile;
+      _modelScoreThreshold = 0;
+      if (profile != null) {
+        try {
+          _modelScoreThreshold = SettingsService.instance.read(SettingsService.subtitleModelScoreReviewForProfile(profile));
+        } catch (_) { /* A damaged preference leaves score review disabled. */ }
+      }
+    }
   }
 
   Future<void> _refreshCapabilityState() async {
@@ -2998,6 +3020,23 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   String _currentGlossaryDraftKey() =>
       '${_useSeriesGlossary ? 'series:${widget.seriesKey}' : 'profile'}|${_currentGlossaryPairKey()}';
 
+  Future<void> _saveModelScoreReviewForProfile(int value) async {
+    final profileId = _activeProfileId;
+    if (_modelScoreSaving || profileId != _modelScoreProfile) return;
+    setState(() => _modelScoreThreshold = value);
+    if (profileId == null) return;
+    setState(() => _modelScoreSaving = true);
+    try {
+      await SettingsService.instance.write(SettingsService.subtitleModelScoreReviewForProfile(profileId), value,
+        checkCurrent: () {
+          if (!mounted || _activeProfileId != profileId) throw StateError('The subtitle review profile changed.');
+        });
+    } catch (_) {
+      if (mounted && _activeProfileId == profileId) setState(() =>
+        _status = _t.videoSettings.subtitleScoreSaveFailed);
+    } finally { if (mounted) setState(() => _modelScoreSaving = false); }
+  }
+
   Future<void> _loadSpeechLanguageForProfile() async {
     final profileId = _activeProfileId;
     if (profileId == null) return;
@@ -3363,10 +3402,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     List<SubtitleCue>? sourceCues,
     required List<(int, SubtitleCue)> undoHistory,
     VoidCallback? onChanged,
+    SubtitleScoreReview? modelScores,
+    int scoreThresholdPercent = 0,
+    bool initiallyFlaggedOnly = false,
   }) async {
     final copy = Translations.of(dialogContext).videoControls.subtitleReviewFlow;
+    final scoreCopy = Translations.of(dialogContext).videoSettings;
     final searchController = TextEditingController();
     var query = '';
+    var flaggedOnly = initiallyFlaggedOnly;
     try {
       await showDialog<void>(
         context: dialogContext,
@@ -3375,6 +3419,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             final normalizedQuery = query.trim().toLowerCase();
             final visibleIndexes = List<int>.generate(cues.length, (index) => index)
                 .where((index) {
+                  if (flaggedOnly && !(modelScores?.flagged(index, cues[index], scoreThresholdPercent) ?? false)) return false;
                   if (normalizedQuery.isEmpty) return true;
                   final output = cues[index].text.toLowerCase();
                   final original = sourceCues != null && index < sourceCues.length
@@ -3388,10 +3433,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               content: SizedBox(
                 width: 720,
                 height: (MediaQuery.sizeOf(editorContext).height - 220).clamp(280.0, 560.0).toDouble(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+                child: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                     Text(copy.editAllDescription),
+                    if (modelScores != null) Text(scoreCopy.subtitleScoreHelp,
+                      style: Theme.of(context).textTheme.bodySmall),
+                    if (modelScores != null && scoreThresholdPercent > 0)
+                      SwitchListTile(contentPadding: EdgeInsets.zero, dense: true,
+                        title: Text(scoreCopy.subtitleScoreFlaggedOnly),
+                        value: flaggedOnly, onChanged: (value) => setEditorState(() => flaggedOnly = value)),
                     const SizedBox(height: 8),
                     TextField(
                       controller: searchController,
@@ -3407,12 +3460,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     const SizedBox(height: 4),
                     Text(copy.showingCues(visible: visibleIndexes.length, total: cues.length)),
                     const SizedBox(height: 6),
-                    Expanded(
-                      child: visibleIndexes.isEmpty
-                          ? Center(child: Text(copy.noMatchingCues))
-                          : ListView.builder(
-                              itemCount: visibleIndexes.length,
-                              itemBuilder: (context, visibleIndex) {
+                      ],
+                    )),
+                    if (visibleIndexes.isEmpty)
+                      SliverToBoxAdapter(child: Center(child: Text(copy.noMatchingCues)))
+                    else SliverList(delegate: SliverChildBuilderDelegate(
+                              (context, visibleIndex) {
                                 final cueIndex = visibleIndexes[visibleIndex];
                                 final cue = cues[cueIndex];
                                 final original = sourceCues != null && cueIndex < sourceCues.length
@@ -3442,6 +3495,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                       ],
                                       Text(copy.output, style: Theme.of(context).textTheme.labelSmall),
                                       SelectableText(cue.text),
+                                      if (modelScores != null)
+                                        Text(_modelScoreLabel(modelScores.at(cueIndex, cue)),
+                                          style: Theme.of(context).textTheme.bodySmall),
                                     ],
                                   ),
                                   trailing: IconButton(
@@ -3451,9 +3507,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                   ),
                                   onTap: editCue,
                                 );
-                              },
-                            ),
-                    ),
+                              }, childCount: visibleIndexes.length,
+                    )),
                   ],
                 ),
               ),
@@ -3628,6 +3683,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       await pendingDraftWrite;
       await _deleteSubtitleDraft(draftIdentity);
     }
+    final scoreReview = reviewedWordTimings.isEmpty ? null : SubtitleScoreReview(cues, reviewedWordTimings);
+    final scoreThreshold = _modelScoreThreshold;
     _lastResultUploadedToServer = false;
     _lastResultSavedToSource = false;
     final uploadLanguage = _normalizedUploadLanguage(operationLanguageCode);
@@ -3653,7 +3710,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           content: SizedBox(
             width: 560,
             height: (MediaQuery.sizeOf(dialogContext).height - 220).clamp(240.0, 420.0).toDouble(),
-            child: Column(
+            child: SingleChildScrollView(child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(copy.readyCues(count: cues.length)),
@@ -3711,6 +3768,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       reviewedCues,
                       sourceCues: sourceCues,
                       undoHistory: undoHistory,
+                      modelScores: scoreReview,
+                      scoreThresholdPercent: scoreThreshold,
                       onChanged: () {
                         setDialogState(() {});
                         scheduleDraftPersistence();
@@ -3720,6 +3779,17 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   icon: const AppIcon(Symbols.edit_rounded),
                   label: Text(copy.editAllCuesButton),
                 ),
+                if (scoreReview != null && scoreThreshold > 0)
+                  TextButton.icon(
+                    icon: const Icon(Icons.fact_check_outlined),
+                    label: Text(_t.videoSettings.subtitleScoreReviewCount(
+                      count: scoreReview.flaggedCount(reviewedCues, scoreThreshold))),
+                    onPressed: () async {
+                      await _showFullCueEditor(dialogContext, reviewedCues, sourceCues: sourceCues,
+                        undoHistory: undoHistory, modelScores: scoreReview,
+                        scoreThresholdPercent: scoreThreshold, initiallyFlaggedOnly: true,
+                        onChanged: () { setDialogState(() {}); scheduleDraftPersistence(); });
+                    }),
                 if (widget.selectedSubtitleBurnedIn)
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
@@ -3755,8 +3825,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     ),
                   ),
                 const SizedBox(height: 10),
-                Expanded(
-                  child: ListView.builder(
+                ListView.builder(
+                    shrinkWrap: true,
+                    primary: false,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: previewIndexes.length,
                     itemBuilder: (context, index) {
                       final cueIndex = previewIndexes[index];
@@ -3798,10 +3870,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                         ),
                       );
                     },
-                  ),
                 ),
               ],
-            ),
+            )),
           ),
           actions: [
             if (undoHistory.isNotEmpty)
@@ -4153,6 +4224,25 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     return languages;
   }
 
+  String _modelScoreLabel(SubtitleCueModelScore? score) => score == null
+      ? _t.videoSettings.subtitleScoreUnknown
+      : _t.videoSettings.subtitleScoreValues(minimum: score.minimum.toStringAsFixed(2),
+          mean: score.mean.toStringAsFixed(2), count: score.spanCount);
+
+  Widget _modelScoreReviewSelector() => ExpansionTile(
+    tilePadding: EdgeInsets.zero,
+    title: Text(_t.videoSettings.subtitleScoreReview),
+    children: [
+      Text(_t.videoSettings.subtitleScoreHelp, style: Theme.of(context).textTheme.bodySmall),
+      DropdownButtonFormField<int>(key: ValueKey(_modelScoreThreshold), initialValue: _modelScoreThreshold,
+        decoration: InputDecoration(labelText: _t.videoSettings.subtitleScoreThreshold),
+        items: [for (final value in const [0, 30, 50, 70, 90]) DropdownMenuItem(value: value,
+          child: Text(value == 0 ? _t.common.disabled : (value / 100).toStringAsFixed(2)))],
+        onChanged: _busy || _modelScoreSaving ? null : (value) {
+          if (value != null) unawaited(_saveModelScoreReviewForProfile(value));
+        }),
+    ]);
+
   Widget _speechLanguageSelector() {
     final aiCopy = Translations.of(context).videoControls.subtitleAiControls;
     final supportsOverride =
@@ -4269,6 +4359,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             child: Text(Translations.of(context).videoSettings.subtitleBackendCheckTitle)),
           const SizedBox(height: 12),
           _speechLanguageSelector(),
+          _modelScoreReviewSelector(),
           const SizedBox(height: 10),
           if (_busy) const LinearProgressIndicator(),
           if (_busy && _activeCompanion != null)

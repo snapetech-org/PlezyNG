@@ -5797,5 +5797,13 @@
   "videoSettings.subtitleBroadcastProgram": "fbb888f530618476",
   "videoSettings.subtitleBroadcastDvb": "4ff1066afdcb8155",
   "videoSettings.subtitleTeletextPage": "aef9927fad862f8c",
-  "videoSettings.subtitleTeletextHelp": "782875c9e62f4d8d"
+  "videoSettings.subtitleTeletextHelp": "782875c9e62f4d8d",
+  "videoSettings.subtitleScoreReview": "7d5a751392490b90",
+  "videoSettings.subtitleScoreHelp": "358a345e9cb302aa",
+  "videoSettings.subtitleScoreThreshold": "06a9c673714b385b",
+  "videoSettings.subtitleScoreFlaggedOnly": "f0eb65b33f90f8f6",
+  "videoSettings.subtitleScoreReviewCount": "6e590a8c85d3f2e0",
+  "videoSettings.subtitleScoreValues": "fe53b1ddd5271dee",
+  "videoSettings.subtitleScoreUnknown": "9ab505779af4fe70",
+  "videoSettings.subtitleScoreSaveFailed": "23991c0969da89a8"
 }

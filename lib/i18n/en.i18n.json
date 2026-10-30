@@ -4633,7 +4633,15 @@
     "subtitleBroadcastProgram": "Transport-stream program (optional, 1–65535)",
     "subtitleBroadcastDvb": "This decoder also accepts a selected DVB bitmap subtitle stream. Image/text review still applies.",
     "subtitleTeletextPage": "Decode one teletext page",
-    "subtitleTeletextHelp": "Choose the teletext subtitle stream below and enter its page number (100–899). The decoder preserves page images for OCR review. It does not merge every page into the same track."
+    "subtitleTeletextHelp": "Choose the teletext subtitle stream below and enter its page number (100–899). The decoder preserves page images for OCR review. It does not merge every page into the same track.",
+    "subtitleScoreReview": "Model-score review",
+    "subtitleScoreHelp": "Flag cues with low word, token or alignment scores for optional review. Scores are uncalibrated and differ between models; they do not measure correctness. Missing scores stay unknown. This setting never hides, deletes or changes captions.",
+    "subtitleScoreThreshold": "Flag cues with a span score below",
+    "subtitleScoreFlaggedOnly": "Show only cues below the score threshold",
+    "subtitleScoreReviewCount": "Review ${count} cues below the score threshold",
+    "subtitleScoreValues": "Uncalibrated scores: lowest ${minimum} · mean ${mean} · ${count} spans",
+    "subtitleScoreUnknown": "No linked score for this cue or its current edited wording and timing.",
+    "subtitleScoreSaveFailed": "The model-score review setting applies for this session, but could not be saved for this profile."
   },
   "performanceOverlay": {
     "color": "Color",

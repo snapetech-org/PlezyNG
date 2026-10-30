@@ -1351,6 +1351,13 @@ class SettingsService extends BaseSharedPreferencesService {
     return StringPref(profileScopedPrefsKey(profileId, 'subtitle_speech_language_v1'), defaultValue: 'auto');
   }
 
+  /// Optional review-only cutoff; zero disables flags. Never filters playback.
+  static IntPref subtitleModelScoreReviewForProfile(String profileId) {
+    if (profileId.trim().isEmpty) throw ArgumentError.value(profileId, 'profileId');
+    return IntPref(profileScopedPrefsKey(profileId, 'subtitle_model_score_review_v1'),
+      transform: (value) => const {0, 30, 50, 70, 90}.contains(value) ? value : 0);
+  }
+
   static StringPref subtitleOverlayAppearanceForProfile(String profileId) {
     if (profileId.trim().isEmpty) throw ArgumentError.value(profileId, 'profileId');
     return StringPref(profileScopedPrefsKey(profileId, 'subtitle_overlay_appearance_v1'));

@@ -182,6 +182,7 @@ windows_simdutf_downloader = (
     if WINDOWS_SIMDUTF_DOWNLOADER.is_file()
     else ""
 )
+windows_simdutf_downloader_normalized = windows_simdutf_downloader.replace("\\", "/")
 require(
     "URL_HASH SHA256=${MPV_SHA256}" in windows_mpv_block,
     "Windows libmpv fetch must keep URL_HASH enforcement",
@@ -239,7 +240,10 @@ for expected in (
     "Get-FileHash -Algorithm SHA256",
     "PLEZYNG_SIMDUTF_ARCHIVE_PATH=",
 ):
-    require(expected in windows_simdutf_downloader, f"Windows simdutf bootstrap must keep: {expected}")
+    require(
+        expected in windows_simdutf_downloader_normalized,
+        f"Windows simdutf bootstrap must keep: {expected}",
+    )
 for forbidden in ("--ssl-no-revoke", "--insecure"):
     require(
         forbidden not in windows_simdutf_downloader,

@@ -516,3 +516,12 @@ The source lock pins MilkRust `7d7ed901bb105f9ad23431caa25e9f97e095a1bc`, ABI v2
 profiles. WebGL sprite sampling now matches native GL for static assets;
 animated assets retain linear filtering without mipmaps. This source checkpoint
 has not been built, tested, or visually qualified.
+
+
+## 2026-10-30 saved-sprite behavior checkpoint
+
+The current engine pin is MilkRust `e0752db79a5b74668c4f1c9303630817ca120dec`. Sprite repeat multipliers and
+position/scale offsets now follow the pinned behavior source's clamp order.
+WebGL sprite sampling also uses the shared filter and address profile. The
+corrections and existing source assertions remain unexecuted; pixel parity is
+still open.

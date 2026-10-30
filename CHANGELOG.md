@@ -4,6 +4,7 @@
 
 - Refresh the iOS CocoaPods checksum for `plezy_torrent` so deployment installs match the current podspec.
 - Refresh the macOS CocoaPods checksum for `plezy_torrent` so deployment installs match the current platform podspec.
+- Refresh the tvOS CocoaPods checksum for `plezy_torrent_tvos` so deployment installs match the current platform podspec.
 
 - Install the GStreamer runtime plugins required to build Linux release bundles with Steam decoder support.
 - Provision native Temurin JDK 21 on private Windows CI and release runners so CMake can

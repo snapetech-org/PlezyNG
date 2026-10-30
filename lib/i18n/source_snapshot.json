@@ -5773,5 +5773,20 @@
   "videoSettings.subtitleDefaultsAutoSynced": "59cbb84592c8403c",
   "videoSettings.subtitleDefaultsAutoConflict": "31e504171afdc2d8",
   "videoSettings.subtitleDefaultsAutoUnavailable": "fb3a30c1c49df016",
-  "videoSettings.subtitleDefaultsAutoRefresh": "d9eec7fefc246000"
+  "videoSettings.subtitleDefaultsAutoRefresh": "d9eec7fefc246000",
+  "videoSettings.subtitleTimingTransfer": "1eeca3b009c1ca3c",
+  "videoSettings.subtitleTimingTransferHelp": "7256e3a581858768",
+  "videoSettings.subtitleTimingExport": "2b9c053afb251306",
+  "videoSettings.subtitleTimingImport": "93adcae45366359e",
+  "videoSettings.subtitleTimingSave": "44b89aebcab22bce",
+  "videoSettings.subtitleTimingUndo": "5f07ff2bab8a7797",
+  "videoSettings.subtitleTimingValue": "aa60d44903152370",
+  "videoSettings.subtitleTimingCurrent": "57018fcea84bf46f",
+  "videoSettings.subtitleTimingPrevious": "ba18c3b29c888e1a",
+  "videoSettings.subtitleTimingIncoming": "d091f6ac39e5af75",
+  "videoSettings.subtitleTimingNoSaved": "a267ac2213a0d8fa",
+  "videoSettings.subtitleTimingExported": "0afa645f93415cc8",
+  "videoSettings.subtitleTimingSavedForNextOpen": "9bd3e3167f31bb3b",
+  "videoSettings.subtitleTimingImportUndone": "c4f784f7121eee54",
+  "videoSettings.subtitleTimingTransferFailed": "8127800e4d181b2a"
 }

@@ -118,7 +118,7 @@ abstract final class LibrarySyncCorrections {
   static LibrarySyncValue? read(String profile, String key) => LibrarySyncValue.decode(_read(profile)[key]);
 
   static Future<void> write(String profile, String key, LibrarySyncValue? value,
-      {required void Function() checkCurrent}) {
+      {required void Function() checkCurrent, bool compareExisting = false, LibrarySyncValue? expectedValue}) {
     final next = _writes.then((_) async {
       checkCurrent();
       if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(key) || (value != null &&
@@ -126,6 +126,10 @@ abstract final class LibrarySyncCorrections {
         throw const FormatException('Invalid saved playback timing.');
       }
       final values = _read(profile);
+      final existing = LibrarySyncValue.decode(values[key]);
+      if (compareExisting && (existing?.delayMs != expectedValue?.delayMs || existing?.rate != expectedValue?.rate)) {
+        throw StateError('The saved correction changed after preview.');
+      }
       if (value == null) { values.remove(key); }
       else { values[key] = {'delayMs': value.delayMs, 'rate': value.rate,
         'savedAtMs': DateTime.now().millisecondsSinceEpoch}; }

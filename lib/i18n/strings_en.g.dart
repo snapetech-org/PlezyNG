@@ -7624,6 +7624,51 @@ class Translations$videoSettings$en {
 	/// en: 'Check paired defaults now'
 	String get subtitleDefaultsAutoRefresh => 'Check paired defaults now';
 
+	/// en: 'Transfer native subtitle timing'
+	String get subtitleTimingTransfer => 'Transfer native subtitle timing';
+
+	/// en: 'Export the current subtitle correction or preview a correction from another device. The server copy, backend, selected audio and subtitle metadata must match. Matching metadata cannot detect file bytes replaced in place. Saving affects the next open or track restoration; current playback is unchanged. The file contains only an opaque binding and timing values.'
+	String get subtitleTimingTransferHelp => 'Export the current subtitle correction or preview a correction from another device. The server copy, backend, selected audio and subtitle metadata must match. Matching metadata cannot detect file bytes replaced in place. Saving affects the next open or track restoration; current playback is unchanged. The file contains only an opaque binding and timing values.';
+
+	/// en: 'Export current correction'
+	String get subtitleTimingExport => 'Export current correction';
+
+	/// en: 'Preview correction file'
+	String get subtitleTimingImport => 'Preview correction file';
+
+	/// en: 'Save for the next open'
+	String get subtitleTimingSave => 'Save for the next open';
+
+	/// en: 'Undo this import'
+	String get subtitleTimingUndo => 'Undo this import';
+
+	/// en: '${delay} ms · timestamp multiplier ${rate}'
+	String subtitleTimingValue({required int delay, required String rate}) => '${delay} ms · timestamp multiplier ${rate}';
+
+	/// en: 'Current playback: ${value}'
+	String subtitleTimingCurrent({required String value}) => 'Current playback: ${value}';
+
+	/// en: 'Previously saved: ${value}'
+	String subtitleTimingPrevious({required String value}) => 'Previously saved: ${value}';
+
+	/// en: 'Incoming correction: ${value}'
+	String subtitleTimingIncoming({required String value}) => 'Incoming correction: ${value}';
+
+	/// en: 'No copy-specific correction'
+	String get subtitleTimingNoSaved => 'No copy-specific correction';
+
+	/// en: 'The current correction was exported.'
+	String get subtitleTimingExported => 'The current correction was exported.';
+
+	/// en: 'The correction was saved for the next open or track restoration. Current playback is unchanged.'
+	String get subtitleTimingSavedForNextOpen => 'The correction was saved for the next open or track restoration. Current playback is unchanged.';
+
+	/// en: 'The saved correction was restored.'
+	String get subtitleTimingImportUndone => 'The saved correction was restored.';
+
+	/// en: 'The correction could not be transferred. Check its file size, values and matching copy/tracks, then preview again. A concurrent saved edit is preserved.'
+	String get subtitleTimingTransferFailed => 'The correction could not be transferred. Check its file size, values and matching copy/tracks, then preview again. A concurrent saved edit is preserved.';
+
 	/// en: 'Subtitle cues'
 	String get subtitleCueTools => 'Subtitle cues';
 
@@ -23156,6 +23201,21 @@ extension on Translations {
 			'videoSettings.subtitleDefaultsAutoConflict' => 'Defaults differ or have concurrent versions. Pull the shared versions and use the existing preview to choose; automatic import is paused.',
 			'videoSettings.subtitleDefaultsAutoUnavailable' => 'Synchronization is unavailable. Check the connection, profile and pairing. A changed folder or code requires a new opt-in.',
 			'videoSettings.subtitleDefaultsAutoRefresh' => 'Check paired defaults now',
+			'videoSettings.subtitleTimingTransfer' => 'Transfer native subtitle timing',
+			'videoSettings.subtitleTimingTransferHelp' => 'Export the current subtitle correction or preview a correction from another device. The server copy, backend, selected audio and subtitle metadata must match. Matching metadata cannot detect file bytes replaced in place. Saving affects the next open or track restoration; current playback is unchanged. The file contains only an opaque binding and timing values.',
+			'videoSettings.subtitleTimingExport' => 'Export current correction',
+			'videoSettings.subtitleTimingImport' => 'Preview correction file',
+			'videoSettings.subtitleTimingSave' => 'Save for the next open',
+			'videoSettings.subtitleTimingUndo' => 'Undo this import',
+			'videoSettings.subtitleTimingValue' => ({required int delay, required String rate}) => '${delay} ms · timestamp multiplier ${rate}',
+			'videoSettings.subtitleTimingCurrent' => ({required String value}) => 'Current playback: ${value}',
+			'videoSettings.subtitleTimingPrevious' => ({required String value}) => 'Previously saved: ${value}',
+			'videoSettings.subtitleTimingIncoming' => ({required String value}) => 'Incoming correction: ${value}',
+			'videoSettings.subtitleTimingNoSaved' => 'No copy-specific correction',
+			'videoSettings.subtitleTimingExported' => 'The current correction was exported.',
+			'videoSettings.subtitleTimingSavedForNextOpen' => 'The correction was saved for the next open or track restoration. Current playback is unchanged.',
+			'videoSettings.subtitleTimingImportUndone' => 'The saved correction was restored.',
+			'videoSettings.subtitleTimingTransferFailed' => 'The correction could not be transferred. Check its file size, values and matching copy/tracks, then preview again. A concurrent saved edit is preserved.',
 			'videoSettings.subtitleCueTools' => 'Subtitle cues',
 			'videoSettings.subtitleReplayCue' => 'Replay current cue',
 			'videoSettings.subtitleCopyCue' => 'Copy current cue',

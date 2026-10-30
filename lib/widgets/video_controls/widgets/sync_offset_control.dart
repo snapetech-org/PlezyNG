@@ -18,6 +18,7 @@ import '../../../services/subtitle_cue_document.dart';
 import '../../../services/subtitle_calibration_history.dart';
 import '../../../services/library_sync_correction.dart';
 import '../../subtitle_calibration_dialog.dart';
+import '../sheets/subtitle_timing_transfer_dialog.dart';
 import '../../../services/subtitle_retimer.dart';
 import '../../../services/file_picker_service.dart';
 import '../../subtitle_cue_picker_sheet.dart';
@@ -402,6 +403,26 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
       // feedback, never the remote location or its credentials.
       if (mounted) showErrorSnackBar(context,
         export ? t.videoSettings.subtitleExportFailed : t.videoSettings.subtitleCueUnavailable);
+    } finally { if (mounted) setState(() => _fileToolBusy = false); }
+  }
+
+  LibrarySyncBinding? get _transferBinding => widget.propertyName == PlayerSyncOffsets.audioProperty || !_sourceCurrent()
+      ? null : PlayerSyncOffsets.of(widget.player).binding(widget.propertyName);
+
+  Future<void> _openTimingTransfer() async {
+    final binding = _transferBinding;
+    if (binding == null || _fileToolBusy) return;
+    final player = widget.player, generation = _bindingGeneration;
+    setState(() => _fileToolBusy = true);
+    try {
+      await playerSyncWrites[player]?.settled(widget.propertyName);
+      _checkBinding(generation, player); binding.checkCurrent();
+      await showDialog<void>(context: context, builder: (_) => SubtitleTimingTransferDialog(binding: binding,
+        currentValue: LibrarySyncValue(delayMs: _confirmedOffset.round(),
+          rate: widget.propertyName == PlayerSyncOffsets.subtitleProperty ? _confirmedSubtitleRate : 1),
+        isCurrent: () => mounted && generation == _bindingGeneration && _sourceCurrent()));
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context, t.videoSettings.subtitleTimingTransferFailed);
     } finally { if (mounted) setState(() => _fileToolBusy = false); }
   }
 
@@ -1103,7 +1124,7 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
               ),
             ],
           ),
-          if (supportsCueSync)
+          if (supportsCueSync || _transferBinding != null)
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Wrap(
@@ -1111,8 +1132,10 @@ class _SyncOffsetControlState extends State<SyncOffsetControl> {
                 spacing: 8,
                 runSpacing: 4,
                 children: [
-                  _buildSubtitleStepButton(previous: true),
-                  _buildSubtitleStepButton(previous: false),
+                  if (supportsCueSync) _buildSubtitleStepButton(previous: true),
+                  if (supportsCueSync) _buildSubtitleStepButton(previous: false),
+                  if (_transferBinding != null) IconButton(tooltip: t.videoSettings.subtitleTimingTransfer,
+                    onPressed: _fileToolBusy ? null : _openTimingTransfer, icon: const Icon(Icons.swap_horiz)),
                   if (_canInspectSubtitle) _fileToolButton(export: false),
                   if (_canInspectSubtitle) _fileToolButton(export: true),
                   if (_supportsSubtitleDriftCalibration) _buildSubtitleDriftButton(),

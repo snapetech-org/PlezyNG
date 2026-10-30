@@ -680,4 +680,4 @@ revision. Execution, reference captures and the release gates above remain open.
 
 ## 2026-10-30 MilkRust noise resource source checkpoint
 
-The app source lock pins MilkRust `f7de4f66b718e11fbc86a0d2ea5354389b8feb62`, ABI v2. Native GL and WebGL now generate built-in noise with the compatible physical dimensions, low-frequency quality lattice, X/Y/Z cubic interpolation order, packed channels, and one-level texture state. Stable fixed seeds keep source output reproducible; the compatible reference reseeds from its runtime clock, so pixel identity still requires reference captures. No build or GPU comparison has been run.
+The app source lock pins MilkRust `aeaf9147f4dce6e1f5b13c182e444a7dc368421b`, ABI v2. Native GL and WebGL now generate built-in noise with the compatible physical dimensions, low-frequency quality lattice, X/Y/Z cubic interpolation order, packed channels, and one-level texture state. Stable fixed seeds keep source output reproducible; the compatible reference reseeds from its runtime clock, so pixel identity still requires reference captures. No build or GPU comparison has been run.

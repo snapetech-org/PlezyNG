@@ -575,3 +575,17 @@ MilkRust PR #20 now preserves finite float-range `.milk2` progress and random he
 ## 2026-10-30 MilkDrop host input blending
 
 MilkRust PR #20 now pins `361a4a0c96408bf63760b914cbc508e4fb0494a3` (ABI v2). The engine binds standard `mousex`, `mousey`, `mousedown`, and per-runtime rising-edge `mouseclick` variables, along with frame-clock-derived `year` through `totalseconds`. Saved-pair rendering cosine-mixes mouse positions and clock registers and snaps buttons at the reference threshold. Source regressions cover binding, click edges, mixing and snapping; no build or test has run.
+
+
+## 2026-10-30 MilkRust per-preset and host clock source checkpoint
+
+MilkRust now anchors EEL `time`, frame count and saved-sprite playback at the
+source load. Both halves of one `.milk2` begin at the same zero point and keep
+separate equation state. Its native ABI accepts validated local calendar and
+wall-clock registers. PlezyNG's shared native adapter now refreshes those
+registers from the device's local clock before every render and capture. The
+engine lock pins MilkRust `36f3058f150550cc1691303643489c8f89581300`, ABI v2.
+Regression sources cover preset-clock reset and clock-value binding. No private
+build, test, renderer capture or device run has executed for this checkpoint;
+the GitHub connector exposes no manual workflow-dispatch operation, and the
+private JIT runner requirement remains in force.

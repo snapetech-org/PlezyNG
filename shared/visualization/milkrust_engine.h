@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include <algorithm>
+#include <chrono>
+#include <ctime>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -24,7 +26,7 @@ struct MilkRustApi {
   // clang-format off
 #define DECLARE(name) decltype(&milkrust_##name) name = nullptr;
   DECLARE(abi_version) DECLARE(create) DECLARE(load) DECLARE(texture_names)
-  DECLARE(texture) DECLARE(texture_gif) DECLARE(pcm) DECLARE(render) DECLARE(render_rgba) DECLARE(destroy) DECLARE(last_error)
+  DECLARE(texture) DECLARE(texture_gif) DECLARE(pcm) DECLARE(set_clock) DECLARE(render) DECLARE(render_rgba) DECLARE(destroy) DECLARE(last_error)
 #undef DECLARE
       // clang-format on
       MilkRustApi() {
@@ -62,7 +64,7 @@ struct MilkRustApi {
     if (!name) { error = "Native MilkRust lacks the required ABI v2 symbols."; return; }
 #endif
     LOAD(abi_version) LOAD(create) LOAD(load) LOAD(texture_names) LOAD(texture) LOAD(texture_gif)
-    LOAD(pcm) LOAD(render) LOAD(render_rgba) LOAD(destroy) LOAD(last_error)
+    LOAD(pcm) LOAD(set_clock) LOAD(render) LOAD(render_rgba) LOAD(destroy) LOAD(last_error)
 #undef LOAD
         // clang-format on
         if (abi_version() != MILKRUST_ABI_VERSION) error = "Native MilkRust ABI version does not match the app.";
@@ -172,18 +174,39 @@ class MilkRustEngine {
     }
   }
   void Render(uint32_t framebuffer, uint32_t width, uint32_t height, double seconds) {
+    SetLocalClock();
     Check(api_.render(handle_, framebuffer, width, height, seconds));
   }
   void Capture(uint32_t width, uint32_t height, double seconds, std::vector<uint8_t>& rgba) {
     if (!width || !height || width > 4096 || height > 4096 || static_cast<uint64_t>(width) * height > 8 * 1024 * 1024)
       throw std::runtime_error("Capture exceeds image budget.");
     rgba.resize(static_cast<size_t>(width) * height * 4);
+    SetLocalClock();
     Check(api_.render_rgba(handle_, width, height, seconds, rgba.data(), rgba.size()));
   }
 
  private:
   MilkRustApi& api_;
   milkrust_handle handle_ = 0;
+  void SetLocalClock() {
+    const auto now = std::chrono::system_clock::now();
+    const auto whole_seconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+    const auto total_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+    const auto subsecond = static_cast<uint32_t>((total_milliseconds % 1000 + 1000) % 1000);
+    const std::time_t timestamp = static_cast<std::time_t>(whole_seconds);
+    std::tm local_time{};
+#if defined(_WIN32)
+    if (::localtime_s(&local_time, &timestamp) != 0)
+      throw std::runtime_error("Could not read the local calendar clock.");
+#else
+    if (::localtime_r(&timestamp, &local_time) == nullptr)
+      throw std::runtime_error("Could not read the local calendar clock.");
+#endif
+    Check(api_.set_clock(handle_, static_cast<int32_t>(local_time.tm_year + 1900),
+        static_cast<uint32_t>(local_time.tm_mon + 1), static_cast<uint32_t>(local_time.tm_mday),
+        static_cast<uint32_t>(local_time.tm_wday), static_cast<uint32_t>(local_time.tm_hour),
+        static_cast<uint32_t>(local_time.tm_min), static_cast<uint32_t>(local_time.tm_sec), subsecond));
+  }
   void Check(int result) const {
     if (result != 0) throw std::runtime_error(api_.Error());
   }

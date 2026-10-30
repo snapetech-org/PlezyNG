@@ -265,3 +265,16 @@ MilkRust PR #20 now preserves finite float-range `.milk2` progress and random he
 ## Current MilkRust pin — MilkDrop host inputs
 
 The source lock pins MilkRust `361a4a0c96408bf63760b914cbc508e4fb0494a3` (ABI v2). It adds standard MilkDrop mouse and clock registers, a shared rising-edge `mouseclick`, and reference-style saved-pair blending for these host values. The added regression sources are unrun. This workspace has no Cargo toolchain or project checkout; the connector reports no Actions run for the engine commit. Use the compatible private JIT runner; the connected GitHub tool does not expose manual workflow dispatch.
+
+
+## 2026-10-30 local clock and preset timing handoff
+
+Build MilkRust PR #20 at `36f3058f150550cc1691303643489c8f89581300` and the
+PlezyNG shared native adapter. Verify that single-preset and both `.milk2`
+scopes report `time=0` on first render, increment per frame, and reset when a
+new source loads. Verify the native ABI date/time setter on desktop, Android,
+Apple, Tizen and webOS, including leap dates and invalid-input rejection. Check
+local timezone and daylight-saving changes while rendering. Browser and
+stateless callers that do not supply clock state retain the deterministic
+preset-relative fallback. No build, test, or device run is attached to this
+source checkpoint; use only compatible private JIT runners.

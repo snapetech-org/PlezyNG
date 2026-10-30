@@ -184,6 +184,11 @@ exports a raw player pointer, queries the decoder from the render worker, or
 delivers PCM through Kotlin/Dart. Stock AARs fail this capability gate and keep
 normal playback.
 
+The shared native adapter refreshes the MilkRust local-calendar setter before
+each render and offscreen capture, so EEL date/time registers reflect the
+active device clock. The engine itself remains deterministic unless the host
+supplies this state.
+
 ### Regular runtime artifact wiring
 
 The regular build paths now produce the pinned MilkRust runtime on private JIT.

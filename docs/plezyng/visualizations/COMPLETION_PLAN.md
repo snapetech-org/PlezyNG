@@ -750,3 +750,16 @@ The earlier Apple lifecycle/interruption checkpoint is also committed. This
 updates the implementation for the declared profile; the original plan's
 private-runner compile/test, reference/corpus, runtime-artifact and release
 acceptance requirements remain unfulfilled. Only source checks ran here.
+
+
+## 2026-10-30 comparison-gather channel and sampler-state alias source checkpoint
+
+PlezyNG now pins MilkRust `a0ce0242eef5372501a3a6036569e53fb8ad7239`, ABI v2. The typed compiler lowers all
+five Texture2D GatherCmp component methods, preserving selected-channel
+comparison and D3D texel order. Statically initialized global ordinary and
+comparison sampler states can alias other initialized states, including
+forward chains; filter, addressing and comparison functions are preserved.
+Unresolved aliases and aliases between ordinary/comparison state types fail
+explicitly. Regression source covers these cases and all comparison-gather
+channels. No build, test, renderer run, pixel comparison or device qualification
+was performed; the lock remains `source-only-unqualified`.

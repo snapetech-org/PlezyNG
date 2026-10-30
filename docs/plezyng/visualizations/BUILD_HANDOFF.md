@@ -407,3 +407,20 @@ Also run the Apple lifecycle/journal and shared worker regressions described
 above, followed by the platform lifecycle/device matrix. Source checks passed;
 none of these compiler/test/renderer checks has run. Current build acceptance
 cannot be inferred from source commits or from earlier workflow revisions.
+
+
+## MilkRust comparison-channel and static-state alias gate
+
+Build the exact lock revision `a0ce0242eef5372501a3a6036569e53fb8ad7239` (ABI v2) on the compatible private
+JIT runner. Run the native HLSL/core suites and `tools/smoke-hlsl.mjs`, then
+exercise Emscripten delivery. New regression source covers all five
+Texture2D GatherCmp channel forms, comparison resource-array result widths,
+global `SamplerState` and `SamplerComparisonState` aliases (including
+forward chains), unresolved targets, and cross-type aliases. Preserve the
+existing Gather order, compare-before-filter, overload, recursion and
+single-evaluation checks.
+
+No build or test run exists for this engine pin; the GitHub connector does not
+expose workflow dispatch for the private JIT jobs. Reference pixels, native
+and browser driver behavior, device recovery and artifact promotion remain
+separate acceptance gates.

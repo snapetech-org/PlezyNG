@@ -793,3 +793,22 @@ Confidence is moderate in integrated source behavior and unknown for platform
 execution. The existing private-only workflows require manual dispatch, which
 the connected GitHub tools do not expose. The original build, mpv artifact,
 conformance, content and production-release gates remain open.
+
+
+## 2026-10-30 MilkRust comparison-gather and static-state alias source checkpoint
+
+The app lock now pins MilkRust `a0ce0242eef5372501a3a6036569e53fb8ad7239` (ABI v2). The bounded HLSL
+profile lowers all five Texture2D comparison-gather channel methods:
+`GatherCmp`, `GatherCmpRed`, `GatherCmpGreen`, `GatherCmpBlue`, and
+`GatherCmpAlpha`. Their selected channel is compared independently at each
+of the four D3D-ordered texels. Global `SamplerState` and
+`SamplerComparisonState` declarations may alias another statically
+initialized global state, including forward aliases and alias chains; lowering
+preserves filter, address and comparison function, and rejects unresolved or
+type-mismatched aliases. Native regression sources now cover every channel,
+static aliases, invalid targets and type mismatches.
+
+This is source implementation only. No Rust/C++ build, compiler suite,
+browser run, render, reference-pixel comparison or device run was performed.
+The connected GitHub actions expose no workflow-dispatch operation, and the
+PR's private JIT runners remain the required execution environment.

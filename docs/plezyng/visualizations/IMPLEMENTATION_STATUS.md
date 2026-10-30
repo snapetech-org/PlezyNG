@@ -507,3 +507,12 @@ dynamic state remain outside the profile. Native GL and WebGL now use MilkDrop's
 source-texel offsets, nested range transforms, and first-level edge darkening.
 No build, test, pixel comparison, or device qualification was run. Reference
 render parity and private-JIT execution remain open.
+
+
+## 2026-10-30 current MilkRust sampler and sprite profile
+
+The source lock pins MilkRust `7d7ed901bb105f9ad23431caa25e9f97e095a1bc`, ABI v2. Static HLSL and legacy
+`sampler_state` paths use independent filter and U/V/W Wrap/Clamp/Mirror
+profiles. WebGL sprite sampling now matches native GL for static assets;
+animated assets retain linear filtering without mipmaps. This source checkpoint
+has not been built, tested, or visually qualified.

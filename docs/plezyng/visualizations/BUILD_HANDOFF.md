@@ -277,5 +277,7 @@ Apple, Tizen and webOS, including leap dates and invalid-input rejection. Check
 local timezone and daylight-saving changes while rendering. The MilkRust browser SDK supplies the page's local date and time before each frame.
 Direct WebAssembly/stateless callers that omit the setter retain zero calendar
 fields and preset-relative time. This source checkpoint has no build, test,
-browser capture, or device run; use only compatible private JIT runners. No build, test, or device run is attached to this
+browser capture, or device run; use only compatible private JIT runners.
+Native hosts can call MilkRustEngine::SetMouseState before rendering; platform
+pointer-event wiring is still pending. No build, test, or device run is attached to this
 source checkpoint; use only compatible private JIT runners.

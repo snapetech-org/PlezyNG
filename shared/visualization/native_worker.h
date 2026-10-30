@@ -97,6 +97,7 @@ class NativeWorker {
         paused_ = paused;
         if (paused) {
           mouse_down_ = false;
+          mouse_click_pending_ = false;
           mouse_dx_ = 0;
           mouse_dy_ = 0;
         }
@@ -109,7 +110,13 @@ class NativeWorker {
         throw std::runtime_error("Invalid native mouse input.");
       std::lock_guard<std::mutex> lock(mutex_);
       if (stopping_) return;
-      mouse_down_ = down;
+      if (paused_) {
+        mouse_down_ = false;
+        mouse_click_pending_ = false;
+      } else {
+        if (down && !mouse_down_) mouse_click_pending_ = true;
+        mouse_down_ = down;
+      }
       mouse_x_ = std::clamp(x, 0.0, 1.0);
       mouse_y_ = std::clamp(y, 0.0, 1.0);
       mouse_dx_ = std::clamp(mouse_dx_ + dx, -1.0, 1.0);
@@ -139,7 +146,7 @@ class NativeWorker {
     Publish publish_;
     mutable std::mutex mutex_;
     std::condition_variable condition_;
-    bool stopping_ = false, paused_ = true, mouse_down_ = false;
+    bool stopping_ = false, paused_ = true, mouse_down_ = false, mouse_click_pending_ = false;
     int width_ = 768, height_ = 432;
     double mouse_x_ = 0.5, mouse_y_ = 0.5, mouse_dx_ = 0, mouse_dy_ = 0;
     uint64_t serial_ = 0;

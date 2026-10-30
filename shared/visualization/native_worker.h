@@ -95,6 +95,11 @@ class NativeWorker {
       {
         std::lock_guard<std::mutex> lock(mutex_);
         paused_ = paused;
+        if (paused) {
+          mouse_down_ = false;
+          mouse_dx_ = 0;
+          mouse_dy_ = 0;
+        }
         if (paused && status_.state != "failed") status_.state = "paused";
       }
       condition_.notify_all();

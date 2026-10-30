@@ -160,11 +160,16 @@ class VisualizerSession extends ChangeNotifier {
     required double dy,
   }) {
     if (_closed || _engine != 'milkrust' || !x.isFinite || !y.isFinite || !dx.isFinite || !dy.isFinite) return;
-    _mouseDown = down;
+    _mouseDown = !_paused && down;
     _mouseX = x.clamp(0.0, 1.0).toDouble();
     _mouseY = y.clamp(0.0, 1.0).toDouble();
-    _mouseDx = (_mouseDx + dx).clamp(-1.0, 1.0).toDouble();
-    _mouseDy = (_mouseDy + dy).clamp(-1.0, 1.0).toDouble();
+    if (_paused) {
+      _mouseDx = 0;
+      _mouseDy = 0;
+    } else {
+      _mouseDx = (_mouseDx + dx).clamp(-1.0, 1.0).toDouble();
+      _mouseDy = (_mouseDy + dy).clamp(-1.0, 1.0).toDouble();
+    }
     if (_mouseTimer?.isActive == true) return;
     _mouseTimer = Timer(const Duration(milliseconds: 16), () {
       _mouseTimer = null;
@@ -189,9 +194,17 @@ class VisualizerSession extends ChangeNotifier {
   void setPaused(bool paused) {
     if (_closed || _paused == paused) return;
     _paused = paused;
+    if (paused) {
+      _mouseDown = false;
+      _mouseDx = 0;
+      _mouseDy = 0;
+    }
     unawaited(
       _enqueue(() async {
-        if (!_closed && _sessionId != null) await _call<void>('visualizerSetPaused', {'paused': _paused});
+        if (!_closed && _sessionId != null) {
+          if (_engine == 'milkrust') await _sendMouseState();
+          await _call<void>('visualizerSetPaused', {'paused': _paused});
+        }
       }),
     );
   }

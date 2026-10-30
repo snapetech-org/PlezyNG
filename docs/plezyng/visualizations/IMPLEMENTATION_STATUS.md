@@ -493,3 +493,14 @@ blend masks. Both GPU hosts key their shared mask cache by the effective carried
 header registers. Process-start omitted registers remain zero, and partial
 headers inherit preceding values. This is source integration, not a reference
 capture or a passed runtime test.
+
+## 2026-10-30 current MilkRust source checkpoint
+
+The source lock pins MilkRust `35db92c3ecbf1aefe76bdbb7176db5dc7a934de4`, ABI v2. Saved-mask formulas consume
+effective carried random registers directly. Global static HLSL sampler states
+support point/linear filters and uniform active-axis Wrap/Clamp addressing;
+mixed addressing, advanced modes, and dynamic state propagation remain outside
+the profile. Native GL and WebGL now use MilkDrop's paired-tap blur weights,
+source-texel offsets, nested range transforms, and first-level edge darkening.
+No build, test, pixel comparison, or device qualification was run. Reference
+render parity and private-JIT execution remain open.

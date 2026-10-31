@@ -414,6 +414,8 @@ BuildAppDebug() {
     cd "$FLUTTER_APPLICATION_PATH" && \
     env -u FLUTTER_BUILD_NAME -u FLUTTER_BUILD_NUMBER \
     "$FLUTTER_BIN" build bundle \
+      --target-platform=ios \
+      --no-pub \
       --asset-dir="$OUTDIR/App.framework/flutter_assets" \
       --no-tree-shake-icons \
       --suppress-analytics
@@ -564,6 +566,8 @@ BuildAppRelease() {
     cd "$FLUTTER_APPLICATION_PATH" && \
     env -u FLUTTER_BUILD_NAME -u FLUTTER_BUILD_NUMBER \
     "$FLUTTER_BIN" build bundle \
+      --target-platform=ios \
+      --no-pub \
       --release \
       --asset-dir="$OUTDIR/App.framework/flutter_assets" \
       --no-tree-shake-icons \

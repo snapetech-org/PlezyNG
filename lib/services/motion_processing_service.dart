@@ -375,6 +375,7 @@ abstract final class MotionProcessingService {
   /// changes are live only for an already-active supported provider session.
   static bool canChangeLive(Player player, {required MotionProcessingMode mode, bool isLive = false}) {
     if (isLive || !supportsPlayer(player) || _interpolationBufferReady[player] != true) return false;
+    if (mode != MotionProcessingMode.off && _interlacedTrackSuppressed[player] == true) return false;
     if (mode.usesNeuralInterpolation && _isDesktopPmePlatform) {
       return _desktopPmeActive[player] == true &&
           _desktopPmePreset[player] != null &&
@@ -675,6 +676,12 @@ abstract final class MotionProcessingService {
     NeuralInterpolationPreset neuralPreset = NeuralInterpolationPreset.balanced,
   }) async {
     if (!supportsPlayer(player)) throw UnsupportedError('MPV motion interpolation is unavailable on this player.');
+    if (mode != MotionProcessingMode.off && _interlacedTrackSuppressed[player] == true) {
+      appLogger.i(
+        'MotionProcessingService: motion processing remains disabled for this video track until the next media open.',
+      );
+      return;
+    }
 
     if (mode.usesNeuralInterpolation) {
       if (await _preparePowerPolicy(player, mode)) {

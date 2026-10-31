@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve punctuation when converting podcast descriptions with inline HTML to plain text.
+
 - Fix the pinned Opus CMake package config for Windows builds with a relative install prefix.
 
 - Fall back to packaged LiteRT providers when Qualcomm HTP context preparation fails.

@@ -31,6 +31,12 @@ subprojects {
         // and leave their src/main/kotlin entry points uncompiled.
         if (name == "file_picker" && !pluginManager.hasPlugin("org.jetbrains.kotlin.android")) {
             pluginManager.apply("org.jetbrains.kotlin.android")
+        }
+        // The app and its native libraries target Java 17. AGP 9 defaults
+        // plugin JavaCompile tasks to 11 while Kotlin 2.4 defaults to 17,
+        // which fails Gradle's target-compatibility validation for plugins
+        // such as receive_sharing_intent that do not declare compileOptions.
+        plugins.withId("org.jetbrains.kotlin.android") {
             tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
                 compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
             }
@@ -46,6 +52,8 @@ subprojects {
             finalizeDsl { extension ->
                 // Plugin modules can lag the app's Android tools even when
                 // their dependencies already require current APIs.
+                extension.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+                extension.compileOptions.targetCompatibility = JavaVersion.VERSION_17
                 extension.compileSdk = 37
                 extension.buildToolsVersion = "36.1.0"
                 // The Flutter plugin copies the app's build types into every plugin

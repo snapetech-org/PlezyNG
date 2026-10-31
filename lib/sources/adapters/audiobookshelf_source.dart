@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../source_models.dart';
 import '../source_transport.dart';
+import '../podcast_metadata.dart';
 import 'webdav_source.dart';
 
 class AudiobookshelfSourceAdapter extends SourceAdapter {
@@ -191,6 +192,16 @@ class AudiobookshelfSourceAdapter extends SourceAdapter {
   @override
   Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
     final library = parent ?? source.root;
+    if (library.startsWith('podcast:')) {
+      final itemId = library.substring('podcast:'.length);
+      final data = await api('GET', 'api/items/${Uri.encodeComponent(itemId)}', query: {'expanded': '1'});
+      if (data['mediaType'] != 'podcast') throw const SourceException(SourceFailure.invalidData);
+      final episodes = _podcastEpisodes(data);
+      final search = query?.trim().toLowerCase() ?? '';
+      return SourcePage(episodes.where((entry) => search.isEmpty ||
+          '${entry.title} ${entry.description}'.toLowerCase().contains(search)).toList(),
+          title: sourceMap(sourceMap(data['media'])['metadata'])['title'] as String?);
+    }
     if (library.isEmpty) {
       final data = await api('GET', 'api/libraries');
       return SourcePage(
@@ -222,6 +233,13 @@ class AudiobookshelfSourceAdapter extends SourceAdapter {
   SourceEntry _entry(Map<String, dynamic> j, String? parent) {
     final media = sourceMap(j['media']), meta = sourceMap(sourceMap(j['media'])['metadata']);
     final id = j['id'] as String;
+    if (j['mediaType'] == 'podcast') {
+      return SourceEntry(sourceId: source.id, id: 'podcast:$id',
+        title: meta['title'] as String? ?? '', kind: SourceItemKind.folder, parentId: parent,
+        author: meta['author'] as String? ?? '', coverId: id,
+        description: podcastPlainText(meta['description'] as String? ?? ''),
+        identifiers: {'podcast': 'show', 'absItem': id});
+    }
     final files = <PublicationFile>[];
     final audio = sourceList(media['audioFiles']).map(sourceMap).toList()
       ..sort((a, b) => (sourceInt(a['index']) ?? 0).compareTo(sourceInt(b['index']) ?? 0));
@@ -285,12 +303,63 @@ class AudiobookshelfSourceAdapter extends SourceAdapter {
     );
   }
 
+  List<SourceEntry> _podcastEpisodes(Map<String, dynamic> item) {
+    final itemId = item['id'] as String;
+    final media = sourceMap(item['media']), meta = sourceMap(sourceMap(item['media'])['metadata']);
+    final show = meta['title'] as String? ?? '';
+    final result = <SourceEntry>[];
+    final seen = <String>{};
+    for (final value in sourceList(media['episodes']).take(10000)) {
+      final episode = sourceMap(value), audio = sourceMap(sourceMap(value)['audioFile']);
+      final metadata = sourceMap(audio['metadata']);
+      final episodeId = episode['id'];
+      if (episodeId is! String || episodeId.isEmpty || audio['ino'] == null || !seen.add(episodeId)) continue;
+      final duration = episode['duration'] ?? audio['duration'];
+      final durationMs = duration is num && duration.isFinite && duration > 0 && duration < 7 * 86400
+          ? (duration * 1000).round() : null;
+      final published = sourceInt(episode['publishedAt']);
+      final date = published != null && published.abs() <= 8640000000000000
+          ? DateTime.fromMillisecondsSinceEpoch(published, isUtc: true)
+          : parsePodcastDate(episode['pubDate'] as String? ?? '');
+      result.add(SourceEntry(
+        sourceId: source.id, id: 'podcast-episode:${sourceDigest('$itemId\u0000$episodeId')}',
+        parentId: 'podcast:$itemId', title: episode['title'] as String? ?? show,
+        kind: SourceItemKind.music, author: meta['author'] as String? ?? '', series: show,
+        description: podcastPlainText(episode['description'] as String? ?? ''),
+        coverId: itemId, releaseYear: date?.year,
+        identifiers: {'podcast': 'episode', 'feed': 'podcast:$itemId', 'absItem': itemId, 'absEpisode': episodeId,
+          if (date != null) 'publishedAt': '${date.millisecondsSinceEpoch}',
+          for (final key in ['season', 'episode', 'episodeType'])
+            if (episode[key] != null) key: '${episode[key]}',
+          'explicit': '${meta['explicit'] == true}',
+        },
+        files: [PublicationFile(id: jsonEncode({'item': itemId, 'ino': audio['ino']}),
+          name: metadata['filename'] as String? ?? '$episodeId.mp3',
+          mimeType: audio['mimeType'] as String? ?? 'audio/mpeg', size: sourceInt(metadata['size']),
+          durationMs: durationMs, revision: metadata['mtimeMs']?.toString())],
+      ));
+    }
+    result.sort((a, b) => (podcastPublishedAt(b)?.millisecondsSinceEpoch ?? 0)
+        .compareTo(podcastPublishedAt(a)?.millisecondsSinceEpoch ?? 0));
+    return result;
+  }
+
+  String _itemId(SourceEntry entry) => entry.identifiers['absItem'] ?? entry.id;
+  String _progressPath(SourceEntry entry) => 'api/me/progress/${Uri.encodeComponent(_itemId(entry))}'
+      '${entry.identifiers['absEpisode'] == null ? '' : '/${Uri.encodeComponent(entry.identifiers['absEpisode']!)}'}';
+
   @override
-  Future<SourceEntry> hydrate(SourceEntry entry) async =>
-      _entry(await api('GET', 'api/items/${entry.id}', query: {'expanded': '1'}), entry.parentId);
+  Future<SourceEntry> hydrate(SourceEntry entry) async {
+    final data = await api('GET', 'api/items/${Uri.encodeComponent(_itemId(entry))}', query: {'expanded': '1'});
+    if (entry.identifiers['absEpisode'] != null) {
+      return _podcastEpisodes(data).where((item) => item.id == entry.id).firstOrNull ??
+          (throw const SourceException(SourceFailure.unavailable));
+    }
+    return _entry(data, entry.parentId);
+  }
   @override
   Future<ContentLease?> cover(SourceEntry entry) async =>
-      ContentLease(url('api/items/${entry.id}/cover'), headers: await headers());
+      ContentLease(url('api/items/${Uri.encodeComponent(_itemId(entry))}/cover'), headers: await headers());
   @override
   bool supportsProgress(SourceEntry entry, PublicationProgress progress) {
     if (progress.mode == PublicationMode.reading) {
@@ -304,12 +373,19 @@ class AudiobookshelfSourceAdapter extends SourceAdapter {
   @override
   Future<ContentLease> resolve(PublicationFile file) async {
     final ref = sourceMap(jsonDecode(file.id));
-    return ContentLease(url('api/items/${ref['item']}/file/${ref['ino']}'), headers: await headers(), size: file.size);
+    return ContentLease(url('api/items/${Uri.encodeComponent('${ref['item']}')}/file/${Uri.encodeComponent('${ref['ino']}')}'),
+        headers: await headers(), size: file.size);
   }
 
   @override
   Future<PublicationProgress?> readProgress(SourceEntry entry, PublicationProgress local) async {
-    final j = await api('GET', 'api/me/progress/${entry.id}');
+    Map<String, dynamic> j;
+    try {
+      j = await api('GET', _progressPath(entry));
+    } on SourceException catch (error) {
+      if (error.status == 404) return null;
+      rethrow;
+    }
     if (j.isEmpty) return null;
     return local.copyWith(
       positionMs: ((j['currentTime'] as num? ?? 0) * 1000).round(),
@@ -343,7 +419,7 @@ class AudiobookshelfSourceAdapter extends SourceAdapter {
     };
     await _requestText(
       'PATCH',
-      url('api/me/progress/${entry.id}'),
+      url(_progressPath(entry)),
       headers: const {'Content-Type': 'application/json'},
       body: jsonEncode(body),
     );
@@ -351,7 +427,7 @@ class AudiobookshelfSourceAdapter extends SourceAdapter {
 
   @override
   Future<void> writeAnnotation(SourceEntry entry, BookAnnotation annotation) async {
-    if (annotation.mode != PublicationMode.listening || annotation.positionMs == null) {
+    if (!supportsAnnotations(entry) || annotation.mode != PublicationMode.listening || annotation.positionMs == null) {
       throw const SourceException(SourceFailure.unsupported);
     }
     final time = (annotation.positionMs! / 1000).floor();
@@ -374,7 +450,7 @@ class AudiobookshelfSourceAdapter extends SourceAdapter {
 
   @override
   Future<List<BookAnnotation>> readAnnotations(SourceEntry entry, PublicationProgress progress) async {
-    if (progress.mode != PublicationMode.listening) return [];
+    if (!supportsAnnotations(entry) || progress.mode != PublicationMode.listening) return [];
     final data = await api('GET', 'api/me/bookmarks/${entry.id}');
     return sourceList(data['bookmarks'])
         .map(sourceMap)
@@ -391,4 +467,7 @@ class AudiobookshelfSourceAdapter extends SourceAdapter {
         )
         .toList();
   }
+
+  @override
+  bool supportsAnnotations(SourceEntry entry) => entry.identifiers['podcast'] == null;
 }

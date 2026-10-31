@@ -10,6 +10,7 @@ import '../../services/settings_service.dart';
 import '../../utils/platform_detector.dart';
 import '../../utils/app_logger.dart';
 import '../models.dart';
+import '../mpv_path_list.dart';
 import 'audio_rendering_mode.dart';
 import 'audio_spectrum.dart';
 import 'player_base.dart';
@@ -301,13 +302,6 @@ class PlayerNative extends PlayerBase
     return path.length <= 40 ? path : '…${path.substring(path.length - 40)}';
   }
 
-  /// Escapes [separator] in one `sub-files` path-list entry. mpv's splitter
-  /// (`get_nextsep`) removes only a backslash directly before the separator
-  /// and keeps every other one, so backslashes must pass through unchanged.
-  /// A non-final entry ending in `\` cannot be expressed; no subtitle source
-  /// produces one.
-  static String _escapePathListEntry(String value, String separator) => value.replaceAll(separator, '\\$separator');
-
   static String? _externalSubtitlesLoadfileOption(List<SubtitleTrack>? externalSubtitles) {
     final separator = Platform.isWindows ? ';' : ':';
     final escapedUris = externalSubtitles
@@ -315,7 +309,7 @@ class PlayerNative extends PlayerBase
         .whereType<String>()
         .where((uri) => uri.isNotEmpty)
         .toSet()
-        .map((uri) => _escapePathListEntry(uri, separator))
+        .map((uri) => MpvPathList.escapeEntry(uri, separator))
         .toList();
     if (escapedUris == null || escapedUris.isEmpty) return null;
 

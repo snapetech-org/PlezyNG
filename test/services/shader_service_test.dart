@@ -5,6 +5,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plezy/models/shader_preset.dart';
 import 'package:plezy/mpv/player/player.dart';
+import 'package:plezy/services/ambient_lighting_service.dart';
 import 'package:plezy/services/shader_asset_loader.dart';
 import 'package:plezy/services/shader_service.dart';
 
@@ -33,8 +34,8 @@ void main() {
     if (await root.exists()) await root.delete(recursive: true);
   });
 
-  Iterable<List<String>> appends(_RecordingPlayer player) =>
-      player.commands.where((command) => command.length > 2 && command[2] == 'append');
+  Iterable<List<String>> replacements(_RecordingPlayer player) =>
+      player.commands.where((command) => command.length > 2 && command[2] == 'set');
 
   test('an escaped custom preset never reaches the MPV shader append command', () async {
     final supportDirectory = Directory(path.join(root.path, 'support'))..createSync(recursive: true);
@@ -55,6 +56,42 @@ void main() {
     expect(await sentinel.readAsString(), 'sentinel');
   });
 
+  test('replaces a shader preset with one chain update and no empty intermediate chain', () async {
+    final player = _RecordingPlayer();
+    final service = ShaderService(player);
+
+    await service.applyPreset(ShaderPreset.nvscalerDefault);
+    player.commands.clear();
+    final preset = ShaderPreset.anime4kPreset(Anime4KQuality.fast, Anime4KMode.modeB);
+
+    await service.applyPreset(preset);
+
+    expect(player.commands, hasLength(1));
+    expect(player.commands.single, hasLength(4));
+    expect(player.commands.single.take(3), ['change-list', 'glsl-shaders', 'set']);
+    expect(player.commands.single.last, contains('Anime4K_Clamp_Highlights.glsl'));
+    expect(player.commands.single.last, contains('Anime4K_Restore_CNN_M.glsl'));
+    expect(player.commands.single.last, contains('Anime4K_Upscale_CNN_x2_M.glsl'));
+    expect(service.currentPreset, preset);
+  });
+
+  test('retains ambient lighting as the final shader in a replacement chain', () async {
+    final player = _RecordingPlayer();
+    final service = ShaderService(player);
+    final ambient = AmbientLightingService(player);
+    service.ambientLightingService = ambient;
+
+    await ambient.enable(16 / 9);
+    final ambientPath = player.commands.singleWhere((command) => command[2] == 'append').last;
+    player.commands.clear();
+
+    await service.applyPreset(ShaderPreset.anime4kPreset(Anime4KQuality.fast, Anime4KMode.modeA));
+
+    expect(player.commands, hasLength(1));
+    expect(player.commands.single[2], 'set');
+    expect(player.commands.single.last.endsWith(':$ambientPath'), isTrue);
+  });
+
   group('reapplyForContent', () {
     test('drops an NVScaler applied before decode once the frame proves HDR content', () async {
       final player = _RecordingPlayer();
@@ -63,7 +100,7 @@ void main() {
       // Nothing decoded yet: mpv answers no colour params, so the HDR skip
       // cannot fire and the chain gets NVScaler.
       await service.applyPreset(ShaderPreset.nvscalerDefault);
-      expect(appends(player), hasLength(1));
+      expect(replacements(player), hasLength(1));
       expect(service.currentPreset, ShaderPreset.nvscalerDefault);
 
       player.properties['video-params/colormatrix'] = 'bt.2020-ncl';
@@ -81,14 +118,14 @@ void main() {
       final service = ShaderService(player);
 
       await service.applyPreset(ShaderPreset.nvscalerDefault);
-      expect(appends(player), isEmpty);
+      expect(replacements(player), isEmpty);
       expect(service.currentPreset, ShaderPreset.none);
 
       player.properties['video-params/primaries'] = 'bt.709';
       player.commands.clear();
 
       expect(await service.reapplyForContent(), isTrue);
-      expect(appends(player), hasLength(1));
+      expect(replacements(player), hasLength(1));
       expect(service.currentPreset, ShaderPreset.nvscalerDefault);
     });
 
@@ -132,6 +169,11 @@ class _RecordingPlayer implements Player {
   @override
   Future<void> command(List<String> args) async {
     commands.add(List.unmodifiable(args));
+  }
+
+  @override
+  Future<void> setProperty(String name, String value) async {
+    properties[name] = value;
   }
 
   @override

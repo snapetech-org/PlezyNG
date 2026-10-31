@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import '../models/shader_preset.dart';
+import '../mpv/mpv_path_list.dart';
 import '../mpv/player/player.dart';
 import '../utils/app_logger.dart';
 import 'ambient_lighting_service.dart';
@@ -11,8 +12,8 @@ import 'shader_asset_loader.dart';
 /// Applies MPV GLSL presets and the Android ExoPlayer Lanczos GL resampler.
 ///
 /// Handles shader chain building, HDR detection, and runtime switching.
-/// When ambient lighting is active, the ambient lighting shader is always appended last
-/// in the chain after any upscaling/processing shaders.
+/// When ambient lighting is active, its shader remains last in the chain after
+/// any upscaling/processing shaders.
 class ShaderService {
   final Player _player;
 
@@ -24,7 +25,7 @@ class ShaderService {
   /// re-decides against the picture mpv actually presents.
   ShaderPreset _requestedPreset = ShaderPreset.none;
 
-  /// Reference to ambient lighting service for re-appending its shader after chain rebuilds.
+  /// Reference to ambient lighting service so its shader can stay in an atomic chain update.
   AmbientLightingService? ambientLightingService;
 
   ShaderService(this._player);
@@ -114,19 +115,25 @@ class ShaderService {
   static bool _skipsOnHdr(ShaderPreset preset) =>
       preset.type == ShaderPresetType.nvscaler && preset.nvscalerConfig?.autoHdrSkip == true;
 
-  /// Rebuild mpv's chain for [preset]: clear, append its shaders, keep
-  /// ambient lighting last.
+  /// Replace mpv's chain for [preset] in one operation. This keeps renderer
+  /// requirements such as Android's GPU output active while presets change.
   Future<void> _applyChain(ShaderPreset preset) async {
     final shaderPaths = await ShaderAssetLoader.getShadersForPreset(preset);
+    final ambientShader = ambientLightingService?.shaderPathForRebuild;
+    final shaderChain = [...shaderPaths, if (ambientShader != null) ambientShader];
 
-    await _clearShaders();
-    for (final shaderPath in shaderPaths) {
-      await _player.command(['change-list', 'glsl-shaders', 'append', shaderPath]);
+    if (shaderChain.isEmpty) {
+      await _clearShaders();
+    } else {
+      final separator = Platform.isWindows ? ';' : ':';
+      await _player.command([
+        'change-list',
+        'glsl-shaders',
+        'set',
+        MpvPathList.encode(shaderChain, separator: separator),
+      ]);
     }
     _currentPreset = preset;
-
-    // Re-append ambient lighting shader at end of chain
-    await _reappendAmbientLighting();
 
     if (shaderPaths.isNotEmpty) {
       appLogger.d('ShaderService: Applied ${preset.name} with ${shaderPaths.length} shaders');
@@ -138,19 +145,6 @@ class ShaderService {
       await _player.command(['change-list', 'glsl-shaders', 'clr', '']);
     } catch (e, st) {
       appLogger.w('ShaderService: Failed to clear shaders', error: e, stackTrace: st);
-    }
-  }
-
-  /// Re-append the ambient lighting shader if it's active.
-  /// Called after shader chain rebuilds to keep ambient lighting last.
-  Future<void> _reappendAmbientLighting() async {
-    final service = ambientLightingService;
-    if (service == null || !service.isEnabled) return;
-
-    try {
-      await service.reappendShader();
-    } catch (e, st) {
-      appLogger.w('ShaderService: Failed to re-append ambient lighting', error: e, stackTrace: st);
     }
   }
 

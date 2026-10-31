@@ -5,17 +5,17 @@
 Built locally on `kspld0` from branch `codex/motion-engine-w8a8-20261030`, outside CI:
 
 ```sh
-nice -n 19 ionice -c 2 -n 7 ./gradlew :app:assembleDebug --no-daemon --max-workers=2
+TMPDIR=/mnt/disks/scratch/plezyng-motion-runtime-20261030/tmp JAVA_TOOL_OPTIONS='-Djava.io.tmpdir=/mnt/disks/scratch/plezyng-motion-runtime-20261030/tmp' nice -n 19 ionice -c 2 -n 7 ./gradlew :app:assembleDebug --offline --no-daemon --max-workers=2
 ```
 
-Gradle completed with `BUILD SUCCESSFUL in 6m 50s` and 806 actionable tasks (425 executed, 381 up-to-date). The build now compiles the Android live Performance/Balanced/Quality switching path. The `receive_sharing_intent` Java/Kotlin target mismatch was resolved by aligning Android library compilation to JVM 17; two Kotlin declarations in the app were also corrected.
+Gradle completed with `BUILD SUCCESSFUL in 6m 43s` and 806 actionable tasks (45 executed, 761 up-to-date). This rebuild packages the live Performance/Balanced/Quality switching path and atomic GLSL-chain replacement. The `receive_sharing_intent` Java/Kotlin target mismatch was resolved by aligning Android library compilation to JVM 17; two Kotlin declarations in the app were also corrected. All Gradle and JVM temporary files were directed to task scratch. The shared Gradle cache was reused.
 
 ## Packaged artifact
 
 - Path in the scratch worktree: `build/app/outputs/apk/debug/app-debug.apk`
 - Retained standalone copy: `/mnt/disks/scratch/plezyng-motion-runtime-20261030/artifacts/android/app-debug.apk`
 - Size: 677,807,075 bytes
-- SHA-256: `db5a217e98330d92214812adef11fe8786272754b7ce569a025e5a8848b17d53`
+- SHA-256: `89c14a52010babddd379a1fa8736c4f24547b793cc8f1b6a217ae95dd6e934de`
 - Native libraries present for: `arm64-v8a`, `armeabi-v7a`, and `x86_64` (`x86` is not present in this APK).
 - Package contents include `libonnxruntime.so`, the LiteRT model manifest and TFLite model assets, the ANVIL-S 540p ONNX model, and the live-switch app code.
 - `unzip -t` reports no archive errors.

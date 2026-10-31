@@ -37,6 +37,10 @@ class AmbientLightingService {
 
   bool get isEnabled => _enabled;
 
+  /// Shader path to retain when another preset rebuilds the MPV chain.
+  /// Ambient lighting remains the final pass.
+  String? get shaderPathForRebuild => _enabled ? _shaderPath : null;
+
   /// A GLSL shader effect, so unavailable where shaders are (vo=avfoundation).
   bool get isSupported => _player.playerType == 'mpv' && ShaderService.isPlatformSupported;
 
@@ -92,13 +96,6 @@ class AmbientLightingService {
     } catch (e, st) {
       appLogger.w('AmbientLightingService: Failed to disable', error: e, stackTrace: st);
     }
-  }
-
-  /// Re-append the ambient lighting shader to the chain.
-  /// Called by ShaderService after it rebuilds the shader chain (clr + append).
-  Future<void> reappendShader() async {
-    if (!_enabled || _shaderPath == null) return;
-    await _player.command(['change-list', 'glsl-shaders', 'append', _shaderPath!]);
   }
 
   /// Re-point subtitle placement at a new picture: the shader adapts to the

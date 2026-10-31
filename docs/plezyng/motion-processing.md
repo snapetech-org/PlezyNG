@@ -97,6 +97,8 @@ The engine should reuse one flow result for every output timestamp between a sou
 
 On Android, NNAPI is deprecated in Android 15 and is not used as the NPU plan. LiteRT's documented accelerator interfaces are vendor-specific; where a device has no usable NPU delegate, the engine selects GPU/MPV or passthrough. This is provider resolution at runtime, not a platform-name claim.
 
+MPV shader enhancements replace the complete `glsl-shaders` path list in one command. This preserves the Android output arbiter's active shader requirement while changing presets instead of briefly returning to direct MediaCodec output, and keeps ambient lighting as the final pass. Shared path-list escaping preserves Windows backslashes and quotes list separators inside paths; see MPV's [list-option syntax](https://mpv.io/manual/stable/#list-options).
+
 Android LiteRT AARs and the C++ SDK are pinned to 2.3.0 by SHA-256 in `android/app/build.gradle.kts`. Run `scripts/motion/export_android_litert_models.py` outside the app build with the pinned ANVIL source and optional calibration inputs; point `PLEZY_LITERT_MODEL_ROOT` at its output directory to stage the checked manifest and `.tflite` files. Generic NPU records declare JIT execution. Google Tensor uses the target-specific AOT records described below; the Kotlin runtime resolver does not pass a JIT pack to Tensor devices. The app's LiteRT wrapper accepts fully NPU- or GPU-accelerated graphs only, and reports the provider family rather than inferring a vendor from the device name. This current bridge uses host-memory tensors, so it copies into the runtime and does not yet provide the LiteRT zero-copy AHardwareBuffer path.
 
 ## Enhancement modes

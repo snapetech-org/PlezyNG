@@ -29,6 +29,9 @@
 #include <windows.h>
 #else
 #include <dlfcn.h>
+#if defined(__linux__)
+#include <dirent.h>
+#endif
 #endif
 
 #define PME_ORT_API_VERSION 27
@@ -55,6 +58,7 @@ struct pme_runtime_session {
 #endif
 #if defined(__linux__)
   void* migraphx_runtime_library = nullptr;
+  void* hip_runtime_library = nullptr;
 #endif
   const OrtApiBase* api_base = nullptr;
   const OrtApi* api = nullptr;
@@ -1126,6 +1130,203 @@ bool try_builtin_cuda_candidate(
   return true;
 }
 
+#if defined(__linux__)
+enum class PmeRx7900PciPresence { absent, present, unknown };
+
+struct PmeMigraphxDeviceSelection {
+  uint16_t device_id = 0;
+  std::string device_name = "AMD";
+};
+
+using HipGetDeviceCountFn = int (*)(int*);
+using HipDeviceGetNameFn = int (*)(char*, int, int);
+using HipDeviceGetPciBusIdFn = int (*)(char*, int, int);
+
+bool parse_sysfs_hex_id(const std::string& text, uint32_t* value) {
+  if (!value) return false;
+  errno = 0;
+  char* end = nullptr;
+  const unsigned long parsed = std::strtoul(text.c_str(), &end, 0);
+  if (errno != 0 || end == text.c_str() || *end != '\0' || parsed > std::numeric_limits<uint32_t>::max()) {
+    return false;
+  }
+  *value = static_cast<uint32_t>(parsed);
+  return true;
+}
+
+bool read_linux_pci_identity(const std::string& bus_id, uint32_t* vendor_id, uint32_t* device_id) {
+  if (bus_id.empty() || !vendor_id || !device_id) return false;
+  const std::string root = "/sys/bus/pci/devices/" + bus_id + "/";
+  std::ifstream vendor_file(root + "vendor");
+  std::ifstream device_file(root + "device");
+  std::string vendor_text;
+  std::string device_text;
+  if (!vendor_file || !device_file || !std::getline(vendor_file, vendor_text) ||
+      !std::getline(device_file, device_text)) {
+    return false;
+  }
+  return parse_sysfs_hex_id(vendor_text, vendor_id) && parse_sysfs_hex_id(device_text, device_id);
+}
+
+PmeRx7900PciPresence probe_rx_7900_xt_pci_presence(std::vector<std::string>* navi31_bus_ids) {
+  if (!navi31_bus_ids) return PmeRx7900PciPresence::unknown;
+  navi31_bus_ids->clear();
+  DIR* devices = opendir("/sys/bus/pci/devices");
+  if (!devices) return PmeRx7900PciPresence::unknown;
+
+  bool unreadable_identity = false;
+  for (dirent* entry = readdir(devices); entry != nullptr; entry = readdir(devices)) {
+    if (entry->d_name[0] == '.') continue;
+    uint32_t vendor_id = 0;
+    uint32_t device_id = 0;
+    if (!read_linux_pci_identity(entry->d_name, &vendor_id, &device_id)) {
+      unreadable_identity = true;
+      continue;
+    }
+    if (vendor_id == 0x1002 && device_id == 0x744c) {
+      navi31_bus_ids->emplace_back(entry->d_name);
+    }
+  }
+  closedir(devices);
+  if (!navi31_bus_ids->empty()) return PmeRx7900PciPresence::present;
+  return unreadable_identity ? PmeRx7900PciPresence::unknown : PmeRx7900PciPresence::absent;
+}
+
+bool is_rx_7900_xt_name(const char* device_name) {
+  if (!device_name) return false;
+  const std::string name(device_name);
+  const std::string token = "RX 7900 XT";
+  const size_t position = name.find(token);
+  if (position == std::string::npos) return false;
+  const size_t suffix = position + token.size();
+  return suffix == name.size() || !std::isalnum(static_cast<unsigned char>(name[suffix]));
+}
+
+bool explicit_rocm_device_visibility() {
+  constexpr const char* variables[] = {"ROCR_VISIBLE_DEVICES", "HIP_VISIBLE_DEVICES", "GPU_DEVICE_ORDINAL"};
+  for (const char* variable : variables) {
+    const char* value = std::getenv(variable);
+    if (value && value[0] != '\0') return true;
+  }
+  return false;
+}
+
+void* load_hip_runtime_for_migraphx(pme_runtime_session* session) {
+  if (!session) return nullptr;
+  if (session->hip_runtime_library) return session->hip_runtime_library;
+
+  const char* libraries[] = {"libamdhip64.so", "libamdhip64.so.8", "libamdhip64.so.7", "libamdhip64.so.6"};
+  int flags = RTLD_NOW | RTLD_LOCAL;
+#if defined(RTLD_NODELETE)
+  flags |= RTLD_NODELETE;
+#endif
+  for (const char* library : libraries) {
+    session->hip_runtime_library = dlopen(library, flags);
+    if (session->hip_runtime_library) return session->hip_runtime_library;
+  }
+  return nullptr;
+}
+
+bool select_migraphx_device(pme_runtime_session* session, PmeMigraphxDeviceSelection* selection, std::string* error) {
+  if (!session || !selection || !error) return false;
+
+  void* hip_library = load_hip_runtime_for_migraphx(session);
+  const auto get_device_count =
+      hip_library ? reinterpret_cast<HipGetDeviceCountFn>(dlsym(hip_library, "hipGetDeviceCount")) : nullptr;
+  const auto get_device_name =
+      hip_library ? reinterpret_cast<HipDeviceGetNameFn>(dlsym(hip_library, "hipDeviceGetName")) : nullptr;
+  const auto get_device_pci_bus_id =
+      hip_library ? reinterpret_cast<HipDeviceGetPciBusIdFn>(dlsym(hip_library, "hipDeviceGetPCIBusId")) : nullptr;
+
+  int device_count = 0;
+  const bool device_count_known = get_device_count && get_device_count(&device_count) == 0 && device_count >= 0;
+  if (explicit_rocm_device_visibility()) {
+    // Respect an explicit ROCm/HIP visibility list. MIGraphX device zero is
+    // the first device left visible by that user-owned process setting.
+    selection->device_id = 0;
+    if (device_count_known && device_count > 0 && get_device_name) {
+      char name[256] = {};
+      if (get_device_name(name, static_cast<int>(sizeof(name)), 0) == 0 && name[0] != '\0') {
+        selection->device_name = name;
+      }
+    }
+    return true;
+  }
+
+  std::vector<std::string> navi31_bus_ids;
+  const PmeRx7900PciPresence pci_presence = probe_rx_7900_xt_pci_presence(&navi31_bus_ids);
+  if (!device_count_known || !get_device_name) {
+    if (pci_presence != PmeRx7900PciPresence::absent) {
+      *error = "Could not query HIP adapters while the RX 7900 XT is present or adapter discovery is incomplete";
+      return false;
+    }
+    selection->device_id = 0;
+    return true;
+  }
+
+  std::string first_device_name;
+  std::vector<std::string> mapped_navi31_bus_ids;
+  int selected_device = -1;
+  std::string selected_name;
+  for (int device = 0; device < device_count; ++device) {
+    char name[256] = {};
+    if (get_device_name(name, static_cast<int>(sizeof(name)), device) != 0 || name[0] == '\0') {
+      if (pci_presence != PmeRx7900PciPresence::absent) {
+        *error = "HIP could not identify every visible adapter while selecting RX 7900 XT compute";
+        return false;
+      }
+      continue;
+    }
+    if (device == 0) first_device_name = name;
+
+    char bus_id[64] = {};
+    uint32_t vendor_id = 0;
+    uint32_t pci_device_id = 0;
+    const bool pci_identity_known = get_device_pci_bus_id &&
+                                    get_device_pci_bus_id(bus_id, static_cast<int>(sizeof(bus_id)), device) == 0 &&
+                                    bus_id[0] != '\0' && read_linux_pci_identity(bus_id, &vendor_id, &pci_device_id);
+    const bool is_navi31_pci_device = pci_identity_known && vendor_id == 0x1002 && pci_device_id == 0x744c;
+    if (is_navi31_pci_device &&
+        std::find(navi31_bus_ids.begin(), navi31_bus_ids.end(), std::string(bus_id)) != navi31_bus_ids.end() &&
+        std::find(mapped_navi31_bus_ids.begin(), mapped_navi31_bus_ids.end(), std::string(bus_id)) ==
+            mapped_navi31_bus_ids.end()) {
+      mapped_navi31_bus_ids.emplace_back(bus_id);
+    }
+
+    if (!is_rx_7900_xt_name(name)) continue;
+    if (pci_identity_known && (vendor_id != 0x1002 || pci_device_id != 0x744c)) {
+      continue;
+    }
+    if (selected_device >= 0) {
+      *error = "More than one RX 7900 XT is visible to HIP; set ROCR_VISIBLE_DEVICES to select one explicitly";
+      return false;
+    }
+    selected_device = device;
+    selected_name = name;
+  }
+
+  if (selected_device >= 0) {
+    if (selected_device > std::numeric_limits<uint16_t>::max()) {
+      *error = "HIP RX 7900 XT device ordinal exceeds MIGraphX's supported device-id range";
+      return false;
+    }
+    selection->device_id = static_cast<uint16_t>(selected_device);
+    selection->device_name = selected_name;
+    return true;
+  }
+
+  if (pci_presence == PmeRx7900PciPresence::unknown ||
+      (pci_presence == PmeRx7900PciPresence::present && mapped_navi31_bus_ids.size() != navi31_bus_ids.size())) {
+    *error = "RX 7900 XT adapter discovery is incomplete; refusing MIGraphX device 0";
+    return false;
+  }
+
+  selection->device_id = 0;
+  if (!first_device_name.empty()) selection->device_name = first_device_name;
+  return true;
+}
+#endif
+
 bool try_builtin_migraphx_candidate(
     pme_runtime_session* session, const pme_runtime_config* config, const pme_provider_candidate& candidate,
     std::string* error) {
@@ -1176,11 +1377,20 @@ bool try_builtin_migraphx_candidate(
     *error = "ONNX Runtime does not expose its built-in MIGraphX provider API";
     return false;
   }
+#if defined(__linux__)
+  PmeMigraphxDeviceSelection device_selection;
+  if (!select_migraphx_device(session, &device_selection, error)) return false;
+  const uint16_t migraphx_device_id = device_selection.device_id;
+  const std::string migraphx_device_name = device_selection.device_name;
+#else
+  const uint16_t migraphx_device_id = 0;
+  const std::string migraphx_device_name = "AMD";
+#endif
   OrtSessionOptions* options = nullptr;
   if (!session_options_create(session, config, &options, error)) return false;
 
   OrtMIGraphXProviderOptions migraphx_options{};
-  migraphx_options.device_id = 0;
+  migraphx_options.device_id = migraphx_device_id;
   if (!call_status(
           api, api->AddSessionConfigEntry(options, "session.disable_cpu_ep_fallback", "1"), error,
           "Disable CPU execution provider fallback") ||
@@ -1204,7 +1414,7 @@ bool try_builtin_migraphx_candidate(
   // CPU EP fallback is disabled. A successful run therefore confirms that
   // the model graph was assigned to the AMD GPU provider.
   session->provider_name = "MIGraphXExecutionProvider";
-  session->provider_vendor = "AMD";
+  session->provider_vendor = migraphx_device_name;
   session->info.device_kind = PME_DEVICE_GPU;
   return true;
 #else
@@ -1422,6 +1632,15 @@ void release_session(pme_runtime_session* session) {
     session->runtime_library = nullptr;
   }
 #if defined(__linux__)
+  if (session->hip_runtime_library) {
+#if defined(RTLD_NODELETE)
+    dlclose(session->hip_runtime_library);
+#else
+    // Keep HIP mapped until process exit when the platform cannot mark the
+    // runtime NODELETE; MIGraphX may retain HIP-owned global state at teardown.
+#endif
+    session->hip_runtime_library = nullptr;
+  }
   if (session->migraphx_runtime_library) {
 #if defined(RTLD_NODELETE)
     dlclose(session->migraphx_runtime_library);

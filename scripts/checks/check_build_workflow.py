@@ -952,6 +952,12 @@ require(
 
 apple_native = job_block(ci_text, "apple-native-test")
 require(
+    "derived_data_path=\"$RUNNER_TEMP/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${{ matrix.source_packages_directory }}-DerivedData\""
+    in apple_native
+    and apple_native.count('-derivedDataPath "$APPLE_DERIVED_DATA_PATH"') == 2,
+    "Apple CI must isolate Xcode DerivedData per platform job under RUNNER_TEMP",
+)
+require(
     "scripts/refresh_apple_spm.sh ios" in apple_native
     and "scripts/refresh_apple_spm.sh macos" in apple_native
     and "xcodebuild -resolvePackageDependencies -workspace" in apple_native

@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -637,9 +637,7 @@
+                                 INSTALL_DESTINATION
+                                 ${CMAKE_INSTALL_PACKAGEDIR}
+                                 PATH_VARS
+-                                INCLUDE_INSTALL_DIR
+-                                INSTALL_PREFIX
+-                                ${CMAKE_INSTALL_PREFIX})
++                                INCLUDE_INSTALL_DIR)
+   write_basic_package_version_file(OpusConfigVersion.cmake
+                                    VERSION ${PROJECT_VERSION}
+                                    COMPATIBILITY SameMajorVersion)

@@ -1,10 +1,16 @@
-# Implementation work packages
+# Motion & clarity implementation work packages
 
-This document separates the delivered Motion & clarity feature from the wider
-engineering roadmap. The current runtime and its user-facing controls are listed
-first; the remaining work packages describe follow-on engineering.
+> **Status note (2026-10-31):** This file preserves the original implementation
+> snapshot and its P01–P25 design criteria. Its inventory of delivered controls,
+> remaining work, and proposed paths is historical. For the current implementation
+> and qualification state, see [Motion processing and neural playback](../motion-processing.md)
+> and the evidence reports linked there.
 
-## Current delivery in this PR
+This document records the original Motion & clarity delivery snapshot and the
+wider engineering roadmap that followed it. The work packages remain useful as
+design criteria, but their original status statements are not a current inventory.
+
+## Original delivery snapshot
 
 - Adds typed Original, Cinema, Balanced, Smooth, Animation, Sports, OLED and Custom
   profiles. The default stays Original. OLED routes through motion compensation at
@@ -40,9 +46,14 @@ frame counter only when the preferred signal is unavailable. Three consecutive
 to Balanced to Fast, then fall back to temporal blending if overload continues.
 The stored preference is unchanged. This is not a full resource governor or
 hardware benchmark; it does not measure processor headroom, thermals, power or
-physical scanout. Neural RIFE, custom confidence/occlusion analysis,
-camera-blur restoration, capability-qualified scaling, native Android/Apple/TV
-frame adapters, verified model packaging and TV comparison remain unimplemented.
+physical scanout. The original snapshot listed Neural RIFE, custom
+confidence/occlusion analysis, camera-blur restoration, capability-qualified
+scaling, native Android/Apple/TV frame adapters, verified model packaging and TV
+comparison as unimplemented. Since then, PlezyNG has added desktop PME, Apple
+VideoToolbox interpolation, Android ANVIL/QNN/LiteRT paths, verified on-demand
+model packs, and deadline-governed fallback. RIFE remains a benchmark reference,
+TV frame adapters and TV comparison remain outstanding, and the current feature
+is not fully playback-qualified. See the current status and evidence linked above.
 The qualification protocol records the device, timing and visual evidence needed for broader platform comparisons.
 
 ## 1. Verified repository integration map

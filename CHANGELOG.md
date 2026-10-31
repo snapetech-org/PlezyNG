@@ -7,12 +7,24 @@
 - Explain when a downloaded subtitle fails to appear in the player.
 - Wait for a queued active-profile rebind cycle to settle before returning to its caller.
 - Add the repository root to Python guard-test imports so nested CI checks resolve project modules.
+- Find the Linux `gio-launch-desktop` helper in `/usr/lib` when packaging the app bundle.
 - Retry transient FFmpeg source download failures without weakening signature verification.
 - Declare VDPAU and Vulkan loader packages required by Linux bundles.
 - Include the pinned Vulkan-backed WebGPU provider in Linux app builds by default for Neural motion processing.
 - Prefer the RX 7900 XT for Linux PME inference and Vulkan filter compute while keeping display rendering independent.
+- Show Neural model-pack download progress in playback diagnostics while the current smoothing fallback remains active.
+- Select the RX 7900 XT for Linux MIGraphX inference by HIP adapter identity, while honoring explicit ROCm device visibility.
+- Select the RX 7900 XT for Windows DirectML inference when available, leaving the independently selected output adapter free for presentation.
+- Promote the RX 7900 XT-bound Windows DirectML route ahead of generic GPU providers and prevent silent compute fallback to another adapter.
+- Keep Neural interpolation SDR-only while resolving desktop HDR/Dolby Vision requests to active MPV smoothing with an explicit reason.
+- Retain source Dolby Vision capability in live playback reports when the active player omits its profile.
 - Report the PME inference adapter separately from its Vulkan preprocessing and warping GPU.
 - Carry selected-stream scan type into live motion capability reports, disable smoothing for interlaced sources, and format its stats parser with Flutter 3.47.1.
+- Confirm desktop neural interpolation against 24 consecutive decoded PTS intervals and report measured cadence in playback diagnostics.
+- Prefer the named RX 7900 XT Vulkan adapter for PME compute when present, independently of MPV's output adapter.
+- Resolve scan type from MPV's active FFmpeg video track after in-session track changes, and report unknown when the demuxer index space cannot be matched safely.
+- Keep motion processing disabled until the next media open after an interlaced or unclassifiable track switch.
+- Allow model packs to be omitted from optimized bundles and downloaded after Neural is selected, while preserving bundled fallbacks by default.
 - Include verified Google Tensor G5/G6 AOT motion models in the default Android LiteRT pack and preserve them across ordinary exports.
 - Remove stale CocoaPods aggregate framework links from the iOS simulator test project.
 - Enable the pinned Google ML Kit helper for Apple Silicon iOS simulator builds.

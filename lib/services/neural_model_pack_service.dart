@@ -10,15 +10,23 @@ import 'package:path_provider/path_provider.dart';
 import '../models/motion_processing_mode.dart';
 import '../utils/app_logger.dart';
 
+final class NeuralModelPackDownloadProgress {
+  final int bytesReceived;
+  final int bytesTotal;
+
+  const NeuralModelPackDownloadProgress({required this.bytesReceived, required this.bytesTotal});
+}
+
 /// Installs the opt-in ANVIL model packs used by the Plezy Motion Engine.
 ///
-/// The compact 540p Performance graph is bundled and copied to app-private
-/// storage on demand. Balanced and Quality graphs are downloaded from a pinned
-/// upstream revision and checked by size and SHA-256 before native use.
+/// The compact 540p Performance graph stays bundled for offline playback.
+/// Balanced and Quality graphs download only when Neural is selected and are
+/// copied to app-private storage after their pinned size and SHA-256 verify.
 abstract final class NeuralModelPackService {
   static const _repositoryRevision = 'fa97e30f6aabe897bd4f6f82d971ad607f5d61fa';
   static const _repository = 'https://huggingface.co/NihilDigit/anvil';
   static const _androidFilterRevision = '1efc82739f6f7034cd63e7ee8b3ec5431df27467';
+  static const _downloadTimeout = Duration(minutes: 2);
 
   static const _performanceModel = _NeuralModelPack(
     id: 'anvil-s-540p',
@@ -63,9 +71,13 @@ abstract final class NeuralModelPackService {
   );
 
   static final Map<String, Future<File>> _inFlight = {};
+  static final Map<String, NeuralModelPackDownloadProgress> _activeDownloads = {};
+
+  static NeuralModelPackDownloadProgress? downloadProgressForPreset(NeuralInterpolationPreset preset) =>
+      _activeDownloads[_modelForPreset(preset).id];
 
   /// Resolve the selected preset to its pinned local ONNX model.
-  /// Performance uses a bundled 540p ANVIL-S graph; Balanced uses the
+  /// Performance uses the bundled 540p ANVIL-S graph; Balanced uses the
   /// upstream 1080p ANVIL-S graph; Quality uses the larger ANVIL-M graph.
   static Future<File> ensureInstalled(NeuralInterpolationPreset preset) =>
       _ensureInstalledMemoized(_modelForPreset(preset));
@@ -161,8 +173,10 @@ abstract final class NeuralModelPackService {
     if (url == null) throw StateError('Neural model pack has no source.');
     final uri = Uri.parse(url);
     final client = http.Client();
+    final stopwatch = Stopwatch()..start();
+    _activeDownloads[model.id] = NeuralModelPackDownloadProgress(bytesReceived: 0, bytesTotal: model.bytes);
     try {
-      final response = await client.send(http.Request('GET', uri)).timeout(const Duration(minutes: 2));
+      final response = await client.send(http.Request('GET', uri)).timeout(_downloadTimeout);
       if (response.statusCode != HttpStatus.ok) {
         throw HttpException('Neural model download failed with status ${response.statusCode}.');
       }
@@ -177,15 +191,25 @@ abstract final class NeuralModelPackService {
       var receivedBytes = 0;
       try {
         await for (final chunk in response.stream.timeout(const Duration(seconds: 45))) {
+          if (stopwatch.elapsed > _downloadTimeout) {
+            throw TimeoutException('Neural model pack download exceeded its time limit.');
+          }
           receivedBytes += chunk.length;
           if (receivedBytes > model.bytes) {
             throw const FormatException('Neural model pack exceeds its pinned manifest size.');
           }
           digestInput.add(chunk);
           output.add(chunk);
+          _activeDownloads[model.id] = NeuralModelPackDownloadProgress(
+            bytesReceived: receivedBytes,
+            bytesTotal: model.bytes,
+          );
         }
         if (receivedBytes != model.bytes) {
           throw const FormatException('Neural model pack size does not match its pinned manifest.');
+        }
+        if (stopwatch.elapsed > _downloadTimeout) {
+          throw TimeoutException('Neural model pack download exceeded its time limit.');
         }
 
         digestInput.close();
@@ -214,6 +238,7 @@ abstract final class NeuralModelPackService {
       rethrow;
     } finally {
       client.close();
+      _activeDownloads.remove(model.id);
     }
   }
 

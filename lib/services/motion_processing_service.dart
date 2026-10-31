@@ -7,6 +7,7 @@ import '../media/media_stream.dart';
 import '../media/media_version.dart';
 import '../models/motion_processing_mode.dart';
 import '../models/playback_capability_report.dart';
+import '../mpv/models.dart';
 import '../mpv/player/player.dart';
 import '../mpv/player/player_native.dart';
 import 'neural_model_pack_service.dart';
@@ -52,6 +53,13 @@ abstract final class MotionProcessingService {
     'motion-processing-desktop-pme-originals',
   );
   static final Expando<Future<void>> _operationTails = Expando('motion-processing-operation-tails');
+  static final Expando<StreamSubscription<Tracks>> _videoTrackSubscriptions = Expando(
+    'motion-processing-video-track-subscription',
+  );
+  static final Expando<String> _lastVideoTrackSelection = Expando('motion-processing-last-video-track-selection');
+  static final Expando<int> _videoTrackMonitorGeneration = Expando('motion-processing-video-track-generation');
+  static final Expando<int> _motionSessionGeneration = Expando('motion-processing-session-generation');
+  static final Expando<bool> _interlacedTrackSuppressed = Expando('motion-processing-interlaced-track-suppressed');
 
   /// Windows uses MPV's embedded gpu-next output. Linux's Wayland plane uses
   /// libmpv and reports both display refresh and successful swaps. Android
@@ -117,10 +125,20 @@ abstract final class MotionProcessingService {
             providerReady &&
             !const {'mpv-bypass', 'recovery-probe'}.contains(capabilityReport?.neuralDeadlineGovernor));
     final streamSupported = capabilityReport == null || _supportsReportedMotionStream(capabilityReport);
+    final neuralStreamFallback = capabilityReport?.dolbyVisionProfile != null
+        ? MotionProcessingFallback.dolbyVision
+        : capabilityReport?.sourceIsHdr == true
+        ? MotionProcessingFallback.highDynamicRange
+        : null;
+    final desktopCadenceStatus = capabilityReport?.sourceCadenceStatus;
+    final desktopCadenceConfirmed =
+        !_isDesktopPmePlatform || capabilityReport == null || const {'cfr-24', 'cfr-30'}.contains(desktopCadenceStatus);
     return resolveMotionProcessing(
       requested: requested,
       mpvRendererAvailable: rendererAvailable && streamSupported,
-      neuralProviderAvailable: nativeProviderReady && streamSupported,
+      neuralProviderAvailable: nativeProviderReady && streamSupported && desktopCadenceConfirmed,
+      neuralStreamSupported: neuralStreamFallback == null,
+      neuralStreamFallback: neuralStreamFallback ?? MotionProcessingFallback.unsupportedStream,
       neuralPowerLimited:
           _powerLimited[player] == true &&
           (SettingsService.instanceOrNull?.read(SettingsService.neuralOnlyWhenPluggedIn) ?? true),
@@ -131,12 +149,12 @@ abstract final class MotionProcessingService {
     );
   }
 
-  /// Active stream facts can invalidate a previously configured path after a
-  /// track or file transition. Missing facts remain unknown; positive evidence
-  /// outside the initial SDR 24/30 fps, up-to-1080p scope resolves the request
-  /// to Off.
+  /// Active stream facts can invalidate a previously configured renderer path
+  /// after a track or file transition. Missing facts remain unknown; positive
+  /// evidence outside the initial progressive 24/30 fps, up-to-1080p scope
+  /// resolves the request to Off. HDR/Dolby Vision is a separate Neural-only
+  /// restriction because desktop MPV smoothing can remain available.
   static bool _supportsReportedMotionStream(PlaybackCapabilityReport report) {
-    if (report.sourceIsHdr == true || report.dolbyVisionProfile != null) return false;
     if (report.sourceIsInterlaced == true) return false;
 
     final width = report.sourceWidth;
@@ -149,13 +167,37 @@ abstract final class MotionProcessingService {
     }
 
     final fps = report.sourceFps;
-    if (fps != null && fps > 0 && (fps - 24).abs() > 0.1 && (fps - 30).abs() > 0.1) return false;
+    // Desktop PME measures cadence from decoded source PTS. Prefer it over
+    // container FPS metadata, which can be wrong for VFR or remuxed media.
+    // MPV can still smooth irregular cadence; Neural needs confirmed CFR.
+    final measuredDesktopCadence =
+        _isDesktopPmePlatform &&
+        const {
+          'probing',
+          'cfr-24',
+          'cfr-30',
+          'non-uniform-pts',
+          'pts-discontinuity',
+        }.contains(report.sourceCadenceStatus);
+    if (!measuredDesktopCadence && fps != null && fps > 0 && (fps - 24).abs() > 0.1 && (fps - 30).abs() > 0.1) {
+      return false;
+    }
     return true;
   }
 
-  /// Scan type from the selected source version used to configure this player.
-  /// A missing value stays unknown; callers must not infer progressive video.
-  static bool? sourceInterlacedForPlayer(Player player) {
+  /// Scan type for the video track currently decoded by MPV.
+  ///
+  /// The server's selected-track flag is only a setup-time fallback. During
+  /// playback, use the active FFmpeg stream index when MPV reports libavformat
+  /// as its demuxer; other demuxers can expose a different index space. A
+  /// missing or ambiguous match stays unknown so motion eligibility never
+  /// assumes that the active source is progressive.
+  static bool? sourceInterlacedForPlayer(
+    Player player, {
+    int? activeVideoStreamIndex,
+    String? currentDemuxer,
+    bool allowSelectedTrackFallback = true,
+  }) {
     final version = _sessionSelectedVersion[player];
     if (version == null) return null;
 
@@ -163,11 +205,128 @@ abstract final class MotionProcessingService {
         .expand((part) => part.streams)
         .where((stream) => stream.kind == MediaStreamKind.video)
         .toList(growable: false);
+
+    final demuxer = currentDemuxer?.trim().toLowerCase();
+    if (activeVideoStreamIndex != null || (demuxer != null && demuxer.isNotEmpty)) {
+      if (demuxer != 'lavf' || activeVideoStreamIndex == null) return null;
+      final scanTypes = streams
+          .where((stream) => stream.index == activeVideoStreamIndex)
+          .map((stream) => stream.interlaced)
+          .toSet();
+      return scanTypes.length == 1 ? scanTypes.single : null;
+    }
+
+    if (!allowSelectedTrackFallback) return null;
+
     final video = streams.firstWhere(
       (stream) => stream.selected,
       orElse: () => streams.length == 1 ? streams.single : const MediaStream(id: '', kind: MediaStreamKind.unknown),
     );
     return video.kind == MediaStreamKind.video ? video.interlaced : null;
+  }
+
+  static void _watchVideoTrackChanges(Player player) {
+    if (_videoTrackSubscriptions[player] != null) return;
+    final generation = _videoTrackMonitorGeneration[player] ?? 0;
+    _videoTrackMonitorGeneration[player] = generation;
+    _videoTrackSubscriptions[player] = player.streams.tracks.listen((tracks) {
+      final selection = tracks.video.where((track) => track.isSelected).map((track) => track.id).join('\u0000');
+      final previous = _lastVideoTrackSelection[player];
+      if (previous == selection) return;
+      if (selection.isEmpty) {
+        if (previous != null && previous.isNotEmpty) _lastVideoTrackSelection[player] = '';
+        return;
+      }
+      _lastVideoTrackSelection[player] = selection;
+
+      final selectionChanged = previous != null && previous != selection;
+      unawaited(
+        _checkActiveVideoTrack(
+          player,
+          selectionChanged: selectionChanged,
+          generation: generation,
+          sessionGeneration: _motionSessionGeneration[player] ?? 0,
+        ),
+      );
+    });
+  }
+
+  static Future<void> _checkActiveVideoTrack(
+    Player player, {
+    required bool selectionChanged,
+    required int generation,
+    required int sessionGeneration,
+  }) async {
+    try {
+      await _serializePlayerOperation(player, () async {
+        if (_videoTrackMonitorGeneration[player] != generation ||
+            _motionSessionGeneration[player] != sessionGeneration ||
+            _sessionSelectedVersion[player] == null) {
+          return;
+        }
+        final demuxer = await player.getProperty('current-demuxer');
+        final streamIndex = int.tryParse(await player.getProperty('current-tracks/video/ff-index') ?? '');
+        final interlaced = sourceInterlacedForPlayer(
+          player,
+          activeVideoStreamIndex: streamIndex,
+          currentDemuxer: demuxer,
+          allowSelectedTrackFallback: !selectionChanged,
+        );
+        if (interlaced != true && !(selectionChanged && interlaced == null)) return;
+        if (!_hasActiveMotionProcessing(player) || _interlacedTrackSuppressed[player] == true) return;
+        await _suspendMotionForUnsupportedTrack(player);
+      });
+    } catch (error, stackTrace) {
+      appLogger.w(
+        'MotionProcessingService: could not suspend motion processing after a video-track change',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  static bool _hasActiveMotionProcessing(Player player) =>
+      _desktopPmeActive[player] == true ||
+      _androidAnvilActive[player] == true ||
+      _androidMpvOutputActive[player] == true ||
+      _appleNeuralPreset[player] != null ||
+      (_originals[player] != null && _interpolationBufferReady[player] == true);
+
+  /// Stop generated frames after switching to an interlaced or unclassifiable
+  /// alternate track. Keep the current renderer and decoder choice in place;
+  /// motion can be configured again at the next media open.
+  static Future<void> _suspendMotionForUnsupportedTrack(Player player) async {
+    if (_desktopPmeActive[player] == true) {
+      if (await _removeDesktopPmeFilter(player)) {
+        _desktopPmeActive[player] = false;
+        _desktopPmePreset[player] = null;
+      }
+    }
+    if (_androidAnvilActive[player] == true) {
+      if (await _removeAndroidAnvilFilter(player)) {
+        _androidAnvilActive[player] = false;
+        _androidAnvilPreset[player] = null;
+      }
+    }
+    if (_appleNeuralPreset[player] != null) {
+      await player.setProperty('avfoundation-motion-interpolation', 'no');
+      _appleNeuralPreset[player] = null;
+      _appleNeuralEligible[player] = false;
+    }
+    if (_originals[player] != null ||
+        _desktopPmeActive[player] == true ||
+        _androidAnvilActive[player] == true ||
+        _androidMpvOutputActive[player] == true) {
+      await player.setProperty('interpolation', 'no');
+    }
+    _interpolationBufferReady[player] = false;
+    _neuralRequested[player] = false;
+    await _stopPowerMonitoring(player);
+    await _stopThermalMonitoring(player);
+    _interlacedTrackSuppressed[player] = true;
+    appLogger.w(
+      'MotionProcessingService: motion processing stopped for an interlaced or unclassifiable video track; it will resume at the next media open.',
+    );
   }
 
   static bool _supportsVideoOutput(String output) {
@@ -216,6 +375,7 @@ abstract final class MotionProcessingService {
   /// changes are live only for an already-active supported provider session.
   static bool canChangeLive(Player player, {required MotionProcessingMode mode, bool isLive = false}) {
     if (isLive || !supportsPlayer(player) || _interpolationBufferReady[player] != true) return false;
+    if (mode != MotionProcessingMode.off && _interlacedTrackSuppressed[player] == true) return false;
     if (mode.usesNeuralInterpolation && _isDesktopPmePlatform) {
       return _desktopPmeActive[player] == true &&
           _desktopPmePreset[player] != null &&
@@ -321,6 +481,10 @@ abstract final class MotionProcessingService {
     _sessionSelectedVersion[player] = selectedVersion;
     _sessionIsLive[player] = isLive;
     _sessionIsTranscoding[player] = isTranscoding;
+    _motionSessionGeneration[player] = (_motionSessionGeneration[player] ?? 0) + 1;
+    _interlacedTrackSuppressed[player] = false;
+    _lastVideoTrackSelection[player] = null;
+    _watchVideoTrackChanges(player);
     if (_isApplePlatform) {
       final output = await _videoOutputForConfiguration(player);
       final avfoundationOutput = output == null || output == 'avfoundation';
@@ -440,7 +604,10 @@ abstract final class MotionProcessingService {
       final output = await _videoOutputForConfiguration(player);
       final fallback = resolveForPlayer(player, mode, currentVideoOutput: output, isLive: isLive);
       final mpvFallbackEligible =
-          !isLive && !isTranscoding && selectedVersion != null && _supportsMotionSource(selectedVersion);
+          !isLive &&
+          !isTranscoding &&
+          selectedVersion != null &&
+          _supportsMotionSource(selectedVersion, allowDynamicRange: true);
       if (mpvFallbackEligible && fallback.usesMpvInterpolation) {
         await _applyMpvInterpolation(player);
         _interpolationBufferReady[player] = true;
@@ -457,7 +624,10 @@ abstract final class MotionProcessingService {
 
     if (_isDesktopPmePlatform &&
         mode != MotionProcessingMode.off &&
-        (isLive || isTranscoding || selectedVersion == null || !_supportsMotionSource(selectedVersion))) {
+        (isLive ||
+            isTranscoding ||
+            selectedVersion == null ||
+            !_supportsMotionSource(selectedVersion, allowDynamicRange: true))) {
       final original = _originals[player];
       if (original != null) await _restoreOriginalProperties(player, original);
       _interpolationBufferReady[player] = false;
@@ -506,6 +676,12 @@ abstract final class MotionProcessingService {
     NeuralInterpolationPreset neuralPreset = NeuralInterpolationPreset.balanced,
   }) async {
     if (!supportsPlayer(player)) throw UnsupportedError('MPV motion interpolation is unavailable on this player.');
+    if (mode != MotionProcessingMode.off && _interlacedTrackSuppressed[player] == true) {
+      appLogger.i(
+        'MotionProcessingService: motion processing remains disabled for this video track until the next media open.',
+      );
+      return;
+    }
 
     if (mode.usesNeuralInterpolation) {
       if (await _preparePowerPolicy(player, mode)) {
@@ -936,6 +1112,12 @@ abstract final class MotionProcessingService {
   }
 
   static Future<void> _stopPowerSourceMonitoring(Player player) async {
+    _videoTrackMonitorGeneration[player] = (_videoTrackMonitorGeneration[player] ?? 0) + 1;
+    _motionSessionGeneration[player] = (_motionSessionGeneration[player] ?? 0) + 1;
+    final trackSubscription = _videoTrackSubscriptions[player];
+    _videoTrackSubscriptions[player] = null;
+    await trackSubscription?.cancel();
+    _lastVideoTrackSelection[player] = null;
     _neuralRequested[player] = false;
     await _stopPowerMonitoring(player);
     await _stopThermalMonitoring(player);
@@ -1170,7 +1352,9 @@ abstract final class MotionProcessingService {
     _desktopPmeOriginals[player] = null;
   }
 
-  static bool _supportsMotionSource(MediaVersion version) {
+  /// `allowDynamicRange` is used only for desktop MPV smoothing. Neural setup
+  /// keeps the default SDR-only rule, and Android keeps its direct surface path.
+  static bool _supportsMotionSource(MediaVersion version, {bool allowDynamicRange = false}) {
     final width = version.width;
     final height = version.height;
     if (width == null || height == null || width < 1 || height < 1 || width > 1920 || height > 1920) return false;
@@ -1183,7 +1367,9 @@ abstract final class MotionProcessingService {
       (stream) => stream.selected,
       orElse: () => streams.length == 1 ? streams.single : const MediaStream(id: '', kind: MediaStreamKind.unknown),
     );
-    if (video.kind != MediaStreamKind.video || video.interlaced != false || video.hdr || video.dolbyVision) {
+    if (video.kind != MediaStreamKind.video ||
+        video.interlaced != false ||
+        (!allowDynamicRange && (video.hdr || video.dolbyVision))) {
       return false;
     }
     final fps = video.frameRate;
@@ -1434,6 +1620,15 @@ abstract final class MotionProcessingService {
     final modelId = NeuralModelPackService.androidContextModelId(resolution, neuralPreset);
     final runtime = await player.prepareAndroidLiteRtMotionRuntime(modelId: modelId);
     if (runtime == null) return false;
+    if (runtime['modelDownloadPending'] == true) {
+      final pendingFiles = runtime['pendingModelFiles'] as List<Object?>? ?? const [];
+      appLogger.i(
+        'MotionProcessingService: Android Neural model packs are downloading '
+        '(${pendingFiles.map((file) => file.toString()).join(', ')}); '
+        'this playback will use the available non-neural motion path.',
+      );
+      return false;
+    }
     final npuModel = runtime['npuModelPath'] as String?;
     final gpuModel = runtime['gpuModelPath'] as String?;
     final npuModelBackend = runtime['npuModelBackend'] as String?;

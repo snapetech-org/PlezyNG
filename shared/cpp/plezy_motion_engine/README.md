@@ -184,6 +184,15 @@ PME Vulkan compute filter also prefers the RX 7900 XT when no explicit device
 override is set. The display-renderer selection remains independent of both
 compute paths.
 
+On Windows, PME probes DXGI for the RX 7900 XT by model name and AMD hardware
+ID. When present, its explicitly bound DirectML candidate is promoted ahead of
+generic GPU providers; the runtime creates a D3D12 device and compute queue on
+that adapter and binds them through ONNX Runtime's DML1 API. If this pinned
+route fails, generic GPU candidates are skipped rather than moving inference
+to the RX 9070 XT. NPU candidates remain eligible. If the RX 7900 XT is absent,
+the provider catalog keeps its normal order and DirectML can use its DML2
+high-performance GPU policy.
+
 To build the WebGPU runtime into the Linux Flutter application bundle, generate
 Flutter's Linux configuration first, then configure and install the app with the
 provider variant selected. The runtime, plugin, provider manifest, and notices
@@ -211,11 +220,17 @@ stages the matching ORT runtime and provider libraries from the verified ROCm
 7.2.1 wheel. The target system must provide ROCm 7.2.1 and MIGraphX runtime
 dependencies; the app does not bundle that system stack. To reserve a
 particular AMD GPU for a development process, set `ROCR_VISIBLE_DEVICES` only
-on that process when launching PlezyNG. The RX 7900 XT launcher resolves its
-ROCm UUID and makes it the process's only visible device; MIGraphX's device
-`0` then means that card, while the MPV output renderer stays independent.
-Without that isolation, MIGraphX's device `0` means the first visible ROCm
-GPU, which may be the RX 9070 XT on this dual-GPU desktop.
+on that process when launching PlezyNG. By default, the runtime enumerates HIP
+devices and selects the RX 7900 XT by its model name and PCI identity, then
+passes that HIP ordinal to MIGraphX instead of assuming device `0`. If a PCI
+Navi 31 adapter (`0x1002:0x744c`) is present but HIP cannot identify its model
+and ordinal, provider setup fails instead of silently moving compute to the
+RX 9070 XT. Explicit
+`ROCR_VISIBLE_DEVICES`, `HIP_VISIBLE_DEVICES`, or `GPU_DEVICE_ORDINAL` values
+remain authoritative; MIGraphX device `0` then means the first device in that
+process-visible set. The RX 7900 XT launcher resolves its ROCm UUID and makes
+it the process's only visible device for local qualification. MPV's output
+renderer stays independently selected in either case.
 
 Build the library with `ONNXRUNTIME_ROOT` pointing at an SDK whose C API is at
 least version 27 and `PME_ORT_RUNTIME_LIBRARY` pointing at the runtime to stage.

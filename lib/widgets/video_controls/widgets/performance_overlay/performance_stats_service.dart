@@ -9,6 +9,7 @@ import '../../../../models/playback_capability_report.dart';
 import '../../../../mpv/mpv.dart';
 import '../../../../media/media_display_criteria.dart';
 import '../../../../services/motion_processing_service.dart';
+import '../../../../services/neural_model_pack_service.dart';
 import '../../../../services/settings_service.dart';
 import '../../../../utils/app_logger.dart';
 import '../../../../utils/codec_utils.dart';
@@ -60,6 +61,23 @@ class PerformanceStatsService {
             isLive: isLive,
             neuralPreset: settings!.read(SettingsService.neuralInterpolationPreset),
           );
+  }
+
+  NeuralModelPackDownloadProgress? _parseAndroidModelDownloadProgress(Object? raw) {
+    if (raw is! List) return null;
+    var receivedBytes = 0;
+    var totalBytes = 0;
+    var count = 0;
+    for (final entry in raw.whereType<Map>()) {
+      final received = entry['bytesReceived'];
+      final total = entry['bytesTotal'];
+      if (received is! num || total is! num || received < 0 || total <= 0) continue;
+      receivedBytes += received.toInt();
+      totalBytes += total.toInt();
+      count++;
+    }
+    if (count == 0 || totalBytes <= 0) return null;
+    return NeuralModelPackDownloadProgress(bytesReceived: receivedBytes, bytesTotal: totalBytes);
   }
 
   double? _currentUiFps;
@@ -219,6 +237,7 @@ class PerformanceStatsService {
       final neuralOutputObserved =
           _parseBool(statsMap['anvil-active']?.toString()) == true ||
           (_parseInt(statsMap['anvil-generated-frames']?.toString()) ?? 0) > 0;
+      final modelDownloadProgress = _parseAndroidModelDownloadProgress(statsMap['neuralModelDownloads']);
       final capabilityReport = PlaybackCapabilityReport(
         playerType: 'mpv',
         videoOutput: statsMap['current-vo']?.toString(),
@@ -235,8 +254,12 @@ class PerformanceStatsService {
             statsMap['video-params/max-fall'],
           ),
         ),
-        sourceIsInterlaced: _sourceInterlaced(statsMap['sourceIsInterlaced']),
-        dolbyVisionProfile: (statsMap['dvSourceProfile'] as num?)?.toInt(),
+        sourceIsInterlaced: _sourceInterlaced(
+          reported: statsMap['sourceIsInterlaced'],
+          activeVideoStreamIndex: _parseInt(statsMap['current-tracks/video/ff-index']?.toString()),
+          currentDemuxer: statsMap['current-demuxer']?.toString(),
+        ),
+        dolbyVisionProfile: (statsMap['dvSourceProfile'] as num?)?.toInt() ?? _sourceDolbyVisionProfile,
         sourceFps: _parseDouble(statsMap['container-fps'] as String?),
         displayFps: _parseDouble(statsMap['display-fps'] as String?),
         renderedFps: _parseDouble(statsMap['estimated-vf-fps'] as String?),
@@ -247,6 +270,8 @@ class PerformanceStatsService {
         neuralProviderReady: _isNeuralProviderReady(neuralProvider, outputObserved: neuralOutputObserved),
         neuralProvider: neuralProvider,
         neuralProviderVendor: neuralProviderVendor,
+        neuralModelDownloadBytesReceived: modelDownloadProgress?.bytesReceived,
+        neuralModelDownloadBytesTotal: modelDownloadProgress?.bytesTotal,
         neuralPowerMode: statsMap['anvil-power-mode']?.toString(),
         neuralOutputObserved: neuralOutputObserved,
         neuralInferenceP95Ms: _parseDouble(statsMap['anvil-inference-p95-ms']?.toString()),
@@ -343,8 +368,8 @@ class PerformanceStatsService {
         sourceWidth: statsMap['videoWidth'] as int?,
         sourceHeight: statsMap['videoHeight'] as int?,
         sourceIsHdr: statsMap['sourceIsHdr'] as bool?,
-        sourceIsInterlaced: _sourceInterlaced(statsMap['sourceIsInterlaced']),
-        dolbyVisionProfile: (statsMap['dvSourceProfile'] as num?)?.toInt(),
+        sourceIsInterlaced: _sourceInterlaced(reported: statsMap['sourceIsInterlaced']),
+        dolbyVisionProfile: (statsMap['dvSourceProfile'] as num?)?.toInt() ?? _sourceDolbyVisionProfile,
         sourceFps: (statsMap['videoFps'] as num?)?.toDouble(),
         droppedFrames: statsMap['videoDroppedFrames'] as int?,
         rendererInterpolationActive: false,
@@ -485,6 +510,13 @@ class PerformanceStatsService {
         hasPmeMetadata
             ? _optionalPlayerProperty('vf-metadata/plezy-pme/phase-budget-configured')
             : Future.value(null), // 34
+        _optionalPlayerProperty('current-tracks/video/ff-index'), // 35
+        _optionalPlayerProperty('current-demuxer'), // 36
+        hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/source-cadence') : Future.value(null), // 37
+        hasPmeMetadata
+            ? _optionalPlayerProperty('vf-metadata/plezy-pme/source-cadence-samples')
+            : Future.value(null), // 38
+        hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/source-cadence-fps') : Future.value(null), // 39
       ]);
     }
 
@@ -524,6 +556,10 @@ class PerformanceStatsService {
         _parseBool(videoResults?[19]) == true ||
         (neuralGeneratedFrames != null && neuralGeneratedFrames > 0) ||
         nativeInterpolationStatus == 'active';
+    final selectedNeuralPreset = SettingsService.instanceOrNull?.read(SettingsService.neuralInterpolationPreset);
+    final modelDownloadProgress = (Platform.isWindows || Platform.isLinux) && selectedNeuralPreset != null
+        ? NeuralModelPackService.downloadProgressForPreset(selectedNeuralPreset)
+        : null;
     final playbackPlayerType = player.playerType;
     final reportedVideoOutput = videoResults?[13] ?? (playbackPlayerType == 'webos' ? 'webos-native' : null);
     final videoWidth = _parseInt(results[1] ?? (webosDimensions.isEmpty ? null : webosDimensions[0]));
@@ -542,9 +578,15 @@ class PerformanceStatsService {
         videoResults?[5],
         hasHdrMetadata: _hasMpvHdrMetadata(videoResults?[6], videoResults?[7], videoResults?[8], videoResults?[9]),
       ),
-      sourceIsInterlaced: _sourceInterlaced(),
-      dolbyVisionProfile: dolbyVisionProfile,
+      sourceIsInterlaced: _sourceInterlaced(
+        activeVideoStreamIndex: _parseInt(videoResults?[35]),
+        currentDemuxer: videoResults?[36],
+      ),
+      dolbyVisionProfile: dolbyVisionProfile ?? _sourceDolbyVisionProfile,
       sourceFps: _parseDouble(results[3]),
+      sourceCadenceStatus: videoResults?[37],
+      sourceCadenceSamples: _parseInt(videoResults?[38]),
+      sourceCadenceFps: _parseInt(videoResults?[39]),
       displayFps: _parseDouble(videoResults?.first),
       renderedFps: _parseDouble(results[4]),
       droppedFrames: _parseInt(results[15]),
@@ -559,6 +601,8 @@ class PerformanceStatsService {
           ((Platform.isIOS || Platform.isMacOS) && const {'ready', 'active'}.contains(nativeInterpolationStatus)),
       neuralProvider: neuralProvider,
       neuralProviderVendor: metadataProviderVendor,
+      neuralModelDownloadBytesReceived: modelDownloadProgress?.bytesReceived,
+      neuralModelDownloadBytesTotal: modelDownloadProgress?.bytesTotal,
       neuralPowerMode: videoResults?[28],
       neuralOutputObserved: neuralOutputObserved,
       neuralInferenceP95Ms: _parseDouble(videoResults?[20]),
@@ -661,14 +705,19 @@ class PerformanceStatsService {
     _ => null,
   };
 
-  bool? _sourceInterlaced([Object? reported]) {
-    final sourceMetadata = MotionProcessingService.sourceInterlacedForPlayer(player);
+  bool? _sourceInterlaced({Object? reported, int? activeVideoStreamIndex, String? currentDemuxer}) {
+    final sourceMetadata = MotionProcessingService.sourceInterlacedForPlayer(
+      player,
+      activeVideoStreamIndex: activeVideoStreamIndex,
+      currentDemuxer: currentDemuxer,
+    );
     final bool? backendValue = reported is bool
         ? reported
         : reported is String
         ? _parseBool(reported)
         : null;
     if (sourceMetadata == true || backendValue == true) return true;
+    if (currentDemuxer != null && currentDemuxer.trim().isNotEmpty) return sourceMetadata;
     return backendValue ?? sourceMetadata;
   }
 

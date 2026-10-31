@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.os.PowerManager
+import android.os.SystemClock
 import android.util.Log
 import com.edde746.plezy.exoplayer.supportedMpvSpdifCodecs
 import com.edde746.plezy.shared.PlayerChannelBinding
@@ -21,17 +22,23 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.security.MessageDigest
 import java.util.concurrent.CancellationException
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
 import java.util.zip.ZipFile
 import kotlin.math.roundToLong
 
 private const val LITERT_RUNTIME_VERSION = "2.3.0"
+private const val LITERT_MODEL_ARTIFACTS_REVISION = "e80ebf0d8d3a0d98d2ab05319548f844d18e0655"
+private const val LITERT_MODEL_DOWNLOAD_DEADLINE_MS = 120_000L
 private val LITERT_OPENVINO_RUNTIME_LIBRARIES = listOf(
   "libopenvino.so",
   "libopenvino_intel_npu_plugin.so",
@@ -93,6 +100,16 @@ open class MpvPlayerPlugin(
   private val motionRuntimeExecutor = Executors.newSingleThreadExecutor { task ->
     Thread(task, "$tag-motion-runtime").apply { isDaemon = true }
   }
+  private val liteRtModelDownloadExecutor = Executors.newFixedThreadPool(2) { task ->
+    Thread(task, "$tag-litert-download").apply { isDaemon = true }
+  }
+  private val pendingLiteRtModelDownloads = ConcurrentHashMap.newKeySet<String>()
+  private data class LiteRtModelDownloadProgress(
+    val filename: String,
+    val bytesTotal: Long,
+    val bytesReceived: AtomicLong = AtomicLong(0)
+  )
+  private val liteRtModelDownloadProgress = ConcurrentHashMap<String, LiteRtModelDownloadProgress>()
 
   private data class AndroidHtpTarget(
     val socModel: String,
@@ -267,6 +284,7 @@ open class MpvPlayerPlugin(
     binding.applicationContext.unregisterComponentCallbacks(memoryCallbacks)
     disposeCoreForTeardown()
     motionRuntimeExecutor.shutdown()
+    liteRtModelDownloadExecutor.shutdown()
     activity = null
     activityBinding = null
     applicationContext = null
@@ -725,19 +743,37 @@ open class MpvPlayerPlugin(
         null
       }
       val npuExecution = npuRecord?.optString("execution", "jit")
-      val npuModel = if (
+      val useNpuModel =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-        npuRecord != null &&
-        (npuRecord.optString("backend") != "google-tensor" || npuExecution == "aot")
-      ) {
+          npuRecord != null &&
+          (npuRecord.optString("backend") != "google-tensor" || npuExecution == "aot")
+      val npuModel = if (useNpuModel) {
         installLiteRtModelAsset(context, npuRecord, directory)
       } else {
         null
       }
-      val gpuModel = if (gpuAvailable) {
-        providers.optJSONObject("gpu")?.let { installLiteRtModelAsset(context, it, directory) }
+      val gpuRecord = if (gpuAvailable) providers.optJSONObject("gpu") else null
+      val gpuModel = if (gpuRecord != null) {
+        installLiteRtModelAsset(context, gpuRecord, directory)
       } else {
         null
+      }
+      val pendingModelFiles = buildList {
+        if (useNpuModel && npuModel == null) {
+          npuRecord.optString("file").takeIf(String::isNotBlank)?.let(::add)
+        }
+        if (gpuRecord != null && gpuModel == null) gpuRecord.optString("file").takeIf(String::isNotBlank)?.let(::add)
+      }
+      if (pendingModelFiles.isNotEmpty()) {
+        result.success(
+          mapOf(
+            "modelId" to modelId,
+            "modelDownloadPending" to true,
+            "pendingModelFiles" to pendingModelFiles,
+            "pendingDownloads" to pendingLiteRtModelDownloads.toList().sorted()
+          )
+        )
+        return
       }
       if (npuModel == null && gpuModel == null) {
         result.error("MOTION_MODEL_UNAVAILABLE", "No model variant matches the installed LiteRT providers", capabilities)
@@ -918,6 +954,7 @@ open class MpvPlayerPlugin(
       "litertNpuAvailable" to litertNpuProviders.isNotEmpty(),
       "litertNpuProviders" to litertNpuProviders,
       "litertModelManifestPresent" to liteRtModelManifestPresent,
+      "litertPendingModelDownloads" to pendingLiteRtModelDownloads.toList().sorted(),
       "missingLibraries" to missingLibraries,
       "skelAssetPresent" to skelAssetPresent,
       "reason" to when {
@@ -931,60 +968,193 @@ open class MpvPlayerPlugin(
 
   private fun normalizeSocModel(value: String): String = value.trim().uppercase().filter { it.isLetterOrDigit() }
 
-  private fun installLiteRtModelAsset(context: Context, record: org.json.JSONObject, directory: File): File {
+  private fun installLiteRtModelAsset(context: Context, record: org.json.JSONObject, directory: File): File? {
     val filename = record.optString("file")
     val expectedBytes = record.optLong("bytes", -1)
     val expectedSha256 = record.optString("sha256")
     if (
       filename.isBlank() ||
       File(filename).name != filename ||
-      !filename.endsWith(".tflite") ||
+      !filename.matches(Regex("[A-Za-z0-9._-]+\\.tflite")) ||
       expectedBytes <= 0 ||
-      expectedSha256.length != 64
+      !expectedSha256.matches(Regex("[0-9a-fA-F]{64}"))
     ) {
       throw IllegalArgumentException("LiteRT model manifest entry is invalid")
     }
 
     val assetPath = "litert/models/$filename"
     val destination = File(directory, filename)
-    if (destination.isFile &&
-      destination.length() == expectedBytes &&
-      sha256(destination).equals(expectedSha256, ignoreCase = true)
-    ) {
-      return destination
+    if (isVerifiedLiteRtModel(destination, expectedBytes, expectedSha256)) return destination
+
+    if (!directory.isDirectory && !directory.mkdirs()) {
+      throw IllegalStateException("Could not create the LiteRT model directory")
     }
 
-    val temporary = File(directory, "$filename.partial")
-    try {
-      context.assets.open(assetPath).use { input ->
-        FileOutputStream(temporary).use { output ->
-          val digest = MessageDigest.getInstance("SHA-256")
-          val buffer = ByteArray(64 * 1024)
-          var totalBytes = 0L
-          while (true) {
-            val count = input.read(buffer)
-            if (count < 0) break
-            totalBytes += count
-            if (totalBytes > expectedBytes) throw IllegalStateException("LiteRT model exceeds its manifest size")
-            digest.update(buffer, 0, count)
-            output.write(buffer, 0, count)
-          }
-          output.fd.sync()
-          val actualSha256 = digest.digest().joinToString("") { "%02x".format(it.toInt() and 0xff) }
-          if (totalBytes != expectedBytes || !actualSha256.equals(expectedSha256, ignoreCase = true)) {
-            throw IllegalStateException("LiteRT model size or SHA-256 does not match its manifest")
+    if (assetExists(context, assetPath)) {
+      val temporary = File(directory, "$filename.asset.partial")
+      try {
+        context.assets.open(assetPath).use { input ->
+          FileOutputStream(temporary, false).use { output ->
+            copyAndVerifyLiteRtModel(input, output, expectedBytes, expectedSha256)
           }
         }
+        promoteLiteRtModel(temporary, destination)
+        return destination
+      } finally {
+        if (temporary.exists()) temporary.delete()
       }
-      if (destination.exists() && !destination.delete()) {
-        throw IllegalStateException("Could not replace LiteRT model ${destination.name}")
+    }
+
+    val modelUrl = validatedLiteRtModelUrl(record, filename)
+      ?: throw IllegalStateException("LiteRT model $filename is not bundled and has no pinned download URL")
+    scheduleLiteRtModelDownload(modelUrl, destination, expectedBytes, expectedSha256)
+    return null
+  }
+
+  private fun validatedLiteRtModelUrl(record: org.json.JSONObject, filename: String): URL? {
+    val rawUrl = record.optString("url").takeIf(String::isNotBlank) ?: return null
+    val url = URL(rawUrl)
+    val expectedPath =
+      "/snapetech-org/PlezyNG/$LITERT_MODEL_ARTIFACTS_REVISION/assets/motion_models/litert/$filename"
+    if (
+      url.protocol != "https" ||
+      !url.host.equals("raw.githubusercontent.com", ignoreCase = true) ||
+      url.port != -1 ||
+      url.userInfo != null ||
+      url.query != null ||
+      url.ref != null ||
+      url.path != expectedPath
+    ) {
+      throw IllegalArgumentException("LiteRT model download URL is not pinned to the approved artifact revision")
+    }
+    return url
+  }
+
+  private fun scheduleLiteRtModelDownload(
+    url: URL,
+    destination: File,
+    expectedBytes: Long,
+    expectedSha256: String
+  ) {
+    val destinationDirectory = destination.parentFile
+      ?: throw IllegalArgumentException("LiteRT model download destination has no parent directory")
+    val key = "${destination.name}:${expectedSha256.lowercase()}"
+    if (!pendingLiteRtModelDownloads.add(key)) return
+    val progress = LiteRtModelDownloadProgress(destination.name, expectedBytes)
+    liteRtModelDownloadProgress[key] = progress
+
+    try {
+      liteRtModelDownloadExecutor.execute {
+        val temporary = File(destinationDirectory, "${destination.name}.download.partial")
+        var connection: HttpURLConnection? = null
+        try {
+          if (isVerifiedLiteRtModel(destination, expectedBytes, expectedSha256)) return@execute
+          if (!destinationDirectory.isDirectory && !destinationDirectory.mkdirs()) {
+            throw IllegalStateException("Could not create the LiteRT model download directory")
+          }
+          if (temporary.exists() && !temporary.delete()) {
+            throw IllegalStateException("Could not remove an incomplete LiteRT model download")
+          }
+
+          val startedAt = SystemClock.elapsedRealtime()
+          val activeConnection = (url.openConnection() as? HttpURLConnection)
+            ?: throw IllegalStateException("LiteRT model URL did not create an HTTP connection")
+          connection = activeConnection
+          activeConnection.connectTimeout = 15_000
+          activeConnection.readTimeout = 45_000
+          activeConnection.instanceFollowRedirects = false
+          activeConnection.useCaches = false
+          activeConnection.requestMethod = "GET"
+          activeConnection.setRequestProperty("Accept", "application/octet-stream")
+          activeConnection.setRequestProperty("User-Agent", "PlezyNG-model-pack")
+
+          val status = activeConnection.responseCode
+          if (status != HttpURLConnection.HTTP_OK) {
+            throw IllegalStateException("LiteRT model download returned HTTP $status")
+          }
+          val contentLength = activeConnection.getHeaderField("Content-Length")?.toLongOrNull()
+          if (contentLength != null && contentLength != expectedBytes) {
+            throw IllegalStateException("LiteRT model download size does not match its manifest")
+          }
+
+          activeConnection.inputStream.use { input ->
+            FileOutputStream(temporary, false).use { output ->
+              copyAndVerifyLiteRtModel(
+                input,
+                output,
+                expectedBytes,
+                expectedSha256,
+                startedAt + LITERT_MODEL_DOWNLOAD_DEADLINE_MS,
+                activeConnection,
+                onProgress = progress.bytesReceived::set
+              )
+            }
+          }
+          promoteLiteRtModel(temporary, destination)
+          Log.i(tag, "Installed verified LiteRT model ${destination.name}")
+        } catch (error: Exception) {
+          Log.w(tag, "LiteRT model ${destination.name} could not be downloaded", error)
+          if (temporary.exists()) temporary.delete()
+        } finally {
+          connection?.disconnect()
+          pendingLiteRtModelDownloads.remove(key)
+          liteRtModelDownloadProgress.remove(key)
+        }
       }
-      if (!temporary.renameTo(destination)) {
-        throw IllegalStateException("Could not install LiteRT model $filename")
+    } catch (error: RejectedExecutionException) {
+      pendingLiteRtModelDownloads.remove(key)
+      liteRtModelDownloadProgress.remove(key)
+      Log.w(tag, "LiteRT model download executor is shutting down", error)
+    }
+  }
+
+  private fun copyAndVerifyLiteRtModel(
+    input: java.io.InputStream,
+    output: FileOutputStream,
+    expectedBytes: Long,
+    expectedSha256: String,
+    deadlineElapsedRealtime: Long? = null,
+    connection: HttpURLConnection? = null,
+    onProgress: ((Long) -> Unit)? = null
+  ) {
+    val digest = MessageDigest.getInstance("SHA-256")
+    val buffer = ByteArray(64 * 1024)
+    var totalBytes = 0L
+    while (true) {
+      if (deadlineElapsedRealtime != null) {
+        val remainingMillis = deadlineElapsedRealtime - SystemClock.elapsedRealtime()
+        if (remainingMillis <= 0) {
+          throw IllegalStateException("LiteRT model download exceeded its time limit")
+        }
+        connection?.readTimeout = minOf(45_000L, remainingMillis).toInt()
       }
-      return destination
-    } finally {
-      if (temporary.exists()) temporary.delete()
+      val count = input.read(buffer)
+      if (count < 0) break
+      totalBytes += count
+      if (totalBytes > expectedBytes) {
+        throw IllegalStateException("LiteRT model exceeds its manifest size")
+      }
+      digest.update(buffer, 0, count)
+      output.write(buffer, 0, count)
+      onProgress?.invoke(totalBytes)
+    }
+    output.fd.sync()
+    val actualSha256 = digest.digest().joinToString("") { "%02x".format(it.toInt() and 0xff) }
+    if (totalBytes != expectedBytes || !actualSha256.equals(expectedSha256, ignoreCase = true)) {
+      throw IllegalStateException("LiteRT model size or SHA-256 does not match its manifest")
+    }
+  }
+
+  private fun isVerifiedLiteRtModel(file: File, expectedBytes: Long, expectedSha256: String): Boolean = file.isFile &&
+    file.length() == expectedBytes &&
+    sha256(file).equals(expectedSha256, ignoreCase = true)
+
+  private fun promoteLiteRtModel(temporary: File, destination: File) {
+    if (destination.exists() && !destination.delete()) {
+      throw IllegalStateException("Could not replace LiteRT model ${destination.name}")
+    }
+    if (!temporary.renameTo(destination)) {
+      throw IllegalStateException("Could not install LiteRT model ${destination.name}")
     }
   }
 
@@ -1531,7 +1701,17 @@ open class MpvPlayerPlugin(
       if (gen != sessionGeneration || playerCore !== core) {
         result.success(mapOf("playerType" to "mpv"))
       } else {
-        result.success(stats)
+        val resultStats = stats.toMutableMap()
+        resultStats["neuralModelDownloads"] = liteRtModelDownloadProgress.values
+          .map { progress ->
+            mapOf(
+              "file" to progress.filename,
+              "bytesReceived" to progress.bytesReceived.get(),
+              "bytesTotal" to progress.bytesTotal
+            )
+          }
+          .sortedBy { it["file"].toString() }
+        result.success(resultStats)
       }
     }
   }

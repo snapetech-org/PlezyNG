@@ -191,13 +191,15 @@ val androidAnvilContextsRoot = providers.environmentVariable("PLEZY_ANVIL_CONTEX
   ?.let { File(it) }
 val allowPartialAndroidAnvilContextSet =
   providers.environmentVariable("PLEZY_ANVIL_ALLOW_PARTIAL_CONTEXT_SET").orNull == "1"
-// Package the checked-in models in normal app builds; exported calibrated or
-// target-specific packs can override this directory explicitly.
+// Preserve bundled offline inference by default. Set this to 0 only for
+// intentionally smaller builds that rely on verified on-demand downloads.
 val defaultAndroidLiteRtModelRoot = rootProject.file("../assets/motion_models/litert")
 val androidLiteRtModelRoot = providers.environmentVariable("PLEZY_LITERT_MODEL_ROOT").orNull
   ?.takeIf(String::isNotBlank)
   ?.let { File(it) }
   ?: defaultAndroidLiteRtModelRoot
+val bundleAndroidLiteRtModels = providers.environmentVariable("PLEZY_LITERT_BUNDLE_MODELS").orNull != "0"
+val androidLiteRtModelArtifactsRevision = "e80ebf0d8d3a0d98d2ab05319548f844d18e0655"
 val androidLiteRtSamsungRuntimeRoot = providers.environmentVariable("PLEZY_LITERT_SAMSUNG_RUNTIME_ROOT").orNull
   ?.takeIf(String::isNotBlank)
   ?.let { File(it) }
@@ -661,7 +663,8 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
 val stageAndroidLiteRtModels = tasks.register<Sync>("stageAndroidLiteRtModels") {
   androidLiteRtModelRoot?.let { root ->
     from(root) {
-      include("manifest.json", "*.tflite")
+      include("manifest.json")
+      if (bundleAndroidLiteRtModels) include("*.tflite")
       into("litert/models")
     }
   }
@@ -697,6 +700,17 @@ val stageAndroidLiteRtModels = tasks.register<Sync>("stageAndroidLiteRtModels") 
           val expectedSha256 = record["sha256"] as? String
             ?: throw GradleException("LiteRT model $filename has no SHA-256")
           verifySha256(modelFile, expectedSha256, "LiteRT model $filename")
+          val downloadUrl = record["url"] as? String
+          val expectedUrl = Regex(
+            "^https://raw\\.githubusercontent\\.com/snapetech-org/PlezyNG/$androidLiteRtModelArtifactsRevision/" +
+              "assets/motion_models/litert/${Regex.escape(filename)}$"
+          )
+          if (!bundleAndroidLiteRtModels && (downloadUrl == null || !expectedUrl.matches(downloadUrl))) {
+            throw GradleException(
+              "LiteRT model $filename has no immutable public download URL; " +
+              "set PLEZY_LITERT_BUNDLE_MODELS=0 only for a build that allows on-demand downloads"
+            )
+          }
         }
       }
     }

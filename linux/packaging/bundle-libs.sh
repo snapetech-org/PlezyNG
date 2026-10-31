@@ -125,6 +125,7 @@ if compgen -G "$LIB_DIR/libgio-2.0.so*" > /dev/null; then
     GLIB_LIBDIR="$(pkg-config --variable=libdir glib-2.0 2>/dev/null || true)"
     GIO_HELPER=""
     for candidate in "${GLIB_LIBDIR:+$GLIB_LIBDIR/glib-2.0/gio-launch-desktop}" \
+        /usr/lib/gio-launch-desktop \
         /usr/libexec/gio-launch-desktop \
         /usr/lib/glib-2.0/gio-launch-desktop; do
         if [[ -n "$candidate" && -x "$candidate" ]]; then

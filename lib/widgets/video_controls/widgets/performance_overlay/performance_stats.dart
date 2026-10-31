@@ -256,8 +256,19 @@ class PerformanceStats {
 
   /// Format source FPS with 2 decimal places.
   String get videoFpsFormatted {
-    if (videoFps == null) return t.common.notAvailable;
-    return formatDecimal(videoFps!, minimumDecimals: 2, maximumDecimals: 2);
+    final fps = videoFps == null ? null : formatDecimal(videoFps!, minimumDecimals: 2, maximumDecimals: 2);
+    final report = playbackCapabilityReport;
+    final measuredCadenceFps = report?.sourceCadenceFps ?? (report?.sourceCadenceStatus == 'cfr-24' ? 24 : 30);
+    final cadence = switch (report?.sourceCadenceStatus) {
+      'cfr-24' || 'cfr-30' => 'CFR $measuredCadenceFps fps',
+      'probing' => 'measuring PTS ${report?.sourceCadenceSamples ?? 0}/24',
+      'non-uniform-pts' => 'non-uniform PTS',
+      'pts-discontinuity' => 'PTS discontinuity',
+      'unknown' => 'CFR unverified',
+      _ => null,
+    };
+    if (fps == null) return cadence ?? t.common.notAvailable;
+    return cadence == null ? fps : '$fps · $cadence';
   }
 
   /// Format A/V sync in milliseconds.
@@ -324,6 +335,17 @@ class PerformanceStats {
     final neuralRequest = resolution.requestedPreset == null
         ? t.settings.neuralInterpolation
         : '${t.settings.neuralInterpolation} · ${_neuralPresetLabel(resolution.requestedPreset!)}';
+    final isActive = motionInterpolationActive == true && videoSync == 'display-resample';
+    final modelDownloadReceived = playbackCapabilityReport?.neuralModelDownloadBytesReceived;
+    final modelDownloadTotal = playbackCapabilityReport?.neuralModelDownloadBytesTotal;
+    if (resolution.requested == MotionProcessingMode.neural &&
+        modelDownloadReceived != null &&
+        modelDownloadTotal != null &&
+        modelDownloadTotal > 0) {
+      final percent = (modelDownloadReceived * 100 ~/ modelDownloadTotal).clamp(0, 100);
+      return '$neuralRequest · ${t.performanceOverlay.neuralModelDownloading} $percent%'
+          '${isActive ? ' → ${t.settings.motionSmoothingMpv}' : ''}';
+    }
     if (resolution.fallback == MotionProcessingFallback.livePlayback) {
       final request = resolution.requested == MotionProcessingMode.neural
           ? neuralRequest
@@ -335,6 +357,15 @@ class PerformanceStats {
     }
     if (resolution.fallback == MotionProcessingFallback.thermalLimited) {
       return '$neuralRequest · ${t.settings.neuralThermalLimited}';
+    }
+    if (resolution.requested == MotionProcessingMode.neural &&
+        (resolution.fallback == MotionProcessingFallback.dolbyVision ||
+            resolution.fallback == MotionProcessingFallback.highDynamicRange)) {
+      final range = resolution.fallback == MotionProcessingFallback.dolbyVision
+          ? t.fileInfo.dolbyVision
+          : t.videoSettings.hdr;
+      return '$neuralRequest · ${t.settings.neuralInterpolationUnavailable} ($range)'
+          '${isActive ? ' → ${t.settings.motionSmoothingMpv}' : ''}';
     }
     if (resolution.requested == MotionProcessingMode.neural &&
         const {'mpv-bypass', 'recovery-probe'}.contains(playbackCapabilityReport?.neuralDeadlineGovernor)) {
@@ -402,7 +433,6 @@ class PerformanceStats {
           ? '$neuralRequest · ${t.settings.neuralInterpolationUnavailable}'
           : '${t.settings.motionSmoothingMpv} · ${t.settings.motionSmoothingUnavailableDescription}';
     }
-    final isActive = motionInterpolationActive == true && videoSync == 'display-resample';
     if (resolution.requested == MotionProcessingMode.neural) {
       final providerStatus = (playbackCapabilityReport?.neuralProvider ?? neuralProvider)?.toLowerCase();
       if (providerStatus == 'initializing' || providerStatus?.endsWith('-initializing') == true) {
@@ -670,6 +700,9 @@ class PerformanceStats {
   bool get hasValidVideoFps {
     return videoFps != null && videoFps! > 0;
   }
+
+  /// Whether the PME filter reported a decoded-source cadence state.
+  bool get hasSourceCadenceReport => playbackCapabilityReport?.sourceCadenceStatus != null;
 
   /// Check if video bitrate is valid (not null, not negative, not zero).
   bool get hasValidVideoBitrate {

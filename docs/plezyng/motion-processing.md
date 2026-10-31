@@ -251,6 +251,8 @@ Windows provider resolution keeps the RX 7900 XT dedicated to PME when that adap
 
 Neural interpolation remains SDR-only. On Windows' active GPU renderer and Linux's `libmpv` path, an HDR or Dolby Vision Neural request can resolve to MPV smoothing when its display-synchronized interpolation is active; the performance overlay names the dynamic-range reason and reports the fallback only when those MPV properties confirm it. Android's direct MediaCodec path and Apple's AVFoundation path are not forced onto another renderer. This source integration does not qualify HDR/Dolby Vision presentation or audio/video sync on a device.
 
+The capability report prefers the active player's Dolby Vision profile and falls back to the current source display metadata when that player omits the profile. It does not reuse the original source profile for transcoded output.
+
 ## References
 
 - [Apple WWDC25 VideoToolbox effects](https://developer.apple.com/videos/play/wwdc2025/300/) — API introduction, platform floors, supported effects, and frame-based processing integration.

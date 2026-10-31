@@ -1400,8 +1400,7 @@ jobs:
             echo "codesign=true" >> "$GITHUB_OUTPUT"
             keychain_password="$(/usr/bin/uuidgen)"
             echo "::add-mask::$keychain_password"
-            printf 'keychain_password=%s
-' "$keychain_password" >> "$GITHUB_OUTPUT"
+            echo "keychain_password=$keychain_password" >> "$GITHUB_OUTPUT"
           fi
 
           notary_values=("$APPLE_API_KEY_ID" "$APPLE_API_ISSUER_ID" "$APPLE_API_PRIVATE_KEY")
@@ -1506,7 +1505,7 @@ jobs:
           echo "Creating ZIP for notarization..."
           ditto -c -k --keepParent "$APP_PATH" notarization.zip
           echo "Submitting to Apple's notary service..."
-          xcrun notarytool submit notarization.zip             --key "$API_KEY_PATH"             --key-id "$APPLE_API_KEY_ID"             --issuer "$APPLE_API_ISSUER_ID"             --wait
+          xcrun notarytool submit notarization.zip --key "$API_KEY_PATH" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_API_ISSUER_ID" --wait
 
           echo "Stapling the notarization ticket to the app..."
           xcrun stapler staple "$APP_PATH"
@@ -1522,7 +1521,9 @@ jobs:
           if [[ -e "$KEYCHAIN_PATH" || -L "$KEYCHAIN_PATH" ]]; then
             security delete-keychain "$KEYCHAIN_PATH"
           fi
-          rm -f "$RUNNER_TEMP/certificate.p12"             "$RUNNER_TEMP/plezyng-macos-notary-api-key.p8"             notarization.zip
+          rm -f "$RUNNER_TEMP/certificate.p12"
+          rm -f "$RUNNER_TEMP/plezyng-macos-notary-api-key.p8"
+          rm -f notarization.zip
 
       - name: Verify Gatekeeper acceptance for Homebrew Cask
         if: ${{ needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'true' }}

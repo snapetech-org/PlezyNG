@@ -667,8 +667,7 @@ bool read_requested_webgpu_device(const char* provider_name, RequestedWebGpuDevi
   return true;
 }
 
-bool webgpu_device_has_ids(
-    const OrtApi* api, const OrtEpDevice* device, uint32_t vendor_id, uint32_t device_id) {
+bool webgpu_device_has_ids(const OrtApi* api, const OrtEpDevice* device, uint32_t vendor_id, uint32_t device_id) {
   const OrtHardwareDevice* hardware = api->EpDevice_Device(device);
   return hardware && api->HardwareDevice_VendorId(hardware) == vendor_id &&
          api->HardwareDevice_DeviceId(hardware) == device_id;
@@ -812,8 +811,8 @@ bool try_accelerator_candidate(
         break;
       }
     } else if (requested_webgpu_device.prefer_rx_7900_xt) {
-      if (webgpu_device_has_ids(api, devices[i], requested_webgpu_device.vendor_id,
-                                requested_webgpu_device.device_id)) {
+      if (webgpu_device_has_ids(
+              api, devices[i], requested_webgpu_device.vendor_id, requested_webgpu_device.device_id)) {
         selected_device = devices[i];
         break;
       }

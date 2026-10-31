@@ -3,9 +3,11 @@
 #include <onnxruntime_c_api.h>
 
 #include <algorithm>
+#include <cerrno>
 #include <cctype>
 #include <chrono>
 #include <condition_variable>
+#include <cstdlib>
 #include <cstring>
 #include <exception>
 #include <fstream>
@@ -611,6 +613,77 @@ bool device_matches(const OrtApi* api, const OrtEpDevice* device, pme_device_kin
   return false;
 }
 
+struct RequestedWebGpuDevice {
+  bool enabled = false;
+  uint32_t vendor_id = 0;
+  uint32_t device_id = 0;
+};
+
+bool parse_hardware_id(const char* environment_name, uint32_t* output, bool* is_set, std::string* error) {
+  const char* value = std::getenv(environment_name);
+  if (!value || value[0] == '\0') {
+    *is_set = false;
+    return true;
+  }
+
+  errno = 0;
+  char* end = nullptr;
+  const bool hex_prefix = value[0] == '0' && (value[1] == 'x' || value[1] == 'X');
+  if (hex_prefix) value += 2;
+  const unsigned long parsed = std::strtoul(value, &end, hex_prefix ? 16 : 10);
+  if (errno != 0 || end == value || *end != '\0' || parsed > std::numeric_limits<uint32_t>::max()) {
+    *error = std::string(environment_name) + " must be a decimal or 0x-prefixed 32-bit hardware id";
+    return false;
+  }
+  *output = static_cast<uint32_t>(parsed);
+  *is_set = true;
+  return true;
+}
+
+bool read_requested_webgpu_device(const char* provider_name, RequestedWebGpuDevice* requested, std::string* error) {
+  if (!provider_name || std::strcmp(provider_name, "WebGpuExecutionProvider") != 0) return true;
+
+  bool vendor_is_set = false;
+  bool device_is_set = false;
+  if (!parse_hardware_id("PLEZY_PME_WEBGPU_VENDOR_ID", &requested->vendor_id, &vendor_is_set, error) ||
+      !parse_hardware_id("PLEZY_PME_WEBGPU_DEVICE_ID", &requested->device_id, &device_is_set, error)) {
+    return false;
+  }
+  if (vendor_is_set != device_is_set) {
+    *error = "Both PLEZY_PME_WEBGPU_VENDOR_ID and PLEZY_PME_WEBGPU_DEVICE_ID are required to pin a WebGPU adapter";
+    return false;
+  }
+  requested->enabled = vendor_is_set;
+  return true;
+}
+
+bool webgpu_device_matches(const OrtApi* api, const OrtEpDevice* device, const RequestedWebGpuDevice& requested) {
+  if (!requested.enabled) return true;
+  const OrtHardwareDevice* hardware = api->EpDevice_Device(device);
+  return hardware && api->HardwareDevice_VendorId(hardware) == requested.vendor_id &&
+         api->HardwareDevice_DeviceId(hardware) == requested.device_id;
+}
+
+std::string hardware_vendor_label(const OrtApi* api, const OrtHardwareDevice* hardware, const char* fallback) {
+  const char* vendor = hardware ? api->HardwareDevice_Vendor(hardware) : nullptr;
+  if (vendor && vendor[0]) return vendor;
+  if (hardware) {
+    switch (api->HardwareDevice_VendorId(hardware)) {
+      case 0x1002:
+        return "AMD";
+      case 0x10de:
+        return "NVIDIA";
+      case 0x8086:
+        return "Intel";
+      case 0x5143:
+        return "Qualcomm";
+      default:
+        break;
+    }
+  }
+  return fallback ? fallback : "";
+}
+
 bool try_accelerator_candidate(
     pme_runtime_session* session, const pme_runtime_config* config, const pme_provider_candidate& candidate,
     std::string* error) {
@@ -681,15 +754,20 @@ bool try_accelerator_candidate(
 
   const OrtEpDevice* selected_device = nullptr;
   const std::string expected_provider_name = expected_ep_name(candidate.provider_name);
+  RequestedWebGpuDevice requested_webgpu_device;
+  if (!read_requested_webgpu_device(candidate.provider_name, &requested_webgpu_device, error)) return false;
   for (size_t i = 0; i < device_count; ++i) {
     const char* ep_name = api->EpDevice_EpName(devices[i]);
-    if (ep_name && expected_provider_name == ep_name && device_matches(api, devices[i], candidate.device_kind)) {
+    if (ep_name && expected_provider_name == ep_name && device_matches(api, devices[i], candidate.device_kind) &&
+        webgpu_device_matches(api, devices[i], requested_webgpu_device)) {
       selected_device = devices[i];
       break;
     }
   }
   if (!selected_device) {
-    *error = "No matching ONNX Runtime device was reported for provider " + std::string(candidate.provider_name);
+    *error = requested_webgpu_device.enabled
+                 ? "WebGPU did not report the requested physical GPU"
+                 : "No matching ONNX Runtime device was reported for provider " + std::string(candidate.provider_name);
     return false;
   }
 
@@ -758,12 +836,17 @@ bool try_accelerator_candidate(
     return false;
   }
 
+  if (!webgpu_device_matches(api, output_device, requested_webgpu_device)) {
+    api->ReleaseSession(session->session);
+    session->session = nullptr;
+    *error = "ONNX Runtime assigned model output to a different WebGPU adapter than requested";
+    return false;
+  }
+
   const char* provider_vendor = api->EpDevice_EpVendor(output_device);
   const OrtHardwareDevice* hardware = api->EpDevice_Device(output_device);
-  const char* hardware_vendor = hardware ? api->HardwareDevice_Vendor(hardware) : nullptr;
   session->provider_name = output_provider;
-  session->provider_vendor =
-      hardware_vendor && hardware_vendor[0] ? hardware_vendor : (provider_vendor ? provider_vendor : "");
+  session->provider_vendor = hardware_vendor_label(api, hardware, provider_vendor);
   if (!hardware) {
     session->info.device_kind = candidate.device_kind;
   } else {

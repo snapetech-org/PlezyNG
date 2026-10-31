@@ -115,6 +115,10 @@ The RX 7900 XT development launcher adds that directory and its optional
 `migraphx/lib` subdirectory to `LD_LIBRARY_PATH` before starting PlezyNG.
 Additional extracted ROCm library directories can be supplied as a
 colon-separated `PLEZY_PME_LIBRARY_PATH`; each configured entry must exist.
+The launcher also resolves the RX 7900 XT's Vulkan vendor/device IDs and sets
+`PLEZY_PME_WEBGPU_VENDOR_ID` / `PLEZY_PME_WEBGPU_DEVICE_ID`; PME uses those IDs
+to select and verify the matching WebGPU adapter without changing MPV's output
+renderer.
 Intel systems can use the optional `openvino` CMake variant to stage the pinned
 OpenVINO Plugin EP 1.8.1 with the default ORT 1.27.1 runtime. It includes the
 OpenVINO 2026.4 runtime, TBB libraries, GPU kernel cache, plugin license, and
@@ -133,6 +137,55 @@ cmake --build build/pme-openvino --target plezy_motion_runtime_probe
 cmake --install build/pme-openvino --component Runtime
 cmake --install build/pme-openvino --component DevTools
 ```
+
+AMD, Intel, and NVIDIA Vulkan systems can use the `webgpu` CMake variant. It
+stages the SHA-256-pinned ONNX Runtime WebGPU Plugin EP 0.5.0 for x86_64 or
+ARM64 with the default ORT 1.27.1 runtime. Dawn uses Vulkan on Linux, so the
+host must provide glibc 2.28 or later, `libvulkan.so.1`, and a working GPU
+driver; it does not need the ROCm userspace stack. The local dual-GPU host's provider enumeration
+reported WebGPU hardware IDs for the RX 7900 XT, RX 9070 XT, and integrated
+GPU. A strict no-CPU-fallback PME ABI smoke against the built app bundle
+executed 540p ANVIL-S on the RX 7900 XT; three calls measured 24.264 ms median
+and 33.261 ms p95. This confirms provider execution, adapter selection, and
+bundle loading, but the short probe does not qualify real-time playback or its
+frame budget. An earlier probe ran while another workload heavily occupied the
+GPU and was left running.
+
+```sh
+cmake -S shared/cpp/plezy_motion_engine -B build/pme-webgpu \
+  -DCMAKE_INSTALL_PREFIX="$PWD/build/pme-webgpu/stage" \
+  -DPLEZY_ORT_LINUX_VARIANT=webgpu \
+  -DPME_BUILD_RUNTIME_PROBE=ON
+cmake --build build/pme-webgpu --target plezy_motion_runtime_probe
+cmake --install build/pme-webgpu --component Runtime
+cmake --install build/pme-webgpu --component DevTools
+```
+
+On multi-GPU systems, `PLEZY_PME_WEBGPU_VENDOR_ID` and
+`PLEZY_PME_WEBGPU_DEVICE_ID` pin the plugin to the matching physical adapter.
+PME verifies those IDs when selecting the EP device and again when checking
+the model output device. The RX 7900 XT launcher derives the IDs from Vulkan's
+device name and keeps MPV display-renderer selection independent.
+
+To build the WebGPU runtime into the Linux Flutter application bundle, generate
+Flutter's Linux configuration first, then configure and install the app with the
+provider variant selected. The runtime, plugin, provider manifest, and notices
+are installed into `bundle/lib`, where `MotionProcessingService` discovers them
+beside the executable:
+
+```sh
+flutter build linux --debug --config-only
+cmake -S linux -B build/pme-webgpu-app -G Ninja \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DFLUTTER_TARGET_PLATFORM=linux-x64 \
+  -DPLEZY_ORT_LINUX_VARIANT=webgpu
+cmake --build build/pme-webgpu-app --target install --parallel 8
+scripts/motion/with_rx7900_motion_gpu.sh \
+  "$PWD/build/pme-webgpu-app/bundle/plezy"
+```
+
+This launcher pins PME compute to the RX 7900 XT and leaves the RX 9070 XT
+available for the desktop and MPV output renderer.
 
 For AMD's built-in MIGraphX provider, the Linux `amd-migraphx` CMake variant
 stages the matching ORT runtime and provider libraries from the verified ROCm
@@ -154,9 +207,12 @@ runtime, MIGraphX provider libraries, and notices, then installs a manifest
 that selects only built-in MIGraphX. The `openvino` variant keeps the default
 ORT 1.27.1 runtime and adds the pinned OpenVINO Plugin EP 1.8.1 wheel, which
 declares compatibility with ORT 1.23.0 and later. It stages the provider,
-OpenVINO/TBB libraries, GPU cache, plugin license, and third-party notices. Both
-accelerated variants need Python 3 at configure time for selective wheel
-extraction. The PME API-v23 compatibility path is restricted to MIGraphX. The
+OpenVINO/TBB libraries, GPU cache, plugin license, and third-party notices. The
+`webgpu` variant keeps ORT 1.27.1 and stages the pinned WebGPU Plugin EP 0.5.0
+plus its MIT license and third-party notices for Linux x86_64 and ARM64; the
+host supplies the Vulkan loader and device driver. The OpenVINO and WebGPU
+plugin variants need Python 3 at configure time for selective wheel extraction.
+The PME API-v23 compatibility path is restricted to MIGraphX. The
 default `cpu` variant continues to bundle only the official ORT 1.27.1 CPU
 runtime. CMake installs the runtime as
 `libonnxruntime.so` beside `libplezy_motion_engine.so` on Linux, preserves the

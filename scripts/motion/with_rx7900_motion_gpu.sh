@@ -40,6 +40,37 @@ gpu_inventory() {
   '
 }
 
+vulkan_inventory() {
+  awk -v target="$1" '
+    function value_after_equals(line) {
+      sub(/^[^=]*=[[:space:]]*/, "", line)
+      gsub(/^"|"$/, "", line)
+      return line
+    }
+    function emit() {
+      if (name != "" && index(name, target) > 0) {
+        matches++
+        selected = vendor "|" device
+      }
+    }
+    /^GPU[0-9]+:$/ {
+      emit()
+      name = ""
+      vendor = ""
+      device = ""
+      next
+    }
+    /^[[:space:]]*deviceName[[:space:]]*=/ { name = value_after_equals($0); next }
+    /^[[:space:]]*vendorID[[:space:]]*=/ { vendor = value_after_equals($0); next }
+    /^[[:space:]]*deviceID[[:space:]]*=/ { device = value_after_equals($0); next }
+    END {
+      emit()
+      if (matches != 1 || vendor == "" || device == "") exit 1
+      print selected
+    }
+  '
+}
+
 configure_runtime_loader_paths() {
   local runtime_dir="${PLEZY_PME_RUNTIME_DIR:-}"
   local extra_library_paths="${PLEZY_PME_LIBRARY_PATH:-}"
@@ -99,6 +130,24 @@ if [[ ! "$gpu_uuid" =~ ^GPU- ]]; then
   exit 1
 fi
 
+if ! command -v vulkaninfo >/dev/null 2>&1; then
+  printf 'vulkaninfo is required to pin WebGPU inference to the RX 7900 XT safely.\n' >&2
+  exit 1
+fi
+if ! webgpu_device=$(vulkaninfo --summary 2>/dev/null | vulkan_inventory "$gpu_name"); then
+  printf 'Could not map the RX 7900 XT to one Vulkan hardware ID.\n' >&2
+  exit 1
+fi
+IFS='|' read -r webgpu_vendor_id webgpu_device_id <<<"$webgpu_device"
+if [[ ! "$webgpu_vendor_id" =~ ^0x[[:xdigit:]]+$ || ! "$webgpu_device_id" =~ ^0x[[:xdigit:]]+$ ]]; then
+  printf 'Vulkan returned unexpected RX 7900 XT vendor/device IDs: %s\n' "$webgpu_device" >&2
+  exit 1
+fi
+if [[ "${webgpu_vendor_id,,}" != "0x1002" ]]; then
+  printf 'Vulkan RX 7900 XT mapping returned unexpected vendor ID: %s\n' "$webgpu_vendor_id" >&2
+  exit 1
+fi
+
 if ! visible_gpus=$(ROCR_VISIBLE_DEVICES="$gpu_uuid" rocminfo | gpu_inventory); then
   printf 'Could not verify the RX 7900 XT process-visible ROCm device set.\n' >&2
   exit 1
@@ -115,6 +164,9 @@ configure_runtime_loader_paths || exit 1
 # by the local PME filter patch; MPV's display renderer remains unchanged.
 export ROCR_VISIBLE_DEVICES="$gpu_uuid"
 export PLEZY_PME_VULKAN_DEVICE="$gpu_name"
+export PLEZY_PME_WEBGPU_VENDOR_ID="$webgpu_vendor_id"
+export PLEZY_PME_WEBGPU_DEVICE_ID="$webgpu_device_id"
 
-printf 'PME compute pinned to %s (%s); desktop/output GPU selection unchanged.\n' "$gpu_name" "$gpu_uuid" >&2
+printf 'PME compute pinned to %s (%s, WebGPU ID %s:%s); desktop/output GPU selection unchanged.\n' \
+  "$gpu_name" "$gpu_uuid" "$webgpu_vendor_id" "$webgpu_device_id" >&2
 exec "$@"

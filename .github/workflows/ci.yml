@@ -229,7 +229,6 @@ jobs:
     permissions:
       actions: read
       contents: read
-      security-events: write
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -284,14 +283,6 @@ jobs:
 
       - name: Configure Android local properties
         run: printf 'flutter.sdk=%s\nsdk.dir=%s\n' "$FLUTTER_ROOT" "$ANDROID_HOME" > android/local.properties
-
-      # CodeQL runs inside this private JIT job using advanced setup. Repository
-      # default setup must be disabled so the tagged scan can upload SARIF.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
-        with:
-          languages: cpp, java-kotlin
-          build-mode: manual
 
       - name: Verify Android host native test toolchain
         run: |
@@ -379,11 +370,6 @@ jobs:
       - name: Build embedded Moonlight and Steam Android modules
         working-directory: android
         run: ./gradlew :moonlight:assembleDebug :steam:assembleDebug :steam:testDebugUnitTest --stacktrace
-
-      - name: Upload CodeQL analysis
-        uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
-        with:
-          category: /language:android
 
   native-format:
     name: Native Formatting

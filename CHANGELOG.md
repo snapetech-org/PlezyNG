@@ -33,6 +33,7 @@
 - Add a Podcasts hub with Apple Podcasts discovery, optional Podcast Index search/trending, private RSS setup, OPML portability, episode filters and existing-player/offline integration.
 - Support Audiobookshelf podcast shows and episodes with episode-scoped resume/progress, and add RSS dates, video enclosures, explicit/season metadata and Podcasting 2.0/Podlove chapters.
 - Refresh pinned MPV and FFmpeg artifacts to the verified private native build.
+- Refresh all Apple, Android, Linux, and Windows MPV pins to the verified current artifact manifest.
 
 - Fix iOS Sherpa ONNX CocoaPods staging, isolate Apple Pub caches, and remove the unsupported warning flag from pinned tvOS AMSMB2.
 

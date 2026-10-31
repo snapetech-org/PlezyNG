@@ -53,8 +53,9 @@ abstract final class MotionProcessingService {
     'motion-processing-desktop-pme-originals',
   );
   static final Expando<Future<void>> _operationTails = Expando('motion-processing-operation-tails');
-  static final Expando<StreamSubscription<Tracks>> _videoTrackSubscriptions =
-      Expando('motion-processing-video-track-subscription');
+  static final Expando<StreamSubscription<Tracks>> _videoTrackSubscriptions = Expando(
+    'motion-processing-video-track-subscription',
+  );
   static final Expando<String> _lastVideoTrackSelection = Expando('motion-processing-last-video-track-selection');
   static final Expando<int> _videoTrackMonitorGeneration = Expando('motion-processing-video-track-generation');
   static final Expando<int> _motionSessionGeneration = Expando('motion-processing-session-generation');
@@ -124,10 +125,13 @@ abstract final class MotionProcessingService {
             providerReady &&
             !const {'mpv-bypass', 'recovery-probe'}.contains(capabilityReport?.neuralDeadlineGovernor));
     final streamSupported = capabilityReport == null || _supportsReportedMotionStream(capabilityReport);
+    final desktopCadenceStatus = capabilityReport?.sourceCadenceStatus;
+    final desktopCadenceConfirmed =
+        !_isDesktopPmePlatform || capabilityReport == null || const {'cfr-24', 'cfr-30'}.contains(desktopCadenceStatus);
     return resolveMotionProcessing(
       requested: requested,
       mpvRendererAvailable: rendererAvailable && streamSupported,
-      neuralProviderAvailable: nativeProviderReady && streamSupported,
+      neuralProviderAvailable: nativeProviderReady && streamSupported && desktopCadenceConfirmed,
       neuralPowerLimited:
           _powerLimited[player] == true &&
           (SettingsService.instanceOrNull?.read(SettingsService.neuralOnlyWhenPluggedIn) ?? true),
@@ -156,7 +160,21 @@ abstract final class MotionProcessingService {
     }
 
     final fps = report.sourceFps;
-    if (fps != null && fps > 0 && (fps - 24).abs() > 0.1 && (fps - 30).abs() > 0.1) return false;
+    // Desktop PME measures cadence from decoded source PTS. Prefer it over
+    // container FPS metadata, which can be wrong for VFR or remuxed media.
+    // MPV can still smooth irregular cadence; Neural needs confirmed CFR.
+    final measuredDesktopCadence =
+        _isDesktopPmePlatform &&
+        const {
+          'probing',
+          'cfr-24',
+          'cfr-30',
+          'non-uniform-pts',
+          'pts-discontinuity',
+        }.contains(report.sourceCadenceStatus);
+    if (!measuredDesktopCadence && fps != null && fps > 0 && (fps - 24).abs() > 0.1 && (fps - 30).abs() > 0.1) {
+      return false;
+    }
     return true;
   }
 

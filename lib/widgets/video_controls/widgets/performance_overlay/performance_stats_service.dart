@@ -491,6 +491,11 @@ class PerformanceStatsService {
             : Future.value(null), // 34
         _optionalPlayerProperty('current-tracks/video/ff-index'), // 35
         _optionalPlayerProperty('current-demuxer'), // 36
+        hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/source-cadence') : Future.value(null), // 37
+        hasPmeMetadata
+            ? _optionalPlayerProperty('vf-metadata/plezy-pme/source-cadence-samples')
+            : Future.value(null), // 38
+        hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/source-cadence-fps') : Future.value(null), // 39
       ]);
     }
 
@@ -554,6 +559,9 @@ class PerformanceStatsService {
       ),
       dolbyVisionProfile: dolbyVisionProfile,
       sourceFps: _parseDouble(results[3]),
+      sourceCadenceStatus: videoResults?[37],
+      sourceCadenceSamples: _parseInt(videoResults?[38]),
+      sourceCadenceFps: _parseInt(videoResults?[39]),
       displayFps: _parseDouble(videoResults?.first),
       renderedFps: _parseDouble(results[4]),
       droppedFrames: _parseInt(results[15]),
@@ -670,17 +678,17 @@ class PerformanceStatsService {
     _ => null,
   };
 
-  bool? _sourceInterlaced({
-    Object? reported,
-    int? activeVideoStreamIndex,
-    String? currentDemuxer,
-  }) {
+  bool? _sourceInterlaced({Object? reported, int? activeVideoStreamIndex, String? currentDemuxer}) {
     final sourceMetadata = MotionProcessingService.sourceInterlacedForPlayer(
       player,
       activeVideoStreamIndex: activeVideoStreamIndex,
       currentDemuxer: currentDemuxer,
     );
-    final bool? backendValue = reported is bool ? reported : reported is String ? _parseBool(reported) : null;
+    final bool? backendValue = reported is bool
+        ? reported
+        : reported is String
+        ? _parseBool(reported)
+        : null;
     if (sourceMetadata == true || backendValue == true) return true;
     if (currentDemuxer != null && currentDemuxer.trim().isNotEmpty) return sourceMetadata;
     return backendValue ?? sourceMetadata;

@@ -22,6 +22,13 @@ final class PlaybackCapabilityReport {
   /// Source Dolby Vision profile; null means no profile was reported.
   final int? dolbyVisionProfile;
   final double? sourceFps;
+
+  /// Source-PTS cadence reported by a frame-processing filter. `cfr-24` and
+  /// `cfr-30` mean the filter observed 24 consecutive matching frame intervals;
+  /// `probing`, `non-uniform-pts`, and `pts-discontinuity` are not CFR proof.
+  final String? sourceCadenceStatus;
+  final int? sourceCadenceSamples;
+  final int? sourceCadenceFps;
   final double? displayFps;
   final double? renderedFps;
   final int? droppedFrames;
@@ -74,6 +81,9 @@ final class PlaybackCapabilityReport {
     this.sourceIsInterlaced,
     this.dolbyVisionProfile,
     this.sourceFps,
+    this.sourceCadenceStatus,
+    this.sourceCadenceSamples,
+    this.sourceCadenceFps,
     this.displayFps,
     this.renderedFps,
     this.droppedFrames,

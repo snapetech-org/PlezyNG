@@ -7,6 +7,8 @@
 - Include the pinned Vulkan-backed WebGPU provider in Linux app builds by default for Neural motion processing.
 - Prefer the RX 7900 XT for Linux PME inference and Vulkan filter compute while keeping display rendering independent.
 - Report the PME inference adapter separately from its Vulkan preprocessing and warping GPU.
+- Confirm desktop neural interpolation against 24 consecutive decoded PTS intervals and report measured cadence in playback diagnostics.
+- Prefer the named RX 7900 XT Vulkan adapter for PME compute when present, independently of MPV's output adapter.
 - Carry selected-stream scan type into live motion capability reports and disable smoothing for interlaced sources.
 - Resolve scan type from MPV's active FFmpeg video track after in-session track changes, and report unknown when the demuxer index space cannot be matched safely.
 - Include verified Google Tensor G5/G6 AOT motion models in the default Android LiteRT pack and preserve them across ordinary exports.

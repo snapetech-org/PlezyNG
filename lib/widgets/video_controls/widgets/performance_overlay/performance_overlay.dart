@@ -102,7 +102,8 @@ class _PlayerPerformanceOverlayState extends State<PlayerPerformanceOverlay> {
         _metric(t.fileInfo.resolution, _stats.resolution),
         if (_stats.playbackCapabilityReport?.sourceIsHdr case final sourceIsHdr?)
           _metric(t.videoSettings.hdr, sourceIsHdr ? t.common.yes : t.common.no),
-        if (_stats.hasValidVideoFps) _metric(t.performanceOverlay.fps, _stats.videoFpsFormatted),
+        if (_stats.hasValidVideoFps || _stats.hasSourceCadenceReport)
+          _metric(t.performanceOverlay.fps, _stats.videoFpsFormatted),
         if (_stats.hasValidVideoBitrate) _metric(t.fileInfo.bitrate, _stats.videoBitrateFormatted),
         _metric(t.performanceOverlay.decoder, _stats.hwdecFormatted),
         if (!isMpv && _stats.videoDecoderName != null) _metric(t.performanceOverlay.rawDecoder, _stats.videoDecoderRaw),

@@ -100,6 +100,7 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
             PlatformDetector.isAppleTV() ||
             (Platform.isWindows &&
                 (svc.read(SettingsService.matchRefreshRate) || svc.read(SettingsService.matchDynamicRange))) ||
+            (Platform.isMacOS && svc.read(SettingsService.matchRefreshRate)) ||
             (Platform.isAndroid &&
                 (svc.read(SettingsService.matchContentFrameRate) || svc.read(SettingsService.matchContentResolution)));
         // The DV output switch is limited to native Android mpv and Apple TV.
@@ -144,7 +145,7 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
               children: [
                 if (Platform.isAndroid) _matchContentFrameRateTile(),
                 if (Platform.isAndroid && PlatformDetector.isTV()) _matchContentResolutionTile(),
-                if (Platform.isWindows) _matchRefreshRateTile(),
+                if (Platform.isWindows || Platform.isMacOS) _matchRefreshRateTile(),
                 if (Platform.isWindows) _matchDynamicRangeTile(),
                 if (showDisplaySwitchDelay) _displaySwitchDelayTile(),
                 if (showDisableDolbyVision) _disableDolbyVisionTile(),

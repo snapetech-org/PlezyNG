@@ -350,6 +350,11 @@ class PerformanceStats {
             ? '$vendor · $provider'
             : provider;
         final neuralPowerMode = _neuralPowerModeLabel;
+        final phaseTimingSource = switch (playbackCapabilityReport?.neuralPhaseTimingSource) {
+          'mpv-display-sync' => 'MPV display sync',
+          'nominal-grid' => 'Nominal phase grid',
+          _ => null,
+        };
         final synthesisRatio = generated != null && sourceFrames != null && sourceFrames > 0
             ? generated / sourceFrames
             : null;
@@ -359,6 +364,7 @@ class PerformanceStats {
           if (latencyLabel != null && latency! > 0) '$latencyLabel ms',
           if (neuralGpuProvider != null && neuralGpuProvider!.isNotEmpty) 'Compute $neuralGpuProvider',
           ?neuralPowerMode,
+          ?phaseTimingSource,
           if (sceneCutBypasses != null && sceneCutBypasses > 0)
             '$sceneCutBypasses ${t.performanceOverlay.sceneCutBypasses}',
           if (deadlineMisses != null && deadlineMisses > 0) '$deadlineMisses ${t.performanceOverlay.deadlineMisses}',

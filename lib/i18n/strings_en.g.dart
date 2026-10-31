@@ -1501,8 +1501,8 @@ class Translations$settings$en {
 	/// en: 'Neural unavailable'
 	String get neuralInterpolationUnavailable => 'Neural unavailable';
 
-	/// en: 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. Playback diagnostics show the provider that actually ran. Unsupported video uses MPV smoothing when available. Choose Performance, Balanced, or Quality.'
-	String get neuralInterpolationUnavailableDescription => 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. Playback diagnostics show the provider that actually ran. Unsupported video uses MPV smoothing when available. Choose Performance, Balanced, or Quality.';
+	/// en: 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. On Android and desktop, model packs download the first time Neural is selected and are verified before use; that playback uses the available MPV or normal playback path while they download. Playback diagnostics show the provider that actually ran. Choose Performance, Balanced, or Quality.'
+	String get neuralInterpolationUnavailableDescription => 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. On Android and desktop, model packs download the first time Neural is selected and are verified before use; that playback uses the available MPV or normal playback path while they download. Playback diagnostics show the provider that actually ran. Choose Performance, Balanced, or Quality.';
 
 	/// en: 'Performance'
 	String get neuralInterpolationPresetPerformance => 'Performance';
@@ -14807,7 +14807,7 @@ extension on Translations {
 			'settings.neuralInterpolation' => 'Neural interpolation',
 			'settings.neuralInterpolationPresets' => 'Presets',
 			'settings.neuralInterpolationUnavailable' => 'Neural unavailable',
-			'settings.neuralInterpolationUnavailableDescription' => 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. Playback diagnostics show the provider that actually ran. Unsupported video uses MPV smoothing when available. Choose Performance, Balanced, or Quality.',
+			'settings.neuralInterpolationUnavailableDescription' => 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. On Android and desktop, model packs download the first time Neural is selected and are verified before use; that playback uses the available MPV or normal playback path while they download. Playback diagnostics show the provider that actually ran. Choose Performance, Balanced, or Quality.',
 			'settings.neuralInterpolationPresetPerformance' => 'Performance',
 			'settings.neuralInterpolationPresetBalanced' => 'Balanced',
 			'settings.neuralInterpolationPresetQuality' => 'Quality',

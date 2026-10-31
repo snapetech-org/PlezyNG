@@ -1620,6 +1620,15 @@ abstract final class MotionProcessingService {
     final modelId = NeuralModelPackService.androidContextModelId(resolution, neuralPreset);
     final runtime = await player.prepareAndroidLiteRtMotionRuntime(modelId: modelId);
     if (runtime == null) return false;
+    if (runtime['modelDownloadPending'] == true) {
+      final pendingFiles = runtime['pendingModelFiles'] as List<Object?>? ?? const [];
+      appLogger.i(
+        'MotionProcessingService: Android Neural model packs are downloading '
+        '(${pendingFiles.map((file) => file.toString()).join(', ')}); '
+        'this playback will use the available non-neural motion path.',
+      );
+      return false;
+    }
     final npuModel = runtime['npuModelPath'] as String?;
     final gpuModel = runtime['gpuModelPath'] as String?;
     final npuModelBackend = runtime['npuModelBackend'] as String?;

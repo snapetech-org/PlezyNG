@@ -1,7 +1,10 @@
 import hashlib
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.motion.export_android_litert_models import preserve_google_tensor_aot_records
 

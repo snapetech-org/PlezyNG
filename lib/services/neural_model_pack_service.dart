@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -12,18 +11,21 @@ import '../utils/app_logger.dart';
 
 /// Installs the opt-in ANVIL model packs used by the Plezy Motion Engine.
 ///
-/// The compact 540p Performance graph is bundled and copied to app-private
-/// storage on demand. Balanced and Quality graphs are downloaded from a pinned
-/// upstream revision and checked by size and SHA-256 before native use.
+/// Model files are downloaded only when Neural is selected and copied to
+/// app-private storage after their pinned size and SHA-256 have been verified.
 abstract final class NeuralModelPackService {
   static const _repositoryRevision = 'fa97e30f6aabe897bd4f6f82d971ad607f5d61fa';
   static const _repository = 'https://huggingface.co/NihilDigit/anvil';
   static const _androidFilterRevision = '1efc82739f6f7034cd63e7ee8b3ec5431df27467';
+  static const _plezyModelArtifactsRevision = 'e80ebf0d8d3a0d98d2ab05319548f844d18e0655';
+  static const _downloadTimeout = Duration(minutes: 2);
 
   static const _performanceModel = _NeuralModelPack(
     id: 'anvil-s-540p',
     revision: _repositoryRevision,
-    assetPath: 'assets/motion_models/anvil-s-540p.onnx',
+    url:
+        'https://raw.githubusercontent.com/snapetech-org/PlezyNG/$_plezyModelArtifactsRevision/'
+        'assets/motion_models/anvil-s-540p.onnx',
     filename: 'anvil-s-540p.onnx',
     bytes: 3431923,
     sha256: '6b599d7b13c848ce7608d5e6fa1de8ec0adea8477d29a57be69d71daf808ce84',
@@ -65,8 +67,9 @@ abstract final class NeuralModelPackService {
   static final Map<String, Future<File>> _inFlight = {};
 
   /// Resolve the selected preset to its pinned local ONNX model.
-  /// Performance uses a bundled 540p ANVIL-S graph; Balanced uses the
-  /// upstream 1080p ANVIL-S graph; Quality uses the larger ANVIL-M graph.
+  /// Performance uses the 540p ANVIL-S graph; Balanced uses the upstream
+  /// 1080p ANVIL-S graph; Quality uses the larger ANVIL-M graph. Each is
+  /// downloaded only after Neural is selected.
   static Future<File> ensureInstalled(NeuralInterpolationPreset preset) =>
       _ensureInstalledMemoized(_modelForPreset(preset));
 
@@ -78,7 +81,6 @@ abstract final class NeuralModelPackService {
     final support = await getApplicationSupportDirectory();
     final destination = File(p.join(support.path, 'motion-models', model.id, model.revision, model.filename));
     if (await _isValid(destination, model)) return destination;
-    if (model.assetPath != null) return _ensureInstalledMemoized(model);
 
     final pending = _ensureInstalledMemoized(model);
     unawaited(
@@ -154,15 +156,11 @@ abstract final class NeuralModelPackService {
     await directory.create(recursive: true);
 
     final partial = File('${destination.path}.partial');
-    if (model.assetPath case final assetPath?) {
-      return _installBundledAsset(destination, partial, model, assetPath);
-    }
-    final url = model.url;
-    if (url == null) throw StateError('Neural model pack has no source.');
-    final uri = Uri.parse(url);
+    final uri = Uri.parse(model.url);
     final client = http.Client();
+    final stopwatch = Stopwatch()..start();
     try {
-      final response = await client.send(http.Request('GET', uri)).timeout(const Duration(minutes: 2));
+      final response = await client.send(http.Request('GET', uri)).timeout(_downloadTimeout);
       if (response.statusCode != HttpStatus.ok) {
         throw HttpException('Neural model download failed with status ${response.statusCode}.');
       }
@@ -177,6 +175,9 @@ abstract final class NeuralModelPackService {
       var receivedBytes = 0;
       try {
         await for (final chunk in response.stream.timeout(const Duration(seconds: 45))) {
+          if (stopwatch.elapsed > _downloadTimeout) {
+            throw TimeoutException('Neural model pack download exceeded its time limit.');
+          }
           receivedBytes += chunk.length;
           if (receivedBytes > model.bytes) {
             throw const FormatException('Neural model pack exceeds its pinned manifest size.');
@@ -186,6 +187,9 @@ abstract final class NeuralModelPackService {
         }
         if (receivedBytes != model.bytes) {
           throw const FormatException('Neural model pack size does not match its pinned manifest.');
+        }
+        if (stopwatch.elapsed > _downloadTimeout) {
+          throw TimeoutException('Neural model pack download exceeded its time limit.');
         }
 
         digestInput.close();
@@ -214,27 +218,6 @@ abstract final class NeuralModelPackService {
       rethrow;
     } finally {
       client.close();
-    }
-  }
-
-  static Future<File> _installBundledAsset(
-    File destination,
-    File partial,
-    _NeuralModelPack model,
-    String assetPath,
-  ) async {
-    try {
-      final data = await rootBundle.load(assetPath);
-      final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-      if (bytes.length != model.bytes || sha256.convert(bytes).toString() != model.sha256) {
-        throw const FormatException('Bundled Neural model pack does not match its pinned manifest.');
-      }
-      await partial.writeAsBytes(bytes, flush: true);
-      await partial.rename(destination.path);
-      return destination;
-    } catch (_) {
-      if (await partial.exists()) await partial.delete();
-      rethrow;
     }
   }
 
@@ -268,8 +251,7 @@ final class _DigestOutput implements Sink<Digest> {
 final class _NeuralModelPack {
   final String id;
   final String revision;
-  final String? url;
-  final String? assetPath;
+  final String url;
   final String filename;
   final int bytes;
   final String sha256;
@@ -277,10 +259,9 @@ final class _NeuralModelPack {
   const _NeuralModelPack({
     required this.id,
     required this.revision,
-    this.url,
-    this.assetPath,
+    required this.url,
     required this.filename,
     required this.bytes,
     required this.sha256,
-  }) : assert((url == null) != (assetPath == null));
+  });
 }

@@ -6,6 +6,8 @@ This tool runs outside normal app builds. Optional W8A8 output is calibrated
 from the same raw six-channel samples accepted by build_android_anvil_contexts.py.
 Existing Google Tensor AOT records are preserved and integrity-checked on
 ordinary exports so a model refresh cannot silently remove those device paths.
+Existing immutable download URLs are retained only when the exported artifact
+has the same filename, size, and SHA-256 as the pinned source pack.
 """
 
 from __future__ import annotations
@@ -345,7 +347,7 @@ def verify_model_interface(model_path: Path, resolution: str) -> None:
 
 
 def prune_unlisted_model_files(output_dir: Path, manifest: dict[str, Any]) -> None:
-    """Remove stale LiteRT files that Gradle's wildcard staging would package."""
+    """Remove stale LiteRT files that an explicit offline APK could package."""
     listed_files = {
         record["file"]
         for model in manifest["models"].values()
@@ -355,6 +357,54 @@ def prune_unlisted_model_files(output_dir: Path, manifest: dict[str, Any]) -> No
     for model_file in output_dir.glob("*.tflite"):
         if model_file.name not in listed_files:
             model_file.unlink()
+
+
+def preserve_verified_download_urls(
+    existing_manifest: dict[str, Any] | None,
+    output_manifest: dict[str, Any],
+) -> int:
+    """Keep immutable source URLs only for byte-identical exported artifacts."""
+    if existing_manifest is None:
+        return 0
+
+    def records(manifest: dict[str, Any]) -> Iterable[tuple[str, str, str, dict[str, Any]]]:
+        for model_name, model in manifest.get("models", {}).items():
+            for resolution, providers in model.get("variants", {}).items():
+                for provider, record in providers.items():
+                    if isinstance(record, dict):
+                        yield model_name, resolution, provider, record
+
+    existing = {
+        (model_name, resolution, provider): record
+        for model_name, resolution, provider, record in records(existing_manifest)
+    }
+    preserved = 0
+    for model_name, resolution, provider, record in records(output_manifest):
+        previous = existing.get((model_name, resolution, provider))
+        if previous is None:
+            continue
+        if any(record.get(key) != previous.get(key) for key in ("file", "bytes", "sha256")):
+            continue
+
+        filename = record.get("file")
+        url = previous.get("url")
+        if not isinstance(filename, str) or Path(filename).name != filename or not isinstance(url, str):
+            continue
+        prefix = "https://raw.githubusercontent.com/snapetech-org/PlezyNG/"
+        if not url.startswith(prefix):
+            continue
+        revision_and_path = url[len(prefix):]
+        revision, separator, path = revision_and_path.partition("/")
+        if (
+            not separator
+            or len(revision) != 40
+            or any(character not in "0123456789abcdef" for character in revision)
+            or path != f"assets/motion_models/litert/{filename}"
+        ):
+            continue
+        record["url"] = url
+        preserved += 1
+    return preserved
 
 
 def preserve_google_tensor_aot_records(
@@ -787,6 +837,10 @@ def main() -> int:
             )
     else:
         preserve_google_tensor_aot_records(args.output_dir, existing_manifest, manifest)
+
+    preserved_download_urls = preserve_verified_download_urls(existing_manifest, manifest)
+    if preserved_download_urls:
+        print(f"Preserved immutable download URLs for {preserved_download_urls} unchanged model artifacts.")
 
     manifest_path = args.output_dir / "manifest.json"
     temporary = manifest_path.with_suffix(".json.partial")

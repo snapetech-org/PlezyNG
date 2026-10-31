@@ -299,10 +299,7 @@ flutter:
     - assets/shaders/artcnn/
     - assets/shaders/anime4k/
     - assets/player_icons/
-    # Android LiteRT packs are staged once by Gradle under litert/models.
-    # Flutter only loads the compact PME ONNX graph; the wider directory would
-    # duplicate every Android provider variant in Flutter assets on all targets.
-    - assets/motion_models/anvil-s-540p.onnx
+    # Neural model files download on opt-in; the source packs are not Flutter assets.
     - assets/rating_icons/
     # App icon picker thumbnails; scripts/codegen/generate_app_icons.py renders them from
     # assets/app_icons/source, which stays out of the bundle.

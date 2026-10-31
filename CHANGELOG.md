@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Log specific Watch Together relay connection failures while keeping existing user-facing error notices.
 - Refresh pinned MPV and FFmpeg artifacts to the verified private native build.
 
 - Fix iOS Sherpa ONNX CocoaPods staging, isolate Apple Pub caches, and remove the unsupported warning flag from pinned tvOS AMSMB2.

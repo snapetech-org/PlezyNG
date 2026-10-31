@@ -176,6 +176,8 @@ dependencies:
   archive: ^4.5.2
   dart_smb2: ^0.2.3
   flutter_tts: ^4.2.5
+  # The connector passed to openwatchparty, which logs relay connect failures.
+  web_socket: ^1.0.1
 
   shared_preferences_foundation: ^2.5.6
 dev_dependencies:
@@ -205,7 +207,6 @@ dev_dependencies:
   plugin_platform_interface: ^2.1.0
   freezed: ^3.2.5
   analyzer: 10.2.0
-  web_socket: ^1.0.1
 
   code_assets: any
   hooks: any

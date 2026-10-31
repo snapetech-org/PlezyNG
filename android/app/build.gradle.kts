@@ -191,10 +191,13 @@ val androidAnvilContextsRoot = providers.environmentVariable("PLEZY_ANVIL_CONTEX
   ?.let { File(it) }
 val allowPartialAndroidAnvilContextSet =
   providers.environmentVariable("PLEZY_ANVIL_ALLOW_PARTIAL_CONTEXT_SET").orNull == "1"
+// Package the checked-in models in normal app builds; exported calibrated or
+// target-specific packs can override this directory explicitly.
+val defaultAndroidLiteRtModelRoot = rootProject.file("../assets/motion_models/litert")
 val androidLiteRtModelRoot = providers.environmentVariable("PLEZY_LITERT_MODEL_ROOT").orNull
   ?.takeIf(String::isNotBlank)
   ?.let { File(it) }
-  ?: rootProject.file("../assets/motion_models/litert")
+  ?: defaultAndroidLiteRtModelRoot
 val androidLiteRtSamsungRuntimeRoot = providers.environmentVariable("PLEZY_LITERT_SAMSUNG_RUNTIME_ROOT").orNull
   ?.takeIf(String::isNotBlank)
   ?.let { File(it) }
@@ -426,6 +429,7 @@ val openVinoAndroidRoot = "openvino_toolkit_android_$openVinoAndroidVersion.${op
 val androidLiteRtArtifactDir = layout.buildDirectory.dir("plezy-litert-downloads").get().asFile
 val androidLiteRtRuntimeDir = layout.buildDirectory.dir("plezy-litert-runtime").get().asFile
 val androidLiteRtModelAssetsDir = layout.buildDirectory.dir("plezy-litert-model-assets").get().asFile
+val androidLiteRtAbis = setOf("arm64-v8a", "armeabi-v7a", "x86_64")
 val androidLiteRtArtifacts = linkedMapOf(
   "litert_cc_sdk.zip" to Pair(
     "https://github.com/google-ai-edge/LiteRT/releases/download/v$liteRtVersion/litert_cc_sdk.zip",
@@ -499,18 +503,33 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
   from(provider { zipTree(File(androidLiteRtArtifactDir, "litert_cc_sdk.zip")) }) {
     include("litert_cc_sdk/litert/**")
     eachFile {
-      relativePath = RelativePath(true, *relativePath.segments.drop(1).toTypedArray())
+      val segments = relativePath.segments
+      val headerRootIndex = segments.indices.firstOrNull { index ->
+        segments[index] == "litert" && index > 0 && segments[index - 1] == "litert_cc_sdk"
+      } ?: throw GradleException("LiteRT C++ SDK archive entry is outside its public headers: $relativePath")
+      relativePath = RelativePath(
+        true,
+        "sdk",
+        "litert_cc_sdk",
+        *segments.drop(headerRootIndex).toTypedArray()
+      )
     }
-    into("sdk/litert_cc_sdk")
   }
   androidLiteRtArtifacts.keys.filter { it.endsWith(".aar") }.forEach { aarName ->
     from(provider { zipTree(File(androidLiteRtArtifactDir, aarName)) }) {
       include("jni/**/*.so")
       exclude("jni/**/libc++_shared.so")
       eachFile {
-        relativePath = RelativePath(true, *relativePath.segments.drop(1).toTypedArray())
+        val abiIndex = relativePath.segments.indexOfFirst { it in androidLiteRtAbis }
+        if (abiIndex < 0) {
+          throw GradleException("LiteRT AAR contains a native library outside the supported ABIs: $relativePath")
+        }
+        relativePath = RelativePath(
+          true,
+          "jniLibs",
+          *relativePath.segments.drop(abiIndex).toTypedArray()
+        )
       }
-      into("jniLibs")
     }
   }
   from(
@@ -525,8 +544,7 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
       "$openVinoAndroidRoot/runtime/lib/intel64/libopenvino_tensorflow_lite_frontend.so",
       "$openVinoAndroidRoot/runtime/3rdparty/tbb/lib/libtbb.so"
     )
-    eachFile { relativePath = RelativePath(true, "x86_64", name) }
-    into("jniLibs")
+    eachFile { relativePath = RelativePath(true, "jniLibs", "x86_64", name) }
   }
   androidLiteRtSamsungRuntimeRoot?.let { runtimeRoot ->
     inputs.file(runtimeRoot.resolve("BUILD_INFO.txt"))
@@ -587,6 +605,56 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
           ?: throw GradleException("Samsung runtime SHA256SUMS has no entry for $relativePath")
         verifySha256(library, expectedHash, "Samsung runtime $relativePath")
       }
+    }
+  }
+  doLast {
+    val requiredRuntimeFiles = listOf(
+      "arm64-v8a/libLiteRt.so",
+      "arm64-v8a/libLiteRtClGlAccelerator.so",
+      "arm64-v8a/libLiteRtCompilerPlugin_Qualcomm.so",
+      "arm64-v8a/libLiteRtDispatch_Qualcomm.so",
+      "arm64-v8a/libLiteRtCompilerPlugin_MediaTek.so",
+      "arm64-v8a/libLiteRtDispatch_MediaTek.so",
+      "arm64-v8a/libLiteRtCompilerPlugin_google_tensor.so",
+      "arm64-v8a/libLiteRtDispatch_GoogleTensor.so",
+      "armeabi-v7a/libLiteRt.so",
+      "armeabi-v7a/libLiteRtClGlAccelerator.so",
+      "x86_64/libLiteRt.so",
+      "x86_64/libLiteRtClGlAccelerator.so",
+      "x86_64/libLiteRtCompilerPlugin_IntelOpenvino.so",
+      "x86_64/libLiteRtDispatch_IntelOpenvino.so",
+      "x86_64/libopenvino.so",
+      "x86_64/libopenvino_intel_npu_plugin.so",
+      "x86_64/libopenvino_ir_frontend.so",
+      "x86_64/libopenvino_tensorflow_lite_frontend.so",
+      "x86_64/libtbb.so"
+    )
+    val missing = requiredRuntimeFiles
+      .map { File(androidLiteRtRuntimeDir, "jniLibs/$it") }
+      .filterNot(File::isFile)
+    if (missing.isNotEmpty()) {
+      throw GradleException(
+        "LiteRT runtime staging is incomplete under jniLibs: ${missing.joinToString { it.relativeTo(androidLiteRtRuntimeDir).path }}"
+      )
+    }
+    val requiredSdkHeaders = listOf(
+      "litert/build_common/build_config.h.in",
+      "litert/c/litert_compiled_model.h",
+      "litert/c/litert_environment.h",
+      "litert/c/litert_environment_options.h",
+      "litert/c/litert_model.h",
+      "litert/c/litert_model_types.h",
+      "litert/c/litert_options.h",
+      "litert/c/litert_tensor_buffer.h",
+      "litert/c/litert_tensor_buffer_requirements.h"
+    )
+    val missingHeaders = requiredSdkHeaders
+      .map { File(androidLiteRtRuntimeDir, "sdk/litert_cc_sdk/$it") }
+      .filterNot(File::isFile)
+    if (missingHeaders.isNotEmpty()) {
+      throw GradleException(
+        "LiteRT C++ SDK staging is incomplete: ${missingHeaders.joinToString { it.relativeTo(androidLiteRtRuntimeDir).path }}"
+      )
     }
   }
 }

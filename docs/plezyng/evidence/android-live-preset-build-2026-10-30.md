@@ -1,5 +1,10 @@
 # Android live preset-switch debug build (2026-10-30)
 
+This earlier build established that the live preset-switch source compiles.
+The later local 12-model candidate is documented in the
+[Android build evidence](android-12-model-apk-build-2026-10-30.md). Its Tensor
+AOT model files remain local pending approval and are not in main's default pack.
+
 ## Build
 
 Built locally on `kspld0` from branch `codex/motion-engine-w8a8-20261030`, outside CI:

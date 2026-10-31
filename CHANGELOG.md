@@ -26,6 +26,7 @@
 - Restore Apple CI by quoting simulator-only Xcode project settings and keeping the macOS test plugin current with its shared protocol.
 - Fix Android debug compilation under AGP 9 by aligning Android plugin Java and Kotlin targets at JVM 17 for the live preset-switch path.
 - Replace MPV GLSL enhancement chains in one update, keep ambient lighting last, and share path-list escaping with subtitle loading.
+- Stage LiteRT runtime libraries under their Android ABI paths and verify required native libraries and SDK headers before packaging.
 - Preserve fractional display cadence in motion clarity, accept 48×1000/1001 Hz, and report MPV's active PME phase budget alongside its display-sync timing source.
 - Align desktop PME source eligibility with the filter's supported 720p and 1080p inputs; validate Tensor AOT output interfaces after compilation.
 - Default Tensor AOT export to the verified 720p shape while retaining 720p and 1080p GPU exports, allow explicit Tensor shape selection, and prune stale models after successful export.

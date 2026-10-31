@@ -1,4 +1,4 @@
-# MPV motion artifact gate — 2026-10-29
+# MPV motion artifact gate — updated 2026-10-30
 
 This records the local package state for the MPV motion-processing integration. It separates locally built files from retrievable release assets; only the latter can be pinned by PlezyNG.
 
@@ -90,7 +90,16 @@ MPV branch `codex/motion-adaptive-phases-20261029` now includes patch 0161 at co
 | Windows aarch64 package | `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/windows/libmpv-windows-01139c3f4748-aarch64.zip` | `e2142209ba84a3cedc2eba082594ba5a958188ae8fa234e210b9f644cdf355cc` |
 | Windows aarch64 symbols | `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/windows/libmpv-windows-01139c3f4748-aarch64-symbols.zip` | `76d6af3ad255f25a1c76df7d2392217472fb2fc67715ac6ba5960568b1168539` |
 
-Linux aarch64 remains on the patch-0160 candidate (`500fcbd3b251`), retained at `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-0160-linux-aarch64-20261029`. Its patch-0161 rebuild is still required to complete the Linux architecture group. The scratch clone's `artifacts.json` contains the three new architecture records, but is not committed. The remote MPV branch manifest still records the previous 0160 packages. No package was uploaded; the PlezyNG lock remains unchanged. No CI was used and no device or visible-display test was run.
+### Linux aarch64 patch-0161 package (2026-10-30)
+
+The Linux aarch64 candidate was built from the same patch-0161 MPV source commit `4fe0b706` and content key `d142165ec420` using the pinned Ubuntu 24.04 container with QEMU user-mode. The build completed through the PME filter and linked `libmpv.so.2.5.0`. `zstd -t` and the symbol archive's `unzip -t` passed. The extracted shared library is ELF64 little-endian AArch64 and contains `mpv-display-sync`, `phase-timing-source`, and `phase-budget-configured`.
+
+| Candidate | Retained path | Size | SHA-256 |
+| --- | --- | ---: | --- |
+| Linux aarch64 package | `/mnt/disks/scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/linux-aarch64/libmpv-linux-d142165ec420-aarch64.tar.zst` | 24,381,396 bytes | `6493c3f69a57fb9ed8c043537409bebf0e6e9854841e4bc889bda77fb1b8690b` |
+| Linux aarch64 symbols | `/mnt/disks/scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/linux-aarch64/libmpv-linux-aarch64-symbols.zip` | 9,731,078 bytes | `bb507124e3f3fd6d6a3a294cfc9fdc858402d2b1db238f9c2c71a88e7b84ff9c` |
+
+The build log is retained at `/mnt/disks/scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/logs/linux-aarch64-build.log`. The local candidate manifest now lists Linux x86_64/aarch64 and Windows x86_64/aarch64 under their matching keys. It is not committed to the MPV build branch or published. The PlezyNG lock remains unchanged. This is package validation, not native-device playback or display qualification.
 
 ## Earlier local artifact checksums (patch 0157)
 
@@ -120,6 +129,6 @@ These hashes identify local candidates only. They do not imply upload, publicati
 
 On 2026-10-29, direct downloads for previous Windows packages, the Linux package, and Android ABI tarballs/AAR/symbols returned HTTP 404 from the `snapetech-org/mpv-build` rolling release URLs ([Windows](https://github.com/snapetech-org/mpv-build/releases/tag/binaries-windows), [Linux](https://github.com/snapetech-org/mpv-build/releases/tag/binaries-linux), [Android](https://github.com/snapetech-org/mpv-build/releases/tag/binaries-android)). The latest remote check found no Linux assets and no Windows or Android rolling releases; no upload has been made since. The MPV build branch `artifacts.json` records local Windows key `544d2295432e` and Linux key `500fcbd3b251`, but neither candidate set is published. The 0159 Linux key `09ebe80cfc4f` is also unpublished. The PlezyNG lock still references its previous keys `52b991183e5f` (Linux), `8dbcea0c526c` (Windows), `5b7e6b31ab13` (Android native libraries), and `f9b1be38a527` (Android AAR). `scripts/keys.py verify` checks local manifest consistency; it cannot establish that assets are available from the real download URLs.
 
-The Linux group requires both x86_64 and aarch64 packages. The x86_64 package was built natively; the aarch64 package was built and ELF-checked under QEMU with the same pinned container. These are local package candidates, not target-device playback results. No CI workflow or remote build was run.
+The Linux patch-0161 group now has both x86_64 and aarch64 local packages; the x86_64 build was native and the aarch64 build used QEMU user-mode. The Windows patch-0161 group has x86_64 and aarch64 local packages. Archive integrity, ELF architecture, and feature-string inspection establish package contents only, not target-device playback. No CI workflow or remote build was run.
 
-The PlezyNG lock must stay on its existing package revision until the matching source commit and complete package set are retrievable at their real download URLs. Linux x86_64/aarch64 and Windows x86_64/aarch64 have locally verified 0160 candidates; updated Android release assets and matching publication remain open. Android Tensor/NPU execution, Windows and Linux hardware playback, visible presentation, cadence, A/V sync, and device quality are separate gates; these package builds do not qualify them.
+The PlezyNG lock stays on its existing published package revision until the matching source commit and complete asset set are retrievable at their real release URLs. All four Linux and Windows desktop architectures now have locally verified patch-0161 candidates; they remain unpublished. Android uses a separate MPV patch series and does not consume desktop-only patch 0161. Android Tensor/NPU provider execution, Windows and Linux hardware playback, visible presentation, cadence, A/V sync, and device quality remain device-qualification gates; these package builds do not establish them.

@@ -5,6 +5,11 @@ workflow, Pixel, or Tensor device was used. The package was not installed, so
 this does not establish Tensor NPU execution, playback quality, cadence, sync,
 or sustained thermal behavior.
 
+A local October 30 candidate APK later packaged the four verified Tensor AOT
+models alongside float32 GPU and W8A8 generic-JIT defaults. The candidate is
+not main's default pack; its build and manifest/hash checks are recorded in
+[`android-12-model-apk-build-2026-10-30.md`](android-12-model-apk-build-2026-10-30.md).
+
 ## SDK and pinned inputs
 
 - The user-provided `litert_plugin_compiler.tar.gz` is present at

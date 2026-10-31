@@ -4,6 +4,11 @@
 **Host:** `kspld0`
 **Build:** Android debug APK with embedded Moonlight and Steam modules
 
+> Historical snapshot: the APK and model counts below describe the October
+> 28 build. A local-only 12-model candidate build, including four Tensor G5/G6 AOT packs
+> that remain out of main pending approval, is recorded in the
+> [October 30 APK evidence](android-12-model-apk-build-2026-10-30.md).
+
 ## Updated eight-model APK verification
 
 The debug APK was rebuilt after the W8A8 candidates were added to the LiteRT
@@ -50,7 +55,10 @@ models: these four float32 GPU variants plus four W8A8 generic NPU candidates.
 The APK hash and size below do not verify packaging of those later W8A8 files.
 Their single-clip comparison is recorded separately in
 [`android-litert-w8a8-validation-2026-10-28.md`](android-litert-w8a8-validation-2026-10-28.md).
-No vendor-specific AOT models are included in the current default manifest.
+No vendor-specific AOT models were included in the default manifest at this
+October 28 source revision. The October 30 local candidate records Google
+Tensor G5/G6 AOT packs; they are not in main's default manifest, as noted in
+the APK evidence linked above.
 
 ## Original four-model APK build
 

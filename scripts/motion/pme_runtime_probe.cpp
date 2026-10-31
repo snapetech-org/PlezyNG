@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
       pme_runtime_close(session);
       return 1;
     }
-    std::cerr << "PME session ready: " << info.provider_name << " on " << info.provider_vendor << ' '
+    std::cerr << "PME session ready: " << info.provider_name << " on hardware " << info.provider_vendor << ' '
               << device_name(info.device_kind) << " after " << std::fixed << std::setprecision(1) << session_open_ms
               << " ms\n";
     if (!info.input.element_count || !info.output.element_count ||
@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
 
     const double total = std::accumulate(timings_ms.begin(), timings_ms.end(), 0.0);
     std::cout << std::fixed << std::setprecision(3)
-              << "{\"provider\":\"" << info.provider_name << "\",\"vendor\":\"" << info.provider_vendor
+              << "{\"provider\":\"" << info.provider_name << "\",\"hardware\":\"" << info.provider_vendor
               << "\",\"device\":\"" << device_name(info.device_kind)
               << "\",\"cpu_execution\":" << (info.device_kind == PME_DEVICE_CPU ? "true" : "false")
               << ",\"cpu_fallback\":"

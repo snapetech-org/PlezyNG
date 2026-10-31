@@ -171,7 +171,8 @@ jobs:
       - name: Run tests
         run: |
           if [ -d "test" ] && [ "$(find test -name '*_test.dart' | wc -l)" -gt 0 ]; then
-            scripts/run_tests.sh -j 2
+            # Drift-backed tests can exceed package:test's 30s default on busy JIT workers.
+            scripts/run_tests.sh -j 2 --timeout=120s
           else
             echo "No tests found, skipping test execution"
           fi

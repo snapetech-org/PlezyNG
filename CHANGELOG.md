@@ -52,6 +52,7 @@
 - Omit Watchmode availability rows whose links are all unsafe or invalid, so the Links screen never shows a provider it cannot open.
 - Add a player-neutral bounded PCM capture contract and capability-gated Linux, Windows, Apple, and Android MPV live-caption bridges alongside Android ExoPlayer; patched MPV runtimes and target-device qualification remain required, and accelerator placement remains explicitly unverified per operation.
 - Add opt-in experimental motion processing across MPV, Apple VideoToolbox, Android LiteRT/QNN, and desktop PME, with capability reporting and platform qualification limits documented separately.
+- Make Android LiteRT calibration reproducible with atomic, hash-checked samples, explicit calibration/holdout grids, and refreshed W8A8 provenance plus CPU holdout evidence.
 - Retarget the active current-display motion-compensation filter when mpv reports a display-rate change.
 - Place desktop PME phases on matched MPV display-sync slots, include A/V-corrected slot counts, and expose the timing source in playback diagnostics.
 - Serialize motion-processing configuration and health-monitor fallback changes so stale MPV updates cannot overwrite newer settings.

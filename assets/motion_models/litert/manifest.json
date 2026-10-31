@@ -7,6 +7,7 @@
           "height": 1080,
           "pairs": [
             {
+              "bytes": 49766400,
               "file": "pair-000.f32",
               "first_frame": 275,
               "first_timestamp_seconds": 11.458333,
@@ -15,6 +16,7 @@
               "sha256": "725b27432f3da1790df77c74243922a32bb755cf951252f45787cacd0a35db5a"
             },
             {
+              "bytes": 49766400,
               "file": "pair-002.f32",
               "first_frame": 1377,
               "first_timestamp_seconds": 57.375,
@@ -23,6 +25,7 @@
               "sha256": "f794e2a5f17050184c4aa6dded5ff5d61fdccd08cb4efca626b3953ac6a1967e"
             },
             {
+              "bytes": 49766400,
               "file": "pair-004.f32",
               "first_frame": 2478,
               "first_timestamp_seconds": 103.25,
@@ -31,6 +34,7 @@
               "sha256": "99af3420a95e3abef2cdd5ad8be8813206d071ceb0ed7c9cf082234b7bb11429"
             },
             {
+              "bytes": 49766400,
               "file": "pair-006.f32",
               "first_frame": 3579,
               "first_timestamp_seconds": 149.125,
@@ -39,6 +43,7 @@
               "sha256": "1bd518e9c3c8fc49209efb61452734629ade779d62c49dc5b1d2aabda75f9ba6"
             },
             {
+              "bytes": 49766400,
               "file": "pair-008.f32",
               "first_frame": 4680,
               "first_timestamp_seconds": 195.0,
@@ -47,6 +52,7 @@
               "sha256": "38cfae5dd6a7afebcf55afb9086c0bc3dc3646885e1bb77a93f7afd157457ab5"
             },
             {
+              "bytes": 49766400,
               "file": "pair-010.f32",
               "first_frame": 5782,
               "first_timestamp_seconds": 240.916667,
@@ -55,6 +61,7 @@
               "sha256": "066ed0141a156fa9465a0a3a86e2dc5b941854b55562f045b0c7cf997bffb69d"
             },
             {
+              "bytes": 49766400,
               "file": "pair-012.f32",
               "first_frame": 6883,
               "first_timestamp_seconds": 286.791667,
@@ -63,6 +70,7 @@
               "sha256": "d78a1b9de41dcb3f6124bc2e4a7688b8c45f6a57f4e1231c057ce069b4906b11"
             },
             {
+              "bytes": 49766400,
               "file": "pair-014.f32",
               "first_frame": 7984,
               "first_timestamp_seconds": 332.666667,
@@ -71,6 +79,7 @@
               "sha256": "b9967ebf66af48f95440b47a992585ba8c6c0f093a913ecb5d95278b0a84fb15"
             },
             {
+              "bytes": 49766400,
               "file": "pair-016.f32",
               "first_frame": 9085,
               "first_timestamp_seconds": 378.541667,
@@ -79,6 +88,7 @@
               "sha256": "2d008108ecf6d5d2501d687b571c8352ffb9453ef0c1bcf2327fcc3fe37445f9"
             },
             {
+              "bytes": 49766400,
               "file": "pair-018.f32",
               "first_frame": 10187,
               "first_timestamp_seconds": 424.458333,
@@ -87,6 +97,7 @@
               "sha256": "55226c9a235e8e6c8c16aaaede6bcf2362e1483549545a9bb9a9ae05451aa945"
             },
             {
+              "bytes": 49766400,
               "file": "pair-020.f32",
               "first_frame": 11288,
               "first_timestamp_seconds": 470.333333,
@@ -95,6 +106,7 @@
               "sha256": "6b82e73dd3215246a39c747727fee55a71053b2f42cc57a13a9c6ef3c7855b0d"
             },
             {
+              "bytes": 49766400,
               "file": "pair-022.f32",
               "first_frame": 12389,
               "first_timestamp_seconds": 516.208333,
@@ -103,6 +115,7 @@
               "sha256": "76759680720359901312c05228965e89467fe0b0184f67049e18bedd8048789b"
             },
             {
+              "bytes": 49766400,
               "file": "pair-024.f32",
               "first_frame": 13490,
               "first_timestamp_seconds": 562.083333,
@@ -111,6 +124,7 @@
               "sha256": "656bbc907ca14af1e1a3f164d38efa4cec07b290b55ffc15d25fe7f692bec146"
             },
             {
+              "bytes": 49766400,
               "file": "pair-026.f32",
               "first_frame": 14592,
               "first_timestamp_seconds": 608.0,
@@ -119,6 +133,7 @@
               "sha256": "caeffd7eb5347f4936c2540fc26bc025385933d4e1de71f95cd4156c3b4d530a"
             },
             {
+              "bytes": 49766400,
               "file": "pair-028.f32",
               "first_frame": 15693,
               "first_timestamp_seconds": 653.875,
@@ -127,6 +142,7 @@
               "sha256": "e122c7e08dde56c76f4111445698969882ef2597fc8e4052198de4ecaafd44c5"
             },
             {
+              "bytes": 49766400,
               "file": "pair-030.f32",
               "first_frame": 16794,
               "first_timestamp_seconds": 699.75,
@@ -142,6 +158,7 @@
           "height": 720,
           "pairs": [
             {
+              "bytes": 22118400,
               "file": "pair-000.f32",
               "first_frame": 275,
               "first_timestamp_seconds": 11.458333,
@@ -150,6 +167,7 @@
               "sha256": "6032a80368570a1bde9fa3e4acc2ff876bd9f7a4f2f3d9a7e72edf19673cf068"
             },
             {
+              "bytes": 22118400,
               "file": "pair-002.f32",
               "first_frame": 1377,
               "first_timestamp_seconds": 57.375,
@@ -158,6 +176,7 @@
               "sha256": "2c1feaa41e7aaecb59b49add763eacca3ea0e46a3e846721008828c11bd18a4b"
             },
             {
+              "bytes": 22118400,
               "file": "pair-004.f32",
               "first_frame": 2478,
               "first_timestamp_seconds": 103.25,
@@ -166,6 +185,7 @@
               "sha256": "ce249d33a37dd003f31c18e5250aa5c247be69eef44da60763311f6ccf5ae1bf"
             },
             {
+              "bytes": 22118400,
               "file": "pair-006.f32",
               "first_frame": 3579,
               "first_timestamp_seconds": 149.125,
@@ -174,6 +194,7 @@
               "sha256": "71bf60d0cda7f7774f6df6fc707b7a0af349a181e60a4c348b3d13fc7588ba42"
             },
             {
+              "bytes": 22118400,
               "file": "pair-008.f32",
               "first_frame": 4680,
               "first_timestamp_seconds": 195.0,
@@ -182,6 +203,7 @@
               "sha256": "4ac4d29288bf05420fc7526dc082e097d13f32283147fbb8c2f9d29f7ec0f97a"
             },
             {
+              "bytes": 22118400,
               "file": "pair-010.f32",
               "first_frame": 5782,
               "first_timestamp_seconds": 240.916667,
@@ -190,6 +212,7 @@
               "sha256": "01d3c27d9de3306a78554070ffe4142cf742bb26fdb397c8ff8d73b7a5718cd3"
             },
             {
+              "bytes": 22118400,
               "file": "pair-012.f32",
               "first_frame": 6883,
               "first_timestamp_seconds": 286.791667,
@@ -198,6 +221,7 @@
               "sha256": "65867a596a27a79ceddb8e0a0067a44e7e827055699ce977cd478c3e6606fd19"
             },
             {
+              "bytes": 22118400,
               "file": "pair-014.f32",
               "first_frame": 7984,
               "first_timestamp_seconds": 332.666667,
@@ -206,6 +230,7 @@
               "sha256": "2321dc20a3ee67aeb26f4d9db80c591f1ace243e40884a71c2ab61ce528f1833"
             },
             {
+              "bytes": 22118400,
               "file": "pair-016.f32",
               "first_frame": 9085,
               "first_timestamp_seconds": 378.541667,
@@ -214,6 +239,7 @@
               "sha256": "9ea7d841129a41d1cde8a01084b5b126844f62d77121648e4e542038a6a135da"
             },
             {
+              "bytes": 22118400,
               "file": "pair-018.f32",
               "first_frame": 10187,
               "first_timestamp_seconds": 424.458333,
@@ -222,6 +248,7 @@
               "sha256": "661ccee88fe66868603350e686e1d4eeff5127e6a599bf06f68b059eaeb196de"
             },
             {
+              "bytes": 22118400,
               "file": "pair-020.f32",
               "first_frame": 11288,
               "first_timestamp_seconds": 470.333333,
@@ -230,6 +257,7 @@
               "sha256": "162a1015c563b34de7dee76bbe70140962affb8c77070536b537efaf933c7709"
             },
             {
+              "bytes": 22118400,
               "file": "pair-022.f32",
               "first_frame": 12389,
               "first_timestamp_seconds": 516.208333,
@@ -238,6 +266,7 @@
               "sha256": "0e219513d7ba5fe596ef778cf144597f68959e973b1353285ff64e10c8cfb82f"
             },
             {
+              "bytes": 22118400,
               "file": "pair-024.f32",
               "first_frame": 13490,
               "first_timestamp_seconds": 562.083333,
@@ -246,6 +275,7 @@
               "sha256": "2e65f79c4d9f6865db370fc061a0b91b4290c53dffd2a08b2f2b4a52353d5678"
             },
             {
+              "bytes": 22118400,
               "file": "pair-026.f32",
               "first_frame": 14592,
               "first_timestamp_seconds": 608.0,
@@ -254,6 +284,7 @@
               "sha256": "77056662a57f63f1995f1190da49083ea76ddf4caedf048e1c7cea2471c2d271"
             },
             {
+              "bytes": 22118400,
               "file": "pair-028.f32",
               "first_frame": 15693,
               "first_timestamp_seconds": 653.875,
@@ -262,6 +293,7 @@
               "sha256": "0afd27bc48349fbebe212422eebefab99bb7f7e82cf27314b2574491732c0b20"
             },
             {
+              "bytes": 22118400,
               "file": "pair-030.f32",
               "first_frame": 16794,
               "first_timestamp_seconds": 699.75,
@@ -275,10 +307,29 @@
         }
       },
       "sampling": {
-        "held_out_from_quantization": false,
         "pair_count": 16,
         "policy": "evenly spaced consecutive frame pairs across the full source duration",
-        "split": "even pair indices"
+        "sampling_grid_indices": [
+          0,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18,
+          20,
+          22,
+          24,
+          26,
+          28,
+          30
+        ],
+        "sampling_grid_offset": 0,
+        "sampling_grid_pair_count": 32,
+        "sampling_grid_stride": 2
       },
       "source": {
         "attribution": "Tears of Steel, Blender Foundation, 2012",
@@ -313,7 +364,7 @@
         "shape": "[1, 6, height, width]"
       }
     },
-    "metadata_sha256": "8dbf87a78255f28a19bf81afa600e1271304f2540aa70e5e62e718cef7628a98"
+    "metadata_sha256": "61f677653a8cc9765ff927ba3a272e77256bb12784ccee143cceba93391dc9a2"
   },
   "converter": {
     "name": "litert-torch",
@@ -355,7 +406,7 @@
           },
           "npu": {
             "bytes": 2829440,
-            "calibration_metadata_sha256": "8dbf87a78255f28a19bf81afa600e1271304f2540aa70e5e62e718cef7628a98",
+            "calibration_metadata_sha256": "61f677653a8cc9765ff927ba3a272e77256bb12784ccee143cceba93391dc9a2",
             "execution": "jit",
             "file": "anvil-m-1080p-w8a8.tflite",
             "input_layout": "NHWC",
@@ -402,7 +453,7 @@
           },
           "npu": {
             "bytes": 2828160,
-            "calibration_metadata_sha256": "8dbf87a78255f28a19bf81afa600e1271304f2540aa70e5e62e718cef7628a98",
+            "calibration_metadata_sha256": "61f677653a8cc9765ff927ba3a272e77256bb12784ccee143cceba93391dc9a2",
             "execution": "jit",
             "file": "anvil-m-720p-w8a8.tflite",
             "input_layout": "NHWC",
@@ -458,7 +509,7 @@
           },
           "npu": {
             "bytes": 959312,
-            "calibration_metadata_sha256": "8dbf87a78255f28a19bf81afa600e1271304f2540aa70e5e62e718cef7628a98",
+            "calibration_metadata_sha256": "61f677653a8cc9765ff927ba3a272e77256bb12784ccee143cceba93391dc9a2",
             "execution": "jit",
             "file": "anvil-s-1080p-w8a8.tflite",
             "input_layout": "NHWC",
@@ -505,7 +556,7 @@
           },
           "npu": {
             "bytes": 958080,
-            "calibration_metadata_sha256": "8dbf87a78255f28a19bf81afa600e1271304f2540aa70e5e62e718cef7628a98",
+            "calibration_metadata_sha256": "61f677653a8cc9765ff927ba3a272e77256bb12784ccee143cceba93391dc9a2",
             "execution": "jit",
             "file": "anvil-s-720p-w8a8.tflite",
             "input_layout": "NHWC",

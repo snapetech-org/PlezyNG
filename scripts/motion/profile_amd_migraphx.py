@@ -2,7 +2,7 @@
 """Profile the pinned ANVIL-S ONNX model on one visible RX 7900 XT.
 
 Run inside an AMD ROCm container with ROCR_VISIBLE_DEVICES set to the host
-index of the RX 7900 XT. This measures only the model inference stage; it does
+index or UUID of the RX 7900 XT. This measures only the model inference stage; it does
 not qualify Plezy's PME ABI, frame transfers, preprocessing, or presentation.
 It supports both the older monolithic MIGraphX EP wheel and AMD's current
 separate execution-provider plugin package.
@@ -47,11 +47,31 @@ def visible_amd_gpus() -> list[str]:
         raise RuntimeError("Set ROCR_VISIBLE_DEVICES to isolate the target GPU before starting this process.")
 
     result = subprocess.run(["rocminfo"], check=True, capture_output=True, text=True)
-    architectures = re.findall(r"^\s*Name:\s*(gfx[0-9a-z]+)\s*$", result.stdout, re.MULTILINE)
-    if architectures != ["gfx1100"] or EXPECTED_GPU not in result.stdout:
+    gpu_agents: list[tuple[str, str]] = []
+    agents = re.split(r"^\s*Agent\s+\d+\s*$", result.stdout, flags=re.MULTILINE)
+    for agent in agents:
+        vendor = re.search(r"^\s*Vendor Name:\s*(.+?)\s*$", agent, re.MULTILINE)
+        marketing_name = re.search(
+            r"^\s*Marketing Name:\s*(.+?)\s*$", agent, re.MULTILINE
+        )
+        architecture = re.search(r"^\s*Name:\s*(gfx[0-9a-z]+)\s*$", agent, re.MULTILINE)
+        if (
+            vendor is None
+            or vendor.group(1) != "AMD"
+            or marketing_name is None
+            or not marketing_name.group(1).startswith("AMD Radeon")
+        ):
+            continue
+        gpu_agents.append(
+            (
+                marketing_name.group(1).removeprefix("AMD "),
+                architecture.group(1) if architecture is not None else "unknown",
+            )
+        )
+    if gpu_agents != [(EXPECTED_GPU, "gfx1100")]:
         raise RuntimeError(
             "Refusing to profile: the isolated ROCm view must contain only the RX 7900 XT "
-            f"(gfx1100); found GPU architectures {architectures!r}."
+            f"(gfx1100); found AMD GPU agents {gpu_agents!r}."
         )
     return [EXPECTED_GPU]
 

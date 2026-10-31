@@ -15,6 +15,7 @@ import argparse
 import fractions
 import hashlib
 import json
+import os
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -32,6 +33,38 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: source.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def write_tensor_atomically(path: Path, tensor: Any, expected_bytes: int) -> str:
+    """Publish a tensor only after its complete payload is present on disk."""
+    temporary = path.with_name(path.name + ".partial")
+    try:
+        with temporary.open("wb") as output:
+            tensor.tofile(output)
+            output.flush()
+            os.fsync(output.fileno())
+        actual_bytes = temporary.stat().st_size
+        if actual_bytes != expected_bytes:
+            raise OSError(
+                f"Wrote {actual_bytes} bytes for {path.name}; expected {expected_bytes}"
+            )
+        digest = sha256_file(temporary)
+        os.replace(temporary, path)
+        return digest
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def write_text_atomically(path: Path, value: str) -> None:
+    temporary = path.with_name(path.name + ".partial")
+    try:
+        with temporary.open("w", encoding="utf-8", newline="\n") as output:
+            output.write(value)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def probe_video(path: Path, ffprobe: str) -> dict[str, Any]:
@@ -174,6 +207,7 @@ def write_resolution_samples(
     resolution: str,
     dimensions: tuple[int, int],
     pair_indices: list[int],
+    sample_indices: list[int],
     frame_rate: fractions.Fraction,
     ffmpeg: str,
 ) -> list[dict[str, Any]]:
@@ -194,26 +228,34 @@ def write_resolution_samples(
     directory.mkdir(parents=True, exist_ok=True)
     records: list[dict[str, Any]] = []
     listing: list[str] = []
-    for sample_index, first_frame in enumerate(pair_indices):
+    for sample_index, (sample_file_index, first_frame) in enumerate(
+        zip(sample_indices, pair_indices, strict=True)
+    ):
         previous = frames[first_frame].transpose(2, 0, 1)
         current = frames[first_frame + 1].transpose(2, 0, 1)
         tensor = np.concatenate((previous, current), axis=0).astype(np.float32)
         tensor *= 1.0 / 255.0
-        filename = f"pair-{sample_index:03d}.f32"
+        filename = f"pair-{sample_file_index:03d}.f32"
         sample_path = directory / filename
-        tensor.tofile(sample_path)
+        expected_bytes = 6 * height * width * np.dtype(np.float32).itemsize
+        if tensor.nbytes != expected_bytes:
+            raise ValueError(
+                f"Built {tensor.nbytes} bytes for {filename}; expected {expected_bytes}"
+            )
+        sample_sha256 = write_tensor_atomically(sample_path, tensor, expected_bytes)
         listing.append(filename)
         records.append(
             {
                 "file": filename,
-                "sha256": sha256_file(sample_path),
+                "bytes": expected_bytes,
+                "sha256": sample_sha256,
                 "first_frame": first_frame,
                 "second_frame": first_frame + 1,
                 "first_timestamp_seconds": round(float(first_frame / frame_rate), 6),
                 "second_timestamp_seconds": round(float((first_frame + 1) / frame_rate), 6),
             }
         )
-    (directory / "input_list.txt").write_text("\n".join(listing) + "\n", encoding="utf-8")
+    write_text_atomically(directory / "input_list.txt", "\n".join(listing) + "\n")
     return records
 
 
@@ -222,6 +264,23 @@ def main() -> int:
     parser.add_argument("--input", type=Path, required=True, help="Representative SDR input video")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--pairs", type=int, default=12, help="Evenly spaced adjacent frame pairs")
+    parser.add_argument(
+        "--sampling-grid-pairs",
+        type=int,
+        help="Number of evenly spaced source pairs before applying the sampling stride",
+    )
+    parser.add_argument(
+        "--sampling-grid-stride",
+        type=int,
+        default=1,
+        help="Take every Nth pair from the sampling grid, preserving the grid index in filenames",
+    )
+    parser.add_argument(
+        "--sampling-grid-offset",
+        type=int,
+        default=0,
+        help="Start at this sampling-grid index; use a separate offset for holdout samples",
+    )
     parser.add_argument(
         "--allow-untagged-sdr",
         action="store_true",
@@ -239,7 +298,30 @@ def main() -> int:
     probe = probe_video(source, args.ffprobe)
     if probe["color_transfer"] == "unknown" and not args.allow_untagged_sdr:
         raise ValueError("Source transfer is untagged; confirm SDR and pass --allow-untagged-sdr")
-    pair_indices = sample_pair_indices(probe["frame_count"], args.pairs)
+    if args.pairs < 2:
+        raise ValueError("Use at least two pairs so calibration covers multiple scenes")
+    grid_pair_count = (
+        args.sampling_grid_pairs
+        if args.sampling_grid_pairs is not None
+        else args.pairs
+    )
+    if grid_pair_count < 2:
+        raise ValueError("Sampling grid must contain at least two pairs")
+    if args.sampling_grid_stride < 1:
+        raise ValueError("Sampling grid stride must be at least 1")
+    if args.sampling_grid_offset < 0:
+        raise ValueError("Sampling grid offset cannot be negative")
+    sample_indices = [
+        args.sampling_grid_offset + index * args.sampling_grid_stride
+        for index in range(args.pairs)
+    ]
+    if sample_indices[-1] >= grid_pair_count:
+        raise ValueError(
+            f"Cannot select {args.pairs} pairs at stride {args.sampling_grid_stride} "
+            f"from a {grid_pair_count}-pair sampling grid"
+        )
+    grid_indices = sample_pair_indices(probe["frame_count"], grid_pair_count)
+    pair_indices = [grid_indices[index] for index in sample_indices]
     frame_rate = fractions.Fraction(probe["frame_rate"])
     output_root.mkdir(parents=True, exist_ok=True)
 
@@ -251,6 +333,7 @@ def main() -> int:
             resolution,
             dimensions,
             pair_indices,
+            sample_indices,
             frame_rate,
             args.ffmpeg,
         )
@@ -288,11 +371,25 @@ def main() -> int:
         "sampling": {
             "policy": "evenly spaced consecutive frame pairs across the full source duration",
             "pair_count": args.pairs,
+            "sampling_grid_pair_count": grid_pair_count,
+            "sampling_grid_stride": args.sampling_grid_stride,
+            "sampling_grid_offset": args.sampling_grid_offset,
+            "sampling_grid_indices": sample_indices,
         },
         "samples": samples,
     }
     metadata_path = output_root / "metadata.json"
-    metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    for resolution, dimensions in RESOLUTIONS.items():
+        expected_bytes = 6 * dimensions[0] * dimensions[1] * 4
+        for record in samples[resolution]["pairs"]:
+            sample_path = output_root / resolution / record["file"]
+            if sample_path.stat().st_size != expected_bytes:
+                raise OSError(f"Incomplete calibration tensor after write: {sample_path}")
+            if sha256_file(sample_path) != record["sha256"]:
+                raise OSError(f"Calibration tensor SHA-256 changed after write: {sample_path}")
+    write_text_atomically(
+        metadata_path, json.dumps(metadata, indent=2, sort_keys=True) + "\n"
+    )
     print(f"Wrote {args.pairs} calibration pairs per resolution to {output_root}")
     print(f"Source SHA-256: {metadata['source']['sha256']}")
     print(f"Metadata: {metadata_path}")

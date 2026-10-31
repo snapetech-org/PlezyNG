@@ -33,6 +33,14 @@ def verify_record(model_root: Path, record: dict[str, Any]) -> Path:
     return path
 
 
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def tensor_to_float(value: Any, detail: dict[str, Any]) -> Any:
     import numpy as np
 
@@ -72,19 +80,42 @@ def invoke(interpreter: Any, value: Any) -> tuple[Any, str]:
     return tensor_to_float(result, output_detail), str(input_dtype)
 
 
-def calibration_inputs(root: Path, resolution: str, np: Any):
+def calibration_inputs(
+    root: Path,
+    resolution: str,
+    np: Any,
+    expected_pairs: list[dict[str, Any]] | None = None,
+):
     height, width = {"720p": (720, 1280), "1080p": (1080, 1920)}[resolution]
     listing = root / resolution / "input_list.txt"
-    for raw_line in listing.read_text(encoding="utf-8").splitlines():
-        entry = raw_line.strip()
-        if not entry or entry.startswith("#"):
-            continue
+    entries = [
+        raw_line.strip()
+        for raw_line in listing.read_text(encoding="utf-8").splitlines()
+        if raw_line.strip() and not raw_line.strip().startswith("#")
+    ]
+    if expected_pairs is not None and len(entries) != len(expected_pairs):
+        raise ValueError(
+            f"{resolution} list has {len(entries)} samples; metadata records {len(expected_pairs)}"
+        )
+    for index, entry in enumerate(entries):
         path = Path(entry)
         if not path.is_absolute():
             path = listing.parent / path
         expected = 6 * height * width * 4
         if not path.is_file() or path.stat().st_size != expected:
             raise ValueError(f"Invalid {resolution} calibration sample: {path}")
+        if expected_pairs is not None:
+            record = expected_pairs[index]
+            if path.name != record.get("file"):
+                raise ValueError(
+                    f"{resolution} calibration list order differs from metadata at sample {index}"
+                )
+            if record.get("bytes", expected) != expected:
+                raise ValueError(
+                    f"{resolution} calibration metadata has an invalid tensor size: {path}"
+                )
+            if sha256_file(path) != record.get("sha256"):
+                raise ValueError(f"{resolution} calibration sample SHA-256 mismatch: {path}")
         nchw = np.fromfile(path, dtype=np.float32).reshape(1, 6, height, width)
         yield path.name, np.transpose(nchw, (0, 2, 3, 1)).copy()
 
@@ -212,7 +243,16 @@ def main() -> int:
             if quantized_record is None:
                 raise ValueError(f"Manifest is missing {model_name}/{resolution}/npu")
             quantized_path = verify_record(root, quantized_record)
-            inputs = list(calibration_inputs(validation_root, resolution, np))
+            expected_pairs = (
+                validation_metadata["metadata"].get("samples", {})
+                .get(resolution, {})
+                .get("pairs")
+                if validation_metadata is not None
+                else None
+            )
+            inputs = list(
+                calibration_inputs(validation_root, resolution, np, expected_pairs)
+            )
             result = validate_pair(float_path, quantized_path, inputs, Interpreter)
             result.update({"model": model_name, "resolution": resolution})
             result["float_sha256"] = records["gpu"]["sha256"]

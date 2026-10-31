@@ -254,7 +254,11 @@ def export_google_tensor_aot(
 
 
 def read_calibration_samples(
-    root: Path, resolution: str, np: Any, signature_input_name: str
+    root: Path,
+    resolution: str,
+    np: Any,
+    signature_input_name: str,
+    expected_pairs: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     height, width = SHAPES[resolution]
     list_path = root / resolution / "input_list.txt"
@@ -271,13 +275,27 @@ def read_calibration_samples(
         paths.append(path.resolve())
     if not paths:
         raise ValueError(f"Calibration list is empty: {list_path}")
+    if expected_pairs is not None and len(paths) != len(expected_pairs):
+        raise ValueError(
+            f"Calibration list has {len(paths)} samples; metadata records {len(expected_pairs)}"
+        )
     # LiteRT Quantizer counts samples before it runs calibration, so keep this
     # iterable replayable instead of passing a one-shot generator.
     samples: list[dict[str, Any]] = []
-    for path in paths:
+    for index, path in enumerate(paths):
         expected_bytes = 6 * height * width * 4
         if not path.is_file() or path.stat().st_size != expected_bytes:
             raise ValueError(f"Expected a {expected_bytes}-byte six-channel calibration tensor: {path}")
+        if expected_pairs is not None:
+            record = expected_pairs[index]
+            if path.name != record.get("file"):
+                raise ValueError(
+                    f"Calibration list order differs from metadata at sample {index}: {path.name}"
+                )
+            if record.get("bytes", expected_bytes) != expected_bytes:
+                raise ValueError(f"Calibration metadata has an invalid tensor size: {path}")
+            if sha256_file(path) != record.get("sha256"):
+                raise ValueError(f"Calibration tensor SHA-256 does not match metadata: {path}")
         nchw = np.fromfile(path, dtype=np.float32).reshape(1, 6, height, width)
         samples.append({signature_input_name: np.transpose(nchw, (0, 2, 3, 1)).copy()})
     return samples
@@ -590,7 +608,17 @@ def main() -> int:
                 calibration = calibrator.calibrate(
                     {
                         "serving_default": read_calibration_samples(
-                            args.calibration_root, resolution, np, calibration_input_name
+                            args.calibration_root,
+                            resolution,
+                            np,
+                            calibration_input_name,
+                            (
+                                calibration_provenance["metadata"].get("samples", {})
+                                .get(resolution, {})
+                                .get("pairs")
+                                if calibration_provenance is not None
+                                else None
+                            ),
                         )
                     }
                 )

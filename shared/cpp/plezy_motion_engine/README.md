@@ -126,7 +126,11 @@ Intel's third-party notices; the extracted package adds about 158 MB. Its Linux
 wheel requires glibc 2.28 or later and supports x86_64 only. Intel GPU/NPU use
 still depends on the host's driver, and GPU use requires `libOpenCL.so.1`. The
 CMake variant downloads the SHA-256-pinned wheel and needs Python 3 to extract
-it. The default `cpu` runtime remains smaller and does not include OpenVINO.
+it. The standalone PME CMake project defaults to the smaller `cpu` runtime.
+The Linux Flutter app runner selects the portable `webgpu` variant by default;
+pass `-DPLEZY_ORT_LINUX_VARIANT=cpu` for a minimal app bundle or choose another
+supported variant explicitly. WebGPU uses the host Vulkan loader and driver,
+and neural playback falls back to MPV smoothing if the provider cannot open.
 
 ```sh
 cmake -S shared/cpp/plezy_motion_engine -B build/pme-openvino \
@@ -216,9 +220,9 @@ OpenVINO/TBB libraries, GPU cache, plugin license, and third-party notices. The
 plus its MIT license and third-party notices for Linux x86_64 and ARM64; the
 host supplies the Vulkan loader and device driver. The OpenVINO and WebGPU
 plugin variants need Python 3 at configure time for selective wheel extraction.
-The PME API-v23 compatibility path is restricted to MIGraphX. The
-default `cpu` variant continues to bundle only the official ORT 1.27.1 CPU
-runtime. CMake installs the runtime as
+The PME API-v23 compatibility path is restricted to MIGraphX. The explicit
+`cpu` variant bundles only the official ORT 1.27.1 CPU runtime. CMake installs
+the runtime as
 `libonnxruntime.so` beside `libplezy_motion_engine.so` on Linux, preserves the
 versioned `libonnxruntime.so.*` targets behind its SONAME links, and stages
 `libonnxruntime_providers_shared.so` so the runtime and provider-loader symbols

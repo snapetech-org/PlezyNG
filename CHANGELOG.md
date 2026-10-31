@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Declare VDPAU and Vulkan loader packages required by Linux bundles.
+- Include the pinned Vulkan-backed WebGPU provider in Linux app builds by default for Neural motion processing.
 - Remove stale CocoaPods aggregate framework links from the iOS simulator test project.
 - Patch the pinned tvOS AMSMB2 manifest safely when SwiftPM marks its checkout read-only.
 - Preserve punctuation when converting podcast descriptions with inline HTML to plain text.

@@ -28,6 +28,12 @@ end
 
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
 
+# Sherpa's FFI CocoaPod vendors a native framework but omits source files. Add its
+# existing no-op Swift sources so CocoaPods generates the native targets.
+unless system('python3', File.expand_path('../scripts/patch_sherpa_onnx_ios_podspec.py', __dir__))
+  raise 'Could not prepare Sherpa ONNX Apple CocoaPods integration'
+end
+
 # Disable file_picker's media picker on iOS - removes DKImagePickerController dependency
 # This app only uses file_picker for directory selection on desktop
 Pod.const_set(:PICKER_MEDIA, false) unless Pod.const_defined?(:PICKER_MEDIA)

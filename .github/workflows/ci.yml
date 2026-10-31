@@ -545,23 +545,29 @@ jobs:
     runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
+    env:
+      PUB_CACHE: ${{ runner.temp }}/plezy-pub-cache
+      APPLE_SOURCE_PACKAGES_DIR: ${{ github.workspace }}/build/${{ matrix.source_packages_directory }}/SourcePackages
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: iOS
+            source_packages_directory: ios
             project_directory: ios
             workspace: ios/Runner.xcworkspace
             simulator_runtime: iOS
             simulator_platform: iOS
             static_destination: ""
           - platform: macOS
+            source_packages_directory: macos
             project_directory: macos
             workspace: macos/Runner.xcworkspace
             simulator_runtime: ""
             simulator_platform: ""
             static_destination: platform=macOS
           - platform: tvOS
+            source_packages_directory: tvos
             project_directory: tvos
             workspace: tvos/Runner.xcworkspace
             simulator_runtime: tvOS
@@ -577,6 +583,12 @@ jobs:
         uses: ./.github/actions/setup-flutter-apple
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Cache Pub dependencies
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ runner.temp }}/plezy-pub-cache
+          key: ${{ runner.os }}-${{ runner.arch }}-plezy-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Ensure CMake for the embedded Steam receiver
         shell: bash
@@ -626,6 +638,27 @@ jobs:
       - name: Install locked Dart dependencies
         if: matrix.platform != 'tvOS'
         run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Verify Sherpa ONNX iOS simulator framework
+        if: matrix.platform == 'iOS'
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          from urllib.parse import unquote, urlparse
+
+          config = json.loads(Path(".dart_tool/package_config.json").read_text())
+          package = next(item for item in config["packages"] if item["name"] == "sherpa_onnx_ios")
+          root = Path(unquote(urlparse(package["rootUri"]).path))
+          framework = root / "ios/sherpa_onnx_ios/SherpaOnnxC.xcframework"
+          simulator_binary = framework / "ios-arm64_x86_64-simulator/SherpaOnnxC.framework/SherpaOnnxC"
+          if not (framework / "Info.plist").is_file() or not simulator_binary.is_file():
+              raise SystemExit(f"Sherpa ONNX iOS simulator XCFramework is incomplete: {framework}")
+          digest = hashlib.sha256(simulator_binary.read_bytes()).hexdigest()
+          print(f"sherpa_onnx_ios_root={root}")
+          print(f"sherpa_onnx_ios_simulator_binary={simulator_binary} bytes={simulator_binary.stat().st_size} sha256={digest}")
+          PY
 
       - name: Install tvOS dependencies with the unsupported SMB native asset stub
         if: matrix.platform == 'tvOS'
@@ -732,6 +765,28 @@ jobs:
                   for number, line in enumerate(project.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
                       if any(token in line for token in ("plezy_torrent", "PlezyTorrent", "Copy XCFrameworks")):
                           print(f"{project_name}_project:{number}:{line[:240]}")
+
+          sherpa_plugin = Path("ios/.symlinks/plugins/sherpa_onnx_ios")
+          sherpa_podspec = sherpa_plugin / "ios/sherpa_onnx_ios.podspec"
+          sherpa_source = sherpa_plugin / "ios/sherpa_onnx_ios/Sources/sherpa_onnx_ios/SherpaOnnxIosPlugin.swift"
+          sherpa_framework = sherpa_plugin / "ios/sherpa_onnx_ios/SherpaOnnxC.xcframework"
+          expected_source = "s.source_files = 'sherpa_onnx_ios/Sources/sherpa_onnx_ios/SherpaOnnxIosPlugin.swift'"
+          print(f"sherpa_plugin={sherpa_plugin.resolve(strict=False)} exists={sherpa_plugin.exists()}")
+          print(f"sherpa_source_exists={sherpa_source.is_file()} sherpa_framework_exists={sherpa_framework.is_dir()}")
+          if not sherpa_podspec.is_file() or not sherpa_source.is_file() or not sherpa_framework.is_dir():
+              raise SystemExit("resolved sherpa_onnx_ios package is missing its Podspec, source anchor, or XCFramework")
+          if expected_source not in sherpa_podspec.read_text(encoding="utf-8"):
+              raise SystemExit("sherpa_onnx_ios Podspec does not include the CocoaPods source anchor")
+
+          sherpa_support = Path("ios/Pods/Target Support Files/sherpa_onnx_ios")
+          copy_scripts = sorted(sherpa_support.glob("*xcframeworks.sh"))
+          if not copy_scripts:
+              raise SystemExit("CocoaPods did not generate the sherpa_onnx_ios XCFramework copy phase")
+          for copy_script in copy_scripts:
+              contents = copy_script.read_text(encoding="utf-8", errors="replace")
+              print(f"sherpa_copy_script={copy_script} has_framework={('SherpaOnnxC.xcframework' in contents)}")
+              if "SherpaOnnxC.xcframework" not in contents:
+                  raise SystemExit(f"SherpaOnnxC is absent from {copy_script}")
           PY
 
       - name: Install tvOS CocoaPods dependencies
@@ -745,7 +800,14 @@ jobs:
           ruby tvos/scripts/test_wire_top_shelf.rb
 
       - name: Resolve pinned Apple Swift packages for native tests
-        run: xcodebuild -resolvePackageDependencies -workspace "${{ matrix.workspace }}" -scheme Runner
+        run: xcodebuild -resolvePackageDependencies -workspace "${{ matrix.workspace }}" -scheme Runner -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR"
+
+      - name: Remove AMSMB2 unsafe warning flag from the pinned tvOS checkout
+        if: matrix.platform == 'tvOS'
+        run: |
+          python3 scripts/patch_amsmb2_manifest.py \
+            --source-packages-dir "$APPLE_SOURCE_PACKAGES_DIR" \
+            --resolved-package tvos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
       - name: Select Apple test destination
         env:
@@ -794,6 +856,7 @@ jobs:
             -scheme Runner \
             -configuration Debug \
             -destination "$APPLE_TEST_DESTINATION" \
+            -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR" \
             -disableAutomaticPackageResolution \
             -resultBundlePath "$result_bundle" \
             CODE_SIGNING_ALLOWED=NO \

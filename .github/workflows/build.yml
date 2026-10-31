@@ -739,6 +739,8 @@ jobs:
       id-token: write
       attestations: write
       contents: read
+    env:
+      PUB_CACHE: ${{ runner.temp }}/plezy-pub-cache
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -752,9 +754,8 @@ jobs:
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: |
-            ~/.pub-cache
-          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
+          path: ${{ runner.temp }}/plezy-pub-cache
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Cache CocoaPods
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
@@ -1025,6 +1026,9 @@ jobs:
       id-token: write
       attestations: write
       contents: read
+    env:
+      PUB_CACHE: ${{ runner.temp }}/plezy-pub-cache
+      APPLE_SOURCE_PACKAGES_DIR: ${{ github.workspace }}/build/tvos/SourcePackages
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -1038,8 +1042,8 @@ jobs:
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ~/.pub-cache
-          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
+          path: ${{ runner.temp }}/plezy-pub-cache
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Cache pinned tvOS Flutter engine
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
@@ -1083,6 +1087,19 @@ jobs:
 
       - name: Install tvOS CocoaPods dependencies
         run: tvos/scripts/pod_install.sh
+
+      - name: Resolve pinned tvOS Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -workspace tvos/Runner.xcworkspace \
+            -scheme Runner \
+            -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR"
+
+      - name: Remove AMSMB2 unsafe warning flag from the pinned tvOS checkout
+        run: |
+          python3 scripts/patch_amsmb2_manifest.py \
+            --source-packages-dir "$APPLE_SOURCE_PACKAGES_DIR" \
+            --resolved-package tvos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
       - name: Configure optional tvOS App Store signing
         id: tvos-signing
@@ -1141,6 +1158,7 @@ jobs:
             -configuration Release \
             -sdk appletvos \
             -destination 'generic/platform=tvOS' \
+            -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR" \
             -derivedDataPath build/tvos \
             ARCHS=arm64 \
             CODE_SIGNING_ALLOWED=NO \
@@ -1178,6 +1196,7 @@ jobs:
             -configuration Release \
             -sdk appletvos \
             -destination 'generic/platform=tvOS' \
+            -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR" \
             -archivePath "$archive_path" \
             -derivedDataPath "$derived_data_path" \
             -allowProvisioningUpdates \
@@ -1242,6 +1261,8 @@ jobs:
       id-token: write
       attestations: write
       contents: read
+    env:
+      PUB_CACHE: ${{ runner.temp }}/plezy-pub-cache
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -1255,9 +1276,8 @@ jobs:
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: |
-            ~/.pub-cache
-          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
+          path: ${{ runner.temp }}/plezy-pub-cache
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Cache CocoaPods
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6

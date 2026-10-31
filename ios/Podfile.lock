@@ -365,13 +365,13 @@ SPEC CHECKSUMS:
   Sentry: 5321d74bdd28d6f6f8beaa1ca06f1fdc746bff49
   sentry_flutter: 52a33f5c4c91b05015a6d8c0b26c155776a07d7f
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
-  sherpa_onnx_ios: 039706c98c43bacd61c36d19b2755dc1de5f2dd2
+  sherpa_onnx_ios: 51d42fc70e50e1e9d54de59e8e71d24e55947cc0
   SSZipArchive: 8a6ee5677c8e304bebc109e39cf0da91ccef22ea
   swift-collections: ba248ecaf44ef500b27d5cf94d304218c89892ff
   universal_gamepad: 7c0cc0c2e3909dfb803d325387e42963b3ed842c
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
   wakelock_plus: 5aaa6a7ccaf4749a96a7d8ff0721d68061ad62cf
 
-PODFILE CHECKSUM: 8b72055ecd2acfeda074930354754ea6f97830f4
+PODFILE CHECKSUM: ac30af4314e82e7ccbeb87c192139d4a109d3d25
 
 COCOAPODS: 1.17.0

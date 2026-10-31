@@ -1,6 +1,6 @@
 # MPV display-sync feedback source change
 
-This note records the source implementation added by MPV patch 0161 and the matching PlezyNG diagnostic field. It does not record build or playback evidence.
+This note records the source implementation added by MPV patch 0161, the matching PlezyNG diagnostic field, and local package evidence for Linux x86_64 and Windows x86_64/aarch64. It does not record playback or device qualification.
 
 The MPV player publishes a display-sync feedback record for each scheduled source frame. The record carries the source PTS, final num_vsyncs after A/V drop/repeat correction, vsync interval, effective video speed, and the display-sync error before and after scheduling. The PME phase planner consumes it only when the PTS, interval, and speed match the source pair it is about to process.
 
@@ -8,4 +8,4 @@ For a matched record, PME converts each selected display-slot edge back into med
 
 The selected model graph remains fixed while a preset is active. PlezyNG now serializes a preset change for an already-active supported desktop or Android Neural session, replacing the live filter/provider without reopening the media. It prepares the requested model/runtime first and attempts to restore the previous preset if replacement setup fails; Android can fall back to MPV smoothing if restoration fails. First-time Neural activation and unsupported decoder/renderer transitions remain staged for the next media open. This source integration has not been built or playback-tested, and a brief frame gap may occur during filter replacement.
 
-Patch 0161 is source-only at this point. It has not been compiled, packaged, or run. Existing Linux and Windows candidate packages contain patches 0159 and 0160 only, and the PlezyNG package lock still references the published package group. This pass did not dispatch CI or run local builds. The private-runner policy requires compatible ephemeral JIT capacity; Windows and Linux ARM64 have no verified route in the current inventory. Device/display behavior, A/V sync, inference quality, sustained playback, and provider execution remain unqualified.
+Patch 0161 has been compiled and packaged for Linux x86_64 and Windows x86_64/aarch64. The archives passed integrity checks, and the packaged libraries contain the display-sync timing identifiers. Linux aarch64 remains on the 0160 candidate; the complete Linux package group and artifact manifest update are unfinished. The PlezyNG package lock still references the published group. No CI was used. Live playback behavior, A/V sync, inference quality, sustained playback, and provider execution remain unqualified.

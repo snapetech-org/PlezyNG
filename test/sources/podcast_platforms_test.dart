@@ -15,16 +15,13 @@ http.Response jsonResponse(Object data) =>
 
 void main() {
   group('Podcast metadata', () {
-    test(
-      'plain text keeps punctuation across inline markup and spaces block elements',
-      () {
-        expect(podcastPlainText('A safe <b>description</b>.'), 'A safe description.');
-        expect(
-          podcastPlainText('<p>A safe <b>description</b>.</p><p>Next &amp; final!</p>'),
-          'A safe description. Next & final!',
-        );
-      },
-    );
+    test('plain text keeps punctuation across inline markup and spaces block elements', () {
+      expect(podcastPlainText('A safe <b>description</b>.'), 'A safe description.');
+      expect(
+        podcastPlainText('<p>A safe <b>description</b>.</p><p>Next &amp; final!</p>'),
+        'A safe description. Next & final!',
+      );
+    });
 
     test('RFC 822 offsets and Atom timestamps describe the same instant', () {
       expect(parsePodcastDate('Fri, 30 Oct 2026 19:00:00 -0600'), DateTime.utc(2026, 10, 31, 1));

@@ -69,10 +69,7 @@ int? podcastTimestamp(String value) {
 String podcastPlainText(String value) {
   final plain = value
       .replaceAll(
-        RegExp(
-          r'</?(?:article|blockquote|br|div|h[1-6]|hr|li|ol|p|pre|section|ul)\b[^>]*>',
-          caseSensitive: false,
-        ),
+        RegExp(r'</?(?:article|blockquote|br|div|h[1-6]|hr|li|ol|p|pre|section|ul)\b[^>]*>', caseSensitive: false),
         ' ',
       )
       .replaceAll(RegExp(r'<[^>]*>'), '')

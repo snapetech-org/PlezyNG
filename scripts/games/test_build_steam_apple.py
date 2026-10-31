@@ -61,7 +61,18 @@ class AppleArchiveTest(unittest.TestCase):
         for arch, command in zip(('arm64', 'x86_64'), combines):
             self.assertTrue(any(f'macosx-{arch}/mbedtls/3rdparty/everest/libeverest.a' in p for p in command))
             self.assertTrue(any(f'macosx-{arch}/mbedtls/3rdparty/p256-m/libp256m.a' in p for p in command))
-        self.assertEqual(commands[-1][-3:], ('-verify_arch', 'arm64', 'x86_64'))
+        architecture_checks = [
+            command for command in commands
+            if command[:2] == ('xcrun', 'lipo')
+            and len(command) == 5
+            and command[3] == '-verify_arch'
+        ]
+        self.assertEqual(
+            [command[4] for command in architecture_checks], ['arm64', 'x86_64']
+        )
+        self.assertTrue(
+            all(command[2].endswith('/libplezy_steam.pending.a') for command in architecture_checks)
+        )
 
     def test_missing_crypto_dependency_preserves_previous_archive(self):
         commands = self.exercise(fail='missing crypto')

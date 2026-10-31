@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import re
 import shutil
 import stat
 import subprocess
@@ -18,6 +19,20 @@ ROOT = Path(__file__).resolve().parents[2]
 FETCH_ENGINE = ROOT / "tvos/scripts/fetch_engine.sh"
 PATCH_HEADERS = ROOT / "scripts/patch_tvos_flutter_engine_headers.py"
 ENGINE_VARIANTS = ("tvos_debug_sim_unopt_arm64", "tvos_release")
+TVOS_GUARD = "#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)"
+IOS_ONLY_TYPES = {
+    "FlutterPlugin.h": (
+        ("UIUserNotificationSettings*", 1),
+        ("UILocalNotification*", 1),
+        ("UIApplicationShortcutItem*", 1),
+    ),
+    "FlutterPluginAppLifeCycleDelegate.h": (
+        ("UIUserNotificationSettings*", 1),
+        ("UILocalNotification*", 1),
+        ("UIApplicationShortcutItem*", 1),
+    ),
+    "FlutterSceneLifeCycle.h": (("UIApplicationShortcutItem*", 2),),
+}
 
 
 class FetchTvosEngineTest(unittest.TestCase):
@@ -74,20 +89,32 @@ cp "$FIXTURE_ARCHIVE" "$output"
                     "#ifndef FLUTTERPLUGIN_H_\n"
                     "#define FLUTTERPLUGIN_H_\n"
                     "#import <UIKit/UIKit.h>\n"
-                    "#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)\n"
                     "- (void)application:(UIApplication*)application\n"
-                    "    didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings;\n"
-                    "#endif\n",
+                    "    didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings\n"
+                    "    API_DEPRECATED(ios(8.0, 10.0));\n"
+                    "- (void)application:(UIApplication*)application\n"
+                    "    didReceiveLocalNotification:(UILocalNotification*)notification\n"
+                    "    API_DEPRECATED(ios(4.0, 10.0));\n"
+                    "- (BOOL)application:(UIApplication*)application\n"
+                    "    performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem\n"
+                    "    completionHandler:(void (^)(BOOL succeeded))completionHandler\n"
+                    "    API_AVAILABLE(ios(9.0));\n",
                     encoding="utf-8",
                 )
                 (headers / "FlutterPluginAppLifeCycleDelegate.h").write_text(
                     "#ifndef FLUTTERPLUGINAPPLIFECYCLEDELEGATE_H_\n"
                     "#define FLUTTERPLUGINAPPLIFECYCLEDELEGATE_H_\n"
                     '#import "FlutterPlugin.h"\n'
-                    "#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)\n"
                     "- (void)application:(UIApplication*)application\n"
-                    "    didReceiveLocalNotification:(UILocalNotification*)notification;\n"
-                    "#endif\n",
+                    "    didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings\n"
+                    "    API_DEPRECATED(ios(8.0, 10.0));\n"
+                    "- (void)application:(UIApplication*)application\n"
+                    "    didReceiveLocalNotification:(UILocalNotification*)notification\n"
+                    "    API_DEPRECATED(ios(4.0, 10.0));\n"
+                    "- (BOOL)application:(UIApplication*)application\n"
+                    "    performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem\n"
+                    "    completionHandler:(void (^)(BOOL succeeded))completionHandler\n"
+                    "    API_AVAILABLE(ios(9.0));\n",
                     encoding="utf-8",
                 )
                 (headers / "FlutterSceneLifeCycle.h").write_text(
@@ -111,14 +138,30 @@ cp "$FIXTURE_ARCHIVE" "$output"
     def _assert_patched_headers(self, engine: Path) -> None:
         for variant in ENGINE_VARIANTS:
             headers = engine / "out" / variant / "Flutter.framework" / "Headers"
-            plugin = (headers / "FlutterPlugin.h").read_text(encoding="utf-8")
-            delegate = (headers / "FlutterPluginAppLifeCycleDelegate.h").read_text(encoding="utf-8")
-            lifecycle = (headers / "FlutterSceneLifeCycle.h").read_text(encoding="utf-8")
-            self.assertIn("#import <TargetConditionals.h>", plugin)
-            self.assertIn("#import <TargetConditionals.h>", delegate)
-            self.assertIn("#import <TargetConditionals.h>", lifecycle)
-            self.assertEqual(lifecycle.count("#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)"), 2)
-            self.assertEqual(lifecycle.count("API_UNAVAILABLE(tvos);"), 2)
+            for header_name, marker_counts in IOS_ONLY_TYPES.items():
+                content = (headers / header_name).read_text(encoding="utf-8")
+                self.assertIn("#import <TargetConditionals.h>", content)
+                self.assertEqual(content.count(TVOS_GUARD), sum(count for _, count in marker_counts))
+                method_starts = [
+                    match.start() for match in re.finditer(r"(?m)^-[ \t]+\(", content)
+                ]
+                declarations = []
+                for start in method_starts:
+                    end = content.find(";", start)
+                    self.assertGreaterEqual(end, start)
+                    declarations.append((start, end, content[start : end + 1]))
+
+                for marker, expected_count in marker_counts:
+                    matches = [
+                        (start, end)
+                        for start, end, declaration in declarations
+                        if marker in declaration
+                    ]
+                    self.assertEqual(len(matches), expected_count, header_name)
+                    for start, end in matches:
+                        guard = content.rfind(TVOS_GUARD, 0, start)
+                        self.assertGreater(guard, content.rfind("#endif", 0, start))
+                        self.assertGreater(content.find("#endif", end), end)
 
     def _run(self) -> subprocess.CompletedProcess[str]:
         return subprocess.run(

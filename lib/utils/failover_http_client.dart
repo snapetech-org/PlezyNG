@@ -103,9 +103,11 @@ class FailoverHttpClient extends MediaServerHttpClient {
     Duration? timeout,
     AbortController? abort,
     bool allowEndpointFailover = true,
+    bool retryTimeoutInPlace = false,
   }) => _sendWithFailover(
     verb: 'GET',
     allowEndpointFailover: allowEndpointFailover,
+    retryTimeoutInPlace: retryTimeoutInPlace,
     abort: abort,
     send: () => super.get(path, queryParameters: queryParameters, headers: headers, timeout: timeout, abort: abort),
   );
@@ -139,6 +141,7 @@ class FailoverHttpClient extends MediaServerHttpClient {
     required String verb,
     required bool allowEndpointFailover,
     required Future<MediaServerResponse> Function() send,
+    bool retryTimeoutInPlace = false,
     AbortController? abort,
   }) async {
     final generation = _endpointManager?.generation;
@@ -149,7 +152,13 @@ class FailoverHttpClient extends MediaServerHttpClient {
       if (!allowEndpointFailover || !_shouldAttemptFailover(exception: e) || !_canFailover(generation)) {
         rethrow;
       }
-      final retried = await _failoverOnce(verb: verb, send: send, abort: abort, failure: e.type);
+      final retried = await _failoverOnce(
+        verb: verb,
+        send: send,
+        abort: abort,
+        failure: e.type,
+        retryTimeoutInPlace: retryTimeoutInPlace,
+      );
       if (retried == null) rethrow;
       return retried;
     }
@@ -189,6 +198,7 @@ class FailoverHttpClient extends MediaServerHttpClient {
     required Future<MediaServerResponse> Function() send,
     AbortController? abort,
     MediaServerHttpErrorType? failure,
+    bool retryTimeoutInPlace = false,
   }) async {
     final manager = _endpointManager!;
     final generation = manager.generation;
@@ -201,6 +211,16 @@ class FailoverHttpClient extends MediaServerHttpClient {
       } else if (failure == MediaServerHttpErrorType.connectionTimeout ||
           failure == MediaServerHttpErrorType.receiveTimeout) {
         if (await _currentEndpointAnswers(manager, abort)) {
+          if (retryTimeoutInPlace) {
+            return await _resendInPlace(
+              manager,
+              generation: generation,
+              verb: verb,
+              failure: 'timeout',
+              send: send,
+              abort: abort,
+            );
+          }
           appLogger.i('$logLabel endpoint still answers after $verb timeout, keeping it');
           return null;
         }
@@ -246,10 +266,31 @@ class FailoverHttpClient extends MediaServerHttpClient {
   }) async {
     final generation = manager.generation;
     if (!await _currentEndpointAnswers(manager, abort)) return null;
+    return _resendInPlace(
+      manager,
+      generation: generation,
+      verb: verb,
+      failure: 'connection error',
+      send: send,
+      abort: abort,
+    );
+  }
+
+  /// Retries once on the current endpoint after its probe answered. A 4xx is
+  /// still an answer; transport errors and 5xx responses return `null` so the
+  /// original request failure remains authoritative. Cancellations propagate.
+  Future<MediaServerResponse?> _resendInPlace(
+    EndpointFailoverManager manager, {
+    required int generation,
+    required String verb,
+    required String failure,
+    required Future<MediaServerResponse> Function() send,
+    AbortController? abort,
+  }) async {
     abort?.throwIfAborted();
     if (manager.generation != generation) return null;
 
-    appLogger.i('$logLabel endpoint still answers after $verb connection error, retrying in place');
+    appLogger.i('$logLabel endpoint still answers after $verb $failure, retrying in place');
     try {
       final response = await send();
       return _shouldAttemptFailover(statusCode: response.statusCode) ? null : response;

@@ -2493,20 +2493,22 @@ class _MainScreenState extends State<MainScreen>
   @override
   Widget build(BuildContext context) {
     final useSideNav = PlatformDetector.shouldUseSideNavigation(context);
-    return Focus(
-      onKeyEvent: (node, event) {
-        if (event is KeyDownEvent || event is KeyRepeatEvent) _recordScreensaverActivity();
-        return KeyEventResult.ignored;
-      },
-      child: Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: (_) => _recordScreensaverActivity(),
-        onPointerMove: (_) => _recordScreensaverActivity(),
-        onPointerHover: (_) => _recordScreensaverActivity(),
-        onPointerSignal: (_) => _recordScreensaverActivity(),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [_buildContent(context, useSideNav), if (_showContentScreensaver) _buildContentScreensaver()],
+    return CoveredRouteFocusBoundary(
+      child: Focus(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent || event is KeyRepeatEvent) _recordScreensaverActivity();
+          return KeyEventResult.ignored;
+        },
+        child: Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (_) => _recordScreensaverActivity(),
+          onPointerMove: (_) => _recordScreensaverActivity(),
+          onPointerHover: (_) => _recordScreensaverActivity(),
+          onPointerSignal: (_) => _recordScreensaverActivity(),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [_buildContent(context, useSideNav), if (_showContentScreensaver) _buildContentScreensaver()],
+          ),
         ),
       ),
     );

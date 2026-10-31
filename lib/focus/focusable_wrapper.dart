@@ -401,6 +401,8 @@ class _FocusableWrapperState extends State<FocusableWrapper> with SingleTickerPr
 
       if (!position.maxScrollExtent.isFinite) return;
       final targetOffset = (currentOffset + scrollDelta).clamp(position.minScrollExtent, position.maxScrollExtent);
+      // A no-op inner animation can still move an ancestor in a NestedScrollView.
+      if ((targetOffset - currentOffset).abs() < 0.5) return;
 
       if (MediaQuery.disableAnimationsOf(context)) {
         position.jumpTo(targetOffset);

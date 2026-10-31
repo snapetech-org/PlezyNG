@@ -3308,6 +3308,9 @@ class Translations$videoControls$en {
 	/// en: 'Subtitle downloaded, but it could not be selected'
 	String get subtitleDownloadedNotApplied => 'Subtitle downloaded, but it could not be selected';
 
+	/// en: 'Subtitle did not appear in time; the download may have failed'
+	String get subtitleDownloadTimedOut => 'Subtitle did not appear in time; the download may have failed';
+
 	/// en: 'Failed to download subtitle'
 	String get subtitleDownloadFailed => 'Failed to download subtitle';
 
@@ -15432,6 +15435,7 @@ extension on Translations {
 			'videoControls.noSubtitlesFound' => 'No subtitles found',
 			'videoControls.subtitleDownloaded' => 'Subtitle downloaded',
 			'videoControls.subtitleDownloadedNotApplied' => 'Subtitle downloaded, but it could not be selected',
+			'videoControls.subtitleDownloadTimedOut' => 'Subtitle did not appear in time; the download may have failed',
 			'videoControls.subtitleDownloadFailed' => 'Failed to download subtitle',
 			'videoControls.searchLanguages' => 'Search languages...',
 			'videoControls.skipIntro' => 'Skip Intro',
@@ -15861,9 +15865,9 @@ extension on Translations {
 			'accountPreferences.forcedSubtitleOptions.onlyNonForcedDescription' => 'Exclude tracks marked as forced.',
 			'accountPreferences.displayMissingEpisodes' => 'Show missing episodes',
 			'accountPreferences.displayMissingEpisodesDescription' => 'List episodes the server knows about but has no file for.',
-			'accountPreferences.hidePlayedInLatest' => 'Hide watched items in Latest',
 			_ => null,
 		} ?? switch (path) {
+			'accountPreferences.hidePlayedInLatest' => 'Hide watched items in Latest',
 			'accountPreferences.hidePlayedInLatestDescription' => 'Leave items you have already watched out of the server\'s Latest rows.',
 			'accountPreferences.displayCollectionsView' => 'Show the Collections view',
 			'accountPreferences.displayCollectionsViewDescription' => 'Offer the server\'s Collections view alongside your libraries.',
@@ -16375,9 +16379,9 @@ extension on Translations {
 			'explore.relation.adaptation' => 'Adaptation',
 			'explore.relation.other' => 'Related',
 			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
-			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
 			_ => null,
 		} ?? switch (path) {
+			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
 			'explore.detail.originalTitle' => 'Original title',
 			'explore.detail.alsoKnownAs' => 'Also known as',
 			'explore.detail.studios' => 'Studios',
@@ -16889,9 +16893,9 @@ extension on Translations {
 			'downloads.notificationDownloading' => 'Downloading...',
 			'downloads.notificationComplete' => 'Download complete',
 			'downloads.notificationPaused' => 'Download paused',
-			'shaders.title' => 'Shaders',
 			_ => null,
 		} ?? switch (path) {
+			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',
 			'shaders.lanczosUpscaling' => 'Lanczos upscaling',
@@ -17403,9 +17407,9 @@ extension on Translations {
 			'services.deviceCode.copyCode' => 'Copy activation code',
 			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
 			'services.deviceCode.codeCopied' => 'Code copied',
-			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
 			_ => null,
 		} ?? switch (path) {
+			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
 			'services.oauthProxy.body' => 'Scan this QR code or open the URL on any device.',
 			'services.oauthProxy.openToSignIn' => ({required Object service}) => 'Open ${service} to sign in',
 			'services.pendingAuth.copyUrl' => 'Copy sign-in URL',
@@ -17917,9 +17921,9 @@ extension on Translations {
 			'universalMedia.shareStop' => 'Stop sharing',
 			'universalMedia.extensionsMode' => 'Extensions and CLI',
 			'universalMedia.extensionsIntro' => 'Add a data-only search extension to find media. Choose a result to load it into the familiar Open media form.',
-			'universalMedia.extensionsPrivacy' => 'A manifest can define one HTTPS search endpoint and map response fields. It cannot run code, add request headers, read files, or launch shell commands.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.extensionsPrivacy' => 'A manifest can define one HTTPS search endpoint and map response fields. It cannot run code, add request headers, read files, or launch shell commands.',
 			'universalMedia.extensionImport' => 'Add extension manifest',
 			'universalMedia.extensionEmpty' => 'No search services yet. Choose a trusted manifest JSON file to add one.',
 			'universalMedia.extensionChoose' => 'Search service',
@@ -18431,9 +18435,9 @@ extension on Translations {
 			'games.unlinkSteamAccount' => 'Unlink Steam account',
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
-			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
 			_ => null,
 		} ?? switch (path) {
+			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
 			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
 			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'games.connecting' => 'Connecting…',

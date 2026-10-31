@@ -43,8 +43,8 @@ class CoveredRouteFocusBoundary extends StatefulWidget {
 
   final Widget child;
 
-  /// Requests focus for [node] as the first focus of the subtree below
-  /// [context]: a screen's entry focus after it mounts or first loads.
+  /// Requests focus for [node] as the first focus of the subtree it lives in:
+  /// a screen's entry focus after it mounts or first loads.
   ///
   /// Outside a covered boundary this is `node.requestFocus()`. Under one, the
   /// request is held instead of dropped and replayed after the uncover
@@ -53,17 +53,34 @@ class CoveredRouteFocusBoundary extends StatefulWidget {
   /// that descendant. A self-heal that re-takes focus keeps calling
   /// `requestFocus()` directly, so the cover still drops it.
   static void requestInitialFocus(BuildContext context, FocusNode node) {
-    final boundary = context.findAncestorStateOfType<_CoveredRouteFocusBoundaryState>();
-    // `_covered` is the exclusion in force, which outlives the route's own
-    // currency until the next frame: a request between a pop and that frame
-    // would still be dropped.
-    if (boundary == null || !boundary._covered) {
+    final nodeContext = node.context;
+    final searchContext = nodeContext != null && nodeContext.mounted ? nodeContext : context;
+    final boundary = _coveredBoundaryAbove(searchContext);
+    if (boundary == null) {
       node.requestFocus();
       return;
     }
     boundary._heldRequests
       ..remove(node)
       ..add(node);
+  }
+
+  /// Finds the innermost boundary that is still excluding descendants. The
+  /// covered flag outlives route currency until the next frame, so requests
+  /// between a pop and that frame must still be held.
+  static _CoveredRouteFocusBoundaryState? _coveredBoundaryAbove(BuildContext context) {
+    _CoveredRouteFocusBoundaryState? covered;
+    context.visitAncestorElements((element) {
+      if (element is StatefulElement) {
+        final state = element.state;
+        if (state is _CoveredRouteFocusBoundaryState && state._covered) {
+          covered = state;
+          return false;
+        }
+      }
+      return true;
+    });
+    return covered;
   }
 
   @override
@@ -137,7 +154,7 @@ class _CoveredRouteFocusBoundaryState extends State<CoveredRouteFocusBoundary> {
         final held = List.of(_heldRequests);
         _heldRequests.clear();
         for (final node in held) {
-          if (_isAttachedBelowScope(node)) node.requestFocus();
+          if (_isAttachedBelowScope(node)) CoveredRouteFocusBoundary.requestInitialFocus(context, node);
         }
       });
     }

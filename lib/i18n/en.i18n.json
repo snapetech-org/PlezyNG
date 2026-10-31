@@ -1169,6 +1169,7 @@
     "noSubtitlesFound": "No subtitles found",
     "subtitleDownloaded": "Subtitle downloaded",
     "subtitleDownloadedNotApplied": "Subtitle downloaded, but it could not be selected",
+    "subtitleDownloadTimedOut": "Subtitle did not appear in time; the download may have failed",
     "subtitleDownloadFailed": "Failed to download subtitle",
     "searchLanguages": "Search languages...",
     "skipIntro": "Skip Intro",

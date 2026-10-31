@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Preserve health status after a transient timeout when the current server endpoint is still reachable.
+- Keep TV focus on the visible route and avoid no-op nested scrolling that can collapse the library header.
+- Explain when a downloaded subtitle fails to appear in the player.
 - Wait for a queued active-profile rebind cycle to settle before returning to its caller.
 - Add the repository root to Python guard-test imports so nested CI checks resolve project modules.
 - Retry transient FFmpeg source download failures without weakening signature verification.

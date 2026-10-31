@@ -702,7 +702,11 @@ class JellyfinClient
   @override
   Future<HealthStatus> checkHealth() async {
     try {
-      final response = await _http.get(paths.currentUser, timeout: MediaServerTimeouts.jellyfinProbe);
+      final response = await _http.get(
+        paths.currentUser,
+        timeout: MediaServerTimeouts.jellyfinProbe,
+        retryTimeoutInPlace: true,
+      );
       final ok = response.statusCode >= 200 && response.statusCode < 300;
       if (ok) {
         final data = response.data;

@@ -591,6 +591,13 @@ jobs:
           path: ${{ github.workspace }}/.cache/plezy-pub-cache
           key: ${{ runner.os }}-${{ runner.arch }}-plezy-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
+      - name: Select per-job Xcode DerivedData path
+        shell: bash
+        run: |
+          set -euo pipefail
+          derived_data_path="$RUNNER_TEMP/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${{ matrix.source_packages_directory }}-DerivedData"
+          echo "APPLE_DERIVED_DATA_PATH=$derived_data_path" >> "$GITHUB_ENV"
+
       - name: Ensure CMake for the embedded Steam receiver
         shell: bash
         run: |
@@ -857,6 +864,7 @@ jobs:
             -scheme Runner \
             -configuration Debug \
             -destination "$APPLE_TEST_DESTINATION" \
+            -derivedDataPath "$APPLE_DERIVED_DATA_PATH" \
             -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR" \
             -disableAutomaticPackageResolution \
             -resultBundlePath "$result_bundle" \
@@ -878,6 +886,7 @@ jobs:
             -scheme Runner \
             -configuration Debug \
             -destination "$APPLE_TEST_DESTINATION" \
+            -derivedDataPath "$APPLE_DERIVED_DATA_PATH" \
             -disableAutomaticPackageResolution \
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \

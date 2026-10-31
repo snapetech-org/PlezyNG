@@ -111,6 +111,10 @@ the visible GPU before it reports the selected provider.
 Linux runtime discovery checks `PLEZY_PME_RUNTIME_DIR` before the app bundle.
 That directory must contain `libplezy_motion_engine.so`, `libonnxruntime.so`,
 and `providers.linux.tsv`, plus any provider plug-ins named by the manifest.
+The RX 7900 XT development launcher adds that directory and its optional
+`migraphx/lib` subdirectory to `LD_LIBRARY_PATH` before starting PlezyNG.
+Additional extracted ROCm library directories can be supplied as a
+colon-separated `PLEZY_PME_LIBRARY_PATH`; each configured entry must exist.
 Intel systems can use the optional `openvino` CMake variant to stage the pinned
 OpenVINO Plugin EP 1.8.1 with the default ORT 1.27.1 runtime. It includes the
 OpenVINO 2026.4 runtime, TBB libraries, GPU kernel cache, plugin license, and

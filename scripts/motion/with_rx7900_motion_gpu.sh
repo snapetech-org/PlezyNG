@@ -40,6 +40,46 @@ gpu_inventory() {
   '
 }
 
+configure_runtime_loader_paths() {
+  local runtime_dir="${PLEZY_PME_RUNTIME_DIR:-}"
+  local extra_library_paths="${PLEZY_PME_LIBRARY_PATH:-}"
+  local current_library_path="${LD_LIBRARY_PATH:-}"
+  local directory
+  local prefix=""
+  local -a library_directories=()
+  local -a extra_directories=()
+
+  if [[ -n "$runtime_dir" ]]; then
+    if [[ ! -d "$runtime_dir" ]]; then
+      printf 'PLEZY_PME_RUNTIME_DIR is not a directory: %s\n' "$runtime_dir" >&2
+      return 1
+    fi
+    library_directories+=("$runtime_dir")
+    if [[ -d "$runtime_dir/migraphx/lib" ]]; then
+      library_directories+=("$runtime_dir/migraphx/lib")
+    fi
+  fi
+
+  if [[ -n "$extra_library_paths" ]]; then
+    IFS=: read -r -a extra_directories <<<"$extra_library_paths"
+    for directory in "${extra_directories[@]}"; do
+      [[ -n "$directory" ]] || continue
+      if [[ ! -d "$directory" ]]; then
+        printf 'PLEZY_PME_LIBRARY_PATH entry is not a directory: %s\n' "$directory" >&2
+        return 1
+      fi
+      library_directories+=("$directory")
+    done
+  fi
+
+  for directory in "${library_directories[@]}"; do
+    prefix="${prefix:+$prefix:}$directory"
+  done
+  if [[ -n "$prefix" ]]; then
+    export LD_LIBRARY_PATH="$prefix${current_library_path:+:$current_library_path}"
+  fi
+}
+
 if ! host_gpus=$(rocminfo | gpu_inventory); then
   printf 'Could not enumerate ROCm GPUs.\n' >&2
   exit 1
@@ -68,6 +108,8 @@ if [[ "$visible_gpus" != "$target" ]]; then
     "$target" "$visible_gpus" >&2
   exit 1
 fi
+
+configure_runtime_loader_paths || exit 1
 
 # PME's MIGraphX device 0 is now the RX 7900 XT. The Vulkan selector is read
 # by the local PME filter patch; MPV's display renderer remains unchanged.

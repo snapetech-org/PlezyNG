@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Add a Podcasts hub with Apple Podcasts discovery, optional Podcast Index search/trending, private RSS setup, OPML portability, episode filters and existing-player/offline integration.
+- Support Audiobookshelf podcast shows and episodes with episode-scoped resume/progress, and add RSS dates, video enclosures, explicit/season metadata and Podcasting 2.0/Podlove chapters.
+
 - Refresh pinned MPV and FFmpeg artifacts to the verified private native build.
 
 - Refresh the iOS CocoaPods checksum for `plezy_torrent` so deployment installs match the current podspec.

@@ -25,6 +25,7 @@ import '../../widgets/settings_section.dart';
 import 'add_connection_screen.dart';
 import 'hardcover_settings_screen.dart';
 import '../sources/add_source_screen.dart';
+import '../sources/podcasts_screen.dart';
 import 'integration_matches_screen.dart';
 import 'seerr_connect_screen.dart';
 import 'seerr_settings_screen.dart';
@@ -68,6 +69,12 @@ class ServicesSettingsScreen extends StatelessWidget {
                   trailing: const AppIcon(Symbols.chevron_right_rounded, fill: 1),
                   onTap: () =>
                       Navigator.push<bool>(context, MaterialPageRoute<bool>(builder: (_) => const AddSourceScreen())),
+                ),
+                FocusableListTile(
+                  leading: const AppIcon(Symbols.podcasts_rounded),
+                  title: Text(t.podcasts.title), subtitle: Text(t.podcasts.discover),
+                  trailing: const AppIcon(Symbols.chevron_right_rounded, fill: 1),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PodcastsScreen())),
                 ),
               ],
             ),

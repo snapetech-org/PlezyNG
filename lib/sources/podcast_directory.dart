@@ -61,7 +61,7 @@ class PodcastDirectory {
     PodcastDirectoryProvider provider = PodcastDirectoryProvider.apple,
     String country = 'US', String apiKey = '', String apiSecret = '', bool trending = false,
   }) async {
-    final term = input.trim();
+    final term = trending ? '' : input.trim();
     if (!trending && (term.isEmpty || term.length > 512)) throw const SourceException(SourceFailure.invalidData);
     // URL-like input is either an exact supported public show link or handled
     // locally as RSS by the caller. Never send an unrecognised URL as a query.

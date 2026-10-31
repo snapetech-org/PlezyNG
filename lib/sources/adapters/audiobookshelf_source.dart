@@ -387,8 +387,11 @@ class AudiobookshelfSourceAdapter extends SourceAdapter {
       rethrow;
     }
     if (j.isEmpty) return null;
+    final positionMs = ((j['currentTime'] as num? ?? 0) * 1000).round();
     return local.copyWith(
-      positionMs: ((j['currentTime'] as num? ?? 0) * 1000).round(),
+      positionMs: positionMs,
+      filePositionMs: entry.audio.length == 1 ? positionMs : local.filePositionMs,
+      fileIndex: entry.audio.length == 1 ? 0 : local.fileIndex,
       fraction: (j[local.mode == PublicationMode.reading ? 'ebookProgress' : 'progress'] as num?)?.toDouble() ?? 0,
       locator: local.mode == PublicationMode.reading && j['ebookLocation'] is String
           ? ReadingLocator(href: '', cfi: j['ebookLocation'] as String)
@@ -412,6 +415,8 @@ class AudiobookshelfSourceAdapter extends SourceAdapter {
         'ebookLocation': progress.locator?.cfi,
         'ebookProgress': progress.fraction,
       } else ...{
+        if (entry.audio.every((file) => (file.durationMs ?? 0) > 0))
+          'duration': entry.audio.fold<int>(0, (total, file) => total + (file.durationMs ?? 0)) / 1000,
         'currentTime': progress.positionMs / 1000,
         'progress': progress.fraction,
         'isFinished': progress.finished,

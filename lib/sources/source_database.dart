@@ -547,6 +547,27 @@ class SourceRepository {
           }
         }
       });
+  /// Latest indexed episodes across RSS and Audiobookshelf, scoped before
+  /// decoding so opening Podcasts never loads the entire media catalogue.
+  Future<List<SourceEntry>> podcastEntries(String profile, {int limit = 200, int offset = 0,
+      String? source, String? parent, String query = '', bool oldestFirst = false}) async {
+    final rows = await database.customSelect(
+      "SELECT e.payload FROM entries e WHERE e.profile=? "
+      "AND json_extract(e.payload,'\$.kind') != 'folder' "
+      "AND (json_extract(e.payload,'\$.identifiers.podcast')='episode' "
+      "OR json_extract(e.payload,'\$.identifiers.feed') IS NOT NULL) "
+      '${source == null ? '' : 'AND e.source=? '}'
+      '${parent == null ? '' : 'AND e.parent=? '}'
+      '${query.trim().isEmpty ? '' : 'AND instr(e.search,?)>0 '}'
+      "ORDER BY CAST(json_extract(e.payload,'\$.identifiers.publishedAt') AS INTEGER) "
+      '${oldestFirst ? 'ASC' : 'DESC'}, e.entry_key '
+      'LIMIT ? OFFSET ?', variables: [Variable(profile), if (source != null) Variable(source),
+        if (parent != null) Variable(parent), if (query.trim().isNotEmpty) Variable(query.trim().toLowerCase()),
+        Variable(limit.clamp(1, 10000)), Variable(offset.clamp(0, 1000000))],
+    ).get();
+    return rows.map((row) => SourceEntry.fromJson(sourceMap(jsonDecode(row.read<String>('payload'))))).toList();
+  }
+
   Future<List<SourceEntry>> entries(
     String profile, {
     String? source,

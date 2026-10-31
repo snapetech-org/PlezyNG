@@ -83,7 +83,12 @@ class PodcastRssSourceAdapter extends SourceAdapter {
     if (RegExp(r'<!\s*(DOCTYPE|ENTITY)', caseSensitive: false).hasMatch(response)) {
       throw const SourceException(SourceFailure.invalidData);
     }
-    final document = XmlDocument.parse(response);
+    late XmlDocument document;
+    try {
+      document = XmlDocument.parse(response);
+    } on Object {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     final root = document.rootElement;
     final rssChannel = root.name.local == 'rss'
         ? root.childElements.where((e) => e.name.local == 'channel').firstOrNull
@@ -205,6 +210,10 @@ class PodcastRssSourceAdapter extends SourceAdapter {
         }
       }
       inline.sort((a, b) => a.startMs.compareTo(b.startMs));
+      final inlineChapters = [for (var i = 0; i < inline.length; i++) BookChapter(
+        title: inline[i].title, startMs: inline[i].startMs,
+        endMs: i + 1 < inline.length ? inline[i + 1].startMs : durationMs ?? 0,
+      )];
       final entry = SourceEntry(
         sourceId: source.id,
         id: id,
@@ -215,7 +224,7 @@ class PodcastRssSourceAdapter extends SourceAdapter {
         series: title,
         description: podcastPlainText(description),
         language: childText(rssChannel ?? atom!, 'language'),
-        chapters: chapterCache[id] ?? inline,
+        chapters: chapterCache[id] ?? inlineChapters,
         coverId: cover == null ? null : sourceDigest(_urlIdentity(cover)),
         releaseYear: date?.year,
         identifiers: {

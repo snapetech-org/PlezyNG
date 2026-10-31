@@ -71,9 +71,9 @@ List<BookChapter> podcastJsonChapters(Map<String, dynamic> data, {int? durationM
     if (seconds is! num || !seconds.isFinite || seconds < 0 || seconds > 7 * 24 * 3600) continue;
     final start = (seconds * 1000).round();
     if (durationMs != null && durationMs > 0 && start >= durationMs) continue;
-    if (item['toc'] == false || !seen.add(start)) continue;
+    if (item['toc'] == false) continue;
     final title = podcastPlainText(item['title'] is String ? item['title'] as String : '');
-    if (title.isEmpty) continue;
+    if (title.isEmpty || !seen.add(start)) continue;
     chapters.add(BookChapter(title: title, startMs: start, endMs: 0));
   }
   chapters.sort((a, b) => a.startMs.compareTo(b.startMs));

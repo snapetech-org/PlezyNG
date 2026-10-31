@@ -27,6 +27,7 @@ void main() {
 
     test('chapter resources ignore invalid, duplicate and hidden chapters', () {
       final chapters = podcastJsonChapters({'chapters': [
+        {'startTime': 0, 'title': ''},
         {'startTime': 20, 'title': 'Later'}, {'startTime': 0, 'title': 'Start'},
         {'startTime': 20, 'title': 'Duplicate'}, {'startTime': -1, 'title': 'Invalid'},
         {'startTime': 30, 'title': 'Hidden', 'toc': false}, {'startTime': 60, 'title': 'Outside'},
@@ -74,6 +75,7 @@ void main() {
       })));
       addTearDown(directory.close);
       for (final input in ['https://feed.example/private?token=secret',
+        'https://[invalid/private?token=secret', 'feeds.patreon.com/private?token=secret',
         'https://podcasts.apple.com.attacker.example/podcast/id123',
         'https://user:password@podcasts.apple.com/podcast/id123', '//feed.example/private']) {
         await expectLater(directory.search(input), throwsA(isA<SourceException>()));

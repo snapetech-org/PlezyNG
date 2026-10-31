@@ -31,6 +31,15 @@ class PodcastDirectory {
   static String countryCode(String? value) =>
       RegExp(r'^[A-Za-z]{2}$').hasMatch(value ?? '') ? value!.toUpperCase() : 'US';
 
+  /// Classify before parsing: malformed or scheme-less private links must
+  /// never fall through into a public directory's search query.
+  static bool looksLikeUrl(String input) {
+    final value = input.trim();
+    return RegExp(r'^[a-z][a-z0-9+.-]*:', caseSensitive: false).hasMatch(value) ||
+        value.contains('://') || value.startsWith('//') ||
+        RegExp(r'^(?:[a-z0-9-]+\.)+[a-z]{2,63}(?::\d+)?(?:[/#?]|$)', caseSensitive: false).hasMatch(value);
+  }
+
   static Uri? feedUri(Object? value) {
     if (value is! String || value.length > 8192) return null;
     final uri = Uri.tryParse(value.trim());
@@ -67,7 +76,8 @@ class PodcastDirectory {
     // locally as RSS by the caller. Never send an unrecognised URL as a query.
     final link = Uri.tryParse(term);
     String? apple, index;
-    if (link != null && (link.hasScheme || term.contains('://') || term.startsWith('//'))) {
+    if (looksLikeUrl(term)) {
+      if (link == null) throw const SourceException(SourceFailure.invalidData);
       apple = appleId(link);
       index = indexId(link);
       if (apple == null && index == null) throw const SourceException(SourceFailure.unsupported);

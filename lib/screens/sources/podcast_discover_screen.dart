@@ -84,8 +84,12 @@ class _PodcastDiscoverScreenState extends State<PodcastDiscoverScreen> {
     sources.requireSession(epoch);
     final text = _search.text.trim();
     final uri = Uri.tryParse(text);
-    if (!trending && uri != null && uri.hasScheme &&
-        PodcastDirectory.appleId(uri) == null && PodcastDirectory.indexId(uri) == null) {
+    if (!trending && PodcastDirectory.looksLikeUrl(text) &&
+        (uri == null || (PodcastDirectory.appleId(uri) == null && PodcastDirectory.indexId(uri) == null))) {
+      if (uri == null) {
+        setState(() => _error = const SourceException(SourceFailure.invalidData));
+        return;
+      }
       if (uri.scheme != 'https' && uri.scheme != 'http') {
         setState(() => _error = const SourceException(SourceFailure.unsupported));
         return;

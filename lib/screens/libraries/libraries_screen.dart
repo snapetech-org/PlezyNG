@@ -21,7 +21,6 @@ import '../../providers/hidden_libraries_provider.dart';
 import '../../providers/libraries_provider.dart';
 import '../../providers/multi_server_provider.dart';
 import '../../services/settings_service.dart';
-import '../../services/jellyfin_sequential_launcher.dart';
 import '../../services/media_list_playback_launcher.dart';
 import '../../widgets/settings_builder.dart';
 import '../../utils/app_logger.dart';
@@ -273,7 +272,7 @@ class _LibrariesScreenState extends State<LibrariesScreen>
     if (_isPreparingRandomPlay) return;
     setState(() => _isPreparingRandomPlay = true);
     try {
-      final result = await JellyfinSequentialLauncher(context: context).launchShuffledLibrary(library: library);
+      final result = await MediaListPlaybackLauncher.shuffleLibrary(context, library);
       if (mounted && result is PlayQueueEmpty) showAppSnackBar(context, t.hubDetail.noItemsFound);
     } catch (error, stackTrace) {
       appLogger.w('Library shuffle failed', error: error, stackTrace: stackTrace);
@@ -1022,7 +1021,7 @@ class _LibrariesScreenState extends State<LibrariesScreen>
           tooltip: t.libraries.playRandomMovie,
           onPressed: _isPreparingRandomPlay ? null : () => _pickRandomMovie(selectedLibrary!),
         ),
-      if (selectedLibrary?.kind == MediaKind.movie || selectedLibrary?.kind == MediaKind.show)
+      if (selectedLibrary != null && MediaListPlaybackLauncher.canShuffleLibrary(selectedLibrary))
         FocusableAction(
           icon: Symbols.shuffle_rounded,
           tooltip: t.common.shuffle,

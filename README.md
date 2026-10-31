@@ -168,6 +168,7 @@ PlezyNG's Google Play closed test is being prepared. Once the test release is pu
 
 ### <img src="assets/readme_icons/browse.svg" height="20" alt="" align="center" /> Browse & Discover
 - Libraries, collections, and playlists — video and audio
+- Shuffle a whole movie or TV library
 - Discover hub — Continue Watching, Next Up, trending, and recommendations
 - Configurable Home rows: merge Recently Added / Recently Released across whichever libraries you pick, or a collections row scoped to specific libraries or collections
 - Hide Home backdrop artwork and choose compact, standard, or large Continue Watching cards

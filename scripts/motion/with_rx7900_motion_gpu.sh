@@ -71,9 +71,17 @@ vulkan_inventory() {
   '
 }
 
+trim_whitespace() {
+  local value="$1"
+  value="${value#"${value%%[![:space:]]*}"}"
+  value="${value%"${value##*[![:space:]]}"}"
+  printf '%s' "$value"
+}
+
 webgpu_provider_selected() {
   local requested="${PLEZY_PME_USE_WEBGPU:-auto}"
   local executable="${1:-}"
+  local runtime_override
   local executable_directory=""
   local resolved_executable=""
   local directory
@@ -92,8 +100,9 @@ webgpu_provider_selected() {
       ;;
   esac
 
-  if [[ -n "${PLEZY_PME_RUNTIME_DIR:-}" ]]; then
-    directories+=("$PLEZY_PME_RUNTIME_DIR")
+  runtime_override=$(trim_whitespace "${PLEZY_PME_RUNTIME_DIR:-}")
+  if [[ -n "$runtime_override" ]]; then
+    directories+=("$runtime_override")
   fi
 
   if [[ -n "$executable" ]]; then
@@ -114,7 +123,15 @@ webgpu_provider_selected() {
   for directory in "${directories[@]}"; do
     manifest="$directory/providers.linux.tsv"
     [[ -f "$manifest" && -e "$directory/libplezy_motion_engine.so" && -e "$directory/libonnxruntime.so" ]] || continue
-    awk -F '\t' '$1 == "WebGpuExecutionProvider" { found = 1 } END { exit !found }' "$manifest"
+    awk -F '\t' '
+      {
+        provider = $1
+        sub(/^[[:space:]]+/, "", provider)
+        sub(/[[:space:]]+$/, "", provider)
+        if (provider == "WebGpuExecutionProvider") found = 1
+      }
+      END { exit !found }
+    ' "$manifest"
     return $?
   done
 
@@ -124,7 +141,7 @@ webgpu_provider_selected() {
 }
 
 configure_runtime_loader_paths() {
-  local runtime_dir="${PLEZY_PME_RUNTIME_DIR:-}"
+  local runtime_dir
   local extra_library_paths="${PLEZY_PME_LIBRARY_PATH:-}"
   local current_library_path="${LD_LIBRARY_PATH:-}"
   local directory
@@ -132,6 +149,7 @@ configure_runtime_loader_paths() {
   local -a library_directories=()
   local -a extra_directories=()
 
+  runtime_dir=$(trim_whitespace "${PLEZY_PME_RUNTIME_DIR:-}")
   if [[ -n "$runtime_dir" ]]; then
     if [[ ! -d "$runtime_dir" ]]; then
       printf 'PLEZY_PME_RUNTIME_DIR is not a directory: %s\n' "$runtime_dir" >&2

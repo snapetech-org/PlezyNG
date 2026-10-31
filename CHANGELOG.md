@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Normalize modifier scan codes on remote Android keys when they obscure the actual key.
 - Mark rejected Plex account tokens as needing sign-in again and retry profile binding after the next sign-in.
 - Keep the explicitly selected Jellyfin subtitle when same-language files tie on metadata.
 - Match the active display's refresh rate during fullscreen playback on macOS without changing its resolution or scaling.

@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import re
 import sys
+from urllib.parse import urlsplit
 
 from workflow_yaml import iter_uses_references, job_block
 
@@ -22,6 +23,7 @@ SETUP_FLUTTER_GIT = WORKFLOW.parents[1] / "actions/setup-flutter-git/action.yml"
 SETUP_FLUTTER_WINDOWS = ROOT / ".github/actions/setup-flutter-windows/action.yml"
 WINDOWS_CMAKE = WORKFLOW.parents[2] / "windows/CMakeLists.txt"
 WINDOWS_MPV_DOWNLOADER = WORKFLOW.parents[2] / "windows/tool/download-pinned-mpv.ps1"
+MPV_LOCK = WORKFLOW.parents[2] / "mpv-build.lock.json"
 WINDOWS_SIMDUTF_DOWNLOADER = (
     WORKFLOW.parents[2] / "windows/tool/download-pinned-simdutf.ps1"
 )
@@ -202,6 +204,20 @@ windows_mpv_downloader = (
     WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8")
     if WINDOWS_MPV_DOWNLOADER.is_file()
     else ""
+)
+windows_mpv_lock = (
+    json.loads(MPV_LOCK.read_text(encoding="utf-8")) if MPV_LOCK.is_file() else {}
+)
+windows_mpv_asset_base = urlsplit(
+    windows_mpv_lock.get("artifacts", {}).get("windows", {}).get("assetBase", "")
+)
+require(
+    windows_mpv_asset_base.scheme == "https"
+    and windows_mpv_asset_base.hostname == "github.com"
+    and f"$base.Host -ne '{windows_mpv_asset_base.hostname}'" in windows_mpv_downloader
+    and f"$base.AbsolutePath -notmatch '^{windows_mpv_asset_base.path}/?$'"
+    in windows_mpv_downloader,
+    "Windows MPV downloader must allow only the asset base pinned in mpv-build.lock.json",
 )
 windows_simdutf_downloader = (
     WINDOWS_SIMDUTF_DOWNLOADER.read_text(encoding="utf-8")

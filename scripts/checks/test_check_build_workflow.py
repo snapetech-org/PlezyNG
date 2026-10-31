@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Behavior tests for the privileged build-workflow guard."""
 
+import json
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from urllib.parse import urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -14,6 +16,7 @@ WORKFLOW = ROOT / ".github/workflows/build.yml"
 SETUP_FLUTTER_GIT = ROOT / ".github/actions/setup-flutter-git/action.yml"
 WINDOWS_CMAKE = ROOT / "windows/CMakeLists.txt"
 WINDOWS_MPV_DOWNLOADER = ROOT / "windows/tool/download-pinned-mpv.ps1"
+MPV_LOCK = ROOT / "mpv-build.lock.json"
 WINDOWS_SIMDUTF_DOWNLOADER = ROOT / "windows/tool/download-pinned-simdutf.ps1"
 WINDOWS_WINSPARKLE_DOWNLOADER = ROOT / "windows/tool/download-pinned-winsparkle.ps1"
 WINDOWS_SDL3_DOWNLOADER = ROOT / "windows/tool/download-pinned-sdl3.ps1"
@@ -50,6 +53,8 @@ class BuildWorkflowGuardTest(unittest.TestCase):
                 WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8"),
                 encoding="utf-8",
             )
+            lock_fixture = Path(directory) / "mpv-build.lock.json"
+            lock_fixture.write_text(MPV_LOCK.read_text(encoding="utf-8"), encoding="utf-8")
             simdutf_downloader_fixture = (
                 Path(directory) / "windows/tool/download-pinned-simdutf.ps1"
             )
@@ -117,6 +122,19 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("architecture matrix checks passed", result.stdout)
+
+    def test_windows_mpv_downloader_matches_locked_asset_base(self) -> None:
+        lock = json.loads(MPV_LOCK.read_text(encoding="utf-8"))
+        asset_base = urlsplit(lock["artifacts"]["windows"]["assetBase"])
+        downloader = WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8")
+
+        self.assertEqual(asset_base.scheme, "https")
+        self.assertEqual(asset_base.hostname, "github.com")
+        self.assertIn(f"$base.Host -ne '{asset_base.hostname}'", downloader)
+        self.assertIn(
+            f"$base.AbsolutePath -notmatch '^{asset_base.path}/?$'",
+            downloader,
+        )
 
     def test_windows_release_requires_pinned_torrent_dependencies(self) -> None:
         workflow = self._workflow()

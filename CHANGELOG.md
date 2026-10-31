@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Accept the locked PlezyNG Windows MPV archive URL during verified builds.
 - Preserve punctuation when converting podcast descriptions with inline HTML to plain text.
 - Use the explicit English fallback for new podcast and version-selection labels until localized copy is reviewed.
 - Clear current Dart analysis diagnostics in library playback, Jellyfin shuffle, and shader list construction.

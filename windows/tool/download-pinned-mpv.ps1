@@ -22,7 +22,7 @@ $base = [Uri][string]$mpv.assetBase
 if (
     $base.Scheme -ne 'https' -or
     $base.Host -ne 'github.com' -or
-    $base.AbsolutePath -notmatch '^/edde746/mpv-build/releases/download/binaries-windows/?$' -or
+    $base.AbsolutePath -notmatch '^/snapetech-org/mpv-build/releases/download/binaries-windows/?$' -or
     $asset -notmatch '^[A-Za-z0-9_.-]+\.zip$' -or
     $expectedHash -notmatch '^[0-9a-fA-F]{64}$'
 ) {

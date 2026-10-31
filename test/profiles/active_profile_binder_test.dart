@@ -1280,9 +1280,15 @@ void main() {
 
       int? callsAtSettle;
       unawaited(activeProfile.awaitBindingSettle().then((_) => callsAtSettle = gated.calls));
-      unawaited(binder.rebindActive()); // queues a same-id follow-up pass
+      final followUp = binder.rebindActive(); // queues a same-id follow-up pass
+      var followUpSettled = false;
+      unawaited(followUp.then((_) => followUpSettled = true));
+      await Future<void>.delayed(Duration.zero);
+      expect(followUpSettled, isFalse);
+
       gated.gate.complete();
       await cycle;
+      await followUp;
       await Future<void>.delayed(Duration.zero);
 
       expect(gated.calls, 2);

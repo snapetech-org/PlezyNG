@@ -252,11 +252,13 @@ class ActiveProfileBinder {
   /// server's libraries appear without an app restart.
   ///
   /// Safe to call while a rebind is in flight; the request is queued and
-  /// the loop runs an extra pass when the current one settles.
+  /// the loop runs an extra pass when the current one settles. The returned
+  /// future completes after that full cycle, including the queued pass.
   Future<void> rebindActive() async {
     _lastFailedProfileId = null;
     if (_isSwitching) {
       _pendingSameIdRebind = true;
+      await activeProfile.awaitBindingSettle();
       return;
     }
     await _rebind();

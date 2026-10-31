@@ -26,6 +26,8 @@ default model pack.
 - SHA-256: `58dfa50b0524d54d5b2d57ad711a563ff12624111b2c8c0522ed2dd56fc213d9`.
 - Build log:
   `/mnt/disks/scratch/plezyng-motion-combined-apk-20261030/logs/android-combined-12-models-build-default.log`.
+- APK, manifest, model-hash, runtime-library, and patched-filter verification log:
+  `/mnt/disks/scratch/plezyng-motion-combined-apk-20261030/logs/android-12-model-apk-verify.log`.
 
 ## Packaged LiteRT models
 

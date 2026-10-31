@@ -150,13 +150,13 @@ for legacy_job in (
 windows = job("build-windows")
 validate_windows_jni_jdk(windows, "Windows release builds")
 require(
-    '"group":"packer-windows"' in windows
+    '"group":"ng-shared-main-jit"' in windows
     and '"Windows","X64"' in windows
     and '"PlezyNG"' in windows,
     "Windows x64 must use the private Packer JIT route",
 )
 require(
-    '"group":"packer-windows"' in windows
+    '"group":"ng-shared-main-jit"' in windows
     and '"Windows","ARM64","on-demand","packer-windows","PlezyNG"' in windows
     and "matrix.arch == 'x64'" in windows,
     "Windows ARM64 must use its private JIT route",

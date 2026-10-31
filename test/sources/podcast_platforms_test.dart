@@ -126,6 +126,7 @@ void main() {
       SourceTransport(client: MockClient((request) async {
         if (request.url.host == 'chapters.example') {
           expect(request.headers.containsKey('authorization'), false);
+          expect(request.headers['accept'], contains('application/json+chapters'));
           return jsonResponse({'chapters': [{'startTime': 0, 'title': 'Welcome'}, {'startTime': 20, 'title': 'Topic'}]});
         }
         feedCalls++;

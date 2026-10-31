@@ -399,7 +399,8 @@ class PodcastRssSourceAdapter extends SourceAdapter {
     final uri = _chapterUrls[entry.id];
     if (uri != null && !_chapters.containsKey(entry.id)) {
       try {
-        final body = await transport.text('GET', uri, headers: await _headers(uri),
+        final body = await transport.text('GET', uri,
+            headers: {...await _headers(uri), 'Accept': 'application/json+chapters, application/json'},
             limit: 1024 * 1024, redirects: true);
         if (_closed) throw const SourceException(SourceFailure.cancelled);
         _chapters[entry.id] = podcastJsonChapters(sourceMap(jsonDecode(body)),

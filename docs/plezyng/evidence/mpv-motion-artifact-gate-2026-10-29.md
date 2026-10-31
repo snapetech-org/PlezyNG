@@ -97,13 +97,13 @@ The Linux aarch64 candidate was built from the same patch-0161 MPV source commit
 | Candidate | Retained path | Size | SHA-256 |
 | --- | --- | ---: | --- |
 | Linux aarch64 package | `/mnt/disks/scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/linux-aarch64/libmpv-linux-d142165ec420-aarch64.tar.zst` | 24,381,396 bytes | `6493c3f69a57fb9ed8c043537409bebf0e6e9854841e4bc889bda77fb1b8690b` |
-| Linux aarch64 symbols | `/mnt/disks/scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/linux-aarch64/libmpv-linux-aarch64-symbols.zip` | 9,731,078 bytes | `bb507124e3f3fd6d6a3a294cfc9fdc858402d2b1db238f9c2c71a88e7b84ff9c` |
+| Linux aarch64 symbols | `/mnt/disks/scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/linux-aarch64/libmpv-linux-d142165ec420-aarch64-symbols.zip` | 9,731,078 bytes | `bb507124e3f3fd6d6a3a294cfc9fdc858402d2b1db238f9c2c71a88e7b84ff9c` |
 
-The build log is retained at `/mnt/disks/scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/logs/linux-aarch64-build.log`. The local candidate manifest now lists Linux x86_64/aarch64 and Windows x86_64/aarch64 under their matching keys. It is not committed to the MPV build branch or published. The PlezyNG lock remains unchanged. This is package validation, not native-device playback or display qualification.
+The build log is retained at `/mnt/disks/scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/logs/linux-aarch64-build.log`. The MPV build branch's local manifest update is committed as `c96c12e` on `codex/motion-adaptive-phases-20261029`. It records current Android (`0494457e8620` native libraries and `dfe7d6a5ad4e` AAR), Linux (`d142165ec420`), and Windows (`01139c3f4748`) candidates. Per-platform `scripts/keys.py verify` checks pass for Android, Linux, and Windows, and all 17 listed local package/symbol files match their manifest SHA-256 values. The commit is local and unpushed; no release assets were uploaded, and the PlezyNG lock remains unchanged. This is package validation, not native-device playback or display qualification.
 
-## Earlier local artifact checksums (patch 0157)
+## Retained local artifact checksums
 
-The earlier locally retained Windows/Linux files are under the task scratch `mpv-build-windows-0157-native-20261029/dist/release`; Android files are under `mpv-android-motion-aar-20261029/release-tarballs-and-symbols-20261029`, with the AAR alongside that directory.
+The older Windows/Linux files below are retained under the task scratch `mpv-build-windows-0157-native-20261029/dist/release`.
 
 | Candidate | SHA-256 |
 | --- | --- |
@@ -113,6 +113,24 @@ The earlier locally retained Windows/Linux files are under the task scratch `mpv
 | Windows x86_64 symbols | `0239c6172fc32a4b6de30b6fc465d964073621151cfea7164694f0b7119556ff` |
 | Linux x86_64 package | `816fbd730efcd15765a157acb1d70abdb412103e29de28b5daf45fcc0c25e5bb` |
 | Linux x86_64 symbols | `2ee8edeb650cb2febdbe261cc566a9afc794510a76c9c6166de9d5224b7ec8e9` |
+
+These hashes identify local historical candidates only. They do not imply upload, publication, or device qualification.
+
+### Android motion candidates (2026-10-30)
+
+The current local Android package set is retained under
+`mpv-android-motion-aar-20261029/` and
+`mpv-motion-artifact-candidate-20261029/`. Its manifest keys are
+`0494457e8620` for the four ABI libraries and `dfe7d6a5ad4e` for the AAR.
+The arm64 AAR's `libmpv.so` has Build ID
+`f2eb7b85f3ed4eaec74dc8819b8bca07cf0c2011` and contains the ANVIL/LiteRT
+filter strings; release stripping removes the internal `vf_anvil` symbol
+name. The other ABI libraries do not contain the filter. The combined debug
+APK was built using this exact AAR SHA-256, and its arm64 `libmpv.so` retains
+the same Build ID and filter strings.
+
+| Candidate | SHA-256 |
+| --- | --- |
 | Android arm64-v8a tarball | `1e147c3e1ee94a394876706dbaddb762d2eb6bf3977b69f40067453ca32e0db3` |
 | Android armeabi-v7a tarball | `282fc05a3ac9075fc2608fa1513ccdbd5bf5dfe972b66989f9c2af72affa8f33` |
 | Android x86 tarball | `9c5ce1c4911a6fca43e4ef7ec7f16c1a9428b93583bde45dd797a70ce8eb1211` |
@@ -123,12 +141,13 @@ The earlier locally retained Windows/Linux files are under the task scratch `mpv
 | Android x86 symbols | `14165853a645b2170b537812ff4a4da43dc886f8b5ee708e2340d60a63d15b98` |
 | Android x86_64 symbols | `0a67040f945ed3fe6b5ace934063ab16e74acb2a9de058d123f1195d9a3bb7fa` |
 
-These hashes identify local candidates only. They do not imply upload, publication, or device qualification.
+These are local build candidates. They do not imply upload, publication, or
+device qualification.
 
 ## Remaining publication and architecture gates
 
-On 2026-10-29, direct downloads for previous Windows packages, the Linux package, and Android ABI tarballs/AAR/symbols returned HTTP 404 from the `snapetech-org/mpv-build` rolling release URLs ([Windows](https://github.com/snapetech-org/mpv-build/releases/tag/binaries-windows), [Linux](https://github.com/snapetech-org/mpv-build/releases/tag/binaries-linux), [Android](https://github.com/snapetech-org/mpv-build/releases/tag/binaries-android)). The latest remote check found no Linux assets and no Windows or Android rolling releases; no upload has been made since. The MPV build branch `artifacts.json` records local Windows key `544d2295432e` and Linux key `500fcbd3b251`, but neither candidate set is published. The 0159 Linux key `09ebe80cfc4f` is also unpublished. The PlezyNG lock still references its previous keys `52b991183e5f` (Linux), `8dbcea0c526c` (Windows), `5b7e6b31ab13` (Android native libraries), and `f9b1be38a527` (Android AAR). `scripts/keys.py verify` checks local manifest consistency; it cannot establish that assets are available from the real download URLs.
+At the 2026-10-29 remote check, direct downloads for the previous Windows packages, Linux package, and Android ABI tarballs/AAR/symbols returned HTTP 404 from the `snapetech-org/mpv-build` rolling release URLs ([Windows](https://github.com/snapetech-org/mpv-build/releases/tag/binaries-windows), [Linux](https://github.com/snapetech-org/mpv-build/releases/tag/binaries-linux), [Android](https://github.com/snapetech-org/mpv-build/releases/tag/binaries-android)). The candidate manifest now records Android keys `0494457e8620` and `dfe7d6a5ad4e`, Linux key `d142165ec420`, and Windows key `01139c3f4748`; these artifacts remain local and no upload was made. The PlezyNG lock still references its prior package group and is unchanged. The default Apple-group key check still fails because the Apple package set has not been rebuilt from the current source. The host is Linux and `xcodebuild` is unavailable, so Apple artifact refresh remains an Apple-toolchain build gate. `scripts/keys.py verify` checks manifest consistency for each platform group; it cannot establish that assets are available from the real download URLs.
 
 The Linux patch-0161 group now has both x86_64 and aarch64 local packages; the x86_64 build was native and the aarch64 build used QEMU user-mode. The Windows patch-0161 group has x86_64 and aarch64 local packages. Archive integrity, ELF architecture, and feature-string inspection establish package contents only, not target-device playback. No CI workflow or remote build was run.
 
-The PlezyNG lock stays on its existing published package revision until the matching source commit and complete asset set are retrievable at their real release URLs. All four Linux and Windows desktop architectures now have locally verified patch-0161 candidates; they remain unpublished. Android uses a separate MPV patch series and does not consume desktop-only patch 0161. Android Tensor/NPU provider execution, Windows and Linux hardware playback, visible presentation, cadence, A/V sync, and device quality remain device-qualification gates; these package builds do not establish them.
+The PlezyNG lock stays on its existing published package revision until the matching source commit and complete asset set are retrievable at their real release URLs. Android, Linux, and Windows local candidates are recorded in MPV build branch commit `c96c12e`, which remains unpushed; the four Linux and Windows desktop architectures have patch-0161 packages. Apple artifacts still need an Apple-toolchain build before Apple-device testing. Android uses a separate MPV patch series and does not consume desktop-only patch 0161. Android Tensor/NPU provider execution, Windows/Linux hardware playback, visible presentation, cadence, A/V sync, and device quality remain device-qualification gates; these package builds do not establish them.

@@ -12,7 +12,8 @@ default model pack.
 
 - Source revision: PlezyNG `f7a74967568af04e3ba4d10e6f37b0999b306c9c`, with
   the Android model-staging, runtime-staging, and Tensor model-pack changes
-  recorded in the accompanying source commit.
+  recorded in local feature-branch commit `3510a7984`. The Tensor model files
+  and manifest records are intentionally not part of main pending approval.
 - Build: `./gradlew assembleDebug --offline --no-daemon --max-workers=2
   --console=plain` with `PLEZY_LITERT_MODEL_ROOT` unset, so Gradle packaged the
   checked-in default model directory. The local experimental MPV Android AAR
@@ -46,6 +47,14 @@ The APK also contains the LiteRT base and GPU runtime libraries for
 Google Tensor compiler and dispatch plug-ins; x86_64 includes the OpenVINO
 plug-ins. These entries verify package presence only and do not prove a
 provider can initialize or execute on a device.
+
+The APK's `lib/arm64-v8a/libmpv.so` has Build ID
+`f2eb7b85f3ed4eaec74dc8819b8bca07cf0c2011`. Its retained strings include
+`ANVIL H.264 motion-vector video frame interpolation`, `anvil-vfi`,
+`plezy_litert_motion_open`, and the Tensor/LiteRT target-selection labels.
+This confirms the patched ANVIL filter and its LiteRT bridge are linked into
+the arm64 app package. Release stripping removes the internal `vf_anvil`
+symbol name, so symbol-name search alone is not a valid presence check.
 
 `zipfile.testzip()` reported no corrupt archive member. The build also passed
 the Gradle checks for required LiteRT headers/runtime files, model filenames,

@@ -527,6 +527,14 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
                                ffmpeg_version: str, ffmpeg_sha256: str) -> str:
     command(["scripts/set_native_revision.sh", native_sha, "--repo", native_repo], cwd=worktree)
     update_android_ffmpeg_pin(worktree, ffmpeg_version, ffmpeg_sha256)
+    changelog = worktree / "CHANGELOG.md"
+    changelog_source = changelog.read_text(encoding="utf-8")
+    unreleased = "## [Unreleased]\n\n"
+    pin_note = "- Refresh pinned MPV and FFmpeg artifacts to the verified private native build.\n\n"
+    if pin_note.rstrip() not in changelog_source:
+        if changelog_source.count(unreleased) != 1:
+            raise ReleaseError("Expected one [Unreleased] section before committing native pins.")
+        changelog.write_text(changelog_source.replace(unreleased, unreleased + pin_note, 1), encoding="utf-8")
     # The Apple SPM checker needs .dart_tool/package_config.json from `flutter pub get`.
     # Dependency resolution belongs on the compatible private JIT runner, not this host.
     # ci.yml runs pub get and this same checker on the exact release commit before tagging.
@@ -535,8 +543,11 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
     changed = command(["git", "status", "--porcelain"], cwd=worktree, capture=True).stdout.strip()
     if changed:
         command(["git", "add", "-u"], cwd=worktree)
+        # This generated pin commit is validated by the exact-source private-JIT CI below.
+        # The repository pre-commit hook runs Dart/codegen checks on the host, so skip it here.
         command(
-            ["git", "commit", "-m", f"build: pin verified native artifacts {native_sha[:12]}"],
+            ["env", "SKIP_HOOKS=1", "git", "commit", "-m",
+             f"build: pin verified native artifacts {native_sha[:12]}"],
             cwd=worktree,
         )
 

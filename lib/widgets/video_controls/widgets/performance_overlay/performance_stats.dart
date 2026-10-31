@@ -335,6 +335,7 @@ class PerformanceStats {
     final neuralRequest = resolution.requestedPreset == null
         ? t.settings.neuralInterpolation
         : '${t.settings.neuralInterpolation} · ${_neuralPresetLabel(resolution.requestedPreset!)}';
+    final isActive = motionInterpolationActive == true && videoSync == 'display-resample';
     if (resolution.fallback == MotionProcessingFallback.livePlayback) {
       final request = resolution.requested == MotionProcessingMode.neural
           ? neuralRequest
@@ -346,6 +347,15 @@ class PerformanceStats {
     }
     if (resolution.fallback == MotionProcessingFallback.thermalLimited) {
       return '$neuralRequest · ${t.settings.neuralThermalLimited}';
+    }
+    if (resolution.requested == MotionProcessingMode.neural &&
+        (resolution.fallback == MotionProcessingFallback.dolbyVision ||
+            resolution.fallback == MotionProcessingFallback.highDynamicRange)) {
+      final range = resolution.fallback == MotionProcessingFallback.dolbyVision
+          ? t.fileInfo.dolbyVision
+          : t.videoSettings.hdr;
+      return '$neuralRequest · ${t.settings.neuralInterpolationUnavailable} ($range)'
+          '${isActive ? ' → ${t.settings.motionSmoothingMpv}' : ''}';
     }
     if (resolution.requested == MotionProcessingMode.neural &&
         const {'mpv-bypass', 'recovery-probe'}.contains(playbackCapabilityReport?.neuralDeadlineGovernor)) {
@@ -413,7 +423,6 @@ class PerformanceStats {
           ? '$neuralRequest · ${t.settings.neuralInterpolationUnavailable}'
           : '${t.settings.motionSmoothingMpv} · ${t.settings.motionSmoothingUnavailableDescription}';
     }
-    final isActive = motionInterpolationActive == true && videoSync == 'display-resample';
     if (resolution.requested == MotionProcessingMode.neural) {
       final providerStatus = (playbackCapabilityReport?.neuralProvider ?? neuralProvider)?.toLowerCase();
       if (providerStatus == 'initializing' || providerStatus?.endsWith('-initializing') == true) {

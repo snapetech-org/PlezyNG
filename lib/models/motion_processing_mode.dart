@@ -20,6 +20,8 @@ enum MotionProcessingFallback {
   rendererUnavailable,
   livePlayback,
   unsupportedStream,
+  highDynamicRange,
+  dolbyVision,
   powerLimited,
   thermalLimited,
 }
@@ -56,7 +58,12 @@ MotionProcessingResolution resolveMotionProcessing({
   required bool mpvRendererAvailable,
   bool neuralProviderAvailable = false,
   bool isLive = false,
+  // Common source constraints for MPV interpolation (scan, cadence, size).
   bool streamSupported = true,
+  // Neural adds an SDR-only constraint. HDR/Dolby Vision may still use an
+  // already-supported MPV renderer path.
+  bool neuralStreamSupported = true,
+  MotionProcessingFallback neuralStreamFallback = MotionProcessingFallback.unsupportedStream,
   bool neuralPowerLimited = false,
   bool neuralThermalLimited = false,
   NeuralInterpolationPreset neuralPreset = NeuralInterpolationPreset.balanced,
@@ -76,6 +83,15 @@ MotionProcessingResolution resolveMotionProcessing({
       requestedPreset: requested == MotionProcessingMode.neural ? neuralPreset : null,
       provider: MotionProcessingProvider.off,
       fallback: MotionProcessingFallback.unsupportedStream,
+    );
+  }
+
+  if (requested == MotionProcessingMode.neural && !neuralStreamSupported) {
+    return MotionProcessingResolution(
+      requested: requested,
+      requestedPreset: neuralPreset,
+      provider: mpvRendererAvailable ? MotionProcessingProvider.mpv : MotionProcessingProvider.off,
+      fallback: neuralStreamFallback,
     );
   }
 

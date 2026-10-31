@@ -125,6 +125,11 @@ abstract final class MotionProcessingService {
             providerReady &&
             !const {'mpv-bypass', 'recovery-probe'}.contains(capabilityReport?.neuralDeadlineGovernor));
     final streamSupported = capabilityReport == null || _supportsReportedMotionStream(capabilityReport);
+    final neuralStreamFallback = capabilityReport?.dolbyVisionProfile != null
+        ? MotionProcessingFallback.dolbyVision
+        : capabilityReport?.sourceIsHdr == true
+        ? MotionProcessingFallback.highDynamicRange
+        : null;
     final desktopCadenceStatus = capabilityReport?.sourceCadenceStatus;
     final desktopCadenceConfirmed =
         !_isDesktopPmePlatform || capabilityReport == null || const {'cfr-24', 'cfr-30'}.contains(desktopCadenceStatus);
@@ -132,6 +137,8 @@ abstract final class MotionProcessingService {
       requested: requested,
       mpvRendererAvailable: rendererAvailable && streamSupported,
       neuralProviderAvailable: nativeProviderReady && streamSupported && desktopCadenceConfirmed,
+      neuralStreamSupported: neuralStreamFallback == null,
+      neuralStreamFallback: neuralStreamFallback ?? MotionProcessingFallback.unsupportedStream,
       neuralPowerLimited:
           _powerLimited[player] == true &&
           (SettingsService.instanceOrNull?.read(SettingsService.neuralOnlyWhenPluggedIn) ?? true),
@@ -142,12 +149,12 @@ abstract final class MotionProcessingService {
     );
   }
 
-  /// Active stream facts can invalidate a previously configured path after a
-  /// track or file transition. Missing facts remain unknown; positive evidence
-  /// outside the initial SDR 24/30 fps, up-to-1080p scope resolves the request
-  /// to Off.
+  /// Active stream facts can invalidate a previously configured renderer path
+  /// after a track or file transition. Missing facts remain unknown; positive
+  /// evidence outside the initial progressive 24/30 fps, up-to-1080p scope
+  /// resolves the request to Off. HDR/Dolby Vision is a separate Neural-only
+  /// restriction because desktop MPV smoothing can remain available.
   static bool _supportsReportedMotionStream(PlaybackCapabilityReport report) {
-    if (report.sourceIsHdr == true || report.dolbyVisionProfile != null) return false;
     if (report.sourceIsInterlaced == true) return false;
 
     final width = report.sourceWidth;
@@ -596,7 +603,10 @@ abstract final class MotionProcessingService {
       final output = await _videoOutputForConfiguration(player);
       final fallback = resolveForPlayer(player, mode, currentVideoOutput: output, isLive: isLive);
       final mpvFallbackEligible =
-          !isLive && !isTranscoding && selectedVersion != null && _supportsMotionSource(selectedVersion);
+          !isLive &&
+          !isTranscoding &&
+          selectedVersion != null &&
+          _supportsMotionSource(selectedVersion, allowDynamicRange: true);
       if (mpvFallbackEligible && fallback.usesMpvInterpolation) {
         await _applyMpvInterpolation(player);
         _interpolationBufferReady[player] = true;
@@ -613,7 +623,10 @@ abstract final class MotionProcessingService {
 
     if (_isDesktopPmePlatform &&
         mode != MotionProcessingMode.off &&
-        (isLive || isTranscoding || selectedVersion == null || !_supportsMotionSource(selectedVersion))) {
+        (isLive ||
+            isTranscoding ||
+            selectedVersion == null ||
+            !_supportsMotionSource(selectedVersion, allowDynamicRange: true))) {
       final original = _originals[player];
       if (original != null) await _restoreOriginalProperties(player, original);
       _interpolationBufferReady[player] = false;
@@ -1332,7 +1345,9 @@ abstract final class MotionProcessingService {
     _desktopPmeOriginals[player] = null;
   }
 
-  static bool _supportsMotionSource(MediaVersion version) {
+  /// `allowDynamicRange` is used only for desktop MPV smoothing. Neural setup
+  /// keeps the default SDR-only rule, and Android keeps its direct surface path.
+  static bool _supportsMotionSource(MediaVersion version, {bool allowDynamicRange = false}) {
     final width = version.width;
     final height = version.height;
     if (width == null || height == null || width < 1 || height < 1 || width > 1920 || height > 1920) return false;
@@ -1345,7 +1360,9 @@ abstract final class MotionProcessingService {
       (stream) => stream.selected,
       orElse: () => streams.length == 1 ? streams.single : const MediaStream(id: '', kind: MediaStreamKind.unknown),
     );
-    if (video.kind != MediaStreamKind.video || video.interlaced != false || video.hdr || video.dolbyVision) {
+    if (video.kind != MediaStreamKind.video ||
+        video.interlaced != false ||
+        (!allowDynamicRange && (video.hdr || video.dolbyVision))) {
       return false;
     }
     final fps = video.frameRate;

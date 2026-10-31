@@ -249,6 +249,8 @@ The current local MPV candidate artifact state is recorded in the [artifact gate
 
 Windows provider resolution keeps the RX 7900 XT dedicated to PME when that adapter is present (or DXGI enumeration is inconclusive): NPU candidates are tried first, then the explicitly pinned DirectML route is promoted ahead of generic GPU providers. If that pinned route fails, PME does not silently continue on the RX 9070 XT; Neural falls back through the existing MPV path. When the RX 7900 XT is absent, the provider catalog retains its normal GPU order.
 
+Neural interpolation remains SDR-only. On Windows' active GPU renderer and Linux's `libmpv` path, an HDR or Dolby Vision Neural request can resolve to MPV smoothing when its display-synchronized interpolation is active; the performance overlay names the dynamic-range reason and reports the fallback only when those MPV properties confirm it. Android's direct MediaCodec path and Apple's AVFoundation path are not forced onto another renderer. This source integration does not qualify HDR/Dolby Vision presentation or audio/video sync on a device.
+
 ## References
 
 - [Apple WWDC25 VideoToolbox effects](https://developer.apple.com/videos/play/wwdc2025/300/) — API introduction, platform floors, supported effects, and frame-based processing integration.

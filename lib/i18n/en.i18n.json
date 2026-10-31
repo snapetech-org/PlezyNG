@@ -3068,6 +3068,7 @@
     "videoOutput": "Video Output",
     "motionInterpolation": "Interpolation",
     "thermalStatus": "Thermal",
+    "neuralModelDownloading": "Model download",
     "neuralP95": "p95",
     "sceneCutBypasses": "scene cut bypasses",
     "deadlineMisses": "deadline misses",

@@ -6,6 +6,7 @@
 - Declare VDPAU and Vulkan loader packages required by Linux bundles.
 - Include the pinned Vulkan-backed WebGPU provider in Linux app builds by default for Neural motion processing.
 - Prefer the RX 7900 XT for Linux PME inference and Vulkan filter compute while keeping display rendering independent.
+- Show Neural model-pack download progress in playback diagnostics while the current smoothing fallback remains active.
 - Select the RX 7900 XT for Linux MIGraphX inference by HIP adapter identity, while honoring explicit ROCm device visibility.
 - Select the RX 7900 XT for Windows DirectML inference when available, leaving the independently selected output adapter free for presentation.
 - Promote the RX 7900 XT-bound Windows DirectML route ahead of generic GPU providers and prevent silent compute fallback to another adapter.

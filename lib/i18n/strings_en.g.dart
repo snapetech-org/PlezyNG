@@ -7173,6 +7173,9 @@ class Translations$performanceOverlay$en {
 	/// en: 'Thermal'
 	String get thermalStatus => 'Thermal';
 
+	/// en: 'Model download'
+	String get neuralModelDownloading => 'Model download';
+
 	/// en: 'p95'
 	String get neuralP95 => 'p95';
 
@@ -17154,6 +17157,7 @@ extension on Translations {
 			'performanceOverlay.videoOutput' => 'Video Output',
 			'performanceOverlay.motionInterpolation' => 'Interpolation',
 			'performanceOverlay.thermalStatus' => 'Thermal',
+			'performanceOverlay.neuralModelDownloading' => 'Model download',
 			'performanceOverlay.neuralP95' => 'p95',
 			'performanceOverlay.sceneCutBypasses' => 'scene cut bypasses',
 			'performanceOverlay.deadlineMisses' => 'deadline misses',
@@ -17403,9 +17407,9 @@ extension on Translations {
 			'services.deviceCode.copyCode' => 'Copy activation code',
 			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
 			'services.deviceCode.codeCopied' => 'Code copied',
-			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
 			_ => null,
 		} ?? switch (path) {
+			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
 			'services.oauthProxy.body' => 'Scan this QR code or open the URL on any device.',
 			'services.oauthProxy.openToSignIn' => ({required Object service}) => 'Open ${service} to sign in',
 			'services.pendingAuth.copyUrl' => 'Copy sign-in URL',
@@ -17917,9 +17921,9 @@ extension on Translations {
 			'universalMedia.shareStop' => 'Stop sharing',
 			'universalMedia.extensionsMode' => 'Extensions and CLI',
 			'universalMedia.extensionsIntro' => 'Add a data-only search extension to find media. Choose a result to load it into the familiar Open media form.',
-			'universalMedia.extensionsPrivacy' => 'A manifest can define one HTTPS search endpoint and map response fields. It cannot run code, add request headers, read files, or launch shell commands.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.extensionsPrivacy' => 'A manifest can define one HTTPS search endpoint and map response fields. It cannot run code, add request headers, read files, or launch shell commands.',
 			'universalMedia.extensionImport' => 'Add extension manifest',
 			'universalMedia.extensionEmpty' => 'No search services yet. Choose a trusted manifest JSON file to add one.',
 			'universalMedia.extensionChoose' => 'Search service',
@@ -18431,9 +18435,9 @@ extension on Translations {
 			'games.unlinkSteamAccount' => 'Unlink Steam account',
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
-			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
 			_ => null,
 		} ?? switch (path) {
+			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
 			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
 			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'games.connecting' => 'Connecting…',

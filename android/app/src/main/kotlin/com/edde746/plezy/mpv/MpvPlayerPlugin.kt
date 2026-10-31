@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
 import java.util.zip.ZipFile
 import kotlin.math.roundToLong
 
@@ -103,6 +104,12 @@ open class MpvPlayerPlugin(
     Thread(task, "$tag-litert-download").apply { isDaemon = true }
   }
   private val pendingLiteRtModelDownloads = ConcurrentHashMap.newKeySet<String>()
+  private data class LiteRtModelDownloadProgress(
+    val filename: String,
+    val bytesTotal: Long,
+    val bytesReceived: AtomicLong = AtomicLong(0)
+  )
+  private val liteRtModelDownloadProgress = ConcurrentHashMap<String, LiteRtModelDownloadProgress>()
 
   private data class AndroidHtpTarget(
     val socModel: String,
@@ -1033,6 +1040,8 @@ open class MpvPlayerPlugin(
       ?: throw IllegalArgumentException("LiteRT model download destination has no parent directory")
     val key = "${destination.name}:${expectedSha256.lowercase()}"
     if (!pendingLiteRtModelDownloads.add(key)) return
+    val progress = LiteRtModelDownloadProgress(destination.name, expectedBytes)
+    liteRtModelDownloadProgress[key] = progress
 
     try {
       liteRtModelDownloadExecutor.execute {
@@ -1076,7 +1085,8 @@ open class MpvPlayerPlugin(
                 expectedBytes,
                 expectedSha256,
                 startedAt + LITERT_MODEL_DOWNLOAD_DEADLINE_MS,
-                activeConnection
+                activeConnection,
+                onProgress = progress.bytesReceived::set
               )
             }
           }
@@ -1088,10 +1098,12 @@ open class MpvPlayerPlugin(
         } finally {
           connection?.disconnect()
           pendingLiteRtModelDownloads.remove(key)
+          liteRtModelDownloadProgress.remove(key)
         }
       }
     } catch (error: RejectedExecutionException) {
       pendingLiteRtModelDownloads.remove(key)
+      liteRtModelDownloadProgress.remove(key)
       Log.w(tag, "LiteRT model download executor is shutting down", error)
     }
   }
@@ -1102,7 +1114,8 @@ open class MpvPlayerPlugin(
     expectedBytes: Long,
     expectedSha256: String,
     deadlineElapsedRealtime: Long? = null,
-    connection: HttpURLConnection? = null
+    connection: HttpURLConnection? = null,
+    onProgress: ((Long) -> Unit)? = null
   ) {
     val digest = MessageDigest.getInstance("SHA-256")
     val buffer = ByteArray(64 * 1024)
@@ -1123,6 +1136,7 @@ open class MpvPlayerPlugin(
       }
       digest.update(buffer, 0, count)
       output.write(buffer, 0, count)
+      onProgress?.invoke(totalBytes)
     }
     output.fd.sync()
     val actualSha256 = digest.digest().joinToString("") { "%02x".format(it.toInt() and 0xff) }
@@ -1687,7 +1701,17 @@ open class MpvPlayerPlugin(
       if (gen != sessionGeneration || playerCore !== core) {
         result.success(mapOf("playerType" to "mpv"))
       } else {
-        result.success(stats)
+        val resultStats = stats.toMutableMap()
+        resultStats["neuralModelDownloads"] = liteRtModelDownloadProgress.values
+          .map { progress ->
+            mapOf(
+              "file" to progress.filename,
+              "bytesReceived" to progress.bytesReceived.get(),
+              "bytesTotal" to progress.bytesTotal
+            )
+          }
+          .sortedBy { it["file"].toString() }
+        result.success(resultStats)
       }
     }
   }

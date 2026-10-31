@@ -9,6 +9,7 @@ import '../../../../models/playback_capability_report.dart';
 import '../../../../mpv/mpv.dart';
 import '../../../../media/media_display_criteria.dart';
 import '../../../../services/motion_processing_service.dart';
+import '../../../../services/neural_model_pack_service.dart';
 import '../../../../services/settings_service.dart';
 import '../../../../utils/app_logger.dart';
 import '../../../../utils/codec_utils.dart';
@@ -60,6 +61,23 @@ class PerformanceStatsService {
             isLive: isLive,
             neuralPreset: settings!.read(SettingsService.neuralInterpolationPreset),
           );
+  }
+
+  NeuralModelPackDownloadProgress? _parseAndroidModelDownloadProgress(Object? raw) {
+    if (raw is! List) return null;
+    var receivedBytes = 0;
+    var totalBytes = 0;
+    var count = 0;
+    for (final entry in raw.whereType<Map>()) {
+      final received = entry['bytesReceived'];
+      final total = entry['bytesTotal'];
+      if (received is! num || total is! num || received < 0 || total <= 0) continue;
+      receivedBytes += received.toInt();
+      totalBytes += total.toInt();
+      count++;
+    }
+    if (count == 0 || totalBytes <= 0) return null;
+    return NeuralModelPackDownloadProgress(bytesReceived: receivedBytes, bytesTotal: totalBytes);
   }
 
   double? _currentUiFps;
@@ -219,6 +237,7 @@ class PerformanceStatsService {
       final neuralOutputObserved =
           _parseBool(statsMap['anvil-active']?.toString()) == true ||
           (_parseInt(statsMap['anvil-generated-frames']?.toString()) ?? 0) > 0;
+      final modelDownloadProgress = _parseAndroidModelDownloadProgress(statsMap['neuralModelDownloads']);
       final capabilityReport = PlaybackCapabilityReport(
         playerType: 'mpv',
         videoOutput: statsMap['current-vo']?.toString(),
@@ -251,6 +270,8 @@ class PerformanceStatsService {
         neuralProviderReady: _isNeuralProviderReady(neuralProvider, outputObserved: neuralOutputObserved),
         neuralProvider: neuralProvider,
         neuralProviderVendor: neuralProviderVendor,
+        neuralModelDownloadBytesReceived: modelDownloadProgress?.bytesReceived,
+        neuralModelDownloadBytesTotal: modelDownloadProgress?.bytesTotal,
         neuralPowerMode: statsMap['anvil-power-mode']?.toString(),
         neuralOutputObserved: neuralOutputObserved,
         neuralInferenceP95Ms: _parseDouble(statsMap['anvil-inference-p95-ms']?.toString()),
@@ -535,6 +556,10 @@ class PerformanceStatsService {
         _parseBool(videoResults?[19]) == true ||
         (neuralGeneratedFrames != null && neuralGeneratedFrames > 0) ||
         nativeInterpolationStatus == 'active';
+    final selectedNeuralPreset = SettingsService.instanceOrNull?.read(SettingsService.neuralInterpolationPreset);
+    final modelDownloadProgress = (Platform.isWindows || Platform.isLinux) && selectedNeuralPreset != null
+        ? NeuralModelPackService.downloadProgressForPreset(selectedNeuralPreset)
+        : null;
     final playbackPlayerType = player.playerType;
     final reportedVideoOutput = videoResults?[13] ?? (playbackPlayerType == 'webos' ? 'webos-native' : null);
     final videoWidth = _parseInt(results[1] ?? (webosDimensions.isEmpty ? null : webosDimensions[0]));
@@ -576,6 +601,8 @@ class PerformanceStatsService {
           ((Platform.isIOS || Platform.isMacOS) && const {'ready', 'active'}.contains(nativeInterpolationStatus)),
       neuralProvider: neuralProvider,
       neuralProviderVendor: metadataProviderVendor,
+      neuralModelDownloadBytesReceived: modelDownloadProgress?.bytesReceived,
+      neuralModelDownloadBytesTotal: modelDownloadProgress?.bytesTotal,
       neuralPowerMode: videoResults?[28],
       neuralOutputObserved: neuralOutputObserved,
       neuralInferenceP95Ms: _parseDouble(videoResults?[20]),

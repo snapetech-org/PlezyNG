@@ -9,6 +9,13 @@ import 'package:path_provider/path_provider.dart';
 import '../models/motion_processing_mode.dart';
 import '../utils/app_logger.dart';
 
+final class NeuralModelPackDownloadProgress {
+  final int bytesReceived;
+  final int bytesTotal;
+
+  const NeuralModelPackDownloadProgress({required this.bytesReceived, required this.bytesTotal});
+}
+
 /// Installs the opt-in ANVIL model packs used by the Plezy Motion Engine.
 ///
 /// Model files are downloaded only when Neural is selected and copied to
@@ -65,6 +72,10 @@ abstract final class NeuralModelPackService {
   );
 
   static final Map<String, Future<File>> _inFlight = {};
+  static final Map<String, NeuralModelPackDownloadProgress> _activeDownloads = {};
+
+  static NeuralModelPackDownloadProgress? downloadProgressForPreset(NeuralInterpolationPreset preset) =>
+      _activeDownloads[_modelForPreset(preset).id];
 
   /// Resolve the selected preset to its pinned local ONNX model.
   /// Performance uses the 540p ANVIL-S graph; Balanced uses the upstream
@@ -159,6 +170,7 @@ abstract final class NeuralModelPackService {
     final uri = Uri.parse(model.url);
     final client = http.Client();
     final stopwatch = Stopwatch()..start();
+    _activeDownloads[model.id] = NeuralModelPackDownloadProgress(bytesReceived: 0, bytesTotal: model.bytes);
     try {
       final response = await client.send(http.Request('GET', uri)).timeout(_downloadTimeout);
       if (response.statusCode != HttpStatus.ok) {
@@ -184,6 +196,10 @@ abstract final class NeuralModelPackService {
           }
           digestInput.add(chunk);
           output.add(chunk);
+          _activeDownloads[model.id] = NeuralModelPackDownloadProgress(
+            bytesReceived: receivedBytes,
+            bytesTotal: model.bytes,
+          );
         }
         if (receivedBytes != model.bytes) {
           throw const FormatException('Neural model pack size does not match its pinned manifest.');
@@ -218,6 +234,7 @@ abstract final class NeuralModelPackService {
       rethrow;
     } finally {
       client.close();
+      _activeDownloads.remove(model.id);
     }
   }
 

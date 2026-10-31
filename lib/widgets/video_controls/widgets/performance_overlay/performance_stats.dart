@@ -336,6 +336,16 @@ class PerformanceStats {
         ? t.settings.neuralInterpolation
         : '${t.settings.neuralInterpolation} · ${_neuralPresetLabel(resolution.requestedPreset!)}';
     final isActive = motionInterpolationActive == true && videoSync == 'display-resample';
+    final modelDownloadReceived = playbackCapabilityReport?.neuralModelDownloadBytesReceived;
+    final modelDownloadTotal = playbackCapabilityReport?.neuralModelDownloadBytesTotal;
+    if (resolution.requested == MotionProcessingMode.neural &&
+        modelDownloadReceived != null &&
+        modelDownloadTotal != null &&
+        modelDownloadTotal > 0) {
+      final percent = (modelDownloadReceived * 100 ~/ modelDownloadTotal).clamp(0, 100);
+      return '$neuralRequest · ${t.performanceOverlay.neuralModelDownloading} $percent%'
+          '${isActive ? ' → ${t.settings.motionSmoothingMpv}' : ''}';
+    }
     if (resolution.fallback == MotionProcessingFallback.livePlayback) {
       final request = resolution.requested == MotionProcessingMode.neural
           ? neuralRequest

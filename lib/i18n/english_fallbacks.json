@@ -370,6 +370,7 @@
     "matchScreen.plexLibrary",
     "performanceOverlay.deadlineMisses",
     "performanceOverlay.motionInterpolation",
+    "performanceOverlay.neuralModelDownloading",
     "performanceOverlay.neuralP95",
     "performanceOverlay.sceneCutBypasses",
     "performanceOverlay.thermalStatus",

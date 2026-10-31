@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Make release run names show the action, runner pool and tag; route platform matrices by explicit targets.
 - Load the Google ML Kit simulator helper after Flutter creates CocoaPods plugin symlinks.
 - Fix native Kotlin formatting in the Android LiteRT model validation message.
 - Keep recently added playback and subtitle messages on the approved English fallback until translations are reviewed.

@@ -1,7 +1,7 @@
 # ng-runner-policy: private-jit-only-v1
 # packer-windows-jit-v1
 name: PlezyNG Release
-run-name: ${{ inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
+run-name: ${{ inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}:ref:{3}', inputs.action, inputs.runner_pool, inputs.build_version, github.ref_name) || format('action:{0}:pool:{1}:tag:{2}', inputs.action, inputs.runner_pool, inputs.build_version || 'current') }}
 
 on:
   workflow_dispatch:

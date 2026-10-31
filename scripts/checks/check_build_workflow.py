@@ -1017,8 +1017,10 @@ run_name_expression = run_name.group(1) if run_name else ""
 require(
     all(field in run_name_expression for field in ("inputs.action", "inputs.runner_pool", "inputs.build_version"))
     and all(marker in run_name_expression for marker in ("action:", "pool:", "tag:"))
-    and "inputs.action == 'release'" in run_name_expression,
-    "run names must expose the manual action and pool, plus the selected ref for releases",
+    and "inputs.action == 'release'" in run_name_expression
+    and "inputs.build_version || 'current'" in run_name_expression
+    and "github.ref_name" in run_name_expression,
+    "run names must include action, pool and tag, plus the selected ref on releases",
 )
 
 for action_pool_job in (

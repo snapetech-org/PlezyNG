@@ -4,6 +4,7 @@
 #include <libtorrent/download_priority.hpp>
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/session.hpp>
+#include <libtorrent/session_params.hpp>
 #include <libtorrent/settings_pack.hpp>
 #include <libtorrent/torrent_info.hpp>
 #include <libtorrent/torrent_status.hpp>
@@ -65,7 +66,7 @@ struct Stream {
   bool failed = false, priority_ready = false, ready = false;
   std::set<int> renaming;
   std::string name;
-  Stream(int file, int64_t limit, int upload) : session(settings(upload)), index(file), quota(limit) {}
+  Stream(int file, int64_t limit, int upload) : session(lt::session_params(settings(upload))), index(file), quota(limit) {}
   void poll() {
     std::vector<lt::alert*> alerts;
     session.pop_alerts(&alerts);

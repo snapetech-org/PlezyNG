@@ -1,5 +1,6 @@
 #include "../src/plezy_torrent.h"
 #include <libtorrent/session.hpp>
+#include <libtorrent/session_params.hpp>
 #include <libtorrent/torrent_status.hpp>
 #include <libtorrent/peer_info.hpp>
 #include <libtorrent/alert_types.hpp>
@@ -50,7 +51,7 @@ void verify_transfer(bool multiple_files) {
   settings.set_bool(lt::settings_pack::enable_upnp, false);
   settings.set_bool(lt::settings_pack::enable_natpmp, false);
   settings.set_int(lt::settings_pack::alert_mask, lt::alert_category::all);
-  lt::session seed(settings);
+  lt::session seed{lt::session_params{settings}};
   lt::add_torrent_params params;
   params.ti = metadata; params.save_path = (root / "seed").string();
   params.flags &= ~(lt::torrent_flags::paused | lt::torrent_flags::auto_managed);

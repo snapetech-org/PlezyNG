@@ -46,6 +46,8 @@ final class PlaybackCapabilityReport {
   final String? neuralDeadlineGovernor;
   final int? neuralDeadlineBackoffs;
   final int? neuralDeadlineBypassFrames;
+  final int? neuralPhaseBudget;
+  final int? neuralPhaseBudgetConfigured;
   final String? neuralPhaseTimingSource;
   final String? neuralGpuProvider;
   final bool imageEnhancementConfigured;
@@ -82,6 +84,8 @@ final class PlaybackCapabilityReport {
     this.neuralDeadlineGovernor,
     this.neuralDeadlineBackoffs,
     this.neuralDeadlineBypassFrames,
+    this.neuralPhaseBudget,
+    this.neuralPhaseBudgetConfigured,
     this.neuralPhaseTimingSource,
     this.neuralGpuProvider,
     this.imageEnhancementConfigured = false,

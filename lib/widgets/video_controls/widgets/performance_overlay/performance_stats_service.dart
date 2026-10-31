@@ -479,6 +479,10 @@ class PerformanceStatsService {
         hasPmeMetadata
             ? _optionalPlayerProperty('vf-metadata/plezy-pme/phase-timing-source')
             : Future.value(null), // 32
+        hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/phase-budget') : Future.value(null), // 33
+        hasPmeMetadata
+            ? _optionalPlayerProperty('vf-metadata/plezy-pme/phase-budget-configured')
+            : Future.value(null), // 34
       ]);
     }
 
@@ -562,6 +566,8 @@ class PerformanceStatsService {
       neuralDeadlineGovernor: videoResults?[27],
       neuralDeadlineBackoffs: _parseInt(videoResults?[29]),
       neuralDeadlineBypassFrames: _parseInt(videoResults?[30]),
+      neuralPhaseBudget: _parseInt(videoResults?[33]),
+      neuralPhaseBudgetConfigured: _parseInt(videoResults?[34]),
       neuralPhaseTimingSource: videoResults?[32],
       neuralGpuProvider: neuralGpuProvider,
     );

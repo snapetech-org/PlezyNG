@@ -450,7 +450,10 @@ class MotionClarityService {
     required bool passthroughActive,
   }) async {
     final targetFps = outputRate.resolve(displayFps);
-    if (targetFps == null || !targetFps.isFinite || targetFps < 48) {
+    const fractional48Hz = 48 * 1000 / 1001;
+    final supportsMinimumCadence = targetFps != null &&
+        (targetFps >= 48 || (targetFps - fractional48Hz).abs() <= 0.01);
+    if (targetFps == null || !targetFps.isFinite || !supportsMinimumCadence) {
       return _fallbackToTemporal(
         preset: preset,
         kernel: kernel,
@@ -460,7 +463,8 @@ class MotionClarityService {
         driver: driver,
         displayFps: displayFps,
         passthroughActive: passthroughActive,
-        reason: 'A display rate of at least 48 Hz is required for motion compensation.',
+        reason:
+            'A display rate of at least 48 Hz, or its 1000/1001 equivalent, is required for motion compensation.',
       );
     }
     if (sourceFps != null && sourceFps.isFinite && sourceFps > targetFps + 0.01) {
@@ -477,7 +481,7 @@ class MotionClarityService {
       );
     }
 
-    final rateText = targetFps.toStringAsFixed(3);
+    final rateText = _minterpolateRateText(targetFps);
     final filterSpec =
         '@$_mciFilterLabel:lavfi=[minterpolate=fps=$rateText:mi_mode=mci:${mciQuality.ffmpegOptions}:scd=fdiff:scd_threshold=10]';
     final needsReload =
@@ -816,6 +820,21 @@ class MotionClarityService {
   static double? _readFps(String? raw) {
     final fps = raw == null ? null : double.tryParse(raw.trim());
     return fps != null && fps.isFinite && fps > 0 ? fps : null;
+  }
+
+  static const _fractionalMinterpolateRates = <(double, String)>[
+    (24000 / 1001, '24000/1001'),
+    (30000 / 1001, '30000/1001'),
+    (48000 / 1001, '48000/1001'),
+    (60000 / 1001, '60000/1001'),
+    (120000 / 1001, '120000/1001'),
+  ];
+
+  static String _minterpolateRateText(double fps) {
+    for (final (rate, expression) in _fractionalMinterpolateRates) {
+      if ((fps - rate).abs() <= 0.005) return expression;
+    }
+    return fps.toString();
   }
 
   Future<String?> _readOutputDriver() async {

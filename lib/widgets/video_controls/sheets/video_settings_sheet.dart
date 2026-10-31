@@ -2464,7 +2464,18 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
                   isLive: _state.isLive,
                 ) &&
                 _motionProcessingMode == MotionProcessingMode.neural) {
-              await MotionProcessingService.apply(widget.player, MotionProcessingMode.neural, neuralPreset: preset);
+              final previousPreset = MotionProcessingService.activeNeuralPresetForPlayer(widget.player);
+              try {
+                await MotionProcessingService.apply(widget.player, MotionProcessingMode.neural, neuralPreset: preset);
+              } catch (error, stackTrace) {
+                appLogger.w('Failed to change the active Neural preset', error: error, stackTrace: stackTrace);
+              }
+              if (MotionProcessingService.activeNeuralPresetForPlayer(widget.player) != preset) {
+                if (previousPreset != null) {
+                  await SettingsService.instance.write(SettingsService.neuralInterpolationPreset, previousPreset);
+                }
+                if (mounted) showErrorSnackBar(context, t.settings.motionSmoothingApplyFailed);
+              }
             } else if (MotionProcessingService.supportsPlayer(widget.player) &&
                 _motionProcessingMode == MotionProcessingMode.neural) {
               showAppSnackBar(context, t.settings.motionSmoothingNextPlayback);

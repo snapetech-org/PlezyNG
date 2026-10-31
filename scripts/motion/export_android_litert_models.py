@@ -234,6 +234,7 @@ def export_google_tensor_aot(
                 f"for {model_name}/{resolution}; found: {outputs}"
             )
         shutil.copyfile(compiled_models[0], destination)
+        verify_model_interface(destination, resolution)
 
     height, width = SHAPES[resolution]
     return {

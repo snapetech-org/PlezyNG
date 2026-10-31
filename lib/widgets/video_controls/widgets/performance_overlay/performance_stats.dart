@@ -311,6 +311,12 @@ class PerformanceStats {
   String? get motionProcessingFormatted {
     final resolution = motionProcessingResolution;
     if (resolution == null || resolution.requested == MotionProcessingMode.off) return null;
+    final phaseBudget = playbackCapabilityReport?.neuralPhaseBudget;
+    final configuredPhaseBudget = playbackCapabilityReport?.neuralPhaseBudgetConfigured;
+    final phaseBudgetLabel =
+        phaseBudget != null && configuredPhaseBudget != null && phaseBudget > 0 && configuredPhaseBudget > 0
+        ? 'Phases $phaseBudget/$configuredPhaseBudget'
+        : null;
     final neuralRequest = resolution.requestedPreset == null
         ? t.settings.neuralInterpolation
         : '${t.settings.neuralInterpolation} · ${_neuralPresetLabel(resolution.requestedPreset!)}';
@@ -330,6 +336,7 @@ class PerformanceStats {
         const {'mpv-bypass', 'recovery-probe'}.contains(playbackCapabilityReport?.neuralDeadlineGovernor)) {
       final misses = neuralDeadlineMisses;
       return '$neuralRequest → ${t.settings.motionSmoothingMpv}'
+          '${phaseBudgetLabel == null ? '' : ' · $phaseBudgetLabel'}'
           '${misses == null ? '' : ' · $misses ${t.performanceOverlay.deadlineMisses}'}';
     }
     if (resolution.provider == MotionProcessingProvider.neural) {
@@ -364,6 +371,7 @@ class PerformanceStats {
           if (latencyLabel != null && latency! > 0) '$latencyLabel ms',
           if (neuralGpuProvider != null && neuralGpuProvider!.isNotEmpty) 'Compute $neuralGpuProvider',
           ?neuralPowerMode,
+          ?phaseBudgetLabel,
           ?phaseTimingSource,
           if (sceneCutBypasses != null && sceneCutBypasses > 0)
             '$sceneCutBypasses ${t.performanceOverlay.sceneCutBypasses}',

@@ -527,7 +527,9 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
                                ffmpeg_version: str, ffmpeg_sha256: str) -> str:
     command(["scripts/set_native_revision.sh", native_sha, "--repo", native_repo], cwd=worktree)
     update_android_ffmpeg_pin(worktree, ffmpeg_version, ffmpeg_sha256)
-    command(["python3", "scripts/checks/check_apple_spm_locks.py"], cwd=worktree)
+    # The Apple SPM checker needs .dart_tool/package_config.json from `flutter pub get`.
+    # Dependency resolution belongs on the compatible private JIT runner, not this host.
+    # ci.yml runs pub get and this same checker on the exact release commit before tagging.
     command(["git", "diff", "--check"], cwd=worktree)
 
     changed = command(["git", "status", "--porcelain"], cwd=worktree, capture=True).stdout.strip()

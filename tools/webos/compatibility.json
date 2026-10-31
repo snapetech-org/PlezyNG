@@ -137,7 +137,11 @@
     "clangxxWrapperSha256": "e6c7e41d0c74ac828b353944274fc39f0a786be4d6a1613a91fc9d662e073f42",
     "vpython3Sha256": "f6af230a8c23357e41f652d6320360e735a2ad2c660128067b5e56b224984c08",
     "vpythonBypass": "manually managed python not supported by chrome operations",
-    "depotToolsRevision": "580b4ff3f5cd0dcaa2eacda28cefe0f45320e8f7"
+    "depotToolsRevision": "580b4ff3f5cd0dcaa2eacda28cefe0f45320e8f7",
+    "depotToolsPython314Patch": {
+      "path": "tools/webos/depot-tools-python314.patch",
+      "sha256": "43232fcaf2f32e54bdd17a6a12003b71e433453bfa49b22592bebe9bdbc74f44"
+    }
   },
   "lgArtifacts": {
     "releaseTag": "c6f67dede3-webos26-2",

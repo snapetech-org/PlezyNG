@@ -3,8 +3,8 @@
 #include <onnxruntime_c_api.h>
 
 #include <algorithm>
-#include <cerrno>
 #include <cctype>
+#include <cerrno>
 #include <chrono>
 #include <condition_variable>
 #include <cstdlib>

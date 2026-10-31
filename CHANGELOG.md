@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Mark rejected Plex account tokens as needing sign-in again and retry profile binding after the next sign-in.
 - Keep the explicitly selected Jellyfin subtitle when same-language files tie on metadata.
 - Match the active display's refresh rate during fullscreen playback on macOS without changing its resolution or scaling.
 - Ask which library or server copy to play when Continue Watching merges several copies of a title.

@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/media/media_display_criteria.dart';
+import 'package:plezy/models/motion_processing_mode.dart';
+import 'package:plezy/models/playback_capability_report.dart';
 import 'package:plezy/mpv/mpv.dart';
+import 'package:plezy/services/motion_processing_service.dart';
 import 'package:plezy/widgets/video_controls/widgets/performance_overlay/performance_stats.dart';
 import 'package:plezy/widgets/video_controls/widgets/performance_overlay/performance_stats_service.dart';
 
@@ -387,6 +391,61 @@ void main() {
 
       expect(stats.dvSourceProfile, 8);
       expect(stats.hasDvPlaybackPath, isFalse);
+    });
+  });
+
+  group('PerformanceStatsService WebGPU provider reporting', () {
+    test(
+      'normalizes the PME provider and marks it ready after generated output',
+      () async {
+        final stats = await _firstStats(
+          _PropertyPlayer({
+            'video-params/w': '1280',
+            'video-params/h': '720',
+            'vf-metadata/plezy-pme/provider': 'WebGpuExecutionProvider',
+            'vf-metadata/plezy-pme/device-kind': 'GPU',
+            'vf-metadata/plezy-pme/generated-frames': '1',
+          }),
+        );
+
+        expect(stats.neuralProvider, 'webgpu-gpu');
+        expect(stats.playbackCapabilityReport?.neuralProviderReady, isTrue);
+        expect(stats.playbackCapabilityReport?.hasObservedNeuralOutput, isTrue);
+      },
+      skip: !Platform.isLinux && !Platform.isWindows,
+    );
+
+    test(
+      'accepts a WebGPU provider status when resolving Neural mode',
+      () {
+        final resolution = MotionProcessingService.resolveForPlayer(
+          _PropertyPlayer(const {}),
+          MotionProcessingMode.neural,
+          neuralProviderStatus: 'webgpu-gpu-ready',
+        );
+
+        expect(resolution.provider, MotionProcessingProvider.neural);
+      },
+      skip: !MotionProcessingService.isMpvPlatformSupported,
+    );
+
+    test('labels the provider as WebGPU GPU in the performance overlay', () {
+      final stats = PerformanceStats(
+        neuralProvider: 'webgpu-gpu',
+        motionProcessingResolution: const MotionProcessingResolution(
+          requested: MotionProcessingMode.neural,
+          requestedPreset: NeuralInterpolationPreset.performance,
+          provider: MotionProcessingProvider.neural,
+        ),
+        playbackCapabilityReport: const PlaybackCapabilityReport(
+          playerType: 'mpv',
+          neuralProvider: 'webgpu-gpu',
+          neuralProviderReady: true,
+          neuralOutputObserved: true,
+        ),
+      );
+
+      expect(stats.motionProcessingFormatted, contains('WebGPU · GPU'));
     });
   });
 }

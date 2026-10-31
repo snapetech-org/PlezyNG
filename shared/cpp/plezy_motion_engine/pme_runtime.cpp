@@ -41,6 +41,9 @@ struct pme_runtime_session {
 #else
   void* runtime_library = nullptr;
 #endif
+#if defined(__linux__)
+  void* migraphx_runtime_library = nullptr;
+#endif
   const OrtApiBase* api_base = nullptr;
   const OrtApi* api = nullptr;
   uint32_t api_version = 0;
@@ -831,6 +834,42 @@ bool try_builtin_migraphx_candidate(
     *error = "MIGraphXExecutionProvider must target a GPU device";
     return false;
   }
+#if defined(__linux__)
+  // The AMD provider depends on libmigraphx_c.so.3 but does not include an
+  // RPATH. Preload the bundled runtime (when present) so its RUNPATH can find
+  // sibling libraries, and keep MIGraphX's global loader state mapped after
+  // the ONNX Runtime session is released. Unloading it during MPV teardown
+  // previously faulted in libmigraphx's dynamic_loader_impl destructor.
+  if (!session->migraphx_runtime_library) {
+    std::vector<std::string> candidates;
+    if (valid_string(config->runtime_library_path)) {
+      const std::string runtime_path(config->runtime_library_path);
+      const size_t separator = runtime_path.find_last_of('/');
+      if (separator != std::string::npos) {
+        candidates.push_back(runtime_path.substr(0, separator + 1) + "libmigraphx_c.so.3");
+      }
+    }
+    candidates.emplace_back("libmigraphx_c.so.3");
+
+    std::string last_error;
+    for (const std::string& path : candidates) {
+      dlerror();
+      int flags = RTLD_NOW | RTLD_GLOBAL;
+#if defined(RTLD_NODELETE)
+      flags |= RTLD_NODELETE;
+#endif
+      session->migraphx_runtime_library = dlopen(path.c_str(), flags);
+      if (session->migraphx_runtime_library) break;
+      const char* detail = dlerror();
+      if (detail && detail[0]) last_error = detail;
+    }
+    if (!session->migraphx_runtime_library) {
+      *error = "Could not load AMD MIGraphX runtime libmigraphx_c.so.3";
+      if (!last_error.empty()) *error += ": " + last_error;
+      return false;
+    }
+  }
+#endif
   const OrtApi* api = session->api;
   if (session->api_version < PME_ORT_LEGACY_MIGRAPHX_API_VERSION ||
       !api->SessionOptionsAppendExecutionProvider_MIGraphX) {
@@ -1043,6 +1082,17 @@ void release_session(pme_runtime_session* session) {
     dlclose(session->runtime_library);
     session->runtime_library = nullptr;
   }
+#if defined(__linux__)
+  if (session->migraphx_runtime_library) {
+#if defined(RTLD_NODELETE)
+    dlclose(session->migraphx_runtime_library);
+#else
+    // On Linux libcs without RTLD_NODELETE, retain this loader reference until
+    // process exit so MIGraphX's global state cannot be unloaded at teardown.
+#endif
+    session->migraphx_runtime_library = nullptr;
+  }
+#endif
 #endif
 }
 

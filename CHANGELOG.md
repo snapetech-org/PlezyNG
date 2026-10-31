@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fix the pinned Opus CMake package config for Windows builds with a relative install prefix.
+
 - Fall back to packaged LiteRT providers when Qualcomm HTP context preparation fails.
 - Normalize modifier scan codes on remote Android keys when they obscure the actual key.
 - Mark rejected Plex account tokens as needing sign-in again and retry profile binding after the next sign-in.

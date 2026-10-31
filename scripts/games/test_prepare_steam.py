@@ -1,10 +1,11 @@
 """Exercise real cross-process source preparation locking without network I/O."""
 import multiprocessing
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 
-from prepare_steam import preparation_lock
+from prepare_steam import ROOT, apply_patches, preparation_lock
 
 
 def hold(destination, entered, release):
@@ -14,6 +15,33 @@ def hold(destination, entered, release):
 
 
 class SourceLockTest(unittest.TestCase):
+    def test_opus_cmake_patch_omits_relative_install_prefix(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary)
+            (source / 'CMakeLists.txt').write_text('''  include(CMakePackageConfigHelpers)
+
+  set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR})
+  configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/OpusConfig.cmake.in
+                                OpusConfig.cmake
+                                INSTALL_DESTINATION
+                                ${CMAKE_INSTALL_PACKAGEDIR}
+                                PATH_VARS
+                                INCLUDE_INSTALL_DIR
+                                INSTALL_PREFIX
+                                ${CMAKE_INSTALL_PREFIX})
+  write_basic_package_version_file(OpusConfigVersion.cmake
+                                   VERSION ${PROJECT_VERSION}
+                                   COMPATIBILITY SameMajorVersion)
+''')
+            subprocess.run(['git', 'init', '--quiet'], cwd=source, check=True)
+            patch = ROOT / 'scripts/games/patches/steam-opus-cmake-prefix.patch'
+            self.assertTrue(patch.is_file())
+            apply_patches(source, [patch])
+            cmake = (source / 'CMakeLists.txt').read_text()
+            self.assertIn('                                INCLUDE_INSTALL_DIR)\n', cmake)
+            self.assertNotIn('INSTALL_PREFIX', cmake)
+            self.assertNotIn('${CMAKE_INSTALL_PREFIX})', cmake)
+
     def test_competing_builder_times_out_without_mutating_sources(self):
         with tempfile.TemporaryDirectory() as temporary:
             destination = Path(temporary) / 'steam'

@@ -86,15 +86,23 @@ def prepare(destination: Path) -> None:
         prepare_locked(destination)
 
 
+def apply_patches(source: Path, patches: list[Path]) -> None:
+    for patch in patches:
+        run('git', 'apply', '--check', str(patch), cwd=source)
+        run('git', 'apply', str(patch), cwd=source)
+
+
 def prepare_locked(destination: Path) -> None:
     source_lock = json.loads((ROOT / 'games-native.lock.json').read_text())
     lock = source_lock['steamRuntime']
     pyrowave = lock['pyrowave']
     granite = source_lock['steamResearch']['granite']
-    ihs_patches = sorted((ROOT / 'scripts/games/patches').glob('steam-runtime-*.patch'))
+    patch_root = ROOT / 'scripts/games/patches'
+    ihs_patches = sorted(patch_root.glob('steam-runtime-*.patch'))
+    opus_patches = sorted(patch_root.glob('steam-opus-*.patch'))
     digest = hashlib.sha256(Path(__file__).read_bytes() + json.dumps(lock, sort_keys=True).encode())
     digest.update(json.dumps(granite, sort_keys=True).encode())
-    for patch in ihs_patches:
+    for patch in (*ihs_patches, *opus_patches):
         digest.update(patch.read_bytes())
     recipe = digest.hexdigest()
     marker = destination / '.plezy-recipe'
@@ -126,10 +134,8 @@ def prepare_locked(destination: Path) -> None:
             run('git', 'submodule', 'update', '--init', '--depth=1', '--', path, cwd=granite_source)
             if run('git', '-C', path, 'rev-parse', 'HEAD', cwd=granite_source) != revision:
                 raise ValueError(f'Unexpected Granite submodule revision: {path}')
-        ihs = prepared / 'ihslib'
-        for patch in ihs_patches:
-            run('git', 'apply', '--check', str(patch), cwd=ihs)
-            run('git', 'apply', str(patch), cwd=ihs)
+        apply_patches(prepared / 'ihslib', ihs_patches)
+        apply_patches(prepared / 'opus', opus_patches)
         (prepared / '.plezy-recipe').write_text(recipe)
         shutil.move(str(prepared), destination)
 

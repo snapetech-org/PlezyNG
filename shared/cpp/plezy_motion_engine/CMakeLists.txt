@@ -388,7 +388,7 @@ if(CMAKE_DL_LIBS)
 endif()
 target_link_libraries(plezy_motion_engine PRIVATE Threads::Threads)
 if(WIN32)
-  target_link_libraries(plezy_motion_engine PRIVATE WindowsML::Api dxgi)
+  target_link_libraries(plezy_motion_engine PRIVATE WindowsML::Api dxgi d3d12)
 endif()
 
 if(WIN32)

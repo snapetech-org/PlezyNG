@@ -473,6 +473,8 @@ class PerformanceStats {
       'vitisai-npu' => 'Vitis AI NPU',
       'nvtensorrtrtx-gpu' => 'TensorRT RTX GPU',
       'migraphx-gpu' => 'MIGraphX GPU',
+      'webgpu-gpu' => 'WebGPU · GPU',
+      'webgpu' => 'WebGPU',
       'directml-gpu' => 'DirectML GPU',
       'winml-npu' => 'Windows ML NPU',
       'winml-gpu' => 'Windows ML GPU',

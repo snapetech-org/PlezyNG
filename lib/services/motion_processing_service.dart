@@ -109,7 +109,7 @@ abstract final class MotionProcessingService {
         (capabilityReport?.neuralProviderReady ??
             (normalizedProviderStatus != null &&
                 RegExp(
-                  r'^(qnn-htp(-v\d+)?|qnn-(npu|gpu)|litert-(npu|gpu)|openvino(-npu|-gpu)?|cuda-gpu|directml-gpu|vitisai-npu|nvtensorrtrtx-gpu|migraphx-gpu|winml(-npu|-gpu)?)(-ready)?$|^pme:(openvino|qnn|cuda|directml)(:(npu|gpu))?(-ready)?$',
+                  r'^(qnn-htp(-v\d+)?|qnn-(npu|gpu)|litert-(npu|gpu)|openvino(-npu|-gpu)?|cuda-gpu|directml-gpu|vitisai-npu|nvtensorrtrtx-gpu|migraphx-gpu|webgpu(-gpu)?|webgpuexecutionprovider|winml(-npu|-gpu)?)(-ready)?$|^pme:(openvino|qnn|cuda|directml)(:(npu|gpu))?(-ready)?$',
                 ).hasMatch(normalizedProviderStatus)));
     final nativeProviderReady =
         (appleOutput && const {'initializing', 'ready', 'active'}.contains(nativeInterpolationStatus)) ||

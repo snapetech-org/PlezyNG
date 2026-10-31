@@ -727,6 +727,8 @@ class PerformanceStatsService {
       token = 'nvtensorrtrtx-gpu';
     } else if (name.contains('migraphx')) {
       token = 'migraphx-gpu';
+    } else if (name.contains('webgpu')) {
+      token = 'webgpu$deviceSuffix';
     } else if (name.contains('directml') || name.contains('dml')) {
       token = 'directml-gpu';
     } else if (name.contains('winml')) {

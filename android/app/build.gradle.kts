@@ -708,7 +708,7 @@ val stageAndroidLiteRtModels = tasks.register<Sync>("stageAndroidLiteRtModels") 
           if (!bundleAndroidLiteRtModels && (downloadUrl == null || !expectedUrl.matches(downloadUrl))) {
             throw GradleException(
               "LiteRT model $filename has no immutable public download URL; " +
-              "set PLEZY_LITERT_BUNDLE_MODELS=0 only for a build that allows on-demand downloads"
+                "set PLEZY_LITERT_BUNDLE_MODELS=0 only for a build that allows on-demand downloads"
             )
           }
         }

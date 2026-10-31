@@ -8,14 +8,15 @@ set(PME_PROVIDER_DEPENDENCY_LIBRARIES "" CACHE STRING "Non-ORT shared libraries 
 set(PME_PROVIDER_NOTICE_FILES "" CACHE STRING "Provider licenses and third-party notices to bundle")
 set(PME_PROVIDER_RUNTIME_FILES "" CACHE STRING "Non-library runtime data files required by providers")
 option(PME_BUILD_RUNTIME_PROBE "Build the standalone PME provider/inference diagnostic" OFF)
-set(PLEZY_ORT_LINUX_VARIANT "cpu" CACHE STRING "Linux ONNX Runtime bundle: cpu, amd-migraphx, or openvino")
-set_property(CACHE PLEZY_ORT_LINUX_VARIANT PROPERTY STRINGS cpu amd-migraphx openvino)
+set(PLEZY_ORT_LINUX_VARIANT "cpu" CACHE STRING "Linux ONNX Runtime bundle: cpu, amd-migraphx, openvino, or webgpu")
+set_property(CACHE PLEZY_ORT_LINUX_VARIANT PROPERTY STRINGS cpu amd-migraphx openvino webgpu)
 
 if(UNIX AND NOT APPLE)
   if(NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "cpu" AND
      NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "amd-migraphx" AND
-     NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "openvino")
-    message(FATAL_ERROR "PLEZY_ORT_LINUX_VARIANT must be 'cpu', 'amd-migraphx', or 'openvino'")
+     NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "openvino" AND
+     NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "webgpu")
+    message(FATAL_ERROR "PLEZY_ORT_LINUX_VARIANT must be 'cpu', 'amd-migraphx', 'openvino', or 'webgpu'")
   endif()
 endif()
 
@@ -254,6 +255,74 @@ if(UNIX AND NOT APPLE AND PLEZY_ORT_LINUX_VARIANT STREQUAL "openvino")
     "${CMAKE_CURRENT_LIST_DIR}/licenses/OpenVINO-Plugin-LICENSE.txt"
   )
   list(APPEND PME_PROVIDER_RUNTIME_FILES "${PLEZY_OPENVINO_EP_EXTRACT_DIR}/OpenVINO-Plugin-cache.json")
+endif()
+
+if(UNIX AND NOT APPLE AND PLEZY_ORT_LINUX_VARIANT STREQUAL "webgpu")
+  if(PLEZY_ORT_PLATFORM STREQUAL "linux-x64")
+    set(PLEZY_WEBGPU_EP_WHEEL_NAME "onnxruntime_ep_webgpu-0.5.0-py3-none-manylinux_2_28_x86_64.whl")
+    set(PLEZY_WEBGPU_EP_WHEEL_SHA256 "b6baa3e223d9a679023388b1179e5597b6bc0d282ba72f2afe38d46ef37deeb4")
+    set(PLEZY_WEBGPU_EP_WHEEL_URL "https://files.pythonhosted.org/packages/e2/1d/ac0ccbe8bd6435b6e1946fea964790ffa3d73ee2513775e90958fd6b860e/${PLEZY_WEBGPU_EP_WHEEL_NAME}")
+  elseif(PLEZY_ORT_PLATFORM STREQUAL "linux-aarch64")
+    set(PLEZY_WEBGPU_EP_WHEEL_NAME "onnxruntime_ep_webgpu-0.5.0-py3-none-manylinux_2_28_aarch64.whl")
+    set(PLEZY_WEBGPU_EP_WHEEL_SHA256 "d39e0769f8b2ff7a4b04a492ef882510474d52cf722408d393569b36558b2829")
+    set(PLEZY_WEBGPU_EP_WHEEL_URL "https://files.pythonhosted.org/packages/93/ca/71f305dc822d62ef33d7f3862ba7058a0099086112d9ab679d8252e7b77d/${PLEZY_WEBGPU_EP_WHEEL_NAME}")
+  else()
+    message(FATAL_ERROR "The pinned WebGPU Plugin EP wheel requires Linux x86_64 or ARM64")
+  endif()
+
+  set(PLEZY_WEBGPU_EP_VERSION "0.5.0")
+  set(PLEZY_WEBGPU_EP_CACHE_DIR "${CMAKE_BINARY_DIR}/onnxruntime/webgpu-${PLEZY_WEBGPU_EP_VERSION}")
+  set(PLEZY_WEBGPU_EP_DOWNLOAD_DIR "${PLEZY_WEBGPU_EP_CACHE_DIR}/downloads")
+  set(PLEZY_WEBGPU_EP_EXTRACT_DIR "${PLEZY_WEBGPU_EP_CACHE_DIR}/runtime")
+  set(PLEZY_WEBGPU_EP_WHEEL "${PLEZY_WEBGPU_EP_DOWNLOAD_DIR}/${PLEZY_WEBGPU_EP_WHEEL_NAME}")
+  file(MAKE_DIRECTORY "${PLEZY_WEBGPU_EP_DOWNLOAD_DIR}" "${PLEZY_WEBGPU_EP_EXTRACT_DIR}")
+
+  if(EXISTS "${PLEZY_WEBGPU_EP_WHEEL}")
+    file(SHA256 "${PLEZY_WEBGPU_EP_WHEEL}" PLEZY_WEBGPU_EP_CACHED_SHA256)
+    if(NOT PLEZY_WEBGPU_EP_CACHED_SHA256 STREQUAL PLEZY_WEBGPU_EP_WHEEL_SHA256)
+      file(REMOVE "${PLEZY_WEBGPU_EP_WHEEL}")
+    endif()
+  endif()
+  if(NOT EXISTS "${PLEZY_WEBGPU_EP_WHEEL}")
+    message(STATUS "Downloading pinned ONNX Runtime WebGPU Plugin EP ${PLEZY_WEBGPU_EP_VERSION}")
+    file(DOWNLOAD
+      "${PLEZY_WEBGPU_EP_WHEEL_URL}"
+      "${PLEZY_WEBGPU_EP_WHEEL}"
+      EXPECTED_HASH "SHA256=${PLEZY_WEBGPU_EP_WHEEL_SHA256}"
+      STATUS PLEZY_WEBGPU_EP_DOWNLOAD_STATUS
+    )
+    list(GET PLEZY_WEBGPU_EP_DOWNLOAD_STATUS 0 PLEZY_WEBGPU_EP_DOWNLOAD_RESULT)
+    if(NOT PLEZY_WEBGPU_EP_DOWNLOAD_RESULT EQUAL 0)
+      file(REMOVE "${PLEZY_WEBGPU_EP_WHEEL}")
+      message(FATAL_ERROR "Could not download the verified WebGPU Plugin EP wheel: ${PLEZY_WEBGPU_EP_DOWNLOAD_STATUS}")
+    endif()
+  endif()
+
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  execute_process(
+    COMMAND "${Python3_EXECUTABLE}"
+      "${CMAKE_CURRENT_LIST_DIR}/../../../scripts/motion/extract_webgpu_ep_wheel.py"
+      "${PLEZY_WEBGPU_EP_WHEEL}"
+      "${PLEZY_WEBGPU_EP_EXTRACT_DIR}"
+      "${PLEZY_WEBGPU_EP_WHEEL_SHA256}"
+    RESULT_VARIABLE PLEZY_WEBGPU_EP_EXTRACT_RESULT
+    OUTPUT_VARIABLE PLEZY_WEBGPU_EP_EXTRACT_OUTPUT
+    ERROR_VARIABLE PLEZY_WEBGPU_EP_EXTRACT_ERROR
+  )
+  if(NOT PLEZY_WEBGPU_EP_EXTRACT_RESULT EQUAL 0)
+    message(FATAL_ERROR "Could not extract the pinned WebGPU Plugin EP wheel: ${PLEZY_WEBGPU_EP_EXTRACT_ERROR}")
+  endif()
+
+  set(PLEZY_WEBGPU_EP_PLUGIN "${PLEZY_WEBGPU_EP_EXTRACT_DIR}/libonnxruntime_providers_webgpu.so")
+  if(NOT EXISTS "${PLEZY_WEBGPU_EP_PLUGIN}")
+    message(FATAL_ERROR "The WebGPU Plugin EP wheel did not produce its provider library")
+  endif()
+  list(APPEND PME_PROVIDER_LIBRARIES "${PLEZY_WEBGPU_EP_PLUGIN}")
+  list(APPEND PME_PROVIDER_NOTICE_FILES
+    "${PLEZY_WEBGPU_EP_EXTRACT_DIR}/WebGPU-License.txt"
+    "${PLEZY_WEBGPU_EP_EXTRACT_DIR}/WebGPU-ThirdPartyNotices.txt"
+  )
+  set(PME_LINUX_PROVIDER_MANIFEST "${CMAKE_CURRENT_LIST_DIR}/providers.linux.webgpu.tsv")
 endif()
 
 find_path(ONNXRUNTIME_INCLUDE_DIR

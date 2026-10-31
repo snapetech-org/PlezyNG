@@ -1,0 +1,2 @@
+# Provider name<TAB>device kind<TAB>plugin library path relative to this file
+WebGpuExecutionProvider	GPU	libonnxruntime_providers_webgpu.so

@@ -1442,6 +1442,11 @@ jobs:
           printf '%s' "$MACOS_CERTIFICATE_BASE64" | base64 -D -o "$CERTIFICATE_PATH"
           security import "$CERTIFICATE_PATH" -k "$KEYCHAIN_PATH" -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          identities="$(security find-identity -v -p codesigning "$KEYCHAIN_PATH")"
+          if [[ "$identities" != *"Developer ID Application:"* ]]; then
+            echo "The imported macOS signing certificate has no valid Developer ID Application identity. Configure a Developer ID Application certificate; Apple Distribution certificates cannot be used for macOS notarization." >&2
+            exit 1
+          fi
           security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain
 
       - name: Sign Application

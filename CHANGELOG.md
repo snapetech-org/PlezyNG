@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 - Make release run names show the action, runner pool and tag; route platform matrices by explicit targets.
+- Verify the imported macOS signing identity is a Developer ID certificate before signing and notarization.
+- Align Dolby workflow route checks with the private Windows x64 and macOS ARM64 JIT labels.
 - Load the Google ML Kit simulator helper after Flutter creates CocoaPods plugin symlinks.
 - Fix native Kotlin formatting in the Android LiteRT model validation message.
 - Keep recently added playback and subtitle messages on the approved English fallback until translations are reviewed.

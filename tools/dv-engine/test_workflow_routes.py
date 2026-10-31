@@ -77,11 +77,10 @@ class DolbyWorkflowRouteTests(unittest.TestCase):
     def test_platform_specific_jobs_route_to_private_platform_pools(self):
         platforms = (WORKFLOWS / "dv-platforms.yml").read_text()
         contracts = job_block(platforms, "contracts")
-        self.assertIn("windows-2025", contracts)
-        self.assertIn("matrix.os == 'windows-2025'", contracts)
+        self.assertIn("matrix.platform == 'windows-x64'", contracts)
         self.assertIn('"group":"packer-windows"', contracts)
         self.assertIn('"Windows","X64"', contracts)
-        self.assertIn("macos-15", contracts)
+        self.assertIn("matrix.platform == 'macos-arm64'", contracts)
         self.assertIn('"macOS","ARM64"', contracts)
 
         apple = job_block(platforms, "apple-source")

@@ -362,7 +362,10 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         result = self._run(workflow)
 
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("run names must expose the manual action and pool", result.stderr)
+        self.assertIn(
+            "build and release run names must match the private JIT broker title schema",
+            result.stderr,
+        )
 
     def test_automatic_release_triggers_are_rejected(self) -> None:
         workflow = self._workflow().replace(

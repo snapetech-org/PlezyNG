@@ -14,6 +14,11 @@ final class PlaybackCapabilityReport {
   /// Tri-state source classification. Null means the backend could not report it.
   final bool? sourceIsHdr;
 
+  /// Whether the selected source video stream is interlaced. Null means scan
+  /// type is unknown; motion processing requires an explicitly progressive
+  /// source during setup.
+  final bool? sourceIsInterlaced;
+
   /// Source Dolby Vision profile; null means no profile was reported.
   final int? dolbyVisionProfile;
   final double? sourceFps;
@@ -66,6 +71,7 @@ final class PlaybackCapabilityReport {
     this.sourceWidth,
     this.sourceHeight,
     this.sourceIsHdr,
+    this.sourceIsInterlaced,
     this.dolbyVisionProfile,
     this.sourceFps,
     this.displayFps,

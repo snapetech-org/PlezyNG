@@ -235,6 +235,7 @@ class PerformanceStatsService {
             statsMap['video-params/max-fall'],
           ),
         ),
+        sourceIsInterlaced: _sourceInterlaced(statsMap['sourceIsInterlaced']),
         dolbyVisionProfile: (statsMap['dvSourceProfile'] as num?)?.toInt(),
         sourceFps: _parseDouble(statsMap['container-fps'] as String?),
         displayFps: _parseDouble(statsMap['display-fps'] as String?),
@@ -342,6 +343,7 @@ class PerformanceStatsService {
         sourceWidth: statsMap['videoWidth'] as int?,
         sourceHeight: statsMap['videoHeight'] as int?,
         sourceIsHdr: statsMap['sourceIsHdr'] as bool?,
+        sourceIsInterlaced: _sourceInterlaced(statsMap['sourceIsInterlaced']),
         dolbyVisionProfile: (statsMap['dvSourceProfile'] as num?)?.toInt(),
         sourceFps: (statsMap['videoFps'] as num?)?.toDouble(),
         droppedFrames: statsMap['videoDroppedFrames'] as int?,
@@ -540,6 +542,7 @@ class PerformanceStatsService {
         videoResults?[5],
         hasHdrMetadata: _hasMpvHdrMetadata(videoResults?[6], videoResults?[7], videoResults?[8], videoResults?[9]),
       ),
+      sourceIsInterlaced: _sourceInterlaced(),
       dolbyVisionProfile: dolbyVisionProfile,
       sourceFps: _parseDouble(results[3]),
       displayFps: _parseDouble(videoResults?.first),
@@ -657,6 +660,13 @@ class PerformanceStatsService {
     'no' || 'false' || '0' => false,
     _ => null,
   };
+
+  bool? _sourceInterlaced([Object? reported]) {
+    final sourceMetadata = MotionProcessingService.sourceInterlacedForPlayer(player);
+    final bool? backendValue = reported is bool ? reported : reported is String ? _parseBool(reported) : null;
+    if (sourceMetadata == true || backendValue == true) return true;
+    return backendValue ?? sourceMetadata;
+  }
 
   bool? _isHdrTransfer(String? transfer, {bool hasHdrMetadata = false}) {
     if (hasHdrMetadata) return true;

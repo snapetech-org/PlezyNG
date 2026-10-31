@@ -140,6 +140,8 @@ class _PlayerPerformanceOverlayState extends State<PlayerPerformanceOverlay> {
           _metric(t.performanceOverlay.videoOutput, _stats.currentVideoOutput!),
         if (_stats.motionProcessingFormatted != null)
           _metric(t.settings.motionSmoothing, _stats.motionProcessingFormatted!),
+        if (_stats.playbackCapabilityReport?.sourceIsInterlaced == true)
+          _metric(t.fileInfo.scanType, t.fileInfo.interlaced),
         if (_stats.playbackCapabilityReport?.thermalStatus case final status?)
           _metric(t.performanceOverlay.thermalStatus, status),
         if (_stats.videoUpscalingFormatted != null)

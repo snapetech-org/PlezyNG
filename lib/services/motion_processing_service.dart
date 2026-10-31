@@ -137,6 +137,7 @@ abstract final class MotionProcessingService {
   /// to Off.
   static bool _supportsReportedMotionStream(PlaybackCapabilityReport report) {
     if (report.sourceIsHdr == true || report.dolbyVisionProfile != null) return false;
+    if (report.sourceIsInterlaced == true) return false;
 
     final width = report.sourceWidth;
     final height = report.sourceHeight;
@@ -150,6 +151,23 @@ abstract final class MotionProcessingService {
     final fps = report.sourceFps;
     if (fps != null && fps > 0 && (fps - 24).abs() > 0.1 && (fps - 30).abs() > 0.1) return false;
     return true;
+  }
+
+  /// Scan type from the selected source version used to configure this player.
+  /// A missing value stays unknown; callers must not infer progressive video.
+  static bool? sourceInterlacedForPlayer(Player player) {
+    final version = _sessionSelectedVersion[player];
+    if (version == null) return null;
+
+    final streams = version.parts
+        .expand((part) => part.streams)
+        .where((stream) => stream.kind == MediaStreamKind.video)
+        .toList(growable: false);
+    final video = streams.firstWhere(
+      (stream) => stream.selected,
+      orElse: () => streams.length == 1 ? streams.single : const MediaStream(id: '', kind: MediaStreamKind.unknown),
+    );
+    return video.kind == MediaStreamKind.video ? video.interlaced : null;
   }
 
   static bool _supportsVideoOutput(String output) {

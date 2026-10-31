@@ -4,6 +4,8 @@
 The exported input/output tensors are NHWC to match vf_anvil's frame packer.
 This tool runs outside normal app builds. Optional W8A8 output is calibrated
 from the same raw six-channel samples accepted by build_android_anvil_contexts.py.
+Existing Google Tensor AOT records are preserved and integrity-checked on
+ordinary exports so a model refresh cannot silently remove those device paths.
 """
 
 from __future__ import annotations
@@ -41,6 +43,10 @@ MODELS = {
     },
 }
 SHAPES = {"720p": (720, 1280), "1080p": (1080, 1920)}
+GOOGLE_TENSOR_AOT_PROVIDERS = {
+    "google-tensor-g5": "Tensor_G5",
+    "google-tensor-g6": "Tensor_G6",
+}
 
 
 def sha256_file(path: Path) -> str:
@@ -351,6 +357,112 @@ def prune_unlisted_model_files(output_dir: Path, manifest: dict[str, Any]) -> No
             model_file.unlink()
 
 
+def preserve_google_tensor_aot_records(
+    output_dir: Path,
+    existing_manifest: dict[str, Any] | None,
+    output_manifest: dict[str, Any],
+) -> bool:
+    """Keep verified target-specific records during a non-AOT model export."""
+    if existing_manifest is None:
+        return False
+
+    existing_models = existing_manifest.get("models", {})
+    aot_records = [
+        (model_name, resolution, provider, record)
+        for model_name, model in existing_models.items()
+        for resolution, providers in model.get("variants", {}).items()
+        for provider, record in providers.items()
+        if provider in GOOGLE_TENSOR_AOT_PROVIDERS
+    ]
+    if not aot_records:
+        return False
+
+    if existing_manifest.get("source") != output_manifest.get("source") or existing_manifest.get(
+        "weights"
+    ) != output_manifest.get("weights"):
+        raise ValueError(
+            "Existing Google Tensor AOT models target different ANVIL source or weights; "
+            "rerun with --google-tensor-aot to rebuild them before replacing this pack."
+        )
+
+    metadata = existing_manifest.get("google_tensor_aot")
+    if not isinstance(metadata, dict):
+        raise ValueError("Existing Google Tensor AOT records are missing their compiler metadata.")
+
+    preserved_resolutions: set[str] = set()
+    for model_name, resolution, provider, record in aot_records:
+        output_model = output_manifest.get("models", {}).get(model_name)
+        if output_model is None:
+            raise ValueError(
+                f"Existing Google Tensor AOT record has an unknown model: {model_name}; "
+                "remove the invalid record or rebuild the pack."
+            )
+
+        if resolution not in SHAPES or not isinstance(record, dict):
+            raise ValueError(f"Existing Google Tensor AOT record is invalid: {model_name}/{resolution}/{provider}")
+        target = GOOGLE_TENSOR_AOT_PROVIDERS[provider]
+        height, width = SHAPES[resolution]
+        filename = record.get("file")
+        expected_bytes = record.get("bytes")
+        expected_sha256 = record.get("sha256")
+        if (
+            record.get("backend") != "google-tensor"
+            or record.get("execution") != "aot"
+            or record.get("soc_model") != target
+            or record.get("input_layout") != "NHWC"
+            or record.get("input_shape") != [1, height, width, 6]
+            or record.get("output_layout") != "NHWC"
+            or record.get("output_shape") != [1, height, width, 3]
+            or not isinstance(filename, str)
+            or Path(filename).name != filename
+            or not filename.endswith(".tflite")
+            or not isinstance(expected_bytes, int)
+            or isinstance(expected_bytes, bool)
+            or not isinstance(expected_sha256, str)
+            or len(expected_sha256) != 64
+        ):
+            raise ValueError(f"Existing Google Tensor AOT record is invalid: {model_name}/{resolution}/{provider}")
+
+        model_path = output_dir / filename
+        if (
+            not model_path.is_file()
+            or model_path.stat().st_size != expected_bytes
+            or sha256_file(model_path) != expected_sha256
+        ):
+            raise ValueError(
+                f"Existing Google Tensor AOT model failed integrity checks: {model_path}; "
+                "re-export it with --google-tensor-aot."
+            )
+
+        output_model.setdefault("variants", {}).setdefault(resolution, {})[provider] = record
+        preserved_resolutions.add(resolution)
+
+    if not preserved_resolutions:
+        return False
+
+    normalized_metadata = dict(metadata)
+    normalized_metadata.pop("validated_resolutions", None)
+    normalized_metadata["compiled_resolutions"] = sorted(preserved_resolutions)
+    output_manifest["google_tensor_aot"] = normalized_metadata
+    return True
+
+
+def google_tensor_aot_metadata(
+    litert_torch: Any,
+    torch: Any,
+    resolutions: set[str],
+) -> dict[str, Any]:
+    """Record the exact converter/compiler toolchain for target AOT files."""
+    sdk_distribution = "ai-edge-litert-sdk-google-tensor-nightly"
+    return {
+        "converter": f"litert-torch=={litert_torch.__version__}",
+        "litert": f"ai-edge-litert=={importlib.metadata.version('ai-edge-litert')}",
+        "sdk": f"{sdk_distribution}=={importlib.metadata.version(sdk_distribution)}",
+        "torch": str(torch.__version__),
+        "compiled_resolutions": sorted(resolutions),
+    }
+
+
 def read_calibration_provenance(root: Path | None) -> dict[str, Any] | None:
     if root is None:
         return None
@@ -496,6 +608,12 @@ def main() -> int:
 
     args.work_dir.mkdir(parents=True, exist_ok=True)
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    existing_manifest_path = args.output_dir / "manifest.json"
+    existing_manifest = (
+        json.loads(existing_manifest_path.read_text(encoding="utf-8"))
+        if existing_manifest_path.is_file()
+        else None
+    )
     manifest: dict[str, Any] = {
         "format": 1,
         "license": "MIT",
@@ -653,6 +771,22 @@ def main() -> int:
             },
             "variants": output_variants,
         }
+
+    if args.google_tensor_aot:
+        compiled_resolutions = {
+            resolution
+            for model in manifest["models"].values()
+            for resolution, providers in model["variants"].items()
+            if any(provider in GOOGLE_TENSOR_AOT_PROVIDERS for provider in providers)
+        }
+        if compiled_resolutions:
+            manifest["google_tensor_aot"] = google_tensor_aot_metadata(
+                litert_torch,
+                torch,
+                compiled_resolutions,
+            )
+    else:
+        preserve_google_tensor_aot_records(args.output_dir, existing_manifest, manifest)
 
     manifest_path = args.output_dir / "manifest.json"
     temporary = manifest_path.with_suffix(".json.partial")

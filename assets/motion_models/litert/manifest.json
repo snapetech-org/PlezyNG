@@ -373,6 +373,15 @@
     "version": "0.10.0"
   },
   "format": 1,
+  "google_tensor_aot": {
+    "compiled_resolutions": [
+      "720p"
+    ],
+    "converter": "litert-torch==0.10.0",
+    "litert": "ai-edge-litert==2.3.0",
+    "sdk": "ai-edge-litert-sdk-google-tensor-nightly==2.3.0.dev20261001",
+    "torch": "2.14.1+cpu"
+  },
   "license": "MIT",
   "models": {
     "anvil-m": {
@@ -430,6 +439,54 @@
           }
         },
         "720p": {
+          "google-tensor-g5": {
+            "backend": "google-tensor",
+            "bytes": 7678736,
+            "execution": "aot",
+            "file": "anvil-m-720p-google-tensor-g5.tflite",
+            "input_layout": "NHWC",
+            "input_shape": [
+              1,
+              720,
+              1280,
+              6
+            ],
+            "output_layout": "NHWC",
+            "output_semantics": "residual_to_add_to_pair_blend",
+            "output_shape": [
+              1,
+              720,
+              1280,
+              3
+            ],
+            "precision": "float16-truncated",
+            "sha256": "9d67574c89b9e6729e03eca62964e7c5bd07646703c317e46a651c6e37433145",
+            "soc_model": "Tensor_G5"
+          },
+          "google-tensor-g6": {
+            "backend": "google-tensor",
+            "bytes": 16964368,
+            "execution": "aot",
+            "file": "anvil-m-720p-google-tensor-g6.tflite",
+            "input_layout": "NHWC",
+            "input_shape": [
+              1,
+              720,
+              1280,
+              6
+            ],
+            "output_layout": "NHWC",
+            "output_semantics": "residual_to_add_to_pair_blend",
+            "output_shape": [
+              1,
+              720,
+              1280,
+              3
+            ],
+            "precision": "float16-truncated",
+            "sha256": "25097a7585584cacf64803333ee06541dbaa24efdf3e2986f9ab89b52ea8b464",
+            "soc_model": "Tensor_G6"
+          },
           "gpu": {
             "bytes": 10707640,
             "file": "anvil-m-720p.tflite",
@@ -533,6 +590,54 @@
           }
         },
         "720p": {
+          "google-tensor-g5": {
+            "backend": "google-tensor",
+            "bytes": 3852816,
+            "execution": "aot",
+            "file": "anvil-s-720p-google-tensor-g5.tflite",
+            "input_layout": "NHWC",
+            "input_shape": [
+              1,
+              720,
+              1280,
+              6
+            ],
+            "output_layout": "NHWC",
+            "output_semantics": "residual_to_add_to_pair_blend",
+            "output_shape": [
+              1,
+              720,
+              1280,
+              3
+            ],
+            "precision": "float16-truncated",
+            "sha256": "3f771ca046c6276681b3d8d244c02abab9f6c92441cdf0f5d2140e2b4618ed72",
+            "soc_model": "Tensor_G5"
+          },
+          "google-tensor-g6": {
+            "backend": "google-tensor",
+            "bytes": 11572240,
+            "execution": "aot",
+            "file": "anvil-s-720p-google-tensor-g6.tflite",
+            "input_layout": "NHWC",
+            "input_shape": [
+              1,
+              720,
+              1280,
+              6
+            ],
+            "output_layout": "NHWC",
+            "output_semantics": "residual_to_add_to_pair_blend",
+            "output_shape": [
+              1,
+              720,
+              1280,
+              3
+            ],
+            "precision": "float16-truncated",
+            "sha256": "483879a47e6bbd6feecdb5ad190221a34d59277e94e3de49f2749d2ce5e9972c",
+            "soc_model": "Tensor_G6"
+          },
           "gpu": {
             "bytes": 3463252,
             "file": "anvil-s-720p.tflite",

@@ -184,6 +184,13 @@ PME Vulkan compute filter also prefers the RX 7900 XT when no explicit device
 override is set. The display-renderer selection remains independent of both
 compute paths.
 
+On Windows, the DirectML fallback enumerates DXGI adapters and selects the
+RX 7900 XT by its model name and AMD hardware ID when present. This keeps the
+other GPU available to the output renderer. If the exact model is not present,
+the runtime retains DirectML's high-performance GPU selection. A failure to
+open DirectML on a detected RX 7900 XT is reported as a provider failure rather
+than silently retrying inference on a different adapter.
+
 To build the WebGPU runtime into the Linux Flutter application bundle, generate
 Flutter's Linux configuration first, then configure and install the app with the
 provider variant selected. The runtime, plugin, provider manifest, and notices

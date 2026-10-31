@@ -9,6 +9,7 @@
 #include <condition_variable>
 #include <cstdlib>
 #include <cstring>
+#include <cwctype>
 #include <exception>
 #include <fstream>
 #include <limits>
@@ -22,6 +23,8 @@
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <dxgi.h>
+#include <dxgi1_2.h>
 #else
 #include <dlfcn.h>
 #endif
@@ -84,16 +87,17 @@ struct OrtTensorInfoGuard {
 
 #if defined(_WIN32)
 // The ONNX Runtime DML provider API is returned by GetExecutionProviderApi
-// rather than stored in OrtApi. Mirror only the ABI prefix needed for DML2 so
+// rather than stored in OrtApi. Mirror the adapter-index and DML2 prefix so
 // this shared runtime does not need DirectML SDK headers to build.
 struct PmeOrtDmlDeviceOptions {
   int32_t preference;
   uint32_t filter;
 };
 using OrtDmlApiMethod = OrtStatus*(ORT_API_CALL*)(void*, void*)NO_EXCEPTION;
+using OrtDmlAppendProviderDmlFn = OrtStatus*(ORT_API_CALL*)(OrtSessionOptions*, int32_t)NO_EXCEPTION;
 using OrtDmlAppendProviderDml2Fn = OrtStatus*(ORT_API_CALL*)(OrtSessionOptions*, PmeOrtDmlDeviceOptions*)NO_EXCEPTION;
 struct OrtDmlApiPrefix {
-  OrtDmlApiMethod append_dml;
+  OrtDmlAppendProviderDmlFn append_dml;
   OrtDmlApiMethod append_dml1;
   OrtDmlApiMethod create_gpu_allocation;
   OrtDmlApiMethod free_gpu_allocation;
@@ -103,7 +107,42 @@ struct OrtDmlApiPrefix {
 static_assert(sizeof(PmeOrtDmlDeviceOptions) == sizeof(uint32_t) * 2);
 static_assert(sizeof(OrtDmlApiMethod) == sizeof(void*));
 static_assert(sizeof(OrtDmlApiMethod) == sizeof(OrtDmlAppendProviderDml2Fn));
+static_assert(sizeof(OrtDmlApiMethod) == sizeof(OrtDmlAppendProviderDmlFn));
 static_assert(sizeof(OrtDmlApiPrefix) == sizeof(OrtDmlApiMethod) * 6);
+
+bool find_rx_7900_xt_dxgi_adapter(int32_t* adapter_index) {
+  if (!adapter_index) return false;
+
+  IDXGIFactory1* factory = nullptr;
+  if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory))) || !factory) return false;
+
+  bool found = false;
+  for (UINT index = 0; !found; ++index) {
+    IDXGIAdapter* adapter = nullptr;
+    const HRESULT result = factory->EnumAdapters(index, &adapter);
+    if (result == DXGI_ERROR_NOT_FOUND) break;
+    if (FAILED(result) || !adapter) break;
+
+    DXGI_ADAPTER_DESC description{};
+    if (SUCCEEDED(adapter->GetDesc(&description)) && description.VendorId == 0x1002 &&
+        description.DeviceId == 0x744c) {
+      const std::wstring name(description.Description);
+      const std::wstring token = L"RX 7900 XT";
+      const size_t position = name.find(token);
+      const size_t suffix = position == std::wstring::npos ? position : position + token.size();
+      const bool exact_model = position != std::wstring::npos &&
+                               (suffix == name.size() || !std::iswalnum(name[suffix]));
+      if (exact_model && index <= static_cast<UINT>(std::numeric_limits<int32_t>::max())) {
+        *adapter_index = static_cast<int32_t>(index);
+        found = true;
+      }
+    }
+    adapter->Release();
+  }
+
+  factory->Release();
+  return found;
+}
 #endif
 
 void set_error(char* out, size_t capacity, const std::string& message) {
@@ -1093,21 +1132,41 @@ bool try_builtin_dml_candidate(
   }
   OrtDmlApiPrefix dml_api{};
   std::memcpy(&dml_api, provider_api, sizeof(dml_api));
-  if (!dml_api.append_dml2) {
-    *error = "ONNX Runtime DirectML provider API has no DML2 session append function";
-    return false;
-  }
-
   OrtSessionOptions* options = nullptr;
   if (!session_options_create(session, config, &options, error)) return false;
   PmeOrtDmlDeviceOptions device_options{1, 1};  // HighPerformance, GPU
+  int32_t preferred_adapter_index = -1;
+  const bool pin_rx_7900_xt = find_rx_7900_xt_dxgi_adapter(&preferred_adapter_index);
   if (!call_status(api, api->DisableMemPattern(options), error, "Disable DirectML memory pattern") ||
       !call_status(
           api, api->SetSessionExecutionMode(options, ORT_SEQUENTIAL), error, "Set DirectML sequential execution") ||
       !call_status(
           api, api->AddSessionConfigEntry(options, "session.disable_cpu_ep_fallback", "1"), error,
-          "Disable CPU execution provider fallback") ||
-      !call_status(api, dml_api.append_dml2(options, &device_options), error, "Append DirectML execution provider")) {
+          "Disable CPU execution provider fallback")) {
+    api->ReleaseSessionOptions(options);
+    return false;
+  }
+
+  OrtStatus* append_status = nullptr;
+  if (pin_rx_7900_xt) {
+    // DML2 can request a high-performance GPU but cannot target a specific
+    // adapter, so use the adapter-index entry to keep compute on the 7900 XT.
+    if (!dml_api.append_dml) {
+      api->ReleaseSessionOptions(options);
+      *error = "ONNX Runtime DirectML API cannot select the RX 7900 XT adapter";
+      return false;
+    }
+    append_status = dml_api.append_dml(options, preferred_adapter_index);
+  } else {
+    if (!dml_api.append_dml2) {
+      api->ReleaseSessionOptions(options);
+      *error = "ONNX Runtime DirectML API has no DML2 session append function";
+      return false;
+    }
+    append_status = dml_api.append_dml2(options, &device_options);
+  }
+  if (!call_status(api, append_status, error,
+                   pin_rx_7900_xt ? "Append DirectML on RX 7900 XT" : "Append DirectML high-performance GPU")) {
     api->ReleaseSessionOptions(options);
     return false;
   }
@@ -1126,7 +1185,7 @@ bool try_builtin_dml_candidate(
   // fallback is disabled, so session initialization cannot silently split
   // unsupported nodes onto CPU. Run calls are serialized by pme_runtime_run.
   session->provider_name = candidate.provider_name;
-  session->provider_vendor = "Microsoft";
+  session->provider_vendor = pin_rx_7900_xt ? "AMD Radeon RX 7900 XT" : "Microsoft DirectML GPU";
   session->info.device_kind = PME_DEVICE_GPU;
   return true;
 #else

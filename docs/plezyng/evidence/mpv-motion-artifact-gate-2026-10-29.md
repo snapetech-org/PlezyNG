@@ -77,6 +77,21 @@ A local MPV cplayer smoke used a synthetic 1280×720, 24 fps H.264 clip, FFmpeg 
 
 This confirms 720p input resampling and CPU runtime wiring only. CPU inference misses real-time deadlines; this smoke does not qualify accelerator/NPU placement, physical display, image quality, cadence, A/V synchronization, or sustained playback. The filter still rejects 960×540 source input and shapes other than 1280×720 or 1920×1080.
 
+## Patch-0161 desktop candidate packages (2026-10-29)
+
+MPV branch `codex/motion-adaptive-phases-20261029` now includes patch 0161 at commit `4fe0b706`. Local packages were built from that source in the pinned Ubuntu 24.04 container. The Linux x86_64 archive passed `zstd -t`; all Windows package and symbol archives passed `unzip -t`. The packaged Linux shared library and both Windows DLLs contain `mpv-display-sync`, `phase-timing-source`, and `phase-budget-configured`. These checks establish package contents only, not playback behavior.
+
+| Candidate | Retained path | SHA-256 |
+| --- | --- | --- |
+| Linux x86_64 package | `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/linux-x86_64/libmpv-linux-d142165ec420-x86_64.tar.zst` | `e21549437c7c28809e66151ecd144a6b0bcae825731a6edd280627245dc8681c` |
+| Linux x86_64 symbols | `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/linux-x86_64/libmpv-linux-d142165ec420-x86_64-symbols.zip` | `67bbe2bef05421c295aff522d0cfa004ec49fed85c4b86a2a579270794b7a0c8` |
+| Windows x86_64 package | `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/windows/libmpv-windows-01139c3f4748-x86_64.zip` | `444033941c856340c43939f17370b5e87858f9f0318a597a8d0eec2c152a45fa` |
+| Windows x86_64 symbols | `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/windows/libmpv-windows-01139c3f4748-x86_64-symbols.zip` | `cbc91f7b258a22e7cb5f4a973622d9cc6032e3d2ff545afdf87bcdc51bf5938e` |
+| Windows aarch64 package | `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/windows/libmpv-windows-01139c3f4748-aarch64.zip` | `e2142209ba84a3cedc2eba082594ba5a958188ae8fa234e210b9f644cdf355cc` |
+| Windows aarch64 symbols | `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-0161-local-candidates-20261029/artifacts/windows/libmpv-windows-01139c3f4748-aarch64-symbols.zip` | `76d6af3ad255f25a1c76df7d2392217472fb2fc67715ac6ba5960568b1168539` |
+
+Linux aarch64 remains on the patch-0160 candidate (`500fcbd3b251`), retained at `/home/keith/Documents/code/task-scratch/plezyng-motion-qualification-20261028/mpv-0160-linux-aarch64-20261029`. Its patch-0161 rebuild is still required to complete the Linux architecture group. The scratch clone's `artifacts.json` contains the three new architecture records, but is not committed. The remote MPV branch manifest still records the previous 0160 packages. No package was uploaded; the PlezyNG lock remains unchanged. No CI was used and no device or visible-display test was run.
+
 ## Earlier local artifact checksums (patch 0157)
 
 The earlier locally retained Windows/Linux files are under the task scratch `mpv-build-windows-0157-native-20261029/dist/release`; Android files are under `mpv-android-motion-aar-20261029/release-tarballs-and-symbols-20261029`, with the AAR alongside that directory.

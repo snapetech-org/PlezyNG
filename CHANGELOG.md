@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Find the Linux `gio-launch-desktop` helper in `/usr/lib` when packaging the app bundle.
 - Retry transient FFmpeg source download failures without weakening signature verification.
 - Declare VDPAU and Vulkan loader packages required by Linux bundles.
 - Include the pinned Vulkan-backed WebGPU provider in Linux app builds by default for Neural motion processing.

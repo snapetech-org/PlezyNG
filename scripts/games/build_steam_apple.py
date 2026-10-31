@@ -75,7 +75,9 @@ def build() -> None:
         archives.append(archive)
     temporary = destination / "libplezy_steam.pending.a"
     run("xcrun", "lipo", "-create", *(str(p) for p in archives), "-output", str(temporary))
-    run("xcrun", "lipo", str(temporary), "-verify_arch", *architectures)
+    for arch in architectures:
+        # Xcode 27's lipo rejects multiple architectures in one -verify_arch call.
+        run("xcrun", "lipo", str(temporary), "-verify_arch", arch)
     temporary.replace(destination / "libplezy_steam.a")
 
 

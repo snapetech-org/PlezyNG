@@ -10,6 +10,8 @@
 - Ask which library or server copy to play when Continue Watching merges several copies of a title.
 - Shuffle full Plex video-library sections through server queues and route MediaBrowser libraries through the existing complete paged queue.
 - Log specific Watch Together relay connection failures while keeping existing user-facing error notices.
+- Add a Podcasts hub with Apple Podcasts discovery, optional Podcast Index search/trending, private RSS setup, OPML portability, episode filters and existing-player/offline integration.
+- Support Audiobookshelf podcast shows and episodes with episode-scoped resume/progress, and add RSS dates, video enclosures, explicit/season metadata and Podcasting 2.0/Podlove chapters.
 - Refresh pinned MPV and FFmpeg artifacts to the verified private native build.
 
 - Fix iOS Sherpa ONNX CocoaPods staging, isolate Apple Pub caches, and remove the unsupported warning flag from pinned tvOS AMSMB2.

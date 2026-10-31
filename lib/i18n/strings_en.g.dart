@@ -113,6 +113,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$deepLinks$en deepLinks = Translations$deepLinks$en.internal(_root);
 	late final Translations$householdSetup$en householdSetup = Translations$householdSetup$en.internal(_root);
 	late final Translations$issueReport$en issueReport = Translations$issueReport$en.internal(_root);
+	late final Translations$podcasts$en podcasts = Translations$podcasts$en.internal(_root);
 }
 
 // Path: app
@@ -11661,6 +11662,117 @@ class Translations$issueReport$en {
 	String get openDraft => 'Open GitHub draft';
 }
 
+// Path: podcasts
+class Translations$podcasts$en {
+	Translations$podcasts$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Podcasts'
+	String get title => 'Podcasts';
+
+	/// en: 'Discover podcasts'
+	String get discover => 'Discover podcasts';
+
+	/// en: 'Subscriptions'
+	String get shows => 'Subscriptions';
+
+	/// en: 'Latest episodes'
+	String get episodes => 'Latest episodes';
+
+	/// en: 'Search shows or paste an Apple Podcasts or Podcast Index link'
+	String get searchHint => 'Search shows or paste an Apple Podcasts or Podcast Index link';
+
+	/// en: 'Choose a directory to search. Add private RSS links with Add feed.'
+	String get searchHelp => 'Choose a directory to search. Add private RSS links with Add feed.';
+
+	/// en: 'Add feed'
+	String get addFeed => 'Add feed';
+
+	/// en: 'Paste a publisher RSS/Atom URL, including a private Patreon or other member feed. Use source setup for HTTP or password-protected feeds.'
+	String get addFeedHelp => 'Paste a publisher RSS/Atom URL, including a private Patreon or other member feed. Use source setup for HTTP or password-protected feeds.';
+
+	/// en: 'Subscribe'
+	String get subscribe => 'Subscribe';
+
+	/// en: 'Subscribed'
+	String get subscribed => 'Subscribed';
+
+	/// en: 'This feed is already subscribed.'
+	String get alreadySubscribed => 'This feed is already subscribed.';
+
+	/// en: 'Add a feed, import OPML, or find a show to start listening.'
+	String get empty => 'Add a feed, import OPML, or find a show to start listening.';
+
+	/// en: 'No matching podcasts.'
+	String get noResults => 'No matching podcasts.';
+
+	/// en: 'Newest first'
+	String get newest => 'Newest first';
+
+	/// en: 'Oldest first'
+	String get oldest => 'Oldest first';
+
+	/// en: 'Explicit'
+	String get explicit => 'Explicit';
+
+	/// en: 'Trending'
+	String get trending => 'Trending';
+
+	/// en: 'Podcast Index settings'
+	String get indexSetup => 'Podcast Index settings';
+
+	/// en: 'Use your own Podcast Index API key and secret. They are encrypted for this profile. Apple Podcasts discovery works without them.'
+	String get indexHelp => 'Use your own Podcast Index API key and secret. They are encrypted for this profile. Apple Podcasts discovery works without them.';
+
+	/// en: 'API key'
+	String get indexKey => 'API key';
+
+	/// en: 'API secret'
+	String get indexSecret => 'API secret';
+
+	/// en: 'Country (two-letter code)'
+	String get country => 'Country (two-letter code)';
+
+	/// en: 'Open directory listing'
+	String get directoryLink => 'Open directory listing';
+
+	/// en: 'Podcast added.'
+	String get feedAdded => 'Podcast added.';
+
+	/// en: 'Some feeds could not refresh. Cached episodes remain available.'
+	String get refreshPartial => 'Some feeds could not refresh. Cached episodes remain available.';
+
+	/// en: 'Import subscriptions (OPML)'
+	String get importOpml => 'Import subscriptions (OPML)';
+
+	/// en: 'Export subscriptions (OPML)'
+	String get exportOpml => 'Export subscriptions (OPML)';
+
+	/// en: 'Subscriptions imported.'
+	String get imported => 'Subscriptions imported.';
+
+	/// en: 'The export contains feed URLs, including private membership links. Keep it private.'
+	String get exportHelp => 'The export contains feed URLs, including private membership links. Keep it private.';
+
+	/// en: 'Browse or scan your Audiobookshelf source to add its downloaded podcast episodes here.'
+	String get serverHelp => 'Browse or scan your Audiobookshelf source to add its downloaded podcast episodes here.';
+
+	/// en: 'Show more episodes'
+	String get viewAll => 'Show more episodes';
+
+	/// en: 'Open podcast'
+	String get inLibrary => 'Open podcast';
+
+	/// en: 'Wait a few seconds before searching again.'
+	String get rateLimited => 'Wait a few seconds before searching again.';
+
+	/// en: 'This show has no supported HTTPS RSS feed. Add its feed manually if available.'
+	String get noFeed => 'This show has no supported HTTPS RSS feed. Add its feed manually if available.';
+}
+
 // Path: appIcon.names
 class Translations$appIcon$names$en {
 	Translations$appIcon$names$en.internal(this._root);
@@ -18495,6 +18607,40 @@ extension on Translations {
 			'issueReport.privacy' => 'The draft includes app version, platform, and connection counts. It excludes server addresses, account and profile names, media titles, and file paths.',
 			'issueReport.logPrivacy' => 'Logs are optional. Review them before uploading. Their ID is added to the draft, which may be public.',
 			'issueReport.openDraft' => 'Open GitHub draft',
+			'podcasts.title' => 'Podcasts',
+			'podcasts.discover' => 'Discover podcasts',
+			'podcasts.shows' => 'Subscriptions',
+			'podcasts.episodes' => 'Latest episodes',
+			'podcasts.searchHint' => 'Search shows or paste an Apple Podcasts or Podcast Index link',
+			'podcasts.searchHelp' => 'Choose a directory to search. Add private RSS links with Add feed.',
+			'podcasts.addFeed' => 'Add feed',
+			'podcasts.addFeedHelp' => 'Paste a publisher RSS/Atom URL, including a private Patreon or other member feed. Use source setup for HTTP or password-protected feeds.',
+			'podcasts.subscribe' => 'Subscribe',
+			'podcasts.subscribed' => 'Subscribed',
+			'podcasts.alreadySubscribed' => 'This feed is already subscribed.',
+			'podcasts.empty' => 'Add a feed, import OPML, or find a show to start listening.',
+			'podcasts.noResults' => 'No matching podcasts.',
+			'podcasts.newest' => 'Newest first',
+			'podcasts.oldest' => 'Oldest first',
+			'podcasts.explicit' => 'Explicit',
+			'podcasts.trending' => 'Trending',
+			'podcasts.indexSetup' => 'Podcast Index settings',
+			'podcasts.indexHelp' => 'Use your own Podcast Index API key and secret. They are encrypted for this profile. Apple Podcasts discovery works without them.',
+			'podcasts.indexKey' => 'API key',
+			'podcasts.indexSecret' => 'API secret',
+			'podcasts.country' => 'Country (two-letter code)',
+			'podcasts.directoryLink' => 'Open directory listing',
+			'podcasts.feedAdded' => 'Podcast added.',
+			'podcasts.refreshPartial' => 'Some feeds could not refresh. Cached episodes remain available.',
+			'podcasts.importOpml' => 'Import subscriptions (OPML)',
+			'podcasts.exportOpml' => 'Export subscriptions (OPML)',
+			'podcasts.imported' => 'Subscriptions imported.',
+			'podcasts.exportHelp' => 'The export contains feed URLs, including private membership links. Keep it private.',
+			'podcasts.serverHelp' => 'Browse or scan your Audiobookshelf source to add its downloaded podcast episodes here.',
+			'podcasts.viewAll' => 'Show more episodes',
+			'podcasts.inLibrary' => 'Open podcast',
+			'podcasts.rateLimited' => 'Wait a few seconds before searching again.',
+			'podcasts.noFeed' => 'This show has no supported HTTPS RSS feed. Add its feed manually if available.',
 			_ => null,
 		};
 	}

@@ -2026,7 +2026,7 @@ class SourceController extends ChangeNotifier {
         continue;
       }
       if (source == null ||
-          !source.capabilities.annotations ||
+          !source.supportsAnnotations(entry) ||
           (source.source.kind == FileSourceKind.audiobookshelf && annotation.mode != PublicationMode.listening)) {
         continue;
       }

@@ -25,8 +25,10 @@ import '../settings/trakt_settings_screen.dart';
 import 'source_widgets.dart';
 
 class AddSourceScreen extends StatefulWidget {
-  const AddSourceScreen({super.key, this.existing});
+  const AddSourceScreen({super.key, this.existing, this.initialKind, this.initialEndpoint});
   final FileSource? existing;
+  final FileSourceKind? initialKind;
+  final String? initialEndpoint;
   @override
   State<AddSourceScreen> createState() => _AddSourceScreenState();
 }
@@ -54,6 +56,11 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
   void initState() {
     super.initState();
     final old = widget.existing;
+    if (old == null && widget.initialKind != null) {
+      _kind = widget.initialKind!;
+      _shelves = defaultPublicationShelves(_kind);
+      field('endpoint').text = widget.initialEndpoint ?? '';
+    }
     if (old != null) {
       _kind = old.kind;
       field('name').text = old.name;
@@ -527,6 +534,8 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                     ),
                     const SizedBox(height: 24),
                     input('name', t.fileSources.name),
+                    if (_kind == FileSourceKind.podcastRss)
+                      Padding(padding: const EdgeInsets.only(bottom: 16), child: Text(t.podcasts.addFeedHelp)),
                     if (!oauth && _kind != FileSourceKind.local)
                       input(
                         'endpoint',

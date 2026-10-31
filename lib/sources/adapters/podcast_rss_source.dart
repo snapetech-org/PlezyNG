@@ -4,6 +4,7 @@ import 'package:xml/xml.dart';
 
 import '../source_models.dart';
 import '../source_transport.dart';
+import '../podcast_metadata.dart';
 import 'webdav_source.dart';
 
 class PodcastRssSourceAdapter extends SourceAdapter {
@@ -12,6 +13,8 @@ class PodcastRssSourceAdapter extends SourceAdapter {
   final Map<String, Uri> _enclosures = {};
   final Map<String, Uri> _covers = {};
   final Set<String> _coverChecked = {};
+  final Map<String, Uri> _chapterUrls = {};
+  final Map<String, List<BookChapter>> _chapters = {};
   _PodcastFeed? _feedCache;
   Future<_PodcastFeed>? _feedLoading;
   bool _closed = false;
@@ -77,7 +80,15 @@ class PodcastRssSourceAdapter extends SourceAdapter {
       redirects: true,
     );
     if (_closed) throw const SourceException(SourceFailure.cancelled);
-    final document = XmlDocument.parse(response);
+    if (RegExp(r'<!\s*(DOCTYPE|ENTITY)', caseSensitive: false).hasMatch(response)) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
+    late XmlDocument document;
+    try {
+      document = XmlDocument.parse(response);
+    } on Object {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     final root = document.rootElement;
     final rssChannel = root.name.local == 'rss'
         ? root.childElements.where((e) => e.name.local == 'channel').firstOrNull
@@ -121,12 +132,13 @@ class PodcastRssSourceAdapter extends SourceAdapter {
         ? rssChannel.childElements.where((e) => e.name.local == 'item')
         : atom!.childElements.where((e) => e.name.local == 'entry');
     final episodes = <_PodcastEpisode>[];
-    _enclosures.clear();
-    _covers.clear();
-    _coverChecked
-      ..clear()
-      ..add('podcast:episodes');
-    if (artwork != null) _covers['podcast:episodes'] = artwork;
+    final episodeIds = <String>{};
+    final enclosures = <String, Uri>{};
+    final covers = <String, Uri>{};
+    final chapterUrls = <String, Uri>{};
+    final chapterCache = <String, List<BookChapter>>{};
+    final coverChecked = <String>{'podcast:episodes'};
+    if (artwork != null) covers['podcast:episodes'] = artwork;
     for (final node in nodes.take(1000)) {
       final episodeTitle = childText(node, 'title');
       if (episodeTitle.isEmpty) continue;
@@ -142,8 +154,8 @@ class PodcastRssSourceAdapter extends SourceAdapter {
       final audioUri = _safeResolve(feedUri, rawUrl);
       if (audioUri == null) continue;
       final declaredMime = (enclosure?.getAttribute('type') ?? '').split(';').first.trim().toLowerCase();
-      final mime = declaredMime.startsWith('audio/') ? declaredMime : _audioMime(audioUri, declaredMime);
-      if (!mime.startsWith('audio/')) continue;
+      final mime = declaredMime.startsWith('video/') ? declaredMime : _audioMime(audioUri, declaredMime);
+      if (!mime.startsWith('audio/') && !mime.startsWith('video/')) continue;
 
       final guid = rssChannel != null ? childText(node, 'guid') : childText(node, 'id');
       final published = rssChannel != null
@@ -152,6 +164,7 @@ class PodcastRssSourceAdapter extends SourceAdapter {
       final identity = guid.isNotEmpty ? guid : '$episodeTitle\u0000$published\u0000${_urlIdentity(audioUri)}';
       final scopedIdentity = '$feedIdentity\u0000$identity';
       final id = 'episode:${sourceDigest(scopedIdentity)}';
+      if (!episodeIds.add(id)) continue;
       final rawLength = sourceInt(enclosure?.getAttribute('length'));
       final length = rawLength == null || rawLength < 0 ? null : rawLength;
       final durationText = links.where((e) => e.name.local == 'duration').firstOrNull?.innerText.trim() ?? '';
@@ -176,21 +189,58 @@ class PodcastRssSourceAdapter extends SourceAdapter {
           ?.getAttribute('href');
       final cover = enclosureImage == null ? artwork : _safeResolve(feedUri, enclosureImage) ?? artwork;
       final fileName = _filename(episodeTitle, audioUri, mime);
+      final date = parsePodcastDate(published);
+      final chapterNode = links
+          .where((e) => e.name.local == 'chapters' && e.namespaceUri == 'https://podcastindex.org/namespace/1.0')
+          .firstOrNull;
+      final rawChapters = chapterNode?.getAttribute('url');
+      final chapterUri = rawChapters == null ? null : _safeResolve(feedUri, rawChapters);
+      if (chapterUri != null && chapterNode?.getAttribute('type') == 'application/json+chapters') {
+        chapterUrls[id] = chapterUri;
+        if (_chapterUrls[id] == chapterUri && _chapters.containsKey(id)) chapterCache[id] = _chapters[id]!;
+      }
+      final inline = <BookChapter>[];
+      for (final group in links.where(
+        (e) => e.name.local == 'chapters' && e.namespaceUri == 'http://podlove.org/simple-chapters',
+      )) {
+        for (final c in group.childElements.where((e) => e.name.local == 'chapter').take(2000)) {
+          final start = podcastTimestamp(c.getAttribute('start') ?? '');
+          final name = podcastPlainText(c.getAttribute('title') ?? '');
+          if (start != null && name.isNotEmpty && (durationMs == null || start < durationMs)) {
+            inline.add(BookChapter(title: name, startMs: start, endMs: 0));
+          }
+        }
+      }
+      inline.sort((a, b) => a.startMs.compareTo(b.startMs));
+      final inlineChapters = [
+        for (var i = 0; i < inline.length; i++)
+          BookChapter(
+            title: inline[i].title,
+            startMs: inline[i].startMs,
+            endMs: i + 1 < inline.length ? inline[i + 1].startMs : durationMs ?? 0,
+          ),
+      ];
       final entry = SourceEntry(
         sourceId: source.id,
         id: id,
         title: episodeTitle,
-        kind: SourceItemKind.music,
+        kind: mime.startsWith('video/') ? SourceItemKind.video : SourceItemKind.music,
         parentId: 'podcast:episodes',
         author: episodeAuthor.isEmpty ? author : episodeAuthor,
         series: title,
-        description: _plainText(description),
+        description: podcastPlainText(description),
+        language: childText(rssChannel ?? atom!, 'language'),
+        chapters: chapterCache[id] ?? inlineChapters,
         coverId: cover == null ? null : sourceDigest(_urlIdentity(cover)),
-        releaseYear: DateTime.tryParse(published)?.year,
+        releaseYear: date?.year,
         identifiers: {
+          'podcast': 'episode',
           'feed': source.id,
           'guid': sourceDigest(scopedIdentity),
           if (published.isNotEmpty) 'published': published,
+          if (date != null) 'publishedAt': '${date.millisecondsSinceEpoch}',
+          for (final field in ['season', 'episode', 'episodeType', 'explicit'])
+            if (childText(node, field).isNotEmpty) field: childText(node, field),
         },
         files: [
           PublicationFile(
@@ -203,11 +253,28 @@ class PodcastRssSourceAdapter extends SourceAdapter {
           ),
         ],
       );
-      _enclosures[id] = audioUri;
-      _coverChecked.add(id);
-      if (cover != null) _covers[id] = cover;
+      enclosures[id] = audioUri;
+      coverChecked.add(id);
+      if (cover != null) covers[id] = cover;
       episodes.add(_PodcastEpisode(entry));
     }
+    // Publish lookup maps only after the whole document was accepted. A bad
+    // refresh must not destroy the previous in-memory playback/cover leases.
+    _enclosures
+      ..clear()
+      ..addAll(enclosures);
+    _covers
+      ..clear()
+      ..addAll(covers);
+    _coverChecked
+      ..clear()
+      ..addAll(coverChecked);
+    _chapterUrls
+      ..clear()
+      ..addAll(chapterUrls);
+    _chapters
+      ..clear()
+      ..addAll(chapterCache);
     return _PodcastFeed(title: title, author: author, episodes: episodes);
   }
 
@@ -274,6 +341,9 @@ class PodcastRssSourceAdapter extends SourceAdapter {
       'audio/x-m4a' => '.m4a',
       'audio/x-wav' || 'audio/wave' => '.wav',
       'audio/mp3' || 'audio/x-mp3' => '.mp3',
+      'video/mp4' => '.mp4',
+      'video/webm' => '.webm',
+      'video/quicktime' => '.mov',
       _ => '.mp3',
     };
     final extension = RegExp(r'^[a-z0-9]{1,8}$').hasMatch(candidate) ? '.$candidate' : fallback;
@@ -296,15 +366,6 @@ class PodcastRssSourceAdapter extends SourceAdapter {
     return seconds <= 0 || seconds > 7 * 24 * 60 * 60 ? null : seconds * 1000;
   }
 
-  static String _plainText(String value) {
-    final text = value
-        .replaceAll(RegExp(r'<[^>]*>'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim()
-        .replaceAllMapped(RegExp(r'\s+([,.;:!?])'), (match) => match.group(1)!);
-    return text.length > 8000 ? text.substring(0, 8000) : text;
-  }
-
   @override
   // Episode resume state stays in PlezyNG; RSS has no shared progress-write API.
   SourceCapabilities get capabilities => const SourceCapabilities();
@@ -312,7 +373,7 @@ class PodcastRssSourceAdapter extends SourceAdapter {
   @override
   Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
     if (cursor != null && cursor != 'episodes') throw const SourceException(SourceFailure.invalidData);
-    final feed = await _loadFeed(refresh: query?.trim().isNotEmpty != true);
+    final feed = await _loadFeed(refresh: parent == null && query?.trim().isNotEmpty != true);
     if (parent == 'podcast:episodes' || (parent == null && query?.trim().isNotEmpty == true)) {
       final episodes = feed.episodes.map((episode) => episode.entry).toList();
       final normalized = query?.trim().toLowerCase();
@@ -334,6 +395,7 @@ class PodcastRssSourceAdapter extends SourceAdapter {
         id: 'podcast:episodes',
         title: feed.title,
         kind: SourceItemKind.folder,
+        identifiers: const {'podcast': 'show'},
         author: feed.author,
         description: '${feed.episodes.length} episodes',
         coverId: _covers['podcast:episodes'] == null ? null : sourceDigest(_urlIdentity(_covers['podcast:episodes']!)),
@@ -348,8 +410,29 @@ class PodcastRssSourceAdapter extends SourceAdapter {
       return entry.copyWith(title: feed.title, description: '${feed.episodes.length} episodes');
     }
     final feed = await _loadFeed();
-    return feed.episodes.map((episode) => episode.entry).where((e) => e.id == entry.id).firstOrNull ??
-        (throw const SourceException(SourceFailure.unavailable));
+    final current = feed.episodes.map((episode) => episode.entry).where((e) => e.id == entry.id).firstOrNull;
+    if (current == null) throw const SourceException(SourceFailure.unavailable);
+    final uri = _chapterUrls[entry.id];
+    if (uri != null && !_chapters.containsKey(entry.id)) {
+      try {
+        final body = await transport.text(
+          'GET',
+          uri,
+          headers: {...await _headers(uri), 'Accept': 'application/json+chapters, application/json'},
+          limit: 1024 * 1024,
+          redirects: true,
+        );
+        if (_closed) throw const SourceException(SourceFailure.cancelled);
+        _chapters[entry.id] = podcastJsonChapters(
+          sourceMap(jsonDecode(body)),
+          durationMs: current.files.firstOrNull?.durationMs,
+        );
+      } on Object {
+        // Optional chapter metadata never prevents playing an enclosure.
+        if (_closed) throw const SourceException(SourceFailure.cancelled);
+      }
+    }
+    return current.copyWith(chapters: _chapters[entry.id] ?? current.chapters);
   }
 
   @override
@@ -397,6 +480,8 @@ class PodcastRssSourceAdapter extends SourceAdapter {
     _enclosures.clear();
     _covers.clear();
     _coverChecked.clear();
+    _chapterUrls.clear();
+    _chapters.clear();
     super.close();
   }
 }

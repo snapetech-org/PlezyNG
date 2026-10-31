@@ -12,8 +12,6 @@ import '../../widgets/media_card.dart';
 import 'canonical_library_navigation.dart';
 
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +24,6 @@ import '../../i18n/strings.g.dart';
 import '../../i18n/presentation_formats.dart';
 import '../../sources/source_controller.dart';
 import '../../sources/source_models.dart';
-import '../../sources/podcast_opml.dart';
 import '../../sources/offline_readiness.dart';
 import '../../sources/publication_library.dart';
 import '../../services/remote_streams/remote_stream_models.dart';
@@ -34,7 +31,6 @@ import '../../services/remote_streams/remote_streaming_provider.dart';
 import '../../utils/dialogs.dart';
 import '../../utils/formatters.dart';
 import '../../utils/snackbar_helper.dart';
-import '../../services/file_picker_service.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/dialog_action_button.dart';
 import '../../widgets/focusable_list_tile.dart';
@@ -49,6 +45,8 @@ import 'open_media_screen.dart';
 import '../../sources/publication_shelf.dart';
 import 'source_navigation.dart';
 import 'source_sync_screen.dart';
+import 'podcasts_screen.dart';
+import 'podcast_actions.dart';
 import '../lending/public_libraries_screen.dart';
 import '../remote_streams/remote_cloud_files_screen.dart';
 import '../settings/remote_streaming_settings_screen.dart';
@@ -408,41 +406,11 @@ class _SourcesScreenState extends State<SourcesScreen> {
   }
 
   Future<void> _importPodcastOpml() async {
-    final sourceController = context.read<SourceController>();
-    final picked = await FilePickerService.instance.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const ['opml', 'xml'],
-      withData: true,
-    );
-    final bytes = picked?.files.firstOrNull?.bytes;
-    if (bytes == null || bytes.isEmpty) return;
-    if (bytes.length > PodcastOpml.maxBytes) throw const SourceException(SourceFailure.invalidData);
-    final feeds = PodcastOpml.parse(utf8.decode(bytes));
-    final count = await sourceController.importPodcastSubscriptions(feeds);
-    if (!mounted) return;
-    showSnackBar(context, count == 0 ? 'No new podcast subscriptions.' : 'Imported $count podcast subscriptions.');
-    await _load();
+    await importPodcastOpml(context);
+    if (mounted) await _load();
   }
 
-  Future<void> _exportPodcastOpml() async {
-    final controller = context.read<SourceController>();
-    final subscriptions = await controller.podcastSubscriptions();
-    if (subscriptions.isEmpty || !mounted) return;
-    final confirmed = await showConfirmDialog(
-      context,
-      title: 'Export podcast subscriptions',
-      message: 'This OPML file includes feed URLs. Private subscription URLs may grant access to their feeds.',
-      confirmText: 'Export OPML',
-    );
-    if (confirmed != true || !mounted) return;
-    final bytes = Uint8List.fromList(utf8.encode(PodcastOpml.write(subscriptions)));
-    await FilePickerService.instance.saveFile(
-      fileName: 'plezyng-podcasts.opml',
-      type: FileType.custom,
-      allowedExtensions: const ['opml'],
-      bytes: bytes,
-    );
-  }
+  Future<void> _exportPodcastOpml() => exportPodcastOpml(context);
 
   @override
   void dispose() {
@@ -461,6 +429,12 @@ class _SourcesScreenState extends State<SourcesScreen> {
     if (entry.isFolder) {
       final source = context.read<SourceController>().sources.where((s) => s.id == entry.sourceId).firstOrNull;
       if (source == null) return;
+      if (entry.identifiers['podcast'] == 'show') {
+        await Navigator.push(context, MaterialPageRoute(builder: (_) =>
+            PodcastsScreen(sourceId: source.id, parentId: entry.id, title: entry.title)));
+        if (mounted) await _load();
+        return;
+      }
       await Navigator.push(
         context,
         MaterialPageRoute(
@@ -814,14 +788,15 @@ class _SourcesScreenState extends State<SourcesScreen> {
             ],
             if (root) ...[
               const AppMenuDivider(),
+              AppMenuItem(value: 'podcasts', label: t.podcasts.title, icon: Symbols.podcasts_rounded),
               AppMenuItem(
                 value: 'import-podcast-opml',
-                label: 'Import podcast subscriptions (OPML)',
+                label: t.podcasts.importOpml,
                 icon: Symbols.rss_feed_rounded,
               ),
               AppMenuItem(
                 value: 'export-podcast-opml',
-                label: 'Export podcast subscriptions (OPML)',
+                label: t.podcasts.exportOpml,
                 icon: Symbols.ios_share_rounded,
                 enabled: sources.sources.any((source) => source.kind == FileSourceKind.podcastRss),
               ),
@@ -850,6 +825,9 @@ class _SourcesScreenState extends State<SourcesScreen> {
               await _editOfflineQuota(sources);
             } else if (action == 'manage-streaming-connections') {
               await _manageRemoteStreaming();
+            } else if (action == 'podcasts') {
+              await Navigator.push(context, MaterialPageRoute(builder: (_) => const PodcastsScreen()));
+              if (mounted) await _load();
             } else if (action == 'import-podcast-opml') {
               await sourceAction(context, _importPodcastOpml);
             } else if (action == 'export-podcast-opml') {
@@ -912,6 +890,11 @@ class _SourcesScreenState extends State<SourcesScreen> {
                 if (root) ...[
                   Text(t.fileSources.subtitle, style: Theme.of(context).textTheme.bodyLarge),
                   const SizedBox(height: 24),
+                  SourceTile(title: t.podcasts.title, subtitle: t.podcasts.discover,
+                    icon: Symbols.podcasts_rounded, onTap: () async {
+                      await Navigator.push(context, MaterialPageRoute(builder: (_) => const PodcastsScreen()));
+                      if (mounted) await _load();
+                    }),
                   SourceTile(
                     title: t.universalMedia.title,
                     subtitle: t.universalMedia.shortcutHelp,

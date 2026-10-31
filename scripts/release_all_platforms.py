@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
@@ -35,6 +36,8 @@ CI_WORKFLOW = "ci.yml"
 RELEASE_WORKFLOW = "build.yml"
 NATIVE_GROUPS = ("apple", "android", "linux", "windows")
 FFMPEG_SIGNING_FINGERPRINT = "FCF986EA15E6E293A5644F10B4322F04D67658D8"
+DOWNLOAD_ATTEMPTS = 4
+DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS = 1
 
 
 class ReleaseError(RuntimeError):
@@ -152,8 +155,39 @@ def download(url: str, destination: Path) -> None:
         raise ReleaseError(f"Refusing non-official FFmpeg source URL: {url}")
     destination.parent.mkdir(parents=True, exist_ok=True)
     request = urllib.request.Request(url, headers={"User-Agent": "PlezyNG-release-orchestrator/1"})
-    with urllib.request.urlopen(request, timeout=90) as response, destination.open("wb") as output:
-        shutil.copyfileobj(response, output)
+    partial = destination.with_name(destination.name + ".part")
+    for attempt in range(1, DOWNLOAD_ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=90) as response, partial.open("wb") as output:
+                shutil.copyfileobj(response, output)
+            partial.replace(destination)
+            return
+        except urllib.error.HTTPError as error:
+            error.close()
+            partial.unlink(missing_ok=True)
+            if error.code not in (408, 429) and not 500 <= error.code < 600:
+                raise
+            if attempt == DOWNLOAD_ATTEMPTS:
+                raise
+        except urllib.error.URLError as error:
+            partial.unlink(missing_ok=True)
+            if not isinstance(error.reason, (TimeoutError, ConnectionError)):
+                raise
+            if attempt == DOWNLOAD_ATTEMPTS:
+                raise
+        except (TimeoutError, ConnectionError):
+            partial.unlink(missing_ok=True)
+            if attempt == DOWNLOAD_ATTEMPTS:
+                raise
+
+        delay = DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS * (2 ** (attempt - 1))
+        print(
+            f"Transient official FFmpeg download failure for {parsed.path} "
+            f"(attempt {attempt}/{DOWNLOAD_ATTEMPTS}); retrying in {delay}s.",
+            file=sys.stderr,
+            flush=True,
+        )
+        time.sleep(delay)
 
 
 def verified_ffmpeg_source(version_pin: str, scratch: Path) -> tuple[str, str]:

@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Retry transient FFmpeg source download failures without weakening signature verification.
 - Declare VDPAU and Vulkan loader packages required by Linux bundles.
 - Include the pinned Vulkan-backed WebGPU provider in Linux app builds by default for Neural motion processing.
 - Prefer the RX 7900 XT for Linux PME inference and Vulkan filter compute while keeping display rendering independent.

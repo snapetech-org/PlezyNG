@@ -32,6 +32,8 @@ final class PlaybackCapabilityReport {
   /// output and prevents readiness from being reported as active inference.
   final bool neuralProviderReady;
   final String? neuralProvider;
+
+  /// Provider-reported vendor or hardware label for model inference.
   final String? neuralProviderVendor;
 
   /// Provider-reported mode (for example, QNN HTP power mode). Null means
@@ -49,6 +51,8 @@ final class PlaybackCapabilityReport {
   final int? neuralPhaseBudget;
   final int? neuralPhaseBudgetConfigured;
   final String? neuralPhaseTimingSource;
+
+  /// Device used by PME's GPU preprocessing/warping path, separate from model inference.
   final String? neuralGpuProvider;
   final bool imageEnhancementConfigured;
   final String? imageEnhancementProvider;

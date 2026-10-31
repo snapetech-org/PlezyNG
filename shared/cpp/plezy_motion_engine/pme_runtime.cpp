@@ -679,24 +679,52 @@ bool webgpu_device_matches(const OrtApi* api, const OrtEpDevice* device, const R
   return webgpu_device_has_ids(api, device, requested.vendor_id, requested.device_id);
 }
 
-std::string hardware_vendor_label(const OrtApi* api, const OrtHardwareDevice* hardware, const char* fallback) {
-  const char* vendor = hardware ? api->HardwareDevice_Vendor(hardware) : nullptr;
-  if (vendor && vendor[0]) return vendor;
-  if (hardware) {
-    switch (api->HardwareDevice_VendorId(hardware)) {
-      case 0x1002:
-        return "AMD";
-      case 0x10de:
-        return "NVIDIA";
-      case 0x8086:
-        return "Intel";
-      case 0x5143:
-        return "Qualcomm";
+std::string hardware_provider_label(const OrtApi* api, const OrtHardwareDevice* hardware, const char* fallback) {
+  if (!hardware) return fallback ? fallback : "";
+
+  const OrtHardwareDeviceType type = api->HardwareDevice_Type(hardware);
+  const uint32_t vendor_id = api->HardwareDevice_VendorId(hardware);
+  const uint32_t device_id = api->HardwareDevice_DeviceId(hardware);
+  if (type == OrtHardwareDeviceType_GPU && vendor_id == 0x1002) {
+    switch (device_id) {
+      case 0x744c:
+        return "AMD Radeon RX 7900 XT";
+      case 0x7550:
+        return "AMD Radeon RX 9070 XT";
       default:
         break;
     }
   }
-  return fallback ? fallback : "";
+
+  const char* vendor = api->HardwareDevice_Vendor(hardware);
+  std::string vendor_label = vendor && vendor[0] ? vendor : "";
+  if (vendor_label.empty()) {
+    switch (vendor_id) {
+      case 0x1002:
+        vendor_label = "AMD";
+        break;
+      case 0x10de:
+        vendor_label = "NVIDIA";
+        break;
+      case 0x8086:
+        vendor_label = "Intel";
+        break;
+      case 0x5143:
+        vendor_label = "Qualcomm";
+        break;
+      default:
+        vendor_label = fallback ? fallback : "";
+        break;
+    }
+  }
+
+  if (type == OrtHardwareDeviceType_GPU && device_id != 0) {
+    std::ostringstream label;
+    if (!vendor_label.empty()) label << vendor_label << ' ';
+    label << "GPU type 0x" << std::hex << device_id;
+    return label.str();
+  }
+  return vendor_label;
 }
 
 bool try_accelerator_candidate(
@@ -890,7 +918,7 @@ bool try_accelerator_candidate(
   const char* provider_vendor = api->EpDevice_EpVendor(output_device);
   const OrtHardwareDevice* hardware = api->EpDevice_Device(output_device);
   session->provider_name = output_provider;
-  session->provider_vendor = hardware_vendor_label(api, hardware, provider_vendor);
+  session->provider_vendor = hardware_provider_label(api, hardware, provider_vendor);
   if (!hardware) {
     session->info.device_kind = candidate.device_kind;
   } else {

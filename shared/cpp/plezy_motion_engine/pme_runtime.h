@@ -72,6 +72,7 @@ typedef struct pme_runtime_info {
   uint32_t struct_size;
   uint32_t abi_version;
   char provider_name[64];
+  /* Runtime-reported vendor or GPU model/device-type label for the provider. */
   char provider_vendor[64];
   pme_device_kind device_kind;
   pme_tensor_shape input;

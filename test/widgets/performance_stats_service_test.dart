@@ -395,43 +395,38 @@ void main() {
   });
 
   group('PerformanceStatsService WebGPU provider reporting', () {
-    test(
-      'normalizes the PME provider and marks it ready after generated output',
-      () async {
-        final stats = await _firstStats(
-          _PropertyPlayer({
-            'video-params/w': '1280',
-            'video-params/h': '720',
-            'vf-metadata/plezy-pme/provider': 'WebGpuExecutionProvider',
-            'vf-metadata/plezy-pme/device-kind': 'GPU',
-            'vf-metadata/plezy-pme/generated-frames': '1',
-          }),
-        );
+    test('normalizes the PME provider and marks it ready after generated output', () async {
+      final stats = await _firstStats(
+        _PropertyPlayer({
+          'video-params/w': '1280',
+          'video-params/h': '720',
+          'vf-metadata/plezy-pme/provider': 'WebGpuExecutionProvider',
+          'vf-metadata/plezy-pme/provider-vendor': 'AMD Radeon RX 7900 XT',
+          'vf-metadata/plezy-pme/device-kind': 'GPU',
+          'vf-metadata/plezy-pme/generated-frames': '1',
+        }),
+      );
 
-        expect(stats.neuralProvider, 'webgpu-gpu');
-        expect(stats.playbackCapabilityReport?.neuralProviderReady, isTrue);
-        expect(stats.playbackCapabilityReport?.hasObservedNeuralOutput, isTrue);
-      },
-      skip: !Platform.isLinux && !Platform.isWindows,
-    );
+      expect(stats.neuralProvider, 'webgpu-gpu');
+      expect(stats.neuralProviderVendor, 'AMD Radeon RX 7900 XT');
+      expect(stats.playbackCapabilityReport?.neuralProviderReady, isTrue);
+      expect(stats.playbackCapabilityReport?.hasObservedNeuralOutput, isTrue);
+    }, skip: !Platform.isLinux && !Platform.isWindows);
 
-    test(
-      'accepts a WebGPU provider status when resolving Neural mode',
-      () {
-        final resolution = MotionProcessingService.resolveForPlayer(
-          _PropertyPlayer(const {}),
-          MotionProcessingMode.neural,
-          neuralProviderStatus: 'webgpu-gpu-ready',
-        );
+    test('accepts a WebGPU provider status when resolving Neural mode', () {
+      final resolution = MotionProcessingService.resolveForPlayer(
+        _PropertyPlayer(const {}),
+        MotionProcessingMode.neural,
+        neuralProviderStatus: 'webgpu-gpu-ready',
+      );
 
-        expect(resolution.provider, MotionProcessingProvider.neural);
-      },
-      skip: !MotionProcessingService.isMpvPlatformSupported,
-    );
+      expect(resolution.provider, MotionProcessingProvider.neural);
+    }, skip: !MotionProcessingService.isMpvPlatformSupported);
 
     test('labels the provider as WebGPU GPU in the performance overlay', () {
       final stats = PerformanceStats(
         neuralProvider: 'webgpu-gpu',
+        neuralGpuProvider: 'AMD Radeon RX 7900 XT',
         motionProcessingResolution: const MotionProcessingResolution(
           requested: MotionProcessingMode.neural,
           requestedPreset: NeuralInterpolationPreset.performance,
@@ -440,12 +435,16 @@ void main() {
         playbackCapabilityReport: const PlaybackCapabilityReport(
           playerType: 'mpv',
           neuralProvider: 'webgpu-gpu',
+          neuralProviderVendor: 'AMD Radeon RX 7900 XT',
+          neuralGpuProvider: 'AMD Radeon RX 7900 XT',
           neuralProviderReady: true,
           neuralOutputObserved: true,
         ),
       );
 
       expect(stats.motionProcessingFormatted, contains('WebGPU · GPU'));
+      expect(stats.motionProcessingFormatted, contains('AMD Radeon RX 7900 XT · WebGPU · GPU'));
+      expect(stats.motionProcessingFormatted, contains('Compute AMD Radeon RX 7900 XT'));
     });
   });
 }

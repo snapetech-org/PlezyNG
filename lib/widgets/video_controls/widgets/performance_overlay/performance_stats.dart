@@ -87,12 +87,16 @@ class PerformanceStats {
   final MotionProcessingResolution? motionProcessingResolution;
   final PlaybackCapabilityReport? playbackCapabilityReport;
   final String? neuralProvider;
+
+  /// Provider-reported vendor or hardware label for model inference.
   final String? neuralProviderVendor;
   final double? neuralInferenceMs;
   final double? neuralInferenceP95Ms;
   final int? neuralGeneratedFrames;
   final int? neuralSceneCutBypasses;
   final int? neuralDeadlineMisses;
+
+  /// PME's separate GPU preprocessing/warping device, when the filter reports it.
   final String? neuralGpuProvider;
   final bool videoUpscalingRequested;
   final bool videoUpscalingConfigured;

@@ -170,6 +170,10 @@ On Linux, WebGPU automatically prefers the AMD RX 7900 XT adapter
 `PLEZY_PME_WEBGPU_VENDOR_ID` and `PLEZY_PME_WEBGPU_DEVICE_ID` values overrides
 that preference and pins the plugin to the matching physical adapter. PME
 checks that ONNX Runtime assigns the model output to the selected adapter.
+When the Plezy PME runtime and its matching MPV filter are built together,
+playback diagnostics identify the RX 7900 XT inference adapter separately from
+the PME Vulkan preprocessing/warping GPU; other GPU labels use the provider's
+vendor and reported device type when a model name is unavailable.
 MPV's separate output renderer is unchanged, so the RX 9070 XT remains
 available for desktop and video presentation. The RX 7900 XT launcher detects
 `WebGpuExecutionProvider` in the selected runtime manifest and only then uses

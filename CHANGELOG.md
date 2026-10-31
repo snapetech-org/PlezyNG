@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Build the Tizen torrent bridge with libtorrent session parameters to avoid a duplicate link symbol.
+
 - Make release run names show the action, runner pool and tag; route platform matrices by explicit targets.
 - Verify the imported macOS signing identity is a Developer ID certificate before signing and notarization.
 - Align Dolby workflow route checks with the private Windows x64 and macOS ARM64 JIT labels.

@@ -850,7 +850,7 @@ jobs:
         run: |
           xcodebuild build \
             -project "$PODS_PROJECT" \
-            -target Pods-Runner \
+            -scheme Pods-Runner \
             -configuration Debug \
             -sdk "$PODS_SDK" \
             -destination "$APPLE_TEST_DESTINATION" \

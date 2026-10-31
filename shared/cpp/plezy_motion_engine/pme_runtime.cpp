@@ -615,6 +615,7 @@ bool device_matches(const OrtApi* api, const OrtEpDevice* device, pme_device_kin
 
 struct RequestedWebGpuDevice {
   bool enabled = false;
+  bool prefer_rx_7900_xt = false;
   uint32_t vendor_id = 0;
   uint32_t device_id = 0;
 };
@@ -654,14 +655,28 @@ bool read_requested_webgpu_device(const char* provider_name, RequestedWebGpuDevi
     return false;
   }
   requested->enabled = vendor_is_set;
+#if defined(__linux__)
+  if (!requested->enabled) {
+    // Keep motion inference on the dedicated compute card on the dual-GPU
+    // desktop. MPV's presentation renderer selects its device independently.
+    requested->prefer_rx_7900_xt = true;
+    requested->vendor_id = 0x1002;
+    requested->device_id = 0x744c;
+  }
+#endif
   return true;
+}
+
+bool webgpu_device_has_ids(
+    const OrtApi* api, const OrtEpDevice* device, uint32_t vendor_id, uint32_t device_id) {
+  const OrtHardwareDevice* hardware = api->EpDevice_Device(device);
+  return hardware && api->HardwareDevice_VendorId(hardware) == vendor_id &&
+         api->HardwareDevice_DeviceId(hardware) == device_id;
 }
 
 bool webgpu_device_matches(const OrtApi* api, const OrtEpDevice* device, const RequestedWebGpuDevice& requested) {
   if (!requested.enabled) return true;
-  const OrtHardwareDevice* hardware = api->EpDevice_Device(device);
-  return hardware && api->HardwareDevice_VendorId(hardware) == requested.vendor_id &&
-         api->HardwareDevice_DeviceId(hardware) == requested.device_id;
+  return webgpu_device_has_ids(api, device, requested.vendor_id, requested.device_id);
 }
 
 std::string hardware_vendor_label(const OrtApi* api, const OrtHardwareDevice* hardware, const char* fallback) {
@@ -753,17 +768,33 @@ bool try_accelerator_candidate(
   }
 
   const OrtEpDevice* selected_device = nullptr;
+  const OrtEpDevice* first_matching_device = nullptr;
   const std::string expected_provider_name = expected_ep_name(candidate.provider_name);
   RequestedWebGpuDevice requested_webgpu_device;
   if (!read_requested_webgpu_device(candidate.provider_name, &requested_webgpu_device, error)) return false;
   for (size_t i = 0; i < device_count; ++i) {
     const char* ep_name = api->EpDevice_EpName(devices[i]);
-    if (ep_name && expected_provider_name == ep_name && device_matches(api, devices[i], candidate.device_kind) &&
-        webgpu_device_matches(api, devices[i], requested_webgpu_device)) {
+    if (!ep_name || expected_provider_name != ep_name || !device_matches(api, devices[i], candidate.device_kind)) {
+      continue;
+    }
+    if (!first_matching_device) first_matching_device = devices[i];
+    if (requested_webgpu_device.enabled) {
+      if (webgpu_device_matches(api, devices[i], requested_webgpu_device)) {
+        selected_device = devices[i];
+        break;
+      }
+    } else if (requested_webgpu_device.prefer_rx_7900_xt) {
+      if (webgpu_device_has_ids(api, devices[i], requested_webgpu_device.vendor_id,
+                                requested_webgpu_device.device_id)) {
+        selected_device = devices[i];
+        break;
+      }
+    } else {
       selected_device = devices[i];
       break;
     }
   }
+  if (!selected_device && !requested_webgpu_device.enabled) selected_device = first_matching_device;
   if (!selected_device) {
     *error = requested_webgpu_device.enabled
                  ? "WebGPU did not report the requested physical GPU"
@@ -841,6 +872,19 @@ bool try_accelerator_candidate(
     session->session = nullptr;
     *error = "ONNX Runtime assigned model output to a different WebGPU adapter than requested";
     return false;
+  }
+
+  if (requested_webgpu_device.prefer_rx_7900_xt && !requested_webgpu_device.enabled) {
+    const OrtHardwareDevice* selected_hardware = api->EpDevice_Device(selected_device);
+    const OrtHardwareDevice* output_hardware = api->EpDevice_Device(output_device);
+    if (!selected_hardware || !output_hardware ||
+        api->HardwareDevice_VendorId(selected_hardware) != api->HardwareDevice_VendorId(output_hardware) ||
+        api->HardwareDevice_DeviceId(selected_hardware) != api->HardwareDevice_DeviceId(output_hardware)) {
+      api->ReleaseSession(session->session);
+      session->session = nullptr;
+      *error = "ONNX Runtime assigned model output to a different WebGPU adapter than selected";
+      return false;
+    }
   }
 
   const char* provider_vendor = api->EpDevice_EpVendor(output_device);

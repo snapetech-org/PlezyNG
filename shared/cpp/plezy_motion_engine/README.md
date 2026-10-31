@@ -165,15 +165,20 @@ cmake --install build/pme-webgpu --component Runtime
 cmake --install build/pme-webgpu --component DevTools
 ```
 
-On multi-GPU systems, `PLEZY_PME_WEBGPU_VENDOR_ID` and
-`PLEZY_PME_WEBGPU_DEVICE_ID` pin the plugin to the matching physical adapter.
-PME verifies those IDs when selecting the EP device and again when checking
-the model output device. The RX 7900 XT launcher detects
+On Linux, WebGPU automatically prefers the AMD RX 7900 XT adapter
+(`vendor=0x1002`, `device=0x744c`) when it is present. An explicit pair of
+`PLEZY_PME_WEBGPU_VENDOR_ID` and `PLEZY_PME_WEBGPU_DEVICE_ID` values overrides
+that preference and pins the plugin to the matching physical adapter. PME
+checks that ONNX Runtime assigns the model output to the selected adapter.
+MPV's separate output renderer is unchanged, so the RX 9070 XT remains
+available for desktop and video presentation. The RX 7900 XT launcher detects
 `WebGpuExecutionProvider` in the selected runtime manifest and only then uses
 `vulkaninfo` to derive those IDs. If the manifest is outside the executable-
 relative paths or `PLEZY_PME_RUNTIME_DIR`, set `PLEZY_PME_USE_WEBGPU=1` when
 launching. MIGraphX-only runs do not require the `vulkaninfo` utility. MPV's
-display-renderer selection remains independent of PME's compute adapter.
+PME Vulkan compute filter also prefers the RX 7900 XT when no explicit device
+override is set. The display-renderer selection remains independent of both
+compute paths.
 
 To build the WebGPU runtime into the Linux Flutter application bundle, generate
 Flutter's Linux configuration first, then configure and install the app with the
@@ -192,17 +197,21 @@ scripts/motion/with_rx7900_motion_gpu.sh \
   "$PWD/build/pme-webgpu-app/bundle/plezy"
 ```
 
-This launcher pins PME compute to the RX 7900 XT and leaves the RX 9070 XT
-available for the desktop and MPV output renderer.
+This launcher isolates ROCm to the RX 7900 XT for the MIGraphX path, and
+verifies the WebGPU adapter when that provider is selected. WebGPU and the PME
+Vulkan filter also prefer the RX 7900 XT in normal Linux app launches; the
+RX 9070 XT remains available to the desktop and MPV output renderer.
 
 For AMD's built-in MIGraphX provider, the Linux `amd-migraphx` CMake variant
 stages the matching ORT runtime and provider libraries from the verified ROCm
 7.2.1 wheel. The target system must provide ROCm 7.2.1 and MIGraphX runtime
 dependencies; the app does not bundle that system stack. To reserve a
 particular AMD GPU for a development process, set `ROCR_VISIBLE_DEVICES` only
-on that process when launching PlezyNG. ROCm then numbers the visible device
-set inside the process; MIGraphX's device `0` means the first visible GPU, not
-necessarily host GPU 0.
+on that process when launching PlezyNG. The RX 7900 XT launcher resolves its
+ROCm UUID and makes it the process's only visible device; MIGraphX's device
+`0` then means that card, while the MPV output renderer stays independent.
+Without that isolation, MIGraphX's device `0` means the first visible ROCm
+GPU, which may be the RX 9070 XT on this dual-GPU desktop.
 
 Build the library with `ONNXRUNTIME_ROOT` pointing at an SDK whose C API is at
 least version 27 and `PME_ORT_RUNTIME_LIBRARY` pointing at the runtime to stage.

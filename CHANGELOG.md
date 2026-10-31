@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Load the Google ML Kit simulator helper after Flutter creates CocoaPods plugin symlinks.
+
 - Offer a server transcode after an eligible Plex HTTP 500 file refusal.
 - Preserve health status after a transient timeout when the current server endpoint is still reachable.
 - Keep TV focus on the visible route and avoid no-op nested scrolling that can collapse the library header.

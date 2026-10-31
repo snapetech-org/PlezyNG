@@ -28,14 +28,6 @@ end
 
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
 
-# Google ML Kit's pinned frameworks ship an arm64 iOS slice that must be
-# relabeled for Apple Silicon simulator builds. The plugin's opt-in helper
-# restores the original platform label for physical-device builds.
-require File.expand_path(
-  '.symlinks/plugins/google_mlkit_commons/ios/scripts/apple_silicon_simulator',
-  __dir__,
-)
-
 # Sherpa's FFI CocoaPod vendors a native framework but omits source files. Add its
 # existing no-op Swift sources so CocoaPods generates the native targets.
 unless system('python3', File.expand_path('../scripts/patch_sherpa_onnx_ios_podspec.py', __dir__))
@@ -58,6 +50,13 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  # Flutter creates ios/.symlinks/plugins in flutter_install_all_ios_pods,
+  # so load the plugin helper only after CocoaPods has resolved those paths.
+  require File.expand_path(
+    '.symlinks/plugins/google_mlkit_commons/ios/scripts/apple_silicon_simulator',
+    __dir__,
+  )
+
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
   end

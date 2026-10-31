@@ -16,6 +16,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 FETCH_ENGINE = ROOT / "tvos/scripts/fetch_engine.sh"
+PATCH_HEADERS = ROOT / "scripts/patch_tvos_flutter_engine_headers.py"
+ENGINE_VARIANTS = ("tvos_debug_sim_unopt_arm64", "tvos_release")
 
 
 class FetchTvosEngineTest(unittest.TestCase):
@@ -24,7 +26,9 @@ class FetchTvosEngineTest(unittest.TestCase):
         self.root = Path(self.temporary.name)
         self.tvos = self.root / "tvos"
         (self.tvos / "scripts").mkdir(parents=True)
+        (self.root / "scripts").mkdir()
         shutil.copy2(FETCH_ENGINE, self.tvos / "scripts/fetch_engine.sh")
+        shutil.copy2(PATCH_HEADERS, self.root / "scripts/patch_tvos_flutter_engine_headers.py")
         (self.tvos / "engine.version").write_text("fixture-1\n", encoding="utf-8")
         (self.root / "pubspec.yaml").write_text("version: 1.2.3+4\n", encoding="utf-8")
         self.cache = self.root / "cache"
@@ -62,8 +66,59 @@ cp "$FIXTURE_ARCHIVE" "$output"
         source = self.root / "marker.txt"
         source.write_text(marker, encoding="utf-8")
         with tarfile.open(self.archive, "w:gz") as archive:
-            archive.add(source, arcname="out/tvos_debug_sim_unopt_arm64/marker.txt")
+            for variant in ENGINE_VARIANTS:
+                framework = self.root / "fixture-engine" / "out" / variant / "Flutter.framework"
+                headers = framework / "Headers"
+                headers.mkdir(parents=True, exist_ok=True)
+                (headers / "FlutterPlugin.h").write_text(
+                    "#ifndef FLUTTERPLUGIN_H_\n"
+                    "#define FLUTTERPLUGIN_H_\n"
+                    "#import <UIKit/UIKit.h>\n"
+                    "#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)\n"
+                    "- (void)application:(UIApplication*)application\n"
+                    "    didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings;\n"
+                    "#endif\n",
+                    encoding="utf-8",
+                )
+                (headers / "FlutterPluginAppLifeCycleDelegate.h").write_text(
+                    "#ifndef FLUTTERPLUGINAPPLIFECYCLEDELEGATE_H_\n"
+                    "#define FLUTTERPLUGINAPPLIFECYCLEDELEGATE_H_\n"
+                    '#import "FlutterPlugin.h"\n'
+                    "#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)\n"
+                    "- (void)application:(UIApplication*)application\n"
+                    "    didReceiveLocalNotification:(UILocalNotification*)notification;\n"
+                    "#endif\n",
+                    encoding="utf-8",
+                )
+                (headers / "FlutterSceneLifeCycle.h").write_text(
+                    "#ifndef FLUTTERSCENELIFECYCLE_H_\n"
+                    "#define FLUTTERSCENELIFECYCLE_H_\n"
+                    "#import <UIKit/UIKit.h>\n"
+                    "- (BOOL)windowScene:(UIWindowScene*)windowScene\n"
+                    "    performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem\n"
+                    "               completionHandler:(void (^)(BOOL succeeded))completionHandler\n"
+                    "    API_UNAVAILABLE(tvos);\n"
+                    "- (void)windowScene:(UIWindowScene*)windowScene\n"
+                    "    performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem\n"
+                    "               completionHandler:(void (^)(BOOL succeeded))completionHandler\n"
+                    "    API_UNAVAILABLE(tvos);\n",
+                    encoding="utf-8",
+                )
+                archive.add(framework.parent, arcname=f"out/{variant}")
+            archive.add(source, arcname=f"out/{ENGINE_VARIANTS[0]}/marker.txt")
         return hashlib.sha256(self.archive.read_bytes()).hexdigest()
+
+    def _assert_patched_headers(self, engine: Path) -> None:
+        for variant in ENGINE_VARIANTS:
+            headers = engine / "out" / variant / "Flutter.framework" / "Headers"
+            plugin = (headers / "FlutterPlugin.h").read_text(encoding="utf-8")
+            delegate = (headers / "FlutterPluginAppLifeCycleDelegate.h").read_text(encoding="utf-8")
+            lifecycle = (headers / "FlutterSceneLifeCycle.h").read_text(encoding="utf-8")
+            self.assertIn("#import <TargetConditionals.h>", plugin)
+            self.assertIn("#import <TargetConditionals.h>", delegate)
+            self.assertIn("#import <TargetConditionals.h>", lifecycle)
+            self.assertEqual(lifecycle.count("#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)"), 2)
+            self.assertEqual(lifecycle.count("API_UNAVAILABLE(tvos);"), 2)
 
     def _run(self) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
@@ -87,12 +142,14 @@ cp "$FIXTURE_ARCHIVE" "$output"
             (engine / "out/tvos_debug_sim_unopt_arm64/marker.txt").read_text(encoding="utf-8"),
             "reviewed engine",
         )
+        self._assert_patched_headers(engine)
         self.archive.unlink()
 
         second = self._run()
 
         self.assertEqual(second.returncode, 0, second.stderr)
         self.assertIn("using verified cached engine", second.stdout)
+        self._assert_patched_headers(engine)
 
     def test_checksum_mismatch_leaves_no_partial_engine(self) -> None:
         self._write_archive("unreviewed engine")

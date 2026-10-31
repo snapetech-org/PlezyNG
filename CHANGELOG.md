@@ -13,6 +13,7 @@
 - Include verified Google Tensor G5/G6 AOT motion models in the default Android LiteRT pack and preserve them across ordinary exports.
 - Remove stale CocoaPods aggregate framework links from the iOS simulator test project.
 - Enable the pinned Google ML Kit helper for Apple Silicon iOS simulator builds.
+- Patch the pinned tvOS Flutter engine headers for Xcode 27 availability checks.
 - Patch the pinned tvOS AMSMB2 manifest safely when SwiftPM marks its checkout read-only.
 - Preserve punctuation when converting podcast descriptions with inline HTML to plain text.
 - Use the explicit English fallback for new podcast and version-selection labels until localized copy is reviewed.

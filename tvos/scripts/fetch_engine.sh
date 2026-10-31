@@ -69,6 +69,11 @@ else
   echo "[fetch_engine] using verified cached engine at $ENGINE_DIR"
 fi
 
+# Xcode 27's tvOS SDK rejects iOS-only availability types while compiling the
+# custom engine's public module headers. Apply Plezy's local header-only shim to
+# every tvOS framework variant after verifying or reusing the pinned archive.
+python3 "$REPO_ROOT/scripts/patch_tvos_flutter_engine_headers.py" "$ENGINE_DIR"
+
 # Locate a host Flutter SDK for flutter CLI invocation during the build.
 if [[ -n "${FLUTTER_ROOT:-}" ]]; then
   FLUTTER_ROOT_RESOLVED="$FLUTTER_ROOT"

@@ -862,7 +862,10 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
             ARCHS=arm64
-          test -d "$pods_products_dir/Pods_Runner.framework"
+          test -f "$pods_products_dir/Pods_Runner.framework/Pods_Runner" || {
+            echo "::error::CocoaPods aggregate framework binary is missing from $pods_products_dir/Pods_Runner.framework"
+            exit 1
+          }
 
       - name: Run Apple native reliability tests
         if: matrix.platform != 'macOS'

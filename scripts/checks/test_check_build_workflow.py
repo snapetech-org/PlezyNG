@@ -268,6 +268,22 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             result.stderr,
         )
 
+    def test_windows_mpv_download_must_reject_nonstandard_https_ports(self) -> None:
+        downloader = WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8").replace(
+            "    $base.Port -ne 443 -or\n",
+            "",
+            1,
+        )
+        self.assertNotEqual(downloader, WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8"))
+
+        result = self._run(self._workflow(), mpv_downloader=downloader)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "Windows MPV downloader must validate the locked snapetech-org/mpv-build artifact base",
+            result.stderr,
+        )
+
     def test_windows_native_cache_without_lock_identity_is_rejected(self) -> None:
         cache_identity = (
             "hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json', "

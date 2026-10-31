@@ -317,7 +317,8 @@ require(
     and windows_mpv_lock.get("assetBase") == windows_mpv_expected_base
     and "snapetech-org/mpv-build" in windows_mpv_downloader
     and "$lock.repo" in windows_mpv_downloader
-    and "$expectedAssetBase" in windows_mpv_downloader,
+    and "$expectedAssetBase" in windows_mpv_downloader
+    and "$base.Port -ne 443" in windows_mpv_downloader,
     "Windows MPV downloader must validate the locked snapetech-org/mpv-build artifact base",
 )
 for expected in (

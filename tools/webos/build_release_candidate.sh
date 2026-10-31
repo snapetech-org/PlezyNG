@@ -245,6 +245,20 @@ git -C "$SDK_ROOT/flutter" apply "$ROOT/tools/webos/flutter-framework-3.47.1.pat
 git -c protocol.file.allow=never clone --filter=blob:none --no-checkout \
   https://chromium.googlesource.com/chromium/tools/depot_tools.git "$BOOTSTRAP_DEPOT_TOOLS"
 git -C "$BOOTSTRAP_DEPOT_TOOLS" checkout --detach "$DEPOT_TOOLS_REVISION"
+DEPOT_TOOLS_PATCH_PATH="$(read_lock engineBuild depotToolsPython314Patch path)"
+DEPOT_TOOLS_PATCH_SHA256="$(read_lock engineBuild depotToolsPython314Patch sha256)"
+DEPOT_TOOLS_PATCH="$ROOT/$DEPOT_TOOLS_PATCH_PATH"
+if [[ ! -f "$DEPOT_TOOLS_PATCH" || -L "$DEPOT_TOOLS_PATCH" ]]; then
+  echo "The locked depot_tools Python 3.14 compatibility patch is missing or unsafe." >&2
+  exit 1
+fi
+ACTUAL_DEPOT_TOOLS_PATCH_SHA256="$(sha256sum -- "$DEPOT_TOOLS_PATCH" | awk '{ print $1 }')"
+if [[ "$ACTUAL_DEPOT_TOOLS_PATCH_SHA256" != "$DEPOT_TOOLS_PATCH_SHA256" ]]; then
+  echo "The locked depot_tools Python 3.14 compatibility patch hash changed." >&2
+  exit 1
+fi
+git -C "$BOOTSTRAP_DEPOT_TOOLS" apply --check "$DEPOT_TOOLS_PATCH"
+git -C "$BOOTSTRAP_DEPOT_TOOLS" apply "$DEPOT_TOOLS_PATCH"
 export DEPOT_TOOLS_UPDATE=0
 export VPYTHON_BYPASS="manually managed python not supported by chrome operations"
 export CIPD_CACHE_DIR="$TASK_ROOT/cipd-cache"

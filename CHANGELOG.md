@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Fall back to packaged LiteRT providers when Qualcomm HTP context preparation fails.
 - Normalize modifier scan codes on remote Android keys when they obscure the actual key.
 - Mark rejected Plex account tokens as needing sign-in again and retry profile binding after the next sign-in.
 - Keep the explicitly selected Jellyfin subtitle when same-language files tie on metadata.

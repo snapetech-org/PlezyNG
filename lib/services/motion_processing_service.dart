@@ -1221,14 +1221,24 @@ abstract final class MotionProcessingService {
     try {
       final capabilities = await player.getAndroidMotionRuntimeCapabilities();
       if (capabilities == null) return false;
-      if (capabilities['qnnHtpAvailable'] == true &&
-          await _configureAndroidAnvilQnn(
+      if (capabilities['qnnHtpAvailable'] == true) {
+        try {
+          if (await _configureAndroidAnvilQnn(
             player,
             capabilities: capabilities,
             selectedVersion: selectedVersion,
             neuralPreset: neuralPreset,
           )) {
-        return true;
+            return true;
+          }
+        } catch (error, stackTrace) {
+          appLogger.w(
+            'MotionProcessingService: Qualcomm HTP setup failed; trying LiteRT providers',
+            error: error,
+            stackTrace: stackTrace,
+          );
+          await _restoreAndroidMotionPath(player);
+        }
       }
       return await _configureAndroidAnvilLiteRt(
         player,

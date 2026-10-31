@@ -7,6 +7,7 @@ import '../media/media_stream.dart';
 import '../media/media_version.dart';
 import '../models/motion_processing_mode.dart';
 import '../models/playback_capability_report.dart';
+import '../mpv/models.dart';
 import '../mpv/player/player.dart';
 import '../mpv/player/player_native.dart';
 import 'neural_model_pack_service.dart';
@@ -52,6 +53,12 @@ abstract final class MotionProcessingService {
     'motion-processing-desktop-pme-originals',
   );
   static final Expando<Future<void>> _operationTails = Expando('motion-processing-operation-tails');
+  static final Expando<StreamSubscription<Tracks>> _videoTrackSubscriptions =
+      Expando('motion-processing-video-track-subscription');
+  static final Expando<String> _lastVideoTrackSelection = Expando('motion-processing-last-video-track-selection');
+  static final Expando<int> _videoTrackMonitorGeneration = Expando('motion-processing-video-track-generation');
+  static final Expando<int> _motionSessionGeneration = Expando('motion-processing-session-generation');
+  static final Expando<bool> _interlacedTrackSuppressed = Expando('motion-processing-interlaced-track-suppressed');
 
   /// Windows uses MPV's embedded gpu-next output. Linux's Wayland plane uses
   /// libmpv and reports both display refresh and successful swaps. Android
@@ -153,9 +160,19 @@ abstract final class MotionProcessingService {
     return true;
   }
 
-  /// Scan type from the selected source version used to configure this player.
-  /// A missing value stays unknown; callers must not infer progressive video.
-  static bool? sourceInterlacedForPlayer(Player player) {
+  /// Scan type for the video track currently decoded by MPV.
+  ///
+  /// The server's selected-track flag is only a setup-time fallback. During
+  /// playback, use the active FFmpeg stream index when MPV reports libavformat
+  /// as its demuxer; other demuxers can expose a different index space. A
+  /// missing or ambiguous match stays unknown so motion eligibility never
+  /// assumes that the active source is progressive.
+  static bool? sourceInterlacedForPlayer(
+    Player player, {
+    int? activeVideoStreamIndex,
+    String? currentDemuxer,
+    bool allowSelectedTrackFallback = true,
+  }) {
     final version = _sessionSelectedVersion[player];
     if (version == null) return null;
 
@@ -163,11 +180,128 @@ abstract final class MotionProcessingService {
         .expand((part) => part.streams)
         .where((stream) => stream.kind == MediaStreamKind.video)
         .toList(growable: false);
+
+    final demuxer = currentDemuxer?.trim().toLowerCase();
+    if (activeVideoStreamIndex != null || (demuxer != null && demuxer.isNotEmpty)) {
+      if (demuxer != 'lavf' || activeVideoStreamIndex == null) return null;
+      final scanTypes = streams
+          .where((stream) => stream.index == activeVideoStreamIndex)
+          .map((stream) => stream.interlaced)
+          .toSet();
+      return scanTypes.length == 1 ? scanTypes.single : null;
+    }
+
+    if (!allowSelectedTrackFallback) return null;
+
     final video = streams.firstWhere(
       (stream) => stream.selected,
       orElse: () => streams.length == 1 ? streams.single : const MediaStream(id: '', kind: MediaStreamKind.unknown),
     );
     return video.kind == MediaStreamKind.video ? video.interlaced : null;
+  }
+
+  static void _watchVideoTrackChanges(Player player) {
+    if (_videoTrackSubscriptions[player] != null) return;
+    final generation = _videoTrackMonitorGeneration[player] ?? 0;
+    _videoTrackMonitorGeneration[player] = generation;
+    _videoTrackSubscriptions[player] = player.streams.tracks.listen((tracks) {
+      final selection = tracks.video.where((track) => track.isSelected).map((track) => track.id).join('\u0000');
+      final previous = _lastVideoTrackSelection[player];
+      if (previous == selection) return;
+      if (selection.isEmpty) {
+        if (previous != null && previous.isNotEmpty) _lastVideoTrackSelection[player] = '';
+        return;
+      }
+      _lastVideoTrackSelection[player] = selection;
+
+      final selectionChanged = previous != null && previous != selection;
+      unawaited(
+        _checkActiveVideoTrack(
+          player,
+          selectionChanged: selectionChanged,
+          generation: generation,
+          sessionGeneration: _motionSessionGeneration[player] ?? 0,
+        ),
+      );
+    });
+  }
+
+  static Future<void> _checkActiveVideoTrack(
+    Player player, {
+    required bool selectionChanged,
+    required int generation,
+    required int sessionGeneration,
+  }) async {
+    try {
+      await _serializePlayerOperation(player, () async {
+        if (_videoTrackMonitorGeneration[player] != generation ||
+            _motionSessionGeneration[player] != sessionGeneration ||
+            _sessionSelectedVersion[player] == null) {
+          return;
+        }
+        final demuxer = await player.getProperty('current-demuxer');
+        final streamIndex = int.tryParse(await player.getProperty('current-tracks/video/ff-index') ?? '');
+        final interlaced = sourceInterlacedForPlayer(
+          player,
+          activeVideoStreamIndex: streamIndex,
+          currentDemuxer: demuxer,
+          allowSelectedTrackFallback: !selectionChanged,
+        );
+        if (interlaced != true && !(selectionChanged && interlaced == null)) return;
+        if (!_hasActiveMotionProcessing(player) || _interlacedTrackSuppressed[player] == true) return;
+        await _suspendMotionForUnsupportedTrack(player);
+      });
+    } catch (error, stackTrace) {
+      appLogger.w(
+        'MotionProcessingService: could not suspend motion processing after a video-track change',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  static bool _hasActiveMotionProcessing(Player player) =>
+      _desktopPmeActive[player] == true ||
+      _androidAnvilActive[player] == true ||
+      _androidMpvOutputActive[player] == true ||
+      _appleNeuralPreset[player] != null ||
+      (_originals[player] != null && _interpolationBufferReady[player] == true);
+
+  /// Stop generated frames after switching to an interlaced or unclassifiable
+  /// alternate track. Keep the current renderer and decoder choice in place;
+  /// motion can be configured again at the next media open.
+  static Future<void> _suspendMotionForUnsupportedTrack(Player player) async {
+    if (_desktopPmeActive[player] == true) {
+      if (await _removeDesktopPmeFilter(player)) {
+        _desktopPmeActive[player] = false;
+        _desktopPmePreset[player] = null;
+      }
+    }
+    if (_androidAnvilActive[player] == true) {
+      if (await _removeAndroidAnvilFilter(player)) {
+        _androidAnvilActive[player] = false;
+        _androidAnvilPreset[player] = null;
+      }
+    }
+    if (_appleNeuralPreset[player] != null) {
+      await player.setProperty('avfoundation-motion-interpolation', 'no');
+      _appleNeuralPreset[player] = null;
+      _appleNeuralEligible[player] = false;
+    }
+    if (_originals[player] != null ||
+        _desktopPmeActive[player] == true ||
+        _androidAnvilActive[player] == true ||
+        _androidMpvOutputActive[player] == true) {
+      await player.setProperty('interpolation', 'no');
+    }
+    _interpolationBufferReady[player] = false;
+    _neuralRequested[player] = false;
+    await _stopPowerMonitoring(player);
+    await _stopThermalMonitoring(player);
+    _interlacedTrackSuppressed[player] = true;
+    appLogger.w(
+      'MotionProcessingService: motion processing stopped for an interlaced or unclassifiable video track; it will resume at the next media open.',
+    );
   }
 
   static bool _supportsVideoOutput(String output) {
@@ -321,6 +455,10 @@ abstract final class MotionProcessingService {
     _sessionSelectedVersion[player] = selectedVersion;
     _sessionIsLive[player] = isLive;
     _sessionIsTranscoding[player] = isTranscoding;
+    _motionSessionGeneration[player] = (_motionSessionGeneration[player] ?? 0) + 1;
+    _interlacedTrackSuppressed[player] = false;
+    _lastVideoTrackSelection[player] = null;
+    _watchVideoTrackChanges(player);
     if (_isApplePlatform) {
       final output = await _videoOutputForConfiguration(player);
       final avfoundationOutput = output == null || output == 'avfoundation';
@@ -936,6 +1074,12 @@ abstract final class MotionProcessingService {
   }
 
   static Future<void> _stopPowerSourceMonitoring(Player player) async {
+    _videoTrackMonitorGeneration[player] = (_videoTrackMonitorGeneration[player] ?? 0) + 1;
+    _motionSessionGeneration[player] = (_motionSessionGeneration[player] ?? 0) + 1;
+    final trackSubscription = _videoTrackSubscriptions[player];
+    _videoTrackSubscriptions[player] = null;
+    await trackSubscription?.cancel();
+    _lastVideoTrackSelection[player] = null;
     _neuralRequested[player] = false;
     await _stopPowerMonitoring(player);
     await _stopThermalMonitoring(player);

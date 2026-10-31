@@ -235,7 +235,11 @@ class PerformanceStatsService {
             statsMap['video-params/max-fall'],
           ),
         ),
-        sourceIsInterlaced: _sourceInterlaced(statsMap['sourceIsInterlaced']),
+        sourceIsInterlaced: _sourceInterlaced(
+          reported: statsMap['sourceIsInterlaced'],
+          activeVideoStreamIndex: _parseInt(statsMap['current-tracks/video/ff-index']?.toString()),
+          currentDemuxer: statsMap['current-demuxer']?.toString(),
+        ),
         dolbyVisionProfile: (statsMap['dvSourceProfile'] as num?)?.toInt(),
         sourceFps: _parseDouble(statsMap['container-fps'] as String?),
         displayFps: _parseDouble(statsMap['display-fps'] as String?),
@@ -343,7 +347,7 @@ class PerformanceStatsService {
         sourceWidth: statsMap['videoWidth'] as int?,
         sourceHeight: statsMap['videoHeight'] as int?,
         sourceIsHdr: statsMap['sourceIsHdr'] as bool?,
-        sourceIsInterlaced: _sourceInterlaced(statsMap['sourceIsInterlaced']),
+        sourceIsInterlaced: _sourceInterlaced(reported: statsMap['sourceIsInterlaced']),
         dolbyVisionProfile: (statsMap['dvSourceProfile'] as num?)?.toInt(),
         sourceFps: (statsMap['videoFps'] as num?)?.toDouble(),
         droppedFrames: statsMap['videoDroppedFrames'] as int?,
@@ -485,6 +489,8 @@ class PerformanceStatsService {
         hasPmeMetadata
             ? _optionalPlayerProperty('vf-metadata/plezy-pme/phase-budget-configured')
             : Future.value(null), // 34
+        _optionalPlayerProperty('current-tracks/video/ff-index'), // 35
+        _optionalPlayerProperty('current-demuxer'), // 36
       ]);
     }
 
@@ -542,7 +548,10 @@ class PerformanceStatsService {
         videoResults?[5],
         hasHdrMetadata: _hasMpvHdrMetadata(videoResults?[6], videoResults?[7], videoResults?[8], videoResults?[9]),
       ),
-      sourceIsInterlaced: _sourceInterlaced(),
+      sourceIsInterlaced: _sourceInterlaced(
+        activeVideoStreamIndex: _parseInt(videoResults?[35]),
+        currentDemuxer: videoResults?[36],
+      ),
       dolbyVisionProfile: dolbyVisionProfile,
       sourceFps: _parseDouble(results[3]),
       displayFps: _parseDouble(videoResults?.first),
@@ -661,10 +670,19 @@ class PerformanceStatsService {
     _ => null,
   };
 
-  bool? _sourceInterlaced([Object? reported]) {
-    final sourceMetadata = MotionProcessingService.sourceInterlacedForPlayer(player);
+  bool? _sourceInterlaced({
+    Object? reported,
+    int? activeVideoStreamIndex,
+    String? currentDemuxer,
+  }) {
+    final sourceMetadata = MotionProcessingService.sourceInterlacedForPlayer(
+      player,
+      activeVideoStreamIndex: activeVideoStreamIndex,
+      currentDemuxer: currentDemuxer,
+    );
     final bool? backendValue = reported is bool ? reported : reported is String ? _parseBool(reported) : null;
     if (sourceMetadata == true || backendValue == true) return true;
+    if (currentDemuxer != null && currentDemuxer.trim().isNotEmpty) return sourceMetadata;
     return backendValue ?? sourceMetadata;
   }
 

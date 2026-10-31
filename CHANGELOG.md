@@ -8,6 +8,7 @@
 - Prefer the RX 7900 XT for Linux PME inference and Vulkan filter compute while keeping display rendering independent.
 - Report the PME inference adapter separately from its Vulkan preprocessing and warping GPU.
 - Carry selected-stream scan type into live motion capability reports and disable smoothing for interlaced sources.
+- Resolve scan type from MPV's active FFmpeg video track after in-session track changes, and report unknown when the demuxer index space cannot be matched safely.
 - Include verified Google Tensor G5/G6 AOT motion models in the default Android LiteRT pack and preserve them across ordinary exports.
 - Remove stale CocoaPods aggregate framework links from the iOS simulator test project.
 - Patch the pinned tvOS AMSMB2 manifest safely when SwiftPM marks its checkout read-only.

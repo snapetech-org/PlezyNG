@@ -3244,6 +3244,10 @@ class MpvPlayerCore private constructor(
       stats["video-params/max-fall"] = readProperty("video-params/max-fall")
       stats["video-params/aspect-name"] = readProperty("video-params/aspect-name")
       stats["video-params/rotate"] = readProperty("video-params/rotate")
+      // Read the active stream identity so scan-type capability reporting can
+      // follow alternate video-track changes during playback.
+      stats["current-tracks/video/ff-index"] = readProperty("current-tracks/video/ff-index")
+      stats["current-demuxer"] = readProperty("current-demuxer")
       // The Plezy ANVIL filter exposes runtime metadata through mpv's
       // vf-metadata property. These fields describe the executed provider;
       // the selected UI mode alone is not evidence of HTP inference.

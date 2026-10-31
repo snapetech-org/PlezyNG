@@ -2,7 +2,7 @@
 
 The desktop MPV patch candidate adds a bounded phase-density governor to the Linux and Windows patch series. A deadline miss caps subsequent pairs at one fewer generated phase than the affected pair. The limit recovers one phase after 120 consecutive on-time pairs. MPV metadata exposes both the active limit and the preset maximum; PlezyNG carries these into `PlaybackCapabilityReport` and the performance overlay.
 
-The governor reduces display-phase reconstruction work. It does not switch models or change model resolution after the provider session has initialized. The existing three-misses-in-two-seconds bypass and ten-second single recovery probe remain active. Cadence-exact presentation remains unqualified because MPV's final vsync and later A/V-sync corrections are not observed.
+The governor reduces display-phase reconstruction work and does not itself change the model or its resolution. Separately, PlezyNG now serializes Performance/Balanced/Quality replacement for an already-active supported desktop or Android Neural session without reopening the media; it attempts to restore the previous preset if setup fails. The existing three-misses-in-two-seconds bypass and ten-second single recovery probe remain active. Cadence-exact presentation remains unqualified because MPV's final vsync and later A/V-sync corrections are not observed in the 0159 candidate.
 
 ## Source and validation
 

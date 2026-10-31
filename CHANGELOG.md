@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Refresh pinned MPV and FFmpeg artifacts to the verified private native build.
+
 - Refresh the iOS CocoaPods checksum for `plezy_torrent` so deployment installs match the current podspec.
 - Refresh the macOS CocoaPods checksum for `plezy_torrent` so deployment installs match the current platform podspec.
 - Refresh the tvOS CocoaPods checksum for `plezy_torrent_tvos` so deployment installs match the current platform podspec.

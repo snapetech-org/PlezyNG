@@ -657,8 +657,8 @@ val extractMpvNatives = tasks.register<Sync>("extractMpvNatives") {
 }
 
 val media3Version = "1.11.0"
-val mpvFfmpegVersion = "8.0.1"
-val mpvFfmpegSourceSha256 = "05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41"
+val mpvFfmpegVersion = "9.0.2"
+val mpvFfmpegSourceSha256 = "8c3850283eb25fa026482078a04051e0be17347b09ef81a0849bec15a96e002e"
 val mpvFfmpegSourceUrl = "https://ffmpeg.org/releases/ffmpeg-$mpvFfmpegVersion.tar.xz"
 val mpvFfmpegDevelopmentDir = layout.buildDirectory.dir("libmpv-ffmpeg-development").get().asFile
 

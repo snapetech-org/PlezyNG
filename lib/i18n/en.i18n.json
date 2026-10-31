@@ -4626,7 +4626,6 @@
     "serverHelp": "Browse or scan your Audiobookshelf source to add its downloaded podcast episodes here.",
     "viewAll": "Show more episodes",
     "inLibrary": "Open podcast",
-    "rateLimited": "Wait a few seconds before searching again.",
-    "noFeed": "This show has no supported HTTPS RSS feed. Add its feed manually if available."
+    "rateLimited": "Wait a few seconds before searching again."
   }
 }

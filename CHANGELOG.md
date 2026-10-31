@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 - Preserve punctuation when converting podcast descriptions with inline HTML to plain text.
+- Use the explicit English fallback for new podcast and version-selection labels until localized copy is reviewed.
+- Clear current Dart analysis diagnostics in library playback, Jellyfin shuffle, and shader list construction.
 
 - Fix the pinned Opus CMake package config for Windows builds with a relative install prefix.
 

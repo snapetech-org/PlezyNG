@@ -1,6 +1,6 @@
 {
   "baseLocale": "en",
-  "reason": "Product-specific Steam, service integration, discovery, library genre, privacy, IPTV, motion processing, subtitle and playback copy use the existing Slang base_locale_empty_string English fallback until reviewed translations are available. This manifest does not imply language review; remove each key when translations no longer need fallback.",
+  "reason": "Product-specific Steam, service integration, discovery, podcast, library genre, privacy, IPTV, motion processing, subtitle and playback copy use the existing Slang base_locale_empty_string English fallback until reviewed translations are available. This manifest does not imply language review; remove each key when translations no longer need fallback.",
   "keys": [
     "audiobook.syncFolderHelp",
     "audiobook.syncPrivacy",
@@ -70,6 +70,7 @@
     "discover.findNext.votePrivacy",
     "discover.findNext.voteSetup",
     "discover.findNext.widenShortlist",
+    "discover.selectVersion",
     "games.achievementLocked",
     "games.achievementProgress",
     "games.achievementUnlocked",
@@ -394,7 +395,6 @@
     "podcasts.indexSecret",
     "podcasts.indexSetup",
     "podcasts.newest",
-    "podcasts.noFeed",
     "podcasts.noResults",
     "podcasts.oldest",
     "podcasts.rateLimited",

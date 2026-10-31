@@ -11768,9 +11768,6 @@ class Translations$podcasts$en {
 
 	/// en: 'Wait a few seconds before searching again.'
 	String get rateLimited => 'Wait a few seconds before searching again.';
-
-	/// en: 'This show has no supported HTTPS RSS feed. Add its feed manually if available.'
-	String get noFeed => 'This show has no supported HTTPS RSS feed. Add its feed manually if available.';
 }
 
 // Path: appIcon.names
@@ -18640,7 +18637,6 @@ extension on Translations {
 			'podcasts.viewAll' => 'Show more episodes',
 			'podcasts.inLibrary' => 'Open podcast',
 			'podcasts.rateLimited' => 'Wait a few seconds before searching again.',
-			'podcasts.noFeed' => 'This show has no supported HTTPS RSS feed. Add its feed manually if available.',
 			_ => null,
 		};
 	}

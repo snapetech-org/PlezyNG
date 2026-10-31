@@ -120,7 +120,7 @@ class ShaderService {
   Future<void> _applyChain(ShaderPreset preset) async {
     final shaderPaths = await ShaderAssetLoader.getShadersForPreset(preset);
     final ambientShader = ambientLightingService?.shaderPathForRebuild;
-    final shaderChain = [...shaderPaths, if (ambientShader != null) ambientShader];
+    final shaderChain = [...shaderPaths, ?ambientShader];
 
     if (shaderChain.isEmpty) {
       await _clearShaders();

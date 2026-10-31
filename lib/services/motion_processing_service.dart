@@ -23,9 +23,7 @@ abstract final class MotionProcessingService {
   static final Expando<_OriginalMotionProperties> _originals = Expando('motion-processing-originals');
   static final Expando<_OriginalAppleMotionOptions> _appleOriginals = Expando('motion-processing-apple-originals');
   static final Expando<bool> _appleNeuralEligible = Expando('motion-processing-apple-neural-eligible');
-  static final Expando<NeuralInterpolationPreset> _appleNeuralPreset = Expando(
-    'motion-processing-apple-neural-preset',
-  );
+  static final Expando<NeuralInterpolationPreset> _appleNeuralPreset = Expando('motion-processing-apple-neural-preset');
   static final Expando<_OriginalAndroidMotionOptions> _androidOriginals = Expando(
     'motion-processing-android-originals',
   );
@@ -36,9 +34,7 @@ abstract final class MotionProcessingService {
   static final Expando<bool> _androidMpvOutputActive = Expando('motion-processing-android-mpv-output-active');
   static final Expando<bool> _interpolationBufferReady = Expando('motion-processing-buffer-ready');
   static final Expando<bool> _desktopPmeActive = Expando('motion-processing-desktop-pme-active');
-  static final Expando<NeuralInterpolationPreset> _desktopPmePreset = Expando(
-    'motion-processing-desktop-pme-preset',
-  );
+  static final Expando<NeuralInterpolationPreset> _desktopPmePreset = Expando('motion-processing-desktop-pme-preset');
   static final Expando<MediaVersion> _sessionSelectedVersion = Expando('motion-processing-session-version');
   static final Expando<bool> _sessionIsLive = Expando('motion-processing-session-live');
   static final Expando<bool> _sessionIsTranscoding = Expando('motion-processing-session-transcoding');
@@ -1071,8 +1067,7 @@ abstract final class MotionProcessingService {
 
   static bool _supportsDesktopPmeSource(MediaVersion version) {
     final supportedSourceShape =
-        (version.width == 1280 && version.height == 720) ||
-        (version.width == 1920 && version.height == 1080);
+        (version.width == 1280 && version.height == 720) || (version.width == 1920 && version.height == 1080);
     if (!supportedSourceShape) return false;
     final streams = version.parts
         .expand((part) => part.streams)

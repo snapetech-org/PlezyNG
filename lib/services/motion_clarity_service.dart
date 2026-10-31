@@ -451,8 +451,7 @@ class MotionClarityService {
   }) async {
     final targetFps = outputRate.resolve(displayFps);
     const fractional48Hz = 48 * 1000 / 1001;
-    final supportsMinimumCadence = targetFps != null &&
-        (targetFps >= 48 || (targetFps - fractional48Hz).abs() <= 0.01);
+    final supportsMinimumCadence = targetFps != null && (targetFps >= 48 || (targetFps - fractional48Hz).abs() <= 0.01);
     if (targetFps == null || !targetFps.isFinite || !supportsMinimumCadence) {
       return _fallbackToTemporal(
         preset: preset,
@@ -463,8 +462,7 @@ class MotionClarityService {
         driver: driver,
         displayFps: displayFps,
         passthroughActive: passthroughActive,
-        reason:
-            'A display rate of at least 48 Hz, or its 1000/1001 equivalent, is required for motion compensation.',
+        reason: 'A display rate of at least 48 Hz, or its 1000/1001 equivalent, is required for motion compensation.',
       );
     }
     if (sourceFps != null && sourceFps.isFinite && sourceFps > targetFps + 0.01) {

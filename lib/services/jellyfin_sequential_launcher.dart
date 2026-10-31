@@ -56,6 +56,7 @@ class JellyfinSequentialLauncher extends MediaListPlaybackLauncher {
 
   /// Shuffle all playable movies or episodes in a library. The neutral paged
   /// API keeps Plex, Jellyfin, and Emby on the same client-side queue path.
+  @override
   Future<PlayQueueResult> launchShuffledLibrary({
     required MediaLibrary library,
     bool showLoadingIndicator = true,

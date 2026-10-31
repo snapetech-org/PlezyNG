@@ -69,15 +69,13 @@ owp.WebSocketConnector relayConnector(owp.Relays relays) => (url) async {
 
 /// Transport exceptions can echo a relay URL. Keep its scheme and host for
 /// diagnosis, while stripping the user-configured path, query and fragment.
-String safeRelayErrorForLog(Object error) => error.toString().replaceAllMapped(
-  RegExp(r'\b(?:https?|wss?)://[^\s)\],}]+', caseSensitive: false),
-  (match) {
-    final uri = Uri.tryParse(match.group(0)!);
-    if (uri == null || uri.host.isEmpty) return '[RELAY_URL_REDACTED]';
-    final port = uri.hasPort ? ':${uri.port}' : '';
-    return '${uri.scheme}://${uri.host}$port/[REDACTED]';
-  },
-);
+String safeRelayErrorForLog(Object error) =>
+    error.toString().replaceAllMapped(RegExp(r'\b(?:https?|wss?)://[^\s)\],}]+', caseSensitive: false), (match) {
+      final uri = Uri.tryParse(match.group(0)!);
+      if (uri == null || uri.host.isEmpty) return '[RELAY_URL_REDACTED]';
+      final port = uri.hasPort ? ':${uri.port}' : '';
+      return '${uri.scheme}://${uri.host}$port/[REDACTED]';
+    });
 
 /// The id of [relays]' relay at [url] (`na`, `custom`, …); its list can be
 /// refreshed under a party, so it is looked up at log time.

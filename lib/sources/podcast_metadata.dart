@@ -1,8 +1,5 @@
 import 'source_models.dart';
 
-bool isPodcastEpisode(SourceEntry entry) =>
-    !entry.isFolder && (entry.identifiers['podcast'] == 'episode' || entry.identifiers.containsKey('feed'));
-
 DateTime? podcastPublishedAt(SourceEntry entry) {
   final milliseconds = int.tryParse(entry.identifiers['publishedAt'] ?? '');
   if (milliseconds != null && milliseconds.abs() <= 8640000000000000) {

@@ -1025,7 +1025,7 @@ class _LibrariesScreenState extends State<LibrariesScreen>
         FocusableAction(
           icon: Symbols.shuffle_rounded,
           tooltip: t.common.shuffle,
-          onPressed: _isPreparingRandomPlay ? null : () => _shuffleLibrary(selectedLibrary!),
+          onPressed: _isPreparingRandomPlay ? null : () => _shuffleLibrary(selectedLibrary),
         ),
     ];
 

@@ -430,8 +430,12 @@ class _SourcesScreenState extends State<SourcesScreen> {
       final source = context.read<SourceController>().sources.where((s) => s.id == entry.sourceId).firstOrNull;
       if (source == null) return;
       if (entry.identifiers['podcast'] == 'show') {
-        await Navigator.push(context, MaterialPageRoute(builder: (_) =>
-            PodcastsScreen(sourceId: source.id, parentId: entry.id, title: entry.title)));
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PodcastsScreen(sourceId: source.id, parentId: entry.id, title: entry.title),
+          ),
+        );
         if (mounted) await _load();
         return;
       }
@@ -789,11 +793,7 @@ class _SourcesScreenState extends State<SourcesScreen> {
             if (root) ...[
               const AppMenuDivider(),
               AppMenuItem(value: 'podcasts', label: t.podcasts.title, icon: Symbols.podcasts_rounded),
-              AppMenuItem(
-                value: 'import-podcast-opml',
-                label: t.podcasts.importOpml,
-                icon: Symbols.rss_feed_rounded,
-              ),
+              AppMenuItem(value: 'import-podcast-opml', label: t.podcasts.importOpml, icon: Symbols.rss_feed_rounded),
               AppMenuItem(
                 value: 'export-podcast-opml',
                 label: t.podcasts.exportOpml,
@@ -890,11 +890,15 @@ class _SourcesScreenState extends State<SourcesScreen> {
                 if (root) ...[
                   Text(t.fileSources.subtitle, style: Theme.of(context).textTheme.bodyLarge),
                   const SizedBox(height: 24),
-                  SourceTile(title: t.podcasts.title, subtitle: t.podcasts.discover,
-                    icon: Symbols.podcasts_rounded, onTap: () async {
+                  SourceTile(
+                    title: t.podcasts.title,
+                    subtitle: t.podcasts.discover,
+                    icon: Symbols.podcasts_rounded,
+                    onTap: () async {
                       await Navigator.push(context, MaterialPageRoute(builder: (_) => const PodcastsScreen()));
                       if (mounted) await _load();
-                    }),
+                    },
+                  ),
                   SourceTile(
                     title: t.universalMedia.title,
                     subtitle: t.universalMedia.shortcutHelp,

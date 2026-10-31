@@ -1,0 +1,42 @@
+diff --git a/src/ihs_arraylist.c b/src/ihs_arraylist.c
+index 60c416c..302d89b 100644
+--- a/src/ihs_arraylist.c
++++ b/src/ihs_arraylist.c
+@@ -90,3 +90,3 @@ void *IHS_ArrayListGet(IHS_ArrayList *list, size_t index) {
+     assert(list->data != NULL);
+-    return list->data + index * list->itemSize;
++    return (unsigned char *) list->data + index * list->itemSize;
+ }
+@@ -98,3 +98,3 @@ int IHS_ArrayListBinarySearch(const IHS_ArrayList *list, const void *value, IHS_
+     }
+-    return (int) ((itemPtr - list->data) / list->itemSize);
++    return (int) (((unsigned char *) itemPtr - (unsigned char *) list->data) / list->itemSize);
+ }
+@@ -103,3 +103,3 @@ int IHS_ArrayListLinearSearch(const IHS_ArrayList *list, const void *value, IHS_
+     for (size_t i = 0, j = list->size; i < j; ++i) {
+-        if (searchFn(value, list->data + i * list->itemSize) == 0) {
++        if (searchFn(value, (unsigned char *) list->data + i * list->itemSize) == 0) {
+             return (int) i;
+diff --git a/src/ihs_enumeration_array.c b/src/ihs_enumeration_array.c
+index 2378e84..52bf822 100644
+--- a/src/ihs_enumeration_array.c
++++ b/src/ihs_enumeration_array.c
+@@ -109,3 +109,3 @@ static void *EnumerationArrayGet(const IHS_Enumeration *enumeration) {
+     }
+-    return ll->array + ll->index * ll->itemSize;
++    return (unsigned char *) ll->array + ll->index * ll->itemSize;
+ }
+diff --git a/src/ihs_queue.c b/src/ihs_queue.c
+index a800c60..cbcb123 100644
+--- a/src/ihs_queue.c
++++ b/src/ihs_queue.c
+@@ -160,3 +160,3 @@ static IHS_QueueItem *ItemFromNode(QueueNode *node) {
+     assert(node != NULL);
+-    return (IHS_QueueItem *) ((void *) node + sizeof(QueueNode));
++    return (IHS_QueueItem *) ((unsigned char *) node + sizeof(QueueNode));
+ }
+@@ -165,3 +165,3 @@ static QueueNode *NodeFromItem(IHS_QueueItem *item) {
+     assert(item != NULL);
+-    return (QueueNode *) ((void *) item - sizeof(QueueNode));
++    return (QueueNode *) ((unsigned char *) item - sizeof(QueueNode));
+ }

@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import '../../test_helpers/media_items.dart';
 import '../../test_helpers/mock_player_channels.dart';
 import '../../test_helpers/prefs.dart';
+import '../../test_helpers/pump.dart';
 
 /// Mirrors `VideoPlayerScreen.build`: a screen-level [Focus] that owns player
 /// navigation, wrapping the screen's own [OverlaySheetHost]. Sheets therefore
@@ -260,6 +261,8 @@ void main() {
     final nativeInitialize = Completer<bool>();
     final navigatorKey = GlobalKey<NavigatorState>();
     final sheetButtonFocusNode = FocusNode(debugLabel: 'playerSheetButton');
+    final playerCalls = <MethodCall>[];
+    final playerEventCalls = <MethodCall>[];
     addTearDown(sheetButtonFocusNode.dispose);
 
     await withMockPlayerChannels(
@@ -268,8 +271,14 @@ void main() {
       // Never completes: the screen stays on its initialization surface, so no
       // real player is needed and the chrome is not presented — the state in
       // which a leaked Back goes straight to exitPlayer.
-      methodHandler: (call) => call.method == 'initialize' ? nativeInitialize.future : Future<Object?>.value(),
-      eventHandler: (_) async => null,
+      methodHandler: (call) {
+        playerCalls.add(call);
+        return call.method == 'initialize' ? nativeInitialize.future : Future<Object?>.value();
+      },
+      eventHandler: (call) async {
+        playerEventCalls.add(call);
+        return null;
+      },
       testBody: () async {
         await tester.pumpWidget(
           ChangeNotifierProvider(
@@ -320,6 +329,19 @@ void main() {
         await tester.pumpWidget(const SizedBox.shrink());
         nativeInitialize.complete(true);
         await tester.pump();
+        await pumpUntil(
+          tester,
+          () =>
+              playerCalls.any((call) => call.method == 'dispose') &&
+              playerEventCalls.any((call) => call.method == 'cancel'),
+          describe: () =>
+              'playerCalls=${playerCalls.map((call) => call.method).toList()} '
+              'playerEvents=${playerEventCalls.map((call) => call.method).toList()}',
+        );
+        // PlayerBase clears event-channel ownership in a microtask after the
+        // native dispose reply. Let that release settle before another player
+        // screen starts in this test worker.
+        await tester.runAsync(() => Future<void>.delayed(Duration.zero));
       },
     );
   });

@@ -740,7 +740,7 @@ jobs:
       attestations: write
       contents: read
     env:
-      PUB_CACHE: ${{ runner.temp }}/plezy-pub-cache
+      PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -754,7 +754,7 @@ jobs:
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ${{ runner.temp }}/plezy-pub-cache
+          path: ${{ github.workspace }}/.cache/plezy-pub-cache
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Cache CocoaPods
@@ -1027,7 +1027,7 @@ jobs:
       attestations: write
       contents: read
     env:
-      PUB_CACHE: ${{ runner.temp }}/plezy-pub-cache
+      PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
       APPLE_SOURCE_PACKAGES_DIR: ${{ github.workspace }}/build/tvos/SourcePackages
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -1042,7 +1042,7 @@ jobs:
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ${{ runner.temp }}/plezy-pub-cache
+          path: ${{ github.workspace }}/.cache/plezy-pub-cache
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Cache pinned tvOS Flutter engine
@@ -1262,7 +1262,7 @@ jobs:
       attestations: write
       contents: read
     env:
-      PUB_CACHE: ${{ runner.temp }}/plezy-pub-cache
+      PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -1276,7 +1276,7 @@ jobs:
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ${{ runner.temp }}/plezy-pub-cache
+          path: ${{ github.workspace }}/.cache/plezy-pub-cache
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Cache CocoaPods

@@ -546,7 +546,7 @@ jobs:
     permissions:
       contents: read
     env:
-      PUB_CACHE: ${{ runner.temp }}/plezy-pub-cache
+      PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
       APPLE_SOURCE_PACKAGES_DIR: ${{ github.workspace }}/build/${{ matrix.source_packages_directory }}/SourcePackages
     strategy:
       fail-fast: false
@@ -587,7 +587,7 @@ jobs:
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ${{ runner.temp }}/plezy-pub-cache
+          path: ${{ github.workspace }}/.cache/plezy-pub-cache
           key: ${{ runner.os }}-${{ runner.arch }}-plezy-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Ensure CMake for the embedded Steam receiver

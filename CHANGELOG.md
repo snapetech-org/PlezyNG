@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Ask which library or server copy to play when Continue Watching merges several copies of a title.
 - Shuffle full Plex video-library sections through server queues and route MediaBrowser libraries through the existing complete paged queue.
 - Log specific Watch Together relay connection failures while keeping existing user-facing error notices.
 - Refresh pinned MPV and FFmpeg artifacts to the verified private native build.

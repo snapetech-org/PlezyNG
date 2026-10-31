@@ -1676,6 +1676,7 @@
     "addMediaToLibraries": "Add some media to your libraries",
     "continueWatching": "Continue Watching",
     "continueWatchingIn": "Continue Watching in ${library}",
+    "selectVersion": "Select Version",
     "nextUp": "Next Up",
     "nextUpIn": "Next Up in ${library}",
     "recentlyAdded": "Recently Added",

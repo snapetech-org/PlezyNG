@@ -173,6 +173,7 @@ PlezyNG's Google Play closed test is being prepared. Once the test release is pu
 - Configurable Home rows: merge Recently Added / Recently Released across whichever libraries you pick, or a collections row scoped to specific libraries or collections
 - Hide Home backdrop artwork and choose compact, standard, or large Continue Watching cards
 - Cross-server search across connected Plex, Jellyfin, and Emby libraries, including actors and directors
+- Continue Watching shows a title held in several libraries or on several servers once, and asks which copy to play
 - Filtering, sorting, and alphabetical jump navigation
 - Folder browsing and folder playback — home-video libraries open in folder view
 - Resolution, HDR/Dolby Vision, and audio-format badges on cards and detail pages

@@ -12,6 +12,7 @@
 - Carry selected-stream scan type into live motion capability reports, disable smoothing for interlaced sources, and format its stats parser with Flutter 3.47.1.
 - Include verified Google Tensor G5/G6 AOT motion models in the default Android LiteRT pack and preserve them across ordinary exports.
 - Remove stale CocoaPods aggregate framework links from the iOS simulator test project.
+- Enable the pinned Google ML Kit helper for Apple Silicon iOS simulator builds.
 - Patch the pinned tvOS AMSMB2 manifest safely when SwiftPM marks its checkout read-only.
 - Preserve punctuation when converting podcast descriptions with inline HTML to plain text.
 - Use the explicit English fallback for new podcast and version-selection labels until localized copy is reviewed.

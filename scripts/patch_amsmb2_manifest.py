@@ -5,8 +5,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import stat
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -21,6 +24,24 @@ UNSAFE_BLOCK = '''                .unsafeFlags([
 def fail(message: str) -> int:
     print(f"error: {message}", file=sys.stderr)
     return 1
+
+
+def replace_text_atomically(path: Path, contents: str) -> None:
+    if path.is_symlink():
+        raise OSError(f"refusing to replace manifest symlink: {path}")
+
+    permissions = stat.S_IMODE(path.stat().st_mode)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.", dir=path.parent
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as output:
+            output.write(contents)
+        temporary.chmod(permissions)
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def main() -> int:
@@ -61,7 +82,7 @@ def main() -> int:
             patched = contents.replace(UNSAFE_BLOCK, "", 1)
             if ".unsafeFlags(" in patched:
                 return fail("AMSMB2 manifest has additional unsafe flags; review the new source")
-            manifest.write_text(patched, encoding="utf-8")
+            replace_text_atomically(manifest, patched)
         elif ".unsafeFlags(" in contents:
             return fail("AMSMB2 manifest has unexpected unsafe flags; review the new source")
 

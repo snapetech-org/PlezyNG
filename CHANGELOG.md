@@ -4,6 +4,7 @@
 
 - Declare VDPAU and Vulkan loader packages required by Linux bundles.
 - Remove stale CocoaPods aggregate framework links from the iOS simulator test project.
+- Patch the pinned tvOS AMSMB2 manifest safely when SwiftPM marks its checkout read-only.
 - Preserve punctuation when converting podcast descriptions with inline HTML to plain text.
 - Use the explicit English fallback for new podcast and version-selection labels until localized copy is reviewed.
 - Clear current Dart analysis diagnostics in library playback, Jellyfin shuffle, and shader list construction.

@@ -355,6 +355,34 @@ ResolveFrontendServer() {
   printf '%s\n' "$frontend_server"
 }
 
+BuildFlutterAssetBundle() {
+  local flutter_bin="$1"
+  local output_dir="$2"
+  local flutter_root="${FLUTTER_ROOT:-}"
+  if [[ -z "$flutter_root" ]]; then
+    flutter_root="$(cd "$(dirname "$flutter_bin")/.." && pwd)"
+  fi
+
+  # Flutter's native-assets target models Apple builds as iOS and requires an
+  # iPhoneOS or iPhoneSimulator SDK root. The surrounding Xcode target is tvOS,
+  # so use the matching iOS SDK only while creating the Flutter asset bundle;
+  # the app frameworks and snapshots below still come from the tvOS engine.
+  local ios_sdk="iphoneos"
+  if [[ "${PLATFORM_NAME:-}" == "appletvsimulator" ]]; then
+    ios_sdk="iphonesimulator"
+  fi
+  local sdk_root
+  sdk_root="$(xcrun --sdk "$ios_sdk" --show-sdk-path)"
+
+  (
+    cd "$FLUTTER_APPLICATION_PATH" && \
+      SDKROOT="$sdk_root" \
+      BUILT_PRODUCTS_DIR="$output_dir" \
+      TREE_SHAKE_ICONS=NO \
+      "$flutter_root/packages/flutter_tools/bin/xcode_backend.sh" build ios
+  )
+}
+
 BuildAppDebug() {
   # Host tools (frontend_server, patched SDK, dartaotruntime) ship in
   # host_release for both debug and release consumers — the frontend_server
@@ -403,24 +431,11 @@ BuildAppDebug() {
 
   DART_AOT_RUNTIME=$(ResolveDartAotRuntime "$HOST_TOOLS") || return 1
 
-  # flutter build bundle produces: AssetManifest, FontManifest, NOTICES,
-  # shaders, fonts, assets, packages, plus a kernel_blob.bin and
-  # isolate_snapshot_data compiled against the stock flutter engine. We
-  # overwrite kernel_blob.bin and both snapshot blobs below with versions
-  # from our tvOS engine so the tvOS VM can load them.
-  (
-    # Flutter 3.47's tool rejects FLUTTER_BUILD_NAME/NUMBER in the environment;
-    # they are consumed by this script's plist sync, not by `build bundle`.
-    cd "$FLUTTER_APPLICATION_PATH" && \
-    env -u FLUTTER_BUILD_NAME -u FLUTTER_BUILD_NUMBER \
-    "$FLUTTER_BIN" build bundle \
-      --target-platform=ios \
-      --no-pub \
-      --asset-dir="$OUTDIR/App.framework/flutter_assets" \
-      --no-tree-shake-icons \
-      --suppress-analytics
-  ) || {
-    echo " └─ERROR: flutter build bundle failed"
+  # Flutter's Xcode backend creates AssetManifest, FontManifest, NOTICES,
+  # shaders, fonts, assets, packages, plus a stock-engine kernel and snapshots.
+  # We replace those snapshots below with versions from the tvOS engine.
+  BuildFlutterAssetBundle "$FLUTTER_BIN" "$OUTDIR" || {
+    echo " └─ERROR: Flutter asset bundle build failed"
     return 1
   }
 
@@ -558,22 +573,10 @@ BuildAppRelease() {
 
   DART_AOT_RUNTIME=$(ResolveDartAotRuntime "$HOST_TOOLS") || return 1
 
-  echo " └─Generate flutter_assets via flutter build bundle (release)"
+  echo " └─Generate flutter_assets via Flutter's Xcode backend (release)"
   mkdir -p "$OUTDIR/App.framework/flutter_assets"
-  (
-    # Flutter 3.47's tool rejects FLUTTER_BUILD_NAME/NUMBER in the environment;
-    # they are consumed by this script's plist sync, not by `build bundle`.
-    cd "$FLUTTER_APPLICATION_PATH" && \
-    env -u FLUTTER_BUILD_NAME -u FLUTTER_BUILD_NUMBER \
-    "$FLUTTER_BIN" build bundle \
-      --target-platform=ios \
-      --no-pub \
-      --release \
-      --asset-dir="$OUTDIR/App.framework/flutter_assets" \
-      --no-tree-shake-icons \
-      --suppress-analytics
-  ) || {
-    echo " └─ERROR: flutter build bundle failed"
+  BuildFlutterAssetBundle "$FLUTTER_BIN" "$OUTDIR" || {
+    echo " └─ERROR: Flutter asset bundle build failed"
     return 1
   }
   # AOT builds don't need kernel_blob.bin in flutter_assets — the compiled

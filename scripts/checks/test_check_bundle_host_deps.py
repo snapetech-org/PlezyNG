@@ -160,6 +160,32 @@ class BundleHostDepsGuardTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("every one of the 1 host libraries", result.stdout)
 
+    def test_vdpau_and_vulkan_runtime_libraries_are_declared_for_every_distro(self) -> None:
+        libraries = {
+            "libvdpau.so.1": (
+                "/usr/lib/x86_64-linux-gnu/libvdpau.so.1",
+                "libvdpau1",
+            ),
+            "libvulkan.so.1": (
+                "/usr/lib/x86_64-linux-gnu/libvulkan.so.1",
+                "libvulkan1",
+            ),
+        }
+        result = self._check(
+            ldd={
+                "plezy": [
+                    f"{soname} => {path} (0x00007f9c2c000000)"
+                    for soname, (path, _owner) in libraries.items()
+                ]
+            },
+            owners={path: owner for path, owner in libraries.values()},
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("every one of the 2 host libraries", result.stdout)
+        self.assertIn("libvdpau.so.1", result.stdout)
+        self.assertIn("libvulkan.so.1", result.stdout)
+
     def test_an_undeclared_host_library_is_named(self) -> None:
         result = self._check(
             ldd={"plezy": [f"{UNDECLARED_SONAME} => {UNDECLARED_PATH} (0x00007f9c2c000000)"]},

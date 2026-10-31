@@ -9,6 +9,7 @@ $ErrorActionPreference = 'Stop'
 
 $lockPath = Join-Path $PSScriptRoot '..\..\mpv-build.lock.json'
 $lock = Get-Content -LiteralPath $lockPath -Raw | ConvertFrom-Json
+$repo = [string]$lock.repo
 $mpv = $lock.artifacts.windows
 $assetArchitecture = if ($Architecture -eq 'arm64') { 'aarch64' } else { 'x86_64' }
 $assetProperty = $mpv.assets.PSObject.Properties[$assetArchitecture]
@@ -19,10 +20,13 @@ if ($null -eq $assetProperty) {
 $asset = [string]$assetProperty.Value.asset
 $expectedHash = [string]$assetProperty.Value.checksum
 $base = [Uri][string]$mpv.assetBase
+$expectedAssetBase = "https://github.com/$repo/releases/download/binaries-windows"
 if (
+    $repo -cne 'snapetech-org/mpv-build' -or
     $base.Scheme -ne 'https' -or
     $base.Host -ne 'github.com' -or
-    $base.AbsolutePath -notmatch '^/edde746/mpv-build/releases/download/binaries-windows/?$' -or
+    $base.Port -ne 443 -or
+    $base.AbsoluteUri.TrimEnd('/') -cne $expectedAssetBase -or
     $asset -notmatch '^[A-Za-z0-9_.-]+\.zip$' -or
     $expectedHash -notmatch '^[0-9a-fA-F]{64}$'
 ) {

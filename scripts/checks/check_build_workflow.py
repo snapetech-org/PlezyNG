@@ -22,6 +22,7 @@ SETUP_FLUTTER_GIT = WORKFLOW.parents[1] / "actions/setup-flutter-git/action.yml"
 SETUP_FLUTTER_WINDOWS = ROOT / ".github/actions/setup-flutter-windows/action.yml"
 WINDOWS_CMAKE = WORKFLOW.parents[2] / "windows/CMakeLists.txt"
 WINDOWS_MPV_DOWNLOADER = WORKFLOW.parents[2] / "windows/tool/download-pinned-mpv.ps1"
+MPV_BUILD_LOCK = WORKFLOW.parents[2] / "mpv-build.lock.json"
 WINDOWS_SIMDUTF_DOWNLOADER = (
     WORKFLOW.parents[2] / "windows/tool/download-pinned-simdutf.ps1"
 )
@@ -203,6 +204,12 @@ windows_mpv_downloader = (
     if WINDOWS_MPV_DOWNLOADER.is_file()
     else ""
 )
+mpv_build_lock = (
+    json.loads(MPV_BUILD_LOCK.read_text(encoding="utf-8"))
+    if MPV_BUILD_LOCK.is_file()
+    else {}
+)
+windows_mpv_lock = mpv_build_lock.get("artifacts", {}).get("windows", {})
 windows_simdutf_downloader = (
     WINDOWS_SIMDUTF_DOWNLOADER.read_text(encoding="utf-8")
     if WINDOWS_SIMDUTF_DOWNLOADER.is_file()
@@ -301,6 +308,18 @@ require(
     "Windows CMake must use and validate the checksum-verified libtorrent source override",
 )
 require(bool(windows_mpv_downloader), "missing pinned Windows MPV download helper")
+windows_mpv_repo = mpv_build_lock.get("repo")
+windows_mpv_expected_base = (
+    f"https://github.com/{windows_mpv_repo}/releases/download/binaries-windows"
+)
+require(
+    windows_mpv_repo == "snapetech-org/mpv-build"
+    and windows_mpv_lock.get("assetBase") == windows_mpv_expected_base
+    and "snapetech-org/mpv-build" in windows_mpv_downloader
+    and "$lock.repo" in windows_mpv_downloader
+    and "$expectedAssetBase" in windows_mpv_downloader,
+    "Windows MPV downloader must validate the locked snapetech-org/mpv-build artifact base",
+)
 for expected in (
     "[ValidateSet('x64', 'arm64')]",
     "mpv-build.lock.json",

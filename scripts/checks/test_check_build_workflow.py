@@ -14,6 +14,7 @@ WORKFLOW = ROOT / ".github/workflows/build.yml"
 SETUP_FLUTTER_GIT = ROOT / ".github/actions/setup-flutter-git/action.yml"
 WINDOWS_CMAKE = ROOT / "windows/CMakeLists.txt"
 WINDOWS_MPV_DOWNLOADER = ROOT / "windows/tool/download-pinned-mpv.ps1"
+MPV_BUILD_LOCK = ROOT / "mpv-build.lock.json"
 WINDOWS_SIMDUTF_DOWNLOADER = ROOT / "windows/tool/download-pinned-simdutf.ps1"
 WINDOWS_WINSPARKLE_DOWNLOADER = ROOT / "windows/tool/download-pinned-winsparkle.ps1"
 WINDOWS_SDL3_DOWNLOADER = ROOT / "windows/tool/download-pinned-sdl3.ps1"
@@ -30,6 +31,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         workflow: str,
         action: str | None = None,
         cmake: str | None = None,
+        mpv_downloader: str | None = None,
     ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory(prefix="plezy-build-workflow-test-") as directory:
             # The checker resolves Windows bootstrap files and the torrent
@@ -47,7 +49,15 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             downloader_fixture = Path(directory) / "windows/tool/download-pinned-mpv.ps1"
             downloader_fixture.parent.mkdir(parents=True)
             downloader_fixture.write_text(
-                WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8"),
+                (
+                    mpv_downloader
+                    if mpv_downloader is not None
+                    else WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8")
+                ),
+                encoding="utf-8",
+            )
+            (Path(directory) / "mpv-build.lock.json").write_text(
+                MPV_BUILD_LOCK.read_text(encoding="utf-8"),
                 encoding="utf-8",
             )
             simdutf_downloader_fixture = (
@@ -241,6 +251,22 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("mpv-build lock", result.stderr)
+
+    def test_windows_mpv_download_must_allow_the_locked_fork(self) -> None:
+        downloader = WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8").replace(
+            "snapetech-org/mpv-build",
+            "edde746/mpv-build",
+            1,
+        )
+        self.assertNotEqual(downloader, WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8"))
+
+        result = self._run(self._workflow(), mpv_downloader=downloader)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "Windows MPV downloader must validate the locked snapetech-org/mpv-build artifact base",
+            result.stderr,
+        )
 
     def test_windows_native_cache_without_lock_identity_is_rejected(self) -> None:
         cache_identity = (

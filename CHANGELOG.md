@@ -5,6 +5,7 @@
 - Preserve punctuation when converting podcast descriptions with inline HTML to plain text.
 - Use the explicit English fallback for new podcast and version-selection labels until localized copy is reviewed.
 - Clear current Dart analysis diagnostics in library playback, Jellyfin shuffle, and shader list construction.
+- Accept the pinned Windows MPV archive from the PlezyNG mpv-build fork while keeping its repository and checksum locked.
 
 - Fix the pinned Opus CMake package config for Windows builds with a relative install prefix.
 

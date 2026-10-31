@@ -3542,6 +3542,9 @@ class Translations$messages$en {
 	/// en: 'Server error (HTTP 500). A bandwidth/transcoding limit likely rejected this session. Ask the owner to adjust it.'
 	String get serverLimitBody => 'Server error (HTTP 500). A bandwidth/transcoding limit likely rejected this session. Ask the owner to adjust it.';
 
+	/// en: 'Try transcoding'
+	String get serverLimitTranscode => 'Try transcoding';
+
 	/// en: 'File unavailable'
 	String get mediaUnreadableTitle => 'File unavailable';
 
@@ -15511,6 +15514,7 @@ extension on Translations {
 			'messages.switchingToCompatiblePlayer' => 'Switching to compatible player...',
 			'messages.serverLimitTitle' => 'Playback failed',
 			'messages.serverLimitBody' => 'Server error (HTTP 500). A bandwidth/transcoding limit likely rejected this session. Ask the owner to adjust it.',
+			'messages.serverLimitTranscode' => 'Try transcoding',
 			'messages.mediaUnreadableTitle' => 'File unavailable',
 			'messages.mediaUnreadableBody' => 'The server found this item but could not read its file (HTTP 404). The file was probably moved, deleted, or its storage is offline. Ask the server owner to check the file and rescan the library.',
 			'messages.serverBusyTitle' => 'Stream unavailable',
@@ -15867,9 +15871,9 @@ extension on Translations {
 			'accountPreferences.forcedSubtitleOptions.onlyForcedDescription' => 'Use only tracks marked as forced.',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForcedDescription' => 'Exclude tracks marked as forced.',
 			'accountPreferences.displayMissingEpisodes' => 'Show missing episodes',
-			'accountPreferences.displayMissingEpisodesDescription' => 'List episodes the server knows about but has no file for.',
 			_ => null,
 		} ?? switch (path) {
+			'accountPreferences.displayMissingEpisodesDescription' => 'List episodes the server knows about but has no file for.',
 			'accountPreferences.hidePlayedInLatest' => 'Hide watched items in Latest',
 			'accountPreferences.hidePlayedInLatestDescription' => 'Leave items you have already watched out of the server\'s Latest rows.',
 			'accountPreferences.displayCollectionsView' => 'Show the Collections view',
@@ -16381,9 +16385,9 @@ extension on Translations {
 			'explore.relation.parentStory' => 'Parent story',
 			'explore.relation.adaptation' => 'Adaptation',
 			'explore.relation.other' => 'Related',
-			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
 			_ => null,
 		} ?? switch (path) {
+			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
 			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
 			'explore.detail.originalTitle' => 'Original title',
 			'explore.detail.alsoKnownAs' => 'Also known as',
@@ -16895,9 +16899,9 @@ extension on Translations {
 			'downloads.reasonDeviceStorageFull' => 'this device is out of storage',
 			'downloads.notificationDownloading' => 'Downloading...',
 			'downloads.notificationComplete' => 'Download complete',
-			'downloads.notificationPaused' => 'Download paused',
 			_ => null,
 		} ?? switch (path) {
+			'downloads.notificationPaused' => 'Download paused',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',
@@ -17409,10 +17413,10 @@ extension on Translations {
 			'services.deviceCode.instructions' => 'Scan the QR code, or visit the address below and enter this code:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Open ${service} to activate',
 			'services.deviceCode.copyCode' => 'Copy activation code',
-			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
-			'services.deviceCode.codeCopied' => 'Code copied',
 			_ => null,
 		} ?? switch (path) {
+			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
+			'services.deviceCode.codeCopied' => 'Code copied',
 			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
 			'services.oauthProxy.body' => 'Scan this QR code or open the URL on any device.',
 			'services.oauthProxy.openToSignIn' => ({required Object service}) => 'Open ${service} to sign in',
@@ -17923,10 +17927,10 @@ extension on Translations {
 			'universalMedia.shareStarting' => 'Preparing the stream…',
 			'universalMedia.shareStart' => 'Start sharing',
 			'universalMedia.shareStop' => 'Stop sharing',
-			'universalMedia.extensionsMode' => 'Extensions and CLI',
-			'universalMedia.extensionsIntro' => 'Add a data-only search extension to find media. Choose a result to load it into the familiar Open media form.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.extensionsMode' => 'Extensions and CLI',
+			'universalMedia.extensionsIntro' => 'Add a data-only search extension to find media. Choose a result to load it into the familiar Open media form.',
 			'universalMedia.extensionsPrivacy' => 'A manifest can define one HTTPS search endpoint and map response fields. It cannot run code, add request headers, read files, or launch shell commands.',
 			'universalMedia.extensionImport' => 'Add extension manifest',
 			'universalMedia.extensionEmpty' => 'No search services yet. Choose a trusted manifest JSON file to add one.',
@@ -18437,10 +18441,10 @@ extension on Translations {
 			'games.linkSteamAccount' => 'Link Steam account',
 			'games.refreshSteamAccount' => 'Refresh Steam account',
 			'games.unlinkSteamAccount' => 'Unlink Steam account',
-			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
-			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			_ => null,
 		} ?? switch (path) {
+			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
+			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
 			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
 			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',

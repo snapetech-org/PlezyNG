@@ -105,6 +105,14 @@ class PlaybackInitializationOptions {
   bool hasServerDolbyVisionSdrRoute(MediaSourceInfo? source, {required DolbyVisionSdrBackend backend}) =>
       serverHasDolbyVisionSdrRoute(backend: backend, source: source?.displayCriteria);
 
+  /// Have the server transcode at [qualityPreset] with direct play withheld,
+  /// even at Original or where the selected version already fits under the
+  /// preset, and fail rather than fall back to the file itself. At Original
+  /// no cap goes out, so the server picks the output its own limits admit.
+  /// Set when the server refused that file (HTTP 500), so serving it again
+  /// could only fail the same way.
+  final bool forceTranscode;
+
   const PlaybackInitializationOptions({
     required this.metadata,
     required this.selectedMediaIndex,
@@ -123,6 +131,7 @@ class PlaybackInitializationOptions {
     this.supportedNativeDolbyVisionProfiles = const {},
     this.allowExperimentalDolbyVisionProfile7 = false,
     this.forceServerPlayback = false,
+    this.forceTranscode = false,
   });
 }
 

@@ -28,5 +28,5 @@ for checker in \
 done
 
 for guard_test in scripts/test_*.py scripts/*/test_*.py; do
-  python3 "$guard_test"
+  PYTHONPATH="$ROOT_DIR${PYTHONPATH:+:$PYTHONPATH}" python3 "$guard_test"
 done

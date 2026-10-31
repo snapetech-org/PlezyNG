@@ -663,7 +663,11 @@ class PerformanceStatsService {
 
   bool? _sourceInterlaced([Object? reported]) {
     final sourceMetadata = MotionProcessingService.sourceInterlacedForPlayer(player);
-    final bool? backendValue = reported is bool ? reported : reported is String ? _parseBool(reported) : null;
+    final bool? backendValue = reported is bool
+        ? reported
+        : reported is String
+        ? _parseBool(reported)
+        : null;
     if (sourceMetadata == true || backendValue == true) return true;
     return backendValue ?? sourceMetadata;
   }

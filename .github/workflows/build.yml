@@ -1,7 +1,7 @@
 # ng-runner-policy: private-jit-only-v1
 # packer-windows-jit-v1
 name: PlezyNG Release
-run-name: ${{ inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}:ref:{3}', inputs.action, inputs.runner_pool, inputs.build_version, github.ref_name) || format('action:{0}:pool:{1}:tag:{2}', inputs.action, inputs.runner_pool, inputs.build_version || 'current') }}
+run-name: ${{ inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
 on:
   workflow_dispatch:
@@ -1374,17 +1374,17 @@ jobs:
       - name: Check macOS signing configuration
         id: macos-signing
         env:
-          MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
-          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          MACOS_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           REQUIRE_HOMEBREW_CASK: ${{ needs.validate-trusted-ref.outputs.prepare_homebrew_cask }}
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           set -euo pipefail
-          signing_values=("$MACOS_CERTIFICATE_BASE64" "$MACOS_CERTIFICATE_PASSWORD" "$KEYCHAIN_PASSWORD")
+          signing_values=("$MACOS_CERTIFICATE_BASE64" "$MACOS_CERTIFICATE_PASSWORD")
           signing_set=0
           signing_missing=0
           for value in "${signing_values[@]}"; do
@@ -1394,16 +1394,16 @@ jobs:
             echo "codesign=false" >> "$GITHUB_OUTPUT"
             echo "Apple signing secrets are not configured; the macOS DMG will be unsigned."
           elif (( signing_missing != 0 )); then
-            echo "Apple signing secrets are incomplete; configure the certificate, certificate password, and keychain password." >&2
+            echo "Apple signing certificate and password are incomplete." >&2
             exit 1
           else
             echo "codesign=true" >> "$GITHUB_OUTPUT"
+            keychain_password="$(/usr/bin/uuidgen)"
+            echo "::add-mask::$keychain_password"
+            echo "keychain_password=$keychain_password" >> "$GITHUB_OUTPUT"
           fi
 
-          # APPLE_TEAM_ID is also used by the iOS and tvOS signing jobs, so its
-          # presence alone must not make optional macOS notarization appear
-          # partially configured.
-          notary_values=("$APPLE_ID" "$APPLE_APP_SPECIFIC_PASSWORD")
+          notary_values=("$APPLE_API_KEY_ID" "$APPLE_API_ISSUER_ID" "$APPLE_API_PRIVATE_KEY")
           notary_set=0
           notary_missing=0
           for value in "${notary_values[@]}"; do
@@ -1411,15 +1411,15 @@ jobs:
           done
           if (( notary_set == 0 )); then
             echo "notarize=false" >> "$GITHUB_OUTPUT"
-          elif (( notary_missing != 0 || signing_set == 0 )) || [[ -z "$APPLE_TEAM_ID" ]]; then
-            echo "Apple notarization requires APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID, and a signing certificate." >&2
+          elif (( notary_missing != 0 || signing_set != 2 )) || [[ -z "$APPLE_TEAM_ID" ]]; then
+            echo "Apple notarization requires the complete App Store Connect API key, team ID, and signing certificate." >&2
             exit 1
           else
             echo "notarize=true" >> "$GITHUB_OUTPUT"
           fi
 
           if [[ "$REQUIRE_HOMEBREW_CASK" == "true" ]]; then
-            if (( signing_set != 3 || notary_set != 2 )) || [[ -z "$APPLE_TEAM_ID" ]]; then
+            if (( signing_set != 2 || notary_set != 3 )) || [[ -z "$APPLE_TEAM_ID" ]]; then
               echo "Homebrew Cask preparation requires complete Developer ID signing and Apple notarization credentials." >&2
               exit 1
             fi
@@ -1428,22 +1428,26 @@ jobs:
       - name: Import Code Signing Certificate
         if: steps.macos-signing.outputs.codesign == 'true'
         env:
-          MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
-          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          MACOS_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ steps.macos-signing.outputs.keychain_password }}
         run: |
-          KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          set -euo pipefail
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain"
+          CERTIFICATE_PATH="$RUNNER_TEMP/certificate.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
-          CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
-          echo "$MACOS_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          security import $CERTIFICATE_PATH -k $KEYCHAIN_PATH -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # Add keychain to search list
-          security list-keychains -d user -s $KEYCHAIN_PATH login.keychain
+          printf '%s' "$MACOS_CERTIFICATE_BASE64" | base64 -D -o "$CERTIFICATE_PATH"
+          security import "$CERTIFICATE_PATH" -k "$KEYCHAIN_PATH" -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          identities="$(security find-identity -v -p codesigning "$KEYCHAIN_PATH")"
+          if [[ "$identities" != *"Developer ID Application:"* ]]; then
+            echo "The imported macOS signing certificate has no valid Developer ID Application identity. Configure a Developer ID Application certificate; Apple Distribution certificates cannot be used for macOS notarization." >&2
+            exit 1
+          fi
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain
 
       - name: Sign Application
         if: steps.macos-signing.outputs.codesign == 'true'
@@ -1492,32 +1496,39 @@ jobs:
       - name: Notarize Application
         if: steps.macos-signing.outputs.notarize == 'true'
         env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
+          set -euo pipefail
           APP_PATH="build/macos/Build/Products/Release/PlezyNG.app"
+          API_KEY_PATH="$RUNNER_TEMP/plezyng-macos-notary-api-key.p8"
+          umask 077
+          printf '%s' "$APPLE_API_PRIVATE_KEY" > "$API_KEY_PATH"
 
-          # Create a temporary ZIP for notarization submission
           echo "Creating ZIP for notarization..."
           ditto -c -k --keepParent "$APP_PATH" notarization.zip
-
-          # Submit for notarization
           echo "Submitting to Apple's notary service..."
-          xcrun notarytool submit notarization.zip \
-            --apple-id "$APPLE_ID" \
-            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-            --team-id "$APPLE_TEAM_ID" \
-            --wait
+          xcrun notarytool submit notarization.zip --key "$API_KEY_PATH" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_API_ISSUER_ID" --wait
 
-          # Staple the notarization ticket to the app
-          echo "Stapling notarization ticket..."
+          echo "Stapling the notarization ticket to the app..."
           xcrun stapler staple "$APP_PATH"
-
-          # Verify stapling
           echo "Verifying notarization..."
           xcrun stapler validate "$APP_PATH"
+
+      - name: Remove temporary macOS signing material
+        if: always()
+        working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain"
+          if [[ -e "$KEYCHAIN_PATH" || -L "$KEYCHAIN_PATH" ]]; then
+            security delete-keychain "$KEYCHAIN_PATH"
+          fi
+          rm -f "$RUNNER_TEMP/certificate.p12"
+          rm -f "$RUNNER_TEMP/plezyng-macos-notary-api-key.p8"
+          rm -f notarization.zip
 
       - name: Verify Gatekeeper acceptance for Homebrew Cask
         if: ${{ needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'true' }}

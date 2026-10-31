@@ -1016,11 +1016,10 @@ run_name = re.search(r"(?m)^run-name: (.*)$", text)
 run_name_expression = run_name.group(1) if run_name else ""
 require(
     all(field in run_name_expression for field in ("inputs.action", "inputs.runner_pool", "inputs.build_version"))
-    and all(marker in run_name_expression for marker in ("action:", "pool:", "tag:"))
-    and "inputs.action == 'release'" in run_name_expression
-    and "inputs.build_version || 'current'" in run_name_expression
-    and "github.ref_name" in run_name_expression,
-    "run names must include action, pool and tag, plus the selected ref on releases",
+    and "format('action:{0}:pool:{1}:tag:v{2}'" in run_name_expression
+    and "format('action:{0}:pool:{1}'" in run_name_expression
+    and "inputs.action == 'release'" in run_name_expression,
+    "build and release run names must match the private JIT broker title schema",
 )
 
 for action_pool_job in (

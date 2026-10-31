@@ -164,8 +164,12 @@ cmake --install build/pme-webgpu --component DevTools
 On multi-GPU systems, `PLEZY_PME_WEBGPU_VENDOR_ID` and
 `PLEZY_PME_WEBGPU_DEVICE_ID` pin the plugin to the matching physical adapter.
 PME verifies those IDs when selecting the EP device and again when checking
-the model output device. The RX 7900 XT launcher derives the IDs from Vulkan's
-device name and keeps MPV display-renderer selection independent.
+the model output device. The RX 7900 XT launcher detects
+`WebGpuExecutionProvider` in the selected runtime manifest and only then uses
+`vulkaninfo` to derive those IDs. If the manifest is outside the executable-
+relative paths or `PLEZY_PME_RUNTIME_DIR`, set `PLEZY_PME_USE_WEBGPU=1` when
+launching. MIGraphX-only runs do not require the `vulkaninfo` utility. MPV's
+display-renderer selection remains independent of PME's compute adapter.
 
 To build the WebGPU runtime into the Linux Flutter application bundle, generate
 Flutter's Linux configuration first, then configure and install the app with the

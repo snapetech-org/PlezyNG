@@ -71,6 +71,58 @@ vulkan_inventory() {
   '
 }
 
+webgpu_provider_selected() {
+  local requested="${PLEZY_PME_USE_WEBGPU:-auto}"
+  local executable="${1:-}"
+  local executable_directory=""
+  local resolved_executable=""
+  local directory
+  local manifest
+  local -a directories=()
+
+  case "${requested,,}" in
+    1|true|yes)
+      return 0
+      ;;
+    auto)
+      ;;
+    *)
+      printf 'PLEZY_PME_USE_WEBGPU must be auto, 1, true, or yes.\n' >&2
+      return 2
+      ;;
+  esac
+
+  if [[ -n "${PLEZY_PME_RUNTIME_DIR:-}" ]]; then
+    directories+=("$PLEZY_PME_RUNTIME_DIR")
+  fi
+
+  if [[ -n "$executable" ]]; then
+    resolved_executable=$(command -v -- "$executable" 2>/dev/null || printf '%s' "$executable")
+    if [[ -e "$resolved_executable" ]]; then
+      resolved_executable=$(readlink -f -- "$resolved_executable" 2>/dev/null || printf '%s' "$resolved_executable")
+      executable_directory=$(dirname -- "$resolved_executable")
+      directories+=(
+        "$executable_directory"
+        "$executable_directory/lib"
+        "$executable_directory/../lib"
+        "$executable_directory/../lib/plezy"
+        "$executable_directory/../lib/plezyng"
+      )
+    fi
+  fi
+
+  for directory in "${directories[@]}"; do
+    manifest="$directory/providers.linux.tsv"
+    [[ -f "$manifest" && -e "$directory/libplezy_motion_engine.so" && -e "$directory/libonnxruntime.so" ]] || continue
+    awk -F '\t' '$1 == "WebGpuExecutionProvider" { found = 1 } END { exit !found }' "$manifest"
+    return $?
+  done
+
+  # A caller can request WebGPU explicitly when the app's runtime bundle is
+  # outside the executable-relative paths checked above.
+  [[ -n "${PLEZY_PME_WEBGPU_VENDOR_ID:-}" || -n "${PLEZY_PME_WEBGPU_DEVICE_ID:-}" ]]
+}
+
 configure_runtime_loader_paths() {
   local runtime_dir="${PLEZY_PME_RUNTIME_DIR:-}"
   local extra_library_paths="${PLEZY_PME_LIBRARY_PATH:-}"
@@ -130,22 +182,34 @@ if [[ ! "$gpu_uuid" =~ ^GPU- ]]; then
   exit 1
 fi
 
-if ! command -v vulkaninfo >/dev/null 2>&1; then
-  printf 'vulkaninfo is required to pin WebGPU inference to the RX 7900 XT safely.\n' >&2
-  exit 1
+webgpu_selected=false
+if webgpu_provider_selected "$1"; then
+  webgpu_selected=true
+else
+  selection_status=$?
+  if ((selection_status == 2)); then
+    exit 2
+  fi
 fi
-if ! webgpu_device=$(vulkaninfo --summary 2>/dev/null | vulkan_inventory "$gpu_name"); then
-  printf 'Could not map the RX 7900 XT to one Vulkan hardware ID.\n' >&2
-  exit 1
-fi
-IFS='|' read -r webgpu_vendor_id webgpu_device_id <<<"$webgpu_device"
-if [[ ! "$webgpu_vendor_id" =~ ^0x[[:xdigit:]]+$ || ! "$webgpu_device_id" =~ ^0x[[:xdigit:]]+$ ]]; then
-  printf 'Vulkan returned unexpected RX 7900 XT vendor/device IDs: %s\n' "$webgpu_device" >&2
-  exit 1
-fi
-if [[ "${webgpu_vendor_id,,}" != "0x1002" ]]; then
-  printf 'Vulkan RX 7900 XT mapping returned unexpected vendor ID: %s\n' "$webgpu_vendor_id" >&2
-  exit 1
+
+if [[ "$webgpu_selected" == true ]]; then
+  if ! command -v vulkaninfo >/dev/null 2>&1; then
+    printf 'vulkaninfo is required to pin the selected WebGPU provider to the RX 7900 XT.\n' >&2
+    exit 1
+  fi
+  if ! webgpu_device=$(vulkaninfo --summary 2>/dev/null | vulkan_inventory "$gpu_name"); then
+    printf 'Could not map the RX 7900 XT to one Vulkan hardware ID.\n' >&2
+    exit 1
+  fi
+  IFS='|' read -r webgpu_vendor_id webgpu_device_id <<<"$webgpu_device"
+  if [[ ! "$webgpu_vendor_id" =~ ^0x[[:xdigit:]]+$ || ! "$webgpu_device_id" =~ ^0x[[:xdigit:]]+$ ]]; then
+    printf 'Vulkan returned unexpected RX 7900 XT vendor/device IDs: %s\n' "$webgpu_device" >&2
+    exit 1
+  fi
+  if [[ "${webgpu_vendor_id,,}" != "0x1002" ]]; then
+    printf 'Vulkan RX 7900 XT mapping returned unexpected vendor ID: %s\n' "$webgpu_vendor_id" >&2
+    exit 1
+  fi
 fi
 
 if ! visible_gpus=$(ROCR_VISIBLE_DEVICES="$gpu_uuid" rocminfo | gpu_inventory); then
@@ -164,9 +228,14 @@ configure_runtime_loader_paths || exit 1
 # by the local PME filter patch; MPV's display renderer remains unchanged.
 export ROCR_VISIBLE_DEVICES="$gpu_uuid"
 export PLEZY_PME_VULKAN_DEVICE="$gpu_name"
-export PLEZY_PME_WEBGPU_VENDOR_ID="$webgpu_vendor_id"
-export PLEZY_PME_WEBGPU_DEVICE_ID="$webgpu_device_id"
+if [[ "$webgpu_selected" == true ]]; then
+  export PLEZY_PME_WEBGPU_VENDOR_ID="$webgpu_vendor_id"
+  export PLEZY_PME_WEBGPU_DEVICE_ID="$webgpu_device_id"
+fi
 
-printf 'PME compute pinned to %s (%s, WebGPU ID %s:%s); desktop/output GPU selection unchanged.\n' \
-  "$gpu_name" "$gpu_uuid" "$webgpu_vendor_id" "$webgpu_device_id" >&2
+printf 'PME compute pinned to %s (%s); desktop/output GPU selection unchanged.\n' "$gpu_name" "$gpu_uuid" >&2
+if [[ "$webgpu_selected" == true ]]; then
+  printf 'WebGPU adapter pinned to %s (vendor/device %s:%s).\n' \
+    "$gpu_name" "$webgpu_vendor_id" "$webgpu_device_id" >&2
+fi
 exec "$@"

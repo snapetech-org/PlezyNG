@@ -247,6 +247,8 @@ The PME adapter, Windows packaging integration, and updated mpv patch series are
 
 The current local MPV candidate artifact state is recorded in the [artifact gate evidence](evidence/mpv-motion-artifact-gate-2026-10-29.md). Patch-0161 packages for Linux x86_64/aarch64 (`d142165ec420`) and Windows x86_64/aarch64 (`01139c3f4748`) passed archive-integrity checks and include the display-sync timing source. The separate MPV build branch locally commits the Android/Linux/Windows candidate manifest at `c96c12e`; Android keys `0494457e8620` and `dfe7d6a5ad4e`, Linux, and Windows each pass their local manifest checks. These artifacts remain unpublished and the PlezyNG lock stays on its existing package revision. Apple binaries have not been rebuilt for the current source because this host has no Xcode toolchain. Device/display playback remains unqualified. No CI was used.
 
+Windows provider resolution keeps the RX 7900 XT dedicated to PME when that adapter is present (or DXGI enumeration is inconclusive): NPU candidates are tried first, then the explicitly pinned DirectML route is promoted ahead of generic GPU providers. If that pinned route fails, PME does not silently continue on the RX 9070 XT; Neural falls back through the existing MPV path. When the RX 7900 XT is absent, the provider catalog retains its normal GPU order.
+
 ## References
 
 - [Apple WWDC25 VideoToolbox effects](https://developer.apple.com/videos/play/wwdc2025/300/) — API introduction, platform floors, supported effects, and frame-based processing integration.

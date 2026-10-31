@@ -7,6 +7,7 @@
 - Include the pinned Vulkan-backed WebGPU provider in Linux app builds by default for Neural motion processing.
 - Prefer the RX 7900 XT for Linux PME inference and Vulkan filter compute while keeping display rendering independent.
 - Select the RX 7900 XT for Windows DirectML inference when available, leaving the independently selected output adapter free for presentation.
+- Promote the RX 7900 XT-bound Windows DirectML route ahead of generic GPU providers and prevent silent compute fallback to another adapter.
 - Report the PME inference adapter separately from its Vulkan preprocessing and warping GPU.
 - Confirm desktop neural interpolation against 24 consecutive decoded PTS intervals and report measured cadence in playback diagnostics.
 - Prefer the named RX 7900 XT Vulkan adapter for PME compute when present, independently of MPV's output adapter.

@@ -22,11 +22,11 @@
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <DirectML.h>
 #include <d3d12.h>
 #include <dxgi.h>
 #include <dxgi1_2.h>
-#include <DirectML.h>
+#include <windows.h>
 #else
 #include <dlfcn.h>
 #endif
@@ -46,6 +46,10 @@ struct pme_runtime_session {
 #if defined(_WIN32)
   HMODULE runtime_library = nullptr;
   HMODULE directml_runtime_library = nullptr;
+  // Keep PME inference on the RX 7900 XT when it is present. If adapter
+  // discovery is inconclusive, do not silently continue to a generic GPU
+  // provider that may select a different adapter.
+  bool rx_7900_xt_target_required = false;
 #else
   void* runtime_library = nullptr;
 #endif
@@ -97,8 +101,8 @@ struct PmeOrtDmlDeviceOptions {
   uint32_t filter;
 };
 using OrtDmlApiMethod = OrtStatus*(ORT_API_CALL*)(void*, void*)NO_EXCEPTION;
-using OrtDmlAppendProviderDml1Fn =
-    OrtStatus*(ORT_API_CALL*)(OrtSessionOptions*, IDMLDevice*, ID3D12CommandQueue*)NO_EXCEPTION;
+using OrtDmlAppendProviderDml1Fn = OrtStatus*(ORT_API_CALL*)(OrtSessionOptions*, IDMLDevice*,
+                                                             ID3D12CommandQueue*)NO_EXCEPTION;
 using OrtDmlAppendProviderDml2Fn = OrtStatus*(ORT_API_CALL*)(OrtSessionOptions*, PmeOrtDmlDeviceOptions*)NO_EXCEPTION;
 struct OrtDmlApiPrefix {
   OrtDmlApiMethod append_dml;
@@ -128,6 +132,50 @@ struct PmeDirectMLDevice {
   }
 };
 
+enum class PmeRx7900XtAdapterProbe { absent, present, unknown };
+
+bool is_rx_7900_xt_adapter(const DXGI_ADAPTER_DESC& description) {
+  if (description.VendorId != 0x1002 || description.DeviceId != 0x744c) return false;
+  const std::wstring name(description.Description);
+  const std::wstring token = L"RX 7900 XT";
+  const size_t position = name.find(token);
+  if (position == std::wstring::npos) return false;
+  const size_t suffix = position + token.size();
+  return suffix == name.size() || !std::iswalnum(name[suffix]);
+}
+
+PmeRx7900XtAdapterProbe probe_rx_7900_xt_adapter() {
+  IDXGIFactory1* factory = nullptr;
+  const HRESULT factory_result = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
+  if (FAILED(factory_result) || !factory) return PmeRx7900XtAdapterProbe::unknown;
+
+  PmeRx7900XtAdapterProbe probe = PmeRx7900XtAdapterProbe::absent;
+  for (UINT index = 0;; ++index) {
+    IDXGIAdapter* adapter = nullptr;
+    const HRESULT result = factory->EnumAdapters(index, &adapter);
+    if (result == DXGI_ERROR_NOT_FOUND) break;
+    if (FAILED(result) || !adapter) {
+      probe = PmeRx7900XtAdapterProbe::unknown;
+      break;
+    }
+
+    DXGI_ADAPTER_DESC description{};
+    if (FAILED(adapter->GetDesc(&description))) {
+      adapter->Release();
+      probe = PmeRx7900XtAdapterProbe::unknown;
+      break;
+    }
+    const bool is_target = is_rx_7900_xt_adapter(description);
+    adapter->Release();
+    if (is_target) {
+      probe = PmeRx7900XtAdapterProbe::present;
+      break;
+    }
+  }
+  factory->Release();
+  return probe;
+}
+
 enum class PmeDirectMLTargetStatus { not_found, ready, failed };
 
 PmeDirectMLTargetStatus create_rx_7900_xt_directml_device(PmeDirectMLDevice* target, std::string* error) {
@@ -152,57 +200,49 @@ PmeDirectMLTargetStatus create_rx_7900_xt_directml_device(PmeDirectMLDevice* tar
     }
 
     DXGI_ADAPTER_DESC description{};
-    if (SUCCEEDED(adapter->GetDesc(&description)) && description.VendorId == 0x1002 &&
-        description.DeviceId == 0x744c) {
-      const std::wstring name(description.Description);
-      const std::wstring token = L"RX 7900 XT";
-      const size_t position = name.find(token);
-      const size_t suffix = position == std::wstring::npos ? position : position + token.size();
-      const bool exact_model = position != std::wstring::npos &&
-                               (suffix == name.size() || !std::iswalnum(name[suffix]));
-      if (exact_model) {
-        result = D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&target->d3d_device));
-        adapter->Release();
-        if (FAILED(result) || !target->d3d_device) {
-          *error = "Could not create a D3D12 device on the RX 7900 XT";
-          status = PmeDirectMLTargetStatus::failed;
-          break;
-        }
-
-        D3D12_COMMAND_QUEUE_DESC queue_description{};
-        queue_description.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
-        result = target->d3d_device->CreateCommandQueue(&queue_description, IID_PPV_ARGS(&target->command_queue));
-        if (FAILED(result) || !target->command_queue) {
-          *error = "Could not create a DirectML command queue on the RX 7900 XT";
-          status = PmeDirectMLTargetStatus::failed;
-          break;
-        }
-
-        target->runtime_library = LoadLibraryW(L"DirectML.dll");
-        if (!target->runtime_library) {
-          *error = "Could not load the bundled DirectML runtime";
-          status = PmeDirectMLTargetStatus::failed;
-          break;
-        }
-        using DmlCreateDeviceFn = HRESULT(WINAPI*)(ID3D12Device*, DML_CREATE_DEVICE_FLAGS, REFIID, void**);
-        const auto create_dml_device = reinterpret_cast<DmlCreateDeviceFn>(
-            GetProcAddress(target->runtime_library, "DMLCreateDevice"));
-        if (!create_dml_device) {
-          *error = "The bundled DirectML runtime does not export DMLCreateDevice";
-          status = PmeDirectMLTargetStatus::failed;
-          break;
-        }
-        result = create_dml_device(target->d3d_device, DML_CREATE_DEVICE_FLAG_NONE, __uuidof(IDMLDevice),
-                                   reinterpret_cast<void**>(&target->device));
-        if (FAILED(result) || !target->device) {
-          *error = "Could not create a DirectML device on the RX 7900 XT";
-          status = PmeDirectMLTargetStatus::failed;
-          break;
-        }
-
-        status = PmeDirectMLTargetStatus::ready;
+    if (SUCCEEDED(adapter->GetDesc(&description)) && is_rx_7900_xt_adapter(description)) {
+      result = D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&target->d3d_device));
+      adapter->Release();
+      if (FAILED(result) || !target->d3d_device) {
+        *error = "Could not create a D3D12 device on the RX 7900 XT";
+        status = PmeDirectMLTargetStatus::failed;
         break;
       }
+
+      D3D12_COMMAND_QUEUE_DESC queue_description{};
+      queue_description.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+      result = target->d3d_device->CreateCommandQueue(&queue_description, IID_PPV_ARGS(&target->command_queue));
+      if (FAILED(result) || !target->command_queue) {
+        *error = "Could not create a DirectML command queue on the RX 7900 XT";
+        status = PmeDirectMLTargetStatus::failed;
+        break;
+      }
+
+      target->runtime_library = LoadLibraryW(L"DirectML.dll");
+      if (!target->runtime_library) {
+        *error = "Could not load the bundled DirectML runtime";
+        status = PmeDirectMLTargetStatus::failed;
+        break;
+      }
+      using DmlCreateDeviceFn = HRESULT(WINAPI*)(ID3D12Device*, DML_CREATE_DEVICE_FLAGS, REFIID, void**);
+      const auto create_dml_device =
+          reinterpret_cast<DmlCreateDeviceFn>(GetProcAddress(target->runtime_library, "DMLCreateDevice"));
+      if (!create_dml_device) {
+        *error = "The bundled DirectML runtime does not export DMLCreateDevice";
+        status = PmeDirectMLTargetStatus::failed;
+        break;
+      }
+      result = create_dml_device(
+          target->d3d_device, DML_CREATE_DEVICE_FLAG_NONE, __uuidof(IDMLDevice),
+          reinterpret_cast<void**>(&target->device));
+      if (FAILED(result) || !target->device) {
+        *error = "Could not create a DirectML device on the RX 7900 XT";
+        status = PmeDirectMLTargetStatus::failed;
+        break;
+      }
+
+      status = PmeDirectMLTargetStatus::ready;
+      break;
     }
     adapter->Release();
   }
@@ -773,8 +813,7 @@ bool read_requested_webgpu_device(const char* provider_name, RequestedWebGpuDevi
   return true;
 }
 
-bool webgpu_device_has_ids(
-    const OrtApi* api, const OrtEpDevice* device, uint32_t vendor_id, uint32_t device_id) {
+bool webgpu_device_has_ids(const OrtApi* api, const OrtEpDevice* device, uint32_t vendor_id, uint32_t device_id) {
   const OrtHardwareDevice* hardware = api->EpDevice_Device(device);
   return hardware && api->HardwareDevice_VendorId(hardware) == vendor_id &&
          api->HardwareDevice_DeviceId(hardware) == device_id;
@@ -918,8 +957,8 @@ bool try_accelerator_candidate(
         break;
       }
     } else if (requested_webgpu_device.prefer_rx_7900_xt) {
-      if (webgpu_device_has_ids(api, devices[i], requested_webgpu_device.vendor_id,
-                                requested_webgpu_device.device_id)) {
+      if (webgpu_device_has_ids(
+              api, devices[i], requested_webgpu_device.vendor_id, requested_webgpu_device.device_id)) {
         selected_device = devices[i];
         break;
       }
@@ -1207,6 +1246,10 @@ bool try_builtin_dml_candidate(
     *error = target_error;
     return false;
   }
+  if (session->rx_7900_xt_target_required && target_status != PmeDirectMLTargetStatus::ready) {
+    *error = "Could not confirm the RX 7900 XT DirectML adapter";
+    return false;
+  }
   const bool pin_rx_7900_xt = target_status == PmeDirectMLTargetStatus::ready;
 
   OrtSessionOptions* options = nullptr;
@@ -1242,8 +1285,9 @@ bool try_builtin_dml_candidate(
     }
     append_status = dml_api.append_dml2(options, &device_options);
   }
-  if (!call_status(api, append_status, error,
-                   pin_rx_7900_xt ? "Append DirectML device on RX 7900 XT" : "Append DirectML high-performance GPU")) {
+  if (!call_status(
+          api, append_status, error,
+          pin_rx_7900_xt ? "Append DirectML device on RX 7900 XT" : "Append DirectML high-performance GPU")) {
     api->ReleaseSessionOptions(options);
     return false;
   }
@@ -1434,7 +1478,36 @@ extern "C" PME_RUNTIME_API int pme_runtime_open(
 
     bool opened = false;
     std::string last_provider_error;
-    for (size_t i = 0; i < config->provider_count && !opened; ++i) {
+#if defined(_WIN32)
+    session->rx_7900_xt_target_required = probe_rx_7900_xt_adapter() != PmeRx7900XtAdapterProbe::absent;
+#endif
+    std::vector<size_t> provider_order;
+    provider_order.reserve(config->provider_count);
+    for (size_t i = 0; i < config->provider_count; ++i) provider_order.push_back(i);
+#if defined(_WIN32)
+    if (session->rx_7900_xt_target_required) {
+      const auto is_builtin_dml_at = [&](size_t index) {
+        const pme_provider_candidate& candidate = config->providers[index];
+        return candidate.struct_size >= sizeof(pme_provider_candidate) && candidate.provider_name &&
+               candidate.provider_library_path && std::strcmp(candidate.provider_name, "DmlExecutionProvider") == 0 &&
+               std::strcmp(candidate.provider_library_path, "builtin-dml") == 0;
+      };
+      const auto is_gpu_at = [&](size_t index) {
+        const pme_provider_candidate& candidate = config->providers[index];
+        return candidate.struct_size >= sizeof(pme_provider_candidate) && candidate.device_kind == PME_DEVICE_GPU;
+      };
+      const auto dml = std::find_if(provider_order.begin(), provider_order.end(), is_builtin_dml_at);
+      const auto first_gpu = std::find_if(provider_order.begin(), provider_order.end(), is_gpu_at);
+      if (dml != provider_order.end() && first_gpu != provider_order.end() && dml > first_gpu) {
+        const size_t dml_index = *dml;
+        provider_order.erase(dml);
+        const auto insertion = std::find_if(provider_order.begin(), provider_order.end(), is_gpu_at);
+        provider_order.insert(insertion, dml_index);
+      }
+    }
+#endif
+    for (size_t order_index = 0; order_index < provider_order.size() && !opened; ++order_index) {
+      const size_t i = provider_order[order_index];
       if (config->is_cancelled && config->is_cancelled(config->cancel_context)) {
         last_provider_error = "Motion provider setup was cancelled";
         break;
@@ -1454,6 +1527,15 @@ extern "C" PME_RUNTIME_API int pme_runtime_open(
       const bool builtin_dml = candidate.provider_name && candidate.provider_library_path &&
                                std::strcmp(candidate.provider_name, "DmlExecutionProvider") == 0 &&
                                std::strcmp(candidate.provider_library_path, "builtin-dml") == 0;
+#if defined(_WIN32)
+      if (session->rx_7900_xt_target_required && candidate.device_kind == PME_DEVICE_GPU && !builtin_dml) {
+        if (last_provider_error.empty()) {
+          last_provider_error = std::string(candidate.provider_name ? candidate.provider_name : "GPU provider") +
+                                ": skipped to keep PME compute on the RX 7900 XT";
+        }
+        continue;
+      }
+#endif
       const bool builtin_vitisai = candidate.provider_name && candidate.provider_library_path &&
                                    std::strcmp(candidate.provider_name, "VitisAIExecutionProvider") == 0 &&
                                    std::strcmp(candidate.provider_library_path, "builtin-vitisai") == 0;

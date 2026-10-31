@@ -849,6 +849,7 @@ jobs:
           PODS_SDK: ${{ matrix.pods_sdk }}
           PODS_SIMULATOR_PLATFORM: ${{ matrix.simulator_platform }}
         run: |
+          pods_products_dir="$APPLE_DERIVED_DATA_PATH/Build/Products/Debug-$PODS_SDK"
           xcodebuild build \
             -project "$PODS_PROJECT" \
             -scheme Pods-Runner \
@@ -856,9 +857,12 @@ jobs:
             -sdk "$PODS_SDK" \
             -destination "generic/platform=$PODS_SIMULATOR_PLATFORM Simulator" \
             -derivedDataPath "$APPLE_DERIVED_DATA_PATH" \
+            CONFIGURATION_BUILD_DIR="$pods_products_dir" \
+            PODS_CONFIGURATION_BUILD_DIR="$pods_products_dir" \
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
             ARCHS=arm64
+          test -d "$pods_products_dir/Pods_Runner.framework"
 
       - name: Run Apple native reliability tests
         if: matrix.platform != 'macOS'

@@ -30,7 +30,7 @@ def replace_text_atomically(path: Path, contents: str) -> None:
     if path.is_symlink():
         raise OSError(f"refusing to replace manifest symlink: {path}")
 
-    permissions = stat.S_IMODE(path.stat().st_mode)
+    permissions = stat.S_IMODE(path.stat().st_mode) | stat.S_IRUSR
     descriptor, temporary_name = tempfile.mkstemp(
         prefix=f".{path.name}.", dir=path.parent
     )
@@ -77,7 +77,13 @@ def main() -> int:
             return fail(f"AMSMB2 checkout revision {revision} does not match the locked pin")
 
         manifest = checkout / "Package.swift"
-        contents = manifest.read_text(encoding="utf-8")
+        # SwiftPM checkouts can leave this file unreadable to the runner even
+        # though the checkout's Git object is readable. Read the pinned source
+        # from Git, then atomically replace the checkout file below.
+        contents = subprocess.check_output(
+            ["git", "-C", str(checkout), "show", "HEAD:Package.swift"],
+            text=True,
+        )
         if UNSAFE_BLOCK in contents:
             patched = contents.replace(UNSAFE_BLOCK, "", 1)
             if ".unsafeFlags(" in patched:

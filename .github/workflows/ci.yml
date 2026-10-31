@@ -543,6 +543,7 @@ jobs:
             source_packages_directory: ios
             project_directory: ios
             workspace: ios/Runner.xcworkspace
+            pods_sdk: iphonesimulator
             simulator_runtime: iOS
             simulator_platform: iOS
             static_destination: ""
@@ -557,6 +558,7 @@ jobs:
             source_packages_directory: tvos
             project_directory: tvos
             workspace: tvos/Runner.xcworkspace
+            pods_sdk: appletvsimulator
             simulator_runtime: tvOS
             simulator_platform: tvOS
             static_destination: ""
@@ -839,6 +841,23 @@ jobs:
           with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
               output.write(f"APPLE_TEST_DESTINATION={destination}\n")
           PY
+
+      - name: Build CocoaPods aggregate framework
+        if: matrix.platform != 'macOS'
+        env:
+          PODS_PROJECT: ${{ matrix.project_directory }}/Pods/Pods.xcodeproj
+          PODS_SDK: ${{ matrix.pods_sdk }}
+        run: |
+          xcodebuild build \
+            -project "$PODS_PROJECT" \
+            -target Pods-Runner \
+            -configuration Debug \
+            -sdk "$PODS_SDK" \
+            -destination "$APPLE_TEST_DESTINATION" \
+            -derivedDataPath "$APPLE_DERIVED_DATA_PATH" \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            ARCHS=arm64
 
       - name: Run Apple native reliability tests
         if: matrix.platform != 'macOS'

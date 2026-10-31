@@ -51,6 +51,15 @@ it writes the manifest record. The existing four 720p Tensor outputs were
 rechecked through that interface verifier; all expose input `[1,720,1280,6]`
 and output `[1,720,1280,3]`.
 
+The exporter keeps its default float32 GPU exports at both 720p and 1080p, but
+Tensor AOT compilation now defaults to 720p so a normal Tensor export does not
+fail after generating the supported models by attempting the known-failing
+1080p graph. Pass `--google-tensor-resolutions 720p 1080p` to request both
+Tensor shapes, or `--google-tensor-resolutions 1080p` with `--resolutions
+1080p` to retry the 1080p compiler path explicitly.
+After a successful export, unlisted `.tflite` files are pruned from the output
+directory so Android's wildcard model staging cannot package stale variants.
+
 ## 1080p compilation attempts
 
 The 1080p model contract is input `[1,1080,1920,6]`, output

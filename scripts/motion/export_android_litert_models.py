@@ -233,8 +233,8 @@ def export_google_tensor_aot(
                 f"LiteRT did not export exactly one Google Tensor {soc_model} model "
                 f"for {model_name}/{resolution}; found: {outputs}"
             )
+        verify_model_interface(compiled_models[0], resolution)
         shutil.copyfile(compiled_models[0], destination)
-        verify_model_interface(destination, resolution)
 
     height, width = SHAPES[resolution]
     return {
@@ -320,6 +320,19 @@ def verify_model_interface(model_path: Path, resolution: str) -> None:
         )
 
 
+def prune_unlisted_model_files(output_dir: Path, manifest: dict[str, Any]) -> None:
+    """Remove stale LiteRT files that Gradle's wildcard staging would package."""
+    listed_files = {
+        record["file"]
+        for model in manifest["models"].values()
+        for providers in model["variants"].values()
+        for record in providers.values()
+    }
+    for model_file in output_dir.glob("*.tflite"):
+        if model_file.name not in listed_files:
+            model_file.unlink()
+
+
 def read_calibration_provenance(root: Path | None) -> dict[str, Any] | None:
     if root is None:
         return None
@@ -373,6 +386,15 @@ def main() -> int:
         default=["Tensor_G5", "Tensor_G6"],
         help="Google Tensor targets to compile when --google-tensor-aot is enabled.",
     )
+    parser.add_argument(
+        "--google-tensor-resolutions",
+        nargs="+",
+        choices=SHAPES,
+        help=(
+            "Google Tensor AOT shapes to compile. Defaults to 720p, the currently verified Tensor shape; "
+            "1080p can be requested explicitly when the compiler supports it."
+        ),
+    )
     args = parser.parse_args()
 
     if args.google_tensor_aot:
@@ -396,6 +418,14 @@ def main() -> int:
             )
     if args.google_tensor_socs != ["Tensor_G5", "Tensor_G6"] and not args.google_tensor_aot:
         parser.error("--google-tensor-socs requires --google-tensor-aot")
+    if args.google_tensor_aot:
+        google_tensor_resolutions = args.google_tensor_resolutions or ["720p"]
+        if not set(google_tensor_resolutions).issubset(args.resolutions):
+            parser.error("--google-tensor-resolutions must also appear in --resolutions")
+    else:
+        if args.google_tensor_resolutions is not None:
+            parser.error("--google-tensor-resolutions requires --google-tensor-aot")
+        google_tensor_resolutions = []
 
     verify_source(args.anvil_source)
     try:
@@ -529,7 +559,11 @@ def main() -> int:
                     args.output_dir,
                 )
 
-            if google_tensor_aot_compile is not None and google_tensor_target is not None:
+            if (
+                google_tensor_aot_compile is not None
+                and google_tensor_target is not None
+                and resolution in google_tensor_resolutions
+            ):
                 for soc_model in args.google_tensor_socs:
                     provider_key = f"google-tensor-{soc_model.lower().replace('_', '-')}"
                     output_variants[resolution][provider_key] = export_google_tensor_aot(
@@ -542,6 +576,11 @@ def main() -> int:
                         args.work_dir,
                         args.output_dir,
                     )
+            elif google_tensor_aot_compile is not None and google_tensor_target is not None:
+                print(
+                    f"Skipping Google Tensor AOT for {model_name}/{resolution}; "
+                    f"selected Tensor shapes are {', '.join(google_tensor_resolutions)}."
+                )
 
             if args.calibration_root:
                 calibration_input_name = signature_input_name(float_path)
@@ -591,6 +630,7 @@ def main() -> int:
     temporary = manifest_path.with_suffix(".json.partial")
     temporary.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     temporary.replace(manifest_path)
+    prune_unlisted_model_files(args.output_dir, manifest)
     print(f"Wrote {manifest_path}")
     return 0
 

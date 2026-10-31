@@ -26,6 +26,7 @@
 - Restore Apple CI by quoting simulator-only Xcode project settings and keeping the macOS test plugin current with its shared protocol.
 - Preserve fractional display cadence in motion clarity, accept 48×1000/1001 Hz, and report MPV's active PME phase budget alongside its display-sync timing source.
 - Align desktop PME source eligibility with the filter's supported 720p and 1080p inputs; validate Tensor AOT output interfaces after compilation.
+- Default Tensor AOT export to the verified 720p shape while retaining 720p and 1080p GPU exports, allow explicit Tensor shape selection, and prune stale models after successful export.
 - Allow serialized live Performance/Balanced/Quality preset switching in already-active desktop and Android Neural sessions, with prior-preset restoration on setup failure and MPV fallback where available.
 - Bound Android Gradle and Kotlin daemon memory so private CI runners can complete Android tests and release builds.
 - Fix Android private-JIT builds for the sharing plugin and pinned LiteRT OpenVINO runtime downloads.

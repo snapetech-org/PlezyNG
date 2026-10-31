@@ -1,9 +1,9 @@
 # Local Windows x64 MPV 0163 build and package
 
-**Date:** 2026-10-31  
-**Host:** `kspld0` (Linux x86_64)  
-**MPV build worktree:** `/mnt/disks/scratch/task-scratch/plezyng-motion-local-mpv-20261031/mpv-build-win-config-20261031`  
-**MPV build commit:** `003f85f3071736353c48932a78c239e04ffb64d5`  
+**Date:** 2026-10-31
+**Host:** `kspld0` (Linux x86_64)
+**MPV build worktree:** `/mnt/disks/scratch/task-scratch/plezyng-motion-local-mpv-20261031/mpv-build-win-config-20261031`
+**MPV build commit:** `003f85f3071736353c48932a78c239e04ffb64d5`
 **Container:** Ubuntu 24.04, CPU-only, 6 CPU workers, 32 GiB memory limit; it exited normally after the build.
 
 ## Result

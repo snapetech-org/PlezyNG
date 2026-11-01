@@ -105,6 +105,7 @@ void main() {
 
     final key = GlobalKey<VideoPlayerScreenState>();
     var loadfileCalls = 0;
+    final playerCalls = <String>[];
     const playerChannelBase = 'com.plezy/mpv_player/player_startup_failure_test';
 
     await withMockPlayerChannels(
@@ -112,6 +113,7 @@ void main() {
       eventChannelName: '$playerChannelBase/events',
       channelNameBase: playerChannelBase,
       methodHandler: (call) async {
+        if (playerCalls.length < 32) playerCalls.add(call.method);
         if (call.method == 'initialize') return true;
         if (call.method != 'command') return null;
         final args = (call.arguments as Map?)?['args'];
@@ -157,8 +159,15 @@ void main() {
         await pumpUntil(
           tester,
           () => loadfileCalls > 0,
-          describe: () => 'loadfileCalls=$loadfileCalls',
-          timeout: const Duration(seconds: 10),
+          describe: () =>
+              'loadfileCalls=$loadfileCalls, playerCalls=${playerCalls.join(',')}, '
+              'initialized=${key.currentState?.player != null}',
+          // This assertion waits for the entire cold-start chain: settings,
+          // native player configuration, stream resolution and the initial
+          // loadfile. A 10-second test-clock budget only gives pumpUntil about
+          // 5 seconds of real event-loop yielding, which is too short on the
+          // full private-JIT suite.
+          timeout: const Duration(seconds: 30),
         );
         await pumpUntil(
           tester,

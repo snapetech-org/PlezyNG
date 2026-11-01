@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Size the private Apple Flutter SDK disk preflight from the verified download and extraction peak while preserving the 30 GiB reserve.
 - Keep Android fallback event fixtures on the main thread and retain JVM test reports from CI failures.
 - Keep Android MPV fallback CI tests aligned with video-surface resume behavior and native open-event ordering.
 - Drain download manager callbacks before closing the application database, and keep desktop exit bounded when work does not settle.

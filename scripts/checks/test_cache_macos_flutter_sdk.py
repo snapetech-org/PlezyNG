@@ -14,8 +14,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from scripts.cache_macos_flutter_sdk import (
-    INSTALL_HEADROOM_BYTES,
+    INSTALL_SAFETY_MARGIN_BYTES,
     MIN_FREE_BYTES,
+    _archive_uncompressed_size,
     _extract_sdk_archive,
     cache_is_valid,
     download_archive,
@@ -26,14 +27,21 @@ from scripts.cache_macos_flutter_sdk import (
 
 
 class FlutterSdkCacheTest(unittest.TestCase):
-    def test_per_job_install_reserves_space_and_fits_current_mac_capacity(self) -> None:
+    def test_per_job_install_preflights_measured_download_and_extraction_peaks(self) -> None:
+        gib = 1024**3
         self.assertEqual(MIN_FREE_BYTES, 30 * 1024**3)
-        self.assertEqual(INSTALL_HEADROOM_BYTES, 9 * 1024**3)
+        self.assertEqual(INSTALL_SAFETY_MARGIN_BYTES, 2 * gib)
 
-        require_install_headroom(int(39.9 * 1024**3))
+        archive_size = 2 * gib
+        expanded_size = 4 * gib
+        free_at_start = int(38.9 * gib)
+        require_install_headroom(free_at_start, archive_size * 2, "download")
+        require_install_headroom(free_at_start - archive_size, expanded_size, "extraction")
 
-        with self.assertRaisesRegex(RuntimeError, "39 GiB free"):
-            require_install_headroom(int(38.9 * 1024**3))
+        with self.assertRaisesRegex(RuntimeError, "extraction needs"):
+            require_install_headroom(
+                free_at_start - archive_size, expanded_size + gib, "extraction"
+            )
 
     def test_flutter_sdk_cache_must_be_inside_the_current_job_temp_directory(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -134,6 +142,7 @@ class FlutterSdkCacheTest(unittest.TestCase):
                 destination,
                 segment_bytes=32_000,
                 max_workers=4,
+                expected_size=len(payload),
             )
 
             self.assertEqual(result.read_bytes(), payload)
@@ -148,6 +157,8 @@ class FlutterSdkCacheTest(unittest.TestCase):
                 flutter.external_attr = (stat.S_IFREG | 0o755) << 16
                 bundle.writestr(flutter, b"#!/bin/sh\nexit 0\n")
             digest = sha256(archive.read_bytes()).hexdigest()
+
+            self.assertEqual(_archive_uncompressed_size(archive), len(b"#!/bin/sh\nexit 0\n"))
 
             cache = _extract_sdk_archive(archive, root / "cache", "3.47.1", digest)
 

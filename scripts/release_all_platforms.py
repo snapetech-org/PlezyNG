@@ -190,7 +190,11 @@ def download(url: str, destination: Path) -> None:
         time.sleep(delay)
 
 
-def verified_ffmpeg_source(version_pin: str, scratch: Path) -> tuple[str, str]:
+def verified_ffmpeg_source(
+    version_pin: str,
+    scratch: Path,
+    source_cache: Path | None = None,
+) -> tuple[str, str]:
     match = re.fullmatch(r"n(\d+\.\d+\.\d+)", version_pin)
     if not match:
         raise ReleaseError(f"Expected a stable FFmpeg release tag such as n9.0.2, got {version_pin!r}")
@@ -199,9 +203,22 @@ def verified_ffmpeg_source(version_pin: str, scratch: Path) -> tuple[str, str]:
     archive = scratch / archive_name
     signature = scratch / f"{archive_name}.asc"
     key = scratch / "ffmpeg-devel.asc"
-    download(f"https://ffmpeg.org/releases/{archive_name}", archive)
-    download(f"https://ffmpeg.org/releases/{archive_name}.asc", signature)
-    download("https://ffmpeg.org/ffmpeg-devel.asc", key)
+    if source_cache is None:
+        download(f"https://ffmpeg.org/releases/{archive_name}", archive)
+        download(f"https://ffmpeg.org/releases/{archive_name}.asc", signature)
+        download("https://ffmpeg.org/ffmpeg-devel.asc", key)
+    else:
+        cache = source_cache.expanduser().resolve()
+        scratch.mkdir(parents=True, exist_ok=True)
+        for name, destination in (
+            (archive_name, archive),
+            (f"{archive_name}.asc", signature),
+            ("ffmpeg-devel.asc", key),
+        ):
+            cached = cache / name
+            if not cached.is_file():
+                raise ReleaseError(f"FFmpeg source cache is missing required file: {name}")
+            shutil.copyfile(cached, destination)
     if shutil.which("gpg") is None:
         raise ReleaseError("gpg is required to verify the official FFmpeg release signature.")
 
@@ -1023,6 +1040,14 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="Keep temporary checkouts and signature-verification inputs under this directory.",
     )
+    parser.add_argument(
+        "--ffmpeg-source-cache",
+        type=Path,
+        help=(
+            "Reuse a retained directory containing the pinned FFmpeg archive, its .asc signature, and "
+            "ffmpeg-devel.asc; the archive is still verified against the pinned release key."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -1062,7 +1087,11 @@ def main() -> int:
         stage = "FFmpeg signature and checksum verification"
         progress["stage"] = stage
         save_progress()
-        ffmpeg_version, ffmpeg_sha256 = verified_ffmpeg_source(ffmpeg_pin, scratch / "ffmpeg")
+        ffmpeg_version, ffmpeg_sha256 = verified_ffmpeg_source(
+            ffmpeg_pin,
+            scratch / "ffmpeg",
+            source_cache=args.ffmpeg_source_cache,
+        )
         progress["ffmpeg_version"] = ffmpeg_version
         progress["ffmpeg_source_sha256"] = ffmpeg_sha256
 

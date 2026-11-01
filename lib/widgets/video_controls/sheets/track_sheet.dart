@@ -448,7 +448,7 @@ class _SubtitleColumn extends StatelessWidget {
                 : null,
             secondaryAction: supportsSecondary
                 ? IconButton(
-                    tooltip: 'Clear secondary subtitle',
+                    tooltip: context.t.subtitleAiUi.clearSecondarySubtitle,
                     onPressed: hasSecondary
                         ? () {
                             player.selectSecondarySubtitleTrack(SubtitleTrack.off);
@@ -561,11 +561,11 @@ Future<void> _configureSubtitleReplayPreroll(BuildContext context) async {
     context: context,
     builder: (dialogContext) => StatefulBuilder(
       builder: (context, setDialogState) => AlertDialog(
-        title: const Text('Subtitle replay lead-in'),
+        title: Text(context.t.subtitleAiUi.subtitleReplayLeadIn),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('${selected.round()} ms before the cue'),
+            Text(context.t.subtitleAiUi.subtitleReplayLeadInOffset(milliseconds: selected.round())),
             Slider(
               value: selected,
               min: 0,
@@ -577,8 +577,11 @@ Future<void> _configureSubtitleReplayPreroll(BuildContext context) async {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(selected.round()), child: const Text('Save')),
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(context.t.common.cancel)),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(selected.round()),
+            child: Text(context.t.common.save),
+          ),
         ],
       ),
     ),
@@ -594,23 +597,25 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
     actions.add(
       FocusableListTile(
         leading: const AppIcon(Symbols.replay_rounded),
-        title: const Text('Replay current subtitle'),
+        title: Text(context.t.subtitleAiUi.replayCurrentSubtitle),
         onTap: () => _replayCurrentSubtitle(context, player),
       ),
     );
     actions.add(
       FocusableListTile(
         leading: const AppIcon(Symbols.replay_rounded),
-        title: const Text('Replay current secondary subtitle'),
+        title: Text(context.t.subtitleAiUi.replayCurrentSecondarySubtitle),
         onTap: () => _replayCurrentSubtitle(context, player, secondary: true),
       ),
     );
     actions.add(
       FocusableListTile(
         leading: const AppIcon(Symbols.timer_rounded),
-        title: const Text('Subtitle replay lead-in'),
+        title: Text(context.t.subtitleAiUi.subtitleReplayLeadIn),
         subtitle: Text(
-          '${SettingsService.instance.read(SettingsService.subtitleReplayPrerollMs).clamp(0, 2500).toInt()} ms before the cue',
+          context.t.subtitleAiUi.subtitleReplayLeadInOffset(
+            milliseconds: SettingsService.instance.read(SettingsService.subtitleReplayPrerollMs).clamp(0, 2500).toInt(),
+          ),
         ),
         onTap: () => unawaited(_configureSubtitleReplayPreroll(context)),
       ),
@@ -644,7 +649,7 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
         if (count == 0 || defaultTargetPlatform != TargetPlatform.android) return const SizedBox.shrink();
         return FocusableListTile(
           leading: const AppIcon(Symbols.move_to_inbox_rounded),
-          title: Text('Import shared subtitle ($count)'),
+          title: Text(context.t.subtitleAiUi.importSharedSubtitle(count: count)),
           onTap: () => _importSharedSubtitleFiles(context, player),
         );
       },
@@ -666,8 +671,8 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
       actions.add(
         FocusableListTile(
           leading: const AppIcon(Symbols.auto_awesome_rounded),
-          title: const Text('Generate, sync, or translate subtitles'),
-          subtitle: const Text('Generate, sync, and translate WAV-based subtitle tracks'),
+          title: Text(context.t.subtitleAiUi.generateSyncOrTranslateSubtitles),
+          subtitle: Text(context.t.subtitleAiUi.generateSyncAndTranslateWAVBasedSubtitleTracks),
           onTap: () => OverlaySheetController.of(context).push(
             builder: (_) => SubtitleAiSheet(
               player: player,
@@ -687,10 +692,8 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
         ListTile(
           dense: true,
           leading: const AppIcon(Symbols.info_rounded),
-          title: const Text('AI subtitle attachment unavailable'),
-          subtitle: const Text(
-            'The active player cannot receive local SRT files. Switch to a player with SRT support to use this workflow.',
-          ),
+          title: Text(context.t.subtitleAiUi.aISubtitleAttachmentUnavailable),
+          subtitle: Text(context.t.subtitleAiUi.theActivePlayerCannotReceiveLocalSRT_8b50bc65),
         ),
       );
     }
@@ -700,7 +703,7 @@ List<Widget> _buildSubtitleFooter(BuildContext context, TrackControlsState state
     actions.add(
       FocusableListTile(
         leading: const AppIcon(Symbols.cloud_upload_rounded),
-        title: const Text('Attach subtitle to server library'),
+        title: Text(context.t.subtitleAiUi.attachSubtitleToServerLibrary),
         onTap: () => _attachSubtitleFile(context, state),
       ),
     );
@@ -819,7 +822,7 @@ Future<void> _attachSubtitleFile(BuildContext context, TrackControlsState state)
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          title: const Text('Attach subtitle to server library'),
+          title: Text(context.t.subtitleAiUi.attachSubtitleToServerLibrary),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -829,20 +832,20 @@ Future<void> _attachSubtitleFile(BuildContext context, TrackControlsState state)
                 TextField(
                   controller: languageController,
                   decoration: InputDecoration(
-                    labelText: 'Language code',
-                    helperText: 'ISO 639-1, for example en or ja',
+                    labelText: context.t.subtitleAiUi.languageCode,
+                    helperText: context.t.subtitleAiUi.iSO6391ForExampleEnOrJa,
                     errorText: languageError,
                   ),
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Forced subtitles'),
+                  title: Text(context.t.accountPreferences.forcedSubtitles),
                   value: forced,
                   onChanged: (value) => setDialogState(() => forced = value),
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('SDH / closed captions'),
+                  title: Text(context.t.subtitleAiUi.sDHClosedCaptions),
                   value: hearingImpaired,
                   onChanged: (value) => setDialogState(() => hearingImpaired = value),
                 ),
@@ -855,12 +858,12 @@ Future<void> _attachSubtitleFile(BuildContext context, TrackControlsState state)
               onPressed: () {
                 final language = LanguageCodes.getIso6391Code(languageController.text.trim());
                 if (language == null) {
-                  setDialogState(() => languageError = 'Enter a valid ISO 639-1 language code.');
+                  setDialogState(() => languageError = context.t.subtitleAiUi.enterAValidISO6391LanguageCode);
                   return;
                 }
                 Navigator.of(dialogContext).pop((language: language, forced: forced, hearingImpaired: hearingImpaired));
               },
-              child: const Text('Upload'),
+              child: Text(context.t.subtitleAiUi.upload),
             ),
           ],
         ),
@@ -1030,7 +1033,7 @@ Future<void> _importSubtitlePaths(BuildContext context, Player player, List<Stri
       : await showDialog<({String path, String name})>(
           context: context,
           builder: (dialogContext) => AlertDialog(
-            title: const Text('Choose a subtitle'),
+            title: Text(context.t.streaming.chooseSubtitle),
             content: SizedBox(
               width: 520,
               height: 420,

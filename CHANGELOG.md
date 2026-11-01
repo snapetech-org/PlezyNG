@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Localize subtitle, external-access and music visualizer controls.
+- Keep the iOS CocoaPods lockfile checksum aligned with the current Podfile.
 - Build the Tizen torrent bridge with libtorrent session parameters to avoid a duplicate link symbol.
 
 - Make release run names show the action, runner pool and tag; route platform matrices by explicit targets.

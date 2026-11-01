@@ -353,9 +353,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
           })
           .catchError((Object error) {
             if (mounted) {
-              ScaffoldMessenger.maybeOf(
-                context,
-              )?.showSnackBar(SnackBar(content: Text('Could not save visualization choices: $error')));
+              ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                SnackBar(content: Text(context.t.visualizerUi.couldNotSaveVisualizationChoices(error: error))),
+              );
             }
           }),
     );
@@ -741,7 +741,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                 FocusableButton(
                   onPressed: () => _showLibrary(context),
                   child: IconButton(
-                    tooltip: 'Browse and download presets',
+                    tooltip: context.t.visualizerUi.browseAndDownloadPresets,
                     onPressed: () => _showLibrary(context),
                     visualDensity: VisualDensity.compact,
                     constraints: const BoxConstraints.tightFor(width: 40, height: 40),
@@ -749,26 +749,35 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                   ),
                 ),
                 PopupMenuButton<String>(
-                  tooltip: 'Visualization options',
+                  tooltip: context.t.visualizerUi.visualizationOptions,
                   icon: const AppIcon(Symbols.more_vert_rounded, size: 20),
                   onSelected: _option,
                   itemBuilder: (_) => [
-                    if (_native.active) const PopupMenuItem(value: 'original', child: Text('Original scenes')),
                     if (_native.active)
-                      CheckedPopupMenuItem(value: 'lock', checked: _locked, child: const Text('Lock preset')),
+                      PopupMenuItem(value: 'original', child: Text(context.t.visualizerUi.originalScenes)),
                     if (_native.active)
-                      CheckedPopupMenuItem(value: 'shuffle', checked: _shuffle, child: const Text('Shuffle presets')),
+                      CheckedPopupMenuItem(
+                        value: 'lock',
+                        checked: _locked,
+                        child: Text(context.t.visualizerUi.lockPreset),
+                      ),
+                    if (_native.active)
+                      CheckedPopupMenuItem(
+                        value: 'shuffle',
+                        checked: _shuffle,
+                        child: Text(context.t.visualizerUi.shufflePresets),
+                      ),
                     if (_native.active) ...[
                       for (final seconds in [15, 30, 60, 120])
                         CheckedPopupMenuItem(
                           value: 'interval:$seconds',
                           checked: _intervalSeconds == seconds,
-                          child: Text('Change every $seconds seconds'),
+                          child: Text(context.t.visualizerUi.changeEverySeconds(seconds: seconds)),
                         ),
                       CheckedPopupMenuItem(
                         value: 'quality',
                         checked: _resolutionScale < 1,
-                        child: const Text('Lower resolution'),
+                        child: Text(context.t.visualizerUi.lowerResolution),
                       ),
                       for (final seconds in [0, 3, 8])
                         CheckedPopupMenuItem(
@@ -776,10 +785,10 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                           checked: _native.transitionSeconds == seconds,
                           child: Text(seconds == 0 ? 'Instant transitions' : '$seconds second transitions'),
                         ),
-                      const PopupMenuItem(value: 'retry', child: Text('Reload preset')),
-                      const PopupMenuItem(value: 'diagnostics', child: Text('Playback details')),
+                      PopupMenuItem(value: 'retry', child: Text(context.t.visualizerUi.reloadPreset)),
+                      PopupMenuItem(value: 'diagnostics', child: Text(context.t.visualizerUi.playbackDetails)),
                     ],
-                    const PopupMenuItem(value: 'fullscreen', child: Text('Fullscreen')),
+                    PopupMenuItem(value: 'fullscreen', child: Text(context.t.common.fullscreen)),
                   ],
                 ),
               ],
@@ -811,9 +820,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Visualization playback'),
+          title: Text(context.t.visualizerUi.visualizationPlayback),
           content: SingleChildScrollView(child: SelectableText(_native.diagnostics)),
-          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+          actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(context.t.common.close))],
         ),
       );
       return;
@@ -908,7 +917,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                                           ),
                                         ),
                                         IconButton(
-                                          tooltip: 'Exit fullscreen',
+                                          tooltip: context.t.common.exitFullscreen,
                                           onPressed: () => Navigator.pop(dialogContext),
                                           icon: const AppIcon(Symbols.fullscreen_exit_rounded),
                                         ),

@@ -4,6 +4,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../../../i18n/strings.g.dart';
+
 import '../../services/settings_service.dart';
 import '../../utils/language_codes.dart';
 import '../../widgets/settings_page.dart';
@@ -48,14 +50,14 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
         .where((value) => value.isNotEmpty)
         .toList(growable: false);
     if (raw.length > 12) {
-      setState(() => _error = 'Use at most 12 language codes.');
+      setState(() => _error = context.t.subtitleLanguageOrderUi.useAtMost12LanguageCodes);
       return null;
     }
     final normalized = <String>[];
     for (final value in raw) {
       final code = LanguageCodes.getIso6391Code(value);
       if (code == null) {
-        setState(() => _error = '“$value” is not a supported language code.');
+        setState(() => _error = context.t.subtitleLanguageOrderUi.isNotASupportedLanguageCode(value: value));
         return null;
       }
       if (!normalized.contains(code)) normalized.add(code);
@@ -78,7 +80,7 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
         setState(() => _status = order.isEmpty ? 'Language fallback order cleared.' : 'Language order saved.');
       }
     } catch (_) {
-      if (mounted) setState(() => _error = 'Could not save the subtitle language order.');
+      if (mounted) setState(() => _error = context.t.subtitleLanguageOrderUi.couldNotSaveTheSubtitleLanguageOrder);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -94,9 +96,9 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
       final settings = await SettingsService.getInstance();
       await settings.reset(SettingsService.subtitleLanguageOrder);
       _controller.clear();
-      if (mounted) setState(() => _status = 'Language fallback order cleared.');
+      if (mounted) setState(() => _status = context.t.subtitleLanguageOrderUi.languageFallbackOrderCleared);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Could not clear the subtitle language order.');
+      if (mounted) setState(() => _error = context.t.subtitleLanguageOrderUi.couldNotClearTheSubtitleLanguageOrder);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -105,7 +107,7 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
   @override
   Widget build(BuildContext context) {
     return SettingsPage(
-      title: const Text('Preferred subtitle languages'),
+      title: Text(context.t.subtitleLanguageOrderUi.preferredSubtitleLanguages),
       children: [
         SettingsGroup(
           title: 'Device-local fallback order',
@@ -113,9 +115,7 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Text(
-                'Enter ISO 639-1 language codes in priority order, separated by commas. '
-                'The server profile language is checked first. This order is used by automatic track selection, '
-                'Always show subtitles, and preferred subtitle downloads when no matching server choice is available.',
+                context.t.subtitleLanguageOrderUi.languageFallbackOrderDescription,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
@@ -126,7 +126,7 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
                 enabled: !_saving,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  labelText: 'Language codes',
+                  labelText: context.t.subtitleLanguageOrderUi.languageCodes,
                   hintText: 'en, es, ja',
                   errorText: _error,
                   border: const OutlineInputBorder(),
@@ -147,12 +147,12 @@ class _SubtitleLanguageOrderScreenState extends State<SubtitleLanguageOrderScree
                     icon: _saving
                         ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                         : const AppIcon(Symbols.save_rounded),
-                    label: const Text('Save order'),
+                    label: Text(context.t.subtitleLanguageOrderUi.saveOrder),
                   ),
                   TextButton.icon(
                     onPressed: _saving ? null : _clear,
                     icon: const AppIcon(Symbols.clear_all_rounded),
-                    label: const Text('Clear'),
+                    label: Text(context.t.common.clear),
                   ),
                 ],
               ),

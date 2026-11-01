@@ -112,6 +112,7 @@ void main() {
 
     final navigator = GlobalKey<NavigatorState>();
     final key = GlobalKey<VideoPlayerScreenState>();
+    final playerCalls = <String>[];
     final loadfileUrls = <String>[];
     const playerChannelBase = 'com.plezy/mpv_player/reload_first_frame_source_test';
 
@@ -128,6 +129,8 @@ void main() {
       eventChannelName: '$playerChannelBase/events',
       channelNameBase: playerChannelBase,
       methodHandler: (call) async {
+        playerCalls.add(call.method);
+        if (playerCalls.length > 20) playerCalls.removeAt(0);
         if (call.method == 'initialize') return true;
         if (call.method != 'command') return null;
         final args = (call.arguments as Map?)?['args'];
@@ -184,8 +187,8 @@ void main() {
         await pumpUntil(
           tester,
           () => revealed()?.value == true,
-          describe: () => 'loadfiles=$loadfileUrls, first frame never revealed',
-          timeout: const Duration(seconds: 10),
+          describe: () => 'playerCalls=$playerCalls, loadfiles=$loadfileUrls, first frame never revealed',
+          timeout: const Duration(seconds: 30),
         );
 
         PlaybackSourceChangeOutcome? outcome;

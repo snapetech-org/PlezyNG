@@ -29,12 +29,12 @@ MAX_WORKERS = 16
 MAX_ATTEMPTS = 8
 READ_SIZE = 1024 * 1024
 # Keep this per-job SDK cache under RUNNER_TEMP so the worker removes it after
-# each job. The post-install check enforces the 30 GiB reserve; the 9 GiB
-# preflight budget leaves room for the Flutter archive and extracted SDK while
-# tolerating small APFS free-space differences around the broker's 40 GiB idle
-# threshold.
+# each job. The post-install check enforces the 30 GiB reserve. The pinned
+# Flutter 3.47.1 archive plus extracted SDK use about 6.2 GiB at peak; the 8 GiB
+# preflight budget leaves additional room for APFS metadata and small free-space
+# differences on the Mac runner.
 MIN_FREE_BYTES = 30 * 1024**3
-INSTALL_HEADROOM_BYTES = 9 * 1024**3
+INSTALL_HEADROOM_BYTES = 8 * 1024**3
 CONTENT_RANGE_RE = re.compile(r"^bytes (\d+)-(\d+)/(\d+)$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 

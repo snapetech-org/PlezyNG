@@ -107,7 +107,7 @@ class ExoPlayerPluginTest {
   fun fallbackPropertyHandlersWaitForAcceptedWritesAndReplyOnce() {
     for (case in fallbackPropertyCases()) {
       val writes = mutableListOf<Pair<String, String>>()
-      val plugin = fallbackPlugin { name, value -> writes += name to value }
+      val plugin = fallbackPlugin(audioOnly = true) { name, value -> writes += name to value }
       val result = RecordingResult()
 
       plugin.onMethodCall(MethodCall(case.method, case.arguments), result)
@@ -140,7 +140,7 @@ class ExoPlayerPluginTest {
   fun fallbackPropertyHandlersMapRejectedWritesToBoundedErrorsOnce() {
     for (case in fallbackPropertyCases()) {
       val writes = AtomicInteger()
-      val plugin = fallbackPlugin { _, _ ->
+      val plugin = fallbackPlugin(audioOnly = true) { _, _ ->
         writes.incrementAndGet()
         error("secret-fallback-value")
       }
@@ -936,10 +936,11 @@ class ExoPlayerPluginTest {
   )
 
   private fun fallbackPlugin(
+    audioOnly: Boolean = false,
     writer: suspend (String, String) -> Unit
   ): ExoPlayerPlugin {
     val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
-    val core = MpvPlayerCore(activity, true, writer)
+    val core = MpvPlayerCore(activity, audioOnly, writer)
     return ExoPlayerPlugin().also { plugin ->
       setField(plugin, "activity", activity)
       setField(plugin, "mpvCore", core)

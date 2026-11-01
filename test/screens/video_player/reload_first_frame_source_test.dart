@@ -110,6 +110,7 @@ void main() {
     final navigator = GlobalKey<NavigatorState>();
     final key = GlobalKey<VideoPlayerScreenState>();
     final loadfileUrls = <String>[];
+    const playerChannelBase = 'com.plezy/mpv_player/reload_first_frame_source_test';
 
     PlayerBase player() => key.currentState!.player! as PlayerBase;
 
@@ -120,8 +121,9 @@ void main() {
     }
 
     await withMockPlayerChannels(
-      methodChannelName: 'com.plezy/mpv_player',
-      eventChannelName: 'com.plezy/mpv_player/events',
+      methodChannelName: playerChannelBase,
+      eventChannelName: '$playerChannelBase/events',
+      channelNameBase: playerChannelBase,
       methodHandler: (call) async {
         if (call.method == 'initialize') return true;
         if (call.method != 'command') return null;

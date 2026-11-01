@@ -20,6 +20,7 @@ import 'package:plezy/mpv/player/player_base.dart';
 import 'package:plezy/providers/account_preferences_controller.dart';
 import 'package:plezy/providers/companion_remote_provider.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
+import 'package:plezy/providers/offline_mode_provider.dart';
 import 'package:plezy/providers/playback_state_provider.dart';
 import 'package:plezy/providers/shader_provider.dart';
 import 'package:plezy/screens/video_player/widgets/player_prompt_overlays.dart';
@@ -85,6 +86,7 @@ void main() {
     final client = _StreamClient();
     final multi = testMultiServer(clients: [client]);
     final offlineWatch = OfflineWatchSyncService(database: db, serverManager: multi.manager);
+    final offlineMode = OfflineModeProvider(multi.manager, multiServerProvider: multi.provider);
     final accountPreferences = AccountPreferencesController();
     final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
     const windowChannel = MethodChannel('window_manager');
@@ -104,6 +106,7 @@ void main() {
       messenger.setMockMethodCallHandler(mediaControlEvents, null);
       tester.view.reset();
       offlineWatch.dispose();
+      offlineMode.dispose();
       accountPreferences.dispose();
     });
 
@@ -149,6 +152,7 @@ void main() {
               ChangeNotifierProvider(create: (_) => PlaybackStateProvider()),
               ChangeNotifierProvider<MultiServerProvider>.value(value: multi.provider),
               ChangeNotifierProvider<OfflineWatchSyncService>.value(value: offlineWatch),
+              ChangeNotifierProvider<OfflineModeProvider>.value(value: offlineMode),
               ChangeNotifierProvider<AccountPreferencesController>.value(value: accountPreferences),
               ChangeNotifierProvider(create: (_) => CompanionRemoteProvider()),
               ChangeNotifierProvider(create: (_) => WatchTogetherProvider()),

@@ -173,6 +173,12 @@ void main() {
         },
       ),
     );
+    // The real background entrypoint opens and reads the journal before it
+    // handles work. Do that here too so this assertion measures concurrent
+    // transactions, not a cold connection/schema open racing the first write.
+    RemoteStreamStore.useDatabaseForTesting(second);
+    await RemoteStreamStore.load('alice');
+    RemoteStreamStore.useDatabaseForTesting(first);
     final account = RemoteStreamAccount.create(
       service: RemoteStreamService.realDebrid,
       displayName: 'Test',

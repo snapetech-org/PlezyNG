@@ -360,6 +360,15 @@ jobs:
             sleep "$delay"
           done
 
+      - name: Upload Android JVM test reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: android-jvm-test-reports-${{ github.run_id }}
+          path: android/**/build/test-results/testDebugUnitTest/*.xml
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Check Android API compatibility
         working-directory: android
         run: ./gradlew :app:lintDebug

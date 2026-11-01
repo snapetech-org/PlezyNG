@@ -291,7 +291,12 @@ class ExoPlayerPluginTest {
       activity,
       true,
       { _, _ -> Unit },
-      recordingLoads(loads) { coreForEvents.get()?.delegate?.onEvent("file-loaded", null) }
+      recordingLoads(loads) {
+        // MpvPlayerCore delivers native events on the main dispatcher. Preserve
+        // that contract in this command-runner fixture so the plugin's signal
+        // gate and its flush are serialized on the same thread.
+        activity.runOnUiThread { coreForEvents.get()?.delegate?.onEvent("file-loaded", null) }
+      }
     )
     coreForEvents.set(mpvCore)
     val plugin = ExoPlayerPlugin()
@@ -341,7 +346,12 @@ class ExoPlayerPluginTest {
     assertEquals(listOf("https://example.test/episode-3.mkv"), loads.map { it[1] })
     assertEquals("pause=no", loads.single()[4].split(",")[1])
     assertTrue("fallback events were not delivered", awaitEventCount(sink, 2))
-    assertEquals(listOf("backend-switched", "file-loaded"), sink.eventNames)
+    val firstFallbackEvents = sink.eventNames
+    assertEquals(
+      "Unexpected MPV event sequence after the first fallback open: $firstFallbackEvents",
+      listOf("backend-switched", "file-loaded"),
+      firstFallbackEvents
+    )
 
     // The fallback owns subsequent opens: they reach mpv directly, without
     // another backend switch.
@@ -355,7 +365,12 @@ class ExoPlayerPluginTest {
     assertEquals("https://example.test/episode-4.mkv", loads.last()[1])
     assertEquals("pause=yes", loads.last()[4].split(",")[1])
     assertTrue("subsequent fallback events were not delivered", awaitEventCount(sink, 3))
-    assertEquals(listOf("backend-switched", "file-loaded", "file-loaded"), sink.eventNames)
+    val subsequentFallbackEvents = sink.eventNames
+    assertEquals(
+      "Unexpected MPV event sequence after the next fallback open: $subsequentFallbackEvents",
+      listOf("backend-switched", "file-loaded", "file-loaded"),
+      subsequentFallbackEvents
+    )
 
     val disposeResult = RecordingResult()
     plugin.onMethodCall(MethodCall("dispose", null), disposeResult)

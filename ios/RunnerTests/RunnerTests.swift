@@ -82,6 +82,9 @@ final class RecordingMpvPlugin: MpvPluginShared {
 
   func setPlayerVisible(_ visible: Bool, restoreOnWindowVisible: Bool) {}
   func updatePlayerFrame() {}
+  func setPlayerVideoRect(
+    left _: Int, top _: Int, right _: Int, bottom _: Int, devicePixelRatio _: Double
+  ) {}
   func setPlayerVideoZoom(_ scale: Double) {}
 
   func didSetPauseProperty(value: String) {

@@ -3,7 +3,8 @@ import com.android.build.api.variant.LibraryAndroidComponentsExtension
 allprojects {
     repositories {
         google()
-        mavenCentral()
+        // Maven Central throttled private JIT builds with HTTP 429 responses.
+        maven { url = uri("https://repo1.maven.org/maven2") }
         exclusiveContent {
             forRepository {
                 maven { url = uri("https://jitpack.io") }

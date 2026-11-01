@@ -3295,11 +3295,13 @@ void main() {
           return true;
         },
       );
+      final tasks = StreamIterator<Task>(enqueued.stream);
       addTearDown(() async {
         await manager.disposeAndDrain();
+        await tasks.cancel();
         await enqueued.close();
       });
-      return (manager: manager, tasks: StreamIterator(enqueued.stream));
+      return (manager: manager, tasks: tasks);
     }
 
     Future<Task> nextTask(StreamIterator<Task> tasks) async {

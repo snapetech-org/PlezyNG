@@ -169,7 +169,10 @@ void main() {
           tester,
           () => find.textContaining('loadfile failed').evaluate().isNotEmpty,
           describe: () => 'playerMethods=$playerMethods, loadfiles=$loadfileUrls, no failure view',
-          timeout: const Duration(seconds: 10),
+          // This wait includes the full cold-start path. pumpUntil yields only
+          // 5 ms of real event-loop time per 10 ms test frame, so 10 seconds
+          // of test time can expire too early on the full private-JIT suite.
+          timeout: const Duration(seconds: 30),
         );
         final failureMessage = find.textContaining('loadfile failed');
         expect(
@@ -203,7 +206,7 @@ void main() {
           tester,
           () => loadfileUrls.length == 2,
           describe: () => 'loadfiles=$loadfileUrls',
-          timeout: const Duration(seconds: 10),
+          timeout: const Duration(seconds: 30),
         );
         expect(loadfileUrls[1], loadfileUrls[0], reason: 'Retry re-runs the same open');
         await pumpUntil(

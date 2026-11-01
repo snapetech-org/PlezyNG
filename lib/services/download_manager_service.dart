@@ -188,6 +188,8 @@ class DownloadManagerService {
   final Map<String, _DownloadContext> _pendingDownloadContext = {};
 
   Future<void>? _supplementaryRepairFuture;
+  final Set<Future<void>> _pendingBackgroundOperations = {};
+  Future<void>? _disposeFuture;
 
   // Resolve the correct MediaServerClient for a given serverId/scope
   // (constructor-injected). Falls back to _fallbackClient when no serverId
@@ -285,7 +287,7 @@ class DownloadManagerService {
 
   /// Future that completes when interrupted download recovery finishes.
   /// Await this before reading download state from the DB to avoid races.
-  late final Future<void> recoveryFuture;
+  Future<void> recoveryFuture = Future<void>.value();
 
   // Public parameter names are used by tests and app setup; the private fields
   // cannot be initializing formals without exposing private named parameters.
@@ -1524,7 +1526,7 @@ class DownloadManagerService {
   /// Resume queued downloads that have no active processing.
   /// Call after a [MediaServerClient] becomes available (e.g. after server connect on launch).
   void resumeQueuedDownloads(MediaServerClient client) {
-    if (_skipDownloadsUnsupported('queued download resume')) return;
+    if (_disposed || _skipDownloadsUnsupported('queued download resume')) return;
 
     _fallbackClient = client;
 
@@ -1533,34 +1535,36 @@ class DownloadManagerService {
       return;
     }
 
-    unawaited(repairPendingSupplementaryDownloads());
-    unawaited(repairMissingArtworkForDownloads());
+    _trackBackgroundOperation(repairPendingSupplementaryDownloads(), 'supplementary download repair');
+    _trackBackgroundOperation(repairMissingArtworkForDownloads(), 'download artwork repair');
 
-    unawaited(
+    _trackBackgroundOperation(
       _database
           .getNextQueueItem()
           .then((item) {
             if (item != null) {
               appLogger.i('Resuming queued downloads after app restart');
-              _processQueue(client);
+              _startQueueProcessing(client);
             }
           })
           .catchError((e, st) {
             appLogger.e('Failed to resume queued downloads', error: e, stackTrace: st);
           }),
+      'queued download resume',
     );
   }
 
   /// Best-effort repair for downloads that completed while supplementary
   /// artwork was missing, corrupt, or skipped by older queue logic.
   Future<void> repairMissingArtworkForDownloads() async {
-    if (_isRepairingArtwork || _isOffline) return;
+    if (_disposed || _isRepairingArtwork || _isOffline) return;
     _isRepairingArtwork = true;
     try {
       final rows = await _database.select(_database.downloadedMedia).get();
       final ensuredParentKeys = <String>{};
 
       for (final row in rows) {
+        if (_disposed) return;
         if (row.status != DownloadStatus.completed.index) continue;
         final client = await _getClientForDownloadKey(row.globalKey);
         if (client == null) continue;
@@ -1921,7 +1925,7 @@ class DownloadManagerService {
     }
 
     _emitProgress(globalKey, DownloadStatus.queued, 0);
-    unawaited(_processQueue(client));
+    _startQueueProcessing(client);
     return storedMetadata;
   }
 
@@ -1955,7 +1959,9 @@ class DownloadManagerService {
   /// Process the download queue — prepares and enqueues items with background_downloader.
   /// Non-blocking: returns after all queued items are enqueued (downloads run natively).
   Future<void> _processQueue(MediaServerClient client) async {
-    if (_skipDownloadsUnsupported('download queue processing') || _queueBlockedByStorageFailure) return;
+    if (_disposed || _skipDownloadsUnsupported('download queue processing') || _queueBlockedByStorageFailure) {
+      return;
+    }
     final queueProcessorOverride = _queueProcessorOverride;
     if (queueProcessorOverride != null) {
       _fallbackClient = client;
@@ -1980,7 +1986,7 @@ class DownloadManagerService {
         // Heads whose client could not be resolved this cycle: excluded from the
         // next lookup so the drain advances instead of re-reading the same row.
         final skippedGlobalKeys = <String>{};
-        while (!_queueBlockedByStorageFailure) {
+        while (!_disposed && !_queueBlockedByStorageFailure) {
           if (_consecutiveQueueFailures >= _maxConsecutiveFailures) {
             appLogger.w('Circuit breaker: $_consecutiveQueueFailures consecutive failures, pausing queue');
             break;
@@ -2032,7 +2038,7 @@ class DownloadManagerService {
     await _transitionStatus(globalKey, DownloadStatus.queued, progress: row == null ? null : _storedPartsPercent(row));
     await _database.addToQueue(mediaGlobalKey: globalKey);
     final client = await _getClientForDownloadKey(globalKey) ?? fallbackClient;
-    if (client != null) unawaited(_processQueue(client));
+    if (client != null) _startQueueProcessing(client);
   }
 
   /// Progress a stacked download earned with the files it already stored, so
@@ -2325,10 +2331,12 @@ class DownloadManagerService {
           );
         }
         _serverConversionTimers.remove(globalKey)?.cancel();
-        _serverConversionTimers[globalKey] = Timer(retryAfter, () {
-          _serverConversionTimers.remove(globalKey);
-          unawaited(_pollServerConversion(globalKey, client));
-        });
+        if (!_disposed) {
+          _serverConversionTimers[globalKey] = Timer(retryAfter, () {
+            _serverConversionTimers.remove(globalKey);
+            _trackBackgroundOperation(_pollServerConversion(globalKey, client), 'server conversion poll');
+          });
+        }
         return null;
       case ConvertedDownloadFailed(:final reason):
         throw StateError(reason);
@@ -2591,7 +2599,7 @@ class DownloadManagerService {
         // The retained queue row carries the supplementary-download policy.
         if (await _queueItemFor(globalKey) == null) await _database.addToQueue(mediaGlobalKey: globalKey);
         final client = ctx?.client ?? await _getClientForDownloadKey(globalKey);
-        if (client != null) unawaited(_processQueue(client));
+        if (client != null) _startQueueProcessing(client);
         return;
       }
       appLogger.i('Downloading file ${partIndex + 1} of ${row.partCount} for $globalKey');
@@ -2622,10 +2630,11 @@ class DownloadManagerService {
   /// Callback: background_downloader progress update
   void _onTaskProgress(TaskProgressUpdate update) {
     if (_disposed) return;
-    unawaited(
+    _trackBackgroundOperation(
       _handleTaskProgress(update).catchError((Object e, StackTrace st) {
         appLogger.e('Error handling download progress for ${update.task.metaData}', error: e, stackTrace: st);
       }),
+      'download progress callback',
     );
   }
 
@@ -2676,6 +2685,7 @@ class DownloadManagerService {
     final progress = ((partIndex + update.progress) * 100 / partCount).round().clamp(0, 100);
     final downloadedBytes = storedBytes + fileDownloadedBytes;
     final totalBytes = fileBytes > 0 ? storedBytes + fileBytes : 0;
+    if (_disposed) return;
 
     _progressController.add(
       DownloadProgress(
@@ -2695,9 +2705,12 @@ class DownloadManagerService {
     _progressDebounceTimers[globalKey]?.cancel();
     _progressDebounceTimers[globalKey] = Timer(_progressDebounceDelay, () {
       _progressDebounceTimers.remove(globalKey);
-      _database.updateDownloadProgress(globalKey, progress, downloadedBytes, totalBytes).catchError((e) {
-        appLogger.w('Failed to update download progress in DB', error: e);
-      });
+      _trackBackgroundOperation(
+        _database.updateDownloadProgress(globalKey, progress, downloadedBytes, totalBytes).catchError((e) {
+          appLogger.w('Failed to update download progress in DB', error: e);
+        }),
+        'download progress persistence',
+      );
     });
   }
 
@@ -2734,10 +2747,11 @@ class DownloadManagerService {
   /// Callback: background_downloader status change
   void _onTaskStatusChanged(TaskStatusUpdate update) {
     if (_disposed) return;
-    unawaited(
+    _trackBackgroundOperation(
       _handleTaskStatusChanged(update).catchError((Object e, StackTrace st) {
         appLogger.e('Error handling download status for ${update.task.metaData}', error: e, stackTrace: st);
       }),
+      'download status callback',
     );
   }
 
@@ -2903,12 +2917,14 @@ class DownloadManagerService {
     await _transitionStatus(globalKey, DownloadStatus.failed, errorMessage: errorMessage);
     await _database.removeFromQueue(globalKey);
     _autoRetryTimers.remove(globalKey)?.cancel();
-    _autoRetryTimers[globalKey] = Timer(_autoRetryDelay, () {
-      _autoRetryTimers.remove(globalKey);
-      unawaited(_performAutoRetry(globalKey));
-    });
+    if (!_disposed) {
+      _autoRetryTimers[globalKey] = Timer(_autoRetryDelay, () {
+        _autoRetryTimers.remove(globalKey);
+        _trackBackgroundOperation(_performAutoRetry(globalKey), 'automatic download retry');
+      });
+    }
 
-    if (processQueueAfterProgress) unawaited(_processQueue(client));
+    if (processQueueAfterProgress) _startQueueProcessing(client);
   }
 
   bool _isStorageFullDownloadFailure(TaskException? exception) {
@@ -3036,7 +3052,7 @@ class DownloadManagerService {
 
     // Try to enqueue more items from the queue
     final client = await _getClientForDownloadKey(globalKey);
-    if (client != null) unawaited(_processQueue(client));
+    if (client != null) _startQueueProcessing(client);
   }
 
   /// Execute an app-level auto-retry: transition back to queued and re-enqueue.
@@ -3296,7 +3312,7 @@ class DownloadManagerService {
       if (part != null) await _continueStackedDownload(globalKey, part, nextPartContext);
       // Always advance the queue, even after errors
       final nextClient = await _getClientForDownloadKey(globalKey);
-      if (nextClient != null) unawaited(_processQueue(nextClient));
+      if (nextClient != null) _startQueueProcessing(nextClient);
     }
   }
 
@@ -4692,7 +4708,26 @@ class DownloadManagerService {
     return collection;
   }
 
-  void dispose() {
+  void _startQueueProcessing(MediaServerClient client) {
+    if (_disposed) return;
+    _trackBackgroundOperation(_processQueue(client), 'download queue processing');
+  }
+
+  void _trackBackgroundOperation(Future<void> operation, String description) {
+    late final Future<void> tracked;
+    tracked = operation
+        .catchError((Object error, StackTrace stackTrace) {
+          appLogger.e('Background download operation failed: $description', error: error, stackTrace: stackTrace);
+        })
+        .whenComplete(() => _pendingBackgroundOperations.remove(tracked));
+    _pendingBackgroundOperations.add(tracked);
+  }
+
+  /// Stops new callbacks and waits for all download work that can still use
+  /// the database. Call this before closing [AppDatabase].
+  Future<void> disposeAndDrain() => _disposeFuture ??= _disposeAndDrain();
+
+  Future<void> _disposeAndDrain() async {
     _disposed = true;
     for (final timer in _progressDebounceTimers.values) {
       timer.cancel();
@@ -4708,8 +4743,37 @@ class DownloadManagerService {
     _completingKeys.clear();
     _pausingKeys.clear();
     _cancellingKeys.clear();
-    _progressController.close();
-    _deletionProgressController.close();
+
+    try {
+      await recoveryFuture;
+    } catch (error, stackTrace) {
+      appLogger.w('Download recovery did not finish during shutdown', error: error, stackTrace: stackTrace);
+    }
+    final supplementaryRepair = _supplementaryRepairFuture;
+    if (supplementaryRepair != null) {
+      try {
+        await supplementaryRepair;
+      } catch (error, stackTrace) {
+        appLogger.w(
+          'Supplementary download repair did not finish during shutdown',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+    while (_pendingBackgroundOperations.isNotEmpty) {
+      await Future.wait(_pendingBackgroundOperations.toList(), eagerError: false);
+    }
+    unawaited(_progressController.close());
+    unawaited(_deletionProgressController.close());
+  }
+
+  void dispose() {
+    unawaited(
+      disposeAndDrain().catchError((Object error, StackTrace stackTrace) {
+        appLogger.w('Download shutdown drain failed', error: error, stackTrace: stackTrace);
+      }),
+    );
   }
 }
 

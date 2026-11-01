@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Drain download manager callbacks before closing the application database.
 - Keep the pinned tvOS Flutter framework in native test products after Flutter asset generation.
 - Localize subtitle, external-access and music visualizer controls.
 - Keep the iOS CocoaPods lockfile checksum aligned with the current Podfile.

@@ -1535,7 +1535,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     _memoryCheckTimer?.cancel();
 
     _libraryEventService.dispose();
-    _downloadManager.dispose();
+    await _downloadManager.disposeAndDrain();
     // Quitting straight from the player is a real stop: the trackers that own
     // their own watched semantics need the terminal report before the process
     // goes away. Bounded — a hung tracker must not hold the app open.

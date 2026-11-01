@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-const _analysisTimeout = Duration(minutes: 3);
+// Package build hooks can take several minutes on a shared private JIT runner.
+const _analysisTimeout = Duration(minutes: 30);
 
 final _allowedDiagnostics = <AnalyzerDiagnostic>{
   const AnalyzerDiagnostic(

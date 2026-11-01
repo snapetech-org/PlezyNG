@@ -17,7 +17,8 @@
         bool valid = id == 7 && CVPixelBufferGetWidth(image) == 64 && CVPixelBufferGetHeight(image) == 64;
         if (CVPixelBufferLockBaseAddress(image, kCVPixelBufferLock_ReadOnly) == kCVReturnSuccess) {
           auto* pixel = static_cast<const uint8_t*>(CVPixelBufferGetBaseAddress(image));
-          valid = valid && pixel && pixel[0] < 50 && pixel[1] < 50 && pixel[2] > 200 && pixel[3] == 255;
+          // H.264 carries no alpha channel; VideoToolbox's unused BGRA byte is unspecified.
+          valid = valid && pixel && pixel[0] < 50 && pixel[1] < 50 && pixel[2] > 200;
           CVPixelBufferUnlockBaseAddress(image, kCVPixelBufferLock_ReadOnly);
         } else
           valid = false;

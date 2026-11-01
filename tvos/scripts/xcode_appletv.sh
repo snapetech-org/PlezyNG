@@ -355,6 +355,20 @@ ResolveFrontendServer() {
   printf '%s\n' "$frontend_server"
 }
 
+CopyTvosFlutterFramework() {
+  local output_dir="$1"
+  local device_tools="$2"
+
+  echo " └─Copying tvOS Flutter.framework from $device_tools"
+  rm -rf "$output_dir/Flutter.framework"
+  cp -R "$device_tools/Flutter.framework" "$output_dir"
+  # The engine tarball's Flutter.framework/Info.plist declares MinimumOSVersion
+  # 13.0 but the binary is linked with the resolved deployment target. Apple's
+  # validator compares both against the host app, so keep the plist aligned.
+  plutil -replace MinimumOSVersion -string "$TVOS_DEPLOYMENT_TARGET" \
+    "$output_dir/Flutter.framework/Info.plist"
+}
+
 BuildFlutterAssetBundle() {
   local flutter_bin="$1"
   local output_dir="$2"
@@ -402,14 +416,7 @@ BuildAppDebug() {
   echo " └─BUILT_PRODUCTS_DIR: $BUILT_PRODUCTS_DIR"
  
 
-  echo " └─Copying Flutter.framework"
-  rm -rf "$OUTDIR/Flutter.framework"
-  cp -R "$DEVICE_TOOLS/Flutter.framework" "$OUTDIR"
-  # The engine tarball's Flutter.framework/Info.plist declares MinimumOSVersion
-  # 13.0 but the binary is linked with the resolved deployment target. Apple's
-  # validator compares both against the host app, so keep the plist aligned.
-  plutil -replace MinimumOSVersion -string "$TVOS_DEPLOYMENT_TARGET" "$OUTDIR/Flutter.framework/Info.plist"
-
+  CopyTvosFlutterFramework "$OUTDIR" "$DEVICE_TOOLS"
 
   tvos_deployment_target="$TVOS_DEPLOYMENT_TARGET"
 
@@ -438,6 +445,12 @@ BuildAppDebug() {
     echo " └─ERROR: Flutter asset bundle build failed"
     return 1
   }
+
+  # The Flutter asset-bundle backend models Apple builds as iOS and can leave
+  # its stock iOS framework in OUTDIR. Restore the pinned tvOS engine framework
+  # after that step so Xcode compiles and links the tvOS-compatible headers and
+  # binary copied below.
+  CopyTvosFlutterFramework "$OUTDIR" "$DEVICE_TOOLS"
 
   echo " └─Compiling tvOS kernel via compatible frontend_server"
   FRONTEND_SERVER=$(ResolveFrontendServer "$HOST_TOOLS" "$DART_AOT_RUNTIME") || return 1

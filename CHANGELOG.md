@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Keep the pinned tvOS Flutter framework in native test products after Flutter asset generation.
 - Localize subtitle, external-access and music visualizer controls.
 - Keep the iOS CocoaPods lockfile checksum aligned with the current Podfile.
 - Update iOS and tvOS native test doubles for the shared MPV video-rect method.

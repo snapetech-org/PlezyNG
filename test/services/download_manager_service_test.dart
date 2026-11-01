@@ -198,7 +198,7 @@ void main() {
           },
         ),
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       return manager;
     }
 
@@ -1066,7 +1066,7 @@ void main() {
           if (!processingStarted.isCompleted) processingStarted.complete();
         },
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.queueDownload(metadata: fixture.metadata, client: client);
       await processingStarted.future;
@@ -1106,7 +1106,7 @@ void main() {
       );
       final progressSubscription = manager.progressStream.listen((_) => progressEvents++);
       addTearDown(progressSubscription.cancel);
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.queueDownload(
         metadata: fixture.metadata,
@@ -1160,7 +1160,7 @@ void main() {
         expect(processingAttempts, 0);
         expect(progressEvents, 0);
         await progressSubscription.cancel();
-        manager.dispose();
+        await manager.disposeAndDrain();
         await fixture.db.deleteDownload(fixture.metadata.globalKey);
       }
     });
@@ -1193,7 +1193,7 @@ void main() {
         fileDownloaderInitializerOverride: () async {},
         autoRetryDelay: Duration.zero,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.queueDownload(metadata: fixture.metadata, client: client);
       await retryStarted.future;
@@ -1231,7 +1231,7 @@ void main() {
         fileDownloaderInitializerOverride: () async {},
         autoRetryDelay: Duration.zero,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final exhausted = manager.progressStream.firstWhere(
         (event) => event.status == DownloadStatus.failed && attempts == 4,
       );
@@ -1263,7 +1263,7 @@ void main() {
         fileDownloaderInitializerOverride: () async {},
         autoRetryDelay: Duration.zero,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final failed = manager.progressStream.firstWhere((event) => event.status == DownloadStatus.failed);
 
       await manager.queueDownload(metadata: fixture.metadata, client: client);
@@ -1300,7 +1300,7 @@ void main() {
           return true;
         },
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final converting = manager.progressStream.firstWhere((event) => event.serverConverting);
 
       await manager.queueDownload(
@@ -1338,7 +1338,7 @@ void main() {
         fileDownloaderInitializerOverride: () async {},
         enqueueTaskOverride: (task) async => fail('nothing should be fetched'),
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final failed = manager.progressStream.firstWhere((event) => event.status == DownloadStatus.failed);
 
       await manager.queueDownload(
@@ -1373,7 +1373,7 @@ void main() {
             return true;
           },
         );
-        addTearDown(manager.dispose);
+        addTearDown(manager.disposeAndDrain);
 
         await manager.queueDownload(metadata: fixture.metadata, client: client, downloadQuality: quality);
 
@@ -1421,7 +1421,7 @@ void main() {
       firstManager.resumeQueuedDownloads(client);
       await processingStarted.future;
       expect(queueProcessingCalls, 1);
-      firstManager.dispose();
+      await firstManager.disposeAndDrain();
 
       final secondManager = DownloadManagerService(
         database: fixture.db,
@@ -1435,7 +1435,7 @@ void main() {
           queueProcessingCalls++;
         },
       );
-      addTearDown(secondManager.dispose);
+      addTearDown(secondManager.disposeAndDrain);
       await secondManager.recoverInterruptedDownloads();
       secondManager.resumeQueuedDownloads(client);
       await Future<void>.delayed(Duration.zero);
@@ -1485,7 +1485,7 @@ void main() {
       expect(File(secondPath).existsSync(), isTrue);
       expect((await fixture.db.getDownloadedMedia(fixture.metadata.globalKey))?.status, DownloadStatus.completed.index);
       expect(await fixture.db.getPendingSupplementaryQueueItems(), hasLength(1));
-      firstManager.dispose();
+      await firstManager.disposeAndDrain();
 
       final restartedManager = DownloadManagerService(
         database: fixture.db,
@@ -1494,7 +1494,7 @@ void main() {
         http: MediaServerHttpClient(client: httpClient),
         downloadsSupportedOverride: false,
       );
-      addTearDown(restartedManager.dispose);
+      addTearDown(restartedManager.disposeAndDrain);
       await restartedManager.repairPendingSupplementaryDownloads();
 
       expect(httpClient.trackRequests, [1, 2, 1]);
@@ -1522,7 +1522,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => client,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.repairPendingSupplementaryDownloads();
       expect(await fixture.db.getPendingSupplementaryQueueItems(), hasLength(1));
@@ -1547,7 +1547,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => client,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.repairPendingSupplementaryDownloads();
 
@@ -1573,7 +1573,7 @@ void main() {
         http: MediaServerHttpClient(client: httpClient),
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.debugHandleTaskStatus(
         TaskStatusUpdate(_downloadTask('current-task', fixture.metadata.globalKey), TaskStatus.complete),
@@ -1604,7 +1604,7 @@ void main() {
         http: MediaServerHttpClient(client: httpClient),
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       final firstRepair = manager.repairPendingSupplementaryDownloads();
       await requestStarted.future;
@@ -1625,7 +1625,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => null,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       // A custom download path enqueues a BaseDirectory.root task; the Task
       // constructor strips the leading separator from `directory`, so only
       // Task.filePath() can rebuild the completed file's absolute location.
@@ -1678,7 +1678,7 @@ void main() {
         downloadsSupportedOverride: true,
         fileDownloaderInitializerOverride: () async {},
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final secondItemAttempted = manager.progressStream.firstWhere(
         (event) => event.globalKey == fixture.metadata.globalKey && event.status == DownloadStatus.failed,
       );
@@ -1771,7 +1771,7 @@ void main() {
         downloadsSupportedOverride: true,
         fileDownloaderInitializerOverride: () async {},
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final lateItemAttempted = manager.progressStream.firstWhere(
         (event) => event.globalKey == 'late:late-1' && event.status == DownloadStatus.failed,
       );
@@ -1831,7 +1831,7 @@ void main() {
         downloadsSupportedOverride: true,
         fileDownloaderInitializerOverride: () async {},
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final attempted = manager.progressStream.firstWhere(
         (event) => event.globalKey == globalKey && event.status == DownloadStatus.failed,
       );
@@ -1873,7 +1873,7 @@ void main() {
         downloadsSupportedOverride: true,
         fileDownloaderInitializerOverride: () async {},
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       final firstPassFailures = manager.progressStream
           .where((event) => event.status == DownloadStatus.failed)
@@ -1921,7 +1921,7 @@ void main() {
       final events = <DownloadProgress>[];
       final progressSubscription = manager.progressStream.listen(events.add);
       addTearDown(progressSubscription.cancel);
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.repairPendingSupplementaryDownloads();
       await Future<void>.delayed(Duration.zero);
@@ -1966,7 +1966,7 @@ void main() {
       final events = <DownloadProgress>[];
       final progressSubscription = manager.progressStream.listen(events.add);
       addTearDown(progressSubscription.cancel);
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.debugHandleTaskStatus(
         TaskStatusUpdate(_downloadTask('current-task', fixture.metadata.globalKey), TaskStatus.complete),
@@ -2025,7 +2025,7 @@ void main() {
         storageService: storage,
         clientResolver: (serverId, {clientScopeId}) => null,
       )..recoveryFuture = Future<void>.value();
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.deleteDownload('srv:item-1');
 
@@ -2105,7 +2105,7 @@ void main() {
         storageService: storage,
         clientResolver: (serverId, {clientScopeId}) => null,
       )..recoveryFuture = Future<void>.value();
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.deleteDownload('srv:track-1');
 
@@ -2288,7 +2288,7 @@ void main() {
           clientResolver: (serverId, {clientScopeId}) => null,
           downloadsSupportedOverride: false,
         );
-        addTearDown(manager.dispose);
+        addTearDown(manager.disposeAndDrain);
         final events = <DownloadProgress>[];
         final sub = manager.progressStream.listen(events.add);
         addTearDown(sub.cancel);
@@ -2355,7 +2355,7 @@ void main() {
           rescheduleKilledTasks: () async => (<Task>[], <Task>[]),
         ),
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.debugHandleTaskStatus(
         TaskStatusUpdate(
@@ -2400,7 +2400,7 @@ void main() {
         autoRetryDelay: Duration.zero,
         queueProcessorOverride: (_) async {},
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       // The native downloader reports the raw response body as the description.
       await manager.debugHandleTaskStatus(
@@ -2439,7 +2439,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => null,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.debugHandleTaskStatus(
         TaskStatusUpdate(
@@ -2483,7 +2483,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => null,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       // The server's transcode disk is full, not this device's.
       await manager.debugHandleTaskStatus(
@@ -2555,7 +2555,7 @@ void main() {
           clientResolver: (serverId, {clientScopeId}) => null,
           downloadsSupportedOverride: false,
         );
-        addTearDown(manager.dispose);
+        addTearDown(manager.disposeAndDrain);
 
         await manager.debugHandleTaskStatus(
           TaskStatusUpdate(_downloadTask('current-task', globalKey), TaskStatus.failed, exception),
@@ -2599,7 +2599,7 @@ void main() {
           safStorage: _FakeSafStorage(resolveOverride: (_) async => throw error),
           downloadsSupportedOverride: false,
         );
-        addTearDown(manager.dispose);
+        addTearDown(manager.disposeAndDrain);
         final task = UriDownloadTask(
           taskId: 'saf-task',
           url: 'https://example.test/video.mp4',
@@ -2637,7 +2637,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => null,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final events = <DownloadProgress>[];
       final sub = manager.progressStream.listen(events.add);
       addTearDown(sub.cancel);
@@ -2686,7 +2686,7 @@ void main() {
           rescheduleKilledTasks: () async => (<Task>[], <Task>[]),
         ),
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final events = <DownloadProgress>[];
       final sub = manager.progressStream.listen(events.add);
       addTearDown(sub.cancel);
@@ -2718,7 +2718,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => null,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.debugHandleTaskStatus(TaskStatusUpdate(_downloadTask('stale-task', globalKey), TaskStatus.failed));
 
@@ -2747,7 +2747,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => null,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.debugHandleTaskStatus(
         TaskStatusUpdate(_downloadTask('current-task', globalKey), TaskStatus.canceled),
@@ -2781,7 +2781,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => null,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final events = <DownloadProgress>[];
       final sub = manager.progressStream.listen(events.add);
       addTearDown(sub.cancel);
@@ -2814,7 +2814,7 @@ void main() {
           return true;
         },
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       for (final value in values) {
         await manager.applyDownloadOnWifiOnly(value);
       }
@@ -2852,7 +2852,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => null,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       final resumed = await manager.debugTryResumeNativeTask(
         globalKey,
@@ -2886,7 +2886,7 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => null,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       final resumed = await manager.debugTryResumeNativeTask(
         globalKey,
@@ -2933,7 +2933,7 @@ void main() {
           rescheduleKilledTasks: () async => (<Task>[], <Task>[]),
         ),
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final events = <DownloadProgress>[];
       final sub = manager.progressStream.listen(events.add);
       addTearDown(sub.cancel);
@@ -3012,7 +3012,7 @@ void main() {
         },
         downloadStorageRefresher: () async {},
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.debugClaimDownloadSafRoot('srv:first', 'content://picked-a');
       await manager.debugClaimDownloadSafRoot('srv:second', 'content://picked-a');
@@ -3067,7 +3067,7 @@ void main() {
         },
         downloadStorageRefresher: () async {},
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       final claim = manager.debugClaimDownloadSafRoot('srv:item', 'content://task-a');
       await claimEntered.future;
@@ -3115,7 +3115,7 @@ void main() {
         downloadsSupportedOverride: false,
         downloadLocationReader: () => (path: 'content://picked-b', type: 'saf'),
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
       final task = UriDownloadTask(
         taskId: 'task-d',
         url: 'https://example.test/video.mp4',
@@ -3154,7 +3154,7 @@ void main() {
         downloadsSupportedOverride: false,
         downloadLocationReader: () => (path: 'content://picked-b', type: 'saf'),
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.debugReconcileSafGrantOwnership();
       expect(saf.releaseCalls, isEmpty);
@@ -3201,7 +3201,7 @@ void main() {
             }
           },
         );
-        addTearDown(manager.dispose);
+        addTearDown(manager.disposeAndDrain);
 
         await expectLater(manager.setDownloadLocation(path: 'content://picked-b', pathType: 'saf'), throwsStateError);
         expect(location, (path: 'content://picked-a', type: 'saf'));
@@ -3248,7 +3248,7 @@ void main() {
           if (refreshes == 1) throw StateError('injected refresh failure');
         },
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await expectLater(manager.setDownloadLocation(path: 'content://picked-b', pathType: 'saf'), throwsStateError);
       expect(location, (path: 'content://picked-a', type: 'saf'));
@@ -3295,9 +3295,9 @@ void main() {
           return true;
         },
       );
-      addTearDown(() {
-        manager.dispose();
-        unawaited(enqueued.close());
+      addTearDown(() async {
+        await manager.disposeAndDrain();
+        await enqueued.close();
       });
       return (manager: manager, tasks: StreamIterator(enqueued.stream));
     }
@@ -3415,7 +3415,7 @@ void main() {
       await before.manager.queueDownload(metadata: fixture.metadata, client: client);
       final first = await nextTask(before.tasks);
       // The app is killed while the first file downloads; its context is gone.
-      before.manager.dispose();
+      await before.manager.disposeAndDrain();
 
       final after = startManager(fixture, client);
       final progress = <DownloadProgress>[];
@@ -3599,7 +3599,7 @@ void main() {
         safStorage: safStorage,
         downloadsSupportedOverride: false,
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.deleteDownload(movie.globalKey);
 
@@ -3652,7 +3652,7 @@ void main() {
           return true;
         },
       );
-      addTearDown(manager.dispose);
+      addTearDown(manager.disposeAndDrain);
 
       await manager.queueDownload(metadata: fixture.metadata, client: client);
       final task = await enqueued.future.timeout(const Duration(seconds: 10));
@@ -3985,7 +3985,7 @@ Future<_DeletionResult> _runEpisodeDeletion({required bool saf, bool failVideoDe
     );
   } finally {
     await subscription.cancel();
-    manager.dispose();
+    await manager.disposeAndDrain();
     await db.close();
     DownloadStorageService.resetForTesting();
     SettingsService.resetForTesting();
@@ -4101,7 +4101,7 @@ Future<_ContainerDeletionResult> _runContainerDeletion({
           : !withForeignFile || await foreignFile!.exists(),
     );
   } finally {
-    manager.dispose();
+    await manager.disposeAndDrain();
     await db.close();
     DownloadStorageService.resetForTesting();
     SettingsService.resetForTesting();
@@ -4188,7 +4188,7 @@ Future<bool> _runSameTitleMovieDeletion({required bool saf, required bool legacy
             : !await File(await storage.ensureAbsolutePath(storedPaths[first.globalKey]!)).exists());
     return firstGone && secondKept && firstFileGone;
   } finally {
-    manager.dispose();
+    await manager.disposeAndDrain();
     await db.close();
     DownloadStorageService.resetForTesting();
     SettingsService.resetForTesting();
@@ -4275,7 +4275,7 @@ Future<({bool thumbRetained, int networkFetches})> _runChapterThumbnailDeletion(
     await manager.deleteDownload(globalKey);
     return (thumbRetained: await artworkFile.exists(), networkFetches: client.networkFetchCount);
   } finally {
-    manager.dispose();
+    await manager.disposeAndDrain();
     await db.close();
     DownloadStorageService.resetForTesting();
     SettingsService.resetForTesting();
@@ -4368,7 +4368,7 @@ Future<({bool thumbRetained, int networkFetches})> _runSeasonBatchChapterThumbna
     await manager.deleteDownload('srv:season-1');
     return (thumbRetained: await artworkFile.exists(), networkFetches: client.networkFetchCount);
   } finally {
-    manager.dispose();
+    await manager.disposeAndDrain();
     await db.close();
     DownloadStorageService.resetForTesting();
     SettingsService.resetForTesting();

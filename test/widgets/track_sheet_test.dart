@@ -344,14 +344,16 @@ void main() {
       late BuildContext hostContext;
 
       await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(extensions: const [testMonoTokens]),
-          home: OverlaySheetHost(
-            child: Builder(
-              builder: (context) {
-                hostContext = context;
-                return const Scaffold(body: SizedBox.expand());
-              },
+        TranslationProvider(
+          child: MaterialApp(
+            theme: ThemeData(extensions: const [testMonoTokens]),
+            home: OverlaySheetHost(
+              child: Builder(
+                builder: (context) {
+                  hostContext = context;
+                  return const Scaffold(body: SizedBox.expand());
+                },
+              ),
             ),
           ),
         ),
@@ -727,14 +729,16 @@ Future<void> _pumpTrackSheet(
   required TrackControlsState trackControlsState,
 }) async {
   await tester.pumpWidget(
-    MaterialApp(
-      theme: ThemeData(extensions: const [testMonoTokens]),
-      home: OverlaySheetHost(
-        child: Scaffold(
-          body: SizedBox(
-            width: 700,
-            height: 400,
-            child: TrackSheet(player: player, trackControlsState: trackControlsState),
+    TranslationProvider(
+      child: MaterialApp(
+        theme: ThemeData(extensions: const [testMonoTokens]),
+        home: OverlaySheetHost(
+          child: Scaffold(
+            body: SizedBox(
+              width: 700,
+              height: 400,
+              child: TrackSheet(player: player, trackControlsState: trackControlsState),
+            ),
           ),
         ),
       ),

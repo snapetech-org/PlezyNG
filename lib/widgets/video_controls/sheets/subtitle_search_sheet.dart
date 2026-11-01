@@ -465,7 +465,11 @@ class _SubtitleSearchSheetState extends State<SubtitleSearchSheet> with Controll
               if (_hiddenRejectedRevisionCount > 0)
                 TextButton(
                   onPressed: _toggleRejectedRevisionVisibility,
-                  child: Text('Show $_hiddenRejectedRevisionCount hidden revision(s)'),
+                  child: Text(
+                    context.t.subtitleSearchUi.showHiddenRevisionS(
+                      hiddenRejectedRevisionCount: _hiddenRejectedRevisionCount,
+                    ),
+                  ),
                 ),
             ],
           ),

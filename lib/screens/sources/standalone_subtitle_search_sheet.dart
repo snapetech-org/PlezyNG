@@ -244,7 +244,7 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
         _hiddenRejectedRevisionCount = filtered.hidden;
       });
     } catch (_) {
-      if (mounted) setState(() => _error = 'Could not save the subtitle revision choice.');
+      if (mounted) setState(() => _error = context.t.subtitleSearchUi.couldNotSaveTheSubtitleRevisionChoice);
     }
   }
 
@@ -439,7 +439,11 @@ class _StandaloneSubtitleSearchSheetState extends State<StandaloneSubtitleSearch
                                     if (_hiddenRejectedRevisionCount > 0)
                                       TextButton(
                                         onPressed: _toggleRejectedRevisionVisibility,
-                                        child: Text('Show $_hiddenRejectedRevisionCount hidden revision(s)'),
+                                        child: Text(
+                                          context.t.subtitleSearchUi.showHiddenRevisionS(
+                                            hiddenRejectedRevisionCount: _hiddenRejectedRevisionCount,
+                                          ),
+                                        ),
                                       ),
                                   ],
                                 ),

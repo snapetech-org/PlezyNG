@@ -89,5 +89,8 @@
   },
   "lib/screens/sources/capture_share_screen.dart": {
     "python3 tools/plezyctl search --manifest path/to/extension.json \"ambient\" --open": "Executable CLI syntax; keep the command example unchanged across locales."
+  },
+  "lib/widgets/video_controls/sheets/subtitle_ai_sheet.dart": {
+    "Undo checkpoint: ": "Persisted revision marker retained for backwards compatibility; not user-facing UI copy."
   }
 }

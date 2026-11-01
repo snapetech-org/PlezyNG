@@ -108,7 +108,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
     if (!_store.isStorageSupported) {
       if (!mounted) return;
       setState(() {
-        _failure = 'Downloads and local preset storage are not available in the web build.';
+        _failure = context.t.visualizerUi.downloadsAndLocalPresetStorageAreNot_c2c47bc7;
         _loading = false;
       });
       return;
@@ -152,7 +152,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       await _store.saveFavoriteIds(next);
     } on Object catch (error) {
       if (!mounted) return;
-      setState(() => _failure = 'Could not save library favorites: $error');
+      setState(() => _failure = context.t.visualizerUi.couldNotSaveLibraryFavorites(error: error));
     }
   }
 
@@ -165,7 +165,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       await _store.refreshCatalog();
       await _refresh();
     } on Object catch (error) {
-      if (mounted) setState(() => _failure = 'Could not update pack catalog: $error');
+      if (mounted) setState(() => _failure = context.t.visualizerUi.couldNotUpdatePackCatalog(error: error));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -238,12 +238,14 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
     );
     if (result == null || result.files.isEmpty || !mounted) return;
     if (result.files.length > VisualizerPackStore.maxPresetImportCount) {
-      setState(() => _failure = 'Choose at most ${VisualizerPackStore.maxPresetImportCount} preset files at a time.');
+      setState(
+        () => _failure = context.t.visualizerUi.presetImportLimit(count: VisualizerPackStore.maxPresetImportCount),
+      );
       return;
     }
     final announcedBytes = result.files.fold<int>(0, (sum, file) => sum + file.size);
     if (announcedBytes > VisualizerPackStore.maxPresetImportBatchBytes) {
-      setState(() => _failure = 'The selected preset files exceed the 64 MB batch limit.');
+      setState(() => _failure = context.t.visualizerUi.theSelectedPresetFilesExceedThe64MBBatchLimit);
       return;
     }
     setState(() {
@@ -275,9 +277,17 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       final skipped = failures.isEmpty
           ? ''
           : '; skipped ${failures.length}: ${failures.take(2).join(' · ')}${failures.length > 2 ? ' · …' : ''}';
-      ScaffoldMessenger.maybeOf(
-        context,
-      )?.showSnackBar(SnackBar(content: Text('Imported $imported of ${result.files.length} preset files$skipped.')));
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(
+          content: Text(
+            context.t.visualizerUi.importedOfPresetFiles(
+              imported: imported,
+              fileCount: result.files.length,
+              skipped: skipped,
+            ),
+          ),
+        ),
+      );
     } catch (error) {
       if (mounted) setState(() => _failure = error.toString());
     } finally {
@@ -294,12 +304,12 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
     if (result == null || result.files.isEmpty || !mounted) return;
     final picked = result.files.first;
     if (picked.size <= 0 || picked.size > VisualizerPackStore.maxLocalPackArchiveBytes) {
-      setState(() => _failure = 'Community pack archives must be 32 MB or smaller.');
+      setState(() => _failure = context.t.visualizerUi.communityPackArchivesMustBe32MBOrSmaller);
       return;
     }
     final sourcePath = picked.path;
     if (sourcePath == null) {
-      setState(() => _failure = 'The selected community pack could not be read from device storage.');
+      setState(() => _failure = context.t.visualizerUi.theSelectedCommunityPackCouldNotBeRe_c50ae021);
       return;
     }
     setState(() {
@@ -310,9 +320,11 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       final pack = await _store.importPackFile(sourcePath, picked.size);
       await _refresh();
       if (!mounted) return;
-      ScaffoldMessenger.maybeOf(
-        context,
-      )?.showSnackBar(SnackBar(content: Text('Imported ${pack.name} ${pack.version}.')));
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(
+          content: Text(context.t.visualizerUi.imported(packName: pack.name, packVersion: pack.version)),
+        ),
+      );
     } catch (error) {
       if (mounted) setState(() => _failure = error.toString());
     } finally {
@@ -328,7 +340,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
     });
     try {
       final path = await FilePickerService.instance.getDirectoryPath(
-        dialogTitle: 'Import a preset folder with textures and notices',
+        dialogTitle: context.t.visualizerUi.importAPresetFolderWithTexturesAndNotices,
       );
       if (path == null || !mounted) return;
       setState(() {
@@ -339,9 +351,13 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       final pack = await _store.importPresetFolder(path, cancellation: cancellation);
       await _refresh();
       if (mounted) {
-        ScaffoldMessenger.maybeOf(
-          context,
-        )?.showSnackBar(SnackBar(content: Text('Imported ${pack.presetCount} presets from ${pack.name}.')));
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(
+            content: Text(
+              context.t.visualizerUi.importedPresetsFrom(packPresetCount: pack.presetCount, packName: pack.name),
+            ),
+          ),
+        );
       }
     } on VisualizerPackCanceledException {
       /* The staging directory is discarded. */
@@ -376,7 +392,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
     final uri = Uri.tryParse(url);
     if (uri == null || uri.scheme != 'https') return;
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication) && mounted) {
-      setState(() => _failure = 'Could not open the source page.');
+      setState(() => _failure = context.t.visualizerUi.couldNotOpenTheSourcePage);
     }
   }
 
@@ -436,10 +452,10 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Visualizer library', style: Theme.of(context).textTheme.titleLarge),
+                          Text(context.t.visualizerUi.visualizerLibrary, style: Theme.of(context).textTheme.titleLarge),
                           const SizedBox(height: 4),
                           Text(
-                            'Download cleared packs or import preset files you already have.',
+                            context.t.visualizerUi.downloadClearedPacksOrImportPresetFi_d3e50944,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(color: tk.textMuted),
                           ),
                         ],
@@ -462,17 +478,17 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                       child: TextField(
                         controller: _searchController,
                         onChanged: (value) => setState(() => _searchQuery = value.trim().toLowerCase()),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           isDense: true,
                           prefixIcon: AppIcon(Symbols.search_rounded),
-                          hintText: 'Search packs, presets, authors, or licenses',
+                          hintText: context.t.visualizerUi.searchPacksPresetsAuthorsOrLicenses,
                           border: OutlineInputBorder(),
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
                     FilterChip(
-                      label: const Text('Favorites'),
+                      label: Text(context.t.libraries.filterCategories.favorites),
                       selected: _favoritesOnly,
                       onSelected: (value) => setState(() => _favoritesOnly = value),
                     ),
@@ -494,7 +510,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                           FilledButton.icon(
                             onPressed: _busy ? null : () => _browse(),
                             icon: const AppIcon(Symbols.grid_view_rounded),
-                            label: const Text('Browse installed presets'),
+                            label: Text(context.t.visualizerUi.browseInstalledPresets),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8),
@@ -505,16 +521,19 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                             ),
                           ),
                           if ((_searchQuery.isNotEmpty || _favoritesOnly) && !hasMatches)
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                              child: Text('No matching packs or imported presets.'),
+                              child: Text(context.t.visualizerUi.noMatchingPacksOrImportedPresets),
                             ),
                           DropdownButtonFormField<String>(
                             initialValue: _engine,
-                            decoration: const InputDecoration(labelText: 'Preset renderer'),
-                            items: const [
-                              DropdownMenuItem(value: 'projectm', child: Text('projectM')),
-                              DropdownMenuItem(value: 'milkrust', child: Text('MilkRust native (experimental)')),
+                            decoration: InputDecoration(labelText: context.t.visualizerUi.presetRenderer),
+                            items: [
+                              DropdownMenuItem(value: 'projectm', child: Text(context.t.visualizerUi.projectM)),
+                              DropdownMenuItem(
+                                value: 'milkrust',
+                                child: Text(context.t.visualizerUi.milkRustNativeExperimental),
+                              ),
                             ],
                             onChanged: _busy
                                 ? null
@@ -531,12 +550,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                   },
                           ),
                           if (_engine == 'milkrust')
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.all(8),
-                              child: Text(
-                                'MilkRust supports a limited shader subset and uniform Fade double presets. '
-                                'Preset changes currently cut immediately. Unsupported presets report an error.',
-                              ),
+                              child: Text(context.t.visualizerUi.milkRustShaderSupportNotice),
                             ),
                           _sectionTitle(context, 'Included packs and downloads'),
                           Text(_store.catalogStatus, style: Theme.of(context).textTheme.bodySmall),
@@ -545,7 +561,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                             child: TextButton.icon(
                               onPressed: _busy || !_store.catalogConfigured ? null : _checkPackUpdates,
                               icon: const AppIcon(Symbols.refresh_rounded),
-                              label: const Text('Check for pack updates'),
+                              label: Text(context.t.visualizerUi.checkForPackUpdates),
                             ),
                           ),
                           for (final entry in visibleEntries)
@@ -565,7 +581,11 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                             children: [
                                               Text(entry.name, style: Theme.of(context).textTheme.titleMedium),
                                               Text(
-                                                '${entry.version} · ${entry.license} · ${entry.presetCount} presets',
+                                                context.t.visualizerUi.presets(
+                                                  entryVersion: entry.version,
+                                                  entryLicense: entry.license,
+                                                  entryPresetCount: entry.presetCount,
+                                                ),
                                                 style: Theme.of(
                                                   context,
                                                 ).textTheme.bodySmall?.copyWith(color: tk.textMuted),
@@ -584,28 +604,24 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                           Uri.parse(entry.qualification.reportUrl!),
                                           mode: LaunchMode.externalApplication,
                                         ),
-                                        child: const Text('Open qualification report'),
+                                        child: Text(context.t.visualizerUi.openQualificationReport),
                                       ),
                                     if (entry.bundledAsset != null)
-                                      const Text('Included with the app. Installation and restoration work offline.'),
+                                      Text(context.t.visualizerUi.includedWithTheAppInstallationAndRes_6db88a7c),
                                     if (!_store.canDownload(entry))
-                                      const Text(
-                                        'Download unavailable. Installed presets can still be browsed and removed.',
-                                      ),
+                                      Text(context.t.visualizerUi.downloadUnavailableInstalledPresetsC_3739b83a),
                                     if (_store.canDownload(entry) &&
                                         olderIds.contains(entry.id) &&
                                         !installedIds.contains(entry.id))
-                                      const Text(
-                                        'Update available. Previous versions stay available in Installed presets.',
-                                      ),
+                                      Text(context.t.visualizerUi.updateAvailablePreviousVersionsStayA_7fb9cf83),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Content notice: ${entry.contentNotice}',
+                                      context.t.visualizerUi.contentNotice(entryContentNotice: entry.contentNotice),
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: tk.textMuted),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'The archive hash and included license notice are checked before installation. Presets are stored offline; playback depends on the native renderer and preset format.',
+                                      context.t.visualizerUi.theArchiveHashAndIncludedLicenseNoti_c58a34a2,
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: tk.textMuted),
                                     ),
                                     if (_workingPackId == entry.id && _progress != null) ...[
@@ -629,7 +645,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                                         .path,
                                                   ),
                                             icon: const AppIcon(Symbols.grid_view_rounded, size: 18),
-                                            label: const Text('Browse presets'),
+                                            label: Text(context.t.visualizerUi.browsePresets),
                                           ),
                                         if (installedIds.contains(entry.id) || olderIds.contains(entry.id))
                                           OutlinedButton.icon(
@@ -641,7 +657,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                           OutlinedButton.icon(
                                             onPressed: _installCancellation?.cancel,
                                             icon: const AppIcon(Symbols.close_rounded, size: 18),
-                                            label: const Text('Cancel installation'),
+                                            label: Text(context.t.visualizerUi.cancelInstallation),
                                           )
                                         else if (!installedIds.contains(entry.id))
                                           FilledButton.icon(
@@ -671,7 +687,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                         TextButton.icon(
                                           onPressed: () => _openSource(entry.sourceUrl),
                                           icon: const AppIcon(Symbols.open_in_new_rounded, size: 18),
-                                          label: const Text('Source'),
+                                          label: Text(context.t.fileSources.source),
                                         ),
                                       ],
                                     ),
@@ -680,11 +696,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                               ),
                             ),
                           _sectionTitle(context, 'Community sources'),
-                          const Padding(
+                          Padding(
                             padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                            child: Text(
-                              'Historical preset collections without an explicit redistribution license stay link-only. Open their source and import a local copy; this app does not rehost those files.',
-                            ),
+                            child: Text(context.t.visualizerUi.historicalPresetCollectionsWithoutAn_ebfd6d44),
                           ),
                           for (final source in visibleLinks)
                             ListTile(
@@ -693,31 +707,31 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                               subtitle: Text(source.status),
                               trailing: TextButton(
                                 onPressed: () => _openSource(source.url),
-                                child: const Text('Open source'),
+                                child: Text(context.t.visualizerUi.openSource),
                               ),
                             ),
                           _sectionTitle(context, 'Local presets'),
                           OutlinedButton.icon(
                             onPressed: _busy || !_store.isStorageSupported ? null : _importFolder,
                             icon: const AppIcon(Symbols.folder_open_rounded, size: 18),
-                            label: const Text('Import folder with textures and notices'),
+                            label: Text(context.t.visualizerUi.importFolderWithTexturesAndNotices),
                           ),
                           if (_busy && _installCancellation != null && _workingPackId == null)
                             TextButton.icon(
                               onPressed: _installCancellation!.cancel,
                               icon: const AppIcon(Symbols.close_rounded),
-                              label: const Text('Cancel folder import'),
+                              label: Text(context.t.visualizerUi.cancelFolderImport),
                             ),
                           OutlinedButton.icon(
                             onPressed: _busy || !_store.isStorageSupported ? null : _importCommunityPack,
                             icon: const AppIcon(Symbols.folder_open_rounded, size: 18),
-                            label: const Text('Import .rmpack (check files and notices)'),
+                            label: Text(context.t.visualizerUi.importRmpackCheckFilesAndNotices),
                           ),
                           if (_communityPacks.isEmpty)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               child: Text(
-                                'No local collections imported. Folder imports stay private and preserve original notices. Pack archives need license records, attribution and an integrity index.',
+                                context.t.visualizerUi.noLocalCollectionsImportedFolderImpo_5b95ffdd,
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(color: tk.textMuted),
                               ),
                             )
@@ -765,12 +779,15 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                           OutlinedButton.icon(
                             onPressed: _busy || !_store.isStorageSupported ? null : _import,
                             icon: const AppIcon(Symbols.file_open_rounded, size: 18),
-                            label: const Text('Import .milk or .milk2 files'),
+                            label: Text(context.t.visualizerUi.importMilkOrMilk2Files),
                           ),
                           if (_imports.isEmpty)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 12),
-                              child: Text('No local presets imported.', style: TextStyle(color: tk.textMuted)),
+                              child: Text(
+                                context.t.visualizerUi.noLocalPresetsImported,
+                                style: TextStyle(color: tk.textMuted),
+                              ),
                             )
                           else
                             for (final name in visibleImports)
@@ -808,7 +825,7 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                               ),
                           const SizedBox(height: 12),
                           Text(
-                            'The six original scenes remain available. Native preset playback is optional. Imported files can contain rapid flashes and intense motion; reduced motion pauses the native renderer.',
+                            context.t.visualizerUi.theSixOriginalScenesRemainAvailableN_69e5ab50,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(color: tk.textMuted),
                           ),
                         ],

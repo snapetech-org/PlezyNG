@@ -114,6 +114,12 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$householdSetup$en householdSetup = Translations$householdSetup$en.internal(_root);
 	late final Translations$issueReport$en issueReport = Translations$issueReport$en.internal(_root);
 	late final Translations$podcasts$en podcasts = Translations$podcasts$en.internal(_root);
+	late final Translations$subtitleAiUi$en subtitleAiUi = Translations$subtitleAiUi$en.internal(_root);
+	late final Translations$externalAccessUi$en externalAccessUi = Translations$externalAccessUi$en.internal(_root);
+	late final Translations$subtitleLanguageOrderUi$en subtitleLanguageOrderUi = Translations$subtitleLanguageOrderUi$en.internal(_root);
+	late final Translations$sourcePlayerUi$en sourcePlayerUi = Translations$sourcePlayerUi$en.internal(_root);
+	late final Translations$subtitleSearchUi$en subtitleSearchUi = Translations$subtitleSearchUi$en.internal(_root);
+	late final Translations$visualizerUi$en visualizerUi = Translations$visualizerUi$en.internal(_root);
 }
 
 // Path: app
@@ -7271,6 +7277,9 @@ class Translations$performanceOverlay$en {
 
 	/// en: '${converted} (${failures} failed)'
 	String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} failed)';
+
+	/// en: '${request} · initializing${fallback}'
+	String neuralProviderInitializing({required Object request, required Object fallback}) => '${request} · initializing${fallback}';
 }
 
 // Path: externalPlayer
@@ -11777,6 +11786,774 @@ class Translations$podcasts$en {
 
 	/// en: 'Wait a few seconds before searching again.'
 	String get rateLimited => 'Wait a few seconds before searching again.';
+}
+
+// Path: subtitleAiUi
+class Translations$subtitleAiUi$en {
+	Translations$subtitleAiUi$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Cut repair'
+	String get cutRepair => 'Cut repair';
+
+	/// en: 'Automatic sync'
+	String get automaticSync => 'Automatic sync';
+
+	/// en: 'cut repair'
+	String get cutRepairLowercase => 'cut repair';
+
+	/// en: 'sync'
+	String get syncLowercase => 'sync';
+
+	/// en: 'Subtitle-reference sync'
+	String get subtitleReferenceSync => 'Subtitle-reference sync';
+
+	/// en: 'Cues outside captured evidence kept their original timing. '
+	String get capturedEvidenceTimingNote => 'Cues outside captured evidence kept their original timing. ';
+
+	/// en: ' Uploaded to the server library.'
+	String get uploadedToServerLibraryNote => ' Uploaded to the server library.';
+
+	/// en: 'Glossary check found ${count} possible mismatch. Review these cues before attaching.'
+	String glossaryMismatchOne({required Object count}) => 'Glossary check found ${count} possible mismatch. Review these cues before attaching.';
+
+	/// en: 'Glossary check found ${count} possible mismatches. Review these cues before attaching.'
+	String glossaryMismatchMany({required Object count}) => 'Glossary check found ${count} possible mismatches. Review these cues before attaching.';
+
+	/// en: 'Downloading the English speech model and speech detector…'
+	String get downloadingTheEnglishSpeechModelAndS_d75c5cb7 => 'Downloading the English speech model and speech detector…';
+
+	/// en: 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}'
+	String generatedCueCountAndDuration({required Object cueCount, required Object durationMinutes, required Object speechStatus, required Object providerLabel, required Object placementEvidence, required Object uploadedNote}) => 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}';
+
+	/// en: 'Transcribing audio and aligning subtitle text…'
+	String get transcribingAudioAndAligningSubtitleText => 'Transcribing audio and aligning subtitle text…';
+
+	/// en: '${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected; rate ${rate}×, base offset ${baseOffset} ms. Original: ${source}.${uploadedNote}'
+	String synchronizationOperationApplied({required Object operation, required Object matchedCueCount, required Object totalCueCount, required Object confidence, required Object discontinuityCount, required Object rate, required Object baseOffset, required Object source, required Object uploadedNote}) => '${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected; rate ${rate}×, base offset ${baseOffset} ms. Original: ${source}.${uploadedNote}';
+
+	/// en: 'Subtitle languages for matching'
+	String get subtitleLanguagesForMatching => 'Subtitle languages for matching';
+
+	/// en: 'Subtitle to synchronize'
+	String get subtitleToSynchronize => 'Subtitle to synchronize';
+
+	/// en: 'Reference subtitle'
+	String get referenceSubtitle => 'Reference subtitle';
+
+	/// en: 'Choose different languages to use translated text for matching.'
+	String get chooseDifferentLanguagesToUseTransla_db4d6e3a => 'Choose different languages to use translated text for matching.';
+
+	/// en: 'Choose the subtitle that needs synchronization…'
+	String get chooseTheSubtitleThatNeedsSynchronization => 'Choose the subtitle that needs synchronization…';
+
+	/// en: 'Choose a synchronized subtitle in another language…'
+	String get chooseASynchronizedSubtitleInAnotherLanguage => 'Choose a synchronized subtitle in another language…';
+
+	/// en: 'Translating target cues locally for text matching…'
+	String get translatingTargetCuesLocallyForTextMatching => 'Translating target cues locally for text matching…';
+
+	/// en: 'Translating cues for alignment (${completed}/${total})…'
+	String translatingCuesForAlignment({required Object completed, required Object total}) => 'Translating cues for alignment (${completed}/${total})…';
+
+	/// en: 'Aligning translated target text against the reference…'
+	String get aligningTranslatedTargetTextAgainstTheReference => 'Aligning translated target text against the reference…';
+
+	/// en: 'Cross-language ${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). The original target text was preserved. Translated from ${sourceLanguage} to ${referenceLanguage}${warningNote}.${uploadedNote}'
+	String crossLanguageOperationApplied({required Object operation, required Object matchedCueCount, required Object totalCueCount, required Object confidence, required Object sourceLanguage, required Object referenceLanguage, required Object warningNote, required Object uploadedNote}) => 'Cross-language ${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). The original target text was preserved. Translated from ${sourceLanguage} to ${referenceLanguage}${warningNote}.${uploadedNote}';
+
+	/// en: 'Choose an already synchronized subtitle in the same language…'
+	String get chooseAnAlreadySynchronizedSubtitleI_83e183b5 => 'Choose an already synchronized subtitle in the same language…';
+
+	/// en: 'Matching both subtitles and aligning timing…'
+	String get matchingBothSubtitlesAndAligningTiming => 'Matching both subtitles and aligning timing…';
+
+	/// en: '${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected. Reference: ${referenceSource}. Original: ${originalSource}.${uploadedNote}'
+	String referenceOperationApplied({required Object operation, required Object matchedCueCount, required Object totalCueCount, required Object confidence, required Object discontinuityCount, required Object referenceSource, required Object originalSource, required Object uploadedNote}) => '${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected. Reference: ${referenceSource}. Original: ${originalSource}.${uploadedNote}';
+
+	/// en: 'Matching the captured speech against subtitle text…'
+	String get matchingTheCapturedSpeechAgainstSubtitleText => 'Matching the captured speech against subtitle text…';
+
+	/// en: 'Captured-playback ${operation} applied to ${matchedCount} of ${totalCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected. ${evidenceNote}Original: ${source}.${uploadedNote}'
+	String capturedPlaybackOperationApplied({required Object operation, required Object matchedCount, required Object totalCount, required Object confidence, required Object discontinuityCount, required Object evidenceNote, required Object source, required Object uploadedNote}) => 'Captured-playback ${operation} applied to ${matchedCount} of ${totalCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected. ${evidenceNote}Original: ${source}.${uploadedNote}';
+
+	/// en: 'Revision history needs an active profile and media item.'
+	String get revisionHistoryNeedsAnActiveProfileAndMediaItem => 'Revision history needs an active profile and media item.';
+
+	/// en: 'Saved revision ${revisionId} to this device for this profile and media item.'
+	String savedRevisionToThisDeviceForThisProf_12a75bb7({required Object revisionId}) => 'Saved revision ${revisionId} to this device for this profile and media item.';
+
+	/// en: 'Could not save this revision locally: ${error}'
+	String couldNotSaveThisRevisionLocally({required Object error}) => 'Could not save this revision locally: ${error}';
+
+	/// en: 'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.'
+	String get persistentUndoCheckpointsNeedAStable_cca05e18 => 'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.';
+
+	/// en: 'Saved an undo checkpoint to this device for this item.'
+	String get savedAnUndoCheckpointToThisDeviceForThisItem => 'Saved an undo checkpoint to this device for this item.';
+
+	/// en: 'Could not save an undo checkpoint; the accepted revision remains available: ${error}'
+	String couldNotSaveAnUndoCheckpointTheAccep_6f1c79d5({required Object error}) => 'Could not save an undo checkpoint; the accepted revision remains available: ${error}';
+
+	/// en: 'Attached reviewed revision from ${revisionDate}.'
+	String attachedReviewedRevisionFrom({required Object revisionDate}) => 'Attached reviewed revision from ${revisionDate}.';
+
+	/// en: 'Export reviewed subtitle revision'
+	String get exportReviewedSubtitleRevision => 'Export reviewed subtitle revision';
+
+	/// en: 'Reviewed subtitle revision exported as SRT.'
+	String get reviewedSubtitleRevisionExportedAsSRT => 'Reviewed subtitle revision exported as SRT.';
+
+	/// en: 'Revision history needs a stable profile and media item.'
+	String get revisionHistoryNeedsAStableProfileAndMediaItem => 'Revision history needs a stable profile and media item.';
+
+	/// en: 'Subtitle revision history'
+	String get subtitleRevisionHistory => 'Subtitle revision history';
+
+	/// en: 'No reviewed revisions have been saved for this item yet.'
+	String get noReviewedRevisionsHaveBeenSavedForThisItemYet => 'No reviewed revisions have been saved for this item yet.';
+
+	/// en: '${revisionDate} · ${revisionCueCount} cues${language}'
+	String cues({required Object revisionDate, required Object revisionCueCount, required Object language}) => '${revisionDate} · ${revisionCueCount} cues${language}';
+
+	/// en: '${revisionWordtimingCount} token-derived timing spans retained'
+	String tokenDerivedTimingSpansRetained({required Object revisionWordtimingCount}) => '${revisionWordtimingCount} token-derived timing spans retained';
+
+	/// en: 'Export'
+	String get export => 'Export';
+
+	/// en: 'Could not open subtitle revision history: ${error}'
+	String couldNotOpenSubtitleRevisionHistory({required Object error}) => 'Could not open subtitle revision history: ${error}';
+
+	/// en: 'Could not save the speech language preference for this profile.'
+	String get couldNotSaveTheSpeechLanguagePrefere_41ee943c => 'Could not save the speech language preference for this profile.';
+
+	/// en: 'Selected language models are ready for offline translation.'
+	String get selectedLanguageModelsAreReadyForOff_eda629c6 => 'Selected language models are ready for offline translation.';
+
+	/// en: 'Translating cue ${completed} of ${total} on this device…'
+	String translatingCueOfOnThisDevice({required Object completed, required Object total}) => 'Translating cue ${completed} of ${total} on this device…';
+
+	/// en: 'Translated ${cueCount} cues from ${sourceLanguage} to ${targetLanguage}. Timing and original subtitle file were preserved. ${backendLabel}.${uploadedNote}'
+	String translatedCuesFrom({required Object cueCount, required Object sourceLanguage, required Object targetLanguage, required Object backendLabel, required Object uploadedNote}) => 'Translated ${cueCount} cues from ${sourceLanguage} to ${targetLanguage}. Timing and original subtitle file were preserved. ${backendLabel}.${uploadedNote}';
+
+	/// en: 'Edit subtitle cue'
+	String get editSubtitleCue => 'Edit subtitle cue';
+
+	/// en: 'Cue text'
+	String get cueText => 'Cue text';
+
+	/// en: 'Start (ms)'
+	String get startMs => 'Start (ms)';
+
+	/// en: 'End (ms)'
+	String get endMs => 'End (ms)';
+
+	/// en: 'Use non-empty text up to 4000 characters and valid millisecond times.'
+	String get useNonEmptyTextUpTo4000CharactersAnd_98f9f3ab => 'Use non-empty text up to 4000 characters and valid millisecond times.';
+
+	/// en: 'Save cue'
+	String get saveCue => 'Save cue';
+
+	/// en: 'Edit all ${cuesCueCount} cues'
+	String editAllCues({required Object cuesCueCount}) => 'Edit all ${cuesCueCount} cues';
+
+	/// en: 'Review or edit any output cue. Changes stay in this result until you attach it.'
+	String get reviewOrEditAnyOutputCueChangesStayI_26d3610b => 'Review or edit any output cue. Changes stay in this result until you attach it.';
+
+	/// en: 'Find in source or output cues'
+	String get findInSourceOrOutputCues => 'Find in source or output cues';
+
+	/// en: 'Showing ${visibleIndexesVisibleindexCount} of ${cuesCueCount} cues.'
+	String showingOfCues({required Object visibleIndexesVisibleindexCount, required Object cuesCueCount}) => 'Showing ${visibleIndexesVisibleindexCount} of ${cuesCueCount} cues.';
+
+	/// en: 'No cues match this search.'
+	String get noCuesMatchThisSearch => 'No cues match this search.';
+
+	/// en: 'Cue ${cueIndex} · ${startTime} – ${endTime}'
+	String cue({required Object cueIndex, required Object startTime, required Object endTime}) => 'Cue ${cueIndex} · ${startTime} – ${endTime}';
+
+	/// en: 'Original'
+	String get original => 'Original';
+
+	/// en: 'Output'
+	String get output => 'Output';
+
+	/// en: 'Edit cue'
+	String get editCue => 'Edit cue';
+
+	/// en: 'Undo (${undoHistoryUndohistoryCount})'
+	String undo({required Object undoHistoryUndohistoryCount}) => 'Undo (${undoHistoryUndohistoryCount})';
+
+	/// en: 'Review ${operationLabel}'
+	String review({required Object operationLabel}) => 'Review ${operationLabel}';
+
+	/// en: '${cuesCueCount} cues are ready. Review this sample before attaching the generated SRT.'
+	String cuesAreReadyReviewThisSampleBeforeAt_2851cf04({required Object cuesCueCount}) => '${cuesCueCount} cues are ready. Review this sample before attaching the generated SRT.';
+
+	/// en: 'And ${count} more.'
+	String andMore({required Object count}) => 'And ${count} more.';
+
+	/// en: 'Save SRT or JSON exports the reviewed result without changing the active track or source subtitle.'
+	String get saveSRTOrJSONExportsTheReviewedResul_b960b84b => 'Save SRT or JSON exports the reviewed result without changing the active track or source subtitle.';
+
+	/// en: 'Edit all cues'
+	String get editAllCues_8771718b => 'Edit all cues';
+
+	/// en: 'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.'
+	String get theCurrentlySelectedCaptionsAreBurne_9904ad02 => 'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.';
+
+	/// en: 'Upload + attach stores this SRT on the active library item when the server allows it.'
+	String get uploadAttachStoresThisSRTOnTheActive_3e49fa27 => 'Upload + attach stores this SRT on the active library item when the server allows it.';
+
+	/// en: 'Edit sample cue'
+	String get editSampleCue => 'Edit sample cue';
+
+	/// en: 'Save SRT'
+	String get saveSRT => 'Save SRT';
+
+	/// en: 'Save JSON'
+	String get saveJSON => 'Save JSON';
+
+	/// en: 'Discard'
+	String get discard => 'Discard';
+
+	/// en: 'Upload + attach'
+	String get uploadAttach => 'Upload + attach';
+
+	/// en: 'Attach to player'
+	String get attachToPlayer => 'Attach to player';
+
+	/// en: 'Subtitle result discarded; the current track and source file are unchanged.'
+	String get subtitleResultDiscardedTheCurrentTra_a846b389 => 'Subtitle result discarded; the current track and source file are unchanged.';
+
+	/// en: 'Save reviewed subtitle'
+	String get saveReviewedSubtitle => 'Save reviewed subtitle';
+
+	/// en: 'SRT export was cancelled; the active track and source subtitle are unchanged.'
+	String get sRTExportWasCancelledTheActiveTrackA_62f0bcfe => 'SRT export was cancelled; the active track and source subtitle are unchanged.';
+
+	/// en: 'Reviewed subtitle exported as SRT.'
+	String get reviewedSubtitleExportedAsSRT => 'Reviewed subtitle exported as SRT.';
+
+	/// en: 'Save reviewed subtitle cue JSON'
+	String get saveReviewedSubtitleCueJSON => 'Save reviewed subtitle cue JSON';
+
+	/// en: 'JSON export was cancelled; the active track and source subtitle are unchanged.'
+	String get jSONExportWasCancelledTheActiveTrack_9ae1948d => 'JSON export was cancelled; the active track and source subtitle are unchanged.';
+
+	/// en: 'Reviewed subtitle exported as versioned cue JSON.'
+	String get reviewedSubtitleExportedAsVersionedCueJSON => 'Reviewed subtitle exported as versioned cue JSON.';
+
+	/// en: 'Subtitle operation failed: ${error}'
+	String subtitleOperationFailed({required Object error}) => 'Subtitle operation failed: ${error}';
+
+	/// en: 'Speech language'
+	String get speechLanguage => 'Speech language';
+
+	/// en: 'Auto-detect'
+	String get autoDetect => 'Auto-detect';
+
+	/// en: 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.'
+	String get theSelectedAcceleratorUsesAnEnglishO_8735cf91 => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.';
+
+	/// en: 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.'
+	String get wAVTranscriptionAndAudioSyncUseA16Bi_31205915 => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.';
+
+	/// en: 'Inference backend'
+	String get inferenceBackend => 'Inference backend';
+
+	/// en: 'Restore, export, or delete reviewed versions stored on this device'
+	String get restoreExportOrDeleteReviewedVersion_e84dffb9 => 'Restore, export, or delete reviewed versions stored on this device';
+
+	/// en: 'Live captions from playback'
+	String get liveCaptionsFromPlayback => 'Live captions from playback';
+
+	/// en: 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.'
+	String get theActivePlayerCopiesBoundedDecodedP_1bef0371 => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.';
+
+	/// en: 'Browse captured transcript'
+	String get browseCapturedTranscript => 'Browse captured transcript';
+
+	/// en: 'Search cues, seek to their start, or hide future dialogue'
+	String get searchCuesSeekToTheirStartOrHideFutureDialogue => 'Search cues, seek to their start, or hide future dialogue';
+
+	/// en: 'Sync from captured playback'
+	String get syncFromCapturedPlayback => 'Sync from captured playback';
+
+	/// en: 'Aligns the watched portion against an existing subtitle'
+	String get alignsTheWatchedPortionAgainstAnExistingSubtitle => 'Aligns the watched portion against an existing subtitle';
+
+	/// en: 'Repair cuts from captured playback'
+	String get repairCutsFromCapturedPlayback => 'Repair cuts from captured playback';
+
+	/// en: 'Preserves cue timing outside speech-matched evidence'
+	String get preservesCueTimingOutsideSpeechMatchedEvidence => 'Preserves cue timing outside speech-matched evidence';
+
+	/// en: 'Translate detected speech to English'
+	String get translateDetectedSpeechToEnglish => 'Translate detected speech to English';
+
+	/// en: 'Used only for generation; sync always transcribes the source language. Whisper translates audio instead of transcribing it.'
+	String get usedOnlyForGenerationSyncAlwaysTrans_5a1e6651 => 'Used only for generation; sync always transcribes the source language. Whisper translates audio instead of transcribing it.';
+
+	/// en: 'Automatically sync an existing subtitle'
+	String get automaticallySyncAnExistingSubtitle => 'Automatically sync an existing subtitle';
+
+	/// en: 'Aligns SRT, VTT, ASS, or SSA text against local speech recognition'
+	String get alignsSRTVTTASSOrSSATextAgainstLocal_6c0ca7b3 => 'Aligns SRT, VTT, ASS, or SSA text against local speech recognition';
+
+	/// en: 'Repair cuts and sync'
+	String get repairCutsAndSync => 'Repair cuts and sync';
+
+	/// en: 'Uses piecewise timing where subtitle/audio text anchors suggest a cut offset change'
+	String get usesPiecewiseTimingWhereSubtitleAudi_a09bdd2c => 'Uses piecewise timing where subtitle/audio text anchors suggest a cut offset change';
+
+	/// en: 'Sync to another subtitle'
+	String get syncToAnotherSubtitle => 'Sync to another subtitle';
+
+	/// en: 'Use a same-language SRT, VTT, ASS, or SSA subtitle as the timing reference'
+	String get useASameLanguageSRTVTTASSOrSSASubtit_4f603312 => 'Use a same-language SRT, VTT, ASS, or SSA subtitle as the timing reference';
+
+	/// en: 'Sync across subtitle languages'
+	String get syncAcrossSubtitleLanguages => 'Sync across subtitle languages';
+
+	/// en: 'Translate target text locally for matching; keep its original text'
+	String get translateTargetTextLocallyForMatchin_8e05d8e7 => 'Translate target text locally for matching; keep its original text';
+
+	/// en: 'Repair cuts across subtitle languages'
+	String get repairCutsAcrossSubtitleLanguages => 'Repair cuts across subtitle languages';
+
+	/// en: 'Uses translated text for anchors and keeps the original target text'
+	String get usesTranslatedTextForAnchorsAndKeeps_3fd7071f => 'Uses translated text for anchors and keeps the original target text';
+
+	/// en: 'Repair cuts using another subtitle'
+	String get repairCutsUsingAnotherSubtitle => 'Repair cuts using another subtitle';
+
+	/// en: 'Apply piecewise offsets where dialogue anchors show a timing discontinuity'
+	String get applyPiecewiseOffsetsWhereDialogueAn_cfd3013c => 'Apply piecewise offsets where dialogue anchors show a timing discontinuity';
+
+	/// en: 'Local subtitle translation'
+	String get localSubtitleTranslation => 'Local subtitle translation';
+
+	/// en: 'Use a series-specific glossary'
+	String get useASeriesSpecificGlossary => 'Use a series-specific glossary';
+
+	/// en: 'Starts with the profile glossary; saved edits apply only to this series.'
+	String get startsWithTheProfileGlossarySavedEdi_5ab98347 => 'Starts with the profile glossary; saved edits apply only to this series.';
+
+	/// en: 'Bilingual subtitle output'
+	String get bilingualSubtitleOutput => 'Bilingual subtitle output';
+
+	/// en: 'Show the original line followed by its translation in each cue'
+	String get showTheOriginalLineFollowedByItsTran_912a8201 => 'Show the original line followed by its translation in each cue';
+
+	/// en: 'Translation glossary (JSON)'
+	String get translationGlossaryJSON => 'Translation glossary (JSON)';
+
+	/// en: '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}'
+	String get tARDISTARDISTheDoctorElDoctor => '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}';
+
+	/// en: 'Save glossary'
+	String get saveGlossary => 'Save glossary';
+
+	/// en: 'Allow language-model downloads over mobile data'
+	String get allowLanguageModelDownloadsOverMobileData => 'Allow language-model downloads over mobile data';
+
+	/// en: 'Prepare offline language models'
+	String get prepareOfflineLanguageModels => 'Prepare offline language models';
+
+	/// en: 'Request Argos CUDA'
+	String get requestArgosCUDA => 'Request Argos CUDA';
+
+	/// en: 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.'
+	String get requiresACUDAEnabledArgosCTranslate2_25eb4fab => 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.';
+
+	/// en: 'Translate an existing subtitle'
+	String get translateAnExistingSubtitle => 'Translate an existing subtitle';
+
+	/// en: 'Timing and source file remain unchanged'
+	String get timingAndSourceFileRemainUnchanged => 'Timing and source file remain unchanged';
+
+	/// en: 'Could not seek to this transcript cue.'
+	String get couldNotSeekToThisTranscriptCue => 'Could not seek to this transcript cue.';
+
+	/// en: 'Captured transcript'
+	String get capturedTranscript => 'Captured transcript';
+
+	/// en: 'Only watched portions are included. Selecting a cue seeks to its start.'
+	String get onlyWatchedPortionsAreIncludedSelect_bb56a271 => 'Only watched portions are included. Selecting a cue seeks to its start.';
+
+	/// en: 'Search transcript'
+	String get searchTranscript => 'Search transcript';
+
+	/// en: 'Clear search'
+	String get clearSearch => 'Clear search';
+
+	/// en: 'Hide future dialogue'
+	String get hideFutureDialogue => 'Hide future dialogue';
+
+	/// en: 'Show cues from the current playhead and earlier'
+	String get showCuesFromTheCurrentPlayheadAndEarlier => 'Show cues from the current playhead and earlier';
+
+	/// en: 'Clear secondary subtitle'
+	String get clearSecondarySubtitle => 'Clear secondary subtitle';
+
+	/// en: 'Subtitle replay lead-in'
+	String get subtitleReplayLeadIn => 'Subtitle replay lead-in';
+
+	/// en: '${milliseconds} ms before the cue'
+	String subtitleReplayLeadInOffset({required Object milliseconds}) => '${milliseconds} ms before the cue';
+
+	/// en: 'Replay current subtitle'
+	String get replayCurrentSubtitle => 'Replay current subtitle';
+
+	/// en: 'Replay current secondary subtitle'
+	String get replayCurrentSecondarySubtitle => 'Replay current secondary subtitle';
+
+	/// en: 'Import shared subtitle (${count})'
+	String importSharedSubtitle({required Object count}) => 'Import shared subtitle (${count})';
+
+	/// en: 'Generate, sync, or translate subtitles'
+	String get generateSyncOrTranslateSubtitles => 'Generate, sync, or translate subtitles';
+
+	/// en: 'Generate, sync, and translate WAV-based subtitle tracks'
+	String get generateSyncAndTranslateWAVBasedSubtitleTracks => 'Generate, sync, and translate WAV-based subtitle tracks';
+
+	/// en: 'AI subtitle attachment unavailable'
+	String get aISubtitleAttachmentUnavailable => 'AI subtitle attachment unavailable';
+
+	/// en: 'The active player cannot receive local SRT files. Switch to a player with SRT support to use this workflow.'
+	String get theActivePlayerCannotReceiveLocalSRT_8b50bc65 => 'The active player cannot receive local SRT files. Switch to a player with SRT support to use this workflow.';
+
+	/// en: 'Attach subtitle to server library'
+	String get attachSubtitleToServerLibrary => 'Attach subtitle to server library';
+
+	/// en: 'Language code'
+	String get languageCode => 'Language code';
+
+	/// en: 'ISO 639-1, for example en or ja'
+	String get iSO6391ForExampleEnOrJa => 'ISO 639-1, for example en or ja';
+
+	/// en: 'SDH / closed captions'
+	String get sDHClosedCaptions => 'SDH / closed captions';
+
+	/// en: 'Enter a valid ISO 639-1 language code.'
+	String get enterAValidISO6391LanguageCode => 'Enter a valid ISO 639-1 language code.';
+
+	/// en: 'Upload'
+	String get upload => 'Upload';
+
+	/// en: 'Continue'
+	String get continueButton => 'Continue';
+
+	/// en: 'Speech translated to English'
+	String get speechTranslatedToEnglish => 'Speech translated to English';
+
+	/// en: 'Detected language: ${language}'
+	String detectedSpeechLanguage({required Object language}) => 'Detected language: ${language}';
+
+	/// en: '; ${count} translation quality warnings'
+	String translationQualityWarnings({required Object count}) => '; ${count} translation quality warnings';
+
+	/// en: '${visibleCount} of ${totalCount} cues${seekingNote}'
+	String cueCountSummary({required Object visibleCount, required Object totalCount, required Object seekingNote}) => '${visibleCount} of ${totalCount} cues${seekingNote}';
+
+	/// en: ' · seeking unavailable'
+	String get seekingUnavailableNote => ' · seeking unavailable';
+}
+
+// Path: externalAccessUi
+class Translations$externalAccessUi$en {
+	Translations$externalAccessUi$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Streaming availability powered by Watchmode'
+	String get streamingAvailabilityPoweredByWatchmode => 'Streaming availability powered by Watchmode';
+
+	/// en: 'Apple Music'
+	String get appleMusic => 'Apple Music';
+}
+
+// Path: subtitleLanguageOrderUi
+class Translations$subtitleLanguageOrderUi$en {
+	Translations$subtitleLanguageOrderUi$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Use at most 12 language codes.'
+	String get useAtMost12LanguageCodes => 'Use at most 12 language codes.';
+
+	/// en: '“${value}” is not a supported language code.'
+	String isNotASupportedLanguageCode({required Object value}) => '“${value}” is not a supported language code.';
+
+	/// en: 'Could not save the subtitle language order.'
+	String get couldNotSaveTheSubtitleLanguageOrder => 'Could not save the subtitle language order.';
+
+	/// en: 'Language fallback order cleared.'
+	String get languageFallbackOrderCleared => 'Language fallback order cleared.';
+
+	/// en: 'Could not clear the subtitle language order.'
+	String get couldNotClearTheSubtitleLanguageOrder => 'Could not clear the subtitle language order.';
+
+	/// en: 'Preferred subtitle languages'
+	String get preferredSubtitleLanguages => 'Preferred subtitle languages';
+
+	/// en: 'Language codes'
+	String get languageCodes => 'Language codes';
+
+	/// en: 'Save order'
+	String get saveOrder => 'Save order';
+
+	/// en: 'Enter ISO 639-1 language codes in priority order, separated by commas. The server profile language is checked first. This order is used by automatic track selection, Always show subtitles, and preferred subtitle downloads when no matching server choice is available.'
+	String get languageFallbackOrderDescription => 'Enter ISO 639-1 language codes in priority order, separated by commas. The server profile language is checked first. This order is used by automatic track selection, Always show subtitles, and preferred subtitle downloads when no matching server choice is available.';
+}
+
+// Path: sourcePlayerUi
+class Translations$sourcePlayerUi$en {
+	Translations$sourcePlayerUi$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Generate, sync, or translate subtitles'
+	String get generateSyncOrTranslateSubtitles => 'Generate, sync, or translate subtitles';
+}
+
+// Path: subtitleSearchUi
+class Translations$subtitleSearchUi$en {
+	Translations$subtitleSearchUi$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Could not save the subtitle revision choice.'
+	String get couldNotSaveTheSubtitleRevisionChoice => 'Could not save the subtitle revision choice.';
+
+	/// en: 'Show ${hiddenRejectedRevisionCount} hidden revision(s)'
+	String showHiddenRevisionS({required Object hiddenRejectedRevisionCount}) => 'Show ${hiddenRejectedRevisionCount} hidden revision(s)';
+}
+
+// Path: visualizerUi
+class Translations$visualizerUi$en {
+	Translations$visualizerUi$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Could not save visualization choices: ${error}'
+	String couldNotSaveVisualizationChoices({required Object error}) => 'Could not save visualization choices: ${error}';
+
+	/// en: 'Browse and download presets'
+	String get browseAndDownloadPresets => 'Browse and download presets';
+
+	/// en: 'Visualization options'
+	String get visualizationOptions => 'Visualization options';
+
+	/// en: 'Original scenes'
+	String get originalScenes => 'Original scenes';
+
+	/// en: 'Lock preset'
+	String get lockPreset => 'Lock preset';
+
+	/// en: 'Shuffle presets'
+	String get shufflePresets => 'Shuffle presets';
+
+	/// en: 'Change every ${seconds} seconds'
+	String changeEverySeconds({required Object seconds}) => 'Change every ${seconds} seconds';
+
+	/// en: 'Lower resolution'
+	String get lowerResolution => 'Lower resolution';
+
+	/// en: 'Reload preset'
+	String get reloadPreset => 'Reload preset';
+
+	/// en: 'Playback details'
+	String get playbackDetails => 'Playback details';
+
+	/// en: 'Visualization playback'
+	String get visualizationPlayback => 'Visualization playback';
+
+	/// en: 'Downloads and local preset storage are not available in the web build.'
+	String get downloadsAndLocalPresetStorageAreNot_c2c47bc7 => 'Downloads and local preset storage are not available in the web build.';
+
+	/// en: 'Could not save library favorites: ${error}'
+	String couldNotSaveLibraryFavorites({required Object error}) => 'Could not save library favorites: ${error}';
+
+	/// en: 'Could not update pack catalog: ${error}'
+	String couldNotUpdatePackCatalog({required Object error}) => 'Could not update pack catalog: ${error}';
+
+	/// en: 'Choose at most ${count} preset files at a time.'
+	String presetImportLimit({required Object count}) => 'Choose at most ${count} preset files at a time.';
+
+	/// en: 'The selected preset files exceed the 64 MB batch limit.'
+	String get theSelectedPresetFilesExceedThe64MBBatchLimit => 'The selected preset files exceed the 64 MB batch limit.';
+
+	/// en: 'Imported ${imported} of ${fileCount} preset files${skipped}.'
+	String importedOfPresetFiles({required Object imported, required Object fileCount, required Object skipped}) => 'Imported ${imported} of ${fileCount} preset files${skipped}.';
+
+	/// en: 'Community pack archives must be 32 MB or smaller.'
+	String get communityPackArchivesMustBe32MBOrSmaller => 'Community pack archives must be 32 MB or smaller.';
+
+	/// en: 'The selected community pack could not be read from device storage.'
+	String get theSelectedCommunityPackCouldNotBeRe_c50ae021 => 'The selected community pack could not be read from device storage.';
+
+	/// en: 'Imported ${packName} ${packVersion}.'
+	String imported({required Object packName, required Object packVersion}) => 'Imported ${packName} ${packVersion}.';
+
+	/// en: 'Import a preset folder with textures and notices'
+	String get importAPresetFolderWithTexturesAndNotices => 'Import a preset folder with textures and notices';
+
+	/// en: 'Imported ${packPresetCount} presets from ${packName}.'
+	String importedPresetsFrom({required Object packPresetCount, required Object packName}) => 'Imported ${packPresetCount} presets from ${packName}.';
+
+	/// en: 'Could not open the source page.'
+	String get couldNotOpenTheSourcePage => 'Could not open the source page.';
+
+	/// en: 'Visualizer library'
+	String get visualizerLibrary => 'Visualizer library';
+
+	/// en: 'Download cleared packs or import preset files you already have.'
+	String get downloadClearedPacksOrImportPresetFi_d3e50944 => 'Download cleared packs or import preset files you already have.';
+
+	/// en: 'Search packs, presets, authors, or licenses'
+	String get searchPacksPresetsAuthorsOrLicenses => 'Search packs, presets, authors, or licenses';
+
+	/// en: 'Browse installed presets'
+	String get browseInstalledPresets => 'Browse installed presets';
+
+	/// en: 'No matching packs or imported presets.'
+	String get noMatchingPacksOrImportedPresets => 'No matching packs or imported presets.';
+
+	/// en: 'Preset renderer'
+	String get presetRenderer => 'Preset renderer';
+
+	/// en: 'projectM'
+	String get projectM => 'projectM';
+
+	/// en: 'MilkRust native (experimental)'
+	String get milkRustNativeExperimental => 'MilkRust native (experimental)';
+
+	/// en: 'Check for pack updates'
+	String get checkForPackUpdates => 'Check for pack updates';
+
+	/// en: '${entryVersion} · ${entryLicense} · ${entryPresetCount} presets'
+	String presets({required Object entryVersion, required Object entryLicense, required Object entryPresetCount}) => '${entryVersion} · ${entryLicense} · ${entryPresetCount} presets';
+
+	/// en: 'Open qualification report'
+	String get openQualificationReport => 'Open qualification report';
+
+	/// en: 'Included with the app. Installation and restoration work offline.'
+	String get includedWithTheAppInstallationAndRes_6db88a7c => 'Included with the app. Installation and restoration work offline.';
+
+	/// en: 'Download unavailable. Installed presets can still be browsed and removed.'
+	String get downloadUnavailableInstalledPresetsC_3739b83a => 'Download unavailable. Installed presets can still be browsed and removed.';
+
+	/// en: 'Update available. Previous versions stay available in Installed presets.'
+	String get updateAvailablePreviousVersionsStayA_7fb9cf83 => 'Update available. Previous versions stay available in Installed presets.';
+
+	/// en: 'Content notice: ${entryContentNotice}'
+	String contentNotice({required Object entryContentNotice}) => 'Content notice: ${entryContentNotice}';
+
+	/// en: 'The archive hash and included license notice are checked before installation. Presets are stored offline; playback depends on the native renderer and preset format.'
+	String get theArchiveHashAndIncludedLicenseNoti_c58a34a2 => 'The archive hash and included license notice are checked before installation. Presets are stored offline; playback depends on the native renderer and preset format.';
+
+	/// en: 'Browse presets'
+	String get browsePresets => 'Browse presets';
+
+	/// en: 'Cancel installation'
+	String get cancelInstallation => 'Cancel installation';
+
+	/// en: 'Historical preset collections without an explicit redistribution license stay link-only. Open their source and import a local copy; this app does not rehost those files.'
+	String get historicalPresetCollectionsWithoutAn_ebfd6d44 => 'Historical preset collections without an explicit redistribution license stay link-only. Open their source and import a local copy; this app does not rehost those files.';
+
+	/// en: 'Open source'
+	String get openSource => 'Open source';
+
+	/// en: 'Import folder with textures and notices'
+	String get importFolderWithTexturesAndNotices => 'Import folder with textures and notices';
+
+	/// en: 'Cancel folder import'
+	String get cancelFolderImport => 'Cancel folder import';
+
+	/// en: 'Import .rmpack (check files and notices)'
+	String get importRmpackCheckFilesAndNotices => 'Import .rmpack (check files and notices)';
+
+	/// en: 'No local collections imported. Folder imports stay private and preserve original notices. Pack archives need license records, attribution and an integrity index.'
+	String get noLocalCollectionsImportedFolderImpo_5b95ffdd => 'No local collections imported. Folder imports stay private and preserve original notices. Pack archives need license records, attribution and an integrity index.';
+
+	/// en: 'Import .milk or .milk2 files'
+	String get importMilkOrMilk2Files => 'Import .milk or .milk2 files';
+
+	/// en: 'No local presets imported.'
+	String get noLocalPresetsImported => 'No local presets imported.';
+
+	/// en: 'The six original scenes remain available. Native preset playback is optional. Imported files can contain rapid flashes and intense motion; reduced motion pauses the native renderer.'
+	String get theSixOriginalScenesRemainAvailableN_69e5ab50 => 'The six original scenes remain available. Native preset playback is optional. Imported files can contain rapid flashes and intense motion; reduced motion pauses the native renderer.';
+
+	/// en: 'Save this preset list'
+	String get saveThisPresetList => 'Save this preset list';
+
+	/// en: 'Playlist name'
+	String get playlistName => 'Playlist name';
+
+	/// en: 'Export visualizer playlists'
+	String get exportVisualizerPlaylists => 'Export visualizer playlists';
+
+	/// en: 'Could not save favorites: ${error}'
+	String couldNotSaveFavorites({required Object error}) => 'Could not save favorites: ${error}';
+
+	/// en: 'Installed presets'
+	String get installedPresets => 'Installed presets';
+
+	/// en: '${visibleVisibleCount} of ${presetCount} · stored offline'
+	String ofStoredOffline({required Object visibleVisibleCount, required Object presetCount}) => '${visibleVisibleCount} of ${presetCount} · stored offline';
+
+	/// en: 'Title, author, pack or tag'
+	String get titleAuthorPackOrTag => 'Title, author, pack or tag';
+
+	/// en: 'Classic .milk'
+	String get classicMilk => 'Classic .milk';
+
+	/// en: 'All presets'
+	String get allPresets => 'All presets';
+
+	/// en: 'Save filtered list as playlist'
+	String get saveFilteredListAsPlaylist => 'Save filtered list as playlist';
+
+	/// en: 'Delete playlist'
+	String get deletePlaylist => 'Delete playlist';
+
+	/// en: 'Import playlists'
+	String get importPlaylists => 'Import playlists';
+
+	/// en: 'Export playlists (references only)'
+	String get exportPlaylistsReferencesOnly => 'Export playlists (references only)';
+
+	/// en: 'Some playlist presets are not installed in this view. Downloads are managed separately.'
+	String get somePlaylistPresetsAreNotInstalledIn_00dcddda => 'Some playlist presets are not installed in this view. Downloads are managed separately.';
+
+	/// en: 'No matching presets.'
+	String get noMatchingPresets => 'No matching presets.';
+
+	/// en: 'Reorder in playlist'
+	String get reorderInPlaylist => 'Reorder in playlist';
+
+	/// en: 'Preset details and notices'
+	String get presetDetailsAndNotices => 'Preset details and notices';
+
+	/// en: 'MilkRust supports a limited shader subset and uniform Fade double presets. Preset changes currently cut immediately. Unsupported presets report an error.'
+	String get milkRustShaderSupportNotice => 'MilkRust supports a limited shader subset and uniform Fade double presets. Preset changes currently cut immediately. Unsupported presets report an error.';
 }
 
 // Path: appIcon.names
@@ -17196,6 +17973,7 @@ extension on Translations {
 			'performanceOverlay.decoderHardware' => 'Hardware',
 			'performanceOverlay.tunnelingActive' => 'Active',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} failed)',
+			'performanceOverlay.neuralProviderInitializing' => ({required Object request, required Object fallback}) => '${request} · initializing${fallback}',
 			'externalPlayer.title' => 'External Player',
 			'externalPlayer.useExternalPlayer' => 'Use External Player',
 			'externalPlayer.useExternalPlayerDescription' => 'Open videos in another app',
@@ -17412,9 +18190,9 @@ extension on Translations {
 			'services.deviceCode.title' => ({required Object service}) => 'Activate PlezyNG on ${service}',
 			'services.deviceCode.instructions' => 'Scan the QR code, or visit the address below and enter this code:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Open ${service} to activate',
-			'services.deviceCode.copyCode' => 'Copy activation code',
 			_ => null,
 		} ?? switch (path) {
+			'services.deviceCode.copyCode' => 'Copy activation code',
 			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
 			'services.deviceCode.codeCopied' => 'Code copied',
 			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
@@ -17926,9 +18704,9 @@ extension on Translations {
 			'universalMedia.shareExpiresLabel' => 'Link expires at',
 			'universalMedia.shareStarting' => 'Preparing the stream…',
 			'universalMedia.shareStart' => 'Start sharing',
-			'universalMedia.shareStop' => 'Stop sharing',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.shareStop' => 'Stop sharing',
 			'universalMedia.extensionsMode' => 'Extensions and CLI',
 			'universalMedia.extensionsIntro' => 'Add a data-only search extension to find media. Choose a result to load it into the familiar Open media form.',
 			'universalMedia.extensionsPrivacy' => 'A manifest can define one HTTPS search endpoint and map response fields. It cannot run code, add request headers, read files, or launch shell commands.',
@@ -18440,9 +19218,9 @@ extension on Translations {
 			'games.steamLibrary' => 'Steam library',
 			'games.linkSteamAccount' => 'Link Steam account',
 			'games.refreshSteamAccount' => 'Refresh Steam account',
-			'games.unlinkSteamAccount' => 'Unlink Steam account',
 			_ => null,
 		} ?? switch (path) {
+			'games.unlinkSteamAccount' => 'Unlink Steam account',
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
@@ -18649,6 +19427,244 @@ extension on Translations {
 			'podcasts.viewAll' => 'Show more episodes',
 			'podcasts.inLibrary' => 'Open podcast',
 			'podcasts.rateLimited' => 'Wait a few seconds before searching again.',
+			'subtitleAiUi.cutRepair' => 'Cut repair',
+			'subtitleAiUi.automaticSync' => 'Automatic sync',
+			'subtitleAiUi.cutRepairLowercase' => 'cut repair',
+			'subtitleAiUi.syncLowercase' => 'sync',
+			'subtitleAiUi.subtitleReferenceSync' => 'Subtitle-reference sync',
+			'subtitleAiUi.capturedEvidenceTimingNote' => 'Cues outside captured evidence kept their original timing. ',
+			'subtitleAiUi.uploadedToServerLibraryNote' => ' Uploaded to the server library.',
+			'subtitleAiUi.glossaryMismatchOne' => ({required Object count}) => 'Glossary check found ${count} possible mismatch. Review these cues before attaching.',
+			'subtitleAiUi.glossaryMismatchMany' => ({required Object count}) => 'Glossary check found ${count} possible mismatches. Review these cues before attaching.',
+			'subtitleAiUi.downloadingTheEnglishSpeechModelAndS_d75c5cb7' => 'Downloading the English speech model and speech detector…',
+			'subtitleAiUi.generatedCueCountAndDuration' => ({required Object cueCount, required Object durationMinutes, required Object speechStatus, required Object providerLabel, required Object placementEvidence, required Object uploadedNote}) => 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}',
+			'subtitleAiUi.transcribingAudioAndAligningSubtitleText' => 'Transcribing audio and aligning subtitle text…',
+			'subtitleAiUi.synchronizationOperationApplied' => ({required Object operation, required Object matchedCueCount, required Object totalCueCount, required Object confidence, required Object discontinuityCount, required Object rate, required Object baseOffset, required Object source, required Object uploadedNote}) => '${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected; rate ${rate}×, base offset ${baseOffset} ms. Original: ${source}.${uploadedNote}',
+			'subtitleAiUi.subtitleLanguagesForMatching' => 'Subtitle languages for matching',
+			'subtitleAiUi.subtitleToSynchronize' => 'Subtitle to synchronize',
+			'subtitleAiUi.referenceSubtitle' => 'Reference subtitle',
+			'subtitleAiUi.chooseDifferentLanguagesToUseTransla_db4d6e3a' => 'Choose different languages to use translated text for matching.',
+			'subtitleAiUi.chooseTheSubtitleThatNeedsSynchronization' => 'Choose the subtitle that needs synchronization…',
+			'subtitleAiUi.chooseASynchronizedSubtitleInAnotherLanguage' => 'Choose a synchronized subtitle in another language…',
+			'subtitleAiUi.translatingTargetCuesLocallyForTextMatching' => 'Translating target cues locally for text matching…',
+			'subtitleAiUi.translatingCuesForAlignment' => ({required Object completed, required Object total}) => 'Translating cues for alignment (${completed}/${total})…',
+			'subtitleAiUi.aligningTranslatedTargetTextAgainstTheReference' => 'Aligning translated target text against the reference…',
+			'subtitleAiUi.crossLanguageOperationApplied' => ({required Object operation, required Object matchedCueCount, required Object totalCueCount, required Object confidence, required Object sourceLanguage, required Object referenceLanguage, required Object warningNote, required Object uploadedNote}) => 'Cross-language ${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). The original target text was preserved. Translated from ${sourceLanguage} to ${referenceLanguage}${warningNote}.${uploadedNote}',
+			'subtitleAiUi.chooseAnAlreadySynchronizedSubtitleI_83e183b5' => 'Choose an already synchronized subtitle in the same language…',
+			'subtitleAiUi.matchingBothSubtitlesAndAligningTiming' => 'Matching both subtitles and aligning timing…',
+			'subtitleAiUi.referenceOperationApplied' => ({required Object operation, required Object matchedCueCount, required Object totalCueCount, required Object confidence, required Object discontinuityCount, required Object referenceSource, required Object originalSource, required Object uploadedNote}) => '${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected. Reference: ${referenceSource}. Original: ${originalSource}.${uploadedNote}',
+			'subtitleAiUi.matchingTheCapturedSpeechAgainstSubtitleText' => 'Matching the captured speech against subtitle text…',
+			'subtitleAiUi.capturedPlaybackOperationApplied' => ({required Object operation, required Object matchedCount, required Object totalCount, required Object confidence, required Object discontinuityCount, required Object evidenceNote, required Object source, required Object uploadedNote}) => 'Captured-playback ${operation} applied to ${matchedCount} of ${totalCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected. ${evidenceNote}Original: ${source}.${uploadedNote}',
+			'subtitleAiUi.revisionHistoryNeedsAnActiveProfileAndMediaItem' => 'Revision history needs an active profile and media item.',
+			'subtitleAiUi.savedRevisionToThisDeviceForThisProf_12a75bb7' => ({required Object revisionId}) => 'Saved revision ${revisionId} to this device for this profile and media item.',
+			'subtitleAiUi.couldNotSaveThisRevisionLocally' => ({required Object error}) => 'Could not save this revision locally: ${error}',
+			'subtitleAiUi.persistentUndoCheckpointsNeedAStable_cca05e18' => 'Persistent undo checkpoints need a stable profile and media identity; session undo is still available.',
+			'subtitleAiUi.savedAnUndoCheckpointToThisDeviceForThisItem' => 'Saved an undo checkpoint to this device for this item.',
+			'subtitleAiUi.couldNotSaveAnUndoCheckpointTheAccep_6f1c79d5' => ({required Object error}) => 'Could not save an undo checkpoint; the accepted revision remains available: ${error}',
+			'subtitleAiUi.attachedReviewedRevisionFrom' => ({required Object revisionDate}) => 'Attached reviewed revision from ${revisionDate}.',
+			'subtitleAiUi.exportReviewedSubtitleRevision' => 'Export reviewed subtitle revision',
+			'subtitleAiUi.reviewedSubtitleRevisionExportedAsSRT' => 'Reviewed subtitle revision exported as SRT.',
+			'subtitleAiUi.revisionHistoryNeedsAStableProfileAndMediaItem' => 'Revision history needs a stable profile and media item.',
+			'subtitleAiUi.subtitleRevisionHistory' => 'Subtitle revision history',
+			'subtitleAiUi.noReviewedRevisionsHaveBeenSavedForThisItemYet' => 'No reviewed revisions have been saved for this item yet.',
+			'subtitleAiUi.cues' => ({required Object revisionDate, required Object revisionCueCount, required Object language}) => '${revisionDate} · ${revisionCueCount} cues${language}',
+			'subtitleAiUi.tokenDerivedTimingSpansRetained' => ({required Object revisionWordtimingCount}) => '${revisionWordtimingCount} token-derived timing spans retained',
+			'subtitleAiUi.export' => 'Export',
+			'subtitleAiUi.couldNotOpenSubtitleRevisionHistory' => ({required Object error}) => 'Could not open subtitle revision history: ${error}',
+			'subtitleAiUi.couldNotSaveTheSpeechLanguagePrefere_41ee943c' => 'Could not save the speech language preference for this profile.',
+			'subtitleAiUi.selectedLanguageModelsAreReadyForOff_eda629c6' => 'Selected language models are ready for offline translation.',
+			'subtitleAiUi.translatingCueOfOnThisDevice' => ({required Object completed, required Object total}) => 'Translating cue ${completed} of ${total} on this device…',
+			'subtitleAiUi.translatedCuesFrom' => ({required Object cueCount, required Object sourceLanguage, required Object targetLanguage, required Object backendLabel, required Object uploadedNote}) => 'Translated ${cueCount} cues from ${sourceLanguage} to ${targetLanguage}. Timing and original subtitle file were preserved. ${backendLabel}.${uploadedNote}',
+			'subtitleAiUi.editSubtitleCue' => 'Edit subtitle cue',
+			'subtitleAiUi.cueText' => 'Cue text',
+			'subtitleAiUi.startMs' => 'Start (ms)',
+			'subtitleAiUi.endMs' => 'End (ms)',
+			'subtitleAiUi.useNonEmptyTextUpTo4000CharactersAnd_98f9f3ab' => 'Use non-empty text up to 4000 characters and valid millisecond times.',
+			'subtitleAiUi.saveCue' => 'Save cue',
+			'subtitleAiUi.editAllCues' => ({required Object cuesCueCount}) => 'Edit all ${cuesCueCount} cues',
+			'subtitleAiUi.reviewOrEditAnyOutputCueChangesStayI_26d3610b' => 'Review or edit any output cue. Changes stay in this result until you attach it.',
+			'subtitleAiUi.findInSourceOrOutputCues' => 'Find in source or output cues',
+			'subtitleAiUi.showingOfCues' => ({required Object visibleIndexesVisibleindexCount, required Object cuesCueCount}) => 'Showing ${visibleIndexesVisibleindexCount} of ${cuesCueCount} cues.',
+			'subtitleAiUi.noCuesMatchThisSearch' => 'No cues match this search.',
+			'subtitleAiUi.cue' => ({required Object cueIndex, required Object startTime, required Object endTime}) => 'Cue ${cueIndex} · ${startTime} – ${endTime}',
+			'subtitleAiUi.original' => 'Original',
+			'subtitleAiUi.output' => 'Output',
+			'subtitleAiUi.editCue' => 'Edit cue',
+			'subtitleAiUi.undo' => ({required Object undoHistoryUndohistoryCount}) => 'Undo (${undoHistoryUndohistoryCount})',
+			'subtitleAiUi.review' => ({required Object operationLabel}) => 'Review ${operationLabel}',
+			'subtitleAiUi.cuesAreReadyReviewThisSampleBeforeAt_2851cf04' => ({required Object cuesCueCount}) => '${cuesCueCount} cues are ready. Review this sample before attaching the generated SRT.',
+			'subtitleAiUi.andMore' => ({required Object count}) => 'And ${count} more.',
+			'subtitleAiUi.saveSRTOrJSONExportsTheReviewedResul_b960b84b' => 'Save SRT or JSON exports the reviewed result without changing the active track or source subtitle.',
+			'subtitleAiUi.editAllCues_8771718b' => 'Edit all cues',
+			'subtitleAiUi.theCurrentlySelectedCaptionsAreBurne_9904ad02' => 'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.',
+			'subtitleAiUi.uploadAttachStoresThisSRTOnTheActive_3e49fa27' => 'Upload + attach stores this SRT on the active library item when the server allows it.',
+			'subtitleAiUi.editSampleCue' => 'Edit sample cue',
+			'subtitleAiUi.saveSRT' => 'Save SRT',
+			'subtitleAiUi.saveJSON' => 'Save JSON',
+			'subtitleAiUi.discard' => 'Discard',
+			'subtitleAiUi.uploadAttach' => 'Upload + attach',
+			'subtitleAiUi.attachToPlayer' => 'Attach to player',
+			'subtitleAiUi.subtitleResultDiscardedTheCurrentTra_a846b389' => 'Subtitle result discarded; the current track and source file are unchanged.',
+			'subtitleAiUi.saveReviewedSubtitle' => 'Save reviewed subtitle',
+			'subtitleAiUi.sRTExportWasCancelledTheActiveTrackA_62f0bcfe' => 'SRT export was cancelled; the active track and source subtitle are unchanged.',
+			'subtitleAiUi.reviewedSubtitleExportedAsSRT' => 'Reviewed subtitle exported as SRT.',
+			'subtitleAiUi.saveReviewedSubtitleCueJSON' => 'Save reviewed subtitle cue JSON',
+			'subtitleAiUi.jSONExportWasCancelledTheActiveTrack_9ae1948d' => 'JSON export was cancelled; the active track and source subtitle are unchanged.',
+			'subtitleAiUi.reviewedSubtitleExportedAsVersionedCueJSON' => 'Reviewed subtitle exported as versioned cue JSON.',
+			'subtitleAiUi.subtitleOperationFailed' => ({required Object error}) => 'Subtitle operation failed: ${error}',
+			'subtitleAiUi.speechLanguage' => 'Speech language',
+			'subtitleAiUi.autoDetect' => 'Auto-detect',
+			'subtitleAiUi.theSelectedAcceleratorUsesAnEnglishO_8735cf91' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
+			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
+			'subtitleAiUi.inferenceBackend' => 'Inference backend',
+			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
+			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
+			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
+			'subtitleAiUi.browseCapturedTranscript' => 'Browse captured transcript',
+			'subtitleAiUi.searchCuesSeekToTheirStartOrHideFutureDialogue' => 'Search cues, seek to their start, or hide future dialogue',
+			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
+			'subtitleAiUi.alignsTheWatchedPortionAgainstAnExistingSubtitle' => 'Aligns the watched portion against an existing subtitle',
+			'subtitleAiUi.repairCutsFromCapturedPlayback' => 'Repair cuts from captured playback',
+			'subtitleAiUi.preservesCueTimingOutsideSpeechMatchedEvidence' => 'Preserves cue timing outside speech-matched evidence',
+			'subtitleAiUi.translateDetectedSpeechToEnglish' => 'Translate detected speech to English',
+			'subtitleAiUi.usedOnlyForGenerationSyncAlwaysTrans_5a1e6651' => 'Used only for generation; sync always transcribes the source language. Whisper translates audio instead of transcribing it.',
+			'subtitleAiUi.automaticallySyncAnExistingSubtitle' => 'Automatically sync an existing subtitle',
+			'subtitleAiUi.alignsSRTVTTASSOrSSATextAgainstLocal_6c0ca7b3' => 'Aligns SRT, VTT, ASS, or SSA text against local speech recognition',
+			'subtitleAiUi.repairCutsAndSync' => 'Repair cuts and sync',
+			'subtitleAiUi.usesPiecewiseTimingWhereSubtitleAudi_a09bdd2c' => 'Uses piecewise timing where subtitle/audio text anchors suggest a cut offset change',
+			'subtitleAiUi.syncToAnotherSubtitle' => 'Sync to another subtitle',
+			'subtitleAiUi.useASameLanguageSRTVTTASSOrSSASubtit_4f603312' => 'Use a same-language SRT, VTT, ASS, or SSA subtitle as the timing reference',
+			'subtitleAiUi.syncAcrossSubtitleLanguages' => 'Sync across subtitle languages',
+			'subtitleAiUi.translateTargetTextLocallyForMatchin_8e05d8e7' => 'Translate target text locally for matching; keep its original text',
+			'subtitleAiUi.repairCutsAcrossSubtitleLanguages' => 'Repair cuts across subtitle languages',
+			'subtitleAiUi.usesTranslatedTextForAnchorsAndKeeps_3fd7071f' => 'Uses translated text for anchors and keeps the original target text',
+			'subtitleAiUi.repairCutsUsingAnotherSubtitle' => 'Repair cuts using another subtitle',
+			'subtitleAiUi.applyPiecewiseOffsetsWhereDialogueAn_cfd3013c' => 'Apply piecewise offsets where dialogue anchors show a timing discontinuity',
+			'subtitleAiUi.localSubtitleTranslation' => 'Local subtitle translation',
+			'subtitleAiUi.useASeriesSpecificGlossary' => 'Use a series-specific glossary',
+			'subtitleAiUi.startsWithTheProfileGlossarySavedEdi_5ab98347' => 'Starts with the profile glossary; saved edits apply only to this series.',
+			'subtitleAiUi.bilingualSubtitleOutput' => 'Bilingual subtitle output',
+			'subtitleAiUi.showTheOriginalLineFollowedByItsTran_912a8201' => 'Show the original line followed by its translation in each cue',
+			'subtitleAiUi.translationGlossaryJSON' => 'Translation glossary (JSON)',
+			'subtitleAiUi.tARDISTARDISTheDoctorElDoctor' => '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}',
+			'subtitleAiUi.saveGlossary' => 'Save glossary',
+			'subtitleAiUi.allowLanguageModelDownloadsOverMobileData' => 'Allow language-model downloads over mobile data',
+			'subtitleAiUi.prepareOfflineLanguageModels' => 'Prepare offline language models',
+			'subtitleAiUi.requestArgosCUDA' => 'Request Argos CUDA',
+			'subtitleAiUi.requiresACUDAEnabledArgosCTranslate2_25eb4fab' => 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.',
+			'subtitleAiUi.translateAnExistingSubtitle' => 'Translate an existing subtitle',
+			'subtitleAiUi.timingAndSourceFileRemainUnchanged' => 'Timing and source file remain unchanged',
+			'subtitleAiUi.couldNotSeekToThisTranscriptCue' => 'Could not seek to this transcript cue.',
+			'subtitleAiUi.capturedTranscript' => 'Captured transcript',
+			'subtitleAiUi.onlyWatchedPortionsAreIncludedSelect_bb56a271' => 'Only watched portions are included. Selecting a cue seeks to its start.',
+			'subtitleAiUi.searchTranscript' => 'Search transcript',
+			'subtitleAiUi.clearSearch' => 'Clear search',
+			'subtitleAiUi.hideFutureDialogue' => 'Hide future dialogue',
+			'subtitleAiUi.showCuesFromTheCurrentPlayheadAndEarlier' => 'Show cues from the current playhead and earlier',
+			'subtitleAiUi.clearSecondarySubtitle' => 'Clear secondary subtitle',
+			'subtitleAiUi.subtitleReplayLeadIn' => 'Subtitle replay lead-in',
+			'subtitleAiUi.subtitleReplayLeadInOffset' => ({required Object milliseconds}) => '${milliseconds} ms before the cue',
+			'subtitleAiUi.replayCurrentSubtitle' => 'Replay current subtitle',
+			'subtitleAiUi.replayCurrentSecondarySubtitle' => 'Replay current secondary subtitle',
+			'subtitleAiUi.importSharedSubtitle' => ({required Object count}) => 'Import shared subtitle (${count})',
+			'subtitleAiUi.generateSyncOrTranslateSubtitles' => 'Generate, sync, or translate subtitles',
+			'subtitleAiUi.generateSyncAndTranslateWAVBasedSubtitleTracks' => 'Generate, sync, and translate WAV-based subtitle tracks',
+			'subtitleAiUi.aISubtitleAttachmentUnavailable' => 'AI subtitle attachment unavailable',
+			'subtitleAiUi.theActivePlayerCannotReceiveLocalSRT_8b50bc65' => 'The active player cannot receive local SRT files. Switch to a player with SRT support to use this workflow.',
+			'subtitleAiUi.attachSubtitleToServerLibrary' => 'Attach subtitle to server library',
+			'subtitleAiUi.languageCode' => 'Language code',
+			'subtitleAiUi.iSO6391ForExampleEnOrJa' => 'ISO 639-1, for example en or ja',
+			'subtitleAiUi.sDHClosedCaptions' => 'SDH / closed captions',
+			'subtitleAiUi.enterAValidISO6391LanguageCode' => 'Enter a valid ISO 639-1 language code.',
+			'subtitleAiUi.upload' => 'Upload',
+			'subtitleAiUi.continueButton' => 'Continue',
+			'subtitleAiUi.speechTranslatedToEnglish' => 'Speech translated to English',
+			'subtitleAiUi.detectedSpeechLanguage' => ({required Object language}) => 'Detected language: ${language}',
+			'subtitleAiUi.translationQualityWarnings' => ({required Object count}) => '; ${count} translation quality warnings',
+			'subtitleAiUi.cueCountSummary' => ({required Object visibleCount, required Object totalCount, required Object seekingNote}) => '${visibleCount} of ${totalCount} cues${seekingNote}',
+			'subtitleAiUi.seekingUnavailableNote' => ' · seeking unavailable',
+			'externalAccessUi.streamingAvailabilityPoweredByWatchmode' => 'Streaming availability powered by Watchmode',
+			'externalAccessUi.appleMusic' => 'Apple Music',
+			'subtitleLanguageOrderUi.useAtMost12LanguageCodes' => 'Use at most 12 language codes.',
+			'subtitleLanguageOrderUi.isNotASupportedLanguageCode' => ({required Object value}) => '“${value}” is not a supported language code.',
+			'subtitleLanguageOrderUi.couldNotSaveTheSubtitleLanguageOrder' => 'Could not save the subtitle language order.',
+			'subtitleLanguageOrderUi.languageFallbackOrderCleared' => 'Language fallback order cleared.',
+			'subtitleLanguageOrderUi.couldNotClearTheSubtitleLanguageOrder' => 'Could not clear the subtitle language order.',
+			'subtitleLanguageOrderUi.preferredSubtitleLanguages' => 'Preferred subtitle languages',
+			'subtitleLanguageOrderUi.languageCodes' => 'Language codes',
+			'subtitleLanguageOrderUi.saveOrder' => 'Save order',
+			'subtitleLanguageOrderUi.languageFallbackOrderDescription' => 'Enter ISO 639-1 language codes in priority order, separated by commas. The server profile language is checked first. This order is used by automatic track selection, Always show subtitles, and preferred subtitle downloads when no matching server choice is available.',
+			'sourcePlayerUi.generateSyncOrTranslateSubtitles' => 'Generate, sync, or translate subtitles',
+			'subtitleSearchUi.couldNotSaveTheSubtitleRevisionChoice' => 'Could not save the subtitle revision choice.',
+			'subtitleSearchUi.showHiddenRevisionS' => ({required Object hiddenRejectedRevisionCount}) => 'Show ${hiddenRejectedRevisionCount} hidden revision(s)',
+			'visualizerUi.couldNotSaveVisualizationChoices' => ({required Object error}) => 'Could not save visualization choices: ${error}',
+			'visualizerUi.browseAndDownloadPresets' => 'Browse and download presets',
+			'visualizerUi.visualizationOptions' => 'Visualization options',
+			'visualizerUi.originalScenes' => 'Original scenes',
+			'visualizerUi.lockPreset' => 'Lock preset',
+			'visualizerUi.shufflePresets' => 'Shuffle presets',
+			'visualizerUi.changeEverySeconds' => ({required Object seconds}) => 'Change every ${seconds} seconds',
+			'visualizerUi.lowerResolution' => 'Lower resolution',
+			'visualizerUi.reloadPreset' => 'Reload preset',
+			'visualizerUi.playbackDetails' => 'Playback details',
+			'visualizerUi.visualizationPlayback' => 'Visualization playback',
+			'visualizerUi.downloadsAndLocalPresetStorageAreNot_c2c47bc7' => 'Downloads and local preset storage are not available in the web build.',
+			'visualizerUi.couldNotSaveLibraryFavorites' => ({required Object error}) => 'Could not save library favorites: ${error}',
+			'visualizerUi.couldNotUpdatePackCatalog' => ({required Object error}) => 'Could not update pack catalog: ${error}',
+			'visualizerUi.presetImportLimit' => ({required Object count}) => 'Choose at most ${count} preset files at a time.',
+			'visualizerUi.theSelectedPresetFilesExceedThe64MBBatchLimit' => 'The selected preset files exceed the 64 MB batch limit.',
+			'visualizerUi.importedOfPresetFiles' => ({required Object imported, required Object fileCount, required Object skipped}) => 'Imported ${imported} of ${fileCount} preset files${skipped}.',
+			'visualizerUi.communityPackArchivesMustBe32MBOrSmaller' => 'Community pack archives must be 32 MB or smaller.',
+			'visualizerUi.theSelectedCommunityPackCouldNotBeRe_c50ae021' => 'The selected community pack could not be read from device storage.',
+			'visualizerUi.imported' => ({required Object packName, required Object packVersion}) => 'Imported ${packName} ${packVersion}.',
+			'visualizerUi.importAPresetFolderWithTexturesAndNotices' => 'Import a preset folder with textures and notices',
+			'visualizerUi.importedPresetsFrom' => ({required Object packPresetCount, required Object packName}) => 'Imported ${packPresetCount} presets from ${packName}.',
+			'visualizerUi.couldNotOpenTheSourcePage' => 'Could not open the source page.',
+			'visualizerUi.visualizerLibrary' => 'Visualizer library',
+			'visualizerUi.downloadClearedPacksOrImportPresetFi_d3e50944' => 'Download cleared packs or import preset files you already have.',
+			'visualizerUi.searchPacksPresetsAuthorsOrLicenses' => 'Search packs, presets, authors, or licenses',
+			'visualizerUi.browseInstalledPresets' => 'Browse installed presets',
+			'visualizerUi.noMatchingPacksOrImportedPresets' => 'No matching packs or imported presets.',
+			'visualizerUi.presetRenderer' => 'Preset renderer',
+			'visualizerUi.projectM' => 'projectM',
+			'visualizerUi.milkRustNativeExperimental' => 'MilkRust native (experimental)',
+			'visualizerUi.checkForPackUpdates' => 'Check for pack updates',
+			'visualizerUi.presets' => ({required Object entryVersion, required Object entryLicense, required Object entryPresetCount}) => '${entryVersion} · ${entryLicense} · ${entryPresetCount} presets',
+			'visualizerUi.openQualificationReport' => 'Open qualification report',
+			'visualizerUi.includedWithTheAppInstallationAndRes_6db88a7c' => 'Included with the app. Installation and restoration work offline.',
+			'visualizerUi.downloadUnavailableInstalledPresetsC_3739b83a' => 'Download unavailable. Installed presets can still be browsed and removed.',
+			'visualizerUi.updateAvailablePreviousVersionsStayA_7fb9cf83' => 'Update available. Previous versions stay available in Installed presets.',
+			'visualizerUi.contentNotice' => ({required Object entryContentNotice}) => 'Content notice: ${entryContentNotice}',
+			'visualizerUi.theArchiveHashAndIncludedLicenseNoti_c58a34a2' => 'The archive hash and included license notice are checked before installation. Presets are stored offline; playback depends on the native renderer and preset format.',
+			'visualizerUi.browsePresets' => 'Browse presets',
+			'visualizerUi.cancelInstallation' => 'Cancel installation',
+			'visualizerUi.historicalPresetCollectionsWithoutAn_ebfd6d44' => 'Historical preset collections without an explicit redistribution license stay link-only. Open their source and import a local copy; this app does not rehost those files.',
+			'visualizerUi.openSource' => 'Open source',
+			'visualizerUi.importFolderWithTexturesAndNotices' => 'Import folder with textures and notices',
+			'visualizerUi.cancelFolderImport' => 'Cancel folder import',
+			'visualizerUi.importRmpackCheckFilesAndNotices' => 'Import .rmpack (check files and notices)',
+			'visualizerUi.noLocalCollectionsImportedFolderImpo_5b95ffdd' => 'No local collections imported. Folder imports stay private and preserve original notices. Pack archives need license records, attribution and an integrity index.',
+			'visualizerUi.importMilkOrMilk2Files' => 'Import .milk or .milk2 files',
+			'visualizerUi.noLocalPresetsImported' => 'No local presets imported.',
+			'visualizerUi.theSixOriginalScenesRemainAvailableN_69e5ab50' => 'The six original scenes remain available. Native preset playback is optional. Imported files can contain rapid flashes and intense motion; reduced motion pauses the native renderer.',
+			'visualizerUi.saveThisPresetList' => 'Save this preset list',
+			'visualizerUi.playlistName' => 'Playlist name',
+			'visualizerUi.exportVisualizerPlaylists' => 'Export visualizer playlists',
+			'visualizerUi.couldNotSaveFavorites' => ({required Object error}) => 'Could not save favorites: ${error}',
+			'visualizerUi.installedPresets' => 'Installed presets',
+			'visualizerUi.ofStoredOffline' => ({required Object visibleVisibleCount, required Object presetCount}) => '${visibleVisibleCount} of ${presetCount} · stored offline',
+			'visualizerUi.titleAuthorPackOrTag' => 'Title, author, pack or tag',
+			'visualizerUi.classicMilk' => 'Classic .milk',
+			'visualizerUi.allPresets' => 'All presets',
+			'visualizerUi.saveFilteredListAsPlaylist' => 'Save filtered list as playlist',
+			'visualizerUi.deletePlaylist' => 'Delete playlist',
+			'visualizerUi.importPlaylists' => 'Import playlists',
+			'visualizerUi.exportPlaylistsReferencesOnly' => 'Export playlists (references only)',
+			'visualizerUi.somePlaylistPresetsAreNotInstalledIn_00dcddda' => 'Some playlist presets are not installed in this view. Downloads are managed separately.',
+			'visualizerUi.noMatchingPresets' => 'No matching presets.',
+			'visualizerUi.reorderInPlaylist' => 'Reorder in playlist',
+			'visualizerUi.presetDetailsAndNotices' => 'Preset details and notices',
+			'visualizerUi.milkRustShaderSupportNotice' => 'MilkRust supports a limited shader subset and uniform Fade double presets. Preset changes currently cut immediately. Unsupported presets report an error.',
 			_ => null,
 		};
 	}

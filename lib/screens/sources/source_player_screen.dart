@@ -1444,7 +1444,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
               s.player?.playerType == 'mpv' &&
               s.player?.supportedLocalSubtitleExtensions.contains('srt') == true)
             IconButton(
-              tooltip: 'Generate, sync, or translate subtitles',
+              tooltip: context.t.sourcePlayerUi.generateSyncOrTranslateSubtitles,
               onPressed: () => _openSourceSubtitleAi(s),
               icon: const AppIcon(Symbols.auto_awesome_rounded),
             ),

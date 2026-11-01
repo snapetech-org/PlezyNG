@@ -443,19 +443,21 @@ void main() {
           );
 
     await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => MultiviewWorkspaceController()),
-          ChangeNotifierProvider<SourceController>.value(value: sources),
-          ChangeNotifierProvider<SourcePlayback>.value(value: playback),
-        ],
-        child: InputModeTracker(
-          child: RepaintBoundary(
-            key: const ValueKey('source-player-capture'),
-            child: MaterialApp(
-              theme: screenshotTheme,
-              debugShowCheckedModeBanner: false,
-              home: const SourcePlayerScreen(),
+      TranslationProvider(
+        child: MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => MultiviewWorkspaceController()),
+            ChangeNotifierProvider<SourceController>.value(value: sources),
+            ChangeNotifierProvider<SourcePlayback>.value(value: playback),
+          ],
+          child: InputModeTracker(
+            child: RepaintBoundary(
+              key: const ValueKey('source-player-capture'),
+              child: MaterialApp(
+                theme: screenshotTheme,
+                debugShowCheckedModeBanner: false,
+                home: const SourcePlayerScreen(),
+              ),
             ),
           ),
         ),

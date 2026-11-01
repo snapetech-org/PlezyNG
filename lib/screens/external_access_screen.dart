@@ -371,7 +371,10 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
         ),
         Padding(
           padding: const EdgeInsets.only(left: 16, top: 2, bottom: 8),
-          child: Text('Streaming availability powered by Watchmode', style: Theme.of(context).textTheme.bodySmall),
+          child: Text(
+            context.t.externalAccessUi.streamingAvailabilityPoweredByWatchmode,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ),
       ],
     );
@@ -401,7 +404,10 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
-                  child: Text('Apple Music', style: Theme.of(sheetContext).textTheme.titleLarge),
+                  child: Text(
+                    context.t.externalAccessUi.appleMusic,
+                    style: Theme.of(sheetContext).textTheme.titleLarge,
+                  ),
                 ),
                 if (songs.isEmpty)
                   Expanded(child: Center(child: Text(t.messages.noResultsFound)))
@@ -461,7 +467,7 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
         FocusableListTile(
           leading: const AppIcon(Symbols.music_note_rounded),
           title: Text(t.lending.search),
-          subtitle: const Text('Apple Music'),
+          subtitle: Text(context.t.externalAccessUi.appleMusic),
           trailing: _appleMusicLoading
               ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
               : const AppIcon(Symbols.search_rounded),
@@ -473,7 +479,7 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
             title: Text(song.title),
             subtitle: Text(song.artist),
             trailing: IconButton(
-              tooltip: 'Stop',
+              tooltip: context.t.companionRemote.remote.stop,
               onPressed: _stopAppleMusic,
               icon: const AppIcon(Symbols.stop_rounded),
             ),

@@ -26,6 +26,7 @@ final class SceneLifecycleTests: XCTestCase {
       "plezy://open",
       "plezy://open?profile=Kids%20Room",
       "plezy://play?content_id=plezy_server_item",
+      "plezy://watch?plex=show/5d9c086c46115600200aa2fe&mode=shuffle",
       "plezy://play?server=abc123&id=42&mode=shuffle&profile=p1",
       "plezy://play?type=show&tvdb=81189&mode=next",
       "plezy://live?channel=5.1&server=abc123&start=beginning",
@@ -69,21 +70,6 @@ final class SceneLifecycleTests: XCTestCase {
 
     XCTAssertTrue(handled)
     XCTAssertEqual(visited, urls)
-  }
-
-  func testDeepLinkPayloadForEachHost() {
-    func payload(_ string: String) -> String? {
-      SystemShelfPlugin.deepLinkPayload(from: URL(string: string)!)
-    }
-
-    XCTAssertEqual(payload("plezy://play?content_id=plezy_abc_123"), "plezy_abc_123")
-    XCTAssertEqual(
-      payload("plezy://watch?plex=show/5d9c086c46115600200aa2fe&mode=shuffle"),
-      "plezy://watch?plex=show/5d9c086c46115600200aa2fe&mode=shuffle"
-    )
-    XCTAssertEqual(payload("plezy://live?channel=4.1"), "plezy://live?channel=4.1")
-    XCTAssertNil(payload("plezy://other?id=1"))
-    XCTAssertNil(payload("https://watch?plex=show/abc"))
   }
 
   func testSceneURLRoutingReturnsFalseWhenNoContextIsAccepted() {

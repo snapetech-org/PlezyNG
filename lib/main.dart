@@ -1535,7 +1535,23 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     _memoryCheckTimer?.cancel();
 
     _libraryEventService.dispose();
-    await _downloadManager.disposeAndDrain();
+    var downloadManagerDrained = false;
+    try {
+      await _downloadManager.disposeAndDrain().timeout(const Duration(seconds: 8));
+      downloadManagerDrained = true;
+    } on TimeoutException catch (e, st) {
+      appLogger.w(
+        'Download manager did not drain before exit; keeping the database open until process exit',
+        error: e,
+        stackTrace: st,
+      );
+    } catch (e, st) {
+      appLogger.w(
+        'Download manager drain failed; keeping the database open until process exit',
+        error: e,
+        stackTrace: st,
+      );
+    }
     // Quitting straight from the player is a real stop: the trackers that own
     // their own watched semantics need the terminal report before the process
     // goes away. Bounded — a hung tracker must not hold the app open.
@@ -1560,7 +1576,9 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       _offlineWatchSyncService.stopBackgroundSync(),
       ?_autoDeleteRun?.future,
     ]);
-    await _appDatabase.close();
+    if (downloadManagerDrained) {
+      await _appDatabase.close();
+    }
   }
 
   @override

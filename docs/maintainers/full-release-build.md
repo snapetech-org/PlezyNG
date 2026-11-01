@@ -15,6 +15,13 @@ native manifest and dispatches `snapetech-org/mpv-build` if the published
 artifacts are stale or incomplete. It verifies Apple, Android, Linux, and
 Windows native groups before touching PlezyNG.
 
+If the control-plane host cannot reach `ffmpeg.org`, pass
+`--ffmpeg-source-cache <directory>` with retained files named
+`ffmpeg-<pinned-version>.tar.xz`, `ffmpeg-<pinned-version>.tar.xz.asc`, and
+`ffmpeg-devel.asc`. The orchestrator copies those files into the new scratch
+directory and still requires a valid signature from its pinned FFmpeg release
+key before it records a checksum or changes PlezyNG's pins.
+
 When a completed native run has failed platforms, the orchestrator can recover
 other groups whose publishing jobs succeeded. It checks the manifest artifact's
 GitHub digest, the current source content keys, and every published asset's

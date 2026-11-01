@@ -15,6 +15,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -1151,7 +1152,7 @@ class ExoPlayerPluginTest {
 
   private class RecordingEventSink : EventChannel.EventSink {
     var successValue: Any? = null
-    val successValues = mutableListOf<Any?>()
+    private val successValues = CopyOnWriteArrayList<Any?>()
     val eventNames: List<String>
       get() = successValues.mapNotNull { event ->
         val envelope = event as? Map<*, *> ?: return@mapNotNull null

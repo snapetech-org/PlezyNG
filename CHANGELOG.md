@@ -4,6 +4,7 @@
 
 - Localize subtitle, external-access and music visualizer controls.
 - Keep the iOS CocoaPods lockfile checksum aligned with the current Podfile.
+- Update iOS and tvOS native test doubles for the shared MPV video-rect method.
 - Build the Tizen torrent bridge with libtorrent session parameters to avoid a duplicate link symbol.
 
 - Make release run names show the action, runner pool and tag; route platform matrices by explicit targets.

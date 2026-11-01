@@ -105,10 +105,12 @@ void main() {
 
     final key = GlobalKey<VideoPlayerScreenState>();
     var loadfileCalls = 0;
+    const playerChannelBase = 'com.plezy/mpv_player/player_startup_failure_test';
 
     await withMockPlayerChannels(
-      methodChannelName: 'com.plezy/mpv_player',
-      eventChannelName: 'com.plezy/mpv_player/events',
+      methodChannelName: playerChannelBase,
+      eventChannelName: '$playerChannelBase/events',
+      channelNameBase: playerChannelBase,
       methodHandler: (call) async {
         if (call.method == 'initialize') return true;
         if (call.method != 'command') return null;

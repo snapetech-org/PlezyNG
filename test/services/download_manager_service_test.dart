@@ -1229,7 +1229,8 @@ void main() {
         clientResolver: (serverId, {clientScopeId}) => client,
         downloadsSupportedOverride: true,
         fileDownloaderInitializerOverride: () async {},
-        autoRetryDelay: Duration.zero,
+        // Let each queue pass settle before the next retry timer re-enters it.
+        autoRetryDelay: const Duration(milliseconds: 50),
       );
       addTearDown(manager.disposeAndDrain);
       final exhausted = manager.progressStream.firstWhere(

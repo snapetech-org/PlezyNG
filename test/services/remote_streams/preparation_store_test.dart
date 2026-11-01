@@ -179,6 +179,12 @@ void main() {
       accessToken: 'private',
     );
     try {
+      // The real background entrypoint opens and reads the journal before it
+      // handles work. Do that here too so this assertion measures concurrent
+      // transactions, not a cold connection/schema open racing the first write.
+      RemoteStreamStore.useDatabaseForTesting(second);
+      await RemoteStreamStore.load('alice');
+      RemoteStreamStore.useDatabaseForTesting(first);
       final foreground = RemoteStreamStore.update('alice', (state) => state.copyWith(accounts: [account]));
       RemoteStreamStore.useDatabaseForTesting(second);
       final worker = RemoteStreamStore.update('alice', (state) => state.copyWith(nativePeerEnabled: true));

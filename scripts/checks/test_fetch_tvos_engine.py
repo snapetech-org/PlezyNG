@@ -226,6 +226,20 @@ cp "$FIXTURE_ARCHIVE" "$output"
             f"fixture-1 {second_digest}",
         )
 
+    def test_tvOS_framework_is_restored_after_flutter_asset_generation(self) -> None:
+        script = (ROOT / "tvos/scripts/xcode_appletv.sh").read_text(encoding="utf-8")
+        build_app_debug = (
+            script.split("BuildAppDebug() {", 1)[1]
+            .split("\nBuildAppRelease() {", 1)[0]
+        )
+        install_framework = 'CopyTvosFlutterFramework "$OUTDIR" "$DEVICE_TOOLS"'
+
+        self.assertEqual(build_app_debug.count(install_framework), 2)
+        self.assertLess(
+            build_app_debug.index('BuildFlutterAssetBundle "$FLUTTER_BIN" "$OUTDIR"'),
+            build_app_debug.rindex(install_framework),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

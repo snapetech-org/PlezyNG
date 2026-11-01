@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Keep Android MPV fallback CI tests aligned with video-surface resume behavior and native open-event ordering.
 - Drain download manager callbacks before closing the application database, and keep desktop exit bounded when work does not settle.
 - Keep the pinned tvOS Flutter framework in native test products after Flutter asset generation.
 - Localize subtitle, external-access and music visualizer controls.

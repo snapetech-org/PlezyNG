@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -106,7 +107,7 @@ class ExoPlayerPluginTest {
   fun fallbackPropertyHandlersWaitForAcceptedWritesAndReplyOnce() {
     for (case in fallbackPropertyCases()) {
       val writes = mutableListOf<Pair<String, String>>()
-      val plugin = fallbackPlugin { name, value -> writes += name to value }
+      val plugin = fallbackPlugin(audioOnly = true) { name, value -> writes += name to value }
       val result = RecordingResult()
 
       plugin.onMethodCall(MethodCall(case.method, case.arguments), result)
@@ -139,7 +140,7 @@ class ExoPlayerPluginTest {
   fun fallbackPropertyHandlersMapRejectedWritesToBoundedErrorsOnce() {
     for (case in fallbackPropertyCases()) {
       val writes = AtomicInteger()
-      val plugin = fallbackPlugin { _, _ ->
+      val plugin = fallbackPlugin(audioOnly = true) { _, _ ->
         writes.incrementAndGet()
         error("secret-fallback-value")
       }
@@ -284,7 +285,14 @@ class ExoPlayerPluginTest {
     val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
     val exoCore = ExoPlayerCore(activity)
     val loads = ConcurrentLinkedQueue<List<String>>()
-    val mpvCore = MpvPlayerCore(activity, true, { _, _ -> Unit }, recordingLoads(loads))
+    val coreForEvents = AtomicReference<MpvPlayerCore?>()
+    val mpvCore = MpvPlayerCore(
+      activity,
+      true,
+      { _, _ -> Unit },
+      recordingLoads(loads) { coreForEvents.get()?.delegate?.onEvent("file-loaded", null) }
+    )
+    coreForEvents.set(mpvCore)
     val plugin = ExoPlayerPlugin()
     val sink = RecordingEventSink()
     plugin.onListen(null, sink)
@@ -324,7 +332,6 @@ class ExoPlayerPluginTest {
     assertTrue(loads.isEmpty())
 
     initializeCallback!!(true)
-    mpvCore.delegate?.onEvent("file-loaded", null)
     awaitCompletion(active)
 
     assertEquals(null, active.errorCode)
@@ -345,7 +352,7 @@ class ExoPlayerPluginTest {
     assertEquals(null, next.errorCode)
     assertEquals("https://example.test/episode-4.mkv", loads.last()[1])
     assertEquals("pause=yes", loads.last()[4].split(",")[1])
-    assertEquals(listOf("backend-switched", "file-loaded"), sink.eventNames)
+    assertEquals(listOf("backend-switched", "file-loaded", "file-loaded"), sink.eventNames)
 
     val disposeResult = RecordingResult()
     plugin.onMethodCall(MethodCall("dispose", null), disposeResult)
@@ -929,10 +936,11 @@ class ExoPlayerPluginTest {
   )
 
   private fun fallbackPlugin(
+    audioOnly: Boolean = false,
     writer: suspend (String, String) -> Unit
   ): ExoPlayerPlugin {
     val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
-    val core = MpvPlayerCore(activity, false, writer)
+    val core = MpvPlayerCore(activity, audioOnly, writer)
     return ExoPlayerPlugin().also { plugin ->
       setField(plugin, "activity", activity)
       setField(plugin, "mpvCore", core)
@@ -1020,12 +1028,18 @@ class ExoPlayerPluginTest {
     }
   }
 
-  /** Accepts every native command, recording each one; a `loadfile` yields playlist entry 1. */
+  /** Records commands, returns playlist entry 1 for `loadfile`, and can emit its configured event. */
   private fun recordingLoads(
-    loads: ConcurrentLinkedQueue<List<String>>
+    loads: ConcurrentLinkedQueue<List<String>>,
+    onLoadFile: (() -> Unit)? = null
   ): suspend (Array<String>) -> Long? = { args ->
     loads += args.toList()
-    if (args.firstOrNull() == "loadfile") 1L else null
+    if (args.firstOrNull() == "loadfile") {
+      onLoadFile?.invoke()
+      1L
+    } else {
+      null
+    }
   }
 
   private fun awaitQueueEntry(

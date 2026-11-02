@@ -1020,6 +1020,13 @@ require(
     and apple_native.count('-derivedDataPath "$APPLE_DERIVED_DATA_PATH"') == 3,
     "Apple CI must use task-scoped NFS scratch for Swift packages, DerivedData, and test results",
 )
+macos_apple_build = named_step(
+    apple_native, "Build macOS application and XCTest bundle"
+)
+require(
+    '-clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR"' in macos_apple_build,
+    "macOS Apple CI must reuse the run-scoped SwiftPM checkout during the build",
+)
 for apple_job_name, scratch_job in (
     ("build-ios", "ios"),
     ("build-tvos", "tvos"),

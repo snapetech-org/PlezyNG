@@ -1171,8 +1171,7 @@ class ExoPlayerPluginTest {
   private class RecordingEventSink : EventChannel.EventSink {
     var successValue: Any? = null
     private val successValues = CopyOnWriteArrayList<Any?>()
-    val eventNames: List<String>
-      get() = successValues.mapNotNull { event ->
+    val eventNames: List<String> get() = successValues.mapNotNull { event ->
         val envelope = event as? Map<*, *> ?: return@mapNotNull null
         if (envelope["type"] == "event") envelope["name"] as? String else null
       }

@@ -2227,6 +2227,10 @@ jobs:
           fi
           echo "BUNDLE_DIR=$bundle_dir" >> "$GITHUB_ENV"
 
+      - name: Install and verify locked Sherpa ONNX libraries
+        shell: bash
+        run: python3 linux/packaging/install-sherpa-onnx-runtime.py "$BUNDLE_DIR" --arch "${{ matrix.arch }}"
+
       # Everything below resolves the bundle *before* packaging, so the packages
       # and the tarball are cut from one identical tree.
       #

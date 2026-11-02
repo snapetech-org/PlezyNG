@@ -1205,6 +1205,10 @@ jobs:
         env:
           PKG_CONFIG_PATH: ${{ github.workspace }}/libmpv-prefix/lib/pkgconfig:${{ github.workspace }}/libmpv-prefix/lib/x86_64-linux-gnu/pkgconfig
 
+      - name: Install and verify locked Sherpa ONNX libraries
+        shell: bash
+        run: python3 linux/packaging/install-sherpa-onnx-runtime.py build/linux/x64/release/bundle --arch x64
+
       # Mirrors build.yml: resolve the bundle completely, then package from it.
       # libmpv travels with us, so nothing depends on a host one - which also
       # removes the transitive pull of everything libmpv links, hence bundle-libs

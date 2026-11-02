@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Fix Steam video decoding on Apple by supplying monotonic VideoToolbox presentation timestamps.
 - Restart the Gradle daemon before Android API compatibility lint to avoid carrying memory from JVM tests.
 - Bundle the locked Sherpa ONNX Linux runtime pair and verify it resolves before packaging.
 - Route Android Gradle and Robolectric runtime downloads through Google's Maven Central mirror to avoid shared private JIT egress 429 throttling.

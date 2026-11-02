@@ -11,7 +11,7 @@
 - (void)testRealH264PixelsAndTeardown {
   std::mutex mutex;
   std::condition_variable ready;
-  bool failed = false, presented = false, red = false;
+  bool failed = false, presented = false, red = false, completed = false, completedShown = false;
   plezy::steam::AppleSink sink(
       [&](CVPixelBufferRef image, uint32_t id) {
         bool valid = id == 7 && CVPixelBufferGetWidth(image) == 64 && CVPixelBufferGetHeight(image) == 64;
@@ -30,7 +30,15 @@
         ready.notify_one();
         return true;
       },
-      [](uint32_t, bool) {},
+      [&](uint32_t id, bool shown) {
+        if (id != 7) return;
+        {
+          std::lock_guard<std::mutex> lock(mutex);
+          completed = true;
+          completedShown = shown;
+        }
+        ready.notify_one();
+      },
       [&](bool) {
         {
           std::lock_guard<std::mutex> lock(mutex);
@@ -45,9 +53,11 @@
   XCTAssertTrue(sink.frame(redH264, sizeof(redH264), 7, true));
   {
     std::unique_lock<std::mutex> lock(mutex);
-    ready.wait_for(lock, std::chrono::seconds(5), [&] { return failed || presented; });
+    ready.wait_for(lock, std::chrono::seconds(5), [&] { return failed || presented || completed; });
     XCTAssertFalse(failed);
-    XCTAssertTrue(presented && red);
+    XCTAssertTrue(presented, "No decoded frame arrived (completed=%d, displayed=%d)", completed, completedShown);
+    XCTAssertTrue(red, "The decoded frame did not match the expected red pixels");
+    XCTAssertFalse(completed, "The frame completed before presentation (displayed=%d)", completedShown);
   }
   sink.close();
   sink.close();

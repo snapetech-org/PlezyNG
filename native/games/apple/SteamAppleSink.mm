@@ -44,6 +44,8 @@ struct AppleSink::Impl {
   MetalPyrowave pyrowave;
   CMVideoFormatDescriptionRef format = nullptr;
   VTDecompressionSessionRef decoder = nullptr;
+  // The stream carries frame IDs but no presentation timestamps.
+  int64_t nextPts = 1;
   AudioQueueRef audioQueue = nullptr;
   std::array<AudioQueueBufferRef, 4> buffers{};
   std::array<std::atomic<bool>, 4> free{};
@@ -182,8 +184,12 @@ struct AppleSink::Impl {
         kCFAllocatorDefault, nullptr, bytes.size(), kCFAllocatorDefault, nullptr, 0, bytes.size(), 0, &block);
     if (result == noErr) result = CMBlockBufferReplaceDataBytes(bytes.data(), block, 0, bytes.size());
     const size_t sampleSize = bytes.size();
+    CMSampleTimingInfo timing{};
+    timing.duration = CMTimeMake(1, 1000);
+    timing.presentationTimeStamp = CMTimeMake(nextPts++, 1000);
+    timing.decodeTimeStamp = kCMTimeInvalid;
     if (result == noErr)
-      result = CMSampleBufferCreateReady(kCFAllocatorDefault, block, format, 1, 0, nullptr, 1, &sampleSize, &sample);
+      result = CMSampleBufferCreateReady(kCFAllocatorDefault, block, format, 1, 1, &timing, 1, &sampleSize, &sample);
     decodeSucceeded = false;
     if (result == noErr) {
       // No asynchronous-decompression flag: the callback finishes before this

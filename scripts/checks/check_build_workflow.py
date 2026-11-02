@@ -1266,6 +1266,25 @@ for protected_job in (
         f"{protected_job} must depend on trusted-ref validation",
     )
 
+android_job = job("build-android")
+android_memory_diagnostics = named_step(android_job, "Capture Android JIT memory diagnostics")
+android_gradle_properties = (ROOT / "android/gradle.properties").read_text(encoding="utf-8")
+require(
+    "-Xmx3G" in android_gradle_properties
+    and "kotlin.compiler.execution.strategy=in-process" in android_gradle_properties
+    and "org.gradle.workers.max=1" in android_gradle_properties,
+    "Android release Gradle must bound heap use and serialize Kotlin/workers on the 8 GiB JIT guest",
+)
+require(
+    'CMAKE_BUILD_PARALLEL_LEVEL: "2"' in android_job
+    and "if: always()" in android_memory_diagnostics
+    and all(
+        f"/sys/fs/cgroup/{name}" in android_memory_diagnostics
+        for name in ("memory.current", "memory.max", "memory.peak", "memory.events")
+    ),
+    "Android release builds must limit native parallelism and log JIT memory state even on failure",
+)
+
 require(
     text.count(FLUTTER_VERSION) == 1 and f'FLUTTER_VERSION: "{FLUTTER_VERSION}"' in text,
     "the Flutter SDK version must be written once, as the workflow FLUTTER_VERSION env",

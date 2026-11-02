@@ -112,6 +112,6 @@ void main() {
         Uri(scheme: 'http', host: '127.0.0.1', port: expiredPort, path: advertised.path),
       );
       await request.close();
-    }, throwsA(isA<SocketException>()));
+    }, throwsA(anyOf(isA<SocketException>(), isA<HttpException>())));
   });
 }

@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Build the bundled Mbed TLS Everest crypto helper as a static library when the parent enables shared libraries, fixing Windows native links.
 - Store per-run Apple JIT Xcode scratch on the Mac NFS share and verified retained archives on SMB.
 - Fix MSVC Windows builds by giving controller axis values distinct local names.
 - Defer Windows ARM64 release artifacts until a compatible native private runner is available.

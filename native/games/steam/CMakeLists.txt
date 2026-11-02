@@ -28,7 +28,27 @@ endif()
 set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
 set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
 set(MBEDTLS_FATAL_WARNINGS OFF CACHE BOOL "" FORCE)
+
+# Mbed TLS 3.6's bundled Everest target uses add_library() without an explicit
+# type. A parent BUILD_SHARED_LIBS=ON turns it into a DLL with no import library,
+# while mbedcrypto's static target still needs everest.lib on Windows. Make the
+# bundled crypto helper static, then restore the caller's setting for later
+# dependencies such as Opus.
+if(DEFINED BUILD_SHARED_LIBS)
+  set(_PLEZY_STEAM_PARENT_BUILD_SHARED_LIBS_DEFINED ON)
+  set(_PLEZY_STEAM_PARENT_BUILD_SHARED_LIBS "${BUILD_SHARED_LIBS}")
+else()
+  set(_PLEZY_STEAM_PARENT_BUILD_SHARED_LIBS_DEFINED OFF)
+endif()
+set(BUILD_SHARED_LIBS OFF)
 add_subdirectory("${PLEZY_STEAM_SOURCE}/mbedtls" "${CMAKE_CURRENT_BINARY_DIR}/mbedtls" EXCLUDE_FROM_ALL)
+if(_PLEZY_STEAM_PARENT_BUILD_SHARED_LIBS_DEFINED)
+  set(BUILD_SHARED_LIBS "${_PLEZY_STEAM_PARENT_BUILD_SHARED_LIBS}")
+else()
+  unset(BUILD_SHARED_LIBS)
+endif()
+unset(_PLEZY_STEAM_PARENT_BUILD_SHARED_LIBS)
+unset(_PLEZY_STEAM_PARENT_BUILD_SHARED_LIBS_DEFINED)
 
 add_library(plezy_protobuf_c STATIC "${PLEZY_STEAM_SOURCE}/protobuf-c/protobuf-c/protobuf-c.c")
 target_include_directories(plezy_protobuf_c PUBLIC "${PLEZY_STEAM_SOURCE}/protobuf-c")

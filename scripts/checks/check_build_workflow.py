@@ -21,6 +21,7 @@ WORKFLOW = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else DEFAULT_WORKFL
 SETUP_FLUTTER_GIT = WORKFLOW.parents[1] / "actions/setup-flutter-git/action.yml"
 SETUP_FLUTTER_WINDOWS = ROOT / ".github/actions/setup-flutter-windows/action.yml"
 WINDOWS_CMAKE = WORKFLOW.parents[2] / "windows/CMakeLists.txt"
+STEAM_CMAKE = WORKFLOW.parents[2] / "native/games/steam/CMakeLists.txt"
 WINDOWS_MPV_DOWNLOADER = WORKFLOW.parents[2] / "windows/tool/download-pinned-mpv.ps1"
 MPV_BUILD_LOCK = WORKFLOW.parents[2] / "mpv-build.lock.json"
 WINDOWS_SIMDUTF_DOWNLOADER = (
@@ -186,6 +187,20 @@ for expected in (
 # the checksum must stay enforced.
 windows_cmake = WINDOWS_CMAKE.read_text(encoding="utf-8") if WINDOWS_CMAKE.is_file() else ""
 require(bool(windows_cmake), "missing windows/CMakeLists.txt")
+steam_cmake = STEAM_CMAKE.read_text(encoding="utf-8") if STEAM_CMAKE.is_file() else ""
+require(
+    re.search(
+        r"(?s)if\(DEFINED BUILD_SHARED_LIBS\).*?"
+        r"set\(BUILD_SHARED_LIBS OFF\)\s+"
+        r"add_subdirectory\(\"\$\{PLEZY_STEAM_SOURCE\}/mbedtls\".*?\)\s+"
+        r"if\(_PLEZY_STEAM_PARENT_BUILD_SHARED_LIBS_DEFINED\)\s+"
+        r"set\(BUILD_SHARED_LIBS \"\$\{_PLEZY_STEAM_PARENT_BUILD_SHARED_LIBS\}\"\)\s+"
+        r"else\(\)\s+unset\(BUILD_SHARED_LIBS\)\s+endif\(\)",
+        steam_cmake,
+    )
+    is not None,
+    "Mbed TLS Everest must stay static even when the parent enables BUILD_SHARED_LIBS",
+)
 windows_mpv_block = windows_cmake.split("FetchContent_MakeAvailable(mpv_dev)", 1)[0]
 windows_mpv_downloader = (
     WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8")

@@ -155,12 +155,6 @@ require(
     and '"PlezyNG"' in windows,
     "Windows x64 must use the private Packer JIT route",
 )
-require(
-    '"group":"packer-windows"' in windows
-    and '"Windows","ARM64","on-demand","packer-windows","PlezyNG"' in windows
-    and "matrix.arch == 'x64'" in windows,
-    "Windows ARM64 must use its private JIT route",
-)
 require("fail-fast: false" in windows, "Windows matrix must not cancel its other architecture")
 require(
     re.search(
@@ -173,14 +167,8 @@ require(
     "Windows x64 matrix configuration changed",
 )
 require(
-    re.search(
-        r"(?ms)          - arch: arm64\n"
-        r"            flutter_setup: git\n"
-        r"            native_cache_path: build/windows/arm64/_deps\n",
-        windows,
-    )
-    is not None,
-    "Windows arm64 matrix configuration changed",
+    re.search(r"(?m)^          - arch: arm64$", windows) is None,
+    "Windows ARM64 must stay out of the 3.0.0 release build matrix until native capacity returns",
 )
 for expected in (
     "if: matrix.flutter_setup == 'action'",
@@ -759,12 +747,16 @@ require(
 )
 for artifact in (
     "windows-x64-build",
-    "windows-arm64-build",
     "windows-x64-portable",
-    "windows-arm64-portable",
     "windows-installer",
 ):
     require(f"name: {artifact}" in package_windows, f"Windows packaging lost {artifact}")
+require(
+    "windows-arm64-build" not in package_windows
+    and "windows-arm64-portable" not in package_windows
+    and "-Arm64BuildDir" not in package_windows,
+    "Windows packaging must emit x64 artifacts only until native ARM64 capacity returns",
+)
 
 require(
     re.search(
@@ -1044,7 +1036,11 @@ require(
     and windows_ci_flutter_cache_key.group(1)
     == "flutter-:os:-:channel:-:version:-:arch:-:hash:"
     and "uses: ./.github/actions/setup-flutter-git" in windows_native,
-    "Windows x64 CI must use bounded Flutter setup retries while ARM64 keeps its pinned bootstrap",
+    "Windows native CI must keep the bounded x64 Flutter setup",
+)
+require(
+    re.search(r"(?m)^          - arch: arm64$", windows_native) is None,
+    "Windows ARM64 CI must stay out of the required 3.0.0 gate until native capacity returns",
 )
 
 
@@ -1097,13 +1093,30 @@ for artifact in (
     "tvos-ipa",
     "macos-dmg",
     "windows-x64-portable",
-    "windows-arm64-portable",
     "windows-installer",
     "windows-chocolatey",
     "linux-x64",
     "linux-arm64",
 ):
     require(f"name: {artifact}" in release, f"release download lost {artifact}")
+require(
+    "windows-arm64-portable" not in release
+    and "plezy-windows-arm64-portable.7z" not in release,
+    "release assembly must not require a Windows ARM64 artifact without native capacity",
+)
+winget_generator = (ROOT / "scripts/generate_winget_manifests.py").read_text(
+    encoding="utf-8"
+)
+winget_step = named_step(release, "Generate WinGet manifest bundle")
+require(
+    re.search(
+        r'architectures\s*=\s*\["x64",\s*"arm64"\]\s*if args\.include_arm64\s*else\s*\["x64"\]',
+        winget_generator,
+    )
+    is not None
+    and "--include-arm64" not in winget_step,
+    "3.0.0 WinGet manifests must match the x64-only installer",
+)
 
 tizen_download = named_step(release, "Download Tizen ARM tester handoff")
 require(

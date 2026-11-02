@@ -945,8 +945,6 @@ jobs:
         include:
           - arch: x64
             flutter_setup: action
-          - arch: arm64
-            flutter_setup: git
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

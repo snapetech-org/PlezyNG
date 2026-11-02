@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Defer Windows ARM64 release artifacts until a compatible native private runner is available.
 - Fix Windows C++20 builds that treated deprecated UTF-8 path APIs and HDR SDK shim warnings as errors.
 - Preserve Android API 25 compatibility when matching Google Tensor LiteRT device models.
 - Fix Steam video decoding on Apple by supplying monotonic VideoToolbox presentation timestamps.

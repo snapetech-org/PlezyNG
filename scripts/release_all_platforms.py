@@ -747,7 +747,7 @@ def validate_release_outputs(tag: str, version: str, *, include_webos_release: b
         "SHA256SUMS.txt", "appcast.xml",
         "plezy-android-arm64-v8a.tar.gz", "plezy-android-armeabi-v7a.tar.gz", "plezy-android-x86_64.tar.gz",
         "plezy-ios-unsigned.ipa", "plezy-tvos-unsigned.ipa", "plezyng-macos.dmg",
-        "plezy-windows-x64-portable.7z", "plezy-windows-arm64-portable.7z", "plezy-windows-installer.exe",
+        "plezy-windows-x64-portable.7z", "plezy-windows-installer.exe",
         f"plezyng-winget-manifests-{version}.zip", f"plezyng.{version}.nupkg",
         "plezy-linux-x64.tar.gz", "plezy-linux-x64.deb", "plezy-linux-x64.rpm",
         "plezy-linux-x64.pkg.tar.zst", "plezy-linux-x64.flatpak", "plezyng-linux-x64.snap",

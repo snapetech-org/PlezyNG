@@ -33,6 +33,11 @@ def main() -> int:
         "--release-tag",
         help="exact GitHub release tag used for download links (defaults to version)",
     )
+    parser.add_argument(
+        "--include-arm64",
+        action="store_true",
+        help="add an ARM64 WinGet entry when the combined installer contains ARM64",
+    )
     args = parser.parse_args()
 
     if not re.fullmatch(r"\d+\.\d+\.\d+", args.version):
@@ -53,6 +58,13 @@ def main() -> int:
     package_dir = Path("manifests/s/SnapeTech/PlezyNG") / args.version
     output_dir = args.output / package_dir
     output_dir.mkdir(parents=True, exist_ok=True)
+    architectures = ["x64", "arm64"] if args.include_arm64 else ["x64"]
+    installer_entries = "".join(
+        f"  - Architecture: {architecture}\n"
+        f"    InstallerUrl: {installer_url}\n"
+        f"    InstallerSha256: {digest}\n"
+        for architecture in architectures
+    )
 
     files = {
         f"{PACKAGE_ID}.yaml": f"""# yaml-language-server: $schema=https://aka.ms/winget-manifest.version.{MANIFEST_VERSION}.schema.json
@@ -77,12 +89,7 @@ InstallerSwitches:
   SilentWithProgress: /SILENT /SUPPRESSMSGBOXES /NORESTART /SP-
 UpgradeBehavior: install
 Installers:
-  - Architecture: x64
-    InstallerUrl: {installer_url}
-    InstallerSha256: {digest}
-  - Architecture: arm64
-    InstallerUrl: {installer_url}
-    InstallerSha256: {digest}
+{installer_entries}
 AppsAndFeaturesEntries:
   - DisplayName: PlezyNG
     Publisher: SnapeTech

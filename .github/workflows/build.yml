@@ -1626,9 +1626,6 @@ jobs:
           - arch: x64
             flutter_setup: action
             native_cache_path: build/windows/x64/_deps
-          - arch: arm64
-            flutter_setup: git
-            native_cache_path: build/windows/arm64/_deps
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -1878,12 +1875,6 @@ jobs:
           name: windows-x64-build
           path: build-x64
 
-      - name: Download arm64 build
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          name: windows-arm64-build
-          path: build-arm64
-
       - name: Read version from pubspec
         id: version
         shell: bash
@@ -1892,7 +1883,7 @@ jobs:
           echo "version=${VERSION%%+*}" >> "$GITHUB_OUTPUT"
 
       - name: Build installer and portables
-        run: .\windows\build-installer.ps1 -X64BuildDir "build-x64" -Arm64BuildDir "build-arm64" -Version "${{ steps.version.outputs.version }}"
+        run: .\windows\build-installer.ps1 -X64BuildDir "build-x64" -Version "${{ steps.version.outputs.version }}"
 
       - name: Build Microsoft Store MSIX bundle
         if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
@@ -1905,7 +1896,6 @@ jobs:
         run: |
           .\windows\build-msix.ps1 `
             -X64BuildDir "build-x64" `
-            -Arm64BuildDir "build-arm64" `
             -Version $env:RELEASE_VERSION `
             -IdentityName $env:MSSTORE_PACKAGE_NAME `
             -Publisher $env:MSSTORE_PUBLISHER `
@@ -2016,7 +2006,6 @@ jobs:
         with:
           subject-path: |
             plezy-windows-x64-portable.7z
-            plezy-windows-arm64-portable.7z
             plezy-windows-installer.exe
 
       - name: Attest Microsoft Store bundle
@@ -2035,12 +2024,6 @@ jobs:
         with:
           name: windows-x64-portable
           path: plezy-windows-x64-portable.7z
-
-      - name: Upload arm64 portable
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: windows-arm64-portable
-          path: plezy-windows-arm64-portable.7z
 
       - name: Upload installer
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -2548,12 +2531,6 @@ jobs:
           name: windows-x64-portable
           path: artifacts/windows-x64-portable
 
-      - name: Download Windows arm64 artifact
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          name: windows-arm64-portable
-          path: artifacts/windows-arm64-portable
-
       - name: Download Windows installer artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
@@ -2731,7 +2708,6 @@ jobs:
             fi
             echo artifacts/macos-dmg/plezyng-macos.dmg
             echo artifacts/windows-x64-portable/plezy-windows-x64-portable.7z
-            echo artifacts/windows-arm64-portable/plezy-windows-arm64-portable.7z
             echo artifacts/windows-installer/plezy-windows-installer.exe
             if [ -f artifacts/windows-msix/plezyng-windows.msixbundle ]; then
               echo artifacts/windows-msix/plezyng-windows.msixbundle

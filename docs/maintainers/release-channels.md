@@ -12,7 +12,7 @@ Push and pull-request CI runs checks; it does not build release packages or publ
 
 | Platform | Architectures | GitHub Release assets |
 | --- | --- | --- |
-| Windows | x64, arm64 | Combined Inno Setup installer, per-architecture portable `.7z`, Chocolatey `.nupkg`, and versioned WinGet manifest bundle. A dual-architecture Microsoft Store `.msixbundle` is added when the Partner Center package identity is configured. |
+| Windows | x64 for 3.0.0; ARM64 deferred | x64 Inno Setup installer and portable `.7z`, Chocolatey `.nupkg`, and x64 WinGet manifest bundle. Windows ARM64 returns when a compatible native private runner is available. A Microsoft Store `.msixbundle` is added when the Partner Center package identity is configured. |
 | macOS | x64, arm64 | Universal DMG and Sparkle appcast; the Homebrew cask is updated after publication. Developer ID signing and notarization are optional. |
 | Linux | x64, arm64 | Portable `.tar.gz`, Debian `.deb`, RPM `.rpm`, Arch `.pkg.tar.zst`, Flatpak bundle, and Snap package for each architecture; an x64 AppImage is also attached. |
 | Android | arm64-v8a, armeabi-v7a, x86_64 | Split APK archives. A Play `.aab` and Amazon Fire TV APK are attached when the Android release key is configured. |

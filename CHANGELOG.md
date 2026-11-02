@@ -4,7 +4,7 @@
 
 - Bundle the locked Sherpa ONNX Linux runtime pair and verify it resolves before packaging.
 - Route Android Gradle and Robolectric runtime downloads through Google's Maven Central mirror to avoid shared private JIT egress 429 throttling.
-- Keep Android fallback event fixtures on the main thread and retain JVM test reports from CI failures.
+- Check Android fallback event ordering on the fallback event stream and upload Gradle JVM test reports after CI failures.
 - Keep Android MPV fallback CI tests aligned with video-surface resume behavior and native open-event ordering.
 - Drain download manager callbacks before closing the application database, and keep desktop exit bounded when work does not settle.
 - Keep the pinned tvOS Flutter framework in native test products after Flutter asset generation.

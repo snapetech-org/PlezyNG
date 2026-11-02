@@ -21,6 +21,11 @@ enum {
 // Windows SDK declarations for these types are gated by the selected target
 // NTDDI_VERSION, not just by the SDK version. Older targets need these shims
 // even when building with SDK 10.0.26100.0 or newer.
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4201)
+#endif
+
 #if !defined(NTDDI_WIN11_GE) || !defined(NTDDI_VERSION) || NTDDI_VERSION < NTDDI_WIN11_GE
 
 typedef enum _DISPLAYCONFIG_ADVANCED_COLOR_MODE {
@@ -62,6 +67,10 @@ typedef struct _DISPLAYCONFIG_SET_HDR_STATE {
 } DISPLAYCONFIG_SET_HDR_STATE;
 
 #endif  // Win11 24H2 types are unavailable for the selected target.
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 // DisplayConfig virtual-refresh-rate awareness flags for Dynamic Refresh Rate
 // (Win11 22H2+, SDK 10.0.22621.0+). Guarded individually because, unlike the

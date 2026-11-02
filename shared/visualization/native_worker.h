@@ -164,7 +164,7 @@ class NativeWorker {
             resampler = PcmResampler();
           }
           if (loaded != serial) {
-            engine->Load(std::filesystem::u8path(path), std::filesystem::u8path(root), decoder_);
+            engine->Load(PathFromUtf8(path), PathFromUtf8(root), decoder_);
             loaded = serial;
             elapsed = 0;
             tick = {};

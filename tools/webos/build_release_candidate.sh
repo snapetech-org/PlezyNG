@@ -257,8 +257,8 @@ if [[ "$ACTUAL_DEPOT_TOOLS_PATCH_SHA256" != "$DEPOT_TOOLS_PATCH_SHA256" ]]; then
   echo "The locked depot_tools Python 3.14 compatibility patch hash changed." >&2
   exit 1
 fi
-git -C "$BOOTSTRAP_DEPOT_TOOLS" apply --check "$DEPOT_TOOLS_PATCH"
-git -C "$BOOTSTRAP_DEPOT_TOOLS" apply "$DEPOT_TOOLS_PATCH"
+git -C "$BOOTSTRAP_DEPOT_TOOLS" apply --unidiff-zero --check "$DEPOT_TOOLS_PATCH"
+git -C "$BOOTSTRAP_DEPOT_TOOLS" apply --unidiff-zero "$DEPOT_TOOLS_PATCH"
 export DEPOT_TOOLS_UPDATE=0
 export VPYTHON_BYPASS="manually managed python not supported by chrome operations"
 export CIPD_CACHE_DIR="$TASK_ROOT/cipd-cache"

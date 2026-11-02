@@ -648,13 +648,17 @@ void main() {
 
     test('a handshake failure after cancel is consumed', () async {
       final handshake = Completer<Socket>();
+      final handshakeStarted = Completer<void>();
       final task = startHappyEyeballsConnect(
         InternetAddress.loopbackIPv4.address,
         server.port,
         secure: true,
-        upgrade: (socket, host) => handshake.future,
+        upgrade: (socket, host) {
+          handshakeStarted.complete();
+          return handshake.future;
+        },
       );
-      await _waitFor(() => serverSide.isNotEmpty);
+      await handshakeStarted.future;
       final result = expectLater(task.socket, throwsA(isA<SocketException>()));
       task.cancel();
       await result;

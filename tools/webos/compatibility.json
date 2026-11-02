@@ -140,7 +140,7 @@
     "depotToolsRevision": "580b4ff3f5cd0dcaa2eacda28cefe0f45320e8f7",
     "depotToolsPython314Patch": {
       "path": "tools/webos/depot-tools-python314.patch",
-      "sha256": "43232fcaf2f32e54bdd17a6a12003b71e433453bfa49b22592bebe9bdbc74f44"
+      "sha256": "f734a48ba2029932c7b179b73348d53ad544926e8c2f3ac1075a020d6ead1be4"
     }
   },
   "lgArtifacts": {

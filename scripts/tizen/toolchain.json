@@ -1,6 +1,7 @@
 {
   "flutter_tizen_revision": "22bcec9058fbe1e0943e6c6fda21792f24868e91",
   "flutter_revision": "6a19cca56475dbfba1478ee68d7bd0c2ef891da1",
+  "flutter_version_tag": "3.47.5",
   "sqlite_url": "https://www.sqlite.org/2026/sqlite-amalgamation-3530300.zip",
   "sqlite_sha256": "646421e12aac110282ef8cc68f1a62d4bb15fc7b8f09da0b53e29ee690500431",
   "libsmb2_revision": "e94eee9465d55ed094ace2c038a8705b4822dada",

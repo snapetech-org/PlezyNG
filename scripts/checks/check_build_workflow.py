@@ -934,6 +934,16 @@ require(
     and "name: plezyng-tizen-${{ inputs.architecture }}-experimental" in tizen_workflow,
     "Tizen reusable workflow must build signed packages from main and version tags",
 )
+tizen_flutter_version = named_step(
+    tizen_workflow, "Restore the pinned Flutter release tag for SDK version detection"
+)
+require(
+    '"flutter_version_tag"' in tizen_flutter_version
+    and '"flutter_revision"' in tizen_flutter_version
+    and 'fetch --depth=1 origin "refs/tags/$flutter_tag:refs/tags/$flutter_tag"' in tizen_flutter_version
+    and 'describe --tags --exact-match HEAD' in tizen_flutter_version,
+    "the pinned Tizen Flutter checkout must restore its exact SDK version tag",
+)
 require(
     re.search(
         r"(?ms)^      action:\n.*?^        required: true\n        type: choice\n"
@@ -968,6 +978,32 @@ require(
     "if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_linux_packages }}"
     in job_block(ci_text, "linux-packages"),
     "the optional Linux package smoke build must not run on pushes",
+)
+
+linux_release = job("build-linux")
+linux_release_sherpa = named_step(
+    linux_release, "Install and verify locked Sherpa ONNX libraries"
+)
+require(
+    'python3 linux/packaging/install-sherpa-onnx-runtime.py "$BUNDLE_DIR" --arch "${{ matrix.arch }}"'
+    in linux_release_sherpa
+    and linux_release.find("      - name: Resolve bundle directory")
+    < linux_release.find("      - name: Install and verify locked Sherpa ONNX libraries")
+    < linux_release.find("      - name: Bundle shared libraries"),
+    "Linux release artifacts must use the locked Sherpa ONNX library pair before bundling",
+)
+
+linux_smoke = job_block(ci_text, "linux-packages")
+linux_smoke_sherpa = named_step(
+    linux_smoke, "Install and verify locked Sherpa ONNX libraries"
+)
+require(
+    "python3 linux/packaging/install-sherpa-onnx-runtime.py build/linux/x64/release/bundle --arch x64"
+    in linux_smoke_sherpa
+    and linux_smoke.find("      - name: Build the release bundle")
+    < linux_smoke.find("      - name: Install and verify locked Sherpa ONNX libraries")
+    < linux_smoke.find("      - name: Bundle shared libraries"),
+    "Linux package smoke artifacts must use the locked Sherpa ONNX library pair before bundling",
 )
 
 apple_native = job_block(ci_text, "apple-native-test")

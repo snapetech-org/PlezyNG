@@ -23,6 +23,7 @@ WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER = (
 )
 WINDOWS_TOOLCHAIN_LOCK = ROOT / "windows/tool/build-toolchain.lock.json"
 PLEZY_TORRENT_CMAKE = ROOT / "packages/plezy_torrent/src/CMakeLists.txt"
+STEAM_CMAKE = ROOT / "native/games/steam/CMakeLists.txt"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
@@ -34,8 +35,8 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         mpv_downloader: str | None = None,
     ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory(prefix="plezy-build-workflow-test-") as directory:
-            # The checker resolves Windows bootstrap files and the torrent
-            # CMake source beside the workflow, so the fixture mirrors them.
+            # The checker resolves Windows bootstrap files and native CMake
+            # sources beside the workflow, so the fixture mirrors them.
             github = Path(directory) / ".github"
             fixture = github / "workflows/build.yml"
             fixture.parent.mkdir(parents=True)
@@ -97,6 +98,14 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             torrent_cmake_fixture.parent.mkdir(parents=True)
             torrent_cmake_fixture.write_text(
                 PLEZY_TORRENT_CMAKE.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            steam_cmake_fixture = (
+                Path(directory) / "native/games/steam/CMakeLists.txt"
+            )
+            steam_cmake_fixture.parent.mkdir(parents=True)
+            steam_cmake_fixture.write_text(
+                STEAM_CMAKE.read_text(encoding="utf-8"),
                 encoding="utf-8",
             )
             return subprocess.run(

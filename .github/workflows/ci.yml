@@ -927,6 +927,7 @@ jobs:
             -configuration Debug \
             -destination "$APPLE_TEST_DESTINATION" \
             -derivedDataPath "$APPLE_DERIVED_DATA_PATH" \
+            -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR" \
             -disableAutomaticPackageResolution \
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \

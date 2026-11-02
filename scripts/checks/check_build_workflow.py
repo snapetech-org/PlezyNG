@@ -1024,6 +1024,12 @@ require(
     and apple_native.count('-derivedDataPath "$APPLE_DERIVED_DATA_PATH"') == 3,
     "Apple CI must keep SwiftPM sources, DerivedData, and results on local APFS",
 )
+apple_scratch_script = (ROOT / "scripts/prepare_apple_jit_scratch.sh").read_text()
+require(
+    "printf 'APPLE_SOURCE_PACKAGES_DIR=%s/%s/SourcePackages\\n' \"$local_build_dir\" \"$scratch_job\"" in apple_scratch_script
+    and "/build/${platform}/SourcePackages\"" in (ROOT / "scripts/refresh_apple_spm.sh").read_text(),
+    "Apple SwiftPM checkouts must match Flutter's local build/<platform>/SourcePackages path",
+)
 macos_apple_build = named_step(
     apple_native, "Build macOS application and XCTest bundle"
 )
@@ -1038,9 +1044,26 @@ for apple_job_name, scratch_job in (
 ):
     apple_release_job = job(apple_job_name)
     require(
-        f"scripts/prepare_apple_jit_scratch.sh {scratch_job} 40" in apple_release_job
+        f"scripts/prepare_apple_jit_scratch.sh {scratch_job} 40 local-xcode" in apple_release_job
         and f"scripts/cleanup_apple_jit_scratch.sh {scratch_job}" in apple_release_job,
-        f"{apple_job_name} must allocate and clean its task-scoped NFS scratch",
+        f"{apple_job_name} must allocate local Xcode state and clean task-scoped scratch",
+    )
+for apple_job_name, workspace_label in (
+    ("build-ios", "iOS"),
+    ("build-macos", "macOS"),
+):
+    apple_release_job = job(apple_job_name)
+    require(
+        'ln -s "$APPLE_LOCAL_BUILD_DIR" "$short_root/build"' in apple_release_job
+        and '"$(cd "$short_root/build" && pwd -P)" == "$APPLE_LOCAL_BUILD_DIR"' in apple_release_job,
+        f"{workspace_label} release Flutter/Xcode build output must resolve to local APFS",
+    )
+for apple_job_name in ("build-ios", "build-tvos"):
+    apple_release_job = job(apple_job_name)
+    require(
+        f'archive_path="$APPLE_LOCAL_BUILD_DIR/{"ios" if apple_job_name == "build-ios" else "tvos"}-store.xcarchive"' in apple_release_job
+        and f'derived_data_path="$APPLE_LOCAL_BUILD_DIR/{"ios" if apple_job_name == "build-ios" else "tvos"}-store-derived-data"' in apple_release_job,
+        f"{apple_job_name} signing archives and DerivedData must stay on local APFS",
     )
 require(
     "scripts/refresh_apple_spm.sh ios" in apple_native

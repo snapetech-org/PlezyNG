@@ -105,7 +105,7 @@ for platform in "${PLATFORMS[@]}"; do
         exit 1
       fi
       runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
-      expected_cloned_dir="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}-xcode/SourcePackages"
+      expected_cloned_dir="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}-xcode/build/${platform}/SourcePackages"
     elif [[ "${APPLE_SCRATCH_MODE:-nfs-derived-data}" == "nfs-derived-data" ]]; then
       expected_cloned_dir="/Volumes/plezyng-native-build-kspld0/runs/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}/build/${platform}/SourcePackages"
     else

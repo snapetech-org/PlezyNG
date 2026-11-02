@@ -4,7 +4,7 @@
 
 - Build the bundled Mbed TLS Everest crypto helper as a static library when the parent enables shared libraries, fixing Windows native links.
 - Fix the Windows build-guard test fixture to include the Steam CMake file that verifies the static Mbed TLS configuration.
-- Store per-run Apple JIT Xcode scratch on the Mac NFS share and verified retained archives on SMB.
+- Keep Apple SwiftPM checkouts, Flutter build output, Xcode DerivedData, result bundles, and signing archives on local APFS while using NFS for scoped source workspaces and SMB for verified retained archives.
 - Fix MSVC Windows builds by giving controller axis values distinct local names.
 - Defer Windows ARM64 release artifacts until a compatible native private runner is available.
 - Keep Windows native sample interpolation explicit about its float output precision so MSVC does not promote conversion warnings to errors.

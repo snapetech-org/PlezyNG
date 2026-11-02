@@ -813,16 +813,25 @@ jobs:
           export PATH="$RUNNER_TEMP/cocoapods-bin:/opt/homebrew/bin:$PATH"
           pod --version
 
-      - name: Prepare NFS-backed short iOS build workspace
+      - name: Prepare NFS source workspace and local APFS iOS build output
         shell: bash
         run: |
           set -euo pipefail
-          short_root="$(bash scripts/prepare_apple_jit_scratch.sh ios 40)"
+          short_root="$(bash scripts/prepare_apple_jit_scratch.sh ios 40 local-xcode)"
+          runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
+          APPLE_LOCAL_BUILD_DIR="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-ios-xcode/build"
           ditto "$GITHUB_WORKSPACE/." "$short_root/"
+          if [[ -e "$short_root/build" || -L "$short_root/build" ]]; then
+            echo "Refusing to replace existing build output in the new Apple workspace: $short_root/build" >&2
+            exit 1
+          fi
+          mkdir -p "$APPLE_LOCAL_BUILD_DIR"
+          ln -s "$APPLE_LOCAL_BUILD_DIR" "$short_root/build"
           chmod 700 "$short_root"
           [[ "$(git -C "$short_root" rev-parse HEAD)" == "$GITHUB_SHA" ]]
           [[ ! -L "$short_root" && "$(cd "$short_root" && pwd -P)" == "$short_root" ]]
-          echo "Prepared real NFS-backed iOS workspace: $short_root (${#short_root} characters)"
+          [[ "$(cd "$short_root/build" && pwd -P)" == "$APPLE_LOCAL_BUILD_DIR" ]]
+          echo "Prepared NFS-backed iOS sources with local APFS build output: $short_root -> $APPLE_LOCAL_BUILD_DIR"
 
       - name: Install dependencies
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
@@ -926,9 +935,9 @@ jobs:
             --obfuscate \
             --split-debug-info=debug-info/ios-app-store
 
-          archive_path="$PLEZYNG_APPLE_TASK_ROOT/ios-store.xcarchive"
-          export_path="$PLEZYNG_APPLE_TASK_ROOT/ios-store-export"
-          derived_data_path="$PLEZYNG_APPLE_TASK_ROOT/ios-store-derived-data"
+          archive_path="$APPLE_LOCAL_BUILD_DIR/ios-store.xcarchive"
+          export_path="$APPLE_LOCAL_BUILD_DIR/ios-store-export"
+          derived_data_path="$APPLE_LOCAL_BUILD_DIR/ios-store-derived-data"
           xcodebuild archive \
             -workspace ios/Runner.xcworkspace \
             -scheme Runner \
@@ -997,9 +1006,9 @@ jobs:
           EXPORT_OPTIONS_PATH: ${{ steps.ios-signing.outputs.export_options_path }}
         run: |
           rm -f "$APPLE_API_KEY_PATH" "$EXPORT_OPTIONS_PATH"
-          rm -rf "$PLEZYNG_APPLE_TASK_ROOT/ios-store.xcarchive" \
-            "$PLEZYNG_APPLE_TASK_ROOT/ios-store-export" \
-            "$PLEZYNG_APPLE_TASK_ROOT/ios-store-derived-data"
+          rm -rf "$APPLE_LOCAL_BUILD_DIR/ios-store.xcarchive" \
+            "$APPLE_LOCAL_BUILD_DIR/ios-store-export" \
+            "$APPLE_LOCAL_BUILD_DIR/ios-store-derived-data"
 
       - name: Upload IPA
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -1060,9 +1069,9 @@ jobs:
           path: ~/.cache/flutter-tvos-engine
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-tvos-engine-${{ hashFiles('tvos/engine.version', 'tvos/engine.sha256') }}
 
-      - name: Prepare NFS-backed tvOS build scratch
+      - name: Prepare NFS source scratch and local APFS Xcode output
         shell: bash
-        run: bash scripts/prepare_apple_jit_scratch.sh tvos 40 >/dev/null
+        run: bash scripts/prepare_apple_jit_scratch.sh tvos 40 local-xcode >/dev/null
 
       - name: Ensure CMake for the embedded Steam receiver
         shell: bash
@@ -1199,9 +1208,9 @@ jobs:
           EXPORT_OPTIONS_PATH: ${{ steps.tvos-signing.outputs.export_options_path }}
         run: |
           set -euo pipefail
-          archive_path="$PLEZYNG_APPLE_TASK_ROOT/tvos-store.xcarchive"
-          export_path="$PLEZYNG_APPLE_TASK_ROOT/tvos-store-export"
-          derived_data_path="$PLEZYNG_APPLE_TASK_ROOT/tvos-store-derived-data"
+          archive_path="$APPLE_LOCAL_BUILD_DIR/tvos-store.xcarchive"
+          export_path="$APPLE_LOCAL_BUILD_DIR/tvos-store-export"
+          derived_data_path="$APPLE_LOCAL_BUILD_DIR/tvos-store-derived-data"
           mkdir -p "$export_path"
           xcodebuild archive \
             -workspace tvos/Runner.xcworkspace \
@@ -1253,9 +1262,9 @@ jobs:
           EXPORT_OPTIONS_PATH: ${{ steps.tvos-signing.outputs.export_options_path }}
         run: |
           rm -f "$APPLE_API_KEY_PATH" "$EXPORT_OPTIONS_PATH"
-          rm -rf "$PLEZYNG_APPLE_TASK_ROOT/tvos-store.xcarchive" \
-            "$PLEZYNG_APPLE_TASK_ROOT/tvos-store-export" \
-            "$PLEZYNG_APPLE_TASK_ROOT/tvos-store-derived-data"
+          rm -rf "$APPLE_LOCAL_BUILD_DIR/tvos-store.xcarchive" \
+            "$APPLE_LOCAL_BUILD_DIR/tvos-store-export" \
+            "$APPLE_LOCAL_BUILD_DIR/tvos-store-derived-data"
 
       - name: Upload tvOS package
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -1266,7 +1275,7 @@ jobs:
             plezyng-tvos-appstore.ipa
           if-no-files-found: error
 
-      - name: Clean NFS-backed tvOS build scratch
+      - name: Clean tvOS source and Xcode scratch
         if: always()
         shell: bash
         run: bash scripts/cleanup_apple_jit_scratch.sh tvos
@@ -1334,16 +1343,25 @@ jobs:
           export PATH="$RUNNER_TEMP/cocoapods-bin:/opt/homebrew/bin:$PATH"
           pod --version
 
-      - name: Prepare NFS-backed short macOS build workspace
+      - name: Prepare NFS source workspace and local APFS macOS build output
         shell: bash
         run: |
           set -euo pipefail
-          short_root="$(bash scripts/prepare_apple_jit_scratch.sh macos 40)"
+          short_root="$(bash scripts/prepare_apple_jit_scratch.sh macos 40 local-xcode)"
+          runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
+          APPLE_LOCAL_BUILD_DIR="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-macos-xcode/build"
           ditto "$GITHUB_WORKSPACE/." "$short_root/"
+          if [[ -e "$short_root/build" || -L "$short_root/build" ]]; then
+            echo "Refusing to replace existing build output in the new Apple workspace: $short_root/build" >&2
+            exit 1
+          fi
+          mkdir -p "$APPLE_LOCAL_BUILD_DIR"
+          ln -s "$APPLE_LOCAL_BUILD_DIR" "$short_root/build"
           chmod 700 "$short_root"
           [[ "$(git -C "$short_root" rev-parse HEAD)" == "$GITHUB_SHA" ]]
           [[ ! -L "$short_root" && "$(cd "$short_root" && pwd -P)" == "$short_root" ]]
-          echo "Prepared real NFS-backed macOS workspace: $short_root (${#short_root} characters)"
+          [[ "$(cd "$short_root/build" && pwd -P)" == "$APPLE_LOCAL_BUILD_DIR" ]]
+          echo "Prepared NFS-backed macOS sources with local APFS build output: $short_root -> $APPLE_LOCAL_BUILD_DIR"
 
       - name: Install dependencies
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}

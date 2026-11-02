@@ -68,13 +68,15 @@ fi
 task_root="$NFS_RUNS_ROOT/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}"
 owner_file="$NFS_RUNS_ROOT/.plezyng-apple-scratch-p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}.owner"
 local_xcode_root=""
+local_build_dir=""
 if [[ "$scratch_mode" == "local-xcode" ]]; then
   if [[ -z "${RUNNER_TEMP:-}" || ! -d "$RUNNER_TEMP" ]]; then
-    echo "A real RUNNER_TEMP directory is required for local Xcode DerivedData." >&2
+    echo "A real RUNNER_TEMP directory is required for local Xcode scratch." >&2
     exit 1
   fi
   runner_temp_real="$(cd "$RUNNER_TEMP" && /bin/pwd -P)"
   local_xcode_root="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}-xcode"
+  local_build_dir="$local_xcode_root/build"
 fi
 if (( ${#task_root} > 64 )); then
   echo "NFS Apple workspace path is unexpectedly long (${#task_root} characters): $task_root" >&2
@@ -110,6 +112,7 @@ created_root=1
 if [[ -n "$local_xcode_root" ]]; then
   /bin/mkdir -m 700 "$local_xcode_root"
   created_local_xcode_root=1
+  /bin/mkdir -m 700 "$local_build_dir"
 fi
 {
   printf 'run_id=%s\n' "$GITHUB_RUN_ID"
@@ -136,9 +139,10 @@ probe_dir="$task_root/.nfs-probe"
   printf 'PLEZYNG_APPLE_TASK_ROOT=%s\n' "$task_root"
   printf 'PLEZYNG_APPLE_TASK_OWNER_FILE=%s\n' "$owner_file"
   printf 'PLEZYNG_APPLE_WORKSPACE=%s\n' "$task_root"
+  printf 'APPLE_LOCAL_BUILD_DIR=%s\n' "$local_build_dir"
   if [[ -n "$local_xcode_root" ]]; then
     printf 'APPLE_SCRATCH_MODE=%s\n' "$scratch_mode"
-    printf 'APPLE_SOURCE_PACKAGES_DIR=%s/SourcePackages\n' "$local_xcode_root"
+    printf 'APPLE_SOURCE_PACKAGES_DIR=%s/%s/SourcePackages\n' "$local_build_dir" "$scratch_job"
     printf 'APPLE_DERIVED_DATA_PATH=%s/DerivedData\n' "$local_xcode_root"
     printf 'APPLE_RESULT_BUNDLE=%s/apple-native-reliability.xcresult\n' "$local_xcode_root"
   else

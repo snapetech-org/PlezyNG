@@ -7,6 +7,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "milkrust.h"
@@ -17,6 +19,17 @@
 #endif
 
 namespace plezy::visualization {
+inline std::filesystem::path PathFromUtf8(std::string_view value) {
+#if defined(__cpp_char8_t)
+  std::u8string encoded;
+  encoded.reserve(value.size());
+  for (const unsigned char byte : value) encoded.push_back(static_cast<char8_t>(byte));
+  return std::filesystem::path(std::move(encoded));
+#else
+  return std::filesystem::u8path(std::string(value));
+#endif
+}
+
 struct MilkRustApi {
   void* library = nullptr;
   std::string error;
@@ -195,7 +208,7 @@ class MilkRustEngine {
   static std::filesystem::path Resolve(
       const std::filesystem::path& root, const std::filesystem::path& preset_folder, std::string name) {
     std::replace(name.begin(), name.end(), '\\', '/');
-    const auto relative = std::filesystem::u8path(name);
+    const auto relative = PathFromUtf8(name);
     if (name.empty() || relative.is_absolute() || name.find(':') != std::string::npos)
       throw std::runtime_error("Texture name is not a relative pack asset.");
     for (const auto& part : relative)
@@ -204,7 +217,7 @@ class MilkRustEngine {
     for (const auto& directory : {preset_folder, root, root / "textures"}) {
       for (const char* extension : {"", ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".tga", ".dds"}) {
         if (*extension && relative.has_extension()) continue;
-        const auto candidate = directory / std::filesystem::u8path(name + extension);
+        const auto candidate = directory / PathFromUtf8(name + extension);
         if (std::filesystem::exists(candidate)) return Inside(root, candidate);
         const auto folded = CaseInsensitive(root, candidate, remaining);
         if (!folded.empty()) return folded;

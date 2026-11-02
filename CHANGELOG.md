@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Fix Windows C++20 builds that treated deprecated UTF-8 path APIs and HDR SDK shim warnings as errors.
 - Preserve Android API 25 compatibility when matching Google Tensor LiteRT device models.
 - Fix Steam video decoding on Apple by supplying monotonic VideoToolbox presentation timestamps.
 - Restart the Gradle daemon before Android API compatibility lint to avoid carrying memory from JVM tests.

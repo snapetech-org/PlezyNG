@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 - Bundle the locked Sherpa ONNX Linux runtime pair and verify it resolves before packaging.
-- Route Android Maven Central requests through the private JIT mirror to avoid upstream 429 throttling.
+- Route Android Gradle and Robolectric runtime downloads through Google's Maven Central mirror to avoid shared private JIT egress 429 throttling.
 - Keep Android fallback event fixtures on the main thread and retain JVM test reports from CI failures.
 - Keep Android MPV fallback CI tests aligned with video-surface resume behavior and native open-event ordering.
 - Drain download manager callbacks before closing the application database, and keep desktop exit bounded when work does not settle.

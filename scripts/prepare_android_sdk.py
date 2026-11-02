@@ -37,6 +37,8 @@ def configure_proxy(env: dict[str, str]) -> None:
         if "\n" in previous or "\r" in previous:
             raise ValueError(f"{name} must fit on one environment-file line")
         lines.append(f"{name}={previous + ' ' if previous else ''}{options}\n")
+    lines.append(f"ROBOLECTRIC_PROXY_HOST={host}\n")
+    lines.append(f"ROBOLECTRIC_PROXY_PORT={port}\n")
     with Path(env["GITHUB_ENV"]).open("a", encoding="utf-8") as output:
         output.writelines(lines)
 

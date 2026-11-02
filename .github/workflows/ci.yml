@@ -561,7 +561,6 @@ jobs:
       contents: read
     env:
       PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
-      APPLE_SOURCE_PACKAGES_DIR: ${{ github.workspace }}/build/${{ matrix.source_packages_directory }}/SourcePackages
     strategy:
       fail-fast: false
       matrix:
@@ -606,12 +605,13 @@ jobs:
           path: ${{ github.workspace }}/.cache/plezy-pub-cache
           key: ${{ runner.os }}-${{ runner.arch }}-plezy-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
-      - name: Select per-job Xcode DerivedData path
+      - name: Prepare NFS-backed Apple build scratch
         shell: bash
+        env:
+          APPLE_SCRATCH_JOB: ${{ matrix.source_packages_directory }}
         run: |
           set -euo pipefail
-          derived_data_path="$RUNNER_TEMP/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${{ matrix.source_packages_directory }}-DerivedData"
-          echo "APPLE_DERIVED_DATA_PATH=$derived_data_path" >> "$GITHUB_ENV"
+          bash scripts/prepare_apple_jit_scratch.sh "$APPLE_SCRATCH_JOB" 20 >/dev/null
 
       - name: Ensure CMake for the embedded Steam receiver
         shell: bash
@@ -897,7 +897,7 @@ jobs:
       - name: Run Apple native reliability tests
         if: matrix.platform != 'macOS'
         run: |
-          result_bundle="$RUNNER_TEMP/apple-native-reliability.xcresult"
+          result_bundle="$APPLE_RESULT_BUNDLE"
           set +e
           xcodebuild test \
             -workspace "${{ matrix.workspace }}" \
@@ -931,6 +931,13 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
             ARCHS=arm64
+
+      - name: Clean NFS-backed Apple build scratch
+        if: always()
+        shell: bash
+        env:
+          APPLE_SCRATCH_JOB: ${{ matrix.source_packages_directory }}
+        run: bash scripts/cleanup_apple_jit_scratch.sh "$APPLE_SCRATCH_JOB"
 
   # packer-windows-jit-v1
   windows-native-test:

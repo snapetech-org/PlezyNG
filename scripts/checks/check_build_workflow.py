@@ -1000,11 +1000,22 @@ require(
 
 apple_native = job_block(ci_text, "apple-native-test")
 require(
-    "derived_data_path=\"$RUNNER_TEMP/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${{ matrix.source_packages_directory }}-DerivedData\""
-    in apple_native
+    'bash scripts/prepare_apple_jit_scratch.sh "$APPLE_SCRATCH_JOB" 20' in apple_native
+    and "result_bundle=\"$APPLE_RESULT_BUNDLE\"" in apple_native
     and apple_native.count('-derivedDataPath "$APPLE_DERIVED_DATA_PATH"') == 3,
-    "Apple CI must share isolated Xcode DerivedData across the CocoaPods prebuild and platform build",
+    "Apple CI must use task-scoped NFS scratch for Swift packages, DerivedData, and test results",
 )
+for apple_job_name, scratch_job in (
+    ("build-ios", "ios"),
+    ("build-tvos", "tvos"),
+    ("build-macos", "macos"),
+):
+    apple_release_job = job(apple_job_name)
+    require(
+        f"scripts/prepare_apple_jit_scratch.sh {scratch_job} 40" in apple_release_job
+        and f"scripts/cleanup_apple_jit_scratch.sh {scratch_job}" in apple_release_job,
+        f"{apple_job_name} must allocate and clean its task-scoped NFS scratch",
+    )
 require(
     "scripts/refresh_apple_spm.sh ios" in apple_native
     and "scripts/refresh_apple_spm.sh macos" in apple_native

@@ -66,9 +66,12 @@ signature against FFmpeg's pinned release-key fingerprint, records its exact
 SHA-256 in the Android header build, and runs
 `scripts/set_native_revision.sh` for the published artifact-manifest commit.
 It pushes that focused pin update to PlezyNG `main`, waits for CI on that exact
-commit, creates the matching `v<version>` tag, and dispatches the all-platform
-release build. The release build compiles the webOS and Tizen ARM candidates by
-default. The validated Tizen tester package and its re-signing handoff are
+commit, and runs a complete nonpublishing `action=build`, `mode=release`
+candidate with webOS and Tizen enabled. The immutable `v<version>` tag is
+created only after that candidate succeeds; the tagged `action=release` run
+then assembles and validates the draft release. Both runs use the same exact
+`main` commit. The candidate build compiles the webOS and Tizen ARM artifacts
+by default. The validated Tizen tester package and its re-signing handoff are
 attached to the versioned release. The webOS IPK remains excluded from public
 release assets until the existing artifact eligibility gate passes and the
 operator opts in. Apple jobs refresh their SwiftPM mirror after the native pin
@@ -98,9 +101,9 @@ The orchestrator uses the current machine's GitHub CLI authentication only for
 workflow dispatch, repository commits, and the version tag. Build, test,
 package, and release jobs still use their configured private JIT runner groups;
 the script has no hosted-runner option and does not store or print credentials.
-It stops on a failed native group, FFmpeg signature, CI run, tag conflict, or
-release build. Re-running it reuses successful native/CI/release runs and never
-moves an existing tag.
+It stops on a failed native group, FFmpeg signature, CI run, candidate build,
+tag conflict, or release build. Re-running it reuses successful native,
+CI, candidate, and release runs and never moves an existing tag.
 
 The final JSON receipt is written to the printed scratch directory. Temporary
 checkouts and the verified source archive are removed after the workflow run;

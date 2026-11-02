@@ -632,6 +632,59 @@ def ensure_ci(commit_sha: str) -> dict:
     )
 
 
+def candidate_build_title(version: str) -> str:
+    return f"action:build:pool:private:mode:release:version:{version}"
+
+
+def ensure_candidate_build(version: str, commit_sha: str) -> dict:
+    """Require a complete nonpublishing release-mode build before creating the immutable tag."""
+    run_title = candidate_build_title(version)
+    existing = matching_run(
+        PLEZY_REPO,
+        RELEASE_WORKFLOW,
+        commit_sha,
+        ref="main",
+        expected_title=run_title,
+    )
+    if existing:
+        if existing.get("status") == "completed" and existing.get("conclusion") != "success":
+            raise ReleaseError(
+                f"Release-mode candidate run {existing['databaseId']} concluded "
+                f"{existing.get('conclusion')}; refusing to tag an unvalidated commit."
+            )
+        if existing.get("status") == "completed":
+            print(f"Reusing successful release-mode candidate run {existing['databaseId']} for {version}.")
+            return existing
+        return wait_for_run(PLEZY_REPO, existing, f"PlezyNG {version} all-platform release-mode candidate")
+
+    active = active_run(PLEZY_REPO, RELEASE_WORKFLOW, ref="main")
+    if active:
+        raise ReleaseError(
+            f"PlezyNG build workflow run {active['databaseId']} is still {active.get('status')}; "
+            "wait for it to finish before dispatching the release-mode candidate."
+        )
+    ensure_remote_main_sha(commit_sha, f"dispatching the {version} release-mode candidate")
+    return dispatch(
+        PLEZY_REPO,
+        RELEASE_WORKFLOW,
+        "main",
+        {
+            "action": "build",
+            "runner_pool": "private",
+            "mode": "release",
+            "build_version": version,
+            "include_webos_build": "true",
+            "include_webos_release": "false",
+            "include_tizen_build": "true",
+            "subtitle_gpu_backend": "cpu",
+            "prepare_homebrew_cask": "false",
+        },
+        f"PlezyNG {version} all-platform release-mode candidate",
+        expected_title=run_title,
+        expected_sha=commit_sha,
+    )
+
+
 def ensure_tag(worktree: Path, version: str, commit_sha: str) -> str:
     tag = f"v{version}"
     command(["git", "fetch", "--tags", "origin"], cwd=worktree)
@@ -1108,6 +1161,11 @@ def main() -> int:
         save_progress()
         ci = ensure_ci(pin_sha)
         progress["ci_run"] = ci["databaseId"]
+        stage = "all-platform release-mode candidate build"
+        progress["stage"] = stage
+        save_progress()
+        candidate = ensure_candidate_build(args.version, pin_sha)
+        progress["candidate_build_run"] = candidate["databaseId"]
         stage = "release tag"
         progress["stage"] = stage
         save_progress()

@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from verify_release_ci import _manifest_gate  # noqa: E402
-from release_all_platforms import ensure_ci  # noqa: E402
+from release_all_platforms import ReleaseError, ensure_candidate_build, ensure_ci  # noqa: E402
 
 
 class ReleaseCIGateManifestTests(unittest.TestCase):
@@ -43,6 +43,60 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
             expected_title="action:ci:pool:private",
             expected_sha=commit_sha,
         )
+
+
+class ReleaseCandidateBuildGateTests(unittest.TestCase):
+    @patch("release_all_platforms.ensure_remote_main_sha")
+    @patch("release_all_platforms.dispatch")
+    @patch("release_all_platforms.active_run", return_value=None)
+    @patch("release_all_platforms.matching_run", return_value=None)
+    def test_dispatches_full_nonpublishing_release_mode_on_exact_main_sha(
+        self, _matching_run, _active_run, dispatch, ensure_main
+    ) -> None:
+        commit_sha = "b" * 40
+        ensure_candidate_build("3.0.0", commit_sha)
+
+        ensure_main.assert_called_once_with(commit_sha, "dispatching the 3.0.0 release-mode candidate")
+        dispatch.assert_called_once_with(
+            "snapetech-org/PlezyNG",
+            "build.yml",
+            "main",
+            {
+                "action": "build",
+                "runner_pool": "private",
+                "mode": "release",
+                "build_version": "3.0.0",
+                "include_webos_build": "true",
+                "include_webos_release": "false",
+                "include_tizen_build": "true",
+                "subtitle_gpu_backend": "cpu",
+                "prepare_homebrew_cask": "false",
+            },
+            "PlezyNG 3.0.0 all-platform release-mode candidate",
+            expected_title="action:build:pool:private:mode:release:version:3.0.0",
+            expected_sha=commit_sha,
+        )
+
+    @patch("release_all_platforms.matching_run")
+    def test_reuses_only_a_successful_exact_version_candidate(self, matching_run) -> None:
+        successful = {"databaseId": 123, "status": "completed", "conclusion": "success"}
+        matching_run.return_value = successful
+
+        self.assertIs(ensure_candidate_build("3.0.0", "b" * 40), successful)
+        matching_run.assert_called_once_with(
+            "snapetech-org/PlezyNG",
+            "build.yml",
+            "b" * 40,
+            ref="main",
+            expected_title="action:build:pool:private:mode:release:version:3.0.0",
+        )
+
+    @patch("release_all_platforms.matching_run")
+    def test_rejects_a_failed_candidate_for_the_exact_commit(self, matching_run) -> None:
+        matching_run.return_value = {"databaseId": 124, "status": "completed", "conclusion": "failure"}
+
+        with self.assertRaisesRegex(ReleaseError, "refusing to tag an unvalidated commit"):
+            ensure_candidate_build("3.0.0", "b" * 40)
 
 
 if __name__ == "__main__":

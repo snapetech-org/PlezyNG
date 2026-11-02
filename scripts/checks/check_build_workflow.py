@@ -1109,6 +1109,8 @@ run_name_expression = run_name.group(1) if run_name else ""
 require(
     all(field in run_name_expression for field in ("inputs.action", "inputs.runner_pool", "inputs.build_version"))
     and "format('action:{0}:pool:{1}:tag:v{2}'" in run_name_expression
+    and "inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != ''" in run_name_expression
+    and "format('action:{0}:pool:{1}:mode:{2}:version:{3}'" in run_name_expression
     and "format('action:{0}:pool:{1}'" in run_name_expression
     and "inputs.action == 'release'" in run_name_expression,
     "build and release run names must match the private JIT broker title schema",

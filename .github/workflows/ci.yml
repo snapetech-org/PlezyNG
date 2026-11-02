@@ -383,6 +383,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+      - name: Stop Gradle daemon before Android API compatibility check
+        working-directory: android
+        run: ./gradlew --stop
+
       - name: Check Android API compatibility
         working-directory: android
         run: ./gradlew :app:lintDebug

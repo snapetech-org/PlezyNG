@@ -189,22 +189,25 @@ if(PLEZY_STEAM_TESTS AND WIN32)
     else()
       target_compile_options(plezy_${name}_test PRIVATE -UNDEBUG)
     endif()
-    # The Opus target is a DLL in the Windows toolchain. Steam test executables
-    # live in steam/Debug while opus.dll lives in steam/opus/Debug, outside the
-    # Windows loader's search path. Put the runtime beside each test binary.
-    if(PLEZY_STEAM_OPUS_TARGET_TYPE STREQUAL "SHARED_LIBRARY")
-      add_custom_command(
-        TARGET plezy_${name}_test
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-          "$<TARGET_FILE:opus>"
-          "$<TARGET_FILE_DIR:plezy_${name}_test>"
-        VERBATIM
-      )
-    endif()
     add_test(NAME plezy_${name} COMMAND plezy_${name}_test)
     set_tests_properties(plezy_${name} PROPERTIES TIMEOUT 30)
   endforeach()
+  # The Opus target is a DLL in the Windows toolchain. Steam test executables
+  # live in steam/Debug while opus.dll lives in steam/opus/Debug, outside the
+  # Windows loader's search path. Stage it once before parallel test builds.
+  if(PLEZY_STEAM_OPUS_TARGET_TYPE STREQUAL "SHARED_LIBRARY")
+    add_custom_target(plezy_steam_opus_test_runtime
+      COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:plezy_windows_platform_test>"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:opus>"
+        "$<TARGET_FILE_DIR:plezy_windows_platform_test>"
+      DEPENDS opus
+      VERBATIM
+    )
+    foreach(name windows_platform windows_sink h26x audio pyrowave)
+      add_dependencies(plezy_${name}_test plezy_steam_opus_test_runtime)
+    endforeach()
+  endif()
 elseif(PLEZY_STEAM_TESTS AND NOT ANDROID)
   enable_testing()
   add_library(ihslib ALIAS plezy_ihs)

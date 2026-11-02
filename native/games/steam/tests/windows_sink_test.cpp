@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cassert>
 #include <condition_variable>
+#include <cstdint>
 #include <cstdio>
 
 #include "SteamWindowsSink.h"

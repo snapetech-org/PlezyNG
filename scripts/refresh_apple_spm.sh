@@ -94,7 +94,20 @@ for platform in "${PLATFORMS[@]}"; do
     continue
   fi
 
-  cloned_dir="$ROOT/build/$platform/SourcePackages"
+  if [[ -n "${APPLE_SOURCE_PACKAGES_DIR:-}" ]]; then
+    if [[ ! "${GITHUB_RUN_ID:-}" =~ ^[0-9]+$ || ! "${GITHUB_RUN_ATTEMPT:-}" =~ ^[0-9]+$ ]]; then
+      echo "error: APPLE_SOURCE_PACKAGES_DIR overrides require a scoped GitHub Actions run" >&2
+      exit 1
+    fi
+    expected_cloned_dir="/Volumes/plezyng-native-build-kspld0/runs/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}/build/${platform}/SourcePackages"
+    if [[ "$APPLE_SOURCE_PACKAGES_DIR" != "$expected_cloned_dir" ]]; then
+      echo "error: refusing an unscoped Apple SwiftPM directory: $APPLE_SOURCE_PACKAGES_DIR" >&2
+      exit 1
+    fi
+    cloned_dir="$APPLE_SOURCE_PACKAGES_DIR"
+  else
+    cloned_dir="$ROOT/build/$platform/SourcePackages"
+  fi
   if [ "$RESET" -eq 1 ] && [ -d "$cloned_dir" ]; then
     rm -rf "$cloned_dir"
     echo "reset      $cloned_dir"

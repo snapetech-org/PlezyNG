@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Store per-run Apple JIT Xcode scratch on the Mac NFS share and verified retained archives on SMB.
 - Fix MSVC Windows builds by giving controller axis values distinct local names.
 - Defer Windows ARM64 release artifacts until a compatible native private runner is available.
 - Keep Windows native sample interpolation explicit about its float output precision so MSVC does not promote conversion warnings to errors.

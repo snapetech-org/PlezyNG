@@ -794,26 +794,16 @@ jobs:
           export PATH="$RUNNER_TEMP/cocoapods-bin:/opt/homebrew/bin:$PATH"
           pod --version
 
-      - name: Prepare short iOS build workspace
+      - name: Prepare NFS-backed short iOS build workspace
         shell: bash
         run: |
           set -euo pipefail
-          short_root="$HOME/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-ios"
-          if [[ -e "$short_root" || -L "$short_root" ]]; then
-            echo "Refusing to reuse existing Apple build path: $short_root" >&2
-            exit 1
-          fi
-          mkdir -m 700 "$short_root"
+          short_root="$(bash scripts/prepare_apple_jit_scratch.sh ios 40)"
           ditto "$GITHUB_WORKSPACE/." "$short_root/"
           chmod 700 "$short_root"
           [[ "$(git -C "$short_root" rev-parse HEAD)" == "$GITHUB_SHA" ]]
           [[ ! -L "$short_root" && "$(cd "$short_root" && pwd -P)" == "$short_root" ]]
-          if (( ${#short_root} > 64 )); then
-            echo "Short iOS workspace path is unexpectedly long: $short_root" >&2
-            exit 1
-          fi
-          echo "PLEZYNG_APPLE_WORKSPACE=$short_root" >> "$GITHUB_ENV"
-          echo "Prepared real local build workspace: $short_root (${#short_root} characters)"
+          echo "Prepared real NFS-backed iOS workspace: $short_root (${#short_root} characters)"
 
       - name: Install dependencies
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
@@ -917,8 +907,9 @@ jobs:
             --obfuscate \
             --split-debug-info=debug-info/ios-app-store
 
-          archive_path="$RUNNER_TEMP/plezyng-ios-store.xcarchive"
-          export_path="$RUNNER_TEMP/plezyng-ios-store-export"
+          archive_path="$PLEZYNG_APPLE_TASK_ROOT/ios-store.xcarchive"
+          export_path="$PLEZYNG_APPLE_TASK_ROOT/ios-store-export"
+          derived_data_path="$PLEZYNG_APPLE_TASK_ROOT/ios-store-derived-data"
           xcodebuild archive \
             -workspace ios/Runner.xcworkspace \
             -scheme Runner \
@@ -926,7 +917,7 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath "$archive_path" \
-            -derivedDataPath "$RUNNER_TEMP/plezyng-ios-store-derived-data" \
+            -derivedDataPath "$derived_data_path" \
             -allowProvisioningUpdates \
             -authenticationKeyPath "$APPLE_API_KEY_PATH" \
             -authenticationKeyID "$APPLE_API_KEY_ID" \
@@ -987,9 +978,9 @@ jobs:
           EXPORT_OPTIONS_PATH: ${{ steps.ios-signing.outputs.export_options_path }}
         run: |
           rm -f "$APPLE_API_KEY_PATH" "$EXPORT_OPTIONS_PATH"
-          rm -rf "$RUNNER_TEMP/plezyng-ios-store.xcarchive" \
-            "$RUNNER_TEMP/plezyng-ios-store-export" \
-            "$RUNNER_TEMP/plezyng-ios-store-derived-data"
+          rm -rf "$PLEZYNG_APPLE_TASK_ROOT/ios-store.xcarchive" \
+            "$PLEZYNG_APPLE_TASK_ROOT/ios-store-export" \
+            "$PLEZYNG_APPLE_TASK_ROOT/ios-store-derived-data"
 
       - name: Upload IPA
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -1001,17 +992,17 @@ jobs:
           if-no-files-found: error
 
       - name: Remove short iOS build workspace
-        if: always()
+        if: always() && env.PLEZYNG_APPLE_TASK_ROOT != ''
         shell: bash
         run: |
           set -euo pipefail
-          short_root="$HOME/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-ios"
+          short_root="$PLEZYNG_APPLE_TASK_ROOT"
           if [[ -d "$short_root" && ! -L "$short_root" && "$(cd "$short_root" && pwd -P)" == "$short_root" ]]; then
             if [[ -d "$short_root/ios/Pods" ]]; then
               mkdir -p "$GITHUB_WORKSPACE/ios"
               ditto "$short_root/ios/Pods" "$GITHUB_WORKSPACE/ios/Pods"
             fi
-            rm -rf -- "$short_root"
+            bash scripts/cleanup_apple_jit_scratch.sh ios
           elif [[ -e "$short_root" || -L "$short_root" ]]; then
             echo "Refusing to remove unexpected Apple build path: $short_root" >&2
             exit 1
@@ -1028,7 +1019,6 @@ jobs:
       contents: read
     env:
       PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
-      APPLE_SOURCE_PACKAGES_DIR: ${{ github.workspace }}/build/tvos/SourcePackages
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -1050,6 +1040,10 @@ jobs:
         with:
           path: ~/.cache/flutter-tvos-engine
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-tvos-engine-${{ hashFiles('tvos/engine.version', 'tvos/engine.sha256') }}
+
+      - name: Prepare NFS-backed tvOS build scratch
+        shell: bash
+        run: bash scripts/prepare_apple_jit_scratch.sh tvos 40 >/dev/null
 
       - name: Ensure CMake for the embedded Steam receiver
         shell: bash
@@ -1159,7 +1153,7 @@ jobs:
             -sdk appletvos \
             -destination 'generic/platform=tvOS' \
             -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR" \
-            -derivedDataPath build/tvos \
+            -derivedDataPath "$APPLE_DERIVED_DATA_PATH" \
             ARCHS=arm64 \
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO
@@ -1167,7 +1161,7 @@ jobs:
       - name: Package unsigned tvOS developer IPA
         run: |
           set -euo pipefail
-          app_path=$(find build/tvos/Build/Products -type d -name Runner.app -print -quit)
+          app_path=$(find "$APPLE_DERIVED_DATA_PATH/Build/Products" -type d -name Runner.app -print -quit)
           if [[ -z "$app_path" ]]; then
             echo 'Xcode did not produce Runner.app.' >&2
             exit 1
@@ -1186,9 +1180,9 @@ jobs:
           EXPORT_OPTIONS_PATH: ${{ steps.tvos-signing.outputs.export_options_path }}
         run: |
           set -euo pipefail
-          archive_path="$RUNNER_TEMP/plezyng-tvos-store.xcarchive"
-          export_path="$RUNNER_TEMP/plezyng-tvos-store-export"
-          derived_data_path="$RUNNER_TEMP/plezyng-tvos-store-derived-data"
+          archive_path="$PLEZYNG_APPLE_TASK_ROOT/tvos-store.xcarchive"
+          export_path="$PLEZYNG_APPLE_TASK_ROOT/tvos-store-export"
+          derived_data_path="$PLEZYNG_APPLE_TASK_ROOT/tvos-store-derived-data"
           mkdir -p "$export_path"
           xcodebuild archive \
             -workspace tvos/Runner.xcworkspace \
@@ -1240,9 +1234,9 @@ jobs:
           EXPORT_OPTIONS_PATH: ${{ steps.tvos-signing.outputs.export_options_path }}
         run: |
           rm -f "$APPLE_API_KEY_PATH" "$EXPORT_OPTIONS_PATH"
-          rm -rf "$RUNNER_TEMP/plezyng-tvos-store.xcarchive" \
-            "$RUNNER_TEMP/plezyng-tvos-store-export" \
-            "$RUNNER_TEMP/plezyng-tvos-store-derived-data"
+          rm -rf "$PLEZYNG_APPLE_TASK_ROOT/tvos-store.xcarchive" \
+            "$PLEZYNG_APPLE_TASK_ROOT/tvos-store-export" \
+            "$PLEZYNG_APPLE_TASK_ROOT/tvos-store-derived-data"
 
       - name: Upload tvOS package
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -1252,6 +1246,11 @@ jobs:
             plezy-tvos-unsigned.ipa
             plezyng-tvos-appstore.ipa
           if-no-files-found: error
+
+      - name: Clean NFS-backed tvOS build scratch
+        if: always()
+        shell: bash
+        run: bash scripts/cleanup_apple_jit_scratch.sh tvos
 
   build-macos:
     if: ${{ inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'macos-validation') }}
@@ -1316,26 +1315,16 @@ jobs:
           export PATH="$RUNNER_TEMP/cocoapods-bin:/opt/homebrew/bin:$PATH"
           pod --version
 
-      - name: Prepare short macOS build workspace
+      - name: Prepare NFS-backed short macOS build workspace
         shell: bash
         run: |
           set -euo pipefail
-          short_root="$HOME/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-macos"
-          if [[ -e "$short_root" || -L "$short_root" ]]; then
-            echo "Refusing to reuse existing Apple build path: $short_root" >&2
-            exit 1
-          fi
-          mkdir -m 700 "$short_root"
+          short_root="$(bash scripts/prepare_apple_jit_scratch.sh macos 40)"
           ditto "$GITHUB_WORKSPACE/." "$short_root/"
           chmod 700 "$short_root"
           [[ "$(git -C "$short_root" rev-parse HEAD)" == "$GITHUB_SHA" ]]
           [[ ! -L "$short_root" && "$(cd "$short_root" && pwd -P)" == "$short_root" ]]
-          if (( ${#short_root} > 64 )); then
-            echo "Short macOS workspace path is unexpectedly long: $short_root" >&2
-            exit 1
-          fi
-          echo "PLEZYNG_APPLE_WORKSPACE=$short_root" >> "$GITHUB_ENV"
-          echo "Prepared real local build workspace: $short_root (${#short_root} characters)"
+          echo "Prepared real NFS-backed macOS workspace: $short_root (${#short_root} characters)"
 
       - name: Install dependencies
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
@@ -1596,17 +1585,17 @@ jobs:
             macos-dmg-size.txt
 
       - name: Remove short macOS build workspace
-        if: always()
+        if: always() && env.PLEZYNG_APPLE_TASK_ROOT != ''
         shell: bash
         run: |
           set -euo pipefail
-          short_root="$HOME/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-macos"
+          short_root="$PLEZYNG_APPLE_TASK_ROOT"
           if [[ -d "$short_root" && ! -L "$short_root" && "$(cd "$short_root" && pwd -P)" == "$short_root" ]]; then
             if [[ -d "$short_root/macos/Pods" ]]; then
               mkdir -p "$GITHUB_WORKSPACE/macos"
               ditto "$short_root/macos/Pods" "$GITHUB_WORKSPACE/macos/Pods"
             fi
-            rm -rf -- "$short_root"
+            bash scripts/cleanup_apple_jit_scratch.sh macos
           elif [[ -e "$short_root" || -L "$short_root" ]]; then
             echo "Refusing to remove unexpected Apple build path: $short_root" >&2
             exit 1

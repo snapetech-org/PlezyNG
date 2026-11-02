@@ -5,7 +5,7 @@ readonly NFS_MOUNT="/Volumes/plezyng-native-build-kspld0"
 readonly NFS_RUNS_ROOT="$NFS_MOUNT/runs"
 
 usage() {
-  echo "Usage: $0 <job-id> <minimum-free-gib> [nfs-derived-data|local-derived-data]" >&2
+  echo "Usage: $0 <job-id> <minimum-free-gib> [nfs-derived-data|local-xcode]" >&2
   exit 2
 }
 
@@ -30,7 +30,7 @@ if [[ ! "$minimum_free_gib" =~ ^[1-9][0-9]*$ ]]; then
   echo "Minimum free-space requirement must be a positive whole GiB value." >&2
   exit 1
 fi
-if [[ "$scratch_mode" != "nfs-derived-data" && "$scratch_mode" != "local-derived-data" ]]; then
+if [[ "$scratch_mode" != "nfs-derived-data" && "$scratch_mode" != "local-xcode" ]]; then
   echo "Unsupported Apple scratch mode: $scratch_mode" >&2
   exit 1
 fi
@@ -68,7 +68,7 @@ fi
 task_root="$NFS_RUNS_ROOT/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}"
 owner_file="$NFS_RUNS_ROOT/.plezyng-apple-scratch-p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}.owner"
 local_xcode_root=""
-if [[ "$scratch_mode" == "local-derived-data" ]]; then
+if [[ "$scratch_mode" == "local-xcode" ]]; then
   if [[ -z "${RUNNER_TEMP:-}" || ! -d "$RUNNER_TEMP" ]]; then
     echo "A real RUNNER_TEMP directory is required for local Xcode DerivedData." >&2
     exit 1
@@ -136,11 +136,14 @@ probe_dir="$task_root/.nfs-probe"
   printf 'PLEZYNG_APPLE_TASK_ROOT=%s\n' "$task_root"
   printf 'PLEZYNG_APPLE_TASK_OWNER_FILE=%s\n' "$owner_file"
   printf 'PLEZYNG_APPLE_WORKSPACE=%s\n' "$task_root"
-  printf 'APPLE_SOURCE_PACKAGES_DIR=%s/build/%s/SourcePackages\n' "$task_root" "$scratch_job"
   if [[ -n "$local_xcode_root" ]]; then
+    printf 'APPLE_SCRATCH_MODE=%s\n' "$scratch_mode"
+    printf 'APPLE_SOURCE_PACKAGES_DIR=%s/SourcePackages\n' "$local_xcode_root"
     printf 'APPLE_DERIVED_DATA_PATH=%s/DerivedData\n' "$local_xcode_root"
     printf 'APPLE_RESULT_BUNDLE=%s/apple-native-reliability.xcresult\n' "$local_xcode_root"
   else
+    printf 'APPLE_SCRATCH_MODE=%s\n' "$scratch_mode"
+    printf 'APPLE_SOURCE_PACKAGES_DIR=%s/build/%s/SourcePackages\n' "$task_root" "$scratch_job"
     printf 'APPLE_DERIVED_DATA_PATH=%s/DerivedData\n' "$task_root"
     printf 'APPLE_RESULT_BUNDLE=%s/apple-native-reliability.xcresult\n' "$task_root"
   fi
@@ -148,7 +151,7 @@ probe_dir="$task_root/.nfs-probe"
 
 trap - EXIT
 if [[ -n "$local_xcode_root" ]]; then
-  echo "Prepared private per-run Apple scratch: Swift packages on NFS at $task_root; Xcode DerivedData and results on local APFS at $local_xcode_root." >&2
+  echo "Prepared private per-run Apple scratch: Swift packages, Xcode DerivedData, and results on local APFS at $local_xcode_root; NFS task root: $task_root." >&2
 else
   echo "Prepared private per-run Apple scratch on NFS: $task_root (${#task_root} characters; ${minimum_free_gib} GiB minimum)." >&2
 fi

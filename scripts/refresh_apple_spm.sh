@@ -99,7 +99,19 @@ for platform in "${PLATFORMS[@]}"; do
       echo "error: APPLE_SOURCE_PACKAGES_DIR overrides require a scoped GitHub Actions run" >&2
       exit 1
     fi
-    expected_cloned_dir="/Volumes/plezyng-native-build-kspld0/runs/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}/build/${platform}/SourcePackages"
+    if [[ "${APPLE_SCRATCH_MODE:-}" == "local-xcode" ]]; then
+      if [[ -z "${RUNNER_TEMP:-}" || ! -d "$RUNNER_TEMP" ]]; then
+        echo "error: local Apple SwiftPM checkouts require RUNNER_TEMP" >&2
+        exit 1
+      fi
+      runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
+      expected_cloned_dir="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}-xcode/SourcePackages"
+    elif [[ "${APPLE_SCRATCH_MODE:-nfs-derived-data}" == "nfs-derived-data" ]]; then
+      expected_cloned_dir="/Volumes/plezyng-native-build-kspld0/runs/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}/build/${platform}/SourcePackages"
+    else
+      echo "error: unsupported Apple scratch mode: ${APPLE_SCRATCH_MODE:-}" >&2
+      exit 1
+    fi
     if [[ "$APPLE_SOURCE_PACKAGES_DIR" != "$expected_cloned_dir" ]]; then
       echo "error: refusing an unscoped Apple SwiftPM directory: $APPLE_SOURCE_PACKAGES_DIR" >&2
       exit 1

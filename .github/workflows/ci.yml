@@ -605,13 +605,13 @@ jobs:
           path: ${{ github.workspace }}/.cache/plezy-pub-cache
           key: ${{ runner.os }}-${{ runner.arch }}-plezy-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
-      - name: Prepare NFS SwiftPM and local Xcode scratch
+      - name: Prepare local Xcode and SwiftPM scratch
         shell: bash
         env:
           APPLE_SCRATCH_JOB: ${{ matrix.source_packages_directory }}
         run: |
           set -euo pipefail
-          bash scripts/prepare_apple_jit_scratch.sh "$APPLE_SCRATCH_JOB" 20 local-derived-data >/dev/null
+          bash scripts/prepare_apple_jit_scratch.sh "$APPLE_SCRATCH_JOB" 20 local-xcode >/dev/null
 
       - name: Ensure CMake for the embedded Steam receiver
         shell: bash

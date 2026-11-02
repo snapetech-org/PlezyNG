@@ -29,8 +29,8 @@ if [[ "$(cd "$task_root" && /bin/pwd -P)" != "$task_root" ]]; then
   echo "Refusing to clean an Apple scratch path that resolves elsewhere: $task_root" >&2
   exit 1
 fi
-if /usr/bin/grep -Fqx 'scratch_mode=local-derived-data' "$owner_file"; then
-  scratch_mode="local-derived-data"
+if /usr/bin/grep -Fqx 'scratch_mode=local-xcode' "$owner_file"; then
+  scratch_mode="local-xcode"
 elif /usr/bin/grep -Fqx 'scratch_mode=nfs-derived-data' "$owner_file"; then
   scratch_mode="nfs-derived-data"
 else
@@ -50,7 +50,7 @@ for expected in \
   fi
 done
 
-if /usr/bin/grep -Fqx 'scratch_mode=local-derived-data' "$owner_file"; then
+if /usr/bin/grep -Fqx 'scratch_mode=local-xcode' "$owner_file"; then
   if [[ -z "${RUNNER_TEMP:-}" || ! -d "$RUNNER_TEMP" ]]; then
     echo "RUNNER_TEMP is unavailable; refusing to remove local Xcode scratch." >&2
     exit 1

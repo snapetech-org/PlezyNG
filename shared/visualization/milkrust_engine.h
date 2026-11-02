@@ -162,9 +162,11 @@ class MilkRustEngine {
       throw std::runtime_error("Asset is outside its verified preset root.");
     return path;
   }
-  static std::string Fold(std::string value) {
+  template <typename String>
+  static String Fold(String value) {
+    using Char = typename String::value_type;
     for (auto& ch : value)
-      if (ch >= 'A' && ch <= 'Z') ch += 'a' - 'A';
+      if (ch >= static_cast<Char>('A') && ch <= static_cast<Char>('Z')) ch += static_cast<Char>('a' - 'A');
     return value;
   }
   static std::filesystem::path CaseInsensitive(

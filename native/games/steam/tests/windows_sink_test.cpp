@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+#include <algorithm>
 #include <cassert>
 #include <condition_variable>
+#include <cstdio>
 
 #include "SteamWindowsSink.h"
 #include "red_h264.h"
@@ -16,9 +18,34 @@ int main() {
     bool failed = false, presented = false, red = false;
     WindowsSink sink(
         [&](DecodedPixels&& image) {
-          const bool valid = image.id == 7 && image.width == 64 && image.height == 64 &&
-                             image.rgba.size() == 64 * 64 * 4 && image.rgba[0] > 200 && image.rgba[1] < 50 &&
-                             image.rgba[2] < 50 && image.rgba[3] == 255;
+          const bool geometry = image.id == 7 && image.width == 64 && image.height == 64 &&
+                                image.rgba.size() == 64 * 64 * 4;
+          bool valid = false;
+          uint8_t center[4]{};
+          if (geometry) {
+            constexpr int patchStart = 24;
+            constexpr int patchSize = 16;
+            uint32_t channels[3]{};
+            for (int y = patchStart; y < patchStart + patchSize; ++y) {
+              for (int x = patchStart; x < patchStart + patchSize; ++x) {
+                const size_t offset = (static_cast<size_t>(y) * 64 + x) * 4;
+                channels[0] += image.rgba[offset];
+                channels[1] += image.rgba[offset + 1];
+                channels[2] += image.rgba[offset + 2];
+              }
+            }
+            const size_t centerOffset = (32 * 64 + 32) * 4;
+            std::copy_n(image.rgba.data() + centerOffset, 4, center);
+            constexpr uint32_t pixelCount = patchSize * patchSize;
+            valid = channels[0] / pixelCount > 200 && channels[1] / pixelCount < 50 &&
+                    channels[2] / pixelCount < 50 && center[3] == 255;
+          }
+          if (!valid) {
+            std::fprintf(stderr,
+                         "Windows sink returned unexpected frame: id=%u size=%ux%u bytes=%zu center=(%u,%u,%u,%u)\n",
+                         image.id, image.width, image.height, image.rgba.size(), center[0], center[1], center[2],
+                         center[3]);
+          }
           {
             std::lock_guard<std::mutex> lock(mutex);
             presented = true;

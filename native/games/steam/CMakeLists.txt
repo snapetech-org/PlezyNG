@@ -179,6 +179,7 @@ if(PLEZY_STEAM_GSTREAMER)
 endif()
 if(PLEZY_STEAM_TESTS AND WIN32)
   enable_testing()
+  get_target_property(PLEZY_STEAM_OPUS_TARGET_TYPE opus TYPE)
   foreach(name windows_platform windows_sink h26x audio pyrowave)
     add_executable(plezy_${name}_test tests/${name}_test.cpp)
     target_include_directories(plezy_${name}_test PRIVATE "${IHS_ROOT}/src")
@@ -187,6 +188,19 @@ if(PLEZY_STEAM_TESTS AND WIN32)
       target_compile_options(plezy_${name}_test PRIVATE /UNDEBUG)
     else()
       target_compile_options(plezy_${name}_test PRIVATE -UNDEBUG)
+    endif()
+    # The Opus target is a DLL in the Windows toolchain. Steam test executables
+    # live in steam/Debug while opus.dll lives in steam/opus/Debug, outside the
+    # Windows loader's search path. Put the runtime beside each test binary.
+    if(PLEZY_STEAM_OPUS_TARGET_TYPE STREQUAL "SHARED_LIBRARY")
+      add_custom_command(
+        TARGET plezy_${name}_test
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          "$<TARGET_FILE:opus>"
+          "$<TARGET_FILE_DIR:plezy_${name}_test>"
+        VERBATIM
+      )
     endif()
     add_test(NAME plezy_${name} COMMAND plezy_${name}_test)
     set_tests_properties(plezy_${name} PROPERTIES TIMEOUT 30)

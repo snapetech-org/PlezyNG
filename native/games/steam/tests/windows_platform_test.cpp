@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-#include <windows.h>
+// Include Winsock 2 before Windows.h so the SDK doesn't pull in winsock.h.
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <windows.h>
 
 #include <cassert>
 #include <cstring>

@@ -1,10 +1,13 @@
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 
+val robolectricMavenRepository = "https://storage.googleapis.com/maven-central/maven2"
+
 allprojects {
     repositories {
         google()
-        // Maven Central throttled private JIT builds with HTTP 429 responses.
-        maven { url = uri("https://repo1.maven.org/maven2") }
+        // Central is rate limiting shared private JIT egress; use Google's
+        // Cloud Storage Maven Central mirror instead.
+        maven { url = uri(robolectricMavenRepository) }
         exclusiveContent {
             forRepository {
                 maven { url = uri("https://jitpack.io") }
@@ -64,6 +67,22 @@ subprojects {
                 // missing classes. Only the app should shrink.
                 extension.buildTypes.findByName("minified")?.isMinifyEnabled = false
             }
+        }
+    }
+}
+
+val robolectricProxyHost = providers.environmentVariable("ROBOLECTRIC_PROXY_HOST").orNull
+val robolectricProxyPort = providers.environmentVariable("ROBOLECTRIC_PROXY_PORT").orNull
+
+subprojects {
+    tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+        systemProperty("robolectric.dependency.repo.id", "google-maven-central")
+        systemProperty("robolectric.dependency.repo.url", robolectricMavenRepository)
+        robolectricProxyHost?.let {
+            systemProperty("robolectric.dependency.proxy.host", it)
+        }
+        robolectricProxyPort?.let {
+            systemProperty("robolectric.dependency.proxy.port", it)
         }
     }
 }

@@ -244,6 +244,18 @@ jobs:
       - name: Configure Gradle to use the private JIT proxy
         run: python3 scripts/prepare_android_sdk.py proxy
 
+      - name: Verify private proxy access to Maven Central mirror
+        shell: bash
+        run: |
+          proxy="${HTTPS_PROXY:-${https_proxy:-}}"
+          if [[ -z "$proxy" ]]; then
+            echo "The private JIT HTTPS proxy is not configured."
+            exit 1
+          fi
+          curl --fail --show-error --silent --head --max-time 30 \
+            --proxy "$proxy" \
+            https://storage.googleapis.com/maven-central/maven2/org/robolectric/nativeruntime-dist-compat/1.0.18/nativeruntime-dist-compat-1.0.18.jar
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
         with:

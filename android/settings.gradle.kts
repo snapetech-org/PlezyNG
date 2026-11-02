@@ -11,8 +11,9 @@ pluginManagement {
 
   repositories {
     google()
-    // Keep Central downloads on the private JIT proxy's approved mirror route.
-    maven { url = uri("https://repo1.maven.org/maven2") }
+    // Central is rate limiting the shared private JIT egress. Use Google's
+    // Cloud Storage Maven Central mirror through the existing exact-host proxy route.
+    maven { url = uri("https://storage.googleapis.com/maven-central/maven2") }
     gradlePluginPortal()
   }
 }

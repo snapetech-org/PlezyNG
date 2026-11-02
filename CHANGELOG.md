@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Preserve Android API 25 compatibility when matching Google Tensor LiteRT device models.
 - Fix Steam video decoding on Apple by supplying monotonic VideoToolbox presentation timestamps.
 - Restart the Gradle daemon before Android API compatibility lint to avoid carrying memory from JVM tests.
 - Bundle the locked Sherpa ONNX Linux runtime pair and verify it resolves before packaging.

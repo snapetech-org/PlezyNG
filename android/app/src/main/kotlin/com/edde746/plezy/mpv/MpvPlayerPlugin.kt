@@ -727,7 +727,7 @@ open class MpvPlayerPlugin(
           if (
             record.optString("backend") == "google-tensor" &&
             record.optString("execution") == "aot" &&
-            normalizeSocModel(record.optString("soc_model")) == normalizeSocModel(Build.SOC_MODEL)
+            normalizeSocModel(record.optString("soc_model")) == currentSocModel
           ) {
             matchingRecord = record
           }

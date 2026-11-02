@@ -29,17 +29,50 @@ if [[ "$(cd "$task_root" && /bin/pwd -P)" != "$task_root" ]]; then
   echo "Refusing to clean an Apple scratch path that resolves elsewhere: $task_root" >&2
   exit 1
 fi
+if /usr/bin/grep -Fqx 'scratch_mode=local-derived-data' "$owner_file"; then
+  scratch_mode="local-derived-data"
+elif /usr/bin/grep -Fqx 'scratch_mode=nfs-derived-data' "$owner_file"; then
+  scratch_mode="nfs-derived-data"
+else
+  echo "Refusing to clean Apple scratch with an unknown recorded mode: $owner_file" >&2
+  exit 1
+fi
 for expected in \
   "run_id=$GITHUB_RUN_ID" \
   "run_attempt=$GITHUB_RUN_ATTEMPT" \
   "job=${GITHUB_JOB:-$scratch_job}" \
   "sha=${GITHUB_SHA:-}" \
+  "scratch_mode=$scratch_mode" \
   "task_root=$task_root"; do
   if ! /usr/bin/grep -Fqx "$expected" "$owner_file"; then
     echo "Refusing to clean scratch without its matching owner record: $owner_file" >&2
     exit 1
   fi
 done
+
+if /usr/bin/grep -Fqx 'scratch_mode=local-derived-data' "$owner_file"; then
+  if [[ -z "${RUNNER_TEMP:-}" || ! -d "$RUNNER_TEMP" ]]; then
+    echo "RUNNER_TEMP is unavailable; refusing to remove local Xcode scratch." >&2
+    exit 1
+  fi
+  runner_temp_real="$(cd "$RUNNER_TEMP" && /bin/pwd -P)"
+  local_xcode_root="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}-xcode"
+  if ! /usr/bin/grep -Fqx "local_xcode_root=$local_xcode_root" "$owner_file"; then
+    echo "Refusing to clean local Xcode scratch without its matching owner record: $local_xcode_root" >&2
+    exit 1
+  fi
+  if [[ -L "$local_xcode_root" || ( -e "$local_xcode_root" && ! -d "$local_xcode_root" ) ]]; then
+    echo "Refusing to clean redirected or non-directory local Xcode scratch: $local_xcode_root" >&2
+    exit 1
+  fi
+  if [[ -d "$local_xcode_root" ]]; then
+    if [[ "$(cd "$local_xcode_root" && /bin/pwd -P)" != "$local_xcode_root" ]]; then
+      echo "Refusing to clean local Xcode scratch that resolves elsewhere: $local_xcode_root" >&2
+      exit 1
+    fi
+    /bin/rm -rf -- "$local_xcode_root"
+  fi
+fi
 
 /bin/rm -rf -- "$task_root"
 /bin/rm -f -- "$owner_file"

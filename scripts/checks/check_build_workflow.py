@@ -1014,11 +1014,15 @@ require(
 )
 
 apple_native = job_block(ci_text, "apple-native-test")
+apple_prepare_scratch = named_step(
+    apple_native, "Prepare NFS SwiftPM and local Xcode scratch"
+)
 require(
-    'bash scripts/prepare_apple_jit_scratch.sh "$APPLE_SCRATCH_JOB" 20' in apple_native
+    'bash scripts/prepare_apple_jit_scratch.sh "$APPLE_SCRATCH_JOB" 20 local-derived-data'
+    in apple_prepare_scratch
     and "result_bundle=\"$APPLE_RESULT_BUNDLE\"" in apple_native
     and apple_native.count('-derivedDataPath "$APPLE_DERIVED_DATA_PATH"') == 3,
-    "Apple CI must use task-scoped NFS scratch for Swift packages, DerivedData, and test results",
+    "Apple CI must keep SwiftPM sources on task-scoped NFS and Xcode DerivedData/results on local APFS",
 )
 macos_apple_build = named_step(
     apple_native, "Build macOS application and XCTest bundle"

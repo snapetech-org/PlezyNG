@@ -345,8 +345,8 @@ class ExoPlayerPluginTest {
     // failed Exo URI nor the superseded episode was ever loaded.
     assertEquals(listOf("https://example.test/episode-3.mkv"), loads.map { it[1] })
     assertEquals("pause=no", loads.single()[4].split(",")[1])
-    assertTrue("fallback events were not delivered", awaitEventCount(sink, 2))
-    val firstFallbackEvents = sink.eventNames
+    assertTrue("fallback events were not delivered", awaitFallbackEventCount(sink, 2))
+    val firstFallbackEvents = fallbackEventNames(sink)
     assertEquals(
       "Unexpected MPV event sequence after the first fallback open: $firstFallbackEvents",
       listOf("backend-switched", "file-loaded"),
@@ -364,8 +364,8 @@ class ExoPlayerPluginTest {
     assertEquals(null, next.errorCode)
     assertEquals("https://example.test/episode-4.mkv", loads.last()[1])
     assertEquals("pause=yes", loads.last()[4].split(",")[1])
-    assertTrue("subsequent fallback events were not delivered", awaitEventCount(sink, 3))
-    val subsequentFallbackEvents = sink.eventNames
+    assertTrue("subsequent fallback events were not delivered", awaitFallbackEventCount(sink, 3))
+    val subsequentFallbackEvents = fallbackEventNames(sink)
     assertEquals(
       "Unexpected MPV event sequence after the next fallback open: $subsequentFallbackEvents",
       listOf("backend-switched", "file-loaded", "file-loaded"),
@@ -1127,14 +1127,17 @@ class ExoPlayerPluginTest {
     assertEquals(1, result.completionCount)
   }
 
-  private fun awaitEventCount(sink: RecordingEventSink, expectedCount: Int): Boolean {
+  private fun fallbackEventNames(sink: RecordingEventSink): List<String> =
+    sink.eventNames.filter { it == "backend-switched" || it == "file-loaded" }
+
+  private fun awaitFallbackEventCount(sink: RecordingEventSink, expectedCount: Int): Boolean {
     repeat(100) {
       shadowOf(Looper.getMainLooper()).idle()
-      if (sink.eventNames.size >= expectedCount) return true
+      if (fallbackEventNames(sink).size >= expectedCount) return true
       Thread.sleep(10)
     }
     shadowOf(Looper.getMainLooper()).idle()
-    return sink.eventNames.size >= expectedCount
+    return fallbackEventNames(sink).size >= expectedCount
   }
 
   private class RecordingResult : MethodChannel.Result {

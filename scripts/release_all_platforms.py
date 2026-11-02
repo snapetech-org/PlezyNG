@@ -625,7 +625,7 @@ def ensure_ci(commit_sha: str) -> dict:
         PLEZY_REPO,
         CI_WORKFLOW,
         "main",
-        {"action": "ci", "runner_pool": "private", "build_linux_packages": "false"},
+        {"action": "ci", "runner_pool": "private", "build_linux_packages": "true"},
         "PlezyNG CI",
         expected_title="action:ci:pool:private",
         expected_sha=commit_sha,

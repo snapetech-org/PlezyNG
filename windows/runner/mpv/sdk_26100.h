@@ -7,15 +7,21 @@
 
 #include <Windows.h>
 
-// Only define these if the SDK doesn't already have them (SDK < 10.0.26100.0).
 #ifndef NTDDI_WIN11_GE
-
+// These enum values are present in SDK 10.0.26100.0 and newer even when the
+// target version hides the corresponding structure declarations.
 enum {
   DISPLAYCONFIG_DEVICE_INFO_SET_RESERVED1 = 14,
   DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO_2 = 15,
   DISPLAYCONFIG_DEVICE_INFO_SET_HDR_STATE = 16,
   DISPLAYCONFIG_DEVICE_INFO_SET_WCG_STATE = 17,
 };
+#endif
+
+// Windows SDK declarations for these types are gated by the selected target
+// NTDDI_VERSION, not just by the SDK version. Older targets need these shims
+// even when building with SDK 10.0.26100.0 or newer.
+#if !defined(NTDDI_WIN11_GE) || !defined(NTDDI_VERSION) || NTDDI_VERSION < NTDDI_WIN11_GE
 
 typedef enum _DISPLAYCONFIG_ADVANCED_COLOR_MODE {
   DISPLAYCONFIG_ADVANCED_COLOR_MODE_SDR,
@@ -55,7 +61,7 @@ typedef struct _DISPLAYCONFIG_SET_HDR_STATE {
   };
 } DISPLAYCONFIG_SET_HDR_STATE;
 
-#endif  // NTDDI_WIN11_GE
+#endif  // Win11 24H2 types are unavailable for the selected target.
 
 // DisplayConfig virtual-refresh-rate awareness flags for Dynamic Refresh Rate
 // (Win11 22H2+, SDK 10.0.22621.0+). Guarded individually because, unlike the

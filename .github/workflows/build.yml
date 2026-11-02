@@ -360,6 +360,8 @@ jobs:
     if: ${{ inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     timeout-minutes: 360
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: "2"
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-build-android"]}}', github.run_id)) }}
     permissions:
       id-token: write
@@ -502,6 +504,23 @@ jobs:
         run: |
           AMAZON=1 ORG_GRADLE_PROJECT_openiapStore=amazon flutter build apk --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --dart-define=AMAZON_STORE=true --obfuscate --split-debug-info=debug-info/android-amazon
           cp build/app/outputs/flutter-apk/app-release.apk plezyng-amazon-firetv.apk
+
+      - name: Capture Android JIT memory diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          free -h
+          for file in /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.max \
+                      /sys/fs/cgroup/memory.peak /sys/fs/cgroup/memory.events; do
+            if [[ -r "$file" ]]; then
+              echo "--- $file"
+              cat "$file"
+            fi
+          done
+          if command -v dmesg >/dev/null 2>&1; then
+            dmesg --ctime 2>/dev/null | grep -Ei 'out of memory|oom-kill|killed process|memory cgroup' | tail -n 40 || true
+          fi
 
       - name: Clean up keystore
         if: ${{ always() && needs.validate-trusted-ref.outputs.mode == 'release' }}

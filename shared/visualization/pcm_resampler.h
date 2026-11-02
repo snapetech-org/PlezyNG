@@ -42,8 +42,8 @@ class PcmResampler {
       }
       while (next_ <= static_cast<double>(index_)) {
         const double blend = index_ ? next_ - (index_ - 1) : 1;
-        output->push_back(previous_left_ + (left - previous_left_) * blend);
-        output->push_back(previous_right_ + (right - previous_right_) * blend);
+        output->push_back(static_cast<float>(previous_left_ + (left - previous_left_) * blend));
+        output->push_back(static_cast<float>(previous_right_ + (right - previous_right_) * blend));
         next_ += static_cast<double>(rate_) / 44100.0;
       }
       previous_left_ = left;

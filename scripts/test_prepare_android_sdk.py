@@ -45,11 +45,17 @@ class AndroidSdkTests(unittest.TestCase):
         output = self.root / "github-env"
         MODULE.configure_proxy(self.env | {"GITHUB_ENV": str(output), "JAVA_TOOL_OPTIONS": "-Xmx2g"})
         entries = dict(line.split("=", 1) for line in output.read_text().splitlines())
-        self.assertEqual(set(entries), {"JAVA_TOOL_OPTIONS", "GRADLE_OPTS"})
-        for value in entries.values():
+        self.assertEqual(
+            set(entries),
+            {"JAVA_TOOL_OPTIONS", "GRADLE_OPTS", "ROBOLECTRIC_PROXY_HOST", "ROBOLECTRIC_PROXY_PORT"},
+        )
+        for name in ("JAVA_TOOL_OPTIONS", "GRADLE_OPTS"):
+            value = entries[name]
             self.assertIn("-Dhttps.proxyHost=10.0.2.100", value)
             self.assertIn("-Dhttp.proxyPort=3128", value)
         self.assertTrue(entries["JAVA_TOOL_OPTIONS"].startswith("-Xmx2g "))
+        self.assertEqual(entries["ROBOLECTRIC_PROXY_HOST"], "10.0.2.100")
+        self.assertEqual(entries["ROBOLECTRIC_PROXY_PORT"], "3128")
 
     def test_invalid_proxy_or_multiline_environment_is_rejected(self):
         for proxy in ("", "https://host:3128", "http://user:secret@host:3128",

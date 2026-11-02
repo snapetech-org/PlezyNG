@@ -1,17 +1,9 @@
 diff --git a/gclient_utils.py b/gclient_utils.py
 --- a/gclient_utils.py
 +++ b/gclient_utils.py
-@@ -12,7 +12,7 @@
- import io
- import logging
- import operator
- import os
+@@ -16 +16 @@
 -import pipes
 +import shlex
- import platform
- import queue
-@@ -370,3 +370,3 @@
- def CommandToStr(args):
-     """Converts an arg list into a shell escaped string."""
+@@ -372 +372 @@
 -    return ' '.join(pipes.quote(arg) for arg in args)
 +    return ' '.join(shlex.quote(arg) for arg in args)

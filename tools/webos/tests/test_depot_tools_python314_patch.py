@@ -31,8 +31,12 @@ class DepotToolsPython314PatchTests(unittest.TestCase):
 
     def test_release_builder_applies_patch_before_gclient_sync(self):
         builder = BUILDER_PATH.read_text(encoding="utf-8")
-        verify = builder.index('git -C "$BOOTSTRAP_DEPOT_TOOLS" apply --check')
-        apply = builder.index('git -C "$BOOTSTRAP_DEPOT_TOOLS" apply "$DEPOT_TOOLS_PATCH"')
+        verify = builder.index(
+            'git -C "$BOOTSTRAP_DEPOT_TOOLS" apply --unidiff-zero --check'
+        )
+        apply = builder.index(
+            'git -C "$BOOTSTRAP_DEPOT_TOOLS" apply --unidiff-zero "$DEPOT_TOOLS_PATCH"'
+        )
         sync = builder.index("gclient sync --no-history --shallow -j 8")
         self.assertLess(verify, apply)
         self.assertLess(apply, sync)

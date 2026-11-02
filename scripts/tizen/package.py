@@ -457,6 +457,11 @@ def build(args):
     actual_flutter = subprocess.check_output(['git', '-C', str(sdk / 'flutter'), 'rev-parse', 'HEAD'], text=True).strip()
     if actual_flutter != PINS['flutter_revision']:
         raise ValueError('Flutter revision differs from toolchain.json')
+    actual_flutter_tag = subprocess.check_output(
+        ['git', '-C', str(sdk / 'flutter'), 'describe', '--tags', '--exact-match', 'HEAD'], text=True
+    ).strip()
+    if actual_flutter_tag != PINS['flutter_version_tag']:
+        raise ValueError('Flutter release tag differs from toolchain.json')
     flutter = sdk / 'bin/flutter-tizen'
     run(flutter, '--version')
     run(flutter, 'pub', 'get', '--enforce-lockfile', cwd=ROOT)

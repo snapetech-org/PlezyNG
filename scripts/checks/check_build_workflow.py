@@ -934,6 +934,16 @@ require(
     and "name: plezyng-tizen-${{ inputs.architecture }}-experimental" in tizen_workflow,
     "Tizen reusable workflow must build signed packages from main and version tags",
 )
+tizen_flutter_version = named_step(
+    tizen_workflow, "Restore the pinned Flutter release tag for SDK version detection"
+)
+require(
+    '"flutter_version_tag"' in tizen_flutter_version
+    and '"flutter_revision"' in tizen_flutter_version
+    and 'fetch --depth=1 origin "refs/tags/$flutter_tag:refs/tags/$flutter_tag"' in tizen_flutter_version
+    and 'describe --tags --exact-match HEAD' in tizen_flutter_version,
+    "the pinned Tizen Flutter checkout must restore its exact SDK version tag",
+)
 require(
     re.search(
         r"(?ms)^      action:\n.*?^        required: true\n        type: choice\n"

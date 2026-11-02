@@ -161,6 +161,19 @@ jobs:
           ref: 6a19cca56475dbfba1478ee68d7bd0c2ef891da1
           path: .tizen-toolchain/flutter-tizen/flutter
           persist-credentials: false
+      - name: Restore the pinned Flutter release tag for SDK version detection
+        if: env.PLEZY_FLUTTER_TIZEN_ROOT == ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter_dir=.tizen-toolchain/flutter-tizen/flutter
+          flutter_tag=$(python3 -c 'import json; print(json.load(open("scripts/tizen/toolchain.json"))["flutter_version_tag"])')
+          flutter_revision=$(python3 -c 'import json; print(json.load(open("scripts/tizen/toolchain.json"))["flutter_revision"])')
+          test "$(git -C "$flutter_dir" rev-parse HEAD)" = "$flutter_revision"
+          # actions/checkout fetched only the pinned commit, so Flutter otherwise
+          # reports 0.0.0-unknown and flutter-tizen cannot resolve flutter_test.
+          git -C "$flutter_dir" fetch --depth=1 origin "refs/tags/$flutter_tag:refs/tags/$flutter_tag"
+          test "$(git -C "$flutter_dir" describe --tags --exact-match HEAD)" = "$flutter_tag"
       - name: Resolve toolchain and provision the isolated ARM SDK when needed
         shell: bash
         run: |

@@ -537,12 +537,12 @@ void Session::method(const Call& call, Reply reply) {
             if (std::string(group) == "buttons") {
               if (const auto* pressed = std::get_if<bool>(&entry.second))
                 input.button(*runtime, deviceId, *name, *pressed, assistance);
-            } else if (const auto* n = std::get_if<double>(&entry.second))
-              input.axis(*runtime, deviceId, *name, *n, assistance);
-            else if (const auto* n = std::get_if<int32_t>(&entry.second))
-              input.axis(*runtime, deviceId, *name, *n, assistance);
-            else if (const auto* n = std::get_if<int64_t>(&entry.second))
-              input.axis(*runtime, deviceId, *name, double(*n), assistance);
+            } else if (const auto* doubleValue = std::get_if<double>(&entry.second))
+              input.axis(*runtime, deviceId, *name, *doubleValue, assistance);
+            else if (const auto* int32Value = std::get_if<int32_t>(&entry.second))
+              input.axis(*runtime, deviceId, *name, *int32Value, assistance);
+            else if (const auto* int64Value = std::get_if<int64_t>(&entry.second))
+              input.axis(*runtime, deviceId, *name, double(*int64Value), assistance);
           }
         }
     }

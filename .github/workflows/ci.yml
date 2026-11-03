@@ -1248,16 +1248,24 @@ jobs:
             libdisplay-info-dev libgbm-dev libwayland-dev wayland-protocols liblcms2-dev libmujs-dev \
             liblua5.2-dev rpm libarchive-tools imagemagick ruby-dev build-essential
           proxy="${HTTPS_PROXY:-${https_proxy:-}}"
-          if [[ -z "$proxy" ]]; then
+          if [[ -n "$proxy" ]]; then
+            sudo env \
+              HTTP_PROXY="${HTTP_PROXY:-$proxy}" \
+              HTTPS_PROXY="$proxy" \
+              http_proxy="${http_proxy:-${HTTP_PROXY:-$proxy}}" \
+              https_proxy="${https_proxy:-$proxy}" \
+              gem install fpm --version 1.17.0 --no-document
+          elif [[ "$EXECUTION_PROFILE_INPUT" == "hybrid" ]]; then
+            # Public runners have direct egress and do not expose the private
+            # JIT proxy variables. Use that scoped path only for this release
+            # profile; private jobs must keep the proxy requirement below.
+            sudo gem install fpm --version 1.17.0 --no-document
+          else
             echo "The private JIT HTTPS proxy is required to install fpm." >&2
             exit 1
           fi
-          sudo env \
-            HTTP_PROXY="${HTTP_PROXY:-$proxy}" \
-            HTTPS_PROXY="$proxy" \
-            http_proxy="${http_proxy:-${HTTP_PROXY:-$proxy}}" \
-            https_proxy="${https_proxy:-$proxy}" \
-            gem install fpm --version 1.17.0 --no-document
+        env:
+          EXECUTION_PROFILE_INPUT: ${{ inputs.execution_profile }}
 
       # Keyed the same way build.yml keys it: the lock names the asset and its
       # checksum, so editing the lock is what invalidates the cache.

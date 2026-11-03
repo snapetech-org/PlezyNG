@@ -177,7 +177,8 @@ require(
 )
 require(
     '"arch":"arm64","flutter_setup":"git","native_cache_path":"build/windows/arm64/_deps"' in windows
-    and "matrix: ${{ fromJSON(needs.validate-trusted-ref.outputs.execution_profile == 'hybrid'" in windows,
+    and "matrix: ${{ fromJSON(needs.validate-trusted-ref.outputs.execution_profile == 'hybrid'" in windows
+    and '"include":[{"arch":"x64"' in windows,
     "native Windows ARM64 must be present only in the hybrid 3.0.0 build matrix",
 )
 for expected in (
@@ -1176,6 +1177,7 @@ require(
 require(
     '"arch":"arm64","flutter_setup":"git"' in windows_native
     and "matrix: ${{ fromJSON(inputs.execution_profile == 'hybrid'" in windows_native
+    and '"include":[{"arch":"x64"' in windows_native
     and "'windows-11-arm'" in windows_native,
     "native Windows ARM64 CI must run on the public ARM64 host in the 3.0.0 hybrid profile",
 )

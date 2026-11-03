@@ -1714,7 +1714,7 @@ jobs:
       contents: read
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && '[{"arch":"x64","flutter_setup":"action","native_cache_path":"build/windows/x64/_deps"},{"arch":"arm64","flutter_setup":"git","native_cache_path":"build/windows/arm64/_deps"}]' || '[{"arch":"x64","flutter_setup":"action","native_cache_path":"build/windows/x64/_deps"}]') }}
+      matrix: ${{ fromJSON(needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && '{"include":[{"arch":"x64","flutter_setup":"action","native_cache_path":"build/windows/x64/_deps"},{"arch":"arm64","flutter_setup":"git","native_cache_path":"build/windows/arm64/_deps"}]}' || '{"include":[{"arch":"x64","flutter_setup":"action","native_cache_path":"build/windows/x64/_deps"}]}') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:

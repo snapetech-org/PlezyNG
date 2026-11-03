@@ -1021,7 +1021,7 @@ jobs:
       contents: read
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(inputs.execution_profile == 'hybrid' && '[{"arch":"x64","flutter_setup":"action"},{"arch":"arm64","flutter_setup":"git"}]' || '[{"arch":"x64","flutter_setup":"action"}]') }}
+      matrix: ${{ fromJSON(inputs.execution_profile == 'hybrid' && '{"include":[{"arch":"x64","flutter_setup":"action"},{"arch":"arm64","flutter_setup":"git"}]}' || '{"include":[{"arch":"x64","flutter_setup":"action"}]}') }}
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

@@ -41,8 +41,24 @@ Windows CI and release jobs provision NuGet from `windows/tool/build-toolchain.l
 before Flutter configures its plugins. The installer job also provisions Inno Setup
 from that lock; both downloads require matching hashes and publisher signatures.
 `-VerifyOnly` checks the installed tools before compilation or packaging. Windows
-x64 and ARM64 use the private PC pool; the Mac is reserved for Apple and Linux ARM
-work. See [the Windows toolchain runbook](../../windows/tool/build-toolchain.md).
+x64 uses the private PC pool. Windows ARM64 is excluded from CI and release
+matrices until a native private runner is provisioned; no hosted or emulated
+fallback is allowed. The Mac is reserved for Apple and Linux ARM work. See
+[the Windows toolchain runbook](../../windows/tool/build-toolchain.md).
+
+Apple JIT source workspaces use `/p/runs/...`, a short mount alias of the same
+kspld0 NFS export that is also mounted at
+`/Volumes/plezyng-native-build-kspld0`. The Dart macOS native-asset step rewrites
+dylib install names to absolute workspace paths; the longer mount path exceeded
+the bundled SMB library's Mach-O header padding. The JIT account cannot mount
+shares itself, so the Mac host must provide `/p` before dispatch. The Apple
+scratch preflight checks that `/p` is the expected NFS export and fails before
+checkout or build work if it is absent. Xcode build products remain on local
+APFS; only the task-scoped source workspace and scratch data use NFS. Keep the
+existing long mount for the Mac-backed Linux ARM64 worker and leave both mounts
+in place while any Mac job owns the shared slot. The Apple Steam-source hook
+also removes AppleDouble files after its pinned source checkout, since that
+checkout is generated during the Xcode build after the initial workspace copy.
 
 Release-channel workflows set `GH_REPO` before checkout, so their release gates
 and downloads do not depend on a previous workspace. The runner bootstrap installs

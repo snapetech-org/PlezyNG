@@ -1797,10 +1797,34 @@ jobs:
         run: dart run scripts/configure_updater.dart
 
       - name: Build Windows ${{ matrix.arch }}
+        id: windows-build
         shell: pwsh
         env:
           FLUTTER_WHISPER_GPU_BACKEND: ${{ inputs.subtitle_gpu_backend == 'vulkan' && matrix.arch == 'x64' && 'VULKAN' || inputs.subtitle_gpu_backend == 'cuda' && matrix.arch == 'x64' && 'CUDA' || 'CPU' }}
         run: flutter build windows --release ${{ env.RELEASE_DART_DEFINES }} ${{ env.NATIVE_UPDATER_DEFINE }} --dart-define=SUPPORTER_MODE=unlocked --split-debug-info=debug-info/windows-${{ matrix.arch }}
+
+      - name: Diagnose failed Windows CMake installation
+        if: ${{ failure() && steps.windows-build.outcome == 'failure' }}
+        shell: pwsh
+        run: |
+          $buildDir = "build/windows/${{ matrix.arch }}"
+          $installScript = Join-Path $buildDir 'cmake_install.cmake'
+          if (-not (Test-Path -LiteralPath $installScript -PathType Leaf)) {
+            Write-Host "CMake install script was not generated: $installScript"
+            exit 0
+          }
+
+          $logPath = Join-Path $env:RUNNER_TEMP 'plezyng-windows-cmake-install-diagnostics.log'
+          $previousVerbose = $env:VERBOSE
+          $env:VERBOSE = '1'
+          try {
+            & cmake --install $buildDir --config Release --verbose *> $logPath
+            $installExit = $LASTEXITCODE
+          } finally {
+            $env:VERBOSE = $previousVerbose
+          }
+          Get-Content -LiteralPath $logPath -Tail 180
+          Write-Host "Verbose CMake install retry exit code: $installExit"
 
       - name: Verify Windows bundle contents
         shell: pwsh

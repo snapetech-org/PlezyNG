@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly NFS_MOUNT="/Volumes/plezyng-native-build-kspld0"
+readonly NFS_MOUNT="/p"
 readonly NFS_RUNS_ROOT="$NFS_MOUNT/runs"
 
 if [[ $# -ne 1 ]]; then

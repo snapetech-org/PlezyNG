@@ -1025,6 +1025,19 @@ require(
     "Apple CI must keep SwiftPM sources, DerivedData, and results on local APFS",
 )
 apple_scratch_script = (ROOT / "scripts/prepare_apple_jit_scratch.sh").read_text()
+apple_scratch_helper_scripts = (
+    apple_scratch_script,
+    (ROOT / "scripts/cleanup_apple_jit_scratch.sh").read_text(),
+    (ROOT / "scripts/clean_appledouble_sidecars.sh").read_text(),
+)
+require(
+    all('readonly NFS_MOUNT="/p"' in script for script in apple_scratch_helper_scripts)
+    and 'readonly NFS_PRIMARY_MOUNT="/Volumes/plezyng-native-build-kspld0"' in apple_scratch_script
+    and 'if [[ "$short_source" != "$primary_source" ]]' in apple_scratch_script
+    and all('readonly NFS_MOUNT="/Volumes/plezyng-native-build-kspld0"' not in script for script in apple_scratch_helper_scripts)
+    and 'expected_cloned_dir="/p/runs/' in (ROOT / "scripts/refresh_apple_spm.sh").read_text(),
+    "Apple source workspaces must use the short NFS alias so native-asset install names fit Mach-O headers",
+)
 require(
     "printf 'APPLE_SOURCE_PACKAGES_DIR=%s/%s/SourcePackages\\n' \"$local_build_dir\" \"$scratch_job\"" in apple_scratch_script
     and "/build/${platform}/SourcePackages\"" in (ROOT / "scripts/refresh_apple_spm.sh").read_text(),

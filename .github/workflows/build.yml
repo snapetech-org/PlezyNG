@@ -2452,7 +2452,9 @@ jobs:
       - name: Build Snap package
         id: snap
         shell: bash
-        run: bash scripts/build_private_snap.sh '${{ matrix.snap_arch }}'
+        run: bash scripts/build_snap.sh '${{ matrix.snap_arch }}'
+        env:
+          PLEZYNG_ALLOW_PUBLIC_SNAP: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'true' || 'false' }}
 
       - name: Name Snap artifact
         env:

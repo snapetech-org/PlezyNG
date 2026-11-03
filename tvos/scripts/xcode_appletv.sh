@@ -562,13 +562,7 @@ BuildAppRelease() {
   echo " └─OUTDIR: $OUTDIR"
   echo " └─gen_snapshot: $GEN_SNAPSHOT"
 
-  echo " └─Copying Flutter.framework"
-  rm -rf "$OUTDIR/Flutter.framework"
-  cp -R "$DEVICE_TOOLS/Flutter.framework" "$OUTDIR"
-  # The engine tarball's Flutter.framework/Info.plist declares MinimumOSVersion
-  # 13.0 but the binary is linked with the resolved deployment target. Apple's
-  # validator compares both against the host app, so keep the plist aligned.
-  plutil -replace MinimumOSVersion -string "$TVOS_DEPLOYMENT_TARGET" "$OUTDIR/Flutter.framework/Info.plist"
+  CopyTvosFlutterFramework "$OUTDIR" "$DEVICE_TOOLS"
 
   tvos_deployment_target="$TVOS_DEPLOYMENT_TARGET"
 
@@ -592,6 +586,10 @@ BuildAppRelease() {
     echo " └─ERROR: Flutter asset bundle build failed"
     return 1
   }
+  # The Flutter asset-bundle backend models Apple builds as iOS and may replace
+  # the tvOS framework with the stock iOS framework. Restore the pinned tvOS
+  # engine before Xcode compiles and links this release app.
+  CopyTvosFlutterFramework "$OUTDIR" "$DEVICE_TOOLS"
   # AOT builds don't need kernel_blob.bin in flutter_assets — the compiled
   # arm64 code lives in App.framework/App itself.
   rm -f "$OUTDIR/App.framework/flutter_assets/kernel_blob.bin"

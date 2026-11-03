@@ -8,6 +8,10 @@ SCRIPT = Path(__file__).resolve().parents[1] / "build_release_candidate.sh"
 
 
 class BuildReleaseCandidateDirectoriesTests(unittest.TestCase):
+    def test_lg_ndk_installer_does_not_inherit_python_library_path(self):
+        script = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('env -u LD_LIBRARY_PATH bash "$NDK_INSTALLER"', script)
+
     def test_nested_host_tools_directory_is_created_with_private_permissions(self):
         script = SCRIPT.read_text(encoding="utf-8")
         setup_start = script.index('LOG_ROOT="$TASK_ROOT/logs"\n')

@@ -75,13 +75,14 @@ proxy build arguments; the Dockerfile does not persist those settings in the
 runtime image. See [Docker's proxy arguments](https://docs.docker.com/build/building/variables/#proxy-arguments).
 
 Snap packaging uses Canonical's digest-pinned multi-platform core24 OCI image
-from `linux/packaging/snap/toolchain.lock.json`. The native Linux JIT guest runs
-it with Podman and explicit proxy settings, without a nested LXD build or a
-snapd daemon. `scripts/build_private_snap.sh` rejects an architecture mismatch,
-verifies the image architecture and completed SquashFS, and removes its own
-container after completion or failure. The container supplies Ubuntu 24.04
-regardless of the guest's distribution; only the job's packaging directory is
-mounted into it. See [Canonical's Snapcraft images](https://github.com/canonical/snapcraft-rocks).
+from `linux/packaging/snap/toolchain.lock.json`. Trusted-main hybrid builds may
+run on hosted Linux with direct networking explicitly enabled by the release
+workflow; private JIT runs use the restricted proxy. Both use Podman without a
+nested LXD build or a snapd daemon. `scripts/build_snap.sh` rejects an
+architecture mismatch, verifies the image architecture and completed SquashFS,
+and removes its own container after completion or failure. The container
+supplies Ubuntu 24.04 regardless of the runner distribution; only the job's
+packaging directory is mounted into it. See [Canonical's Snapcraft images](https://github.com/canonical/snapcraft-rocks).
 
 After native artifacts verify, the command verifies the FFmpeg source archive
 signature against FFmpeg's pinned release-key fingerprint, records its exact

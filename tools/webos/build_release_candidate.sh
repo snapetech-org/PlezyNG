@@ -305,7 +305,10 @@ export PYTHONPATH="$DEPOT_TOOLS_PYTHON_SITE${PYTHONPATH:+:$PYTHONPATH}"
 
 "$PYTHON_BIN" "$ROOT/tools/webos/verify_sdk_checkout.py" "$SDK_ROOT"
 
-bash "$NDK_INSTALLER" -y -d "$NDK_ROOT"
+# actions/setup-python exports its shared-library directory through
+# LD_LIBRARY_PATH. The LG installer rejects any inherited value while it
+# sources the SDK environment, so isolate only the installer process.
+env -u LD_LIBRARY_PATH bash "$NDK_INSTALLER" -y -d "$NDK_ROOT"
 "$PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --verify
 
 export FLUTTER_WEBOS_SDK_ROOT="$SDK_ROOT"

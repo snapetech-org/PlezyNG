@@ -1,13 +1,28 @@
 #!/usr/bin/env bash
-# Run Canonical's core24 build environment inside the existing private JIT VM.
+# Run the digest-pinned Canonical core24 build environment.
 set -Eeuo pipefail
 
-: "${GITHUB_ACTIONS:?Run this packaging helper in its private JIT workflow}"
+: "${GITHUB_ACTIONS:?Run this packaging helper in its validated GitHub Actions workflow}"
 : "${GITHUB_RUN_ID:?The task run ID is required}"
 : "${RUNNER_TEMP:?The job temporary directory is required}"
 : "${GITHUB_OUTPUT:?The workflow step output file is required}"
-if [[ "$GITHUB_ACTIONS" != true || "${RUNNER_ENVIRONMENT:-}" != self-hosted || ! "$GITHUB_RUN_ID" =~ ^[0-9]+$ ]]; then
-  echo 'Snap packaging requires the private self-hosted JIT job.' >&2
+if [[ "$GITHUB_ACTIONS" != true || ! "$GITHUB_RUN_ID" =~ ^[0-9]+$ ]]; then
+  echo 'Snap packaging requires a GitHub Actions run.' >&2
+  exit 1
+fi
+allow_direct_network=false
+if [[ "${RUNNER_ENVIRONMENT:-}" == self-hosted ]]; then
+  : # Private JIT jobs must provide their restricted HTTP proxy below.
+elif [[ "${RUNNER_ENVIRONMENT:-}" == github-hosted \
+    && "${PLEZYNG_ALLOW_PUBLIC_SNAP:-}" == true \
+    && "${GITHUB_REPOSITORY:-}" == snapetech-org/PlezyNG \
+    && "${GITHUB_REF:-}" == refs/heads/main \
+    && "${GITHUB_EVENT_NAME:-}" == workflow_dispatch ]]; then
+  # The release workflow's trusted-ref validator gates this explicit hybrid
+  # lane. Public-fork and pull-request code cannot enable direct networking.
+  allow_direct_network=true
+else
+  echo 'Snap packaging requires private JIT or the validated trusted-main hybrid job.' >&2
   exit 1
 fi
 arch="${1:?Pass the native Snap architecture: amd64 or arm64}"
@@ -18,20 +33,22 @@ esac
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 project="$root/linux/packaging/snap"
 proxy="${HTTPS_PROXY:-${https_proxy:-}}"
-image="$(python3 - "$project/toolchain.lock.json" "$proxy" "$arch" <<'PY'
+image="$(python3 - "$project/toolchain.lock.json" "$proxy" "$arch" "$allow_direct_network" <<'PY'
 import json
 import re
 import sys
 from urllib.parse import urlsplit
 
 lock = json.load(open(sys.argv[1], encoding="utf-8"))
-raw, arch = sys.argv[2:]
+raw, arch, allow_direct_network = sys.argv[2:]
 proxy = urlsplit(raw)
-if (not raw or any(character.isspace() for character in raw)
+if raw and (any(character.isspace() for character in raw)
         or proxy.scheme != "http" or not proxy.hostname or not proxy.port
         or proxy.username or proxy.password or proxy.path not in ("", "/")
         or proxy.query or proxy.fragment):
     raise SystemExit("An unauthenticated private HTTP proxy with host and port is required")
+if not raw and allow_direct_network != "true":
+    raise SystemExit("A restricted private HTTP proxy is required outside the trusted hybrid lane")
 if (lock["base"] != "core24" or f"linux/{arch}" not in lock["platforms"]
         or not re.fullmatch(r"ghcr\.io/canonical/snapcraft@sha256:[0-9a-f]{64}", lock["image"])):
     raise SystemExit("The Canonical multi-platform Snapcraft image must be digest-pinned")

@@ -110,7 +110,7 @@ Local validation for this change: 44 compiled Kotlin policy tests and 24 Python
 route/output tests passed. Kotlin tests exercise real policy classes with JUnit,
 not translated replicas. Full Android core/plugin compilation and device video
 playback were not run locally. No HDR/FEL pixel accuracy or throughput result is
-inferred from policy tests. Existing private-JIT CI is the integration check.
+inferred from policy tests. Run the integration checks on a compatible hosted or private-JIT route under root `AGENTS.md`; use private JIT when the target hardware or network needs it.
 
 Device qualification should cover P5/P7 MEL/P7 FEL/P8.1/P8.4 on DV, HDR10-only,
 HLG, and SDR outputs; repeated seek and pause; preference changes while playing;

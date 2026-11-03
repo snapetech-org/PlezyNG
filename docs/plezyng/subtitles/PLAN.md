@@ -524,7 +524,7 @@ Do not start with NPU dispatch, OCR, or a large language-model editor. Those fea
 
 # 12 Verification and release gates
 
-Existing test files are regression anchors, not evidence that this planning task ran the suite. Use the repository's pinned SDK and native toolchain. `AGENTS.md` requires compatible private ephemeral JIT runners for build, test, scan, packaging, and release work; GitHub-hosted fallback is not authorized. [C23]
+Existing test files are regression anchors, not evidence that this planning task ran the suite. Use the repository's pinned SDK and native toolchain. Follow current `AGENTS.md`: use compatible GitHub-hosted runners when their OS, architecture, trust, and hardware fit; use private ephemeral JIT runners for private network/storage, special hardware, or explicitly private validation. [C23]
 
 | Area | Existing anchors to retain | Required additions |
 | --- | --- | --- |
@@ -554,7 +554,7 @@ No silent success from an unsupported backend. No silent cloud fallback. No unbo
 
 # 13 Implementation handoff and remaining qualification
 
-> PR #77 carries the current subtitle workflows: local WAV-based CPU ASR and translation, optional GPU/NPU provider requests with CPU fallback, automatic timing/cut repair, server-side subtitle upload, expanded drop/share import, and MPV cue replay. Android ExoPlayer PCM capture is implemented; Tizen native capture and CPU Whisper packaging are wired in source but still need a private-JIT build and TV qualification. MPV capture remains blocked on new published binaries, and webOS/browser do not expose a supported player PCM path here. Preserve `TrackManager`, `TrackSelectionService`, `PlaybackSubtitleResolver`, `SubtitlePreference`, scoped offsets, existing rendering, downloads, server selection, and source playback ownership. Keep originals, gate output attachment by backend capability, and guard provider claims: GPU/NPU placement and device performance are not qualified. Remaining catalogue requirements must be tracked separately from these delivered paths. Respect the private-JIT runner policy; source syntax checks passed in this workspace, but no private build or physical-device validation was run.
+> PR #77 carries the current subtitle workflows: local WAV-based CPU ASR and translation, optional GPU/NPU provider requests with CPU fallback, automatic timing/cut repair, server-side subtitle upload, expanded drop/share import, and MPV cue replay. Android ExoPlayer PCM capture is implemented; Tizen native capture and CPU Whisper packaging are wired in source but still need a compatible package build and TV qualification. MPV capture remains blocked on new published binaries, and webOS/browser do not expose a supported player PCM path here. Preserve `TrackManager`, `TrackSelectionService`, `PlaybackSubtitleResolver`, `SubtitlePreference`, scoped offsets, existing rendering, downloads, server selection, and source playback ownership. Keep originals, gate output attachment by backend capability, and guard provider claims: GPU/NPU placement and device performance are not qualified. Remaining catalogue requirements must be tracked separately from these delivered paths. Follow the current runner policy; source syntax checks passed in this workspace, but no private build or physical-device validation was run.
 
 # 14 Source register
 

@@ -108,7 +108,7 @@ Use meaningful unit tests for event ordering, account generations, retry policy,
 
 ## Build and release rules
 
-Follow the root [AGENTS.md](../../../AGENTS.md): all GitHub Actions build, test, scan, packaging, and release work uses compatible private ephemeral JIT runners. Missing capacity is a provisioning blocker, not permission for GitHub-hosted fallback. Preserve OS/architecture constraints, isolated untrusted-code execution, active jobs, and unrelated work. A new workflow must be validated at its actual revision.
+Follow the root [AGENTS.md](../../../AGENTS.md): use compatible GitHub-hosted runners where OS, architecture, trust, and hardware requirements fit; use private ephemeral JIT runners for private network/storage, special hardware, or explicitly private validation. Keep untrusted-code isolation, preserve active jobs and unrelated work, and validate new workflow revisions at the actual revision. Missing JIT capacity blocks a job only when no compatible hosted route meets its requirements.
 
 Future native/browser/crypto dependencies need pinned revisions, reproducible packaging, license/notice inventory, and an update/rollback owner. Test the binaries actually distributed, including codec support and browser sandbox configuration. Do not treat a dependency's supported-platform list as PlezyNG qualification.
 

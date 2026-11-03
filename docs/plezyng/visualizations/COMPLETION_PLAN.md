@@ -192,7 +192,7 @@ Qualify Linux x64/arm64 and Wayland, Windows x64/arm64, macOS Apple Silicon and 
 
 For the initial imported corpus, every file must be accounted for and every advertised preset must pass the declared renderer tier. Full custom compatibility requires the MilkRust gate too. Newly discovered valid formats/features add tracked conformance cases; exceptions remain visible rather than quietly shrinking the denominator.
 
-CI must follow both repositories’ **private ephemeral JIT runner** requirement, including GPU/device-capable coverage where necessary. Never add GitHub-hosted fallback or disturb active builds. Missing hardware/capacity is an explicit unresolved qualification item. Update [PlezyNG’s capability ledger](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/docs/maintainers/capability-manifest.json) with implementation, test, device and release states separately.
+Use compatible GitHub-hosted runners for jobs whose OS, architecture, trust, and hardware needs they satisfy. Use private ephemeral JIT runners for private-network, special-hardware/storage, or explicitly private validation needs. Missing JIT capacity is a blocker only when no compatible hosted route meets the job's requirements; do not disturb active builds. Update [PlezyNG’s capability ledger](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/docs/maintainers/capability-manifest.json) with implementation, test, device and release states separately.
 
 Luna should deliver reviewable PRs, exact engine/content pins, reports, logs and representative captures; update the user guide, acknowledgements and changelog. A merged PR, successful build or draft release alone does not establish downloadable delivery.
 
@@ -207,7 +207,7 @@ Proceed through the pack builder, transactional importer, in-app download catalo
 
 Keep the existing six original scenes and feed live features where supported. Preserve passthrough and playback ownership. Package community content with exact provenance, author credits, notices and recorded distribution status. Treat parsing, rendering fidelity, device qualification and published availability as separate gates.
 
-Work in reviewable PR-sized packages, use private JIT runners only, and keep a progress ledger with implemented/tested/qualified/released evidence. Do not claim all presets work from static parser reports, and do not stop at scaffolding. If a platform or external distribution requirement blocks completion, finish independent work and record the exact remaining dependency and next action.
+Work in reviewable PR-sized packages and use compatible hosted runners where their OS, architecture, trust, and hardware fit; use private JIT runners for special hardware, private storage/network, or explicitly private qualification. Keep a progress ledger with implemented/tested/qualified/released evidence. Do not claim all presets work from static parser reports, and do not stop at scaffolding. If a platform or external distribution requirement blocks completion, finish independent work and record the exact remaining dependency and next action.
 ```
 
 ## Current implementation ledger — 2026-10-28

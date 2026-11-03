@@ -72,7 +72,7 @@ One record per enabled provider/capability/platform/channel, containing:
 - Auth/network/unsupported-content errors and recovery behavior.
 - Evidence of official deep-link destination and permitted attribution; price/availability match sampling.
 - Partner approval reference, terms/branding version and allowed distribution surfaces.
-- Automated test names/results and private-JIT workflow/job URLs when run.
+- Automated test names/results and runner workflow/job URLs when run.
 - Remaining gaps and per-capability release flags.
 
 `implemented_unqualified` is a useful delivery state. Do not convert it to “supported everywhere” because Flutter compiles or an SDK is listed in pubspec.
@@ -110,7 +110,7 @@ The availability bake-off sample is specified in PROVIDERS. Publish observed res
 
 Start disabled behind provider/capability/distribution flags. Enable an internal pilot for one approved territory and target, then expand only tested cells. Keep stable local features unaffected by remote policy changes. Rollback disables the provider action/feed, retires in-flight operations and follows data-license deletion rules; it preserves owned downloads, annotations and existing server connections.
 
-This assessment must not trigger CI, enroll partner accounts or deploy a gateway. Runtime implementation PRs use the current required checks and private ephemeral JIT policy. Manual releases remain separate owner actions.
+This assessment must not trigger CI, enroll partner accounts or deploy a gateway. Runtime implementation PRs use the current required checks and runner selection policy in root `AGENTS.md`: compatible hosted runners where requirements fit, private JIT where they do not. Manual releases remain separate owner actions.
 
 ## Validation performed for this implementation branch
 

@@ -38,7 +38,7 @@ Confidence: high in this source assessment; no runtime validation performed.
 
 ## Verification and constraints
 
-Use the attached GitHub connector for all remote reads/writes. No builds, tests, analyzer, formatter or CI runs in this task. Keep the feature on its own review branch and preserve other active work. Existing workflows are manual dispatch and private JIT only.
+Use the attached GitHub connector for all remote reads/writes. No builds, tests, analyzer, formatter or CI runs in this task. Keep the feature on its own review branch and preserve other active work. Existing workflows are manual dispatch and currently route to private JIT; compatible hosted runners may be used for jobs that meet their OS, architecture, trust, and hardware requirements under root `AGENTS.md`.
 
 Source completion does not establish device behavior, provider availability or release qualification. Validation should cover private-feed redirects, profile changes during requests, a real Audiobookshelf podcast library, resumed/offline playback, keyboard/remote traversal and long/RTL text.
 

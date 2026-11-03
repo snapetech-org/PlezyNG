@@ -149,7 +149,7 @@ player adapter, NDK compilation and physical-TV qualification remain open.
 ## Qualification still required
 
 Both targets remain open in `all-native-hosts-v1`. After execution is authorized,
-use compatible private ephemeral JIT runners and physical TVs to exercise
+use runners compatible with the current root `AGENTS.md` and physical TVs to exercise
 ordinary playback with and without the renderer library; offload/protected/
 unsupported outputs; exact-source rebinding; pause/seek/rate/track changes;
 buffering; suspend/restore; late callbacks; pending pixel leases; allocation

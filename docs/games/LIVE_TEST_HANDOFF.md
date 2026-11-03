@@ -60,7 +60,7 @@ the existing private Linux, Android, Windows x64/ARM64 and Apple jobs. Apple
 tests build the real Runner workspaces and invoke the VideoToolbox/Metal tests;
 a simulator/Intel Metal skip does not qualify the GPU path. The Android module
 job now runs the Steam JVM tests as well as building both embedded engines.
-No hosted runner fallback or runner permission widening is authorized.
+These commands explicitly select the current private runner path. Root `AGENTS.md` permits compatible hosted runners for jobs that meet their OS, architecture, trust, and hardware requirements; preserve runner-group access boundaries and do not widen trusted permissions.
 
 Before live testing, require the platform's build and tests to pass. Build
 Android's minified app release as well as debug; verify both supported ABIs and

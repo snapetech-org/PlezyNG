@@ -92,7 +92,7 @@ instead of upgrading a flag merely because another document says a graph ran.
 
 New paths below are **proposed**, not existing APIs. Use an isolated implementation
 branch and small reviewable commits. Read the current repository instructions;
-the planning PR does not authorize altering workflow triggers or runner policy.
+the planning PR does not authorize altering workflow triggers. Runner selection follows current root `AGENTS.md`, which permits compatible hosted runners and private JIT where special requirements need them.
 
 ## 2. Package dependency map
 
@@ -334,8 +334,10 @@ validating the first real embedded playback route.
 
 - Implement TIM/SYN/BLR/COL/RES/INT/UX tests from qualification; use generated or
   properly redistributable fixtures. Run sanitizers/fuzzing for native boundaries.
-- Use only compatible private ephemeral JIT runners; keep accelerator/hardware
-  jobs manual/explicit and isolated. Do not enable automatic hosted fallback.
+- Use compatible hosted runners for jobs they can satisfy. Keep accelerator
+  and hardware-specific jobs on suitable private JIT runners when hosted
+  hardware cannot meet their requirements; keep these runs explicit and
+  isolated. Any hosted route must preserve the same trust boundaries.
 - Done: reports identify exact engine/model/source/builds, failures are fixed,
   and unsupported tests are recorded rather than represented as passed.
 

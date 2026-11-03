@@ -153,7 +153,10 @@ identical. It never overwrites an existing signed output or guesses a TV target.
 ## CI and rollout plan
 
 `.github/workflows/tizen.yml` is manual (`workflow_dispatch`) with no release
-publication. Validation and packaging use private ephemeral JIT runners only.
+publication. Its current validation and packaging jobs use private ephemeral
+JIT runners. Root `AGENTS.md` permits compatible GitHub-hosted runners when
+they meet OS, architecture, trust, toolchain, and storage needs; use private JIT
+for requirements a hosted runner cannot meet.
 `build_package` defaults to false; packaging runs only on `main`. `tester_build`
 defaults to true. With no provisioned paths/profile, the ARM job checks out the
 pinned Flutter toolchain, bootstraps its isolated SDK and creates a disposable
@@ -166,8 +169,10 @@ The shared JIT inventory in `snapetech-org/packer` must include this exact
 workflow and its two jobs. The deployed broker policy, runner-group workflow
 access and runner bootstrap/capacity must agree before dispatch. Adding workflow
 YAML or inventory source does not deploy the broker or create capacity.
-ARM SDK and development signing are now provisioned by the workflow.
-Missing private-JIT capacity still blocks dispatch; there is no hosted fallback. Do not restart an active broker to roll out this change.
+ARM SDK and development signing are now provisioned by the workflow. The
+current workflow has no hosted route, so missing JIT capacity blocks this
+configured dispatch until a compatible hosted route is added or JIT capacity is
+available. Do not restart an active broker to roll out this change.
 
 ## Existing Samsung signing and Seller Office handoff
 

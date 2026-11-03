@@ -58,4 +58,4 @@ Other branches visible during inspection included connected-media continuity, ne
 
 The integration implementation compared its current main and active debrid branch before choosing shared type names. This plan proposes responsibility boundaries rather than a blind cherry-pick. The debrid branch modifies broad source/search/game owners and remains separate to avoid duplicating or overwriting that work. The service-integration PR stays on its own review branch; it is not merged into main here.
 
-`AGENTS.md` requires private ephemeral JIT runners and no hosted fallback. The inspected CI workflow is manually dispatched. This documentation change does not need a runtime build or CI dispatch; future implementation must follow the current policy and record exact checks.
+At the time of this audit, `AGENTS.md` required private ephemeral JIT runners and no hosted fallback. The inspected CI workflow is manually dispatched. This documentation change did not need a runtime build or CI dispatch. That runner restriction is superseded by the current root `AGENTS.md`, which permits compatible hosted runners again.

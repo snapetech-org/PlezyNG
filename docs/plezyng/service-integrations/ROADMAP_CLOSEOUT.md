@@ -26,7 +26,7 @@ Status: code-level work for the selected first-release scope is delivered on `co
 - **Comic/game affiliate links:** configure only the approved merchant/network pairs in `server/comic-commerce.env.example`. All approval switches default to false. Network credentials and publisher/advertiser identifiers stay server-side; never enable a surface outside the accepted property terms. A click is not a sale or commission.
 - **OverDrive:** keep `ENABLE_OVERDRIVE=false` until the assigned credentials, scopes, environments, IDs, branding terms, and provider qualification are in place.
 - **Hoopla/Palace:** no adapter is included. Hoopla requires its signed API license, library-specific access, and express written permission for any income derived from its API/data. Palace requires a selected institution/vendor agreement and an agreed fulfillment/DRM path. These are separate partner-approved projects, not key-only activation.
-- **Validation:** the repository records no tests, analyzer, platform build, live provider request, relay deployment, or device qualification for this closeout. Root `AGENTS.md` requires compatible private ephemeral JIT runners for GitHub Actions; hosted fallback is not authorized.
+- **Validation:** the repository records no tests, analyzer, platform build, live provider request, relay deployment, or device qualification for this closeout. At the time of this closeout, root `AGENTS.md` required compatible private ephemeral JIT runners for GitHub Actions. That restriction is superseded by the current root policy, which permits compatible hosted runners again.
 
 ## W14 decisions
 

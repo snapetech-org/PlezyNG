@@ -335,7 +335,7 @@ wired into all Apple targets. Source/project checks verify compilation inputs,
 framework linkage and archive wiring. Portable parser tests now cover opt-in
 4:4:4, siting, legacy 4:2:0 rejection, conflicting sequence headers and HDR
 rejection. This does not validate Metal shader compilation or GPU execution.
-The checked-in Apple XCTest must run on compatible Apple private-JIT hardware.
+The checked-in Apple XCTest must run on a compatible Apple runner. A hosted macOS runner is suitable when it meets the test's OS, architecture, and trust requirements; use private JIT for hardware or private-network needs it cannot meet.
 The Intel/simulator skip is explicit and is not a successful GPU test.
 
 Local follow-up checks: all **41 native tests** and **20 focused Dart/widget
@@ -394,7 +394,9 @@ gh workflow run ci.yml --repo snapetech-org/PlezyNG \
 ```
 
 Verify the run's head matches the PR head. A rerun of an older workflow revision
-does not validate these sources. No hosted fallback is authorized.
+does not validate these sources. This command explicitly selects the current
+private runner path; root `AGENTS.md` now permits compatible hosted runners for
+jobs that meet their requirements.
 
 
 ### Windows receiver source and cross-compilation — 2026-10-28

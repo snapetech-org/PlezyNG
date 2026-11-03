@@ -14,7 +14,7 @@ driver, EDID, kernel module or TV firmware is replaced automatically.
 | Offline companion | Pinned FelBaker builder patches its VapourSynth output key and builds a tested RGB48 pipeline. A 48-frame generated P7 sample changed all 2,073,600 designed residual-patch pixels; both HDR10/PQ HEVC and SDR/BT.709 H.264 outputs encoded and passed `ffprobe` frame/color-tag checks. | These lossy files are derived compatibility versions, not native DV. FelBaker is a comparison implementation, not an independent Dolby reference; real-clip and playback-device checks remain open. |
 | Android | Startup enumerates exact Profile 5/7/8 MediaCodec support. A matching profile keeps the local decoder path; missing or unknown profiles use a server SDR rendition before open. Explicit Profile 7 experimentation may still be enabled in mpv, while ExoPlayer remains outside the FEL experiment. A separate experimental AAR passes a synthetic FEL-on versus EL-dropped pixel comparison through Android Surface readback. | The profile report comes from the device codec list and is not a per-source pixel test. The production AAR remains on mpv 0.41 and does not contain the FEL path. The experimental AAR compiled for four ABIs; runtime pixel evidence is one API 36 x86_64 emulator with synthetic media. Real-device playback, reference pixels and physical Dolby Vision output remain unqualified. CoreELEC S5 remains a separate vendor/kernel project. |
 | webOS | For an identified Dolby Vision source, Plex, Jellyfin, and Emby are asked for a full server video encode, even at Original quality; a response offering only the original direct stream is rejected. Jellyfin/Emby also receive an explicit SDR output-range constraint. | The server's output must declare SDR in every HLS video variant before Plezy opens it. That declaration is not proof of correct tone mapping or visible pixel values. The app path exposes no BL/EL GPU composer. |
-| Windows | A D3D11 engine builder and verified app bundle selection prepare the native port. Identified Dolby Vision uses a server SDR rendition before the unqualified MPV path opens. The explicit Profile 7 experiment can override that policy when enabled. | FEL filter acceptance is not proof of EL pixels. The pinned Windows engine's FEL components, D3D11 rendering, independent pixels and device output remain unqualified. PlezyNG is not authorized in the private `packer-windows` runner group, so its Windows CI jobs can remain queued; no hosted fallback is used. No D3D11/Vulkan reference comparison or device result is claimed. |
+| Windows | A D3D11 engine builder and verified app bundle selection prepare the native port. Identified Dolby Vision uses a server SDR rendition before the unqualified MPV path opens. The explicit Profile 7 experiment can override that policy when enabled. | FEL filter acceptance is not proof of EL pixels. The pinned Windows engine's FEL components, D3D11 rendering, independent pixels and device output remain unqualified. The configured private `packer-windows` route may queue; under the current root policy, compatible hosted runners are allowed when they meet the job's OS, architecture, and trust requirements. No D3D11/Vulkan reference comparison or device result is claimed. |
 
 Online VOD playback asks every backend to apply a profile-aware compatibility
 policy before a local decoder sees the source. Android and iOS/tvOS keep only
@@ -335,21 +335,23 @@ none has a GitHub-hosted runner or hosted fallback. The owner-side route work is
    with read-only repository access, no secrets, and the isolated
    `gvisor-sandbox` runner. Never route fork code through the trusted-main group.
 
-The app repository's general pull-request workflow (`ci.yml`) still declares
-GitHub-hosted jobs. Opening a PR from this branch would start those jobs, so do
-not open or merge a PR until that PR route is also JIT-only. No jobs were
-dispatched, and no shared group, broker allowlist, runner service, or other
-worktree was changed during this work.
+The app repository's general pull-request workflow (`ci.yml`) declares
+GitHub-hosted jobs. Compatible hosted runners are permitted under the current
+root `AGENTS.md`; do not block a PR solely because these compatible jobs use
+hosted runners. Keep fork code on a disposable, restricted JIT sandbox with no
+secrets. No jobs were dispatched, and no shared group, broker allowlist, runner
+service, or other worktree was changed during this work.
 
 This is only the Dolby workflow route. The org-wide inventory tracked in
 [Packer PR #9](https://github.com/snapetech-org/packer/pull/9) counts 407
 workflow files and 779 jobs across 60 repositories; 667 job definitions still
 contain hosted runner labels. Plezy's [shared-JIT PR #26](https://github.com/snapetech-org/PlezyNG/pull/26)
 covers three trusted release jobs, not the remaining Plezy or org-wide routes.
-Keep each lane blocked until its exact private JIT route and trust boundary are
-verified.
+Keep each lane blocked until a compatible runner route and its trust boundary are
+verified. Use private JIT when hardware, private storage/network, or the
+untrusted-code isolation requirement needs it.
 
-Private-JIT validation checks (blocked until route provisioning):
+Validation checks (run on the compatible route selected under root `AGENTS.md`):
 
 ```bash
 python3 scripts/test_dv_experiments.py
@@ -358,14 +360,15 @@ g++ -std=c++17 -Wall -Wextra -Werror linux/runner/mpv/experimental_render_api_te
 flutter test test/media/dolby_vision_playback_test.dart test/mpv/player_native_bridge_test.dart test/screens/settings/playback_settings_screen_test.dart test/widgets/performance_stats_service_test.dart
 ```
 
-Run the commands below only from an approved private-JIT job after its workflow
-access is verified. The dedicated dv-platforms.yml workflow builds the Apple host
-and FelBaker source, runs contract checks on Linux/Windows/macOS, and checks app
-tests and codegen.
-It uses read-only repository permissions and no signing secrets. It does not fetch
-test media. Its current runner definitions are GitHub-hosted, so do not dispatch
-it until the private-JIT workflow route is provisioned and verified. Retain build
-diagnostics; never turn a missing tool/media/GPU skip into a playback qualification.
+Run these checks on compatible GitHub-hosted runners or approved private-JIT
+jobs under root `AGENTS.md`; use private JIT where GPU, device, private
+storage/network, or explicit validation needs require it. The dedicated
+`dv-platforms.yml` workflow builds the Apple host and FelBaker source, runs
+contract checks on Linux/Windows/macOS, and checks app tests and codegen. It
+uses read-only repository permissions and no signing secrets. It does not fetch
+test media. Its current runner definitions are GitHub-hosted, which is allowed
+for compatible jobs. Retain build diagnostics; never turn a missing
+tool/media/GPU skip into a playback qualification.
 
 Priority testing handoff:
 

@@ -12,7 +12,7 @@ Dispatch the private PlezyNG Release workflow with:
 
 The default is cpu. Choosing vulkan installs the pinned LunarG Vulkan SDK 1.4.363.0 for Windows x64 and Linux x64, verifies the published archive SHA-256 (Windows: 94a82d378f7a5e3e54c9db7d2fb7016af136e14ac0a18dbf0f2f67a36352d141; Linux: 197962f5cbf80baf2775a03336a01cee7c8745686c65aaa70d3f751ade4d7e43), and sets FLUTTER_WHISPER_GPU_BACKEND=VULKAN. Choosing cuda installs NVIDIA CUDA Toolkit 13.4.3 components on Windows x64, validates the NVIDIA Authenticode signer, and sets FLUTTER_WHISPER_GPU_BACKEND=CUDA. Linux CUDA and non-x64 builds stay on CPU. Release publishing rejects GPU selections and remains CPU-only.
 
-The SDK installation happens only on the private JIT runner. It does not run from ordinary app builds or configure a consumer machine. The workflow does not install an NVIDIA display driver; GPU use still depends on a compatible driver on the system where the app runs.
+The current SDK installation runs on the private JIT runner. It does not run from ordinary app builds or configure a consumer machine. This is the current accelerator workflow route, not a repo-wide hosted-runner restriction; compatible hosted runners may be used for jobs that meet their requirements. The workflow does not install an NVIDIA display driver; GPU use still depends on a compatible driver on the system where the app runs.
 
 ## Prerequisites and pinned SDKs
 

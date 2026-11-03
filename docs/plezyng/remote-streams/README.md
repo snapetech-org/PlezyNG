@@ -173,7 +173,7 @@ help sentence at setup, rather than requiring users to learn the architecture.
 11. No PlezyNG-hosted stream proxy or credential service is required for the core
     feature. Optional companion input and user-owned bridges remain optional.
 12. Commit implementation in coherent checkpoints on the owner-authorized PR
-    branch. Do not dispatch CI or use hosted runners without authorization.
+    branch. Do not dispatch CI as part of this plan. For later authorized build/CI work, follow root `AGENTS.md`; compatible hosted runners may be used when their requirements fit.
 
 ## Delivery scope
 
@@ -218,5 +218,7 @@ not measured results. No live service credentials were used. Native transfer ver
 locally generated fixture and a loopback-only seeder.
 
 The repository's inspected workflows are manual/reusable, rather than triggered
-by ordinary pushes. Preserve that policy. The owner requires private JIT runners
-for any later authorized CI/build work; see [AGENTS.md](../../../AGENTS.md).
+by ordinary pushes. Preserve that policy. For later authorized CI/build work,
+follow [AGENTS.md](../../../AGENTS.md): use compatible hosted runners where
+their requirements fit and private JIT for private network/storage, special
+hardware, or explicitly private validation.

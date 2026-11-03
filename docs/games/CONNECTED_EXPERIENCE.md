@@ -105,7 +105,10 @@ receiver. Unsupported features stay unavailable with a useful explanation.
    authenticated host artwork; enforce bounds, no arbitrary webviews or scripts.
 9. No automatic installation, purchase, sharing, quitting a game, cloud-save
    replacement or guest invitation. Host Steam remains the entitlement authority.
-10. Preserve private ephemeral JIT CI, pinned dependencies and license notices.
+10. Preserve the runner trust boundaries in root `AGENTS.md`, using compatible
+    hosted runners where requirements fit and private ephemeral JIT for
+    private network/storage, special hardware, or explicitly private checks.
+    Keep dependencies pinned and license notices intact.
 
 ## Compatibility and rollout
 
@@ -409,7 +412,7 @@ those plugins does not advertise a working receiver. The build can explicitly
 omit it with `-DPLEZY_STEAM_RECEIVER=OFF`. Release bundles include the fixed
 pipelines' plugins and matching scanner; the launcher confines plugin discovery
 to that set. Distribution, Flatpak keyring/audio, full-runner builds and actual
-Steam hosts still require private-JIT and hardware qualification.
+Steam hosts still require platform and hardware qualification; use private JIT when private-network or hardware needs require it.
 
 Local verification: strict C++ compilation against Flutter Linux headers;
 actual H.264 encode→decode pixel checks; common Opus/speaker and controller seat

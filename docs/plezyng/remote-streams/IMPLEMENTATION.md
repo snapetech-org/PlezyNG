@@ -19,8 +19,10 @@ implementation/evidence record. Signed-device and live-account qualification
 remain open, so the broader R01–R16 release plan is not certified complete.
 
 The owner requested implementation on a PR branch. Commit and push only to that
-branch; do not dispatch GitHub Actions or use hosted runners. The repository
-requires private ephemeral JIT runners for any later authorized build/CI work.
+branch; do not dispatch GitHub Actions as part of that task. For later
+authorized build/CI work, follow root `AGENTS.md`: compatible hosted runners
+may be used where their requirements fit; private JIT remains available for
+private network/storage, special hardware, or explicitly private validation.
 
 ## Implemented on this branch
 
@@ -39,7 +41,8 @@ Focused Flutter tests, static analysis, pinned native source compilation and
 real loopback transfer/seek tests have been run. Tizen/webOS package-inspection
 tests also pass. See [COMPLETION.md](COMPLETION.md) for commands and counts.
 No signed mobile/TV/desktop package or live-account result is claimed. No
-GitHub Actions was dispatched; later CI must follow the private JIT policy.
+GitHub Actions was dispatched; later CI must follow the current runner
+selection policy in root `AGENTS.md`.
 
 ## Start here
 

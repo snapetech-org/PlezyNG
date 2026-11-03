@@ -418,7 +418,7 @@ Dependencies are explicit in `implementation-slices.json`. `requirements.json` m
 5. Every offered seek/replay/recording action has a real capable owner and valid retained/archived range. No fabricated rewind window or “scheduled” local job on a platform unable to execute it.
 6. Remote, keyboard, touch and assistive-technology flows are tested. Large text and narrow layouts preserve primary actions. Existing themes and icons remain authoritative.
 7. Storage/time/connection/decoder budgets hold under stress. A low-resource device gracefully rejects extra capability without interrupting active recording or unrelated media.
-8. New native paths are built on compatible private ephemeral JIT runners and tested on declared device classes. Missing private capacity is a blocker for that target; no GitHub-hosted fallback.
+8. Build new native paths on compatible GitHub-hosted runners when their OS, architecture, trust, and hardware fit; use private ephemeral JIT for requirements they cannot meet. Test on the declared device classes. Missing JIT capacity blocks a target only when no compatible hosted route satisfies its requirements.
 
 ### Proposed measurable budgets
 
@@ -465,7 +465,7 @@ Maintain a per-platform scorecard with **better / equivalent / worse / unavailab
 | Scheduled capture is advertised without a durable host | Recorder | Host capability and lease reconciliation are release gates, not a UI toggle |
 | Synchronization resurrects deleted sources or wrong progress | Sync/profile | Tombstones, edition-qualified identity, deterministic conflicts and offline replay fixtures |
 | The feature set makes Plezy feel like an administration console | Product/UI | Existing-surface contract, screenshot review in current themes, remote task testing and contextual advanced settings |
-| Native build/device capacity is unavailable | Release owner | Inventory private JIT capacity in M0; qualify targets independently and disclose the exact blocked gate |
+| Native build/device capacity is unavailable | Release owner | Inventory compatible hosted and private JIT options in M0; qualify targets independently and disclose the exact blocked gate |
 
 ### Fixture corpus
 
@@ -554,7 +554,7 @@ These are dependency-ordered review units, not a promise that every unit fits on
 
 **Touchpoints:** `AGENTS.md`; `DESIGN.md`; `UX-CONTRACT.md`; `docs/plezyng/iptv/DELIVERY.md (new)`; `docs/plezyng/multiview/DELIVERY.md`.
 
-**Exit gate:** Record exact revision, available device/build evidence and baseline timings; reconcile stale multiview status; preserve private JIT policy.
+**Exit gate:** Record exact revision, available device/build evidence and baseline timings; reconcile stale multiview status; follow the current runner selection policy in root `AGENTS.md`.
 
 #### PR01 Extract source identity and the live launch seam
 
@@ -917,7 +917,7 @@ Then land protected persistence and bounded ingestion. The current connection mo
 - Use a durable host for promised unattended recording. Keep local capture's platform limits explicit.
 - Treat provider M3U/XMLTV, logos and metadata as untrusted data. Never execute playlist-supplied commands or arbitrary player options.
 - Profile restrictions apply before preview/search/deep-link/failover/casting. A favorite or stored layout cannot bypass current permission.
-- Use compatible private ephemeral JIT runners. The repository forbids GitHub-hosted jobs and automatic hosted fallback.
+- Use compatible GitHub-hosted runners for jobs whose OS, architecture, trust, and hardware needs they satisfy. Use private ephemeral JIT runners for private network/storage, special hardware, or explicitly private validation. Do not route work to a runner that fails those requirements.
 
 ### Work and reporting discipline
 
@@ -1031,7 +1031,7 @@ The source links below are precise baseline evidence. Later code may supersede t
 | B14 | [SearchHit](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/media/search_hit.dart) and [SearchScreen](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/search_screen.dart): typed heterogeneous results; no direct IPTV hit type at baseline |
 | B15 | [Navigation tabs](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/navigation/navigation_tabs.dart): one existing Live TV destination, conditional visibility |
 | B16 | [Playback copy ranking](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/media/playback_copy_ranking.dart): network-aware ordering is explicitly not authority to switch editions or transfer progress |
-| B17 | [AGENTS.md](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/AGENTS.md): private ephemeral JIT runners only; no hosted fallback |
+| B17 | [AGENTS.md](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/AGENTS.md) at the captured revision required private ephemeral JIT runners only; the current root `AGENTS.md` permits compatible GitHub-hosted runners again. |
 | B18 | [README](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/README.md): current platform claims, experimental webOS/Tizen qualifications and existing live deep links |
 
 No competitor binary was reverse engineered, no proprietary app code was copied, and no live provider account was probed. Compatibility fixtures and controlled runtime comparisons remain implementation/release work.

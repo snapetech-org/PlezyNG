@@ -1016,10 +1016,10 @@ jobs:
   windows-native-test:
     name: Windows native reliability (${{ matrix.arch }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
     env:
       PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && '1' || '0' }}
-      # The pinned Whisper GGML source requires Clang for ARM; select Visual Studio's ClangCL toolset only on the hosted ARM64 route.
+      # CMake only honors this toolset when CMAKE_GENERATOR also names the matching Visual Studio generator.
       CMAKE_GENERATOR_TOOLSET: ${{ inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}
     permissions:
       contents: read
@@ -1064,6 +1064,12 @@ jobs:
       - name: Set up Flutter from its pinned commit
         if: matrix.flutter_setup == 'git'
         uses: ./.github/actions/setup-flutter-git
+
+      - name: Select Visual Studio 2026 generator for hybrid ARM64
+        if: inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64'
+        shell: pwsh
+        run: |
+          'CMAKE_GENERATOR=Visual Studio 18 2026' >> $env:GITHUB_ENV
 
       - name: Install locked Dart dependencies
         shell: pwsh

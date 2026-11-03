@@ -167,7 +167,7 @@ require(
 )
 require(
     "'windows-2025'" in windows
-    and "'windows-11-arm'" in windows,
+    and "'windows-11-vs2026-arm'" in windows,
     "the hybrid release must use standard native Windows x64 and ARM64 runners",
 )
 require("fail-fast: false" in windows, "Windows matrix must not cancel its other architecture")
@@ -185,6 +185,12 @@ require(
     "CMAKE_GENERATOR_TOOLSET: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}"
     in windows,
     "hybrid Windows ARM64 release builds must use ClangCL for the pinned Whisper GGML ARM backend",
+)
+require(
+    'CMAKE_GENERATOR=Visual Studio 18 2026' in named_step(
+        windows, "Select Visual Studio 2026 generator for hybrid ARM64"
+    ),
+    "hybrid Windows ARM64 release builds must set the Visual Studio generator so CMake honors ClangCL",
 )
 for expected in (
     "if: matrix.flutter_setup == 'action'",
@@ -1216,13 +1222,19 @@ require(
     '"arch":"arm64","flutter_setup":"git"' in windows_native
     and "matrix: ${{ fromJSON(inputs.execution_profile == 'hybrid'" in windows_native
     and '"include":[{"arch":"x64"' in windows_native
-    and "'windows-11-arm'" in windows_native,
+    and "'windows-11-vs2026-arm'" in windows_native,
     "native Windows ARM64 CI must run on the public ARM64 host in the 3.0.0 hybrid profile",
 )
 require(
     "CMAKE_GENERATOR_TOOLSET: ${{ inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}"
     in windows_native,
     "hybrid Windows ARM64 CI must use ClangCL for the pinned Whisper GGML ARM backend",
+)
+require(
+    'CMAKE_GENERATOR=Visual Studio 18 2026' in named_step(
+        windows_native, "Select Visual Studio 2026 generator for hybrid ARM64"
+    ),
+    "hybrid Windows ARM64 CI must set the Visual Studio generator so CMake honors ClangCL",
 )
 
 

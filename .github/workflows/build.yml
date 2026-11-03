@@ -1710,10 +1710,10 @@ jobs:
     if: ${{ inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build Windows (${{ matrix.arch }})
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-build-windows"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-build-windows"]}}', github.run_id, strategy.job-index)) }}
     env:
       PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && '1' || '0' }}
-      # The pinned Whisper GGML source requires Clang for ARM; select Visual Studio's ClangCL toolset only on the hosted ARM64 route.
+      # CMake only honors this toolset when CMAKE_GENERATOR also names the matching Visual Studio generator.
       CMAKE_GENERATOR_TOOLSET: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}
     permissions:
       contents: read
@@ -1758,6 +1758,12 @@ jobs:
       - name: Set up Flutter from its pinned commit
         if: matrix.flutter_setup == 'git'
         uses: ./.github/actions/setup-flutter-git
+
+      - name: Select Visual Studio 2026 generator for hybrid ARM64
+        if: needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && matrix.arch == 'arm64'
+        shell: pwsh
+        run: |
+          'CMAKE_GENERATOR=Visual Studio 18 2026' >> $env:GITHUB_ENV
 
       - name: Install pinned NVIDIA CUDA Toolkit (Windows x64)
         if: inputs.subtitle_gpu_backend == 'cuda' && matrix.arch == 'x64'

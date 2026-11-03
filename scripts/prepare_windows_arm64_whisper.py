@@ -101,6 +101,12 @@ else()
       IMPORTED_IMPLIB "${_implib}"
       IMPORTED_IMPLIB_RELEASE "${_implib}")
   endforeach()
+  # Match the PUBLIC target graph from the pinned whisper.cpp CMake files.
+  # The plugin calls GGML APIs directly and therefore needs all import libs.
+  set_target_properties(whisper PROPERTIES
+    INTERFACE_LINK_LIBRARIES ggml)
+  set_target_properties(ggml PROPERTIES
+    INTERFACE_LINK_LIBRARIES "ggml-base;ggml-cpu")
 endif()'''
     patched = source.replace(WHISPER_ADD_SUBDIRECTORY, imported_targets)
     patched = patched.replace(WHISPER_MSVC_WARNING_BLOCK, WHISPER_MSVC_WARNING_BLOCK_PATCHED)

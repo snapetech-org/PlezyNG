@@ -1070,6 +1070,13 @@ jobs:
         shell: pwsh
         run: |
           'CMAKE_GENERATOR=Visual Studio 18 2026' >> $env:GITHUB_ENV
+          'CC=clang-cl' >> $env:GITHUB_ENV
+          'CXX=clang-cl' >> $env:GITHUB_ENV
+
+      - name: Verify ClangCL CMake toolset for hybrid ARM64
+        if: inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64'
+        shell: pwsh
+        run: '& .\windows\tool\verify-clang-cmake-toolset.ps1'
 
       - name: Install locked Dart dependencies
         shell: pwsh

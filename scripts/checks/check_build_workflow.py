@@ -192,6 +192,13 @@ require(
     ),
     "hybrid Windows ARM64 release builds must set the Visual Studio generator so CMake honors ClangCL",
 )
+require(
+    all(value in named_step(windows, "Select Visual Studio 2026 generator for hybrid ARM64")
+        for value in ("CC=clang-cl", "CXX=clang-cl"))
+    and "windows/tool/verify-clang-cmake-toolset.ps1"
+    in named_step(windows, "Verify ClangCL CMake toolset for hybrid ARM64").replace("\\", "/"),
+    "hybrid Windows ARM64 release builds must select and verify clang-cl for both CMake languages",
+)
 for expected in (
     "if: matrix.flutter_setup == 'action'",
     "if: matrix.flutter_setup == 'git'",
@@ -1235,6 +1242,13 @@ require(
         windows_native, "Select Visual Studio 2026 generator for hybrid ARM64"
     ),
     "hybrid Windows ARM64 CI must set the Visual Studio generator so CMake honors ClangCL",
+)
+require(
+    all(value in named_step(windows_native, "Select Visual Studio 2026 generator for hybrid ARM64")
+        for value in ("CC=clang-cl", "CXX=clang-cl"))
+    and "windows/tool/verify-clang-cmake-toolset.ps1"
+    in named_step(windows_native, "Verify ClangCL CMake toolset for hybrid ARM64").replace("\\", "/"),
+    "hybrid Windows ARM64 CI must select and verify clang-cl for both CMake languages",
 )
 
 

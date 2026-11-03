@@ -1031,11 +1031,11 @@ apple_scratch_helper_scripts = (
     (ROOT / "scripts/clean_appledouble_sidecars.sh").read_text(),
 )
 require(
-    all('readonly NFS_MOUNT="/p"' in script for script in apple_scratch_helper_scripts)
+    all('readonly NFS_MOUNT="/Volumes/p"' in script for script in apple_scratch_helper_scripts)
     and 'readonly NFS_PRIMARY_MOUNT="/Volumes/plezyng-native-build-kspld0"' in apple_scratch_script
     and 'if [[ "$short_source" != "$primary_source" ]]' in apple_scratch_script
     and all('readonly NFS_MOUNT="/Volumes/plezyng-native-build-kspld0"' not in script for script in apple_scratch_helper_scripts)
-    and 'expected_cloned_dir="/p/runs/' in (ROOT / "scripts/refresh_apple_spm.sh").read_text(),
+    and 'expected_cloned_dir="/Volumes/p/runs/' in (ROOT / "scripts/refresh_apple_spm.sh").read_text(),
     "Apple source workspaces must use the short NFS alias so native-asset install names fit Mach-O headers",
 )
 require(

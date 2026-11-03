@@ -30,7 +30,10 @@ AI-assisted pull requests must state in the PR description which model(s) were u
 
 ### Code Quality Checks
 
-The project includes automated CI checks that run on all pull requests:
+`CI - Sanity Checks` is manually dispatched from GitHub Actions and runs on
+private JIT runners. It does not trigger automatically for pushes or pull
+requests. PR descriptions should report focused validation; after changes merge
+to `main`, dispatch CI against that exact SHA before creating a release tag.
 
 1. **Code Formatting**: Ensures code follows Dart and native formatting standards
    - Run locally: `dart format .` to format Dart files
@@ -51,7 +54,9 @@ The project includes automated CI checks that run on all pull requests:
      leaves most of the machine idle because the suite is dominated by per-file compilation.
      Arguments are forwarded, so `scripts/run_tests.sh test/widgets/some_test.dart` works.
 
-All these checks must pass before your changes can be merged.
+These checks are required for release readiness. Validate focused changes during
+review, then run the complete CI workflow on the exact `main` commit used for
+the release.
 
 ### Changelog and release notes
 

@@ -149,6 +149,15 @@ for legacy_job in (
     require(f"  {legacy_job}:\n" not in text, f"legacy job {legacy_job} must stay removed")
 
 windows = job("build-windows")
+windows_checkout = re.search(
+    r"(?ms)^      - uses: actions/checkout@[^\n]+\n(?P<step>.*?)(?=^      - |\Z)",
+    windows,
+)
+require(
+    windows_checkout is not None
+    and re.search(r"(?m)^          fetch-depth: 0$", windows_checkout.group("step")) is not None,
+    "Windows release checkout must fetch tags for the pinned Opus CMake version probe",
+)
 validate_windows_jni_jdk(windows, "Windows release builds")
 require(
     '"group":"packer-windows"' in windows

@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Retry transient TLS resets in Windows Flutter setup and wait for slow iOS simulator decode callbacks.
+- Fetch full Windows source history so the pinned Opus CMake version probe can resolve tags.
 - Mount Apple JIT source workspaces under writable `/Volumes` so the Mac can provide the short NFS path without changing its sealed root volume.
 - Remove AppleDouble files created while preparing pinned Steam sources so Xcode does not compile Finder metadata as C source.
 - Use a short Apple NFS workspace path for Dart native-asset install names, and include EGL headers absent from the pinned Tizen SDK rootstrap.

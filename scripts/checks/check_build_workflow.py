@@ -1212,6 +1212,13 @@ require(
 )
 
 windows_native = job_block(ci_text, "windows-native-test")
+native_format = job_block(ci_text, "native-format")
+require(
+    "inputs.execution_profile == 'hybrid' && 'macos-26' || fromJSON(format(" in native_format
+    and '"group":"private-apple-builds"' in native_format
+    and "scripts/format_native.sh --check" in native_format,
+    "hybrid native formatting must use standard macOS while private mode preserves the Apple JIT route",
+)
 validate_windows_jni_jdk(windows_native, "Windows native CI")
 windows_ci_flutter_cache_key = re.search(
     r'(?m)^\s*cache-key:\s*["\']?([^"\'\s]+)["\']?\s*$',

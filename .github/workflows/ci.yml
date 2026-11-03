@@ -1,5 +1,5 @@
 # ng-runner-policy: private-jit-only-v1
-# The trusted-main 3.0.0 execution_profile=hybrid exception routes compatible Linux and Windows CI jobs to standard GitHub-hosted runners; private-only jobs remain on JIT.
+# The trusted-main 3.0.0 hybrid profile routes compatible Linux, Windows, and native-format jobs to standard GitHub-hosted runners; Apple app/device builds remain on private JIT.
 name: CI - Sanity Checks
 run-name: ${{ format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
@@ -67,7 +67,7 @@ jobs:
           {
             echo "Execution profile: **$EXECUTION_PROFILE_INPUT** (broker pool: private)."
             if [[ "$EXECUTION_PROFILE_INPUT" == "hybrid" ]]; then
-              echo "Compatible Linux and Windows jobs use standard GitHub-hosted runners; Apple jobs remain on private JIT."
+              echo "Compatible Linux, Windows, and native-format jobs use standard GitHub-hosted runners; Apple app/device builds remain on private JIT."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -467,7 +467,7 @@ jobs:
   native-format:
     name: Native Formatting
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-native-format"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-native-format"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:

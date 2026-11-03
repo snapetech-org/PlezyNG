@@ -10,6 +10,7 @@
 - Use a short Apple NFS workspace path for Dart native-asset install names, and include EGL headers absent from the pinned Tizen SDK rootstrap.
 - Pass and verify ClangCL explicitly in the pinned Flutter Windows ARM64 CMake invocation.
 - Select one Git executable when patching the pinned Flutter tool on Windows ARM64.
+- Fix the hybrid Linux release runner expression so release jobs parse and dispatch.
 - Run compatible native formatting on standard macOS runners in the 3.0.0 hybrid CI profile.
 - Delete AppleDouble sidecars directly from per-run NFS source workspaces before iOS and macOS Xcode builds.
 - Give Android release builds more memory on private JIT guests and install the pinned Python dependencies required by the webOS engine bootstrap.

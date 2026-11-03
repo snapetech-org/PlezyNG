@@ -37,6 +37,16 @@ class WindowsArm64WhisperTest(unittest.TestCase):
         self.assertIn('"${FLUTTER_WHISPER_CPP_DIR}"', patched)
         self.assertIn("foreach(_target IN ITEMS whisper ggml ggml-base ggml-cpu)", patched)
         self.assertIn(
+            "set_target_properties(whisper PROPERTIES\n"
+            "    INTERFACE_LINK_LIBRARIES ggml)",
+            patched,
+        )
+        self.assertIn(
+            'set_target_properties(ggml PROPERTIES\n'
+            '    INTERFACE_LINK_LIBRARIES "ggml-base;ggml-cpu")',
+            patched,
+        )
+        self.assertIn(
             "get_target_property(_FW_TARGET_IS_IMPORTED ${_FW_THIRD_PARTY_TARGET} IMPORTED)",
             patched,
         )

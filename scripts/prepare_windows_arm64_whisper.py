@@ -19,6 +19,30 @@ WHISPER_ADD_SUBDIRECTORY = '''add_subdirectory(
   "${FLUTTER_WHISPER_CPP_DIR}"
   "${CMAKE_CURRENT_BINARY_DIR}/whisper_cpp"
   EXCLUDE_FROM_ALL)'''
+# The plugin sets MSVC warning flags on whisper.cpp targets. The ARM64 route
+# replaces those targets with prebuilt Clang IMPORTED libraries, which cannot
+# accept PRIVATE compile options and do not need MSVC compile flags.
+WHISPER_MSVC_WARNING_BLOCK = '''if(MSVC)
+  foreach(_FW_THIRD_PARTY_TARGET
+      whisper ggml ggml-base ggml-cpu ggml-cuda ggml-vulkan)
+    if(TARGET ${_FW_THIRD_PARTY_TARGET})
+      target_compile_options(${_FW_THIRD_PARTY_TARGET} PRIVATE
+        /W0 /wd4244 /wd4267)
+    endif()
+  endforeach()
+endif()'''
+WHISPER_MSVC_WARNING_BLOCK_PATCHED = '''if(MSVC)
+  foreach(_FW_THIRD_PARTY_TARGET
+      whisper ggml ggml-base ggml-cpu ggml-cuda ggml-vulkan)
+    if(TARGET ${_FW_THIRD_PARTY_TARGET})
+      get_target_property(_FW_TARGET_IS_IMPORTED ${_FW_THIRD_PARTY_TARGET} IMPORTED)
+      if(NOT _FW_TARGET_IS_IMPORTED)
+        target_compile_options(${_FW_THIRD_PARTY_TARGET} PRIVATE
+          /W0 /wd4244 /wd4267)
+      endif()
+    endif()
+  endforeach()
+endif()'''
 
 
 def package_root(package_config: Path) -> Path:
@@ -53,6 +77,8 @@ def patch_plugin_cmake(cmake_file: Path, prebuilt_root: Path, *, expected_sha256
     source = original.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
     if source.count(WHISPER_ADD_SUBDIRECTORY) != 1:
         raise ValueError("The pinned Whisper CMake file no longer has the expected add_subdirectory block")
+    if source.count(WHISPER_MSVC_WARNING_BLOCK) != 1:
+        raise ValueError("The pinned Whisper CMake file no longer has the expected MSVC warning-options block")
     imported_targets = '''set(FLUTTER_WHISPER_PREBUILT_ROOT "$ENV{FLUTTER_WHISPER_PREBUILT_ROOT}")
 if(FLUTTER_WHISPER_PREBUILT_ROOT STREQUAL "")
   add_subdirectory(
@@ -76,7 +102,9 @@ else()
       IMPORTED_IMPLIB_RELEASE "${_implib}")
   endforeach()
 endif()'''
-    cmake_file.write_text(source.replace(WHISPER_ADD_SUBDIRECTORY, imported_targets), encoding="utf-8", newline="\n")
+    patched = source.replace(WHISPER_ADD_SUBDIRECTORY, imported_targets)
+    patched = patched.replace(WHISPER_MSVC_WARNING_BLOCK, WHISPER_MSVC_WARNING_BLOCK_PATCHED)
+    cmake_file.write_text(patched, encoding="utf-8", newline="\n")
 
 
 def cmake_identity_probe(work_root: Path, generator: str) -> None:

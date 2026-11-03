@@ -21,6 +21,21 @@ def run(*args: str, cwd: Path | None = None) -> str:
     return subprocess.check_output(args, cwd=cwd, text=True).strip()
 
 
+def remove_appledouble_sidecars(root: Path) -> int:
+    """Remove Finder metadata files that Xcode would treat as native sources."""
+    if root.is_symlink() or not root.is_dir():
+        raise ValueError(f'Expected a real prepared Steam source directory: {root}')
+    removed = 0
+    for sidecar in root.rglob('._*'):
+        if sidecar.is_file():
+            sidecar.unlink()
+            removed += 1
+    remaining = next(root.rglob('._*'), None)
+    if remaining is not None:
+        raise ValueError(f'AppleDouble sidecar remains in prepared Steam sources: {remaining}')
+    return removed
+
+
 def checkout(destination: Path, specification: dict, recursive_submodules: bool = True) -> None:
     run('git', 'init', '--quiet', str(destination))
     run('git', 'remote', 'add', 'origin', specification['repository'], cwd=destination)
@@ -107,6 +122,9 @@ def prepare_locked(destination: Path) -> None:
     recipe = digest.hexdigest()
     marker = destination / '.plezy-recipe'
     if marker.exists() and marker.read_text() == recipe:
+        removed = remove_appledouble_sidecars(destination)
+        if removed:
+            print(f'Removed {removed} AppleDouble sidecars from prepared Steam sources')
         return
     if destination.exists():
         default_destination = (ROOT / '.dart_tool/games/steam').resolve()
@@ -138,6 +156,9 @@ def prepare_locked(destination: Path) -> None:
         apply_patches(prepared / 'opus', opus_patches)
         (prepared / '.plezy-recipe').write_text(recipe)
         shutil.move(str(prepared), destination)
+        removed = remove_appledouble_sidecars(destination)
+        if removed:
+            print(f'Removed {removed} AppleDouble sidecars from prepared Steam sources')
 
 
 if __name__ == '__main__':

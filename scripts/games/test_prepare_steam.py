@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 import unittest
 
-from prepare_steam import ROOT, apply_patches, preparation_lock
+from prepare_steam import ROOT, apply_patches, preparation_lock, remove_appledouble_sidecars
 
 
 def hold(destination, entered, release):
@@ -15,6 +15,18 @@ def hold(destination, entered, release):
 
 
 class SourceLockTest(unittest.TestCase):
+    def test_appledouble_sidecars_are_removed_from_prepared_sources(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / 'steam'
+            nested = source / 'ihslib' / 'src'
+            nested.mkdir(parents=True)
+            (nested / 'crc32.c').write_text('int crc32(void) { return 0; }\n')
+            (nested / '._crc32.c').write_bytes(b'AppleDouble metadata')
+
+            self.assertEqual(remove_appledouble_sidecars(source), 1)
+            self.assertTrue((nested / 'crc32.c').is_file())
+            self.assertFalse((nested / '._crc32.c').exists())
+
     def test_opus_cmake_patch_omits_relative_install_prefix(self):
         with tempfile.TemporaryDirectory() as temporary:
             source = Path(temporary)

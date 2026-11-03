@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly NFS_MOUNT="/Volumes/plezyng-native-build-kspld0"
+# Keep task paths short: Dart's macOS native-asset step writes absolute Mach-O
+# install names, and the long volume name exhausted the bundled dylib's header pad.
+readonly NFS_MOUNT="/p"
 readonly NFS_RUNS_ROOT="$NFS_MOUNT/runs"
+readonly NFS_PRIMARY_MOUNT="/Volumes/plezyng-native-build-kspld0"
 
 usage() {
   echo "Usage: $0 <job-id> <minimum-free-gib> [nfs-derived-data|local-xcode]" >&2
@@ -44,6 +47,7 @@ if [[ ! -d "$NFS_RUNS_ROOT" || -L "$NFS_RUNS_ROOT" ]]; then
 fi
 
 mount_line="$(/sbin/mount | /usr/bin/awk -v mountpoint="$NFS_MOUNT" '$3 == mountpoint { print; exit }')"
+primary_mount_line="$(/sbin/mount | /usr/bin/awk -v mountpoint="$NFS_PRIMARY_MOUNT" '$3 == mountpoint { print; exit }')"
 case "$mount_line" in
   kspld0*:/mnt/disks/gamespool0/plezyng-native-build-*" on $NFS_MOUNT (nfs,"*) ;;
   *)
@@ -51,6 +55,20 @@ case "$mount_line" in
     exit 1
     ;;
 esac
+primary_source="$(/usr/bin/awk '{ print $1 }' <<< "$primary_mount_line")"
+short_source="$(/usr/bin/awk '{ print $1 }' <<< "$mount_line")"
+case "$primary_source" in
+  kspld0*:/mnt/disks/gamespool0/plezyng-native-build-*) ;;
+  *)
+    echo "Expected the primary PlezyNG NFS export at $NFS_PRIMARY_MOUNT; found: ${primary_mount_line:-no mount}" >&2
+    exit 1
+    ;;
+esac
+if [[ "$short_source" != "$primary_source" ]]; then
+  echo "The short Apple workspace mount at $NFS_MOUNT must use the same NFS export as $NFS_PRIMARY_MOUNT." >&2
+  echo "Primary: $primary_source; short: $short_source" >&2
+  exit 1
+fi
 
 free_kib="$(/bin/df -Pk "$NFS_RUNS_ROOT" | /usr/bin/awk 'NR == 2 { print $4 }')"
 if [[ ! "$free_kib" =~ ^[0-9]+$ ]]; then

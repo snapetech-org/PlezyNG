@@ -305,7 +305,7 @@ export PYTHONPATH="$DEPOT_TOOLS_PYTHON_SITE${PYTHONPATH:+:$PYTHONPATH}"
 
 "$PYTHON_BIN" "$ROOT/tools/webos/verify_sdk_checkout.py" "$SDK_ROOT"
 
-"$NDK_INSTALLER" -y -d "$NDK_ROOT"
+bash "$NDK_INSTALLER" -y -d "$NDK_ROOT"
 "$PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --verify
 
 export FLUTTER_WEBOS_SDK_ROOT="$SDK_ROOT"

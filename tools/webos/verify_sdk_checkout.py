@@ -8,7 +8,7 @@ import hashlib
 import json
 import subprocess
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -60,9 +60,35 @@ def _verify_clean(repo: Path, label: str) -> None:
         raise CheckoutError(f"{label} checkout has local changes or untracked files")
 
 
-def _diff_from_head(repo: Path, added_paths: list[str]) -> bytes:
+def _patch_paths(patch: bytes) -> list[str]:
+    paths: list[str] = []
+    for line in patch.splitlines():
+        if not line.startswith(b"diff --git a/"):
+            continue
+        header = line[len(b"diff --git "):]
+        try:
+            old_path, new_path = header.rsplit(b" b/", 1)
+        except ValueError as exc:
+            raise CheckoutError("reviewed patch contains an invalid Git diff header") from exc
+        if not old_path.startswith(b"a/"):
+            raise CheckoutError("reviewed patch contains an invalid source path")
+        try:
+            relative = new_path.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise CheckoutError("reviewed patch contains a non-UTF-8 source path") from exc
+        path = PurePosixPath(relative)
+        if path.is_absolute() or not path.parts or ".." in path.parts:
+            raise CheckoutError(f"reviewed patch contains an unsafe source path: {relative}")
+        if relative not in paths:
+            paths.append(relative)
+    if not paths:
+        raise CheckoutError("reviewed patch has no Git diff paths")
+    return paths
+
+
+def _diff_from_head(repo: Path, added_paths: list[str], patched_paths: list[str]) -> bytes:
     result = subprocess.run(
-        ["git", "-C", str(repo), "diff", "HEAD", "--binary"],
+        ["git", "-C", str(repo), "diff", "HEAD", "--binary", "--", *patched_paths],
         check=False,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -110,7 +136,8 @@ def _verify_patch(
     patch_hash = hashlib.sha256(patch).hexdigest()
     if patch_hash != expected_hash:
         raise CheckoutError(f"reviewed patch hash changed: {patch_path}")
-    if hashlib.sha256(_diff_from_head(repo, added_paths)).hexdigest() != expected_hash:
+    patched_paths = _patch_paths(patch)
+    if hashlib.sha256(_diff_from_head(repo, added_paths, patched_paths)).hexdigest() != expected_hash:
         raise CheckoutError(f"SDK source differs from reviewed patch: {repo}")
     _git(repo, "diff", "--check", "HEAD")
 

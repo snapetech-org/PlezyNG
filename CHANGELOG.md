@@ -5,6 +5,7 @@
 - Cache and verify the pinned FFmpeg header archive for Android private JIT CI and release builds.
 - Use direct FFmpeg downloads only on the trusted public hybrid lane, run native formatting on hosted Intel macOS, and keep Flutter Windows plugins on MSVC while building the ARM64 Whisper dependency with Clang.
 - Retry transient TLS resets in Windows Flutter setup and wait for slow iOS simulator decode callbacks.
+- Fix WebOS release candidate setup when the verified LG NDK installer is downloaded without executable permissions.
 - Fetch full Windows source history so the pinned Opus CMake version probe can resolve tags.
 - Mount Apple JIT source workspaces under writable `/Volumes` so the Mac can provide the short NFS path without changing its sealed root volume.
 - Remove AppleDouble files created while preparing pinned Steam sources so Xcode does not compile Finder metadata as C source.

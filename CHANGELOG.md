@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Cache and verify the pinned FFmpeg header archive for Android private JIT CI and release builds.
 - Retry transient TLS resets in Windows Flutter setup and wait for slow iOS simulator decode callbacks.
 - Fetch full Windows source history so the pinned Opus CMake version probe can resolve tags.
 - Mount Apple JIT source workspaces under writable `/Volumes` so the Mac can provide the short NFS path without changing its sealed root volume.

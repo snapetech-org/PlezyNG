@@ -1369,7 +1369,34 @@ for protected_job in (
 
 android_job = job("build-android")
 android_memory_diagnostics = named_step(android_job, "Capture Android JIT memory diagnostics")
+android_ffmpeg_prepare = named_step(android_job, "Prepare verified Android FFmpeg source archive")
 android_gradle_properties = (ROOT / "android/gradle.properties").read_text(encoding="utf-8")
+android_ci = job_block(ci_text, "android-test")
+android_ci_ffmpeg_prepare = named_step(android_ci, "Prepare verified Android FFmpeg source archive")
+android_ffmpeg_gradle = (ROOT / "android/app/build.gradle.kts").read_text(encoding="utf-8")
+android_ffmpeg_helper = (ROOT / "scripts/prepare_android_ffmpeg_source.py").read_text(encoding="utf-8")
+require(
+    "prepare_android_ffmpeg_source.py" in android_ci_ffmpeg_prepare
+    and "actions/cache/restore@" in android_ci
+    and "actions/cache/save@" in android_ci
+    and "TRUSTED_BUILD_CACHE_VERSION" in android_ci
+    and "PLEZYNG_FFMPEG_SOURCE_ARCHIVE" in android_ffmpeg_gradle,
+    "Android CI must prefetch, verify, and cache pinned FFmpeg headers through the private JIT proxy",
+)
+require(
+    "prepare_android_ffmpeg_source.py" in android_ffmpeg_prepare
+    and "actions/cache/restore@" in android_job
+    and "actions/cache/save@" in android_job
+    and "TRUSTED_BUILD_CACHE_VERSION" in android_job
+    and "PLEZYNG_FFMPEG_SOURCE_ARCHIVE" in android_ffmpeg_gradle,
+    "Android release builds must prefetch, verify, and cache pinned FFmpeg headers before Gradle",
+)
+require(
+    "proxy_parts(dict(os.environ))" in android_ffmpeg_helper
+    and "sha256_file" in android_ffmpeg_helper
+    and "FFmpeg source SHA-256 mismatch" in android_ffmpeg_helper,
+    "Android FFmpeg prefetch must use the private proxy and verify its pinned SHA-256",
+)
 require(
     "-Xmx3G" in android_gradle_properties
     and "kotlin.compiler.execution.strategy=in-process" in android_gradle_properties

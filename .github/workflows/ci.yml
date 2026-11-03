@@ -26,6 +26,7 @@ on:
 env:
   # Only place this workflow names the SDK; .github/actions/setup-flutter-git pins the same release.
   FLUTTER_VERSION: "3.47.1"
+  TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
 
 jobs:
   # These jobs use trusted private JIT pools. Public fork PRs must use a
@@ -255,6 +256,23 @@ jobs:
           curl --fail --show-error --silent --head --max-time 30 \
             --proxy "$proxy" \
             https://storage.googleapis.com/maven-central/maven2/org/robolectric/nativeruntime-dist-compat/1.0.18/nativeruntime-dist-compat-1.0.18.jar
+
+      - name: Restore Android FFmpeg source cache
+        id: ffmpeg-source-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ runner.temp }}/plezyng-ffmpeg-source
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-ffmpeg-source-${{ hashFiles('android/app/build.gradle.kts') }}
+
+      - name: Prepare verified Android FFmpeg source archive
+        run: python3 scripts/prepare_android_ffmpeg_source.py "$RUNNER_TEMP/plezyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
+
+      - name: Save Android FFmpeg source cache
+        if: steps.ffmpeg-source-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ runner.temp }}/plezyng-ffmpeg-source
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-ffmpeg-source-${{ hashFiles('android/app/build.gradle.kts') }}
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4

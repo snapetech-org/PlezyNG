@@ -742,6 +742,9 @@ val media3Version = "1.11.0"
 val mpvFfmpegVersion = "9.0.2"
 val mpvFfmpegSourceSha256 = "8c3850283eb25fa026482078a04051e0be17347b09ef81a0849bec15a96e002e"
 val mpvFfmpegSourceUrl = "https://ffmpeg.org/releases/ffmpeg-$mpvFfmpegVersion.tar.xz"
+val preparedMpvFfmpegSourceArchive = System.getenv("PLEZYNG_FFMPEG_SOURCE_ARCHIVE")
+  ?.takeIf { it.isNotBlank() }
+  ?.let(::File)
 val mpvFfmpegDevelopmentDir = layout.buildDirectory.dir("libmpv-ffmpeg-development").get().asFile
 
 // Build the Media3 JNI adapter against the same shared FFmpeg libraries that
@@ -825,21 +828,33 @@ val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") 
       } else {
         val sourceArchive = File(staging, "ffmpeg-$mpvFfmpegVersion.tar.xz")
         try {
-          providers.exec {
-            commandLine(
-              "curl",
-              "-fsSL",
-              "--retry", "3",
-              "--retry-connrefused",
-              "--retry-delay", "2",
-              "--connect-timeout", "30",
-              "--max-time", "180",
-              mpvFfmpegSourceUrl,
-              "-o", sourceArchive.absolutePath
-            )
-          }.result.get().assertNormalExitValue()
+          if (preparedMpvFfmpegSourceArchive != null) {
+            if (!preparedMpvFfmpegSourceArchive.isFile) {
+              throw GradleException(
+                "Configured FFmpeg source archive does not exist: $preparedMpvFfmpegSourceArchive"
+              )
+            }
+            preparedMpvFfmpegSourceArchive.copyTo(sourceArchive, overwrite = true)
+          } else {
+            providers.exec {
+              commandLine(
+                "curl",
+                "-fsSL",
+                "--retry", "3",
+                "--retry-connrefused",
+                "--retry-delay", "2",
+                "--connect-timeout", "30",
+                "--max-time", "180",
+                mpvFfmpegSourceUrl,
+                "-o", sourceArchive.absolutePath
+              )
+            }.result.get().assertNormalExitValue()
+          }
         } catch (error: Exception) {
-          throw GradleException("Failed to download FFmpeg $mpvFfmpegVersion headers", error)
+          throw GradleException(
+            "Failed to prepare FFmpeg $mpvFfmpegVersion headers: ${error.message}",
+            error
+          )
         }
         verifySha256(sourceArchive, mpvFfmpegSourceSha256, "FFmpeg $mpvFfmpegVersion source")
 

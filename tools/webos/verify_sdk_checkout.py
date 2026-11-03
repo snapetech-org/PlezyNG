@@ -88,7 +88,20 @@ def _patch_paths(patch: bytes) -> list[str]:
 
 def _diff_from_head(repo: Path, added_paths: list[str], patched_paths: list[str]) -> bytes:
     result = subprocess.run(
-        ["git", "-C", str(repo), "diff", "HEAD", "--binary", "--", *patched_paths],
+        # The reviewed patch hash includes Git's abbreviated object IDs. Keep
+        # their width stable across clones with different object databases.
+        [
+            "git",
+            "-C",
+            str(repo),
+            "-c",
+            "core.abbrev=8",
+            "diff",
+            "HEAD",
+            "--binary",
+            "--",
+            *patched_paths,
+        ],
         check=False,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -110,7 +123,19 @@ def _diff_from_head(repo: Path, added_paths: list[str], patched_paths: list[str]
         if new_path.is_symlink() or not new_path.is_file():
             raise CheckoutError(f"required patched source file is missing or not regular: {new_path}")
         added = subprocess.run(
-            ["git", "-C", str(repo), "diff", "--no-index", "--binary", "--", "/dev/null", relative],
+            [
+                "git",
+                "-C",
+                str(repo),
+                "-c",
+                "core.abbrev=8",
+                "diff",
+                "--no-index",
+                "--binary",
+                "--",
+                "/dev/null",
+                relative,
+            ],
             check=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

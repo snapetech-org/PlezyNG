@@ -20,7 +20,8 @@ class WindowsArm64WhisperTest(unittest.TestCase):
             '  "${FLUTTER_WHISPER_CPP_DIR}"\n'
             '  "${CMAKE_CURRENT_BINARY_DIR}/whisper_cpp"\n'
             '  EXCLUDE_FROM_ALL)\n'
-            'after\n'
+            + whisper.WHISPER_MSVC_WARNING_BLOCK
+            + '\nafter\n'
         )
         expected = hashlib.sha256(source.encode()).hexdigest()
         with tempfile.TemporaryDirectory() as temporary:
@@ -35,6 +36,34 @@ class WindowsArm64WhisperTest(unittest.TestCase):
         self.assertIn("add_subdirectory(", patched)
         self.assertIn('"${FLUTTER_WHISPER_CPP_DIR}"', patched)
         self.assertIn("foreach(_target IN ITEMS whisper ggml ggml-base ggml-cpu)", patched)
+        self.assertIn(
+            "get_target_property(_FW_TARGET_IS_IMPORTED ${_FW_THIRD_PARTY_TARGET} IMPORTED)",
+            patched,
+        )
+        self.assertIn(
+            "if(NOT _FW_TARGET_IS_IMPORTED)\n"
+            "        target_compile_options(${_FW_THIRD_PARTY_TARGET} PRIVATE",
+            patched,
+        )
+        self.assertNotIn(whisper.WHISPER_MSVC_WARNING_BLOCK + "\n", patched)
+
+    def test_patch_rejects_missing_msvc_warning_block(self):
+        source = (
+            'add_subdirectory(\n'
+            '  "${FLUTTER_WHISPER_CPP_DIR}"\n'
+            '  "${CMAKE_CURRENT_BINARY_DIR}/whisper_cpp"\n'
+            '  EXCLUDE_FROM_ALL)\n'
+        )
+        expected = hashlib.sha256(source.encode()).hexdigest()
+        with tempfile.TemporaryDirectory() as temporary:
+            cmake_file = Path(temporary) / "CMakeLists.txt"
+            cmake_file.write_text(source)
+            with self.assertRaisesRegex(ValueError, "expected MSVC warning-options block"):
+                whisper.patch_plugin_cmake(
+                    cmake_file,
+                    Path(temporary) / "whisper-libraries",
+                    expected_sha256=expected,
+                )
 
     def test_patch_rejects_an_unrecognized_dependency(self):
         with tempfile.TemporaryDirectory() as temporary:

@@ -2,7 +2,7 @@
 name: Samsung Tizen TV
 run-name: ${{ format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
-# Private ARM tester builds for versioned releases; manual Seller Office handoff remains opt-in.
+# Manual Tizen jobs remain private; the trusted 3.0.0 hybrid release caller may use hosted Ubuntu.
 on:
   workflow_dispatch:
     inputs:
@@ -38,6 +38,11 @@ on:
         default: false
   workflow_call:
     inputs:
+      execution_profile:
+        description: Use public Ubuntu only when called by the trusted hybrid PlezyNG release workflow
+        type: string
+        required: false
+        default: private
       build_package:
         description: Build the TPK after validation
         type: boolean
@@ -72,7 +77,7 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-validate"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-validate"]}}', github.run_id)) }}
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -108,7 +113,7 @@ jobs:
   package:
     needs: validate
     if: inputs.build_package && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-package"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-package"]}}', github.run_id)) }}
     timeout-minutes: 60
     env:
       TESTER_BUILD: ${{ inputs.tester_build }}
@@ -119,6 +124,7 @@ jobs:
       TIZEN_CMAKE_TOOLCHAIN_X64: ${{ vars.PLEZYNG_TIZEN_TOOLCHAIN_X64 }}
       PACKAGE_ARCH: ${{ inputs.architecture }}
       SIGNING_PROFILE: ${{ inputs.security_profile }}
+      PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && '1' || '0' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -141,12 +147,22 @@ jobs:
           clang --version
           cmake --version
           git lfs version
-          if [[ -z "${HTTPS_PROXY:-${https_proxy:-}}" ]]; then
+          if [[ -z "${HTTPS_PROXY:-${https_proxy:-}}" && "$PLEZYNG_ALLOW_DIRECT_DOWNLOADS" != 1 ]]; then
             echo "The private JIT HTTPS proxy is required to fetch the pinned Samsung SDK packages." >&2
             exit 1
           fi
+      - name: Ignore private Tizen toolchain paths on hosted runners
+        if: ${{ inputs.execution_profile == 'hybrid' }}
+        shell: bash
+        run: |
+          {
+            echo 'PLEZYNG_TIZEN_STUDIO_ROOT='
+            echo 'PLEZY_FLUTTER_TIZEN_ROOT='
+            echo 'TIZEN_CMAKE_TOOLCHAIN_ARM='
+            echo 'TIZEN_CMAKE_TOOLCHAIN_X64='
+          } >> "$GITHUB_ENV"
       - name: Check out the pinned Flutter-Tizen tool
-        if: env.PLEZY_FLUTTER_TIZEN_ROOT == ''
+        if: ${{ inputs.execution_profile == 'hybrid' || env.PLEZY_FLUTTER_TIZEN_ROOT == '' }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: flutter-tizen/flutter-tizen
@@ -154,7 +170,7 @@ jobs:
           path: .tizen-toolchain/flutter-tizen
           persist-credentials: false
       - name: Check out its pinned Flutter framework
-        if: env.PLEZY_FLUTTER_TIZEN_ROOT == ''
+        if: ${{ inputs.execution_profile == 'hybrid' || env.PLEZY_FLUTTER_TIZEN_ROOT == '' }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: flutter/flutter
@@ -162,7 +178,7 @@ jobs:
           path: .tizen-toolchain/flutter-tizen/flutter
           persist-credentials: false
       - name: Restore the pinned Flutter release tag for SDK version detection
-        if: env.PLEZY_FLUTTER_TIZEN_ROOT == ''
+        if: ${{ inputs.execution_profile == 'hybrid' || env.PLEZY_FLUTTER_TIZEN_ROOT == '' }}
         shell: bash
         run: |
           set -euo pipefail

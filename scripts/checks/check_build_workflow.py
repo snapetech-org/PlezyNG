@@ -970,6 +970,7 @@ tizen_job = job("build-tizen")
 require(
     "uses: ./.github/workflows/tizen.yml" in tizen_job
     and "outputs.include_tizen_build == 'true'" in tizen_job
+    and "execution_profile: ${{ needs.validate-trusted-ref.outputs.execution_profile }}" in tizen_job
     and "architecture: arm" in tizen_job
     and "tester_build: true" in tizen_job
     and "security_profile: ''" in tizen_job
@@ -982,6 +983,10 @@ tizen_workflow = (
 require(
     "  workflow_call:" in tizen_workflow
     and "tester_build:" in tizen_workflow
+    and "default: private" in tizen_workflow
+    and tizen_workflow.count("inputs.execution_profile == 'hybrid' && 'ubuntu-24.04'") == 2
+    and "PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && '1' || '0' }}" in tizen_workflow
+    and "Ignore private Tizen toolchain paths on hosted runners" in tizen_workflow
     and "python3 scripts/tizen/prepare_signing_profile.py" in tizen_workflow
     and "python3 scripts/tizen/package.py build" in tizen_workflow
     and "startsWith(github.ref, 'refs/tags/v')" in tizen_workflow

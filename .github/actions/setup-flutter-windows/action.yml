@@ -19,8 +19,8 @@ runs:
   using: composite
   steps:
     # The pinned action uses curl for its manifest and archive downloads. The
-    # Windows egress proxy can leave certificate revocation endpoints offline;
-    # keep Schannel verification enabled and tolerate only unavailable CRLs.
+    # Windows egress proxy can reset otherwise verified TLS transfers; keep
+    # Schannel verification enabled and retry those transient transfer errors.
     - name: Enable best-effort Schannel revocation for Flutter downloads
       id: windows_curl
       shell: bash
@@ -40,6 +40,10 @@ runs:
           echo "The private Windows runner curl lacks --ssl-revoke-best-effort." >&2
           exit 1
         fi
+        if ! grep -q -- '--retry-all-errors' <<<"$curl_help"; then
+          echo "The private Windows runner curl lacks --retry-all-errors." >&2
+          exit 1
+        fi
         curl_windows_path="$(readlink -f "$curl_path" 2>/dev/null || printf '%s' "$curl_path")"
         if [[ "$curl_windows_path" != *.exe && -f "${curl_windows_path}.exe" ]]; then
           curl_windows_path="${curl_windows_path}.exe"
@@ -50,7 +54,7 @@ runs:
         mkdir -p "$wrapper_dir"
         printf '%s\n' \
           'curl() {' \
-          '  "$PLEZY_REAL_CURL" --ssl-revoke-best-effort "$@"' \
+          '  "$PLEZY_REAL_CURL" --ssl-revoke-best-effort --retry-all-errors --retry-delay 2 --retry-max-time 120 "$@"' \
           '}' > "$bash_env"
         printf 'curl_path=%s\n' "$curl_path" >> "$GITHUB_OUTPUT"
         printf 'windows_curl_path=%s\n' "$curl_windows_path" >> "$GITHUB_OUTPUT"
@@ -81,7 +85,7 @@ runs:
       run: |
         manifest_url="${FLUTTER_STORAGE_BASE_URL:-https://storage.googleapis.com}/flutter_infra_release/releases/releases_windows.json"
         set +e
-        manifest="$("$PLEZY_REAL_CURL" --ssl-revoke-best-effort --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 0 "$manifest_url")"
+        manifest="$("$PLEZY_REAL_CURL" --ssl-revoke-best-effort --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 5 --retry-all-errors --retry-delay 2 --retry-max-time 120 "$manifest_url")"
         manifest_exit=$?
         set -e
         if [[ $manifest_exit -ne 0 ]]; then
@@ -99,7 +103,7 @@ runs:
         fi
         archive_url="${FLUTTER_STORAGE_BASE_URL:-https://storage.googleapis.com}/flutter_infra_release/releases/$archive_path"
         set +e
-        "$PLEZY_REAL_CURL" --ssl-revoke-best-effort --head --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 0 --output /dev/null --write-out 'Pinned Flutter archive HTTP %{http_code}; TLS verify %{ssl_verify_result}.\n' "$archive_url"
+        "$PLEZY_REAL_CURL" --ssl-revoke-best-effort --head --fail --silent --show-error --connect-timeout 15 --max-time 45 --retry 5 --retry-all-errors --retry-delay 2 --retry-max-time 120 --output /dev/null --write-out 'Pinned Flutter archive HTTP %{http_code}; TLS verify %{ssl_verify_result}.\n' "$archive_url"
         archive_exit=$?
         set -e
         if [[ $archive_exit -ne 0 ]]; then
@@ -122,9 +126,52 @@ runs:
         cache-key: ${{ inputs.cache-key }}
         pub-cache: false
 
+    - name: Use the verified cached Flutter SDK after a transient setup failure
+      id: cache_fallback
+      if: ${{ steps.first.outcome == 'failure' }}
+      shell: pwsh
+      env:
+        FLUTTER_VERSION: ${{ inputs.flutter-version }}
+      run: |
+        $installRoot = Join-Path $env:RUNNER_TOOL_CACHE "flutter\stable-$env:FLUTTER_VERSION-x64"
+        $sdkRoot = Join-Path $installRoot 'flutter'
+        $flutter = Join-Path $sdkRoot 'bin\flutter.bat'
+        $dart = Join-Path $sdkRoot 'bin\cache\dart-sdk\bin\dart.exe'
+        $cacheValid = $false
+
+        if ((Test-Path -LiteralPath $flutter -PathType Leaf) -and
+            (Test-Path -LiteralPath $dart -PathType Leaf)) {
+          try {
+            $versionOutput = & $flutter --version --machine 2>&1
+            $flutterExit = $LASTEXITCODE
+            $reported = ($versionOutput -join "`n") | ConvertFrom-Json -ErrorAction Stop
+            $cacheValid = $flutterExit -eq 0 -and
+              $reported.frameworkVersion -eq $env:FLUTTER_VERSION -and
+              $reported.channel -eq 'stable' -and
+              $reported.frameworkRevision -match '^[0-9a-f]{40}$' -and
+              $reported.engineRevision -match '^[0-9a-f]{40}$'
+          } catch {
+            $cacheValid = $false
+          }
+        }
+
+        if ($cacheValid) {
+          Add-Content -Path $env:GITHUB_PATH -Value (Join-Path $sdkRoot 'bin')
+          Add-Content -Path $env:GITHUB_PATH -Value (Join-Path $sdkRoot 'bin\cache\dart-sdk\bin')
+          Add-Content -Path $env:GITHUB_ENV -Value "FLUTTER_ROOT=$sdkRoot"
+          if ([string]::IsNullOrWhiteSpace($env:PUB_CACHE)) {
+            Add-Content -Path $env:GITHUB_ENV -Value "PUB_CACHE=$(Join-Path $env:LOCALAPPDATA 'Pub\Cache')"
+          }
+          Add-Content -Path $env:GITHUB_OUTPUT -Value 'cache_valid=true'
+          Write-Host "Using verified cached Flutter $($reported.frameworkVersion) stable SDK ($($reported.frameworkRevision))."
+        } else {
+          Add-Content -Path $env:GITHUB_OUTPUT -Value 'cache_valid=false'
+          Write-Host 'No complete, exact-version Flutter SDK cache is available; continuing with bounded setup retries.'
+        }
+
     - name: Set up Flutter (attempt 2 of 3)
       id: second
-      if: ${{ steps.first.outcome == 'failure' }}
+      if: ${{ steps.first.outcome == 'failure' && steps.cache_fallback.outputs.cache_valid != 'true' }}
       continue-on-error: true
       uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
       env:
@@ -140,7 +187,7 @@ runs:
 
     - name: Set up Flutter (attempt 3 of 3)
       id: third
-      if: ${{ steps.first.outcome == 'failure' && steps.second.outcome == 'failure' }}
+      if: ${{ steps.first.outcome == 'failure' && steps.second.outcome == 'failure' && steps.cache_fallback.outputs.cache_valid != 'true' }}
       continue-on-error: true
       uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
       env:
@@ -155,7 +202,7 @@ runs:
         pub-cache: false
 
     - name: Discard incomplete Flutter SDK and fail
-      if: ${{ steps.first.outcome == 'failure' && steps.second.outcome == 'failure' && steps.third.outcome == 'failure' }}
+      if: ${{ steps.first.outcome == 'failure' && steps.second.outcome == 'failure' && steps.third.outcome == 'failure' && steps.cache_fallback.outputs.cache_valid != 'true' }}
       shell: pwsh
       env:
         FLUTTER_VERSION: ${{ inputs.flutter-version }}

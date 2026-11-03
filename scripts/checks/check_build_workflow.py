@@ -598,8 +598,12 @@ require(
     and "throw 'Flutter setup failed three times" in setup_flutter_windows
     and "name: Probe pinned Flutter release connectivity" in setup_flutter_windows
     and "--ssl-revoke-best-effort" in setup_flutter_windows
+    and "--retry-all-errors" in setup_flutter_windows
     and "--ssl-revoke-best-effort --head --fail" in setup_flutter_windows
     and 'manifest="$("$PLEZY_REAL_CURL" --ssl-revoke-best-effort --fail' in setup_flutter_windows
+    and "name: Use the verified cached Flutter SDK after a transient setup failure" in setup_flutter_windows
+    and "steps.cache_fallback.outputs.cache_valid != 'true'" in setup_flutter_windows
+    and "reported.frameworkVersion -eq $env:FLUTTER_VERSION" in setup_flutter_windows
     and setup_flutter_windows.count("BASH_ENV: ${{ steps.windows_curl.outputs.bash_env }}") == 4
     and setup_flutter_windows.count(
         "PLEZY_REAL_CURL: ${{ steps.windows_curl.outputs.curl_path }}"
@@ -610,7 +614,7 @@ require(
     and "windows_curl_path:" in setup_flutter_windows
     and "steps.windows_curl.outputs.windows_curl_path" in setup_flutter_windows
     and "--show-error" in setup_flutter_windows,
-    "Windows Flutter setup must retry three times with a trusted cache key and fail closed",
+    "Windows Flutter setup must retry transient TLS failures, use only a verified pinned cache, and fail closed",
 )
 
 windows_ci = job_block(ci_text, "windows-native-test")

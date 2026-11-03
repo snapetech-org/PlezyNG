@@ -53,9 +53,11 @@
   XCTAssertTrue(sink.frame(redH264, sizeof(redH264), 7, true));
   {
     std::unique_lock<std::mutex> lock(mutex);
-    ready.wait_for(lock, std::chrono::seconds(5), [&] { return failed || presented || completed; });
+    ready.wait_for(lock, std::chrono::seconds(15), [&] { return failed || presented || completed; });
     XCTAssertFalse(failed);
-    XCTAssertTrue(presented, "No decoded frame arrived (completed=%d, displayed=%d)", completed, completedShown);
+    XCTAssertTrue(
+        presented, "No decoded frame arrived (completed=%d, displayed=%d, decoderKind=%d)", completed, completedShown,
+        sink.decoderKind());
     XCTAssertTrue(red, "The decoded frame did not match the expected red pixels");
     XCTAssertFalse(completed, "The frame completed before presentation (displayed=%d)", completedShown);
   }

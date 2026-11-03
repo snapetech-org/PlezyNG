@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Remove AppleDouble sidecars from per-run NFS source workspaces before iOS and macOS Xcode builds.
+- Delete AppleDouble sidecars directly from per-run NFS source workspaces before iOS and macOS Xcode builds.
 - Give Android release builds more memory on private JIT guests and install the pinned Python dependencies required by the webOS engine bootstrap.
 - Exercise multi-frame Windows Steam decoding in native CI and report dropped frames.
 - Require a successful exact-main all-platform release-mode candidate before creating the version tag.

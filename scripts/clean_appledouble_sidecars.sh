@@ -64,15 +64,10 @@ for expected in \
   fi
 done
 
-if ! command -v dot_clean >/dev/null 2>&1; then
-  echo "macOS dot_clean is unavailable; refusing to start Xcode with possible AppleDouble files." >&2
-  exit 1
-fi
-
 before_count="$(/usr/bin/find "$task_root" -name '._*' -print | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
 if [[ "$before_count" != "0" ]]; then
-  echo "Removing $before_count AppleDouble sidecars from task-owned source workspace: $task_root"
-  dot_clean -m "$task_root"
+  echo "Deleting $before_count AppleDouble sidecars from task-owned source workspace: $task_root"
+  /usr/bin/find "$task_root" -type f -name '._*' -delete
 fi
 
 remaining="$(/usr/bin/find "$task_root" -name '._*' -print -quit)"

@@ -1083,11 +1083,12 @@ for apple_job_name, workspace_label in (
     )
     clean_appledouble_script = (ROOT / "scripts/clean_appledouble_sidecars.sh").read_text()
     require(
-        "dot_clean -m \"$task_root\"" in clean_appledouble_script
+        '/usr/bin/find "$task_root" -type f -name \'._*\' -delete' in clean_appledouble_script
+        and "dot_clean" not in clean_appledouble_script
         and "run_id=$GITHUB_RUN_ID" in clean_appledouble_script
         and "scratch_mode=local-xcode" in clean_appledouble_script
         and "AppleDouble sidecars remain after cleanup" in clean_appledouble_script,
-        "AppleDouble cleanup must be limited to the owned NFS task root and verify the result",
+        "AppleDouble cleanup must delete sidecars only inside the owned NFS task root and verify the result",
     )
     if apple_job_name == "build-ios":
         signed_build = named_step(apple_release_job, "Build signed iOS App Store IPA")

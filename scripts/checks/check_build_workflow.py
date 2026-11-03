@@ -37,6 +37,9 @@ WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER = (
     WORKFLOW.parents[2] / "windows/tool/download-pinned-torrent-dependencies.ps1"
 )
 WINDOWS_TOOLCHAIN_LOCK = WORKFLOW.parents[2] / "windows/tool/build-toolchain.lock.json"
+WINDOWS_CLANGCL_PATCHER = ROOT / "windows/tool/apply-flutter-clangcl-arm64.ps1"
+WINDOWS_CLANGCL_PATCH = ROOT / "windows/tool/flutter-3.47.1-windows-arm64-clangcl.patch"
+WINDOWS_CLANGCL_PROBE = ROOT / "windows/tool/verify-clang-cmake-toolset.ps1"
 PLEZY_TORRENT_CMAKE = WORKFLOW.parents[2] / "packages/plezy_torrent/src/CMakeLists.txt"
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
@@ -191,6 +194,19 @@ require(
         windows, "Select Visual Studio 2026 generator for hybrid ARM64"
     ),
     "hybrid Windows ARM64 release builds must set the Visual Studio generator so CMake honors ClangCL",
+)
+require(
+    "windows/tool/apply-flutter-clangcl-arm64.ps1" in named_step(
+        windows, "Patch pinned Flutter CMake toolset for hybrid ARM64"
+    ).replace("\\", "/")
+    and windows.find("name: Patch pinned Flutter CMake toolset for hybrid ARM64")
+    < windows.find("name: Verify ClangCL CMake toolset for hybrid ARM64"),
+    "hybrid Windows ARM64 release builds must pass ClangCL through Flutter's explicit CMake invocation",
+)
+require(
+    (ROOT / "windows/tool/apply-flutter-clangcl-arm64.ps1").is_file()
+    and (ROOT / "windows/tool/flutter-3.47.1-windows-arm64-clangcl.patch").is_file(),
+    "hybrid Windows ARM64 release patch inputs must be checked in",
 )
 require(
     all(value in named_step(windows, "Select Visual Studio 2026 generator for hybrid ARM64")
@@ -1249,6 +1265,26 @@ require(
         windows_native, "Select Visual Studio 2026 generator for hybrid ARM64"
     ),
     "hybrid Windows ARM64 CI must set the Visual Studio generator so CMake honors ClangCL",
+)
+require(
+    "windows/tool/apply-flutter-clangcl-arm64.ps1" in named_step(
+        windows_native, "Patch pinned Flutter CMake toolset for hybrid ARM64"
+    ).replace("\\", "/")
+    and windows_native.find("name: Patch pinned Flutter CMake toolset for hybrid ARM64")
+    < windows_native.find("name: Verify ClangCL CMake toolset for hybrid ARM64"),
+    "hybrid Windows ARM64 CI must pass ClangCL through Flutter's explicit CMake invocation",
+)
+require(
+    (ROOT / "windows/tool/apply-flutter-clangcl-arm64.ps1").is_file()
+    and (ROOT / "windows/tool/flutter-3.47.1-windows-arm64-clangcl.patch").is_file(),
+    "hybrid Windows ARM64 CI patch inputs must be checked in",
+)
+require(
+    f"$expectedCommit = '{FLUTTER_COMMIT}'" in WINDOWS_CLANGCL_PATCHER.read_text(encoding="utf-8")
+    and "TargetPlatform.windows_arm64" in WINDOWS_CLANGCL_PATCH.read_text(encoding="utf-8")
+    and "'ClangCL'" in WINDOWS_CLANGCL_PATCH.read_text(encoding="utf-8")
+    and "-T ClangCL -A ARM64" in WINDOWS_CLANGCL_PROBE.read_text(encoding="utf-8"),
+    "Windows ARM64 ClangCL patch and probe must stay tied to the pinned Flutter SDK",
 )
 require(
     all(value in named_step(windows_native, "Select Visual Studio 2026 generator for hybrid ARM64")

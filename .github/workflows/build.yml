@@ -1713,7 +1713,7 @@ jobs:
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-build-windows"]}}', github.run_id, strategy.job-index)) }}
     env:
       PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && '1' || '0' }}
-      # CMake only honors this toolset when CMAKE_GENERATOR also names the matching Visual Studio generator.
+      # Keep CMake defaults aligned; the pinned Flutter patch passes -T ClangCL explicitly.
       CMAKE_GENERATOR_TOOLSET: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}
     permissions:
       contents: read
@@ -1766,6 +1766,11 @@ jobs:
           'CMAKE_GENERATOR=Visual Studio 18 2026' >> $env:GITHUB_ENV
           'CC=clang-cl' >> $env:GITHUB_ENV
           'CXX=clang-cl' >> $env:GITHUB_ENV
+
+      - name: Patch pinned Flutter CMake toolset for hybrid ARM64
+        if: needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && matrix.arch == 'arm64'
+        shell: pwsh
+        run: '& .\windows\tool\apply-flutter-clangcl-arm64.ps1'
 
       - name: Verify ClangCL CMake toolset for hybrid ARM64
         if: needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && matrix.arch == 'arm64'

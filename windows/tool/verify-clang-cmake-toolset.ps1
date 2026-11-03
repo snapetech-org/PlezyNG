@@ -20,8 +20,8 @@ if (Test-Path -LiteralPath $probeRoot) {
   throw "Refusing to reuse existing CMake probe directory: $probeRoot"
 }
 
-New-Item -ItemType Directory -Path (Join-Path $sourceRoot 'c-language') -Force | Out-Null
 try {
+  New-Item -ItemType Directory -Path (Join-Path $sourceRoot 'c-language') -Force | Out-Null
   @'
 cmake_minimum_required(VERSION 3.21)
 project(plezyng_clangcl_probe LANGUAGES CXX)
@@ -34,7 +34,7 @@ file(WRITE "${CMAKE_BINARY_DIR}/compiler-identities.txt" "${CMAKE_C_COMPILER_ID}
 '@ | Set-Content -LiteralPath (Join-Path $sourceRoot 'c-language/CMakeLists.txt') -Encoding ascii
 
   $cmakeCommand = Get-Command cmake -CommandType Application -ErrorAction Stop
-  & $cmakeCommand.Source -S $sourceRoot -B $buildRoot -G $env:CMAKE_GENERATOR -A ARM64
+  & $cmakeCommand.Source -S $sourceRoot -B $buildRoot -G $env:CMAKE_GENERATOR -T ClangCL -A ARM64
   if ($LASTEXITCODE -ne 0) {
     throw "CMake could not configure the hybrid Windows ARM64 ClangCL probe (exit $LASTEXITCODE)."
   }

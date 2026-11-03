@@ -1,0 +1,14 @@
+diff --git a/packages/flutter_tools/lib/src/windows/build_windows.dart b/packages/flutter_tools/lib/src/windows/build_windows.dart
+--- a/packages/flutter_tools/lib/src/windows/build_windows.dart
++++ b/packages/flutter_tools/lib/src/windows/build_windows.dart
+@@ -198,6 +198,10 @@ Future<void> _runCmakeGeneration({
+       buildDir.path,
+       '-G',
+       generator,
++      if (targetPlatform == TargetPlatform.windows_arm64) ...<String>[
++        '-T',
++        'ClangCL',
++      ],
+       '-A',
+       getCmakeWindowsArch(targetPlatform),
+       '-DFLUTTER_TARGET_PLATFORM=${targetPlatform.getName()}',

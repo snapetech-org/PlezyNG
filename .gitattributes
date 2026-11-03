@@ -3,6 +3,7 @@
 Dockerfile text eol=lf
 *.bat text eol=lf
 scripts/games/patches/*.patch text eol=lf
+windows/tool/*.patch text eol=lf
 
 # Byte-exact generated Dart checked by scripts/check_codegen.py.
 lib/data/ducet_order.dart text eol=lf

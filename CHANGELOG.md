@@ -8,7 +8,7 @@
 - Mount Apple JIT source workspaces under writable `/Volumes` so the Mac can provide the short NFS path without changing its sealed root volume.
 - Remove AppleDouble files created while preparing pinned Steam sources so Xcode does not compile Finder metadata as C source.
 - Use a short Apple NFS workspace path for Dart native-asset install names, and include EGL headers absent from the pinned Tizen SDK rootstrap.
-- Select and verify clang-cl for the Windows ARM64 Whisper CMake backend.
+- Pass and verify ClangCL explicitly in the pinned Flutter Windows ARM64 CMake invocation.
 - Run compatible native formatting on standard macOS runners in the 3.0.0 hybrid CI profile.
 - Delete AppleDouble sidecars directly from per-run NFS source workspaces before iOS and macOS Xcode builds.
 - Give Android release builds more memory on private JIT guests and install the pinned Python dependencies required by the webOS engine bootstrap.

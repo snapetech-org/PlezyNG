@@ -821,6 +821,7 @@ jobs:
           runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
           APPLE_LOCAL_BUILD_DIR="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-ios-xcode/build"
           ditto "$GITHUB_WORKSPACE/." "$short_root/"
+          bash "$short_root/scripts/clean_appledouble_sidecars.sh" "$short_root"
           if [[ -e "$short_root/build" || -L "$short_root/build" ]]; then
             echo "Refusing to replace existing build output in the new Apple workspace: $short_root/build" >&2
             exit 1
@@ -840,6 +841,9 @@ jobs:
       - name: Refresh pinned mpv Swift packages
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: scripts/refresh_apple_spm.sh ios
+
+      - name: Remove AppleDouble sidecars before iOS Xcode build
+        run: bash "$GITHUB_WORKSPACE/scripts/clean_appledouble_sidecars.sh" "$PLEZYNG_APPLE_WORKSPACE"
 
       - name: Configure optional iOS App Store signing
         id: ios-signing
@@ -929,6 +933,7 @@ jobs:
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           set -euo pipefail
+          bash "$GITHUB_WORKSPACE/scripts/clean_appledouble_sidecars.sh" "$PLEZYNG_APPLE_WORKSPACE"
           flutter build ios --release --no-codesign \
             ${{ env.RELEASE_DART_DEFINES }} \
             --dart-define=SUPPORTER_MODE=iap \
@@ -1351,6 +1356,7 @@ jobs:
           runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
           APPLE_LOCAL_BUILD_DIR="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-macos-xcode/build"
           ditto "$GITHUB_WORKSPACE/." "$short_root/"
+          bash "$short_root/scripts/clean_appledouble_sidecars.sh" "$short_root"
           if [[ -e "$short_root/build" || -L "$short_root/build" ]]; then
             echo "Refusing to replace existing build output in the new Apple workspace: $short_root/build" >&2
             exit 1
@@ -1378,6 +1384,9 @@ jobs:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: dart run scripts/configure_updater.dart
+
+      - name: Remove AppleDouble sidecars before macOS Xcode build
+        run: bash "$GITHUB_WORKSPACE/scripts/clean_appledouble_sidecars.sh" "$PLEZYNG_APPLE_WORKSPACE"
 
       - name: Build macOS
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}

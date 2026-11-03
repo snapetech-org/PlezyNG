@@ -1058,6 +1058,44 @@ for apple_job_name, workspace_label in (
         and '"$(cd "$short_root/build" && pwd -P)" == "$APPLE_LOCAL_BUILD_DIR"' in apple_release_job,
         f"{workspace_label} release Flutter/Xcode build output must resolve to local APFS",
     )
+    stage_step_name = (
+        "Prepare NFS source workspace and local APFS iOS build output"
+        if apple_job_name == "build-ios"
+        else "Prepare NFS source workspace and local APFS macOS build output"
+    )
+    stage_step = named_step(apple_release_job, stage_step_name)
+    xcode_step_name = (
+        "Build iOS (no codesign)" if apple_job_name == "build-ios" else "Build macOS"
+    )
+    cleanup_step_name = (
+        "Remove AppleDouble sidecars before iOS Xcode build"
+        if apple_job_name == "build-ios"
+        else "Remove AppleDouble sidecars before macOS Xcode build"
+    )
+    cleanup_step = named_step(apple_release_job, cleanup_step_name)
+    require(
+        'bash "$short_root/scripts/clean_appledouble_sidecars.sh" "$short_root"' in stage_step
+        and "scripts/clean_appledouble_sidecars.sh" in cleanup_step
+        and apple_release_job.find(f"      - name: {stage_step_name}")
+        < apple_release_job.find(f"      - name: {cleanup_step_name}")
+        < apple_release_job.find(f"      - name: {xcode_step_name}"),
+        f"{workspace_label} NFS source must remove AppleDouble sidecars before Xcode builds",
+    )
+    clean_appledouble_script = (ROOT / "scripts/clean_appledouble_sidecars.sh").read_text()
+    require(
+        "dot_clean -m \"$task_root\"" in clean_appledouble_script
+        and "run_id=$GITHUB_RUN_ID" in clean_appledouble_script
+        and "scratch_mode=local-xcode" in clean_appledouble_script
+        and "AppleDouble sidecars remain after cleanup" in clean_appledouble_script,
+        "AppleDouble cleanup must be limited to the owned NFS task root and verify the result",
+    )
+    if apple_job_name == "build-ios":
+        signed_build = named_step(apple_release_job, "Build signed iOS App Store IPA")
+        require(
+            'bash "$GITHUB_WORKSPACE/scripts/clean_appledouble_sidecars.sh" "$PLEZYNG_APPLE_WORKSPACE"'
+            in signed_build,
+            "Signed iOS archive builds must repeat the AppleDouble check after the unsigned build",
+        )
 for apple_job_name in ("build-ios", "build-tvos"):
     apple_release_job = job(apple_job_name)
     require(

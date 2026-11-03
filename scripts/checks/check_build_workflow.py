@@ -41,6 +41,7 @@ PLEZY_TORRENT_CMAKE = WORKFLOW.parents[2] / "packages/plezy_torrent/src/CMakeLis
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
 WEBOS_RELEASE_GATE = ROOT / "tools/webos/check_release_eligibility.py"
+SNAP_BUILDER = ROOT / "scripts/build_snap.sh"
 TIZEN_WORKFLOW = ROOT / ".github/workflows/tizen.yml"
 RELEASE_CHECKSUMS = ROOT / "scripts/create_release_checksums.py"
 text = WORKFLOW.read_text(encoding="utf-8")
@@ -224,6 +225,26 @@ for expected in (
 # the checksum must stay enforced.
 windows_cmake = WINDOWS_CMAKE.read_text(encoding="utf-8") if WINDOWS_CMAKE.is_file() else ""
 require(bool(windows_cmake), "missing windows/CMakeLists.txt")
+require(
+    'set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ".")' in windows_cmake,
+    "Windows app-local MSVC runtimes must use a relative install destination beside the executable",
+)
+snap_builder = SNAP_BUILDER.read_text(encoding="utf-8") if SNAP_BUILDER.is_file() else ""
+require(
+    bool(snap_builder)
+    and '"${RUNNER_ENVIRONMENT:-}" == self-hosted' in snap_builder
+    and '"${RUNNER_ENVIRONMENT:-}" == github-hosted' in snap_builder
+    and '"${PLEZYNG_ALLOW_PUBLIC_SNAP:-}" == true' in snap_builder
+    and '"${GITHUB_REPOSITORY:-}" == snapetech-org/PlezyNG' in snap_builder
+    and '"${GITHUB_REF:-}" == refs/heads/main' in snap_builder
+    and '"${GITHUB_EVENT_NAME:-}" == workflow_dispatch' in snap_builder,
+    "public Snap packaging must be limited to the explicitly enabled trusted-main workflow",
+)
+require(
+    "PLEZYNG_ALLOW_PUBLIC_SNAP: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'true' || 'false' }}"
+    in text,
+    "the hosted Snap lane must be explicitly enabled only by the validated hybrid profile",
+)
 steam_cmake = STEAM_CMAKE.read_text(encoding="utf-8") if STEAM_CMAKE.is_file() else ""
 require(
     re.search(
@@ -1504,8 +1525,10 @@ require(
 require(
     "-Xmx3G" in android_gradle_properties
     and "kotlin.compiler.execution.strategy=in-process" in android_gradle_properties
-    and "org.gradle.workers.max=1" in android_gradle_properties,
-    "Android release Gradle must bound heap use and serialize Kotlin/workers on the 8 GiB JIT guest",
+    and "org.gradle.workers.max=1" in android_gradle_properties
+    and "android.nonFinalResIds=false" in android_gradle_properties
+    and "android.r8.optimizedResourceShrinking=false" in android_gradle_properties,
+    "Android release Gradle must bound memory, serialize workers, and preserve the final IDs required by Moonlight",
 )
 require(
     'CMAKE_BUILD_PARALLEL_LEVEL: "2"' in android_job

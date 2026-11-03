@@ -1,12 +1,15 @@
-# Private Snap packaging and publication
+# Snap packaging and private publication
 
-Snap jobs run in disposable private Linux VMs. Both commands use the Canonical
-Snapcraft image pinned in `linux/packaging/snap/toolchain.lock.json`; they do not
-start a host snapd or LXD daemon. Podman downloads and container commands receive
-the job's explicit restricted HTTP proxy.
+Release builds on trusted `main` may package Snap on a GitHub-hosted Linux runner
+when the hybrid workflow explicitly enables it. Private JIT jobs remain supported
+and use their restricted HTTP proxy. Both routes use the Canonical Snapcraft
+image pinned in `linux/packaging/snap/toolchain.lock.json`; neither starts a host
+snapd or LXD daemon.
 
-Packaging uses `scripts/build_private_snap.sh amd64` or `arm64` on the matching
-native architecture, after the workflow stages the real application bundle.
+Packaging uses `scripts/build_snap.sh amd64` or `arm64` on the matching native
+architecture, after the workflow stages the real application bundle. Direct
+network access is accepted only for the trusted-main `workflow_dispatch` route;
+all other jobs must use the private proxy.
 
 Publication uses the private Linux x64 job for either package architecture:
 

@@ -476,7 +476,11 @@ install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
 # constexpr std::mutex layout, so the app never opens. App-local copies
 # precede System32 in the DLL search order, removing the dependency on the
 # machine-wide redistributable entirely.
-set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${INSTALL_BUNDLE_LIB_DIR}")
+# This variable is a relative install destination. Using the absolute bundle
+# path here made CMake treat the target-directory generator expression as a
+# literal path and attempt to create a `$<TARGET_FILE_DIR:...>/lib` directory.
+# A dot keeps the app-local MSVC runtimes beside the executable.
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ".")
 set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT "Runtime")
 include(InstallRequiredSystemLibraries)
 

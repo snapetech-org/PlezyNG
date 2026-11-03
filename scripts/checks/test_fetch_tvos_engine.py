@@ -232,12 +232,18 @@ cp "$FIXTURE_ARCHIVE" "$output"
             script.split("BuildAppDebug() {", 1)[1]
             .split("\nBuildAppRelease() {", 1)[0]
         )
+        build_app_release = script.split("BuildAppRelease() {", 1)[1]
         install_framework = 'CopyTvosFlutterFramework "$OUTDIR" "$DEVICE_TOOLS"'
 
         self.assertEqual(build_app_debug.count(install_framework), 2)
         self.assertLess(
             build_app_debug.index('BuildFlutterAssetBundle "$FLUTTER_BIN" "$OUTDIR"'),
             build_app_debug.rindex(install_framework),
+        )
+        self.assertEqual(build_app_release.count(install_framework), 2)
+        self.assertLess(
+            build_app_release.index('BuildFlutterAssetBundle "$FLUTTER_BIN" "$OUTDIR"'),
+            build_app_release.rindex(install_framework),
         )
 
 

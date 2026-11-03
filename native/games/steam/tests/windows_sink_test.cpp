@@ -17,9 +17,10 @@ int main() {
     std::mutex mutex;
     std::condition_variable ready;
     bool failed = false, presented = false, red = false;
+    uint32_t unsuccessfulCompletions = 0;
     WindowsSink sink(
         [&](DecodedPixels&& image) {
-          const bool geometry = image.id == 7 && image.width == 64 && image.height == 64 &&
+          const bool geometry = image.id >= 7 && image.id <= 9 && image.width == 64 && image.height == 64 &&
                                 image.rgba.size() == 64 * 64 * 4;
           bool valid = false;
           uint8_t center[4]{};
@@ -38,14 +39,13 @@ int main() {
             const size_t centerOffset = (32 * 64 + 32) * 4;
             std::copy_n(image.rgba.data() + centerOffset, 4, center);
             constexpr uint32_t pixelCount = patchSize * patchSize;
-            valid = channels[0] / pixelCount > 200 && channels[1] / pixelCount < 50 &&
-                    channels[2] / pixelCount < 50 && center[3] == 255;
+            valid = channels[0] / pixelCount > 200 && channels[1] / pixelCount < 50 && channels[2] / pixelCount < 50 &&
+                    center[3] == 255;
           }
           if (!valid) {
-            std::fprintf(stderr,
-                         "Windows sink returned unexpected frame: id=%u size=%ux%u bytes=%zu center=(%u,%u,%u,%u)\n",
-                         image.id, image.width, image.height, image.rgba.size(), center[0], center[1], center[2],
-                         center[3]);
+            std::fprintf(
+                stderr, "Windows sink returned unexpected frame: id=%u size=%ux%u bytes=%zu center=(%u,%u,%u,%u)\n",
+                image.id, image.width, image.height, image.rgba.size(), center[0], center[1], center[2], center[3]);
           }
           {
             std::lock_guard<std::mutex> lock(mutex);
@@ -55,7 +55,15 @@ int main() {
           ready.notify_all();
           return true;
         },
-        [](uint32_t, bool) {},
+        [&](uint32_t id, bool shown) {
+          if (id >= 7 && id <= 9 && !shown) {
+            {
+              std::lock_guard<std::mutex> lock(mutex);
+              ++unsuccessfulCompletions;
+            }
+            ready.notify_all();
+          }
+        },
         [&](bool) {
           {
             std::lock_guard<std::mutex> lock(mutex);
@@ -68,10 +76,20 @@ int main() {
     assert(!sink.frame(redH264, 2 * 1024 * 1024 + 1, 1, true));
     assert(!sink.audio(8, 48000));
     assert(sink.video(4, 64, 64, nullptr, 0));
+    // Exercise several consecutive access units. The production input is a
+    // stream, so the test should cover output after decoder startup as well as
+    // the first submitted frame.
     assert(sink.frame(redH264, sizeof(redH264), 7, true));
+    assert(sink.frame(redH264, sizeof(redH264), 8, true));
+    assert(sink.frame(redH264, sizeof(redH264), 9, true));
     {
       std::unique_lock<std::mutex> lock(mutex);
       ready.wait_for(lock, std::chrono::seconds(5), [&] { return presented || failed; });
+      if (failed || !presented || !red) {
+        std::fprintf(
+            stderr, "Windows sink did not present a red frame: failed=%d presented=%d red=%d dropped=%u\n", failed,
+            presented, red, unsuccessfulCompletions);
+      }
       assert(!failed && presented && red);
     }
     sink.close();

@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Exercise multi-frame Windows Steam decoding in native CI and report dropped frames.
 - Require a successful exact-main all-platform release-mode candidate before creating the version tag.
 - Build the bundled Mbed TLS Everest crypto helper as a static library when the parent enables shared libraries, fixing Windows native links.
 - Fix the Windows build-guard test fixture to include the Steam CMake file that verifies the static Mbed TLS configuration.

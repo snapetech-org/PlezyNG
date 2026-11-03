@@ -266,6 +266,31 @@ mkdir -m 700 -- "$CIPD_CACHE_DIR"
 export PATH="$HOST_TOOLS:$BOOTSTRAP_DEPOT_TOOLS:$PATH"
 ln -s -- "$PYTHON_BIN" "$HOST_TOOLS/python3"
 
+DEPOT_TOOLS_PYTHON_REQUIREMENTS_PATH="$(read_lock engineBuild depotToolsPythonRequirements path)"
+DEPOT_TOOLS_PYTHON_REQUIREMENTS_SHA256="$(read_lock engineBuild depotToolsPythonRequirements sha256)"
+DEPOT_TOOLS_PYTHON_REQUIREMENTS="$ROOT/$DEPOT_TOOLS_PYTHON_REQUIREMENTS_PATH"
+if [[ ! -f "$DEPOT_TOOLS_PYTHON_REQUIREMENTS" || -L "$DEPOT_TOOLS_PYTHON_REQUIREMENTS" ]]; then
+  echo "The locked depot_tools Python requirements file is missing or unsafe." >&2
+  exit 1
+fi
+ACTUAL_DEPOT_TOOLS_PYTHON_REQUIREMENTS_SHA256="$(sha256sum -- "$DEPOT_TOOLS_PYTHON_REQUIREMENTS" | awk '{ print $1 }')"
+if [[ "$ACTUAL_DEPOT_TOOLS_PYTHON_REQUIREMENTS_SHA256" != "$DEPOT_TOOLS_PYTHON_REQUIREMENTS_SHA256" ]]; then
+  echo "The locked depot_tools Python requirements hash changed." >&2
+  exit 1
+fi
+DEPOT_TOOLS_PYTHON_SITE="$TASK_ROOT/depot-tools-python-site"
+mkdir -m 700 -- "$DEPOT_TOOLS_PYTHON_SITE"
+"$PYTHON_BIN" -m pip install \
+  --disable-pip-version-check \
+  --no-input \
+  --no-deps \
+  --no-compile \
+  --only-binary=:all: \
+  --require-hashes \
+  --target "$DEPOT_TOOLS_PYTHON_SITE" \
+  --requirement "$DEPOT_TOOLS_PYTHON_REQUIREMENTS"
+export PYTHONPATH="$DEPOT_TOOLS_PYTHON_SITE${PYTHONPATH:+:$PYTHONPATH}"
+
 (
   cd -- "$SDK_ROOT/flutter"
   # Flutter's monorepo DEPS uses engine/src paths relative to this root.

@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Give Android release builds more memory on private JIT guests and install the pinned Python dependencies required by the webOS engine bootstrap.
 - Exercise multi-frame Windows Steam decoding in native CI and report dropped frames.
 - Require a successful exact-main all-platform release-mode candidate before creating the version tag.
 - Build the bundled Mbed TLS Everest crypto helper as a static library when the parent enables shared libraries, fixing Windows native links.

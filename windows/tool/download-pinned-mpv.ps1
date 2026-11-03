@@ -34,7 +34,8 @@ if (
 }
 
 $proxy = $env:HTTPS_PROXY
-if ([string]::IsNullOrWhiteSpace($proxy)) {
+$allowDirect = $env:PLEZYNG_ALLOW_DIRECT_DOWNLOADS -eq '1'
+if ([string]::IsNullOrWhiteSpace($proxy) -and -not $allowDirect) {
     throw 'The private JIT HTTPS proxy is required to download Windows MPV.'
 }
 
@@ -71,7 +72,6 @@ if ($null -eq $curlPath) {
 $archive = Join-Path $env:RUNNER_TEMP "plezyng-mpv-$Architecture.zip"
 $url = "$($base.AbsoluteUri.TrimEnd('/'))/$asset"
 $curlArguments = @(
-    '--proxy', $proxy,
     '--ssl-revoke-best-effort',
     '--fail',
     '--location',
@@ -83,6 +83,9 @@ $curlArguments = @(
     '--output', $archive,
     $url
 )
+if (-not [string]::IsNullOrWhiteSpace($proxy)) {
+    $curlArguments = @('--proxy', $proxy) + $curlArguments
+}
 & $curlPath @curlArguments
 if ($LASTEXITCODE -ne 0) {
     throw "Pinned Windows MPV download failed with curl exit code $LASTEXITCODE."

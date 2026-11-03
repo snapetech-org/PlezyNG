@@ -27,7 +27,8 @@ if (
 }
 
 $proxy = $env:HTTPS_PROXY
-if ([string]::IsNullOrWhiteSpace($proxy)) {
+$allowDirect = $env:PLEZYNG_ALLOW_DIRECT_DOWNLOADS -eq '1'
+if ([string]::IsNullOrWhiteSpace($proxy) -and -not $allowDirect) {
     throw 'The private JIT HTTPS proxy is required to download simdutf.'
 }
 
@@ -64,7 +65,6 @@ if ($null -eq $curlPath) {
 $archive = Join-Path $env:RUNNER_TEMP "plezyng-simdutf-$version.zip"
 Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue
 $curlArguments = @(
-    '--proxy', $proxy,
     '--ssl-revoke-best-effort',
     '--fail',
     '--location',
@@ -76,6 +76,9 @@ $curlArguments = @(
     '--output', $archive,
     $url.AbsoluteUri
 )
+if (-not [string]::IsNullOrWhiteSpace($proxy)) {
+    $curlArguments = @('--proxy', $proxy) + $curlArguments
+}
 & $curlPath @curlArguments
 if ($LASTEXITCODE -ne 0) {
     Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue

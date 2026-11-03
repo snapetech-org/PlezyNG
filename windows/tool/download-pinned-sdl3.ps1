@@ -31,7 +31,8 @@ if ([string]::IsNullOrWhiteSpace($env:RUNNER_TEMP) -or
     throw 'RUNNER_TEMP and GITHUB_ENV are required for the private JIT build.'
 }
 $proxy = $env:HTTPS_PROXY
-if ([string]::IsNullOrWhiteSpace($proxy)) {
+$allowDirect = $env:PLEZYNG_ALLOW_DIRECT_DOWNLOADS -eq '1'
+if ([string]::IsNullOrWhiteSpace($proxy) -and -not $allowDirect) {
     throw 'The private JIT HTTPS proxy is required to download SDL3.'
 }
 
@@ -67,7 +68,6 @@ $sourceDir = Join-Path $extractRoot "SDL3-$version"
 Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue
 Remove-Item -LiteralPath $extractRoot -Recurse -Force -ErrorAction SilentlyContinue
 $curlArguments = @(
-    '--proxy', $proxy,
     '--ssl-revoke-best-effort',
     '--fail',
     '--location',
@@ -79,6 +79,9 @@ $curlArguments = @(
     '--output', $archive,
     $url.AbsoluteUri
 )
+if (-not [string]::IsNullOrWhiteSpace($proxy)) {
+    $curlArguments = @('--proxy', $proxy) + $curlArguments
+}
 & $curlPath @curlArguments
 if ($LASTEXITCODE -ne 0) {
     Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue

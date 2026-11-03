@@ -451,6 +451,24 @@ for forbidden in ("--ssl-no-revoke", "--insecure"):
         forbidden not in windows_torrent_dependencies_downloader,
         f"Windows torrent dependency bootstrap must not use {forbidden}",
     )
+for label, downloader in (
+    ("MPV", windows_mpv_downloader),
+    ("simdutf", windows_simdutf_downloader),
+    ("WinSparkle", windows_winsparkle_downloader),
+    ("SDL3", windows_sdl3_downloader),
+    ("torrent", windows_torrent_dependencies_downloader),
+):
+    require(
+        "$env:PLEZYNG_ALLOW_DIRECT_DOWNLOADS -eq '1'" in downloader
+        and "if (-not [string]::IsNullOrWhiteSpace($proxy))" in downloader
+        and "@('--proxy', $proxy) + $curlArguments" in downloader,
+        f"Windows {label} downloads must allow direct egress only when explicitly enabled and keep proxy routing otherwise",
+    )
+require(
+    "PLEZYNG_ALLOW_DIRECT_DOWNLOADS" in windows_cmake
+    and "VULKAN_RT_CURL_ARGS" in windows_cmake,
+    "Windows Vulkan runtime downloads must preserve the selected proxy or explicitly enabled direct route",
+)
 require(
     windows_winsparkle_pin.get("version") == "0.9.2"
     and windows_winsparkle_pin.get("filename") == "WinSparkle-0.9.2.zip"
@@ -629,6 +647,16 @@ require(
 
 windows_ci = job_block(ci_text, "windows-native-test")
 require(bool(windows_ci), "missing Windows native CI job")
+require(
+    "PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && '1' || '0' }}"
+    in windows_ci,
+    "Windows CI may use direct dependency egress only in the hybrid profile",
+)
+require(
+    "PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && '1' || '0' }}"
+    in windows,
+    "Windows release builds may use direct dependency egress only in the hybrid profile",
+)
 windows_ci_download_step = named_step(
     windows_ci, "Download and verify pinned Windows libmpv archive"
 )

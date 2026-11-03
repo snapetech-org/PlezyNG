@@ -36,7 +36,26 @@ def matrix_job_names(workflow: str, key: str, field: str) -> list[str]:
     placeholder = f"${{{{ matrix.{field} }}}}"
     require(placeholder in template, f"CI job {key} no longer names matrix field {field}")
     block = job_block(workflow, key)
-    values = re.findall(rf"(?m)^\s+- {re.escape(field)}: ([A-Za-z0-9_-]+)\s*$", block)
+    if key == "windows-native-test" and field == "arch":
+        matrix_line = next((line for line in block.splitlines() if re.match(r"\s*matrix:", line)), "")
+        encoded_matrices = re.findall(r"'({[^']*})'", matrix_line)
+        require(
+            "inputs.execution_profile == 'hybrid'" in matrix_line and len(encoded_matrices) == 2,
+            "Windows architecture matrix must declare hybrid and private profiles",
+        )
+        values: list[str] = []
+        if len(encoded_matrices) == 2:
+            try:
+                hybrid_matrix, private_matrix = (json.loads(value) for value in encoded_matrices)
+                values = [row[field] for row in hybrid_matrix["include"]]
+                private_values = [row[field] for row in private_matrix["include"]]
+            except (json.JSONDecodeError, KeyError, TypeError) as error:
+                ERRORS.append(f"Windows architecture matrix is invalid: {error}")
+            else:
+                require(set(values) == {"x64", "arm64"}, "hybrid Windows matrix must include native x64 and ARM64")
+                require(private_values == ["x64"], "private Windows matrix must retain its native x64 route")
+    else:
+        values = re.findall(rf"(?m)^\s+- {re.escape(field)}: ([A-Za-z0-9_-]+)\s*$", block)
     require(bool(values), f"CI job {key} has no {field} matrix values")
     require(len(values) == len(set(values)), f"CI job {key} repeats a {field} matrix value")
     return [template.replace(placeholder, value) for value in values]

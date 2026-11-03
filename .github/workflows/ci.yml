@@ -1017,6 +1017,8 @@ jobs:
     name: Windows native reliability (${{ matrix.arch }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
     runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
+    env:
+      PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && '1' || '0' }}
     permissions:
       contents: read
     strategy:

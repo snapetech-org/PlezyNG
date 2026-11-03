@@ -182,27 +182,33 @@ if(NOT EXISTS "${VULKAN_RT_DIR}/vulkan-1.dll" OR NOT EXISTS "${VULKAN_RT_DIR}/Vu
   set(VULKAN_RT_URL
     "https://sdk.lunarg.com/sdk/download/${VULKAN_RT_VERSION}/${VULKAN_RT_SLUG}/vulkan-runtime-components.zip")
   set(VULKAN_RT_CURL_PATH "$ENV{PLEZYNG_WINDOWS_CURL_PATH}")
+  set(VULKAN_RT_ALLOW_DIRECT_DOWNLOADS "$ENV{PLEZYNG_ALLOW_DIRECT_DOWNLOADS}")
   if(NOT VULKAN_RT_CURL_PATH STREQUAL "")
     file(TO_CMAKE_PATH "${VULKAN_RT_CURL_PATH}" VULKAN_RT_CURL_PATH)
     set(VULKAN_RT_PROXY "$ENV{HTTPS_PROXY}")
     if(NOT EXISTS "${VULKAN_RT_CURL_PATH}" OR IS_DIRECTORY "${VULKAN_RT_CURL_PATH}" OR
-       VULKAN_RT_PROXY STREQUAL "")
-      message(FATAL_ERROR "The verified Windows curl and private JIT proxy are required for Vulkan runtime downloads")
+       (VULKAN_RT_PROXY STREQUAL "" AND NOT VULKAN_RT_ALLOW_DIRECT_DOWNLOADS STREQUAL "1"))
+      message(FATAL_ERROR "The verified Windows curl and an approved download route are required for Vulkan runtime downloads")
     endif()
+    set(VULKAN_RT_CURL_ARGS)
+    if(NOT VULKAN_RT_PROXY STREQUAL "")
+      list(APPEND VULKAN_RT_CURL_ARGS --proxy "${VULKAN_RT_PROXY}")
+    endif()
+    list(APPEND VULKAN_RT_CURL_ARGS
+      --ssl-revoke-best-effort
+      --user-agent curl/8.4.0
+      --fail
+      --location
+      --silent
+      --show-error
+      --connect-timeout 20
+      --max-time 600
+      --retry 3
+      --output "${VULKAN_RT_ZIP}"
+      "${VULKAN_RT_URL}")
     execute_process(
       COMMAND "${VULKAN_RT_CURL_PATH}"
-        --proxy "${VULKAN_RT_PROXY}"
-        --ssl-revoke-best-effort
-        --user-agent curl/8.4.0
-        --fail
-        --location
-        --silent
-        --show-error
-        --connect-timeout 20
-        --max-time 600
-        --retry 3
-        --output "${VULKAN_RT_ZIP}"
-        "${VULKAN_RT_URL}"
+        ${VULKAN_RT_CURL_ARGS}
       RESULT_VARIABLE VULKAN_RT_CURL_RESULT
     )
     if(NOT VULKAN_RT_CURL_RESULT EQUAL 0)

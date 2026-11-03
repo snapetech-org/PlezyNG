@@ -182,6 +182,13 @@ class MilkRustEngine {
       if (ch >= static_cast<Char>('A') && ch <= static_cast<Char>('Z')) ch += static_cast<Char>('a' - 'A');
     return value;
   }
+  template <typename String>
+  static std::string Utf8Bytes(const String& value) {
+    std::string bytes;
+    bytes.reserve(value.size());
+    for (const auto unit : value) bytes.push_back(static_cast<char>(unit));
+    return bytes;
+  }
   static std::filesystem::path CaseInsensitive(
       const std::filesystem::path& root, const std::filesystem::path& candidate, size_t& remaining) {
     auto current = root;
@@ -191,11 +198,11 @@ class MilkRustEngine {
       if (part == ".." || part == ".") return {};
       if (!std::filesystem::is_directory(current)) return {};
       std::filesystem::path found;
-      const auto folded = Fold(part.u8string());
+      const auto folded = Fold(Utf8Bytes(part.u8string()));
       for (const auto& entry : std::filesystem::directory_iterator(current)) {
         if (remaining == 0) throw std::runtime_error("Texture lookup exceeds the pack entry budget.");
         --remaining;
-        if (Fold(entry.path().filename().u8string()) != folded) continue;
+        if (Fold(Utf8Bytes(entry.path().filename().u8string())) != folded) continue;
         if (!found.empty()) throw std::runtime_error("Texture path has ambiguous case aliases.");
         if (entry.is_symlink()) throw std::runtime_error("Texture paths cannot follow symbolic links.");
         found = entry.path();

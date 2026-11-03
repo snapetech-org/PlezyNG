@@ -1,0 +1,11 @@
+diff --git a/src/base.c b/src/base.c
+--- a/src/base.c
++++ b/src/base.c
+@@ -29,5 +29,6 @@
+ #include <stdarg.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+-
++#include <string.h>
++
+ #include "crypto.h"

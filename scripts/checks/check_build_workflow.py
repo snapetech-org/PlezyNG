@@ -37,9 +37,6 @@ WINDOWS_TORRENT_DEPENDENCIES_DOWNLOADER = (
     WORKFLOW.parents[2] / "windows/tool/download-pinned-torrent-dependencies.ps1"
 )
 WINDOWS_TOOLCHAIN_LOCK = WORKFLOW.parents[2] / "windows/tool/build-toolchain.lock.json"
-WINDOWS_CLANGCL_PATCHER = ROOT / "windows/tool/apply-flutter-clangcl-arm64.ps1"
-WINDOWS_CLANGCL_PATCH = ROOT / "windows/tool/flutter-3.47.1-windows-arm64-clangcl.patch"
-WINDOWS_CLANGCL_PROBE = ROOT / "windows/tool/verify-clang-cmake-toolset.ps1"
 PLEZY_TORRENT_CMAKE = WORKFLOW.parents[2] / "packages/plezy_torrent/src/CMakeLists.txt"
 WEBOS_CANDIDATE_BUILDER = ROOT / "tools/webos/build_release_candidate.sh"
 WEBOS_IPK_BUILDER = ROOT / "tools/webos/build_ipk.sh"
@@ -185,35 +182,31 @@ require(
     "native Windows ARM64 must be present only in the hybrid 3.0.0 build matrix",
 )
 require(
-    "CMAKE_GENERATOR_TOOLSET: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}"
-    in windows,
-    "hybrid Windows ARM64 release builds must use ClangCL for the pinned Whisper GGML ARM backend",
-)
-require(
     'CMAKE_GENERATOR=Visual Studio 18 2026' in named_step(
         windows, "Select Visual Studio 2026 generator for hybrid ARM64"
     ),
-    "hybrid Windows ARM64 release builds must set the Visual Studio generator so CMake honors ClangCL",
+    "hybrid Windows ARM64 release builds must use the Visual Studio 2026 generator",
 )
 require(
-    "windows/tool/apply-flutter-clangcl-arm64.ps1" in named_step(
-        windows, "Patch pinned Flutter CMake toolset for hybrid ARM64"
-    ).replace("\\", "/")
-    and windows.find("name: Patch pinned Flutter CMake toolset for hybrid ARM64")
-    < windows.find("name: Verify ClangCL CMake toolset for hybrid ARM64"),
-    "hybrid Windows ARM64 release builds must pass ClangCL through Flutter's explicit CMake invocation",
+    "CMAKE_GENERATOR_TOOLSET" not in windows
+    and "CC=clang-cl" not in windows
+    and "CXX=clang-cl" not in windows,
+    "Flutter Windows ARM64 plugins must use the default MSVC toolset",
 )
+whisper_arm64_release = named_step(windows, "Build the pinned Whisper ARM64 backend with Clang")
 require(
-    (ROOT / "windows/tool/apply-flutter-clangcl-arm64.ps1").is_file()
-    and (ROOT / "windows/tool/flutter-3.47.1-windows-arm64-clangcl.patch").is_file(),
-    "hybrid Windows ARM64 release patch inputs must be checked in",
+    "scripts/prepare_windows_arm64_whisper.py" in whisper_arm64_release
+    and windows.find("name: Install dependencies") < windows.find("name: Build the pinned Whisper ARM64 backend with Clang"),
+    "the hash-locked Whisper ARM64 backend must be built before Flutter configures Windows",
 )
+whisper_arm64_builder = (ROOT / "scripts/prepare_windows_arm64_whisper.py").read_text(encoding="utf-8")
 require(
-    all(value in named_step(windows, "Select Visual Studio 2026 generator for hybrid ARM64")
-        for value in ("CC=clang-cl", "CXX=clang-cl"))
-    and "windows/tool/verify-clang-cmake-toolset.ps1"
-    in named_step(windows, "Verify ClangCL CMake toolset for hybrid ARM64").replace("\\", "/"),
-    "hybrid Windows ARM64 release builds must select and verify clang-cl for both CMake languages",
+    all(value in whisper_arm64_builder for value in (
+        "WHISPER_PLUGIN_CMAKE_SHA256",
+        "ClangCL", "MSVC", "GGML_NATIVE=OFF", "FLUTTER_WHISPER_PREBUILT_ROOT",
+        "IMPORTED_IMPLIB_RELEASE", "whisper", "ggml-base", "ggml-cpu",
+    )),
+    "the pinned Whisper dependency must use its hash-locked Clang library with the MSVC Flutter plugin",
 )
 for expected in (
     "if: matrix.flutter_setup == 'action'",
@@ -1230,7 +1223,7 @@ require(
 windows_native = job_block(ci_text, "windows-native-test")
 native_format = job_block(ci_text, "native-format")
 require(
-    "inputs.execution_profile == 'hybrid' && 'macos-26' || fromJSON(format(" in native_format
+    "inputs.execution_profile == 'hybrid' && 'macos-26-intel' || fromJSON(format(" in native_format
     and '"group":"private-apple-builds"' in native_format
     and "scripts/format_native.sh --check" in native_format,
     "hybrid native formatting must use standard macOS while private mode preserves the Apple JIT route",
@@ -1256,42 +1249,23 @@ require(
     "native Windows ARM64 CI must run on the public ARM64 host in the 3.0.0 hybrid profile",
 )
 require(
-    "CMAKE_GENERATOR_TOOLSET: ${{ inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}"
-    in windows_native,
-    "hybrid Windows ARM64 CI must use ClangCL for the pinned Whisper GGML ARM backend",
-)
-require(
     'CMAKE_GENERATOR=Visual Studio 18 2026' in named_step(
         windows_native, "Select Visual Studio 2026 generator for hybrid ARM64"
     ),
-    "hybrid Windows ARM64 CI must set the Visual Studio generator so CMake honors ClangCL",
+    "hybrid Windows ARM64 CI must use the Visual Studio 2026 generator",
 )
 require(
-    "windows/tool/apply-flutter-clangcl-arm64.ps1" in named_step(
-        windows_native, "Patch pinned Flutter CMake toolset for hybrid ARM64"
-    ).replace("\\", "/")
-    and windows_native.find("name: Patch pinned Flutter CMake toolset for hybrid ARM64")
-    < windows_native.find("name: Verify ClangCL CMake toolset for hybrid ARM64"),
-    "hybrid Windows ARM64 CI must pass ClangCL through Flutter's explicit CMake invocation",
+    "CMAKE_GENERATOR_TOOLSET" not in windows_native
+    and "CC=clang-cl" not in windows_native
+    and "CXX=clang-cl" not in windows_native,
+    "Flutter Windows ARM64 CI plugins must use the default MSVC toolset",
 )
+whisper_arm64_ci = named_step(windows_native, "Build the pinned Whisper ARM64 backend with Clang")
 require(
-    (ROOT / "windows/tool/apply-flutter-clangcl-arm64.ps1").is_file()
-    and (ROOT / "windows/tool/flutter-3.47.1-windows-arm64-clangcl.patch").is_file(),
-    "hybrid Windows ARM64 CI patch inputs must be checked in",
-)
-require(
-    f"$expectedCommit = '{FLUTTER_COMMIT}'" in WINDOWS_CLANGCL_PATCHER.read_text(encoding="utf-8")
-    and "TargetPlatform.windows_arm64" in WINDOWS_CLANGCL_PATCH.read_text(encoding="utf-8")
-    and "'ClangCL'" in WINDOWS_CLANGCL_PATCH.read_text(encoding="utf-8")
-    and "-T ClangCL -A ARM64" in WINDOWS_CLANGCL_PROBE.read_text(encoding="utf-8"),
-    "Windows ARM64 ClangCL patch and probe must stay tied to the pinned Flutter SDK",
-)
-require(
-    all(value in named_step(windows_native, "Select Visual Studio 2026 generator for hybrid ARM64")
-        for value in ("CC=clang-cl", "CXX=clang-cl"))
-    and "windows/tool/verify-clang-cmake-toolset.ps1"
-    in named_step(windows_native, "Verify ClangCL CMake toolset for hybrid ARM64").replace("\\", "/"),
-    "hybrid Windows ARM64 CI must select and verify clang-cl for both CMake languages",
+    "scripts/prepare_windows_arm64_whisper.py" in whisper_arm64_ci
+    and windows_native.find("name: Install locked Dart dependencies")
+    < windows_native.find("name: Build the pinned Whisper ARM64 backend with Clang"),
+    "the hash-locked Whisper ARM64 backend must be built before Flutter configures Windows CI",
 )
 
 
@@ -1520,6 +1494,9 @@ require(
 )
 require(
     "proxy_parts(dict(os.environ))" in android_ffmpeg_helper
+    and "ProxyHandler({})" in android_ffmpeg_helper
+    and "--direct-egress" in android_ci_ffmpeg_prepare
+    and "--direct-egress" in android_ffmpeg_prepare
     and "sha256_file" in android_ffmpeg_helper
     and "FFmpeg source SHA-256 mismatch" in android_ffmpeg_helper,
     "Android FFmpeg prefetch must use the private proxy and verify its pinned SHA-256",

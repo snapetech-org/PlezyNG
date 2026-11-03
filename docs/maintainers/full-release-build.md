@@ -46,12 +46,12 @@ matrices until a native private runner is provisioned; no hosted or emulated
 fallback is allowed. The Mac is reserved for Apple and Linux ARM work. See
 [the Windows toolchain runbook](../../windows/tool/build-toolchain.md).
 
-Apple JIT source workspaces use `/p/runs/...`, a short mount alias of the same
-kspld0 NFS export that is also mounted at
+Apple JIT source workspaces use `/Volumes/p/runs/...`, a short mount alias of
+the same kspld0 NFS export that is also mounted at
 `/Volumes/plezyng-native-build-kspld0`. The Dart macOS native-asset step rewrites
 dylib install names to absolute workspace paths; the longer mount path exceeded
 the bundled SMB library's Mach-O header padding. The JIT account cannot mount
-shares itself, so the Mac host must provide `/p` before dispatch. The Apple
+shares itself, so the Mac host must provide `/Volumes/p` before dispatch. The Apple
 scratch preflight checks that `/p` is the expected NFS export and fails before
 checkout or build work if it is absent. Xcode build products remain on local
 APFS; only the task-scoped source workspace and scratch data use NFS. Keep the

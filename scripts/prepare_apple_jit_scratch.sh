@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Keep task paths short: Dart's macOS native-asset step writes absolute Mach-O
 # install names, and the long volume name exhausted the bundled dylib's header pad.
-readonly NFS_MOUNT="/p"
+readonly NFS_MOUNT="/Volumes/p"
 readonly NFS_RUNS_ROOT="$NFS_MOUNT/runs"
 readonly NFS_PRIMARY_MOUNT="/Volumes/plezyng-native-build-kspld0"
 

@@ -3,12 +3,12 @@
 ## [Unreleased]
 
 - Cache and verify the pinned FFmpeg header archive for Android private JIT CI and release builds.
+- Use direct FFmpeg downloads only on the trusted public hybrid lane, run native formatting on hosted Intel macOS, and keep Flutter Windows plugins on MSVC while building the ARM64 Whisper dependency with Clang.
 - Retry transient TLS resets in Windows Flutter setup and wait for slow iOS simulator decode callbacks.
 - Fetch full Windows source history so the pinned Opus CMake version probe can resolve tags.
 - Mount Apple JIT source workspaces under writable `/Volumes` so the Mac can provide the short NFS path without changing its sealed root volume.
 - Remove AppleDouble files created while preparing pinned Steam sources so Xcode does not compile Finder metadata as C source.
 - Use a short Apple NFS workspace path for Dart native-asset install names, and include EGL headers absent from the pinned Tizen SDK rootstrap.
-- Pass and verify ClangCL explicitly in the pinned Flutter Windows ARM64 CMake invocation.
 - Select one Git executable when patching the pinned Flutter tool on Windows ARM64.
 - Fix the hybrid Linux release runner expression so release jobs parse and dispatch.
 - Run compatible native formatting on standard macOS runners in the 3.0.0 hybrid CI profile.
@@ -20,7 +20,7 @@
 - Fix the Windows build-guard test fixture to include the Steam CMake file that verifies the static Mbed TLS configuration.
 - Keep Apple SwiftPM checkouts, Flutter build output, Xcode DerivedData, result bundles, and signing archives on local APFS while using NFS for scoped source workspaces and SMB for verified retained archives.
 - Fix MSVC Windows builds by giving controller axis values distinct local names.
-- Build and release native Windows ARM64 with ClangCL on the standard `windows-11-vs2026-arm` runner in the 3.0.0 hybrid profile.
+- Build native Windows ARM64 with MSVC plugins and the pinned Clang-built Whisper backend on the standard `windows-11-vs2026-arm` runner in the 3.0.0 hybrid profile.
 - Keep Windows native sample interpolation explicit about its float output precision so MSVC does not promote conversion warnings to errors.
 - Fix Windows C++20 builds that treated deprecated UTF-8 path APIs and HDR SDK shim warnings as errors.
 - Preserve Android API 25 compatibility when matching Google Tensor LiteRT device models.

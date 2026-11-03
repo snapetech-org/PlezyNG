@@ -308,7 +308,15 @@ jobs:
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-ffmpeg-source-${{ hashFiles('android/app/build.gradle.kts') }}
 
       - name: Prepare verified Android FFmpeg source archive
-        run: python3 scripts/prepare_android_ffmpeg_source.py "$RUNNER_TEMP/plezyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
+        shell: bash
+        env:
+          PLEZY_EXECUTION_PROFILE: ${{ inputs.execution_profile }}
+        run: |
+          if [[ "$PLEZY_EXECUTION_PROFILE" == "hybrid" ]]; then
+            python3 scripts/prepare_android_ffmpeg_source.py --direct-egress "$RUNNER_TEMP/plezyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
+          else
+            python3 scripts/prepare_android_ffmpeg_source.py "$RUNNER_TEMP/plezyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
+          fi
 
       - name: Save Android FFmpeg source cache
         if: steps.ffmpeg-source-cache.outputs.cache-hit != 'true'
@@ -467,7 +475,7 @@ jobs:
   native-format:
     name: Native Formatting
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-native-format"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-native-format"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
@@ -1019,8 +1027,6 @@ jobs:
     runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
     env:
       PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && '1' || '0' }}
-      # Keep CMake defaults aligned; the pinned Flutter patch passes -T ClangCL explicitly.
-      CMAKE_GENERATOR_TOOLSET: ${{ inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}
     permissions:
       contents: read
     strategy:
@@ -1070,22 +1076,15 @@ jobs:
         shell: pwsh
         run: |
           'CMAKE_GENERATOR=Visual Studio 18 2026' >> $env:GITHUB_ENV
-          'CC=clang-cl' >> $env:GITHUB_ENV
-          'CXX=clang-cl' >> $env:GITHUB_ENV
-
-      - name: Patch pinned Flutter CMake toolset for hybrid ARM64
-        if: inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64'
-        shell: pwsh
-        run: '& .\windows\tool\apply-flutter-clangcl-arm64.ps1'
-
-      - name: Verify ClangCL CMake toolset for hybrid ARM64
-        if: inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64'
-        shell: pwsh
-        run: '& .\windows\tool\verify-clang-cmake-toolset.ps1'
 
       - name: Install locked Dart dependencies
         shell: pwsh
         run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Build the pinned Whisper ARM64 backend with Clang
+        if: inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64'
+        shell: pwsh
+        run: python scripts/prepare_windows_arm64_whisper.py
 
       # Windows replacement semantics (`MoveFileExW` with
       # MOVEFILE_REPLACE_EXISTING) cannot be proven on the POSIX runners, and a

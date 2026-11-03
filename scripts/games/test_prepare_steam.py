@@ -54,6 +54,22 @@ class SourceLockTest(unittest.TestCase):
             self.assertNotIn('INSTALL_PREFIX', cmake)
             self.assertNotIn('${CMAKE_INSTALL_PREFIX})', cmake)
 
+    def test_ihslib_base_patch_declares_string_functions(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary)
+            base = source / 'src' / 'base.c'
+            base.parent.mkdir(parents=True)
+            base.write_text(
+                '#include "base.h"\n\n#include <assert.h>\n'
+                + '\n' * 25
+                + '#include <stdarg.h>\n#include <stdio.h>\n#include <stdlib.h>\n\n#include "crypto.h"\n'
+            )
+            subprocess.run(['git', 'init', '--quiet'], cwd=source, check=True)
+            patch = ROOT / 'scripts/games/patches/steam-runtime-ihslib-string.patch'
+            self.assertTrue(patch.is_file())
+            apply_patches(source, [patch])
+            self.assertIn('#include <string.h>\n', base.read_text())
+
     def test_competing_builder_times_out_without_mutating_sources(self):
         with tempfile.TemporaryDirectory() as temporary:
             destination = Path(temporary) / 'steam'

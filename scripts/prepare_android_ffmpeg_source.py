@@ -43,14 +43,23 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def download(url: str, destination: Path, expected_sha256: str) -> None:
+def download(
+    url: str,
+    destination: Path,
+    expected_sha256: str,
+    *,
+    direct_egress: bool = False,
+) -> None:
     parsed = urlsplit(url)
     if parsed.scheme != "https" or parsed.hostname != "ffmpeg.org":
         raise ValueError(f"Refusing non-official FFmpeg source URL: {url}")
 
-    proxy_host, proxy_port = proxy_parts(dict(os.environ))
-    proxy = f"http://{proxy_host}:{proxy_port}"
-    opener = build_opener(ProxyHandler({"https": proxy}))
+    if direct_egress:
+        opener = build_opener(ProxyHandler({}))
+    else:
+        proxy_host, proxy_port = proxy_parts(dict(os.environ))
+        proxy = f"http://{proxy_host}:{proxy_port}"
+        opener = build_opener(ProxyHandler({"https": proxy}))
     request = Request(url, headers={"User-Agent": "PlezyNG-Android-FFmpeg/1"})
     partial = destination.with_name(destination.name + ".part")
 
@@ -96,7 +105,7 @@ def download(url: str, destination: Path, expected_sha256: str) -> None:
         time.sleep(delay)
 
 
-def prepare(destination: Path) -> None:
+def prepare(destination: Path, *, direct_egress: bool = False) -> None:
     version, expected_sha256, url = pinned_source()
     destination = destination.expanduser().resolve()
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -108,9 +117,9 @@ def prepare(destination: Path) -> None:
         else:
             print("Cached FFmpeg source archive has a stale SHA-256; downloading the pinned archive.")
             destination.unlink()
-            download(url, destination, expected_sha256)
+            download(url, destination, expected_sha256, direct_egress=direct_egress)
     else:
-        download(url, destination, expected_sha256)
+        download(url, destination, expected_sha256, direct_egress=direct_egress)
 
     env_file = os.environ.get("GITHUB_ENV")
     if env_file:
@@ -122,9 +131,14 @@ def prepare(destination: Path) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("archive", type=Path, help="cache file path for the pinned FFmpeg source archive")
+    parser.add_argument(
+        "--direct-egress",
+        action="store_true",
+        help="download directly from ffmpeg.org on a trusted public runner instead of using the private JIT proxy",
+    )
     args = parser.parse_args()
     try:
-        prepare(args.archive)
+        prepare(args.archive, direct_egress=args.direct_egress)
     except (OSError, RuntimeError, ValueError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1

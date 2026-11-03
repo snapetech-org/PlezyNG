@@ -163,7 +163,12 @@ require(
     '"group":"packer-windows"' in windows
     and '"Windows","X64"' in windows
     and '"PlezyNG"' in windows,
-    "Windows x64 must use the private Packer JIT route",
+    "Windows x64 must retain its private route for the private profile",
+)
+require(
+    "'windows-2025'" in windows
+    and "'windows-11-arm'" in windows,
+    "the hybrid release must use standard native Windows x64 and ARM64 runners",
 )
 require("fail-fast: false" in windows, "Windows matrix must not cancel its other architecture")
 require(
@@ -177,8 +182,14 @@ require(
     "Windows x64 matrix configuration changed",
 )
 require(
-    re.search(r"(?m)^          - arch: arm64$", windows) is None,
-    "Windows ARM64 must stay out of the 3.0.0 release build matrix until native capacity returns",
+    re.search(
+        r"(?ms)^          - arch: arm64\n"
+        r"            flutter_setup: git\n"
+        r"            native_cache_path: build/windows/arm64/_deps\n",
+        windows,
+    ) is not None
+    and "matrix.arch == 'x64' || needs.validate-trusted-ref.outputs.execution_profile == 'hybrid'" in windows,
+    "native Windows ARM64 must build in the hybrid 3.0.0 profile and stay skipped for private-only runs",
 )
 for expected in (
     "if: matrix.flutter_setup == 'action'",
@@ -783,7 +794,7 @@ require(
     "windows-arm64-build" not in package_windows
     and "windows-arm64-portable" not in package_windows
     and "-Arm64BuildDir" not in package_windows,
-    "Windows packaging must emit x64 artifacts only until native ARM64 capacity returns",
+    "the Windows installer and Chocolatey packages remain x64; ARM64 is a separate portable archive",
 )
 
 require(
@@ -981,6 +992,16 @@ require(
     "platform workflow must require its supported private runner pool",
 )
 require(
+    re.search(
+        r"(?ms)^      execution_profile:\n.*?^        required: true\n        type: choice\n"
+        r".*?^        options:\n          - private\n          - hybrid\n        default: private$",
+        text,
+    ) is not None
+    and "inputs.execution_profile == 'hybrid'" in job("validate-trusted-ref")
+    and "\"$VERSION\" != \"3.0.0\"" in named_step(job("validate-trusted-ref"), "Resolve release request"),
+    "the hybrid execution profile must be default-off and restricted to trusted-main PlezyNG 3.0.0 builds",
+)
+require(
     "inputs.build_android" not in text
     and "inputs.build_ios" not in text
     and "inputs.build_windows" not in text
@@ -995,7 +1016,7 @@ require(
     "platform builds must be manually dispatched with an explicit action and pool",
 )
 require(
-    "if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_linux_packages }}"
+    "if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_linux_packages && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}"
     in job_block(ci_text, "linux-packages"),
     "the optional Linux package smoke build must not run on pushes",
 )
@@ -1161,11 +1182,13 @@ require(
     and windows_ci_flutter_cache_key.group(1)
     == "flutter-:os:-:channel:-:version:-:arch:-:hash:"
     and "uses: ./.github/actions/setup-flutter-git" in windows_native,
-    "Windows native CI must keep the bounded x64 Flutter setup",
+    "Windows native CI must keep bounded x64 setup and the pinned ARM64 Flutter bootstrap",
 )
 require(
-    re.search(r"(?m)^          - arch: arm64$", windows_native) is None,
-    "Windows ARM64 CI must stay out of the required 3.0.0 gate until native capacity returns",
+    re.search(r"(?m)^          - arch: arm64$", windows_native) is not None
+    and "matrix.arch == 'x64' || inputs.execution_profile == 'hybrid'" in windows_native
+    and "'windows-11-arm'" in windows_native,
+    "native Windows ARM64 CI must run on the public ARM64 host in the 3.0.0 hybrid profile",
 )
 
 
@@ -1227,9 +1250,10 @@ for artifact in (
 ):
     require(f"name: {artifact}" in release, f"release download lost {artifact}")
 require(
-    "windows-arm64-portable" not in release
-    and "plezy-windows-arm64-portable.7z" not in release,
-    "release assembly must not require a Windows ARM64 artifact without native capacity",
+    "windows-arm64-build" in release
+    and "plezy-windows-arm64-portable.zip" in release
+    and "EXECUTION_PROFILE" in named_step(release, "Collect release files"),
+    "hybrid release assembly must verify and attach a native Windows ARM64 portable archive",
 )
 winget_generator = (ROOT / "scripts/generate_winget_manifests.py").read_text(
     encoding="utf-8"

@@ -140,7 +140,7 @@
     "depotToolsRevision": "580b4ff3f5cd0dcaa2eacda28cefe0f45320e8f7",
     "depotToolsPython314Patch": {
       "path": "tools/webos/depot-tools-python314.patch",
-      "sha256": "f734a48ba2029932c7b179b73348d53ad544926e8c2f3ac1075a020d6ead1be4"
+      "sha256": "ac8c9b20e902f0feb9db231d3f6ad26afc54cdc973f5e31f547099c2f31eb665"
     },
     "depotToolsPythonRequirements": {
       "path": "tools/webos/depot-tools-python-requirements.txt",

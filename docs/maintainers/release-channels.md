@@ -4,7 +4,7 @@ This is the release support boundary for the PlezyNG client and its separate rel
 
 ## Release trigger and order
 
-`.github/workflows/build.yml` is manually dispatched with `action=release` and `runner_pool=private` against the exact `v<major>.<minor>.<patch>` tag. Tag pushes do not start builds. The tag must match `pubspec.yaml`, and the exact commit must pass manually dispatched CI first. The release orchestrator dispatches the private-JIT build, checks the assembled release assets, then promotes the GitHub draft only when invoked with `--publish`.
+`.github/workflows/build.yml` is manually dispatched with `action=release` and `runner_pool=private` against the exact `v<major>.<minor>.<patch>` tag. For PlezyNG 3.0.0 only, `execution_profile=hybrid` routes compatible Linux, Android, and Windows jobs to standard GitHub-hosted runners while Apple, webOS, and Tizen stay on private JIT. Tag pushes do not start builds. The tag must match `pubspec.yaml`, and the exact commit must pass manually dispatched CI first. The release orchestrator checks the assembled assets; `--publish-github-only` publishes only the GitHub Release, while `--publish` also dispatches configured downstream channels.
 
 Push and pull-request CI runs checks; it does not build release packages or publish images. The only package build dispatch is **PlezyNG Release**. With `--publish`, the orchestrator explicitly dispatches configured Discord, appcast, Chocolatey, WinGet, Snap Store, AUR, COPR, PPA, relay-container, and app-store upload workflows after the release is published. Google Play uploads go to the internal draft track; Apple and Amazon uploads do not submit builds for review. Missing credentials or store identities remain skipped and are recorded in the release receipt.
 
@@ -12,13 +12,13 @@ Push and pull-request CI runs checks; it does not build release packages or publ
 
 | Platform | Architectures | GitHub Release assets |
 | --- | --- | --- |
-| Windows | x64 for 3.0.0; ARM64 deferred | x64 Inno Setup installer and portable `.7z`, Chocolatey `.nupkg`, and x64 WinGet manifest bundle. Windows ARM64 returns when a compatible native private runner is available. A Microsoft Store `.msixbundle` is added when the Partner Center package identity is configured. |
+| Windows | x64 and native arm64 for 3.0.0 | x64 Inno Setup installer and portable `.7z`, Chocolatey `.nupkg`, and x64 WinGet manifest bundle. The native `windows-11-arm` runner produces `plezy-windows-arm64-portable.zip`. A Microsoft Store `.msixbundle` is added when the Partner Center package identity is configured. |
 | macOS | x64, arm64 | Universal DMG and Sparkle appcast; the Homebrew cask is updated after publication. Developer ID signing and notarization are optional. |
 | Linux | x64, arm64 | Portable `.tar.gz`, Debian `.deb`, RPM `.rpm`, Arch `.pkg.tar.zst`, Flatpak bundle, and Snap package for each architecture; an x64 AppImage is also attached. |
 | Android | arm64-v8a, armeabi-v7a, x86_64 | Split APK archives. A Play `.aab` and Amazon Fire TV APK are attached when the Android release key is configured. |
 | iOS | arm64 | Unsigned developer `.ipa` for inspection; a signed App Store `.ipa` is also attached when Apple distribution signing and provisioning are configured. |
 | tvOS | arm64 | Unsigned developer `.ipa` for inspection; a signed App Store `.ipa` is also attached when Apple distribution signing and provisioning are configured. |
-| Samsung Tizen TV | ARM | Development-signed tester `.tpk` is retained as a private Actions artifact; it needs TV-specific re-signing and is not a public release asset. |
+| Samsung Tizen TV | ARM | Development-signed tester `.tpk` is attached for qualification and handoff; it needs TV-specific re-signing and does not claim Seller Office approval or publication. |
 
 Every binary/package release asset is listed in `SHA256SUMS.txt`. Build artifacts are covered by GitHub build-provenance attestations; the release checksum list and WinGet manifest bundle are attested during release assembly.
 

@@ -1,9 +1,82 @@
-diff --git a/gclient_utils.py b/gclient_utils.py
---- a/gclient_utils.py
-+++ b/gclient_utils.py
-@@ -16 +16 @@
+diff --git a/fetch.py b/fetch.py
+index 8ae37e31..2c860429 100755
+--- a/fetch.py
++++ b/fetch.py
+@@ -23 +23 @@ import os
 -import pipes
 +import shlex
-@@ -372 +372 @@
+@@ -60 +60 @@ class Checkout(object):
+-        print('Running: %s' % (' '.join(pipes.quote(x) for x in cmd)))
++        print('Running: %s' % (' '.join(shlex.quote(x) for x in cmd)))
+@@ -101 +101 @@ class GitCheckout(Checkout):
+-        print('Running: git %s' % (' '.join(pipes.quote(x) for x in cmd)))
++        print('Running: git %s' % (' '.join(shlex.quote(x) for x in cmd)))
+diff --git a/gclient_eval.py b/gclient_eval.py
+index c12d0745..7086a0fe 100644
+--- a/gclient_eval.py
++++ b/gclient_eval.py
+@@ -287 +287,3 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
+-        if isinstance(node, ast.Str):
++        if isinstance(node, ast.Constant):
++            if not isinstance(node.value, str):
++                return node.value
+@@ -289 +291 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
+-                return node.s
++                return node.value
+@@ -291 +293 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
+-                return node.s.format(**vars_dict)
++                return node.value.format(**vars_dict)
+@@ -297,2 +298,0 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
+-        elif isinstance(node, ast.Num):
+-            return node.n
+@@ -320,3 +319,0 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
+-        elif not sys.version_info[:2] < (3, 4) and isinstance(
+-                node, ast.NameConstant):  # Since Python 3.4
+-            return node.value
+@@ -337,2 +334,3 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
+-                if isinstance(node.args[0], ast.Str):
+-                    return ConstantString(node.args[0].s)
++                if (isinstance(node.args[0], ast.Constant)
++                        and isinstance(node.args[0].value, str)):
++                    return ConstantString(node.args[0].value)
+@@ -565,2 +563,3 @@ def EvaluateCondition(condition, variables, referenced_variables=None):
+-        if isinstance(node, ast.Str):
+-            return node.s
++        if isinstance(node, ast.Constant) and (
++                isinstance(node.value, (str, bool)) or node.value is None):
++            return node.value
+@@ -598,4 +596,0 @@ def EvaluateCondition(condition, variables, referenced_variables=None):
+-        if not sys.version_info[:2] < (3, 4) and isinstance(
+-                node, ast.NameConstant):  # Since Python 3.4
+-            return node.value
+-
+@@ -667 +662 @@ def _UpdateAstString(tokens, node, value):
+-    if isinstance(node, ast.Str):
++    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+@@ -671 +666 @@ def _UpdateAstString(tokens, node, value):
+-    node.s = value
++    node.value = value
+@@ -799 +794,2 @@ def SetCIPD(gclient_dict, dep_name, package_name, new_version):
+-    if not isinstance(node, ast.Call) and not isinstance(node, ast.Str):
++    if not isinstance(node, ast.Call) and not (
++            isinstance(node, ast.Constant) and isinstance(node.value, str)):
+@@ -824 +820 @@ def SetRevision(gclient_dict, dep_name, new_revision):
+-        if isinstance(node, ast.Str):
++        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+@@ -826 +822 @@ def SetRevision(gclient_dict, dep_name, new_revision):
+-            if token != node.s:
++            if token != node.value:
+@@ -832 +828,2 @@ def SetRevision(gclient_dict, dep_name, new_revision):
+-        if not isinstance(node, ast.Call) and not isinstance(node, ast.Str):
++        if not isinstance(node, ast.Call) and not (
++                isinstance(node, ast.Constant) and isinstance(node.value, str)):
+diff --git a/gclient_utils.py b/gclient_utils.py
+index 95006cf0..d4e1cfa4 100644
+--- a/gclient_utils.py
++++ b/gclient_utils.py
+@@ -16 +16 @@ import os
+-import pipes
++import shlex
+@@ -372 +372 @@ def CommandToStr(args):
 -    return ' '.join(pipes.quote(arg) for arg in args)
 +    return ' '.join(shlex.quote(arg) for arg in args)

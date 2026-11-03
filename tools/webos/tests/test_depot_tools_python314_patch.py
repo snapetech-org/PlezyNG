@@ -29,6 +29,14 @@ class DepotToolsPython314PatchTests(unittest.TestCase):
             "+    return ' '.join(shlex.quote(arg) for arg in args)\n",
             patch,
         )
+        self.assertIn("diff --git a/fetch.py b/fetch.py", patch)
+
+    def test_patch_updates_removed_ast_literal_aliases(self):
+        patch = PATCH_PATH.read_text(encoding="utf-8")
+        self.assertIn("diff --git a/gclient_eval.py b/gclient_eval.py", patch)
+        self.assertIn("+        if isinstance(node, ast.Constant):", patch)
+        self.assertIn("+                        and isinstance(node.args[0].value, str)):", patch)
+        self.assertIn("+        if isinstance(node, ast.Constant) and (", patch)
 
     def test_compatibility_lock_pins_python_dependencies_for_bypassed_vpython(self):
         lock = json.loads(LOCK_PATH.read_text(encoding="utf-8"))

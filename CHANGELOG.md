@@ -16,7 +16,7 @@
 - Fix the Windows build-guard test fixture to include the Steam CMake file that verifies the static Mbed TLS configuration.
 - Keep Apple SwiftPM checkouts, Flutter build output, Xcode DerivedData, result bundles, and signing archives on local APFS while using NFS for scoped source workspaces and SMB for verified retained archives.
 - Fix MSVC Windows builds by giving controller axis values distinct local names.
-- Defer Windows ARM64 release artifacts until a compatible native private runner is available.
+- Build and release native Windows ARM64 through the standard `windows-11-arm` runner in the 3.0.0 hybrid profile.
 - Keep Windows native sample interpolation explicit about its float output precision so MSVC does not promote conversion warnings to errors.
 - Fix Windows C++20 builds that treated deprecated UTF-8 path APIs and HDR SDK shim warnings as errors.
 - Preserve Android API 25 compatibility when matching Google Tensor LiteRT device models.
@@ -350,10 +350,11 @@ This release gathers PlezyNG’s feature work since the fork, platform expansion
 
 #### Release automation
 
-- Add one-command native dependency refresh and all-platform private-JIT release orchestration.
+- Add one-command native dependency refresh and all-platform release orchestration with private JIT and standard-runner profiles.
 - Reuse complete, checksum-verified native platform groups after another platform fails, while requiring the full artifact set before updating app dependencies.
 - Bind release builds and configured publication workflows to the exact main commit, and resolve pinned Apple packages before native CI tests.
 - Validate all platform assets before publishing and dispatch configured release channels through the private-JIT orchestrator.
+- Use standard public runners for compatible 3.0.0 Linux, Android, and Windows jobs, keep Apple, WebOS, and Tizen on private JIT, and add a GitHub-only publication mode.
 - Include ARM webOS and Tizen tester builds in versioned releases, with pinned SDK and host-tool setup for Android, webOS and Tizen.
 - Provision pinned Android SDK packages and install hash-verified Python/Ninja plus host prerequisites for Android, webOS and Tizen private JIT builds.
 

@@ -92,6 +92,21 @@ class AndroidSdkTests(unittest.TestCase):
         self.assertEqual(arguments[arguments.index("--install") + 1:], MODULE.required_packages(self.root))
         verify.assert_called_once_with(sdk, MODULE.required_packages(self.root))
 
+    def test_direct_egress_installer_does_not_require_or_configure_a_proxy(self):
+        sdk = self.root / "sdk"
+        manager = sdk / "cmdline-tools/latest/bin/sdkmanager"
+        manager.parent.mkdir(parents=True)
+        manager.touch()
+        with patch.object(MODULE.subprocess, "run") as run, patch.object(MODULE, "verify_packages") as verify:
+            MODULE.install(self.root, {"ANDROID_HOME": str(sdk)}, direct_egress=True)
+        self.assertEqual(run.call_count, 2)
+        arguments = run.call_args_list[1].args[0]
+        self.assertEqual(arguments[:3], [str(manager), f"--sdk_root={sdk}", "--channel=3"])
+        self.assertNotIn("--proxy=http", arguments)
+        self.assertFalse(any(argument.startswith("--proxy_") for argument in arguments))
+        self.assertEqual(arguments[arguments.index("--install") + 1:], MODULE.required_packages(self.root))
+        verify.assert_called_once_with(sdk, MODULE.required_packages(self.root))
+
     def test_ci_release_and_games_use_shared_setup_in_order(self):
         for filename in ("ci.yml", "build.yml", "games-native.yml"):
             source = (MODULE.ROOT / ".github/workflows" / filename).read_text()
@@ -101,6 +116,11 @@ class AndroidSdkTests(unittest.TestCase):
                 install = source.index("python3 scripts/prepare_android_sdk.py install", setup)
                 self.assertLess(proxy, setup)
                 self.assertLess(setup, install)
+                if filename in ("ci.yml", "build.yml"):
+                    self.assertIn(
+                        "python3 scripts/prepare_android_sdk.py install --direct-egress",
+                        source,
+                    )
 
 
 if __name__ == "__main__":

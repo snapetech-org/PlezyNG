@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Orchestrate a native dependency refresh and the complete PlezyNG release.
 
-This is a local control-plane command. All build, test, package, and release
-jobs still run on their existing private JIT runners. It uses the operator's
-authenticated `gh` CLI session and never copies credentials into the repos.
+This is a local control-plane command. The default profile keeps build, test,
+package, and release jobs on private JIT runners; the 3.0.0 hybrid profile
+routes only compatible jobs to standard GitHub-hosted runners. It uses the
+operator's authenticated `gh` CLI session and never copies credentials into
+the repos.
 With --publish, it promotes the verified draft and runs every configured
 package/store publication workflow from main, sequentially and idempotently.
 """
@@ -147,6 +149,24 @@ def active_run(repo: str, workflow: str, *, ref: str) -> dict | None:
         if run.get("status") in active_states:
             return run
     return None
+
+
+def run_has_successful_job(repo: str, run: dict, job_name: str) -> bool:
+    jobs = run.get("jobs")
+    if not isinstance(jobs, list):
+        run_id = run.get("databaseId")
+        if not isinstance(run_id, int):
+            raise ReleaseError("Cannot inspect a workflow run without its numeric run ID.")
+        details = gh_json("run", "view", str(run_id), "--repo", repo, "--json", "jobs")
+        jobs = details.get("jobs") if isinstance(details, dict) else None
+    if not isinstance(jobs, list):
+        raise ReleaseError(f"Could not inspect jobs for workflow run {run.get('databaseId')}.")
+    matches = [job for job in jobs if isinstance(job, dict) and job.get("name") == job_name]
+    return (
+        len(matches) == 1
+        and matches[0].get("status") == "completed"
+        and matches[0].get("conclusion") == "success"
+    )
 
 
 def download(url: str, destination: Path) -> None:
@@ -612,20 +632,28 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
     return command(["git", "rev-parse", "HEAD"], cwd=worktree, capture=True).stdout.strip()
 
 
-def ensure_ci(commit_sha: str) -> dict:
+def ensure_ci(commit_sha: str, *, execution_profile: str = "private") -> dict:
     existing = matching_run(PLEZY_REPO, CI_WORKFLOW, commit_sha, ref="main")
     if existing:
         if existing.get("status") == "completed" and existing.get("conclusion") != "success":
             raise ReleaseError(f"CI for release commit {commit_sha[:12]} failed; refusing to tag it.")
-        if existing.get("status") == "completed":
+        if existing.get("status") != "completed":
+            existing = wait_for_run(PLEZY_REPO, existing, "PlezyNG CI")
+        if execution_profile != "hybrid" or run_has_successful_job(
+            PLEZY_REPO, existing, "Windows native reliability (arm64)"
+        ):
             print(f"Reusing successful CI run {existing['databaseId']} for {commit_sha[:12]}.")
             return existing
-        return wait_for_run(PLEZY_REPO, existing, "PlezyNG CI")
+        print(
+            f"CI run {existing['databaseId']} passed without the required Windows ARM64 job; "
+            "dispatching the hybrid profile."
+        )
     return dispatch(
         PLEZY_REPO,
         CI_WORKFLOW,
         "main",
-        {"action": "ci", "runner_pool": "private", "build_linux_packages": "true"},
+        {"action": "ci", "runner_pool": "private", "execution_profile": execution_profile,
+         "build_linux_packages": "true"},
         "PlezyNG CI",
         expected_title="action:ci:pool:private",
         expected_sha=commit_sha,
@@ -636,7 +664,7 @@ def candidate_build_title(version: str) -> str:
     return f"action:build:pool:private:mode:release:version:{version}"
 
 
-def ensure_candidate_build(version: str, commit_sha: str) -> dict:
+def ensure_candidate_build(version: str, commit_sha: str, *, execution_profile: str = "private") -> dict:
     """Require a complete nonpublishing release-mode build before creating the immutable tag."""
     run_title = candidate_build_title(version)
     existing = matching_run(
@@ -652,10 +680,19 @@ def ensure_candidate_build(version: str, commit_sha: str) -> dict:
                 f"Release-mode candidate run {existing['databaseId']} concluded "
                 f"{existing.get('conclusion')}; refusing to tag an unvalidated commit."
             )
-        if existing.get("status") == "completed":
+        if existing.get("status") != "completed":
+            existing = wait_for_run(
+                PLEZY_REPO, existing, f"PlezyNG {version} all-platform release-mode candidate"
+            )
+        if execution_profile != "hybrid" or run_has_successful_job(
+            PLEZY_REPO, existing, "Build Windows (arm64)"
+        ):
             print(f"Reusing successful release-mode candidate run {existing['databaseId']} for {version}.")
             return existing
-        return wait_for_run(PLEZY_REPO, existing, f"PlezyNG {version} all-platform release-mode candidate")
+        print(
+            f"Candidate run {existing['databaseId']} passed without the required Windows ARM64 build; "
+            "dispatching the hybrid profile."
+        )
 
     active = active_run(PLEZY_REPO, RELEASE_WORKFLOW, ref="main")
     if active:
@@ -671,6 +708,7 @@ def ensure_candidate_build(version: str, commit_sha: str) -> dict:
         {
             "action": "build",
             "runner_pool": "private",
+            "execution_profile": execution_profile,
             "mode": "release",
             "build_version": version,
             "include_webos_build": "true",
@@ -707,7 +745,8 @@ def ensure_tag(worktree: Path, version: str, commit_sha: str) -> str:
     return tag
 
 
-def ensure_release(tag: str, commit_sha: str, *, include_webos_release: bool) -> dict:
+def ensure_release(tag: str, commit_sha: str, *, include_webos_release: bool,
+                   execution_profile: str = "private") -> dict:
     run_title = f"action:release:pool:private:tag:{tag}"
     existing = matching_run(
         PLEZY_REPO,
@@ -722,10 +761,17 @@ def ensure_release(tag: str, commit_sha: str, *, include_webos_release: bool) ->
                 f"Release build run {existing['databaseId']} concluded {existing.get('conclusion')}; "
                 "it was not re-run to avoid duplicating publication side effects."
             )
-        if existing.get("status") == "completed":
+        if existing.get("status") != "completed":
+            existing = wait_for_run(PLEZY_REPO, existing, f"PlezyNG {tag} all-platform release build")
+        if execution_profile != "hybrid" or run_has_successful_job(
+            PLEZY_REPO, existing, "Build Windows (arm64)"
+        ):
             print(f"Reusing successful release build run {existing['databaseId']} for {tag}.")
             return existing
-        return wait_for_run(PLEZY_REPO, existing, f"PlezyNG {tag} all-platform release build")
+        print(
+            f"Release run {existing['databaseId']} passed without the required Windows ARM64 build; "
+            "dispatching the hybrid profile."
+        )
     ensure_remote_main_sha(commit_sha, f"dispatching the {tag} release build")
     return dispatch(
         PLEZY_REPO,
@@ -734,6 +780,7 @@ def ensure_release(tag: str, commit_sha: str, *, include_webos_release: bool) ->
         {
             "action": "release",
             "runner_pool": "private",
+            "execution_profile": execution_profile,
             "mode": "release",
             "build_version": tag.removeprefix("v"),
             "include_webos_build": "true",
@@ -789,7 +836,8 @@ def publish_github_release(tag: str) -> dict:
     return published
 
 
-def validate_release_outputs(tag: str, version: str, *, include_webos_release: bool) -> None:
+def validate_release_outputs(tag: str, version: str, *, include_webos_release: bool,
+                             execution_profile: str = "private") -> None:
     release = release_metadata(tag)
     assets = {
         asset.get("name")
@@ -816,6 +864,8 @@ def validate_release_outputs(tag: str, version: str, *, include_webos_release: b
         })
         if not any(name.endswith(".ipk") for name in assets if isinstance(name, str)):
             required.add("<eligible webOS .ipk>")
+    if execution_profile == "hybrid":
+        required.add("plezy-windows-arm64-portable.zip")
 
     secrets = configured_repo_names("secret")
     android_signing = {
@@ -1081,12 +1131,24 @@ def parse_args() -> argparse.Namespace:
         help="Attach the webOS IPK to the public draft release when the existing eligibility gate passes.",
     )
     parser.add_argument(
+        "--execution-profile",
+        choices=("private", "hybrid"),
+        default="private",
+        help="Keep all jobs on private JIT, or route compatible 3.0.0 trusted-main jobs to standard public runners.",
+    )
+    publication = parser.add_mutually_exclusive_group()
+    publication.add_argument(
         "--publish",
         action="store_true",
         help=(
             "After every release build succeeds, publish the GitHub release and run each configured "
             "package/store channel sequentially. Store lanes upload binaries but do not submit them for review."
         ),
+    )
+    publication.add_argument(
+        "--publish-github-only",
+        action="store_true",
+        help="Publish the verified GitHub release without starting package, store, or announcement workflows.",
     )
     parser.add_argument(
         "--scratch",
@@ -1113,6 +1175,10 @@ def main() -> int:
     ).stdout.strip().split("+", 1)[0]
     if package_version != args.version:
         raise ReleaseError(f"Requested {args.version}, but pubspec.yaml declares {package_version}.")
+    if args.execution_profile == "hybrid" and args.version != "3.0.0":
+        raise ReleaseError("The hybrid execution profile is restricted to PlezyNG 3.0.0.")
+    if args.version == "3.0.0" and args.execution_profile != "hybrid":
+        raise ReleaseError("The PlezyNG 3.0.0 release requires the hybrid profile, including native Windows ARM64 CI.")
     command(["gh", "auth", "status", "--hostname", "github.com"], capture=True, quiet=True)
 
     scratch = args.scratch.resolve() if args.scratch else Path(tempfile.mkdtemp(prefix="plezyng-release-"))
@@ -1123,7 +1189,8 @@ def main() -> int:
     progress_path = scratch / "release-progress.json"
     worktree: Path | None = None
     stage = "startup"
-    progress = {"version": args.version, "status": "running", "stage": stage}
+    progress = {"version": args.version, "execution_profile": args.execution_profile,
+                "status": "running", "stage": stage}
 
     def save_progress() -> None:
         progress_path.write_text(json.dumps(progress, indent=2) + "\n", encoding="utf-8")
@@ -1159,12 +1226,13 @@ def main() -> int:
         stage = "PlezyNG CI"
         progress["stage"] = stage
         save_progress()
-        ci = ensure_ci(pin_sha)
+        ci = ensure_ci(pin_sha, execution_profile=args.execution_profile)
         progress["ci_run"] = ci["databaseId"]
         stage = "all-platform release-mode candidate build"
         progress["stage"] = stage
         save_progress()
-        candidate = ensure_candidate_build(args.version, pin_sha)
+        candidate = ensure_candidate_build(args.version, pin_sha,
+                                           execution_profile=args.execution_profile)
         progress["candidate_build_run"] = candidate["databaseId"]
         stage = "release tag"
         progress["stage"] = stage
@@ -1174,7 +1242,12 @@ def main() -> int:
         stage = "all-platform release build"
         progress["stage"] = stage
         save_progress()
-        release = ensure_release(tag, pin_sha, include_webos_release=args.include_webos_release)
+        release = ensure_release(
+            tag,
+            pin_sha,
+            include_webos_release=args.include_webos_release,
+            execution_profile=args.execution_profile,
+        )
         progress["release_run"] = release["databaseId"]
         progress["release_url"] = f"https://github.com/{PLEZY_REPO}/releases/tag/{tag}"
 
@@ -1185,13 +1258,14 @@ def main() -> int:
             tag,
             args.version,
             include_webos_release=args.include_webos_release,
+            execution_profile=args.execution_profile,
         )
 
         published_channels: list[dict] = []
         skipped_channels: list[dict] = []
         channel_failures: list[str] = []
         release_published = False
-        if args.publish:
+        if args.publish or args.publish_github_only:
             ensure_remote_main_sha(pin_sha, f"publishing PlezyNG {tag}")
             stage = "publish GitHub release"
             progress["stage"] = stage
@@ -1199,21 +1273,24 @@ def main() -> int:
             publish_github_release(tag)
             release_published = True
             progress["release_published"] = True
-            stage = "publish configured release channels"
-            progress["stage"] = stage
-            save_progress()
-            published_channels, skipped_channels, channel_failures = publish_configured_channels(
-                tag,
-                args.version,
-                release_sha=pin_sha,
-                include_webos_release=args.include_webos_release,
-            )
-            progress["published_channels"] = published_channels
-            progress["skipped_channels"] = skipped_channels
-            progress["channel_failures"] = channel_failures
-            save_progress()
-            if channel_failures:
-                raise ReleaseError("Release channel publication failures:\n- " + "\n- ".join(channel_failures))
+            if args.publish:
+                stage = "publish configured release channels"
+                progress["stage"] = stage
+                save_progress()
+                published_channels, skipped_channels, channel_failures = publish_configured_channels(
+                    tag,
+                    args.version,
+                    release_sha=pin_sha,
+                    include_webos_release=args.include_webos_release,
+                )
+                progress["published_channels"] = published_channels
+                progress["skipped_channels"] = skipped_channels
+                progress["channel_failures"] = channel_failures
+                save_progress()
+                if channel_failures:
+                    raise ReleaseError("Release channel publication failures:\n- " + "\n- ".join(channel_failures))
+            else:
+                skipped_channels = [{"channel": "configured release channels", "reason": "GitHub-only publication requested"}]
         else:
             metadata = release_metadata(tag)
             release_published = not metadata.get("draft") and bool(metadata.get("published_at"))
@@ -1237,6 +1314,8 @@ def main() -> int:
             "tizen_seller_office_submission": "not configured; tester artifact only",
             "microsoft_store": "not configured; package identity variables are absent",
             "runner_pool": "private JIT",
+            "execution_profile": args.execution_profile,
+            "publication_scope": "github-and-configured-channels" if args.publish else "github-only" if args.publish_github_only else "draft-only",
         }
         progress.update(summary)
         progress["status"] = "success"

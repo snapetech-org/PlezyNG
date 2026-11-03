@@ -1,19 +1,23 @@
 # One-command PlezyNG 3.0.0 release
 
-After the native, Apple, Linux/Android, Windows, webOS, and Tizen private-JIT
-routes pass their current-revision canaries, run the complete release from an
-authenticated `gh` session:
+After the native and platform-specific private-JIT routes pass their
+current-revision canaries, run the complete 3.0.0 release from an authenticated
+`gh` session. Compatible Linux, Android, and Windows jobs use the standard
+GitHub-hosted runners; Apple, webOS, Tizen, and native dependency builds remain
+on their compatible private JIT runners.
 
 ```sh
-python3 scripts/release_all_platforms.py --version 3.0.0 --publish \
-  --scratch /mnt/disks/gamespool0/plezyng-release-3.0.0-20261027
+python3 scripts/release_all_platforms.py --version 3.0.0 \
+  --execution-profile hybrid --publish-github-only \
+  --ffmpeg-source-cache /mnt/disks/scratch/task-scratch/plezyng-release-3.0.0-20261103/ffmpeg-preflight \
+  --scratch /mnt/disks/scratch/task-scratch/plezyng-release-3.0.0-20261103/release-final
 ```
 
-The command coordinates the existing private JIT workflows in order. It reuses
-an active native build when one exists; otherwise it verifies the current
-native manifest and dispatches `snapetech-org/mpv-build` if the published
-artifacts are stale or incomplete. It verifies Apple, Android, Linux, and
-Windows native groups before touching PlezyNG.
+The command coordinates the existing private JIT and standard hosted workflows
+in order. It reuses an active native build when one exists; otherwise it
+verifies the current native manifest and dispatches `snapetech-org/mpv-build`
+if the published artifacts are stale or incomplete. It verifies Apple,
+Android, Linux, and Windows native groups before touching PlezyNG.
 
 If the control-plane host cannot reach `ffmpeg.org`, pass
 `--ffmpeg-source-cache <directory>` with retained files named
@@ -40,10 +44,12 @@ not depend on Gradle silently downloading missing toolchains during compilation.
 Windows CI and release jobs provision NuGet from `windows/tool/build-toolchain.lock.json`
 before Flutter configures its plugins. The installer job also provisions Inno Setup
 from that lock; both downloads require matching hashes and publisher signatures.
-`-VerifyOnly` checks the installed tools before compilation or packaging. Windows
-x64 uses the private PC pool. Windows ARM64 is excluded from CI and release
-matrices until a native private runner is provisioned; no hosted or emulated
-fallback is allowed. The Mac is reserved for Apple and Linux ARM work. See
+`-VerifyOnly` checks the installed tools before compilation or packaging. The
+private profile keeps Windows x64 on the private PC pool and omits ARM64. The
+3.0.0 hybrid profile uses `windows-2025` for x64 and the native `windows-11-arm`
+runner for ARM64; ARM64 is packaged as a separate portable ZIP while installers
+and package-manager artifacts remain x64. Linux ARM64 uses `ubuntu-24.04-arm`
+in the hybrid profile. The Mac remains reserved for Apple work. See
 [the Windows toolchain runbook](../../windows/tool/build-toolchain.md).
 
 Apple JIT source workspaces use `/Volumes/p/runs/...`, a short mount alias of
@@ -93,17 +99,22 @@ release assets until the existing artifact eligibility gate passes and the
 operator opts in. Apple jobs refresh their SwiftPM mirror after the native pin
 changes.
 Before publication, the orchestrator checks that every required release asset
-exists. `--publish` then promotes the GitHub draft and sequentially dispatches
-the configured store, package, container, appcast, and Discord workflows. It
+exists. `--publish-github-only` promotes the verified GitHub draft without
+dispatching store, package, container, appcast, or Discord workflows.
+`--publish` promotes the draft and sequentially dispatches configured channels.
+It
 reuses successful channel runs and stops on a prior failed run rather than
 repeating an external side effect blindly.
 
-The webOS candidate is built but kept out of public release assets unless the
-existing artifact eligibility gate passes and the operator opts in:
+The webOS candidate is built privately and kept out of public release assets
+unless the existing artifact eligibility gate passes and the operator opts in.
+Only after that approval, the release may be rerun with:
 
 ```sh
-python3 scripts/release_all_platforms.py --version 3.0.0 --include-webos-release --publish \
-  --scratch /mnt/disks/gamespool0/plezyng-release-3.0.0-20261027
+python3 scripts/release_all_platforms.py --version 3.0.0 \
+  --execution-profile hybrid --include-webos-release --publish-github-only \
+  --ffmpeg-source-cache /mnt/disks/scratch/task-scratch/plezyng-release-3.0.0-20261103/ffmpeg-preflight \
+  --scratch /mnt/disks/scratch/task-scratch/plezyng-release-3.0.0-20261103/release-webos-approved
 ```
 
 Tizen remains a tester artifact for qualification; Seller Office signing and
@@ -114,9 +125,11 @@ Authenticode signing, and LG public IPK publication remain gated on their
 missing identities, profiles, credentials, or artifact approvals.
 
 The orchestrator uses the current machine's GitHub CLI authentication only for
-workflow dispatch, repository commits, and the version tag. Build, test,
-package, and release jobs still use their configured private JIT runner groups;
-the script has no hosted-runner option and does not store or print credentials.
+workflow dispatch, repository commits, and the version tag. The default
+execution profile keeps all jobs on private JIT; the 3.0.0 hybrid profile uses
+standard GitHub-hosted runners only for compatible Linux, Android, and Windows
+jobs. The script does not accept custom runner labels or store or print
+credentials.
 It stops on a failed native group, FFmpeg signature, CI run, candidate build,
 tag conflict, or release build. Re-running it reuses successful native,
 CI, candidate, and release runs and never moves an existing tag.

@@ -38,11 +38,65 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
             "snapetech-org/PlezyNG",
             "ci.yml",
             "main",
-            {"action": "ci", "runner_pool": "private", "build_linux_packages": "true"},
+            {
+                "action": "ci",
+                "runner_pool": "private",
+                "execution_profile": "private",
+                "build_linux_packages": "true",
+            },
             "PlezyNG CI",
             expected_title="action:ci:pool:private",
             expected_sha=commit_sha,
         )
+
+    @patch("release_all_platforms.dispatch")
+    @patch("release_all_platforms.matching_run", return_value=None)
+    def test_release_ci_dispatch_uses_hybrid_profile_when_requested(
+        self, _matching_run, dispatch
+    ) -> None:
+        commit_sha = "c" * 40
+        ensure_ci(commit_sha, execution_profile="hybrid")
+
+        dispatch.assert_called_once_with(
+            "snapetech-org/PlezyNG",
+            "ci.yml",
+            "main",
+            {
+                "action": "ci",
+                "runner_pool": "private",
+                "execution_profile": "hybrid",
+                "build_linux_packages": "true",
+            },
+            "PlezyNG CI",
+            expected_title="action:ci:pool:private",
+            expected_sha=commit_sha,
+        )
+
+    @patch(
+        "release_all_platforms.gh_json",
+        return_value={
+            "jobs": [
+                {
+                    "name": "Windows native reliability (arm64)",
+                    "status": "completed",
+                    "conclusion": "skipped",
+                }
+            ]
+        },
+    )
+    @patch("release_all_platforms.dispatch")
+    @patch(
+        "release_all_platforms.matching_run",
+        return_value={"databaseId": 42, "status": "completed", "conclusion": "success"},
+    )
+    def test_hybrid_ci_does_not_reuse_private_run_without_arm64(
+        self, _matching_run, dispatch, _gh_json
+    ) -> None:
+        commit_sha = "d" * 40
+        ensure_ci(commit_sha, execution_profile="hybrid")
+
+        dispatch.assert_called_once()
+        self.assertEqual(dispatch.call_args.args[3]["execution_profile"], "hybrid")
 
 
 class ReleaseCandidateBuildGateTests(unittest.TestCase):
@@ -64,6 +118,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
             {
                 "action": "build",
                 "runner_pool": "private",
+                "execution_profile": "private",
                 "mode": "release",
                 "build_version": "3.0.0",
                 "include_webos_build": "true",

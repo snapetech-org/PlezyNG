@@ -99,8 +99,8 @@ def verify_packages(sdk: Path, packages: list[str]) -> None:
                 raise ValueError(f"NDK metadata does not match its declared version: {package}")
 
 
-def install(root: Path, env: dict[str, str]) -> None:
-    host, port = proxy_parts(env)
+def install(root: Path, env: dict[str, str], *, direct_egress: bool = False) -> None:
+    proxy = None if direct_egress else proxy_parts(env)
     sdk_value = env.get("ANDROID_SDK_ROOT") or env.get("ANDROID_HOME")
     if not sdk_value:
         raise ValueError("setup-android must provide ANDROID_SDK_ROOT or ANDROID_HOME")
@@ -111,8 +111,11 @@ def install(root: Path, env: dict[str, str]) -> None:
     manager = sdk / "cmdline-tools/latest/bin/sdkmanager"
     if manager not in managers:
         manager = managers[-1]
-    args = [str(manager), f"--sdk_root={sdk}", "--proxy=http",
-            f"--proxy_host={host}", f"--proxy_port={port}", "--channel=3"]
+    args = [str(manager), f"--sdk_root={sdk}"]
+    if proxy is not None:
+        host, port = proxy
+        args.extend(("--proxy=http", f"--proxy_host={host}", f"--proxy_port={port}"))
+    args.append("--channel=3")
     packages = required_packages(root)
     print("Provisioning pinned Android packages: " + ", ".join(packages), flush=True)
     subprocess.run(args + ["--licenses"], input="y\n" * 100, text=True,
@@ -124,11 +127,18 @@ def install(root: Path, env: dict[str, str]) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("proxy", "install", "list"))
+    parser.add_argument(
+        "--direct-egress",
+        action="store_true",
+        help="Install Android SDK packages without the private JIT HTTPS proxy.",
+    )
     args = parser.parse_args()
+    if args.direct_egress and args.action != "install":
+        parser.error("--direct-egress is valid only with install")
     if args.action == "proxy":
         configure_proxy(dict(os.environ))
     elif args.action == "install":
-        install(ROOT, dict(os.environ))
+        install(ROOT, dict(os.environ), direct_egress=args.direct_egress)
     else:
         print("\n".join(required_packages(ROOT)))
 

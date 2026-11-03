@@ -27,6 +27,7 @@
       "Apple native reliability (macOS)",
       "Apple native reliability (tvOS)",
       "Windows native reliability (x64)",
+      "Windows native reliability (arm64)",
       "Dependency Validation",
       "Server checks"
     ],
@@ -48,6 +49,7 @@
         "Apple native reliability (macOS)",
         "Apple native reliability (tvOS)",
         "Windows native reliability (x64)",
+        "Windows native reliability (arm64)",
         "Dependency Validation",
         "Server checks"
       ]

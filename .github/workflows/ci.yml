@@ -1,4 +1,5 @@
 # ng-runner-policy: private-jit-only-v1
+# The trusted-main 3.0.0 execution_profile=hybrid exception routes compatible Linux and Windows CI jobs to standard GitHub-hosted runners; private-only jobs remain on JIT.
 name: CI - Sanity Checks
 run-name: ${{ format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
@@ -16,6 +17,12 @@ on:
         required: true
         type: choice
         options: [private]
+      execution_profile:
+        description: Use private JIT for every job, or standard public runners for compatible trusted-main 3.0.0 CI jobs
+        required: true
+        type: choice
+        options: [private, hybrid]
+        default: private
       build_linux_packages:
         description: >
           Manually smoke-build Linux packages when changing linux/packaging.
@@ -34,10 +41,36 @@ jobs:
   analyze:
     name: Code Analysis
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
+      - name: Validate the requested runner profile
+        shell: bash
+        env:
+          RUNNER_POOL_INPUT: ${{ inputs.runner_pool }}
+          EXECUTION_PROFILE_INPUT: ${{ inputs.execution_profile }}
+        run: |
+          set -euo pipefail
+          if [[ "$RUNNER_POOL_INPUT" != "private" ]]; then
+            echo "The trusted-main CI route requires the private broker pool." >&2
+            exit 1
+          fi
+          if [[ "$EXECUTION_PROFILE_INPUT" != "private" && "$EXECUTION_PROFILE_INPUT" != "hybrid" ]]; then
+            echo "Unsupported execution profile: $EXECUTION_PROFILE_INPUT" >&2
+            exit 1
+          fi
+          if [[ "$EXECUTION_PROFILE_INPUT" == "hybrid" && "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "The hybrid CI profile is restricted to refs/heads/main." >&2
+            exit 1
+          fi
+          {
+            echo "Execution profile: **$EXECUTION_PROFILE_INPUT** (broker pool: private)."
+            if [[ "$EXECUTION_PROFILE_INPUT" == "hybrid" ]]; then
+              echo "Compatible Linux and Windows jobs use standard GitHub-hosted runners; Apple jobs remain on private JIT."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -134,8 +167,8 @@ jobs:
 
   test:
     name: Unit Tests
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-test"]}}', github.run_id)) }}
+    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-test"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
@@ -225,8 +258,8 @@ jobs:
   android-test:
     name: Android JVM and Native Tests
     needs: test
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-android-test"]}}', github.run_id)) }}
+    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-android-test"]}}', github.run_id)) }}
     permissions:
       actions: read
       contents: read
@@ -243,9 +276,11 @@ jobs:
           java-version: "21"
 
       - name: Configure Gradle to use the private JIT proxy
+        if: ${{ inputs.execution_profile != 'hybrid' }}
         run: python3 scripts/prepare_android_sdk.py proxy
 
       - name: Verify private proxy access to Maven Central mirror
+        if: ${{ inputs.execution_profile != 'hybrid' }}
         shell: bash
         run: |
           proxy="${HTTPS_PROXY:-${https_proxy:-}}"
@@ -255,6 +290,14 @@ jobs:
           fi
           curl --fail --show-error --silent --head --max-time 30 \
             --proxy "$proxy" \
+            https://storage.googleapis.com/maven-central/maven2/org/robolectric/nativeruntime-dist-compat/1.0.18/nativeruntime-dist-compat-1.0.18.jar
+
+      - name: Verify public runner access to Maven Central mirror
+        if: ${{ inputs.execution_profile == 'hybrid' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --head --max-time 30 \
             https://storage.googleapis.com/maven-central/maven2/org/robolectric/nativeruntime-dist-compat/1.0.18/nativeruntime-dist-compat-1.0.18.jar
 
       - name: Restore Android FFmpeg source cache
@@ -281,7 +324,12 @@ jobs:
           log-accepted-android-sdk-licenses: false
 
       - name: Install all pinned Android module toolchains
+        if: ${{ inputs.execution_profile != 'hybrid' }}
         run: python3 scripts/prepare_android_sdk.py install
+
+      - name: Install pinned Android module toolchains with direct egress
+        if: ${{ inputs.execution_profile == 'hybrid' }}
+        run: python3 scripts/prepare_android_sdk.py install --direct-egress
 
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
@@ -418,7 +466,7 @@ jobs:
 
   native-format:
     name: Native Formatting
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
     runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-native-format"]}}', github.run_id)) }}
     permissions:
       contents: read
@@ -440,8 +488,8 @@ jobs:
   linux-native-test:
     name: Linux native reliability (${{ matrix.sanitizer }})
     needs: [test, android-test, server]
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-linux-native-test"]}}', github.run_id, strategy.job-index)) }}
+    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-linux-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     strategy:
@@ -579,7 +627,7 @@ jobs:
 
   apple-native-test:
     name: Apple native reliability (${{ matrix.platform }})
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
     runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
@@ -967,8 +1015,8 @@ jobs:
   # packer-windows-jit-v1
   windows-native-test:
     name: Windows native reliability (${{ matrix.arch }})
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ matrix.arch == 'x64' && fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","ARM64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
+    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (matrix.arch == 'x64' || inputs.execution_profile == 'hybrid') && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-2025') || (matrix.arch == 'x64' && fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","ARM64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     strategy:
@@ -977,6 +1025,8 @@ jobs:
         include:
           - arch: x64
             flutter_setup: action
+          - arch: arm64
+            flutter_setup: git
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -1095,8 +1145,8 @@ jobs:
 
   dependency-check:
     name: Dependency Validation
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-dependency-check"]}}', github.run_id)) }}
+    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-dependency-check"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
@@ -1129,8 +1179,8 @@ jobs:
   server:
     name: Server checks
     needs: [test, android-test, analyze, dependency-check]
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-server"]}}', github.run_id)) }}
+    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-server"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
@@ -1161,8 +1211,8 @@ jobs:
   # checks above without packaging release artifacts.
   linux-packages:
     name: Linux package smoke build
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_linux_packages }}
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-linux-packages"]}}', github.run_id)) }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_linux_packages && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-linux-packages"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:

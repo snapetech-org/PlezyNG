@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path, PurePosixPath
@@ -88,20 +89,7 @@ def _patch_paths(patch: bytes) -> list[str]:
 
 def _diff_from_head(repo: Path, added_paths: list[str], patched_paths: list[str]) -> bytes:
     result = subprocess.run(
-        # The reviewed patch hash includes Git's abbreviated object IDs. Keep
-        # their width stable across clones with different object databases.
-        [
-            "git",
-            "-C",
-            str(repo),
-            "-c",
-            "core.abbrev=8",
-            "diff",
-            "HEAD",
-            "--binary",
-            "--",
-            *patched_paths,
-        ],
+        ["git", "-C", str(repo), "diff", "HEAD", "--binary", "--", *patched_paths],
         check=False,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -123,19 +111,7 @@ def _diff_from_head(repo: Path, added_paths: list[str], patched_paths: list[str]
         if new_path.is_symlink() or not new_path.is_file():
             raise CheckoutError(f"required patched source file is missing or not regular: {new_path}")
         added = subprocess.run(
-            [
-                "git",
-                "-C",
-                str(repo),
-                "-c",
-                "core.abbrev=8",
-                "diff",
-                "--no-index",
-                "--binary",
-                "--",
-                "/dev/null",
-                relative,
-            ],
+            ["git", "-C", str(repo), "diff", "--no-index", "--binary", "--", "/dev/null", relative],
             check=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -145,6 +121,15 @@ def _diff_from_head(repo: Path, added_paths: list[str], patched_paths: list[str]
             raise CheckoutError(f"cannot include new source file {new_path}: {detail}")
         diff += added.stdout
     return diff
+
+
+def _normalize_diff_index_lines(diff: bytes) -> bytes:
+    """Ignore Git's clone-dependent abbreviated IDs in diff index headers."""
+    return re.sub(
+        rb"(?m)^index [0-9a-f]+\.\.[0-9a-f]+",
+        b"index <old>..<new>",
+        diff,
+    )
 
 
 def _verify_patch(
@@ -162,7 +147,8 @@ def _verify_patch(
     if patch_hash != expected_hash:
         raise CheckoutError(f"reviewed patch hash changed: {patch_path}")
     patched_paths = _patch_paths(patch)
-    if hashlib.sha256(_diff_from_head(repo, added_paths, patched_paths)).hexdigest() != expected_hash:
+    actual_diff = _diff_from_head(repo, added_paths, patched_paths)
+    if _normalize_diff_index_lines(actual_diff) != _normalize_diff_index_lines(patch):
         raise CheckoutError(f"SDK source differs from reviewed patch: {repo}")
     _git(repo, "diff", "--check", "HEAD")
 

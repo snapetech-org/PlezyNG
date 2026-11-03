@@ -45,12 +45,13 @@ class VerifySdkCheckoutTests(unittest.TestCase):
 
             _verify_patch(repo, patch_path, expected_hash, [])
 
-    def test_patch_hash_is_stable_across_git_abbreviation_settings(self):
+    def test_patch_accepts_different_git_abbreviation_settings(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             repo = self._repository(root)
+            self._git(repo, "config", "core.abbrev", "7")
             (repo / "patched.txt").write_text("reviewed change\n", encoding="utf-8")
-            patch = self._git(repo, "-c", "core.abbrev=8", "diff", "HEAD", "--binary", "--", "patched.txt")
+            patch = self._git(repo, "diff", "HEAD", "--binary", "--", "patched.txt")
             patch_path = root / "reviewed.patch"
             patch_path.write_bytes(patch)
             expected_hash = hashlib.sha256(patch).hexdigest()
@@ -62,21 +63,23 @@ class VerifySdkCheckoutTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             repo = self._repository(root)
+            self._git(repo, "config", "core.abbrev", "7")
             (repo / "patched.txt").write_text("reviewed change\n", encoding="utf-8")
             added_path = repo / "z-added.txt"
             added_path.write_text("new reviewed file\n", encoding="utf-8")
-            tracked_diff = self._git(
-                repo,
-                "-c",
-                "core.abbrev=8",
-                "diff",
-                "HEAD",
-                "--binary",
-                "--",
-                "patched.txt",
-            )
+            tracked_diff = self._git(repo, "diff", "HEAD", "--binary", "--", "patched.txt")
             added = subprocess.run(
-                ["git", "-C", str(repo), "-c", "core.abbrev=8", "diff", "--no-index", "--binary", "--", "/dev/null", "z-added.txt"],
+                [
+                    "git",
+                    "-C",
+                    str(repo),
+                    "diff",
+                    "--no-index",
+                    "--binary",
+                    "--",
+                    "/dev/null",
+                    "z-added.txt",
+                ],
                 check=False,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,

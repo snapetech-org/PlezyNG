@@ -18,7 +18,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $flutterRoot '.git') -PathType Conta
   throw "Pinned Flutter checkout was not found at $flutterRoot"
 }
 
-$git = Get-Command git -CommandType Application -ErrorAction Stop
+$git = Get-Command git -CommandType Application -ErrorAction Stop | Select-Object -First 1
 $actualCommit = (& $git.Source -C $flutterRoot rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0 -or $actualCommit -ne $expectedCommit) {
   throw "Refusing to patch Flutter $actualCommit; expected $expectedCommit"

@@ -181,6 +181,11 @@ require(
     and '"include":[{"arch":"x64"' in windows,
     "native Windows ARM64 must be present only in the hybrid 3.0.0 build matrix",
 )
+require(
+    "CMAKE_GENERATOR_TOOLSET: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}"
+    in windows,
+    "hybrid Windows ARM64 release builds must use ClangCL for the pinned Whisper GGML ARM backend",
+)
 for expected in (
     "if: matrix.flutter_setup == 'action'",
     "if: matrix.flutter_setup == 'git'",
@@ -1208,6 +1213,11 @@ require(
     and '"include":[{"arch":"x64"' in windows_native
     and "'windows-11-arm'" in windows_native,
     "native Windows ARM64 CI must run on the public ARM64 host in the 3.0.0 hybrid profile",
+)
+require(
+    "CMAKE_GENERATOR_TOOLSET: ${{ inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}"
+    in windows_native,
+    "hybrid Windows ARM64 CI must use ClangCL for the pinned Whisper GGML ARM backend",
 )
 
 

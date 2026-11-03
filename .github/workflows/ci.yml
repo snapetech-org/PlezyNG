@@ -1019,6 +1019,8 @@ jobs:
     runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
     env:
       PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && '1' || '0' }}
+      # The pinned Whisper GGML source requires Clang for ARM; select Visual Studio's ClangCL toolset only on the hosted ARM64 route.
+      CMAKE_GENERATOR_TOOLSET: ${{ inputs.execution_profile == 'hybrid' && matrix.arch == 'arm64' && 'ClangCL' || '' }}
     permissions:
       contents: read
     strategy:

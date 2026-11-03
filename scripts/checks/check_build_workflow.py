@@ -172,24 +172,13 @@ require(
 )
 require("fail-fast: false" in windows, "Windows matrix must not cancel its other architecture")
 require(
-    re.search(
-        r"(?ms)          - arch: x64\n"
-        r"            flutter_setup: action\n"
-        r"            native_cache_path: build/windows/x64/_deps\n",
-        windows,
-    )
-    is not None,
+    '"arch":"x64","flutter_setup":"action","native_cache_path":"build/windows/x64/_deps"' in windows,
     "Windows x64 matrix configuration changed",
 )
 require(
-    re.search(
-        r"(?ms)^          - arch: arm64\n"
-        r"            flutter_setup: git\n"
-        r"            native_cache_path: build/windows/arm64/_deps\n",
-        windows,
-    ) is not None
-    and "matrix.arch == 'x64' || needs.validate-trusted-ref.outputs.execution_profile == 'hybrid'" in windows,
-    "native Windows ARM64 must build in the hybrid 3.0.0 profile and stay skipped for private-only runs",
+    '"arch":"arm64","flutter_setup":"git","native_cache_path":"build/windows/arm64/_deps"' in windows
+    and "matrix: ${{ fromJSON(needs.validate-trusted-ref.outputs.execution_profile == 'hybrid'" in windows,
+    "native Windows ARM64 must be present only in the hybrid 3.0.0 build matrix",
 )
 for expected in (
     "if: matrix.flutter_setup == 'action'",
@@ -1185,8 +1174,8 @@ require(
     "Windows native CI must keep bounded x64 setup and the pinned ARM64 Flutter bootstrap",
 )
 require(
-    re.search(r"(?m)^          - arch: arm64$", windows_native) is not None
-    and "matrix.arch == 'x64' || inputs.execution_profile == 'hybrid'" in windows_native
+    '"arch":"arm64","flutter_setup":"git"' in windows_native
+    and "matrix: ${{ fromJSON(inputs.execution_profile == 'hybrid'" in windows_native
     and "'windows-11-arm'" in windows_native,
     "native Windows ARM64 CI must run on the public ARM64 host in the 3.0.0 hybrid profile",
 )

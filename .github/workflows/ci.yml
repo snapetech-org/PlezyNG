@@ -1015,18 +1015,13 @@ jobs:
   # packer-windows-jit-v1
   windows-native-test:
     name: Windows native reliability (${{ matrix.arch }})
-    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (matrix.arch == 'x64' || inputs.execution_profile == 'hybrid') && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
+    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
     runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-2025') || (matrix.arch == 'x64' && fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","ARM64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - arch: x64
-            flutter_setup: action
-          - arch: arm64
-            flutter_setup: git
+      matrix: ${{ fromJSON(inputs.execution_profile == 'hybrid' && '[{"arch":"x64","flutter_setup":"action"},{"arch":"arm64","flutter_setup":"git"}]' || '[{"arch":"x64","flutter_setup":"action"}]') }}
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

@@ -137,19 +137,37 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("architecture matrix checks passed", result.stdout)
 
-    def test_macos_release_build_disables_xcode_codesigning_before_optional_signing(self) -> None:
+    def test_macos_release_build_uses_flutter_xcode_signing_overrides(self) -> None:
         workflow = self._workflow()
-        command = "flutter build macos --release --no-codesign"
-        self.assertIn(command, workflow, "macOS release build command changed")
-        workflow = workflow.replace(command, "flutter build macos --release", 1)
-
-        result = self._run(workflow)
-
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn(
-            "macOS release build must disable automatic signing before its explicit signing stage",
-            result.stderr,
+        mutations = (
+            (
+                "flutter build macos --release",
+                "flutter build macos --release --no-codesign",
+            ),
+            (
+                'FLUTTER_XCODE_CODE_SIGNING_ALLOWED: "NO"',
+                'FLUTTER_XCODE_CODE_SIGNING_ALLOWED: "YES"',
+            ),
+            (
+                'FLUTTER_XCODE_CODE_SIGNING_REQUIRED: "NO"',
+                'FLUTTER_XCODE_CODE_SIGNING_REQUIRED: "YES"',
+            ),
+            (
+                'FLUTTER_XCODE_CODE_SIGNING_IDENTITY: ""',
+                'FLUTTER_XCODE_CODE_SIGNING_IDENTITY: "-"',
+            ),
         )
+        for original, mutated in mutations:
+            with self.subTest(original=original):
+                self.assertIn(original, workflow, f"missing macOS setting: {original}")
+                changed = workflow.replace(original, mutated, 1)
+                result = self._run(changed)
+
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(
+                    "macOS release build must use Flutter's Xcode build-setting overrides",
+                    result.stderr,
+                )
 
     def test_windows_release_requires_pinned_torrent_dependencies(self) -> None:
         workflow = self._workflow()

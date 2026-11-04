@@ -1196,8 +1196,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--execution-profile",
         choices=("private", "hybrid"),
-        default="private",
-        help="Keep all jobs on private JIT, or route compatible 3.0.0 trusted-main jobs to standard public runners.",
+        default=None,
+        help="Use hosted runners for compatible 3.0.0 jobs by default; other releases remain on private JIT.",
     )
     publication = parser.add_mutually_exclusive_group()
     publication.add_argument(
@@ -1233,6 +1233,8 @@ def main() -> int:
     args = parse_args()
     if not re.fullmatch(r"\d+\.\d+\.\d+", args.version):
         raise ReleaseError("--version must be MAJOR.MINOR.PATCH, without a leading v.")
+    if args.execution_profile is None:
+        args.execution_profile = "hybrid" if args.version == "3.0.0" else "private"
     package_version = command(
         ["python3", "scripts/pubspec_version.py", "pubspec.yaml"], cwd=ROOT, capture=True
     ).stdout.strip().split("+", 1)[0]

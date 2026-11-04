@@ -15,7 +15,7 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-from ndk_environment import verified_environment
+from ndk_environment import _hash_file, verified_environment
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -279,7 +279,11 @@ def _strip_engine_comment(engine_path: Path, ndk_root: Path, output_dir: Path, l
         objcopy_path.relative_to(ndk_real)
     except ValueError as exc:
         raise NormalizeError("pinned NDK objcopy escapes the NDK root") from exc
-    objcopy_hash = sha256(read_regular_file(objcopy_path))
+    objcopy_hash = _hash_file(
+        ndk_root,
+        tool["path"],
+        normalize_root=tool.get("normalizeRoot", False),
+    )
     if objcopy_hash != tool["sha256"]:
         raise NormalizeError("pinned NDK objcopy hash differs from the compatibility lock")
 

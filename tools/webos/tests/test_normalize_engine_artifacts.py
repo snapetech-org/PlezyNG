@@ -2,14 +2,19 @@ from __future__ import annotations
 
 import hashlib
 import struct
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 
 TOOLS_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS_ROOT))
 
+import ndk_environment  # noqa: E402
 import normalize_engine_artifacts as normalizer  # noqa: E402
 
 
@@ -126,6 +131,59 @@ def make_elf(
 
 
 class NormalizeEngineArtifactTests(unittest.TestCase):
+    def test_objcopy_lock_hash_is_normalized_for_the_ndk_install_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "relocated-ndk"
+            tool_path = root / "bin" / "objcopy"
+            tool_path.parent.mkdir(parents=True)
+            tool_path.write_text(f"tool built at {root}\n", encoding="utf-8")
+            engine_path = Path(temporary) / "engine.so"
+            candidate, _ = make_elf(
+                1,
+                40,
+                string_order=(".note.gnu.build-id", ".text", ".shstrtab", ".comment"),
+                build_id_seed=10,
+                include_comment=True,
+            )
+            stripped, _ = make_elf(
+                1,
+                40,
+                string_order=(".note.gnu.build-id", ".text", ".shstrtab"),
+                build_id_seed=10,
+            )
+            engine_path.write_bytes(candidate)
+            expected_hash = ndk_environment._hash_file(
+                root,
+                "bin/objcopy",
+                normalize_root=True,
+            )
+            lock = {
+                "engineBuild": {
+                    "ndkTools": {
+                        "objcopy": {
+                            "path": "bin/objcopy",
+                            "sha256": expected_hash,
+                            "normalizeRoot": True,
+                        }
+                    }
+                }
+            }
+
+            def fake_objcopy(arguments: list[str], **_: object) -> SimpleNamespace:
+                Path(arguments[-1]).write_bytes(stripped)
+                return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+            with patch.object(subprocess, "run", side_effect=fake_objcopy):
+                actual_stripped, actual_hash = normalizer._strip_engine_comment(
+                    engine_path,
+                    root,
+                    Path(temporary),
+                    lock,
+                )
+
+            self.assertEqual(actual_stripped, stripped)
+            self.assertEqual(actual_hash, expected_hash)
+
     def test_normalizes_arm_engine_comment_metadata_and_name_table(self) -> None:
         reference, metadata = make_elf(
             1,

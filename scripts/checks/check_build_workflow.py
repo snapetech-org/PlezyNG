@@ -1185,6 +1185,12 @@ for apple_job_name, workspace_label in (
     xcode_step_name = (
         "Build iOS (no codesign)" if apple_job_name == "build-ios" else "Build macOS"
     )
+    if apple_job_name == "build-macos":
+        macos_xcode_step = named_step(apple_release_job, xcode_step_name)
+        require(
+            "flutter build macos --release --no-codesign" in macos_xcode_step,
+            "macOS release build must disable automatic signing before its explicit signing stage",
+        )
     cleanup_step_name = (
         "Remove AppleDouble sidecars before iOS Xcode build"
         if apple_job_name == "build-ios"

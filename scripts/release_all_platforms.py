@@ -169,6 +169,28 @@ def run_has_successful_job(repo: str, run: dict, job_name: str) -> bool:
     )
 
 
+def run_has_successful_step(repo: str, run: dict, job_name: str, step_name: str) -> bool:
+    jobs = run.get("jobs")
+    if not isinstance(jobs, list):
+        run_id = run.get("databaseId")
+        if not isinstance(run_id, int):
+            raise ReleaseError("Cannot inspect a workflow run without its numeric run ID.")
+        details = gh_json("api", f"repos/{repo}/actions/runs/{run_id}/jobs")
+        jobs = details.get("jobs") if isinstance(details, dict) else None
+    if not isinstance(jobs, list):
+        raise ReleaseError(f"Could not inspect jobs for workflow run {run.get('databaseId')}.")
+    matches = [job for job in jobs if isinstance(job, dict) and job.get("name") == job_name]
+    if len(matches) != 1 or not isinstance(matches[0].get("steps"), list):
+        return False
+    return any(
+        isinstance(step, dict)
+        and step.get("name") == step_name
+        and step.get("status") == "completed"
+        and step.get("conclusion") == "success"
+        for step in matches[0]["steps"]
+    )
+
+
 def download(url: str, destination: Path) -> None:
     parsed = urllib.parse.urlparse(url)
     if parsed.scheme != "https" or parsed.hostname not in {"ffmpeg.org", "www.ffmpeg.org"}:
@@ -664,7 +686,13 @@ def candidate_build_title(version: str) -> str:
     return f"action:build:pool:private:mode:release:version:{version}"
 
 
-def ensure_candidate_build(version: str, commit_sha: str, *, execution_profile: str = "private") -> dict:
+def ensure_candidate_build(
+    version: str,
+    commit_sha: str,
+    *,
+    execution_profile: str = "private",
+    include_apple_store_build: bool = False,
+) -> dict:
     """Require a complete nonpublishing release-mode build before creating the immutable tag."""
     run_title = candidate_build_title(version)
     existing = matching_run(
@@ -684,14 +712,23 @@ def ensure_candidate_build(version: str, commit_sha: str, *, execution_profile: 
             existing = wait_for_run(
                 PLEZY_REPO, existing, f"PlezyNG {version} all-platform release-mode candidate"
             )
-        if execution_profile != "hybrid" or run_has_successful_job(
+        complete = execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Build Windows (arm64)"
-        ):
+        )
+        if include_apple_store_build:
+            complete = complete and all(
+                run_has_successful_step(PLEZY_REPO, existing, job_name, step_name)
+                for job_name, step_name in (
+                    ("build-ios", "Build signed iOS App Store IPA"),
+                    ("Build tvOS developer package (arm64)", "Build signed tvOS App Store IPA"),
+                )
+            )
+        if complete:
             print(f"Reusing successful release-mode candidate run {existing['databaseId']} for {version}.")
             return existing
         print(
-            f"Candidate run {existing['databaseId']} passed without the required Windows ARM64 build; "
-            "dispatching the hybrid profile."
+            f"Candidate run {existing['databaseId']} passed without all requested platform jobs; "
+            "dispatching the required profile."
         )
 
     active = active_run(PLEZY_REPO, RELEASE_WORKFLOW, ref="main")
@@ -714,6 +751,7 @@ def ensure_candidate_build(version: str, commit_sha: str, *, execution_profile: 
             "include_webos_build": "true",
             "include_webos_release": "false",
             "include_tizen_build": "true",
+            "include_apple_store_build": "true" if include_apple_store_build else "false",
             "subtitle_gpu_backend": "cpu",
             "prepare_homebrew_cask": "false",
         },
@@ -745,8 +783,14 @@ def ensure_tag(worktree: Path, version: str, commit_sha: str) -> str:
     return tag
 
 
-def ensure_release(tag: str, commit_sha: str, *, include_webos_release: bool,
-                   execution_profile: str = "private") -> dict:
+def ensure_release(
+    tag: str,
+    commit_sha: str,
+    *,
+    include_webos_release: bool,
+    execution_profile: str = "private",
+    include_apple_store_build: bool = False,
+) -> dict:
     run_title = f"action:release:pool:private:tag:{tag}"
     existing = matching_run(
         PLEZY_REPO,
@@ -763,14 +807,23 @@ def ensure_release(tag: str, commit_sha: str, *, include_webos_release: bool,
             )
         if existing.get("status") != "completed":
             existing = wait_for_run(PLEZY_REPO, existing, f"PlezyNG {tag} all-platform release build")
-        if execution_profile != "hybrid" or run_has_successful_job(
+        complete = execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Build Windows (arm64)"
-        ):
+        )
+        if include_apple_store_build:
+            complete = complete and all(
+                run_has_successful_step(PLEZY_REPO, existing, job_name, step_name)
+                for job_name, step_name in (
+                    ("build-ios", "Build signed iOS App Store IPA"),
+                    ("Build tvOS developer package (arm64)", "Build signed tvOS App Store IPA"),
+                )
+            )
+        if complete:
             print(f"Reusing successful release build run {existing['databaseId']} for {tag}.")
             return existing
         print(
-            f"Release run {existing['databaseId']} passed without the required Windows ARM64 build; "
-            "dispatching the hybrid profile."
+            f"Release run {existing['databaseId']} passed without all requested platform jobs; "
+            "dispatching the required profile."
         )
     ensure_remote_main_sha(commit_sha, f"dispatching the {tag} release build")
     return dispatch(
@@ -786,6 +839,7 @@ def ensure_release(tag: str, commit_sha: str, *, include_webos_release: bool,
             "include_webos_build": "true",
             "include_webos_release": "true" if include_webos_release else "false",
             "include_tizen_build": "true",
+            "include_apple_store_build": "true" if include_apple_store_build else "false",
         },
         f"PlezyNG {tag} all-platform release build",
         expected_title=run_title,
@@ -836,8 +890,14 @@ def publish_github_release(tag: str) -> dict:
     return published
 
 
-def validate_release_outputs(tag: str, version: str, *, include_webos_release: bool,
-                             execution_profile: str = "private") -> None:
+def validate_release_outputs(
+    tag: str,
+    version: str,
+    *,
+    include_webos_release: bool,
+    execution_profile: str = "private",
+    include_apple_store_build: bool = False,
+) -> None:
     release = release_metadata(tag)
     assets = {
         asset.get("name")
@@ -873,9 +933,12 @@ def validate_release_outputs(tag: str, version: str, *, include_webos_release: b
     }
     if android_signing.issubset(secrets):
         required.update({"plezyng-android-play.aab", "plezyng-amazon-firetv.apk"})
-    if {"APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID"}.issubset(secrets):
+    apple_store_signing = {
+        "APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID",
+    }
+    if include_apple_store_build and apple_store_signing.issubset(secrets):
         required.add("plezyng-ios-appstore.ipa")
-    if {"APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID"}.issubset(secrets):
+    if include_apple_store_build and apple_store_signing.issubset(secrets):
         required.add("plezyng-tvos-appstore.ipa")
 
     missing = sorted(required - assets)
@@ -1228,11 +1291,21 @@ def main() -> int:
         save_progress()
         ci = ensure_ci(pin_sha, execution_profile=args.execution_profile)
         progress["ci_run"] = ci["databaseId"]
+        apple_store_secrets = {
+            "APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID",
+        }
+        include_apple_store_build = (
+            args.publish and apple_store_secrets.issubset(configured_repo_names("secret"))
+        )
         stage = "all-platform release-mode candidate build"
         progress["stage"] = stage
         save_progress()
-        candidate = ensure_candidate_build(args.version, pin_sha,
-                                           execution_profile=args.execution_profile)
+        candidate = ensure_candidate_build(
+            args.version,
+            pin_sha,
+            execution_profile=args.execution_profile,
+            include_apple_store_build=include_apple_store_build,
+        )
         progress["candidate_build_run"] = candidate["databaseId"]
         stage = "release tag"
         progress["stage"] = stage
@@ -1247,6 +1320,7 @@ def main() -> int:
             pin_sha,
             include_webos_release=args.include_webos_release,
             execution_profile=args.execution_profile,
+            include_apple_store_build=include_apple_store_build,
         )
         progress["release_run"] = release["databaseId"]
         progress["release_url"] = f"https://github.com/{PLEZY_REPO}/releases/tag/{tag}"
@@ -1259,6 +1333,7 @@ def main() -> int:
             args.version,
             include_webos_release=args.include_webos_release,
             execution_profile=args.execution_profile,
+            include_apple_store_build=include_apple_store_build,
         )
 
         published_channels: list[dict] = []

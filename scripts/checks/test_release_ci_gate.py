@@ -14,7 +14,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from verify_release_ci import _manifest_gate  # noqa: E402
-from release_all_platforms import ReleaseError, ensure_candidate_build, ensure_ci  # noqa: E402
+from release_all_platforms import (  # noqa: E402
+    ReleaseError,
+    ensure_candidate_build,
+    ensure_ci,
+    run_has_successful_step,
+)
 
 
 class ReleaseCIGateManifestTests(unittest.TestCase):
@@ -100,6 +105,26 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
 
 
 class ReleaseCandidateBuildGateTests(unittest.TestCase):
+    def test_signed_apple_step_must_succeed_before_reusing_a_candidate(self) -> None:
+        run = {
+            "jobs": [
+                {
+                    "name": "build-ios",
+                    "steps": [
+                        {"name": "Build signed iOS App Store IPA", "status": "completed", "conclusion": "success"},
+                        {"name": "Attest signed iOS App Store IPA", "status": "completed", "conclusion": "skipped"},
+                    ],
+                }
+            ]
+        }
+
+        self.assertTrue(
+            run_has_successful_step("snapetech-org/PlezyNG", run, "build-ios", "Build signed iOS App Store IPA")
+        )
+        self.assertFalse(
+            run_has_successful_step("snapetech-org/PlezyNG", run, "build-ios", "Attest signed iOS App Store IPA")
+        )
+
     @patch("release_all_platforms.ensure_remote_main_sha")
     @patch("release_all_platforms.dispatch")
     @patch("release_all_platforms.active_run", return_value=None)
@@ -124,12 +149,29 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
                 "include_webos_build": "true",
                 "include_webos_release": "false",
                 "include_tizen_build": "true",
+                "include_apple_store_build": "false",
                 "subtitle_gpu_backend": "cpu",
                 "prepare_homebrew_cask": "false",
             },
             "PlezyNG 3.0.0 all-platform release-mode candidate",
             expected_title="action:build:pool:private:mode:release:version:3.0.0",
             expected_sha=commit_sha,
+        )
+
+    @patch("release_all_platforms.ensure_remote_main_sha")
+    @patch("release_all_platforms.dispatch")
+    @patch("release_all_platforms.active_run", return_value=None)
+    @patch("release_all_platforms.matching_run", return_value=None)
+    def test_signed_apple_candidate_is_explicit_without_changing_runner_title(
+        self, _matching_run, _active_run, dispatch, _ensure_main
+    ) -> None:
+        ensure_candidate_build("3.0.0", "e" * 40, include_apple_store_build=True)
+
+        fields = dispatch.call_args.args[3]
+        self.assertEqual(fields["include_apple_store_build"], "true")
+        self.assertEqual(
+            dispatch.call_args.kwargs["expected_title"],
+            "action:build:pool:private:mode:release:version:3.0.0",
         )
 
     @patch("release_all_platforms.matching_run")

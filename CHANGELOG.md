@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Normalize LG NDK tool and environment-fragment hashes across per-run installation paths so the WebOS candidate verifier accepts the checksum-pinned SDK.
 - Fix tvOS release framework selection, Windows app-local runtime installation, Android R8 compatibility, WebOS SDK setup, and trusted-main hosted Linux Snap packaging.
 - Build macOS release candidates unsigned before applying any configured Developer ID signature and notarization.
 - Cache and verify the pinned FFmpeg header archive for Android private JIT CI and release builds.

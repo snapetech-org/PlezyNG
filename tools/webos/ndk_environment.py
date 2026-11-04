@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 LOCK_PATH = ROOT / "tools" / "webos" / "compatibility.json"
 TARGET_SYSROOT = "sysroots/ca9v1-webosmllib32-linux-gnueabi"
 HOST_SYSROOT = "sysroots/x86_64-starfishsdk-linux"
+NORMALIZED_NDK_ROOT = b"${WEBOS_NDK_ROOT}"
 
 
 class EnvironmentError(ValueError):
@@ -42,7 +43,7 @@ def _read_regular_file(path: Path, root: Path | None = None) -> bytes:
         raise EnvironmentError(f"cannot read {path}: {exc}") from exc
 
 
-def _hash_file(root: Path, relative: str) -> str:
+def _hash_file(root: Path, relative: str, *, normalize_root: bool = False) -> str:
     path = root / relative
     if not path.exists():
         raise EnvironmentError(f"pinned NDK file is missing: {path}")
@@ -53,7 +54,16 @@ def _hash_file(root: Path, relative: str) -> str:
         raise EnvironmentError(f"pinned NDK file escapes the NDK root: {path}") from exc
     if not resolved.is_file():
         raise EnvironmentError(f"pinned NDK file is not regular: {path}")
-    return _sha256(resolved.read_bytes())
+    contents = resolved.read_bytes()
+    if normalize_root:
+        root_bytes = str(root).encode("utf-8")
+        if root_bytes not in contents:
+            raise EnvironmentError(f"pinned NDK file does not reference its installation root: {path}")
+        # LG's installer embeds the chosen destination in both ELF loader
+        # paths and shell fragments. Hash the same vendor bytes independent of
+        # the per-run JIT workspace path.
+        contents = contents.replace(root_bytes, NORMALIZED_NDK_ROOT)
+    return _sha256(contents)
 
 
 def _lock() -> dict[str, object]:
@@ -90,8 +100,20 @@ def verified_environment(root_arg: Path) -> tuple[Path, str]:
 
     tools = build["ndkTools"]
     for name, record in tools.items():
-        actual = _hash_file(root, record["path"])
+        actual = _hash_file(
+            root,
+            record["path"],
+            normalize_root=record.get("normalizeRoot", False),
+        )
         if actual != record["sha256"]:
+            raise EnvironmentError(f"pinned NDK {name} tool hash changed")
+
+    for name, path_key, hash_key in (
+        ("GCC", "gccPath", "gccSha256"),
+        ("GCC driver", "gccDriverPath", "gccDriverSha256"),
+    ):
+        actual = _hash_file(root, build[path_key], normalize_root=True)
+        if actual != build[hash_key]:
             raise EnvironmentError(f"pinned NDK {name} tool hash changed")
 
     target_triple = "arm-webosmllib32-linux-gnueabi"
@@ -102,7 +124,7 @@ def verified_environment(root_arg: Path) -> tuple[Path, str]:
         if not alias.is_symlink() or alias.resolve(strict=True) != expected_target:
             raise EnvironmentError(f"NDK {name} target-triple alias differs from the pinned tool")
 
-    gcc = root / "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-gcc"
+    gcc = root / build["gccPath"]
     try:
         gcc_version = subprocess.run(
             [str(gcc), "-dumpfullversion"],
@@ -137,7 +159,12 @@ def verified_environment(root_arg: Path) -> tuple[Path, str]:
     expected_by_directory: dict[str, set[str]] = {}
     for record in expected_files:
         relative = record["path"]
-        if _hash_file(root, relative) != record["sha256"]:
+        actual = _hash_file(
+            root,
+            relative,
+            normalize_root=record.get("normalizeRoot", False),
+        )
+        if actual != record["sha256"]:
             raise EnvironmentError(f"pinned NDK environment fragment changed: {relative}")
         parent, _, name = relative.rpartition("/")
         expected_by_directory.setdefault(parent, set()).add(name)

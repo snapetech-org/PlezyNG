@@ -11,6 +11,7 @@
 - Retry transient TLS resets in Windows Flutter setup and wait for slow iOS simulator decode callbacks.
 - Fix WebOS release candidate setup when the verified LG NDK installer is downloaded without executable permissions.
 - Give the LG NDK installer system Python and core utilities while isolating setup-python's library path.
+- Source the LG NDK environment without setup-python's inherited loader path, then restore libpython for the Python 3.14 engine tools.
 - Restore GGML import-library dependencies to the Windows ARM64 Whisper plugin link interface.
 - Fetch full Windows source history so the pinned Opus CMake version probe can resolve tags.
 - Mount Apple JIT source workspaces under writable `/Volumes` so the Mac can provide the short NFS path without changing its sealed root volume.

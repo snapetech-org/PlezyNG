@@ -305,10 +305,14 @@ export PYTHONPATH="$DEPOT_TOOLS_PYTHON_SITE${PYTHONPATH:+:$PYTHONPATH}"
 
 "$PYTHON_BIN" "$ROOT/tools/webos/verify_sdk_checkout.py" "$SDK_ROOT"
 
-# actions/setup-python exports its shared-library directory through
-# LD_LIBRARY_PATH. The LG installer rejects any inherited value while it
-# sources the SDK environment, so isolate only the installer process.
-env -u LD_LIBRARY_PATH bash "$NDK_INSTALLER" -y -d "$NDK_ROOT"
+# actions/setup-python adds a Python 3.14 wrapper to HOST_TOOLS, but that
+# interpreter needs LD_LIBRARY_PATH to load libpython. The LG installer
+# removes paths containing deleted directories by running its first Python
+# executable; give that installer a system-only PATH so it uses system Python
+# and keeps core utilities available after sanitizing PATH. The installer must
+# also start without the setup-python library path.
+env -u LD_LIBRARY_PATH PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+  bash "$NDK_INSTALLER" -y -d "$NDK_ROOT"
 "$PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --verify
 
 export FLUTTER_WEBOS_SDK_ROOT="$SDK_ROOT"

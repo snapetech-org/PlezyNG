@@ -75,8 +75,11 @@ class DepotToolsPython314PatchTests(unittest.TestCase):
         self.assertIn('export DEPOT_TOOLS_UPDATE=0', builder)
         self.assertIn("--require-hashes", builder)
 
-    def test_release_builder_runs_verified_ndk_installer_through_bash(self):
+    def test_release_builder_runs_verified_ndk_installer_with_system_path(self):
         builder = BUILDER_PATH.read_text(encoding="utf-8")
+        self.assertIn(
+            "env -u LD_LIBRARY_PATH PATH=/usr/bin:/bin:/usr/sbin:/sbin", builder
+        )
         self.assertIn('bash "$NDK_INSTALLER" -y -d "$NDK_ROOT"', builder)
 
 

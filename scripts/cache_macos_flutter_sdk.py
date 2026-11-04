@@ -276,7 +276,9 @@ def download_archive(
     with ThreadPoolExecutor(max_workers=min(max_workers, len(ranges))) as executor:
         futures = [
             executor.submit(_download_range, url, part, start, end, total)
-            for part, (start, end) in zip(parts, ranges, strict=True)
+            # Apple Silicon JIT runners may provide Python 3.9, which predates
+            # zip(strict=...). Both lists are built from the same range count.
+            for part, (start, end) in zip(parts, ranges)
         ]
         for future in as_completed(futures):
             future.result()

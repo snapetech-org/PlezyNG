@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import builtins
 from hashlib import sha256
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -8,6 +9,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 from zipfile import ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -128,13 +130,19 @@ class FlutterSdkCacheTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temporary:
             destination = Path(temporary) / "flutter.zip"
-            result = download_archive(
-                f"http://127.0.0.1:{server.server_port}/flutter.zip",
-                sha256(payload).hexdigest(),
-                destination,
-                segment_bytes=32_000,
-                max_workers=4,
-            )
+            # The Mac JIT image's Python 3.9 zip() does not accept keyword args.
+            with patch(
+                "scripts.cache_macos_flutter_sdk.zip",
+                side_effect=lambda *iterables: builtins.zip(*iterables),
+                create=True,
+            ):
+                result = download_archive(
+                    f"http://127.0.0.1:{server.server_port}/flutter.zip",
+                    sha256(payload).hexdigest(),
+                    destination,
+                    segment_bytes=32_000,
+                    max_workers=4,
+                )
 
             self.assertEqual(result.read_bytes(), payload)
             self.assertEqual(list(Path(temporary).glob(".*.part-*")), [])

@@ -7,6 +7,27 @@ builds and the storage-heavy webOS candidate use compatible private JIT runners.
 The workflow's private broker pool remains selected for those constrained jobs;
 the hybrid execution profile routes compatible work directly to hosted runners.
 
+## Release job concurrency
+
+`validate-trusted-ref` is the short gate all build jobs wait for. Once it passes,
+the independent platform jobs in one `build.yml` release run are eligible to run
+in parallel; they do not wait for one another. `package-windows` waits for the
+Windows build that produces its input, and `create-release` waits for all
+required platform outputs before assembling the draft. The steps inside each
+job still run in order.
+
+Capacity determines which eligible jobs start. The hybrid Linux, Android,
+Tizen, and Windows jobs can occupy separate hosted runners concurrently. iOS,
+tvOS, and macOS use the single private Apple JIT slot, so those three jobs run
+one at a time. WebOS uses its own private Linux route and can remain queued
+until that compatible capacity is available; it has no dependency on an Apple
+job. The stage-by-stage waits in `release_all_platforms.py` protect the exact
+native-manifest, CI, candidate, tag, and release gates; they do not serialize
+independent platform jobs inside the dispatched release workflow.
+
+For Apple queue inspection and the one-job JIT launcher, see the
+[Apple JIT runner runbook](apple-jit-runner.md).
+
 ```sh
 python3 scripts/release_all_platforms.py --version 3.0.0 \
   --execution-profile hybrid --publish-github-only \

@@ -59,6 +59,11 @@ on:
         required: true
         type: boolean
         default: true
+      include_apple_store_build:
+        description: Opt in to signed iOS and tvOS App Store IPAs; GitHub-only releases use unsigned developer IPAs
+        required: true
+        type: boolean
+        default: false
       subtitle_gpu_backend:
         description: Opt-in Whisper backend; Vulkan builds Windows/Linux x64, CUDA builds Windows x64; release publishing stays CPU-only
         required: true
@@ -104,6 +109,7 @@ jobs:
       include_webos_build: ${{ steps.request.outputs.include_webos_build }}
       include_webos_release: ${{ steps.request.outputs.include_webos_release }}
       include_tizen_build: ${{ steps.request.outputs.include_tizen_build }}
+      include_apple_store_build: ${{ steps.request.outputs.include_apple_store_build }}
       prepare_homebrew_cask: ${{ steps.request.outputs.prepare_homebrew_cask }}
     permissions:
       contents: read
@@ -128,6 +134,7 @@ jobs:
           INCLUDE_WEBOS_BUILD_INPUT: ${{ inputs.include_webos_build }}
           INCLUDE_WEBOS_RELEASE_INPUT: ${{ inputs.include_webos_release }}
           INCLUDE_TIZEN_BUILD_INPUT: ${{ inputs.include_tizen_build }}
+          INCLUDE_APPLE_STORE_BUILD_INPUT: ${{ inputs.include_apple_store_build }}
           PREPARE_HOMEBREW_CASK_INPUT: ${{ inputs.prepare_homebrew_cask }}
           SUBTITLE_GPU_BACKEND_INPUT: ${{ inputs.subtitle_gpu_backend }}
         run: |
@@ -140,6 +147,7 @@ jobs:
           INCLUDE_WEBOS_BUILD="$INCLUDE_WEBOS_BUILD_INPUT"
           INCLUDE_WEBOS_RELEASE="$INCLUDE_WEBOS_RELEASE_INPUT"
           INCLUDE_TIZEN_BUILD="$INCLUDE_TIZEN_BUILD_INPUT"
+          INCLUDE_APPLE_STORE_BUILD="$INCLUDE_APPLE_STORE_BUILD_INPUT"
           PREPARE_HOMEBREW_CASK="$PREPARE_HOMEBREW_CASK_INPUT"
           if [[ "$ACTION" != "build" && "$ACTION" != "release" ]]; then
             echo "Unsupported action: $ACTION" >&2
@@ -216,16 +224,26 @@ jobs:
             echo "macos-validation mode requires prepare_homebrew_cask=true." >&2
             exit 1
           fi
+          if [[ "$INCLUDE_APPLE_STORE_BUILD" != "true" && "$INCLUDE_APPLE_STORE_BUILD" != "false" ]]; then
+            echo "include_apple_store_build must be true or false." >&2
+            exit 1
+          fi
+          if [[ "$MODE" != "release" && "$INCLUDE_APPLE_STORE_BUILD" == "true" ]]; then
+            echo "Signed App Store IPAs are available only in full release mode." >&2
+            exit 1
+          fi
           if [[ "$MODE" == "webos-validation" ]]; then
             RELEASE_TAG=""
             VERSION=""
             INCLUDE_WEBOS_BUILD=true
             INCLUDE_WEBOS_RELEASE=false
             INCLUDE_TIZEN_BUILD=false
+            INCLUDE_APPLE_STORE_BUILD=false
           elif [[ "$MODE" == "macos-validation" ]]; then
             INCLUDE_WEBOS_BUILD=false
             INCLUDE_WEBOS_RELEASE=false
             INCLUDE_TIZEN_BUILD=false
+            INCLUDE_APPLE_STORE_BUILD=false
           elif [[ "$INCLUDE_WEBOS_RELEASE" != "true" && "$INCLUDE_WEBOS_RELEASE" != "false" ]]; then
             echo "include_webos_release must be true or false." >&2
             exit 1
@@ -248,6 +266,7 @@ jobs:
             echo "include_webos_build=$INCLUDE_WEBOS_BUILD"
             echo "include_webos_release=$INCLUDE_WEBOS_RELEASE"
             echo "include_tizen_build=$INCLUDE_TIZEN_BUILD"
+            echo "include_apple_store_build=$INCLUDE_APPLE_STORE_BUILD"
             echo "prepare_homebrew_cask=$PREPARE_HOMEBREW_CASK"
           } >> "$GITHUB_OUTPUT"
 
@@ -915,12 +934,18 @@ jobs:
       - name: Configure optional iOS App Store signing
         id: ios-signing
         env:
+          INCLUDE_APPLE_STORE_BUILD: ${{ needs.validate-trusted-ref.outputs.include_apple_store_build }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
           APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           set -euo pipefail
+          if [[ "$INCLUDE_APPLE_STORE_BUILD" != "true" ]]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "Signed iOS App Store IPA disabled; the unsigned developer IPA remains the GitHub release artifact."
+            exit 0
+          fi
           values=("$APPLE_API_KEY_ID" "$APPLE_API_ISSUER_ID" "$APPLE_API_PRIVATE_KEY" "$APPLE_TEAM_ID")
           configured=0
           missing=0
@@ -1198,12 +1223,18 @@ jobs:
       - name: Configure optional tvOS App Store signing
         id: tvos-signing
         env:
+          INCLUDE_APPLE_STORE_BUILD: ${{ needs.validate-trusted-ref.outputs.include_apple_store_build }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
           APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           set -euo pipefail
+          if [[ "$INCLUDE_APPLE_STORE_BUILD" != "true" ]]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "Signed tvOS App Store IPA disabled; the unsigned developer IPA remains the GitHub release artifact."
+            exit 0
+          fi
           values=("$APPLE_API_KEY_ID" "$APPLE_API_ISSUER_ID" "$APPLE_API_PRIVATE_KEY" "$APPLE_TEAM_ID")
           configured=0
           missing=0

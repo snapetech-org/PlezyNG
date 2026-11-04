@@ -1457,7 +1457,11 @@ jobs:
 
       - name: Build macOS
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
-        run: flutter build macos --release --no-codesign ${{ env.RELEASE_DART_DEFINES }} ${{ env.NATIVE_UPDATER_DEFINE }} --dart-define=SUPPORTER_MODE=unlocked --split-debug-info=debug-info/macos
+        env:
+          FLUTTER_XCODE_CODE_SIGNING_ALLOWED: "NO"
+          FLUTTER_XCODE_CODE_SIGNING_REQUIRED: "NO"
+          FLUTTER_XCODE_CODE_SIGNING_IDENTITY: ""
+        run: flutter build macos --release ${{ env.RELEASE_DART_DEFINES }} ${{ env.NATIVE_UPDATER_DEFINE }} --dart-define=SUPPORTER_MODE=unlocked --split-debug-info=debug-info/macos
 
       - name: Verify universal macOS executable
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}

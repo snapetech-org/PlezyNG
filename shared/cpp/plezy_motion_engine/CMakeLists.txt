@@ -402,93 +402,78 @@ else()
   set(PME_ORT_INSTALL_NAME "libonnxruntime.so")
 endif()
 
-install(TARGETS plezy_motion_engine
-  RUNTIME DESTINATION "${PME_INSTALL_LIBDIR}" COMPONENT Runtime
-  LIBRARY DESTINATION "${PME_INSTALL_LIBDIR}" COMPONENT Runtime
-  ARCHIVE DESTINATION lib COMPONENT Runtime
-)
-install(FILES pme_runtime.h DESTINATION include/plezy_motion_engine COMPONENT Runtime)
-install(FILES "${PME_ORT_RUNTIME_LIBRARY}"
-  DESTINATION "${PME_INSTALL_LIBDIR}"
-  RENAME "${PME_ORT_INSTALL_NAME}"
-  COMPONENT Runtime
-)
-if(UNIX AND NOT APPLE)
-  # ONNX Runtime ships libonnxruntime.so as a symlink chain. Installing only
-  # that entry leaves the bundle pointing at a missing .so.1 target, and the
-  # shared provider interface library is needed when execution providers load.
-  get_filename_component(PME_ORT_RUNTIME_DIRECTORY "${PME_ORT_RUNTIME_LIBRARY}" DIRECTORY)
-  install(DIRECTORY "${PME_ORT_RUNTIME_DIRECTORY}/"
-    DESTINATION "${PME_INSTALL_LIBDIR}"
-    COMPONENT Runtime
-    FILES_MATCHING
-      PATTERN "libonnxruntime.so.*"
-      PATTERN "libonnxruntime_providers_shared.so*"
+if(NOT WIN32)
+  # The Windows runner's POST_BUILD rule copies PME and its runtime files next
+  # to the executable. Nested install scripts cannot safely append destinations
+  # to Flutter's generator-expression CMAKE_INSTALL_PREFIX on Windows.
+  install(TARGETS plezy_motion_engine
+    RUNTIME DESTINATION "${PME_INSTALL_LIBDIR}" COMPONENT Runtime
+    LIBRARY DESTINATION "${PME_INSTALL_LIBDIR}" COMPONENT Runtime
+    ARCHIVE DESTINATION lib COMPONENT Runtime
   )
-  install(FILES "${PME_ORT_LICENSE_FILE}"
+  install(FILES pme_runtime.h DESTINATION include/plezy_motion_engine COMPONENT Runtime)
+  install(FILES "${PME_ORT_RUNTIME_LIBRARY}"
     DESTINATION "${PME_INSTALL_LIBDIR}"
-    RENAME "ONNXRuntime-License.txt"
-    COMPONENT Runtime
-    OPTIONAL
-  )
-  install(FILES "${PME_ORT_THIRD_PARTY_NOTICES_FILE}"
-    DESTINATION "${PME_INSTALL_LIBDIR}"
-    RENAME "ONNXRuntime-ThirdPartyNotices.txt"
-    COMPONENT Runtime
-    OPTIONAL
-  )
-endif()
-if(WIN32)
-  install(FILES
-    "${WINML_BINARY_DIR}/Microsoft.Windows.AI.MachineLearning.dll"
-    "${WINML_DIRECTML_DLL}"
-    DESTINATION "${PME_INSTALL_LIBDIR}"
+    RENAME "${PME_ORT_INSTALL_NAME}"
     COMPONENT Runtime
   )
-  install(FILES "${PLEZY_WINML_PACKAGE_ROOT}/license.txt"
-    DESTINATION "${PME_INSTALL_LIBDIR}"
-    RENAME "WindowsML-License.txt"
-    COMPONENT Runtime
-  )
-  install(FILES "${PLEZY_WINML_PACKAGE_ROOT}/ThirdPartyNotices.txt"
-    DESTINATION "${PME_INSTALL_LIBDIR}"
-    RENAME "WindowsML-ThirdPartyNotices.txt"
-    COMPONENT Runtime
-  )
-endif()
-if(PME_PROVIDER_LIBRARIES)
-  install(FILES ${PME_PROVIDER_LIBRARIES}
-    DESTINATION "${PME_INSTALL_LIBDIR}"
-    COMPONENT Runtime
-  )
-endif()
-if(PME_PROVIDER_DEPENDENCY_LIBRARIES)
-  install(FILES ${PME_PROVIDER_DEPENDENCY_LIBRARIES}
-    DESTINATION "${PME_INSTALL_LIBDIR}"
-    COMPONENT Runtime
-  )
-endif()
-if(PME_PROVIDER_NOTICE_FILES)
-  install(FILES ${PME_PROVIDER_NOTICE_FILES}
-    DESTINATION "${PME_INSTALL_LIBDIR}"
-    COMPONENT Runtime
-  )
-endif()
-if(PME_PROVIDER_RUNTIME_FILES)
-  install(FILES ${PME_PROVIDER_RUNTIME_FILES}
-    DESTINATION "${PME_INSTALL_LIBDIR}"
-    COMPONENT Runtime
-  )
-endif()
+  if(UNIX AND NOT APPLE)
+    # ONNX Runtime ships libonnxruntime.so as a symlink chain. Installing only
+    # that entry leaves the bundle pointing at a missing .so.1 target, and the
+    # shared provider interface library is needed when execution providers load.
+    get_filename_component(PME_ORT_RUNTIME_DIRECTORY "${PME_ORT_RUNTIME_LIBRARY}" DIRECTORY)
+    install(DIRECTORY "${PME_ORT_RUNTIME_DIRECTORY}/"
+      DESTINATION "${PME_INSTALL_LIBDIR}"
+      COMPONENT Runtime
+      FILES_MATCHING
+        PATTERN "libonnxruntime.so.*"
+        PATTERN "libonnxruntime_providers_shared.so*"
+    )
+    install(FILES "${PME_ORT_LICENSE_FILE}"
+      DESTINATION "${PME_INSTALL_LIBDIR}"
+      RENAME "ONNXRuntime-License.txt"
+      COMPONENT Runtime
+      OPTIONAL
+    )
+    install(FILES "${PME_ORT_THIRD_PARTY_NOTICES_FILE}"
+      DESTINATION "${PME_INSTALL_LIBDIR}"
+      RENAME "ONNXRuntime-ThirdPartyNotices.txt"
+      COMPONENT Runtime
+      OPTIONAL
+    )
+  endif()
+  if(PME_PROVIDER_LIBRARIES)
+    install(FILES ${PME_PROVIDER_LIBRARIES}
+      DESTINATION "${PME_INSTALL_LIBDIR}"
+      COMPONENT Runtime
+    )
+  endif()
+  if(PME_PROVIDER_DEPENDENCY_LIBRARIES)
+    install(FILES ${PME_PROVIDER_DEPENDENCY_LIBRARIES}
+      DESTINATION "${PME_INSTALL_LIBDIR}"
+      COMPONENT Runtime
+    )
+  endif()
+  if(PME_PROVIDER_NOTICE_FILES)
+    install(FILES ${PME_PROVIDER_NOTICE_FILES}
+      DESTINATION "${PME_INSTALL_LIBDIR}"
+      COMPONENT Runtime
+    )
+  endif()
+  if(PME_PROVIDER_RUNTIME_FILES)
+    install(FILES ${PME_PROVIDER_RUNTIME_FILES}
+      DESTINATION "${PME_INSTALL_LIBDIR}"
+      COMPONENT Runtime
+    )
+  endif()
 
-if(WIN32)
-  install(FILES providers.windows.tsv DESTINATION "${PME_INSTALL_LIBDIR}" COMPONENT Runtime)
-elseif(UNIX AND NOT APPLE)
-  install(FILES "${PME_LINUX_PROVIDER_MANIFEST}"
-    DESTINATION "${PME_INSTALL_LIBDIR}"
-    RENAME providers.linux.tsv
-    COMPONENT Runtime
-  )
+  if(UNIX AND NOT APPLE)
+    install(FILES "${PME_LINUX_PROVIDER_MANIFEST}"
+      DESTINATION "${PME_INSTALL_LIBDIR}"
+      RENAME providers.linux.tsv
+      COMPONENT Runtime
+    )
+  endif()
 endif()
 
 if(PME_BUILD_RUNTIME_PROBE)
@@ -504,8 +489,10 @@ if(PME_BUILD_RUNTIME_PROBE)
   else()
     set(PME_PROBE_INSTALL_BINDIR "${PME_INSTALL_LIBDIR}")
   endif()
-  install(TARGETS plezy_motion_runtime_probe
-    RUNTIME DESTINATION "${PME_PROBE_INSTALL_BINDIR}"
-    COMPONENT DevTools
-  )
+  if(NOT WIN32)
+    install(TARGETS plezy_motion_runtime_probe
+      RUNTIME DESTINATION "${PME_PROBE_INSTALL_BINDIR}"
+      COMPONENT DevTools
+    )
+  endif()
 endif()

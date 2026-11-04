@@ -115,7 +115,8 @@ mkdir -m 700 -- "$NORMALIZED_ROOT"
 # Emit only the byte-locked LG environment script with its old installation
 # prefix relocated to the verified NDK root. Keep a copy beside the logs.
 "$PYTHON" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --emit-shell > "$LOG_ROOT/ndk-environment.sh"
-source "$LOG_ROOT/ndk-environment.sh"
+source "$ROOT/tools/webos/source_ndk_environment.sh"
+plezyng_source_ndk_environment "$LOG_ROOT/ndk-environment.sh"
 export WEBOS_ENGINE_ROOT="$ENGINE_ROOT"
 export WEBOS_NDK_SYSROOT="$SDKTARGETSYSROOT"
 export WEBOS_NDK_HOST_SYSROOT="$OECORE_NATIVE_SYSROOT"

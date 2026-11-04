@@ -80,62 +80,62 @@
     "gccVersion": "13.3.0",
     "gccPath": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-gcc",
     "gccDriverPath": "sysroots/x86_64-starfishsdk-linux/usr/libexec/arm-webos-linux-gnueabi/gcc/arm-webos-linux-gnueabi/13.3.0/cc1",
-    "gccSha256": "b8845f24980dae2a362c1d15f0246fbf5d7bfabff19034a6d194b8c04229cacd",
-    "gccDriverSha256": "e0c1edab72b7adbff8e253c7dc70ac96e6826686e9fb5b618ea5ad81805e0490",
+    "gccSha256": "51d1444ad5751d30ceedc9813aaa97df1d44377de9abcc3d15709e7266315497",
+    "gccDriverSha256": "77a329ace56caf9ef37f21c47f43afb16cc75c958ef396488b3f4b2542173992",
     "ndkTools": {
       "ld": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-ld",
-        "sha256": "ead45449c0fff6f063f8fb432769ea7c2b99ed52899ccd0ad34bfe9f2f2e1df1",
+        "sha256": "6be13946688e5385a088622d7268b8ccf318d9729f7d3ecf6945efacae702709",
         "normalizeRoot": true
       },
       "ar": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-ar",
-        "sha256": "17fd89dff4b5a0dbb4bd45c144bea1b4d14f531e650d137f458deb68ae88c271",
+        "sha256": "d57b2b3d9f0002b858f6e7d50342c0b45d45df3c80c5fddc899038c6a0308438",
         "normalizeRoot": true
       },
       "as": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-as",
-        "sha256": "077dcd98aead02eb3d1c5392d9144f5a8158eb2f2f09134f87b92208de683f30",
+        "sha256": "298d24c3889212b344f18246119f8c74236c14122cf665ecd232b856fcae0501",
         "normalizeRoot": true
       },
       "strip": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-strip",
-        "sha256": "d2126090a8033990b016568a05b76eeb183baa2baa0e9dd39ad185a01eae14a7",
+        "sha256": "0ef9bf2c125d3c0c211121b48995e7029365c52806f54ca85b5a2728e66972f4",
         "normalizeRoot": true
       },
       "readelf": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-readelf",
-        "sha256": "686e730044269c6aa7c261657428e8661194cf8716a045699ba3415503f5d787",
+        "sha256": "52f0dffee831f37f5c34fd8cb1599248d7de79974986d72be43dbd768101733b",
         "normalizeRoot": true
       },
       "nm": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-nm",
-        "sha256": "45498bb39421aa7f9f86fbbd69d53f84376ba3581701c332cdc40bd0d9833df3",
+        "sha256": "ca0405e247c1464e5271b0aa60b56819803d59d2c992e5c85b7b27930f30b24b",
         "normalizeRoot": true
       },
       "objdump": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-objdump",
-        "sha256": "11b90b9a89a57e4b2793019f834dde1385b07a292bc60e2c30693324c0749cd2",
+        "sha256": "eb1d95179d508ec367bd7c486264b6817e9d9581f1ac1729ecd8afde1f24bd8d",
         "normalizeRoot": true
       },
       "ranlib": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-ranlib",
-        "sha256": "3aff3076d9f3a115007bb03407a5aa7c9342417c7666d2d9d52043fe954d1e54",
+        "sha256": "521d2aa4180a516f3814db8d8bc9da32741249e1bb3eb0b24337dd47fabb12f3",
         "normalizeRoot": true
       },
       "objcopy": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-objcopy",
-        "sha256": "8ad3906af8bf17ecd48afd6aeedb7c2dd5fdfe8178ec3d33fa4f50af14958383",
+        "sha256": "78f46c21772d06105a2163e51ce40c255628673744b9a0e490c7dab1e5d98777",
         "normalizeRoot": true
       },
       "gcc": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/bin/arm-webos-linux-gnueabi/arm-webos-linux-gnueabi-gcc",
-        "sha256": "b8845f24980dae2a362c1d15f0246fbf5d7bfabff19034a6d194b8c04229cacd",
+        "sha256": "51d1444ad5751d30ceedc9813aaa97df1d44377de9abcc3d15709e7266315497",
         "normalizeRoot": true
       },
       "gccDriver": {
         "path": "sysroots/x86_64-starfishsdk-linux/usr/libexec/arm-webos-linux-gnueabi/gcc/arm-webos-linux-gnueabi/13.3.0/cc1",
-        "sha256": "e0c1edab72b7adbff8e253c7dc70ac96e6826686e9fb5b618ea5ad81805e0490",
+        "sha256": "77a329ace56caf9ef37f21c47f43afb16cc75c958ef396488b3f4b2542173992",
         "normalizeRoot": true
       }
     },

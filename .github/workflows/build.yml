@@ -846,6 +846,7 @@ jobs:
       contents: read
     env:
       PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
+      LANG: en_US.UTF-8
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -1144,6 +1145,7 @@ jobs:
       contents: read
     env:
       PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
+      LANG: en_US.UTF-8
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -1393,6 +1395,7 @@ jobs:
       contents: read
     env:
       PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
+      LANG: en_US.UTF-8
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:

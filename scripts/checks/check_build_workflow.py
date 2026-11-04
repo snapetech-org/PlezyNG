@@ -1128,6 +1128,10 @@ require(
 )
 
 apple_native = job_block(ci_text, "apple-native-test")
+require(
+    "LANG: en_US.UTF-8" in apple_native,
+    "Apple CI must use a UTF-8 locale for CocoaPods and Ruby",
+)
 apple_prepare_scratch = named_step(
     apple_native, "Prepare local Xcode and SwiftPM scratch"
 )
@@ -1170,6 +1174,10 @@ for apple_job_name, scratch_job in (
     ("build-macos", "macos"),
 ):
     apple_release_job = job(apple_job_name)
+    require(
+        "LANG: en_US.UTF-8" in apple_release_job,
+        f"{apple_job_name} must use a UTF-8 locale for CocoaPods and Ruby",
+    )
     require(
         f"scripts/prepare_apple_jit_scratch.sh {scratch_job} 40 local-xcode" in apple_release_job
         and f"scripts/cleanup_apple_jit_scratch.sh {scratch_job}" in apple_release_job,

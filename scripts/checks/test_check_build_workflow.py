@@ -137,6 +137,19 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("architecture matrix checks passed", result.stdout)
 
+    def test_apple_release_jobs_require_utf8_locale(self) -> None:
+        workflow = self._workflow()
+        self.assertIn("      LANG: en_US.UTF-8\n", workflow)
+        workflow = workflow.replace("      LANG: en_US.UTF-8\n", "", 1)
+
+        result = self._run(workflow)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "build-ios must use a UTF-8 locale for CocoaPods and Ruby",
+            result.stderr,
+        )
+
     def test_macos_release_build_uses_flutter_xcode_signing_overrides(self) -> None:
         workflow = self._workflow()
         mutations = (

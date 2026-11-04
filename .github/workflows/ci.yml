@@ -642,6 +642,7 @@ jobs:
       contents: read
     env:
       PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
+      LANG: en_US.UTF-8
     strategy:
       fail-fast: false
       matrix:

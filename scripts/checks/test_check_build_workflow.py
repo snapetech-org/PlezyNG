@@ -187,6 +187,33 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             result.stderr,
         )
 
+    def test_windows_cmake_install_prefix_stays_concrete_and_bundles_use_target_dir(self) -> None:
+        cmake = self._cmake()
+        mutations = (
+            (
+                'set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}" CACHE PATH',
+                'set(CMAKE_INSTALL_PREFIX "${BUILD_BUNDLE_DIR}" CACHE PATH',
+            ),
+            (
+                'set(INSTALL_BUNDLE_LIB_DIR "${BUILD_BUNDLE_DIR}")',
+                'set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}")',
+            ),
+            (
+                'set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${BUILD_BUNDLE_DIR}")',
+                'set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ".")',
+            ),
+        )
+        for original, mutated in mutations:
+            with self.subTest(original=original):
+                self.assertIn(original, cmake, f"missing Windows install setting: {original}")
+                result = self._run(self._workflow(), cmake=cmake.replace(original, mutated, 1))
+
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(
+                    "Windows must keep CMAKE_INSTALL_PREFIX concrete and route app bundle files",
+                    result.stderr,
+                )
+
     def test_windows_release_build_requires_native_jdk_for_jni(self) -> None:
         prefix, windows = self._workflow().split("  build-windows:\n", 1)
         java_step = (

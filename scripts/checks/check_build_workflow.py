@@ -1074,12 +1074,12 @@ require(
 require(
     re.search(
         r"(?ms)^      execution_profile:\n.*?^        required: true\n        type: choice\n"
-        r".*?^        options:\n          - private\n          - hybrid\n        default: private$",
+        r".*?^        options:\n          - private\n          - hybrid\n        default: hybrid$",
         text,
     ) is not None
     and "inputs.execution_profile == 'hybrid'" in job("validate-trusted-ref")
     and "\"$VERSION\" != \"3.0.0\"" in named_step(job("validate-trusted-ref"), "Resolve release request"),
-    "the hybrid execution profile must be default-off and restricted to trusted-main PlezyNG 3.0.0 builds",
+    "the hybrid execution profile must be the default and remain restricted to trusted-main PlezyNG 3.0.0 builds",
 )
 require(
     "inputs.build_android" not in text
@@ -1256,8 +1256,13 @@ require(
     "working-directory: tools/reader-tests" in chrome_setup
     and "chromium.executablePath()" in chrome_setup
     and "CHROME_EXECUTABLE=%s" in chrome_setup
-    and "flutter test --platform chrome" in chrome_test,
-    "Flutter Chrome tests must use the Chromium installed for reader browser checks",
+    and "flutter test --platform chrome --timeout 60s" in chrome_test
+    and "timeout-minutes: 10" in chrome_test,
+    "Flutter Chrome tests must use the installed Chromium and have bounded test and step timeouts",
+)
+require(
+    "        options: [private, hybrid]\n        default: hybrid" in ci_text,
+    "manual CI must default to the trusted-main hybrid profile",
 )
 
 windows_native = job_block(ci_text, "windows-native-test")

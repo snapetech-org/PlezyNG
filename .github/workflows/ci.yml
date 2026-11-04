@@ -8,21 +8,21 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: CI action authorized by the private JIT runner policy
+        description: Run the repository CI checks
         required: true
         type: choice
         options: [ci]
       runner_pool:
-        description: Runner pool for this workflow
+        description: Private JIT pool for jobs that need constrained resources
         required: true
         type: choice
         options: [private]
       execution_profile:
-        description: Use private JIT for every job, or standard public runners for compatible trusted-main 3.0.0 CI jobs
+        description: Use standard hosted runners for compatible work and private JIT for constrained Apple jobs
         required: true
         type: choice
         options: [private, hybrid]
-        default: private
+        default: hybrid
       build_linux_packages:
         description: >
           Manually smoke-build Linux packages when changing linux/packaging.
@@ -245,7 +245,8 @@ jobs:
 
       - name: Run wakelock_plus Chrome tests
         working-directory: packages/wakelock_plus
-        run: flutter test --platform chrome --dart-define=WEB_PLUGIN_TESTS=true test/wakelock_plus_web_plugin_test.dart
+        timeout-minutes: 10
+        run: flutter test --platform chrome --timeout 60s --dart-define=WEB_PLUGIN_TESTS=true test/wakelock_plus_web_plugin_test.dart
 
       # The vendored atomic-write patch has to keep the upstream contract, not
       # just the new behaviour. Upstream's own suites are the check for that.

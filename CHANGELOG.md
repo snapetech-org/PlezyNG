@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Bound the Flutter Chrome CI browser test and per-test timeout so stalled runs terminate.
 - Verify the WebOS objcopy tool with the same install-root-normalized hash used by the pinned NDK environment check.
 - Keep 3.0.0 iOS and tvOS developer artifacts available for GitHub-only releases, with signed App Store IPAs behind an explicit opt-in.
 - Normalize LG NDK tool and environment-fragment hashes across per-run installation paths so the WebOS candidate verifier accepts the checksum-pinned SDK.

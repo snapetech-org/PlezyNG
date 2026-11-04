@@ -15,19 +15,19 @@ on:
           - build
           - release
       runner_pool:
-        description: Runner pool for this build
+        description: Private JIT pool for jobs that need constrained resources
         required: true
         type: choice
         options:
           - private
       execution_profile:
-        description: Keep every job on private JIT, or use standard public runners for compatible trusted-main 3.0.0 jobs, including Tizen
+        description: Use standard hosted runners for compatible trusted-main jobs and private JIT for constrained Apple and webOS builds
         required: true
         type: choice
         options:
           - private
           - hybrid
-        default: private
+        default: hybrid
       mode:
         description: Select all release platforms or a platform-specific validation build
         required: true

@@ -1,10 +1,11 @@
 # One-command PlezyNG 3.0.0 release
 
-After the native and platform-specific private-JIT routes pass their
-current-revision canaries, run the complete 3.0.0 release from an authenticated
-`gh` session. Compatible Linux, Android, and Windows jobs use the standard
-GitHub-hosted runners; Apple, webOS, Tizen, and native dependency builds remain
-on their compatible private JIT runners.
+After exact-main CI and platform canaries pass, run the complete 3.0.0 release
+from an authenticated `gh` session. Compatible Linux, Android, Tizen, Windows
+x64, and native Windows ARM64 jobs use standard GitHub-hosted runners. Apple
+builds and the storage-heavy webOS candidate use compatible private JIT runners.
+The workflow's private broker pool remains selected for those constrained jobs;
+the hybrid execution profile routes compatible work directly to hosted runners.
 
 ```sh
 python3 scripts/release_all_platforms.py --version 3.0.0 \
@@ -46,7 +47,8 @@ before Flutter configures its plugins. The installer job also provisions Inno Se
 from that lock; both downloads require matching hashes and publisher signatures.
 `-VerifyOnly` checks the installed tools before compilation or packaging. The
 private profile keeps Windows x64 on the private PC pool and omits ARM64. The
-3.0.0 hybrid profile uses `windows-2025` for x64 and the native `windows-11-arm`
+3.0.0 hybrid profile uses `windows-2025` for x64 and the native
+`windows-11-vs2026-arm`
 runner for ARM64; ARM64 is packaged as a separate portable ZIP while installers
 and package-manager artifacts remain x64. Linux ARM64 uses `ubuntu-24.04-arm`
 in the hybrid profile. The Mac remains reserved for Apple work. See
@@ -57,7 +59,7 @@ the same kspld0 NFS export that is also mounted at
 `/Volumes/plezyng-native-build-kspld0`. The Dart macOS native-asset step rewrites
 dylib install names to absolute workspace paths; the longer mount path exceeded
 the bundled SMB library's Mach-O header padding. The JIT account cannot mount
-shares itself, so the Mac host must provide `/Volumes/p` before dispatch. The Apple
+shares itself, so the Mac host must provide `/Volumes/p` before dispatch. The mount uses the stable Headscale path `kspld0.tail.snape.local` and client identity `100.64.0.3`; its LaunchDaemon reconnects the existing Tailscale identity and retries every 60 seconds if Tailscale is not ready at startup. The Apple
 scratch preflight checks that `/p` is the expected NFS export and fails before
 checkout or build work if it is absent. Xcode build products remain on local
 APFS; only the task-scoped source workspace and scratch data use NFS. Keep the

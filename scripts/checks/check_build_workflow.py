@@ -226,8 +226,17 @@ for expected in (
 windows_cmake = WINDOWS_CMAKE.read_text(encoding="utf-8") if WINDOWS_CMAKE.is_file() else ""
 require(bool(windows_cmake), "missing windows/CMakeLists.txt")
 require(
-    'set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ".")' in windows_cmake,
-    "Windows app-local MSVC runtimes must use a relative install destination beside the executable",
+    'set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}" CACHE PATH' in windows_cmake
+    and 'set(INSTALL_BUNDLE_DATA_DIR "${BUILD_BUNDLE_DIR}/data")' in windows_cmake
+    and 'set(INSTALL_BUNDLE_LIB_DIR "${BUILD_BUNDLE_DIR}")' in windows_cmake
+    and 'install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${BUILD_BUNDLE_DIR}"' in windows_cmake
+    and 'set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${BUILD_BUNDLE_DIR}")' in windows_cmake,
+    "Windows must keep CMAKE_INSTALL_PREFIX concrete and route app bundle files to the target output directory",
+)
+torrent_cmake = PLEZY_TORRENT_CMAKE.read_text(encoding="utf-8") if PLEZY_TORRENT_CMAKE.is_file() else ""
+require(
+    '"$<TARGET_FILE_DIR:${BINARY_NAME}>/share/plezy/licenses"' in torrent_cmake,
+    "Windows libtorrent notices must remain in the executable bundle when dependency staging uses a concrete prefix",
 )
 snap_builder = SNAP_BUILDER.read_text(encoding="utf-8") if SNAP_BUILDER.is_file() else ""
 require(

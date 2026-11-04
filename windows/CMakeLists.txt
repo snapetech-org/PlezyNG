@@ -460,13 +460,17 @@ set(BUILD_BUNDLE_DIR "$<TARGET_FILE_DIR:${BINARY_NAME}>")
 # Make the "install" step default, as it's required to run.
 set(CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX "${BUILD_BUNDLE_DIR}" CACHE PATH "..." FORCE)
+  # Keep the global prefix concrete for dependency install rules. libtorrent
+  # uses relative destinations such as "lib", and CMake does not evaluate a
+  # target generator expression in CMAKE_INSTALL_PREFIX.
+  set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}" CACHE PATH
+    "Concrete staging prefix for Windows dependency install rules" FORCE)
 endif()
 
-set(INSTALL_BUNDLE_DATA_DIR "${CMAKE_INSTALL_PREFIX}/data")
-set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}")
+set(INSTALL_BUNDLE_DATA_DIR "${BUILD_BUNDLE_DIR}/data")
+set(INSTALL_BUNDLE_LIB_DIR "${BUILD_BUNDLE_DIR}")
 
-install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
+install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${BUILD_BUNDLE_DIR}"
   COMPONENT Runtime)
 
 # Bundle the MSVC C++ runtime next to the executable. MSVC requires the
@@ -476,11 +480,10 @@ install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
 # constexpr std::mutex layout, so the app never opens. App-local copies
 # precede System32 in the DLL search order, removing the dependency on the
 # machine-wide redistributable entirely.
-# This variable is a relative install destination. Using the absolute bundle
-# path here made CMake treat the target-directory generator expression as a
-# literal path and attempt to create a `$<TARGET_FILE_DIR:...>/lib` directory.
-# A dot keeps the app-local MSVC runtimes beside the executable.
-set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ".")
+# Use the executable directory directly. The global install prefix is kept
+# concrete so dependency rules cannot turn the target-directory expression
+# into a literal path such as `$<TARGET_FILE_DIR:plezy>/lib`.
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${BUILD_BUNDLE_DIR}")
 set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT "Runtime")
 include(InstallRequiredSystemLibraries)
 

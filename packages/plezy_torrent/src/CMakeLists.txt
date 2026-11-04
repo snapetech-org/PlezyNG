@@ -44,8 +44,16 @@ else()
     URL_HASH SHA256=f0db58580f4f29ade6cc40fa4ba80e2c9a70c90265cd77332d3cdec37ecf1e6d)
   FetchContent_MakeAvailable(libtorrent)
   add_library(LibtorrentRasterbar::torrent-rasterbar ALIAS torrent-rasterbar)
-  install(FILES "${libtorrent_SOURCE_DIR}/COPYING" DESTINATION share/plezy/licenses RENAME libtorrent.txt)
-  install(FILES "${plezy_boost_SOURCE_DIR}/LICENSE_1_0.txt" DESTINATION share/plezy/licenses RENAME boost.txt)
+  if(WIN32 AND DEFINED BINARY_NAME AND TARGET "${BINARY_NAME}")
+    set(PLEZY_TORRENT_LICENSE_DESTINATION
+      "$<TARGET_FILE_DIR:${BINARY_NAME}>/share/plezy/licenses")
+  else()
+    set(PLEZY_TORRENT_LICENSE_DESTINATION "share/plezy/licenses")
+  endif()
+  install(FILES "${libtorrent_SOURCE_DIR}/COPYING"
+    DESTINATION "${PLEZY_TORRENT_LICENSE_DESTINATION}" RENAME libtorrent.txt)
+  install(FILES "${plezy_boost_SOURCE_DIR}/LICENSE_1_0.txt"
+    DESTINATION "${PLEZY_TORRENT_LICENSE_DESTINATION}" RENAME boost.txt)
 endif()
 add_library(plezy_torrent SHARED plezy_torrent.cpp)
 target_compile_features(plezy_torrent PRIVATE cxx_std_17)

@@ -140,7 +140,7 @@ class AppDatabase extends _$AppDatabase {
           final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
           await database.runIdentityMutation(
             () => database.customStatement(
-              "UPDATE iptv_recordings SET state='failed', error_code='interrupted', completed_at=? WHERE state='recording'",
+              "UPDATE iptv_recordings SET state='interrupted', error_code='app_interrupted', completed_at=? WHERE state='recording'",
               [now],
             ),
           );

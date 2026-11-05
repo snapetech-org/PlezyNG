@@ -1,10 +1,11 @@
-import '../../sources/source_models.dart' show sourceDigest;
+import '../../sources/source_models.dart' show sourceDigest, SourceException, SourceFailure;
 
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
+import 'package:disk_usage/disk_usage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:plezy_torrent/plezy_torrent.dart';
@@ -42,6 +43,15 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   Timer? _journalRefresh;
   final Set<TorrentLease> _nativeLeases = {};
   int _nativeOpening = 0;
+  final Map<Object, int> _nativeReservations = {};
+  static const _nativeStorageReserve = 512 * 1024 * 1024;
+  int get nativeCacheQuotaBytes => _snapshot.nativeCacheQuotaBytes;
+
+  Future<void> setNativeCacheQuotaBytes(int bytes) async {
+    if (bytes < 1024 * 1024 * 1024 || bytes > 1024 * 1024 * 1024 * 1024) throw ArgumentError.value(bytes);
+    final (profile, generation) = _requireProfile();
+    await _commit(profile, generation, (current) => current.copyWith(nativeCacheQuotaBytes: bytes));
+  }
   int _nativeGeneration = 0;
   bool? scheduledPreparationAvailable;
   bool get nativePeerAvailable => TorrentLease.available;
@@ -58,6 +68,7 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       unawaited(lease.close());
     }
     _nativeLeases.clear();
+    _nativeReservations.clear();
   }
 
   Future<TorrentLease> resolveNativeTorrent(RemoteStreamCandidate candidate, {bool Function()? shouldCancel}) async {
@@ -65,15 +76,46 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     if (!nativePeerEnabled || candidate.infoHash == null) {
       throw const RemoteProviderException(RemoteProviderFailure.unsupported);
     }
-    _nativeLeases.removeWhere((lease) => lease.isClosed);
+    _nativeLeases.removeWhere((lease) {
+      if (!lease.isClosed) return false;
+      _nativeReservations.remove(lease);
+      return true;
+    });
     if (_nativeLeases.length + _nativeOpening >= 2) {
       throw const RemoteProviderException(RemoteProviderFailure.unavailable);
     }
     final nativeGeneration = _nativeGeneration;
+    final reservation = Object();
+    var quota = nativeCacheQuotaBytes - _nativeReservations.values.fold<int>(0, (sum, bytes) => sum + bytes);
+    if (quota < 16 * 1024 * 1024) throw const SourceException(SourceFailure.quotaExceeded);
+    final knownSize = candidate.behaviorHints['videoSize'];
+    if (knownSize is num && knownSize > quota - 32 * 1024 * 1024) {
+      throw const SourceException(SourceFailure.quotaExceeded);
+    }
+    // Reserve synchronously before any asynchronous platform calls. Once
+    // metadata arrives replace the provisional budget with the selected size.
+    _nativeReservations[reservation] = quota;
     _nativeOpening++;
     try {
       final directory = await getTemporaryDirectory();
       final cache = Directory(path.join(directory.path, 'plezy-torrents', sourceDigest(profile)));
+      await cache.create(recursive: true);
+      int? available;
+      try {
+        available = await DiskUsage.freeSpace(cache.path).timeout(const Duration(seconds: 3));
+      } on Object {
+        throw const SourceException(SourceFailure.storageUnavailable);
+      }
+      if (available == null) throw const SourceException(SourceFailure.storageUnavailable);
+      final otherReservations = _nativeReservations.entries
+          .where((entry) => !identical(entry.key, reservation))
+          .fold<int>(0, (sum, entry) => sum + entry.value);
+      final writable = available - _nativeStorageReserve - otherReservations;
+      if (writable < 16 * 1024 * 1024 || (knownSize is num && knownSize + 32 * 1024 * 1024 > writable)) {
+        throw const SourceException(SourceFailure.storageLow);
+      }
+      if (writable < quota) quota = writable;
+      _nativeReservations[reservation] = quota;
       if (_nativeLeases.isEmpty && _nativeOpening == 1 && await cache.exists()) {
         final cutoff = DateTime.now().subtract(const Duration(days: 1));
         await for (final entry in cache.list(followLinks: false)) {
@@ -89,6 +131,7 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       final lease = await TorrentLease.open(
         infoHash: candidate.infoHash!,
         fileIndex: candidate.fileIndex,
+        quotaBytes: quota,
         trackers: candidate.trackers,
         shouldCancel: () =>
             !_current(profile, generation) ||
@@ -104,9 +147,11 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         await lease.close();
         throw const RemoteProviderException(RemoteProviderFailure.cancelled);
       }
+      _nativeReservations[lease] = lease.size + 32 * 1024 * 1024;
       _nativeLeases.add(lease);
       return lease;
     } finally {
+      _nativeReservations.remove(reservation);
       _nativeOpening--;
     }
   }

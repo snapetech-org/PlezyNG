@@ -8287,7 +8287,7 @@ class Translations$streaming$en {
 	String get nativePeerPlay => 'Play on this device';
 
 	/// en: 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Uses up to 4 GB per video and uploads up to 256 KB/s while playing; stops when playback ends.'
-	String get nativePeerHelp => 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Uses up to 4 GB per video and uploads up to 256 KB/s while playing; stops when playback ends.';
+	String get nativePeerHelp => 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Temporary files share the configured storage limit; free space is checked before playback. Uploads up to 256 KB/s while playing; stops when playback ends.';
 
 	/// en: 'Available sources'
 	String get availableCopies => 'Available sources';

@@ -3476,7 +3476,7 @@
     "providers": "Debrid providers",
     "nativePeerTitle": "Play torrents on this device",
     "nativePeerPlay": "Play on this device",
-    "nativePeerHelp": "Use peers when a cloud provider is unavailable. Peers can see your IP address. Uses up to 4 GB per video and uploads up to 256 KB/s while playing; stops when playback ends.",
+    "nativePeerHelp": "Use peers when a cloud provider is unavailable. Peers can see your IP address. Temporary files share the configured storage limit; free space is checked before playback. Uploads up to 256 KB/s while playing; stops when playback ends.",
     "availableCopies": "Available sources",
     "availableCopiesCount": "${count} sources",
     "canonicalIndexing": "Finding your server and cloud copies…",

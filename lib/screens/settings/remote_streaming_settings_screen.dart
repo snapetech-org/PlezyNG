@@ -15,6 +15,7 @@ import '../../services/remote_streams/stremio_account_client.dart';
 import '../../services/remote_streams/stremio_addon_client.dart';
 import '../../sources/source_controller.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../utils/formatters.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/connector_brand_mark.dart';
 import '../../widgets/focusable_list_tile.dart';
@@ -709,6 +710,26 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                                 }
                               }
                             : null,
+                      ),
+                    if (streaming.nativePeerAvailable && streaming.nativePeerEnabled)
+                      FocusableListTile(
+                        leading: const AppIcon(Symbols.storage_rounded),
+                        title: Text('${t.streaming.nativePeerTitle}: ${t.fileSources.offlineQuota}'),
+                        subtitle: Text(ByteFormatter.formatBytes(streaming.nativeCacheQuotaBytes)),
+                        onTap: !streaming.isReady ? null : () async {
+                          final bytes = await showDialog<int>(context: context, builder: (context) => SimpleDialog(
+                            title: Text(t.fileSources.offlineQuota),
+                            children: [for (final gib in [4, 16, 64, 128, 256])
+                              SimpleDialogOption(
+                                onPressed: () => Navigator.pop(context, gib * 1024 * 1024 * 1024),
+                                child: Text(ByteFormatter.formatBytes(gib * 1024 * 1024 * 1024)),
+                              ),
+                            ],
+                          ));
+                          if (bytes == null || !context.mounted) return;
+                          try { await streaming.setNativeCacheQuotaBytes(bytes); }
+                          on Object { if (context.mounted) showAppSnackBar(context, t.streaming.streamPrepareFailed); }
+                        },
                       ),
                     _providerTile(
                       service: RemoteStreamService.realDebrid,

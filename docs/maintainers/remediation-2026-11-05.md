@@ -18,7 +18,7 @@ release qualification. Changes are committed directly to `main` in small batches
 | D10 | Translation fallbacks and localized service status | Queued | Pending |
 | G01-G02 | Native visualizer delivery and signed catalog activation | Queued | Pending |
 | G03 | Live/DVR subtitle capture | Queued | Pending |
-| G04 | P2P storage policy for large media | Queued | Pending |
+| G04 | P2P storage policy for large media | Implemented: per-profile 4/16/64/128/256 GiB choices, 64 GiB default, aggregate lease reservations, known-size checks and 512 MiB free-space reserve; native metadata checks the actual file requirement | Native transfer/large-file, low-space and concurrent-device execution pending |
 | G05 | Dedicated karaoke implementation | Queued | Pending |
 | G06 | RomM and emulator integration | Queued | Pending |
 | G07 | Full theme packages | Queued | Pending |

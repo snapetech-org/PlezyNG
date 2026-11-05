@@ -1,4 +1,4 @@
-"""Keep Dolby build workflows on the intended private JIT trust lanes."""
+"""Preserve native platform routes and isolated, secret-free validation."""
 from pathlib import Path
 import re
 import unittest
@@ -19,7 +19,7 @@ def job_block(source: str, job_id: str) -> str:
 
 
 class DolbyWorkflowRouteTests(unittest.TestCase):
-    def test_trusted_dolby_workflows_are_manual_and_private_jit(self):
+    def test_trusted_dolby_workflows_are_manual(self):
         paths = {
             "dv-platforms.yml": "codex/dv-platform-*",
             "dv-experimental.yml": "codex/dv-experimental-*",
@@ -30,11 +30,17 @@ class DolbyWorkflowRouteTests(unittest.TestCase):
                 self.assertIn("workflow_dispatch:", source)
                 self.assertNotRegex(source, r"(?m)^  (push|pull_request|pull_request_target|schedule):")
                 self.assertNotIn("pull_request:", source)
-                self.assertNotRegex(
-                    source,
-                    r"(?m)^\s*runs-on:\s*(?:ubuntu|windows|macos|xcode)-",
-                )
                 self.assertNotIn("|| 'ubuntu-latest'", source)
+
+    def test_offline_packages_use_native_architecture_and_clean_export_verification(self):
+        source = (WORKFLOWS / 'dv-platforms.yml').read_text()
+        job = job_block(source, 'offline-tools')
+        self.assertIn("'ubuntu-24.04-arm'", job)
+        self.assertIn("'ubuntu-24.04'", job)
+        self.assertNotIn('qemu', job)
+        self.assertNotIn('secrets.', job)
+        self.assertIn('--network none --read-only', job)
+        self.assertIn('verify_offline_bundle.py', job)
 
     def test_dolby_jobs_use_run_scoped_private_jit_labels(self):
         expected = {

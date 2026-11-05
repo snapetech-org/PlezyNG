@@ -94,7 +94,11 @@ class MpvPlayerCore: MpvPlayerCoreBase {
       return false
     }
 
-    dvBackend?.attach(to: contentView)
+    if let backend = dvBackend {
+      container.backgroundColor = nil
+      container.isOpaque = false
+      backend.attach(to: contentView)
+    }
 
     let center = NotificationCenter.default
     center.addObserver(

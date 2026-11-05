@@ -36,6 +36,14 @@ Linux x64 passed the ordinary producer build, shared-library loading, embedded
 OpenGL ES render/readback and six FEL shader vectors. Other architecture builds
 and complete release artifact checks remain required before delivery.
 
+The Linux offline converter is built by `build_offline_tools.py` from
+`offline.lock.json`. It carries Python, VapourSynth, FFMS2, FelBaker, an HDR/SDR
+encoder and their runtime libraries. A clean, read-only Ubuntu container with no
+network or system Python completed both real authored-fixture exports. The
+native ARM64 build runs separately on `ubuntu-24.04-arm`, without emulation.
+Ordinary package installation and final artifact pins are recorded with the
+release; source-build success alone is not delivery evidence.
+
 The following standalone builders remain development and diagnostic tools. They
 are not prerequisites for a user to enable an included experiment. WebOS/Tizen
 native playback has no portable BL/EL compositor yet; those app builds remain in
@@ -95,8 +103,9 @@ is an error. The normal build still uses `mpv-build.lock.json`. All validated
 runtime DLLs are installed with the app and copied for native contract tests.
 Sources, notices and reports accompany an experimental app install.
 
-Do not copy the DLL into an existing production installation. Production patch
-parity is currently false. Start app qualification with hardware decoding off,
+The archive override above is a diagnostic builder option. Ordinary releases
+use the rebased production producer and its locked artifacts; users enable the
+included implementation in Settings. Start app qualification with hardware decoding off,
 then test each hardware/copy path independently. Record the actual renderer,
 both layers, composer execution, seek/flush behavior, subtitles and A/V sync.
 

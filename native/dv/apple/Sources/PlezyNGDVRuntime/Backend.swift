@@ -62,7 +62,12 @@ private final class AppleDVBackend: DVRuntimeBackend {
       guard let surface else { return }
       #if os(macOS)
         guard let parent = parent as? NSView else { return }
+        surface.wantsLayer = true
         parent.addSubview(surface, positioned: .below, relativeTo: nil)
+        // Match the classic video plane's layer order so Flutter's controls
+        // stay above the experimental NSView even after AppKit lays it out.
+        surface.layer?.zPosition = -1
+        if let layer = surface.layer { parent.layer?.insertSublayer(layer, at: 0) }
       #else
         guard let parent = parent as? UIView else { return }
         surface.isUserInteractionEnabled = false
@@ -217,6 +222,20 @@ private final class AppleDVBackend: DVRuntimeBackend {
         engine.stop()
         releaseScopedURL()
         completion(nil, nil)
+      case "sub-add":
+        guard arguments.count > 1,
+          let url = arguments[1].hasPrefix("/") ? URL(fileURLWithPath: arguments[1]) : URL(string: arguments[1])
+        else {
+          completion(nil, NSError(domain: "PlezyNGDVRuntime", code: 2))
+          return
+        }
+        let track = ExternalSubtitleTrack(
+          url: url, name: arguments.count > 3 ? arguments[3] : nil,
+          language: arguments.count > 4 ? arguments[4] : nil)
+        let info = engine.addExternalSubtitleTrack(track)
+        if arguments.count < 3 || arguments[2] == "select" { engine.selectSubtitleTrack(index: info.id) }
+        publish()
+        completion(nil, nil)
       case "change-list":
         if arguments.count >= 3 && arguments[1] == "http-header-fields" {
           if arguments[2] == "clr" {
@@ -227,7 +246,7 @@ private final class AppleDVBackend: DVRuntimeBackend {
         }
         completion(nil, nil)
       default:
-        completion(nil, nil)
+        completion(nil, NSError(domain: "PlezyNGDVRuntime.UnsupportedCommand", code: 3))
       }
     }
   }
@@ -258,7 +277,7 @@ private final class AppleDVBackend: DVRuntimeBackend {
 
   @MainActor private func stateChanged(_ state: PlaybackState) {
     guard !closed else { return }
-    if loaded && state == .playing && !restarted {
+    if loaded && (state == .playing || state == .paused) && !restarted {
       restarted = true
       onEvent?("playback-restart", nil, sourceID)
       onEvent?(

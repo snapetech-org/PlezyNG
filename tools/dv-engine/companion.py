@@ -73,11 +73,19 @@ def bake_script(bl: Path, el: Path, ffms: Path, baker: Path, fps: Fraction, fram
                          "fps_num": fps.numerator, "fps_den": fps.denominator, "frames": frames})
     return '''import json
 import vapoursynth as vs
+import os
 core = vs.core
+core.num_threads = 2
 core.max_cache_size = 512
 config = json.loads(CONFIG_JSON)
-core.std.LoadPlugin(config['ffms'])
-core.std.LoadPlugin(config['baker'])
+def load_pinned_plugin(identifier, path):
+    existing = next((p for p in core.plugins() if p.identifier == identifier), None)
+    if existing is None:
+        core.std.LoadPlugin(path)
+    elif not existing.plugin_path or os.path.realpath(existing.plugin_path) != os.path.realpath(path):
+        raise ValueError('a different version of the requested plugin is already loaded')
+load_pinned_plugin('com.vapoursynth.ffms2', config['ffms'])
+load_pinned_plugin('com.vapoursynth.felbaker', config['baker'])
 bl = core.ffms2.Source(config['bl'], cache=False, threads=2)
 el = core.ffms2.Source(config['el'], cache=False, threads=2)
 if bl.num_frames != el.num_frames or bl.num_frames < 1:
@@ -160,10 +168,17 @@ def pipe_processes(producer: list[str], consumer: list[str], *, timeout: float, 
                 process.wait()
 
 
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
+def main(argv=None, *, bundled_tools=None):
+    description = (__doc__ if not bundled_tools else
+                   "Offline FEL-derived HDR10/SDR export using the included decoder, compositor and encoders. "
+                   "Provide synchronized BL/EL HEVC files with original RPU and the original frame rate. "
+                   "Add --execute to render; the default validates and prints a plan. Outputs are derived, lossy compatibility versions.")
+    parser = argparse.ArgumentParser(description=description)
     for key in ("bl", "el", "ffms-plugin", "felbaker-plugin", "vspipe", "ffmpeg", "ffprobe", "output"):
-        parser.add_argument("--" + key, type=Path, required=True)
+        bundled = bundled_tools or {}
+        parser.add_argument("--" + key, type=Path, required=key not in bundled,
+                            default=bundled.get(key),
+                            help=argparse.SUPPRESS if key in bundled else None)
     parser.add_argument("--audio", type=Path, help="optional local original container; audio must share video start time")
     parser.add_argument("--fps", type=Fraction, required=True, help="original rational frame rate, e.g. 24000/1001")
     parser.add_argument("--target", choices=("hdr10", "sdr"), default="hdr10")

@@ -78,8 +78,9 @@ def build(work: Path, sdk: str, configuration: str, architectures: list[str]) ->
         "filter.lfs.smudge": "git-lfs smudge -- %f",
         "filter.lfs.clean": "git-lfs clean -- %f",
     }
-    os.environ["GIT_CONFIG_COUNT"] = str(len(config))
-    for index, (key, value) in enumerate(config.items()):
+    start = int(os.environ.get("GIT_CONFIG_COUNT", "0"))
+    os.environ["GIT_CONFIG_COUNT"] = str(start + len(config))
+    for index, (key, value) in enumerate(config.items(), start=start):
         os.environ[f"GIT_CONFIG_KEY_{index}"] = key
         os.environ[f"GIT_CONFIG_VALUE_{index}"] = value
     common = [
@@ -115,7 +116,11 @@ def build(work: Path, sdk: str, configuration: str, architectures: list[str]) ->
         if not files:
             raise ValueError(f"missing upstream license notice: {name}")
         for source in files:
-            shutil.copy2(source, notices / (name + "-" + source.name))
+            target = notices / (name + "-" + source.name)
+            # SwiftPM checkouts can be read-only. Replace our previous copy
+            # so incremental app builds do not fail on its inherited mode.
+            target.unlink(missing_ok=True)
+            shutil.copyfile(source, target)
     provenance = {
         "schema_version": 1, "abi_version": 1, "sdk": sdk,
         "architectures": architectures, "aether_commit": aether["commit"],

@@ -102,6 +102,7 @@ flutter-webos build webos \
   --dart-define="GIT_COMMIT=$GIT_COMMIT"
 
 if ! git -C "$ROOT" diff --quiet -- webos/flutter/main.dart pubspec.lock; then
+  git -C "$ROOT" diff -- webos/flutter/main.dart pubspec.lock >&2
   echo "The webOS build changed tracked generated or dependency files." >&2
   exit 1
 fi

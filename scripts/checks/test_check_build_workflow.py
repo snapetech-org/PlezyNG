@@ -138,7 +138,8 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertIn("architecture matrix checks passed", result.stdout)
 
     def test_recovery_requires_source_verification_and_public_provenance(self) -> None:
-        for original in ("--download artifacts", "needs.validate-trusted-ref.outputs.reuse_source_sha != ''"):
+        for original in ("--download artifacts", "needs.validate-trusted-ref.outputs.reuse_source_sha != ''",
+                         "needs.validate-trusted-ref.outputs.android_source_sha != ''"):
             with self.subTest(original=original):
                 changed = self._workflow().replace(original, "REMOVED", 1)
                 result = self._run(changed)

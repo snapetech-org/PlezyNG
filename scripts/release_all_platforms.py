@@ -902,12 +902,21 @@ def ensure_release(
     execution_profile: str = "hybrid",
     include_apple_store_build: bool = False,
     reuse_platform_run_id: int | None = None,
+    reuse_android_run_id: int | None = None,
+    include_webos_build: bool = True,
 ) -> dict:
     run_title = f"action:release:pool:private:tag:{tag}"
     if reuse_platform_run_id:
         if execution_profile != "hybrid" or include_webos_release or include_apple_store_build:
             raise ReleaseError("Platform recovery requires the hybrid GitHub-only release profile.")
-        verify_platform_recovery(reuse_platform_run_id, commit_sha, tag.removeprefix("v"))
+        options = {}
+        if reuse_android_run_id:
+            options["android_run"] = reuse_android_run_id
+        if not include_webos_build:
+            options["include_webos_build"] = False
+        if reuse_android_run_id and not include_webos_build:
+            options["wait_complete"] = True
+        verify_platform_recovery(reuse_platform_run_id, commit_sha, tag.removeprefix("v"), **options)
     existing = matching_run(
         PLEZY_REPO,
         RELEASE_WORKFLOW,
@@ -948,13 +957,15 @@ def ensure_release(
         "execution_profile": execution_profile,
         "mode": "release",
         "build_version": tag.removeprefix("v"),
-        "include_webos_build": "true",
+        "include_webos_build": "true" if include_webos_build else "false",
         "include_webos_release": "true" if include_webos_release else "false",
         "include_tizen_build": "true",
         "include_apple_store_build": "true" if include_apple_store_build else "false",
     }
     if reuse_platform_run_id:
         fields["reuse_platform_run_id"] = str(reuse_platform_run_id)
+    if reuse_android_run_id:
+        fields["reuse_android_run_id"] = str(reuse_android_run_id)
     return dispatch(
         PLEZY_REPO,
         RELEASE_WORKFLOW,
@@ -966,11 +977,14 @@ def ensure_release(
     )
 
 
-def verify_platform_recovery(run_id: int, commit_sha: str, version: str) -> dict:
-    from recover_release_platforms import RecoveryError, verify_source_run
+def verify_platform_recovery(run_id: int, commit_sha: str, version: str, *,
+                             android_run=None, include_webos_build=True, wait_complete=False) -> dict:
+    from recover_release_platforms import RecoveryError, compose_proof, verify_source_run, wait_for_source_run
 
     try:
-        return verify_source_run(run_id, commit_sha, version, allow_pending=True)
+        source = (wait_for_source_run(run_id, commit_sha, version, 10800) if wait_complete else
+                  verify_source_run(run_id, commit_sha, version, allow_pending=True))
+        return compose_proof(source, android_run, include_webos_build)
     except (RecoveryError, RuntimeError) as error:
         raise ReleaseError(f"Platform artifact recovery rejected: {error}") from error
 
@@ -1320,6 +1334,8 @@ def parse_args() -> argparse.Namespace:
         "--reuse-platform-run", type=int,
         help="Rebuild Android/WebOS and reuse other verified platform outputs after infrastructure-only fixes.",
     )
+    parser.add_argument("--reuse-android-run", type=int, help="Reuse a separately successful Android release artifact.")
+    parser.add_argument("--skip-webos-build", action="store_true", help="Exclude the non-public experimental WebOS candidate from this release.")
     parser.add_argument(
         "--include-webos-release",
         action="store_true",
@@ -1379,6 +1395,10 @@ def main() -> int:
         or args.execution_profile != "hybrid"
     ):
         raise ReleaseError("Platform recovery supports hybrid GitHub-only or draft publication.")
+    if args.reuse_android_run and (args.reuse_android_run < 1 or not args.reuse_platform_run):
+        raise ReleaseError("Android reuse requires a verified platform source run.")
+    if args.skip_webos_build and args.include_webos_release:
+        raise ReleaseError("A public WebOS artifact requires its successful candidate build.")
     command(["gh", "auth", "status", "--hostname", "github.com"], capture=True, quiet=True)
 
     scratch = args.scratch.resolve() if args.scratch else Path(tempfile.mkdtemp(prefix="plezyng-release-"))
@@ -1455,7 +1475,11 @@ def main() -> int:
         progress["stage"] = stage
         save_progress()
         if args.reuse_platform_run:
-            proof = verify_platform_recovery(args.reuse_platform_run, pin_sha, args.version)
+            proof = verify_platform_recovery(
+                args.reuse_platform_run, pin_sha, args.version,
+                android_run=args.reuse_android_run, include_webos_build=not args.skip_webos_build,
+                wait_complete=bool(args.reuse_android_run and args.skip_webos_build),
+            )
             ci = {"databaseId": proof["ci_run_id"]}
             progress["platform_recovery"] = proof
             print(f"Verified unchanged product inputs and exact-source CI from run {proof['ci_run_id']}.")
@@ -1498,6 +1522,8 @@ def main() -> int:
             execution_profile=args.execution_profile,
             include_apple_store_build=include_apple_store_build,
             **({"reuse_platform_run_id": args.reuse_platform_run} if args.reuse_platform_run else {}),
+            **({"reuse_android_run_id": args.reuse_android_run} if args.reuse_android_run else {}),
+            **({"include_webos_build": False} if args.skip_webos_build else {}),
         )
         progress["release_run"] = release["databaseId"]
         progress["release_url"] = f"https://github.com/{PLEZY_REPO}/releases/tag/{tag}"

@@ -148,6 +148,23 @@ class ArtifactTests(unittest.TestCase):
         with self.assertRaises(recovery.RecoveryError):
             recovery.extract_verified(io.BytesIO(self.archive("nested/escape")), self.root / "out")
 
+    def test_android_artifact_uses_its_own_verified_run_identity(self):
+        archive = self.archive()
+        item = {"id": 7, "name": "android-apk", "expired": False,
+                "digest": "sha256:" + hashlib.sha256(archive).hexdigest(),
+                "workflow_run": {"id": 84, "head_sha": "b" * 40}}
+        proof = {"source_run_id": 42, "source_sha": "a" * 40,
+                 "android_source": {"source_run_id": 84, "source_sha": "b" * 40}}
+        def download(_args, stdout):
+            stdout.write(archive)
+            return SimpleNamespace(returncode=0)
+        with patch.object(recovery, "ARTIFACTS", {}), \
+             patch.object(recovery, "collection", side_effect=[[], [item]]), \
+             patch.object(recovery.subprocess, "run", side_effect=download):
+            result = recovery.download_platforms(proof, self.root)
+        self.assertEqual(result["artifacts"][0]["source_run_id"], 84)
+        self.assertEqual((self.root / "android-apk/payload.exe").read_bytes(), b"binary")
+
     def test_verified_download_records_actual_source_and_digests(self):
         archive = self.archive()
         digest = "sha256:" + hashlib.sha256(archive).hexdigest()
@@ -202,6 +219,43 @@ class ControllerTests(unittest.TestCase):
         with self.assertRaises(controller.ReleaseError):
             controller.ensure_release("v3.0.0", "b" * 40, include_webos_release=True,
                                       reuse_platform_run_id=42)
+
+
+class AndroidSourceTests(unittest.TestCase):
+    def setUp(self):
+        self.source = {"status": "completed", "event": "workflow_dispatch", "head_branch": "main",
+                       "head_repository": {"full_name": recovery.REPOSITORY},
+                       "path": ".github/workflows/build.yml", "head_sha": "a" * 40,
+                       "display_title": "action:release:pool:private:tag:v3.0.0"}
+        self.compare = {"status": "ahead", "merge_base_commit": {"sha": "a" * 40}, "files": []}
+        self.jobs = [{"id": 71, "name": "build-android", "status": "completed", "conclusion": "success"},
+                     {"name": "create-release", "conclusion": "skipped"}]
+
+    def prove(self):
+        with patch.object(recovery, "api", side_effect=[self.source, self.compare]), \
+             patch.object(recovery, "collection", return_value=self.jobs):
+            return recovery.verify_android_run(84, "b" * 40, "3.0.0")
+
+    def test_reuses_only_successful_android_from_equivalent_product_inputs(self):
+        self.assertEqual(self.prove()["job_id"], 71)
+        self.compare["files"] = [{"filename": "android/app/build.gradle.kts"}]
+        with self.assertRaisesRegex(recovery.RecoveryError, "input equivalence"):
+            self.prove()
+
+    def test_failed_or_untrusted_android_cannot_be_reused(self):
+        self.jobs[0]["conclusion"] = "failure"
+        with self.assertRaisesRegex(recovery.RecoveryError, "uniquely successful"):
+            self.prove()
+        self.source["head_branch"] = "feature"
+        with self.assertRaisesRegex(recovery.RecoveryError, "trusted-main"):
+            self.prove()
+
+    def test_composition_records_optional_exclusions_and_real_android_source(self):
+        with patch.object(recovery, "verify_android_run", return_value={"source_run_id": 84}):
+            proof = recovery.compose_proof({"head_sha": "b" * 40, "version": "3.0.0"}, 84, False)
+        self.assertEqual(proof["rebuilt_jobs"], [])
+        self.assertEqual(proof["android_source"]["source_run_id"], 84)
+        self.assertEqual(proof["excluded_optional_jobs"], ["Build WebOS TV package (ARMv7)"])
 
 
 if __name__ == "__main__":

@@ -201,6 +201,16 @@ Recovery does not enable App Store signing, Homebrew notarization, or public
 WebOS attachment. If a reused platform fails or product inputs change, fix and
 validate that platform instead of broadening the recovery allowlist.
 
+If Android has already succeeded in a separate trusted-main release run, add
+`--reuse-android-run ANDROID_RUN_ID`. Its successful job, product input diff,
+artifact identity and digest are checked independently and included in the
+public provenance. To ship the GitHub assets while an experimental, non-public
+WebOS candidate is being qualified, also add `--skip-webos-build`. This honors
+the workflow's existing optional WebOS scope; it does not mark a failed WebOS
+job successful. Public WebOS attachment still requires its eligibility gate.
+An assembly-only recovery waits locally for its source jobs before dispatching,
+so a hosted assembly runner does not sit idle while Apple builds finish.
+
 The final JSON receipt is written to the printed scratch directory. Temporary
 checkouts and the verified source archive are removed after the workflow run;
 GitHub retains the workflow logs and release artifacts. The scratch directory

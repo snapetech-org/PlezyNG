@@ -71,6 +71,20 @@ installs those exact packages, and checks the installed tools. This includes
 Steam's CMake 3.22.1 alongside the app/libass CMake 4.1.2. A fresh runner must
 not depend on Gradle silently downloading missing toolchains during compilation.
 
+Android CI and release also install `scripts/prepare_gradle_repositories.py`
+before Gradle starts. Its init policy adds the Maven Central mirror before
+settings plugins resolve, including Flutter's independent included build.
+Android's parent `settings.gradle.kts` cannot configure that build by itself.
+The CI and release Flutter, pub, and Gradle cache keys must match; the repository
+checks enforce this so a green CI run warms the release caches.
+
+For a transient dependency-download failure, preserve the failed job log and
+let other platform jobs finish. Once the workflow is completed, retry that job
+and its dependents with `gh run rerun RUN_ID --job JOB_ID`. After the targeted
+retry succeeds, invoke the release driver with fresh scratch; it reuses the
+successful CI and release run before validating and publishing the assets.
+Avoid redispatching the full platform matrix for a download-only failure.
+
 Windows CI and release jobs provision NuGet from `windows/tool/build-toolchain.lock.json`
 before Flutter configures its plugins. The installer job also provisions Inno Setup
 from that lock; both downloads require matching hashes and publisher signatures.

@@ -346,6 +346,7 @@ jobs:
           channel: "stable"
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
+          cache-key: "${{ env.TRUSTED_BUILD_CACHE_VERSION }}-flutter-:os:-:channel:-:version:-:arch:-:hash:"
           pub-cache: false
 
       - name: Cache Pub dependencies
@@ -353,7 +354,7 @@ jobs:
         with:
           path: |
             ~/.pub-cache
-          key: ${{ runner.os }}-pub-v3-${{ hashFiles('**/pubspec.yaml', '**/pubspec.lock') }}
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Cache Gradle
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
@@ -361,9 +362,10 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+
+      - name: Install shared Gradle repositories
+        run: python3 scripts/prepare_gradle_repositories.py
 
       - name: Install dependencies
         run: flutter pub get

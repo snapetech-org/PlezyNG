@@ -120,6 +120,30 @@ ares-launch --device privacyshield-c6 org.snapetech.plezyng
 
 Keep the TV's address, SSH identity, and keys in that local profile. Do not copy them into this repository, CI, logs, or Homebrew metadata.
 
+## Black screen after sign-in
+
+The 3.0.0 C6 investigation reproduced a cold-start race in
+`SourceController.attachProfile`: the root provider binds a profile while the
+source database is still opening, before `discoverySync` exists. The resulting
+`LateInitializationError` tears down the home screen. A subsequent
+`Provider<ActiveProfileProvider> not found for MainScreen` is a secondary error
+from that failed mount, rather than evidence that the root provider is absent.
+Keep late service access behind `ready` and reject superseded profile bindings
+before resetting or cancelling their services. The regression is exercised by:
+
+```sh
+flutter test test/sources/source_controller_startup_test.dart
+```
+
+Capture the first widget failure, not only the final unhandled exception.
+Release widget failures go to the redacted application log; webOS also emits a
+bounded exception-type/stack trace to native stderr because the pinned embedder
+does not forward ordinary Flutter print output. App Manager normally sends
+native stdout/stderr to `/dev/null`, so explicitly arrange capture when debugging.
+Keep the registered executable pathname when launching a diagnostic wrapper;
+executing a renamed binary can cause an unrelated LS2 permission failure.
+Preserve appdata and an existing Plex sign-in when updating a diagnostic build.
+
 ## App capabilities and credential storage
 
 `webos/meta/appinfo.json` requests these app-specific ACGs:

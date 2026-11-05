@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show Directory, Platform, ProcessInfo;
+import 'dart:io' show Directory, Platform, ProcessInfo, stderr;
 import 'dart:ui' show AppExitResponse;
 import 'package:flutter/foundation.dart';
 // ignore: depend_on_referenced_packages
@@ -195,6 +195,13 @@ void _bootstrapApp() {
   // In release mode, show a colored placeholder instead of a blank/white screen
   // when a widget build() throws an unhandled exception.
   ErrorWidget.builder = (FlutterErrorDetails details) {
+    appLogger.e('Widget build failed', error: details.exception, stackTrace: details.stack);
+    if (PlatformDetector.isWebOSBuild()) {
+      // The webOS embedder does not forward Flutter's normal print output.
+      // Keep a bounded native-console trace without credentials or error text.
+      final trace = details.stack?.toString().split('\n').take(12).join('\n') ?? '';
+      stderr.writeln('PlezyNG widget build failed (${details.exception.runtimeType})\n$trace');
+    }
     if (kDebugMode) return ErrorWidget(details.exception);
     return const ColoredBox(color: Color(0xFF000000));
   };

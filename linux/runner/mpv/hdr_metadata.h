@@ -2,6 +2,7 @@
 #define PLEZY_LINUX_MPV_HDR_METADATA_H_
 
 #include <cstdint>
+#include <cstring>
 
 // Source HDR10 static metadata, and the rules for turning it into a set of
 // colour-management-v1 luminance requests the compositor will accept.
@@ -297,6 +298,30 @@ inline HdrMetadata DescribeTonemappedTo(const HdrMetadata& source, uint32_t peak
 inline bool OutputHasHdrHeadroom(uint32_t max_luminance, uint32_t reference_luminance) {
   if (reference_luminance == 0) return false;
   return static_cast<uint64_t>(max_luminance) * 2 >= static_cast<uint64_t>(reference_luminance) * 3;
+}
+
+// An explicit per-launch output assumption for compositors whose preferred
+// description omits or misreports display headroom. This affects detection
+// only: source format, color protocol, deep framebuffer and user HDR mode
+// still have their independent vetoes in DecideHdr().
+enum class OutputHdrPolicy { kAuto, kHdr, kSdr };
+
+inline OutputHdrPolicy ParseOutputHdrPolicy(const char* value) {
+  if (value != nullptr && std::strcmp(value, "hdr") == 0) return OutputHdrPolicy::kHdr;
+  if (value != nullptr && std::strcmp(value, "sdr") == 0) return OutputHdrPolicy::kSdr;
+  return OutputHdrPolicy::kAuto;
+}
+
+inline bool OutputIsHdr(OutputHdrPolicy policy, bool preferred_valid, uint32_t peak, uint32_t reference) {
+  switch (policy) {
+    case OutputHdrPolicy::kHdr:
+      return true;
+    case OutputHdrPolicy::kSdr:
+      return false;
+    case OutputHdrPolicy::kAuto:
+      return preferred_valid && OutputHasHdrHeadroom(peak, reference);
+  }
+  return false;
 }
 
 // What the compositor advertised it will accept, as named curves and primaries.

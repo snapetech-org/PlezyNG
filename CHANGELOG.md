@@ -7,6 +7,9 @@
 - Build and package the three default RomM emulator cores with the app, preserve their source/notices, validate Android delivery, and install the desktop host after bundle cleanup.
 
 - Preserve typography sizes when applying theme packages, reject encoded RomM path traversal before URL normalization, trim karaoke VTT terminators and distinguish damaged recording data from I/O failures.
+- Register the selected Plex version and stacked part before direct play; keep stream identity across external-player and Cast progress reports, and recheck server deletion permissions before removal.
+- Add held-select context actions to focusable list rows, a per-launch Linux HDR output override, and iOS backup exclusions for managed downloads and artwork.
+
 - Keep automatic download rules stopped after storage exhaustion until an explicit download or retry; batch desktop capacity checks within a bounded write budget and count reclaimable iOS storage.
 
 - Fix karaoke file-picker/TV APIs, nullable media titles and optional player interfaces; register desktop microphone capture plugins.

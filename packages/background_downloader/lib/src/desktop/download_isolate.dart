@@ -233,10 +233,13 @@ Future<TaskStatus> processOkDownloadResponse(
       requestTimeout,
       DesktopDownloader.checkAvailableSpace == 0 ? null : guard,
     );
+    // Capacity budgets batch writes. Drain the final partial budget before
+    // publishing resume offsets as well as completion, so a late ENOSPC is
+    // handled by the failure path instead of being swallowed during close.
+    if (transferBytesResult != TaskStatus.canceled) await outStream.flush();
     switch (transferBytesResult) {
       case .complete:
         // rename file to destination, creating dirs if needed
-        await outStream.flush();
         await outStream.close();
         outStream = null;
         final dirPath = p.dirname(filePath);

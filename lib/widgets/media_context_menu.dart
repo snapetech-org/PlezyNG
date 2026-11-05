@@ -208,7 +208,7 @@ bool isAdminActionAllowedForMediaItem({
 /// stays hidden rather than offering a button that 401s.
 ///
 /// Plex has no per-item permission on the wire, so it keeps the account-level
-/// owner/admin gate.
+/// owner/admin gate alongside the server's live deletion preference.
 bool isMediaDeletionAllowed({
   required MediaBackend? itemBackend,
   required bool? resolvedItemPermission,
@@ -216,7 +216,7 @@ bool isMediaDeletionAllowed({
 }) => switch (itemBackend) {
   null => false,
   MediaBackend.jellyfin || MediaBackend.emby => resolvedItemPermission == true,
-  MediaBackend.plex => isAdminActionAllowed,
+  MediaBackend.plex => isAdminActionAllowed && resolvedItemPermission == true,
 };
 
 /// A reusable wrapper widget that adds a context menu (long press / right click)
@@ -389,7 +389,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
   }) async {
     final permissionClient = client is MediaDeletionPermissionClient ? client as MediaDeletionPermissionClient : null;
     if (item == null || permissionClient == null) return null;
-    if (!serverOnline || context.read<OfflineModeProvider>().isOffline) return false;
+    if (!serverOnline || (context.read<OfflineModeProvider?>()?.isOffline ?? false)) return false;
     try {
       return await permissionClient.fetchDeletePermission(item);
     } catch (e, st) {
@@ -552,6 +552,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         mediaKind == MediaKind.season;
     final canDeleteFromServer =
         isDeletableKind &&
+        (itemBackend != MediaBackend.plex || isAdmin) &&
         isMediaDeletionAllowed(
           itemBackend: itemBackend,
           resolvedItemPermission: await _resolveDeletePermission(

@@ -757,9 +757,35 @@ void TestMetadataEqualityComparesEveryField() {
   EXPECT(!(base == transfer) && (base != transfer));
 }
 
+void TestExplicitOutputPolicyKeepsCapabilityGates() {
+  using mpv::OutputHdrPolicy;
+  EXPECT(mpv::ParseOutputHdrPolicy(nullptr) == OutputHdrPolicy::kAuto);
+  EXPECT(mpv::ParseOutputHdrPolicy("auto") == OutputHdrPolicy::kAuto);
+  EXPECT(mpv::ParseOutputHdrPolicy("invalid") == OutputHdrPolicy::kAuto);
+  EXPECT(mpv::ParseOutputHdrPolicy("hdr") == OutputHdrPolicy::kHdr);
+  EXPECT(mpv::ParseOutputHdrPolicy("sdr") == OutputHdrPolicy::kSdr);
+  EXPECT(!mpv::OutputIsHdr(OutputHdrPolicy::kAuto, false, 1000, 200));
+  EXPECT(mpv::OutputIsHdr(OutputHdrPolicy::kAuto, true, 1000, 200));
+  EXPECT(mpv::OutputIsHdr(OutputHdrPolicy::kHdr, false, 0, 0));
+  EXPECT(!mpv::OutputIsHdr(OutputHdrPolicy::kSdr, true, 1000, 200));
+  const auto source = Metadata(1000, 400, 1000, 0.0001);
+  auto inputs = AllGatesPass();
+  inputs.output_is_hdr = mpv::OutputIsHdr(OutputHdrPolicy::kHdr, false, 0, 0);
+  EXPECT(mpv::DecideHdr(inputs, source).describe);
+  inputs.allowed = false;
+  EXPECT(!mpv::DecideHdr(inputs, source).describe);
+  inputs.allowed = true;
+  inputs.client_can_describe = false;
+  EXPECT(!mpv::DecideHdr(inputs, source).describe);
+  inputs.client_can_describe = true;
+  inputs.source_describable = false;
+  EXPECT(!mpv::DecideHdr(inputs, source).describe);
+}
+
 }  // namespace
 
 int main() {
+  TestExplicitOutputPolicyKeepsCapabilityGates();
   TestWellFormedMetadataSurvives();
   TestMaxCllAtPqCeilingIsKept();
   TestMaxCllAboveMasteringMaxIsDroppedOnV1();

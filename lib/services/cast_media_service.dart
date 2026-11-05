@@ -36,6 +36,7 @@ class CastMediaService extends ChangeNotifier {
   String? _deviceName;
   MediaItem? _activeItem;
   MediaServerClient? _activeClient;
+  String? _playSessionId;
   Duration _partStart = Duration.zero;
   Duration? _duration;
   PlaybackReportSession? _reportSession;
@@ -230,6 +231,7 @@ class CastMediaService extends ChangeNotifier {
       _deviceName = device?.friendlyName ?? _sessions.currentSession?.device?.friendlyName ?? _deviceName;
       _activeItem = item;
       _activeClient = client;
+      _playSessionId = target.playSessionId;
       _partStart = partStart;
       _duration = duration;
       _lastPausedState = null;
@@ -301,7 +303,12 @@ class CastMediaService extends ChangeNotifier {
     if (item == null || client == null) return;
 
     if (duration != null && duration > Duration.zero) {
-      _reportSession = PlaybackReportSession(client: client, itemId: item.id, playMethod: 'DirectPlay');
+      _reportSession = PlaybackReportSession(
+        client: client,
+        itemId: item.id,
+        playMethod: 'DirectPlay',
+        playSessionId: _playSessionId,
+      );
       unawaited(_reportPosition(_currentItemPosition(), isStopped: false));
     }
     unawaited(TrackerCoordinator.instance.startPlayback(item, client));
@@ -414,6 +421,7 @@ class CastMediaService extends ChangeNotifier {
       _reportSession = null;
       _activeItem = null;
       _activeClient = null;
+      _playSessionId = null;
       _partStart = Duration.zero;
       _duration = null;
       _lastPausedState = null;

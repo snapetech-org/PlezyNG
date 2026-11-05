@@ -5,6 +5,43 @@ import AVFoundation
 import MediaPlayer
 import MusicKit
 
+/// Re-downloadable media is not user-created document data. Keep the policy
+/// confined to our two managed roots, including their legacy support paths.
+enum DownloadBackupPolicy {
+  static var managedRoots: [URL] {
+    let manager = FileManager.default
+    return [FileManager.SearchPathDirectory.documentDirectory, .applicationSupportDirectory]
+      .flatMap { manager.urls(for: $0, in: .userDomainMask) }
+      .flatMap { base in ["downloads", "artwork"].map { base.appendingPathComponent($0, isDirectory: true) } }
+  }
+
+  @discardableResult
+  static func exclude(_ directory: URL, allowedRoots: [URL] = managedRoots) throws -> Bool {
+    guard directory.isFileURL else { return false }
+    let target = directory.standardizedFileURL.resolvingSymlinksInPath()
+    guard allowedRoots.contains(where: { $0.standardizedFileURL.resolvingSymlinksInPath() == target }) else {
+      return false
+    }
+    let attributes = try directory.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey])
+    guard attributes.isDirectory == true, attributes.isSymbolicLink != true else { return false }
+    var values = URLResourceValues()
+    values.isExcludedFromBackup = true
+    var writableURL = directory
+    try writableURL.setResourceValues(values)
+    return true
+  }
+
+  static func refreshExistingRoots() {
+    for root in managedRoots where FileManager.default.fileExists(atPath: root.path) {
+      do {
+        try exclude(root)
+      } catch {
+        MpvLog.error("Could not exclude downloaded content from backup: \(error)")
+      }
+    }
+  }
+}
+
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var deviceAdjustmentChannel: FlutterMethodChannel?
@@ -19,6 +56,7 @@ import MusicKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    DownloadBackupPolicy.refreshExistingRoots()
     PlezyPreparationPlugin.registerBackgroundTasks { registry in
       GeneratedPluginRegistrant.register(with: registry)
     }
@@ -51,6 +89,21 @@ import MusicKit
     }
 
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "DownloadStorageChannel") {
+      let channel = FlutterMethodChannel(name: "com.pleazyng/download_storage", binaryMessenger: registrar.messenger())
+      channel.setMethodCallHandler { call, result in
+        guard call.method == "excludeFromBackup", let path = call.arguments as? String else {
+          result(FlutterMethodNotImplemented)
+          return
+        }
+        do {
+          result(try DownloadBackupPolicy.exclude(URL(fileURLWithPath: path)))
+        } catch {
+          result(FlutterError(code: "backup_exclusion", message: "Could not update download backup policy", details: nil))
+        }
+      }
+    }
 
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "MpvPlayerPlugin") {
       MpvPlayerPlugin.register(with: registrar)

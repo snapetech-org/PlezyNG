@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../focus/dpad_navigator.dart';
+import '../focus/dpad_select_long_press_controller.dart';
 import '../focus/focusable_tile_mixin.dart';
 import '../utils/platform_detector.dart';
 import 'clickable_cursor.dart';
@@ -63,6 +66,49 @@ class FocusableListTile extends StatefulWidget {
 }
 
 class _FocusableListTileState extends State<FocusableListTile> with FocusableTileStateMixin<FocusableListTile> {
+  final _selectPress = DpadSelectLongPressController();
+
+  bool get _canActivate =>
+      mounted && widget.enabled && effectiveFocusNode.hasFocus && (ModalRoute.of(context)?.isCurrent ?? true);
+
+  @override
+  void didUpdateWidget(FocusableListTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.enabled || widget.onLongPress == null || oldWidget.focusNode != widget.focusNode) {
+      _selectPress.reset();
+    }
+  }
+
+  @override
+  void dispose() {
+    _selectPress.dispose();
+    super.dispose();
+  }
+
+  KeyEventResult _handleRemoteKey(FocusNode _, KeyEvent event) {
+    if (!_canActivate || widget.onLongPress == null) return KeyEventResult.ignored;
+    if (SelectKeyUpSuppressor.consumeIfSuppressed(event)) {
+      _selectPress.reset();
+      return KeyEventResult.handled;
+    }
+    if (event.logicalKey.isSelectKey) {
+      return _selectPress.handleKeyEvent(
+        event,
+        isOwnerActive: () => _canActivate && widget.onLongPress != null,
+        onShortPress: () {
+          if (_canActivate) widget.onTap?.call();
+        },
+        onLongPress: () => widget.onLongPress?.call(),
+      );
+    }
+    if (event is KeyDownEvent && event.logicalKey.isContextMenuKey) {
+      _selectPress.reset();
+      widget.onLongPress?.call();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
   @override
   FocusNode? get widgetFocusNode => widget.focusNode;
 
@@ -74,22 +120,30 @@ class _FocusableListTileState extends State<FocusableListTile> with FocusableTil
       cursor: widget.enabled && (widget.onTap != null || widget.onLongPress != null)
           ? SystemMouseCursors.click
           : MouseCursor.defer,
-      child: ListTile(
-        title: widget.title,
-        subtitle: widget.subtitle,
-        leading: widget.leading,
-        trailing: widget.trailing,
-        onTap: widget.onTap,
-        onLongPress: widget.onLongPress,
-        dense: automotive ? false : widget.dense,
-        enabled: widget.enabled,
-        selected: widget.selected,
-        contentPadding: widget.contentPadding,
-        visualDensity: automotive ? VisualDensity.standard : widget.visualDensity,
-        focusNode: effectiveFocusNode,
-        autofocus: widget.autofocus,
-        horizontalTitleGap: widget.horizontalTitleGap,
-        minLeadingWidth: widget.minLeadingWidth,
+      child: Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        onKeyEvent: _handleRemoteKey,
+        onFocusChange: (focused) {
+          if (!focused) _selectPress.reset();
+        },
+        child: ListTile(
+          title: widget.title,
+          subtitle: widget.subtitle,
+          leading: widget.leading,
+          trailing: widget.trailing,
+          onTap: widget.onTap,
+          onLongPress: widget.onLongPress,
+          dense: automotive ? false : widget.dense,
+          enabled: widget.enabled,
+          selected: widget.selected,
+          contentPadding: widget.contentPadding,
+          visualDensity: automotive ? VisualDensity.standard : widget.visualDensity,
+          focusNode: effectiveFocusNode,
+          autofocus: widget.autofocus,
+          horizontalTitleGap: widget.horizontalTitleGap,
+          minLeadingWidth: widget.minLeadingWidth,
+        ),
       ),
     );
   }

@@ -26,6 +26,7 @@ class _RecordingClient with PlaybackReportRecorder implements MediaServerClient,
               ? buildPlexProfileScopeId(serverId: ServerId('srv'), profileId: 'profile-a')
               : 'srv/user-a');
 
+  final sessionIds = <String?>[];
   bool failStart = false;
   bool failStop = false;
   final started = <({int positionMs, int? durationMs})>[];
@@ -51,6 +52,7 @@ class _RecordingClient with PlaybackReportRecorder implements MediaServerClient,
 
   @override
   Future<void> onPlaybackReport(PlaybackReportCall call) async {
+    sessionIds.add(call.playSessionId);
     final entry = (positionMs: call.position.inMilliseconds, durationMs: call.duration?.inMilliseconds);
     switch (call.kind) {
       case PlaybackReportKind.started:
@@ -84,6 +86,28 @@ MediaItem _item({int? durationMs}) {
 }
 
 void main() {
+  test('external progress and Apple return callbacks retain the stream session', () async {
+    final android = _RecordingClient();
+    await ExternalPlayerService.reportExternalProgressForTesting(
+      positionMs: 5000,
+      durationMs: 100000,
+      metadata: _item(),
+      client: android,
+      playSessionId: 'android-session',
+    );
+    expect(android.sessionIds, ['android-session', 'android-session']);
+    final apple = _RecordingClient();
+    final callback = ExternalPlayerService.beginCallbackSessionForTesting(
+      metadata: _item(),
+      client: apple,
+      playSessionId: 'apple-session',
+    );
+    await ExternalPlayerService.handleCallbackUrl(
+      Uri.parse('pleazyng://external-player/cancel/$callback?position=5&duration=100'),
+    );
+    expect(apple.sessionIds, ['apple-session', 'apple-session']);
+  });
+
   test('External progress preserves null duration and still stops after start failure', () async {
     final client = _RecordingClient()..failStart = true;
 

@@ -123,6 +123,9 @@ class MediaServerTimeouts {
   /// only ever costs an entry, never safety.
   static const jellyfinDeletePermission = Duration(seconds: 3);
 
+  /// Live Plex deletion preference probe; bounded while opening a menu.
+  static const plexDeletePermission = Duration(seconds: 3);
+
   /// Whole-probe deadline for establishing what a server-side delete will
   /// destroy (see `resolveDeleteImpact`). Generous compared to
   /// [jellyfinDeletePermission] for two reasons: it runs behind a modal

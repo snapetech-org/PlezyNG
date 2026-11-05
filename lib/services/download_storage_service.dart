@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
@@ -27,6 +28,20 @@ class DownloadStorageException implements Exception {
 }
 
 class DownloadStorageService {
+  static const _storageChannel = MethodChannel('com.pleazyng/download_storage');
+
+  Future<void> _excludeManagedRootFromBackup(Directory directory) async {
+    if (!Platform.isIOS) return;
+    try {
+      // The native handler accepts only managed roots. It also handles old
+      // installations at launch; this call covers deletion/recreation in one
+      // app session. Failure must not turn a completed download into an error.
+      await _storageChannel.invokeMethod<bool>('excludeFromBackup', directory.path);
+    } catch (error) {
+      appLogger.w('Could not update download backup policy', error: error);
+    }
+  }
+
   static DownloadStorageService? _instance;
   static DownloadStorageService get instance => _instance ??= DownloadStorageService._();
   DownloadStorageService._() : _safAvailableOverride = false;
@@ -146,7 +161,14 @@ class DownloadStorageService {
   }
 
   Future<Directory> getDownloadsDirectory() async {
-    if (_baseDownloadsDir != null) return _baseDownloadsDir!;
+    final cached = _baseDownloadsDir;
+    if (cached != null) {
+      if (!await cached.exists()) {
+        await _ensureDirectoryExists(cached);
+        await _excludeManagedRootFromBackup(cached);
+      }
+      return cached;
+    }
 
     if (_customDownloadPath != null && _customPathType == 'file') {
       final customDir = Directory(_customDownloadPath!);
@@ -159,6 +181,7 @@ class DownloadStorageService {
 
     final baseDir = await _getBaseAppDir();
     _baseDownloadsDir = await _ensureDirectoryExists(Directory(path.join(baseDir.path, 'downloads')));
+    await _excludeManagedRootFromBackup(_baseDownloadsDir!);
     return _baseDownloadsDir!;
   }
 
@@ -192,6 +215,7 @@ class DownloadStorageService {
     // Default: Get the app base directory directly (not downloads directory)
     final baseDir = await _getBaseAppDir();
     final artworkDir = await _ensureDirectoryExists(Directory(path.join(baseDir.path, 'artwork')));
+    await _excludeManagedRootFromBackup(artworkDir);
     // Cache the path for synchronous access
     _artworkDirectoryPath = artworkDir.path;
     return artworkDir;

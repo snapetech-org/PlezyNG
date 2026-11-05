@@ -1306,7 +1306,9 @@ void main() {
       height: 1080,
     );
 
-    expect(run.paths, isNot(contains('/video/:/transcode/universal/decision')));
+    expect(run.decisions, hasLength(1));
+    expect(run.decisions.single.queryParameters, containsPair('directPlay', '1'));
+    expect(run.decisions.single.queryParameters, containsPair('protocol', 'http'));
     expect(run.result.isTranscoding, isFalse);
     expect(run.result.playMethod, 'DirectPlay');
     expect(run.result.videoUrl, contains('/library/parts/99/file.mkv'));
@@ -1397,7 +1399,8 @@ void main() {
         videoCodec: 'h264',
       );
 
-      expect(run.decisions, isEmpty);
+      expect(run.decisions, hasLength(1));
+      expect(run.decisions.single.queryParameters, containsPair('directPlay', '1'));
       expect(run.result.playMethod, 'DirectPlay');
       expect(run.result.videoUrl, contains('/library/parts/99/file.mkv'));
     });

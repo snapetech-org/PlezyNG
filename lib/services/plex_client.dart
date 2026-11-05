@@ -38,6 +38,7 @@ import 'bif_thumbnail_service.dart';
 import 'file_info_parser.dart';
 import 'download_artwork_helpers.dart';
 import 'settings_service.dart';
+import 'plex_direct_play_identity.dart';
 import 'library_query_translator.dart';
 import 'scrub_preview_source.dart';
 import '../utils/media_server_http_client.dart';
@@ -443,6 +444,7 @@ class PlexClient
         ScopedMediaServerClient,
         GracefullyCloseable,
         ConvertedDownloadClient,
+        MediaDeletionPermissionClient,
         PlexLoudnessProfileClient {
   @override
   PlexConfig config;
@@ -2484,8 +2486,41 @@ class PlexClient
   /// This permanently removes the item and its associated files from the server
   /// Returns true if deletion was successful, false otherwise
   @override
-  Future<bool> deleteMediaItem(MediaItem item) {
+  Future<bool> deleteMediaItem(MediaItem item) async {
+    if (await fetchDeletePermission(item) != true) return false;
     return _wrapBoolApiCall(() => _http.delete('/library/metadata/${item.id}'), 'Failed to delete media item');
+  }
+
+  /// The menu still requires the account's owner/admin grant. The server's
+  /// switch is a separate condition and may change while confirmation is open,
+  /// so both the menu probe and the delete operation read it afresh.
+  @override
+  Future<bool?> fetchDeletePermission(MediaItem item) async {
+    if (isOfflineMode) return false;
+    final abort = AbortController();
+    try {
+      final response = await _http
+          .get(
+            '/:/prefs',
+            timeout: MediaServerTimeouts.plexDeletePermission,
+            abort: abort,
+            allowEndpointFailover: false,
+          )
+          .namedTimeout(MediaServerTimeouts.plexDeletePermission, operation: 'plex delete permission');
+      throwIfHttpError(response);
+      final value = _parseSettingsMap(response)['allowMediaDeletion'];
+      return switch (value) {
+        true || 1 || '1' || 'true' => true,
+        false || 0 || '0' || 'false' => false,
+        _ => null,
+      };
+    } on TimeoutException {
+      abort.abort();
+      return null;
+    } catch (error) {
+      appLogger.d('Plex deletion permission unavailable', error: error);
+      return null;
+    }
   }
 
   /// Parse a Plex Settings response into a map of id --> value.
@@ -4074,7 +4109,7 @@ class PlexClient
             );
           }
 
-          return _transcodeFallbackResult(data, result.outcome, options);
+          return await _transcodeFallbackResult(data, result.outcome, options);
         }
 
         final resolvedAudioId = carriedAudioTrack == null
@@ -4125,13 +4160,14 @@ class PlexClient
         }
 
         if (options.forceTranscode) throw _forcedTranscodeUnavailable(result.outcome);
-        return _transcodeFallbackResult(data, result.outcome, options, activeAudioStreamId: carriedAudioStreamId);
+        return await _transcodeFallbackResult(data, result.outcome, options, activeAudioStreamId: carriedAudioStreamId);
       }
       if (options.forceTranscode && !isTrack) throw _forcedTranscodeUnavailable(null);
 
+      await _registerDirectPlay(data, options.metadata, options.sessionIdentifier);
       return PlaybackInitializationResult(
         availableVersions: data.availableVersions,
-        videoUrl: _trackStreamUrl(data.videoUrl, options),
+        videoUrl: _sessionStreamUrl(data.videoUrl, options),
         mediaInfo: data.mediaInfo,
         subtitleSidecars: _buildExternalSubtitles(data.mediaInfo),
         isOffline: false,
@@ -4238,12 +4274,12 @@ class PlexClient
   /// said direct-play only), surfacing the reason so the UI can notify the
   /// user. Shared by the video and music branches of
   /// [getPlaybackInitialization].
-  PlaybackInitializationResult _transcodeFallbackResult(
+  Future<PlaybackInitializationResult> _transcodeFallbackResult(
     PlexVideoPlaybackData data,
     TranscodeDecisionOutcome outcome,
     PlaybackInitializationOptions options, {
     int? activeAudioStreamId,
-  }) {
+  }) async {
     if (PlatformDetector.isTizenBuild() || options.requestsCompatibleDolbyVisionRendition(data.mediaInfo)) {
       throw PlaybackException(t.messages.playbackFailed, reason: PlaybackFailureReason.noPlayableSource);
     }
@@ -4251,9 +4287,10 @@ class PlexClient
         ? TranscodeFallbackReason.directPlayOnly
         : TranscodeFallbackReason.decisionFailed;
     appLogger.w('Transcode decision fell back to direct play: ${fallbackReason.name}');
+    await _registerDirectPlay(data, options.metadata, options.sessionIdentifier);
     return PlaybackInitializationResult(
       availableVersions: data.availableVersions,
-      videoUrl: _trackStreamUrl(data.videoUrl, options),
+      videoUrl: _sessionStreamUrl(data.videoUrl, options),
       mediaInfo: data.mediaInfo,
       subtitleSidecars: _buildExternalSubtitles(data.mediaInfo),
       isOffline: false,
@@ -4264,6 +4301,56 @@ class PlexClient
       playSessionId: options.sessionIdentifier,
       selectedMediaIndex: data.selectedMediaIndex,
     );
+  }
+
+  /// Register the exact selected version/part on the same session that will
+  /// read the file. This is advisory: it must never substitute the decision's
+  /// URL or force a transcode. A dead decision endpoint gets one bounded try.
+  Future<void> _registerDirectPlay(PlexVideoPlaybackData data, MediaItem item, String? sessionId) async {
+    if (!item.kind.isVideo || sessionId == null || sessionId.isEmpty || isOfflineMode) return;
+    const deadline = Duration(seconds: 5);
+    final abort = AbortController();
+    try {
+      final response = await _http
+          .get(
+            '/video/:/transcode/universal/decision',
+            queryParameters: {
+              ..._transcodeClientParams(),
+              'path': '/library/metadata/${item.id}',
+              'mediaIndex': data.selectedMediaIndex,
+              'partIndex': data.selectedPartIndex,
+              'hasMDE': 1,
+              'protocol': 'http',
+              'directPlay': 1,
+              'directStream': 1,
+              'subtitles': 'none',
+              'session': sessionId,
+              'X-Plex-Session-Identifier': sessionId,
+            },
+            headers: {'X-Plex-Session-Identifier': sessionId},
+            timeout: deadline,
+            abort: abort,
+            allowEndpointFailover: false,
+          )
+          .namedTimeout(deadline, operation: 'plex direct-play registration');
+      throwIfHttpError(response);
+    } on TimeoutException {
+      abort.abort();
+      appLogger.d('Plex direct-play registration timed out; trying the selected file');
+    } on MediaServerHttpException catch (error) {
+      if (error.type == MediaServerHttpErrorType.cancelled) rethrow;
+      appLogger.d('Plex direct-play registration unavailable; trying the selected file');
+    } catch (_) {
+      appLogger.d('Plex direct-play registration failed; trying the selected file');
+    }
+  }
+
+  String? _sessionStreamUrl(String? url, PlaybackInitializationOptions options) {
+    final session = options.sessionIdentifier;
+    if (url != null && session != null && session.isNotEmpty && options.metadata.kind.isVideo) {
+      return plexDirectPlayIdentity(url, clientId: config.clientIdentifier, sessionId: session);
+    }
+    return _trackStreamUrl(url, options);
   }
 
   /// [url] with the playback session in its query when it streams a track,
@@ -5421,10 +5508,20 @@ class PlexClient
     String? mediaSourceId,
     Duration? position,
   }) async {
-    final playbackData = await getVideoPlaybackData(item.id, mediaIndex: mediaIndex, position: position);
+    final playbackData = await getVideoPlaybackData(
+      item.id,
+      mediaIndex: mediaIndex,
+      selectedMediaSourceId: mediaSourceId,
+      position: position,
+    );
     if (!playbackData.hasValidVideoUrl) return null;
+    final sessionId = item.kind.isVideo ? generateSessionIdentifier() : null;
+    await _registerDirectPlay(playbackData, item, sessionId);
     return ExternalPlaybackTarget(
-      url: playbackData.videoUrl!,
+      url: sessionId == null
+          ? playbackData.videoUrl!
+          : plexDirectPlayIdentity(playbackData.videoUrl!, clientId: config.clientIdentifier, sessionId: sessionId),
+      playSessionId: sessionId,
       subtitles: [for (final sidecar in _buildExternalSubtitles(playbackData.mediaInfo)) sidecar.track],
       partTimeline: playbackData.mediaInfo?.partTimeline,
     );

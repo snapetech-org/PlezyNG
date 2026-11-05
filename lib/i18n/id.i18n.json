@@ -5201,6 +5201,15 @@
     "captureUnavailable": "",
     "waitingForAudio": "",
     "captureStopped": "",
-    "preparing": ""
+    "preparing": "",
+    "downloadingDetector": "",
+    "downloadingDetectorProgress": "",
+    "transcribing": "",
+    "transcribingProgress": "",
+    "translating": "",
+    "translatingProgress": "",
+    "processingAudio": "",
+    "processingAudioProgress": "",
+    "cpuFallback": ""
   }
 }

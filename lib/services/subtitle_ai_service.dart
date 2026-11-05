@@ -13,6 +13,7 @@ import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 
 import '../utils/app_logger.dart';
 import 'subtitle_placement_evidence.dart';
+import 'subtitle_speech_progress.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_word_timing.dart';
 import 'subtitle_whisper_cpp_service.dart';
@@ -136,7 +137,7 @@ final class SubtitleAiService {
     }
   }
 
-  Future<void> downloadModel({void Function(String phase, int received, int total)? onProgress}) async {
+  Future<void> downloadModel({SubtitleSpeechProgressCallback? onProgress}) async {
     if (!supportedPlatform) throw UnsupportedError('Local speech generation is unavailable on this platform.');
     if (await isModelInstalled()) return;
 
@@ -151,7 +152,7 @@ final class SubtitleAiService {
         _modelArchiveUrl,
         expectedBytes: _modelArchiveBytes,
         expectedSha256: _modelArchiveSha256,
-        phase: 'English speech model',
+        phase: SubtitleSpeechPhase.downloadingModel,
         onProgress: onProgress,
       );
       await Isolate.run(() => _extractMoonshineArchive(archiveBytes, staging.path));
@@ -160,7 +161,7 @@ final class SubtitleAiService {
         _vadUrl,
         expectedBytes: _vadBytes,
         expectedSha256: _vadSha256,
-        phase: 'Speech detector',
+        phase: SubtitleSpeechPhase.downloadingDetector,
         onProgress: onProgress,
       );
       await File(p.join(staging.path, 'silero_vad.int8.onnx')).writeAsBytes(vadBytes, flush: true);
@@ -188,8 +189,8 @@ final class SubtitleAiService {
     String url, {
     required int expectedBytes,
     required String expectedSha256,
-    required String phase,
-    void Function(String phase, int received, int total)? onProgress,
+    required SubtitleSpeechPhase phase,
+    SubtitleSpeechProgressCallback? onProgress,
   }) async {
     final client = http.Client();
     try {
@@ -231,7 +232,7 @@ final class SubtitleAiService {
     int numThreads = 2,
     bool translateToEnglish = false,
     String? languageCode,
-    void Function(String phase, int received, int total)? onProgress,
+    SubtitleSpeechProgressCallback? onProgress,
   }) async {
     if (!supportedPlatform) throw UnsupportedError('Local speech generation is unavailable on this platform.');
     final requested = availableProviderRequests.contains(provider) ? provider : SubtitleInferenceProvider.cpu;
@@ -272,6 +273,7 @@ final class SubtitleAiService {
       await downloadModel(onProgress: onProgress);
     }
     final root = await _modelDirectoryPath();
+    onProgress?.call(SubtitleSpeechPhase.transcribing, 0, 0);
     final result = await Isolate.run(
       () => _runSubtitleTranscriptionWorker(
         wavPath: wavPath,

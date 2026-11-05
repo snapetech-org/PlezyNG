@@ -5231,6 +5231,15 @@ extension on TranslationsAr {
 			'subtitleCapture.waitingForAudio' => "في انتظار الصوت المفكوك. قد يكون التشغيل متوقفًا مؤقتًا.",
 			'subtitleCapture.captureStopped' => "توقف الالتقاط المباشر. تحقق من التشغيل وحاول مجددًا.",
 			'subtitleCapture.preparing' => "جارٍ تجهيز الترجمة النصية المباشرة…",
+			'subtitleCapture.downloadingDetector' => "جارٍ تنزيل كاشف الكلام…",
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => "جارٍ تنزيل كاشف الكلام (${percent}٪)…",
+			'subtitleCapture.transcribing' => "جارٍ تحويل الصوت إلى نص محليًا…",
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => "جارٍ تحويل الصوت إلى نص محليًا (${percent}٪)…",
+			'subtitleCapture.translating' => "جارٍ ترجمة الكلام إلى الإنجليزية محليًا…",
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => "جارٍ ترجمة الكلام إلى الإنجليزية محليًا (${percent}٪)…",
+			'subtitleCapture.processingAudio' => "جارٍ معالجة الصوت محليًا…",
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => "جارٍ معالجة الصوت محليًا (${percent}٪)…",
+			'subtitleCapture.cpuFallback' => "فشلت معالجة الكلام باستخدام معالج الرسومات. تجري إعادة المحاولة باستخدام المعالج المركزي…",
 
 			'app.title' => 'PlezyNG',
 			'appIcon.title' => 'تطبيق icon',
@@ -9008,4 +9017,13 @@ class _Translations$subtitleCapture$ar extends Translations$subtitleCapture$en {
 	@override String get waitingForAudio => "في انتظار الصوت المفكوك. قد يكون التشغيل متوقفًا مؤقتًا.";
 	@override String get captureStopped => "توقف الالتقاط المباشر. تحقق من التشغيل وحاول مجددًا.";
 	@override String get preparing => "جارٍ تجهيز الترجمة النصية المباشرة…";
+	@override String get downloadingDetector => "جارٍ تنزيل كاشف الكلام…";
+	@override String downloadingDetectorProgress({required Object percent}) => "جارٍ تنزيل كاشف الكلام (${percent}٪)…";
+	@override String get transcribing => "جارٍ تحويل الصوت إلى نص محليًا…";
+	@override String transcribingProgress({required Object percent}) => "جارٍ تحويل الصوت إلى نص محليًا (${percent}٪)…";
+	@override String get translating => "جارٍ ترجمة الكلام إلى الإنجليزية محليًا…";
+	@override String translatingProgress({required Object percent}) => "جارٍ ترجمة الكلام إلى الإنجليزية محليًا (${percent}٪)…";
+	@override String get processingAudio => "جارٍ معالجة الصوت محليًا…";
+	@override String processingAudioProgress({required Object percent}) => "جارٍ معالجة الصوت محليًا (${percent}٪)…";
+	@override String get cpuFallback => "فشلت معالجة الكلام باستخدام معالج الرسومات. تجري إعادة المحاولة باستخدام المعالج المركزي…";
 }

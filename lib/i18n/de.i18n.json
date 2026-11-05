@@ -5228,6 +5228,15 @@
     "captureUnavailable": "Diese Audioausgabe liefert keine dekodierten Audiodaten. Wähle eine unterstützte Audioausgabe.",
     "waitingForAudio": "Warten auf dekodiertes Audio. Die Wiedergabe ist möglicherweise pausiert.",
     "captureStopped": "Die Live-Erfassung wurde beendet. Prüfe die Wiedergabe und versuche es erneut.",
-    "preparing": "Live-Untertitel werden vorbereitet …"
+    "preparing": "Live-Untertitel werden vorbereitet …",
+    "downloadingDetector": "Sprachdetektor wird heruntergeladen …",
+    "downloadingDetectorProgress": "Sprachdetektor wird heruntergeladen (${percent} %) …",
+    "transcribing": "Audio wird lokal transkribiert …",
+    "transcribingProgress": "Audio wird lokal transkribiert (${percent} %) …",
+    "translating": "Sprache wird lokal ins Englische übersetzt …",
+    "translatingProgress": "Sprache wird lokal ins Englische übersetzt (${percent} %) …",
+    "processingAudio": "Audio wird lokal verarbeitet …",
+    "processingAudioProgress": "Audio wird lokal verarbeitet (${percent} %) …",
+    "cpuFallback": "Sprachverarbeitung auf der GPU ist fehlgeschlagen. Neuer Versuch auf der CPU …"
   }
 }

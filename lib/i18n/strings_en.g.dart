@@ -15621,6 +15621,15 @@ extension on Translations {
 			'subtitleCapture.waitingForAudio' => "Waiting for decoded audio. Playback may be paused.",
 			'subtitleCapture.captureStopped' => "Live capture stopped. Check playback and try again.",
 			'subtitleCapture.preparing' => "Preparing live captions…",
+			'subtitleCapture.downloadingDetector' => "Downloading the speech detector…",
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => "Downloading the speech detector (${percent}%)…",
+			'subtitleCapture.transcribing' => "Transcribing audio locally…",
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => "Transcribing audio locally (${percent}%)…",
+			'subtitleCapture.translating' => "Translating speech to English locally…",
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => "Translating speech to English locally (${percent}%)…",
+			'subtitleCapture.processingAudio' => "Processing audio locally…",
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => "Processing audio locally (${percent}%)…",
+			'subtitleCapture.cpuFallback' => "GPU speech processing failed. Retrying on CPU…",
 
 			'app.title' => 'PlezyNG',
 			'appIcon.title' => 'App icon',
@@ -20519,7 +20528,7 @@ extension on Translations {
 
 class Translations$subtitleCapture$en {
 	Translations$subtitleCapture$en.internal(this._root);
-	final Translations _root;
+	final Translations _root; // ignore: unused_field
 	String get loadingModel => "Loading the local speech model…";
 	String loadingModelProgress({required Object percent}) => "Loading the local speech model (${percent}%)…";
 	String get downloadingModel => "Downloading the speech model…";
@@ -20537,4 +20546,13 @@ class Translations$subtitleCapture$en {
 	String get waitingForAudio => "Waiting for decoded audio. Playback may be paused.";
 	String get captureStopped => "Live capture stopped. Check playback and try again.";
 	String get preparing => "Preparing live captions…";
+	String get downloadingDetector => "Downloading the speech detector…";
+	String downloadingDetectorProgress({required Object percent}) => "Downloading the speech detector (${percent}%)…";
+	String get transcribing => "Transcribing audio locally…";
+	String transcribingProgress({required Object percent}) => "Transcribing audio locally (${percent}%)…";
+	String get translating => "Translating speech to English locally…";
+	String translatingProgress({required Object percent}) => "Translating speech to English locally (${percent}%)…";
+	String get processingAudio => "Processing audio locally…";
+	String processingAudioProgress({required Object percent}) => "Processing audio locally (${percent}%)…";
+	String get cpuFallback => "GPU speech processing failed. Retrying on CPU…";
 }

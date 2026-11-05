@@ -1,5 +1,6 @@
 import '../../../i18n/subtitle_capture_status_text.dart';
 import '../../../services/subtitle_capture_status.dart';
+import '../../../services/subtitle_speech_progress.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show File, Platform;
@@ -82,6 +83,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   bool _playbackCaptureSupported = false;
   bool _lastResultUploadedToServer = false;
   String? _status;
+  SubtitleSpeechProgress? _speechProgress;
   SubtitleCaptureStatus? _captureStatus;
   String? _error;
   String? _revisionStatus;
@@ -137,6 +139,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       _busy = true;
       _error = null;
       _status = null;
+      _speechProgress = null;
       _captureStatus = null;
       _revisionStatus = null;
     });
@@ -145,19 +148,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     } catch (error) {
       if (mounted) setState(() => _error = _readableError(error));
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) setState(() { _busy = false; _speechProgress = null; });
     }
   }
 
   Future<void> _ensureSpeechModel() async {
     if (_provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu) return;
     if (await SubtitleAiService.instance.isModelInstalled()) return;
-    if (mounted) setState(() => _status = context.t.subtitleAiUi.downloadingTheEnglishSpeechModelAndS_d75c5cb7);
+    if (mounted) setState(() => _speechProgress = const SubtitleSpeechProgress(SubtitleSpeechPhase.downloadingModel));
     await SubtitleAiService.instance.downloadModel(
       onProgress: (phase, received, total) {
         if (!mounted) return;
-        final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';
-        setState(() => _status = '$phase$percent');
+        setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
       },
     );
   }
@@ -220,11 +222,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final translateToEnglish =
         _translateSpeechToEnglish &&
         (_provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu);
-    setState(
-      () => _status = translateToEnglish
-          ? 'Transcribing and translating speech to English locally…'
-          : 'Transcribing speech locally on this device…',
-    );
+    setState(() => _speechProgress = SubtitleSpeechProgress(
+      translateToEnglish ? SubtitleSpeechPhase.translating : SubtitleSpeechPhase.transcribing,
+    ));
     final result = await SubtitleAiService.instance.transcribeWav(
       wavPath,
       provider: _provider,
@@ -232,8 +232,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       onProgress: (phase, received, total) {
         if (!mounted) return;
-        final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';
-        setState(() => _status = '$phase$percent');
+        setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
       },
     );
     if (!await _writeAndApply(
@@ -276,8 +275,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       onProgress: (phase, received, total) {
         if (!mounted) return;
-        final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';
-        setState(() => _status = '$phase$percent');
+        setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
       },
     );
     final aligned = SubtitleSyncService.synchronize(
@@ -1879,9 +1877,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           _speechLanguageSelector(),
           const SizedBox(height: 10),
           if (_busy) const LinearProgressIndicator(),
-          if (_status != null || _captureStatus != null) ...[
+          if (_status != null || _captureStatus != null || _speechProgress != null) ...[
             const SizedBox(height: 8),
-            Text(_captureStatus != null ? subtitleCaptureStatusText(context, _captureStatus) : _status!, style: Theme.of(context).textTheme.bodyMedium),
+            Text(_speechProgress != null ? subtitleSpeechProgressText(context, _speechProgress!) : _captureStatus != null ? subtitleCaptureStatusText(context, _captureStatus) : _status!, style: Theme.of(context).textTheme.bodyMedium),
           ],
           if (_error != null) ...[
             const SizedBox(height: 8),

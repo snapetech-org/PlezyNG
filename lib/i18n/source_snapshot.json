@@ -4895,5 +4895,14 @@
   "subtitleCapture.captureUnavailable": "c597db9f5f8776f3",
   "subtitleCapture.waitingForAudio": "61c9868d51e79e19",
   "subtitleCapture.captureStopped": "7aa67be78fc12991",
-  "subtitleCapture.preparing": "0ada652012e73975"
+  "subtitleCapture.preparing": "0ada652012e73975",
+  "subtitleCapture.downloadingDetector": "12517cd36a144ed7",
+  "subtitleCapture.downloadingDetectorProgress": "dae17fd9d9c09163",
+  "subtitleCapture.transcribing": "0263f2b61512162e",
+  "subtitleCapture.transcribingProgress": "68275db036627767",
+  "subtitleCapture.translating": "50b4b134fc9ccbb5",
+  "subtitleCapture.translatingProgress": "4f213a32371e9a3a",
+  "subtitleCapture.processingAudio": "2ab1ab3b26315295",
+  "subtitleCapture.processingAudioProgress": "97322e063b76be04",
+  "subtitleCapture.cpuFallback": "526dd79c5caf2ee0"
 }

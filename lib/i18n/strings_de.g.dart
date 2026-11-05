@@ -5131,6 +5131,15 @@ extension on TranslationsDe {
 			'subtitleCapture.waitingForAudio' => "Warten auf dekodiertes Audio. Die Wiedergabe ist möglicherweise pausiert.",
 			'subtitleCapture.captureStopped' => "Die Live-Erfassung wurde beendet. Prüfe die Wiedergabe und versuche es erneut.",
 			'subtitleCapture.preparing' => "Live-Untertitel werden vorbereitet …",
+			'subtitleCapture.downloadingDetector' => "Sprachdetektor wird heruntergeladen …",
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => "Sprachdetektor wird heruntergeladen (${percent} %) …",
+			'subtitleCapture.transcribing' => "Audio wird lokal transkribiert …",
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => "Audio wird lokal transkribiert (${percent} %) …",
+			'subtitleCapture.translating' => "Sprache wird lokal ins Englische übersetzt …",
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => "Sprache wird lokal ins Englische übersetzt (${percent} %) …",
+			'subtitleCapture.processingAudio' => "Audio wird lokal verarbeitet …",
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => "Audio wird lokal verarbeitet (${percent} %) …",
+			'subtitleCapture.cpuFallback' => "Sprachverarbeitung auf der GPU ist fehlgeschlagen. Neuer Versuch auf der CPU …",
 
 			'app.title' => 'PlezyNG',
 			'appIcon.title' => 'App-Symbol',
@@ -8908,4 +8917,13 @@ class _Translations$subtitleCapture$de extends Translations$subtitleCapture$en {
 	@override String get waitingForAudio => "Warten auf dekodiertes Audio. Die Wiedergabe ist möglicherweise pausiert.";
 	@override String get captureStopped => "Die Live-Erfassung wurde beendet. Prüfe die Wiedergabe und versuche es erneut.";
 	@override String get preparing => "Live-Untertitel werden vorbereitet …";
+	@override String get downloadingDetector => "Sprachdetektor wird heruntergeladen …";
+	@override String downloadingDetectorProgress({required Object percent}) => "Sprachdetektor wird heruntergeladen (${percent} %) …";
+	@override String get transcribing => "Audio wird lokal transkribiert …";
+	@override String transcribingProgress({required Object percent}) => "Audio wird lokal transkribiert (${percent} %) …";
+	@override String get translating => "Sprache wird lokal ins Englische übersetzt …";
+	@override String translatingProgress({required Object percent}) => "Sprache wird lokal ins Englische übersetzt (${percent} %) …";
+	@override String get processingAudio => "Audio wird lokal verarbeitet …";
+	@override String processingAudioProgress({required Object percent}) => "Audio wird lokal verarbeitet (${percent} %) …";
+	@override String get cpuFallback => "Sprachverarbeitung auf der GPU ist fehlgeschlagen. Neuer Versuch auf der CPU …";
 }

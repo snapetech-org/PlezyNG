@@ -18,7 +18,16 @@
     "captureUnavailable",
     "waitingForAudio",
     "captureStopped",
-    "preparing"
+    "preparing",
+    "downloadingDetector",
+    "downloadingDetectorProgress",
+    "transcribing",
+    "transcribingProgress",
+    "translating",
+    "translatingProgress",
+    "processingAudio",
+    "processingAudioProgress",
+    "cpuFallback"
   ],
   "locales": {
     "en": "authored source",
@@ -27,5 +36,6 @@
   },
   "nativeSpeakerReview": false,
   "deviceLargeTextRtlQualification": false,
-  "otherLocales": "Explicit English fallback; not claimed translated"
+  "otherLocales": "Explicit English fallback; not claimed translated",
+  "scope": "Live captions and file speech model/transcription progress"
 }

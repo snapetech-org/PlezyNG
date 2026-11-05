@@ -34,6 +34,36 @@ release qualification. Changes are committed directly to `main` in small batches
 | G08 | Remaining podcast functions | Per-show automatic downloads/retention, restart-safe discovery and opt-in alerts implemented; manual downloads protected; foreground worker integrated with profile/lifecycle/download owners. Archive pagination and transcript search/seek with encrypted offline caching added; opt-in gpodder API v2 sync integrated with HTTPS configuration, unique device IDs, independent revision acknowledgments, deferred active-session changes and explicit progress conflicts. Known-duration RSS episodes supported; HTTP imports remain queued for manual setup | Policy, private archive restart/identity and transcript regression cases added; gpodder protocol and acknowledgment regressions added; worker/native/server/device execution pending |
 | G09 | Remaining Steam transport/presentation scope | Reconciled PR #81/#111 source: desktop/Apple receivers, HDR/surround, cloud/family actions, internet tunnel/relay, controller mapping/feedback/motion, touch editor, microphone ownership, SDK preparation and package inspection. Kept current Opus patches and Android direct-egress setup while adding Granite patches and SDK layout recovery | 37 Games SDK tests and 15 Android SDK setup tests pass; cloud companion 10 pass/6 socket skips. Flutter, native SDK builds, account/network/device acceptance and deployed optional services pending |
 | G10 | Detached desktop Multiview windows | Native macOS/AppKit, Windows and Linux/Wayland hosts move the retained video/OSD surface without reopening media or duplicating progress/auth/decoder owners. Workspace and source-video controls route through their original owners; close returns to the pane, stale controls are revoked, queued intents are bounded. Profile/slot geometry is persisted using native facilities; Wayland restores size under compositor placement. Removed the unused child-process RPC experiment | Owner/token/geometry/queued-close/route-restore regression cases added; Flutter and all three native SDK builds/device tests pending. Games/readers/music retain their existing in-app surfaces; application-crash playback restart and non-video detached surfaces are not claimed |
-| M01 | Current release/capability documentation and guards | README and ledger describe the published v3.0.0 release using captured GitHub metadata; current integrated product boundaries corrected; optional independent release-metadata check added | Published tag, source commit, date and actual asset names read from GitHub; source checks pending |
+| M01 | Current release/capability documentation and guards | README and ledger describe the published v3.0.0 release using captured GitHub metadata; current integrated product boundaries corrected; optional independent release-metadata check added | Published tag, source commit, date and actual asset names read from GitHub; capability-manifest and workflow architecture checks pass |
 | M02 | Required public platform delivery | Future versioned releases reject omitted webOS/Tizen/Windows ARM64 and verify the assembled platform artifacts before creating a release. Existing eligibility gates retained | Coverage regressions pass. v3.0.0 public webOS repair still requires an eligible packaged artifact and release upload; no matching write capability is exposed in this session |
 | M03 | Remove tracked generated package outputs | Removed 16 files / 94,520,572 bytes of generated shared_preferences package output; nested package build directories ignored and source-tree guard added | Current tree checked; history intentionally preserved |
+
+## Delivery checkpoint
+
+Confidence is high that the published commits contain the changes recorded in
+this ledger and that the listed executed checks passed. Confidence in the
+uncompiled Flutter/native integrations is moderate; device performance,
+compatibility and installation results at this revision are unknown.
+
+Executed checks include the relative Dart directive guard and its three parser
+regressions, 41 Python checks for workflows/imports/release coverage, locale and
+capability-manifest guards, five compiled C++ visualizer regression binaries,
+Games SDK/setup and companion checks, and Tizen/webOS package-recipe tests.
+The production recording-bootstrap UPDATE was extracted and executed against
+SQLite to verify its interrupted/app_interrupted state contract. Recipe/fixture
+checks do not establish that an actual application package was built.
+
+Flutter/Dart, Go, CMake and platform SDKs are absent in this environment. The
+connected GitHub tools support source commits but expose neither workflow
+dispatch nor release-asset upload; existing CI/release workflows are opt-in. No
+workflow trigger was changed to bypass that boundary, and no full application
+build or device qualification is claimed.
+
+Remaining source/product scope includes the explicit translation backlog,
+non-video detached surfaces and application-crash playback restart, karaoke
+licensed catalog/hosted-sharing/proprietary-format/live-monitor scope, and
+packaged signed emulator-core delivery. Production catalog root provisioning
+requires reviewed public keys and real signing custody. The existing v3.0.0
+webOS delivery gap requires an eligible artifact and release attachment. The
+per-feature acceptance column remains authoritative; this checkpoint does not
+mark the entire requested project scope complete.

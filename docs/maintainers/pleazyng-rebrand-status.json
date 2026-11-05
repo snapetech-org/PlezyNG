@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-11-05",
+  "product": "Pleazyng",
+  "state": "implementation_in_progress",
+  "completed": [
+    "Removed upstream relay URL fallback and reject upstream domains in configured relay URLs",
+    "Removed bundled upstream Discord and tracker client identifiers",
+    "Created a fork ribbon symbol master without the NG lettering"
+  ],
+  "pending": [
+    "Public app/package/link identity migration",
+    "Canonical brand export regeneration and website sync",
+    "Data and purchase continuity",
+    "Repository and domain/channel account changes",
+    "Own service deployment and provider registrations",
+    "Native build and device/channel verification"
+  ],
+  "checks": {
+    "git_diff_check": "passed",
+    "source_configuration_screen": "passed",
+    "dart_runtime": "not_run",
+    "native_builds": "not_run"
+  }
+}

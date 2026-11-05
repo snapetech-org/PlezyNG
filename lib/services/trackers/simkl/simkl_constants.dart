@@ -22,16 +22,16 @@ class SimklConstants {
 
   /// AUTH V1 app. Only used for sessions minted before the V2 cutover; nothing
   /// signs in with it any more. Its tokens never expire and cannot be revoked.
-  static const String legacyClientId = 'ac97718a469c33eab948b63f92226106157e58fdcdd70c1b5857f1779b1d3a6a';
+  static const String legacyClientId = String.fromEnvironment('PLEAZYNG_SIMKL_LEGACY_CLIENT_ID');
 
   /// AUTH V2 app, registered as "TV, devices & command line": device flow
   /// only, no client secret. Public by design — on its own it reaches nothing
   /// but public catalog data.
-  static const String v2ClientId = 'ec68bc6a9d04b3c50af8cc495f9c9bf478c2371b979aed7e3385bdb771b9b18d';
+  static const String v2ClientId = String.fromEnvironment('PLEAZYNG_SIMKL_CLIENT_ID');
 
   static const String apiBase = 'https://api.simkl.com';
   static const String dataBase = 'https://data.simkl.in';
-  static const String appName = 'plezy';
+  static const String appName = 'Pleazyng';
 
   /// Sent as `app-version` when the platform cannot report the real one.
   static const String fallbackAppVersion = 'unknown';

@@ -1,20 +1,34 @@
-/// Base URL of Plezy upstream's hosted service: the tracker OAuth proxy
-/// (`/auth`), log uploads (`/logs`) and Discord posters (`/posters`). Watch
-/// Together rooms run on Open Watch Party relays, not here.
-const String plezyServerBaseUrl = String.fromEnvironment(
-  'PLEZY_SERVER_BASE_URL',
-  defaultValue: 'https://ice.plezy.app',
+/// Fork-owned optional service configuration. No upstream infrastructure is a
+/// fallback. These Dart symbol names remain for internal source compatibility.
+const String pleazyngRelayBaseUrl = String.fromEnvironment('PLEAZYNG_RELAY_BASE_URL');
+const String _comicCommerceBaseUrl = String.fromEnvironment('PLEAZYNG_COMIC_COMMERCE_BASE_URL');
+const String _watchmodeBaseUrl = String.fromEnvironment('PLEAZYNG_WATCHMODE_AVAILABILITY_BASE_URL');
+
+bool get isPleazyngRelayConfigured => pleazyngRelayBaseUrl.trim().isNotEmpty;
+
+/// Validate before constructing a request. Missing configuration must never
+/// send credentials or logs to another project's infrastructure.
+String requirePleazyngServiceUrl(String value, {String service = 'Online service'}) {
+  final uri = Uri.tryParse(value.trim());
+  if (uri == null || uri.scheme != 'https' || uri.host.isEmpty ||
+      uri.userInfo.isNotEmpty || uri.hasQuery || uri.hasFragment) {
+    throw StateError('$service is not configured for this Pleazyng build.');
+  }
+  final host = uri.host.toLowerCase();
+  if (host == 'plezy.app' || host.endsWith('.plezy.app')) {
+    throw StateError('$service must use a Pleazyng-owned service.');
+  }
+  return uri.toString().replaceFirst(RegExp(r'/+$'), '');
+}
+
+String get plezyServerBaseUrl => requirePleazyngServiceUrl(pleazyngRelayBaseUrl);
+
+String get plezyComicCommerceBaseUrl => requirePleazyngServiceUrl(
+  _comicCommerceBaseUrl.isEmpty ? pleazyngRelayBaseUrl : _comicCommerceBaseUrl,
+  service: 'Store links',
 );
 
-/// Comic affiliate links are resolved by Plezy's hosted relay. Override at
-/// build time when deploying the commerce endpoint on a separate relay.
-const String plezyComicCommerceBaseUrl = String.fromEnvironment(
-  'PLEZY_COMIC_COMMERCE_BASE_URL',
-  defaultValue: plezyServerBaseUrl,
-);
-
-/// Watchmode availability is served by the configured Plezy relay; the provider key stays on that server.
-const String plezyWatchmodeAvailabilityBaseUrl = String.fromEnvironment(
-  'PLEZY_WATCHMODE_AVAILABILITY_BASE_URL',
-  defaultValue: plezyServerBaseUrl,
+String get plezyWatchmodeAvailabilityBaseUrl => requirePleazyngServiceUrl(
+  _watchmodeBaseUrl.isEmpty ? pleazyngRelayBaseUrl : _watchmodeBaseUrl,
+  service: 'Availability lookup',
 );

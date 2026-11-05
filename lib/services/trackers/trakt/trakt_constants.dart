@@ -4,7 +4,7 @@ class TraktConstants {
 
   // Native clients cannot keep a client secret confidential. Trakt's device
   // authorization flow identifies this public client with its client ID.
-  static const String clientId = '9861e686e95c13409dd321736f903973cb9b8e5c6abd0634bec8962f52ea30f4';
+  static const String clientId = String.fromEnvironment('PLEAZYNG_TRAKT_CLIENT_ID');
 
   static const String apiBase = 'https://api.trakt.tv';
   static const String apiVersion = '2';

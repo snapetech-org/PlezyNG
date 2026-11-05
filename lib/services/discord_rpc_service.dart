@@ -53,8 +53,9 @@ class _CachedUrl {
 /// video and a "Listening" activity for music tracks. Gracefully handles
 /// Discord not running.
 class DiscordRPCService {
-  static const String _applicationId = '1453773470306402439';
-  static const String _posterUploadUrl = '$plezyServerBaseUrl/posters';
+  static const String _configuredApplicationId = String.fromEnvironment('PLEAZYNG_DISCORD_APPLICATION_ID');
+  final String _applicationId;
+  static String get _posterUploadUrl => '$plezyServerBaseUrl/posters';
   static const int _maxPosterUploadBytes = 5 * 1024 * 1024;
 
   /// Cache of thumbnail paths to hosted poster URLs. Keyed by
@@ -92,16 +93,17 @@ class DiscordRPCService {
   StreamSubscription<void>? _disconnectedSubscription;
   StreamSubscription<dynamic>? _errorSubscription;
 
-  DiscordRPCService._() : _rpcFactory = DiscordRPC.new;
+  DiscordRPCService._() : _rpcFactory = DiscordRPC.new, _applicationId = _configuredApplicationId;
 
   /// Standalone instance for tests; [rpcFactory] supplies fake clients so no
   /// IPC connection is attempted.
   @visibleForTesting
-  DiscordRPCService.forTesting({required this._rpcFactory});
+  DiscordRPCService.forTesting({required this._rpcFactory, String applicationId = '1'}) : _applicationId = applicationId;
 
   final DiscordRPC Function() _rpcFactory;
 
   static bool get isAvailable {
+    if (_configuredApplicationId.isEmpty) return false;
     if (!PlatformDetector.isDesktopOS()) {
       return false;
     }
@@ -230,6 +232,10 @@ class DiscordRPCService {
   }
 
   Future<void> _connect() async {
+    if (_applicationId.isEmpty) {
+      appLogger.w('Discord Rich Presence is not configured for this Pleazyng build');
+      return;
+    }
     if (_rpc != null) return;
 
     // Bound to this attempt's client so deferred continuations (the initialize
@@ -338,6 +344,7 @@ class DiscordRPCService {
   }
 
   Future<String?> _uploadThumbnail(MediaItem metadata, MediaServerClient client) async {
+    if (!isPleazyngRelayConfigured) return null;
     try {
       final thumbPath = _presenceThumbPath(metadata);
       if (thumbPath == null || thumbPath.isEmpty) return null;

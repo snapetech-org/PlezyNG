@@ -111,7 +111,11 @@ alive through Flutter's copy callback. Rendering and PCM ingestion stay native;
 the Dart controller sends control commands and polls status at 2 Hz. Sessions
 have monotonic leases so stale widget disposal cannot destroy a newer session.
 
-The renderer requests at most 1280×720 at 30 FPS. It performs GPU readback and
+Desktop hosts request at most 1920×1080 at 60 FPS; mobile and TV hosts retain
+1280×720 at 30 FPS. A shared controller reduces render scale when the rolling
+90th-percentile capture/presentation cost exceeds its frame budget, and restores
+quality only after sustained headroom. Desktop can fall back to 30 FPS at its
+minimum scale. These are implementation budgets, not measured device performance. It performs GPU readback and
 a native copy, not GPU texture sharing. This is a provisional integration path
 whose cost must be measured before acceptance. Mesa surfaceless EGL is required;
 drivers without it report unavailable. There is no universal Linux GPU claim.
@@ -124,14 +128,16 @@ time-pos gates blocks, with no synchronous per-frame mpv property request.
 Controls on `com.plezy/mpv_audio_player` are `visualizerCapabilities`, `Create`,
 `Load`, `Resize`, `SetPaused`, `Status`, and `Dispose` (all use the `visualizer`
 prefix). Create returns separate `sessionId` and `textureId` values. Every later
-operation requires the session lease. Loading requires a bounded `.milk` file
-under its installed asset root. `.milk2` remains explicitly unavailable.
+operation requires the session lease. Loading requires a bounded preset under its installed asset root. projectM
+rejects `.milk2`; MilkRust implements all 30 saved pattern formulas and all
+eleven saved sprite blend modes in its native/WebGL profile. Reference-pixel
+parity remains unqualified.
 
 The controller serializes loads and disposal, handles missing plugins, and
 shows original scenes while a native preset has no current frame or has failed.
 Player/profile teardown stops the worker before detaching the PCM tap. A native
-driver or compiler hang is **not contained** by this in-process worker: joining
-it can block teardown. Process isolation/watchdog behavior remains a release gate
+driver or compiler hang now triggers helper termination on desktop; mobile/TV
+workers retain bounded thread teardown and quarantine. Verified recovery remains a release gate
 for arbitrary community inputs. Exceptions are not a substitute for that gate.
 
 Promotion still requires the private-JIT build and publication, updated app
@@ -143,29 +149,35 @@ claimed by these source changes.
 
 ## Native MilkRust and platform hosts
 
-`sources.lock.json` also pins MilkRust's `milkrust-native` crate and C ABI v1.
+`sources.lock.json` also pins MilkRust's `milkrust-native` crate and C ABI v2,
+including the bounded animated-GIF upload entry point.
 It builds a static library and a dynamic library; no new third-party Rust
 renderer dependency is introduced. The shared C++ adapter resolves the ABI,
 loads bounded UTF-8 presets, resolves assets within the installed pack root and
 uses platform image decoders with dimensions checked before pixel allocation.
-The Rust engine owns shader programs, named textures, per-layer feedback and
-final composite passes. `milkrust_render_rgba` returns bounded top-down RGBA8.
+Encoded GIFs go through the bounded Rust animation decoder in ABI v2; DDS/TGA
+use the shared bounded native decoder. The Rust engine owns shader programs,
+named textures, per-layer feedback and final composite passes.
+`milkrust_render_rgba` returns bounded top-down RGBA8.
 
 The app source now includes these hosts:
 
 | Platform | Graphics and Flutter output | Playback lease |
 | --- | --- | --- |
-| Linux | Existing surfaceless EGL/GLES 3 and pixel-buffer texture | Existing mpv native mutex and cached playback PTS |
-| Windows | Dedicated hidden WGL 3.2 core context, WIC images, leased Flutter RGBA buffers | Same-player tap under native mutex; worker stops before disposal |
-| macOS | Dedicated CGL 3.2 core context, ImageIO, retained CVPixelBuffer | `MpvPlayerCoreBase` lifecycle lock and internal PTS observation |
+| Linux | Helper-owned surfaceless EGL/GLES 3 and host pixel-buffer texture | Existing mpv native mutex and cached playback PTS |
+| Windows | Helper-owned hidden WGL 3.3 core context, WIC images, leased Flutter RGBA buffers | Same-player tap under native mutex; worker stops before disposal |
+| macOS | Helper-owned CGL 4.1 core context, ImageIO, retained CVPixelBuffer | `MpvPlayerCoreBase` lifecycle lock and internal PTS observation |
 | iOS/tvOS | Dedicated EAGL ES 3 context, ImageIO, retained CVPixelBuffer | Same Apple lifecycle lease |
 | Android/Android TV | EGL ES 3 pbuffer, bounded BitmapFactory decoding, SurfaceTexture native window | AAR `SessionGuard` admission lease; opaque session ID |
 
 All entries are source-only and unqualified. The non-Linux hosts currently offer
-MilkRust; selecting projectM produces an explicit unavailable response. webOS
-and Tizen still lack a decoded-PCM/native-texture path. No host claims to play
-all shaders or all `.milk2` patterns. Native MilkRust currently uses immediate
-preset cuts, not qualified cross-preset transitions.
+MilkRust; selecting projectM produces an explicit unavailable response. Tizen
+and webOS now have decoded-audio and native-texture host source. The webOS route
+uses app-owned SoLoud decoding/output for its bounded supported-file subset;
+LG NDL remains the fallback for other sources. The renderer declares a bounded
+legacy HLSL/resource profile; unsupported shader constructs fail with
+diagnostics. Native MilkRust currently uses immediate preset cuts, not
+qualified cross-preset transitions.
 
 Android's exact pinned mpv-build tree contains the session-leased native bridge
 from `mpv-build-android-visualizer-bridge.patch`; source preparation verifies
@@ -176,36 +188,135 @@ exports a raw player pointer, queries the decoder from the render worker, or
 delivers PCM through Kotlin/Dart. Stock AARs fail this capability gate and keep
 normal playback.
 
-### Artifact wiring after private JIT qualification
+The shared native adapter refreshes the MilkRust local-calendar setter before
+each render and offscreen capture, so EEL date/time registers reflect the
+active device clock. The engine itself remains deterministic unless the host
+supplies this state.
 
-- Linux: install `libmilkrust_native.so` beside the bundled native libraries.
-- Windows: install `milkrust_native.dll` beside the signed app executable.
-- Android: place the matching `libmilkrust_native.so` in the release's `jniLibs`
-  directory for every packaged ABI, and use the patched, verified mpv AAR.
-- Apple: link the per-architecture static library with `-force_load` and retain
-  the C ABI exports (`-Wl,-export_dynamic`) so the runtime gate can resolve them.
-  Include the host's OpenGL/OpenGLES, ImageIO and CoreVideo framework links in the
-  signed target. A universal/XCFramework artifact must carry device and simulator
-  slices separately. The existing default mpv artifacts are not patched here.
+### Regular runtime artifact wiring
+
+The regular build paths now produce the pinned MilkRust runtime on private JIT.
+Desktop workflows call `scripts/visualizer/build_runtime.py` before Flutter;
+CMake verifies the receipt/pin/digests and requires the runtime by default.
+Android Gradle stages selected ABIs before JNI/assets merge. Apple Runner targets
+build per-SDK static archives in an Xcode phase and use strong C ABI references,
+with C++ and iconv link flags, rather than `dlsym`/export flags. Source/notices
+travel with every artifact. Tizen's normal workflow cross-builds through the
+selected SDK toolchain and requires the provenance bundle at package creation.
+
+These paths do not replace the old mpv binary lock. Actual private-JIT mpv
+artifacts with the PCM/session extension still need production and digest
+promotion before those platforms can visualize playback. Full entrypoint and
+acceptance details: `docs/plezyng/visualizations/BUILD_HANDOFF.md`.
+
+The webOS release-candidate path builds the MilkRust crate pinned in
+`sources.lock.json` with the pinned Rust toolchain and LG ARM linker, creates a
+matching source archive and notices bundle, and requires that bundle in every
+IPK made through `tools/webos/build_ipk.sh`. The IPK verifier rejects a package
+without the runtime. The C++ host first uses the normal ELF loader path, then
+resolves `libmilkrust_native.so` beside its own plugin module; the packaged
+runtime and Flutter plugin are both staged under the app's `lib/` directory.
+This closes the optional-staging and runtime-discovery source gaps; the cross
+build, generated IPK, ABI loading and device behavior remain unverified until a
+compatible private JIT run and physical TV qualification complete.
 
 Do not edit the application dependency lock until those artifacts exist and
 have verified digests. Package the AGPL-3.0-only MilkRust notice, exact corresponding
 source and dependency notices with any distribution that includes the engine.
 The full engine license is in `notices/MilkRust-AGPL-3.0.txt`.
 
-The in-process GL compiler and Android native-window presentation can block in
-a driver. Exception handling does not impose a timeout. Qualification must cover
+Desktop GL compilation and image decode execute in the packaged helper with
+two-second IPC deadlines and OS process termination. Android GL compilation and native-window publication run in a private service
+process with bounded socket requests. Tizen/webOS compilation and decode run in their packaged helper. iOS/tvOS GL
+compilation can still block its retained worker.
+Exception handling alone does not impose a driver timeout. Qualification must cover
 backgrounding, surface/context loss, seek generation reset, pixel leases during
 unregister, repeated create/dispose, multichannel audio and passthrough. Process
 isolation or platform-specific recovery remains a release gate for untrusted
 community shaders; this source does not claim that containment is solved.
 
 
-Desktop CMake has an explicit artifact path: set
-`PLEZY_VISUALIZER_MILKRUST_LIBRARY`, `PLEZY_VISUALIZER_MILKRUST_SHA256`,
+Desktop CMake also accepts explicit library/source paths and reviewed SHA-256
+values via `PLEZY_VISUALIZER_MILKRUST_LIBRARY`, `PLEZY_VISUALIZER_MILKRUST_SHA256`,
 `PLEZY_VISUALIZER_MILKRUST_SOURCE_ARCHIVE` and
-`PLEZY_VISUALIZER_MILKRUST_SOURCE_SHA256`. Both digests are checked at configure
-time. Installation includes the runtime library, corresponding-source archive,
-source lock and notices. With no library configured, nothing is downloaded or
-installed and the runtime capability reports unavailable. This wiring has not
-been exercised; it is not an artifact qualification record.
+`PLEZY_VISUALIZER_MILKRUST_SOURCE_SHA256`. The standard build uses its generated
+receipt instead. Missing artifacts fail configuration unless an explicitly
+non-visualization build sets `PLEZY_VISUALIZER_REQUIRE_MILKRUST=OFF`.
+
+
+### Native preset transition duration
+
+All MilkRust platform bridges pass the selected `transitionSeconds` to the
+shared display transition (default 3, finite range 0–10). Linux uses the same
+blend helper after its readback. The helper retains only the last published
+RGBA image and blends it into the new running preset; it does not run the old
+preset in parallel. The render clock pauses with audio/rendering, rapid changes
+start from the last displayed mix, resize uses normalized sampling, and PCM
+generation resets discard history. Zero requests a hard cut. Linux projectM
+continues using its own soft-cut implementation. The authored native regression
+is part of the private Linux sanitizer job and has not been run here.
+
+### Desktop helper protocol and packaging
+
+`render_backend.h` defines the worker backend. `render_process.h` implements the
+desktop client and `render_helper.h` the helper loop. MilkRust uses it on Linux,
+Windows and macOS; Linux projectM uses the same protocol. The player stays in the
+app process, sending native PCM and receiving top-down RGBA through a dedicated
+inherited pipe/socket. No PCM or pixels enter per-frame Dart channels. Controls
+include reset, load/transition duration, pause and pointer input. Pack/root paths,
+finite numbers, message lengths, dimensions and reply sequence IDs are bounded.
+
+Timeout, invalid reply and disposal kill the helper. The helper exits without
+unwinding GPU destructors on protocol failure or parent death. Windows restricts
+inherited handles and uses a kill-on-close job; POSIX closes unrelated descriptors,
+monitors parent disconnection and uses SIGKILL, with pidfd signaling on Linux.
+Retry is refused while a terminated child is still alive. Linux requires glibc
+2.34+ and pidfd support. The helper is not a filesystem sandbox, and cannot recover
+a device-wide GPU/kernel hang. iOS/tvOS retain the local backend.
+
+Desktop CMake installs `plezy_visualizer_helper[.exe]` beside the app; Xcode builds
+and signs it in `Contents/MacOS` with the app's signing identity. The executable
+is resolved beside the running app, never through PATH. Dependency/capability
+failures from the helper are reported explicitly. Authored process regression
+cases run through the existing private Linux/macOS sanitizer and Windows native
+CI paths; no executable verification has occurred for this change.
+
+### Android bound renderer service
+
+`MilkRustRendererService` is non-exported and runs in `:milkrust_visualizer` with
+the app UID, so installed private packs remain readable. It is not an Android
+isolated-UID service or a filesystem sandbox. Messenger passes only the startup
+Surface/socket and lifecycle messages. `render_remote.h` is the shared protocol
+client; `render_socket.h` owns stable socket duplicates and shutdown cancellation.
+Protocol v2 adds negotiated presentation after the parent's frozen-frame fade,
+keeping ANativeWindow lock/post outside the player process. The extra bounded
+RGBA round trip requires device performance qualification.
+
+Service setup runs outside its main Handler; STOP and the startup watchdog can
+terminate the process even during initialization. The native helper monitors
+socket closure independently of rendering. The parent preserves its mpv lease,
+queues controls during binding and refuses overlapping sessions until the old
+Binder dies. No player-side PID kill or local renderer fallback is used. The
+existing JNI keep rule covers the new entry point. Android instrumentation
+source verifies service packaging, death and rebind without a GPU; native fault
+cases cover presentation and stable-FD cancellation. All remain unrun.
+
+### Tizen/webOS helper packages
+
+`render_tv_process.h` supports the older Linux firmware used by these TV hosts.
+It forks only to close inherited nonstandard descriptors, install a parent-death
+signal and exec the packaged helper; child setup never calls the inherited C++
+allocator or renderer. Requests use the shared remote client. Cancellation
+shuts down a stable socket, letting the independent helper monitor exit even
+when rendering stalls. Parent retirement uses nonblocking child reaping and
+blocks retry while that child remains alive; it sends no PID-based kill.
+
+`native/visualizer/tv-helper/CMakeLists.txt` builds `tv_helper.cc` with the selected
+SDK. The runtime builders emit six files: the engine, helper, two corresponding
+source archives, combined notices and schema-v2 provenance. The helper lives in
+`lib/` beside the engine; lookup handles webOS shared plugins and Tizen static
+plugins in `bin/`. TPK/IPK staging and inspection enforce executable mode,
+architecture, protocol and digests. The player retains its PCM/session and
+Flutter pixel leases; both TV control handlers now forward pointer state.
+Firmware permissions, package installation, GL and recovery are unverified.
+There is no in-process fallback if child startup fails.

@@ -1,0 +1,6 @@
+# Optional UDP observation port. WSS relay works without this override.
+# docker compose -f docker-compose.yml -f steam-relay.compose.yml up -d
+services:
+  relay:
+    ports:
+      - "${STEAM_STREAM_RELAY_UDP_PORT:?Set the public UDP observation port}:${STEAM_STREAM_RELAY_UDP_PORT:?Set the public UDP observation port}/udp"

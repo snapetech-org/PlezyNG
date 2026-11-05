@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cinema",
+  "name": "Cinema",
+  "palette": {
+    "bg": "#FF10111A",
+    "surface": "#FF1C1E2C",
+    "outline": "#668F91B8",
+    "text": "#FFF7F7FF",
+    "textMuted": "#FFBEC0DB",
+    "accent": "#FFB4A7FF"
+  },
+  "geometry": {
+    "radiusSm": 12,
+    "radiusMd": 20,
+    "radiusLg": 28,
+    "radiusXs": 6,
+    "space": 16,
+    "groupGap": 4
+  },
+  "typography": {
+    "scale": 1.1
+  },
+  "layout": {
+    "navigation": "sidebar"
+  }
+}

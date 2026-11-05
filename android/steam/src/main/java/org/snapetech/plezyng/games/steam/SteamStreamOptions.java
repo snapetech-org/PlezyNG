@@ -6,31 +6,54 @@ import java.util.Map;
 /** Bounded optional arguments; older Flutter/Activity callers retain defaults. */
 final class SteamStreamOptions {
   final int width, height, fps, bitrateKbps, controllerCount, audioChannels;
-  final boolean allowHevc;
+  final boolean allowHevc, allowHdr, swapTouchSides, controllerOnly;
+  final int touchOpacity;
+  final int[] relayPorts = new int[6];
 
   private SteamStreamOptions(Map<?, ?> args) {
-    width = integer(args, "streamWidth", 1920, 640, 1920);
-    height = integer(args, "streamHeight", 1080, 360, 1080);
-    fps = integer(args, "streamFps", 60, 15, 60);
-    bitrateKbps = integer(args, "streamBitrateKbps", 30000, 1000, 50000);
+    for (int i = 0; i < 6; ++i) relayPorts[i] = integer(args, "relayPort" + i, 0, 1, 65535);
+    width = integer(args, "streamWidth", 1920, 640, 3840);
+    height = integer(args, "streamHeight", 1080, 360, 2160);
+    fps = integer(args, "streamFps", 60, 15, 120);
+    bitrateKbps = integer(args, "streamBitrateKbps", 30000, 1000, 100000);
     controllerCount = integer(args, "controllerCount", 1, 1, 4);
     audioChannels = integer(args, "audioChannels", 2, 2, 6);
     if (audioChannels != 2 && audioChannels != 4 && audioChannels != 6)
       throw new IllegalArgumentException("Invalid audio layout");
-    if (width % 2 != 0 || height % 2 != 0) throw new IllegalArgumentException("Invalid stream dimensions");
+    if (width % 2 != 0 || height % 2 != 0)
+      throw new IllegalArgumentException("Invalid stream dimensions");
     Object hevc = args.get("allowHevc");
-    if (hevc != null && !(hevc instanceof Boolean)) throw new IllegalArgumentException("Invalid codec option");
+    if (hevc != null && !(hevc instanceof Boolean))
+      throw new IllegalArgumentException("Invalid codec option");
     allowHevc = !Boolean.FALSE.equals(hevc);
+    Object hdr = args.get("allowHdr");
+    if (hdr != null && !(hdr instanceof Boolean))
+      throw new IllegalArgumentException("Invalid HDR option");
+    allowHdr = Boolean.TRUE.equals(hdr);
+    touchOpacity = integer(args, "touchOpacity", 100, 50, 100);
+    Object sides = args.get("swapTouchSides");
+    if (sides != null && !(sides instanceof Boolean))
+      throw new IllegalArgumentException("Invalid touch layout");
+    swapTouchSides = Boolean.TRUE.equals(sides);
+    Object controller = args.get("controllerOnly");
+    if (controller != null && !(controller instanceof Boolean))
+      throw new IllegalArgumentException("Invalid controller-only option");
+    controllerOnly = Boolean.TRUE.equals(controller);
   }
 
-  static SteamStreamOptions from(Map<?, ?> args) { return new SteamStreamOptions(args); }
+  static SteamStreamOptions from(Map<?, ?> args) {
+    return new SteamStreamOptions(args);
+  }
 
   private static int integer(Map<?, ?> args, String key, int fallback, int min, int max) {
     Object value = args.get(key);
-    if (value == null) return fallback;
-    if (!(value instanceof Integer) && !(value instanceof Long)) throw new IllegalArgumentException("Invalid stream limit");
+    if (value == null)
+      return fallback;
+    if (!(value instanceof Integer) && !(value instanceof Long))
+      throw new IllegalArgumentException("Invalid stream limit");
     long number = ((Number) value).longValue();
-    if (number < min || number > max) throw new IllegalArgumentException("Stream limit out of range");
+    if (number < min || number > max)
+      throw new IllegalArgumentException("Stream limit out of range");
     return (int) number;
   }
 }

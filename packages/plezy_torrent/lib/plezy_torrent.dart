@@ -40,12 +40,16 @@ class TorrentLease {
     required String cacheDirectory,
     int? fileIndex,
     List<String> trackers = const [],
-    int quotaBytes = 4 * 1024 * 1024 * 1024,
+    int quotaBytes = 64 * 1024 * 1024 * 1024,
     int uploadBytesPerSecond = 256 * 1024,
     bool Function()? shouldCancel,
   }) async {
-    if (!RegExp(r'^[a-fA-F0-9]{40}$').hasMatch(infoHash) || (fileIndex != null && fileIndex < 0)) {
+    if (!RegExp(r'^(?:[a-fA-F0-9]{40}|[a-fA-F0-9]{64})$').hasMatch(infoHash) ||
+        (fileIndex != null && fileIndex < 0)) {
       throw const FormatException('Invalid torrent identity');
+    }
+    if (quotaBytes < 16 * 1024 * 1024 || quotaBytes > 1024 * 1024 * 1024 * 1024) {
+      throw ArgumentError.value(quotaBytes, 'quotaBytes');
     }
     final messages = ReceivePort();
     final opened = Completer<TorrentLease>();
@@ -148,7 +152,9 @@ Future<void> _serve(List<Object> args) async {
           !value.contains('\n');
     });
     final trackerQuery = trackers.map((tracker) => '&tr=${Uri.encodeComponent(tracker)}').join();
-    final magnet = 'magnet:?xt=urn:btih:${args[1]}$trackerQuery'.toNativeUtf8();
+    final infoHash = args[1] as String;
+    final topic = infoHash.length == 64 ? 'btmh:1220$infoHash' : 'btih:$infoHash';
+    final magnet = 'magnet:?xt=urn:$topic$trackerQuery'.toNativeUtf8();
     final path = directory.path.toNativeUtf8();
     try {
       handle = native.open(magnet, path, args[3] as int, args[4] as int, args[5] as int);

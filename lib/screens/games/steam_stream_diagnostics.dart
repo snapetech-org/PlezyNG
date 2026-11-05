@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../games/steam_internet_tunnel.dart';
 import '../../games/steam_stream_metrics.dart';
 import '../../i18n/strings.g.dart';
 import '../../widgets/dialog_action_button.dart';
@@ -9,8 +11,9 @@ import '../../widgets/dialog_action_button.dart';
 /// Measurements are polled only while this dialog is visible. Nothing is sent
 /// to analytics or retained in a profile. Unknown/old native modules stay usable.
 class SteamStreamDiagnostics extends StatefulWidget {
-  const SteamStreamDiagnostics({super.key, required this.readMetrics});
+  const SteamStreamDiagnostics({super.key, required this.readMetrics, this.internetPath});
   final Future<SteamStreamMetrics?> Function() readMetrics;
+  final ValueListenable<SteamInternetPath?>? internetPath;
 
   @override
   State<SteamStreamDiagnostics> createState() => _SteamStreamDiagnosticsState();
@@ -88,16 +91,27 @@ class _SteamStreamDiagnosticsState extends State<SteamStreamDiagnostics> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(t.games.streamFeedbackHelp),
+          if (widget.internetPath != null)
+            ValueListenableBuilder<SteamInternetPath?>(
+              valueListenable: widget.internetPath!,
+              builder: (_, path, _) => path == null
+                  ? const SizedBox.shrink()
+                  : _row(
+                      t.games.internetStreaming,
+                      path == SteamInternetPath.direct ? t.games.internetDirect : t.games.internetRelay,
+                    ),
+            ),
           if (m == null)
             _row(t.games.streamMeasurements, t.games.streamMeasurementsUnavailable)
           else ...[
             if (m.codec != null && m.width > 0 && m.height > 0)
-              _row(t.games.streamVideo, '${m.codec} · ${m.width} × ${m.height}'),
+              _row(t.games.streamVideo, '${m.codec} · ${m.width} × ${m.height}${m.hdr10 ? ' · HDR10' : ''}'),
             _row(t.games.streamDecoder, switch (m.decoderKind) {
               1 => t.games.streamHardwareDecoder,
               2 => t.games.streamSoftwareDecoder,
               3 => t.games.streamReadbackDecoder,
               4 => t.games.streamMetalDecoder,
+              5 => '${t.games.streamHardwareDecoder} · Vulkan',
               _ => t.games.streamMeasurementsUnavailable,
             }),
             if (m.chromaFormat != 0) _row(t.games.streamChroma, m.chromaFormat == 2 ? '4:4:4' : '4:2:0'),

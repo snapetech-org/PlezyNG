@@ -1,6 +1,6 @@
 # PlezyNG Multiview — implementation handoff
 
-Status: **feature code complete on `codex/multiview-workspace-20261026`; automated and device validation pending**. See DELIVERY.md for implemented slices, platform boundaries, verification evidence and remaining qualification work. Keep the PR in draft until the required checks pass; do not merge to main before release review.
+Status: **integrated source on main, including retained desktop video windows; automated Flutter/native and device qualification remain open**. See [DELIVERY.md](DELIVERY.md) for current implementation, platform boundaries and validation. Historical draft-branch directions have been superseded by the owner's 2026-11-05 direct-to-main remediation request.
 
 ## Decision
 
@@ -74,11 +74,11 @@ See [RESEARCH.md](RESEARCH.md) for immutable code references, platform evidence,
 
 ## Implementation boundary
 
-The branch now includes profile-scoped workspace state and persistence, shared pane controls, session adapters for current video/music/source/reader surfaces, two isolated native video channels, and an Android Steam retained surface. Capability checks keep unsupported engine/platform combinations out of the embedded path. GameStream/Moonlight, non-Android game surfaces, desktop pop-out windows, additional video slots, and device-specific composition remain future work; see DELIVERY.md for exact boundaries. An implemented adapter is not device-qualified until the validation matrix passes.
+Current main includes profile-scoped workspace state and persistence, shared pane controls, session adapters for current video/music/source/reader surfaces, two isolated native video channels, and an Android Steam retained surface. Capability checks keep unsupported engine/platform combinations out of the embedded path. Retained desktop video pop-outs are implemented for macOS, Windows and Linux/Wayland. Non-video desktop pop-outs, additional video slots and the remaining engine/device composition work are open; see DELIVERY.md for exact boundaries. An implemented adapter is not device-qualified until the validation matrix passes.
 
 ## Handoff boundaries
 
-The feature branch includes the Games library and Android native modules. Android Steam has a retained surface adapter and can open as an app-owned pane. GameStream/Moonlight still uses an Activity and is not advertised as an inline surface; other platform game renderers remain unavailable. Do not widen the embedded capability flag until a target has an independently owned renderer, audio/input handoff and teardown implementation.
+The integrated source includes the Games library and Android native modules. Android Steam has a retained surface adapter and can open as an app-owned pane. GameStream/Moonlight still uses an Activity and is not advertised as an inline surface; other platform game renderers remain unavailable. Do not widen the embedded capability flag until a target has an independently owned renderer, audio/input handoff and teardown implementation.
 
 The current comic delivery document still lists renderer and device work as incomplete, and the publication reader rejects TV. Existing work may land during this handoff. Preserve it and integrate at the adapter boundary; do not replace the comic, localization, audiobook-sync, or Dolby Vision projects with parallel implementations.
 

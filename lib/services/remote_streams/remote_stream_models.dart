@@ -387,28 +387,33 @@ class RemoteStreamSnapshot {
     this.addons = const [],
     this.preparations = const [],
     this.nativePeerEnabled = false,
+    this.nativeCacheQuotaBytes = 64 * 1024 * 1024 * 1024,
   });
 
   final List<RemoteStreamAccount> accounts;
   final List<StremioAddonInstallation> addons;
   final List<RemotePreparationJob> preparations;
   final bool nativePeerEnabled;
+  final int nativeCacheQuotaBytes;
 
   RemoteStreamSnapshot copyWith({
     List<RemoteStreamAccount>? accounts,
     List<StremioAddonInstallation>? addons,
     List<RemotePreparationJob>? preparations,
     bool? nativePeerEnabled,
+    int? nativeCacheQuotaBytes,
   }) => RemoteStreamSnapshot(
     accounts: accounts ?? this.accounts,
     addons: addons ?? this.addons,
     preparations: preparations ?? this.preparations,
     nativePeerEnabled: nativePeerEnabled ?? this.nativePeerEnabled,
+    nativeCacheQuotaBytes: nativeCacheQuotaBytes ?? this.nativeCacheQuotaBytes,
   );
 
   Map<String, Object?> toJson() => {
     'version': 1,
     'nativePeerEnabled': nativePeerEnabled,
+    'nativeCacheQuotaBytes': nativeCacheQuotaBytes,
     'accounts': accounts.map((account) => account.toJson()).toList(),
     'addons': addons.map((addon) => addon.toJson()).toList(),
     'preparations': preparations.map((job) => job.toJson()).toList(),
@@ -450,6 +455,9 @@ class RemoteStreamSnapshot {
           .toList(growable: false),
       preparations: preparations,
       nativePeerEnabled: json['nativePeerEnabled'] == true,
+      nativeCacheQuotaBytes: json['nativeCacheQuotaBytes'] is int
+          ? (json['nativeCacheQuotaBytes'] as int).clamp(1024 * 1024 * 1024, 1024 * 1024 * 1024 * 1024).toInt()
+          : 64 * 1024 * 1024 * 1024,
     );
   }
 }

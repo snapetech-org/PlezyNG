@@ -11,7 +11,10 @@
 #include <vector>
 
 #include "steam_audio.h"
+#include "steam_controller_feedback.h"
+#include "steam_controller_mapping.h"
 #include "steam_h26x.h"
+#include "steam_microphone.h"
 #include "steam_pyrowave.h"
 #include "steam_stream_options.h"
 extern "C" {
@@ -33,11 +36,29 @@ struct Host {
   std::string address;
   uint16_t port = 27036;
   uint64_t id = 0;
+  // Optional app-owned loopback proxy ports for Steam UDP 27031..27036.
+  // Zeroes preserve every existing caller's direct route.
+  std::array<uint16_t, 6> relayPorts{};
+  bool validRelay() const {
+    bool any = false;
+    for (auto p : relayPorts) any |= p != 0;
+    if (!any) return true;
+    if (address != "127.0.0.1" || port != relayPorts[5]) return false;
+    for (size_t i = 0; i < relayPorts.size(); ++i) {
+      if (!relayPorts[i]) return false;
+      for (size_t j = 0; j < i; ++j)
+        if (relayPorts[i] == relayPorts[j]) return false;
+    }
+    return true;
+  }
 };
 struct PadState {
   std::mutex mutex;
   std::array<int16_t, 6> axes{};
   uint32_t buttons = 0;
+  ControllerMapping mapping;
+  ControllerFeedback feedback;
+  bool motionController = false;
 };
 struct StreamMetrics {
   uint64_t epoch = 0;  // Local measurement epoch, never a host/account identity.
@@ -46,6 +67,11 @@ struct StreamMetrics {
   uint32_t width = 0, height = 0, codec = 0, audioChannels = 0;
   uint32_t fpsNumerator = 0, fpsDenominator = 0, fpsReasons = 0, targetBitrate = 0;
   IHS_SessionReliabilityStats reliability{};
+};
+struct MicrophoneLease {
+  uint64_t epoch = 0;
+  unsigned rate = 0, channels = 0;
+  explicit operator bool() const { return epoch != 0; }
 };
 IHS_HIDProvider* makeController(const std::shared_ptr<PadState>& state, unsigned seat = 0);
 
@@ -79,12 +105,27 @@ class Runtime {
   const std::array<std::vector<uint8_t>, 3>& h26xParameters() const;
   bool normalizeH26x(const uint8_t* bytes, size_t length, std::vector<uint8_t>& output);
   void cancel();
+  bool isConnected();
   void pad(const std::array<int16_t, 6>& axes, uint32_t buttons);
   void padSeat(unsigned seat, const std::array<int16_t, 6>& axes, uint32_t buttons);
+  bool controllerMapping(unsigned seat, const std::vector<int64_t>& encoded);
+  void controllerFeedbackEnabled(bool enabled);
+  void resetControllerFeedback(unsigned seat);
+  void motionControllers(bool enabled);
+  std::array<int64_t, 8> controllerFeedback(unsigned seat);
+  bool controllerMotion(unsigned seat, const std::array<double, 6>& values);
   void key(uint32_t usage, bool down);
   void mouse(float x, float y, int button, bool down);
   void mouseWheel(int direction);
-  void text(const std::string& value);
+  bool text(const std::string& value);
+  // Explicit per-session consent. A lease cannot survive mute, host format
+  // changes, ownership loss or cancellation. No platform capture occurs here.
+  MicrophoneLease beginMicrophone();
+  bool microphoneCurrent(uint64_t epoch);
+  bool microphonePcm(uint64_t epoch, const int16_t* samples, size_t count);
+  void finishMicrophone(uint64_t epoch);
+  void muteMicrophone();
+  int microphoneState();  // 0 unavailable, 1 muted, 2 starting, 3 sending.
   void frameComplete(uint32_t id, bool displayed);
   StreamMetrics metrics();
 
@@ -92,7 +133,8 @@ class Runtime {
   friend struct RuntimeTest;
   bool hostInfo(const Host&, IHS_HostInfo&);
   int wait(std::chrono::seconds timeout);
-  int awaitSession(std::chrono::milliseconds connectTimeout, std::chrono::milliseconds frameTimeout);
+  int awaitSession(
+      std::chrono::milliseconds connectTimeout, std::chrono::milliseconds frameTimeout, bool expectFrame = true);
   void finish(int result);
   void closeClient(IHS_Client*);
   static int videoStart(IHS_Session*, const IHS_StreamVideoConfig*, void*);
@@ -105,6 +147,8 @@ class Runtime {
   static int audioStart(IHS_Session*, const IHS_StreamAudioConfig*, void*);
   static int audioSubmit(IHS_Session*, IHS_Buffer*, void*);
   static void audioStop(IHS_Session*, void*);
+  static int microphoneStart(IHS_Session*, const IHS_StreamAudioConfig*, void*);
+  static void microphoneStop(IHS_Session*, void*);
   std::atomic<bool> cancelled_{false};
   std::mutex mutex_, apiMutex_;
   std::condition_variable condition_;
@@ -116,7 +160,13 @@ class Runtime {
   std::shared_ptr<Sink> sink_;
   std::array<std::shared_ptr<PadState>, 4> pads_;
   AudioDecoder audio_;
+  std::mutex microphoneMutex_;
+  MicrophoneEncoder microphone_;
+  uint64_t microphoneEpoch_ = 1, microphoneCapture_ = 0;
+  unsigned microphoneRate_ = 0, microphoneChannels_ = 0;
+  bool microphoneEnabled_ = false, microphoneSending_ = false;
   int requestedAudioChannels_ = 2;
+  int requestedWidth_ = 1920, requestedHeight_ = 1080;
   bool pyrowaveEnabled_ = false;
   PyrowaveDecoder pyrowave_;
   H26xParser h26x_;

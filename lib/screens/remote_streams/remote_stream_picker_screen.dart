@@ -23,6 +23,7 @@ import '../../providers/multi_server_provider.dart';
 import '../../media/ids.dart';
 import '../../sources/source_models.dart';
 import '../../sources/source_playback.dart';
+import '../sources/source_widgets.dart';
 import '../../screens/video_player_screen.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/app_icon.dart';
@@ -207,7 +208,7 @@ class _RemoteStreamPickerScreenState extends State<RemoteStreamPickerScreen> {
         );
       }
     } on SourceException catch (error) {
-      if (mounted && error.reason != SourceFailure.cancelled) showAppSnackBar(context, t.streaming.streamUnsupported);
+      if (mounted && error.reason != SourceFailure.cancelled) showAppSnackBar(context, sourceFailureText(error));
     } on Object {
       if (mounted) showAppSnackBar(context, t.streaming.streamPrepareFailed);
     } finally {

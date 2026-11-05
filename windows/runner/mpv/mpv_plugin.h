@@ -56,6 +56,18 @@ class MpvPlayerPlugin : public flutter::Plugin {
       const flutter::MethodCall<flutter::EncodableValue>& call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
   void DisposeVisualizer();
+  bool DetachVideoWindow(const flutter::EncodableMap& args);
+  void AttachVideoWindow(bool notify);
+  void LayoutDetachedVideo(HWND window);
+  void DetachedAction(const char* action);
+  static LRESULT CALLBACK DetachedWindowProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
+  HWND detached_window_ = nullptr;
+  HWND video_parent_ = nullptr;
+  RECT video_rect_{};
+  bool requested_video_visible_ = false;
+  std::string detached_token_;
+  std::wstring detached_geometry_key_;
+  void SaveDetachedGeometry();
   HWND GetWindow();
   HWND GetChildWindow();
 

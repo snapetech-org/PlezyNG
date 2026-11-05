@@ -100,6 +100,7 @@ extension _VideoPlayerPipMethods on VideoPlayerScreenState {
     final stableMediaId = _currentMetadata.globalKey;
     final sessionId = 'video:$stableMediaId';
     final title = _currentMetadata.title;
+    final windowPlayer = player;
 
     _workspaceSessionId = sessionId;
     _workspaceController = workspace;
@@ -118,6 +119,35 @@ extension _VideoPlayerPipMethods on VideoPlayerScreenState {
         openedAt: DateTime.now(),
       ),
       videoPlayerSlot: _videoPlayerSlot,
+      onDetachWindow: windowPlayer is PlayerNative && windowPlayer.supportsNativeVideoWindow
+          ? () async {
+              if (!mounted || player != windowPlayer || _shuttingDown) return false;
+              return windowPlayer.detachVideoWindow(
+                title: _currentMetadata.title ?? t.videoControls.pipButton,
+                geometryKey: workspace.nativeWindowGeometryKey(_videoPlayerSlot),
+                labels: {
+                  'playPause': '${t.videoControls.playButton} / ${t.videoControls.pauseButton}',
+                  'back': t.videoControls.seekBackwardButton(seconds: 15),
+                  'forward': t.videoControls.seekForwardButton(seconds: 15),
+                  'restore': t.common.returnToFullView,
+                },
+                onIntent: (action) async {
+                  if (!mounted || player != windowPlayer || _shuttingDown) return;
+                  switch (action) {
+                    case NativeVideoWindowAction.togglePlayback:
+                      await _transportIntent(windowPlayer, TransportCommand.toggle);
+                    case NativeVideoWindowAction.seekBackward:
+                      _seekRelative(const Duration(seconds: -15));
+                    case NativeVideoWindowAction.seekForward:
+                      _seekRelative(const Duration(seconds: 15));
+                  }
+                },
+                onRestored: () => workspace.refreshPresentation(sessionId),
+              );
+            }
+          : null,
+      onAttachWindow: windowPlayer is PlayerNative ? windowPlayer.attachVideoWindow : null,
+      isWindowDetached: windowPlayer is PlayerNative ? () => windowPlayer.hasNativeVideoWindow : null,
       buildSurface: (workspaceContext) => OverlaySheetHost(
         canPop: false,
         onBack: () => _handleScreenPlayerNavigation(PlayerNavigationKey.back),

@@ -31,6 +31,7 @@ class PodcastLibrary {
       ),
       SourceTransport(),
       () async => {'feedUrl': subscription.url.toString()},
+      protect: sources.repository.protect, reveal: sources.repository.reveal,
     );
     late String title;
     try {
@@ -48,29 +49,9 @@ class PodcastLibrary {
     await sources.ready;
     sources.requireSession();
     final epoch = sources.generation;
-    final feeds = sources.sources.where((s) => s.kind == FileSourceKind.podcastRss).toList();
-    var cursor = 0, failed = 0;
-    Future<void> worker() async {
-      while (cursor < feeds.length) {
-        sources.requireSession(epoch);
-        final feed = feeds[cursor++];
-        try {
-          await sources.browse(feed.id);
-          sources.requireSession(epoch);
-          await sources.browse(feed.id, parent: 'podcast:episodes');
-        } on SourceException catch (error) {
-          if (error.reason == SourceFailure.cancelled) rethrow;
-          failed++;
-        } on Object {
-          failed++;
-        }
-        sources.requireSession(epoch);
-      }
-    }
-
-    await Future.wait(List.generate(feeds.length.clamp(0, 4), (_) => worker()));
+    await sources.podcastAutomation.refresh(force: true);
     sources.requireSession(epoch);
-    return failed;
+    return sources.podcastAutomation.lastFailedCount;
   }
 
   static PublicationProgress seed(SourceEntry episode, {String session = ''}) {

@@ -1,0 +1,49 @@
+--- a/include/ihslib/session.h
++++ b/include/ihslib/session.h
+@@ -60,6 +60,8 @@
+     IHS_StreamQuality quality;
+     /** 0 retains the legacy stereo default. Supported requests: 2, 4, 6. */
+     uint32_t audioChannels;
++    /** Opt in only for a qualified HDR10 output; defaults to SDR. */
++    bool enableHdr10;
+ } IHS_SessionConfig;
+ 
+ /** Optional platform/decoder facts. Unknown fields are omitted from the wire.
+--- a/include/ihslib/client.h
++++ b/include/ihslib/client.h
+@@ -103,6 +103,8 @@
+     int32_t gamepadCount;
+     /** Optional real game ID from host activity. Zero starts the selected interface. */
+     uint64_t gameId;
++    /** Display capability, not permission to change the host display mode. */
++    bool displayHdr10;
+ } IHS_StreamingRequest;
+ 
+ typedef struct IHS_ClientDiscoveryCallbacks {
+--- a/src/client/streaming.c
++++ b/src/client/streaming.c
+@@ -293,6 +293,9 @@
+     message.has_maximum_resolution_y = request.maxResolution.y > 0;
+     message.maximum_resolution_y = request.maxResolution.y;
+ 
++    message.has_display_hdr = true;
++    message.display_hdr = request.displayHdr10;
++
+     message.has_enable_audio_streaming = true;
+     message.enable_audio_streaming = request.streamingEnable.audio;
+ 
+--- a/src/session/channels/ch_control_negotiation.c
++++ b/src/session/channels/ch_control_negotiation.c
+@@ -262,6 +262,12 @@
+     supportedCodecs[supportedVideoCodecCount++] = k_EStreamVideoCodecH264;
+     clientCaps.supported_video_codecs = supportedCodecs;
+     clientCaps.n_supported_video_codecs = supportedVideoCodecCount;
++    /* HDR is supported by the qualified Pyrowave native plane only. Never
++     * request a host HDR display toggle or relabel the H.264/HEVC fallback. */
++    EStreamColorspace colorspaces[] = {k_EStreamColorspace_BT709, k_EStreamColorspace_BT709_Full,
++                                     k_EStreamColorspace_HDR10};
++    clientCaps.supported_colorspaces = colorspaces;
++    clientCaps.n_supported_colorspaces = ihsConf.enableHdr10 && pyrowaveSelected ? 3 : 2;
+     EStreamAudioCodec supportedAudioCodecs[] = {k_EStreamAudioCodecOpus};
+     if (ihsConf.enableAudio) {
+         clientCaps.supported_audio_codecs = supportedAudioCodecs;

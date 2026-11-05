@@ -21,7 +21,7 @@
 namespace lt = libtorrent;
 namespace fs = std::filesystem;
 using namespace std::chrono_literals;
-void verify_transfer(bool multiple_files) {
+void verify_transfer(bool multiple_files, bool v2 = false) {
   assert(pt_abi_version() == 1);
   assert(pt_open("invalid", "/tmp", -1, 1LL << 26, 16384) == nullptr);
   const auto root = fs::temp_directory_path() / ("plezy-p2p-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
@@ -40,7 +40,7 @@ void verify_transfer(bool multiple_files) {
     files.add_file("pack/readme.txt", padding.size());
   }
   files.add_file("pack/fixture.mp4", data.size());
-  lt::create_torrent create(files, 16 * 1024, lt::create_torrent::v1_only);
+  lt::create_torrent create(files, 16 * 1024, v2 ? lt::create_torrent::v2_only : lt::create_torrent::v1_only);
   lt::set_piece_hashes(create, (root / "seed").string());
   auto metadata = std::make_shared<lt::torrent_info>(create.generate());
   lt::settings_pack settings;
@@ -61,6 +61,7 @@ void verify_transfer(bool multiple_files) {
   const auto magnet = lt::make_magnet_uri(source) + "&x.pe=127.0.0.1:" + std::to_string(seed.listen_port());
   const auto parsed = lt::parse_magnet_uri(magnet);
   assert(!parsed.peers.empty());
+  assert(v2 ? parsed.info_hashes.has_v2() : parsed.info_hashes.has_v1());
   void* stream = pt_open(magnet.c_str(), (root / "read").string().c_str(), multiple_files ? 1 : -1, 1LL << 26, 16384);
   assert(stream);
   auto deadline = std::chrono::steady_clock::now() + 40s;
@@ -97,5 +98,6 @@ void verify_transfer(bool multiple_files) {
 int main() {
   verify_transfer(false);
   verify_transfer(true);
+  verify_transfer(false, true);
   std::cout << "verified single/multi-file transfer, metadata, seeking, EOF and invalid input passed\n";
 }

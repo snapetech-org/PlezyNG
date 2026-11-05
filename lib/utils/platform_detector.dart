@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'async_singleton.dart';
+import '../theme/theme_package.dart';
 import 'device_channel.dart';
 
 const _androidFeatureTelevision = 'android.hardware.type.television';
@@ -265,11 +266,18 @@ class PlatformDetector {
   /// Candidate platforms; the native capability query verifies the installed engine.
   static bool supportsEmbeddedGameStreaming() =>
       (Platform.isAndroid || Platform.isLinux || Platform.isMacOS || Platform.isIOS || Platform.isWindows) &&
+      !_webOSBuild &&
+      !_tizenBuild &&
       !isAutomotive();
 
   /// Detects if the app should use side navigation (Desktop or TV).
   /// TV is covered because [isMobile] excludes it, so [isDesktop] is true there.
   static bool shouldUseSideNavigation(BuildContext context) {
+    final choice = Theme.of(context).extension<ThemeLayout>()?.navigation;
+    if (!isTV() && !isAutomotive()) {
+      if (choice == ThemeNavigation.bottom) return false;
+      if (choice == ThemeNavigation.sidebar && MediaQuery.sizeOf(context).width >= 840) return true;
+    }
     return isDesktop(context);
   }
 
@@ -278,6 +286,7 @@ class PlatformDetector {
   /// unit — keeps its height for content. Not the desktop/TV sidebar: every
   /// other mobile layout decision stays as it is.
   static bool shouldUseLandscapeNavigationRail(BuildContext context) {
+    if (Theme.of(context).extension<ThemeLayout>()?.navigation == ThemeNavigation.bottom && !isTV() && !isAutomotive()) return false;
     return isMobile(context) && MediaQuery.orientationOf(context) == Orientation.landscape;
   }
 

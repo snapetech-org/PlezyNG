@@ -11,7 +11,7 @@ class VisualizerCapabilities {
   final String reason;
   final String engine;
   bool accepts(VisualizerPresetFile preset) =>
-      preset.supportsProjectM || (engine.startsWith('milkrust') && preset.path.toLowerCase().endsWith('.milk2'));
+      engine.startsWith('milkrust') ? preset.supportsMilkRust : preset.supportsProjectM;
 }
 
 /// Control and diagnostics only. PCM and pixel buffers stay in the native host.
@@ -27,11 +27,14 @@ class VisualizerSession extends ChangeNotifier {
   bool _paused = true;
   int _width = 768, _height = 432;
   double transitionSeconds = 3;
+  bool _mouseDown = false;
+  double _mouseX = 0.5, _mouseY = 0.5, _mouseDx = 0, _mouseDy = 0;
+  Timer? _mouseTimer;
   String _state = 'idle', _reason = '', _engine = 'projectm';
   String get engine => _engine;
   String get engineLabel => _engine == 'milkrust' ? 'MilkRust native' : 'projectM 4.1.8';
   bool accepts(VisualizerPresetFile preset) =>
-      preset.supportsProjectM || (_engine == 'milkrust' && preset.path.toLowerCase().endsWith('.milk2'));
+      _engine == 'milkrust' ? preset.supportsMilkRust : preset.supportsProjectM;
 
   Future<void> setEngine(String engine) => _enqueue(() async {
     if (_closed || _engine == engine) return;
@@ -112,10 +115,11 @@ class VisualizerSession extends ChangeNotifier {
   Future<T?> _call<T>(String method, [Map<String, Object?> args = const {}]) =>
       _channel.invokeMethod<T>(method, {'sessionId': _sessionId, ...args});
 
-  Future<void> load(VisualizerPresetFile preset) => _enqueue(() async {
+  Future<void> load(VisualizerPresetFile preset, {bool automatic = false}) => _enqueue(() async {
     if (_closed) return;
     if (!accepts(preset)) throw StateError('The selected engine does not accept this preset format.');
-    // A failed native worker has exited. Retry with a new worker and GL context.
+    // Retire the old lease; native admission rejects a retry while its renderer
+    // is still quarantined or its helper process has not exited.
     if (_state == 'failed' || _state == 'unavailable') await _release();
     _preset = preset;
     _state = 'loading';
@@ -142,18 +146,74 @@ class VisualizerSession extends ChangeNotifier {
       'path': preset.path,
       'root': preset.root,
       'transitionSeconds': transitionSeconds.clamp(0, 10).toDouble(),
+      'allowInterrupted': !automatic,
     });
+    if (_engine == 'milkrust') await _sendMouseState();
     await _call<void>('visualizerSetPaused', {'paused': _paused});
     _poll ??= Timer.periodic(const Duration(milliseconds: 500), (_) => _pollStatus());
     _changed();
   });
 
+  void setMouseState({
+    required bool down,
+    required double x,
+    required double y,
+    required double dx,
+    required double dy,
+  }) {
+    if (_closed || _engine != 'milkrust' || !x.isFinite || !y.isFinite || !dx.isFinite || !dy.isFinite) return;
+    final wasDown = _mouseDown;
+    _mouseDown = !_paused && down;
+    _mouseX = x.clamp(0.0, 1.0).toDouble();
+    _mouseY = y.clamp(0.0, 1.0).toDouble();
+    if (_paused) {
+      _mouseDx = 0;
+      _mouseDy = 0;
+    } else {
+      _mouseDx = (_mouseDx + dx).clamp(-1.0, 1.0).toDouble();
+      _mouseDy = (_mouseDy + dy).clamp(-1.0, 1.0).toDouble();
+    }
+    if (!_paused && !wasDown && _mouseDown) {
+      _mouseTimer?.cancel();
+      _mouseTimer = null;
+      unawaited(_enqueue(() => _sendMouseState(downOverride: true)));
+      return;
+    }
+    if (_mouseTimer?.isActive == true) return;
+    _mouseTimer = Timer(const Duration(milliseconds: 16), () {
+      _mouseTimer = null;
+      unawaited(_enqueue(_sendMouseState));
+    });
+  }
+
+  Future<void> _sendMouseState({bool? downOverride}) async {
+    if (_closed || _sessionId == null || _engine != 'milkrust') return;
+    final dx = _mouseDx, dy = _mouseDy;
+    _mouseDx = 0;
+    _mouseDy = 0;
+    await _call<void>('visualizerSetMouse', {
+      'down': downOverride ?? _mouseDown,
+      'x': _mouseX,
+      'y': _mouseY,
+      'dx': dx,
+      'dy': dy,
+    });
+  }
+
   void setPaused(bool paused) {
     if (_closed || _paused == paused) return;
     _paused = paused;
+    if (paused) {
+      _mouseDown = false;
+      _mouseDx = 0;
+      _mouseDy = 0;
+    }
     unawaited(
       _enqueue(() async {
-        if (!_closed && _sessionId != null) await _call<void>('visualizerSetPaused', {'paused': _paused});
+        if (!_closed && _sessionId != null) {
+          if (_engine == 'milkrust') await _sendMouseState();
+          await _call<void>('visualizerSetPaused', {'paused': _paused});
+        }
       }),
     );
   }
@@ -209,6 +269,11 @@ class VisualizerSession extends ChangeNotifier {
   Future<void> _release() async {
     _poll?.cancel();
     _poll = null;
+    _mouseTimer?.cancel();
+    _mouseTimer = null;
+    _mouseDown = false;
+    _mouseDx = 0;
+    _mouseDy = 0;
     if (_sessionId != null) {
       try {
         await _call<void>('visualizerDispose');

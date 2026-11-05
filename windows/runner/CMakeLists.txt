@@ -37,7 +37,15 @@ target_compile_options(simdutf PRIVATE /W0)
 target_link_libraries(${BINARY_NAME} PRIVATE flutter flutter_wrapper_app flutter_wrapper_plugin)
 target_link_libraries(${BINARY_NAME} PRIVATE "dwmapi.lib" "comctl32.lib" "dxgi.lib" "advapi32.lib")
 target_link_libraries(${BINARY_NAME} PRIVATE "${MPV_LIB_DIR}/libmpv.dll.a")
-target_link_libraries(${BINARY_NAME} PRIVATE simdutf opengl32 windowscodecs ole32 plezy_motion_engine)
+target_link_libraries(${BINARY_NAME} PRIVATE simdutf opengl32 windowscodecs ole32 bcrypt plezy_motion_engine)
+
+add_executable(plezy_visualizer_helper "visualizer/render_helper.cpp" "runner.exe.manifest")
+apply_standard_settings(plezy_visualizer_helper)
+target_compile_features(plezy_visualizer_helper PRIVATE cxx_std_17)
+target_compile_definitions(plezy_visualizer_helper PRIVATE NOMINMAX UNICODE _UNICODE)
+target_link_libraries(plezy_visualizer_helper PRIVATE opengl32 windowscodecs ole32)
+add_dependencies(${BINARY_NAME} plezy_visualizer_helper)
+include("${CMAKE_SOURCE_DIR}/../native/visualizer/process_tests.cmake")
 target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(${BINARY_NAME} PRIVATE "${MPV_INCLUDE_DIR}")
@@ -78,13 +86,13 @@ if(PLEZY_STEAM_RECEIVER)
   if(NOT STEAM_PREPARE_RESULT EQUAL 0)
     message(FATAL_ERROR "Could not prepare the pinned Steam runtime")
   endif()
-  set(PLEZY_STEAM_PYROWAVE OFF CACHE BOOL "" FORCE)
+  set(PLEZY_STEAM_PYROWAVE ON CACHE BOOL "" FORCE)
   add_subdirectory("${CMAKE_SOURCE_DIR}/../native/games/steam" "${CMAKE_CURRENT_BINARY_DIR}/steam")
   target_sources(${BINARY_NAME} PRIVATE "games/steam_plugin.cpp")
   # Winsock2 must precede windows.h; this adapter owns that include ordering.
   set_source_files_properties("games/steam_plugin.cpp" PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
   target_compile_definitions(${BINARY_NAME} PRIVATE PLEZY_STEAM_RECEIVER=1 _WIN32_WINNT=0x0602)
-  target_link_libraries(${BINARY_NAME} PRIVATE plezy_steam_windows bcrypt)
+  target_link_libraries(${BINARY_NAME} PRIVATE plezy_steam_windows bcrypt dxgi)
 endif()
 
 option(PLEZY_BUILD_MPV_PROPERTY_CONTRACT_TESTS
@@ -150,3 +158,11 @@ if(PLEZY_BUILD_DISPLAY_RECOVERY_TESTS)
   add_test(NAME display_mode_manager_test COMMAND display_mode_manager_test)
 endif()
 
+
+# RomM software emulator host. Core binaries are staged separately with pinned recipes.
+add_subdirectory("${CMAKE_SOURCE_DIR}/../native/games/romm" romm_native)
+add_dependencies(${BINARY_NAME} plezy_retro)
+add_custom_command(TARGET ${BINARY_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:plezy_retro>" "$<TARGET_FILE_DIR:${BINARY_NAME}>"
+  VERBATIM)
+install(TARGETS plezy_retro RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}" COMPONENT Runtime)

@@ -21,17 +21,27 @@
   "appMpvBuild": {
     "repository": "https://github.com/snapetech-org/mpv-build",
     "commit": "39626d5c455b2f1e7441d7b5c3d8a6cef8111b45",
-    "integrationStatus": "all-platform-build-series-updated-android-bridge-integrated-export-gated; source-pull-request-pending-publication",
+    "integrationStatus": "source-integrated-and-export-gated; binary-artifact-production-and-promotion-pending",
     "orderedPcmPatch": "patches/mpv/pool/0210-plezy-ordered-audio-tap.patch",
     "androidBridgePatch": "patches/mpv-build-android-visualizer-bridge.patch",
     "androidBridgePatchSha256": "4c60f9b9ef0017bc2a89ef023932433f75c99d6604ebe99817ba8d36ea2bc28d"
   },
   "milkrust": {
     "repository": "https://github.com/snapetech-org/MilkRust.git",
-    "commit": "c622b0f6614c62bf55abacf334b464487bb97256",
-    "abi": 1,
+    "ref": "refs/pull/20/head",
+    "commit": "bbda9e997a47e2ca4b820e790d65ea6caeaeb8e7",
+    "abi": 2,
     "crate": "milkrust-native",
     "license": "AGPL-3.0-only",
-    "qualification": "source-only-unqualified"
+    "qualification": "source-only-unqualified",
+    "webosTarget": "armv7-unknown-linux-gnueabi",
+    "webosFloatAbi": "base-aapcs-softfp-compatible",
+    "hlslCompiler": {
+      "repository": "https://github.com/Thekla/hlslparser",
+      "revision": "4f4aefdc52ec49910a7542da4e772b9a0c246d7b",
+      "license": "MIT",
+      "integration": "vendored-by-milkrust",
+      "profile": "milkrust-hlslparser-es300-v1"
+    }
   }
 }

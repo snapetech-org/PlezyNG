@@ -17,6 +17,7 @@ import '../../models/companion_remote/remote_command.dart';
 import '../../mpv/models.dart';
 import '../../mpv/player/audio_spectrum.dart';
 import '../../mpv/player/player.dart';
+import '../../mpv/player/player_base.dart';
 import '../../mpv/player/player_native.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/notification_permission.dart';
@@ -85,7 +86,49 @@ class _PendingResume {
 /// progress stop the session with [MusicPlaybackStatus.error].
 class MusicPlaybackServiceImpl extends MusicPlaybackService
     with WidgetsBindingObserver
-    implements MusicLoudnessProfileService, MusicAudioSpectrumService, MusicVisualizationAudioService {
+    implements MusicLoudnessProfileService, MusicAudioSpectrumService, MusicVisualizationAudioService, MusicKaraokeControls {
+  bool? _karaokePassthrough;
+  double _karaokeKey = 0, _karaokeTempo = 1;
+
+  @override
+  Future<void> setKaraokeControls({required double semitones, required double tempo}) async {
+    if (!semitones.isFinite || !tempo.isFinite || semitones.abs() > 12 || tempo < .5 || tempo > 2) {
+      throw ArgumentError('Karaoke key/tempo out of range');
+    }
+    final player = _player;
+    if (player == null || player.disposed || player.playerType != 'mpv' || player is! AudioEffectsCapable) {
+      throw UnsupportedError('Independent key and tempo require the MPV decoded-audio backend');
+    }
+    _karaokePassthrough ??= player.audioPassthroughActive;
+    final effects = player as AudioEffectsCapable;
+    try {
+      await player.setAudioPassthrough(false);
+      await effects.setAudioEffects((stereoWidth: 0, spatializer: false, pitchSemitones: semitones));
+      await player.setRate(tempo);
+      _karaokeKey = semitones;
+      _karaokeTempo = tempo;
+    } catch (_) {
+      await effects.setAudioEffects((stereoWidth: 0, spatializer: false, pitchSemitones: _karaokeKey));
+      await player.setRate(_karaokeTempo);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> resetKaraokeControls() async {
+    final passthrough = _karaokePassthrough;
+    if (passthrough == null) return;
+    final player = _player;
+    if (player != null && !player.disposed && player is AudioEffectsCapable) {
+      await (player as AudioEffectsCapable).setAudioEffects((stereoWidth: 0, spatializer: false, pitchSemitones: 0));
+      await player.setRate(1);
+      await player.setAudioPassthrough(passthrough);
+    }
+    _karaokePassthrough = null;
+    _karaokeKey = 0;
+    _karaokeTempo = 1;
+  }
+
   @override
   bool get hasNativeVisualizationAudio {
     final player = _player;

@@ -10,6 +10,7 @@
 #include <libtorrent/torrent_status.hpp>
 #include <algorithm>
 #include <cstring>
+#include <filesystem>
 #include <map>
 #include <memory>
 #include <set>
@@ -65,7 +66,7 @@ struct Stream {
   int64_t quota, size = -2, offset = 0;
   bool failed = false, priority_ready = false, ready = false;
   std::set<int> renaming;
-  std::string name;
+  std::string name, directory;
   Stream(int file, int64_t limit, int upload) : session(lt::session_params(settings(upload))), index(file), quota(limit) {}
   void poll() {
     std::vector<lt::alert*> alerts;
@@ -112,6 +113,11 @@ struct Stream {
     const auto selected = lt::file_index_t(index);
     size = files.file_size(selected);
     if (size <= 0 || size + 2LL * metadata->piece_length() > quota) { failed = true; return; }
+    std::error_code storage_error;
+    const auto storage = std::filesystem::space(directory, storage_error);
+    constexpr uint64_t reserve = 512ULL * 1024 * 1024;
+    const auto required = static_cast<uint64_t>(size + 2LL * metadata->piece_length());
+    if (storage_error || storage.available < reserve || required > storage.available - reserve) { failed = true; return; }
     name = files.file_name(selected).to_string();
     if (!video(name)) { failed = true; return; }
     offset = files.file_offset(selected);
@@ -135,8 +141,9 @@ void* pt_open(const char* magnet, const char* directory, int32_t index, int64_t 
     if (!magnet || !directory || index < -1 || quota < 16 * 1024 * 1024) return nullptr;
     lt::error_code error;
     auto params = lt::parse_magnet_uri(magnet, error);
-    if (error || !params.info_hashes.has_v1()) return nullptr;
+    if (error || (!params.info_hashes.has_v1() && !params.info_hashes.has_v2())) return nullptr;
     auto stream = std::make_unique<Stream>(index, quota, upload);
+    stream->directory = directory;
     params.save_path = directory;
     params.flags &= ~(lt::torrent_flags::auto_managed | lt::torrent_flags::paused);
     // Fetch metadata without payload; selection is committed to disk before

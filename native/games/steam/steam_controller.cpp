@@ -51,8 +51,9 @@ const IHS_HIDDeviceClass deviceClass = {
     nullptr,
     nullptr,
     [](IHS_HIDDevice* d, const uint8_t* data, size_t length) {
-      if (length >= 2 && data[0] == 9) device(d)->report[27] = data[1];
-      return 0;
+      auto state = device(d)->state;
+      std::lock_guard<std::mutex> lock(state->mutex);
+      return state->feedback.write(data, length) ? 0 : -1;
     },
     [](IHS_HIDDevice*, IHS_Buffer* out, size_t length, uint32_t) {
       if (length > 128) return -1;
@@ -72,12 +73,18 @@ const IHS_HIDDeviceClass deviceClass = {
           data[1] = 0xff;
           size = 2;
           break;
-        case 4:
+        case 4: {
+          auto state = device(d)->state;
+          std::lock_guard<std::mutex> lock(state->mutex);
           data[1] = 1;  // valid; not raw HID/XInput
-          little(data + 3, IHS_CONTROLLER_TYPE_XBOX_ONE, 4);
-          little(data + 16, 0x001003ff, 4);  // basic buttons/sticks/triggers
+          // Explicit motion emulation uses Steam's PS4 SDL controller type.
+          // Remaining bytes are player index, HID flag and reserved padding,
+          // not a made-up capability bitfield. Default Xbox identity is stable.
+          little(data + 3, state->motionController ? 34 : IHS_CONTROLLER_TYPE_XBOX_ONE, 4);
+          little(data + 7, 0xffffffff, 4);
           size = 21;
           break;
+        }
         case 7:
           std::memcpy(data + 1, device(d)->serial.c_str(), 13);
           size = 14;
@@ -107,6 +114,10 @@ const IHS_HIDDeviceClass deviceClass = {
         std::lock_guard<std::mutex> lock(d->state->mutex);
         for (size_t i = 0; i < 6; ++i) little(d->report.data() + i * 2, static_cast<uint16_t>(d->state->axes[i]), 2);
         little(d->report.data() + 16, d->state->buttons, 4);
+        d->state->feedback.expireMotion();
+        d->report[27] = d->state->feedback.version;
+        for (size_t i = 0; i < 6; ++i)
+          little(d->report.data() + 28 + i * 2, static_cast<uint16_t>(d->state->feedback.motion[i]), 2);
       }
       if (d->report == d->previous) return 0;
       IHS_HIDDeviceReportAddDelta(value, d->previous.data(), d->report.data(), d->length);
@@ -141,8 +152,10 @@ const IHS_HIDProviderClass providerClass = {
       info->path = provider(p)->path.c_str();
       info->product_string = "PlezyNG Controller";
       info->serial_number = provider(p)->serial.c_str();
-      info->vendor_id = 0x045e;
-      info->product_id = 0x02ea;
+      auto state = provider(p)->state;
+      std::lock_guard<std::mutex> lock(state->mutex);
+      info->vendor_id = state->motionController ? 0x054c : 0x045e;
+      info->product_id = state->motionController ? 0x09cc : 0x02ea;
       info->product_version = 0x0100;
     }};
 }  // namespace

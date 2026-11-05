@@ -41,7 +41,7 @@ class SourceDatabase extends GeneratedDatabase {
   }
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
   @override
   Iterable<TableInfo<Table, Object?>> get allTables => const [];
   @override
@@ -71,6 +71,7 @@ class SourceDatabase extends GeneratedDatabase {
         await customStatement(sql);
       }
       await _createRemoteWorkerSchema();
+      await _createPodcastSyncSchema();
       await _createEntrySearchIndex();
     },
     onUpgrade: (migrator, from, to) async {
@@ -179,8 +180,14 @@ class SourceDatabase extends GeneratedDatabase {
           DateTime.now().millisecondsSinceEpoch,
         ]);
       }
+      if (from < 12) await _createPodcastSyncSchema();
     },
   );
+
+  Future<void> _createPodcastSyncSchema() async {
+    await customStatement('CREATE TABLE podcast_sync_ack (profile TEXT NOT NULL, account TEXT NOT NULL, key TEXT NOT NULL, revision INTEGER NOT NULL, content_hash TEXT NOT NULL, PRIMARY KEY(profile,account,key))');
+    await customStatement("CREATE INDEX entries_podcast_sync_identity ON entries(profile,CASE WHEN json_valid(payload) THEN json_extract(payload,'\$.identifiers.podcastSyncIdentity') END)");
+  }
 
   Future<void> _createRemoteWorkerSchema() async {
     await customStatement('CREATE TABLE remote_deleted_profiles (profile TEXT PRIMARY KEY NOT NULL)');
@@ -288,6 +295,7 @@ class SourceRepository {
         'canonical_redirects',
         'remote_stream_state',
         'remote_preparation_claims',
+        'podcast_sync_ack',
       ]) {
         await database.customStatement('DELETE FROM $table WHERE profile=?', [profile]);
       }
@@ -1060,6 +1068,37 @@ class SourceRepository {
           .map((r) => BookAnnotation.fromJson(sourceMap(jsonDecode(r.read<String>('payload')))))
           .where((a) => !a.deleted)
           .toList();
+
+  Future<SourceEntry?> podcastEntryBySyncIdentity(String profile, String identity) async {
+    final rows = await database.customSelect(
+      "SELECT payload FROM entries WHERE profile=? AND (CASE WHEN json_valid(payload) THEN json_extract(payload,'\$.identifiers.podcastSyncIdentity') END)=? LIMIT 2",
+      variables: [Variable(profile), Variable(identity)]).get();
+    if (rows.length != 1) return null; // Do not guess between duplicate feed connections.
+    return SourceEntry.fromJson(sourceMap(jsonDecode(rows.single.read<String>('payload'))));
+  }
+
+  Future<({int revision, String hash})?> podcastSyncAck(String profile, String account, String key) async {
+    final row = await database.customSelect('SELECT revision,content_hash FROM podcast_sync_ack WHERE profile=? AND account=? AND key=?',
+      variables: [Variable(profile), Variable(account), Variable(key)]).getSingleOrNull();
+    return row == null ? null : (revision: row.read<int>('revision'), hash: row.read<String>('content_hash'));
+  }
+  Future<void> acknowledgePodcastSync(String profile, String account, PublicationProgress progress, String hash) {
+    _writable(profile);
+    return database.customStatement('INSERT INTO podcast_sync_ack VALUES (?,?,?,?,?) ON CONFLICT(profile,account,key) DO UPDATE SET revision=excluded.revision,content_hash=excluded.content_hash',
+      [profile, account, progress.key, progress.revision, hash]);
+  }
+  Future<void> forgetPodcastSyncAck(String profile, String account, String key) {
+    _writable(profile);
+    return database.customStatement('DELETE FROM podcast_sync_ack WHERE profile=? AND account=? AND key=?', [profile, account, key]);
+  }
+  Future<List<({int row, SourceEntry entry, PublicationProgress progress})>> podcastSyncChanges(String profile, String account, {int after = 0}) async {
+    final rows = await database.customSelect(
+      "SELECT p.rowid AS row_id,e.payload AS item,p.payload AS progress_value FROM progress p JOIN entries e ON e.profile=p.profile AND e.entry_key=p.entry LEFT JOIN podcast_sync_ack a ON a.profile=p.profile AND a.account=? AND a.key=p.key WHERE p.profile=? AND p.rowid>? AND (CASE WHEN json_valid(e.payload) THEN json_extract(e.payload,'\$.identifiers.podcast') END)='episode' AND (a.revision IS NULL OR a.revision != p.revision) ORDER BY p.rowid LIMIT 500",
+      variables: [Variable(account), Variable(profile), Variable(after)]).get();
+    return [for (final row in rows) (row: row.read<int>('row_id'),
+      entry: SourceEntry.fromJson(sourceMap(jsonDecode(row.read<String>('item')))),
+      progress: PublicationProgress.fromJson(sourceMap(jsonDecode(row.read<String>('progress_value')))))];
+  }
 
   Future<Map<String, dynamic>> preference(String profile, String key) async {
     final row = await database

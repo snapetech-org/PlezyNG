@@ -17,6 +17,8 @@ import '../../i18n/presentation_formats.dart';
 import '../../i18n/strings.g.dart';
 import '../../mpv/mpv.dart';
 import '../../mpv/player/audio_spectrum.dart';
+import '../../mpv/player/player_native.dart';
+import '../../multiview/native_video_window.dart';
 import '../../models/media_bookmark.dart';
 import '../../multiview/source_playback_workspace_surface.dart';
 import '../../multiview/workspace_controller.dart';
@@ -385,6 +387,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
     final sourceRoute = ModalRoute.of(context);
     final entry = playback.entry;
     if (entry == null) return;
+    final windowPlayer = playback.player;
     final registration = WorkspaceSurfaceRegistration(
       descriptor: WorkspaceSessionDescriptor(
         id: id,
@@ -398,6 +401,35 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
         openedAt: DateTime.now(),
       ),
       videoPlayerSlot: playback.videoPlayerSlot,
+      onDetachWindow: windowPlayer is PlayerNative && playback.video && windowPlayer.supportsNativeVideoWindow
+          ? () async {
+              if (!mounted || playback.player != windowPlayer || _workspaceSessionId != id) return false;
+              return windowPlayer.detachVideoWindow(
+                title: playback.entry?.displayTitle ?? t.common.unknown,
+                geometryKey: controller.nativeWindowGeometryKey(playback.videoPlayerSlot),
+                labels: {
+                  'playPause': '${t.videoControls.playButton} / ${t.videoControls.pauseButton}',
+                  'back': t.videoControls.seekBackwardButton(seconds: 15),
+                  'forward': t.videoControls.seekForwardButton(seconds: 15),
+                  'restore': t.common.returnToFullView,
+                },
+                onIntent: (action) async {
+                  if (!mounted || playback.player != windowPlayer || _workspaceSessionId != id) return;
+                  switch (action) {
+                    case NativeVideoWindowAction.togglePlayback:
+                      await playback.toggle();
+                    case NativeVideoWindowAction.seekBackward:
+                      await playback.skip(-15);
+                    case NativeVideoWindowAction.seekForward:
+                      await playback.skip(15);
+                  }
+                },
+                onRestored: () => controller.refreshPresentation(id),
+              );
+            }
+          : null,
+      onAttachWindow: windowPlayer is PlayerNative ? windowPlayer.attachVideoWindow : null,
+      isWindowDetached: windowPlayer is PlayerNative ? () => windowPlayer.hasNativeVideoWindow : null,
       buildSurface: (_) => SourcePlaybackWorkspaceSurface(playback: playback, controller: controller, sessionId: id),
       onRestore: () {
         WidgetsBinding.instance.addPostFrameCallback((_) {

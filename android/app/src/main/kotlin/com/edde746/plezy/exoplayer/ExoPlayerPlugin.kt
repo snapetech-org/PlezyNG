@@ -1382,7 +1382,7 @@ open class ExoPlayerPlugin(
       result.success(available)
       return
     }
-    result.success(playerCore?.isInitialized == true)
+    result.success(playerCore?.subtitlePcmCaptureAvailable() == true)
   }
 
   private fun handleSetSubtitlePcmCaptureEnabled(call: MethodCall, result: MethodChannel.Result) {
@@ -1781,3 +1781,4 @@ open class ExoPlayerPlugin(
 
 /** Independent ExoPlayer/fallback-MPV channel and core for the second workspace video. */
 class ExoWorkspacePlayerPlugin : ExoPlayerPlugin("com.plezy/exo_player/workspace")
+

@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstring>
+#include <cstdio>
 #include <deque>
 #include <functional>
 #include <limits>
@@ -73,6 +74,14 @@ struct _MpvPlugin {
   gboolean visible;
   gboolean initialized;
   gboolean audio_only;
+  GtkWidget* detached_window;
+  GtkWidget* detached_video;
+  gchar* detached_token;
+  guint detached_restore_source;
+  guint detached_restore_attempts;
+  gchar* detached_geometry_path;
+  guint detached_geometry_source;
+  gboolean detached_parent_visible;
   // What Dart last asked for via hdr-enabled. Remembered because the answer can
   // change without Dart saying anything: moving the window to another monitor
   // changes whether the output is in HDR at all, and the plane has to be
@@ -171,6 +180,7 @@ G_DEFINE_TYPE(MpvPlugin, mpv_plugin, G_TYPE_OBJECT)
 static void mpv_plugin_handle_method_call(FlMethodChannel* channel, FlMethodCall* method_call, gpointer user_data);
 // The texture bootstrap's failure arms call this; it is defined below.
 static void release_video_resources(MpvPlugin* self);
+static void save_detached_geometry(MpvPlugin* self);
 
 static mpv::HdrMetadata read_source_hdr_metadata(MpvPlugin* self);
 static void apply_hdr_state(MpvPlugin* self, bool allow, mpv::HdrToneMapping mode, std::function<void(int)> done);
@@ -313,6 +323,22 @@ static void release_video_resources(MpvPlugin* self) {
     self->video_surface->Destroy();
     self->video_surface.reset();
   }
+  if (self->detached_restore_source) {
+    g_source_remove(self->detached_restore_source);
+    self->detached_restore_source = 0;
+  }
+  if (self->detached_window) {
+    save_detached_geometry(self);
+    GtkWidget* window = self->detached_window;
+    self->detached_window = self->detached_video = nullptr;
+    gtk_widget_destroy(window);
+  }
+  g_clear_pointer(&self->detached_token, g_free);
+  g_clear_pointer(&self->detached_geometry_path, g_free);
+  if (self->detached_geometry_source) {
+    g_source_remove(self->detached_geometry_source);
+    self->detached_geometry_source = 0;
+  }
   self->initialized = FALSE;
   self->visible = FALSE;
   self->plane_needs_render = FALSE;
@@ -350,7 +376,14 @@ static void release_video_resources(MpvPlugin* self) {
 // would otherwise leave the plane sizeless: render_video_plane bails while
 // has_size() is false, and Dart re-sends only when its numbers change.
 static void apply_pending_rect(MpvPlugin* self) {
-  if (!self->has_pending_rect || self->video_surface == nullptr) return;
+  if (self->video_surface == nullptr) return;
+  if (self->detached_video) {
+    const int scale = gtk_widget_get_scale_factor(self->detached_video);
+    self->video_surface->SetRect(0, 0, gtk_widget_get_allocated_width(self->detached_video) * scale,
+        gtk_widget_get_allocated_height(self->detached_video) * scale, scale);
+    return;
+  }
+  if (!self->has_pending_rect) return;
   const auto& rect = self->pending_rect;
   self->video_surface->SetRect(rect.x, rect.y, rect.width, rect.height, rect.scale);
 }
@@ -910,6 +943,163 @@ static void submit_hdr_transaction(
 // implies the flag is set.
 static bool hdr_busy(MpvPlugin* self) { return self->hdr_transaction_in_flight; }
 
+static void detached_action(MpvPlugin* self, const char* action) {
+  if (!self->detached_token) return;
+  g_autoptr(FlValue) event = fl_value_new_map();
+  fl_value_set_string_take(event, "type", fl_value_new_string("event"));
+  fl_value_set_string_take(event, "name", fl_value_new_string("detached-window-action"));
+  FlValue* data = fl_value_new_map();
+  fl_value_set_string_take(data, "token", fl_value_new_string(self->detached_token));
+  fl_value_set_string_take(data, "action", fl_value_new_string(action));
+  fl_value_set_string_take(event, "data", data);
+  send_event(self, event);
+}
+
+static gboolean attach_video_window(MpvPlugin* self, gboolean notify) {
+  if (!self->detached_window) return TRUE;
+  if (self->render_in_flight || hdr_busy(self)) return FALSE;
+  FlView* view = fl_plugin_registrar_get_view(self->registrar);
+  if (!self->video_surface || !view || !self->video_surface->Reparent(GTK_WIDGET(view))) return FALSE;
+  GtkWidget* window = self->detached_window;
+  save_detached_geometry(self);
+  self->detached_window = self->detached_video = nullptr;
+  self->visible = self->detached_parent_visible;
+  apply_pending_rect(self);
+  self->video_surface->SetVisible(self->visible && !self->hdr_output_unnameable);
+  self->plane_needs_render = TRUE;
+  render_video_plane(self, TRUE);
+  if (notify) detached_action(self, "restored");
+  g_clear_pointer(&self->detached_token, g_free);
+  g_clear_pointer(&self->detached_geometry_path, g_free);
+  gtk_widget_destroy(window);
+  return TRUE;
+}
+
+static void request_detached_restore(MpvPlugin* self) {
+  if (self->detached_restore_source) return;
+  if (attach_video_window(self, TRUE)) return;
+  self->detached_restore_attempts = 0;
+  self->detached_restore_source = g_timeout_add_full(G_PRIORITY_DEFAULT, 25,
+      +[](gpointer data) -> gboolean {
+        auto* self = static_cast<MpvPlugin*>(data);
+        if (++self->detached_restore_attempts >= 200 || attach_video_window(self, TRUE)) {
+          self->detached_restore_source = 0;
+          return G_SOURCE_REMOVE;
+        }
+        return G_SOURCE_CONTINUE;
+      }, g_object_ref(self), g_object_unref);
+}
+
+static const char* detached_text(FlValue* args, const char* key) {
+  FlValue* value = args && fl_value_get_type(args) == FL_VALUE_TYPE_MAP ? fl_value_lookup_string(args, key) : nullptr;
+  return value && fl_value_get_type(value) == FL_VALUE_TYPE_STRING ? fl_value_get_string(value) : "";
+}
+
+static void save_detached_geometry(MpvPlugin* self) {
+  if (!self->detached_window || !self->detached_geometry_path) return;
+  const auto state = gdk_window_get_state(gtk_widget_get_window(self->detached_window));
+  if (state & (GDK_WINDOW_STATE_MAXIMIZED | GDK_WINDOW_STATE_ICONIFIED | GDK_WINDOW_STATE_FULLSCREEN)) return;
+  int width = 0, height = 0;
+  gtk_window_get_size(GTK_WINDOW(self->detached_window), &width, &height);
+  if (width < 360 || width > 8192 || height < 200 || height > 8192) return;
+  g_autofree gchar* text = g_strdup_printf("%d %d\n", width, height);
+  g_file_set_contents(self->detached_geometry_path, text, -1, nullptr);
+}
+
+static gboolean detach_video_window(MpvPlugin* self, FlValue* args) {
+  const char* token = detached_text(args, "token");
+  if (!*token || strlen(token) > 80 || self->audio_only || !self->video_surface) return FALSE;
+  if (self->detached_window) return g_strcmp0(token, self->detached_token) == 0;
+  if (self->render_in_flight || hdr_busy(self)) return FALSE;
+  GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(window), detached_text(args, "title"));
+  gtk_window_set_default_size(GTK_WINDOW(window), 800, 500);
+  g_autofree gchar* geometry_path = nullptr;
+  const char* key = detached_text(args, "geometryKey");
+  if (strlen(key) == 64 && strspn(key, "abcdef0123456789") == 64) {
+    g_autofree gchar* directory = g_build_filename(g_get_user_config_dir(), "plezy", "detached-windows", nullptr);
+    if (g_mkdir_with_parents(directory, 0700) == 0) {
+      geometry_path = g_build_filename(directory, key, nullptr);
+      if (FILE* input = std::fopen(geometry_path, "r")) {
+        char saved[65]{};
+        unsigned int width = 0, height = 0;
+        if (std::fgets(saved, sizeof(saved), input) && sscanf(saved, "%u %u", &width, &height) == 2 &&
+            width >= 360 && width <= 8192 && height >= 200 && height <= 8192)
+          gtk_window_set_default_size(GTK_WINDOW(window), width, height);
+        std::fclose(input);
+      }
+    }
+  }
+  GdkVisual* rgba = gdk_screen_get_rgba_visual(gtk_widget_get_screen(window));
+  if (!rgba) { gtk_widget_destroy(window); return FALSE; }
+  gtk_widget_set_visual(window, rgba);
+  gtk_widget_set_app_paintable(window, TRUE);
+  g_signal_connect(window, "draw", G_CALLBACK(+[](GtkWidget*, cairo_t* cr, gpointer) -> gboolean {
+    cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
+    cairo_set_source_rgba(cr, 0, 0, 0, 0);
+    cairo_paint(cr);
+    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+    return FALSE;
+  }), nullptr);
+  GtkWidget* box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  GtkWidget* video = gtk_drawing_area_new();
+  gtk_widget_set_app_paintable(video, TRUE);
+  gtk_widget_set_size_request(video, 360, 200);
+  gtk_box_pack_start(GTK_BOX(box), video, TRUE, TRUE, 0);
+  GtkWidget* controls = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+  FlValue* labels = args && fl_value_get_type(args) == FL_VALUE_TYPE_MAP ? fl_value_lookup_string(args, "labels") : nullptr;
+  const char* keys[] = {"back", "playPause", "forward", "restore"};
+  const char* actions[] = {"seekBackward", "togglePlayback", "seekForward", "restore"};
+  for (int i = 0; i < 4; ++i) {
+    GtkWidget* button = gtk_button_new_with_label(detached_text(labels, keys[i]));
+    g_object_set_data(G_OBJECT(button), "plezy-action", const_cast<char*>(actions[i]));
+    g_signal_connect(button, "clicked", G_CALLBACK(+[](GtkButton* button, gpointer data) {
+      auto* self = static_cast<MpvPlugin*>(data);
+      const auto* action = static_cast<const char*>(g_object_get_data(G_OBJECT(button), "plezy-action"));
+      if (strcmp(action, "restore") == 0) request_detached_restore(self);
+      else detached_action(self, action);
+    }), self);
+    gtk_box_pack_start(GTK_BOX(controls), button, TRUE, TRUE, 0);
+  }
+  gtk_box_pack_start(GTK_BOX(box), controls, FALSE, FALSE, 0);
+  gtk_container_add(GTK_CONTAINER(window), box);
+  gtk_widget_show_all(window);
+  if (!self->video_surface->Reparent(video)) { gtk_widget_destroy(window); return FALSE; }
+  self->detached_window = window;
+  self->detached_parent_visible = self->visible;
+  self->detached_video = video;
+  self->detached_token = g_strdup(token);
+  self->detached_geometry_path = g_steal_pointer(&geometry_path);
+  g_signal_connect(window, "configure-event", G_CALLBACK(+[](GtkWidget*, GdkEvent*, gpointer data) -> gboolean {
+    auto* self = static_cast<MpvPlugin*>(data);
+    if (!self->detached_geometry_source) {
+      self->detached_geometry_source = g_timeout_add_full(G_PRIORITY_DEFAULT, 250,
+          +[](gpointer data) -> gboolean {
+            auto* self = static_cast<MpvPlugin*>(data);
+            self->detached_geometry_source = 0;
+            save_detached_geometry(self);
+            return G_SOURCE_REMOVE;
+          }, g_object_ref(self), g_object_unref);
+    }
+    return FALSE;
+  }), self);
+  g_signal_connect(window, "delete-event", G_CALLBACK(+[](GtkWidget*, GdkEvent*, gpointer data) -> gboolean {
+    request_detached_restore(static_cast<MpvPlugin*>(data));
+    return TRUE;
+  }), self);
+  g_signal_connect(video, "size-allocate", G_CALLBACK(+[](GtkWidget*, GtkAllocation*, gpointer data) {
+    auto* self = static_cast<MpvPlugin*>(data);
+    if (self->render_in_flight) self->rect_apply_deferred = TRUE;
+    else { apply_pending_rect(self); self->plane_needs_render = TRUE; render_video_plane(self, TRUE); }
+  }), self);
+  apply_pending_rect(self);
+  self->visible = TRUE;
+  self->video_surface->SetVisible(!self->hdr_output_unnameable);
+  self->plane_needs_render = TRUE;
+  render_video_plane(self, TRUE);
+  return TRUE;
+}
+
 // The only entry point for internal re-applies: playback restarts and
 // preferred-description changes. Nobody is waiting on these, so instead of
 // queueing they collapse into a single pending flag and re-read the mode and the
@@ -1172,6 +1362,13 @@ static FlMethodResponse* visualizer_method(MpvPlugin* self, const char* method, 
     auto* value = arg(name);
     return value && fl_value_get_type(value) == FL_VALUE_TYPE_INT ? fl_value_get_int(value) : fallback;
   };
+  auto number = [&arg](const char* name) -> double {
+    auto* value = arg(name);
+    if (!value) throw std::runtime_error(std::string("Missing mouse value: ") + name);
+    if (fl_value_get_type(value) == FL_VALUE_TYPE_FLOAT) return fl_value_get_float(value);
+    if (fl_value_get_type(value) == FL_VALUE_TYPE_INT) return static_cast<double>(fl_value_get_int(value));
+    throw std::runtime_error(std::string("Invalid mouse value: ") + name);
+  };
   auto* requested_engine = arg("engine");
   const std::string engine = requested_engine && fl_value_get_type(requested_engine) == FL_VALUE_TYPE_STRING
                                  ? fl_value_get_string(requested_engine)
@@ -1235,6 +1432,11 @@ static FlMethodResponse* visualizer_method(MpvPlugin* self, const char* method, 
     if (!paused || fl_value_get_type(paused) != FL_VALUE_TYPE_BOOL)
       return failure("INVALID_ARGS", "A paused boolean is required.");
     self->visualizer->SetPaused(fl_value_get_bool(paused));
+  } else if (strcmp(method, "visualizerSetMouse") == 0) {
+    auto* down = arg("down");
+    if (!down || fl_value_get_type(down) != FL_VALUE_TYPE_BOOL)
+      return failure("INVALID_ARGS", "A mouse button state is required.");
+    self->visualizer->SetMouseState(fl_value_get_bool(down), number("x"), number("y"), number("dx"), number("dy"));
   } else if (strcmp(method, "visualizerStatus") == 0) {
     g_autoptr(FlValue) result = self->visualizer->Status();
     return FL_METHOD_RESPONSE(fl_method_success_response_new(result));
@@ -1648,13 +1850,19 @@ static void mpv_plugin_handle_method_call(FlMethodChannel* channel, FlMethodCall
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
       }
     }
+  } else if (strcmp(method, "detachVideoWindow") == 0) {
+    response = bool_success_response(detach_video_window(self, args));
+  } else if (strcmp(method, "attachVideoWindow") == 0) {
+    response = bool_success_response(!self->detached_window ||
+        (g_strcmp0(detached_text(args, "token"), self->detached_token) == 0 && attach_video_window(self, FALSE)));
   } else if (strcmp(method, "setVisible") == 0) {
     FlValue* visible_value = fl_value_lookup_string(args, "visible");
 
     if (visible_value == nullptr || fl_value_get_type(visible_value) != FL_VALUE_TYPE_BOOL) {
       response = FL_METHOD_RESPONSE(fl_method_error_response_new("INVALID_ARGS", "Missing 'visible'", nullptr));
     } else {
-      self->visible = fl_value_get_bool(visible_value);
+      self->detached_parent_visible = fl_value_get_bool(visible_value);
+      self->visible = self->detached_window != nullptr || self->detached_parent_visible;
 
       if (self->video_surface) {
         // Hiding is always Dart's to do. Showing is not, while the plane is

@@ -501,7 +501,19 @@ class _WorkspaceWindowState extends State<_WorkspaceWindow> {
                                 _surfaceFocusNode.requestFocus();
                               }
                             : null,
-                        child: SizedBox.expand(child: _buildSurfaceWithMoveGestures(context, id, registration)),
+                        child: SizedBox.expand(
+                          child: controller.isWindowDetached(id)
+                              ? Center(
+                                  child: FilledButton.icon(
+                                    onPressed: controller.windowOperationPending(id)
+                                        ? null
+                                        : () => controller.toggleDetachedWindow(id),
+                                    icon: const Icon(Symbols.picture_in_picture_alt_rounded),
+                                    label: Text(t.common.returnToFullView),
+                                  ),
+                                )
+                              : _buildSurfaceWithMoveGestures(context, id, registration),
+                        ),
                       ),
                     ),
                   ),
@@ -623,6 +635,17 @@ class _WorkspaceTitleBar extends StatelessWidget {
                     : t.common.returnToFullView,
                 icon: Symbols.picture_in_picture_alt_rounded,
                 onPressed: () => controller.restore(id),
+                iconSize: 19,
+              ),
+            if (registration.onDetachWindow != null)
+              _workspaceIconButton(
+                tooltip: controller.isWindowDetached(id)
+                    ? t.common.returnToFullView
+                    : t.common.workspaceWindowLabel(title: registration.descriptor.title),
+                icon: Symbols.open_in_new_rounded,
+                onPressed: controller.windowOperationPending(id)
+                    ? null
+                    : () => controller.toggleDetachedWindow(id),
                 iconSize: 19,
               ),
             _workspaceIconButton(
@@ -843,12 +866,13 @@ class _WorkspaceSessionTray extends StatelessWidget {
 Widget _workspaceIconButton({
   required String tooltip,
   required IconData icon,
-  required VoidCallback onPressed,
+  required VoidCallback? onPressed,
   double iconSize = 24,
   String? semanticHint,
 }) => Semantics(
   container: true,
   button: true,
+  enabled: onPressed != null,
   label: tooltip,
   hint: semanticHint,
   onTap: onPressed,

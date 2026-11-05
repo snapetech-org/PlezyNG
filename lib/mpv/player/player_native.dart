@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show listEquals, mapEquals, visibleForT
 import 'package:flutter/services.dart';
 
 import '../../models/audio_channel_limit.dart';
+import '../../multiview/native_video_window.dart';
 import '../../services/settings_service.dart';
 import '../../utils/platform_detector.dart';
 import '../../utils/app_logger.dart';
@@ -45,7 +46,8 @@ class PlayerNative extends PlayerBase
         PlayerAudioFocusControl,
         AudioSpectrumAnalyzer,
         SubtitlePcmCaptureSource,
-        NativeVisualizationAudioSource {
+        NativeVisualizationAudioSource,
+        NativeVideoWindowSource {
   final StreamController<AudioSpectrumSample?> _audioSpectrumController =
       StreamController<AudioSpectrumSample?>.broadcast(sync: true);
   final Stopwatch _audioSpectrumClock = Stopwatch()..start();
@@ -57,6 +59,73 @@ class PlayerNative extends PlayerBase
   bool _hasSeenSegmentLoopSource = false;
   int _mediaSessionGeneration = 0;
   bool _isLivePlayback = false;
+  String? _nativeWindowToken;
+  int _nativeWindowRevision = 0;
+  NativeVideoWindowIntent? _nativeWindowIntent;
+  void Function()? _nativeWindowRestored;
+  Future<void> _nativeWindowActions = Future<void>.value();
+  int _queuedNativeWindowActions = 0;
+
+  bool get supportsNativeVideoWindow => !audioOnly && (Platform.isLinux || Platform.isWindows || Platform.isMacOS);
+  bool get hasNativeVideoWindow => _nativeWindowToken != null;
+
+  /// Moves the existing native plane; decoder, credentials and Dart owners stay
+  /// in this process. Native close means return to the owning workspace pane.
+  Future<bool> detachVideoWindow({
+    required String title,
+    required String geometryKey,
+    required Map<String, String> labels,
+    required NativeVideoWindowIntent onIntent,
+    required void Function() onRestored,
+  }) async {
+    if (!supportsNativeVideoWindow || _nativeCoreUnavailable || hasNativeVideoWindow || !state.hasRenderedFrame) return false;
+    if (!RegExp(r'^[a-f0-9]{64}$').hasMatch(geometryKey)) throw const FormatException('Invalid window geometry key');
+    final token = '$nativeInstanceId:${++_nativeWindowRevision}';
+    _nativeWindowToken = token;
+    _nativeWindowIntent = onIntent;
+    _nativeWindowRestored = onRestored;
+    var installed = false;
+    try {
+      for (var attempt = 0; attempt < 24; attempt++) {
+        if (_nativeCoreUnavailable || _nativeWindowToken != token) return false;
+        final accepted = await invoke<bool>('detachVideoWindow', {
+          'token': token, 'title': title, 'labels': labels, 'geometryKey': geometryKey,
+        });
+        if (accepted == true && _nativeWindowToken == token) {
+          installed = true;
+          return true;
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 25));
+      }
+      return false;
+    } finally {
+      if (!installed && _nativeWindowToken == token) _clearNativeVideoWindow();
+    }
+  }
+
+  Future<bool> attachVideoWindow() async {
+    final token = _nativeWindowToken;
+    if (token == null) return true;
+    for (var attempt = 0; attempt < 40; attempt++) {
+      if (_nativeCoreUnavailable) return false;
+      if (_nativeWindowToken != token) return true;
+      if (await invoke<bool>('attachVideoWindow', {'token': token}) == true) {
+        if (_nativeWindowToken == token) _clearNativeVideoWindow();
+        await _applyPendingVideoRect();
+        return true;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 25));
+    }
+    return false;
+  }
+
+  void _clearNativeVideoWindow() {
+    final restored = _nativeWindowRestored;
+    _nativeWindowToken = null;
+    _nativeWindowIntent = null;
+    _nativeWindowRestored = null;
+    if (!_nativeCoreUnavailable) restored?.call();
+  }
   ({int left, int top, int right, int bottom, double devicePixelRatio})? _pendingVideoRect;
 
   @override
@@ -93,7 +162,7 @@ class PlayerNative extends PlayerBase
 
   Future<void> _applyPendingVideoRect() async {
     final rect = _pendingVideoRect;
-    if (rect == null || audioOnly || _nativeCoreUnavailable || !initialized) return;
+    if (rect == null || audioOnly || _nativeCoreUnavailable || !initialized || hasNativeVideoWindow) return;
     await invoke('setVideoRect', {
       'left': rect.left,
       'top': rect.top,
@@ -906,6 +975,25 @@ class PlayerNative extends PlayerBase
 
   @override
   void handlePlayerEvent(String name, Map? data) {
+    if (name == 'detached-window-action') {
+      final token = _nativeWindowToken;
+      if (token == null || data?['token'] != token || _nativeCoreUnavailable) return;
+      if (data?['action'] == 'restored') {
+        _clearNativeVideoWindow();
+        unawaited(_applyPendingVideoRect());
+        return;
+      }
+      final action = nativeVideoWindowAction(data?['action']);
+      if (action == null || _queuedNativeWindowActions >= 32) return;
+      _queuedNativeWindowActions++;
+      _nativeWindowActions = _nativeWindowActions.then((_) async {
+        if (_nativeCoreUnavailable || _nativeWindowToken != token) return;
+        await _nativeWindowIntent?.call(action);
+      }).whenComplete(() => _queuedNativeWindowActions--).catchError((Object error, StackTrace stack) {
+        appLogger.w('Detached window control failed', error: error, stackTrace: stack);
+      });
+      return;
+    }
     if (name == 'start-file' && !audioOnly) {
       ++_mediaSessionGeneration;
       if (_hasSeenSegmentLoopSource) unawaited(_clearTransientSegmentLoop());
@@ -961,6 +1049,7 @@ class PlayerNative extends PlayerBase
 
   Future<void> _disposeNative({required bool preserveDisplayMode}) async {
     if (disposed) return;
+    _clearNativeVideoWindow();
     _audioSpectrumAnalysisRequested = false;
     // Settle an armed-but-unconsumed content fd before the base teardown
     // disables invoke() — the playlist is torn down without mpv ever opening
@@ -1588,8 +1677,7 @@ class PlayerNative extends PlayerBase
   Future<bool> subtitlePcmCaptureAvailable() async {
     if (_nativeCoreUnavailable ||
         audioOnly ||
-        !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) ||
-        _isLivePlayback) {
+        !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid)) {
       return false;
     }
     await _ensureInitialized();

@@ -270,6 +270,19 @@ class NewEpisodeNotificationService {
     return (a.addedAt ?? 0).compareTo(b.addedAt ?? 0);
   }
 
+  Future<void> notifyPodcastEpisode({required String profileId, required String sourceId,
+    required String show, required String episode, required bool Function() isCurrent}) async {
+    if (!_foreground || _profileId != profileId || !isCurrent()) return;
+    if (!await _ensureNotifications() || !_foreground || _profileId != profileId || !isCurrent()) return;
+    final hash = sha256.convert(utf8.encode('podcast/$profileId/$sourceId')).bytes;
+    final id = ((hash[0] << 24) | (hash[1] << 16) | (hash[2] << 8) | hash[3]) & 0x7fffffff;
+    await _notifications.show(id: id, title: t.notifications.newEpisodeTitle,
+      body: t.notifications.newEpisodeBody(show: show, episode: episode),
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(_channelId, 'New episodes', importance: Importance.defaultImportance),
+        iOS: DarwinNotificationDetails()));
+  }
+
   Future<void> _showEpisodeNotification({
     required String serverId,
     required String showId,

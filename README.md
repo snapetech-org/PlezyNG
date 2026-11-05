@@ -92,7 +92,7 @@ This table is a snapshot of downstream work and its current limits. The linked u
 
 ## Download
 
-Published PlezyNG downloads appear on the [GitHub Releases page](https://github.com/snapetech-org/PlezyNG/releases). The 2.24.1 build is currently a draft, so there is no public “latest” download yet. Mobile and TV packages are listed when a release is published.
+Published PlezyNG downloads appear on the [GitHub Releases page](https://github.com/snapetech-org/PlezyNG/releases). Version [3.0.0](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.0) was published on 5 November 2026. Its assets include Android, Linux x64/ARM64, Windows x64/ARM64, macOS, unsigned iOS/tvOS developer packages and a Tizen tester handoff. The public release still lacks a webOS package; a successful candidate build is not a published download. See the [recorded release evidence](docs/maintainers/releases/v3.0.0.json).
 
 | Platform | Download |
 | --- | --- |
@@ -300,7 +300,8 @@ This list covers the current PlezyNG codebase, including additions since the for
 - OPML subscription import/export with explicit confirmation before exporting private feed links
 - Audio/video enclosures, show notes, publication/season/episode metadata, Podlove and Podcasting 2.0 chapters
 - Audiobookshelf podcast shows and episode-specific playback/progress; shared-player resume, speed, sleep timer, bookmarks and manual offline downloads
-- See the [podcast implementation and limits](docs/plezyng/podcasts/IMPLEMENTATION.md); proprietary subscription playback and automatic episode downloading are outside the implemented scope
+- Per-show automatic downloads and retention, archive pagination, transcript search/seek and opt-in gpodder synchronization are implemented in source. See the [podcast implementation and limits](docs/plezyng/podcasts/IMPLEMENTATION.md) for protocol and device qualification limits
+- Dedicated karaoke host/songbook, singer rotation, open rendition packages, timed lyrics/CD+G, practice and optional microphone/private-take workflows are integrated in source. Licensed catalogs, hosted sharing and native microphone monitoring remain open; see the [karaoke ledger](docs/plezyng/karaoke/PLAN.md)
 
 ### <img src="assets/readme_icons/live-tv.svg" height="20" alt="" align="center" /> Live TV & DVR
 
@@ -336,7 +337,8 @@ This list covers the current PlezyNG codebase, including additions since the for
 
 - Optional profile-scoped Games library with paired computers, favorites, recent games, LAN discovery, manual addresses and explicit Wake-on-LAN
 - Embedded Android Moonlight/GameStream engine for compatible hosts, with PIN pairing, certificate trust, host application lists and touch/controller input
-- Experimental Steam receivers in Android, Linux, Windows and Apple source, with secure pairing, H.264/HEVC paths, controller seats, touch assistance and connection diagnostics
+- Experimental Steam receivers in Android, Linux, Windows and Apple source, with secure pairing, H.264/HEVC/HDR paths, surround preferences, controller feedback, editable touch layouts, explicit microphone sharing and connection diagnostics. Internet relay and Cloud/Family actions require their configured services and live acceptance checks
+- RomM catalog, exact-copy selection, in-app browser/stream/native play routes, offline files and durable save synchronization are integrated in source; native cores and signing remain platform build inputs. See the [RomM integration](docs/games/ROMM_INTEGRATION.md)
 - Supported Steam quality/audio preferences, reconnect controls, account-linked reference catalogs and host-bound game activity
 - Separately permissioned Companion Remote game-session and host actions
 - See the [Games architecture](docs/games/ARCHITECTURE.md) and [validation record](docs/games/VALIDATION.md). Native build coverage and real host/controller/device qualification vary by platform; HDR and automatic internet traversal are unfinished.

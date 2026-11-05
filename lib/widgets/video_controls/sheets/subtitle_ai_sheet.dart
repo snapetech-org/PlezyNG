@@ -1,3 +1,6 @@
+import '../../../i18n/subtitle_capture_status_text.dart';
+import '../../../services/subtitle_capture_status.dart';
+import '../../../services/subtitle_speech_progress.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show File, Platform;
@@ -6,7 +9,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../i18n/strings.g.dart';
+import '../../../i18n/strings.g.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
@@ -80,6 +83,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   bool _playbackCaptureSupported = false;
   bool _lastResultUploadedToServer = false;
   String? _status;
+  SubtitleSpeechProgress? _speechProgress;
+  SubtitleCaptureStatus? _captureStatus;
   String? _error;
   String? _revisionStatus;
   SubtitleInferenceProvider _provider = SubtitleInferenceProvider.cpu;
@@ -134,6 +139,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       _busy = true;
       _error = null;
       _status = null;
+      _speechProgress = null;
+      _captureStatus = null;
       _revisionStatus = null;
     });
     try {
@@ -141,19 +148,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     } catch (error) {
       if (mounted) setState(() => _error = _readableError(error));
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) setState(() { _busy = false; _speechProgress = null; });
     }
   }
 
   Future<void> _ensureSpeechModel() async {
     if (_provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu) return;
     if (await SubtitleAiService.instance.isModelInstalled()) return;
-    if (mounted) setState(() => _status = context.t.subtitleAiUi.downloadingTheEnglishSpeechModelAndS_d75c5cb7);
+    if (mounted) setState(() => _speechProgress = const SubtitleSpeechProgress(SubtitleSpeechPhase.downloadingModel));
     await SubtitleAiService.instance.downloadModel(
       onProgress: (phase, received, total) {
         if (!mounted) return;
-        final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';
-        setState(() => _status = '$phase$percent');
+        setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
       },
     );
   }
@@ -216,11 +222,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final translateToEnglish =
         _translateSpeechToEnglish &&
         (_provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu);
-    setState(
-      () => _status = translateToEnglish
-          ? 'Transcribing and translating speech to English locally…'
-          : 'Transcribing speech locally on this device…',
-    );
+    setState(() => _speechProgress = SubtitleSpeechProgress(
+      translateToEnglish ? SubtitleSpeechPhase.translating : SubtitleSpeechPhase.transcribing,
+    ));
     final result = await SubtitleAiService.instance.transcribeWav(
       wavPath,
       provider: _provider,
@@ -228,8 +232,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       onProgress: (phase, received, total) {
         if (!mounted) return;
-        final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';
-        setState(() => _status = '$phase$percent');
+        setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
       },
     );
     if (!await _writeAndApply(
@@ -272,8 +275,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       onProgress: (phase, received, total) {
         if (!mounted) return;
-        final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';
-        setState(() => _status = '$phase$percent');
+        setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
       },
     );
     final aligned = SubtitleSyncService.synchronize(
@@ -325,20 +327,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (service.isRunning || service.hasActiveSession) {
       await service.stop();
       if (!mounted) return;
-      setState(() => _status = service.status);
+      setState(() => _captureStatus = service.status);
       return;
     }
     await service.start(
       captureSource,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
-      onProgress: (phase, received, total) {
-        if (!mounted) return;
-        final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';
-        setState(() => _status = phase + percent);
+      onProgress: (status) {
+        if (mounted) setState(() => _captureStatus = status);
       },
     );
     if (!mounted) return;
-    setState(() => _status = service.status);
+    setState(() => _captureStatus = service.status);
   });
 
   Future<(TranslateLanguage, TranslateLanguage)?> _chooseCrossLanguagePair() async {
@@ -1877,9 +1877,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           _speechLanguageSelector(),
           const SizedBox(height: 10),
           if (_busy) const LinearProgressIndicator(),
-          if (_status != null) ...[
+          if (_status != null || _captureStatus != null || _speechProgress != null) ...[
             const SizedBox(height: 8),
-            Text(_status!, style: Theme.of(context).textTheme.bodyMedium),
+            Text(_speechProgress != null ? subtitleSpeechProgressText(context, _speechProgress!) : _captureStatus != null ? subtitleCaptureStatusText(context, _captureStatus) : _status!, style: Theme.of(context).textTheme.bodyMedium),
           ],
           if (_error != null) ...[
             const SizedBox(height: 8),
@@ -1915,7 +1915,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     if (service.status != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),
-                        child: Text(service.status!, style: Theme.of(context).textTheme.bodySmall),
+                        child: Text(subtitleCaptureStatusText(context, service.status), style: Theme.of(context).textTheme.bodySmall),
                       ),
                     FocusableListTile(
                       leading: AppIcon(
@@ -1927,7 +1927,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       ),
                       title: Text(
                         service.isStarting
-                            ? 'Preparing live captions…'
+                            ? context.t.subtitleCapture.preparing
                             : (service.isRunning || service.hasActiveSession)
                             ? 'Stop live capture'
                             : 'Start live captions',
@@ -2141,7 +2141,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 }
 
 /// Search and seek within the in-memory transcript captured from the watched
-/// portion of the current Android ExoPlayer VOD session.
+/// portion of the current decoded-PCM playback timeline.
 class _CapturedTranscriptDialog extends StatefulWidget {
   const _CapturedTranscriptDialog({required this.player, required this.service});
 
@@ -2212,7 +2212,9 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
 
   Future<void> _seekToCue(SubtitleCue cue) async {
     try {
-      await widget.player.seek(Duration(milliseconds: cue.startMs));
+      final target = widget.service.playbackPositionForCue(cue);
+      if (target.isNegative) return;
+      await widget.player.seek(target);
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.maybeOf(
@@ -2231,7 +2233,7 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
           stream: widget.player.streams.position,
           initialData: widget.player.currentPosition,
           builder: (context, snapshot) {
-            final position = snapshot.data ?? widget.player.currentPosition;
+            final position = widget.service.captionPositionForPlayback(snapshot.data ?? widget.player.currentPosition);
             final visibleCount = _hideFutureDialogue ? _visibleCueCount(cues, position.inMilliseconds) : cues.length;
             final filtered = _filterCues(cues, visibleCount);
             final canSeek = widget.player.state.seekable && !widget.player.disposed;

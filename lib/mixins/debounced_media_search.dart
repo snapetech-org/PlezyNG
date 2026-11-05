@@ -36,6 +36,7 @@ mixin DebouncedMediaSearch<T extends StatefulWidget, R> on State<T> {
   bool hasSearched = false;
   bool lastSearchFailed = false;
   String lastSearchedQuery = '';
+  String resultsQuery = '';
 
   int _searchGeneration = 0;
   String? _inFlightQuery;
@@ -53,6 +54,25 @@ mixin DebouncedMediaSearch<T extends StatefulWidget, R> on State<T> {
 
   /// A successful search was applied to the state.
   void onSearchCompleted(String query, List<R> results) {}
+
+  void onSearchStarted(String query) {}
+
+  /// Capture this before starting source requests. A query string alone is not
+  /// enough: A -> B -> A must not admit progress from the first A request.
+  bool Function(List<R>) searchProgressPublisher(String query) {
+    final generation = _searchGeneration;
+    return (results) {
+      if (!mounted || generation != _searchGeneration || _inFlightQuery != query) return false;
+      setState(() {
+        searchResults = results;
+        resultsQuery = query;
+        hasSearched = true;
+        lastSearchFailed = false;
+      });
+      onSearchCompleted(query, results);
+      return true;
+    };
+  }
 
   /// The field was cleared and the state reset.
   void onSearchCleared() {}
@@ -108,12 +128,13 @@ mixin DebouncedMediaSearch<T extends StatefulWidget, R> on State<T> {
         isSearching = false;
         lastSearchFailed = false;
         lastSearchedQuery = '';
+        resultsQuery = '';
       });
       onSearchCleared();
       return;
     }
 
-    if (query == lastSearchedQuery) {
+    if (query == lastSearchedQuery && query == resultsQuery) {
       // Reverted to what's already shown: the pending debounce and any
       // in-flight pass for the intermediate text must not land afterwards.
       // The spinner goes with them unless a pass for this very text is still
@@ -151,12 +172,14 @@ mixin DebouncedMediaSearch<T extends StatefulWidget, R> on State<T> {
       hasSearched = true;
       lastSearchFailed = false;
     });
+    onSearchStarted(query);
     try {
       final results = await performSearchQuery(query);
       if (!mounted || generation != _searchGeneration) return;
       _inFlightQuery = null;
       setState(() {
         searchResults = results;
+        resultsQuery = query;
         isSearching = false;
         lastSearchedQuery = query;
       });
@@ -172,6 +195,7 @@ mixin DebouncedMediaSearch<T extends StatefulWidget, R> on State<T> {
       _inFlightQuery = null;
       setState(() {
         searchResults = [];
+        resultsQuery = query;
         isSearching = false;
         lastSearchFailed = true;
         lastSearchedQuery = query;
@@ -206,7 +230,7 @@ mixin DebouncedMediaSearch<T extends StatefulWidget, R> on State<T> {
   void handleSearchSubmit() {
     final query = searchController.text.trim();
     if (query.isEmpty) return;
-    if (searchResults.isNotEmpty && !isSearching && query == lastSearchedQuery) {
+    if (searchResults.isNotEmpty && query == resultsQuery) {
       firstResultFocusNode.requestFocus();
       // Focus-gain auto-scroll is keyboard/D-pad-only, so reveal explicitly:
       // a touch OSK submit must still jump to the results.

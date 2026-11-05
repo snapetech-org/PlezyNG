@@ -2302,7 +2302,7 @@ class _MainScreenState extends State<MainScreen>
   bool get _hasGames {
     final id = _activeProfileForListener?.activeId ?? context.read<ActiveProfileProvider?>()?.activeId;
     return id != null &&
-        PlatformDetector.supportsEmbeddedGameStreaming() &&
+        PlatformDetector.supportsGameLibrary() &&
         (SettingsService.instanceOrNull?.read(SettingsService.showGamesTabForProfile(id)) ?? false);
   }
 

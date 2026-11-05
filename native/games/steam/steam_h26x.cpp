@@ -5,7 +5,7 @@
 
 namespace plezy::steam {
 namespace {
-constexpr size_t maxUnit = 2 * 1024 * 1024, maxParameter = 65536;
+constexpr size_t maxUnit = 8 * 1024 * 1024, maxParameter = 65536;
 size_t prefix(const uint8_t* b, size_t n, size_t i) {
   if (n - i >= 3 && b[i] == 0 && b[i + 1] == 0) {
     if (b[i + 2] == 1) return 3;

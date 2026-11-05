@@ -435,7 +435,7 @@ open class MpvPlayerPlugin(
     try {
       if (call.method == "visualizerCapabilities") {
         val reason = unavailable()
-        result.success(mapOf("available" to reason.isEmpty(), "reason" to reason, "engine" to "milkrust-native-abi1", "audioTap" to reason.isEmpty()))
+        result.success(mapOf("available" to reason.isEmpty(), "reason" to reason, "engine" to "milkrust-native-abi2", "audioTap" to reason.isEmpty()))
         return
       }
       if (call.method == "visualizerCreate") {
@@ -444,7 +444,7 @@ open class MpvPlayerPlugin(
         val registry = checkNotNull(textureRegistry) { "Flutter texture registry is unavailable." }
         val player = checkNotNull(playerCore?.visualizationSessionId()) { "Music session ended." }
         disposeVisualizer()
-        val created = MilkRustVisualizer(registry, player)
+        val created = MilkRustVisualizer(checkNotNull(applicationContext), registry, player)
         visualizer = created
         result.success(mapOf("sessionId" to visualizerSessionId, "textureId" to created.textureId))
         return
@@ -456,13 +456,24 @@ open class MpvPlayerPlugin(
       }
       when (call.method) {
         "visualizerDispose" -> disposeVisualizer()
-        "visualizerLoad" -> current.load(checkNotNull(call.argument<String>("path")), checkNotNull(call.argument<String>("root")))
+        "visualizerLoad" -> current.load(
+          checkNotNull(call.argument<String>("path")),
+          checkNotNull(call.argument<String>("root")),
+          call.argument<Number>("transitionSeconds")?.toDouble() ?: 3.0,
+        )
         "visualizerResize" -> {
           val width = checkNotNull(call.argument<Number>("width")).toLong()
           val height = checkNotNull(call.argument<Number>("height")).toLong()
           require(width in 1..16384 && height in 1..16384) { "Invalid visualization dimensions." }
           current.resize(width.toInt(), height.toInt())
         }
+        "visualizerSetMouse" -> current.setMouseState(
+          checkNotNull(call.argument<Boolean>("down")),
+          checkNotNull(call.argument<Number>("x")).toDouble(),
+          checkNotNull(call.argument<Number>("y")).toDouble(),
+          checkNotNull(call.argument<Number>("dx")).toDouble(),
+          checkNotNull(call.argument<Number>("dy")).toDouble(),
+        )
         "visualizerSetPaused" -> current.pause(checkNotNull(call.argument<Boolean>("paused")))
         "visualizerStatus" -> {
           result.success(current.status())

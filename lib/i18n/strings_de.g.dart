@@ -40,6 +40,7 @@ class TranslationsDe extends Translations with BaseTranslations<AppLocale, Trans
 	TranslationsDe $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsDe(meta: meta ?? this.$meta);
 
 	// Translations
+	@override late final _Translations$subtitleCapture$de subtitleCapture = _Translations$subtitleCapture$de.internal(_root);
 	@override late final _Translations$app$de app = _Translations$app$de._(_root);
 	@override late final _Translations$appIcon$de appIcon = _Translations$appIcon$de._(_root);
 	@override late final _Translations$auth$de auth = _Translations$auth$de._(_root);
@@ -5111,6 +5112,33 @@ class _Translations$services$trackerDescriptions$de extends Translations$service
 extension on TranslationsDe {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
+			'subtitleCapture.loadingModel' => "Das lokale Sprachmodell wird geladen …",
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => "Das lokale Sprachmodell wird geladen (${percent} %) …",
+			'subtitleCapture.downloadingModel' => "Das Sprachmodell wird heruntergeladen …",
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => "Das Sprachmodell wird heruntergeladen (${percent} %) …",
+			'subtitleCapture.capturing' => "Dekodiertes Audio wird lokal erfasst. Untertitel erscheinen in Kürze.",
+			'subtitleCapture.startFailed' => "Live-Untertitel konnten nicht gestartet werden. Prüfe die Audioausgabe und versuche es erneut.",
+			'subtitleCapture.inferenceFailed' => "Die Spracherkennung ist fehlgeschlagen. Beende die Erfassung und versuche es erneut.",
+			'subtitleCapture.noSpeech' => "Es wurden keine Untertitel erkannt. Prüfe die Tonspur und versuche es erneut.",
+			'subtitleCapture.captured' => ({required Object count}) => "Erkannte Untertitelabschnitte im angesehenen Teil: ${count}.",
+			'subtitleCapture.playbackEnded' => "Die Wiedergabe wurde beendet. Das erfasste Transkript wurde verworfen.",
+			'subtitleCapture.playbackChanged' => "Die Wiedergabe wurde geändert. Das erfasste Transkript wurde verworfen.",
+			'subtitleCapture.audioTrackChanged' => "Die Tonspur wurde geändert. Starte die Erfassung für die aktuelle Tonspur erneut.",
+			'subtitleCapture.listening' => ({required Object count}) => "Lokale Erkennung auf der CPU. Erfasste Audiopakete: ${count}.",
+			'subtitleCapture.captureUnavailable' => "Diese Audioausgabe liefert keine dekodierten Audiodaten. Wähle eine unterstützte Audioausgabe.",
+			'subtitleCapture.waitingForAudio' => "Warten auf dekodiertes Audio. Die Wiedergabe ist möglicherweise pausiert.",
+			'subtitleCapture.captureStopped' => "Die Live-Erfassung wurde beendet. Prüfe die Wiedergabe und versuche es erneut.",
+			'subtitleCapture.preparing' => "Live-Untertitel werden vorbereitet …",
+			'subtitleCapture.downloadingDetector' => "Sprachdetektor wird heruntergeladen …",
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => "Sprachdetektor wird heruntergeladen (${percent} %) …",
+			'subtitleCapture.transcribing' => "Audio wird lokal transkribiert …",
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => "Audio wird lokal transkribiert (${percent} %) …",
+			'subtitleCapture.translating' => "Sprache wird lokal ins Englische übersetzt …",
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => "Sprache wird lokal ins Englische übersetzt (${percent} %) …",
+			'subtitleCapture.processingAudio' => "Audio wird lokal verarbeitet …",
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => "Audio wird lokal verarbeitet (${percent} %) …",
+			'subtitleCapture.cpuFallback' => "Sprachverarbeitung auf der GPU ist fehlgeschlagen. Neuer Versuch auf der CPU …",
+
 			'app.title' => 'PlezyNG',
 			'appIcon.title' => 'App-Symbol',
 			'appIcon.defaultIcon' => 'Standard',
@@ -8864,4 +8892,34 @@ extension on TranslationsDe {
 			_ => null,
 		};
 	}
+}
+
+class _Translations$subtitleCapture$de extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$de.internal(TranslationsDe root) : super.internal(root);
+	@override String get loadingModel => "Das lokale Sprachmodell wird geladen …";
+	@override String loadingModelProgress({required Object percent}) => "Das lokale Sprachmodell wird geladen (${percent} %) …";
+	@override String get downloadingModel => "Das Sprachmodell wird heruntergeladen …";
+	@override String downloadingModelProgress({required Object percent}) => "Das Sprachmodell wird heruntergeladen (${percent} %) …";
+	@override String get capturing => "Dekodiertes Audio wird lokal erfasst. Untertitel erscheinen in Kürze.";
+	@override String get startFailed => "Live-Untertitel konnten nicht gestartet werden. Prüfe die Audioausgabe und versuche es erneut.";
+	@override String get inferenceFailed => "Die Spracherkennung ist fehlgeschlagen. Beende die Erfassung und versuche es erneut.";
+	@override String get noSpeech => "Es wurden keine Untertitel erkannt. Prüfe die Tonspur und versuche es erneut.";
+	@override String captured({required Object count}) => "Erkannte Untertitelabschnitte im angesehenen Teil: ${count}.";
+	@override String get playbackEnded => "Die Wiedergabe wurde beendet. Das erfasste Transkript wurde verworfen.";
+	@override String get playbackChanged => "Die Wiedergabe wurde geändert. Das erfasste Transkript wurde verworfen.";
+	@override String get audioTrackChanged => "Die Tonspur wurde geändert. Starte die Erfassung für die aktuelle Tonspur erneut.";
+	@override String listening({required Object count}) => "Lokale Erkennung auf der CPU. Erfasste Audiopakete: ${count}.";
+	@override String get captureUnavailable => "Diese Audioausgabe liefert keine dekodierten Audiodaten. Wähle eine unterstützte Audioausgabe.";
+	@override String get waitingForAudio => "Warten auf dekodiertes Audio. Die Wiedergabe ist möglicherweise pausiert.";
+	@override String get captureStopped => "Die Live-Erfassung wurde beendet. Prüfe die Wiedergabe und versuche es erneut.";
+	@override String get preparing => "Live-Untertitel werden vorbereitet …";
+	@override String get downloadingDetector => "Sprachdetektor wird heruntergeladen …";
+	@override String downloadingDetectorProgress({required Object percent}) => "Sprachdetektor wird heruntergeladen (${percent} %) …";
+	@override String get transcribing => "Audio wird lokal transkribiert …";
+	@override String transcribingProgress({required Object percent}) => "Audio wird lokal transkribiert (${percent} %) …";
+	@override String get translating => "Sprache wird lokal ins Englische übersetzt …";
+	@override String translatingProgress({required Object percent}) => "Sprache wird lokal ins Englische übersetzt (${percent} %) …";
+	@override String get processingAudio => "Audio wird lokal verarbeitet …";
+	@override String processingAudioProgress({required Object percent}) => "Audio wird lokal verarbeitet (${percent} %) …";
+	@override String get cpuFallback => "Sprachverarbeitung auf der GPU ist fehlgeschlagen. Neuer Versuch auf der CPU …";
 }

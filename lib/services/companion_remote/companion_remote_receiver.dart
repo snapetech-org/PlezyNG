@@ -146,6 +146,7 @@ class CompanionRemoteReceiver {
       case RemoteCommandType.syncState:
       case RemoteCommandType.gameInventory:
       case RemoteCommandType.gameAction:
+      case RemoteCommandType.gameCloudSetting:
       case RemoteCommandType.gameSession:
         break;
 
@@ -178,7 +179,8 @@ bool _isViewerInput(RemoteCommandType type) => switch (type) {
   RemoteCommandType.syncState ||
   RemoteCommandType.gameInventory ||
   RemoteCommandType.gameAction ||
-  RemoteCommandType.gameSession => false,
+  RemoteCommandType.gameSession ||
+  RemoteCommandType.gameCloudSetting => false,
   RemoteCommandType.dpadUp ||
   RemoteCommandType.dpadDown ||
   RemoteCommandType.dpadLeft ||

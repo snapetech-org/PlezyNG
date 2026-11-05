@@ -8,12 +8,14 @@
 
 // Keep Winsock2 before all dependent Windows SDK and Flutter headers.
 #include <bcrypt.h>
+#include <dxgi1_6.h>
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
 #include <flutter/texture_registrar.h>
 #include <wincred.h>
 #include <windows.h>
+#include <wrl/client.h>
 
 #include <algorithm>
 #include <cmath>
@@ -25,7 +27,9 @@
 
 #include "SteamWindowsSink.h"
 #include "steam_input.h"
+#include "steam_microphone_capture.h"
 #include "steam_plugin.h"
+#include "steam_vulkan_sink.h"
 
 using namespace plezy::steam;
 namespace {
@@ -80,7 +84,10 @@ double real(const Value* args, const char* key) {
   return *n;
 }
 Host hostFrom(const Value* args) {
-  return {text(args, "address"), uint16_t(number(args, "port", 27036, 1, 65535)), identifier(text(args, "hostId"))};
+  Host host{text(args, "address"), uint16_t(number(args, "port", 27036, 1, 65535)), identifier(text(args, "hostId"))};
+  for (int i = 0; i < 6; ++i) host.relayPorts[i] = number(args, ("relayPort" + std::to_string(i)).c_str(), 0, 1, 65535);
+  if (!host.validRelay()) throw std::invalid_argument("Invalid relay route");
+  return host;
 }
 void error(const Reply& reply, const char* code = "UNAVAILABLE") { reply->Error(code, "Steam connection unavailable"); }
 std::wstring credentialName(uint64_t id) { return L"PlezyNG/Steam/" + std::to_wstring(id); }
@@ -219,6 +226,29 @@ struct MainQueue {
   }
 };
 struct Manager;
+// Query the actual output mode, not just the panel's advertised capabilities.
+// No Windows HDR setting is changed by the receiver.
+bool hdrOutput(HWND window) {
+  using Microsoft::WRL::ComPtr;
+  ComPtr<IDXGIFactory1> factory;
+  if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory)))) return false;
+  const auto monitor = MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST);
+  for (UINT a = 0;; ++a) {
+    ComPtr<IDXGIAdapter1> adapter;
+    if (factory->EnumAdapters1(a, &adapter) != S_OK) break;
+    for (UINT o = 0;; ++o) {
+      ComPtr<IDXGIOutput> output;
+      if (adapter->EnumOutputs(o, &output) != S_OK) break;
+      DXGI_OUTPUT_DESC desc{};
+      if (FAILED(output->GetDesc(&desc)) || desc.Monitor != monitor) continue;
+      ComPtr<IDXGIOutput6> output6;
+      DXGI_OUTPUT_DESC1 current{};
+      return SUCCEEDED(output.As(&output6)) && SUCCEEDED(output6->GetDesc1(&current)) && current.BitsPerColor >= 10 &&
+             current.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+    }
+  }
+  return false;
+}
 struct Session : std::enable_shared_from_this<Session> {
   std::weak_ptr<Manager> owner;
   std::shared_ptr<MainQueue> main;
@@ -227,13 +257,17 @@ struct Session : std::enable_shared_from_this<Session> {
   Host host;
   uint64_t game;
   StreamOptions options;
-  bool hevc, audible = false;
+  bool hevc, pyrowave, audible = false;
+  HWND plane = nullptr;
+  bool nativeActive = false;
+  std::atomic<uint64_t> planeSize{0};
+  std::atomic<bool> planeVisible{false};
   InputState input;
   std::unique_ptr<Channel> channel;
   std::unique_ptr<flutter::TextureVariant> texture;
   int64_t textureId = -1;
   FlutterDesktopPixelBuffer buffer{};
-  std::vector<uint8_t> output = std::vector<uint8_t>(1920 * 1080 * 4);
+  std::vector<uint8_t> output = std::vector<uint8_t>(4);
   struct Pixels {
     DecodedPixels data;
     std::weak_ptr<Runtime> source;
@@ -244,12 +278,13 @@ struct Session : std::enable_shared_from_this<Session> {
   std::mutex mutex;
   std::shared_ptr<Runtime> runtime;
   std::shared_ptr<WindowsSink> sink;
+  std::shared_ptr<VulkanSink> gpuSink;
   std::atomic<bool> closing{false}, active{false};
   std::atomic<uint64_t> renderedEpoch{0}, renderedSize{0};
   std::vector<Reply> stopReplies;
   std::string state = "connecting";
   Session(
-      uint64_t n, Host h, uint64_t g, StreamOptions o, bool codec, flutter::PluginRegistrarWindows* plugin,
+      uint64_t n, Host h, uint64_t g, StreamOptions o, bool codec, bool pyro, flutter::PluginRegistrarWindows* plugin,
       std::shared_ptr<MainQueue> queue)
       : main(std::move(queue)),
         registrar(plugin->texture_registrar()),
@@ -258,18 +293,30 @@ struct Session : std::enable_shared_from_this<Session> {
         game(g),
         options(o),
         hevc(codec),
+        pyrowave(pyro),
         input(o.controllerCount) {
     channel = std::make_unique<Channel>(
         plugin->messenger(), "com.plezy/games/steam_stream/" + std::to_string(id),
         &flutter::StandardMethodCodec::GetInstance());
+    output.resize(size_t(o.width) * o.height * 4);
     buffer.buffer = output.data();
     buffer.width = buffer.height = 1;
+    if (pyrowave) {
+      // Match the existing mpv child-plane placement. Flutter's DComp visual
+      // remains above this input-transparent window, including all controls.
+      plane = CreateWindowExW(
+          WS_EX_NOPARENTNOTIFY, L"STATIC", L"", WS_CHILD | WS_DISABLED | WS_CLIPSIBLINGS, 0, 0, 1, 1,
+          plugin->GetView()->GetNativeWindow(), nullptr, GetModuleHandleW(nullptr), nullptr);
+      pyrowave = plane != nullptr;
+    }
+    options.hdr10 = options.hdr10 && plane && hdrOutput(plane);
   }
   ~Session() {
     if (joiner.joinable()) joiner.join();
     if (worker.joinable()) worker.join();
     if (pendingPixels)
       if (auto r = pendingPixels->source.lock()) r->frameComplete(pendingPixels->data.id, false);
+    if (plane) DestroyWindow(plane);
   }
   void setState(const char* value) {
     if (closing || state == value) return;
@@ -279,6 +326,33 @@ struct Session : std::enable_shared_from_this<Session> {
   void notifyState(const char* value) {
     main->post([weak = weak_from_this(), value] {
       if (auto self = weak.lock()) self->setState(value);
+    });
+  }
+  void setNative(bool selected) {
+    nativeActive = selected && plane && !closing;
+    planeVisible = nativeActive && planeSize != 0;
+    if (plane) ShowWindow(plane, planeVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
+    channel->InvokeMethod("nativePresentation", std::make_unique<Value>(nativeActive));
+  }
+  void completeGpu(std::weak_ptr<Runtime> source, uint32_t frame, int w, int h, bool shown, bool prepared) {
+    auto r = source.lock();
+    if (!r) return;
+    const bool displayed = shown && prepared && active && !closing && planeVisible;
+    r->frameComplete(frame, displayed);
+    if (!displayed) return;
+    const uint64_t size = (uint64_t(w) << 32) | uint32_t(h);
+    const bool first = renderedEpoch.exchange(r->metrics().epoch) != r->metrics().epoch;
+    if (renderedSize.exchange(size) == size && !first) return;
+    main->post([weak = weak_from_this(), source, size] {
+      if (auto self = weak.lock()) {
+        std::lock_guard<std::mutex> lock(self->mutex);
+        if (!self->active || self->closing || self->runtime != source.lock()) return;
+        self->channel->InvokeMethod(
+            "videoSize",
+            std::make_unique<Value>(Map{
+                {Value("width"), Value(int32_t(size >> 32))}, {Value("height"), Value(int32_t(size & UINT32_MAX))}}));
+        self->setState("playing");
+      }
     });
   }
   const FlutterDesktopPixelBuffer* copyPixels() {
@@ -316,8 +390,8 @@ struct Session : std::enable_shared_from_this<Session> {
     return &buffer;
   }
   bool pixels(DecodedPixels&& pixels, std::weak_ptr<Runtime> source) {
-    if (closing || !pixels.width || !pixels.height || pixels.width > 1920 || pixels.height > 1080 ||
-        pixels.rgba.size() != size_t(pixels.width) * pixels.height * 4)
+    if (closing || !pixels.width || !pixels.height || pixels.width > unsigned(options.width) ||
+        pixels.height > unsigned(options.height) || pixels.rgba.size() != size_t(pixels.width) * pixels.height * 4)
       return false;
     auto next = std::make_unique<Pixels>(Pixels{std::move(pixels), source});
     std::unique_ptr<Pixels> old;
@@ -388,10 +462,11 @@ void Session::start() {
       loadTrust(host.id, credentials);
       auto target = resolve(host, closing);
       int channels = options.audioChannels;
-      bool allowHevc = hevc;
-      for (int attempt = 0; attempt < 3 && !closing; ++attempt) {
+      bool allowHevc = hevc, allowPyrowave = pyrowave;
+      for (int attempt = 0; attempt < 4 && !closing; ++attempt) {
         active = false;
         auto current = std::make_shared<Runtime>();
+        current->motionControllers(options.motionController);
         std::atomic<bool> audioFailed{false}, videoFailed{false};
         auto decoder = std::make_shared<WindowsSink>(
             [weak, source = std::weak_ptr<Runtime>(current)](DecodedPixels&& pixels) {
@@ -405,10 +480,57 @@ void Session::start() {
               (audio ? audioFailed : videoFailed) = true;
               if (auto r = source.lock()) r->cancel();
             });
+        std::shared_ptr<VulkanSink> gpu;
+        if (allowPyrowave && plane) {
+          gpu = std::make_shared<VulkanSink>(
+              decoder, GpuWindow{GpuWindow::Kind::win32, nullptr, plane}, options.hdr10,
+              [this, checked = std::chrono::steady_clock::time_point{}, hdr = false,
+               monitor = HMONITOR{}](const PyrowaveFrameInfo& info) mutable {
+                VulkanSink::Target target;
+                const auto size = planeSize.load();
+                target.width = int(size >> 32);
+                target.height = int(size & UINT32_MAX);
+                target.permitted = planeVisible && !closing;
+                if (info.hdr10) {
+                  const auto now = std::chrono::steady_clock::now();
+                  const auto output = MonitorFromWindow(plane, MONITOR_DEFAULTTONEAREST);
+                  if (monitor != output || now - checked > std::chrono::milliseconds(250)) {
+                    hdr = hdrOutput(plane);
+                    checked = now;
+                    monitor = output;
+                  }
+                  target.valid = hdr;
+                }
+                return target;
+              },
+              [weak, source = std::weak_ptr<Runtime>(current)](
+                  uint32_t frame, int w, int h, bool shown, bool prepared) {
+                if (auto self = weak.lock()) self->completeGpu(source, frame, w, h, shown, prepared);
+              },
+              [weak, source = std::weak_ptr<Runtime>(current)](bool selected) {
+                if (auto self = weak.lock())
+                  self->main->post([weak, source, selected] {
+                    if (auto s = weak.lock()) {
+                      std::lock_guard<std::mutex> lock(s->mutex);
+                      if (s->runtime == source.lock()) s->setNative(selected);
+                    }
+                  });
+              },
+              [source = std::weak_ptr<Runtime>(current), &videoFailed] {
+                videoFailed = true;
+                if (auto r = source.lock()) r->cancel();
+              });
+          if (!gpu->ready()) {
+            gpu->close();
+            gpu.reset();
+            allowPyrowave = false;
+          }
+        }
         {
           std::lock_guard<std::mutex> lock(mutex);
           runtime = current;
           sink = decoder;
+          gpuSink = gpu;
           active = true;
           input.reset(*current);
           decoder->volume(audible);
@@ -416,17 +538,26 @@ void Session::start() {
         }
         auto request = options;
         request.audioChannels = channels;
-        const int result = current->run(target, credentials, game, allowHevc, false, decoder, request);
+        request.hdr10 = gpu && gpu->supportsHdr10();
+        std::shared_ptr<Sink> receiver = gpu ? std::static_pointer_cast<Sink>(gpu) : decoder;
+        const int result = current->run(target, credentials, game, allowHevc, allowPyrowave, receiver, request);
         active = false;
+        if (gpu) gpu->close();
+        main->post([weak] {
+          if (auto self = weak.lock()) self->setNative(false);
+        });
         decoder->close();
         {
           std::lock_guard<std::mutex> lock(mutex);
           sink.reset();
+          gpuSink.reset();
         }
         if (closing) break;
         const bool dropSurround = audioFailed && channels > 2;
         const bool dropHevc = (videoFailed || result == -4) && allowHevc && current->metrics().codec == 5;
-        if (dropSurround || dropHevc) {
+        const bool dropPyrowave = (videoFailed || result == -4) && allowPyrowave && current->metrics().codec == 9;
+        if (dropSurround || dropHevc || dropPyrowave) {
+          if (dropPyrowave) allowPyrowave = false;
           if (dropSurround) channels = 2;
           if (dropHevc) allowHevc = false;
           notifyState("reconnecting");
@@ -443,6 +574,7 @@ void Session::start() {
 void Session::stop() {
   closing = true;
   active = false;
+  setNative(false);
   std::lock_guard<std::mutex> lock(mutex);
   if (runtime) {
     input.enabled(*runtime, false);
@@ -461,6 +593,10 @@ void Session::close(Reply reply) {
 }
 void Session::finalize() {
   if (textureId < 0) return;
+  if (plane) {
+    DestroyWindow(plane);
+    plane = nullptr;
+  }
   const auto textureToRemove = textureId;
   textureId = -1;
   channel->SetMethodCallHandler(nullptr);
@@ -484,12 +620,77 @@ void Session::method(const Call& call, Reply reply) {
     reply->Success(Value(state));
     return;
   }
+  if (method == "getNativePresentation") {
+    reply->Success(Value(nativeActive));
+    return;
+  }
+  if (method == "setNativeRect" && plane && !closing) {
+    const int x = number(args, "x", 0, -32768, 32768), y = number(args, "y", 0, -32768, 32768);
+    const int w = number(args, "width", 0, 0, 16384), h = number(args, "height", 0, 0, 16384);
+    number(args, "scale", 1, 1, 8);
+    planeSize = w && h ? (uint64_t(w) << 32) | uint32_t(h) : 0;
+    SetWindowPos(plane, HWND_TOP, x, y, w, h, SWP_NOACTIVATE);
+    planeVisible = nativeActive && w && h;
+    ShowWindow(plane, planeVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
+    reply->Success();
+    return;
+  }
   if (closing) {
     error(reply);
     return;
   }
   std::lock_guard<std::mutex> lock(mutex);
   const bool live = runtime && active && runtime->metrics().epoch == renderedEpoch;
+  if (method == "requestMicrophonePermission") {
+    reply->Success(Value(true));  // Windows microphone privacy is enforced by WASAPI at device activation.
+    return;
+  }
+  if (method == "getMicrophoneState") {
+    reply->Success(Value(runtime ? runtime->microphoneState() : 0));
+    return;
+  }
+  if (method == "setMicrophoneEnabled") {
+    const bool enable = boolean(args, "enabled");
+    if (!enable && runtime) runtime->muteMicrophone();
+    reply->Success(Value(!enable || (live && input.isEnabled() && startMicrophoneCapture(runtime))));
+    return;
+  }
+  if (method == "readControllerFeedback") {
+    flutter::EncodableList rows;
+    if (live)
+      for (const auto& row : input.feedback(*runtime)) {
+        flutter::EncodableList values;
+        for (auto value : row) values.emplace_back(value);
+        rows.emplace_back(values);
+      }
+    reply->Success(Value(rows));
+    return;
+  }
+  if (method == "setControllerMotion") {
+    std::array<double, 6> values{};
+    const char* keys[] = {"gx", "gy", "gz", "ax", "ay", "az"};
+    for (size_t i = 0; i < 6; ++i) values[i] = real(args, keys[i]);
+    const auto* device = field(args, "deviceId");
+    reply->Success(Value(live && device && input.motion(*runtime, integer(*device), values)));
+    return;
+  }
+  if (method == "inputText") {
+    const auto* value = field(args, "text");
+    const auto* bytes = value ? std::get_if<std::vector<uint8_t>>(value) : nullptr;
+    if (!bytes || bytes->empty() || bytes->size() > 512) throw std::invalid_argument("Invalid text");
+    reply->Success(Value(live && input.text(*runtime, std::string(bytes->begin(), bytes->end()))));
+    return;
+  }
+  if (method == "setControllerMapping") {
+    const auto* encoded = field(args, "mapping");
+    const auto* values = encoded ? std::get_if<flutter::EncodableList>(encoded) : nullptr;
+    if (!values || values->size() != 19) throw std::invalid_argument("Invalid controller mapping");
+    std::vector<int64_t> mapping;
+    for (const auto& value : *values) mapping.push_back(integer(value));
+    if (runtime) input.reset(*runtime);
+    reply->Success(Value(runtime && runtime->controllerMapping(number(args, "seat", 0, 0, 3), mapping)));
+    return;
+  }
   if (method == "setAudioEnabled") {
     audible = boolean(args, "enabled");
     if (sink) sink->volume(audible);
@@ -578,7 +779,9 @@ void Session::method(const Call& call, Reply reply) {
     put("maxAckLatencyMs", m.reliability.reliableMaxAckLatencyMs);
     put("hidPending", m.reliability.hidPending);
     put("hidInFlight", m.reliability.hidInFlight);
-    put("decoderKind", 2);
+    put("decoderKind", m.codec == 9 && gpuSink ? 4 : 2);
+    put("hdr10", gpuSink && gpuSink->hdr10Active() ? 1 : 0);
+    put("chromaFormat", gpuSink && m.codec == 9 ? gpuSink->chromaFormat() : 0);
     reply->Success(Value(metrics));
     return;
   } else {
@@ -609,7 +812,7 @@ void Manager::method(const Call& call, Reply reply, bool stream) {
     static const bool decoderAvailable = WindowsSink::supported();
     const bool available = text(args, "protocol") == "steam" && decoderAvailable;
     Map result;
-    for (const char* key : {"available", "inlinePairing", "library", "embeddedSurface"})
+    for (const char* key : {"available", "inlinePairing", "library", "embeddedSurface", "internetTunnel"})
       result[Value(key)] = Value(available);
     reply->Success(Value(result));
     return;
@@ -626,15 +829,18 @@ void Manager::method(const Call& call, Reply reply, bool stream) {
     auto host = hostFrom(args);
     auto game = identifier(text(args, "appId"), true);
     StreamOptions options;
-    options.width = number(args, "streamWidth", 1920, 640, 1920);
-    options.height = number(args, "streamHeight", 1080, 360, 1080);
-    options.fps = number(args, "streamFps", 60, 15, 60);
-    options.bitrateKbps = number(args, "streamBitrateKbps", 30000, 1000, 50000);
+    options.width = number(args, "streamWidth", 1920, 640, 3840);
+    options.height = number(args, "streamHeight", 1080, 360, 2160);
+    options.fps = number(args, "streamFps", 60, 15, 120);
+    options.bitrateKbps = number(args, "streamBitrateKbps", 30000, 1000, 100000);
     options.controllerCount = number(args, "controllerCount", 1, 1, 4);
+    options.motionController = boolean(args, "motionController");
     options.audioChannels = number(args, "audioChannels", 2, 2, 6);
+    options.hdr10 = boolean(args, "allowHdr");
     if (!options.valid()) throw std::invalid_argument("Invalid options");
     auto session = std::make_shared<Session>(
-        next++, host, game, options, boolean(args, "allowHevc", true) && WindowsSink::supported(true), registrar, main);
+        next++, host, game, options, boolean(args, "allowHevc", true) && WindowsSink::supported(true),
+        boolean(args, "pyrowave"), registrar, main);
     session->owner = shared_from_this();
     const auto weak = std::weak_ptr<Session>(session);
     session->texture = std::make_unique<flutter::TextureVariant>(flutter::PixelBufferTexture([weak](size_t, size_t) {
@@ -660,8 +866,10 @@ void Manager::method(const Call& call, Reply reply, bool stream) {
           }
         });
     session->start();
-    reply->Success(
-        Value(Map{{Value("id"), Value(int64_t(session->id))}, {Value("textureId"), Value(session->textureId)}}));
+    reply->Success(Value(
+        Map{{Value("id"), Value(int64_t(session->id))},
+            {Value("textureId"), Value(session->textureId)},
+            {Value("nativePlane"), Value(session->plane != nullptr)}}));
     return;
   }
   if (stream || text(args, "protocol") != "steam" || (name != "pair" && name != "games" && name != "forget")) {

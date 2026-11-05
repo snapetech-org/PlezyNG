@@ -4,7 +4,9 @@ enum SteamStreamQuality {
   balanced(1920, 1080, 60, 30000),
   reducedBandwidth(1280, 720, 60, 12000),
   sharperPicture(1920, 1080, 60, 50000),
-  reducedFrameRate(1920, 1080, 30, 15000);
+  reducedFrameRate(1920, 1080, 30, 15000),
+  ultraHd(3840, 2160, 60, 80000),
+  highRefresh(1920, 1080, 120, 50000);
 
   const SteamStreamQuality(this.width, this.height, this.fps, this.bitrateKbps);
   final int width, height, fps, bitrateKbps;

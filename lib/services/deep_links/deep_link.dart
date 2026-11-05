@@ -1,3 +1,4 @@
+import '../../games/romm/romm_link.dart';
 import '../../media/ids.dart';
 import '../../media/media_kind.dart';
 import '../../models/livetv_channel.dart';
@@ -23,7 +24,7 @@ import '../system_shelf_service.dart';
 /// plezy://watch?... and plezy://control?...                 (legacy automation links)
 /// ```
 ///
-/// Every link except the external-player return link may add
+/// Media/open links (excluding game handoffs and external-player returns) may add
 /// `profile=<profile>`, matched by [resolveLinkProfile]. The app switches to
 /// that profile before acting on the link; a protected profile still asks
 /// for its PIN.
@@ -51,6 +52,7 @@ sealed class DeepLink {
     }
     final profile = _param(params, 'profile');
     return switch (uri.host.toLowerCase()) {
+      'game' => GameLink.parse(uri),
       OpenLink.host => OpenLink(profile: profile),
       OpenMediaLink.host => OpenMediaLink._parse(params, profile),
       PlayLink.host => PlayLink._parse(params, profile),
@@ -395,4 +397,14 @@ DeepLink? _legacyProfileLink(Uri uri, Map<String, String> params) {
 String? _param(Map<String, String> params, String name) {
   final value = params[name]?.trim();
   return value == null || value.isEmpty ? null : value;
+}
+
+/// RomM handoffs always open a native copy-selection page, never auto-play.
+final class GameLink extends DeepLink {
+  const GameLink(this.target);
+  final RommLink target;
+  static GameLink? parse(Uri uri) {
+    final target = RommLink.parse(uri); return target == null ? null : GameLink(target);
+  }
+  @override Uri toUri() => target.uri;
 }

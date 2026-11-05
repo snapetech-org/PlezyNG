@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import argparse
 import re
 import sys
 from pathlib import Path
@@ -203,14 +204,46 @@ def check_manifest(data: dict) -> None:
         require("/releases/latest/download" not in readme.lower(), "README links a latest asset while no public latest release exists")
         require(release.get("publicationStatus") == "draft", "a missing public latest release must be labeled draft")
         require("draft" in readme.lower() and "no public" in readme.lower(), "README must explain that no public latest download exists")
+    elif public_latest is True:
+        require(release.get("publicationStatus") == "published", "a public latest release must be labeled published")
+        evidence = ROOT / str(release.get("evidence", ""))
+        try:
+            snapshot = json.loads(evidence.read_text(encoding="utf-8"))
+            check_published_release(release, snapshot)
+        except (OSError, ValueError, TypeError) as error:
+            ERRORS.append(f"published release evidence is unreadable: {error}")
+        require(f"/releases/tag/{release.get('tag')}" in readme, "README must link the recorded published tag")
     for phrase in ("off by default", "Trakt", "full source path", "source credentials", "encrypted progress"):
         require(phrase.lower() in privacy.lower(), f"privacy notice is missing '{phrase}'")
 
 
+def check_published_release(release: dict, metadata: dict) -> None:
+    """Compare the ledger with independent GitHub metadata, not README prose."""
+    require(metadata.get("draft") is False, "release evidence is still a draft")
+    require(metadata.get("prerelease") is False, "latest stable release evidence is a prerelease")
+    require(metadata.get("tag_name") == release.get("tag") == f"v{release.get('version')}", "published release tag/version is stale")
+    require(metadata.get("published_at") == release.get("publishedAt"), "published release date differs from evidence")
+    require(metadata.get("target_commitish") == release.get("sourceCommit"), "published release source commit differs from evidence")
+    names = metadata.get("assetNames")
+    if names is None:
+        names = [asset.get("name") for asset in metadata.get("assets", []) if isinstance(asset, dict)]
+    require(isinstance(names, list) and bool(names), "published release evidence has no assets")
+    missing_webos = not any(isinstance(name, str) and name.endswith(".ipk") for name in names or [])
+    require(("webos" in release.get("missingPublicPlatforms", [])) == missing_webos, "webOS publication status differs from actual release assets")
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--release-metadata", type=Path, help="Independently fetched GitHub latest-release JSON")
+    args = parser.parse_args()
     data = _load_manifest()
     if data is not None:
         check_manifest(data)
+        if args.release_metadata is not None:
+            try:
+                check_published_release(data["release"], json.loads(args.release_metadata.read_text(encoding="utf-8")))
+            except (OSError, ValueError, TypeError) as error:
+                ERRORS.append(f"cannot read independent release metadata: {error}")
     if ERRORS:
         for error in ERRORS:
             print(f"ERROR: {error}", file=sys.stderr)

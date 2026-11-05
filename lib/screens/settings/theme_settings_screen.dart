@@ -21,6 +21,7 @@ import '../../widgets/settings_page.dart';
 import '../../widgets/settings_section.dart';
 import '../../widgets/supporter_sheet.dart';
 import 'custom_theme_editor_screen.dart';
+import 'theme_package_screen.dart';
 import 'settings_utils.dart';
 
 const _builtIns = [
@@ -104,6 +105,16 @@ class ThemeSettingsScreen extends StatelessWidget {
             title: t.themeEditor.custom,
             children: [
               option(settings.ThemeMode.custom),
+              FocusableListTile(
+                key: const ValueKey('theme_package'),
+                leading: const AppIcon(Symbols.code_rounded),
+                title: Text(t.settings.importSettings),
+                subtitle: Text(theme.customPackage?.name ?? t.themeEditor.custom),
+                onTap: () async {
+                  if (!await _ensureUnlocked(context, settings.ThemeMode.custom) || !context.mounted) return;
+                  await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => const ThemePackageScreen()));
+                },
+              ),
               FocusableListTile(
                 key: const ValueKey('theme_edit_custom'),
                 leading: const AppIcon(Symbols.edit_rounded, fill: 1),

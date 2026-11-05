@@ -12,6 +12,7 @@ package/store publication workflow from main, sequentially and idempotently.
 from __future__ import annotations
 
 import argparse
+from release_coverage import missing_assets
 import datetime as dt
 import hashlib
 import json
@@ -72,6 +73,8 @@ RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     "scripts/recover_release_platforms.py",
     "scripts/checks/test_recover_release_platforms.py",
     "scripts/release_all_platforms.py",
+    "scripts/release_coverage.py",
+    "scripts/checks/test_release_platform_coverage.py",
     "scripts/refresh_apple_spm.sh",
     "tools/reader-tests/README.md",
     "tools/webos/compatibility.json",
@@ -915,11 +918,11 @@ def ensure_release(
 ) -> dict:
     if reuse_android_run_id and not reuse_platform_run_id:
         raise ReleaseError("Android reuse requires a verified platform source run.")
-    if include_webos_release and not include_webos_build:
-        raise ReleaseError("Public WebOS attachment requires a successful candidate build.")
+    if not include_webos_release or not include_webos_build:
+        raise ReleaseError("Every versioned release requires its successful webOS build and public artifact.")
     run_title = f"action:release:pool:private:tag:{tag}"
     if reuse_platform_run_id:
-        if execution_profile != "hybrid" or include_webos_release or include_apple_store_build:
+        if execution_profile != "hybrid" or include_apple_store_build:
             raise ReleaseError("Platform recovery requires the hybrid GitHub-only release profile.")
         options = {}
         if reuse_android_run_id:
@@ -1086,6 +1089,10 @@ def validate_release_outputs(
             required.add("<eligible webOS .ipk>")
     if execution_profile == "hybrid":
         required.add("plezy-windows-arm64-portable.zip")
+
+    missing_platforms = missing_assets(assets)
+    if missing_platforms:
+        raise ReleaseError("Required public platform assets are missing: " + "; ".join(missing_platforms))
 
     secrets = configured_repo_names("secret")
     android_signing = {

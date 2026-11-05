@@ -45,7 +45,7 @@ final class SteamControls extends View {
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final List<Control> controls = new ArrayList<>();
   private final SparseArray<Finger> fingers = new SparseArray<>();
-  private boolean enabled;
+  private boolean enabled, swapSides;
   private boolean inputEnabled;
   private int mousePointer = -1;
   private float mouseX = .5f, mouseY = .5f;
@@ -67,6 +67,10 @@ final class SteamControls extends View {
   }
   private static int withAlpha(int color, int alpha) {
     return (color & 0x00FFFFFF) | (alpha << 24);
+  }
+  void configureAppearance(int opacity, boolean swap) {
+    setAlpha(Math.max(.5f, Math.min(1f, opacity / 100f)));
+    swapSides = swap;
   }
   void reset() {
     if (mousePointer != -1)
@@ -132,6 +136,12 @@ final class SteamControls extends View {
     controls.add(new Control(w * .48f, h * .74f, r * .7f, "L3", 7, -1));
     controls.add(new Control(w * .55f, h * .74f, r * .7f, "R3", 8, -1));
     controls.add(new Control(w * .5f, h * .18f, r * .8f, "☰", 5, -1));
+    if (swapSides) {
+      for (Control control : controls) {
+        if (control.axis >= 0 || (control.bit >= 0 && control.bit <= 3) || control.bit >= 9)
+          control.x += control.x < w / 2f ? w * .52f : -w * .52f;
+      }
+    }
     fitHitTargets(w, h);
   }
   @Override

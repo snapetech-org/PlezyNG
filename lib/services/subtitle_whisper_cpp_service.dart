@@ -1,3 +1,5 @@
+import 'subtitle_capture_status.dart';
+import 'subtitle_speech_progress.dart';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:io';
@@ -72,7 +74,7 @@ final class SubtitleWhisperCppService {
   /// Loads the same verified multilingual model used by WAV transcription for
   /// repeated, in-memory player PCM windows. The caller owns and disposes it.
   Future<whisper.FlutterWhisper> loadLiveCpuSession({
-    void Function(String phase, int received, int total)? onProgress,
+    void Function(SubtitleModelLoadPhase phase, int received, int total)? onProgress,
   }) async {
     if (!supportedPlatform) {
       throw UnsupportedError('Local Whisper inference is unavailable on this platform.');
@@ -84,9 +86,9 @@ final class SubtitleWhisperCppService {
       modelDirectory: modelDirectory,
       config: const whisper.WhisperModelConfig(useGpu: false),
       onDownloadProgress: (progress) {
-        onProgress?.call('Downloading multilingual ${model.id}', progress.receivedBytes, progress.totalBytes);
+        onProgress?.call(SubtitleModelLoadPhase.downloading, progress.receivedBytes, progress.totalBytes);
       },
-      onModelProgress: (progress) => onProgress?.call('Loading Whisper model', progress, 100),
+      onModelProgress: (progress) => onProgress?.call(SubtitleModelLoadPhase.loading, progress, 100),
     );
   }
 
@@ -95,7 +97,7 @@ final class SubtitleWhisperCppService {
     required bool requestGpu,
     bool translateToEnglish = false,
     String? languageCode,
-    void Function(String phase, int received, int total)? onProgress,
+    SubtitleSpeechProgressCallback? onProgress,
   }) async {
     if (!supportedPlatform) throw UnsupportedError('Local Whisper inference is unavailable on this platform.');
     final normalizedLanguageCode = languageCode?.trim().toLowerCase().split(RegExp(r'[-_]')).first ?? '';
@@ -152,7 +154,7 @@ final class SubtitleWhisperCppService {
       );
     } catch (error) {
       if (selectedDevice == null) rethrow;
-      onProgress?.call('GPU inference failed; restarting with CPU', 0, 0);
+      onProgress?.call(SubtitleSpeechPhase.cpuFallback, 0, 0);
       return _run(
         wavPath,
         durationMs,
@@ -178,19 +180,19 @@ final class SubtitleWhisperCppService {
     required String runtimeProvider,
     required bool fellBackToCpu,
     required String languageCode,
-    void Function(String phase, int received, int total)? onProgress,
+    SubtitleSpeechProgressCallback? onProgress,
   }) async {
     final session = await whisper.FlutterWhisper.loadModel(
       model: model,
       modelDirectory: modelDirectory,
       config: config,
       onDownloadProgress: (progress) {
-        onProgress?.call('Downloading multilingual ${model.id}', progress.receivedBytes, progress.totalBytes);
+        onProgress?.call(SubtitleSpeechPhase.downloadingModel, progress.receivedBytes, progress.totalBytes);
       },
-      onModelProgress: (progress) => onProgress?.call('Loading Whisper model', progress, 100),
+      onModelProgress: (progress) => onProgress?.call(SubtitleSpeechPhase.loadingModel, progress, 100),
     );
     try {
-      onProgress?.call(translated ? 'Translating audio to English' : 'Transcribing multilingual audio', 0, 0);
+      onProgress?.call(translated ? SubtitleSpeechPhase.translating : SubtitleSpeechPhase.transcribing, 0, 0);
       final result = await session.transcribeFile(
         wavPath,
         config: whisper.WhisperTranscribeConfig(
@@ -201,7 +203,7 @@ final class SubtitleWhisperCppService {
           tokenTimestamps: true,
           splitOnWord: true,
         ),
-        onProgress: (progress) => onProgress?.call('Whisper inference', progress, 100),
+        onProgress: (progress) => onProgress?.call(translated ? SubtitleSpeechPhase.translating : SubtitleSpeechPhase.inference, progress, 100),
       );
       final wordTimings = SubtitleWordTimingBuilder.fromWhisperSegments(result.segments, durationMs: durationMs);
       final cues = <SubtitleCue>[];

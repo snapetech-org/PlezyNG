@@ -19,6 +19,7 @@ import 'iptv_live_tv_session.dart';
 import 'dispatcharr_dvr_client.dart';
 import 'stalker_portal_client.dart';
 import 'iptv_models.dart';
+import 'iptv_hls_archive.dart';
 import 'iptv_playlist_parser.dart';
 
 class IptvImportException implements Exception {
@@ -1148,6 +1149,12 @@ class IptvSourceRepository {
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     await _database.runIdentityMutation(
       () => _database.transaction(() async {
+        // Earlier database bootstrap code changed these rows to failed before
+        // the scheduler could discover/finalize their journaled capture.
+        await _database.customStatement(
+          "UPDATE iptv_recordings SET state='interrupted', error_code='app_interrupted' "
+          "WHERE state='failed' AND error_code='interrupted'",
+        );
         await _database.customStatement(
           '''
         UPDATE iptv_recordings SET state='interrupted', completed_at=?, error_code='app_interrupted'
@@ -1164,7 +1171,52 @@ class IptvSourceRepository {
         );
       }),
     );
+    // Interrupted rows remain playable when their journaled file survived.
+    // Older versions journaled the final name instead of the active partial;
+    // recover that exact app-owned legacy partial without sweeping/deleting it.
+    final interrupted = await _database.customSelect(
+      "SELECT id, profile_id, file_path FROM iptv_recordings WHERE state='interrupted'",
+    ).get();
+    for (final row in interrupted) {
+      final id = row.read<String>('id');
+      final profile = row.read<String>('profile_id');
+      try {
+        var file = File(row.read<String>('file_path'));
+        if (!await file.exists() && RegExp(r'^[a-f0-9-]{36}$', caseSensitive: false).hasMatch(id)) {
+          final legacy = File(p.join(file.parent.path, '.$id.partial.ts'));
+          if (await legacy.exists()) file = legacy;
+        }
+        if (await file.exists()) {
+          final archive = await IptvHlsArchive.mediaDirectory(file);
+          if (archive != null) {
+            await IptvHlsArchive.finalizeInterrupted(file);
+            if (p.extension(file.path).toLowerCase() != '.m3u8') {
+              final recovered = '${file.path}.incomplete.m3u8';
+              await updateLocalRecordingFilePath(profileId: profile, recordingId: id, filePath: recovered);
+              file = await file.rename(recovered);
+            }
+          }
+          final size = await IptvHlsArchive.retainedBytes(file);
+          await _database.runIdentityMutation(() => _database.customStatement(
+            "UPDATE iptv_recordings SET file_path=?, size_bytes=?, "
+            "error_code=CASE WHEN error_code IN ('recovery_io_failed','recovery_data_invalid') "
+            "THEN 'app_interrupted' ELSE error_code END WHERE profile_id=? AND id=? AND state='interrupted'",
+            [file.path, size, profile, id],
+          ));
+        }
+      } on FileSystemException {
+        await _markRecordingRecoveryFailure(profile, id, 'recovery_io_failed');
+      } on FormatException {
+        await _markRecordingRecoveryFailure(profile, id, 'recovery_data_invalid');
+      }
+    }
   }
+
+  Future<void> _markRecordingRecoveryFailure(String profileId, String recordingId, String code) =>
+      _database.runIdentityMutation(() => _database.customStatement(
+        "UPDATE iptv_recordings SET error_code=? WHERE profile_id=? AND id=? AND state='interrupted'",
+        [code, profileId, recordingId],
+      ));
 
   Future<void> cancelLocalRecordingSchedule(String profileId, String scheduleId) async {
     await _database.runIdentityMutation(
@@ -1196,7 +1248,7 @@ class IptvSourceRepository {
           DateTime.now().millisecondsSinceEpoch ~/ 1000,
           durationSeconds,
           sizeBytes,
-          completed ? 'complete' : 'failed',
+          completed ? 'complete' : (sizeBytes ?? 0) > 0 ? 'interrupted' : 'failed',
           errorCode,
           profileId,
           recordingId,

@@ -223,6 +223,8 @@ class _CustomThemeEditorScreenState extends State<CustomThemeEditorScreen>
     final palette = _draft;
     const mutation = SettingsMutationService();
     try {
+      final packageFailure = await mutation.write(context, settings.SettingsService.customThemePackage, null);
+      if (packageFailure != null) throw StateError(packageFailure.display);
       final paletteFailure = await mutation.write(context, settings.SettingsService.customThemePalette, palette);
       if (!mounted) return;
       final modeFailure = await mutation.write(context, settings.SettingsService.themeMode, settings.ThemeMode.custom);

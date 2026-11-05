@@ -180,6 +180,10 @@ jobs:
             echo "Unsupported subtitle_gpu_backend: $SUBTITLE_GPU_BACKEND" >&2
             exit 1
           fi
+          if [[ "$ACTION" == "release" && ( "$INCLUDE_WEBOS_BUILD" != "true" || "$INCLUDE_WEBOS_RELEASE" != "true" || "$INCLUDE_TIZEN_BUILD" != "true" || "$EXECUTION_PROFILE" != "hybrid" ) ]]; then
+            echo "Versioned releases require webOS, Tizen and Windows ARM64. Use the complete hybrid platform matrix." >&2
+            exit 1
+          fi
           if [[ "$ACTION" == "release" && "$SUBTITLE_GPU_BACKEND" != "cpu" ]]; then
             echo "Release publishing uses the CPU Whisper baseline; GPU backends are available only to build runs." >&2
             exit 1
@@ -428,7 +432,7 @@ jobs:
           TIZEN_BUILD: ${{ steps.request.outputs.include_tizen_build }}
         run: |
           set -euo pipefail
-          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || "$HOMEBREW" != false || "$WEBOS_RELEASE" != false || "$TIZEN_BUILD" != true ]]; then
+          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || "$HOMEBREW" != false || "$WEBOS_RELEASE" != true || "$WEBOS_BUILD" != true || "$TIZEN_BUILD" != true ]]; then
             echo "Artifact recovery requires the complete hybrid CPU GitHub-only release profile." >&2
             exit 1
           fi
@@ -1985,6 +1989,10 @@ jobs:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         run: dart run scripts/configure_updater.dart
 
+      - name: Build bundled MilkRust for Windows
+        shell: pwsh
+        run: python scripts/visualizer/build_runtime.py --platform windows --architectures "${{ matrix.arch }}" --output build/visualizer-native
+
       - name: Build Windows ${{ matrix.arch }}
         id: windows-build
         shell: pwsh
@@ -2444,6 +2452,10 @@ jobs:
           path: ~/.cache/plezyng/dv-tools
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-dv-tools-${{ runner.arch }}-${{ hashFiles('tools/dv-engine/offline-runtime.lock.json') }}
 
+      - name: Build bundled MilkRust for Linux
+        shell: bash
+        run: python3 scripts/visualizer/build_runtime.py --platform linux --architectures "${{ matrix.arch }}" --output build/visualizer-native
+
       - name: Build Linux ${{ matrix.arch }}
         shell: bash
         run: |
@@ -2889,6 +2901,9 @@ jobs:
 
       - name: Verify Tizen handoff before publication
         run: test -s artifacts/tizen/PlezyNG-tizen-arm-tester-handoff.zip
+
+      - name: Require every release platform before publication
+        run: python3 scripts/release_coverage.py --directory artifacts
 
       - name: Display structure of downloaded files
         run: ls -R artifacts

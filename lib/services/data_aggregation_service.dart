@@ -934,6 +934,7 @@ class DataAggregationService {
     int? limit,
     Set<String>? hiddenLibraryKeys,
     AbortController? abort,
+    void Function(SearchAggregationResult result)? onProgress,
   }) async {
     if (query.trim().isEmpty) return _emptySearchResult;
 
@@ -943,6 +944,27 @@ class DataAggregationService {
 
     final resultLimit = limit ?? defaultMediaSearchLimit;
     final fetchLimit = resultLimit < defaultMediaSearchLimit ? defaultMediaSearchLimit : resultLimit;
+
+    final settled = <String, ({List<MediaItem> titles, List<MediaPerson> people})>{};
+    void progress(String serverId, List<MediaItem> titles, List<MediaPerson> people) {
+      if (onProgress == null || abort?.isAborted == true) return;
+      settled[serverId] = (titles: titles, people: people);
+      final visible = _withoutHiddenLibraries([
+        for (final id in clients.keys) ...?settled[id]?.titles,
+      ], hiddenLibraryKeys);
+      final persons = [for (final id in clients.keys) ...?settled[id]?.people];
+      onProgress((
+        hits: rankSearchHits([
+          for (final item in visible) MediaSearchHit(item),
+          for (final person in persons) PersonSearchHit(person),
+        ], query, limit: resultLimit),
+        candidates: visible,
+        people: persons,
+        succeededServerIds: Set<String>.unmodifiable(settled.keys),
+        cancelledServerIds: const <String>{},
+        failedServerIds: const <String>{},
+      ));
+    }
 
     final fetched = await _fanOut<SearchHit>(
       clients,
@@ -968,7 +990,9 @@ class DataAggregationService {
           run: (legAbort) =>
               client.searchItems(query, limit: fetchLimit, abort: legAbort, excludedLibraryIds: excludedLibraryIds),
         );
+        progress(serverId, items, const []);
         final people = await peopleFuture;
+        progress(serverId, items, people);
         appLogger.i(
           'Search completed on $serverId in ${stopwatch.elapsedMilliseconds}ms: '
           '${items.length} results ${_searchKindCounts(items)}, ${people.length} people',

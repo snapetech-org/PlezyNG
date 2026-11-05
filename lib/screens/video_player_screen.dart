@@ -21,6 +21,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import '../mpv/mpv.dart';
 import '../mpv/player/platform/player_android.dart';
 import '../services/subtitle_playback_transcription_service.dart';
+import '../mpv/player/subtitle_pcm_capture_source.dart';
 import '../services/subtitle_rejection_service.dart';
 import '../models/subtitles/subtitle_search_result.dart';
 import '../mpv/player/player_native.dart';
@@ -111,6 +112,7 @@ import '../services/video_filter_manager.dart';
 import '../services/video_volume_controller.dart';
 import '../services/pip_service.dart';
 import '../multiview/workspace_controller.dart';
+import '../multiview/native_video_window.dart';
 import '../multiview/workspace_models.dart';
 import '../services/shader_service.dart';
 import '../providers/shader_provider.dart';
@@ -1196,6 +1198,15 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (source.mediaGlobalKey != metadata.globalKey || !_externalSourceProfileIsCurrent(source)) {
       throw StateError('The selected remote stream is no longer available in this profile.');
     }
+    final serverId = metadata.serverId;
+    final manager = context.read<MultiServerProvider>().serverManager;
+    final reportingId = serverId == null ? null : ServerId(serverId);
+    final reportingClient = reportingId != null &&
+            manager.isServerVisible(reportingId) &&
+            !manager.refusedServerIds.contains(reportingId) &&
+            manager.isClientOnline(reportingId)
+        ? manager.getClient(reportingId)
+        : null;
     return PlaybackContext(
       metadata: metadata,
       result: PlaybackInitializationResult(
@@ -1207,7 +1218,12 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         playMethod: 'DirectPlay',
       ),
       sourceKind: source.isLocal ? PlaybackSourceKind.localFile : PlaybackSourceKind.remoteDirect,
-      reportingMode: PlaybackReportingMode.localOnly,
+      // Stream bytes belong to the external provider; a matched library item
+      // still belongs to its server's ordinary playback/session contract.
+      reportingMode: reportingClient == null
+          ? PlaybackReportingMode.localOnly
+          : PlaybackReportingMode.onlineWithOfflineFallback,
+      reportingClient: reportingClient,
     );
   }
 

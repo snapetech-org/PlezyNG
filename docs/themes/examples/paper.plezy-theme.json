@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "paper",
+  "name": "Paper",
+  "palette": {
+    "bg": "#FFF3F0E9",
+    "surface": "#FFFBF9F4",
+    "outline": "#661F1C17",
+    "text": "#FF1F1C17",
+    "textMuted": "#FF645F54",
+    "accent": "#FF1F6B6B"
+  },
+  "geometry": {
+    "radiusSm": 0,
+    "radiusMd": 2,
+    "radiusLg": 4,
+    "radiusXs": 0,
+    "space": 20,
+    "groupGap": 1
+  },
+  "typography": {
+    "scale": 1
+  },
+  "layout": {
+    "navigation": "bottom"
+  }
+}

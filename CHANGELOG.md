@@ -9,6 +9,8 @@
 - Package a self-contained Linux FEL-derived HDR10/SDR converter with its Python runtime, decoder, compositor and encoders; verify actual exports without network access or system tools. Keep Apple experimental video below Flutter controls and make incremental runtime packaging repeatable.
 - Bundle experimental Dolby Vision/FEL playback in normal compatible builds and use a persisted, default-off Settings switch. Add an in-app Apple runtime for macOS 15 and iOS/tvOS 18 while retaining the normal app deployment floors; device output remains unqualified.
 - Keep Android FEL reconstruction controlled by the runtime experimental setting when a FEL-capable engine is bundled.
+
+- Patch the karaoke separation runtime, constrain local model checkpoint loading, and verify CPU stem generation with the current audio backend.
 - Fix the black screen after sign-in when a profile binds before the file-source database finishes opening, and retain bounded webOS widget-error diagnostics.
 - Resolve webOS dependencies once with the enforced lockfile, keep its package version at 3.0.0, and reject stale package metadata before starting a build.
 - Announce published stable releases to Discord automatically, including GitHub-only releases, and retain per-message delivery receipts for safe retries.
@@ -373,6 +375,16 @@
 - Fix the MPV edition selector so it refreshes when a new file loads, without passing an asynchronous value through Flutter's state update callback.
 - Keep temporary HLS sharing within its startup window for long-GOP sources by forcing keyframes at the segment cadence; verify that playlist and media segments remain token-scoped and the listener closes cleanly.
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
+
+## [3.0.1] - 2026-11-05
+
+- Include Android, Linux x64/ARM64, Windows x64/ARM64, universal macOS, iOS, tvOS, Tizen and webOS in the complete release; verify package provenance and checksums before publication.
+- Fix the black screen after Plex sign-in when a profile attaches before its file-source database opens.
+- Bundle implemented experimental Dolby Vision/FEL paths in normal compatible packages with a persisted, default-off Playback settings switch. Include the Apple runtime and Linux offline HDR10/SDR exporter; physical output qualification remains device-specific.
+- Integrate retained desktop multiview surfaces, MilkRust visualizer runtimes, karaoke preparation and capture, Steam/RomM workflows, podcast synchronization, native themes, and recording recovery improvements.
+- Ship ABI-matched Android FFmpeg headers and a Linux shared client SDK that resolves without the native producer's private build dependencies.
+- Automate Apple job sequencing and cleanup, reuse checksum-verified native components, and build the complete application matrix once after exact-source CI.
+- Announce stable releases to Discord automatically with resumable per-message delivery receipts.
 
 ## [3.0.0] - 2026-10-27
 

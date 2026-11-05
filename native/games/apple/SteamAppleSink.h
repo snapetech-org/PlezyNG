@@ -14,7 +14,7 @@ class AppleSink final : public Sink {
   using Present = std::function<bool(CVPixelBufferRef, uint32_t)>;
   using Complete = std::function<void(uint32_t, bool)>;
   using Failed = std::function<void(bool audio)>;
-  AppleSink(Present, Complete, Failed);
+  AppleSink(Present, Complete, Failed, bool allowHdr = false);
   ~AppleSink() override;
   static bool supportsHevc();
   static bool supportsPyrowave();

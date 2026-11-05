@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-05",
+  "namespace": "subtitleCapture",
+  "keys": [
+    "loadingModel",
+    "loadingModelProgress",
+    "downloadingModel",
+    "downloadingModelProgress",
+    "capturing",
+    "startFailed",
+    "inferenceFailed",
+    "noSpeech",
+    "captured",
+    "playbackEnded",
+    "playbackChanged",
+    "audioTrackChanged",
+    "listening",
+    "captureUnavailable",
+    "waitingForAudio",
+    "captureStopped",
+    "preparing",
+    "downloadingDetector",
+    "downloadingDetectorProgress",
+    "transcribing",
+    "transcribingProgress",
+    "translating",
+    "translatingProgress",
+    "processingAudio",
+    "processingAudioProgress",
+    "cpuFallback"
+  ],
+  "locales": {
+    "en": "authored source",
+    "ar": "machine-authored; source/placeholder review only",
+    "de": "machine-authored; source/placeholder review only"
+  },
+  "nativeSpeakerReview": false,
+  "deviceLargeTextRtlQualification": false,
+  "otherLocales": "Explicit English fallback; not claimed translated",
+  "scope": "Live captions and file speech model/transcription progress"
+}

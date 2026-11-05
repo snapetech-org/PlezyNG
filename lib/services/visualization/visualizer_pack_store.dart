@@ -13,10 +13,14 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'visualizer_content_limits.dart';
+import 'visualizer_pack_download.dart';
+import 'visualizer_pack_dependencies.dart';
+import 'visualizer_fragments.dart';
 import 'visualizer_catalog_entry.dart';
 import 'visualizer_signed_catalog.dart';
 
 export 'visualizer_catalog_entry.dart';
+export 'visualizer_pack_download.dart' show VisualizerPackDownload;
 
 class VisualizerInstalledPack {
   const VisualizerInstalledPack({required this.entry, required this.path});
@@ -40,10 +44,16 @@ class VisualizerPresetFile {
     this.tags = const [],
     this.license = '',
     this.notice = '',
+    this.thumbnailPath,
+    this.requiresMilkRust = false,
   });
   final String id, title, path, root, libraryPath, packName, author, license, notice;
   final List<String> tags;
-  bool get supportsProjectM => p.extension(path).toLowerCase() == '.milk';
+  final String? thumbnailPath;
+  final bool requiresMilkRust;
+  bool get isClassicPreset => p.extension(path).toLowerCase() == '.milk';
+  bool get supportsProjectM => isClassicPreset && !requiresMilkRust;
+  bool get supportsMilkRust => isClassicPreset || p.extension(path).toLowerCase() == '.milk2';
   String get searchText => '$title $packName $author ${tags.join(' ')}'.toLowerCase();
 }
 
@@ -122,6 +132,15 @@ class VisualizerPackStore {
   bool canDownload(VisualizerPackCatalogEntry entry) => _catalog.authorizes(entry);
   Future<void> refreshCatalog() => _catalog.refresh();
 
+  Future<VisualizerPackDownloader> _downloader() async =>
+      VisualizerPackDownloader(Directory(p.join((await _root()).path, 'downloads')), _client);
+
+  Future<List<VisualizerPackDownload>> pendingDownloads() =>
+      _assetOperation(() async => (await _downloader()).pending());
+
+  Future<void> discardDownload(String sha256) =>
+      _assetOperation(() async => (await _downloader()).discard(sha256));
+
   final http.Client _client;
   final String? profileId;
   static Future<Directory>? _rootFuture;
@@ -169,7 +188,7 @@ class VisualizerPackStore {
       }
     }
 
-    for (final lane in ['packs', 'community-packs', 'imports']) {
+    for (final lane in ['packs', 'community-packs', 'imports', 'resolved']) {
       await countDirectory(Directory(p.join(root.path, lane)), 0, lane != 'imports');
     }
   }
@@ -182,7 +201,8 @@ class VisualizerPackStore {
     final root = Directory(p.join(support.path, 'visualizer'));
     await root.create(recursive: true);
     // Runs once at process startup, before any mutation can create a stage.
-    // A killed download restarts cleanly; a killed replacement restores its
+    // Legacy partial files are removed; resumable downloads have a separate journal.
+    // A killed replacement restores its
     // previous complete version before the installed library is enumerated.
     for (final lane in ['packs', 'community-packs']) {
       final packs = Directory(p.join(root.path, lane));
@@ -202,6 +222,12 @@ class VisualizerPackStore {
             }
           }
         }
+      }
+    }
+    final resolved = Directory(p.join(root.path, 'resolved'));
+    if (await resolved.exists()) {
+      await for (final item in resolved.list(followLinks: false)) {
+        if (item is Directory && p.basename(item.path).startsWith('.stage-')) await item.delete(recursive: true);
       }
     }
     final imports = Directory(p.join(root.path, 'imports'));
@@ -329,12 +355,53 @@ class VisualizerPackStore {
     return _savePreference('playlists', data);
   }
 
-  Future<List<VisualizerPresetFile>> presetsForPack(String path) async {
+  Future<List<VisualizerPresetFile>> presetsForPack(String path) => _assetOperation(() => _presetsForPack(path));
+
+  Future<VisualizerPackDependencies> _dependencies() async =>
+      VisualizerPackDependencies(Directory(await (await _root()).resolveSymbolicLinks()), safeArchivePath);
+
+  Future<void> _ensureDependencies(Directory owner, {bool download = false,
+      VisualizerPackInstallCancellation? cancellation}) async {
+    final manifest = await _readPackManifest(owner), resolver = await _dependencies();
+    for (final dependency in VisualizerTextureDependency.parse(manifest['dependencies'])) {
+      try {
+        await resolver.locate(dependency);
+      } on FormatException {
+        if (!download) rethrow;
+        final candidates = catalogEntries.where((entry) => entry.identity == dependency.identity &&
+            entry.kind == 'textures' && canDownload(entry));
+        if (candidates.length != 1) rethrow;
+        await _install(candidates.single, cancellation: cancellation);
+        await resolver.locate(dependency);
+      }
+    }
+  }
+
+  Future<void> _protectDependencyReplacement(Directory stage) async {
+    final manifest = await _readPackManifest(stage);
+    final integrity = await _readBounded(File(p.join(stage.path, 'integrity.json')), maxFileBytes);
+    final conflicts = await (await _dependencies()).dependents(manifest['id'] as String,
+        version: manifest['version'] as String, replacingIntegrity: sha256.convert(integrity).toString());
+    if (conflicts.isNotEmpty) {
+      throw VisualizerPackException('This version would replace textures pinned by ${conflicts.join(', ')}. Use a new version.');
+    }
+  }
+
+  Future<void> _checkRemoval(String id, {String? version}) async {
+    final references = await (await _dependencies()).dependents(id, version: version);
+    if (references.isNotEmpty) {
+      throw VisualizerPackException('Remove the packs using these textures first: ${references.join(', ')}.');
+    }
+  }
+
+  Future<List<VisualizerPresetFile>> _presetsForPack(String path) async {
     final library = await (await _root()).resolveSymbolicLinks();
     final root = await Directory(path).resolveSymbolicLinks();
     if (!p.isWithin(library, root)) throw const VisualizerPackException('Pack is outside the local library.');
     final manifest = await _readPackManifest(Directory(root));
-    var textureRoot = root;
+    final resolved = await (await _dependencies()).resolve(Directory(root), manifest,
+        (bytes, replacing) => _reserveLibraryBytes(bytes, replacing: replacing));
+    var textureRoot = resolved.path;
     if (manifest['distributionStatus'] == 'local-only' && manifest['presetRoot'] == 'source') {
       textureRoot = await Directory(p.join(root, 'source')).resolveSymbolicLinks();
       if (!p.isWithin(root, textureRoot)) {
@@ -349,8 +416,25 @@ class VisualizerPackStore {
     for (final item in manifest['presets'] as List) {
       if (item is! Map || item['file'] is! String) continue;
       final relative = safeArchivePath(item['file'] as String);
-      final file = await _resolvePreset(root, relative);
+      final file = await _resolvePreset(resolved.path, relative);
       final asset = assets[relative];
+      VisualizerContentLimits.checkEngineRequirement(item);
+      final requiresMilkRust = item['requiredEngine'] == 'milkrust' ||
+          await _presetRequiresMilkRust(file);
+      String? thumbnail;
+      if (item['thumbnail'] is String) {
+        try {
+          final candidate = File(p.join(root, safeArchivePath(item['thumbnail'] as String)));
+          final canonical = await candidate.resolveSymbolicLinks();
+          final extension = p.extension(canonical).toLowerCase();
+          if (p.isWithin(root, canonical) && ['.png', '.jpg', '.jpeg', '.webp'].contains(extension)) {
+            final bytes = await _readBounded(candidate, 512 * 1024);
+            if (VisualizerContentLimits.imagePixels(extension, bytes) <= 1024 * 1024) thumbnail = canonical;
+          }
+        } on Object {
+          // Thumbnails are optional; a missing preview never hides the preset.
+        }
+      }
       presets.add(
         VisualizerPresetFile(
           id: 'pack:${manifest['id']}@${manifest['version']}/$relative',
@@ -359,12 +443,14 @@ class VisualizerPackStore {
               : p.basenameWithoutExtension(relative),
           path: file,
           root: textureRoot,
-          libraryPath: p.split(p.relative(file, from: library)).join('/'),
+          libraryPath: p.split(p.relative(p.join(root, relative), from: library)).join('/'),
           packName: '${manifest['name']} · ${manifest['version']}',
           author: asset?['author'] is String ? asset!['author'] as String : manifest['author'] as String? ?? '',
           tags: item['tags'] is List ? (item['tags'] as List).whereType<String>().take(32).toList() : const [],
           license: asset?['license'] is String ? asset!['license'] as String : manifest['license'] as String,
           notice: manifest['contentNotice'] as String,
+          thumbnailPath: thumbnail,
+          requiresMilkRust: requiresMilkRust,
         ),
       );
     }
@@ -377,12 +463,125 @@ class VisualizerPackStore {
     final root = await Directory(p.join(library, 'imports')).resolveSymbolicLinks();
     final file = await _resolvePreset(root, name);
     return VisualizerPresetFile(
+      requiresMilkRust: await _presetRequiresMilkRust(file),
       id: 'preset:$name',
       title: p.basenameWithoutExtension(name).replaceFirst(RegExp(r'^[a-f0-9]{12,64}-'), ''),
       path: file,
       root: root,
       libraryPath: p.split(p.relative(file, from: library)).join('/'),
     );
+  }
+
+  Future<({Map<String, Uint8List> files, String selected})> _presetSnapshot(VisualizerPresetFile preset) async {
+    final library = await (await _root()).resolveSymbolicLinks();
+    final root = await Directory(preset.root).resolveSymbolicLinks();
+    final selected = await File(preset.path).resolveSymbolicLinks();
+    if (!p.isWithin(library, root) || !p.isWithin(root, selected)) {
+      throw const VisualizerPackException('The preset is outside the private library.');
+    }
+    final relative = safeArchivePath(p.split(p.relative(selected, from: root)).join('/'));
+    final files = <String, Uint8List>{};
+    var total = 0, visited = 0;
+    Future<void> snapshot(Directory directory, int depth) async {
+      if (depth > 32) throw const VisualizerPackException('Preset assets exceed the directory depth limit.');
+      await for (final item in directory.list(followLinks: false)) {
+        if (++visited > maxFileCount) throw const VisualizerPackException('Preset export exceeds 2,500 entries.');
+        if (p.basename(item.path).startsWith('.')) continue;
+        if (item is Link) throw const VisualizerPackException('Preset exports cannot contain links.');
+        if (item is Directory) { await snapshot(item, depth + 1); continue; }
+        if (item is! File) throw const VisualizerPackException('Preset assets must be regular files.');
+        final path = safeArchivePath(p.split(p.relative(item.path, from: root)).join('/'));
+        final extension = p.extension(path).toLowerCase();
+        if ((extension == '.milk' || extension == '.milk2') && path != relative) continue;
+        final bytes = await _readBounded(item, maxFileBytes);
+        total += bytes.length;
+        if (total > maxLocalPackExpandedBytes) throw const VisualizerPackException('Preset export exceeds 64 MiB.');
+        files[path] = bytes;
+      }
+    }
+    await snapshot(Directory(root), 0);
+    if (!files.containsKey(relative)) throw const VisualizerPackException('The selected preset is missing.');
+    final notice = utf8.encode(jsonEncode({
+      'schemaVersion': 1, 'kind': 'plezy-preset-local-copy', 'title': preset.title,
+      'author': preset.author, 'license': preset.license, 'contentNotice': preset.notice,
+      'sourcePresetSha256': sha256.convert(files[relative]!).toString(),
+      'files': files.entries.map((item) => {'path': item.key, 'sha256': sha256.convert(item.value).toString()}).toList(),
+    }));
+    if (total + notice.length > maxLocalPackExpandedBytes || files.length >= maxFileCount) {
+      throw const VisualizerPackException('Preset provenance exceeds the export budget.');
+    }
+    var noticeName = 'PLEZY-EXPORT-PROVENANCE.json', suffix = 0;
+    final names = files.keys.map((name) => name.toLowerCase()).toSet();
+    while (names.contains(noticeName.toLowerCase())) { noticeName = 'PLEZY-EXPORT-PROVENANCE-${++suffix}.json'; }
+    files[noticeName] = Uint8List.fromList(notice);
+    return (files: files, selected: relative);
+  }
+
+  static Future<Uint8List> _zipPresetFiles(Map<String, Uint8List> files) => Isolate.run(() {
+    if (files.length > maxFileCount ||
+        files.values.fold<int>(0, (sum, bytes) => sum + bytes.length) > maxLocalPackExpandedBytes) {
+      throw const VisualizerPackException('The exported folder exceeds its file or byte budget.');
+    }
+    final archive = Archive();
+    for (final path in files.keys.toList()..sort()) {
+      final data = files[path]!;
+      archive.addFile(ArchiveFile(path, data.length, data));
+    }
+    final result = Uint8List.fromList(ZipEncoder().encode(archive));
+    if (result.length > maxLocalPackArchiveBytes) throw const VisualizerPackException('The exported archive exceeds 32 MiB.');
+    return result;
+  });
+
+  /// Ordinary ZIP folder export with original notices; never a signed catalog
+  /// artifact or a new assertion about redistribution rights.
+  Future<Uint8List> exportPreset(VisualizerPresetFile preset) => _assetOperation(() async {
+    final snapshot = await _presetSnapshot(preset);
+    return _zipPresetFiles(snapshot.files);
+  });
+
+  Future<Uint8List> exportFragments(VisualizerPresetFile preset, String kind) => _assetOperation(() async {
+    final snapshot = await _presetSnapshot(preset);
+    final fragments = VisualizerFragments.extract(snapshot.files[snapshot.selected]!, kind);
+    if (fragments.isEmpty) throw VisualizerPackException('This preset has no custom ${kind}s.');
+    snapshot.files.remove(snapshot.selected);
+    for (final fragment in fragments.entries) {
+      final data = Uint8List.fromList(utf8.encode(fragment.value));
+      snapshot.files['fragments/${sha256.convert(data)}-${fragment.key}.$kind'] = data;
+    }
+    return _zipPresetFiles(snapshot.files);
+  });
+
+  Future<VisualizerPresetFile> composeFragment(VisualizerPresetFile preset, String name, List<int> fragment) async {
+    final kind = p.extension(name).toLowerCase().replaceFirst('.', '');
+    if (!['shape', 'wave'].contains(kind) || p.extension(preset.path).toLowerCase() != '.milk') {
+      throw const VisualizerPackException('Choose a .shape or .wave and a single classic .milk preset.');
+    }
+    VisualizerContentLimits.checkPreset(fragment);
+    final temporary = await Directory((await getTemporaryDirectory()).path).createTemp('plezy-visualizer-edit-');
+    try {
+      await _assetOperation(() async {
+        final snapshot = await _presetSnapshot(preset);
+        final composed = VisualizerFragments.compose(snapshot.files[snapshot.selected]!, fragment, kind);
+        snapshot.files.remove(snapshot.selected);
+        final selected = p.posix.join(p.posix.dirname(snapshot.selected),
+            '${p.posix.basenameWithoutExtension(snapshot.selected)} + $kind.milk');
+        snapshot.files[selected] = Uint8List.fromList(utf8.encode(composed));
+        snapshot.files['fragments/${sha256.convert(fragment)}.$kind'] = Uint8List.fromList(fragment);
+        if (snapshot.files.length > maxFileCount ||
+            snapshot.files.values.fold<int>(0, (sum, bytes) => sum + bytes.length) > maxLocalPackExpandedBytes) {
+          throw const VisualizerPackException('The composed folder exceeds its budget.');
+        }
+        for (final item in snapshot.files.entries) {
+          final target = File(p.join(temporary.path, item.key));
+          await target.parent.create(recursive: true);
+          await target.writeAsBytes(item.value, flush: true);
+        }
+      });
+      final imported = await importPresetFolder(temporary.path);
+      return (await presetsForPack(imported.path)).single;
+    } finally {
+      if (await temporary.exists()) await temporary.delete(recursive: true);
+    }
   }
 
   Future<List<VisualizerPresetFile>> allPresets() async {
@@ -413,6 +612,11 @@ class VisualizerPackStore {
     return result;
   }
 
+  static Future<bool> _presetRequiresMilkRust(String path) async =>
+      VisualizerContentLimits.presetRequiresMilkRust(
+        await _readBounded(File(path), VisualizerContentLimits.maxPresetBytes),
+      );
+
   static Future<String> _resolvePreset(String root, String relative) async {
     final safe = safeArchivePath(relative);
     final file = File(p.joinAll([root, ...safe.split('/')]));
@@ -420,10 +624,23 @@ class VisualizerPackStore {
     if (!p.isWithin(root, canonical) ||
         !['.milk', '.milk2'].contains(p.extension(canonical).toLowerCase()) ||
         await file.length() == 0 ||
-        await file.length() > 2 * 1024 * 1024) {
+        await file.length() > VisualizerContentLimits.maxPresetBytes) {
       throw const VisualizerPackException('The preset is missing, outside its pack, or exceeds 2 MB.');
     }
     return canonical;
+  }
+
+  /// Read a file with a hard byte ceiling even if its size changes after a
+  /// preceding stat or integrity check.
+  static Future<Uint8List> _readBounded(File file, int maxBytes) async {
+    final bytes = await file.openRead(0, maxBytes + 1).fold<List<int>>(
+      <int>[],
+      (result, chunk) => result..addAll(chunk),
+    );
+    if (bytes.length > maxBytes) {
+      throw FormatException('File exceeds the $maxBytes-byte read limit.');
+    }
+    return Uint8List.fromList(bytes);
   }
 
   Future<List<VisualizerInstalledPack>> installedPacks() async {
@@ -511,6 +728,25 @@ class VisualizerPackStore {
       return nameOrder != 0 ? nameOrder : a.version.compareTo(b.version);
     });
     return packs;
+  }
+
+  /// Bounded ordinary ZIP import, including round trips of local exports. It
+  /// becomes a local-only folder copy and gains no catalog/redistribution trust.
+  Future<VisualizerImportedPack> importPresetArchiveFile(String sourcePath, int announcedSize) async {
+    if (announcedSize < 0 || announcedSize > maxLocalPackArchiveBytes) {
+      throw const VisualizerPackException('Choose an archive of at most 32 MiB.');
+    }
+    final temporary = await Directory((await getTemporaryDirectory()).path).createTemp('plezy-visualizer-archive-');
+    try {
+      final snapshot = File(p.join(temporary.path, 'archive.bin'));
+      await snapshot.writeAsBytes(await _readBounded(File(sourcePath), maxLocalPackArchiveBytes), flush: true);
+      final contents = Directory(p.join(temporary.path, 'contents'));
+      await contents.create();
+      await Isolate.run(() => _extractArchive(snapshot.path, contents.path, requireManifest: false));
+      return await importPresetFolder(contents.path);
+    } finally {
+      if (await temporary.exists()) await temporary.delete(recursive: true);
+    }
   }
 
   Future<VisualizerImportedPack> importPackFile(String sourcePath, int announcedSize) =>
@@ -702,6 +938,8 @@ class VisualizerPackStore {
         throw const VisualizerPackException('The expanded community pack exceeds its 64 MB limit.');
       }
       final summary = await _validatePack(stage, extracted);
+      await _ensureDependencies(stage);
+      await _protectDependencyReplacement(stage);
       final target = Directory(p.join(packsRoot.path, summary.id, summary.version));
       await _reserveLibraryBytes(expandedBytes, replacing: target.path);
       final backup = Directory('${target.path}.previous');
@@ -746,12 +984,14 @@ class VisualizerPackStore {
     if (!_isSafePackIdentifier(pack.id) || !_isSafePackIdentifier(pack.version)) {
       throw const VisualizerPackException('The local pack identity is invalid.');
     }
+    await _checkRemoval(pack.id, version: pack.version);
     final root = Directory(p.join((await _root()).path, 'community-packs'));
     final target = Directory(p.join(root.path, pack.id, pack.version));
     if (!p.isWithin(root.path, target.path)) {
       throw const VisualizerPackException('The local pack path is invalid.');
     }
     if (await target.exists()) await target.delete(recursive: true);
+    await (await _dependencies()).removeViews(pack.id, version: pack.version);
     final parent = target.parent;
     if (await parent.exists() && await parent.list().isEmpty) await parent.delete();
   }
@@ -809,7 +1049,9 @@ class VisualizerPackStore {
     final root = await _root();
     final packsRoot = Directory(p.join(root.path, 'packs'));
     await packsRoot.create(recursive: true);
-    final download = File(p.join(packsRoot.path, '${entry.fileName}.partial'));
+    var download = File(p.join(packsRoot.path, '${entry.fileName}.partial'));
+    final downloader = await _downloader();
+    var downloaded = false;
     final stage = Directory(p.join(packsRoot.path, '.stage-${entry.id}-${entry.version}'));
     final target = Directory(p.join(packsRoot.path, entry.id, entry.version));
     final backup = Directory('${target.path}.previous');
@@ -825,46 +1067,16 @@ class VisualizerPackStore {
         }
         await download.writeAsBytes(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes), flush: true);
       } else {
-        final uri = Uri.parse(entry.archiveUrl);
-        if (uri.scheme != 'https' || uri.host != 'raw.githubusercontent.com') {
-          throw const VisualizerPackException('The pack catalog contains an untrusted download host.');
-        }
-        final request = http.AbortableRequest(
-          'GET',
-          uri,
+        download = await downloader.download(
+          entry,
           abortTrigger: cancellation == null
               ? requestAbort.abortTrigger
               : Future.any([requestAbort.abortTrigger, cancellation.abortTrigger]),
+          checkCancellation: checkCancellation,
+          onProgress: onProgress,
         );
-        request.followRedirects = false; // The app pins the origin as well as the digest.
-        final response = await _client.send(request).timeout(const Duration(seconds: 30));
-        if (response.statusCode != HttpStatus.ok) {
-          throw VisualizerPackException('Pack download failed with HTTP ${response.statusCode}.');
-        }
-        final announcedLength = response.contentLength;
-        if (announcedLength != null && (announcedLength != entry.archiveBytes || announcedLength > maxArchiveBytes)) {
-          throw const VisualizerPackException('The downloaded pack size does not match its catalog entry.');
-        }
-        final sink = download.openWrite();
-        var received = 0;
-        try {
-          await for (final chunk in response.stream.timeout(const Duration(seconds: 30))) {
-            checkCancellation();
-            received += chunk.length;
-            if (received > maxArchiveBytes || received > entry.archiveBytes) {
-              throw const VisualizerPackException('The pack archive exceeds its size limit.');
-            }
-            sink.add(chunk);
-            if (entry.archiveBytes > 0) onProgress?.call(received / entry.archiveBytes);
-          }
-          await sink.flush();
-        } finally {
-          await sink.close();
-        }
-        if (received != entry.archiveBytes) {
-          throw const VisualizerPackException('The downloaded pack is incomplete.');
-        }
       }
+      downloaded = true;
       final digest = await sha256.bind(download.openRead()).first;
       checkCancellation();
       if (digest.toString() != entry.sha256) {
@@ -878,6 +1090,8 @@ class VisualizerPackStore {
         throw const VisualizerPackException('The expanded pack size does not match its pinned catalog.');
       }
       await _validatePack(stage, extracted, expectedEntry: entry);
+      await _ensureDependencies(stage, download: true, cancellation: cancellation);
+      await _protectDependencyReplacement(stage);
       if (extracted.containsKey(_catalogReceipt)) {
         throw const VisualizerPackException('The archive uses a reserved application receipt path.');
       }
@@ -911,7 +1125,13 @@ class VisualizerPackStore {
       rethrow;
     } finally {
       requestAbort.cancel();
-      if (await download.exists()) await download.delete();
+      if (entry.bundledAsset != null) {
+        if (await download.exists()) await download.delete();
+      } else if (downloaded) {
+        // Completed archives are removed after activation or validation failure.
+        // Interrupted transfers retain their bounded journal for explicit retry.
+        await downloader.discard(entry.sha256);
+      }
     }
   }
 
@@ -919,8 +1139,10 @@ class VisualizerPackStore {
 
   Future<void> _remove(VisualizerPackCatalogEntry entry) async {
     if (!_isSafePackIdentifier(entry.id)) throw const VisualizerPackException('Invalid pack identity.');
+    await _checkRemoval(entry.id);
     final root = Directory(p.join((await _root()).path, 'packs', entry.id));
     if (await root.exists()) await root.delete(recursive: true);
+    await (await _dependencies()).removeViews(entry.id);
   }
 
   Future<List<String>> importedPresets() async {
@@ -940,8 +1162,8 @@ class VisualizerPackStore {
   Future<String> importPreset(String name, List<int> bytes) => _assetOperation(() => _importPreset(name, bytes));
 
   Future<String> _importPreset(String name, List<int> bytes) async {
-    if (bytes.isEmpty || bytes.length > 1024 * 1024) {
-      throw const VisualizerPackException('Preset files must be smaller than 1 MB.');
+    if (bytes.isEmpty || bytes.length > VisualizerContentLimits.maxPresetBytes) {
+      throw const VisualizerPackException('Preset files must be at most 2 MB.');
     }
     final extension = p.extension(name).toLowerCase();
     if (extension != '.milk' && extension != '.milk2') {
@@ -969,12 +1191,15 @@ class VisualizerPackStore {
   }
 
   Future<String> importPresetFile(String name, String sourcePath, int announcedSize) async {
-    if (announcedSize < 0 || announcedSize > 1024 * 1024) {
-      throw const VisualizerPackException('Preset files must be smaller than 1 MB.');
+    if (announcedSize <= 0 || announcedSize > VisualizerContentLimits.maxPresetBytes) {
+      throw const VisualizerPackException('Preset files must be at most 2 MB.');
     }
     final bytes = await File(
       sourcePath,
-    ).openRead(0, 1024 * 1024 + 1).fold<List<int>>(<int>[], (buffer, chunk) => buffer..addAll(chunk));
+    ).openRead(0, VisualizerContentLimits.maxPresetBytes + 1).fold<List<int>>(
+      <int>[],
+      (buffer, chunk) => buffer..addAll(chunk),
+    );
     if (bytes.length != announcedSize) {
       throw const VisualizerPackException('The selected preset changed while it was being imported.');
     }
@@ -1017,7 +1242,7 @@ class VisualizerPackStore {
     return value;
   }
 
-  static Map<String, int> _extractArchive(String archivePath, String destination) {
+  static Map<String, int> _extractArchive(String archivePath, String destination, {bool requireManifest = true}) {
     if (File(archivePath).lengthSync() > maxArchiveBytes) {
       throw const VisualizerPackException('The pack archive exceeds its size limit.');
     }
@@ -1079,7 +1304,7 @@ class VisualizerPackStore {
         }
         files[name] = entry.size;
       }
-      if (files.length > maxFileCount || !files.containsKey('manifest.json')) {
+      if (files.length > maxFileCount || (requireManifest && !files.containsKey('manifest.json'))) {
         throw const VisualizerPackException('The pack is missing its manifest or exceeds its file limit.');
       }
       return files;
@@ -1231,11 +1456,12 @@ class VisualizerPackStore {
     if (assetPaths.length != expectedAssets.length || !assetPaths.containsAll(expectedAssets)) {
       throw const VisualizerPackException('The pack attribution list does not cover every content file.');
     }
-    // A self-contained pack is the supported unit. Missing external dependencies
-    // must not activate as a supposedly ready preset library.
-    final dependencies = parsed['dependencies'];
-    if (dependencies != null && (dependencies is! List || dependencies.isNotEmpty)) {
-      throw const VisualizerPackException('This pack requires external dependencies. Import a self-contained pack.');
+    final dependencies = VisualizerTextureDependency.parse(parsed['dependencies']);
+    if (dependencies.any((item) => item.id == id && item.version == version)) {
+      throw const VisualizerPackException('A pack cannot depend on itself.');
+    }
+    if (parsed['kind'] == 'textures' && dependencies.isNotEmpty) {
+      throw const VisualizerPackException('Texture packs must be self-contained; dependency cycles are not allowed.');
     }
     var imagePixels = 0;
     for (final relative in listedFiles) {
@@ -1243,17 +1469,17 @@ class VisualizerPackStore {
         VisualizerContentLimits.checkAssetPath(relative, isNotice: licensePaths.contains(relative));
         final extension = p.extension(relative).toLowerCase();
         if (VisualizerContentLimits.imageExtensions.contains(extension)) {
-          final bytes = await File(p.joinAll([directory.path, ...relative.split('/')])).readAsBytes();
+          final file = File(p.joinAll([directory.path, ...relative.split('/')]));
+          final bytes = await _readBounded(file, maxFileBytes);
           imagePixels += VisualizerContentLimits.imagePixels(extension, bytes);
           if (imagePixels > VisualizerContentLimits.maxPackImagePixels) {
             throw const FormatException('Pack textures exceed the combined 32 megapixel budget.');
           }
         } else if (extension == '.milk' || extension == '.milk2') {
           final file = File(p.joinAll([directory.path, ...relative.split('/')]));
-          if (await file.length() > VisualizerContentLimits.maxPresetBytes) {
-            throw const FormatException('A preset exceeds 2 MB.');
-          }
-          VisualizerContentLimits.checkPreset(await file.readAsBytes());
+          VisualizerContentLimits.checkPreset(
+            await _readBounded(file, VisualizerContentLimits.maxPresetBytes),
+          );
         }
       } on FormatException catch (error) {
         throw VisualizerPackException('$relative: ${error.message}');
@@ -1271,8 +1497,14 @@ class VisualizerPackStore {
         }
       }
     }
+    if (parsed['kind'] == 'textures' && (textures is! List || textures.isEmpty)) {
+      throw const VisualizerPackException('A texture pack must contain declared textures.');
+    }
     final presets = parsed['presets'];
-    if (presets is! List || presets.isEmpty || (expectedEntry != null && presets.length != expectedEntry.presetCount)) {
+    if (presets is! List || (presets.isEmpty && parsed['kind'] != 'textures') ||
+        (parsed['kind'] == 'textures' && presets.isNotEmpty) ||
+        (expectedEntry != null && (presets.length != expectedEntry.presetCount ||
+            (parsed['kind'] ?? 'presets') != expectedEntry.kind))) {
       throw const VisualizerPackException('The preset list is empty or does not match the catalog.');
     }
     final presetPaths = <String>{};
@@ -1280,6 +1512,7 @@ class VisualizerPackStore {
       if (preset is! Map<String, dynamic> || preset['file'] is! String) {
         throw const VisualizerPackException('A preset entry is malformed.');
       }
+      VisualizerContentLimits.checkEngineRequirement(preset);
       final relative = safeArchivePath(preset['file'] as String);
       if (!presetPaths.add(relative) ||
           !assetPaths.contains(relative) ||
@@ -1314,7 +1547,8 @@ class VisualizerPackStore {
         (parsed['contentNotice'] as String).trim().isEmpty ||
         (parsed['contentNotice'] as String).length > 2048 ||
         parsed['presets'] is! List ||
-        (parsed['presets'] as List).isEmpty ||
+        ((parsed['presets'] as List).isEmpty && parsed['kind'] != 'textures') ||
+        !['presets', 'textures'].contains(parsed['kind'] ?? 'presets') ||
         (parsed['presets'] as List).length > maxFileCount) {
       throw const VisualizerPackException('The pack manifest is malformed.');
     }

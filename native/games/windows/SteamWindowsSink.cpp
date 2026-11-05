@@ -145,7 +145,7 @@ struct WindowsSink::Impl {
       GUID subtype{};
       if (FAILED(type->GetGUID(MF_MT_SUBTYPE, &subtype)) || subtype != MFVideoFormat_NV12) continue;
       UINT32 w = 0, h = 0;
-      if (FAILED(MFGetAttributeSize(type.Get(), MF_MT_FRAME_SIZE, &w, &h)) || !w || !h || w > 1920 || h > 1080 ||
+      if (FAILED(MFGetAttributeSize(type.Get(), MF_MT_FRAME_SIZE, &w, &h)) || !w || !h || w > 3840 || h > 2160 ||
           w % 2 || h % 2)
         continue;
       UINT32 transfer = 0, primaries = 0;
@@ -170,8 +170,8 @@ struct WindowsSink::Impl {
     if (SUCCEEDED(transform->GetAttributes(&attributes))) {
       attributes->SetUINT32(CODECAPI_AVLowLatencyMode, TRUE);
       attributes->SetUINT32(CODECAPI_AVDecNumWorkerThreads, 2);
-      attributes->SetUINT32(CODECAPI_AVDecVideoMaxCodedWidth, 1920);
-      attributes->SetUINT32(CODECAPI_AVDecVideoMaxCodedHeight, 1088);
+      attributes->SetUINT32(CODECAPI_AVDecVideoMaxCodedWidth, 3840);
+      attributes->SetUINT32(CODECAPI_AVDecVideoMaxCodedHeight, 2176);
     }
     ComPtr<IMFMediaType> type;
     if (FAILED(MFCreateMediaType(&type))) return false;
@@ -208,7 +208,7 @@ struct WindowsSink::Impl {
   }
   bool pixels(IMFSample* sample, uint32_t id) {
     UINT32 w = 0, h = 0;
-    if (FAILED(MFGetAttributeSize(outputType.Get(), MF_MT_FRAME_SIZE, &w, &h)) || !w || !h || w > 1920 || h > 1080)
+    if (FAILED(MFGetAttributeSize(outputType.Get(), MF_MT_FRAME_SIZE, &w, &h)) || !w || !h || w > 3840 || h > 2160)
       return false;
     UINT32 matrix = MFVideoTransferMatrix_BT709, range = MFNominalRange_16_235;
     outputType->GetUINT32(MF_MT_YUV_MATRIX, &matrix);
@@ -461,7 +461,7 @@ bool WindowsSink::supported(bool hevc) {
   return media.ready && decoder(hevc) != nullptr;
 }
 bool WindowsSink::video(int codec, int w, int h, const uint8_t* extra, size_t length) {
-  if ((codec != 4 && codec != 5) || w < 1 || h < 1 || w > 1920 || h > 1080 || length > 65536 || (length && !extra) ||
+  if ((codec != 4 && codec != 5) || w < 1 || h < 1 || w > 3840 || h > 2160 || length > 65536 || (length && !extra) ||
       impl_->stopped)
     return false;
   std::lock_guard<std::mutex> lock(impl_->mutex);
@@ -475,7 +475,7 @@ bool WindowsSink::video(int codec, int w, int h, const uint8_t* extra, size_t le
   return true;
 }
 bool WindowsSink::frame(const uint8_t* bytes, size_t length, uint32_t id, bool key) {
-  if (!bytes || !length || length > 2 * 1024 * 1024 || !id || impl_->stopped) return false;
+  if (!bytes || !length || length > 8 * 1024 * 1024 || !id || impl_->stopped) return false;
   std::lock_guard<std::mutex> lock(impl_->mutex);
   if (impl_->stopping || !impl_->videoEpoch || impl_->videos.size() >= 4) return false;
   impl_->videos.push_back({{bytes, bytes + length}, id, key});

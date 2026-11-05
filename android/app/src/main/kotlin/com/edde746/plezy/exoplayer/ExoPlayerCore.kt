@@ -244,14 +244,13 @@ class ExoPlayerCore(private val activity: Activity) :
   private var tunnelingDisabledForVideoCodec: Boolean = false
   private var tunnelingDisabledForDecodedPcm: Boolean = false
   private var tunnelingDisabledForAudioRecovery: Boolean = false
-  private var tunnelingDisabledForSubtitleCapture: Boolean = false
 
   // Tunneled playback never fires the VideoFrameMetadataListener (media3 releases
   // frames inside the codec), which is the libass pipeline's only render trigger —
   // ASS subs would freeze. Correctness over tunneling while an ASS track is active.
   private var tunnelingDisabledForAssSubtitles: Boolean = false
   private val tunnelingDisabledForCodec: Boolean
-    get() = tunnelingDisabledForAudioCodec || tunnelingDisabledForVideoCodec || tunnelingDisabledForDecodedPcm || tunnelingDisabledForAudioRecovery || tunnelingDisabledForSubtitleCapture
+    get() = tunnelingDisabledForAudioCodec || tunnelingDisabledForVideoCodec || tunnelingDisabledForDecodedPcm || tunnelingDisabledForAudioRecovery
   private var currentTunneledPlayback: Boolean = false
 
   // Loudness normalization (#1289): audiofx effects only process non-tunneled
@@ -2502,7 +2501,6 @@ class ExoPlayerCore(private val activity: Activity) :
 
   private fun shouldBlockDirectAudioOutput(format: Format, reason: String): Boolean {
     val mimeType = format.sampleMimeType ?: return false
-    if (subtitlePcmCaptureEnabled && isEncodedAudioMimeType(mimeType)) return true
     // Loudness normalization needs decoded PCM for the audiofx chain to act on.
     if (audioNormalizationEnabled && isEncodedAudioMimeType(mimeType)) return true
     // Stereo downmix runs in the sink's PCM pipeline; bitstream output would
@@ -3804,21 +3802,19 @@ class ExoPlayerCore(private val activity: Activity) :
     }
   }
 
-  /**
-   * Enables an opt-in PCM copy for local transcription. Encoded passthrough is
-   * temporarily decoded while capture is active; the user's setting is retained.
-   */
+  /** Decoded output only: capture never changes passthrough, tunneling or offload. */
+  fun subtitlePcmCaptureAvailable(): Boolean {
+    if (!isInitialized || renderersFactory == null || currentTunneledPlayback) return false
+    val encoding = lastAudioTrackConfig?.encoding ?: return false
+    return isPcmEncoding(encoding)
+  }
+
   fun setSubtitlePcmCaptureEnabled(enabled: Boolean): Boolean {
     val factory = renderersFactory ?: return false
+    if (enabled && !subtitlePcmCaptureAvailable()) return false
     if (subtitlePcmCaptureEnabled == enabled) return true
     subtitlePcmCaptureEnabled = enabled
-    tunnelingDisabledForSubtitleCapture = enabled
     factory.subtitlePcmCaptureBuffer.setEnabled(enabled)
-    val selectedMime = selectedAudioFormat()?.sampleMimeType
-    val encodedTrack = selectedMime != null && isEncodedAudioMimeType(selectedMime)
-    if (exoPlayer != null && (encodedTrack || currentTunneledPlayback)) {
-      startAudioRendererBounce("subtitle-pcm-capture")
-    }
     return true
   }
 
@@ -4729,3 +4725,4 @@ class ExoPlayerCore(private val activity: Activity) :
     Log.d(TAG, "Disposed")
   }
 }
+

@@ -114,10 +114,11 @@ def prepare_locked(destination: Path) -> None:
     granite = source_lock['steamResearch']['granite']
     patch_root = ROOT / 'scripts/games/patches'
     ihs_patches = sorted(patch_root.glob('steam-runtime-*.patch'))
+    granite_patches = sorted(patch_root.glob('steam-granite-*.patch'))
     opus_patches = sorted(patch_root.glob('steam-opus-*.patch'))
     digest = hashlib.sha256(Path(__file__).read_bytes() + json.dumps(lock, sort_keys=True).encode())
     digest.update(json.dumps(granite, sort_keys=True).encode())
-    for patch in (*ihs_patches, *opus_patches):
+    for patch in (*ihs_patches, *opus_patches, *granite_patches):
         digest.update(patch.read_bytes())
     recipe = digest.hexdigest()
     marker = destination / '.plezy-recipe'
@@ -154,6 +155,7 @@ def prepare_locked(destination: Path) -> None:
                 raise ValueError(f'Unexpected Granite submodule revision: {path}')
         apply_patches(prepared / 'ihslib', ihs_patches)
         apply_patches(prepared / 'opus', opus_patches)
+        apply_patches(granite_source, granite_patches)
         (prepared / '.plezy-recipe').write_text(recipe)
         shutil.move(str(prepared), destination)
         removed = remove_appledouble_sidecars(destination)

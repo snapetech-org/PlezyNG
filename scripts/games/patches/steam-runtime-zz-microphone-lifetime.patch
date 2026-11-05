@@ -1,0 +1,118 @@
+--- a/src/session/session_pri.h
++++ b/src/session/session_pri.h
+@@ -95,6 +95,9 @@
+     IHS_SessionChannel *channels[16];
+     IHS_Thread *sendThread;
+     IHS_Cond *sendQueueCond;
++    /* Dedicated microphone lifetime guard; never traverse the mutable channel array from capture threads. */
++    IHS_Mutex *microphoneMutex;
++    IHS_SessionChannel *microphoneChannel;
+     IHS_Mutex *sendQueueMutex;
+     IHS_Queue *sendQueue;
+     IHS_Queue *pendingData; /* RX-thread-owned packets awaiting Start*Data metadata */
+--- a/src/session/session.c
++++ b/src/session/session.c
+@@ -79,6 +79,7 @@
+     IHS_BaseInit(&session->base, clientConfig, SessionRecvCallback, false);
+     IHS_BaseSetRunCallbacks(&session->base, &SessionRunCallbacks, NULL);
+     session->info = *sessionInfo;
++    session->microphoneMutex = IHS_MutexCreate();
+     session->sendQueueMutex = IHS_MutexCreate();
+     session->sendQueueCond = IHS_CondCreate();
+     session->sendQueue = IHS_QueueCreate(sizeof(QueuedPacket));
+@@ -170,6 +171,7 @@
+     IHS_StreamClockDeinit(&session->clock);
+     IHS_CondDestroy(session->sendQueueCond);
+     IHS_MutexDestroy(session->sendQueueMutex);
++    IHS_MutexDestroy(session->microphoneMutex);
+     IHS_QueueDestroy(session->sendQueue, QueuedPacketDestroy, NULL);
+     IHS_QueueDestroy(session->pendingData, QueuedPacketDestroy, NULL);
+     IHS_SessionLog(session, IHS_LogLevelInfo, "Session", "Destroying session, bye!");
+--- a/src/session/callbacks.c
++++ b/src/session/callbacks.c
+@@ -124,14 +124,12 @@
+ }
+ 
+ bool IHS_SessionSendMicrophoneData(IHS_Session *session, const uint8_t *data, size_t len) {
+-    // No channel = server hasn't started mic (or already stopped). Caller should drop.
+-    // Looking it up each call keeps the function safe to invoke from any thread without
+-    // the caller having to track channel lifetime.
+-    IHS_SessionChannel *mic =
+-        IHS_SessionChannelForType(session, IHS_SessionChannelTypeDataMicrophone);
+-    if (mic == NULL)
+-        return false;
+-    return IHS_SessionChannelDataMicrophoneSend(mic, data, len);
++    if (!session || !data || len == 0 || len > 65536) return false;
++    IHS_MutexLock(session->microphoneMutex);
++    IHS_SessionChannel *mic = session->microphoneChannel;
++    bool sent = mic && IHS_SessionChannelDataMicrophoneSend(mic, data, len);
++    IHS_MutexUnlock(session->microphoneMutex);
++    return sent;
+ }
+ 
+ void IHS_SessionSetLogFunction(IHS_Session *session, IHS_LogFunction *logFunction) {
+--- a/src/session/channels/ch_data_microphone.c
++++ b/src/session/channels/ch_data_microphone.c
+@@ -42,6 +42,7 @@
+     IHS_StreamAudioConfig config;
+     IHS_Mutex *sendLock;
+     uint16_t nextFrameId;
++    bool accepted;
+ } ChannelMicrophone;
+ 
+ static void ChannelMicrophoneInit(IHS_SessionChannel *channel, const void *config);
+@@ -60,6 +61,7 @@
+ };
+ 
+ IHS_SessionChannel *IHS_SessionChannelDataMicrophoneCreate(IHS_Session *session, const CStartAudioDataMsg *message) {
++    if (message->has_codec_data && message->codec_data.len > 65536) return NULL;
+     return IHS_SessionChannelCreate(&ChannelClass, session, IHS_SessionChannelTypeDataMicrophone, message->channel,
+                                     message);
+ }
+@@ -70,10 +72,12 @@
+     mic->config.channels = message->channels;
+     mic->config.frequency = message->frequency;
+     mic->config.codec = (IHS_StreamAudioCodec) message->codec;
+-    if (message->has_codec_data) {
++    if (message->has_codec_data && message->codec_data.len <= 65536) {
+         mic->config.codecDataLen = message->codec_data.len;
+         mic->config.codecData = malloc(message->codec_data.len);
+-        memcpy(mic->config.codecData, message->codec_data.data, message->codec_data.len);
++        if (mic->config.codecData)
++            memcpy(mic->config.codecData, message->codec_data.data, message->codec_data.len);
++        else mic->config.codecDataLen = 0;
+     }
+     mic->sendLock = IHS_MutexCreate();
+     mic->nextFrameId = 0;
+@@ -81,10 +85,12 @@
+     IHS_Session *session = channel->session;
+     const IHS_StreamMicrophoneCallbacks *callbacks = session->callbacks.microphone;
+     if (callbacks && callbacks->start) {
+-        // The user is expected to open the platform capture device here. If they refuse
+-        // (return non-zero), the channel still exists but nothing will ever Send — fine,
+-        // since the server's Stop will tear it down soon enough.
+-        callbacks->start(session, &mic->config, session->callbackContexts.microphone);
++        mic->accepted = callbacks->start(session, &mic->config, session->callbackContexts.microphone) == 0;
++        if (mic->accepted) {
++            IHS_MutexLock(session->microphoneMutex);
++            session->microphoneChannel = channel;
++            IHS_MutexUnlock(session->microphoneMutex);
++        }
+     }
+ }
+ 
+@@ -92,7 +98,13 @@
+     ChannelMicrophone *mic = (ChannelMicrophone *) channel;
+     IHS_Session *session = channel->session;
+     const IHS_StreamMicrophoneCallbacks *callbacks = session->callbacks.microphone;
+-    if (callbacks && callbacks->stop) {
++    /* Detach and wait for an in-flight send before invoking application stop.
++     * Never hold the transport lock across callbacks: the application may be
++     * waiting for a capture worker which is finishing its last submission. */
++    IHS_MutexLock(session->microphoneMutex);
++    if (session->microphoneChannel == channel) session->microphoneChannel = NULL;
++    IHS_MutexUnlock(session->microphoneMutex);
++    if (mic->accepted && callbacks && callbacks->stop) {
+         callbacks->stop(session, session->callbackContexts.microphone);
+     }
+     if (mic->config.codecData) {

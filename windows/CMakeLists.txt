@@ -472,6 +472,8 @@ set(INSTALL_BUNDLE_LIB_DIR "${BUILD_BUNDLE_DIR}")
 
 install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${BUILD_BUNDLE_DIR}"
   COMPONENT Runtime)
+install(TARGETS plezy_visualizer_helper RUNTIME DESTINATION "${BUILD_BUNDLE_DIR}"
+  COMPONENT Runtime)
 
 # Bundle the MSVC C++ runtime next to the executable. MSVC requires the
 # runtime on the target machine to be at least as new as the toolset that

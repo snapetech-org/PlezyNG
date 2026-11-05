@@ -642,7 +642,17 @@ class PlezyActivity : FlutterActivity() {
     }
   }
 
+  private var steamStreamFactory: SteamStreamPlatformViewFactory? = null
+
+  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    if (steamStreamFactory?.onRequestPermissionsResult(requestCode, permissions, grantResults) != true) {
+      super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+  }
+
   override fun onDestroy() {
+    steamStreamFactory?.closeAll()
+    steamStreamFactory = null
     externalPlayerChannel.dispose()
     gamesChannel.dispose()
     systemBarsInsetsHost?.setOnApplyWindowInsetsListener(null)
@@ -905,9 +915,11 @@ class PlezyActivity : FlutterActivity() {
         Class.forName("org.snapetech.plezyng.games.steam.SteamStreamView", false, classLoader)
       }.isSuccess
     ) {
+      steamStreamFactory?.closeAll()
+      steamStreamFactory = SteamStreamPlatformViewFactory(flutterEngine.dartExecutor.binaryMessenger, this)
       flutterEngine.platformViewsController.registry.registerViewFactory(
         SteamStreamPlatformViewFactory.VIEW_TYPE,
-        SteamStreamPlatformViewFactory(flutterEngine.dartExecutor.binaryMessenger)
+        steamStreamFactory!!
       )
     }
 

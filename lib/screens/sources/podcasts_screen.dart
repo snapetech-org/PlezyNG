@@ -23,6 +23,8 @@ import '../../widgets/focused_scroll_scaffold.dart';
 import '../../widgets/music/mini_player.dart';
 import 'add_source_screen.dart';
 import 'podcast_actions.dart';
+import 'podcast_settings_screen.dart';
+import 'podcast_sync_screen.dart';
 import 'podcast_discover_screen.dart';
 import 'source_detail_screen.dart';
 import 'source_player_screen.dart';
@@ -40,6 +42,7 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
   final _search = TextEditingController();
   SourceController? _sources;
   int? _epoch;
+  int _automationRevision = -1;
   List<SourceEntry> _episodes = const [];
   Map<String, PublicationProgress> _progress = {};
   Set<String> _offline = {}, _actions = {};
@@ -57,6 +60,7 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
     if (!identical(sources, _sources) || _epoch != sources.generation) {
       _sources = sources;
       _epoch = sources.generation;
+      _automationRevision = -1;
       _request++;
       _searchTimer?.cancel();
       _episodes = const [];
@@ -73,6 +77,9 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
       _error = null;
       _loading = true;
       WidgetsBinding.instance.addPostFrameCallback((_) => _load(refresh: widget.sourceId != null));
+    } else if (!sources.loading && _automationRevision != sources.podcastAutomation.revision) {
+      _automationRevision = sources.podcastAutomation.revision;
+      WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) _load(); });
     }
   }
 
@@ -301,6 +308,8 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
           icon: const AppIcon(Symbols.more_vert_rounded),
           adaptiveSheet: true,
           entriesBuilder: (_) => [
+            AppMenuItem(value: 'sync', label: t.podcasts.syncConnect, icon: Symbols.sync_rounded),
+            AppMenuItem(value: 'automation', label: t.common.settings, icon: Symbols.settings_rounded),
             AppMenuItem(value: 'discover', label: t.podcasts.discover, icon: Symbols.search_rounded),
             AppMenuItem(value: 'feed', label: t.podcasts.addFeed, icon: Symbols.rss_feed_rounded),
             AppMenuItem(value: 'server', label: 'Audiobookshelf', icon: Symbols.dns_rounded),
@@ -308,7 +317,11 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
             AppMenuItem(value: 'export', label: t.podcasts.exportOpml, icon: Symbols.ios_share_rounded),
           ],
           onSelected: (action) => sourceAction(context, () async {
-            if (action == 'discover') {
+            if (action == 'sync') {
+              await _route(const PodcastSyncScreen());
+            } else if (action == 'automation') {
+              await _route(const PodcastSettingsScreen());
+            } else if (action == 'discover') {
               await _route(const PodcastDiscoverScreen(), refresh: true);
             } else if (action == 'feed') {
               await _route(const AddSourceScreen(initialKind: FileSourceKind.podcastRss), refresh: true);

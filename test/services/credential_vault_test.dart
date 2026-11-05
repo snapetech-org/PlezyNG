@@ -12,6 +12,35 @@ void main() {
   });
 
   group('CredentialVault.reveal', () {
+    test('bulk encryption does not retain plaintext payloads', () async {
+      for (var i = 0; i < 1000; i++) {
+        await CredentialVault.protect('channel-$i-secret');
+      }
+      expect(CredentialVault.payloadCacheForTesting, (entries: 0, bytes: 0, pending: 0));
+    });
+
+    test('decryption cache stays bounded and evicted values remain readable', () async {
+      final values = <String>[];
+      for (var i = 0; i < 300; i++) {
+        final value = 'credential-$i-${'x' * 2048}';
+        final encrypted = await CredentialVault.protect(value);
+        values.add(encrypted);
+        expect(await CredentialVault.reveal(encrypted), value);
+        expect(CredentialVault.payloadCacheForTesting.entries, lessThanOrEqualTo(128));
+        expect(CredentialVault.payloadCacheForTesting.bytes, lessThanOrEqualTo(256 * 1024));
+      }
+      expect(await CredentialVault.reveal(values.first), 'credential-0-${'x' * 2048}');
+      CredentialVault.invalidateCache();
+      expect(CredentialVault.payloadCacheForTesting, (entries: 0, bytes: 0, pending: 0));
+    });
+
+    test('large encrypted journals are readable without entering the cache', () async {
+      final journal = 'j' * (256 * 1024);
+      final encrypted = await CredentialVault.protect(journal);
+      expect(await CredentialVault.reveal(encrypted), journal);
+      expect(CredentialVault.payloadCacheForTesting, (entries: 0, bytes: 0, pending: 0));
+    });
+
     test('round-trips a protected value', () async {
       final protected = await CredentialVault.protect('super-secret');
       expect(protected, startsWith('enc:v2:'));

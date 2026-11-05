@@ -2,4 +2,14 @@
 set -eu
 
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+if [ "${1:-}" != "--version" ]; then
+  if [ -n "${PLEZY_WEBOS_VISUALIZER_NATIVE:-}" ] || [ -n "${PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256:-}" ]; then
+    if [ -z "${PLEZY_WEBOS_VISUALIZER_NATIVE:-}" ] || [ -z "${PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256:-}" ]; then
+      echo "Set both PLEZY_WEBOS_VISUALIZER_NATIVE and PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256." >&2
+      exit 2
+    fi
+    set -- "$@" --visualizer-native "$PLEZY_WEBOS_VISUALIZER_NATIVE" \
+      --visualizer-manifest-sha256 "$PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256"
+  fi
+fi
 exec "${WEBOS_PYTHON_BIN:-python3}" "$SCRIPT_DIR/package_ipk.py" "$@"

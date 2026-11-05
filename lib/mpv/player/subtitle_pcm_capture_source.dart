@@ -17,3 +17,11 @@ abstract interface class SubtitlePcmCaptureSource {
   Future<bool> setSubtitlePcmCaptureEnabled(bool enabled);
   Future<List<Map<String, Object?>>> drainSubtitlePcmCapture();
 }
+
+/// Explicit user seeks are distinct from an unexplained live PTS rollover.
+/// Only the former may reuse cues already captured on the current timeline.
+abstract interface class SubtitlePcmTimelineSource {
+  int get subtitlePcmSeekGeneration;
+  Duration? get subtitlePcmSeekTarget;
+  Duration get timelineOffset;
+}

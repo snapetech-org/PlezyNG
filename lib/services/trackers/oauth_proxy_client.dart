@@ -198,6 +198,11 @@ class OAuthProxyClient {
         refreshToken: body['refreshToken'] as String?,
         expiresIn: (body['expiresIn'] as num?)?.toInt(),
         steamId: steamId,
+        steamCloudToken:
+            body['steamCloudToken'] is String &&
+                RegExp(r'^[A-Za-z0-9_-]{43}$').hasMatch(body['steamCloudToken'] as String)
+            ? body['steamCloudToken'] as String
+            : null,
         steamCatalogToken:
             body['steamCatalogToken'] is String &&
                 RegExp(r'^[A-Za-z0-9_-]{43}$').hasMatch(body['steamCatalogToken'] as String)
@@ -228,6 +233,7 @@ class OAuthProxyResult {
   final int? expiresIn;
   final String? steamId;
   final String? steamCatalogToken;
+  final String? steamCloudToken;
   final bool steamLibraryAvailable;
   final bool steamCatalogTruncated;
   final List<Map<String, dynamic>> steamGames;
@@ -238,6 +244,7 @@ class OAuthProxyResult {
     this.expiresIn,
     this.steamId,
     this.steamCatalogToken,
+    this.steamCloudToken,
     this.steamLibraryAvailable = false,
     this.steamCatalogTruncated = false,
     this.steamGames = const [],

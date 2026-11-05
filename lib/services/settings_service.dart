@@ -48,6 +48,7 @@ import '../utils/platform_detector.dart';
 import 'trackers/tracker_constants.dart';
 import '../profiles/profile.dart';
 import '../theme/mono_theme.dart' show MonoPalette;
+import '../theme/theme_package.dart';
 import '../watch_together/services/watch_party_relays.dart';
 
 Map<String, List<MediaBookmark>> _decodeMediaBookmarks(dynamic raw) {
@@ -786,16 +787,35 @@ class SettingsService extends BaseSharedPreferencesService {
       BoolPref(profileScopedPrefsKey(profileId, 'show_games_tab'), defaultValue: false);
   static BoolPref gameTouchControlsForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'game_touch_controls'), defaultValue: true);
+  static IntPref steamTouchOpacityForProfile(String profileId) => IntPref(
+    profileScopedPrefsKey(profileId, 'steam_touch_opacity'),
+    defaultValue: 100,
+    transform: (value) => [50, 65, 85, 100].contains(value) ? value : 100,
+  );
+  static BoolPref steamSwapTouchSidesForProfile(String profileId) =>
+      BoolPref(profileScopedPrefsKey(profileId, 'steam_swap_touch_sides'), defaultValue: false);
+  static BoolPref steamControllerRumbleForProfile(String profileId) =>
+      BoolPref(profileScopedPrefsKey(profileId, 'steam_controller_rumble'), defaultValue: true);
+  static BoolPref steamMotionControllerForProfile(String profileId) =>
+      BoolPref(profileScopedPrefsKey(profileId, 'steam_motion_controller'), defaultValue: false);
   static BoolPref shareSteamInventoryForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'share_steam_inventory'), defaultValue: false);
+  static BoolPref steamInternetForProfile(String profileId) =>
+      BoolPref(profileScopedPrefsKey(profileId, 'steam_internet'), defaultValue: false);
   static BoolPref allowSteamActionsForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'allow_steam_actions'), defaultValue: false);
+  static BoolPref allowSteamCloudSettingsForProfile(String profileId) =>
+      BoolPref(profileScopedPrefsKey(profileId, 'allow_steam_cloud_settings'), defaultValue: false);
   static BoolPref allowGameSessionControlForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'allow_game_session_control'), defaultValue: false);
   static BoolPref allowSteamInstallForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'allow_steam_install'), defaultValue: false);
   static StringPref steamInstallRootForProfile(String profileId) =>
       StringPref(profileScopedPrefsKey(profileId, 'steam_install_root'));
+  static StringPref steamTouchLayoutForGame(String profileId, String appId) =>
+      StringPref(profileScopedPrefsKey(profileId, 'steam_touch_layout_$appId'));
+  static StringPref steamInputForGame(String profileId, String appId) =>
+      StringPref(profileScopedPrefsKey(profileId, 'steam_input_$appId'));
   static BoolPref gamePyrowaveForProfile(String profileId) =>
       BoolPref(profileScopedPrefsKey(profileId, 'game_pyrowave'), defaultValue: false);
   static EnumPref<SteamStreamQuality> steamQualityForProfile(String profileId) => EnumPref(
@@ -1478,6 +1498,11 @@ class SettingsService extends BaseSharedPreferencesService {
     defaultValue: null,
     encode: (palette) => json.encode(palette?.toJson()),
     decode: (raw) => raw == null ? null : MonoPalette.fromJson(raw),
+  );
+  static final customThemePackage = JsonPref<ThemePackage?>(
+    'custom_theme_package_v1', defaultValue: null,
+    encode: (value) => json.encode(value?.toJson()),
+    decode: (raw) => raw == null ? null : ThemePackage.fromJson(raw),
   );
   static const videoPlayerNavigationEnabled = BoolPref(
     'video_player_navigation_enabled',
@@ -2194,6 +2219,7 @@ class SettingsService extends BaseSharedPreferencesService {
     scopedPlayerPrefValues,
     themeMode,
     customThemePalette,
+    customThemePackage,
     videoPlayerNavigationEnabled,
     playbackBufferTier,
     streamBufferMb,

@@ -17,6 +17,7 @@ import 'player.dart';
 import 'player_state.dart';
 import 'player_stream_controllers.dart';
 import 'player_streams.dart';
+import 'subtitle_pcm_capture_source.dart';
 
 /// Optional capability for player implementations that can apply the
 /// device-local ten-band equalizer.
@@ -63,7 +64,13 @@ extension PlayerAudioFocusOwnership on Player {
 /// - Common lifecycle methods
 abstract class PlayerBase
     with PlayerStreamControllersMixin
-    implements Player, AudioEqualizerCapable, AudioEffectsCapable {
+    implements Player, AudioEqualizerCapable, AudioEffectsCapable, SubtitlePcmTimelineSource {
+  int _subtitlePcmSeekGeneration = 0;
+  Duration? _subtitlePcmSeekTarget;
+  @override
+  int get subtitlePcmSeekGeneration => _subtitlePcmSeekGeneration;
+  @override
+  Duration? get subtitlePcmSeekTarget => _subtitlePcmSeekTarget;
   PlayerState _state = const PlayerState();
 
   @override
@@ -241,8 +248,8 @@ abstract class PlayerBase
   /// and can be sent anyway instead of being skipped. Skipping is what used
   /// to leave a hung predecessor's release chained forever (the permanent
   /// "Playback could not be started" wedge).
-  static final int _nativeInstanceCounter = 0;
-  final int nativeInstanceId = _nativeInstanceCounter;
+  static int _nativeInstanceCounter = 0;
+  final int nativeInstanceId = ++_nativeInstanceCounter;
 
   static const _maximumDurationMilliseconds = 9223372036854775;
 
@@ -1070,6 +1077,8 @@ abstract class PlayerBase
   @protected
   void announcePlayheadJump(Duration? target) {
     if (_disposed) return;
+    _subtitlePcmSeekGeneration++;
+    _subtitlePcmSeekTarget = target;
     playheadJumpController.add(target);
   }
 

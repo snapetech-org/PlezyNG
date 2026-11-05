@@ -11,14 +11,23 @@
 
 #include "steam_input.h"
 #include "steam_runtime.h"
+#include "steam_text.h"
 extern "C" {
 #include "hid/provider.h"
 #include "protobuf/discovery.pb-c.h"
+#include "session/channels/ch_data_microphone.h"
 #include "session/frame_tracker.h"
 }
 using namespace plezy::steam;
 namespace plezy::steam {
 struct RuntimeTest {
+  static void microphoneSession(Runtime& runtime, IHS_Session* session) {
+    runtime.session_ = session;
+    if (session) {
+      static const IHS_StreamMicrophoneCallbacks callbacks{Runtime::microphoneStart, Runtime::microphoneStop};
+      IHS_SessionSetMicrophoneCallbacks(session, &callbacks, &runtime);
+    }
+  }
   static void target(Runtime& runtime, uint32_t numerator, uint32_t denominator, uint32_t reasons, int32_t bitrate) {
     Runtime::videoFramerate(nullptr, numerator, denominator, reasons, &runtime);
     Runtime::videoBitrate(nullptr, bitrate, &runtime);
@@ -157,7 +166,211 @@ void sessionStartup() {
 uint32_t le(const uint8_t* p) {
   return uint32_t(p[0]) | uint32_t(p[1]) << 8 | uint32_t(p[2]) << 16 | uint32_t(p[3]) << 24;
 }
+void controllerMappings() {
+  std::vector<int64_t> encoded{1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 0, 0};
+  ControllerMapping mapping;
+  assert(ControllerMapping::decode(encoded, mapping));
+  for (size_t field : {size_t(0), size_t(1), size_t(16), size_t(17), size_t(18)}) {
+    auto malformed = encoded;
+    malformed[field] = 9999999999;
+    assert(!ControllerMapping::decode(malformed, mapping));
+  }
+  assert(!ControllerMapping::decode({}, mapping));
+  auto extra = encoded;
+  extra.push_back(0);
+  assert(!ControllerMapping::decode(extra, mapping));
+  encoded[1] = 1;
+  encoded[2] = 1;
+  encoded[3] = -1;
+  encoded[16] = 4096;
+  encoded[17] = 2048;
+  encoded[18] = 1 | 16 | 32;
+  assert(ControllerMapping::decode(encoded, mapping));
+  std::array<int16_t, 6> axes{-32768, 4096, -16384, 0, 32767, 1024};
+  uint32_t buttons = 7;
+  mapping.apply(axes, buttons);
+  assert(buttons == 2);  // Two sources OR together; the disabled source is absent.
+  assert(axes[0] < -14000 && axes[0] > -14060 && axes[1] == 0);
+  assert(axes[2] == 32767 && axes[3] == 0 && axes[4] == 0 && axes[5] == 32767);
+  axes = {};
+  buttons = 0;
+  mapping.apply(axes, buttons);
+  assert((axes == std::array<int16_t, 6>{}) && buttons == 0);
+  Runtime runtime;
+  runtime.padSeat(0, {32767, 0, 0, 0, 0, 0}, 1);
+  assert(runtime.controllerMapping(0, encoded));
+  assert(RuntimeTest::pad(runtime, 0)->buttons == 0);
+  assert(!runtime.controllerMapping(4, encoded));
+  runtime.padSeat(0, {}, 1);
+  runtime.padSeat(1, {}, 1);
+  assert(RuntimeTest::pad(runtime, 0)->buttons == 2 && RuntimeTest::pad(runtime, 1)->buttons == 1);
+}
+void microphoneOwnership() {
+  Runtime runtime;
+  assert(runtime.microphoneState() == 0 && !runtime.beginMicrophone());
+  uint8_t key[32]{};
+  IHS_ClientConfig config{1, key, "microphone test"};
+  IHS_SessionInfo info{};
+  assert(IHS_IPAddressFromString(&info.address.ip, "127.0.0.1"));
+  info.address.port = 27036;
+  auto* session = IHS_SessionCreate(&config, &info);
+  assert(session);
+  RuntimeTest::microphoneSession(runtime, session);
+  CStartAudioDataMsg format = CSTART_AUDIO_DATA_MSG__INIT;
+  format.channel = 8;
+  format.frequency = 48000;
+  format.channels = 1;
+  format.codec = k_EStreamAudioCodecOpus;
+  auto* channel = IHS_SessionChannelDataMicrophoneCreate(session, &format);
+  IHS_SessionChannelAdd(session, channel);
+  assert(runtime.microphoneState() == 1);  // Host request cannot open capture.
+  auto lease = runtime.beginMicrophone();
+  assert(lease && lease.rate == 48000 && lease.channels == 1);
+  assert(!runtime.beginMicrophone());  // One capture worker per session.
+  int16_t pcm[480]{};
+  assert(runtime.microphonePcm(lease.epoch, pcm, 480));
+  assert(runtime.microphoneState() == 3);
+  runtime.muteMicrophone();
+  assert(!runtime.microphoneCurrent(lease.epoch));
+  assert(!runtime.microphonePcm(lease.epoch, pcm, 480));
+  assert(!runtime.beginMicrophone());  // Old worker must acknowledge retirement.
+  runtime.finishMicrophone(lease.epoch);
+  auto next = runtime.beginMicrophone();
+  assert(next && next.epoch != lease.epoch);
+  runtime.finishMicrophone(lease.epoch);  // A late old worker cannot mute the new capture.
+  assert(runtime.microphoneCurrent(next.epoch));
+  InputState input(1);
+  input.enabled(runtime, true);
+  input.enabled(runtime, false);
+  assert(!runtime.microphoneCurrent(next.epoch));
+  runtime.finishMicrophone(next.epoch);
+  next = runtime.beginMicrophone();
+  assert(next);
+  IHS_SessionChannelRemove(session, static_cast<IHS_SessionChannelId>(8));
+  assert(runtime.microphoneState() == 0);
+  assert(!runtime.microphonePcm(next.epoch, pcm, 480));
+  runtime.finishMicrophone(next.epoch);
+  // Capture submission races host start/stop. The transport's dedicated
+  // microphone guard must prevent access to a freed/moved channel.
+  std::atomic<bool> running{true};
+  auto sender = std::async(std::launch::async, [&] {
+    uint8_t opus[] = {0xf8, 0xff, 0xfe};
+    while (running) {
+      IHS_SessionSendMicrophoneData(session, opus, sizeof(opus));
+      std::this_thread::yield();
+    }
+  });
+  for (int i = 0; i < 100; ++i) {
+    IHS_SessionChannelAdd(session, IHS_SessionChannelDataMicrophoneCreate(session, &format));
+    std::this_thread::yield();
+    IHS_SessionChannelRemove(session, static_cast<IHS_SessionChannelId>(8));
+  }
+  running = false;
+  sender.get();
+  format.frequency = 44100;
+  IHS_SessionChannelAdd(session, IHS_SessionChannelDataMicrophoneCreate(session, &format));
+  assert(runtime.microphoneState() == 0 && !runtime.beginMicrophone());
+  RuntimeTest::microphoneSession(runtime, nullptr);
+  IHS_SessionDestroy(session);
+}
+void feedbackLifecycle() {
+  for (bool motion : {false, true}) {
+    Runtime receiver;
+    receiver.motionControllers(motion);
+    auto* provider = makeController(RuntimeTest::pad(receiver, 0));
+    IHS_HIDDeviceInfo info{};
+    IHS_HIDProviderDeviceInfo(provider, nullptr, &info);
+    assert(info.vendor_id == (motion ? 0x054c : 0x045e));
+    auto* device = IHS_HIDProviderOpenDevice(provider, info.path);
+    assert(device);
+    IHS_Buffer features{};
+    IHS_BufferInit(&features, 128, 128);
+    const uint8_t command = 4;
+    assert(device->cls->getFeatureReport(device, &command, 1, &features, 21) == 0);
+    assert(features.size == 21 && features.data[1] == 1 && features.data[2] == 0);
+    assert(features.data[3] == (motion ? 34 : 32));
+    assert(features.data[7] == 0xff);  // Unknown player index, not a capability mask.
+    for (size_t i = 11; i < 21; ++i) assert(features.data[i] == 0);
+    IHS_BufferClear(&features, true);
+    device->cls->free(device);
+    IHS_SessionHIDProviderDestroy(provider);
+  }
+  ControllerFeedback feedback;
+  const uint8_t rumble[] = {1, 0xff, 0xff, 0x34, 0x12, 0xff, 0xff, 0xff, 0xff};
+  assert(!feedback.write(nullptr, 1));
+  assert(!feedback.write(rumble, 129));
+  assert(feedback.write(rumble, sizeof(rumble)));
+  assert(feedback.take()[0] == 0);  // No ownership means no physical output.
+  feedback.ownership(true);
+  feedback.take();
+  assert(feedback.write(rumble, 3));
+  assert(feedback.take()[0] == 0);
+  assert(feedback.write(rumble + 3, 6));
+  auto output = feedback.take();
+  assert(output[0] == 1 && output[1] == 65535 && output[2] == 0x1234 && output[3] <= 1000);
+  assert(feedback.take()[0] == 0);  // Bounded latest-value queue, drained exactly once.
+  const uint8_t commands[] = {8, 1, 9, 3, 5, 1, 2, 3};
+  assert(feedback.write(commands, sizeof(commands)));
+  assert(feedback.sensors && feedback.version == 3);
+  assert(feedback.setMotion({34.90659, -34.90659, 0, 19.6133, -19.6133, 0}));
+  assert(feedback.motion[0] == 32767 && feedback.motion[1] == -32768);
+  assert(feedback.motion[3] == 32767 && feedback.motion[4] == -32768);
+  assert(!feedback.setMotion({NAN, 0, 0, 0, 0, 0}));
+  feedback.motionAt -= std::chrono::seconds(1);
+  feedback.expireMotion();
+  assert((feedback.motion == std::array<int16_t, 6>{}));
+  feedback.ownership(false);
+  assert(!feedback.setMotion({1, 2, 3, 4, 5, 6}));
+  assert(feedback.take()[7] == 0);
+  Runtime runtime;
+  InputState input(2);
+  input.enabled(runtime, true);
+  input.button(runtime, 42, "a", true);
+  auto pad = RuntimeTest::pad(runtime, 0);
+  pad->feedback.write(rumble, sizeof(rumble));
+  auto rows = input.feedback(runtime);
+  assert(rows.size() == 1 && rows[0][0] == 42 && rows[0][2] == 65535);
+  assert(!input.motion(runtime, 99, {}));  // Motion never allocates a seat.
+  input.disconnect(runtime, 42);
+  assert(input.feedback(runtime).empty());
+  input.button(runtime, 99, "b", true);
+  rows = input.feedback(runtime);
+  assert(rows.size() == 1 && rows[0][0] == 99 && rows[0][2] == 0);
+  runtime.cancel();
+  assert(runtime.controllerFeedback(0)[0] == 0);
+}
+
 int main() {
+  feedbackLifecycle();
+  microphoneOwnership();
+  controllerMappings();
+  assert(validInputText(u8"日本語 Ελληνικά 🙂\n"));
+  assert(validInputText(std::string(512, 'x')));
+  assert(!validInputText(std::string(513, 'x')));
+  assert(!validInputText(std::string("a\0b", 3)));
+  assert(!validInputText("\x1b"));
+  assert(!validInputText("\xc0\xaf"));          // Overlong encoding.
+  assert(!validInputText("\xed\xa0\x80"));      // UTF-8 surrogate.
+  assert(!validInputText("\xf4\x90\x80\x80"));  // Above Unicode range.
+  assert(!validInputText("\xf0\x9f"));          // Truncated sequence.
+  Runtime disconnectedText;
+  assert(!disconnectedText.text("hello"));
+  InputState textInput(1);
+  assert(!textInput.text(disconnectedText, "hello"));
+  {
+    Host direct{"192.0.2.1", 27036, 1};
+    assert(direct.validRelay());
+    direct.relayPorts = {40001, 40002, 40003, 40004, 40005, 40006};
+    assert(!direct.validRelay());
+    direct.address = "127.0.0.1";
+    assert(!direct.validRelay());
+    direct.port = 40006;
+    assert(direct.validRelay());
+    direct.relayPorts[1] = direct.relayPorts[0];
+    assert(!direct.validRelay());
+    direct.relayPorts[1] = 0;
+    assert(!direct.validRelay());
+  }
   frameOwnership();
   sessionStartup();
   {
@@ -233,12 +446,16 @@ int main() {
   c.device = 123;
   c.user = 456;
   c.key.fill(42);
+  assert((StreamOptions{3840, 2160, 60, 80000}).valid());
+  assert((StreamOptions{1920, 1080, 120, 50000}).valid());
+  assert(!(StreamOptions{3842, 2160, 60, 80000}).valid());
+  assert(!(StreamOptions{3840, 2162, 60, 80000}).valid());
   Runtime invalid;
   for (const auto& options :
        {StreamOptions{0, 1080, 60, 30000},
         {1920, 1081, 60, 30000},
-        {1920, 1080, 120, 30000},
-        {1920, 1080, 60, 50001},
+        {1920, 1080, 121, 30000},
+        {1920, 1080, 60, 100001},
         {1920, 1080, 60, 30000, 0},
         {1920, 1080, 60, 30000, 5},
         {1920, 1080, 60, 30000, 1, 3}}) {

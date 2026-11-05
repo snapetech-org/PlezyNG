@@ -3,8 +3,8 @@ import 'dart:convert';
 import '../utils/media_server_http_client.dart';
 import 'plezy_server.dart';
 
-/// Plezy server endpoint that returns an unguessable, copyable Log ID.
-const String logUploadEndpoint = '$plezyServerBaseUrl/logs';
+/// Fork-owned endpoint that returns an unguessable, copyable Log ID.
+String get logUploadEndpoint => '$plezyServerBaseUrl/logs';
 
 /// The server's `/logs` accepts 1 MiB. The in-memory buffer intentionally remains
 /// larger for local viewing and copying; uploads retain the device header and

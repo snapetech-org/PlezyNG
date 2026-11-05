@@ -42,6 +42,18 @@ void main() {
     expect(session.creationParams.keys, isNot(contains('key')));
   });
 
+  test('new presets are opt-in while legacy defaults retain their budgets', () {
+    expect(SteamStreamQuality.balanced.nativeArguments, {
+      'streamWidth': 1920,
+      'streamHeight': 1080,
+      'streamFps': 60,
+      'streamBitrateKbps': 30000,
+    });
+    expect(SteamStreamQuality.ultraHd.nativeArguments, containsPair('streamWidth', 3840));
+    expect(SteamStreamQuality.ultraHd.nativeArguments, containsPair('streamHeight', 2160));
+    expect(SteamStreamQuality.highRefresh.nativeArguments, containsPair('streamFps', 120));
+  });
+
   test('controller counts are profile scoped and malformed persisted values fall back to one', () async {
     final settings = await SettingsService.getInstance();
     final count = SettingsService.steamControllerCountForProfile('one');

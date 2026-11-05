@@ -25,6 +25,7 @@ import '../data_aggregation_service.dart';
 import '../media_list_playback_launcher.dart';
 import '../../screens/sources/open_media_screen.dart';
 import 'deep_link.dart';
+import '../../screens/games/games_screen.dart';
 
 /// How long a link waits for the server it needs to come online, e.g. while
 /// the app reconnects after the device woke up.
@@ -36,6 +37,9 @@ Future<void> launchDeepLink(BuildContext context, DeepLink link, {required bool 
   switch (link) {
     case OpenLink() || ExternalPlayerReturnLink():
       return;
+    case GameLink():
+      await Navigator.of(context, rootNavigator: true).push(
+        PageRouteBuilder<void>(pageBuilder: (_, animation, secondaryAnimation) => GamesScreen(initialRommLink: link.target)));
     case OpenMediaLink():
       await Navigator.of(context, rootNavigator: true).push(
         PageRouteBuilder<void>(

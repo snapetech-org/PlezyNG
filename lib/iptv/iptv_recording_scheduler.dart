@@ -13,6 +13,7 @@ import '../sources/source_models.dart';
 import 'iptv_models.dart';
 import 'iptv_live_tv_session.dart';
 import 'iptv_scheduled_stream_recorder.dart';
+import 'iptv_hls_archive.dart';
 import 'iptv_source_repository.dart';
 
 /// Runs one-off local IPTV schedules while PlezyNG is running. Dispatcharr
@@ -41,34 +42,12 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
     _recovering = true;
     try {
       await _repository.recoverLocalRecordingSchedules();
-      await _removeInterruptedPartials();
       _recovered = true;
       await _tick();
     } on Object catch (error, stackTrace) {
       appLogger.w('Could not recover IPTV recording schedules', error: error, stackTrace: stackTrace);
     } finally {
       _recovering = false;
-    }
-  }
-
-  Future<void> _removeInterruptedPartials() async {
-    try {
-      final root = await getApplicationSupportDirectory();
-      final folder = Directory(p.join(root.path, 'iptv-recordings'));
-      if (!await folder.exists()) return;
-      await for (final entity in folder.list(recursive: true, followLinks: false)) {
-        if (entity is File &&
-            p.basename(entity.path).startsWith('.') &&
-            p.basename(entity.path).contains('.partial.')) {
-          try {
-            await entity.delete();
-          } on Object {
-            // A stale partial is harmless and can be removed manually later.
-          }
-        }
-      }
-    } on Object catch (error, stackTrace) {
-      appLogger.w('Could not clean interrupted IPTV recording files', error: error, stackTrace: stackTrace);
     }
   }
 
@@ -153,7 +132,9 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
           channelId: schedule.channelId,
           title: schedule.title,
           programmeTitle: schedule.programmeTitle,
-          filePath: recordingTarget.path,
+          // Journal the file that exists during capture so process-death
+          // recovery can retain it before final publication/rename.
+          filePath: recordingPartial.path,
           startedAt: now,
           state: 'recording',
         ),
@@ -164,6 +145,7 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
         allowHttp: config.allowHttp,
         headers: session is IptvLiveTvPlaybackSession ? session.streamHeaders : const <String, String>{},
         outputFile: recordingPartial,
+        archiveDirectory: Directory(p.join(folder.path, '.$id.media')),
         endsAt: schedule.endsAt,
       );
       recorder = capture;
@@ -173,19 +155,18 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
       if (!await recordingPartial.exists() || await recordingPartial.length() == 0) {
         throw const IptvImportException('recording_empty');
       }
-      final size = await recordingPartial.length();
+      final size = await IptvHlsArchive.retainedBytes(recordingPartial);
+      if (size <= 0) throw const IptvImportException('recording_empty');
       final extensionlessTarget = recordingTarget.path.substring(0, recordingTarget.path.lastIndexOf('.'));
       final completedTarget = File('$extensionlessTarget$extension');
       if (await completedTarget.exists()) throw const IptvImportException('recording_conflict');
+      await _repository.updateLocalRecordingFilePath(
+        profileId: schedule.profileId,
+        recordingId: id,
+        filePath: completedTarget.path,
+      );
       await recordingPartial.rename(completedTarget.path);
       target = completedTarget;
-      if (completedTarget.path != recordingTarget.path) {
-        await _repository.updateLocalRecordingFilePath(
-          profileId: schedule.profileId,
-          recordingId: id,
-          filePath: completedTarget.path,
-        );
-      }
       await _repository.finishLocalRecording(
         profileId: schedule.profileId,
         recordingId: id,
@@ -198,9 +179,33 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
       appLogger.w('IPTV scheduled recording failed', error: error, stackTrace: stackTrace);
       final errorCode = _captureErrorCode(error);
       try {
-        if (partial != null && await partial.exists()) await partial.delete();
+        if (partial != null && await partial.exists()) {
+          if (await IptvHlsArchive.retainedBytes(partial) > 0) {
+            // A failed programme is still useful when it contains recorded
+            // media. Retain it with a normal playable extension and an
+            // interrupted state; never delete it merely because capture ended.
+            final retainedPath = '${partial.path}.incomplete${recorder?.fileExtension ?? '.ts'}';
+            if (recordingId != null && profileId != null) {
+              await _repository.updateLocalRecordingFilePath(
+                profileId: profileId,
+                recordingId: recordingId,
+                filePath: retainedPath,
+              );
+            }
+            target = await partial.rename(retainedPath);
+          } else {
+            await partial.delete();
+          }
+        }
         if (recordingId != null && profileId != null) {
-          final retainedSize = target != null && await target.exists() ? await target.length() : null;
+          final retainedSize = target != null && await target.exists() ? await IptvHlsArchive.retainedBytes(target) : null;
+          if (retainedSize != null && retainedSize > 0) {
+            await _repository.updateLocalRecordingFilePath(
+              profileId: profileId,
+              recordingId: recordingId,
+              filePath: target!.path,
+            );
+          }
           await _repository.finishLocalRecording(
             profileId: profileId,
             recordingId: recordingId,

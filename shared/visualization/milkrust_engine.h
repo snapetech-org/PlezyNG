@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include <algorithm>
+#include <chrono>
+#include <ctime>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -12,6 +14,7 @@
 #include <vector>
 
 #include "milkrust.h"
+#include "legacy_image_decode.h"
 #if defined(_WIN32)
 #include <windows.h>
 #else
@@ -36,7 +39,7 @@ struct MilkRustApi {
   // clang-format off
 #define DECLARE(name) decltype(&milkrust_##name) name = nullptr;
   DECLARE(abi_version) DECLARE(create) DECLARE(load) DECLARE(texture_names)
-  DECLARE(texture) DECLARE(pcm) DECLARE(render) DECLARE(render_rgba) DECLARE(destroy) DECLARE(last_error)
+  DECLARE(texture) DECLARE(texture_gif) DECLARE(texture_png) DECLARE(texture_webp) DECLARE(pcm) DECLARE(set_clock) DECLARE(set_mouse) DECLARE(render) DECLARE(render_rgba) DECLARE(destroy) DECLARE(last_error)
 #undef DECLARE
       // clang-format on
       MilkRustApi() {
@@ -44,21 +47,37 @@ struct MilkRustApi {
     library = reinterpret_cast<void*>(LoadLibraryExW(
         L"milkrust_native.dll", nullptr, LOAD_LIBRARY_SEARCH_APPLICATION_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32));
 #elif defined(__APPLE__)
-    // Mobile builds link a static library and export its public symbols. Desktop
-    // bundles may ship the equivalent dylib in their signed Frameworks folder.
+    // Apple builds link the per-SDK static archive with strong ABI references.
     library = dlopen(nullptr, RTLD_NOW | RTLD_LOCAL);
 #else
     library = dlopen("libmilkrust_native.so", RTLD_NOW | RTLD_LOCAL);
+    if (!library) {
+      // App-bundled plugin libraries are not guaranteed to be on the platform
+      // loader's global search path. Resolve the sibling runtime from this
+      // plugin's own installed directory (the webOS IPK stages both in app/lib).
+      Dl_info module{};
+      if (dladdr(reinterpret_cast<const void*>(&MilkRustApi::Shared), &module) != 0 && module.dli_fname) {
+        const auto bundled = std::filesystem::path(module.dli_fname).parent_path() /
+            "libmilkrust_native.so";
+        library = dlopen(bundled.c_str(), RTLD_NOW | RTLD_LOCAL);
+      }
+    }
 #endif
     if (!library) {
       error = "Native MilkRust is not installed in this build.";
       return;
     }
     // clang-format off
+#if defined(__APPLE__)
+    // Strong references pull the ABI objects from the app's static archive;
+    // this remains valid with dead stripping and does not rely on dlsym exports.
+#define LOAD(name) name = &milkrust_##name;
+#else
 #define LOAD(name) name = reinterpret_cast<decltype(name)>(Symbol("milkrust_" #name)); \
-    if (!name) { error = "Native MilkRust lacks the required ABI v1 symbols."; return; }
-    LOAD(abi_version) LOAD(create) LOAD(load) LOAD(texture_names) LOAD(texture)
-    LOAD(pcm) LOAD(render) LOAD(render_rgba) LOAD(destroy) LOAD(last_error)
+    if (!name) { error = "Native MilkRust lacks the required ABI v2 symbols."; return; }
+#endif
+    LOAD(abi_version) LOAD(create) LOAD(load) LOAD(texture_names) LOAD(texture) LOAD(texture_gif) LOAD(texture_png) LOAD(texture_webp)
+    LOAD(pcm) LOAD(set_clock) LOAD(set_mouse) LOAD(render) LOAD(render_rgba) LOAD(destroy) LOAD(last_error)
 #undef LOAD
         // clang-format on
         if (abi_version() != MILKRUST_ABI_VERSION) error = "Native MilkRust ABI version does not match the app.";
@@ -87,15 +106,13 @@ struct MilkRustApi {
     return std::string(reinterpret_cast<const char*>(bytes.data()));
   }
   static MilkRustApi& Shared() {
-    static MilkRustApi api;
-    return api;
+    // A quarantined driver call can outlive a host. Keep its code mapping for
+    // the process lifetime instead of unloading it beneath a render thread.
+    static auto* api = new MilkRustApi();
+    return *api;
   }
 };
 
-struct MilkRustImage {
-  uint32_t width = 0, height = 0;
-  std::vector<uint8_t> rgba;
-};
 using MilkRustImageDecoder = std::function<MilkRustImage(const std::filesystem::path&)>;
 
 // A render-thread object. Context and decoder ownership stay with the host.
@@ -124,7 +141,7 @@ class MilkRustEngine {
       throw std::runtime_error("Preset changed while loading.");
     Check(api_.load(handle_, source.data(), source.size()));
     const auto capacity = api_.texture_names(handle_, nullptr, 0);
-    if (!capacity || capacity > 64 * 513 + 1) throw std::runtime_error("Invalid texture dependency list.");
+    if (!capacity || capacity > 100 * 513 + 1) throw std::runtime_error("Invalid texture dependency list.");
     std::vector<uint8_t> names(capacity);
     if (api_.texture_names(handle_, names.data(), names.size()) != capacity)
       throw std::runtime_error("Texture dependency list changed.");
@@ -133,8 +150,51 @@ class MilkRustEngine {
     for (std::string name; std::getline(lines, name);) {
       const auto asset = Resolve(canonical_root, file.parent_path(), name);
       if (asset.empty()) continue;  // Engine reports a missing asset if the active stage needs it.
-      if (std::filesystem::file_size(asset) > 16 * 1024 * 1024) throw std::runtime_error("Texture exceeds 16 MiB.");
-      const auto image = decode(asset);  // Decoder must enforce dimensions before allocation.
+      const auto extension = Fold(asset.extension().u8string());
+      if (extension == ".webp") {
+        const auto encoded_size = std::filesystem::file_size(asset);
+        if (!encoded_size || encoded_size > 16 * 1024 * 1024)
+          throw std::runtime_error("WebP exceeds 16 MiB or is empty.");
+        std::ifstream encoded_input(asset, std::ios::binary);
+        std::vector<uint8_t> encoded(static_cast<size_t>(encoded_size));
+        if (!encoded_input.read(reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
+            encoded_input.peek() != EOF)
+          throw std::runtime_error("WebP changed while loading.");
+        Check(api_.texture_webp(handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(),
+                                encoded.data(), encoded.size()));
+        continue;
+      }
+      if (extension == ".png") {
+        const auto encoded_size = std::filesystem::file_size(asset);
+        if (!encoded_size || encoded_size > 16 * 1024 * 1024)
+          throw std::runtime_error("PNG exceeds 16 MiB or is empty.");
+        std::ifstream encoded_input(asset, std::ios::binary);
+        std::vector<uint8_t> encoded(static_cast<size_t>(encoded_size));
+        if (!encoded_input.read(reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
+            encoded_input.peek() != EOF)
+          throw std::runtime_error("PNG changed while loading.");
+        Check(api_.texture_png(handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(),
+                               encoded.data(), encoded.size()));
+        continue;
+      }
+      if (extension == ".gif") {
+        const auto encoded_size = std::filesystem::file_size(asset);
+        if (!encoded_size || encoded_size > 16 * 1024 * 1024)
+          throw std::runtime_error("GIF exceeds 16 MiB or is empty.");
+        std::ifstream encoded_input(asset, std::ios::binary);
+        std::vector<uint8_t> encoded(static_cast<size_t>(encoded_size));
+        if (!encoded_input.read(reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
+            encoded_input.peek() != EOF)
+          throw std::runtime_error("GIF changed while loading.");
+        Check(api_.texture_gif(handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(),
+                               encoded.data(), encoded.size()));
+        continue;
+      }
+      if (std::filesystem::file_size(asset) > 16 * 1024 * 1024)
+        throw std::runtime_error("Texture exceeds 16 MiB.");
+      const auto image = extension == ".dds" || extension == ".tga"
+          ? legacy_image::Decode(asset, extension == ".dds")
+          : decode(asset);  // Platform decoder must enforce dimensions before allocation.
       pixels += static_cast<uint64_t>(image.width) * image.height;
       if (!image.width || !image.height || image.width > 4096 || image.height > 4096 ||
           static_cast<uint64_t>(image.width) * image.height > 8 * 1024 * 1024 || pixels > 32 * 1024 * 1024 ||
@@ -152,19 +212,43 @@ class MilkRustEngine {
       offset += count;
     }
   }
+  void SetMouseState(bool down, double x, double y, double dx, double dy) {
+    Check(api_.set_mouse(handle_, down ? 1 : 0, x, y, dx, dy));
+  }
   void Render(uint32_t framebuffer, uint32_t width, uint32_t height, double seconds) {
+    SetLocalClock();
     Check(api_.render(handle_, framebuffer, width, height, seconds));
   }
   void Capture(uint32_t width, uint32_t height, double seconds, std::vector<uint8_t>& rgba) {
     if (!width || !height || width > 4096 || height > 4096 || static_cast<uint64_t>(width) * height > 8 * 1024 * 1024)
       throw std::runtime_error("Capture exceeds image budget.");
     rgba.resize(static_cast<size_t>(width) * height * 4);
+    SetLocalClock();
     Check(api_.render_rgba(handle_, width, height, seconds, rgba.data(), rgba.size()));
   }
 
  private:
   MilkRustApi& api_;
   milkrust_handle handle_ = 0;
+  void SetLocalClock() {
+    const auto now = std::chrono::system_clock::now();
+    const auto whole_seconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+    const auto total_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+    const auto subsecond = static_cast<uint32_t>((total_milliseconds % 1000 + 1000) % 1000);
+    const std::time_t timestamp = static_cast<std::time_t>(whole_seconds);
+    std::tm local_time{};
+#if defined(_WIN32)
+    if (::localtime_s(&local_time, &timestamp) != 0)
+      throw std::runtime_error("Could not read the local calendar clock.");
+#else
+    if (::localtime_r(&timestamp, &local_time) == nullptr)
+      throw std::runtime_error("Could not read the local calendar clock.");
+#endif
+    Check(api_.set_clock(handle_, static_cast<int32_t>(local_time.tm_year + 1900),
+        static_cast<uint32_t>(local_time.tm_mon + 1), static_cast<uint32_t>(local_time.tm_mday),
+        static_cast<uint32_t>(local_time.tm_wday), static_cast<uint32_t>(local_time.tm_hour),
+        static_cast<uint32_t>(local_time.tm_min), static_cast<uint32_t>(local_time.tm_sec), subsecond));
+  }
   void Check(int result) const {
     if (result != 0) throw std::runtime_error(api_.Error());
   }
@@ -222,7 +306,7 @@ class MilkRustEngine {
       if (part == ".." || part == ".") throw std::runtime_error("Unsafe texture path.");
     size_t remaining = 20000;
     for (const auto& directory : {preset_folder, root, root / "textures"}) {
-      for (const char* extension : {"", ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".tga", ".dds"}) {
+      for (const char* extension : {"", ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".gif", ".tga", ".dds"}) {
         if (*extension && relative.has_extension()) continue;
         const auto candidate = directory / PathFromUtf8(name + extension);
         if (std::filesystem::exists(candidate)) return Inside(root, candidate);

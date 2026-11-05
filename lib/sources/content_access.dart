@@ -636,6 +636,7 @@ class PublicationDownloads {
   final SourceRepository repository;
   final Directory directory;
   final Map<String, Future<File>> _pending = {};
+  final Map<String, Future<void>> _removals = {};
   final Map<String, TransferCancellation> _cancellations = {};
   final Map<String, _DownloadTask> _tasks = {};
   final Queue<_DownloadTask> _queue = Queue();
@@ -998,8 +999,11 @@ class PublicationDownloads {
     );
   }
 
-  Future<File?> local(String profile, String sourceId, PublicationFile file) async =>
-      file.sampleOnly ? null : _verifiedLocal(profile, file, await repository.download(profile, key(sourceId, file)));
+  Future<File?> local(String profile, String sourceId, PublicationFile file) async {
+    final pendingRemoval = _removals[sourceKey(profile, key(sourceId, file))];
+    if (pendingRemoval != null) await pendingRemoval;
+    return file.sampleOnly ? null : _verifiedLocal(profile, file, await repository.download(profile, key(sourceId, file)));
+  }
 
   Future<File?> _verifiedLocal(String profile, PublicationFile file, Map<String, dynamic>? record) async {
     if (file.sampleOnly || record == null || record['complete'] != 1 || record['fingerprint'] != file.fingerprint) {
@@ -1952,18 +1956,32 @@ class PublicationDownloads {
     await Future.wait(_pending.values.toList().map((transfer) => transfer.then<void>((_) {}, onError: (Object _) {})));
   }
 
-  Future<void> remove(String profile, String sourceId, PublicationFile file) async {
-    final record = await repository.download(profile, key(sourceId, file));
-    if (record != null) {
-      final path = record['path'] as String;
-      if (!p.isWithin(p.join(directory.path, sourceDigest(profile)), path)) {
-        throw const SourceException(SourceFailure.permission);
+  Future<void> remove(String profile, String sourceId, PublicationFile file, {bool Function()? shouldRemove}) {
+    final identity = sourceKey(profile, key(sourceId, file));
+    final previous = _removals[identity];
+    late final Future<void> removal;
+    removal = () async {
+      if (previous != null) await previous;
+      bool allowed() => shouldRemove?.call() ?? true;
+      if (!allowed()) return;
+      final record = await repository.download(profile, key(sourceId, file));
+      if (!allowed()) return;
+      if (record != null) {
+        final path = record['path'] as String;
+        if (!p.isWithin(p.join(directory.path, sourceDigest(profile)), path)) {
+          throw const SourceException(SourceFailure.permission);
+        }
+        final target = File(path);
+        final exists = await target.exists();
+        if (!allowed()) return;
+        if (exists) await target.delete();
       }
-      final target = File(path);
-      if (await target.exists()) await target.delete();
-    }
-    await repository.forgetDownload(profile, key(sourceId, file));
+      if (allowed()) await repository.forgetDownload(profile, key(sourceId, file));
+    }().whenComplete(() { if (identical(_removals[identity], removal)) _removals.remove(identity); });
+    _removals[identity] = removal;
+    return removal;
   }
+
 }
 
 class _NativeDownloadContext {
@@ -2024,9 +2042,14 @@ class _DownloadTask {
 typedef SourceUriRenewal = Future<({Uri uri, Map<String, String> headers})> Function();
 
 class SourceStreamGateway {
-  SourceStreamGateway({required this.valid});
+  SourceStreamGateway({required this.valid, DateTime Function()? clock}) : _clock = clock ?? DateTime.now;
+  static const _maximumManifestReferences = 50000;
+  static const _maximumRegistrations = 100000;
+  static const _retiredReferenceGrace = Duration(minutes: 2);
   final bool Function() valid;
+  final DateTime Function() _clock;
   HttpServer? _server;
+  Future<void>? _serverStarting;
   final _secret = SourceOAuthService.randomSecret();
   final Map<String, ({SourceAdapter adapter, PublicationFile file})> _files = {};
   final Map<String, ContentLease> _leases = {};
@@ -2035,13 +2058,52 @@ class SourceStreamGateway {
   final Map<String, String> _directIdsByUri = {};
   final Set<String> _nonDeduplicatedDirectIds = {};
   final Map<String, Future<({Uri uri, Map<String, String> headers})>> _directRenewals = {};
+  final Map<String, String> _manifestReferenceIds = {};
+  final Map<String, String> _manifestReferenceKeys = {};
+  final Map<String, Set<String>> _manifestChildren = {};
+  final Map<String, DateTime> _retiredReferences = {};
+  final Map<String, int> _activeDirectRequests = {};
+  final Map<String, Future<void>> _manifestRewrites = {};
   var _directCounter = 0;
   final _abort = Completer<void>();
 
-  Future<void> _ensureServer() async {
+  Future<void> _ensureServer() {
+    if (_server != null) return Future<void>.value();
+    return _serverStarting ??= _startServer().whenComplete(() => _serverStarting = null);
+  }
+
+  Future<void> _startServer() async {
     if (_server != null) return;
-    _server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
-    _server!.listen((request) => unawaited(_serve(request)));
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    if (!valid() || _abort.isCompleted) {
+      await server.close(force: true);
+      throw const SourceException(SourceFailure.cancelled);
+    }
+    _server = server;
+    server.listen((request) => unawaited(_serve(request)));
+  }
+
+  void _removeDirectRegistration(String id) {
+    if ((_activeDirectRequests[id] ?? 0) > 0) return;
+    final removed = _directUris.remove(id);
+    if (removed == null) return;
+    if (_directIdsByUri[removed.cacheKey] == id) _directIdsByUri.remove(removed.cacheKey);
+    _nonDeduplicatedDirectIds.remove(id);
+    final referenceKey = _manifestReferenceKeys.remove(id);
+    if (referenceKey != null && _manifestReferenceIds[referenceKey] == id) {
+      _manifestReferenceIds.remove(referenceKey);
+    }
+    _retiredReferences.remove(id);
+    for (final child in _manifestChildren.remove(id) ?? const <String>{}) {
+      _retiredReferences.putIfAbsent(child, () => _clock().add(_retiredReferenceGrace));
+    }
+  }
+
+  void _pruneRetiredReferences() {
+    final now = _clock();
+    for (final entry in _retiredReferences.entries.toList(growable: false)) {
+      if (!entry.value.isAfter(now)) _removeDirectRegistration(entry.key);
+    }
   }
 
   Future<Uri> register(SourceAdapter adapter, PublicationFile file) async {
@@ -2067,7 +2129,7 @@ class SourceStreamGateway {
       throw const SourceException(SourceFailure.permission);
     }
     final safeHeaders = _validateDirectHeaders(headers);
-    SourceTransport(allowHttp: uri.scheme == 'http').validate(uri);
+    SourceTransport.validateUri(uri, allowHttp: uri.scheme == 'http');
     await _ensureServer();
     final uriText = _directCacheKey(uri, safeHeaders);
     final existing = deduplicate ? _directIdsByUri[uriText] : null;
@@ -2083,20 +2145,18 @@ class SourceStreamGateway {
       }
       return Uri.parse('http://127.0.0.1:${_server!.port}/$_secret/$existing');
     }
+    // Roots are session-owned. Never discard a playing root or a media
+    // playlist to make room for a newer segment. Manifest children retire
+    // through their owning playlist, with a grace period for buffered reads.
+    if (_directUris.length >= _maximumRegistrations) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     final id = sourceDigest('direct:$_secret:${_directCounter++}');
     _directUris[id] = (uri: uri, headers: safeHeaders, cacheKey: uriText, renew: renew);
     if (deduplicate) {
       _directIdsByUri[uriText] = id;
     } else {
       _nonDeduplicatedDirectIds.add(id);
-    }
-    while (_directUris.length > 4096) {
-      final oldest = _directUris.keys.first;
-      final removed = _directUris.remove(oldest);
-      _nonDeduplicatedDirectIds.remove(oldest);
-      if (removed != null && _directIdsByUri[removed.cacheKey] == oldest) {
-        _directIdsByUri.remove(removed.cacheKey);
-      }
     }
     return Uri.parse('http://127.0.0.1:${_server!.port}/$_secret/$id');
   }
@@ -2210,7 +2270,18 @@ class SourceStreamGateway {
           request.response.statusCode = 404;
           return;
         }
-        await _serveDirect(request, id: segments[1], uri: direct.uri, headers: direct.headers, renew: direct.renew);
+        final id = segments[1];
+        _activeDirectRequests[id] = (_activeDirectRequests[id] ?? 0) + 1;
+        try {
+          await _serveDirect(request, id: id, uri: direct.uri, headers: direct.headers, renew: direct.renew);
+        } finally {
+          final remaining = (_activeDirectRequests[id] ?? 1) - 1;
+          if (remaining <= 0) {
+            _activeDirectRequests.remove(id);
+          } else {
+            _activeDirectRequests[id] = remaining;
+          }
+        }
         return;
       }
       final range = request.headers.value(HttpHeaders.rangeHeader);
@@ -2317,6 +2388,18 @@ class SourceStreamGateway {
     }
   }
 
+  Uri _manifestUri(Uri base, String value) {
+    final uri = base.resolve(value.trim());
+    final scheme = uri.scheme.toLowerCase();
+    if (scheme == 'skd' || scheme == 'data') return uri;
+    if (!const {'http', 'https'}.contains(scheme) || uri.hasFragment || uri.userInfo.isNotEmpty ||
+        (base.scheme == 'https' && scheme != 'https')) {
+      throw const SourceException(SourceFailure.permission);
+    }
+    SourceTransport.validateUri(uri, allowHttp: scheme == 'http');
+    return uri;
+  }
+
   Future<String> _registerManifestUri(
     Uri base,
     String value,
@@ -2324,20 +2407,25 @@ class SourceStreamGateway {
     required String parentId,
     required SourceUriRenewal? parentRenew,
     required int referenceIndex,
+    required Set<String> children,
+    required Set<String> created,
   }) async {
     final raw = value.trim();
-    final uri = base.resolve(raw);
+    final uri = _manifestUri(base, raw);
     final scheme = uri.scheme.toLowerCase();
     // FairPlay's skd: key URI is handled by the platform DRM path. Inline
     // data: URIs are self-contained. Never hand file: or another network
     // scheme from a remote manifest to the native player.
     if (scheme == 'skd' || scheme == 'data') return raw;
-    if (!const {'http', 'https'}.contains(scheme) || (base.scheme == 'https' && scheme != 'https')) {
-      throw const SourceException(SourceFailure.permission);
-    }
     // Manifest children can point at a CDN or a different host. Request
     // credentials are scoped to the stream origin and must never follow them.
     final childHeaders = sameSourceOrigin(base, uri) ? headers : const <String, String>{};
+    final referenceKey = sourceDigest(jsonEncode([parentId, referenceIndex, _directCacheKey(uri, childHeaders)]));
+    final existingId = _manifestReferenceIds[referenceKey];
+    if (existingId != null && _directUris.containsKey(existingId)) {
+      children.add(existingId);
+      return 'http://127.0.0.1:${_server!.port}/$_secret/$existingId';
+    }
     final SourceUriRenewal? childRenew = parentRenew == null
         ? null
         : () => _renewManifestChildUri(
@@ -2350,10 +2438,33 @@ class SourceStreamGateway {
     // identical URI for two playlist slots would otherwise bind both slots to
     // whichever callback registered first.
     final local = await registerUri(uri, headers: childHeaders, renew: childRenew, deduplicate: false);
+    final id = local.pathSegments.last;
+    _manifestReferenceIds[referenceKey] = id;
+    _manifestReferenceKeys[id] = referenceKey;
+    children.add(id);
+    created.add(id);
     return local.toString();
   }
 
   Future<String> _rewriteHlsManifest(
+    String value,
+    Uri base,
+    Map<String, String> headers, {
+    required String parentId,
+    required SourceUriRenewal? parentRenew,
+  }) {
+    final result = (_manifestRewrites[parentId] ?? Future<void>.value()).then(
+      (_) => _rewriteHlsManifestNow(value, base, headers, parentId: parentId, parentRenew: parentRenew),
+    );
+    final tail = result.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    _manifestRewrites[parentId] = tail;
+    unawaited(tail.whenComplete(() {
+      if (identical(_manifestRewrites[parentId], tail)) _manifestRewrites.remove(parentId);
+    }));
+    return result;
+  }
+
+  Future<String> _rewriteHlsManifestNow(
     String value,
     Uri base,
     Map<String, String> headers, {
@@ -2364,42 +2475,80 @@ class SourceStreamGateway {
     var rewrittenUris = 0;
     var referenceIndex = 0;
     final attributeUri = RegExp(r'URI="([^"]+)"');
-    for (var index = 0; index < lines.length; index++) {
-      var line = lines[index];
-      if (line.trim().isEmpty) continue;
-      if (!line.startsWith('#')) {
-        if (referenceIndex >= 2000) throw const SourceException(SourceFailure.invalidData);
-        line = await _registerManifestUri(
-          base,
-          line,
-          headers,
-          parentId: parentId,
-          parentRenew: parentRenew,
-          referenceIndex: referenceIndex++,
-        );
-        rewrittenUris++;
-      } else {
-        final matches = attributeUri.allMatches(line).toList();
-        if (referenceIndex + matches.length > 2000) throw const SourceException(SourceFailure.invalidData);
-        for (var matchIndex = matches.length - 1; matchIndex >= 0; matchIndex--) {
-          final match = matches[matchIndex];
-          final local = await _registerManifestUri(
+    // Reject an invalid/oversized playlist before allocating capabilities.
+    // A later registration failure still rolls back only this rewrite's new
+    // children; the previously published playlist remains valid.
+    var validatedReferences = 0;
+    for (final raw in lines) {
+      final line = raw.trim();
+      if (line.isEmpty) continue;
+      final values = line.startsWith('#')
+          ? attributeUri.allMatches(line).map((match) => match.group(1)!)
+          : [line];
+      for (final value in values) {
+        if (++validatedReferences > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+        _manifestUri(base, value);
+      }
+    }
+    _pruneRetiredReferences();
+    final children = <String>{};
+    final created = <String>{};
+    try {
+      for (var index = 0; index < lines.length; index++) {
+        var line = lines[index].trim();
+        if (line.trim().isEmpty) continue;
+        if (!line.startsWith('#')) {
+          if (referenceIndex >= _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+          line = await _registerManifestUri(
             base,
-            match.group(1)!,
+            line,
             headers,
             parentId: parentId,
             parentRenew: parentRenew,
-            referenceIndex: referenceIndex + matchIndex,
+            referenceIndex: referenceIndex++,
+            children: children,
+            created: created,
           );
-          line = line.replaceRange(match.start, match.end, 'URI="$local"');
           rewrittenUris++;
+        } else {
+          final matches = attributeUri.allMatches(line).toList();
+          if (referenceIndex + matches.length > _maximumManifestReferences) {
+            throw const SourceException(SourceFailure.invalidData);
+          }
+          for (var matchIndex = matches.length - 1; matchIndex >= 0; matchIndex--) {
+            final match = matches[matchIndex];
+            final local = await _registerManifestUri(
+              base,
+              match.group(1)!,
+              headers,
+              parentId: parentId,
+              parentRenew: parentRenew,
+              referenceIndex: referenceIndex + matchIndex,
+              children: children,
+              created: created,
+            );
+            line = line.replaceRange(match.start, match.end, 'URI="$local"');
+            rewrittenUris++;
+          }
+          referenceIndex += matches.length;
         }
-        referenceIndex += matches.length;
+        if (rewrittenUris > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+        lines[index] = line;
       }
-      if (rewrittenUris > 2000) throw const SourceException(SourceFailure.invalidData);
-      lines[index] = line;
+      final previous = _manifestChildren[parentId] ?? const <String>{};
+      final retireAt = _clock().add(_retiredReferenceGrace);
+      for (final id in previous.difference(children)) {
+        _retiredReferences.putIfAbsent(id, () => retireAt);
+      }
+      for (final id in children) {
+        _retiredReferences.remove(id);
+      }
+      _manifestChildren[parentId] = children;
+      return lines.join('\n');
+    } catch (_) {
+      for (final id in created) _removeDirectRegistration(id);
+      rethrow;
     }
-    return lines.join('\n');
   }
 
   List<Uri> _hlsReferences(String manifest, Uri base) {
@@ -2410,12 +2559,12 @@ class SourceStreamGateway {
       if (line.isEmpty) continue;
       if (!line.startsWith('#')) {
         references.add(base.resolve(line));
-        if (references.length > 2000) throw const SourceException(SourceFailure.invalidData);
+        if (references.length > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
         continue;
       }
       for (final match in attributeUri.allMatches(line)) {
         references.add(base.resolve(match.group(1)!));
-        if (references.length > 2000) throw const SourceException(SourceFailure.invalidData);
+        if (references.length > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
       }
     }
     return references;
@@ -2605,6 +2754,12 @@ class SourceStreamGateway {
     _directIdsByUri.clear();
     _nonDeduplicatedDirectIds.clear();
     _directRenewals.clear();
+    _manifestReferenceIds.clear();
+    _manifestReferenceKeys.clear();
+    _manifestChildren.clear();
+    _retiredReferences.clear();
+    _activeDirectRequests.clear();
+    _manifestRewrites.clear();
     if (!_abort.isCompleted) _abort.complete();
     await _server?.close(force: true);
     _server = null;

@@ -1175,6 +1175,21 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Reject tracked package build output
+        run: python3 scripts/checks/check_tracked_build_outputs.py
+      - name: Check relative Dart imports
+        run: python3 scripts/checks/check_dart_imports.py
+      - name: Check visualizer process and lifetime contracts
+        timeout-minutes: 5
+        run: bash scripts/visualizer/test_native.sh
+
+      - name: Validate published release facts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY}/releases/latest" > "$RUNNER_TEMP/published-release.json"
+          python3 scripts/checks/check_capability_manifest.py --release-metadata "$RUNNER_TEMP/published-release.json"
+
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:

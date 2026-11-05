@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 
 import 'package:flutter/widgets.dart';
 
@@ -24,6 +27,9 @@ class WorkspaceSurfaceRegistration {
     this.onAudioOwnershipChanged,
     this.onInputOwnershipChanged,
     this.videoPlayerSlot,
+    this.onDetachWindow,
+    this.onAttachWindow,
+    this.isWindowDetached,
   });
 
   final WorkspaceSessionDescriptor descriptor;
@@ -37,6 +43,9 @@ class WorkspaceSurfaceRegistration {
   final WorkspaceOwnershipHandler? onAudioOwnershipChanged;
   final WorkspaceOwnershipHandler? onInputOwnershipChanged;
   final VideoPlayerSlot? videoPlayerSlot;
+  final Future<bool> Function()? onDetachWindow;
+  final Future<bool> Function()? onAttachWindow;
+  final bool Function()? isWindowDetached;
 }
 
 /// Profile-scoped state and command surface for app-owned Multiview.
@@ -63,6 +72,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   final Set<String> _parkedSessionIds = <String>{};
   final Set<String> _restoredSessionIds = <String>{};
   final Set<String> _focusedInputSurfaceIds = <String>{};
+  final Set<String> _windowOperations = <String>{};
   String? _fullscreenSessionId;
   bool _sessionTrayVisible = false;
   String? _focusedSessionId;
@@ -131,6 +141,31 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   MultiviewLayoutMode get layoutMode => _layoutMode;
 
   WorkspaceSurfaceRegistration? session(String id) => _sessions[id];
+
+  bool windowOperationPending(String id) => _windowOperations.contains(id);
+  bool isWindowDetached(String id) => _sessions[id]?.isWindowDetached?.call() ?? false;
+  String nativeWindowGeometryKey(VideoPlayerSlot? slot) =>
+      sha256.convert(utf8.encode('plezy-window-v1|${_profileId ?? 'default'}|${slot?.name ?? 'primary'}')).toString();
+
+  void refreshPresentation(String id) {
+    if (!_disposed && _sessions.containsKey(id)) _publish();
+  }
+
+  Future<bool> toggleDetachedWindow(String id) async {
+    final registration = _sessions[id];
+    if (_disposed || registration == null || !_windowOperations.add(id)) return false;
+    _publish();
+    try {
+      final operation = isWindowDetached(id) ? registration.onAttachWindow : registration.onDetachWindow;
+      return operation != null && await operation();
+    } catch (error, stack) {
+      debugPrint('Workspace window operation failed: $error\n$stack');
+      return false;
+    } finally {
+      _windowOperations.remove(id);
+      if (!_disposed) _publish();
+    }
+  }
 
   /// Load the last profile-local layout. Session owners are never recreated;
   /// saved descriptors only restore geometry and ownership preference when the
@@ -291,6 +326,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       onAudioOwnershipChanged: existing.onAudioOwnershipChanged,
       onInputOwnershipChanged: existing.onInputOwnershipChanged,
       videoPlayerSlot: nextVideoPlayerSlot,
+      onDetachWindow: existing.onDetachWindow,
+      onAttachWindow: existing.onAttachWindow,
+      isWindowDetached: existing.isWindowDetached,
     );
     if ((!descriptor.hasAudio && (_requestedAudibleSessionId == descriptor.id || _audibleSessionId == descriptor.id))) {
       _requestedAudibleSessionId = _firstSessionIdWhere(
@@ -332,6 +370,10 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   bool restore(String id) {
     final registration = _sessions[id];
     if (registration == null || _restoredSessionIds.contains(id)) return false;
+    if (isWindowDetached(id)) {
+      unawaited(_attachWindowThenRestore(id, registration));
+      return true;
+    }
     _restoredSessionIds.add(id);
     _parkedSessionIds.remove(id);
     if (_fullscreenSessionId == id) _fullscreenSessionId = null;
@@ -348,6 +390,11 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     _publish();
     registration.onRestore();
     return true;
+  }
+
+  Future<void> _attachWindowThenRestore(String id, WorkspaceSurfaceRegistration registration) async {
+    if (!await toggleDetachedWindow(id)) return;
+    if (!_disposed && _sessions[id]?.onAttachWindow == registration.onAttachWindow && !isWindowDetached(id)) restore(id);
   }
 
   /// Move a restored or parked session back into the workspace. When

@@ -169,7 +169,9 @@ void main([List<String> args = const <String>[]]) {
   unawaited(IncomingSubtitleShareService.instance.start());
   for (final argument in args) {
     final normalized = argument.toLowerCase();
-    if (normalized.startsWith('pleazyng://') || normalized.startsWith('plezyng://') || normalized.startsWith('plezxyng://')) {
+    if (normalized.startsWith('pleazyng://') ||
+        normalized.startsWith('plezyng://') ||
+        normalized.startsWith('plezxyng://')) {
       DeepLinkService.instance.receive(argument);
       break;
     }
@@ -1277,10 +1279,10 @@ void _registerAppLicenses() {
       yield LicenseEntryWithLineBreaks(const [
         'LG audioplayers_soloud webOS plugin',
       ], await rootBundle.loadString('assets/licenses/LG_AudioPlayers_WebOS_BSD3.txt'));
-      yield LicenseEntryWithLineBreaks(const ['flutter_soloud'],
-          await rootBundle.loadString('assets/licenses/flutter_soloud_MIT.txt'));
-      yield LicenseEntryWithLineBreaks(const ['SoLoud'],
-          await rootBundle.loadString('assets/licenses/SoLoud.txt'));
+      yield LicenseEntryWithLineBreaks(const [
+        'flutter_soloud',
+      ], await rootBundle.loadString('assets/licenses/flutter_soloud_MIT.txt'));
+      yield LicenseEntryWithLineBreaks(const ['SoLoud'], await rootBundle.loadString('assets/licenses/SoLoud.txt'));
     });
   }
   // iOS covers iPhone, iPad, and Apple TV; mpv-build links SpatialAudioBridge
@@ -2637,9 +2639,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
         _statusMessage,
         key: ValueKey(_statusMessage),
         textAlign: TextAlign.center,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
     );
   }
@@ -2647,7 +2647,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   Widget _buildServerStatusList(BuildContext context) {
     if (_serverStatus.isEmpty) return const SizedBox.shrink();
     final textTheme = Theme.of(context).textTheme;
-    final dimColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5);
+    final dimColor = Theme.of(context).colorScheme.onSurfaceVariant;
     const successColor = Color(0xFF4CAF50);
     const failColor = Color(0xFFEF5350);
 
@@ -2671,7 +2671,9 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
             children: [
               statusIcon,
               const SizedBox(width: 8),
-              Text(name, style: textTheme.bodySmall?.copyWith(color: dimColor)),
+              Flexible(
+                child: Text(name, style: textTheme.bodySmall?.copyWith(color: dimColor)),
+              ),
             ],
           ),
         );
@@ -2680,63 +2682,32 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   }
 
   @override
-  Widget build(BuildContext context) {
-    const coralColor = Color(0xFFFF6847);
-    final height = MediaQuery.sizeOf(context).height;
-    // The stacked layout below hangs its two rows off fixed ±170/180 offsets from the middle, which
-    // needs roughly 700 logical pixels of height. A car at a large interface scale — and a phone in
-    // landscape — has less than that, and the rows would collide or fall outside the Stack's clip.
-    if (height < 700) {
-      return ColoredBox(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+  Widget build(BuildContext context) => ColoredBox(
+    color: Theme.of(context).scaffoldBackgroundColor,
+    child: SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) => Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const AppBrandMark(size: 160),
-                  _buildStatusText(context),
+                  AppBrandMark(size: constraints.maxHeight < 500 ? 128 : 224, decorative: true),
                   const SizedBox(height: 16),
-                  Center(
-                    child: _serverStatus.isEmpty
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: coralColor),
-                          )
-                        : _buildServerStatusList(context),
-                  ),
+                  _buildStatusText(context),
+                  const SizedBox(height: 20),
+                  if (_serverStatus.isEmpty)
+                    const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  else
+                    _buildServerStatusList(context),
                 ],
               ),
             ),
           ),
         ),
-      );
-    }
-    return ColoredBox(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Stack(
-        children: [
-          Center(child: const AppBrandMark(size: 288)),
-          Positioned(left: 0, right: 0, bottom: height * 0.5 - 170, child: _buildStatusText(context)),
-          Positioned(
-            left: 0,
-            right: 0,
-            top: height * 0.5 + 180,
-            child: Center(
-              child: _serverStatus.isEmpty
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: coralColor),
-                    )
-                  : _buildServerStatusList(context),
-            ),
-          ),
-        ],
       ),
-    );
-  }
+    ),
+  );
 }

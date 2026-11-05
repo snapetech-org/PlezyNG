@@ -73,6 +73,39 @@ void main() {
       expect(find.text('Retry'), findsNothing);
     });
   });
+
+  testWidgets('empty states scroll at large text sizes on narrow RTL screens', (tester) async {
+    tester.view.physicalSize = const Size(320, 240);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    var activated = false;
+    await tester.pumpWidget(
+      InputModeTracker(
+        child: MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+            child: Directionality(textDirection: TextDirection.rtl, child: child!),
+          ),
+          home: Scaffold(
+            body: EmptyStateWidget(
+              message: 'No matching items in this library',
+              subtitle: 'Change the filters to find something to watch.',
+              icon: Icons.video_library_outlined,
+              actionLabel: 'Clear filters',
+              onAction: () => activated = true,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await tester.ensureVisible(find.text('Clear filters'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Clear filters'));
+    expect(activated, isTrue);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 Future<void> _pump(WidgetTester tester, Widget child) async {

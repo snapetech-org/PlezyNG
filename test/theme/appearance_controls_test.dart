@@ -14,6 +14,10 @@ void main() {
       expect(PaletteContrastCheck.failing(palette), isEmpty);
       expect(MonoPalette.contrastRatio(palette.accent, palette.surface), greaterThanOrEqualTo(4.5));
       expect(monoTheme(palette).colorScheme.primary, palette.accent);
+      expect(
+        MonoPalette.contrastRatio(monoTheme(palette).colorScheme.error, palette.surface),
+        greaterThanOrEqualTo(4.5),
+      );
     }
     expect(MonoPalette.oled.bg, Colors.black);
   });

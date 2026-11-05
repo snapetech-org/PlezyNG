@@ -4,6 +4,8 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../focus/focusable_button.dart';
 import '../../i18n/strings.g.dart';
+import '../../theme/mono_tokens.dart';
+import '../../widgets/app_brand.dart';
 
 /// Base widget for displaying state messages (empty, error, etc.)
 /// Provides a consistent UI pattern for showing icons, messages, and actions
@@ -42,6 +44,7 @@ class StateMessageWidget extends StatelessWidget {
 
   /// Whether the action button uses a background focus indicator.
   final bool actionUseBackgroundFocus;
+  final bool showBrand;
 
   const StateMessageWidget({
     super.key,
@@ -61,59 +64,92 @@ class StateMessageWidget extends StatelessWidget {
     this.actionIcon,
     this.actionAutofocus = false,
     this.actionUseBackgroundFocus = false,
+    this.showBrand = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final appearance = theme.extension<MonoTokens>();
+    final textMuted = appearance?.textMuted ?? theme.colorScheme.onSurfaceVariant;
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            if (icon != null) ...[
-              AppIcon(
-                icon,
-                fill: 1,
-                size: iconSize,
-                color: iconColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.4),
-              ),
-              const SizedBox(height: 16),
-            ],
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: textColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-            ),
-            if (subtitle != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                subtitle!,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(color: subtitleColor ?? theme.colorScheme.onSurfaceVariant),
-              ),
-            ],
-            if (onAction != null && actionLabel != null) ...[
-              const SizedBox(height: 24),
-              FocusableButton(
-                focusNode: actionFocusNode,
-                onNavigateUp: onActionNavigateUp,
-                onNavigateLeft: onActionNavigateLeft,
-                onBack: onActionBack,
-                onPressed: onAction,
-                autofocus: actionAutofocus,
-                useBackgroundFocus: actionUseBackgroundFocus,
-                child: FilledButton.icon(
-                  onPressed: onAction,
-                  icon: AppIcon(actionIcon ?? Symbols.refresh_rounded, fill: 1),
-                  label: Text(actionLabel!),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520),
+          child: Column(
+            mainAxisAlignment: .center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null || showBrand) ...[
+                SizedBox.square(
+                  dimension: iconSize + 16,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      if (icon == null)
+                        AppBrandMark(size: iconSize, decorative: true, monochrome: true)
+                      else
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: (iconColor ?? theme.colorScheme.primary).withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(appearance?.radiusLg ?? 20),
+                          ),
+                          child: AppIcon(icon, fill: 0, weight: 500, size: iconSize, color: iconColor ?? textMuted),
+                        ),
+                      if (showBrand && icon != null)
+                        PositionedDirectional(
+                          end: 0,
+                          bottom: 0,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: theme.scaffoldBackgroundColor,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(2),
+                              child: AppBrandMark(size: 20, decorative: true),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
+                const SizedBox(height: 20),
+              ],
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge?.copyWith(color: textColor ?? theme.colorScheme.onSurface),
               ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  subtitle!,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(color: subtitleColor ?? textMuted),
+                ),
+              ],
+              if (onAction != null && actionLabel != null) ...[
+                const SizedBox(height: 24),
+                FocusableButton(
+                  focusNode: actionFocusNode,
+                  onNavigateUp: onActionNavigateUp,
+                  onNavigateLeft: onActionNavigateLeft,
+                  onBack: onActionBack,
+                  onPressed: onAction,
+                  autofocus: actionAutofocus,
+                  useBackgroundFocus: actionUseBackgroundFocus,
+                  child: FilledButton.icon(
+                    onPressed: onAction,
+                    icon: AppIcon(actionIcon ?? Symbols.refresh_rounded, fill: 1),
+                    label: Text(actionLabel!),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -164,6 +200,7 @@ class EmptyStateWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return StateMessageWidget(
       message: message,
+      showBrand: true,
       subtitle: subtitle,
       icon: icon,
       iconSize: iconSize,

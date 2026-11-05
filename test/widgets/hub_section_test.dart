@@ -13,6 +13,7 @@ import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
 import 'package:plezy/utils/platform_detector.dart';
 import 'package:plezy/widgets/media_card.dart';
+import 'package:plezy/widgets/app_icon.dart';
 import 'package:plezy/widgets/hub_section.dart';
 import 'package:plezy/utils/layout_constants.dart';
 import 'package:plezy/widgets/media_grid_delegate.dart';
@@ -288,6 +289,75 @@ void main() {
       final expectedGap = spacing == GridSpacing.tight ? 4.0 : spacing.gridGap;
       expect(cardPitch(), closeTo(card.width! + expectedGap, 0.01), reason: '$spacing: card pitch');
     }
+  });
+
+  testWidgets('headers align to artwork in both directions across spacing settings', (tester) async {
+    final item = testMediaItem(id: 'aligned', backend: MediaBackend.plex, kind: MediaKind.movie, title: 'Movie');
+    for (final isTv in [false, true]) {
+      TvDetectionService.debugSetAppleTVOverride(isTv);
+      for (final direction in TextDirection.values) {
+        for (final inset in [false, true]) {
+          await tester.pumpWidget(
+            _TestApp(
+              child: Directionality(
+                textDirection: direction,
+                child: HubSection(
+                  hub: _hubWith(item),
+                  focusMemory: HubFocusMemory(),
+                  icon: Symbols.movie_rounded,
+                  inset: inset,
+                ),
+              ),
+            ),
+          );
+          for (final spacing in GridSpacing.values) {
+            await SettingsService.instance.write(SettingsService.gridSpacing, spacing);
+            await tester.pump();
+            final header = find
+                .byWidgetPredicate((widget) => widget is AppIcon && widget.icon == Symbols.movie_rounded)
+                .first;
+            final poster = find.descendant(of: find.byType(MediaCard).first, matching: find.byType(ClipRRect)).first;
+            final headerRect = tester.getRect(header);
+            final posterRect = tester.getRect(poster);
+            expect(
+              direction == TextDirection.ltr ? headerRect.left : headerRect.right,
+              closeTo(direction == TextDirection.ltr ? posterRect.left : posterRect.right, 0.01),
+              reason: 'TV=$isTv, $direction, inset=$inset, $spacing',
+            );
+          }
+        }
+      }
+    }
+  });
+
+  testWidgets('long header metadata fits narrow layouts at twice the text size', (tester) async {
+    tester.view.physicalSize = const Size(320, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      _TestApp(
+        child: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: HubSection(
+            hub: MediaHub(
+              id: 'long_header',
+              title: 'Recently added movies',
+              type: 'movie',
+              items: [],
+              size: 12345,
+              serverName: 'A very long media server name',
+              more: true,
+            ),
+            focusMemory: HubFocusMemory(),
+            icon: Symbols.movie_rounded,
+            showServerName: true,
+            totalResults: 12345,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('TV shelf wide cards use the rail wide formula, not a tall-card multiplier', (tester) async {

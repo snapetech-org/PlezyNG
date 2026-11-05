@@ -283,6 +283,7 @@ flutter:
     - assets/licenses/ANVIL_MIT_LICENSE.txt
     - assets/pleazyng.png
     - assets/branding/pleazyng-compact.png
+    - assets/branding/pleazyng-monochrome.png
     - assets/branding/pleazyng-mark-light.png
     - assets/branding/pleazyng-mark-dark.png
     - assets/branding/pleazyng-wordmark-light.png

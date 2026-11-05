@@ -284,8 +284,9 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
       onSecondary: c.bg,
       surface: c.surface,
       onSurface: c.text,
-      error: const Color(0xFFB00020),
-      onError: Colors.white,
+      onSurfaceVariant: c.textMuted,
+      error: brightness == Brightness.dark ? const Color(0xFFFF8798) : const Color(0xFFB00020),
+      onError: brightness == Brightness.dark ? Colors.black : Colors.white,
       tertiary: c.text,
       onTertiary: c.bg,
       primaryContainer: c.surface,
@@ -318,17 +319,18 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
       scrolledUnderElevation: 0,
       centerTitle: false,
       foregroundColor: c.text,
-      titleTextStyle: TextStyle(color: c.text, fontSize: 18, fontWeight: .w700, letterSpacing: -0.2),
+      titleTextStyle: TextStyle(color: c.text, fontSize: 18, fontWeight: .w600, letterSpacing: -0.1),
     ),
     textTheme: Typography.englishLike2021
         .apply(bodyColor: c.text, displayColor: c.text)
         .copyWith(
           displayLarge: Typography.englishLike2021.displayLarge?.copyWith(
-            fontWeight: .w700,
-            letterSpacing: -0.5,
+            fontWeight: .w600,
+            letterSpacing: -0.3,
             color: c.text,
           ),
           titleMedium: Typography.englishLike2021.titleMedium?.copyWith(fontWeight: .w600, color: c.text),
+          titleLarge: Typography.englishLike2021.titleLarge?.copyWith(fontWeight: .w600, color: c.text),
           bodyMedium: Typography.englishLike2021.bodyMedium?.copyWith(color: c.text),
           bodySmall: Typography.englishLike2021.bodySmall?.copyWith(color: c.textMuted),
         )

@@ -59,7 +59,7 @@ class _FocusableButtonState extends State<FocusableButton> {
       focusNode: widget.focusNode,
       canRequestFocus: enabled,
       disableScale: true,
-      borderRadius: tokens(context).radiusMd,
+      borderRadius: Theme.of(context).extension<MonoTokens>()?.radiusMd ?? 12,
       useBackgroundFocus: widget.useBackgroundFocus,
       descendantsAreFocusable: false,
       onFocusChange: (f) => setState(() => _isFocused = f),

@@ -32,6 +32,12 @@ readonly RUN_URL="repos/$ORG/$REPO/actions/runs/$run_id"
 run_json="$(gh api "$RUN_URL")"
 run_status="$(jq -r '.status' <<<"$run_json")"
 run_attempt="$(jq -er '.run_attempt | select(type == "number")' <<<"$run_json")"
+if [[ "$(jq -r '.event' <<<"$run_json")" != workflow_dispatch \
+  || "$(jq -r '.head_branch' <<<"$run_json")" != main \
+  || "$(jq -r '.head_repository.full_name' <<<"$run_json")" != "$ORG/$REPO" ]]; then
+  echo "Only trusted-main PlezyNG workflow_dispatch runs may use the private Apple lane." >&2
+  exit 1
+fi
 run_root="$RUNS_ROOT/$run_id-$job_id-attempt$run_attempt"
 runner_root="$run_root/runner"
 if [[ "$run_status" != queued && "$run_status" != in_progress ]]; then
@@ -178,5 +184,83 @@ if [[ "$(jq -r '.status' <<<"$job_after")" != completed ]]; then
   exit 1
 fi
 conclusion="$(jq -r '.conclusion' <<<"$job_after")"
-printf 'Job %s completed with conclusion: %s\nRunner root retained for diagnostics: %s\n' "$job_id" "$conclusion" "$runner_root"
+if [[ -n "${APPLE_JIT_EVIDENCE_DIR:-}" ]]; then
+  printf 'Job %s completed with conclusion: %s\nArchiving diagnostics before exact-path cleanup: %s\n' \
+    "$job_id" "$conclusion" "$runner_root"
+else
+  printf 'Job %s completed with conclusion: %s\nRunner root retained for diagnostics: %s\n' \
+    "$job_id" "$conclusion" "$runner_root"
+fi
+
+# The queue controller supplies an evidence directory. In that mode, preserve
+# the runner diagnostics, verify the one-job registration has deregistered, and
+# clean only this completed run/job/attempt directory so the next Apple job can
+# use the same Mac slot without manual cleanup.
+if [[ -n "${APPLE_JIT_EVIDENCE_DIR:-}" ]]; then
+  evidence_dir="${APPLE_JIT_EVIDENCE_DIR%/}"
+  [[ "$evidence_dir" == /* && ! -L "$evidence_dir" ]]
+  /bin/mkdir -m 700 -p "$evidence_dir"
+  /bin/chmod 700 "$evidence_dir"
+  diag_archive="$evidence_dir/${run_id}-${job_id}-attempt${run_attempt}-runner-diag.tar.gz"
+  [[ ! -e "$diag_archive" && ! -L "$diag_archive" ]] || {
+    echo "Refusing to overwrite runner diagnostics: $diag_archive" >&2
+    exit 1
+  }
+
+  registration_gone=0
+  for _ in {1..30}; do
+    group_json="$(gh api "$API_ROOT/runner-groups/$RUNNER_GROUP_ID/runners?per_page=100")"
+    if ! jq -e --arg name "$runner_name" 'any(.runners[]; .name == $name)' <<<"$group_json" >/dev/null; then
+      registration_gone=1
+      break
+    fi
+    sleep 1
+  done
+  if (( registration_gone == 0 )); then
+    echo "Runner registration $runner_name remains after job completion; keeping $run_root for diagnosis." >&2
+    exit 1
+  fi
+
+  ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \
+    "cd / && sudo -H -u $SERVICE_USER env HOME=$SERVICE_HOME PATH=$REMOTE_PATH /bin/bash -s" \
+    <<<"set -euo pipefail; /usr/bin/tar -czf - -C '$runner_root' _diag" > "$diag_archive"
+  [[ -s "$diag_archive" ]]
+  /usr/bin/tar -tzf "$diag_archive" >/dev/null
+  /bin/chmod 600 "$diag_archive"
+  diag_sha256="$(/usr/bin/sha256sum "$diag_archive" | /usr/bin/awk '{print $1}')"
+  printf 'Saved runner diagnostics: %s (sha256 %s)\n' "$diag_archive" "$diag_sha256"
+
+  ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \
+    "cd / && sudo -H -u $SERVICE_USER env HOME=$SERVICE_HOME PATH=$REMOTE_PATH /bin/bash -s" <<REMOTE_CLEAN
+set -euo pipefail
+readonly RUN_ROOT="$run_root"
+readonly RUNS_ROOT="$RUNS_ROOT"
+readonly RUNNER_ROOT="$runner_root"
+[[ "\$RUN_ROOT" == "\$RUNS_ROOT/$run_id-$job_id-attempt$run_attempt" ]]
+[[ -d "\$RUN_ROOT" && ! -L "\$RUN_ROOT" ]]
+[[ -d "\$RUNNER_ROOT/_diag" && ! -L "\$RUNNER_ROOT" ]]
+listeners="\$(/bin/ps -U "$SERVICE_USER" -o comm= | /usr/bin/grep -F -c "\$RUNNER_ROOT/bin/Runner.Listener" || true)"
+[[ "\$listeners" == 0 ]]
+/usr/bin/python3 - "\$RUN_ROOT" "\$RUNS_ROOT" "$run_id" "$job_id" "$run_attempt" <<'PY'
+from pathlib import Path
+import os
+import shutil
+import sys
+
+run_root = Path(sys.argv[1])
+runs_root = Path(sys.argv[2])
+expected = runs_root / f"{sys.argv[3]}-{sys.argv[4]}-attempt{sys.argv[5]}"
+if run_root != expected or run_root.is_symlink() or not run_root.is_dir():
+    raise SystemExit("Refusing to remove a runner directory outside this completed job.")
+if run_root.stat().st_uid != os.geteuid():
+    raise SystemExit("Refusing to remove a runner directory not owned by the JIT service user.")
+if (run_root / "runner").is_symlink() or not (run_root / "runner/_diag").is_dir():
+    raise SystemExit("Refusing to remove a runner directory without archived diagnostics.")
+shutil.rmtree(run_root)
+PY
+[[ ! -e "\$RUN_ROOT" && ! -L "\$RUN_ROOT" ]]
+printf 'Removed completed one-job runner directory: %s\n' "$run_root"
+REMOTE_CLEAN
+fi
+
 [[ "$conclusion" == success ]]

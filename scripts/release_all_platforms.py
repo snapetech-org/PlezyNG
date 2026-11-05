@@ -39,6 +39,7 @@ NATIVE_GROUPS = ("apple", "android", "linux", "windows")
 FFMPEG_SIGNING_FINGERPRINT = "FCF986EA15E6E293A5644F10B4322F04D67658D8"
 DOWNLOAD_ATTEMPTS = 4
 DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS = 1
+APPLE_JIT_EVIDENCE_ROOT: Path | None = None
 RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     ".github/actions/setup-flutter-windows/action.yml",
     ".github/workflows/build.yml",
@@ -61,6 +62,7 @@ RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     "scripts/checks/test_check_build_workflow.py",
     "scripts/checks/test_release_ci_gate.py",
     "scripts/launch_apple_jit_runner.sh",
+    "scripts/launch_queued_apple_jit_jobs.py",
     "scripts/prepare_android_sdk.py",
     "scripts/release_all_platforms.py",
     "tools/reader-tests/README.md",
@@ -134,7 +136,70 @@ def matching_run(
 def wait_for_run(repo: str, run: dict, purpose: str) -> dict:
     run_id = str(run["databaseId"])
     print(f"\n{purpose}: {run.get('url', f'https://github.com/{repo}/actions/runs/{run_id}')}", flush=True)
-    command(["gh", "run", "watch", run_id, "--repo", repo, "--interval", "30", "--exit-status"])
+    apple_controller: subprocess.Popen[bytes] | None = None
+    if repo == PLEZY_REPO:
+        jobs_payload = gh_json("api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100")
+        jobs = jobs_payload.get("jobs") if isinstance(jobs_payload, dict) else None
+        if not isinstance(jobs, list):
+            raise ReleaseError(f"Could not inspect Apple jobs for PlezyNG run {run_id}.")
+        apple_labels = {"private-apple", "macOS", "ARM64"}
+        queued_apple_jobs = [
+            job for job in jobs
+            if isinstance(job, dict)
+            and job.get("status") != "completed"
+            and apple_labels.issubset(set(job.get("labels", [])))
+            and any(
+                isinstance(label, str) and label.startswith(f"gha-{run_id}-")
+                for label in job.get("labels", [])
+            )
+        ]
+        if queued_apple_jobs:
+            if APPLE_JIT_EVIDENCE_ROOT is None:
+                raise ReleaseError(
+                    "PlezyNG Apple jobs are queued, but no task scratch path is configured for JIT evidence."
+                )
+            controller_script = ROOT / "scripts/launch_queued_apple_jit_jobs.py"
+            print(
+                f"Starting the Apple JIT queue controller for {len(queued_apple_jobs)} job(s); "
+                "it will serialize the single Mac slot and preserve per-job evidence.",
+                flush=True,
+            )
+            apple_controller = subprocess.Popen(
+                [
+                    sys.executable,
+                    str(controller_script),
+                    run_id,
+                    "--evidence-dir",
+                    str(APPLE_JIT_EVIDENCE_ROOT),
+                ],
+                cwd=ROOT,
+            )
+
+    watcher = subprocess.Popen(
+        ["gh", "run", "watch", run_id, "--repo", repo, "--interval", "30", "--exit-status"],
+        cwd=ROOT,
+    )
+    while watcher.poll() is None:
+        if apple_controller is not None:
+            controller_code = apple_controller.poll()
+            if controller_code not in (None, 0):
+                watcher.terminate()
+                watcher.wait(timeout=30)
+                raise ReleaseError(
+                    f"Apple JIT queue controller failed with exit code {controller_code}; "
+                    "the GitHub workflow was left running and was not canceled."
+                )
+        time.sleep(3)
+    watch_code = watcher.wait()
+    if apple_controller is not None:
+        controller_code = apple_controller.wait()
+        if controller_code:
+            raise ReleaseError(
+                f"Apple JIT queue controller failed with exit code {controller_code}; "
+                "inspect its per-run evidence before retrying."
+            )
+    if watch_code:
+        raise ReleaseError(f"gh run watch exited with status {watch_code} for run {run_id}.")
     updated = gh_json("run", "view", run_id, "--repo", repo,
                       "--json", "databaseId,status,conclusion,headSha,headBranch,event,url,jobs")
     if updated.get("status") != "completed" or updated.get("conclusion") != "success":
@@ -1310,6 +1375,8 @@ def main() -> int:
     if scratch.exists() and any(scratch.iterdir()):
         raise ReleaseError(f"Scratch directory must be empty so task-owned cleanup is exact: {scratch}")
     scratch.mkdir(parents=True, exist_ok=True)
+    global APPLE_JIT_EVIDENCE_ROOT
+    APPLE_JIT_EVIDENCE_ROOT = scratch / "apple-jit-evidence"
     summary_path = scratch / "release-summary.json"
     progress_path = scratch / "release-progress.json"
     worktree: Path | None = None

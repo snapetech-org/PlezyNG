@@ -6,9 +6,39 @@ a time. A queued Apple job is waiting for that slot; it is not blocked by the
 other platform builds. Linux, Android, Tizen, and Windows jobs remain eligible
 to run concurrently on their selected hosted runners.
 
-## Start one queued Apple job
+## Automatic queue handling
 
-Inspect the queued job IDs for the active run:
+The release orchestrator starts `scripts/launch_queued_apple_jit_jobs.py` when a
+PlezyNG run contains queued or active Apple JIT jobs. The controller watches
+the run, launches one job at a time on the single Mac slot, waits for each job
+to finish, archives its runner diagnostics, and removes only that completed
+run/job/attempt directory before starting the next Apple job. The GitHub run is
+left intact if the controller encounters an error.
+
+Run releases through `scripts/release_all_platforms.py` with an empty task
+scratch directory. The orchestrator stores controller logs and runner evidence
+under `<scratch>/apple-jit-evidence/<run-id>/` and drives the normal GitHub run
+watch concurrently. No manual hold/release/remove/start cycle is needed.
+
+For an already-running workflow that is not being watched by the release
+orchestrator, start the same queue controller directly:
+
+```sh
+run_id=YOUR_RUN_ID
+python3 scripts/launch_queued_apple_jit_jobs.py "$run_id" \
+  --evidence-dir /path/to/task-scratch/apple-jit-evidence
+```
+
+The controller accepts only trusted `workflow_dispatch` runs from PlezyNG
+`main`. It serializes jobs with the run-scoped `gha-<run-id>-...` labels and
+preserves launcher logs, GitHub job logs, and `_diag` archives in the supplied
+evidence directory.
+
+## Single-job troubleshooting
+
+Use the low-level launcher only for a single-job recovery when no queue
+controller is active for the run and no run-scoped Apple runner is online or
+busy. Inspect queued Apple job IDs first:
 
 ```sh
 run_id=YOUR_RUN_ID
@@ -16,7 +46,7 @@ gh api "repos/snapetech-org/PlezyNG/actions/runs/$run_id/jobs?per_page=100" \
   | jq -r '.jobs[] | select(.status == "queued") | [.id,.name,(.labels|join(","))] | @tsv'
 ```
 
-Start exactly one of the queued `build-ios`, `build-tvos`, or `build-macos` jobs:
+Start exactly one of the queued Apple jobs:
 
 ```sh
 run_id=YOUR_RUN_ID
@@ -48,8 +78,7 @@ run/job/attempt runner directory is retained for diagnosis; the launcher only
 removes its own registration when GitHub shows it offline and not busy. Preserve
 the runner logs and GitHub job logs before removing that exact task directory.
 
-After a job completes, let `run.sh` exit and confirm the job is completed and
-its JIT registration is gone before starting the next Apple job. Keep the
-workflow logs and `_diag` evidence under task scratch; remove only the exact
-run/job/attempt directory after copying the evidence. Leave the runner cache,
-the persistent service, NFS mounts, and unrelated run directories in place.
+The queue controller performs the post-job checks and exact-path cleanup after
+archiving evidence. In single-job troubleshooting mode, do those steps manually
+before starting another job. Leave the runner cache, persistent service, NFS
+mounts, and unrelated run directories in place.

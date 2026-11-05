@@ -56,7 +56,7 @@ final class GpodderClient {
     if (encoded != null && utf8.encode(encoded).length > 2 * 1024 * 1024) throw const SourceException(SourceFailure.invalidData);
     final text = await _transport.text(method, _uri(relative, query), headers: {
       'Authorization': 'Basic ${base64Encode(utf8.encode('${config.username}:${config.password}'))}',
-      'Accept': 'application/json', 'Content-Type': 'application/json', 'User-Agent': 'PlezyNG/3 podcast-sync',
+      'Accept': 'application/json', 'Content-Type': 'application/json', 'User-Agent': 'Pleazyng/3 podcast-sync',
     }, body: encoded, limit: 2 * 1024 * 1024);
     _check();
     if (text.trim().isEmpty) return {};

@@ -71,7 +71,7 @@ class WatchTogetherProvider extends ChangeNotifier {
        _resolver = LibraryResolver(clientFor: clientFor ?? _noClient, findCopies: findCopies ?? _noCopies);
 
   static MediaServerClient? _noClient(String serverId) => null;
-  static String _defaultName() => 'PlezyNG';
+  static String _defaultName() => 'Pleazyng';
   static String? _noProfile() => null;
   static String? _relaySetting() => SettingsService.instanceOrNull?.read(SettingsService.watchPartyRelayUrl);
   static Future<LibraryLookupResult> _noCopies(TitleQuery query, {AbortController? abort}) async => (
@@ -124,7 +124,7 @@ class WatchTogetherProvider extends ChangeNotifier {
 
   static Future<String> _plezyNgClientName() async {
     final info = await PackageInfo.fromPlatform();
-    return 'PlezyNG/${info.version}';
+    return 'Pleazyng/${info.version}';
   }
 
   static owp.WatchParty<WatchCopy> _defaultParty({
@@ -748,12 +748,12 @@ class WatchTogetherProvider extends ChangeNotifier {
 }
 
 /// [name] as an Open Watch Party display name: 1 to 32 code points of
-/// protocol text; "PlezyNG" when nothing is left.
+/// protocol text; "Pleazyng" when nothing is left.
 String _sanitizedName(String name) {
   final text = descriptorText(name);
-  if (text == null) return 'PlezyNG';
+  if (text == null) return 'Pleazyng';
   final kept = String.fromCharCodes(text.runes.take(32)).trim();
-  return kept.isEmpty ? 'PlezyNG' : kept;
+  return kept.isEmpty ? 'Pleazyng' : kept;
 }
 
 enum _Away { background, vehicle }

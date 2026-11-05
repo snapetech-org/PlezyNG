@@ -45,7 +45,7 @@ class _IssueReportScreenState extends State<IssueReportScreen> {
     final version = package == null ? 'unknown' : '${package.version} (${package.buildNumber})';
     final body = [
       '### App and device',
-      '- PlezyNG: $version',
+      '- Pleazyng: $version',
       '- Platform: ${defaultTargetPlatform.name}',
       '- Media servers online: $online of $expected',
       if (_logId != null) '- Uploaded log ID: $_logId',
@@ -63,7 +63,7 @@ class _IssueReportScreenState extends State<IssueReportScreen> {
       '1. ',
     ].join('\n');
     return Uri.https('github.com', '/snapetech-org/PlezyNG/issues/new', {
-      'title': '[PlezyNG] Bug report',
+      'title': '[Pleazyng] Bug report',
       'body': body,
     });
   }

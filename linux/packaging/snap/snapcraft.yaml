@@ -1,9 +1,9 @@
-name: plezyng
-title: PlezyNG
+name: pleazyng
+title: Pleazyng
 version: '0.0.0'
 summary: Plex client with Jellyfin and Emby support, offline downloads, and HDR
 description: |
-  PlezyNG is an enhanced Plex client that also supports Jellyfin and Emby.
+  Pleazyng is an enhanced Plex client that also supports Jellyfin and Emby.
   Browse movies, shows, and music across your servers, search connected
   libraries, and keep watchlists and viewing progress in sync.
 
@@ -12,7 +12,7 @@ description: |
   audio sync, and use HDR or Dolby Vision on supported devices.
 
   Watch Together keeps playback in sync when everyone can access the same media
-  on the same server. Use PlezyNG on phones, tablets, TVs, and desktop
+  on the same server. Use Pleazyng on phones, tablets, TVs, and desktop
   computers. You’ll need your own Plex, Jellyfin, or Emby server. Features vary
   by server, device, and media.
 license: GPL-3.0-only
@@ -20,7 +20,7 @@ contact: https://github.com/snapetech-org/PlezyNG/issues
 website: https://github.com/snapetech-org/PlezyNG
 source-code: https://github.com/snapetech-org/PlezyNG
 issues: https://github.com/snapetech-org/PlezyNG/issues
-icon: gui/plezyng.png
+icon: gui/pleazyng.png
 base: core24
 grade: stable
 confinement: strict
@@ -34,9 +34,9 @@ platforms:
     build-for: arm64
 
 apps:
-  plezyng:
-    command: opt/plezy/plezy.sh
-    desktop: usr/share/applications/org.snapetech.plezyng.desktop
+  pleazyng:
+    command: opt/pleazyng/pleazyng.sh
+    desktop: usr/share/applications/org.snapetech.pleazyng.desktop
     plugs:
       - audio-playback
       - desktop
@@ -52,19 +52,19 @@ apps:
 slots:
   mpris:
     interface: mpris
-    name: org_snapetech_plezyng
+    name: org_snapetech_pleazyng
 
 parts:
-  plezyng:
+  pleazyng:
     plugin: nil
     source: src
     override-build: |
       set -eu
-      install -d "$CRAFT_PART_INSTALL/opt/plezy"
-      cp -a "$CRAFT_PART_SRC"/. "$CRAFT_PART_INSTALL/opt/plezy/"
-      install -Dm755 "$CRAFT_PROJECT_DIR/plezy.sh" "$CRAFT_PART_INSTALL/opt/plezy/plezy.sh"
-      install -Dm644 "$CRAFT_PROJECT_DIR/plezyng.desktop" "$CRAFT_PART_INSTALL/usr/share/applications/org.snapetech.plezyng.desktop"
-      install -Dm644 "$CRAFT_PROJECT_DIR/gui/plezyng.png" "$CRAFT_PART_INSTALL/usr/share/icons/hicolor/512x512/apps/plezyng.png"
+      install -d "$CRAFT_PART_INSTALL/opt/pleazyng"
+      cp -a "$CRAFT_PART_SRC"/. "$CRAFT_PART_INSTALL/opt/pleazyng/"
+      install -Dm755 "$CRAFT_PROJECT_DIR/pleazyng.sh" "$CRAFT_PART_INSTALL/opt/pleazyng/pleazyng.sh"
+      install -Dm644 "$CRAFT_PROJECT_DIR/pleazyng.desktop" "$CRAFT_PART_INSTALL/usr/share/applications/org.snapetech.pleazyng.desktop"
+      install -Dm644 "$CRAFT_PROJECT_DIR/gui/pleazyng.png" "$CRAFT_PART_INSTALL/usr/share/icons/hicolor/512x512/apps/pleazyng.png"
     stage-packages:
       - pulseaudio-utils
       - ffmpeg

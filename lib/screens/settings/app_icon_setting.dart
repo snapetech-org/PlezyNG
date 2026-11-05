@@ -250,7 +250,7 @@ class _AppIconPreview extends StatelessWidget {
 /// * tvOS and Android TV: dark plates, from the thumbnails
 ///   scripts/codegen/generate_app_icons.py renders from the shipping image
 ///   stack and banner.
-/// * Android phones: the adaptive foreground on the PlezyNG navy launcher
+/// * Android phones: the adaptive foreground on the Pleazyng navy launcher
 ///   background (res/values/colors.xml).
 /// * iOS: ios/plezy.icon's one light fill, which its dark appearance inherits.
 class _DefaultIconPreview extends StatelessWidget {
@@ -277,8 +277,8 @@ class _DefaultIconPreview extends StatelessWidget {
       color: fill,
       child: Image.asset(
         defaultTargetPlatform == TargetPlatform.android
-            ? 'assets/plezy_adaptive_foreground.png'
-            : 'assets/branding/plezyng-adaptive-light.png',
+            ? 'assets/pleazyng_adaptive_foreground.png'
+            : 'assets/branding/pleazyng-adaptive-light.png',
         fit: BoxFit.contain,
       ),
     );

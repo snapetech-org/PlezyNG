@@ -16,8 +16,8 @@ if [[ -L "$RUNNER_TEMP" || ! -d "$RUNNER_TEMP" ]]; then
   exit 1
 fi
 
-TASK_ROOT="${PLEZYNG_WEBOS_TASK_ROOT:-$RUNNER_TEMP/plezyng-webos-$GITHUB_RUN_ID}"
-if [[ "$TASK_ROOT" != "$RUNNER_TEMP"/plezyng-webos-* ]]; then
+TASK_ROOT="${PLEZYNG_WEBOS_TASK_ROOT:-$RUNNER_TEMP/pleazyng-webos-$GITHUB_RUN_ID}"
+if [[ "$TASK_ROOT" != "$RUNNER_TEMP"/pleazyng-webos-* ]]; then
   echo "PLEZYNG_WEBOS_TASK_ROOT must be a task-scoped child of RUNNER_TEMP." >&2
   exit 1
 fi
@@ -176,7 +176,7 @@ mkdir -m 700 -- "$LOG_ROOT" "$DOWNLOAD_ROOT" "$CUSTOM_ENGINE_ROOT" "$OUTPUT_ROOT
 mkdir -m 700 -- "$HOST_TOOLS"
 exec > >(tee -a "$LOG_ROOT/build-release-candidate.log") 2>&1
 
-printf 'PlezyNG WebOS release build task: %s\n' "$TASK_ROOT"
+printf 'Pleazyng WebOS release build task: %s\n' "$TASK_ROOT"
 printf 'Flutter-webOS SDK: %s\n' "$SDK_ROOT"
 printf 'LG NDK: %s\n' "$NDK_ROOT"
 printf 'Custom engine output: %s\n' "$CUSTOM_ENGINE_ROOT"
@@ -336,9 +336,9 @@ export WEBOS_ENGINE_LOCAL_PATH="$WEBOS_ENGINE_BUILD_ROOT/artifacts/webos-arm-rel
 tools/webos/build_ipk.sh 2>&1 | tee "$LOG_ROOT/build-ipk.log"
 
 shopt -s nullglob
-IPKS=("$ROOT/build/webos/arm/release/ipk"/org.snapetech.plezyng_*_arm.ipk)
+IPKS=("$ROOT/build/webos/arm/release/ipk"/org.snapetech.pleazyng_*_arm.ipk)
 if (( ${#IPKS[@]} != 1 )); then
-  echo "Expected exactly one verified PlezyNG ARM IPK; found ${#IPKS[@]}." >&2
+  echo "Expected exactly one verified Pleazyng ARM IPK; found ${#IPKS[@]}." >&2
   exit 1
 fi
 ENGINE_PROVENANCE="$WEBOS_ENGINE_BUILD_ROOT/artifacts/webos-engine-provenance.json"

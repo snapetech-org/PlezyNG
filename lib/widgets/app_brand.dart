@@ -12,12 +12,12 @@ class AppBrandMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Image.asset(
-    size <= 64 ? 'assets/branding/plezyng-compact.png' : 'assets/branding/plezyng-mark-${_appearance(context)}.png',
+    size <= 64 ? 'assets/branding/pleazyng-compact.png' : 'assets/branding/pleazyng-mark-${_appearance(context)}.png',
     width: size,
     height: size,
     fit: BoxFit.contain,
     filterQuality: FilterQuality.medium,
-    semanticLabel: decorative ? null : 'PlezyNG',
+    semanticLabel: decorative ? null : 'Pleazyng',
     excludeFromSemantics: decorative,
   );
 }
@@ -30,11 +30,11 @@ class AppBrandWordmark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Image.asset(
-    'assets/branding/plezyng-wordmark-${_appearance(context)}.png',
+    'assets/branding/pleazyng-wordmark-${_appearance(context)}.png',
     width: width,
     height: height,
     fit: BoxFit.contain,
     filterQuality: FilterQuality.medium,
-    semanticLabel: 'PlezyNG',
+    semanticLabel: 'Pleazyng',
   );
 }

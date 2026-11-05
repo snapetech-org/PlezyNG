@@ -9,11 +9,11 @@ class RommLink {
   final String identity, platform;
   factory RommLink.game(RommConnection source, RommGame game) => RommLink(source.base, game.id,
     game.sha1.isNotEmpty ? 'sha1:${game.sha1}' : game.md5.isNotEmpty ? 'md5:${game.md5}' : '', platform: game.platform, igdbId: game.igdbId);
-  Uri get uri => Uri(scheme: 'plezy', host: 'game', queryParameters: {'source': 'romm', 'server': server.toString(),
+  Uri get uri => Uri(scheme: 'pleazyng', host: 'game', queryParameters: {'source': 'romm', 'server': server.toString(),
     if (romId > 0) 'rom': '$romId', if (identity.isNotEmpty) 'copy': identity,
     if (platform.isNotEmpty) 'platform': platform, if (igdbId > 0) 'igdb': '$igdbId'});
   static RommLink? parse(Uri uri) {
-    if (!{'plezy', 'plezyng', 'plezxyng'}.contains(uri.scheme) || uri.host != 'game' || uri.path.isNotEmpty ||
+    if (!{'pleazyng', 'plezyng', 'plezxyng'}.contains(uri.scheme) || uri.host != 'game' || uri.path.isNotEmpty ||
         uri.userInfo.isNotEmpty || uri.hasPort || uri.hasFragment || uri.toString().length > 4096) return null;
     final q = uri.queryParameters;
     if (q['source'] != 'romm' || q.keys.any((key) => !{'source', 'server', 'rom', 'copy', 'platform', 'igdb'}.contains(key)) ||

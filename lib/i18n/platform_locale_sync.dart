@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import '../services/settings_service.dart';
 import 'app_locale_utils.dart';
 
-/// Keeps Android 13's app-language picker and PlezyNG's picker in agreement.
+/// Keeps Android 13's app-language picker and Pleazyng's picker in agreement.
 /// The checkpoint distinguishes an external OS change from our previous write,
 /// including choosing “System default” while the app was not running.
 class PlatformLocaleSync {

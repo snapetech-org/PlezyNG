@@ -225,7 +225,7 @@ class HardcoverClient {
               'Authorization': 'Bearer $_token',
               'Content-Type': 'application/json',
               'Accept': 'application/json',
-              'User-Agent': 'PlezyNG',
+              'User-Agent': 'Pleazyng',
             },
             body: jsonEncode({'query': query, 'variables': variables}),
           )

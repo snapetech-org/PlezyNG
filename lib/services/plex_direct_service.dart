@@ -39,7 +39,7 @@ Future<PlexDirectServerInfo> probePlexServer({
     final headers = {
       'Accept': 'application/json',
       'X-Plex-Client-Identifier': clientIdentifier,
-      'X-Plex-Product': 'PlezyNG',
+      'X-Plex-Product': 'Pleazyng',
       'X-Plex-Version': '1.0',
       'X-Plex-Platform': 'Flutter',
     };

@@ -10,7 +10,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 for checker in \
-  scripts/checks/check_brand_assets.py \
+  scripts/checks/check_rebrand.py \
   scripts/checks/check_deep_link_schemes.py \
   scripts/checks/check_capability_manifest.py \
   scripts/checks/check_build_workflow.py \

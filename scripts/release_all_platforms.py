@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Orchestrate a native dependency refresh and the complete PlezyNG release.
+"""Orchestrate a native dependency refresh and the complete Pleazyng release.
 
-This is a local control-plane command. PlezyNG 3.0.0 uses compatible
+This is a local control-plane command. Pleazyng 3.0.0 uses compatible
 GitHub-hosted runners by default and private JIT for Apple, WebOS storage, or
 other private-resource requirements. It uses the operator's authenticated
 `gh` CLI session and never copies credentials into the repos.
@@ -274,7 +274,7 @@ def download(url: str, destination: Path) -> None:
     if parsed.scheme != "https" or parsed.hostname not in {"ffmpeg.org", "www.ffmpeg.org"}:
         raise ReleaseError(f"Refusing non-official FFmpeg source URL: {url}")
     destination.parent.mkdir(parents=True, exist_ok=True)
-    request = urllib.request.Request(url, headers={"User-Agent": "PlezyNG-release-orchestrator/1"})
+    request = urllib.request.Request(url, headers={"User-Agent": "Pleazyng-release-orchestrator/1"})
     partial = destination.with_name(destination.name + ".part")
     for attempt in range(1, DOWNLOAD_ATTEMPTS + 1):
         try:
@@ -448,7 +448,7 @@ def prepare_native_checkout(scratch: Path) -> tuple[Path, str]:
     if not verify_native_groups(checkout):
         raise ReleaseError(
             "The native workflow completed, but its manifest/assets do not verify for every platform group. "
-            "No PlezyNG pin was changed."
+            "No Pleazyng pin was changed."
         )
     verify_native_release_assets(checkout)
     return checkout, native_sha
@@ -738,7 +738,7 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid") -> dict:
         if existing.get("status") == "completed" and existing.get("conclusion") != "success":
             raise ReleaseError(f"CI for release commit {commit_sha[:12]} failed; refusing to tag it.")
         if existing.get("status") != "completed":
-            existing = wait_for_run(PLEZY_REPO, existing, "PlezyNG CI")
+            existing = wait_for_run(PLEZY_REPO, existing, "Pleazyng CI")
         if execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Windows native reliability (arm64)"
         ):
@@ -754,7 +754,7 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid") -> dict:
         "main",
         {"action": "ci", "runner_pool": "private", "execution_profile": execution_profile,
          "build_linux_packages": "true"},
-        "PlezyNG CI",
+        "Pleazyng CI",
         expected_title="action:ci:pool:private",
         expected_sha=commit_sha,
     )
@@ -789,7 +789,7 @@ def ensure_candidate_build(
             )
         if existing.get("status") != "completed":
             existing = wait_for_run(
-                PLEZY_REPO, existing, f"PlezyNG {version} all-platform release-mode candidate"
+                PLEZY_REPO, existing, f"Pleazyng {version} all-platform release-mode candidate"
             )
         complete = execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Build Windows (arm64)"
@@ -813,7 +813,7 @@ def ensure_candidate_build(
     active = active_run(PLEZY_REPO, RELEASE_WORKFLOW, ref="main")
     if active:
         raise ReleaseError(
-            f"PlezyNG build workflow run {active['databaseId']} is still {active.get('status')}; "
+            f"Pleazyng build workflow run {active['databaseId']} is still {active.get('status')}; "
             "wait for it to finish before dispatching the release-mode candidate."
         )
     ensure_remote_main_sha(commit_sha, f"dispatching the {version} release-mode candidate")
@@ -834,7 +834,7 @@ def ensure_candidate_build(
             "subtitle_gpu_backend": "cpu",
             "prepare_homebrew_cask": "false",
         },
-        f"PlezyNG {version} all-platform release-mode candidate",
+        f"Pleazyng {version} all-platform release-mode candidate",
         expected_title=run_title,
         expected_sha=commit_sha,
     )
@@ -893,7 +893,7 @@ def ensure_tag(worktree: Path, version: str, commit_sha: str) -> str:
         validate_immutable_release_tag(worktree, tag, existing_commit, commit_sha)
         print(f"Reusing immutable tag {tag} at {existing_commit[:12]}.")
         return tag
-    command(["git", "tag", "-a", tag, commit_sha, "-m", f"PlezyNG {version}"], cwd=worktree)
+    command(["git", "tag", "-a", tag, commit_sha, "-m", f"Pleazyng {version}"], cwd=worktree)
     command(["git", "push", "origin", f"refs/tags/{tag}"], cwd=worktree)
     return tag
 
@@ -939,7 +939,7 @@ def ensure_release(
                 "it was not re-run to avoid duplicating publication side effects."
             )
         if existing.get("status") != "completed":
-            existing = wait_for_run(PLEZY_REPO, existing, f"PlezyNG {tag} all-platform release build")
+            existing = wait_for_run(PLEZY_REPO, existing, f"Pleazyng {tag} all-platform release build")
         complete = bool(reuse_platform_run_id) or execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Build Windows (arm64)"
         )
@@ -979,7 +979,7 @@ def ensure_release(
         RELEASE_WORKFLOW,
         "main",
         fields,
-        f"PlezyNG {tag} all-platform release build",
+        f"Pleazyng {tag} all-platform release build",
         expected_title=run_title,
         expected_sha=commit_sha,
     )
@@ -1002,7 +1002,7 @@ def ensure_remote_main_sha(expected_sha: str, purpose: str) -> None:
     actual_sha = branch.get("commit", {}).get("sha") if isinstance(branch, dict) else None
     if actual_sha != expected_sha:
         raise ReleaseError(
-            f"Cannot continue with {purpose}: PlezyNG main is {actual_sha or 'unavailable'}, "
+            f"Cannot continue with {purpose}: Pleazyng main is {actual_sha or 'unavailable'}, "
             f"but release tag source is {expected_sha}. Reconcile main before publishing."
         )
 
@@ -1062,26 +1062,26 @@ def validate_release_outputs(
     }
     required = {
         "SHA256SUMS.txt", "appcast.xml",
-        "plezy-android-arm64-v8a.tar.gz", "plezy-android-armeabi-v7a.tar.gz", "plezy-android-x86_64.tar.gz",
-        "plezy-ios-unsigned.ipa", "plezy-tvos-unsigned.ipa", "plezyng-macos.dmg",
-        "plezy-windows-x64-portable.7z", "plezy-windows-installer.exe",
-        f"plezyng-winget-manifests-{version}.zip", f"plezyng.{version}.nupkg",
-        "plezy-linux-x64.tar.gz", "plezy-linux-x64.deb", "plezy-linux-x64.rpm",
-        "plezy-linux-x64.pkg.tar.zst", "plezy-linux-x64.flatpak", "plezyng-linux-x64.snap",
-        "plezy-linux-arm64.tar.gz", "plezy-linux-arm64.deb", "plezy-linux-arm64.rpm",
-        "plezy-linux-arm64.pkg.tar.zst", "plezy-linux-arm64.flatpak", "plezyng-linux-arm64.snap",
-        "plezyng-linux-x86_64.AppImage",
-        "PlezyNG-tizen-arm-tester-handoff.zip",
+        "pleazyng-android-arm64-v8a.tar.gz", "pleazyng-android-armeabi-v7a.tar.gz", "pleazyng-android-x86_64.tar.gz",
+        "pleazyng-ios-unsigned.ipa", "pleazyng-tvos-unsigned.ipa", "pleazyng-macos.dmg",
+        "pleazyng-windows-x64-portable.7z", "pleazyng-windows-installer.exe",
+        f"pleazyng-winget-manifests-{version}.zip", f"pleazyng.{version}.nupkg",
+        "pleazyng-linux-x64.tar.gz", "pleazyng-linux-x64.deb", "pleazyng-linux-x64.rpm",
+        "pleazyng-linux-x64.pkg.tar.zst", "pleazyng-linux-x64.flatpak", "pleazyng-linux-x64.snap",
+        "pleazyng-linux-arm64.tar.gz", "pleazyng-linux-arm64.deb", "pleazyng-linux-arm64.rpm",
+        "pleazyng-linux-arm64.pkg.tar.zst", "pleazyng-linux-arm64.flatpak", "pleazyng-linux-arm64.snap",
+        "pleazyng-linux-x86_64.AppImage",
+        "pleazyng-tizen-arm-tester-handoff.zip",
     }
     if include_webos_release:
         required.update({
             "webos-engine-provenance.json", "webos-compatibility.json",
-            "webos-SHA256SUMS.txt", "PlezyNG-lg-webos-submission.zip",
+            "webos-SHA256SUMS.txt", "pleazyng-lg-webos-submission.zip",
         })
         if not any(name.endswith(".ipk") for name in assets if isinstance(name, str)):
             required.add("<eligible webOS .ipk>")
     if execution_profile == "hybrid":
-        required.add("plezy-windows-arm64-portable.zip")
+        required.add("pleazyng-windows-arm64-portable.zip")
 
     missing_platforms = missing_assets(assets)
     if missing_platforms:
@@ -1092,14 +1092,14 @@ def validate_release_outputs(
         "ANDROID_KEYSTORE_BASE64", "ANDROID_STORE_PASSWORD", "ANDROID_KEY_PASSWORD", "ANDROID_KEY_ALIAS",
     }
     if android_signing.issubset(secrets):
-        required.update({"plezyng-android-play.aab", "plezyng-amazon-firetv.apk"})
+        required.update({"pleazyng-android-play.aab", "pleazyng-amazon-firetv.apk"})
     apple_store_signing = {
         "APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID",
     }
     if include_apple_store_build and apple_store_signing.issubset(secrets):
-        required.add("plezyng-ios-appstore.ipa")
+        required.add("pleazyng-ios-appstore.ipa")
     if include_apple_store_build and apple_store_signing.issubset(secrets):
-        required.add("plezyng-tvos-appstore.ipa")
+        required.add("pleazyng-tvos-appstore.ipa")
 
     missing = sorted(required - assets)
     if missing:
@@ -1174,7 +1174,7 @@ def publish_configured_channels(
             "fields": {"action": "publish-app-stores", "runner_pool": "private", "release_tag": tag,
                        "channel": "google-play", "play_track": "internal", "play_release_status": "draft"},
             "secrets": {"GOOGLE_PLAY_SERVICE_ACCOUNT_JSON"}, "variables": set(),
-            "assets": {"plezyng-android-play.aab", "SHA256SUMS.txt"},
+            "assets": {"pleazyng-android-play.aab", "SHA256SUMS.txt"},
         },
         {
             "name": "Amazon Appstore upload",
@@ -1183,7 +1183,7 @@ def publish_configured_channels(
             "fields": {"action": "publish-app-stores", "runner_pool": "private", "release_tag": tag,
                        "channel": "amazon-appstore", "play_track": "internal", "play_release_status": "draft"},
             "secrets": {"AMAZON_APPSTORE_CLIENT_ID", "AMAZON_APPSTORE_CLIENT_SECRET"}, "variables": set(),
-            "assets": {"plezyng-amazon-firetv.apk", "SHA256SUMS.txt"},
+            "assets": {"pleazyng-amazon-firetv.apk", "SHA256SUMS.txt"},
         },
         {
             "name": "Apple App Store Connect iOS upload",
@@ -1192,7 +1192,7 @@ def publish_configured_channels(
             "fields": {"action": "publish-app-stores", "runner_pool": "private", "release_tag": tag,
                        "channel": "app-store-ios", "play_track": "internal", "play_release_status": "draft"},
             "secrets": {"APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY"}, "variables": set(),
-            "assets": {"plezyng-ios-appstore.ipa", "SHA256SUMS.txt"},
+            "assets": {"pleazyng-ios-appstore.ipa", "SHA256SUMS.txt"},
         },
         {
             "name": "Apple App Store Connect tvOS upload",
@@ -1201,7 +1201,7 @@ def publish_configured_channels(
             "fields": {"action": "publish-app-stores", "runner_pool": "private", "release_tag": tag,
                        "channel": "app-store-tvos", "play_track": "internal", "play_release_status": "draft"},
             "secrets": {"APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY"}, "variables": set(),
-            "assets": {"plezyng-tvos-appstore.ipa", "SHA256SUMS.txt"},
+            "assets": {"pleazyng-tvos-appstore.ipa", "SHA256SUMS.txt"},
         },
         {
             "name": "AUR",
@@ -1209,7 +1209,7 @@ def publish_configured_channels(
             "title": f"action:publish-aur:pool:private:tag:{tag}",
             "fields": {"action": "publish-aur", "runner_pool": "private", "release_tag": tag},
             "secrets": {"AUR_SSH_KEY"}, "variables": {"AUR_PACKAGE_NAME"},
-            "assets": {"plezy-linux-x64.tar.gz", "plezy-linux-arm64.tar.gz", "SHA256SUMS.txt"},
+            "assets": {"pleazyng-linux-x64.tar.gz", "pleazyng-linux-arm64.tar.gz", "SHA256SUMS.txt"},
         },
         {
             "name": "Fedora COPR",
@@ -1217,7 +1217,7 @@ def publish_configured_channels(
             "title": f"action:publish-copr:pool:private:tag:{tag}",
             "fields": {"action": "publish-copr", "runner_pool": "private", "release_tag": tag},
             "secrets": {"COPR_LOGIN", "COPR_USERNAME", "COPR_TOKEN"}, "variables": {"COPR_PROJECT"},
-            "assets": {"plezy-linux-x64.tar.gz", "plezy-linux-arm64.tar.gz", "SHA256SUMS.txt"},
+            "assets": {"pleazyng-linux-x64.tar.gz", "pleazyng-linux-arm64.tar.gz", "SHA256SUMS.txt"},
         },
         {
             "name": "Launchpad PPA",
@@ -1225,7 +1225,7 @@ def publish_configured_channels(
             "title": f"action:publish-ppa:pool:private:tag:{tag}",
             "fields": {"action": "publish-ppa", "runner_pool": "private", "release_tag": tag},
             "secrets": {"GPG_PRIVATE_KEY"}, "variables": {"LAUNCHPAD_PPA"},
-            "assets": {"plezy-linux-x64.tar.gz", "plezy-linux-arm64.tar.gz", "SHA256SUMS.txt"},
+            "assets": {"pleazyng-linux-x64.tar.gz", "pleazyng-linux-arm64.tar.gz", "SHA256SUMS.txt"},
         },
         {
             "name": "Snap Store stable",
@@ -1234,7 +1234,7 @@ def publish_configured_channels(
             "fields": {"action": "publish-snap", "runner_pool": "private", "release_tag": tag,
                        "channel": "stable"},
             "secrets": {"SNAPCRAFT_STORE_CREDENTIALS"}, "variables": set(),
-            "assets": {"plezyng-linux-x64.snap", "plezyng-linux-arm64.snap", "SHA256SUMS.txt"},
+            "assets": {"pleazyng-linux-x64.snap", "pleazyng-linux-arm64.snap", "SHA256SUMS.txt"},
         },
         {
             "name": "Chocolatey",
@@ -1243,8 +1243,8 @@ def publish_configured_channels(
             "fields": {"action": "publish-chocolatey", "runner_pool": "private", "release_tag": tag,
                        "publish": "true"},
             "secrets": {"CHOCO_API_KEY"}, "variables": set(),
-            "assets": {"plezy-windows-installer.exe", "SHA256SUMS.txt"},
-            "asset_predicate": lambda name: name.startswith("plezyng.") and name.endswith(".nupkg"),
+            "assets": {"pleazyng-windows-installer.exe", "SHA256SUMS.txt"},
+            "asset_predicate": lambda name: name.startswith("pleazyng.") and name.endswith(".nupkg"),
         },
         {
             "name": "WinGet community submission",
@@ -1253,7 +1253,7 @@ def publish_configured_channels(
             "fields": {"action": "publish-winget", "runner_pool": "private", "release_tag": tag,
                        "submit": "true"},
             "secrets": {"WINGET_CREATE_GITHUB_TOKEN"}, "variables": set(),
-            "assets": {f"plezyng-winget-manifests-{version}.zip", "plezy-windows-installer.exe", "SHA256SUMS.txt"},
+            "assets": {f"pleazyng-winget-manifests-{version}.zip", "pleazyng-windows-installer.exe", "SHA256SUMS.txt"},
         },
         {
             "name": "GitHub Container Registry and Docker Hub",
@@ -1269,7 +1269,7 @@ def publish_configured_channels(
             "title": f"action:update-packages:pool:private:tag:{tag}",
             "fields": {"action": "update-packages", "runner_pool": "private", "release_tag": tag},
             "secrets": set(), "variables": set(),
-            "assets": {"plezyng-macos.dmg", "appcast.xml"},
+            "assets": {"pleazyng-macos.dmg", "appcast.xml"},
         },
     ]
 
@@ -1400,7 +1400,7 @@ def main() -> int:
     if package_version != args.version:
         raise ReleaseError(f"Requested {args.version}, but pubspec.yaml declares {package_version}.")
     if args.version == "3.0.0" and args.execution_profile != "hybrid":
-        raise ReleaseError("The PlezyNG 3.0.0 release requires the hybrid profile, including native Windows ARM64 CI.")
+        raise ReleaseError("The Pleazyng 3.0.0 release requires the hybrid profile, including native Windows ARM64 CI.")
     if args.reuse_platform_run and (
         args.reuse_platform_run < 1 or args.publish
         or args.execution_profile != "hybrid"
@@ -1412,7 +1412,7 @@ def main() -> int:
         raise ReleaseError("--skip-webos-build cannot be used for a versioned release; all owner-mandated platforms are required.")
     command(["gh", "auth", "status", "--hostname", "github.com"], capture=True, quiet=True)
 
-    scratch = args.scratch.resolve() if args.scratch else Path(tempfile.mkdtemp(prefix="plezyng-release-"))
+    scratch = args.scratch.resolve() if args.scratch else Path(tempfile.mkdtemp(prefix="pleazyng-release-"))
     if scratch.exists() and any(scratch.iterdir()):
         raise ReleaseError(f"Scratch directory must be empty so task-owned cleanup is exact: {scratch}")
     scratch.mkdir(parents=True, exist_ok=True)
@@ -1434,7 +1434,7 @@ def main() -> int:
         main_commit = command(
             ["git", "rev-parse", "HEAD"], cwd=worktree, capture=True, quiet=True
         ).stdout.strip()
-        ensure_remote_main_sha(main_commit, "starting the PlezyNG release")
+        ensure_remote_main_sha(main_commit, "starting the Pleazyng release")
         tag = f"v{args.version}"
         existing_tag_commit = existing_release_tag_commit(worktree, tag)
         tag_reused = existing_tag_commit is not None
@@ -1475,14 +1475,14 @@ def main() -> int:
             progress["ffmpeg_version"] = ffmpeg_version
             progress["ffmpeg_source_sha256"] = ffmpeg_sha256
 
-            stage = "PlezyNG pin update and push"
+            stage = "Pleazyng pin update and push"
             progress["stage"] = stage
             save_progress()
             pin_sha = commit_and_push_native_pin(
                 worktree, native_repo, native_sha, ffmpeg_version, ffmpeg_sha256
             )
         progress["plezyng_commit"] = pin_sha
-        stage = "PlezyNG CI"
+        stage = "Pleazyng CI"
         progress["stage"] = stage
         save_progress()
         if args.reuse_platform_run:
@@ -1556,7 +1556,7 @@ def main() -> int:
         channel_failures: list[str] = []
         release_published = False
         if args.publish or args.publish_github_only:
-            ensure_remote_main_sha(pin_sha, f"publishing PlezyNG {tag}")
+            ensure_remote_main_sha(pin_sha, f"publishing Pleazyng {tag}")
             stage = "publish GitHub release"
             progress["stage"] = stage
             save_progress()

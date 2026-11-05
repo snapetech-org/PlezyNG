@@ -1038,7 +1038,7 @@ android {
   }
 
   defaultConfig {
-    applicationId = "org.snapetech.plezyng"
+    applicationId = "org.snapetech.pleazyng"
     if (felAarFile != null) {
       // Keep experimental native builds installable beside the signed app.
       // This avoids asking testers to uninstall their normal client and lose

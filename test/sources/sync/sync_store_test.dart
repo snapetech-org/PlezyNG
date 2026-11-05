@@ -224,7 +224,7 @@ void main() {
       await store.list(namespace);
       await store.create(filename(1), 'encrypted');
       final args = jsonDecode(upload!.headers['Dropbox-API-Arg']!) as Map<String, dynamic>;
-      expect(args['path'], '/PlezyNG Sync/${filename(1)}');
+      expect(args['path'], '/Pleazyng Sync/${filename(1)}');
       expect(args['mode'], 'add');
       expect(args['autorename'], isFalse);
       expect(args['strict_conflict'], isTrue);

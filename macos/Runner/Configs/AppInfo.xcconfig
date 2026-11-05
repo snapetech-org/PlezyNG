@@ -1,6 +1,6 @@
 
-PRODUCT_NAME = PlezyNG
+PRODUCT_NAME = Pleazyng
 
-PRODUCT_BUNDLE_IDENTIFIER = org.snapetech.plezyng
+PRODUCT_BUNDLE_IDENTIFIER = org.snapetech.pleazyng
 
 PRODUCT_COPYRIGHT = Copyright © 2025 edde746

@@ -336,7 +336,7 @@ func (h *comicCommerceHandler) makeRakutenLink(ctx context.Context, destination 
 		URL:          destination.String(),
 		AdvertiserID: mustParseInt64(h.koboID),
 		U1:           "plezyng_comics",
-		Name:         "PlezyNG comic storefront",
+		Name:         "Pleazyng comic storefront",
 	}
 	body, err := json.Marshal(payload)
 	if err != nil {

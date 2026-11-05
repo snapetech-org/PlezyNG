@@ -1024,7 +1024,7 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
         'UserId': connection.userId,
         ...negotiation,
         'DeviceProfile': <String, Object?>{
-          'Name': 'PlezyNG',
+          'Name': 'Pleazyng',
           'MaxStreamingBitrate': ?maxStreamingBitrate,
           // A compatibility transcode must land in SDR rather than simply
           // re-encode the Dolby Vision signal with incompatible HDR metadata.

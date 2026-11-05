@@ -86,8 +86,8 @@ final class FakeInAppPurchasePlatform extends InAppPurchasePlatform {
 
 ProductDetails supporterProduct({String price = r'$2.99'}) => ProductDetails(
   id: lifetimeUnlockProductId,
-  title: 'PlezyNG Lifetime Unlock',
-  description: 'Lifetime access to every PlezyNG feature',
+  title: 'Pleazyng Lifetime Unlock',
+  description: 'Lifetime access to every Pleazyng feature',
   price: price,
   rawPrice: 2.99,
   currencyCode: 'USD',

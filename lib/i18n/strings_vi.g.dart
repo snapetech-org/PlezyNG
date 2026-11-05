@@ -112,6 +112,7 @@ class TranslationsVi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$vi deepLinks = _Translations$deepLinks$vi._(_root);
 	@override late final _Translations$householdSetup$vi householdSetup = _Translations$householdSetup$vi._(_root);
 	@override late final _Translations$issueReport$vi issueReport = _Translations$issueReport$vi._(_root);
+	@override late final _Translations$romm$vi romm = _Translations$romm$vi._(_root);
 }
 
 // Path: app
@@ -121,7 +122,7 @@ class _Translations$app$vi extends Translations$app$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -135,10 +136,10 @@ class _Translations$appIcon$vi extends Translations$appIcon$en {
 	@override String get defaultIcon => 'Mặc Định';
 	@override String get current => 'Icon hiện tại';
 	@override String get locked => 'Thời gian tiếp cận cần thiết';
-	@override String get lockedHint => 'Bắt đầu thử nghiệm 7 ngày của bạn hoặc mở khóa PlezyNG cho đời để sử dụng các biểu tượng thay thế.';
+	@override String get lockedHint => 'Bắt đầu thử nghiệm 7 ngày của bạn hoặc mở khóa Pleazyng cho đời để sử dụng các biểu tượng thay thế.';
 	@override String get changeFailed => 'Không thể thay đổi icon ứng dụng';
-	@override String get launcherHint => 'biểu tượng mới sẽ xuất hiện trên màn hình nhà của bạn một khi bạn rời khỏi PlezyNG.';
-	@override String get tvLauncherHint => 'Banner mới xuất hiện một khi bạn rời khỏi PlezyNG. Android TV có thể tiếp tục hiển thị một cũ cho đến khi TV khởi động lại.';
+	@override String get launcherHint => 'biểu tượng mới sẽ xuất hiện trên màn hình nhà của bạn một khi bạn rời khỏi Pleazyng.';
+	@override String get tvLauncherHint => 'Banner mới xuất hiện một khi bạn rời khỏi Pleazyng. Android TV có thể tiếp tục hiển thị một cũ cho đến khi TV khởi động lại.';
 	@override late final _Translations$appIcon$names$vi names = _Translations$appIcon$names$vi._(_root);
 	@override String get description => 'Chọn biểu tượng được hiển thị bởi người khởi động thiết bị của bạn. các bản xem trước cho thấy mỗi tùy chọn trông như thế nào.';
 }
@@ -165,7 +166,7 @@ class _Translations$auth$vi extends Translations$auth$en {
 	@override String get quickConnectWaiting => 'Đang chờ sự chấp thuận...';
 	@override String get quickConnectCancel => 'Hủy bỏ';
 	@override String get quickConnectExpired => 'Quick Connect đã hết hạn. thử lại.';
-	@override String get localDataRecoveryRequired => 'PlezyNG không thể khôi phục an toàn dữ liệu đăng nhập cục bộ và dữ liệu phát đang chờ xử lý. Vui lòng đăng nhập lại.';
+	@override String get localDataRecoveryRequired => 'Pleazyng không thể khôi phục an toàn dữ liệu đăng nhập cục bộ và dữ liệu phát đang chờ xử lý. Vui lòng đăng nhập lại.';
 	@override String get pinCheckRejected => 'Kiểm tra PIN Plex đã bị từ chối';
 	@override String get connectToDirectPlex => 'Kết nối với máy chủ địa phương Plex';
 }
@@ -294,9 +295,9 @@ class _Translations$settings$vi extends Translations$settings$en {
 
 	// Translations
 	@override String get title => 'Cài đặt';
-	@override String get supportDeveloper => 'Hỗ trợ PlezyNG';
+	@override String get supportDeveloper => 'Hỗ trợ Pleazyng';
 	@override String get supportDeveloperDescription => 'Ưu đãi để hỗ trợ phát triển';
-	@override String get lifetimeAccess => 'PlezyNG Thời gian truy cập';
+	@override String get lifetimeAccess => 'Pleazyng Thời gian truy cập';
 	@override String get language => 'Ngôn ngữ';
 	@override String get theme => 'Chủ đề';
 	@override String get appearance => 'xuất hiện';
@@ -352,7 +353,7 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get contentScreensaverNoLibraries => 'Không có thư viện truyền thông kết nối.';
 	@override String get contentScreensaverDismissHint => 'Nhấn bất kỳ nút hoặc nhấn để tháo';
 	@override String get newEpisodeNotifications => 'Thông báo episode mới';
-	@override String get newEpisodeNotificationsDescription => 'Cảnh báo khi một tập mới được thêm vào một chương trình bạn đang bị bắt. kiểm tra khi Plezy mở.';
+	@override String get newEpisodeNotificationsDescription => 'Cảnh báo khi một tập mới được thêm vào một chương trình bạn đang bị bắt. kiểm tra khi Pleazyng mở.';
 	@override String get continueWatchingRowSize => 'Xem thêm kích thước hàng';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} thẻ';
 	@override String get rowSizeCompact => 'Gọn';
@@ -481,7 +482,7 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get importSettingsDescription => 'khôi phục các tùy chọn từ một tệp';
 	@override String get importSettingsConfirm => 'Điều này sẽ thay thế cài đặt hiện tại của bạn. tiếp tục?';
 	@override String get importSettingsSuccess => 'Cài đặt nhập khẩu';
-	@override String get importSettingsInvalidFile => 'Tệp này không phải là một hợp lệ PlezyNG cài đặt xuất khẩu';
+	@override String get importSettingsInvalidFile => 'Tệp này không phải là một hợp lệ Pleazyng cài đặt xuất khẩu';
 	@override String get importSettingsNoUser => 'Đăng nhập trước khi nhập cài đặt';
 	@override String get cloudBackup => 'Mây Backup';
 	@override String get cloudBackupDescription => 'Sao lưu các cài đặt có thể chuyển sang thiết bị khác đến địa chỉ WebDAV qua HTTPS. Kết nối máy chủ và thông tin đăng nhập vẫn nằm trên thiết bị này.';
@@ -665,7 +666,7 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get forceTvMode => 'Phim truyền hình Force';
 	@override String get forceTvModeDescription => 'Thiết lập TV Force. Đối với các thiết bị không tự phát hiện. Cần khởi động lại.';
 	@override String get startInFullscreen => 'Bắt đầu trên màn hình đầy đủ';
-	@override String get startInFullscreenDescription => 'Mở PlezyNG trong chế độ màn hình đầy đủ khi ra mắt';
+	@override String get startInFullscreenDescription => 'Mở Pleazyng trong chế độ màn hình đầy đủ khi ra mắt';
 	@override String get exitFullscreenOnPlayerClose => 'Mở màn hình đầy đủ trên player close';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Tự động ra khỏi màn hình đầy đủ khi đóng video player';
 	@override String get autoHidePerformanceOverlay => 'Tính năng Auto-Hide Performance Overlay';
@@ -721,7 +722,7 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get playerScopeGlobal => 'khắp nơi';
 	@override String get playerScopeLibrary => 'bởi thư viện';
 	@override String get playerScopeTitle => 'Theo chương trình hay phim';
-	@override String get exportDialogTitle => 'Xuất khẩu PlezyNG thiết lập';
+	@override String get exportDialogTitle => 'Xuất khẩu Pleazyng thiết lập';
 	@override String get followSystem => 'Theo hệ thống';
 	@override String get followAppLanguage => 'Theo ngôn ngữ giao diện';
 	@override String get regionFormat => 'Định dạng khu vực';
@@ -732,7 +733,7 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get enterFullscreenOnPlaybackStartDescription => 'Mở video desktop trên màn hình đầy đủ khi playback bắt đầu';
 	@override String get extendVideoIntoDisplayCutout => 'mở rộng video vào display cutout';
 	@override String get extendVideoIntoDisplayCutoutDescription => 'Hãy để video màn hình đầy đủ sử dụng camera cutout trên điện thoại Android';
-	@override String get languageDescription => 'Chọn ngôn ngữ được sử dụng cho các điều khiển và thông điệp PlezyNG. Theo hệ thống theo dõi ngôn ngữ thiết bị của bạn.';
+	@override String get languageDescription => 'Chọn ngôn ngữ được sử dụng cho các điều khiển và thông điệp Pleazyng. Theo hệ thống theo dõi ngôn ngữ thiết bị của bạn.';
 	@override String get themeDescription => 'Chọn các màu sắc và tương phản được sử dụng trong toàn bộ ứng dụng.';
 	@override String get libraryDensityDescription => 'Thay đổi số thẻ thư viện phù hợp trong mỗi hàng.';
 	@override String get displayScaleDescription => 'Khôi phục lại giao diện trên màn hình xe này mà không thay đổi kích thước văn bản trên thiết bị của bạn.';
@@ -754,14 +755,14 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get episodeActionDescription => 'Chọn những gì xảy ra khi bạn kích hoạt một thẻ episode.';
 	@override String get episodePlayDescription => 'Bắt đầu sự kiện ngay lập tức.';
 	@override String get episodeDetailsDescription => 'Mở trang tập trước khi playback.';
-	@override String get contentScreensaverDelayDescription => 'Chọn bao lâu PlezyNG chờ đợi mà không có đầu vào trước khi hiển thị tác phẩm nghệ thuật.';
+	@override String get contentScreensaverDelayDescription => 'Chọn bao lâu Pleazyng chờ đợi mà không có đầu vào trước khi hiển thị tác phẩm nghệ thuật.';
 	@override String get continueWatchingRowSizeDescription => 'Chọn kích thước của các thẻ trong dòng tiếp tục xem.';
 	@override String get rowSizeCompactDescription => 'Hiển thị các thẻ nhỏ hơn để nhiều mục phù hợp trên hàng.';
 	@override String get rowSizeStandardDescription => 'Sử dụng kích thước thẻ tiêu chuẩn.';
 	@override String get rowSizeLargeDescription => 'Hiển thị các thẻ lớn hơn với chi tiết nghệ thuật nhiều hơn.';
 	@override String get visualEffectsDescription => 'Chọn ngân sách hoạt hình và hiệu ứng nghệ thuật cho thiết bị này.';
 	@override String get visualEffectsFullDescription => 'Sử dụng các hiệu ứng hoạt hình và nghệ thuật đầy đủ trên mỗi thiết bị.';
-	@override String get startupSectionDescription => 'Chọn phần nào mở khi PlezyNG bắt đầu.';
+	@override String get startupSectionDescription => 'Chọn phần nào mở khi Pleazyng bắt đầu.';
 	@override late final _Translations$settings$startupSectionOptions$vi startupSectionOptions = _Translations$settings$startupSectionOptions$vi._(_root);
 	@override String get smallSkipDurationDescription => 'Thiết lập khoảng cách di chuyển bởi phía sau ngắn và phía trước tìm kiếm kiểm soát.';
 	@override String get largeSkipDurationDescription => 'Thiết lập khoảng cách di chuyển bởi phía sau dài và phía trước tìm kiếm kiểm soát.';
@@ -797,7 +798,7 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get musicQualityOriginalDescription => 'Chơi âm thanh nguồn mà không có transcode bitrate.';
 	@override String get musicQualityTranscodeOptionDescription => 'Yêu cầu một transcode máy chủ được cáp gần bitrate hiển thị ở trên; kết quả thực tế có thể thay đổi.';
 	@override String get maxVolumeInputLabel => 'Số lượng tối đa (%)';
-	@override String get checkForUpdatesDescription => 'Bây giờ kiểm tra xem phiên bản mới hơn của PlezyNG có sẵn hay không.';
+	@override String get checkForUpdatesDescription => 'Bây giờ kiểm tra xem phiên bản mới hơn của Pleazyng có sẵn hay không.';
 	@override String get appearanceDescription => 'Chọn chủ đề ứng dụng và điều chỉnh thư viện thẻ, dòng nhà, và di chuyển.';
 	@override String get prerollLibraryDescription => 'Chọn thư viện chứa các clip có sẵn như phim pre-rolls.';
 	@override String get prerollSelectionDescription => 'Chọn clip nào từ thư viện được chọn có thể chơi trước khi xem phim.';
@@ -1045,8 +1046,8 @@ class _Translations$mediaMenu$vi extends Translations$mediaMenu$en {
 	@override String deleteSharedFileHeading({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
 		other: 'Có ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tập phim khác được lưu trong cùng tệp và cũng sẽ bị xóa:',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'PlezyNG không thể xác định những tệp sẽ bị xóa, nên có thể xóa nhiều hơn mục nêu trên. Hãy hủy và thử lại, hoặc vẫn xóa.';
-	@override String get deleteScopeUnverifiedNoFileInfo => 'Máy chủ không cung cấp thông tin tệp cho mục này, nên PlezyNG không thể xác định những tệp sẽ bị xóa. Có thể xóa nhiều hơn mục nêu trên.';
+	@override String get deleteScopeUnverifiedProbeFailed => 'Pleazyng không thể xác định những tệp sẽ bị xóa, nên có thể xóa nhiều hơn mục nêu trên. Hãy hủy và thử lại, hoặc vẫn xóa.';
+	@override String get deleteScopeUnverifiedNoFileInfo => 'Máy chủ không cung cấp thông tin tệp cho mục này, nên Pleazyng không thể xác định những tệp sẽ bị xóa. Có thể xóa nhiều hơn mục nêu trên.';
 	@override String get mediaDeletedSuccessfully => 'Media item đã bị xóa thành công';
 	@override String get mediaFailedToDelete => 'Không xóa các mục phương tiện truyền thông';
 	@override String get rate => 'Đánh giá';
@@ -1114,7 +1115,7 @@ class _Translations$accessibility$vi extends Translations$accessibility$en {
 	@override String get colorModeRgb => 'RGB';
 	@override String get title => 'Truy cập';
 	@override String get summary => 'Text, contrast, motion và controls';
-	@override String get systemHint => 'Cài đặt khả năng truy cập của thiết bị của bạn luôn được áp dụng. các tùy chọn này thêm các điều chỉnh trong suốt PlezyNG.';
+	@override String get systemHint => 'Cài đặt khả năng truy cập của thiết bị của bạn luôn được áp dụng. các tùy chọn này thêm các điều chỉnh trong suốt Pleazyng.';
 	@override String get readability => 'Đọc và hiển thị';
 	@override String get textSize => '- Thêm Text Size';
 	@override String get preview => 'Tìm câu chuyện tiếp theo của bạn. đọc, nghe và xem theo tốc độ của riêng bạn.';
@@ -1127,7 +1128,7 @@ class _Translations$accessibility$vi extends Translations$accessibility$en {
 	@override String get largeTargets => 'Mục tiêu Touch lớn hơn';
 	@override String get largeTargetsHint => 'Tăng diện tích các điều khiển dùng chung để dễ chạm và điều hướng bằng công nghệ hỗ trợ.';
 	@override String get navigationHint => 'Dùng Tab và Shift+Tab để di chuyển giữa các điều khiển, Enter hoặc Space để kích hoạt, Escape hoặc nút Quay lại để đóng. Bạn có thể chỉnh mức thu phóng và tùy chọn đọc khi mở sách.';
-	@override String get textSizeDescription => 'Tích hợp văn bản giao diện trong PlezyNG ngoài thiết lập kích thước văn bản hệ thống của thiết bị của bạn.';
+	@override String get textSizeDescription => 'Tích hợp văn bản giao diện trong Pleazyng ngoài thiết lập kích thước văn bản hệ thống của thiết bị của bạn.';
 	@override String get boldTextHint => 'Sử dụng trọng lượng nặng hơn cho các nhãn giao diện và tin nhắn để làm cho chúng dễ dàng phân biệt.';
 }
 
@@ -1453,7 +1454,7 @@ class _Translations$profiles$vi extends Translations$profiles$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'Thêm PlezyNG hồ sơ';
+	@override String get addPlezyProfile => 'Thêm Pleazyng hồ sơ';
 	@override String get switchingProfile => 'Thay đổi profile...';
 	@override String get deleteThisProfileTitle => 'Xóa hồ sơ này?';
 	@override String deleteThisProfileMessage({required Object displayName}) => 'Xóa ${displayName}. kết nối không bị ảnh hưởng.';
@@ -1544,7 +1545,7 @@ class _Translations$connections$vi extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} máy chủ từ chối truy cập vào tài khoản này';
 	@override String get signInAgain => 'Đăng ký lại';
 	@override String editMediaBrowserTitle({required Object product}) => 'Edit ${product} kết nối';
-	@override String editMediaBrowserIntro({required Object serverName}) => 'Thêm hoặc xóa URL cho ${serverName}. PlezyNG sẽ sử dụng URL có thể truy cập với độ chậm thấp nhất.';
+	@override String editMediaBrowserIntro({required Object serverName}) => 'Thêm hoặc xóa URL cho ${serverName}. Pleazyng sẽ sử dụng URL có thể truy cập với độ chậm thấp nhất.';
 }
 
 // Path: accountPreferences
@@ -1558,7 +1559,7 @@ class _Translations$accountPreferences$vi extends Translations$accountPreference
 	@override String hubSubtitleSingle({required Object account}) => 'Audio, subtitle và thư viện tùy chọn được lưu trên ${account}';
 	@override String hubSubtitleMultiple({required Object count}) => 'Audio, subtitle và thư viện tùy chọn được lưu trên ${count} tài khoản';
 	@override String get pickAccount => 'Mỗi tài khoản lưu trữ sở thích của riêng mình. chọn một để chỉnh sửa.';
-	@override String get storedOnAccount => 'Các tùy chọn này được lưu trữ trên tài khoản của bạn, vì vậy mỗi ứng dụng đăng ký sử dụng chúng – bao gồm PlezyNG trên các thiết bị khác của bạn.';
+	@override String get storedOnAccount => 'Các tùy chọn này được lưu trữ trên tài khoản của bạn, vì vậy mỗi ứng dụng đăng ký sử dụng chúng – bao gồm Pleazyng trên các thiết bị khác của bạn.';
 	@override String get noAccounts => 'Không có tài khoản để cấu hình';
 	@override String get noAccountsHint => 'Đăng nhập vào Plex, hoặc kết nối với một máy chủ Jellyfin hoặc Emby, và các tùy chọn được lưu trữ trên tài khoản đó được hiển thị ở đây.';
 	@override String get unavailable => 'Không thể truy cập tài khoản này';
@@ -1785,9 +1786,9 @@ class _Translations$startup$vi extends Translations$startup$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'PlezyNG không thể bắt đầu';
+	@override String get failedTitle => 'Pleazyng không thể bắt đầu';
 	@override String get failedBody => 'Một cái gì đó đã sai trong quá trình khởi động. chi tiết bên dưới xác định những gì đã thất bại.';
-	@override String get failedBodyRepairable => 'Tệp cài đặt đã lưu của PlezyNG bị hỏng và phải được tạo lại trước khi ứng dụng có thể khởi động. Thử lại sẽ không giúp ích — hãy chọn sửa bộ nhớ.';
+	@override String get failedBodyRepairable => 'Tệp cài đặt đã lưu của Pleazyng bị hỏng và phải được tạo lại trước khi ứng dụng có thể khởi động. Thử lại sẽ không giúp ích — hãy chọn sửa bộ nhớ.';
 	@override String get phaseLabel => 'Bước bước';
 	@override String get showDetails => 'Hiển thị chi tiết';
 	@override String get hideDetails => 'Ẩn chi tiết';
@@ -1796,16 +1797,16 @@ class _Translations$startup$vi extends Translations$startup$en {
 	@override String get uploadDetails => 'tải chi tiết';
 	@override String get repairStorage => 'sửa lưu trữ';
 	@override String get repairTitle => 'sửa lại dữ liệu được lưu trữ?';
-	@override String get repairBodyCommon => 'Tệp cài đặt của PlezyNG bị hư hỏng và không thể đọc được. sửa chữa tái cài đặt mỗi cài đặt theo mặc định.';
+	@override String get repairBodyCommon => 'Tệp cài đặt của Pleazyng bị hư hỏng và không thể đọc được. sửa chữa tái cài đặt mỗi cài đặt theo mặc định.';
 	@override String get repairBodyOneCredential => 'Một đăng nhập được lưu được bị hư hỏng và không thể đọc được. sửa chữa loại bỏ chỉ một; các cài đặt khác của bạn được để lại một mình.';
 	@override String get repairBodySignInsKept => 'Trạng thái đăng nhập vào các máy chủ và hồ sơ của bạn sẽ được giữ lại nếu quá trình khôi phục diễn ra bình thường.';
 	@override String get repairBodySignInsLost => 'Không thể khôi phục khóa bảo vệ thông tin đăng nhập đã lưu từ tệp này. Bạn sẽ phải đăng nhập lại vào từng máy chủ và hồ sơ. Không có gì trên máy chủ nội dung bị ảnh hưởng.';
-	@override String get repairBodySessionsUncertain => 'Trackers (MAL, AniList, Simkl, Trakt) và Seerr được lưu trữ riêng biệt và có thể hay không tồn tại. PlezyNG sẽ cho bạn biết chính xác những gì nó giữ.';
+	@override String get repairBodySessionsUncertain => 'Trackers (MAL, AniList, Simkl, Trakt) và Seerr được lưu trữ riêng biệt và có thể hay không tồn tại. Pleazyng sẽ cho bạn biết chính xác những gì nó giữ.';
 	@override String get repairConfirm => 'sửa chữa';
 	@override String get repairSucceeded => 'lưu trữ sửa chữa';
 	@override String get repairNeedsRestart => 'Lưu trữ được sửa chữa - cần khởi động lại';
-	@override String get restartRequiredBody => 'Dữ liệu của bạn đã được sửa, nhưng cần khởi động lại PlezyNG để sử dụng. Hãy đóng PlezyNG rồi mở lại.';
-	@override String get quitPlezy => 'Đánh giá PlezyNG';
+	@override String get restartRequiredBody => 'Dữ liệu của bạn đã được sửa, nhưng cần khởi động lại Pleazyng để sử dụng. Hãy đóng Pleazyng rồi mở lại.';
+	@override String get quitPlezy => 'Đánh giá Pleazyng';
 	@override String get repairFailed => 'sửa chữa thất bại';
 	@override String get repairKeptSignIns => 'Bạn vẫn đang đăng nhập vào các máy chủ và hồ sơ của mình.';
 	@override String get repairLostSignIns => 'Không thể khôi phục khóa bảo vệ thông tin đăng nhập đã lưu. Bạn sẽ phải đăng nhập lại vào từng máy chủ và hồ sơ.';
@@ -1814,7 +1815,7 @@ class _Translations$startup$vi extends Translations$startup$en {
 	@override String get backupWarning => 'Bản sao này chứa thông tin đăng nhập của bạn. Không tải lên hoặc chia sẻ.';
 	@override String get deleteBackup => 'xóa copy';
 	@override String get backupDeleted => 'Bản sao bị xóa';
-	@override String get previousFailureTitle => 'PlezyNG không bắt đầu lần cuối';
+	@override String get previousFailureTitle => 'Pleazyng không bắt đầu lần cuối';
 }
 
 // Path: licenses
@@ -2140,7 +2141,7 @@ class _Translations$watchTogether$vi extends Translations$watchTogether$en {
 	@override String get codeCopied => 'Mã phòng copy';
 	@override String get shareInvite => 'Chia sẻ mời';
 	@override String get inviteCopied => 'Gửi tin nhắn, gửi nó vào một tin nhắn.';
-	@override String inviteMessage({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại PlezyNG: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.';
+	@override String inviteMessage({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.';
 	@override String get openSessionControls => 'Open Watch Cùng kiểm soát phiên';
 	@override String get reconnecting => 'Kết nối lại...';
 	@override String get reconnectingDescription => 'Kết nối bị hỏng. bạn sẽ tự động vào phòng.';
@@ -2166,7 +2167,7 @@ class _Translations$watchTogether$vi extends Translations$watchTogether$en {
 	@override String get chooseAnotherCopy => 'Chọn một bản sao khác';
 	@override String get dontPlay => 'Đừng chơi';
 	@override String get unavailableTitle => 'Bạn không có video này';
-	@override String get unavailableDescription => 'PlezyNG không thể tìm thấy nó trong thư viện của bạn. chọn bản sao cho chính mình hoặc tìm kiếm lại.';
+	@override String get unavailableDescription => 'Pleazyng không thể tìm thấy nó trong thư viện của bạn. chọn bản sao cho chính mình hoặc tìm kiếm lại.';
 	@override String get chooseCopy => 'Chọn một bản sao';
 	@override String get searchAgain => 'Tìm lại';
 	@override String get noCandidates => 'Không có bản sao được tìm thấy trong thư viện của bạn.';
@@ -2310,11 +2311,11 @@ class _Translations$downloads$vi extends Translations$downloads$en {
 	@override String get activeSyncRules => 'Quy tắc Sync';
 	@override String get reviewOrphanFiles => 'Đánh giá Downloads Orphaned';
 	@override String get orphanReviewTitle => 'Đánh giá Downloads Orphaned';
-	@override String get orphanReviewDescription => 'Các tệp được nhãn hiệu này nằm trong các thư mục tải xuống được quản lý bởi ứng dụng mặc định của PlezyNG và không có bản ghi tải xuống hoặc nhiệm vụ hoạt động phù hợp.';
+	@override String get orphanReviewDescription => 'Các tệp được nhãn hiệu này nằm trong các thư mục tải xuống được quản lý bởi ứng dụng mặc định của Pleazyng và không có bản ghi tải xuống hoặc nhiệm vụ hoạt động phù hợp.';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} tập tin · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => 'xóa ${count} file';
 	@override String get orphanCleanupNone => 'Không tìm thấy các file download orphaned';
-	@override String get orphanCleanupFailed => 'PlezyNG không thể an toàn quét thư mục tải xuống được quản lý. không có tệp đã bị xóa.';
+	@override String get orphanCleanupFailed => 'Pleazyng không thể an toàn quét thư mục tải xuống được quản lý. không có tệp đã bị xóa.';
 	@override String get orphanCleanupChanged => 'Danh sách tải xuống đã thay đổi trong quá trình xem xét. xem lại các tập tin trước khi làm sạch.';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => 'xóa ${count} các tệp mồ côi · ${size} miễn phí';
 	@override String get noSyncRules => 'Không có quy tắc sync';
@@ -2686,11 +2687,11 @@ class _Translations$trakt$vi extends Translations$trakt$en {
 	@override String get connected => 'Kết nối';
 	@override String connectedAs({required Object username}) => 'Kết nối với @${username}';
 	@override String get disconnectConfirm => 'Tắt tài khoản Trakt?';
-	@override String get disconnectConfirmBody => 'PlezyNG sẽ ngừng gửi các sự kiện đến Trakt. Bạn có thể kết nối lại bất cứ lúc nào.';
+	@override String get disconnectConfirmBody => 'Pleazyng sẽ ngừng gửi các sự kiện đến Trakt. Bạn có thể kết nối lại bất cứ lúc nào.';
 	@override String get scrobble => 'Thời gian thực scrobbling';
 	@override String get scrobbleDescription => 'Gửi game, nghỉ ngơi, và dừng các sự kiện đến Trakt trong khi chơi lại.';
 	@override String get watchedSync => 'Sync theo dõi trạng thái';
-	@override String get watchedSyncDescription => 'Khi bạn đánh dấu các mục như được xem ở PlezyNG, chúng cũng được đánh dấu như được xem ở Trakt.';
+	@override String get watchedSyncDescription => 'Khi bạn đánh dấu các mục như được xem ở Pleazyng, chúng cũng được đánh dấu như được xem ở Trakt.';
 }
 
 // Path: seerr
@@ -2709,10 +2710,10 @@ class _Translations$seerr$vi extends Translations$seerr$en {
 	@override String get signInWithEmby => 'Đăng ký với Emby';
 	@override String get signInWithLocal => 'Sử dụng tài khoản địa phương';
 	@override String get email => 'Email';
-	@override String get noSignInMethods => 'Ví dụ này Seerr không cung cấp các phương pháp đăng nhập PlezyNG hỗ trợ.';
+	@override String get noSignInMethods => 'Ví dụ này Seerr không cung cấp các phương pháp đăng nhập Pleazyng hỗ trợ.';
 	@override String get instance => 'Ấn Độ';
 	@override String get disconnectConfirm => 'Cắt kết nối Seerr?';
-	@override String get disconnectConfirmBody => 'PlezyNG sẽ quên ví dụ này Seerr. nối lại bất cứ lúc nào.';
+	@override String get disconnectConfirmBody => 'Pleazyng sẽ quên ví dụ này Seerr. nối lại bất cứ lúc nào.';
 	@override String get request => 'yêu cầu';
 	@override String get request4k => 'yêu cầu 4K';
 	@override String get seasons => 'Phần';
@@ -2737,7 +2738,7 @@ class _Translations$seerr$vi extends Translations$seerr$en {
 	@override String get statusBlocklisted => 'Khám phá';
 	@override String couldNotReach({required Object url, required Object error}) => 'Không thể đạt ${url}: ${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => 'Không có trường hợp Seerr tại ${url} (HTTP ${status})';
-	@override String get behindAuthProxy => 'Một proxy ngược xác thực (SSO hoặc HTTP auth) trả lời thay vì Seerr. PlezyNG không thể đăng ký thông qua nó: để Seerr /api/v1 đường đi qua proxy cho ứng dụng này, hoặc sử dụng một địa chỉ tiếp cận Seerr trực tiếp.';
+	@override String get behindAuthProxy => 'Một proxy ngược xác thực (SSO hoặc HTTP auth) trả lời thay vì Seerr. Pleazyng không thể đăng ký thông qua nó: để Seerr /api/v1 đường đi qua proxy cho ứng dụng này, hoặc sử dụng một địa chỉ tiếp cận Seerr trực tiếp.';
 	@override String get invalidUrl => 'Nhập địa chỉ máy chủ như https://seerr.example.com';
 	@override String get quickConnectUnsupported => 'Ví dụ Seerr này không hỗ trợ Quick Connect. nó cần Seerr 3.4 hoặc mới hơn.';
 	@override String get notInitialized => 'Ví dụ này Seerr không hoàn thành cài đặt chạy đầu tiên';
@@ -2767,7 +2768,7 @@ class _Translations$services$vi extends Translations$services$en {
 	@override String get scrobble => 'Theo dõi tiến bộ tự động';
 	@override String get scrobbleDescription => 'Cập nhật danh sách của bạn khi bạn hoàn thành một tập hoặc phim.';
 	@override String disconnectConfirm({required Object service}) => 'Tắt kết nối ${service}?';
-	@override String disconnectConfirmBody({required Object service}) => 'PlezyNG sẽ ngừng cập nhật ${service}. Liên hệ lại bất cứ lúc nào.';
+	@override String disconnectConfirmBody({required Object service}) => 'Pleazyng sẽ ngừng cập nhật ${service}. Liên hệ lại bất cứ lúc nào.';
 	@override String connectFailed({required Object service}) => 'Không thể kết nối với ${service}.Cần thử lại.';
 	@override late final _Translations$services$names$vi names = _Translations$services$names$vi._(_root);
 	@override late final _Translations$services$simklReconnect$vi simklReconnect = _Translations$services$simklReconnect$vi._(_root);
@@ -2789,8 +2790,8 @@ class _Translations$streaming$vi extends Translations$streaming$en {
 	@override String get title => 'Phát trực tuyến từ đám mây và tiện ích';
 	@override String get subtitle => 'Kết nối tài khoản Debrid để duyệt tệp trên đám mây và phát các luồng được hỗ trợ. Tiện ích tương thích với Stremio cung cấp lựa chọn phát trên trang phim và tập. Thông tin kết nối được mã hóa trên thiết bị này và lưu trong hồ sơ này.';
 	@override String connectionsConfigured({required Object count}) => 'Nguồn đã kết nối: ${count}';
-	@override String get settingsLoadFailed => 'PlezyNG không thể mở khóa cài đặt phát trực tuyến đã lưu. Hãy mở khóa thiết bị rồi thử lại trước khi thay đổi kết nối.';
-	@override String get settingsUnreadable => 'PlezyNG không thể mở khóa các kết nối đã lưu này. Hãy xóa chúng để kết nối lại dịch vụ.';
+	@override String get settingsLoadFailed => 'Pleazyng không thể mở khóa cài đặt phát trực tuyến đã lưu. Hãy mở khóa thiết bị rồi thử lại trước khi thay đổi kết nối.';
+	@override String get settingsUnreadable => 'Pleazyng không thể mở khóa các kết nối đã lưu này. Hãy xóa chúng để kết nối lại dịch vụ.';
 	@override String get clearUnreadableSettings => 'Xóa cài đặt đã lưu';
 	@override String get clearUnreadableSettingsConfirm => 'Xóa cài đặt phát trực tuyến đã lưu?';
 	@override String get clearUnreadableSettingsBody => 'Thao tác này xóa mọi tài khoản nhà cung cấp và địa chỉ tiện ích đã lưu khỏi hồ sơ này. Không thể hoàn tác.';
@@ -2802,11 +2803,11 @@ class _Translations$streaming$vi extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => 'Chọn bộ lọc bắt buộc để duyệt danh mục này.';
 	@override String get catalogRequiredLabel => 'Bắt buộc';
 	@override String get importFromStremio => 'Nhập từ Stremio';
-	@override String get stremioImportInstructions => 'Quét mã QR hoặc mở liên kết. Đăng nhập Stremio và chấp thuận yêu cầu. PlezyNG chỉ đọc danh sách tiện ích; ứng dụng không yêu cầu mật khẩu Stremio hay thay đổi cài đặt của bạn.';
+	@override String get stremioImportInstructions => 'Quét mã QR hoặc mở liên kết. Đăng nhập Stremio và chấp thuận yêu cầu. Pleazyng chỉ đọc danh sách tiện ích; ứng dụng không yêu cầu mật khẩu Stremio hay thay đổi cài đặt của bạn.';
 	@override String get stremioImportOpen => 'Mở liên kết Stremio';
 	@override String get stremioImportCode => 'Mã liên kết';
 	@override String get stremioImportPreviewTitle => 'Chọn tiện ích';
-	@override String get stremioImportPreviewBody => 'Chọn tiện ích bạn muốn kết nối với PlezyNG. Chỉ có thể nhập địa chỉ HTTPS.';
+	@override String get stremioImportPreviewBody => 'Chọn tiện ích bạn muốn kết nối với Pleazyng. Chỉ có thể nhập địa chỉ HTTPS.';
 	@override String stremioImportIgnored({required Object count}) => 'Đã bỏ qua tiện ích do địa chỉ không được hỗ trợ hoặc không an toàn: ${count}.';
 	@override String get stremioCatalogs => 'Danh mục';
 	@override String get stremioStreams => 'Luồng';
@@ -2820,7 +2821,7 @@ class _Translations$streaming$vi extends Translations$streaming$en {
 	@override String get addByManifestUrl => 'Thêm bằng URL manifest';
 	@override String get addAddon => 'Thêm tiện ích';
 	@override String get manifestUrl => 'URL manifest của tiện ích';
-	@override String get manifestUrlHint => 'Dán URL manifest của tiện ích. PlezyNG sẽ kiểm tra hỗ trợ danh mục hoặc tài nguyên luồng trước khi kết nối.';
+	@override String get manifestUrlHint => 'Dán URL manifest của tiện ích. Pleazyng sẽ kiểm tra hỗ trợ danh mục hoặc tài nguyên luồng trước khi kết nối.';
 	@override String get allowHttp => 'Cho phép địa chỉ HTTP không mã hóa';
 	@override String get allowHttpDescription => 'Chỉ dùng với tiện ích đáng tin cậy trên mạng riêng của bạn.';
 	@override String get installAddon => 'Kết nối tiện ích';
@@ -2828,20 +2829,20 @@ class _Translations$streaming$vi extends Translations$streaming$en {
 	@override String get addonRemoved => 'Đã xóa tiện ích';
 	@override String get addonToggle => 'Bật tiện ích';
 	@override String get addonEmpty => 'Chưa có tiện ích nào được kết nối';
-	@override String get addonError => 'PlezyNG không thể kết nối tiện ích này. Hãy kiểm tra URL manifest rồi thử lại.';
+	@override String get addonError => 'Pleazyng không thể kết nối tiện ích này. Hãy kiểm tra URL manifest rồi thử lại.';
 	@override String get addonPrivacy => 'Chỉ kết nối tiện ích bạn tin cậy. Khi tìm kiếm, tiện ích nhận tiêu đề bạn muốn tìm và có thể trả về liên kết luồng của bên thứ ba.';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Phát các luồng torrent được hỗ trợ qua tài khoản Real-Debrid.';
 	@override String get connectRealDebrid => 'Kết nối bằng mã QR';
 	@override String realDebridConnected({required Object username}) => 'Đã kết nối với tên ${username}';
-	@override String get realDebridInstructions => 'Quét mã QR hoặc mở liên kết, rồi nhập mã kích hoạt này để kết nối PlezyNG:';
+	@override String get realDebridInstructions => 'Quét mã QR hoặc mở liên kết, rồi nhập mã kích hoạt này để kết nối Pleazyng:';
 	@override String get realDebridActivate => 'Mở Real-Debrid để kích hoạt';
 	@override String get realDebridCode => 'Mã kích hoạt';
 	@override String get realDebridConnectFailed => 'Không thể kết nối Real-Debrid. Hãy thử lại.';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => 'Phát các luồng torrent được hỗ trợ qua tài khoản AllDebrid.';
 	@override String get connectAllDebrid => 'Kết nối bằng mã QR';
-	@override String get allDebridInstructions => 'Quét mã QR hoặc mở liên kết để cấp quyền cho PlezyNG. Giữ màn hình này mở trong khi kết nối:';
+	@override String get allDebridInstructions => 'Quét mã QR hoặc mở liên kết để cấp quyền cho Pleazyng. Giữ màn hình này mở trong khi kết nối:';
 	@override String get allDebridActivate => 'Mở AllDebrid để kích hoạt';
 	@override String get allDebridCode => 'Mã PIN kích hoạt';
 	@override String get allDebridConnectFailed => 'Không thể kết nối AllDebrid. Hãy thử lại.';
@@ -2852,13 +2853,13 @@ class _Translations$streaming$vi extends Translations$streaming$en {
 	@override String get connectApiKey => 'Kết nối bằng khóa API';
 	@override String apiKeyTitle({required Object service}) => 'Kết nối ${service}';
 	@override String get apiKey => 'Khóa API';
-	@override String apiKeyHint({required Object service}) => 'Dán khóa API từ cài đặt tài khoản ${service}. PlezyNG mã hóa khóa trên thiết bị này và lưu vào hồ sơ này.';
+	@override String apiKeyHint({required Object service}) => 'Dán khóa API từ cài đặt tài khoản ${service}. Pleazyng mã hóa khóa trên thiết bị này và lưu vào hồ sơ này.';
 	@override String get apiKeyConnectFailed => 'Không thể xác minh khóa API này. Hãy kiểm tra rồi thử lại.';
 	@override String accountConnected({required Object username}) => 'Đã kết nối với tên ${username}';
 	@override String get streamNeedsProvider => 'Kết nối dịch vụ Debrid để phát luồng torrent này.';
 	@override String get playViaProvider => 'Phát qua Debrid';
 	@override String disconnectConfirm({required Object service}) => 'Ngắt kết nối ${service}?';
-	@override String get disconnectBody => 'PlezyNG sẽ thu hồi quyền của thiết bị này. Tệp trên dịch vụ và các lần truyền đang diễn ra vẫn được giữ nguyên.';
+	@override String get disconnectBody => 'Pleazyng sẽ thu hồi quyền của thiết bị này. Tệp trên dịch vụ và các lần truyền đang diễn ra vẫn được giữ nguyên.';
 	@override String get streamsTitle => 'Chọn luồng';
 	@override String get noStreams => 'Không tìm thấy luồng cho tiêu đề này.';
 	@override String get manageConnections => 'Quản lý dịch vụ phát trực tuyến';
@@ -2874,7 +2875,7 @@ class _Translations$streaming$vi extends Translations$streaming$en {
 	@override String get streamUnsupported => 'Trình phát trong ứng dụng không hỗ trợ định dạng luồng này.';
 	@override String get remoteNeedsEpisode => 'Chọn tập trước khi tìm luồng.';
 	@override String get remoteNeedsEpisodeNumber => 'Tập này thiếu số mùa hoặc số tập.';
-	@override String get remoteNeedsExternalId => 'PlezyNG không tìm thấy ID IMDb hoặc TMDB cho tiêu đề này.';
+	@override String get remoteNeedsExternalId => 'Pleazyng không tìm thấy ID IMDb hoặc TMDB cho tiêu đề này.';
 	@override String get watchWithServices => 'Xem bằng dịch vụ đã kết nối';
 	@override String get chooseEpisode => 'Chọn tập';
 	@override String get episodes => 'Các tập';
@@ -3005,15 +3006,15 @@ class _Translations$appAccess$vi extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => 'Cố gắng mọi tính năng miễn phí trong 7 ngày';
-	@override String get description => 'Bắt đầu một cuộc thử nghiệm 7 ngày với quyền truy cập đầy đủ vào mỗi tính năng PlezyNG. không có phí trong cuộc thử nghiệm và không có đăng ký. sau khi thử nghiệm, một mua hàng suốt đời tại giá của cửa hàng của bạn sẽ mở khóa PlezyNG suốt đời.';
-	@override String get trialEndedDescription => 'Khóa tất cả các tính năng trong PlezyNG cho đời với một mua tại giá của cửa hàng của bạn.';
+	@override String get description => 'Bắt đầu một cuộc thử nghiệm 7 ngày với quyền truy cập đầy đủ vào mỗi tính năng Pleazyng. không có phí trong cuộc thử nghiệm và không có đăng ký. sau khi thử nghiệm, một mua hàng suốt đời tại giá của cửa hàng của bạn sẽ mở khóa Pleazyng suốt đời.';
+	@override String get trialEndedDescription => 'Khóa tất cả các tính năng trong Pleazyng cho đời với một mua tại giá của cửa hàng của bạn.';
 	@override String get startTrial => 'Bắt đầu bài kiểm tra miễn phí 7 ngày';
 	@override String get trialActive => 'Thử nghiệm đầy đủ 7 ngày của bạn đang hoạt động.';
 	@override String get trialEnded => 'Cuộc thi 7 ngày đã kết thúc';
 	@override String get trialStartFailed => 'Tôi không thể tiết kiệm thử nghiệm trên thiết bị này. xin vui lòng thử lại.';
-	@override String get lifetimeTitle => 'PlezyNG mở khóa suốt đời';
-	@override String get lifetimeBody => 'Cảm ơn bạn! bạn có quyền truy cập suốt đời cho mỗi tính năng PlezyNG.';
-	@override String get manageTitle => 'PlezyNG Thời gian truy cập';
+	@override String get lifetimeTitle => 'Pleazyng mở khóa suốt đời';
+	@override String get lifetimeBody => 'Cảm ơn bạn! bạn có quyền truy cập suốt đời cho mỗi tính năng Pleazyng.';
+	@override String get manageTitle => 'Pleazyng Thời gian truy cập';
 	@override String get manageDescription => 'Cố gắng mỗi tính năng miễn phí trong 7 ngày, sau đó mở khóa mọi thứ trong suốt đời với một khoản thanh toán với giá của cửa hàng của bạn.';
 	@override String buy({required Object price}) => 'Khóa tất cả các tính năng cho ${price}';
 	@override String get loadingPrice => 'Giá bán hàng tải...';
@@ -3021,11 +3022,11 @@ class _Translations$appAccess$vi extends Translations$appAccess$en {
 	@override String get restore => 'Lợi ích mua sắm suốt đời';
 	@override String get pending => 'Mua hàng của bạn đang chờ đợi thanh toán hoặc phê duyệt. truy cập suốt đời sẽ mở khóa ngay khi cửa hàng hoàn thành nó.';
 	@override String get storeUnavailable => 'Kiểm tra rằng bạn đã đăng ký vào cửa hàng và mua hàng được phép trên thiết bị này.';
-	@override String get productNotFound => 'Tính năng mở khóa PlezyNG vẫn chưa có sẵn trong cửa hàng này.';
+	@override String get productNotFound => 'Tính năng mở khóa Pleazyng vẫn chưa có sẵn trong cửa hàng này.';
 	@override String get productQueryFailed => 'Không thể tải giá cửa hàng. kiểm tra kết nối của bạn và thử lại.';
 	@override String get purchaseFailed => 'Mua sắm không qua được. thử lại.';
 	@override String get restoreFailed => 'Tôi không thể đến cửa hàng để khôi phục mua hàng của bạn. thử lại.';
-	@override String get nothingToRestore => 'Số PlezyNG mua hàng đời đã được tìm thấy cho tài khoản cửa hàng này.';
+	@override String get nothingToRestore => 'Số Pleazyng mua hàng đời đã được tìm thấy cho tài khoản cửa hàng này.';
 }
 
 // Path: detail
@@ -3066,8 +3067,8 @@ class _Translations$homeLayout$vi extends Translations$homeLayout$en {
 
 	// Translations
 	@override String get title => 'Trang chủ Layout';
-	@override String get resetToast => 'Home Reset to the original Plezy anh hùng bố trí';
-	@override String get resetHeroTitle => 'Đặt lại bố trí anh hùng để stock Plezy?';
+	@override String get resetToast => 'Home Reset to the original Pleazyng anh hùng bố trí';
+	@override String get resetHeroTitle => 'Đặt lại bố trí anh hùng để stock Pleazyng?';
 	@override String get resetHeroBody => 'Nó xoay khỏi thiết lập anh hùng của mỗi hàng và mang lại một ban nhạc xoay duy nhất ở trên cùng của Nhà, giống như trước khi hàng anh hùng tồn tại.';
 	@override String get removeRowTitle => 'Xóa dòng Home?';
 	@override String removeRowBody({required Object title}) => '${title} sẽ bị xóa. điều này không thể bị bỏ qua.';
@@ -3077,7 +3078,7 @@ class _Translations$homeLayout$vi extends Translations$homeLayout$en {
 	@override String get syncAccountOff => 'Tắt: Thiết bị này giữ bố trí của riêng mình.';
 	@override String get syncNow => 'Sync hiện tại';
 	@override String get plexHomeManager => 'Plex Nhà quản lý';
-	@override String get managePlexRows => 'Quản lý Plex hàng trong Plezy';
+	@override String get managePlexRows => 'Quản lý Plex hàng trong Pleazyng';
 	@override String get managePlexRowsDescription => 'Mở để tổ chức các dòng được chọn tại nhà';
 	@override String get organizeHomeRows => 'Tổ chức Home Rows';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} hàng: di chuyển, Anh hùng, Auto-slide, loại bỏ';
@@ -3147,7 +3148,7 @@ class _Translations$homeLayout$vi extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => 'Chọn theo một hàng (hoặc giữ Chọn): di chuyển nó · Trái/Trái: tùy chọn hàng · Trở lại: hoàn thành';
 	@override String get layoutNavDescription => 'Chọn hàng, thư viện, và thể loại thu thập';
 	@override String get editHomeRow => 'Trang chủ Edit';
-	@override String get resetHeroButton => 'Đặt lại bản bố trí anh hùng để stock Plezy';
+	@override String get resetHeroButton => 'Đặt lại bản bố trí anh hùng để stock Pleazyng';
 	@override String get reorderingUnlocked => 'Đặt lại Unlocked';
 	@override String get reorderingLocked => 'Đặt lại khóa';
 	@override String get rowsCanBeDragged => 'Các dây có thể được kéo — nhấn khóa để ngăn chặn';
@@ -3173,8 +3174,8 @@ class _Translations$platform$vi extends Translations$platform$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG kết nối với máy chủ truyền thông và thiết bị phát lại trên mạng địa phương của bạn.';
-	@override String get locationPermission => 'PlezyNG sử dụng quyền truy cập vị trí khi iOS yêu cầu nó để phát hiện mạng lưới địa phương của bạn và kết nối với máy chủ truyền thông của bạn.';
+	@override String get localNetworkPermission => 'Pleazyng kết nối với máy chủ truyền thông và thiết bị phát lại trên mạng địa phương của bạn.';
+	@override String get locationPermission => 'Pleazyng sử dụng quyền truy cập vị trí khi iOS yêu cầu nó để phát hiện mạng lưới địa phương của bạn và kết nối với máy chủ truyền thông của bạn.';
 	@override String get photoLibraryPermission => 'Chọn hình ảnh từ thư viện ảnh của bạn để sử dụng như một công việc nghệ thuật phương tiện truyền thông.';
 	@override String get cameraPermission => 'Scan mã QR để kết hợp một Companion Remote.';
 }
@@ -3188,7 +3189,7 @@ class _Translations$universalMedia$vi extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => 'phương tiện truyền thông mở';
 	@override String get shortcutHelp => 'Chơi một liên kết, danh sách chơi hoặc tệp cho phiên này.';
-	@override String get intro => 'Mở một liên kết, danh sách phát hoặc tệp. Playback sử dụng người chơi tiêu chuẩn của PlezyNG và không thêm lịch sử vào thư viện của bạn.';
+	@override String get intro => 'Mở một liên kết, danh sách phát hoặc tệp. Playback sử dụng người chơi tiêu chuẩn của Pleazyng và không thêm lịch sử vào thư viện của bạn.';
 	@override String get openWhat => 'Bạn muốn mở cái gì?';
 	@override String get stream => 'Địa chỉ Stream';
 	@override String get playlist => 'Danh sách Playlist';
@@ -3243,13 +3244,13 @@ class _Translations$universalMedia$vi extends Translations$universalMedia$en {
 	@override String get stopTransfer => 'Ngừng chuyển giao và vô hiệu hóa địa chỉ';
 	@override String get startTransfer => 'Bắt đầu chuyển giao';
 	@override String get wifiImportedFiles => 'Chuyển Wi-Fi';
-	@override String get wifiBrowserTitle => 'Gửi file đến PlezyNG';
+	@override String get wifiBrowserTitle => 'Gửi file đến Pleazyng';
 	@override String get wifiBrowserIntro => 'Chọn các tập tin âm thanh, video, ebook hoặc truyện tranh để gửi. Các tập tin được lưu trữ trong thư viện tệp và sách của thiết bị này. Tối đa: 100 tập tin, 4 GiB mỗi file, tổng cộng 10 GiB.';
 	@override String get uploadFilesLabel => 'file để gửi';
 	@override String get uploadSelected => 'Tải các tập tin được chọn';
 	@override String get uploadSelectFirst => 'Chọn một hoặc nhiều tập tin đầu tiên.';
 	@override String get uploading => 'gửi';
-	@override String get uploadComplete => 'File được thêm vào PlezyNG.';
+	@override String get uploadComplete => 'File được thêm vào Pleazyng.';
 	@override String get uploadFailed => 'Tệp không thể được thêm vào. giữ cho trang này mở và thử lại.';
 	@override String get liveCue => 'Sống';
 	@override String get liveSession => 'Stream trực tiếp';
@@ -3277,7 +3278,7 @@ class _Translations$universalMedia$vi extends Translations$universalMedia$en {
 	@override String get recordingActive => 'Để lại playback dừng lại và tiết kiệm nó.';
 	@override String get recordingFormatHelp => 'Đối với video, chọn MKV hoặc MPEG-TS. Đối với âm thanh, chọn MKA hoặc MKV.';
 	@override String get replaceRecordingTitle => 'Thay thế bản ghi này?';
-	@override String get replaceRecordingHelp => 'PlezyNG sao lưu tệp hiện có trong khi ghi lại. nếu nó không thể tiết kiệm bản ghi mới, Plezyng khôi phục sao lưu.';
+	@override String get replaceRecordingHelp => 'Pleazyng sao lưu tệp hiện có trong khi ghi lại. nếu nó không thể tiết kiệm bản ghi mới, Plezyng khôi phục sao lưu.';
 	@override String get replaceRecording => 'Thay thế file';
 	@override String get discHelp => 'Mở một đĩa trong ổ đĩa quang của máy tính này. Bạn cũng có thể mở hình ảnh ISO từ các tệp thiết bị.';
 	@override String get discs => 'Đĩa Optical';
@@ -3302,7 +3303,7 @@ class _Translations$universalMedia$vi extends Translations$universalMedia$en {
 	@override String get converterUnsupportedInput => 'Chọn một file audio hoặc video.';
 	@override String get converterLocalOnly => 'Tệp được chọn không có sẵn như một con đường thiết bị địa phương.';
 	@override String get converterReplaceTitle => 'Thay thế file này?';
-	@override String get converterReplaceHelp => 'PlezyNG khôi phục lại tệp hiện có cho đến khi bản sao được chuyển đổi được lưu.';
+	@override String get converterReplaceHelp => 'Pleazyng khôi phục lại tệp hiện có cho đến khi bản sao được chuyển đổi được lưu.';
 	@override String get converterStarting => 'Bắt đầu FFmpeg...';
 	@override String get converterProgress => 'Chuyển đổi vào máy tính này...';
 	@override String get converterComplete => 'Chuyển đổi hoàn thành. file mới đã sẵn sàng.';
@@ -3326,7 +3327,7 @@ class _Translations$universalMedia$vi extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => 'Lập trình Audio Input';
 	@override String get captureWaylandHelp => 'Wayland giới hạn thu thập XWayland này đến X display. Windows bên ngoài XWayland có thể không xuất hiện.';
 	@override String get captureFrameRate => 'Tỷ lệ ghi âm frame rate';
-	@override String get capturePrivacy => 'Ghi âm được lưu chỉ cho tệp bạn chọn. microphone capture là tùy chọn. PlezyNG không tải lên ghi âm.';
+	@override String get capturePrivacy => 'Ghi âm được lưu chỉ cho tệp bạn chọn. microphone capture là tùy chọn. Pleazyng không tải lên ghi âm.';
 	@override String get captureSaveAs => 'Lưu màn hình ghi âm như';
 	@override String get captureExtensionMismatch => 'Chọn tên file kết thúc trong .mp4.';
 	@override String get captureFfmpegMissing => 'FFmpeg hoặc mã hóa video H.264 không sẵn dùng. cài đặt một xây dựng FFmpeg được hỗ trợ, sau đó thử lại.';
@@ -3340,7 +3341,7 @@ class _Translations$universalMedia$vi extends Translations$universalMedia$en {
 	@override String get captureStop => 'Stop và Save';
 	@override String get captureMode => 'bắt giữ';
 	@override String get shareMode => 'chia sẻ';
-	@override String get shareIntro => 'Gửi một tệp phương tiện truyền thông địa phương đến một thiết bị khác trên mạng riêng của bạn. PlezyNG tạo ra một dòng HLS tạm thời.';
+	@override String get shareIntro => 'Gửi một tệp phương tiện truyền thông địa phương đến một thiết bị khác trên mạng riêng của bạn. Pleazyng tạo ra một dòng HLS tạm thời.';
 	@override String get sharePrivacy => 'Bất cứ ai trên mạng địa phương của bạn nhận được liên kết tư nhân có thể xem trong khi nó hoạt động. liên kết hết hạn sau 60 phút. ngừng chia sẻ để đóng máy chủ và vô hiệu hóa liên kết.';
 	@override String get shareChooseFile => 'Chọn file media';
 	@override String get shareChooseHelp => 'Chọn một tệp âm thanh hoặc video địa phương. tệp vẫn ở trên máy tính này.';
@@ -3353,7 +3354,7 @@ class _Translations$universalMedia$vi extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => 'Mở địa chỉ này trong một người chơi trên thiết bị khác';
 	@override String get shareQrLabel => 'Mã QR cho địa chỉ dòng tạm thời';
 	@override String get shareQrHelp => 'Scan với một người chơi tương thích kết nối với cùng một mạng tư nhân.';
-	@override String get shareHttpHint => 'Stream này sử dụng HTTP không được mã hóa. trong PlezyNG, cho phép HTTP trước khi mở nó.';
+	@override String get shareHttpHint => 'Stream này sử dụng HTTP không được mã hóa. trong Pleazyng, cho phép HTTP trước khi mở nó.';
 	@override String get shareCopyUrl => 'Bản sao Stream Address';
 	@override String get shareExpiresLabel => 'Link kết thúc tại';
 	@override String get shareStarting => 'Chuẩn bị dòng chảy...';
@@ -3378,7 +3379,7 @@ class _Translations$universalMedia$vi extends Translations$universalMedia$en {
 	@override String get extensionInstall => 'thêm dịch vụ';
 	@override String get extensionReplace => 'Update dịch vụ';
 	@override String get extensionRemoveTitle => 'Xóa dịch vụ tìm kiếm này?';
-	@override String get extensionRemoveHelp => 'Điều này loại bỏ dịch vụ khỏi hồ sơ này.PlezyNG không liên hệ với điểm kết thúc của nó.';
+	@override String get extensionRemoveHelp => 'Điều này loại bỏ dịch vụ khỏi hồ sơ này.Pleazyng không liên hệ với điểm kết thúc của nó.';
 	@override String get extensionRemove => 'Xóa dịch vụ';
 	@override String get extensionInvalidManifest => 'Tệp này không phải là một biểu hiện mở rộng được hỗ trợ. xem hướng dẫn Open media cho định dạng.';
 	@override String get extensionSaveFailed => 'Việc mở rộng không thể được lưu vào hồ sơ hoạt động.';
@@ -3532,12 +3533,12 @@ class _Translations$fileSources$vi extends Translations$fileSources$en {
 	@override String get none => 'Không có';
 	@override String get fullscreen => 'Toàn màn hình';
 	@override String get syncLocation => 'Progress sync folder (tùy chọn)';
-	@override String get syncLocationHint => 'Thư mục WebDAV dành riêng cho trạng thái PlezyNG. Dữ liệu được ghi có điều kiện; các tệp nội dung không bị thay đổi.';
+	@override String get syncLocationHint => 'Thư mục WebDAV dành riêng cho trạng thái Pleazyng. Dữ liệu được ghi có điều kiện; các tệp nội dung không bị thay đổi.';
 	@override String get audiobooks => 'Sách nói';
 	@override String get comics => 'truyện tranh';
 	@override String get scan => 'Scan cho sách và phương tiện truyền thông';
 	@override String get browserReader => 'Open Reader Đọc';
-	@override String get browserReaderHelp => 'Đọc được mở trong trình duyệt của bạn. giữ PlezyNG mở để lưu vị trí và ghi chú của bạn.';
+	@override String get browserReaderHelp => 'Đọc được mở trong trình duyệt của bạn. giữ Pleazyng mở để lưu vị trí và ghi chú của bạn.';
 	@override String get on => 'trên';
 	@override String get advancedSetup => 'App đăng ký';
 	@override String get microsoftSignIn => 'Đăng ký với Microsoft';
@@ -3578,7 +3579,7 @@ class _Translations$fileSources$vi extends Translations$fileSources$en {
 	@override String get importInterrupted => 'nhập khẩu bị gián đoạn · xóa để làm rõ';
 	@override String get errorQuotaExceeded => 'Giới hạn lưu trữ offline đã đạt được.Tăng giới hạn hoặc xóa bản sao tải xuống.';
 	@override String get errorStorageLow => 'Không có đủ lưu trữ thiết bị miễn phí để giữ bảo tồn được bảo vệ.';
-	@override String get errorStorageUnavailable => 'PlezyNG không thể kiểm tra lưu trữ thiết bị miễn phí, vì vậy việc viết đã dừng lại.';
+	@override String get errorStorageUnavailable => 'Pleazyng không thể kiểm tra lưu trữ thiết bị miễn phí, vì vậy việc viết đã dừng lại.';
 	@override String get removeDownloadJob => 'xóa download';
 	@override String get downloadAlreadyComplete => 'Tải xuống này đã hoàn thành trước khi nó có thể được xóa. mục bây giờ có sẵn offline.';
 	@override String get confirmRemoveDownloadJob => 'Loại bỏ tải xuống này và loại bỏ bất kỳ dữ liệu được tải về một phần? vị trí và ghi chú của bạn sẽ ở lại.';
@@ -3628,7 +3629,7 @@ class _Translations$lending$vi extends Translations$lending$en {
 	@override String get openLibraryNote => 'Khám phá danh mục của Open Library. Các tùy chọn đọc và mượn được hiển thị trên trang của từng tựa sách.';
 	@override String get more => 'tải thêm';
 	@override String get gateway => 'Thư viện đăng ký dịch vụ';
-	@override String get gatewayHint => 'Được cung cấp bởi thư viện của bạn hoặc quản trị viên PlezyNG.';
+	@override String get gatewayHint => 'Được cung cấp bởi thư viện của bạn hoặc quản trị viên Pleazyng.';
 	@override String get advanced => 'Thư viện Integration';
 	@override String get loadLibraries => 'Chọn thư viện của bạn';
 	@override String get expired => 'Thời hạn mượn sách này đã kết thúc.';
@@ -3768,7 +3769,7 @@ class _Translations$sourceSetup$vi extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => 'Lấy khóa API từ opensubtitles.com. Tìm kiếm gửi tiêu đề video và các ID IMDb/TMDB có sẵn, không bao giờ gửi tệp video. Khóa và thông tin xác thực tài khoản tùy chọn được mã hóa cùng nguồn này.';
 	@override String get automaticMetadata => 'Siêu dữ liệu video trực tuyến tự động';
 	@override String get metadataPrivacy => 'Chỉ gửi tiêu đề/năm từ tên tệp và số tập hoặc một ID NFO, không bao giờ gửi nội dung đa phương tiện hay thông tin xác thực. Các trường NFO vẫn được ưu tiên.';
-	@override String get nfsEncryptionFailure => 'Với NFS được mã hóa, kiểm tra hỗ trợ RFC 9289 và TLS 1.3 trên cả hai dịch vụ NAS, tên trong chứng chỉ và UID/GID của vùng chia sẻ. PlezyNG sẽ không thử lại kết nối này khi không mã hóa.';
+	@override String get nfsEncryptionFailure => 'Với NFS được mã hóa, kiểm tra hỗ trợ RFC 9289 và TLS 1.3 trên cả hai dịch vụ NAS, tên trong chứng chỉ và UID/GID của vùng chia sẻ. Pleazyng sẽ không thử lại kết nối này khi không mã hóa.';
 	@override String get sourceConnecting => 'Đang kết nối đến nguồn';
 	@override String get metadataSearchPrivacy => 'Lượt tìm tiêu đề này được gửi đến Trakt. Chỉ tiêu đề bạn nhập được gửi đi, không phải video hay thông tin xác thực của nguồn.';
 	@override String get chooseMatch => 'Chọn kết quả phù hợp';
@@ -3891,7 +3892,7 @@ class _Translations$games$vi extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
+	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
 	@override String get touchSetup => 'On-screen controls';
@@ -3904,7 +3905,6 @@ class _Translations$games$vi extends Translations$games$en {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -3934,7 +3934,7 @@ class _Translations$deepLinks$vi extends Translations$deepLinks$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => 'Liên kết Plezy này không hợp lệ.';
+	@override String get invalid => 'Liên kết Pleazyng này không hợp lệ.';
 	@override String profileNotFound({required Object profile}) => 'Không có hồ sơ phù hợp với "${profile}".';
 	@override String get serverUnavailable => 'Tôi không thể truy cập máy chủ cho liên kết này.';
 	@override String get notFound => 'Tôi không thể tìm thấy tiêu đề này trong thư viện của bạn.';
@@ -3975,6 +3975,183 @@ class _Translations$issueReport$vi extends Translations$issueReport$en {
 	@override String get privacy => 'Bản nháp gồm phiên bản ứng dụng, nền tảng và số lượng kết nối. Bản nháp không có địa chỉ máy chủ, tên tài khoản hoặc hồ sơ, tiêu đề nội dung hay đường dẫn tệp.';
 	@override String get logPrivacy => 'Nhật ký là tùy chọn. Hãy xem lại trước khi tải lên. ID nhật ký được thêm vào bản nháp, có thể hiển thị công khai.';
 	@override String get openDraft => 'Mở bản nháp GitHub';
+}
+
+// Path: romm
+class _Translations$romm$vi extends Translations$romm$en {
+	_Translations$romm$vi._(TranslationsVi root) : this._root = root, super.internal(root);
+
+	final TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get chooseFile => 'Choose a game file';
+	@override String get chooseCopy => 'Choose an exact game copy';
+	@override String get favorite => 'Favorite';
+	@override String get startFresh => 'Start from the beginning';
+	@override String get automatic => 'Automatic';
+	@override String get noJoinable => 'No games are accepting players.';
+	@override String get downloadAgain => 'Download again';
+	@override String get offlineUnverified => 'Saved offline. This server did not provide a checksum; only the local file fingerprint is available.';
+	@override String get achievementCount => 'Achievements';
+	@override String get saveInProgress => 'A save is still being captured. Keep the game open and try again.';
+	@override String get browserSaveHelp => 'Use the player’s save and exit controls first. Then close this screen. Pending browser saves remain in this profile’s player storage.';
+	@override String get savedClose => 'I saved; close the player';
+	@override String get cardImportRequired => 'The streaming computer has an existing memory card. Keep it in your RomM account before playing, or explicitly erase that card.';
+	@override String get cardUnreadable => 'The existing memory card could not be read. Cancel to recover it in RomM, or explicitly erase it to continue.';
+	@override String get adoptCard => 'Keep existing card';
+	@override String get discardContainerCard => 'Erase existing card';
+	@override String get coreVersionDifferent => 'This state belongs to another core version. Use a compatible in-game save or start from the beginning.';
+	@override String get nativeCloudResume => 'Resume saved progress';
+	@override String get streamSaving => 'The server is saving. Wait for it to finish before exiting.';
+	@override String get noLocalSave => 'There is no compatible local progress to restore.';
+	@override String get completedAll => 'Completed 100%';
+	@override String get status => 'Progress';
+	@override String get backlogged => 'In backlog';
+	@override String get nowPlaying => 'Now playing';
+	@override String get completed => 'Completed';
+	@override String get playing => 'Playing';
+	@override String get unplayed => 'Unplayed';
+	@override String get syncComplete => 'Saves synchronized';
+	@override String get netplayHelp => 'Shared server sessions support joining. Browser netplay requires RomM’s own session authentication and is not enabled by device-token pairing.';
+	@override String get title => 'RomM';
+	@override String get connect => 'Connect RomM';
+	@override String get connections => 'RomM libraries';
+	@override String get connectionHelp => 'Browse your RomM collection and play supported games here.';
+	@override String get serverAddress => 'Server address';
+	@override String get serverName => 'Library name';
+	@override String get token => 'Client API token';
+	@override String get pair => 'Pair this device';
+	@override String get pairHelp => 'Open the approval page on a signed-in device, review the requested access, and approve this code.';
+	@override String get openApproval => 'Open approval page';
+	@override String get manualToken => 'Use a client token';
+	@override String get manualTokenHelp => 'Create a personal client token in RomM with library, save and device permissions.';
+	@override String get pairing => 'Waiting for approval…';
+	@override String get cancel => 'Cancel';
+	@override String get save => 'Save';
+	@override String get close => 'Close';
+	@override String get remove => 'Disconnect';
+	@override String get removeHelp => 'Remove this connection from this profile? Your server library and saves will remain available in RomM.';
+	@override String get refresh => 'Refresh';
+	@override String get reconnect => 'Reconnect';
+	@override String get sessionOnly => 'Signed in for this session. Sign in again after restarting this device.';
+	@override String get allLibraries => 'All libraries';
+	@override String get allPlatforms => 'All platforms';
+	@override String get allCollections => 'All collections';
+	@override String get more => 'Load more games';
+	@override String get noGames => 'No games found';
+	@override String get cached => 'Showing saved library information.';
+	@override String get variants => 'Other copies';
+	@override String get files => 'Game files';
+	@override String get saves => 'Saves and states';
+	@override String get noSaves => 'No saves yet';
+	@override String get play => 'Play';
+	@override String get resume => 'Resume';
+	@override String get playWith => 'Play with';
+	@override String get download => 'Keep offline';
+	@override String get offline => 'Available offline';
+	@override String get downloadProgress => 'Downloading…';
+	@override String get cancelDownload => 'Cancel download';
+	@override String get removeOffline => 'Remove offline copy';
+	@override String get storage => 'Offline storage';
+	@override String get storageLimit => 'Storage limit (GiB)';
+	@override String get browser => 'In-app browser player';
+	@override String get stream => 'Stream from server';
+	@override String get native => 'On this device';
+	@override String get emulatorJs => 'EmulatorJS';
+	@override String get ruffle => 'Ruffle';
+	@override String get jsDos => 'js-dos';
+	@override String get pico8 => 'PICO-8';
+	@override String get easyRpg => 'EasyRPG';
+	@override String get browserUnavailable => 'An embedded browser player is not available in this build.';
+	@override String get nativeUnavailable => 'The native emulator core is not installed in this build.';
+	@override String get refreshBeforePlay => 'Refresh this library to check available players.';
+	@override String get missing => 'This copy has no game files on the server.';
+	@override String get noRoute => 'No compatible in-app player is available for this copy.';
+	@override String get firmware => 'Firmware';
+	@override String get firmwareHelp => 'Some systems need firmware. Manage it in RomM; the selected emulator reports any missing requirements at launch.';
+	@override String get achievements => 'RetroAchievements';
+	@override String get achievementsHelp => 'Achievement information comes from RomM. The browser player does not earn new achievements.';
+	@override String get screenshots => 'Screenshots';
+	@override String get manual => 'Manual';
+	@override String get importSave => 'Import save';
+	@override String get exportSave => 'Export';
+	@override String get importState => 'Import state';
+	@override String get saveImported => 'Save imported';
+	@override String get saveExported => 'Save exported';
+	@override String get engine => 'Emulator identity';
+	@override String get slot => 'Save slot';
+	@override String get core => 'Core identity';
+	@override String get compatibilityHelp => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.';
+	@override String get saveConflict => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.';
+	@override String get keepBoth => 'Keep both';
+	@override String get useServer => 'Use server copy';
+	@override String get replaceServer => 'Replace server copy';
+	@override String get pendingSaves => 'Saves waiting to sync';
+	@override String get sync => 'Sync saves';
+	@override String get savedLocally => 'Progress kept on this device; upload is pending.';
+	@override String get pause => 'Pause';
+	@override String get kContinue => 'Continue';
+	@override String get saveState => 'Save state';
+	@override String get loadState => 'Load state';
+	@override String get saveAndExit => 'Save and exit';
+	@override String get exitWithoutSaving => 'Exit without saving';
+	@override String get exitConfirm => 'Finish this game session?';
+	@override String get saveExitHelp => 'Save your progress before leaving. Keep this screen open until saving finishes.';
+	@override String get starting => 'Starting game…';
+	@override String get connecting => 'Connecting…';
+	@override String get busy => 'The streaming computer is occupied.';
+	@override String get streamEnded => 'The streaming session ended.';
+	@override String get retry => 'Try again';
+	@override String get disc => 'Change disc';
+	@override String get memoryCard => 'Memory card';
+	@override String get multiplayer => 'Allow players to join';
+	@override String get join => 'Join game';
+	@override String get copyLink => 'Copy game link';
+	@override String get linkCopied => 'Game link copied';
+	@override String get openLink => 'Open game link';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
+	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
+	@override String get requestStatus => 'Library indexing';
+	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
+	@override String get touchControls => 'Touch controls';
+	@override String get controls => 'Controls';
+	@override String get resetControls => 'Reset controls';
+	@override String get playerOne => 'Player 1';
+	@override String get select => 'Select';
+	@override String get start => 'Start';
+	@override String get up => 'Up';
+	@override String get down => 'Down';
+	@override String get left => 'Left';
+	@override String get right => 'Right';
+	@override String get connectingStream => 'Waiting for the server emulator…';
+	@override String get saveFailed => 'Saving did not finish. Keep this session open and try again.';
+	@override String get httpHelp => 'This server uses unencrypted HTTP. Connect on a network you trust.';
+	@override String get invalidAddress => 'Enter an HTTP or HTTPS server address without a password, query or fragment.';
+	@override String get invalidConnection => 'This connection is invalid. Connect the server again.';
+	@override String get invalidToken => 'Enter a valid client token.';
+	@override String get invalidResponse => 'The server returned an unsupported response.';
+	@override String get responseTooLarge => 'The server response exceeded the supported size.';
+	@override String get signInAgain => 'Sign in to this library again.';
+	@override String get permissionDenied => 'Your RomM account or client token does not permit this action.';
+	@override String get notFound => 'This item is no longer available.';
+	@override String get serverError => 'The RomM server could not complete this request.';
+	@override String get connectionFailed => 'Could not connect to RomM. Check the server and try again.';
+	@override String get cancelled => 'Cancelled';
+	@override String get notConnected => 'Connect this RomM library first.';
+	@override String get accountMismatch => 'This connection belongs to a different RomM account. Add it as a separate library.';
+	@override String get connectionLimit => 'This profile already has the maximum number of RomM connections.';
+	@override String get conflict => 'The server copy changed. Review both versions before replacing anything.';
+	@override String get invalidFile => 'This file cannot be used here.';
+	@override String get saveUploadFailed => 'The save could not be uploaded.';
+	@override String get quotaExceeded => 'There is not enough space within the offline storage limit.';
+	@override String get checksumFailed => 'The downloaded file did not match the server checksum.';
+	@override String get downloadChanged => 'This game file changed during the download. Refresh and try again.';
+	@override String get unsupportedArchive => 'Native play needs extracted game files. Choose an extracted copy or use the browser player.';
+	@override String get nativeError => 'The emulator could not start this copy. Check its core and firmware requirements.';
+	@override String get authorization_pending => 'Waiting for approval…';
+	@override String get slow_down => 'Waiting for approval…';
+	@override String get access_denied => 'Device access was declined.';
+	@override String get expired_token => 'This pairing code expired. Start pairing again.';
 }
 
 // Path: appIcon.names
@@ -4821,7 +4998,7 @@ class _Translations$watchTogether$errors$vi extends Translations$watchTogether$e
 	@override String get relayFull => 'Xem cùng nhau đang bận rộn ngay bây giờ. thử lại sau này.';
 	@override String get unreachable => 'Tôi không thể đạt được đồng hồ cùng nhau phát sóng. kiểm tra kết nối của bạn.';
 	@override String get rateLimited => 'Đã có quá nhiều nỗ lực, hãy đợi một phút và thử lại.';
-	@override String get clientBlocked => 'Phiên bản PlezyNG này không thể sử dụng bản phát.';
+	@override String get clientBlocked => 'Phiên bản Pleazyng này không thể sử dụng bản phát.';
 	@override String get forbidden => 'Chỉ có chủ nhà mới có thể làm được điều đó.';
 	@override String get notInRoom => 'Bạn không ở trong một căn phòng.';
 	@override String get alreadyInRoom => 'Bạn đã ở trong một căn phòng.';
@@ -4842,14 +5019,14 @@ class _Translations$downloads$backgroundWarning$vi extends Translations$download
 	@override String get bannerAction => 'chi tiết';
 	@override String get sheetTitle => 'Tải xuống nền bị chặn';
 	@override String get sheetTitleDegraded => 'Tải xuống nền có thể bị giới hạn';
-	@override String get sheetIntro => 'Android ngăn cản PlezyNG tải về đáng tin cậy trong nền.';
-	@override String get sheetIntroDegraded => 'Thiết bị của bạn đang giới hạn khi PlezyNG có thể tải về trong nền.';
-	@override String get reasonBackgroundRestricted => 'Sử dụng nền của PlezyNG là hạn chế. thiết lập sử dụng pin hoặc nền của nó là "Không hạn chế".';
-	@override String get reasonStandbyRestricted => 'Android đã đặt PlezyNG trong trạng thái đứng hạn chế. đặt sử dụng pin của nó lên "Không hạn chế".';
+	@override String get sheetIntro => 'Android ngăn cản Pleazyng tải về đáng tin cậy trong nền.';
+	@override String get sheetIntroDegraded => 'Thiết bị của bạn đang giới hạn khi Pleazyng có thể tải về trong nền.';
+	@override String get reasonBackgroundRestricted => 'Sử dụng nền của Pleazyng là hạn chế. thiết lập sử dụng pin hoặc nền của nó là "Không hạn chế".';
+	@override String get reasonStandbyRestricted => 'Android đã đặt Pleazyng trong trạng thái đứng hạn chế. đặt sử dụng pin của nó lên "Không hạn chế".';
 	@override String get reasonDownloadChannelBlocked => 'Thông báo tải xuống bị tắt, vì vậy tiến bộ và kiểm soát có thể không sẵn dùng.';
 	@override String get reasonNotificationsDisabled => 'Thông báo được tắt. trên Android 13 hoặc mới hơn, chúng được yêu cầu cho tải xuống nền dài.';
 	@override String get reasonDataSaver => 'Data Saver là trên, mà chặn tải xuống nền trên dữ liệu di động. tải xuống vẫn nên chạy trên Wi-Fi.';
-	@override String get reasonOemUnknown => 'Tải về đã ngừng lại nhiều lần trong khi PlezyNG đang ở trong nền. kiểm tra cài đặt pin hoặc nền của PlezyNG.';
+	@override String get reasonOemUnknown => 'Tải về đã ngừng lại nhiều lần trong khi Pleazyng đang ở trong nền. kiểm tra cài đặt pin hoặc nền của Pleazyng.';
 	@override String get openSettings => 'cài đặt mở';
 	@override String get stillNotWorking => '- Hỗ trợ cụ thể thiết bị';
 	@override String get stillNotWorkingDescription => 'Xem các bước cho thiết bị của bạn, hoặc gửi một sổ ghi chép từ Cài đặt › Xem sổ ghi chép nếu vấn đề tiếp tục.';
@@ -4904,19 +5081,19 @@ class _Translations$companionRemote$pairing$vi extends Translations$companionRem
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'Các thiết bị PlezyNG với cùng tài khoản Plex xuất hiện tại đây';
+	@override String get discoveryDescription => 'Các thiết bị Pleazyng với cùng tài khoản Plex xuất hiện tại đây';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Kết nối...';
 	@override String get searchingForDevices => 'Tìm kiếm các thiết bị...';
 	@override String get noDevicesFound => 'Không tìm thấy thiết bị trên mạng của bạn';
-	@override String get noDevicesHint => 'Mở PlezyNG trên máy tính để bàn và sử dụng cùng Wi-Fi';
+	@override String get noDevicesHint => 'Mở Pleazyng trên máy tính để bàn và sử dụng cùng Wi-Fi';
 	@override String get availableDevices => 'Thiết bị có sẵn';
 	@override String get manualConnection => 'Manual kết nối';
 	@override String get cryptoInitFailed => 'Không thể bắt đầu kết nối an toàn. đăng nhập lên Plex đầu tiên.';
 	@override String get validationHostRequired => 'Vui lòng nhập địa chỉ host';
 	@override String get validationHostFormat => 'Định dạng phải là IP:port (ví dụ: 192.168.1.100:48632)';
 	@override String get connectionTimedOut => 'Kết nối tạm thời: Sử dụng cùng một mạng trên cả hai thiết bị.';
-	@override String get sessionNotFound => 'Thiết bị không được tìm thấy. đảm bảo PlezyNG đang chạy trên máy chủ.';
+	@override String get sessionNotFound => 'Thiết bị không được tìm thấy. đảm bảo Pleazyng đang chạy trên máy chủ.';
 	@override String get authFailed => 'Cả hai thiết bị đều cần cùng một tài khoản Plex.';
 	@override String failedToConnect({required Object error}) => 'Không kết nối: ${error}';
 	@override String get codeTitle => 'Cặp code';
@@ -5003,7 +5180,7 @@ class _Translations$services$simklReconnect$vi extends Translations$services$sim
 
 	// Translations
 	@override String get title => 'Kết nối Simkl';
-	@override String get subtitle => 'Simkl là loại bỏ phương pháp đăng nhập sử dụng kết nối này. tái kết nối mở simkl.com để chấp thuận PlezyNG — PlezyNG không bao giờ thấy mật khẩu của bạn. lịch sử đồng hồ của bạn vẫn ở trên Simkl.';
+	@override String get subtitle => 'Simkl là loại bỏ phương pháp đăng nhập sử dụng kết nối này. tái kết nối mở simkl.com để chấp thuận Pleazyng — Pleazyng không bao giờ thấy mật khẩu của bạn. lịch sử đồng hồ của bạn vẫn ở trên Simkl.';
 }
 
 // Path: services.deviceCode
@@ -5013,7 +5190,7 @@ class _Translations$services$deviceCode$vi extends Translations$services$deviceC
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'Chạy PlezyNG trên ${service}';
+	@override String title({required Object service}) => 'Chạy Pleazyng trên ${service}';
 	@override String get instructions => 'Kiểm tra mã QR, hoặc truy cập địa chỉ dưới đây và nhập mã này:';
 	@override String openToActivate({required Object service}) => 'Mở ${service} để kích hoạt';
 	@override String get copyCode => 'copy code kích hoạt';
@@ -5088,15 +5265,15 @@ class _Translations$services$trackerDescriptions$vi extends Translations$service
 extension on TranslationsVi {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => 'ứng dụng icon',
 			'appIcon.defaultIcon' => 'Mặc Định',
 			'appIcon.current' => 'Icon hiện tại',
 			'appIcon.locked' => 'Thời gian tiếp cận cần thiết',
-			'appIcon.lockedHint' => 'Bắt đầu thử nghiệm 7 ngày của bạn hoặc mở khóa PlezyNG cho đời để sử dụng các biểu tượng thay thế.',
+			'appIcon.lockedHint' => 'Bắt đầu thử nghiệm 7 ngày của bạn hoặc mở khóa Pleazyng cho đời để sử dụng các biểu tượng thay thế.',
 			'appIcon.changeFailed' => 'Không thể thay đổi icon ứng dụng',
-			'appIcon.launcherHint' => 'biểu tượng mới sẽ xuất hiện trên màn hình nhà của bạn một khi bạn rời khỏi PlezyNG.',
-			'appIcon.tvLauncherHint' => 'Banner mới xuất hiện một khi bạn rời khỏi PlezyNG. Android TV có thể tiếp tục hiển thị một cũ cho đến khi TV khởi động lại.',
+			'appIcon.launcherHint' => 'biểu tượng mới sẽ xuất hiện trên màn hình nhà của bạn một khi bạn rời khỏi Pleazyng.',
+			'appIcon.tvLauncherHint' => 'Banner mới xuất hiện một khi bạn rời khỏi Pleazyng. Android TV có thể tiếp tục hiển thị một cũ cho đến khi TV khởi động lại.',
 			'appIcon.names.midnight' => 'nửa đêm',
 			'appIcon.names.ember' => 'người',
 			'appIcon.names.paper' => 'giấy',
@@ -5136,7 +5313,7 @@ extension on TranslationsVi {
 			'auth.quickConnectWaiting' => 'Đang chờ sự chấp thuận...',
 			'auth.quickConnectCancel' => 'Hủy bỏ',
 			'auth.quickConnectExpired' => 'Quick Connect đã hết hạn. thử lại.',
-			'auth.localDataRecoveryRequired' => 'PlezyNG không thể khôi phục an toàn dữ liệu đăng nhập cục bộ và dữ liệu phát đang chờ xử lý. Vui lòng đăng nhập lại.',
+			'auth.localDataRecoveryRequired' => 'Pleazyng không thể khôi phục an toàn dữ liệu đăng nhập cục bộ và dữ liệu phát đang chờ xử lý. Vui lòng đăng nhập lại.',
 			'auth.pinCheckRejected' => 'Kiểm tra PIN Plex đã bị từ chối',
 			'auth.connectToDirectPlex' => 'Kết nối với máy chủ địa phương Plex',
 			'common.cancel' => 'Hủy bỏ',
@@ -5252,9 +5429,9 @@ extension on TranslationsVi {
 			'update.latestVersion' => 'Bạn đang ở phiên bản mới nhất',
 			'update.checkFailed' => 'Không kiểm tra cho các bản cập nhật',
 			'settings.title' => 'Cài đặt',
-			'settings.supportDeveloper' => 'Hỗ trợ PlezyNG',
+			'settings.supportDeveloper' => 'Hỗ trợ Pleazyng',
 			'settings.supportDeveloperDescription' => 'Ưu đãi để hỗ trợ phát triển',
-			'settings.lifetimeAccess' => 'PlezyNG Thời gian truy cập',
+			'settings.lifetimeAccess' => 'Pleazyng Thời gian truy cập',
 			'settings.language' => 'Ngôn ngữ',
 			'settings.theme' => 'Chủ đề',
 			'settings.appearance' => 'xuất hiện',
@@ -5310,7 +5487,7 @@ extension on TranslationsVi {
 			'settings.contentScreensaverNoLibraries' => 'Không có thư viện truyền thông kết nối.',
 			'settings.contentScreensaverDismissHint' => 'Nhấn bất kỳ nút hoặc nhấn để tháo',
 			'settings.newEpisodeNotifications' => 'Thông báo episode mới',
-			'settings.newEpisodeNotificationsDescription' => 'Cảnh báo khi một tập mới được thêm vào một chương trình bạn đang bị bắt. kiểm tra khi Plezy mở.',
+			'settings.newEpisodeNotificationsDescription' => 'Cảnh báo khi một tập mới được thêm vào một chương trình bạn đang bị bắt. kiểm tra khi Pleazyng mở.',
 			'settings.continueWatchingRowSize' => 'Xem thêm kích thước hàng',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} thẻ',
 			'settings.rowSizeCompact' => 'Gọn',
@@ -5435,7 +5612,7 @@ extension on TranslationsVi {
 			'settings.importSettingsDescription' => 'khôi phục các tùy chọn từ một tệp',
 			'settings.importSettingsConfirm' => 'Điều này sẽ thay thế cài đặt hiện tại của bạn. tiếp tục?',
 			'settings.importSettingsSuccess' => 'Cài đặt nhập khẩu',
-			'settings.importSettingsInvalidFile' => 'Tệp này không phải là một hợp lệ PlezyNG cài đặt xuất khẩu',
+			'settings.importSettingsInvalidFile' => 'Tệp này không phải là một hợp lệ Pleazyng cài đặt xuất khẩu',
 			'settings.importSettingsNoUser' => 'Đăng nhập trước khi nhập cài đặt',
 			'settings.cloudBackup' => 'Mây Backup',
 			'settings.cloudBackupDescription' => 'Sao lưu các cài đặt có thể chuyển sang thiết bị khác đến địa chỉ WebDAV qua HTTPS. Kết nối máy chủ và thông tin đăng nhập vẫn nằm trên thiết bị này.',
@@ -5621,7 +5798,7 @@ extension on TranslationsVi {
 			'settings.forceTvMode' => 'Phim truyền hình Force',
 			'settings.forceTvModeDescription' => 'Thiết lập TV Force. Đối với các thiết bị không tự phát hiện. Cần khởi động lại.',
 			'settings.startInFullscreen' => 'Bắt đầu trên màn hình đầy đủ',
-			'settings.startInFullscreenDescription' => 'Mở PlezyNG trong chế độ màn hình đầy đủ khi ra mắt',
+			'settings.startInFullscreenDescription' => 'Mở Pleazyng trong chế độ màn hình đầy đủ khi ra mắt',
 			'settings.exitFullscreenOnPlayerClose' => 'Mở màn hình đầy đủ trên player close',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Tự động ra khỏi màn hình đầy đủ khi đóng video player',
 			'settings.autoHidePerformanceOverlay' => 'Tính năng Auto-Hide Performance Overlay',
@@ -5677,7 +5854,7 @@ extension on TranslationsVi {
 			'settings.playerScopeGlobal' => 'khắp nơi',
 			'settings.playerScopeLibrary' => 'bởi thư viện',
 			'settings.playerScopeTitle' => 'Theo chương trình hay phim',
-			'settings.exportDialogTitle' => 'Xuất khẩu PlezyNG thiết lập',
+			'settings.exportDialogTitle' => 'Xuất khẩu Pleazyng thiết lập',
 			'settings.followSystem' => 'Theo hệ thống',
 			'settings.followAppLanguage' => 'Theo ngôn ngữ giao diện',
 			'settings.regionFormat' => 'Định dạng khu vực',
@@ -5688,7 +5865,7 @@ extension on TranslationsVi {
 			'settings.enterFullscreenOnPlaybackStartDescription' => 'Mở video desktop trên màn hình đầy đủ khi playback bắt đầu',
 			'settings.extendVideoIntoDisplayCutout' => 'mở rộng video vào display cutout',
 			'settings.extendVideoIntoDisplayCutoutDescription' => 'Hãy để video màn hình đầy đủ sử dụng camera cutout trên điện thoại Android',
-			'settings.languageDescription' => 'Chọn ngôn ngữ được sử dụng cho các điều khiển và thông điệp PlezyNG. Theo hệ thống theo dõi ngôn ngữ thiết bị của bạn.',
+			'settings.languageDescription' => 'Chọn ngôn ngữ được sử dụng cho các điều khiển và thông điệp Pleazyng. Theo hệ thống theo dõi ngôn ngữ thiết bị của bạn.',
 			'settings.themeDescription' => 'Chọn các màu sắc và tương phản được sử dụng trong toàn bộ ứng dụng.',
 			'settings.libraryDensityDescription' => 'Thay đổi số thẻ thư viện phù hợp trong mỗi hàng.',
 			'settings.displayScaleDescription' => 'Khôi phục lại giao diện trên màn hình xe này mà không thay đổi kích thước văn bản trên thiết bị của bạn.',
@@ -5710,14 +5887,14 @@ extension on TranslationsVi {
 			'settings.episodeActionDescription' => 'Chọn những gì xảy ra khi bạn kích hoạt một thẻ episode.',
 			'settings.episodePlayDescription' => 'Bắt đầu sự kiện ngay lập tức.',
 			'settings.episodeDetailsDescription' => 'Mở trang tập trước khi playback.',
-			'settings.contentScreensaverDelayDescription' => 'Chọn bao lâu PlezyNG chờ đợi mà không có đầu vào trước khi hiển thị tác phẩm nghệ thuật.',
+			'settings.contentScreensaverDelayDescription' => 'Chọn bao lâu Pleazyng chờ đợi mà không có đầu vào trước khi hiển thị tác phẩm nghệ thuật.',
 			'settings.continueWatchingRowSizeDescription' => 'Chọn kích thước của các thẻ trong dòng tiếp tục xem.',
 			'settings.rowSizeCompactDescription' => 'Hiển thị các thẻ nhỏ hơn để nhiều mục phù hợp trên hàng.',
 			'settings.rowSizeStandardDescription' => 'Sử dụng kích thước thẻ tiêu chuẩn.',
 			'settings.rowSizeLargeDescription' => 'Hiển thị các thẻ lớn hơn với chi tiết nghệ thuật nhiều hơn.',
 			'settings.visualEffectsDescription' => 'Chọn ngân sách hoạt hình và hiệu ứng nghệ thuật cho thiết bị này.',
 			'settings.visualEffectsFullDescription' => 'Sử dụng các hiệu ứng hoạt hình và nghệ thuật đầy đủ trên mỗi thiết bị.',
-			'settings.startupSectionDescription' => 'Chọn phần nào mở khi PlezyNG bắt đầu.',
+			'settings.startupSectionDescription' => 'Chọn phần nào mở khi Pleazyng bắt đầu.',
 			'settings.startupSectionOptions.discover' => 'Mở các khuyến nghị và mục từ các nguồn phát hiện liên kết.',
 			'settings.startupSectionOptions.libraries' => 'Mở thư viện truyền thông liên kết của bạn.',
 			'settings.startupSectionOptions.liveTv' => 'Mở Live TV khi một máy chủ cung cấp nó; nếu không, khởi động sẽ trở về nhà.',
@@ -5756,7 +5933,7 @@ extension on TranslationsVi {
 			'settings.musicQualityOriginalDescription' => 'Chơi âm thanh nguồn mà không có transcode bitrate.',
 			'settings.musicQualityTranscodeOptionDescription' => 'Yêu cầu một transcode máy chủ được cáp gần bitrate hiển thị ở trên; kết quả thực tế có thể thay đổi.',
 			'settings.maxVolumeInputLabel' => 'Số lượng tối đa (%)',
-			'settings.checkForUpdatesDescription' => 'Bây giờ kiểm tra xem phiên bản mới hơn của PlezyNG có sẵn hay không.',
+			'settings.checkForUpdatesDescription' => 'Bây giờ kiểm tra xem phiên bản mới hơn của Pleazyng có sẵn hay không.',
 			'settings.appearanceDescription' => 'Chọn chủ đề ứng dụng và điều chỉnh thư viện thẻ, dòng nhà, và di chuyển.',
 			'settings.prerollLibraryDescription' => 'Chọn thư viện chứa các clip có sẵn như phim pre-rolls.',
 			'settings.prerollSelectionDescription' => 'Chọn clip nào từ thư viện được chọn có thể chơi trước khi xem phim.',
@@ -5992,8 +6169,8 @@ extension on TranslationsVi {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Thao tác này xóa tất cả ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tập phim trong mục này cùng các tệp của chúng.', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Mục này được lưu trong ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tệp và tất cả các tệp đó sẽ bị xóa.', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Có ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tập phim khác được lưu trong cùng tệp và cũng sẽ bị xóa:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG không thể xác định những tệp sẽ bị xóa, nên có thể xóa nhiều hơn mục nêu trên. Hãy hủy và thử lại, hoặc vẫn xóa.',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Máy chủ không cung cấp thông tin tệp cho mục này, nên PlezyNG không thể xác định những tệp sẽ bị xóa. Có thể xóa nhiều hơn mục nêu trên.',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng không thể xác định những tệp sẽ bị xóa, nên có thể xóa nhiều hơn mục nêu trên. Hãy hủy và thử lại, hoặc vẫn xóa.',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Máy chủ không cung cấp thông tin tệp cho mục này, nên Pleazyng không thể xác định những tệp sẽ bị xóa. Có thể xóa nhiều hơn mục nêu trên.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media item đã bị xóa thành công',
 			'mediaMenu.mediaFailedToDelete' => 'Không xóa các mục phương tiện truyền thông',
 			'mediaMenu.rate' => 'Đánh giá',
@@ -6043,7 +6220,7 @@ extension on TranslationsVi {
 			'accessibility.colorModeRgb' => 'RGB',
 			'accessibility.title' => 'Truy cập',
 			'accessibility.summary' => 'Text, contrast, motion và controls',
-			'accessibility.systemHint' => 'Cài đặt khả năng truy cập của thiết bị của bạn luôn được áp dụng. các tùy chọn này thêm các điều chỉnh trong suốt PlezyNG.',
+			'accessibility.systemHint' => 'Cài đặt khả năng truy cập của thiết bị của bạn luôn được áp dụng. các tùy chọn này thêm các điều chỉnh trong suốt Pleazyng.',
 			'accessibility.readability' => 'Đọc và hiển thị',
 			'accessibility.textSize' => '- Thêm Text Size',
 			'accessibility.preview' => 'Tìm câu chuyện tiếp theo của bạn. đọc, nghe và xem theo tốc độ của riêng bạn.',
@@ -6056,7 +6233,7 @@ extension on TranslationsVi {
 			'accessibility.largeTargets' => 'Mục tiêu Touch lớn hơn',
 			'accessibility.largeTargetsHint' => 'Tăng diện tích các điều khiển dùng chung để dễ chạm và điều hướng bằng công nghệ hỗ trợ.',
 			'accessibility.navigationHint' => 'Dùng Tab và Shift+Tab để di chuyển giữa các điều khiển, Enter hoặc Space để kích hoạt, Escape hoặc nút Quay lại để đóng. Bạn có thể chỉnh mức thu phóng và tùy chọn đọc khi mở sách.',
-			'accessibility.textSizeDescription' => 'Tích hợp văn bản giao diện trong PlezyNG ngoài thiết lập kích thước văn bản hệ thống của thiết bị của bạn.',
+			'accessibility.textSizeDescription' => 'Tích hợp văn bản giao diện trong Pleazyng ngoài thiết lập kích thước văn bản hệ thống của thiết bị của bạn.',
 			'accessibility.boldTextHint' => 'Sử dụng trọng lượng nặng hơn cho các nhãn giao diện và tin nhắn để làm cho chúng dễ dàng phân biệt.',
 			'tooltips.shufflePlay' => 'Shuffle chơi',
 			'tooltips.playTrailer' => 'Trò chơi Trailer',
@@ -6324,7 +6501,7 @@ extension on TranslationsVi {
 			'mpvConfig.removeLine' => 'xóa dòng',
 			'mpvConfig.embeddedVoHint' => 'vo, gpu-context và gpu-api bị bỏ qua trên Linux: video tích hợp luôn được chuyển qua vo=libmpv trên máy tính video, và gpu-next (màu máy tính như ArtCNN cần) không thể chạy tích hợp.',
 			'dialog.confirmAction' => 'xác nhận hành động',
-			'profiles.addPlezyProfile' => 'Thêm PlezyNG hồ sơ',
+			'profiles.addPlezyProfile' => 'Thêm Pleazyng hồ sơ',
 			'profiles.switchingProfile' => 'Thay đổi profile...',
 			'profiles.deleteThisProfileTitle' => 'Xóa hồ sơ này?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => 'Xóa ${displayName}. kết nối không bị ảnh hưởng.',
@@ -6406,12 +6583,12 @@ extension on TranslationsVi {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} máy chủ từ chối truy cập vào tài khoản này',
 			'connections.signInAgain' => 'Đăng ký lại',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Edit ${product} kết nối',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Thêm hoặc xóa URL cho ${serverName}. PlezyNG sẽ sử dụng URL có thể truy cập với độ chậm thấp nhất.',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Thêm hoặc xóa URL cho ${serverName}. Pleazyng sẽ sử dụng URL có thể truy cập với độ chậm thấp nhất.',
 			'accountPreferences.sectionTitle' => 'Kế toán ưu tiên',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Audio, subtitle và thư viện tùy chọn được lưu trên ${account}',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Audio, subtitle và thư viện tùy chọn được lưu trên ${count} tài khoản',
 			'accountPreferences.pickAccount' => 'Mỗi tài khoản lưu trữ sở thích của riêng mình. chọn một để chỉnh sửa.',
-			'accountPreferences.storedOnAccount' => 'Các tùy chọn này được lưu trữ trên tài khoản của bạn, vì vậy mỗi ứng dụng đăng ký sử dụng chúng – bao gồm PlezyNG trên các thiết bị khác của bạn.',
+			'accountPreferences.storedOnAccount' => 'Các tùy chọn này được lưu trữ trên tài khoản của bạn, vì vậy mỗi ứng dụng đăng ký sử dụng chúng – bao gồm Pleazyng trên các thiết bị khác của bạn.',
 			'accountPreferences.noAccounts' => 'Không có tài khoản để cấu hình',
 			'accountPreferences.noAccountsHint' => 'Đăng nhập vào Plex, hoặc kết nối với một máy chủ Jellyfin hoặc Emby, và các tùy chọn được lưu trữ trên tài khoản đó được hiển thị ở đây.',
 			'accountPreferences.unavailable' => 'Không thể truy cập tài khoản này',
@@ -6735,9 +6912,9 @@ extension on TranslationsVi {
 			'logs.saveLogs' => 'Save Logs to File - Lưu Logs đến File',
 			'logs.logsSaved' => ({required Object path}) => 'Đăng ký được lưu đến ${path}',
 			'logs.saveLogsFailed' => 'Không thể lưu file log.',
-			'startup.failedTitle' => 'PlezyNG không thể bắt đầu',
+			'startup.failedTitle' => 'Pleazyng không thể bắt đầu',
 			'startup.failedBody' => 'Một cái gì đó đã sai trong quá trình khởi động. chi tiết bên dưới xác định những gì đã thất bại.',
-			'startup.failedBodyRepairable' => 'Tệp cài đặt đã lưu của PlezyNG bị hỏng và phải được tạo lại trước khi ứng dụng có thể khởi động. Thử lại sẽ không giúp ích — hãy chọn sửa bộ nhớ.',
+			'startup.failedBodyRepairable' => 'Tệp cài đặt đã lưu của Pleazyng bị hỏng và phải được tạo lại trước khi ứng dụng có thể khởi động. Thử lại sẽ không giúp ích — hãy chọn sửa bộ nhớ.',
 			'startup.phaseLabel' => 'Bước bước',
 			'startup.showDetails' => 'Hiển thị chi tiết',
 			'startup.hideDetails' => 'Ẩn chi tiết',
@@ -6746,16 +6923,16 @@ extension on TranslationsVi {
 			'startup.uploadDetails' => 'tải chi tiết',
 			'startup.repairStorage' => 'sửa lưu trữ',
 			'startup.repairTitle' => 'sửa lại dữ liệu được lưu trữ?',
-			'startup.repairBodyCommon' => 'Tệp cài đặt của PlezyNG bị hư hỏng và không thể đọc được. sửa chữa tái cài đặt mỗi cài đặt theo mặc định.',
+			'startup.repairBodyCommon' => 'Tệp cài đặt của Pleazyng bị hư hỏng và không thể đọc được. sửa chữa tái cài đặt mỗi cài đặt theo mặc định.',
 			'startup.repairBodyOneCredential' => 'Một đăng nhập được lưu được bị hư hỏng và không thể đọc được. sửa chữa loại bỏ chỉ một; các cài đặt khác của bạn được để lại một mình.',
 			'startup.repairBodySignInsKept' => 'Trạng thái đăng nhập vào các máy chủ và hồ sơ của bạn sẽ được giữ lại nếu quá trình khôi phục diễn ra bình thường.',
 			'startup.repairBodySignInsLost' => 'Không thể khôi phục khóa bảo vệ thông tin đăng nhập đã lưu từ tệp này. Bạn sẽ phải đăng nhập lại vào từng máy chủ và hồ sơ. Không có gì trên máy chủ nội dung bị ảnh hưởng.',
-			'startup.repairBodySessionsUncertain' => 'Trackers (MAL, AniList, Simkl, Trakt) và Seerr được lưu trữ riêng biệt và có thể hay không tồn tại. PlezyNG sẽ cho bạn biết chính xác những gì nó giữ.',
+			'startup.repairBodySessionsUncertain' => 'Trackers (MAL, AniList, Simkl, Trakt) và Seerr được lưu trữ riêng biệt và có thể hay không tồn tại. Pleazyng sẽ cho bạn biết chính xác những gì nó giữ.',
 			'startup.repairConfirm' => 'sửa chữa',
 			'startup.repairSucceeded' => 'lưu trữ sửa chữa',
 			'startup.repairNeedsRestart' => 'Lưu trữ được sửa chữa - cần khởi động lại',
-			'startup.restartRequiredBody' => 'Dữ liệu của bạn đã được sửa, nhưng cần khởi động lại PlezyNG để sử dụng. Hãy đóng PlezyNG rồi mở lại.',
-			'startup.quitPlezy' => 'Đánh giá PlezyNG',
+			'startup.restartRequiredBody' => 'Dữ liệu của bạn đã được sửa, nhưng cần khởi động lại Pleazyng để sử dụng. Hãy đóng Pleazyng rồi mở lại.',
+			'startup.quitPlezy' => 'Đánh giá Pleazyng',
 			'startup.repairFailed' => 'sửa chữa thất bại',
 			'startup.repairKeptSignIns' => 'Bạn vẫn đang đăng nhập vào các máy chủ và hồ sơ của mình.',
 			'startup.repairLostSignIns' => 'Không thể khôi phục khóa bảo vệ thông tin đăng nhập đã lưu. Bạn sẽ phải đăng nhập lại vào từng máy chủ và hồ sơ.',
@@ -6764,7 +6941,7 @@ extension on TranslationsVi {
 			'startup.backupWarning' => 'Bản sao này chứa thông tin đăng nhập của bạn. Không tải lên hoặc chia sẻ.',
 			'startup.deleteBackup' => 'xóa copy',
 			'startup.backupDeleted' => 'Bản sao bị xóa',
-			'startup.previousFailureTitle' => 'PlezyNG không bắt đầu lần cuối',
+			'startup.previousFailureTitle' => 'Pleazyng không bắt đầu lần cuối',
 			'licenses.relatedPackages' => 'Các gói liên quan',
 			'licenses.license' => 'Giấy phép',
 			'licenses.licenseNumber' => ({required Object number}) => 'Giấy phép ${number}',
@@ -7144,7 +7321,7 @@ extension on TranslationsVi {
 			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại PlezyNG: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Cùng kiểm soát phiên',
 			'watchTogether.reconnecting' => 'Kết nối lại...',
 			'watchTogether.reconnectingDescription' => 'Kết nối bị hỏng. bạn sẽ tự động vào phòng.',
@@ -7170,7 +7347,7 @@ extension on TranslationsVi {
 			'watchTogether.chooseAnotherCopy' => 'Chọn một bản sao khác',
 			'watchTogether.dontPlay' => 'Đừng chơi',
 			'watchTogether.unavailableTitle' => 'Bạn không có video này',
-			'watchTogether.unavailableDescription' => 'PlezyNG không thể tìm thấy nó trong thư viện của bạn. chọn bản sao cho chính mình hoặc tìm kiếm lại.',
+			'watchTogether.unavailableDescription' => 'Pleazyng không thể tìm thấy nó trong thư viện của bạn. chọn bản sao cho chính mình hoặc tìm kiếm lại.',
 			'watchTogether.chooseCopy' => 'Chọn một bản sao',
 			'watchTogether.searchAgain' => 'Tìm lại',
 			'watchTogether.noCandidates' => 'Không có bản sao được tìm thấy trong thư viện của bạn.',
@@ -7262,7 +7439,7 @@ extension on TranslationsVi {
 			'watchTogether.errors.relayFull' => 'Xem cùng nhau đang bận rộn ngay bây giờ. thử lại sau này.',
 			'watchTogether.errors.unreachable' => 'Tôi không thể đạt được đồng hồ cùng nhau phát sóng. kiểm tra kết nối của bạn.',
 			'watchTogether.errors.rateLimited' => 'Đã có quá nhiều nỗ lực, hãy đợi một phút và thử lại.',
-			'watchTogether.errors.clientBlocked' => 'Phiên bản PlezyNG này không thể sử dụng bản phát.',
+			'watchTogether.errors.clientBlocked' => 'Phiên bản Pleazyng này không thể sử dụng bản phát.',
 			'watchTogether.errors.forbidden' => 'Chỉ có chủ nhà mới có thể làm được điều đó.',
 			'watchTogether.errors.notInRoom' => 'Bạn không ở trong một căn phòng.',
 			'watchTogether.errors.alreadyInRoom' => 'Bạn đã ở trong một căn phòng.',
@@ -7344,11 +7521,11 @@ extension on TranslationsVi {
 			'downloads.activeSyncRules' => 'Quy tắc Sync',
 			'downloads.reviewOrphanFiles' => 'Đánh giá Downloads Orphaned',
 			'downloads.orphanReviewTitle' => 'Đánh giá Downloads Orphaned',
-			'downloads.orphanReviewDescription' => 'Các tệp được nhãn hiệu này nằm trong các thư mục tải xuống được quản lý bởi ứng dụng mặc định của PlezyNG và không có bản ghi tải xuống hoặc nhiệm vụ hoạt động phù hợp.',
+			'downloads.orphanReviewDescription' => 'Các tệp được nhãn hiệu này nằm trong các thư mục tải xuống được quản lý bởi ứng dụng mặc định của Pleazyng và không có bản ghi tải xuống hoặc nhiệm vụ hoạt động phù hợp.',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} tập tin · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => 'xóa ${count} file',
 			'downloads.orphanCleanupNone' => 'Không tìm thấy các file download orphaned',
-			'downloads.orphanCleanupFailed' => 'PlezyNG không thể an toàn quét thư mục tải xuống được quản lý. không có tệp đã bị xóa.',
+			'downloads.orphanCleanupFailed' => 'Pleazyng không thể an toàn quét thư mục tải xuống được quản lý. không có tệp đã bị xóa.',
 			'downloads.orphanCleanupChanged' => 'Danh sách tải xuống đã thay đổi trong quá trình xem xét. xem lại các tập tin trước khi làm sạch.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => 'xóa ${count} các tệp mồ côi · ${size} miễn phí',
 			'downloads.noSyncRules' => 'Không có quy tắc sync',
@@ -7370,14 +7547,14 @@ extension on TranslationsVi {
 			'downloads.backgroundWarning.bannerAction' => 'chi tiết',
 			'downloads.backgroundWarning.sheetTitle' => 'Tải xuống nền bị chặn',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'Tải xuống nền có thể bị giới hạn',
-			'downloads.backgroundWarning.sheetIntro' => 'Android ngăn cản PlezyNG tải về đáng tin cậy trong nền.',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'Thiết bị của bạn đang giới hạn khi PlezyNG có thể tải về trong nền.',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Sử dụng nền của PlezyNG là hạn chế. thiết lập sử dụng pin hoặc nền của nó là "Không hạn chế".',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android đã đặt PlezyNG trong trạng thái đứng hạn chế. đặt sử dụng pin của nó lên "Không hạn chế".',
+			'downloads.backgroundWarning.sheetIntro' => 'Android ngăn cản Pleazyng tải về đáng tin cậy trong nền.',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'Thiết bị của bạn đang giới hạn khi Pleazyng có thể tải về trong nền.',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Sử dụng nền của Pleazyng là hạn chế. thiết lập sử dụng pin hoặc nền của nó là "Không hạn chế".',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android đã đặt Pleazyng trong trạng thái đứng hạn chế. đặt sử dụng pin của nó lên "Không hạn chế".',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'Thông báo tải xuống bị tắt, vì vậy tiến bộ và kiểm soát có thể không sẵn dùng.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Thông báo được tắt. trên Android 13 hoặc mới hơn, chúng được yêu cầu cho tải xuống nền dài.',
 			'downloads.backgroundWarning.reasonDataSaver' => 'Data Saver là trên, mà chặn tải xuống nền trên dữ liệu di động. tải xuống vẫn nên chạy trên Wi-Fi.',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'Tải về đã ngừng lại nhiều lần trong khi PlezyNG đang ở trong nền. kiểm tra cài đặt pin hoặc nền của PlezyNG.',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'Tải về đã ngừng lại nhiều lần trong khi Pleazyng đang ở trong nền. kiểm tra cài đặt pin hoặc nền của Pleazyng.',
 			'downloads.backgroundWarning.openSettings' => 'cài đặt mở',
 			'downloads.backgroundWarning.stillNotWorking' => '- Hỗ trợ cụ thể thiết bị',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'Xem các bước cho thiết bị của bạn, hoặc gửi một sổ ghi chép từ Cài đặt › Xem sổ ghi chép nếu vấn đề tiếp tục.',
@@ -7448,19 +7625,19 @@ extension on TranslationsVi {
 			'companionRemote.session.stopServer' => 'Ngừng Server',
 			'companionRemote.session.minimize' => 'giảm thiểu',
 			'companionRemote.session.manualAddressHint' => 'Địa chỉ kết nối thủ công:',
-			'companionRemote.pairing.discoveryDescription' => 'Các thiết bị PlezyNG với cùng tài khoản Plex xuất hiện tại đây',
+			'companionRemote.pairing.discoveryDescription' => 'Các thiết bị Pleazyng với cùng tài khoản Plex xuất hiện tại đây',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Kết nối...',
 			'companionRemote.pairing.searchingForDevices' => 'Tìm kiếm các thiết bị...',
 			'companionRemote.pairing.noDevicesFound' => 'Không tìm thấy thiết bị trên mạng của bạn',
-			'companionRemote.pairing.noDevicesHint' => 'Mở PlezyNG trên máy tính để bàn và sử dụng cùng Wi-Fi',
+			'companionRemote.pairing.noDevicesHint' => 'Mở Pleazyng trên máy tính để bàn và sử dụng cùng Wi-Fi',
 			'companionRemote.pairing.availableDevices' => 'Thiết bị có sẵn',
 			'companionRemote.pairing.manualConnection' => 'Manual kết nối',
 			'companionRemote.pairing.cryptoInitFailed' => 'Không thể bắt đầu kết nối an toàn. đăng nhập lên Plex đầu tiên.',
 			'companionRemote.pairing.validationHostRequired' => 'Vui lòng nhập địa chỉ host',
 			'companionRemote.pairing.validationHostFormat' => 'Định dạng phải là IP:port (ví dụ: 192.168.1.100:48632)',
 			'companionRemote.pairing.connectionTimedOut' => 'Kết nối tạm thời: Sử dụng cùng một mạng trên cả hai thiết bị.',
-			'companionRemote.pairing.sessionNotFound' => 'Thiết bị không được tìm thấy. đảm bảo PlezyNG đang chạy trên máy chủ.',
+			'companionRemote.pairing.sessionNotFound' => 'Thiết bị không được tìm thấy. đảm bảo Pleazyng đang chạy trên máy chủ.',
 			'companionRemote.pairing.authFailed' => 'Cả hai thiết bị đều cần cùng một tài khoản Plex.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Không kết nối: ${error}',
 			'companionRemote.pairing.codeTitle' => 'Cặp code',
@@ -7724,11 +7901,11 @@ extension on TranslationsVi {
 			'trakt.connected' => 'Kết nối',
 			'trakt.connectedAs' => ({required Object username}) => 'Kết nối với @${username}',
 			'trakt.disconnectConfirm' => 'Tắt tài khoản Trakt?',
-			'trakt.disconnectConfirmBody' => 'PlezyNG sẽ ngừng gửi các sự kiện đến Trakt. Bạn có thể kết nối lại bất cứ lúc nào.',
+			'trakt.disconnectConfirmBody' => 'Pleazyng sẽ ngừng gửi các sự kiện đến Trakt. Bạn có thể kết nối lại bất cứ lúc nào.',
 			'trakt.scrobble' => 'Thời gian thực scrobbling',
 			'trakt.scrobbleDescription' => 'Gửi game, nghỉ ngơi, và dừng các sự kiện đến Trakt trong khi chơi lại.',
 			'trakt.watchedSync' => 'Sync theo dõi trạng thái',
-			'trakt.watchedSyncDescription' => 'Khi bạn đánh dấu các mục như được xem ở PlezyNG, chúng cũng được đánh dấu như được xem ở Trakt.',
+			'trakt.watchedSyncDescription' => 'Khi bạn đánh dấu các mục như được xem ở Pleazyng, chúng cũng được đánh dấu như được xem ở Trakt.',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Kết nối Seerr',
 			'seerr.serverUrl' => 'URL máy chủ',
@@ -7738,10 +7915,10 @@ extension on TranslationsVi {
 			'seerr.signInWithEmby' => 'Đăng ký với Emby',
 			'seerr.signInWithLocal' => 'Sử dụng tài khoản địa phương',
 			'seerr.email' => 'Email',
-			'seerr.noSignInMethods' => 'Ví dụ này Seerr không cung cấp các phương pháp đăng nhập PlezyNG hỗ trợ.',
+			'seerr.noSignInMethods' => 'Ví dụ này Seerr không cung cấp các phương pháp đăng nhập Pleazyng hỗ trợ.',
 			'seerr.instance' => 'Ấn Độ',
 			'seerr.disconnectConfirm' => 'Cắt kết nối Seerr?',
-			'seerr.disconnectConfirmBody' => 'PlezyNG sẽ quên ví dụ này Seerr. nối lại bất cứ lúc nào.',
+			'seerr.disconnectConfirmBody' => 'Pleazyng sẽ quên ví dụ này Seerr. nối lại bất cứ lúc nào.',
 			'seerr.request' => 'yêu cầu',
 			'seerr.request4k' => 'yêu cầu 4K',
 			'seerr.seasons' => 'Phần',
@@ -7766,7 +7943,7 @@ extension on TranslationsVi {
 			'seerr.statusBlocklisted' => 'Khám phá',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => 'Không thể đạt ${url}: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'Không có trường hợp Seerr tại ${url} (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'Một proxy ngược xác thực (SSO hoặc HTTP auth) trả lời thay vì Seerr. PlezyNG không thể đăng ký thông qua nó: để Seerr /api/v1 đường đi qua proxy cho ứng dụng này, hoặc sử dụng một địa chỉ tiếp cận Seerr trực tiếp.',
+			'seerr.behindAuthProxy' => 'Một proxy ngược xác thực (SSO hoặc HTTP auth) trả lời thay vì Seerr. Pleazyng không thể đăng ký thông qua nó: để Seerr /api/v1 đường đi qua proxy cho ứng dụng này, hoặc sử dụng một địa chỉ tiếp cận Seerr trực tiếp.',
 			'seerr.invalidUrl' => 'Nhập địa chỉ máy chủ như https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'Ví dụ Seerr này không hỗ trợ Quick Connect. nó cần Seerr 3.4 hoặc mới hơn.',
 			'seerr.notInitialized' => 'Ví dụ này Seerr không hoàn thành cài đặt chạy đầu tiên',
@@ -7787,7 +7964,7 @@ extension on TranslationsVi {
 			'services.scrobble' => 'Theo dõi tiến bộ tự động',
 			'services.scrobbleDescription' => 'Cập nhật danh sách của bạn khi bạn hoàn thành một tập hoặc phim.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Tắt kết nối ${service}?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG sẽ ngừng cập nhật ${service}. Liên hệ lại bất cứ lúc nào.',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng sẽ ngừng cập nhật ${service}. Liên hệ lại bất cứ lúc nào.',
 			'services.connectFailed' => ({required Object service}) => 'Không thể kết nối với ${service}.Cần thử lại.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -7795,8 +7972,8 @@ extension on TranslationsVi {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Kết nối Simkl',
-			'services.simklReconnect.subtitle' => 'Simkl là loại bỏ phương pháp đăng nhập sử dụng kết nối này. tái kết nối mở simkl.com để chấp thuận PlezyNG — PlezyNG không bao giờ thấy mật khẩu của bạn. lịch sử đồng hồ của bạn vẫn ở trên Simkl.',
-			'services.deviceCode.title' => ({required Object service}) => 'Chạy PlezyNG trên ${service}',
+			'services.simklReconnect.subtitle' => 'Simkl là loại bỏ phương pháp đăng nhập sử dụng kết nối này. tái kết nối mở simkl.com để chấp thuận Pleazyng — Pleazyng không bao giờ thấy mật khẩu của bạn. lịch sử đồng hồ của bạn vẫn ở trên Simkl.',
+			'services.deviceCode.title' => ({required Object service}) => 'Chạy Pleazyng trên ${service}',
 			'services.deviceCode.instructions' => 'Kiểm tra mã QR, hoặc truy cập địa chỉ dưới đây và nhập mã này:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Mở ${service} để kích hoạt',
 			'services.deviceCode.copyCode' => 'copy code kích hoạt',
@@ -7829,8 +8006,8 @@ extension on TranslationsVi {
 			'streaming.title' => 'Phát trực tuyến từ đám mây và tiện ích',
 			'streaming.subtitle' => 'Kết nối tài khoản Debrid để duyệt tệp trên đám mây và phát các luồng được hỗ trợ. Tiện ích tương thích với Stremio cung cấp lựa chọn phát trên trang phim và tập. Thông tin kết nối được mã hóa trên thiết bị này và lưu trong hồ sơ này.',
 			'streaming.connectionsConfigured' => ({required Object count}) => 'Nguồn đã kết nối: ${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG không thể mở khóa cài đặt phát trực tuyến đã lưu. Hãy mở khóa thiết bị rồi thử lại trước khi thay đổi kết nối.',
-			'streaming.settingsUnreadable' => 'PlezyNG không thể mở khóa các kết nối đã lưu này. Hãy xóa chúng để kết nối lại dịch vụ.',
+			'streaming.settingsLoadFailed' => 'Pleazyng không thể mở khóa cài đặt phát trực tuyến đã lưu. Hãy mở khóa thiết bị rồi thử lại trước khi thay đổi kết nối.',
+			'streaming.settingsUnreadable' => 'Pleazyng không thể mở khóa các kết nối đã lưu này. Hãy xóa chúng để kết nối lại dịch vụ.',
 			'streaming.clearUnreadableSettings' => 'Xóa cài đặt đã lưu',
 			'streaming.clearUnreadableSettingsConfirm' => 'Xóa cài đặt phát trực tuyến đã lưu?',
 			'streaming.clearUnreadableSettingsBody' => 'Thao tác này xóa mọi tài khoản nhà cung cấp và địa chỉ tiện ích đã lưu khỏi hồ sơ này. Không thể hoàn tác.',
@@ -7842,11 +8019,11 @@ extension on TranslationsVi {
 			'streaming.catalogFiltersRequired' => 'Chọn bộ lọc bắt buộc để duyệt danh mục này.',
 			'streaming.catalogRequiredLabel' => 'Bắt buộc',
 			'streaming.importFromStremio' => 'Nhập từ Stremio',
-			'streaming.stremioImportInstructions' => 'Quét mã QR hoặc mở liên kết. Đăng nhập Stremio và chấp thuận yêu cầu. PlezyNG chỉ đọc danh sách tiện ích; ứng dụng không yêu cầu mật khẩu Stremio hay thay đổi cài đặt của bạn.',
+			'streaming.stremioImportInstructions' => 'Quét mã QR hoặc mở liên kết. Đăng nhập Stremio và chấp thuận yêu cầu. Pleazyng chỉ đọc danh sách tiện ích; ứng dụng không yêu cầu mật khẩu Stremio hay thay đổi cài đặt của bạn.',
 			'streaming.stremioImportOpen' => 'Mở liên kết Stremio',
 			'streaming.stremioImportCode' => 'Mã liên kết',
 			'streaming.stremioImportPreviewTitle' => 'Chọn tiện ích',
-			'streaming.stremioImportPreviewBody' => 'Chọn tiện ích bạn muốn kết nối với PlezyNG. Chỉ có thể nhập địa chỉ HTTPS.',
+			'streaming.stremioImportPreviewBody' => 'Chọn tiện ích bạn muốn kết nối với Pleazyng. Chỉ có thể nhập địa chỉ HTTPS.',
 			'streaming.stremioImportIgnored' => ({required Object count}) => 'Đã bỏ qua tiện ích do địa chỉ không được hỗ trợ hoặc không an toàn: ${count}.',
 			'streaming.stremioCatalogs' => 'Danh mục',
 			'streaming.stremioStreams' => 'Luồng',
@@ -7860,7 +8037,7 @@ extension on TranslationsVi {
 			'streaming.addByManifestUrl' => 'Thêm bằng URL manifest',
 			'streaming.addAddon' => 'Thêm tiện ích',
 			'streaming.manifestUrl' => 'URL manifest của tiện ích',
-			'streaming.manifestUrlHint' => 'Dán URL manifest của tiện ích. PlezyNG sẽ kiểm tra hỗ trợ danh mục hoặc tài nguyên luồng trước khi kết nối.',
+			'streaming.manifestUrlHint' => 'Dán URL manifest của tiện ích. Pleazyng sẽ kiểm tra hỗ trợ danh mục hoặc tài nguyên luồng trước khi kết nối.',
 			'streaming.allowHttp' => 'Cho phép địa chỉ HTTP không mã hóa',
 			'streaming.allowHttpDescription' => 'Chỉ dùng với tiện ích đáng tin cậy trên mạng riêng của bạn.',
 			'streaming.installAddon' => 'Kết nối tiện ích',
@@ -7868,20 +8045,20 @@ extension on TranslationsVi {
 			'streaming.addonRemoved' => 'Đã xóa tiện ích',
 			'streaming.addonToggle' => 'Bật tiện ích',
 			'streaming.addonEmpty' => 'Chưa có tiện ích nào được kết nối',
-			'streaming.addonError' => 'PlezyNG không thể kết nối tiện ích này. Hãy kiểm tra URL manifest rồi thử lại.',
+			'streaming.addonError' => 'Pleazyng không thể kết nối tiện ích này. Hãy kiểm tra URL manifest rồi thử lại.',
 			'streaming.addonPrivacy' => 'Chỉ kết nối tiện ích bạn tin cậy. Khi tìm kiếm, tiện ích nhận tiêu đề bạn muốn tìm và có thể trả về liên kết luồng của bên thứ ba.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Phát các luồng torrent được hỗ trợ qua tài khoản Real-Debrid.',
 			'streaming.connectRealDebrid' => 'Kết nối bằng mã QR',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Đã kết nối với tên ${username}',
-			'streaming.realDebridInstructions' => 'Quét mã QR hoặc mở liên kết, rồi nhập mã kích hoạt này để kết nối PlezyNG:',
+			'streaming.realDebridInstructions' => 'Quét mã QR hoặc mở liên kết, rồi nhập mã kích hoạt này để kết nối Pleazyng:',
 			'streaming.realDebridActivate' => 'Mở Real-Debrid để kích hoạt',
 			'streaming.realDebridCode' => 'Mã kích hoạt',
 			'streaming.realDebridConnectFailed' => 'Không thể kết nối Real-Debrid. Hãy thử lại.',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'Phát các luồng torrent được hỗ trợ qua tài khoản AllDebrid.',
 			'streaming.connectAllDebrid' => 'Kết nối bằng mã QR',
-			'streaming.allDebridInstructions' => 'Quét mã QR hoặc mở liên kết để cấp quyền cho PlezyNG. Giữ màn hình này mở trong khi kết nối:',
+			'streaming.allDebridInstructions' => 'Quét mã QR hoặc mở liên kết để cấp quyền cho Pleazyng. Giữ màn hình này mở trong khi kết nối:',
 			'streaming.allDebridActivate' => 'Mở AllDebrid để kích hoạt',
 			'streaming.allDebridCode' => 'Mã PIN kích hoạt',
 			'streaming.allDebridConnectFailed' => 'Không thể kết nối AllDebrid. Hãy thử lại.',
@@ -7892,13 +8069,13 @@ extension on TranslationsVi {
 			'streaming.connectApiKey' => 'Kết nối bằng khóa API',
 			'streaming.apiKeyTitle' => ({required Object service}) => 'Kết nối ${service}',
 			'streaming.apiKey' => 'Khóa API',
-			'streaming.apiKeyHint' => ({required Object service}) => 'Dán khóa API từ cài đặt tài khoản ${service}. PlezyNG mã hóa khóa trên thiết bị này và lưu vào hồ sơ này.',
+			'streaming.apiKeyHint' => ({required Object service}) => 'Dán khóa API từ cài đặt tài khoản ${service}. Pleazyng mã hóa khóa trên thiết bị này và lưu vào hồ sơ này.',
 			'streaming.apiKeyConnectFailed' => 'Không thể xác minh khóa API này. Hãy kiểm tra rồi thử lại.',
 			'streaming.accountConnected' => ({required Object username}) => 'Đã kết nối với tên ${username}',
 			'streaming.streamNeedsProvider' => 'Kết nối dịch vụ Debrid để phát luồng torrent này.',
 			'streaming.playViaProvider' => 'Phát qua Debrid',
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Ngắt kết nối ${service}?',
-			'streaming.disconnectBody' => 'PlezyNG sẽ thu hồi quyền của thiết bị này. Tệp trên dịch vụ và các lần truyền đang diễn ra vẫn được giữ nguyên.',
+			'streaming.disconnectBody' => 'Pleazyng sẽ thu hồi quyền của thiết bị này. Tệp trên dịch vụ và các lần truyền đang diễn ra vẫn được giữ nguyên.',
 			'streaming.streamsTitle' => 'Chọn luồng',
 			'streaming.noStreams' => 'Không tìm thấy luồng cho tiêu đề này.',
 			'streaming.manageConnections' => 'Quản lý dịch vụ phát trực tuyến',
@@ -7914,7 +8091,7 @@ extension on TranslationsVi {
 			'streaming.streamUnsupported' => 'Trình phát trong ứng dụng không hỗ trợ định dạng luồng này.',
 			'streaming.remoteNeedsEpisode' => 'Chọn tập trước khi tìm luồng.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Tập này thiếu số mùa hoặc số tập.',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG không tìm thấy ID IMDb hoặc TMDB cho tiêu đề này.',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng không tìm thấy ID IMDb hoặc TMDB cho tiêu đề này.',
 			'streaming.watchWithServices' => 'Xem bằng dịch vụ đã kết nối',
 			'streaming.chooseEpisode' => 'Chọn tập',
 			'streaming.episodes' => 'Các tập',
@@ -8000,15 +8177,15 @@ extension on TranslationsVi {
 			'notifications.newEpisodeTitle' => 'episode mới',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => 'Cố gắng mọi tính năng miễn phí trong 7 ngày',
-			'appAccess.description' => 'Bắt đầu một cuộc thử nghiệm 7 ngày với quyền truy cập đầy đủ vào mỗi tính năng PlezyNG. không có phí trong cuộc thử nghiệm và không có đăng ký. sau khi thử nghiệm, một mua hàng suốt đời tại giá của cửa hàng của bạn sẽ mở khóa PlezyNG suốt đời.',
-			'appAccess.trialEndedDescription' => 'Khóa tất cả các tính năng trong PlezyNG cho đời với một mua tại giá của cửa hàng của bạn.',
+			'appAccess.description' => 'Bắt đầu một cuộc thử nghiệm 7 ngày với quyền truy cập đầy đủ vào mỗi tính năng Pleazyng. không có phí trong cuộc thử nghiệm và không có đăng ký. sau khi thử nghiệm, một mua hàng suốt đời tại giá của cửa hàng của bạn sẽ mở khóa Pleazyng suốt đời.',
+			'appAccess.trialEndedDescription' => 'Khóa tất cả các tính năng trong Pleazyng cho đời với một mua tại giá của cửa hàng của bạn.',
 			'appAccess.startTrial' => 'Bắt đầu bài kiểm tra miễn phí 7 ngày',
 			'appAccess.trialActive' => 'Thử nghiệm đầy đủ 7 ngày của bạn đang hoạt động.',
 			'appAccess.trialEnded' => 'Cuộc thi 7 ngày đã kết thúc',
 			'appAccess.trialStartFailed' => 'Tôi không thể tiết kiệm thử nghiệm trên thiết bị này. xin vui lòng thử lại.',
-			'appAccess.lifetimeTitle' => 'PlezyNG mở khóa suốt đời',
-			'appAccess.lifetimeBody' => 'Cảm ơn bạn! bạn có quyền truy cập suốt đời cho mỗi tính năng PlezyNG.',
-			'appAccess.manageTitle' => 'PlezyNG Thời gian truy cập',
+			'appAccess.lifetimeTitle' => 'Pleazyng mở khóa suốt đời',
+			'appAccess.lifetimeBody' => 'Cảm ơn bạn! bạn có quyền truy cập suốt đời cho mỗi tính năng Pleazyng.',
+			'appAccess.manageTitle' => 'Pleazyng Thời gian truy cập',
 			'appAccess.manageDescription' => 'Cố gắng mỗi tính năng miễn phí trong 7 ngày, sau đó mở khóa mọi thứ trong suốt đời với một khoản thanh toán với giá của cửa hàng của bạn.',
 			'appAccess.buy' => ({required Object price}) => 'Khóa tất cả các tính năng cho ${price}',
 			'appAccess.loadingPrice' => 'Giá bán hàng tải...',
@@ -8016,11 +8193,11 @@ extension on TranslationsVi {
 			'appAccess.restore' => 'Lợi ích mua sắm suốt đời',
 			'appAccess.pending' => 'Mua hàng của bạn đang chờ đợi thanh toán hoặc phê duyệt. truy cập suốt đời sẽ mở khóa ngay khi cửa hàng hoàn thành nó.',
 			'appAccess.storeUnavailable' => 'Kiểm tra rằng bạn đã đăng ký vào cửa hàng và mua hàng được phép trên thiết bị này.',
-			'appAccess.productNotFound' => 'Tính năng mở khóa PlezyNG vẫn chưa có sẵn trong cửa hàng này.',
+			'appAccess.productNotFound' => 'Tính năng mở khóa Pleazyng vẫn chưa có sẵn trong cửa hàng này.',
 			'appAccess.productQueryFailed' => 'Không thể tải giá cửa hàng. kiểm tra kết nối của bạn và thử lại.',
 			'appAccess.purchaseFailed' => 'Mua sắm không qua được. thử lại.',
 			'appAccess.restoreFailed' => 'Tôi không thể đến cửa hàng để khôi phục mua hàng của bạn. thử lại.',
-			'appAccess.nothingToRestore' => 'Số PlezyNG mua hàng đời đã được tìm thấy cho tài khoản cửa hàng này.',
+			'appAccess.nothingToRestore' => 'Số Pleazyng mua hàng đời đã được tìm thấy cho tài khoản cửa hàng này.',
 			'detail.endsAt' => ({required Object time}) => 'Kết thúc tại ${time}',
 			'watchLink.serverUnavailable' => 'Tôi không thể truy cập một máy chủ Plex cho liên kết này.',
 			'watchLink.notFound' => 'Tôi không thể tìm thấy chương trình hoặc bộ phim này trên máy chủ của bạn Plex.',
@@ -8034,8 +8211,8 @@ extension on TranslationsVi {
 			'watchLink.copy' => 'Sao chép',
 			'watchLink.copied' => 'Link sao chép',
 			'homeLayout.title' => 'Trang chủ Layout',
-			'homeLayout.resetToast' => 'Home Reset to the original Plezy anh hùng bố trí',
-			'homeLayout.resetHeroTitle' => 'Đặt lại bố trí anh hùng để stock Plezy?',
+			'homeLayout.resetToast' => 'Home Reset to the original Pleazyng anh hùng bố trí',
+			'homeLayout.resetHeroTitle' => 'Đặt lại bố trí anh hùng để stock Pleazyng?',
 			'homeLayout.resetHeroBody' => 'Nó xoay khỏi thiết lập anh hùng của mỗi hàng và mang lại một ban nhạc xoay duy nhất ở trên cùng của Nhà, giống như trước khi hàng anh hùng tồn tại.',
 			'homeLayout.removeRowTitle' => 'Xóa dòng Home?',
 			'homeLayout.removeRowBody' => ({required Object title}) => '${title} sẽ bị xóa. điều này không thể bị bỏ qua.',
@@ -8045,7 +8222,7 @@ extension on TranslationsVi {
 			'homeLayout.syncAccountOff' => 'Tắt: Thiết bị này giữ bố trí của riêng mình.',
 			'homeLayout.syncNow' => 'Sync hiện tại',
 			'homeLayout.plexHomeManager' => 'Plex Nhà quản lý',
-			'homeLayout.managePlexRows' => 'Quản lý Plex hàng trong Plezy',
+			'homeLayout.managePlexRows' => 'Quản lý Plex hàng trong Pleazyng',
 			'homeLayout.managePlexRowsDescription' => 'Mở để tổ chức các dòng được chọn tại nhà',
 			'homeLayout.organizeHomeRows' => 'Tổ chức Home Rows',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} hàng: di chuyển, Anh hùng, Auto-slide, loại bỏ',
@@ -8115,7 +8292,7 @@ extension on TranslationsVi {
 			'homeLayout.organizeRowsHint' => 'Chọn theo một hàng (hoặc giữ Chọn): di chuyển nó · Trái/Trái: tùy chọn hàng · Trở lại: hoàn thành',
 			'homeLayout.layoutNavDescription' => 'Chọn hàng, thư viện, và thể loại thu thập',
 			'homeLayout.editHomeRow' => 'Trang chủ Edit',
-			'homeLayout.resetHeroButton' => 'Đặt lại bản bố trí anh hùng để stock Plezy',
+			'homeLayout.resetHeroButton' => 'Đặt lại bản bố trí anh hùng để stock Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Đặt lại Unlocked',
 			'homeLayout.reorderingLocked' => 'Đặt lại khóa',
 			'homeLayout.rowsCanBeDragged' => 'Các dây có thể được kéo — nhấn khóa để ngăn chặn',
@@ -8132,13 +8309,13 @@ extension on TranslationsVi {
 			'homeLayout.tapHeroCardDescription' => 'Chọn xem đánh hoặc chọn một thẻ Hero bắt đầu phát lại hay mở chi tiết của nó.',
 			'homeLayout.heroTapPlayDescription' => 'Bắt đầu mục được chọn ngay lập tức.',
 			'homeLayout.heroTapDetailsDescription' => 'Mở chi tiết của mục được chọn trước khi chọn một hành động.',
-			'platform.localNetworkPermission' => 'PlezyNG kết nối với máy chủ truyền thông và thiết bị phát lại trên mạng địa phương của bạn.',
-			'platform.locationPermission' => 'PlezyNG sử dụng quyền truy cập vị trí khi iOS yêu cầu nó để phát hiện mạng lưới địa phương của bạn và kết nối với máy chủ truyền thông của bạn.',
+			'platform.localNetworkPermission' => 'Pleazyng kết nối với máy chủ truyền thông và thiết bị phát lại trên mạng địa phương của bạn.',
+			'platform.locationPermission' => 'Pleazyng sử dụng quyền truy cập vị trí khi iOS yêu cầu nó để phát hiện mạng lưới địa phương của bạn và kết nối với máy chủ truyền thông của bạn.',
 			'platform.photoLibraryPermission' => 'Chọn hình ảnh từ thư viện ảnh của bạn để sử dụng như một công việc nghệ thuật phương tiện truyền thông.',
 			'platform.cameraPermission' => 'Scan mã QR để kết hợp một Companion Remote.',
 			'universalMedia.title' => 'phương tiện truyền thông mở',
 			'universalMedia.shortcutHelp' => 'Chơi một liên kết, danh sách chơi hoặc tệp cho phiên này.',
-			'universalMedia.intro' => 'Mở một liên kết, danh sách phát hoặc tệp. Playback sử dụng người chơi tiêu chuẩn của PlezyNG và không thêm lịch sử vào thư viện của bạn.',
+			'universalMedia.intro' => 'Mở một liên kết, danh sách phát hoặc tệp. Playback sử dụng người chơi tiêu chuẩn của Pleazyng và không thêm lịch sử vào thư viện của bạn.',
 			'universalMedia.openWhat' => 'Bạn muốn mở cái gì?',
 			'universalMedia.stream' => 'Địa chỉ Stream',
 			'universalMedia.playlist' => 'Danh sách Playlist',
@@ -8189,13 +8366,13 @@ extension on TranslationsVi {
 			'universalMedia.stopTransfer' => 'Ngừng chuyển giao và vô hiệu hóa địa chỉ',
 			'universalMedia.startTransfer' => 'Bắt đầu chuyển giao',
 			'universalMedia.wifiImportedFiles' => 'Chuyển Wi-Fi',
-			'universalMedia.wifiBrowserTitle' => 'Gửi file đến PlezyNG',
+			'universalMedia.wifiBrowserTitle' => 'Gửi file đến Pleazyng',
 			'universalMedia.wifiBrowserIntro' => 'Chọn các tập tin âm thanh, video, ebook hoặc truyện tranh để gửi. Các tập tin được lưu trữ trong thư viện tệp và sách của thiết bị này. Tối đa: 100 tập tin, 4 GiB mỗi file, tổng cộng 10 GiB.',
 			'universalMedia.uploadFilesLabel' => 'file để gửi',
 			'universalMedia.uploadSelected' => 'Tải các tập tin được chọn',
 			'universalMedia.uploadSelectFirst' => 'Chọn một hoặc nhiều tập tin đầu tiên.',
 			'universalMedia.uploading' => 'gửi',
-			'universalMedia.uploadComplete' => 'File được thêm vào PlezyNG.',
+			'universalMedia.uploadComplete' => 'File được thêm vào Pleazyng.',
 			'universalMedia.uploadFailed' => 'Tệp không thể được thêm vào. giữ cho trang này mở và thử lại.',
 			'universalMedia.liveCue' => 'Sống',
 			'universalMedia.liveSession' => 'Stream trực tiếp',
@@ -8223,7 +8400,7 @@ extension on TranslationsVi {
 			'universalMedia.recordingActive' => 'Để lại playback dừng lại và tiết kiệm nó.',
 			'universalMedia.recordingFormatHelp' => 'Đối với video, chọn MKV hoặc MPEG-TS. Đối với âm thanh, chọn MKA hoặc MKV.',
 			'universalMedia.replaceRecordingTitle' => 'Thay thế bản ghi này?',
-			'universalMedia.replaceRecordingHelp' => 'PlezyNG sao lưu tệp hiện có trong khi ghi lại. nếu nó không thể tiết kiệm bản ghi mới, Plezyng khôi phục sao lưu.',
+			'universalMedia.replaceRecordingHelp' => 'Pleazyng sao lưu tệp hiện có trong khi ghi lại. nếu nó không thể tiết kiệm bản ghi mới, Plezyng khôi phục sao lưu.',
 			'universalMedia.replaceRecording' => 'Thay thế file',
 			'universalMedia.discHelp' => 'Mở một đĩa trong ổ đĩa quang của máy tính này. Bạn cũng có thể mở hình ảnh ISO từ các tệp thiết bị.',
 			'universalMedia.discs' => 'Đĩa Optical',
@@ -8248,7 +8425,7 @@ extension on TranslationsVi {
 			'universalMedia.converterUnsupportedInput' => 'Chọn một file audio hoặc video.',
 			'universalMedia.converterLocalOnly' => 'Tệp được chọn không có sẵn như một con đường thiết bị địa phương.',
 			'universalMedia.converterReplaceTitle' => 'Thay thế file này?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG khôi phục lại tệp hiện có cho đến khi bản sao được chuyển đổi được lưu.',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng khôi phục lại tệp hiện có cho đến khi bản sao được chuyển đổi được lưu.',
 			'universalMedia.converterStarting' => 'Bắt đầu FFmpeg...',
 			'universalMedia.converterProgress' => 'Chuyển đổi vào máy tính này...',
 			'universalMedia.converterComplete' => 'Chuyển đổi hoàn thành. file mới đã sẵn sàng.',
@@ -8272,7 +8449,7 @@ extension on TranslationsVi {
 			'universalMedia.captureDefaultAudio' => 'Lập trình Audio Input',
 			'universalMedia.captureWaylandHelp' => 'Wayland giới hạn thu thập XWayland này đến X display. Windows bên ngoài XWayland có thể không xuất hiện.',
 			'universalMedia.captureFrameRate' => 'Tỷ lệ ghi âm frame rate',
-			'universalMedia.capturePrivacy' => 'Ghi âm được lưu chỉ cho tệp bạn chọn. microphone capture là tùy chọn. PlezyNG không tải lên ghi âm.',
+			'universalMedia.capturePrivacy' => 'Ghi âm được lưu chỉ cho tệp bạn chọn. microphone capture là tùy chọn. Pleazyng không tải lên ghi âm.',
 			'universalMedia.captureSaveAs' => 'Lưu màn hình ghi âm như',
 			'universalMedia.captureExtensionMismatch' => 'Chọn tên file kết thúc trong .mp4.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg hoặc mã hóa video H.264 không sẵn dùng. cài đặt một xây dựng FFmpeg được hỗ trợ, sau đó thử lại.',
@@ -8286,7 +8463,7 @@ extension on TranslationsVi {
 			'universalMedia.captureStop' => 'Stop và Save',
 			'universalMedia.captureMode' => 'bắt giữ',
 			'universalMedia.shareMode' => 'chia sẻ',
-			'universalMedia.shareIntro' => 'Gửi một tệp phương tiện truyền thông địa phương đến một thiết bị khác trên mạng riêng của bạn. PlezyNG tạo ra một dòng HLS tạm thời.',
+			'universalMedia.shareIntro' => 'Gửi một tệp phương tiện truyền thông địa phương đến một thiết bị khác trên mạng riêng của bạn. Pleazyng tạo ra một dòng HLS tạm thời.',
 			'universalMedia.sharePrivacy' => 'Bất cứ ai trên mạng địa phương của bạn nhận được liên kết tư nhân có thể xem trong khi nó hoạt động. liên kết hết hạn sau 60 phút. ngừng chia sẻ để đóng máy chủ và vô hiệu hóa liên kết.',
 			'universalMedia.shareChooseFile' => 'Chọn file media',
 			'universalMedia.shareChooseHelp' => 'Chọn một tệp âm thanh hoặc video địa phương. tệp vẫn ở trên máy tính này.',
@@ -8299,7 +8476,7 @@ extension on TranslationsVi {
 			'universalMedia.shareOpenUrl' => 'Mở địa chỉ này trong một người chơi trên thiết bị khác',
 			'universalMedia.shareQrLabel' => 'Mã QR cho địa chỉ dòng tạm thời',
 			'universalMedia.shareQrHelp' => 'Scan với một người chơi tương thích kết nối với cùng một mạng tư nhân.',
-			'universalMedia.shareHttpHint' => 'Stream này sử dụng HTTP không được mã hóa. trong PlezyNG, cho phép HTTP trước khi mở nó.',
+			'universalMedia.shareHttpHint' => 'Stream này sử dụng HTTP không được mã hóa. trong Pleazyng, cho phép HTTP trước khi mở nó.',
 			'universalMedia.shareCopyUrl' => 'Bản sao Stream Address',
 			'universalMedia.shareExpiresLabel' => 'Link kết thúc tại',
 			'universalMedia.shareStarting' => 'Chuẩn bị dòng chảy...',
@@ -8324,7 +8501,7 @@ extension on TranslationsVi {
 			'universalMedia.extensionInstall' => 'thêm dịch vụ',
 			'universalMedia.extensionReplace' => 'Update dịch vụ',
 			'universalMedia.extensionRemoveTitle' => 'Xóa dịch vụ tìm kiếm này?',
-			'universalMedia.extensionRemoveHelp' => 'Điều này loại bỏ dịch vụ khỏi hồ sơ này.PlezyNG không liên hệ với điểm kết thúc của nó.',
+			'universalMedia.extensionRemoveHelp' => 'Điều này loại bỏ dịch vụ khỏi hồ sơ này.Pleazyng không liên hệ với điểm kết thúc của nó.',
 			'universalMedia.extensionRemove' => 'Xóa dịch vụ',
 			'universalMedia.extensionInvalidManifest' => 'Tệp này không phải là một biểu hiện mở rộng được hỗ trợ. xem hướng dẫn Open media cho định dạng.',
 			'universalMedia.extensionSaveFailed' => 'Việc mở rộng không thể được lưu vào hồ sơ hoạt động.',
@@ -8467,12 +8644,12 @@ extension on TranslationsVi {
 			'fileSources.none' => 'Không có',
 			'fileSources.fullscreen' => 'Toàn màn hình',
 			'fileSources.syncLocation' => 'Progress sync folder (tùy chọn)',
-			'fileSources.syncLocationHint' => 'Thư mục WebDAV dành riêng cho trạng thái PlezyNG. Dữ liệu được ghi có điều kiện; các tệp nội dung không bị thay đổi.',
+			'fileSources.syncLocationHint' => 'Thư mục WebDAV dành riêng cho trạng thái Pleazyng. Dữ liệu được ghi có điều kiện; các tệp nội dung không bị thay đổi.',
 			'fileSources.audiobooks' => 'Sách nói',
 			'fileSources.comics' => 'truyện tranh',
 			'fileSources.scan' => 'Scan cho sách và phương tiện truyền thông',
 			'fileSources.browserReader' => 'Open Reader Đọc',
-			'fileSources.browserReaderHelp' => 'Đọc được mở trong trình duyệt của bạn. giữ PlezyNG mở để lưu vị trí và ghi chú của bạn.',
+			'fileSources.browserReaderHelp' => 'Đọc được mở trong trình duyệt của bạn. giữ Pleazyng mở để lưu vị trí và ghi chú của bạn.',
 			'fileSources.on' => 'trên',
 			'fileSources.advancedSetup' => 'App đăng ký',
 			'fileSources.microsoftSignIn' => 'Đăng ký với Microsoft',
@@ -8513,7 +8690,7 @@ extension on TranslationsVi {
 			'fileSources.importInterrupted' => 'nhập khẩu bị gián đoạn · xóa để làm rõ',
 			'fileSources.errorQuotaExceeded' => 'Giới hạn lưu trữ offline đã đạt được.Tăng giới hạn hoặc xóa bản sao tải xuống.',
 			'fileSources.errorStorageLow' => 'Không có đủ lưu trữ thiết bị miễn phí để giữ bảo tồn được bảo vệ.',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG không thể kiểm tra lưu trữ thiết bị miễn phí, vì vậy việc viết đã dừng lại.',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng không thể kiểm tra lưu trữ thiết bị miễn phí, vì vậy việc viết đã dừng lại.',
 			'fileSources.removeDownloadJob' => 'xóa download',
 			'fileSources.downloadAlreadyComplete' => 'Tải xuống này đã hoàn thành trước khi nó có thể được xóa. mục bây giờ có sẵn offline.',
 			'fileSources.confirmRemoveDownloadJob' => 'Loại bỏ tải xuống này và loại bỏ bất kỳ dữ liệu được tải về một phần? vị trí và ghi chú của bạn sẽ ở lại.',
@@ -8554,7 +8731,7 @@ extension on TranslationsVi {
 			'lending.openLibraryNote' => 'Khám phá danh mục của Open Library. Các tùy chọn đọc và mượn được hiển thị trên trang của từng tựa sách.',
 			'lending.more' => 'tải thêm',
 			'lending.gateway' => 'Thư viện đăng ký dịch vụ',
-			'lending.gatewayHint' => 'Được cung cấp bởi thư viện của bạn hoặc quản trị viên PlezyNG.',
+			'lending.gatewayHint' => 'Được cung cấp bởi thư viện của bạn hoặc quản trị viên Pleazyng.',
 			'lending.advanced' => 'Thư viện Integration',
 			'lending.loadLibraries' => 'Chọn thư viện của bạn',
 			'lending.expired' => 'Thời hạn mượn sách này đã kết thúc.',
@@ -8676,7 +8853,7 @@ extension on TranslationsVi {
 			'sourceSetup.subtitlePrivacy' => 'Lấy khóa API từ opensubtitles.com. Tìm kiếm gửi tiêu đề video và các ID IMDb/TMDB có sẵn, không bao giờ gửi tệp video. Khóa và thông tin xác thực tài khoản tùy chọn được mã hóa cùng nguồn này.',
 			'sourceSetup.automaticMetadata' => 'Siêu dữ liệu video trực tuyến tự động',
 			'sourceSetup.metadataPrivacy' => 'Chỉ gửi tiêu đề/năm từ tên tệp và số tập hoặc một ID NFO, không bao giờ gửi nội dung đa phương tiện hay thông tin xác thực. Các trường NFO vẫn được ưu tiên.',
-			'sourceSetup.nfsEncryptionFailure' => 'Với NFS được mã hóa, kiểm tra hỗ trợ RFC 9289 và TLS 1.3 trên cả hai dịch vụ NAS, tên trong chứng chỉ và UID/GID của vùng chia sẻ. PlezyNG sẽ không thử lại kết nối này khi không mã hóa.',
+			'sourceSetup.nfsEncryptionFailure' => 'Với NFS được mã hóa, kiểm tra hỗ trợ RFC 9289 và TLS 1.3 trên cả hai dịch vụ NAS, tên trong chứng chỉ và UID/GID của vùng chia sẻ. Pleazyng sẽ không thử lại kết nối này khi không mã hóa.',
 			'sourceSetup.sourceConnecting' => 'Đang kết nối đến nguồn',
 			'sourceSetup.metadataSearchPrivacy' => 'Lượt tìm tiêu đề này được gửi đến Trakt. Chỉ tiêu đề bạn nhập được gửi đi, không phải video hay thông tin xác thực của nguồn.',
 			'sourceSetup.chooseMatch' => 'Chọn kết quả phù hợp',
@@ -8783,7 +8960,7 @@ extension on TranslationsVi {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
+			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
 			'games.touchSetup' => 'On-screen controls',
@@ -8796,7 +8973,6 @@ extension on TranslationsVi {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',
@@ -8817,7 +8993,7 @@ extension on TranslationsVi {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => 'Liên kết Plezy này không hợp lệ.',
+			'deepLinks.invalid' => 'Liên kết Pleazyng này không hợp lệ.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'Không có hồ sơ phù hợp với "${profile}".',
 			'deepLinks.serverUnavailable' => 'Tôi không thể truy cập máy chủ cho liên kết này.',
 			'deepLinks.notFound' => 'Tôi không thể tìm thấy tiêu đề này trong thư viện của bạn.',
@@ -8840,6 +9016,174 @@ extension on TranslationsVi {
 			'issueReport.privacy' => 'Bản nháp gồm phiên bản ứng dụng, nền tảng và số lượng kết nối. Bản nháp không có địa chỉ máy chủ, tên tài khoản hoặc hồ sơ, tiêu đề nội dung hay đường dẫn tệp.',
 			'issueReport.logPrivacy' => 'Nhật ký là tùy chọn. Hãy xem lại trước khi tải lên. ID nhật ký được thêm vào bản nháp, có thể hiển thị công khai.',
 			'issueReport.openDraft' => 'Mở bản nháp GitHub',
+			'romm.chooseFile' => 'Choose a game file',
+			'romm.chooseCopy' => 'Choose an exact game copy',
+			'romm.favorite' => 'Favorite',
+			'romm.startFresh' => 'Start from the beginning',
+			'romm.automatic' => 'Automatic',
+			'romm.noJoinable' => 'No games are accepting players.',
+			'romm.downloadAgain' => 'Download again',
+			'romm.offlineUnverified' => 'Saved offline. This server did not provide a checksum; only the local file fingerprint is available.',
+			'romm.achievementCount' => 'Achievements',
+			'romm.saveInProgress' => 'A save is still being captured. Keep the game open and try again.',
+			'romm.browserSaveHelp' => 'Use the player’s save and exit controls first. Then close this screen. Pending browser saves remain in this profile’s player storage.',
+			'romm.savedClose' => 'I saved; close the player',
+			'romm.cardImportRequired' => 'The streaming computer has an existing memory card. Keep it in your RomM account before playing, or explicitly erase that card.',
+			'romm.cardUnreadable' => 'The existing memory card could not be read. Cancel to recover it in RomM, or explicitly erase it to continue.',
+			'romm.adoptCard' => 'Keep existing card',
+			'romm.discardContainerCard' => 'Erase existing card',
+			'romm.coreVersionDifferent' => 'This state belongs to another core version. Use a compatible in-game save or start from the beginning.',
+			'romm.nativeCloudResume' => 'Resume saved progress',
+			'romm.streamSaving' => 'The server is saving. Wait for it to finish before exiting.',
+			'romm.noLocalSave' => 'There is no compatible local progress to restore.',
+			'romm.completedAll' => 'Completed 100%',
+			'romm.status' => 'Progress',
+			'romm.backlogged' => 'In backlog',
+			'romm.nowPlaying' => 'Now playing',
+			'romm.completed' => 'Completed',
+			'romm.playing' => 'Playing',
+			'romm.unplayed' => 'Unplayed',
+			'romm.syncComplete' => 'Saves synchronized',
+			'romm.netplayHelp' => 'Shared server sessions support joining. Browser netplay requires RomM’s own session authentication and is not enabled by device-token pairing.',
+			'romm.title' => 'RomM',
+			'romm.connect' => 'Connect RomM',
+			'romm.connections' => 'RomM libraries',
+			'romm.connectionHelp' => 'Browse your RomM collection and play supported games here.',
+			'romm.serverAddress' => 'Server address',
+			'romm.serverName' => 'Library name',
+			'romm.token' => 'Client API token',
+			'romm.pair' => 'Pair this device',
+			'romm.pairHelp' => 'Open the approval page on a signed-in device, review the requested access, and approve this code.',
+			'romm.openApproval' => 'Open approval page',
+			'romm.manualToken' => 'Use a client token',
+			'romm.manualTokenHelp' => 'Create a personal client token in RomM with library, save and device permissions.',
+			'romm.pairing' => 'Waiting for approval…',
+			'romm.cancel' => 'Cancel',
+			'romm.save' => 'Save',
+			'romm.close' => 'Close',
+			'romm.remove' => 'Disconnect',
+			'romm.removeHelp' => 'Remove this connection from this profile? Your server library and saves will remain available in RomM.',
+			'romm.refresh' => 'Refresh',
+			'romm.reconnect' => 'Reconnect',
+			'romm.sessionOnly' => 'Signed in for this session. Sign in again after restarting this device.',
+			'romm.allLibraries' => 'All libraries',
+			'romm.allPlatforms' => 'All platforms',
+			'romm.allCollections' => 'All collections',
+			'romm.more' => 'Load more games',
+			'romm.noGames' => 'No games found',
+			'romm.cached' => 'Showing saved library information.',
+			'romm.variants' => 'Other copies',
+			'romm.files' => 'Game files',
+			'romm.saves' => 'Saves and states',
+			'romm.noSaves' => 'No saves yet',
+			'romm.play' => 'Play',
+			'romm.resume' => 'Resume',
+			'romm.playWith' => 'Play with',
+			'romm.download' => 'Keep offline',
+			'romm.offline' => 'Available offline',
+			'romm.downloadProgress' => 'Downloading…',
+			'romm.cancelDownload' => 'Cancel download',
+			'romm.removeOffline' => 'Remove offline copy',
+			'romm.storage' => 'Offline storage',
+			'romm.storageLimit' => 'Storage limit (GiB)',
+			'romm.browser' => 'In-app browser player',
+			'romm.stream' => 'Stream from server',
+			'romm.native' => 'On this device',
+			'romm.emulatorJs' => 'EmulatorJS',
+			'romm.ruffle' => 'Ruffle',
+			'romm.jsDos' => 'js-dos',
+			'romm.pico8' => 'PICO-8',
+			'romm.easyRpg' => 'EasyRPG',
+			'romm.browserUnavailable' => 'An embedded browser player is not available in this build.',
+			'romm.nativeUnavailable' => 'The native emulator core is not installed in this build.',
+			'romm.refreshBeforePlay' => 'Refresh this library to check available players.',
+			'romm.missing' => 'This copy has no game files on the server.',
+			'romm.noRoute' => 'No compatible in-app player is available for this copy.',
+			'romm.firmware' => 'Firmware',
+			'romm.firmwareHelp' => 'Some systems need firmware. Manage it in RomM; the selected emulator reports any missing requirements at launch.',
+			'romm.achievements' => 'RetroAchievements',
+			'romm.achievementsHelp' => 'Achievement information comes from RomM. The browser player does not earn new achievements.',
+			'romm.screenshots' => 'Screenshots',
+			'romm.manual' => 'Manual',
+			'romm.importSave' => 'Import save',
+			'romm.exportSave' => 'Export',
+			'romm.importState' => 'Import state',
+			'romm.saveImported' => 'Save imported',
+			'romm.saveExported' => 'Save exported',
+			'romm.engine' => 'Emulator identity',
+			'romm.slot' => 'Save slot',
+			'romm.core' => 'Core identity',
+			'romm.compatibilityHelp' => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.',
+			'romm.saveConflict' => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.',
+			'romm.keepBoth' => 'Keep both',
+			'romm.useServer' => 'Use server copy',
+			'romm.replaceServer' => 'Replace server copy',
+			'romm.pendingSaves' => 'Saves waiting to sync',
+			'romm.sync' => 'Sync saves',
+			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
+			'romm.pause' => 'Pause',
+			'romm.kContinue' => 'Continue',
+			'romm.saveState' => 'Save state',
+			'romm.loadState' => 'Load state',
+			'romm.saveAndExit' => 'Save and exit',
+			'romm.exitWithoutSaving' => 'Exit without saving',
+			'romm.exitConfirm' => 'Finish this game session?',
+			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
+			'romm.starting' => 'Starting game…',
+			'romm.connecting' => 'Connecting…',
+			'romm.busy' => 'The streaming computer is occupied.',
+			'romm.streamEnded' => 'The streaming session ended.',
+			'romm.retry' => 'Try again',
+			'romm.disc' => 'Change disc',
+			'romm.memoryCard' => 'Memory card',
+			'romm.multiplayer' => 'Allow players to join',
+			'romm.join' => 'Join game',
+			'romm.copyLink' => 'Copy game link',
+			'romm.linkCopied' => 'Game link copied',
+			'romm.openLink' => 'Open game link',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
+			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
+			'romm.requestStatus' => 'Library indexing',
+			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',
+			'romm.touchControls' => 'Touch controls',
+			'romm.controls' => 'Controls',
+			'romm.resetControls' => 'Reset controls',
+			'romm.playerOne' => 'Player 1',
+			'romm.select' => 'Select',
+			'romm.start' => 'Start',
+			'romm.up' => 'Up',
+			'romm.down' => 'Down',
+			'romm.left' => 'Left',
+			'romm.right' => 'Right',
+			'romm.connectingStream' => 'Waiting for the server emulator…',
+			'romm.saveFailed' => 'Saving did not finish. Keep this session open and try again.',
+			'romm.httpHelp' => 'This server uses unencrypted HTTP. Connect on a network you trust.',
+			'romm.invalidAddress' => 'Enter an HTTP or HTTPS server address without a password, query or fragment.',
+			'romm.invalidConnection' => 'This connection is invalid. Connect the server again.',
+			'romm.invalidToken' => 'Enter a valid client token.',
+			'romm.invalidResponse' => 'The server returned an unsupported response.',
+			'romm.responseTooLarge' => 'The server response exceeded the supported size.',
+			'romm.signInAgain' => 'Sign in to this library again.',
+			'romm.permissionDenied' => 'Your RomM account or client token does not permit this action.',
+			'romm.notFound' => 'This item is no longer available.',
+			'romm.serverError' => 'The RomM server could not complete this request.',
+			'romm.connectionFailed' => 'Could not connect to RomM. Check the server and try again.',
+			'romm.cancelled' => 'Cancelled',
+			'romm.notConnected' => 'Connect this RomM library first.',
+			'romm.accountMismatch' => 'This connection belongs to a different RomM account. Add it as a separate library.',
+			'romm.connectionLimit' => 'This profile already has the maximum number of RomM connections.',
+			'romm.conflict' => 'The server copy changed. Review both versions before replacing anything.',
+			'romm.invalidFile' => 'This file cannot be used here.',
+			'romm.saveUploadFailed' => 'The save could not be uploaded.',
+			'romm.quotaExceeded' => 'There is not enough space within the offline storage limit.',
+			'romm.checksumFailed' => 'The downloaded file did not match the server checksum.',
+			'romm.downloadChanged' => 'This game file changed during the download. Refresh and try again.',
+			'romm.unsupportedArchive' => 'Native play needs extracted game files. Choose an extracted copy or use the browser player.',
+			'romm.nativeError' => 'The emulator could not start this copy. Check its core and firmware requirements.',
+			'romm.authorization_pending' => 'Waiting for approval…',
+			'romm.slow_down' => 'Waiting for approval…',
+			'romm.access_denied' => 'Device access was declined.',
+			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
 			_ => null,
 		};
 	}

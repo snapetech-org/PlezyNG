@@ -94,7 +94,7 @@ void main() {
     final watchTogether = WatchTogetherProvider(
       clientFor: (serverId) => serverId == client.serverId ? client : null,
       partyFactory: relay.party,
-      clientName: () async => 'PlezyNG/1.0',
+      clientName: () async => 'Pleazyng/1.0',
       displayName: () => 'Anna',
     );
     final created = watchTogether.createRoom();
@@ -571,7 +571,7 @@ void main() {
         final (:watchTogether, :relay) = await hostRoom(tester, client);
         final guest = WatchTogetherProvider(
           partyFactory: relay.party,
-          clientName: () async => 'PlezyNG/1.0',
+          clientName: () async => 'Pleazyng/1.0',
           displayName: () => 'Ben',
         );
         final joining = guest.joinRoom(FakeOwpRelay.code);
@@ -626,7 +626,7 @@ void main() {
     final (:watchTogether, :relay) = await hostRoom(tester, client);
     final guest = WatchTogetherProvider(
       partyFactory: relay.party,
-      clientName: () async => 'PlezyNG/1.0',
+      clientName: () async => 'Pleazyng/1.0',
       displayName: () => 'Ben',
     );
     final joining = guest.joinRoom(FakeOwpRelay.code);

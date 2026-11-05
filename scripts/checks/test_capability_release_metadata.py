@@ -26,7 +26,7 @@ class PublishedReleaseMetadataTest(unittest.TestCase):
                 self.assertTrue(check.ERRORS)
 
     def test_adding_webos_requires_the_ledger_to_be_updated(self):
-        self.metadata['assetNames'].append('plezyng.ipk')
+        self.metadata['assetNames'].append('pleazyng.ipk')
         check.check_published_release(self.release, self.metadata)
         self.assertTrue(any('webOS' in error for error in check.ERRORS))
 

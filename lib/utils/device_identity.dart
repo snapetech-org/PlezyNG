@@ -51,7 +51,7 @@ class DeviceIdentityService {
     final isTv = PlatformDetector.isTV();
 
     if (PlatformDetector.isTizenBuild()) {
-      return const DeviceIdentity(platform: 'Tizen', deviceModel: 'Samsung TV', deviceName: 'PlezyNG TV', isTv: true);
+      return const DeviceIdentity(platform: 'Tizen', deviceModel: 'Samsung TV', deviceName: 'Pleazyng TV', isTv: true);
     }
 
     try {

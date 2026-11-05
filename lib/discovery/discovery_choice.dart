@@ -370,7 +370,7 @@ class DiscoveryChoice {
 }
 
 /// Identifiers eligible for replication. These are public title identities;
-/// provider URLs and PlezyNG's local ids are intentionally excluded.
+/// provider URLs and Pleazyng's local ids are intentionally excluded.
 Map<String, String> sanitizeDiscoveryPortableIds(Map<String, String> raw) {
   final result = <String, String>{};
   for (final entry in raw.entries.take(16)) {

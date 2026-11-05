@@ -46,7 +46,7 @@ mount_line="$(/sbin/mount | /usr/bin/awk -v mountpoint="$NFS_MOUNT" '$3 == mount
 case "$mount_line" in
   kspld0*:/mnt/disks/gamespool0/plezyng-native-build-*" on $NFS_MOUNT (nfs,"*) ;;
   *)
-    echo "Expected the PlezyNG NFS export from kspld0 at $NFS_MOUNT; found: ${mount_line:-no mount}" >&2
+    echo "Expected the Pleazyng NFS export from kspld0 at $NFS_MOUNT; found: ${mount_line:-no mount}" >&2
     exit 1
     ;;
 esac

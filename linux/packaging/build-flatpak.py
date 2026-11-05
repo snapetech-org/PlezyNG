@@ -23,7 +23,7 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 from pubspec_version import parse_pubspec_version
 
-APP_ID = "org.snapetech.plezyng"
+APP_ID = "org.snapetech.pleazyng"
 ARCHITECTURES = {"x64": ("x86_64", 62), "arm64": ("aarch64", 183)}
 
 
@@ -35,12 +35,12 @@ def main():
     args = parser.parse_args()
     bundle = args.bundle.resolve()
     architecture, machine = ARCHITECTURES[args.arch]
-    for required in ("plezy", "plezy.sh", "lib/libflutter_linux_gtk.so", "lib/libapp.so", "data/icudtl.dat"):
+    for required in ("pleazyng", "pleazyng.sh", "lib/libflutter_linux_gtk.so", "lib/libapp.so", "data/icudtl.dat"):
         if not (bundle / required).is_file():
             parser.error(f"Incomplete release bundle: missing {bundle / required}")
     if not list((bundle / "lib").glob("libmpv.so*")):
         parser.error("Release bundle must include the pinned libmpv")
-    with (bundle / "plezy").open("rb") as executable:
+    with (bundle / "pleazyng").open("rb") as executable:
         header = executable.read(20)
     if len(header) != 20 or header[:6] != b"\x7fELF\x02\x01" or struct.unpack_from("<H", header, 18)[0] != machine:
         parser.error(f"Bundle executable is not a little-endian 64-bit {architecture} ELF")
@@ -50,16 +50,16 @@ def main():
 
     version, _ = parse_pubspec_version((PROJECT_ROOT / "pubspec.yaml").read_text())
     args.output.mkdir(parents=True, exist_ok=True)
-    output = args.output.resolve() / f"plezy-linux-{args.arch}.flatpak"
+    output = args.output.resolve() / f"pleazyng-linux-{args.arch}.flatpak"
     template = SCRIPT_DIR / "flatpak"
     manifest = json.loads((template / f"{APP_ID}.json").read_text())
 
     with tempfile.TemporaryDirectory(prefix="plezy-flatpak-") as temporary:
         stage = Path(temporary)
-        for name in ("plezy", "relocate-caches.py"):
+        for name in ("pleazyng", "relocate-caches.py"):
             shutil.copy2(template / name, stage / name)
         desktop = (SCRIPT_DIR / f"{APP_ID}.desktop").read_text()
-        (stage / f"{APP_ID}.desktop").write_text(desktop.replace("Icon=plezy", f"Icon={APP_ID}"))
+        (stage / f"{APP_ID}.desktop").write_text(desktop.replace("Icon=pleazyng", f"Icon={APP_ID}"))
         # This is a checked-in packaging template, not user or network input.
         # nosemgrep: python.lang.security.use-defused-xml-parse.use-defused-xml-parse
         metadata = ET.parse(template / f"{APP_ID}.metainfo.xml")
@@ -67,8 +67,8 @@ def main():
         ET.SubElement(releases, "release", version=version.split("+", 1)[0],
                       date=datetime.now(timezone.utc).date().isoformat())
         metadata.write(stage / f"{APP_ID}.metainfo.xml", encoding="utf-8", xml_declaration=True)
-        subprocess.run([image_tool, str(PROJECT_ROOT / "assets/plezy.png"), "-resize", "512x512",
-                        str(stage / "plezy.png")], check=True)
+        subprocess.run([image_tool, str(PROJECT_ROOT / "assets/pleazyng.png"), "-resize", "512x512",
+                        str(stage / "pleazyng.png")], check=True)
         manifest["modules"][0]["sources"][0]["path"] = str(bundle)
         manifest_path = stage / f"{APP_ID}.json"
         manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")

@@ -12,7 +12,7 @@ import '../../widgets/settings_section.dart';
 import 'game_cover.dart';
 import 'game_presentation.dart';
 
-/// A normal PlezyNG detail route. Account activity stays lazy and profile owned.
+/// A normal Pleazyng detail route. Account activity stays lazy and profile owned.
 class GameDetailScreen extends StatelessWidget {
   const GameDetailScreen({
     super.key,

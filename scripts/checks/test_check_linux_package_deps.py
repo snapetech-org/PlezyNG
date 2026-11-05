@@ -43,7 +43,7 @@ SUCCESS_LINE = "linux/runner CMake dependency checks passed"
 class LinuxPackageDepsGuardTest(unittest.TestCase):
     def _run(self, omit: tuple[str, ...] = (), **edits: str) -> subprocess.CompletedProcess[str]:
         """Copy the real linux/ inputs, apply edits, and check the copy."""
-        with tempfile.TemporaryDirectory(prefix="plezy-linux-deps-test-") as directory:
+        with tempfile.TemporaryDirectory(prefix="pleazyng-linux-deps-test-") as directory:
             linux = Path(directory) / "linux"
             for name in FIXTURE_FILES:
                 if name in omit:

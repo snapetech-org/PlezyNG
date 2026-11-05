@@ -1,5 +1,5 @@
 name: plezy
-description: "A cross-platform PlezyNG client for Plex, Jellyfin, and Emby"
+description: "A cross-platform Pleazyng client for Plex, Jellyfin, and Emby"
 publish_to: "none"
 version: 3.0.0+159
 
@@ -281,16 +281,16 @@ flutter:
     - assets/licenses/SoLoud.txt
     - assets/visualizer/milkrust-sample-pack-0.1.0.rmpack
     - assets/licenses/ANVIL_MIT_LICENSE.txt
-    - assets/plezy.png
-    - assets/branding/plezyng-compact.png
-    - assets/branding/plezyng-mark-light.png
-    - assets/branding/plezyng-mark-dark.png
-    - assets/branding/plezyng-wordmark-light.png
-    - assets/branding/plezyng-wordmark-dark.png
-    - assets/branding/plezyng-product-illustration.webp
-    - assets/branding/plezyng-product-illustration-4k.png
-    - assets/branding/plezyng-adaptive-light.png
-    - assets/plezy_adaptive_foreground.png
+    - assets/pleazyng.png
+    - assets/branding/pleazyng-compact.png
+    - assets/branding/pleazyng-mark-light.png
+    - assets/branding/pleazyng-mark-dark.png
+    - assets/branding/pleazyng-wordmark-light.png
+    - assets/branding/pleazyng-wordmark-dark.png
+    - assets/branding/pleazyng-product-illustration.webp
+    - assets/branding/pleazyng-product-illustration-4k.png
+    - assets/branding/pleazyng-adaptive-light.png
+    - assets/pleazyng_adaptive_foreground.png
     - assets/plex_chevron.svg
     - assets/jellyfin_icon.svg
     - assets/emby_icon.svg

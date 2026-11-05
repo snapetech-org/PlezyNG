@@ -92,12 +92,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "SnapeTech" "\0"
-            VALUE "FileDescription", "PlezyNG" "\0"
+            VALUE "FileDescription", "Pleazyng" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "Plezy" "\0"
-            VALUE "LegalCopyright", "Original work Copyright (C) 2025 edde746; modified for PlezyNG by SnapeTech." "\0"
-            VALUE "OriginalFilename", "Plezy.exe" "\0"
-            VALUE "ProductName", "PlezyNG" "\0"
+            VALUE "InternalName", "Pleazyng" "\0"
+            VALUE "LegalCopyright", "Original work Copyright (C) 2025 edde746; modified for Pleazyng by SnapeTech." "\0"
+            VALUE "OriginalFilename", "pleazyng.exe" "\0"
+            VALUE "ProductName", "Pleazyng" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

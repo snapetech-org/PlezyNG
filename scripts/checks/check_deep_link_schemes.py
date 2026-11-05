@@ -7,13 +7,15 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
-SCHEMES = {"plezy", "plezyng", "plezxyng"}
+SCHEMES = {"pleazyng", "plezyng", "plezxyng"}
 
 
 def check() -> None:
     failures = []
 
     def expect(path: str, registered: set[str]) -> None:
+        if "plezy" in registered:
+            failures.append(f"{path}: upstream plezy protocol must not be registered")
         missing = SCHEMES - registered
         if missing:
             failures.append(f"{path}: missing {', '.join(sorted(missing))}")

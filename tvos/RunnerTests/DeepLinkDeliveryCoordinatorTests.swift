@@ -2,7 +2,7 @@ import XCTest
 @testable import Runner
 
 final class DeepLinkDeliveryCoordinatorTests: XCTestCase {
-  private let link = "plezy://play?content_id=plezy_server_item"
+  private let link = "pleazyng://play?content_id=plezy_server_item"
 
   func testColdLaunchTransitionsToLiveWithoutChangingFlutterEnvelope() {
     var now: TimeInterval = 10
@@ -62,8 +62,8 @@ final class DeepLinkDeliveryCoordinatorTests: XCTestCase {
     var now: TimeInterval = 40
     let coordinator = DeepLinkDeliveryCoordinator(now: { now })
     XCTAssertNil(coordinator.beginLiveDelivery())
-    let first = "plezy://play?server=s&id=first"
-    let second = "plezy://live?channel=5"
+    let first = "pleazyng://play?server=s&id=first"
+    let second = "pleazyng://live?channel=5"
 
     guard case let .deliver(firstEvent) = coordinator.receive(url: first) else {
       return XCTFail("Expected first delivery")

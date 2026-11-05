@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export all PlezyNG branding from the approved raster, without redrawing it.
+"""Export all Pleazyng branding from the approved raster, without redrawing it.
 
 Install scripts/codegen/requirements-branding.txt, then run this script from
 any directory. --check renders in memory and reports stale / missing exports.
@@ -142,17 +142,7 @@ class BrandRenderer:
         elif role == "artwork":
             image = ImageOps.fit(self.sources[f"artwork_{appearance}"], size, Image.Resampling.LANCZOS).convert("RGB")
         elif role == "feature":
-            image = Image.open(ROOT / "assets/branding/feature-graphic-base.png").convert("RGBA")
-            image.alpha_composite(self.frame((128, 128), 1), (62, 47))
-            image = image.convert("RGB")
-        elif role == "server_options":
-            image = Image.open(ROOT / "assets/branding/server-options-base.png").convert("RGBA")
-            image.alpha_composite(self.frame((315, 315), 1), (382, 173))
-            image = image.convert("RGB")
-        elif role == "iphone_server_options":
-            image = Image.open(ROOT / "assets/branding/iphone-server-options-base.png").convert("RGBA")
-            image.alpha_composite(self.frame((424, 424), 1), (376, 229))
-            image = image.convert("RGB")
+            image = ImageOps.fit(self.sources["artwork_dark"], size, Image.Resampling.LANCZOS).convert("RGB")
         else:
             raise ValueError(f"Unknown brand asset role: {role}")
         if image.size != size:
@@ -181,7 +171,7 @@ class BrandRenderer:
         back = f'<rect width="{width}" height="{height}" fill="{background}"/>' if background else ""
         return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
                 f'viewBox="0 0 {width} {height}">\n'
-                '<!-- Generated from the approved PlezyNG PNG; this is a raster-backed SVG, not a vector redraw. -->\n'
+                '<!-- Generated from the approved Pleazyng PNG; this is a raster-backed SVG, not a vector redraw. -->\n'
                 f'{back}<image href="{href}" x="{(width-edge)/2:g}" y="{(height-edge)/2:g}" '
                 f'width="{edge:g}" height="{edge:g}"/>\n</svg>\n').encode()
 
@@ -190,18 +180,18 @@ class BrandRenderer:
         # reference the single approved source, avoiding 70 embedded PNG copies.
         data_uri = "data:image/png;base64," + base64.b64encode(png(self.source)).decode()
         result = {
-            "assets/plezy.svg": self.svg(data_uri),
-            "assets/plezy_adaptive_foreground.svg": self.svg(data_uri, fit=self.adaptive_fit),
-            "assets/plezyng_top_shelf.svg": self.svg(data_uri, fit=.54, background=self.config["default_background"], width=1920, height=1080),
+            "assets/pleazyng.svg": self.svg(data_uri),
+            "assets/pleazyng_adaptive_foreground.svg": self.svg(data_uri, fit=self.adaptive_fit),
+            "assets/pleazyng_top_shelf.svg": self.svg(data_uri, fit=.54, background=self.config["default_background"], width=1920, height=1080),
         }
         for theme in ICONS:
             prefix = f"assets/app_icons/source/{theme}"
             color = self.config["themes"][theme]
             light = sum(int(color.lstrip("#")[i:i + 2], 16) * w for i, w in zip((0, 2, 4), (.2126, .7152, .0722))) > 160
-            href = "../../../branding/source/mark-light.png" if light else "../../../branding/plezyng-approved.png"
+            href = "../../../branding/source/mark-light.png" if light else "../../../branding/pleazyng-approved.png"
             result[f"{prefix}/icon.svg"] = self.svg(href, fit=.76, background=color)
             result[f"{prefix}/foreground.svg"] = self.svg(href, fit=self.adaptive_fit)
-            result[f"{prefix}/monochrome.svg"] = self.svg("../../../branding/plezyng-monochrome.png", fit=self.adaptive_fit)
+            result[f"{prefix}/monochrome.svg"] = self.svg("../../../branding/pleazyng-monochrome.png", fit=self.adaptive_fit)
             for filename in ("background.svg", "tv_background.svg"):
                 if filename == "tv_background.svg" and not (ROOT / prefix / filename).exists():
                     continue
@@ -213,7 +203,7 @@ class BrandRenderer:
             definition = json.loads((ROOT / path).read_text())
             group = definition["groups"][0]
             layer = group["layers"][0]
-            layer["image-name"] = "plezyng-app-icon.png"
+            layer["image-name"] = "pleazyng-app-icon.png"
             layer["position"]["scale"] = .75
             layer["glass"] = False
             group["specular"] = False

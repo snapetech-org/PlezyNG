@@ -235,7 +235,7 @@ func (h *watchmodeAvailabilityHandler) fetch(
 		return nil, err
 	}
 	request.Header.Set("Accept", "application/json")
-	request.Header.Set("User-Agent", "PlezyNG")
+	request.Header.Set("User-Agent", "Pleazyng")
 	response, err := h.client.Do(request)
 	if err != nil {
 		return nil, err

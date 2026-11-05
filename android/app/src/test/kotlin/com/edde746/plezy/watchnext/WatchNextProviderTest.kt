@@ -1673,7 +1673,7 @@ private class CapturingTvProvider : ContentProvider() {
       )?.takeIf(String::isNotBlank)
       ?: valueAsString(values, TvContractCompat.WatchNextPrograms.COLUMN_INTENT_URI)
         ?.let(Uri::parse)
-        ?.takeIf { uri -> uri.scheme == "plezy" && uri.authority == "play" }
+        ?.takeIf { uri -> uri.scheme == "pleazyng" && uri.authority == "play" }
         ?.getQueryParameter("content_id")
   }
   private val rowIds = mutableListOf<Long>()

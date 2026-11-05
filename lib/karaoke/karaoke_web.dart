@@ -2,9 +2,9 @@
 /// credentials. Mic access is a separate explicit action on a secure context.
 const karaokeGuestHtml=r'''<!doctype html>
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PlezyNG Karaoke</title><style>
+<title>Pleazyng Karaoke</title><style>
 :root{color-scheme:dark;font:17px system-ui;background:#11131a;color:#f4f4fa}*{box-sizing:border-box}body{margin:0 auto;max-width:1000px;padding:20px}h1{font-size:1.6rem}button,input,select{font:inherit;border-radius:10px;padding:12px;border:1px solid #687082;background:#242937;color:inherit}button{cursor:pointer;min-height:46px}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f7cf58;outline-offset:2px}button:disabled{opacity:.4}input{max-width:100%}label{display:block;margin:12px 0}nav,.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.song{padding:16px 0;border-bottom:1px solid #394051;display:flex;gap:12px;justify-content:space-between;align-items:center}.muted{color:#b5bdcf}.error{color:#ffbaba;white-space:pre-wrap}#stage{text-align:center;min-height:60vh;display:grid;align-content:center;padding:3vw}#lyric{font-size:clamp(24px,5vw,64px);font-weight:750;white-space:pre-wrap}#next{font-size:clamp(19px,3vw,38px);color:#b5bdcf;white-space:pre-wrap}#stage small{font-size:1rem}.accent{color:#f7cf58}[hidden]{display:none!important}.queue{padding:14px 0;border-bottom:1px solid #394051}progress{width:100%}#message{min-height:1.5em}#query{flex:1}body.display{max-width:none}body.display header,body.display nav{opacity:.6}a{color:#9bd3ff}
-</style><header><h1>PlezyNG Karaoke</h1></header>
+</style><header><h1>Pleazyng Karaoke</h1></header>
 <p id="message" role="status" aria-live="polite"></p>
 <section id="join"><p>Join this karaoke room. Microphone access is optional and separate.</p><form id="joinForm"><label>Your name <input id="name" maxlength="80" autocomplete="nickname" required></label><button>Join room</button></form></section>
 <main id="room" hidden><nav aria-label="Karaoke views"><button data-view="book">Songbook</button><button data-view="waiting">Queue</button><button data-view="stage">Stage</button><button data-view="input">Microphone</button><button id="leave">Leave</button></nav>

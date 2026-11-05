@@ -954,7 +954,7 @@ class SettingsService extends BaseSharedPreferencesService {
   /// confirmed revocation so an unreachable store cannot lock app access.
   static const supporterEntitlementCached = BoolPref('supporter_entitlement_cached');
 
-  /// Start time for the PlezyNG seven-day, full-app trial. This is local
+  /// Start time for the Pleazyng seven-day, full-app trial. This is local
   /// runtime state: it is not exported or cleared by Reset All Settings.
   static const appAccessTrialStartedAtEpochMs = IntPref('app_access_trial_started_at_ms');
   static const rememberTrackSelections = BoolPref('remember_track_selections', defaultValue: true);

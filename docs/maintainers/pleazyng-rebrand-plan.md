@@ -1,6 +1,6 @@
 # PlezyNG to Pleazyng: brand, assets, packages and publishing migration
 
-Status: implementation plan; brand selected by the owner; migration has not been executed.
+Status: source implementation landed in this work; external cutover and native qualification remain blocked. See [implementation record](pleazyng-rebrand-handoff.md) and [machine-readable status](pleazyng-rebrand-status.json). Repository renames are deferred by the owner. The original audit and checklist below are retained as the scope baseline; unchecked items are not completion claims.
 Date: 5 November 2026 (America/Regina).
 Owner/publisher: SnapeTech.
 Source repository at audit: snapetech-org/PlezyNG, main at 2bc45e1b890776cb6b1a19ba3434867d01f0a404.
@@ -69,7 +69,7 @@ The following are targets, not claims that names, domains or store records are r
 | Lifetime product, new store records | plezyng_lifetime_unlock | pleazyng_lifetime_unlock |
 | Relay container | ghcr.io/snapetech-org/plezyng-relay | ghcr.io/snapetech-org/pleazyng-relay |
 | Docker Hub relay mirror | snapetech/plezyng-relay | snapetech/pleazyng-relay |
-| Main brand asset | assets/plezy.png; assets/plezyng-app-icon.png | assets/pleazyng.png; assets/pleazyng-app-icon.png |
+| Main brand asset | assets/pleazyng.png; assets/pleazyng-app-icon.png | assets/pleazyng.png; assets/pleazyng-app-icon.png |
 | Brand exports/masters | assets/branding/plezyng-* | assets/branding/pleazyng-* |
 | Brand docs/features directory | docs/plezyng | docs/pleazyng, with links migrated and appropriate historical stubs |
 | Fork-specific public env/config | PLEZYNG_*; some PLEZY_* | PLEAZYNG_* canonical, with explicit temporary compatibility readers where safe |

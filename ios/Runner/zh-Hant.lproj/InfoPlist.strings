@@ -1,5 +1,5 @@
 // Generated from lib/i18n; edit the source catalog.
-"NSLocalNetworkUsageDescription" = "PlezyNG 會連線至您區域網路中的媒體伺服器和播放裝置。";
-"NSLocationWhenInUseUsageDescription" = "當 iOS 要求提供位置權限才能偵測區域網路並連線至媒體伺服器時，PlezyNG 會使用此權限。";
+"NSLocalNetworkUsageDescription" = "Pleazyng 會連線至您區域網路中的媒體伺服器和播放裝置。";
+"NSLocationWhenInUseUsageDescription" = "當 iOS 要求提供位置權限才能偵測區域網路並連線至媒體伺服器時，Pleazyng 會使用此權限。";
 "NSPhotoLibraryUsageDescription" = "從照片圖庫中選取圖片，用作媒體封面等影像。";
 "NSCameraUsageDescription" = "掃描 QR 碼以配對 Companion Remote。";

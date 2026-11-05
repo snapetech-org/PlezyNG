@@ -50,10 +50,10 @@ path = Path(package)
 if not stat.S_ISREG(path.lstat().st_mode):
     raise SystemExit("The release package must be a regular file, not a symlink")
 path = path.resolve(strict=True)
-if (path.parent != Path(temporary).resolve(strict=True) / "plezyng-snap"
-        or not re.fullmatch(r"plezyng-linux-(x64|arm64)\.snap", path.name)
+if (path.parent != Path(temporary).resolve(strict=True) / "pleazyng-snap"
+        or not re.fullmatch(r"pleazyng-linux-(x64|arm64)\.snap", path.name)
         or any(character in str(path) for character in "\r\n:\x00")):
-    raise SystemExit("Use the exact release package in RUNNER_TEMP/plezyng-snap")
+    raise SystemExit("Use the exact release package in RUNNER_TEMP/pleazyng-snap")
 checksums = path.with_name("SHA256SUMS.txt")
 if not stat.S_ISREG(checksums.lstat().st_mode):
     raise SystemExit("The release checksum manifest must be a regular file")
@@ -78,7 +78,7 @@ if [[ ${#inputs[@]} != 2 ]]; then
 fi
 image="${inputs[0]}"
 package="${inputs[1]}"
-cid_file="$RUNNER_TEMP/plezyng-snap-publish-$(basename -- "$package").cid"
+cid_file="$RUNNER_TEMP/pleazyng-snap-publish-$(basename -- "$package").cid"
 if [[ -e "$cid_file" || -L "$cid_file" ]]; then
   echo 'Refusing to reuse a Snap publication container receipt.' >&2
   exit 1

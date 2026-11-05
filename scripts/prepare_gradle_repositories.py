@@ -22,7 +22,7 @@ def install(gradle_home: Path) -> Path:
     contents = POLICY.read_bytes()
     temporary = None
     try:
-        with tempfile.NamedTemporaryFile(dir=init_dir, prefix=".plezyng-mirror-", delete=False) as output:
+        with tempfile.NamedTemporaryFile(dir=init_dir, prefix=".pleazyng-mirror-", delete=False) as output:
             temporary = Path(output.name)
             output.write(contents)
         temporary.chmod(0o600)

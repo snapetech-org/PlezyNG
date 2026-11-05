@@ -20,7 +20,7 @@ bool IsOpenMediaLink(const std::string& value) {
              return expected == static_cast<char>(std::tolower(static_cast<unsigned char>(actual)));
            });
   };
-  return starts_with("plezy://open-media?") || starts_with("plezyng://open-media?") ||
+  return starts_with("pleazyng://open-media?") || starts_with("plezyng://open-media?") ||
          starts_with("plezxyng://open-media?");
 }
 
@@ -28,7 +28,7 @@ bool IsOpenMediaLink(const std::string& value) {
 
 int APIENTRY
 wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev, _In_ wchar_t* command_line, _In_ int show_command) {
-  // PlezyNG requires the bundled flutter-plezy engine, which presents the Flutter
+  // Pleazyng requires the bundled flutter-plezy engine, which presents the Flutter
   // UI on a topmost DirectComposition visual when FLUTTER_WINDOWS_DCOMP is set.
   // The mpv video window is then a plain child composed beneath the UI in the
   // same HWND: window capture (Discord/OBS) works, there is no transparency
@@ -49,7 +49,7 @@ wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev, _In_ wchar_t* command
     return EXIT_SUCCESS;
   }
   if (GetLastError() == ERROR_ALREADY_EXISTS) {
-    HWND existing = FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"PlezyNG");
+    HWND existing = FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"Pleazyng");
     if (existing == nullptr) {
       existing = FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"Plezy");
     }
@@ -116,7 +116,7 @@ wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev, _In_ wchar_t* command
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
-  if (!window.Create(L"PlezyNG", origin, size)) {
+  if (!window.Create(L"Pleazyng", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

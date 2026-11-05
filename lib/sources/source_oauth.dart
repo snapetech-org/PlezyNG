@@ -127,12 +127,12 @@ class SourceOAuthService {
         } else {
           receive(request.uri);
           request.response.headers.contentType = ContentType.text;
-          request.response.write('You can return to PlezyNG.');
+          request.response.write('You can return to Pleazyng.');
         }
         await request.response.close();
       });
     } else {
-      redirect = Uri.parse('plezyng-source://oauth/callback');
+      redirect = Uri.parse('pleazyng-source://oauth/callback');
       subscription = AppLinks().uriLinkStream.listen((uri) {
         if (uri.scheme == redirect.scheme && uri.host == redirect.host && uri.path == redirect.path) receive(uri);
       });

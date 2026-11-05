@@ -16,7 +16,7 @@ SPEC.loader.exec_module(MODULE)
 
 class AndroidSdkTests(unittest.TestCase):
     def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory(prefix="plezy-android-sdk-")
+        self.temporary = tempfile.TemporaryDirectory(prefix="pleazyng-android-sdk-")
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         (self.root / "android/steam").mkdir(parents=True)

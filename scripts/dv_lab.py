@@ -135,7 +135,7 @@ def inspect_probe(probe: Any) -> dict[str, Any]:
             "Container configuration is advertised metadata, not decoded-frame evidence.",
             "Absent DV configuration does not prove the bitstream contains no DV metadata.",
             "MEL/FEL needs parsed RPU/NLQ evidence and matching enhancement frames.",
-            "Standalone mpv results do not qualify PlezyNG's embedded renderer.",
+            "Standalone mpv results do not qualify Pleazyng's embedded renderer.",
         ],
     }
 

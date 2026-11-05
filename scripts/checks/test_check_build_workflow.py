@@ -315,8 +315,8 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
     def test_downloaded_signer_execution_is_rejected(self) -> None:
         workflow = self._workflow().replace(
-            "dart run auto_updater:sign_update plezy-windows-installer.exe $keyPath",
-            "dart run sign.dart plezy-windows-installer.exe $keyPath",
+            "dart run auto_updater:sign_update pleazyng-windows-installer.exe $keyPath",
+            "dart run sign.dart pleazyng-windows-installer.exe $keyPath",
             1,
         )
 
@@ -564,7 +564,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
     def test_release_must_attach_the_verified_tizen_tester_handoff(self) -> None:
         workflow = self._workflow().replace(
-            "            echo artifacts/tizen/PlezyNG-tizen-arm-tester-handoff.zip\n",
+            "            echo artifacts/tizen/pleazyng-tizen-arm-tester-handoff.zip\n",
             "",
             1,
         )

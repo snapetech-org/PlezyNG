@@ -89,7 +89,7 @@ class _RommPairDialogState extends State<RommPairDialog> {
       } else {
         final api = _pairClient = RommClient(base);
         final identifier = 'plezy:${sha256.convert(utf8.encode('${widget.controller.profileId}:$base'))}';
-        final result = await api.startPairing(identifier, _name.text.trim().isEmpty ? 'PlezyNG' : _name.text.trim());
+        final result = await api.startPairing(identifier, _name.text.trim().isEmpty ? 'Pleazyng' : _name.text.trim());
         if (!_live(epoch)) return;
         _deviceCode = rommString(result['device_code'], 128);
         _code = rommString(result['user_code'], 32);

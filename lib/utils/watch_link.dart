@@ -16,16 +16,16 @@ import 'video_player_navigation.dart';
 /// How a Watch link that names a show picks what to play.
 enum WatchMode { next, shuffle }
 
-/// A `plezy://watch` deep link that names one show or movie and plays it.
+/// A `pleazyng://watch` deep link that names one show or movie and plays it.
 ///
 /// Formats:
-/// * Portable: `plezy://watch?plex=<show|movie>/<hash>[&mode=next|shuffle]`,
+/// * Portable: `pleazyng://watch?plex=<show|movie>/<hash>[&mode=next|shuffle]`,
 ///   the item's Plex GUID without its `plex://` prefix. Resolves on every
 ///   Plex server that has the title.
-/// * External: `plezy://watch?external=<show|movie>&tmdb=...&title=...`, with
+/// * External: `pleazyng://watch?external=<show|movie>&tmdb=...&title=...`, with
 ///   any available IMDb/TMDB/TVDB ids. This resolves across Plex, Jellyfin,
 ///   and Emby servers.
-/// * Server: `plezy://watch?id=<itemId>&server=<serverId>[&mode=...]`.
+/// * Server: `pleazyng://watch?id=<itemId>&server=<serverId>[&mode=...]`.
 ///   Used when the item has no portable external ids.
 ///
 /// For shows, `next` (the default) plays the On Deck episode, or the first
@@ -37,7 +37,7 @@ enum WatchMode { next, shuffle }
 sealed class WatchLink {
   const WatchLink({this.mode = WatchMode.next});
 
-  static const scheme = 'plezy';
+  static const scheme = 'pleazyng';
   static const host = 'watch';
 
   final WatchMode mode;

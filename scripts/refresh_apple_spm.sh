@@ -105,7 +105,7 @@ for platform in "${PLATFORMS[@]}"; do
         exit 1
       fi
       runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
-      expected_cloned_dir="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}-xcode/build/${platform}/SourcePackages"
+      expected_cloned_dir="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}-xcode/build/${platform}/SourcePackages"
     elif [[ "${APPLE_SCRATCH_MODE:-nfs-derived-data}" == "nfs-derived-data" ]]; then
       expected_cloned_dir="/Volumes/p/runs/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}/build/${platform}/SourcePackages"
     else
@@ -127,7 +127,7 @@ for platform in "${PLATFORMS[@]}"; do
 
   derived_data_args=()
   if [[ "${APPLE_SCRATCH_MODE:-}" == "local-xcode" ]]; then
-    expected_derived_data="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}-xcode/DerivedData"
+    expected_derived_data="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}-xcode/DerivedData"
     if [[ "${APPLE_DERIVED_DATA_PATH:-}" != "$expected_derived_data" ]]; then
       echo "error: refusing an unscoped Apple DerivedData directory" >&2
       exit 1

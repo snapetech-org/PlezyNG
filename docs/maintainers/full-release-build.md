@@ -1,4 +1,4 @@
-# One-command PlezyNG 3.0.0 release
+# One-command Pleazyng 3.0.0 release
 
 After exact-main CI and platform canaries pass, run the complete 3.0.0 release
 from an authenticated `gh` session. Compatible Linux, Android, Tizen, Windows
@@ -54,7 +54,7 @@ If the control-plane host cannot reach `ffmpeg.org`, pass
 `ffmpeg-<pinned-version>.tar.xz`, `ffmpeg-<pinned-version>.tar.xz.asc`, and
 `ffmpeg-devel.asc`. The orchestrator copies those files into the new scratch
 directory and still requires a valid signature from its pinned FFmpeg release
-key before it records a checksum or changes PlezyNG's pins.
+key before it records a checksum or changes Pleazyng's pins.
 
 When a completed native run has failed platforms, the orchestrator can recover
 other groups whose publishing jobs succeeded. It checks the manifest artifact's
@@ -62,7 +62,7 @@ GitHub digest, the current source content keys, and every published asset's
 checksum before recording that group on native `main`. Only manifests from an
 explicit native build of an ancestor of current `main` are eligible. The next
 native build then rebuilds only the groups still stale. A partial recovery never
-updates PlezyNG's pins or bypasses the final all-platform verification.
+updates Pleazyng's pins or bypasses the final all-platform verification.
 
 Android CI, release, and embedded-engine workflows share
 `scripts/prepare_android_sdk.py`. It configures Java and Gradle proxy settings
@@ -132,7 +132,7 @@ After native artifacts verify, the command verifies the FFmpeg source archive
 signature against FFmpeg's pinned release-key fingerprint, records its exact
 SHA-256 in the Android header build, and runs
 `scripts/set_native_revision.sh` for the published artifact-manifest commit.
-It pushes that focused pin update to PlezyNG `main`, waits for CI on that exact
+It pushes that focused pin update to Pleazyng `main`, waits for CI on that exact
 commit, and runs a complete nonpublishing `action=build`, `mode=release`
 candidate with webOS and Tizen enabled. The immutable `v<version>` tag is
 created only after that candidate succeeds; the tagged `action=release` run

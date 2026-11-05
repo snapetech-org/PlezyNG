@@ -14,7 +14,7 @@ import 'webos_media_proxy.dart';
 import 'webos_soloud_player.dart';
 
 /// LG's webOS media pipeline. Video and unsupported audio use LG's player;
-/// bounded supported music files may use PlezyNG's app-owned SoLoud route.
+/// bounded supported music files may use Pleazyng's app-owned SoLoud route.
 /// webOS reports itself as Linux through `dart:io`, so select this before the
 /// generic Linux MPV backend.
 class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {

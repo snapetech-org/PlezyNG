@@ -8,9 +8,12 @@ import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_inte
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_storekit/store_kit_2_wrappers.dart';
 
-/// Product ID of the one-time PlezyNG lifetime unlock, shared by Apple,
+/// Product ID of the one-time Pleazyng lifetime unlock, shared by Apple,
 /// Google Play, and Amazon Appstore listings.
-const String lifetimeUnlockProductId = 'plezyng_lifetime_unlock';
+const String lifetimeUnlockProductId = String.fromEnvironment(
+  'LIFETIME_UNLOCK_PRODUCT_ID',
+  defaultValue: 'pleazyng_lifetime_unlock',
+);
 
 /// What a store's purchase history says about the lifetime unlock on the
 /// signed-in store account.
@@ -50,7 +53,7 @@ class SupporterRestoreCancelled implements Exception {
   const SupporterRestoreCancelled();
 }
 
-/// The store calls behind PlezyNG's one-time lifetime unlock.
+/// The store calls behind Pleazyng's one-time lifetime unlock.
 ///
 /// in_app_purchase's cross-store [platform] buys and reports transactions, but
 /// cannot say whether the account still owns a purchase. Each store answers

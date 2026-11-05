@@ -1,5 +1,5 @@
 # ng-runner-policy: private-jit-only-v1
-name: Publish PlezyNG store builds
+name: Publish Pleazyng store builds
 run-name: ${{ format('action:{0}:pool:{1}:tag:{2}:channel:{3}', inputs.action, inputs.runner_pool, inputs.release_tag, inputs.channel) }}
 
 on:
@@ -116,10 +116,10 @@ jobs:
             exit 1
           fi
           case "$CHANNEL" in
-            google-play) required_asset=plezyng-android-play.aab ;;
-            amazon-appstore) required_asset=plezyng-amazon-firetv.apk ;;
-            app-store-ios) required_asset=plezyng-ios-appstore.ipa ;;
-            app-store-tvos) required_asset=plezyng-tvos-appstore.ipa ;;
+            google-play) required_asset=pleazyng-android-play.aab ;;
+            amazon-appstore) required_asset=pleazyng-amazon-firetv.apk ;;
+            app-store-ios) required_asset=pleazyng-ios-appstore.ipa ;;
+            app-store-tvos) required_asset=pleazyng-tvos-appstore.ipa ;;
             *) echo "Unknown store channel: $CHANNEL" >&2; exit 1 ;;
           esac
           if ! jq -e --arg asset "$required_asset" '.assets | any(.name == $asset)' <<< "$release_json" >/dev/null; then
@@ -150,7 +150,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/store-assets"
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
-            --pattern plezyng-android-play.aab --pattern SHA256SUMS.txt \
+            --pattern pleazyng-android-play.aab --pattern SHA256SUMS.txt \
             --dir "$RUNNER_TEMP/store-assets"
           cd "$RUNNER_TEMP/store-assets"
           sha256sum --check --ignore-missing SHA256SUMS.txt
@@ -170,7 +170,7 @@ jobs:
 
       - name: Upload to selected Play track
         env:
-          PLAY_AAB_PATH: ${{ runner.temp }}/store-assets/plezyng-android-play.aab
+          PLAY_AAB_PATH: ${{ runner.temp }}/store-assets/pleazyng-android-play.aab
           PLAY_TRACK: ${{ inputs.play_track }}
           PLAY_RELEASE_STATUS: ${{ inputs.play_release_status }}
           SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
@@ -199,7 +199,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/store-assets"
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
-            --pattern plezyng-amazon-firetv.apk --pattern SHA256SUMS.txt \
+            --pattern pleazyng-amazon-firetv.apk --pattern SHA256SUMS.txt \
             --dir "$RUNNER_TEMP/store-assets"
           cd "$RUNNER_TEMP/store-assets"
           sha256sum --check --ignore-missing SHA256SUMS.txt
@@ -219,7 +219,7 @@ jobs:
 
       - name: Upload the APK without submitting it for review
         env:
-          AMAZON_APK_PATH: ${{ runner.temp }}/store-assets/plezyng-amazon-firetv.apk
+          AMAZON_APK_PATH: ${{ runner.temp }}/store-assets/pleazyng-amazon-firetv.apk
           AMAZON_CLIENT_ID: ${{ secrets.AMAZON_APPSTORE_CLIENT_ID }}
           AMAZON_CLIENT_SECRET: ${{ secrets.AMAZON_APPSTORE_CLIENT_SECRET }}
         run: |
@@ -245,10 +245,10 @@ jobs:
           CHANNEL: ${{ inputs.channel }}
         run: |
           if [[ "$CHANNEL" == "app-store-ios" ]]; then
-            echo "asset=plezyng-ios-appstore.ipa" >> "$GITHUB_OUTPUT"
+            echo "asset=pleazyng-ios-appstore.ipa" >> "$GITHUB_OUTPUT"
             echo "platform=ios" >> "$GITHUB_OUTPUT"
           else
-            echo "asset=plezyng-tvos-appstore.ipa" >> "$GITHUB_OUTPUT"
+            echo "asset=pleazyng-tvos-appstore.ipa" >> "$GITHUB_OUTPUT"
             echo "platform=appletvos" >> "$GITHUB_OUTPUT"
           fi
 

@@ -67,7 +67,7 @@ def main():
             'GIT_CONFIG_COUNT': '1', 'GIT_CONFIG_KEY_0': 'http.https://github.com/.extraheader',
             'GIT_CONFIG_VALUE_0': 'AUTHORIZATION: basic ' + base64.b64encode(('x-access-token:' + token).encode()).decode(),
         })
-    with tempfile.TemporaryDirectory(prefix='plezyng-branch-cleanup-') as directory:
+    with tempfile.TemporaryDirectory(prefix='pleazyng-branch-cleanup-') as directory:
         def git(*arguments, check=True):
             return subprocess.run(['git', *arguments], cwd=directory, env=env, check=check, capture_output=True, text=True)
         git('init', '--quiet')

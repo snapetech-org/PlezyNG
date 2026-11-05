@@ -15,7 +15,7 @@ param(
     [string]$IdentityName,
     [string]$Publisher,
     [string]$PublisherDisplayName,
-    [string]$AppDisplayName = "PlezyNG",
+    [string]$AppDisplayName = "Pleazyng",
     # Write generated manifests for manual inspection without packaging builds.
     [switch]$EmitManifestOnly
 )
@@ -95,7 +95,7 @@ function New-AppxManifest {
   </Capabilities>
 
   <Applications>
-    <Application Id="PlezyNG" Executable="plezy.exe" EntryPoint="Windows.FullTrustApplication">
+    <Application Id="Pleazyng" Executable="pleazyng.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements DisplayName="$SafeAppDisplayName"
                           Description="Plex client with Jellyfin and Emby support, offline downloads, and HDR"
                           BackgroundColor="transparent"
@@ -107,18 +107,18 @@ function New-AppxManifest {
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="plezy">
-            <uap:DisplayName>PlezyNG media links</uap:DisplayName>
+          <uap:Protocol Name="pleazyng">
+            <uap:DisplayName>Pleazyng media links</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
         <uap:Extension Category="windows.protocol">
           <uap:Protocol Name="plezyng">
-            <uap:DisplayName>PlezyNG media links</uap:DisplayName>
+            <uap:DisplayName>Pleazyng media links</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
         <uap:Extension Category="windows.protocol">
           <uap:Protocol Name="plezxyng">
-            <uap:DisplayName>PlezyNG media links</uap:DisplayName>
+            <uap:DisplayName>Pleazyng media links</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
       </Extensions>
@@ -168,13 +168,13 @@ $MsixVersion = ConvertTo-MsixVersion -Version $Version
 Write-Host "Package version: $MsixVersion" -ForegroundColor Green
 
 if ($IdentityName -notmatch '^[-.A-Za-z0-9]+$') {
-    throw "IdentityName must be the package name assigned to PlezyNG in Partner Center."
+    throw "IdentityName must be the package name assigned to Pleazyng in Partner Center."
 }
 if ($Publisher -notmatch '^CN=[A-Za-z0-9=,. -]+$') {
-    throw "Publisher must be the publisher string assigned to PlezyNG in Partner Center."
+    throw "Publisher must be the publisher string assigned to Pleazyng in Partner Center."
 }
 if ([string]::IsNullOrWhiteSpace($PublisherDisplayName)) {
-    throw "PublisherDisplayName must match the publisher name assigned to PlezyNG in Partner Center."
+    throw "PublisherDisplayName must match the publisher name assigned to Pleazyng in Partner Center."
 }
 
 # Unlike the installer's setup.iss, the manifest does not vary with which
@@ -282,7 +282,7 @@ foreach ($Architecture in $BuildDirs.Keys) {
     )
 }
 
-$Bundle = Join-Path $ResolvedOutput "plezyng-windows.msixbundle"
+$Bundle = Join-Path $ResolvedOutput "pleazyng-windows.msixbundle"
 Write-Host "`nBundling $($BuildDirs.Count) package(s)..." -ForegroundColor Cyan
 Invoke-SdkTool -Tool $MakeAppx -Arguments @(
     "bundle", "/d", $PackageDir, "/p", $Bundle, "/bv", $MsixVersion, "/o"

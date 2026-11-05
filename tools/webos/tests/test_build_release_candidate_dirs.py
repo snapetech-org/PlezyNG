@@ -23,7 +23,7 @@ class BuildReleaseCandidateDirectoriesTests(unittest.TestCase):
         setup_block = script[setup_start:setup_end]
 
         with tempfile.TemporaryDirectory(prefix="plezy-webos-task-dirs-") as temporary:
-            task_root = Path(temporary) / "plezyng-webos-123"
+            task_root = Path(temporary) / "pleazyng-webos-123"
             task_root.mkdir(mode=0o700)
             subprocess.run(
                 [

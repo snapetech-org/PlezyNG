@@ -57,7 +57,7 @@ BASELINE_PREFIXES = (
 )
 
 # Where the loader actually looks for a soname, relative to the bundle root:
-# linux/CMakeLists.txt gives plezy RPATH $ORIGIN/lib and plezy.sh exports
+# linux/CMakeLists.txt gives pleazyng RPATH $ORIGIN/lib and pleazyng.sh exports
 # $INSTALL_DIR/lib. Nothing in the bundle carries a RUNPATH of its own, so this
 # one directory is the whole search path for every object in it.
 LOADER_DIRECTORIES = ("lib",)
@@ -147,7 +147,7 @@ def host_libraries(bundle: Path) -> tuple[dict[str, str], list[str]]:
     # rglob for the objects to inspect, though: those same modules pull in host
     # libraries nothing else in the bundle links, and scanning only lib/*.so*
     # left their dependencies out of ldd entirely.
-    binaries = [bundle / "plezy", *sorted(bundle.rglob("*.so*"))]
+    binaries = [bundle / "pleazyng", *sorted(bundle.rglob("*.so*"))]
     needed: dict[str, str] = {}
     problems: list[str] = []
     for binary in binaries:
@@ -215,8 +215,8 @@ def main() -> int:
     parser.add_argument("--root", type=Path, default=PROJECT_ROOT, help="repository root")
     arguments = parser.parse_args()
 
-    if not (arguments.bundle / "plezy").exists():
-        print(f"::error::{arguments.bundle}/plezy does not exist - nothing to check", file=sys.stderr)
+    if not (arguments.bundle / "pleazyng").exists():
+        print(f"::error::{arguments.bundle}/pleazyng does not exist - nothing to check", file=sys.stderr)
         return 1
 
     # ldd and dpkg-query are the entire evidence base. Without them this walk

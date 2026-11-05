@@ -4,17 +4,17 @@ def centralMirror = 'https://storage.googleapis.com/maven-central/maven2'
 
 gradle.beforeSettings { settings ->
     settings.pluginManagement.repositories {
-        maven { name = 'PlezyNGCentralMirror'; url = uri(centralMirror) }
+        maven { name = 'PleazyngCentralMirror'; url = uri(centralMirror) }
         google()
         gradlePluginPortal()
     }
     settings.dependencyResolutionManagement.repositories {
-        maven { name = 'PlezyNGCentralMirror'; url = uri(centralMirror) }
+        maven { name = 'PleazyngCentralMirror'; url = uri(centralMirror) }
     }
 }
 
 gradle.beforeProject { project ->
     project.buildscript.repositories {
-        maven { name = 'PlezyNGCentralMirror'; url = uri(centralMirror) }
+        maven { name = 'PleazyngCentralMirror'; url = uri(centralMirror) }
     }
 }

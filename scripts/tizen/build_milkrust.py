@@ -129,7 +129,7 @@ def build(args):
         notices = (ROOT / "native/visualizer/notices/MilkRust-AGPL-3.0.txt").read_text()
         notices += "\n\nHLSLParser (MIT):\n" + (source / "crates/milkrust-hlsl/vendor/hlslparser/LICENSE").read_text()
         notices += "\n\nMilkRust core third-party notices:\n" + (source / "crates/milkrust-core/THIRD_PARTY_NOTICES.md").read_text()
-        notices += "\n\nThe PlezyNG visualization helper is AGPL-3.0-only. Corresponding host source and stb_image notices are in visualizer-host-source.tar.gz.\n"
+        notices += "\n\nThe Pleazyng visualization helper is AGPL-3.0-only. Corresponding host source and stb_image notices are in visualizer-host-source.tar.gz.\n"
         (bundle / "MILKRUST-NOTICES.txt").write_text(notices)
         metadata = {"schemaVersion": 2, "abi": lock["abi"], "target": f"tizen-{args.arch}",
             "renderProtocol": 2, "hostSourceRevision": host_revision,

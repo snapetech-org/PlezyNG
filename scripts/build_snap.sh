@@ -55,7 +55,7 @@ if (lock["base"] != "core24" or f"linux/{arch}" not in lock["platforms"]
 print(lock["image"])
 PY
 )"
-cid_file="$RUNNER_TEMP/plezyng-snap-${arch}.cid"
+cid_file="$RUNNER_TEMP/pleazyng-snap-${arch}.cid"
 if [[ -e "$cid_file" || -L "$cid_file" ]]; then
   echo 'Refusing to reuse a Snap container receipt.' >&2
   exit 1

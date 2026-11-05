@@ -20,8 +20,8 @@ class PlatformCoverageTest(unittest.TestCase):
         self.assertIn('webOS: *.ipk', missing_assets(self.names))
 
     def test_windows_arm64_is_required_independently_of_runner_profile(self):
-        self.names.remove('plezy-windows-arm64-portable.zip')
-        self.assertEqual(missing_assets(self.names), ['Windows ARM64: plezy-windows-arm64-portable.zip'])
+        self.names.remove('pleazyng-windows-arm64-portable.zip')
+        self.assertEqual(missing_assets(self.names), ['Windows ARM64: pleazyng-windows-arm64-portable.zip'])
 
 
 if __name__ == '__main__':

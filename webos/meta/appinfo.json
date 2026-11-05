@@ -1,10 +1,10 @@
 {
-    "id": "org.snapetech.plezyng",
+    "id": "org.snapetech.pleazyng",
     "version": "3.0.0",
     "vendor": "Snapetech",
     "type": "native",
-    "main": "plezyng",
-    "title": "PlezyNG",
+    "main": "pleazyng",
+    "title": "Pleazyng",
     "icon": "icon.png",
     "iconColor": "#ffffff",
     "largeIcon": "icon.png",

@@ -298,7 +298,7 @@ def _write_control_tar(destination: Path, package_id: str, version: str, install
         f"Maintainer: {MAINTAINER}\n"
         f"Description: {DESCRIPTION}\n"
         "webOS-Package-Format-Version: 2\n"
-        "webOS-Packager-Version: plezyng-python-1\n"
+        "webOS-Packager-Version: pleazyng-python-1\n"
         "\n"
     ).encode("utf-8")
     with destination.open("wb") as output:
@@ -463,7 +463,7 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     arguments = sys.argv[1:] if argv is None else argv
     if arguments == ["--version"]:
-        print(f"plezyng-ipk-packager {PACKAGER_VERSION}")
+        print(f"pleazyng-ipk-packager {PACKAGER_VERSION}")
         return 0
     try:
         args = _parse_args(arguments)

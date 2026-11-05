@@ -7,7 +7,7 @@ import '../sources/source_models.dart';
 import 'app_icon.dart';
 
 /// Official, unmodified artwork. Brand colours deliberately survive theme
-/// changes; only the surrounding PlezyNG surface and spacing are themed.
+/// changes; only the surrounding Pleazyng surface and spacing are themed.
 class ProviderMark extends StatelessWidget {
   const ProviderMark(this.asset, {super.key, this.size = 28, this.label});
   final String asset;

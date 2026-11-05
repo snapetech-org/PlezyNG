@@ -8,20 +8,20 @@ import '../../utils/app_logger.dart';
 import '../../utils/external_ids.dart';
 import '../system_shelf_service.dart';
 
-/// A `plezy://`, `plezyng://` or legacy `plezxyng://` link. The one grammar for every platform:
+/// A `pleazyng://`, `plezyng://` or legacy `plezxyng://` link. The one grammar for every platform:
 /// native code forwards the URL unchanged and only this file reads it. Links
-/// generated in the app use the canonical `plezy://` scheme.
+/// generated in the app use the canonical `pleazyng://` scheme.
 ///
 /// ```text
-/// plezy://open
-/// plezy://open-media?url=<credential-free HTTPS media address>
-/// plezy://play?server=<serverId>&id=<itemId>[&mode=next|shuffle]
-/// plezy://play?type=movie|show&tmdb=<n>|tvdb=<n>|imdb=tt<n>|plex=<hash>[&mode=next|shuffle]
-/// plezy://play?content_id=plezy_<serverId>_<itemId>      (launcher shelf rows)
-/// plezy://live?channel=<channel>[&server=<serverId>][&start=beginning|live]
-/// plezy://external-player/<result>/<session>?...           (external player return links)
-/// plezy://profile?id=<profileId>                            (legacy profile links)
-/// plezy://watch?... and plezy://control?...                 (legacy automation links)
+/// pleazyng://open
+/// pleazyng://open-media?url=<credential-free HTTPS media address>
+/// pleazyng://play?server=<serverId>&id=<itemId>[&mode=next|shuffle]
+/// pleazyng://play?type=movie|show&tmdb=<n>|tvdb=<n>|imdb=tt<n>|plex=<hash>[&mode=next|shuffle]
+/// pleazyng://play?content_id=plezy_<serverId>_<itemId>      (launcher shelf rows)
+/// pleazyng://live?channel=<channel>[&server=<serverId>][&start=beginning|live]
+/// pleazyng://external-player/<result>/<session>?...           (external player return links)
+/// pleazyng://profile?id=<profileId>                            (legacy profile links)
+/// pleazyng://watch?... and pleazyng://control?...                 (legacy automation links)
 /// ```
 ///
 /// Media/open links (excluding game handoffs and external-player returns) may add
@@ -34,7 +34,7 @@ import '../system_shelf_service.dart';
 sealed class DeepLink {
   const DeepLink({this.profile});
 
-  static const scheme = 'plezy';
+  static const scheme = 'pleazyng';
   static const acceptedSchemes = <String>{scheme, 'plezyng', 'plezxyng'};
 
   /// The profile the link names, as written in the link.
@@ -73,7 +73,7 @@ sealed class DeepLink {
       Uri(scheme: scheme, host: host, queryParameters: params.isEmpty ? null : params);
 }
 
-/// `plezy://open`: bring the app forward, as [profile] when the link names one.
+/// `pleazyng://open`: bring the app forward, as [profile] when the link names one.
 final class OpenLink extends DeepLink {
   const OpenLink({super.profile});
 
@@ -83,7 +83,7 @@ final class OpenLink extends DeepLink {
   Uri toUri() => DeepLink._uri(host, _profileParam);
 }
 
-/// `plezy://open-media`: open a validated URL in the existing Open media form.
+/// `pleazyng://open-media`: open a validated URL in the existing Open media form.
 /// It never starts playback automatically and deliberately rejects credentialed
 /// URLs because app links can be retained by the operating system.
 final class OpenMediaLink extends DeepLink {
@@ -137,7 +137,7 @@ enum PlayMode {
   shuffle,
 }
 
-/// `plezy://play`: play one title.
+/// `pleazyng://play`: play one title.
 final class PlayLink extends DeepLink {
   const PlayLink({required this.target, this.mode = PlayMode.next, super.profile});
 
@@ -266,7 +266,7 @@ final class CatalogPlayTarget extends PlayTarget {
   int get hashCode => Object.hash(kind, ids.tmdb, ids.tvdb, ids.imdb, plexHash);
 }
 
-/// `plezy://live`: tune a live TV channel.
+/// `pleazyng://live`: tune a live TV channel.
 final class LiveLink extends DeepLink {
   const LiveLink({required this.channel, this.serverId, this.startPosition = LiveTvStartPosition.ask, super.profile});
 
@@ -337,7 +337,7 @@ final class LiveLink extends DeepLink {
   });
 }
 
-/// `plezy://external-player/<result>/<session>`: an external player handing
+/// `pleazyng://external-player/<result>/<session>`: an external player handing
 /// control back to Plezy (x-callback-url). The player appends its own query
 /// parameters, so the whole [uri] is kept for `ExternalPlayerService`.
 final class ExternalPlayerReturnLink extends DeepLink {

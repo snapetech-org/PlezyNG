@@ -13,8 +13,8 @@ void main() {
       );
       await tester.pumpAndSettle();
       final assets = tester.widgetList<Image>(find.byType(Image)).map((image) => (image.image as AssetImage).assetName);
-      expect(assets, contains('assets/branding/plezyng-mark-${brightness.name}.png'));
-      expect(assets, contains('assets/branding/plezyng-wordmark-${brightness.name}.png'));
+      expect(assets, contains('assets/branding/pleazyng-mark-${brightness.name}.png'));
+      expect(assets, contains('assets/branding/pleazyng-wordmark-${brightness.name}.png'));
       expect(tester.takeException(), isNull);
     }
   });
@@ -27,8 +27,8 @@ void main() {
       ),
     );
     final assets = tester.widgetList<Image>(find.byType(Image)).map((image) => (image.image as AssetImage).assetName);
-    expect(assets, contains('assets/branding/plezyng-compact.png'));
-    expect(assets, contains('assets/branding/plezyng-wordmark-dark.png'));
+    expect(assets, contains('assets/branding/pleazyng-compact.png'));
+    expect(assets, contains('assets/branding/pleazyng-wordmark-dark.png'));
     expect(tester.takeException(), isNull);
   });
 }

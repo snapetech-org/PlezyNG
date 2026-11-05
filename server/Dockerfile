@@ -18,8 +18,8 @@ COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /relay /relay
 COPY --from=build /healthcheck /healthcheck
 COPY --from=build --chown=65532:65532 /data /data
-LABEL org.opencontainers.image.title="PlezyNG Relay" \
-      org.opencontainers.image.description="PlezyNG authentication and artifact relay service" \
+LABEL org.opencontainers.image.title="Pleazyng Relay" \
+      org.opencontainers.image.description="Pleazyng authentication and artifact relay service" \
       org.opencontainers.image.source="https://github.com/snapetech-org/PlezyNG" \
       org.opencontainers.image.version="$VERSION" \
       org.opencontainers.image.revision="$REVISION" \

@@ -255,7 +255,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
         }
       }
     } catch (error, stackTrace) {
-      appLogger.w('PlezyNG access initialization failed', error: error, stackTrace: stackTrace);
+      appLogger.w('Pleazyng access initialization failed', error: error, stackTrace: stackTrace);
     } finally {
       if (!isDisposed) {
         _ready = true;
@@ -292,7 +292,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
       safeNotifyListeners();
       return true;
     } catch (error, stackTrace) {
-      appLogger.e('PlezyNG trial start could not be saved', error: error, stackTrace: stackTrace);
+      appLogger.e('Pleazyng trial start could not be saved', error: error, stackTrace: stackTrace);
       return false;
     }
   }
@@ -321,11 +321,11 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
         final products = await amazonStore.queryProducts({lifetimeUnlockProductId});
         _amazonProduct = products.firstWhereOrNull((product) => product.id == lifetimeUnlockProductId);
         if (_amazonProduct == null) {
-          appLogger.w('PlezyNG: Amazon Appstore has no "$lifetimeUnlockProductId" product');
+          appLogger.w('Pleazyng: Amazon Appstore has no "$lifetimeUnlockProductId" product');
           failure = SupporterError.productNotFound;
         }
       } catch (error, stackTrace) {
-        appLogger.w('PlezyNG: Amazon Appstore product query failed', error: error, stackTrace: stackTrace);
+        appLogger.w('Pleazyng: Amazon Appstore product query failed', error: error, stackTrace: stackTrace);
         failure = error is StateError ? SupporterError.storeUnavailable : SupporterError.productQueryFailed;
       }
       if (isDisposed) return;
@@ -357,16 +357,16 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
           // `storekit_no_response` rather than an empty result.
           final error = response.error;
           if (error != null && error.code != _storeKitNoProducts) {
-            appLogger.w('PlezyNG access: product query failed: ${error.code} ${error.message}');
+            appLogger.w('Pleazyng access: product query failed: ${error.code} ${error.message}');
             failure = SupporterError.productQueryFailed;
           } else {
-            appLogger.w('PlezyNG: the store has no "$lifetimeUnlockProductId" product');
+            appLogger.w('Pleazyng: the store has no "$lifetimeUnlockProductId" product');
             failure = SupporterError.productNotFound;
           }
         }
       }
     } catch (error, stackTrace) {
-      appLogger.w('PlezyNG access: product query failed', error: error, stackTrace: stackTrace);
+      appLogger.w('Pleazyng access: product query failed', error: error, stackTrace: stackTrace);
       failure = SupporterError.productQueryFailed;
     }
     if (isDisposed) return;
@@ -395,11 +395,11 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
     try {
       final launched = await store.platform.buyNonConsumable(purchaseParam: PurchaseParam(productDetails: product));
       if (!launched) {
-        appLogger.w('PlezyNG access: the store did not open its purchase flow');
+        appLogger.w('Pleazyng access: the store did not open its purchase flow');
         _failPurchase(store);
       }
     } catch (error, stackTrace) {
-      appLogger.w('PlezyNG access: purchase failed', error: error, stackTrace: stackTrace);
+      appLogger.w('Pleazyng access: purchase failed', error: error, stackTrace: stackTrace);
       _failPurchase(store);
     }
   }
@@ -486,13 +486,13 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
     _amazonPurchaseSubscription = store.purchases.listen(
       (purchase) => unawaited(_handleAmazonPurchase(store, purchase)),
       onError: (Object error, StackTrace stackTrace) {
-        appLogger.w('PlezyNG: Amazon Appstore purchase stream error', error: error, stackTrace: stackTrace);
+        appLogger.w('Pleazyng: Amazon Appstore purchase stream error', error: error, stackTrace: stackTrace);
       },
     );
     _amazonErrorSubscription = store.purchaseErrors.listen(
       (error) => _handleAmazonPurchaseError(store, error),
       onError: (Object error, StackTrace stackTrace) {
-        appLogger.w('PlezyNG: Amazon Appstore purchase error stream failed', error: error, stackTrace: stackTrace);
+        appLogger.w('Pleazyng: Amazon Appstore purchase error stream failed', error: error, stackTrace: stackTrace);
       },
     );
     return store;
@@ -514,7 +514,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
       await store.purchase(lifetimeUnlockProductId);
       return true;
     } catch (error, stackTrace) {
-      appLogger.w('PlezyNG: Amazon Appstore purchase could not start', error: error, stackTrace: stackTrace);
+      appLogger.w('Pleazyng: Amazon Appstore purchase could not start', error: error, stackTrace: stackTrace);
       _failAmazonPurchase(store);
       return false;
     }
@@ -531,7 +531,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
     try {
       await store.syncForRestore();
     } catch (error, stackTrace) {
-      appLogger.w('PlezyNG: Amazon restore sync failed', error: error, stackTrace: stackTrace);
+      appLogger.w('Pleazyng: Amazon restore sync failed', error: error, stackTrace: stackTrace);
       synced = false;
     }
     if (isDisposed) return;
@@ -568,14 +568,14 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
         return SupporterOwnership.pending;
       }
       if (generation == _entitlementGeneration) {
-        if (_purchased) appLogger.i('PlezyNG: Amazon no longer reports the lifetime entitlement');
+        if (_purchased) appLogger.i('Pleazyng: Amazon no longer reports the lifetime entitlement');
         _setPurchased(false);
       }
       _clearPendingStatus();
       return SupporterOwnership.revoked;
     } catch (error, stackTrace) {
       appLogger.w(
-        'PlezyNG: Amazon purchase history unavailable; keeping the cached entitlement',
+        'Pleazyng: Amazon purchase history unavailable; keeping the cached entitlement',
         error: error,
         stackTrace: stackTrace,
       );
@@ -608,7 +608,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
     try {
       await store.finish(purchase);
     } catch (error, stackTrace) {
-      appLogger.e('PlezyNG: Amazon transaction fulfillment failed', error: error, stackTrace: stackTrace);
+      appLogger.e('Pleazyng: Amazon transaction fulfillment failed', error: error, stackTrace: stackTrace);
     }
   }
 
@@ -619,7 +619,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
       }
       return;
     }
-    appLogger.w('PlezyNG: Amazon Appstore purchase failed: ${error.code} ${error.message}');
+    appLogger.w('Pleazyng: Amazon Appstore purchase failed: ${error.code} ${error.message}');
     _failAmazonPurchase(store);
   }
 
@@ -646,7 +646,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
           _failPurchase(store);
         }
       }
-      // Any other product is not PlezyNG's; leave it to the store.
+      // Any other product is not Pleazyng's; leave it to the store.
     }
   }
 
@@ -786,7 +786,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
       final settings = await SettingsService.getInstance();
       await settings.write(SettingsService.supporterEntitlementCached, purchased);
     } catch (error, stackTrace) {
-      appLogger.e('PlezyNG access: caching the lifetime unlock failed', error: error, stackTrace: stackTrace);
+      appLogger.e('Pleazyng access: caching the lifetime unlock failed', error: error, stackTrace: stackTrace);
     }
   }
 

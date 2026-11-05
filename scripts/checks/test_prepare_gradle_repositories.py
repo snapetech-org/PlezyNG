@@ -18,7 +18,7 @@ spec.loader.exec_module(policy)
 
 class GradleRepositoryTests(unittest.TestCase):
     def test_installs_policy_without_changing_other_init_scripts(self):
-        with tempfile.TemporaryDirectory(prefix="plezyng-gradle-policy-") as scratch:
+        with tempfile.TemporaryDirectory(prefix="pleazyng-gradle-policy-") as scratch:
             home = Path(scratch)
             (home / "init.d").mkdir()
             other = home / "init.d/unrelated.gradle"
@@ -30,10 +30,10 @@ class GradleRepositoryTests(unittest.TestCase):
             policy.install(home)
             self.assertEqual(target.read_bytes(), policy.POLICY.read_bytes())
             self.assertEqual(other.read_text(), "unchanged")
-            self.assertEqual(list((home / "init.d").glob(".plezyng-mirror-*")), [])
+            self.assertEqual(list((home / "init.d").glob(".pleazyng-mirror-*")), [])
 
     def test_refuses_symlinked_policy_file(self):
-        with tempfile.TemporaryDirectory(prefix="plezyng-gradle-policy-") as scratch:
+        with tempfile.TemporaryDirectory(prefix="pleazyng-gradle-policy-") as scratch:
             home = Path(scratch)
             (home / "init.d").mkdir()
             outside = home / "preserved"
@@ -44,7 +44,7 @@ class GradleRepositoryTests(unittest.TestCase):
             self.assertEqual(outside.read_text(), "unchanged")
 
     def test_refuses_symlinked_init_directory(self):
-        with tempfile.TemporaryDirectory(prefix="plezyng-gradle-policy-") as scratch:
+        with tempfile.TemporaryDirectory(prefix="pleazyng-gradle-policy-") as scratch:
             home = Path(scratch)
             outside = home / "other"
             outside.mkdir()

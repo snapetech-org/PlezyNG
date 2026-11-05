@@ -39,7 +39,7 @@ class _KaraokePreparationScreenState extends State<KaraokePreparationScreen> {
     final url=TextEditingController(text:widget.client.endpoint?.toString() ?? 'http://127.0.0.1:59892'),token=TextEditingController();
     final apply=await showDialog<bool>(context:context,builder:(context)=>AlertDialog(title:const Text('Preparation companion'),
       content:SizedBox(width:500,child:Column(mainAxisSize:MainAxisSize.min,children:[
-        const Text('Run the PlezyNG karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.'),
+        const Text('Run the Pleazyng karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.'),
         TextField(controller:url,decoration:const InputDecoration(labelText:'Companion URL')),
         TextField(controller:token,obscureText:true,decoration:const InputDecoration(labelText:'Token')),
       ])),actions:[TextButton(onPressed:()=>Navigator.pop(context,false),child:const Text('Cancel')),

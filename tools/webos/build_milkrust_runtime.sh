@@ -19,12 +19,12 @@ if [[ ! "$GITHUB_RUN_ID" =~ ^[1-9][0-9]*$ ]]; then
   exit 1
 fi
 if (( $# != 1 )); then
-  echo "Usage: $0 /path/under/RUNNER_TEMP/plezyng-webos-RUN_ID/milkrust-native" >&2
+  echo "Usage: $0 /path/under/RUNNER_TEMP/pleazyng-webos-RUN_ID/milkrust-native" >&2
   exit 2
 fi
 
 BUNDLE_DIR="$1"
-TASK_ROOT="$RUNNER_TEMP/plezyng-webos-$GITHUB_RUN_ID"
+TASK_ROOT="$RUNNER_TEMP/pleazyng-webos-$GITHUB_RUN_ID"
 if [[ -L "$RUNNER_TEMP" || -L "$TASK_ROOT" || ! -d "$TASK_ROOT" ]]; then
   echo "MilkRust builds require this run's real, existing private task directory." >&2
   exit 1
@@ -185,7 +185,7 @@ install -m 0644 -- "$ROOT/native/visualizer/notices/MilkRust-AGPL-3.0.txt" "$BUN
   cat "$TASK_SOURCE/crates/milkrust-hlsl/vendor/hlslparser/LICENSE"
   printf '\n\nMilkRust core third-party notices:\n'
   cat "$TASK_SOURCE/crates/milkrust-core/THIRD_PARTY_NOTICES.md"
-  printf '\n\nThe PlezyNG visualization helper is AGPL-3.0-only. Corresponding host source and stb_image notices are in visualizer-host-source.tar.gz.\n'
+  printf '\n\nThe Pleazyng visualization helper is AGPL-3.0-only. Corresponding host source and stb_image notices are in visualizer-host-source.tar.gz.\n'
 } >> "$BUNDLE_DIR/MILKRUST-NOTICES.txt"
 
 "$WEBOS_PYTHON_BIN" - "$BUNDLE_DIR" "$SOURCE_REVISION" "$ABI" "$RUST_TOOLCHAIN" "$RUST_TARGET" "$RUNNER_POLICY" "$GITHUB_RUN_ID" "$HOST_REVISION" <<'PY'

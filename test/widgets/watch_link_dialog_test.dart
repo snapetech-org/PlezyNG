@@ -31,14 +31,14 @@ void main() {
   testWidgets('shows the portable link and mentions shuffle for a show', (tester) async {
     await pumpDialog(tester, appleTV: false, dialog: WatchLinkDialog(item: show));
 
-    expect(find.text('plezy://watch?plex=show%2F5d9c086c46115600200aa2fe'), findsOneWidget);
+    expect(find.text('pleazyng://watch?plex=show%2F5d9c086c46115600200aa2fe'), findsOneWidget);
     expect(find.text(t.watchLink.dialogShowHint), findsOneWidget);
   });
 
   testWidgets('falls back to the server link for a movie without a Plex GUID', (tester) async {
     await pumpDialog(tester, appleTV: false, dialog: WatchLinkDialog(item: movie));
 
-    expect(find.text('plezy://watch?id=7&server=plex-1'), findsOneWidget);
+    expect(find.text('pleazyng://watch?id=7&server=plex-1'), findsOneWidget);
     expect(find.text(t.watchLink.dialogMovieHint), findsOneWidget);
     expect(find.text(t.watchLink.dialogShowHint), findsNothing);
   });
@@ -61,7 +61,7 @@ void main() {
     await tester.tap(find.text(t.watchLink.copy));
     await tester.pump();
 
-    expect(copied, 'plezy://watch?plex=show%2F5d9c086c46115600200aa2fe');
+    expect(copied, 'pleazyng://watch?plex=show%2F5d9c086c46115600200aa2fe');
   });
 
   testWidgets('hides Copy on Apple TV, which has no clipboard', (tester) async {

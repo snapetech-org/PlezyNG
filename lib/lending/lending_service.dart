@@ -199,7 +199,7 @@ class LendingService {
         'limit': '30',
         'fields': 'key,title,author_name,cover_i,isbn',
       }),
-      headers: const {'User-Agent': 'PlezyNG (https://github.com/snapetech-org/PlezyNG)'},
+      headers: const {'User-Agent': 'Pleazyng (https://github.com/snapetech-org/PlezyNG)'},
     );
     check();
     final books = sourceList(result['docs'])
@@ -419,7 +419,7 @@ class LendingService {
           uri,
           headers: {
             'Authorization': 'Bearer ${token['access_token']}',
-            'User-Agent': 'PlezyNG',
+            'User-Agent': 'Pleazyng',
             if (data != null) 'Content-Type': 'application/json',
           },
           body: data == null ? null : jsonEncode(data),
@@ -550,7 +550,7 @@ class LendingService {
     var response = await transport.send(
       'GET',
       uri,
-      headers: {'Authorization': 'Bearer ${token['access_token']}', 'User-Agent': 'PlezyNG'},
+      headers: {'Authorization': 'Bearer ${token['access_token']}', 'User-Agent': 'Pleazyng'},
     );
     if (response.statusCode == 401) {
       await response.stream.listen(null).cancel();
@@ -559,7 +559,7 @@ class LendingService {
       response = await transport.send(
         'GET',
         uri,
-        headers: {'Authorization': 'Bearer ${token['access_token']}', 'User-Agent': 'PlezyNG'},
+        headers: {'Authorization': 'Bearer ${token['access_token']}', 'User-Agent': 'Pleazyng'},
       );
     }
     await response.stream.listen(null).cancel();

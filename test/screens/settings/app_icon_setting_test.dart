@@ -351,8 +351,8 @@ void main() {
         matching: find.image(
           AssetImage(
             defaultTargetPlatform == TargetPlatform.android
-                ? 'assets/plezy_adaptive_foreground.png'
-                : 'assets/branding/plezyng-adaptive-light.png',
+                ? 'assets/pleazyng_adaptive_foreground.png'
+                : 'assets/branding/pleazyng-adaptive-light.png',
           ),
         ),
       );

@@ -6,7 +6,7 @@ import '../services/playback_coordinator.dart';
 class PlaybackControlLink {
   const PlaybackControlLink._(this.command);
 
-  static const scheme = 'plezy';
+  static const scheme = 'pleazyng';
   static const host = 'control';
 
   final String command;

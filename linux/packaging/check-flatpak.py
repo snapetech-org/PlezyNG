@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check the installed user Flatpak against its runtime, not the build SDK.
 
-Run after `flatpak install --user ./plezy-linux-<arch>.flatpak`.
+Run after `flatpak install --user ./pleazyng-linux-<arch>.flatpak`.
 This does not replace graphical playback verification on a Wayland desktop.
 """
 
@@ -12,12 +12,12 @@ import subprocess
 # Enumerate inside the sandbox: the host must not resolve these dependencies.
 CHECK = r'''
 set -euo pipefail
-export LD_LIBRARY_PATH=/app/plezy/lib
-for executable in /app/bin/plezy /app/plezy/plezy /app/plezy/plezy.sh; do
+export LD_LIBRARY_PATH=/app/pleazyng/lib
+for executable in /app/bin/pleazyng /app/pleazyng/pleazyng /app/pleazyng/pleazyng.sh; do
     test -x "$executable" || { echo "Not executable: $executable" >&2; exit 1; }
 done
-if test -f /app/plezy/lib/crashpad_handler; then
-    test -x /app/plezy/lib/crashpad_handler
+if test -f /app/pleazyng/lib/crashpad_handler; then
+    test -x /app/pleazyng/lib/crashpad_handler
 fi
 count=0
 while IFS= read -r -d '' object; do
@@ -29,7 +29,7 @@ while IFS= read -r -d '' object; do
         exit 1
     fi
     count=$((count + 1))
-done < <(find /app/plezy -type f -print0)
+done < <(find /app/pleazyng -type f -print0)
 test "$count" -gt 0
 printf 'Resolved all dependencies for %s ELF objects in the installed runtime.\n' "$count"
 '''
@@ -41,5 +41,5 @@ architecture = {"x64": "x86_64", "arm64": "aarch64"}.get(args.arch)
 arch_options = [f"--arch={architecture}"] if architecture else []
 
 subprocess.run([
-    "flatpak", "run", "--user", *arch_options, "--command=bash", "org.snapetech.plezyng", "-c", CHECK,
+    "flatpak", "run", "--user", *arch_options, "--command=bash", "org.snapetech.pleazyng", "-c", CHECK,
 ], check=True)

@@ -27,9 +27,9 @@ class PublishPrivateSnapTests(unittest.TestCase):
             self.root / "linux/packaging/snap/toolchain.lock.json",
         )
         self.temporary = self.root / "job"
-        self.packages = self.temporary / "plezyng-snap"
+        self.packages = self.temporary / "pleazyng-snap"
         self.packages.mkdir(parents=True)
-        self.package = self.packages / "plezyng-linux-arm64.snap"
+        self.package = self.packages / "pleazyng-linux-arm64.snap"
         self.package.write_bytes(b"fixture package; no real upload")
         self.manifest = self.packages / "SHA256SUMS.txt"
         self.manifest.write_text(
@@ -142,7 +142,7 @@ if 'podman' in args:
         outside = self.root / self.package.name
         shutil.copyfile(self.package, outside)
         self.assert_rejected_before_tools(self.run_helper(package=outside))
-        (self.temporary / f"plezyng-snap-publish-{self.package.name}.cid").write_text("b" * 64)
+        (self.temporary / f"pleazyng-snap-publish-{self.package.name}.cid").write_text("b" * 64)
         self.assert_rejected_before_tools(self.run_helper())
 
 

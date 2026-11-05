@@ -67,7 +67,7 @@ class SourceProofTests(unittest.TestCase):
     def test_rejects_untrusted_active_or_wrong_version_source(self):
         for change in ({"head_branch": "feature"}, {"status": "in_progress"},
                        {"display_title": "action:release:pool:private:tag:v2.0.0"},
-                       {"head_repository": {"full_name": "fork/PlezyNG"}}):
+                       {"head_repository": {"full_name": "fork/Pleazyng"}}):
             with self.subTest(change=change):
                 original = copy.deepcopy(self.source)
                 self.source.update(change)

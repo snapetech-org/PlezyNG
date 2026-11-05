@@ -2,7 +2,7 @@
 """Build pinned libretro cores into an explicit package staging directory.
 
 Run only on an authorized private build machine. No emulator/ROM downloads
-happen in PlezyNG. Cross builds pass the toolchain's make variables verbatim as
+happen in Pleazyng. Cross builds pass the toolchain's make variables verbatim as
 individual argv entries; shell expansion is never used.
 """
 import argparse

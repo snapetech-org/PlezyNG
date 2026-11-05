@@ -1,9 +1,9 @@
 /// Deep link for selecting an existing Plezy profile from Android
-/// automation, for example `plezy://profile?id=<profile-id>`.
+/// automation, for example `pleazyng://profile?id=<profile-id>`.
 class ProfileDeepLink {
   const ProfileDeepLink._(this.profileId);
 
-  static const scheme = 'plezy';
+  static const scheme = 'pleazyng';
   static const host = 'profile';
 
   final String profileId;

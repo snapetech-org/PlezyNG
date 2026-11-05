@@ -247,7 +247,7 @@ void main() {
 
   group('x-callback-url return links', () {
     Uri link(String result, String session, [String query = '']) =>
-        Uri.parse('plezy://external-player/$result/$session${query.isEmpty ? '' : '?$query'}');
+        Uri.parse('pleazyng://external-player/$result/$session${query.isEmpty ? '' : '?$query'}');
 
     test('cancel reports the position the player stopped at, in seconds', () async {
       final client = _RecordingClient();
@@ -433,13 +433,13 @@ void main() {
     });
 
     test('other plezy links are not callbacks', () async {
-      expect(await ExternalPlayerService.handleCallbackUrl(Uri.parse('plezy://live?channel=4.1')), isFalse);
+      expect(await ExternalPlayerService.handleCallbackUrl(Uri.parse('pleazyng://live?channel=4.1')), isFalse);
     });
 
     test('a return link without a session is not a callback', () async {
       ExternalPlayerService.beginCallbackSessionForTesting(metadata: _item(), client: _RecordingClient());
 
-      expect(await ExternalPlayerService.handleCallbackUrl(Uri.parse('plezy://external-player/cancel')), isFalse);
+      expect(await ExternalPlayerService.handleCallbackUrl(Uri.parse('pleazyng://external-player/cancel')), isFalse);
     });
   });
 

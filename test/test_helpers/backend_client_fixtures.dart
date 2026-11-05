@@ -81,7 +81,7 @@ PlexConfig testPlexConfig({
   String baseUrl = 'https://plex.example.com',
   String? token = 'token',
   String clientIdentifier = 'test-client',
-  String product = 'PlezyNG Test',
+  String product = 'Pleazyng Test',
   String version = '1.0.0',
   String platform = 'Flutter Test',
   String? device,

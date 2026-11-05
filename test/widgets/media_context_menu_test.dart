@@ -833,7 +833,7 @@ void main() {
 
       expect(find.byType(ItemLinkDialog), findsOneWidget);
       // The test server knows no catalogue ids, so the Plex GUID names the movie.
-      const link = 'plezy://play?type=movie&plex=5d776825880197001ec967c2';
+      const link = 'pleazyng://play?type=movie&plex=5d776825880197001ec967c2';
       expect(find.text(link), findsOneWidget);
       expect(
         (DeepLink.tryParse(link)! as PlayLink).target,

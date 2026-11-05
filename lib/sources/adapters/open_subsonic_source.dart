@@ -16,7 +16,7 @@ class OpenSubsonicSourceAdapter extends SourceAdapter {
   OpenSubsonicSourceAdapter(super.source, super.transport, this.credentials);
   final SourceCredentials credentials;
   final Map<String, List<int>> _coverCache = {};
-  static const _client = 'PlezyNG';
+  static const _client = 'Pleazyng';
   static const _version = '1.16.1';
   static const _maxCoverCacheBytes = 24 * 1024 * 1024;
   static final _random = Random.secure();
@@ -107,7 +107,7 @@ class OpenSubsonicSourceAdapter extends SourceAdapter {
   }
 
   @override
-  // Listening progress stays in PlezyNG unless a configured state source
+  // Listening progress stays in Pleazyng unless a configured state source
   // (such as WebDAV) provides the user's cross-device progress store.
   SourceCapabilities get capabilities => const SourceCapabilities();
 

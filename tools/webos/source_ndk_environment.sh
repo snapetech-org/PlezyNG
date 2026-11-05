@@ -2,7 +2,7 @@
 # temporarily removed. The vendor setup script rejects any inherited
 # LD_LIBRARY_PATH; after it installs the NDK paths, append the setup-python
 # path so its Python 3.14 interpreter can still load libpython.
-plezyng_source_ndk_environment() {
+pleazyng_source_ndk_environment() {
   if [[ "$#" -ne 1 || ! -f "$1" || -L "$1" ]]; then
     echo "Expected a regular verified NDK environment script." >&2
     return 2

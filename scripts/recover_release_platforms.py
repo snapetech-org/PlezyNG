@@ -40,7 +40,7 @@ REQUIRED_JOBS = (
     "Build Samsung Tizen TV package (ARM) / package",
 )
 ARTIFACTS = {
-    "plezyng-tizen-arm-experimental": "tizen", "ios-ipa": "ios-ipa", "tvos-ipa": "tvos-ipa",
+    "pleazyng-tizen-arm-experimental": "tizen", "ios-ipa": "ios-ipa", "tvos-ipa": "tvos-ipa",
     "macos-dmg": "macos-dmg", "windows-x64-portable": "windows-x64-portable",
     "windows-arm64-build": "windows-arm64-build", "windows-installer": "windows-installer",
     "windows-chocolatey": "windows-chocolatey", "linux-x64": "linux-x64",
@@ -84,7 +84,7 @@ def ci_proof(repository, source_sha):
 
 def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow_pending=False):
     if repository != REPOSITORY or not str(run_id).isdigit() or not re.fullmatch(r"[0-9a-f]{40}", head_sha):
-        raise RecoveryError("Recovery requires the PlezyNG repository and exact run/commit identities.")
+        raise RecoveryError("Recovery requires the Pleazyng repository and exact run/commit identities.")
     source = api(f"repos/{repository}/actions/runs/{run_id}")
     source_sha = source.get("head_sha", "")
     pending = allow_pending and source.get("status") in {"queued", "in_progress", "waiting", "pending"}
@@ -148,7 +148,7 @@ def wait_for_source_run(run_id, head_sha, version, seconds):
 
 def verify_android_run(run_id, head_sha, version, repository=REPOSITORY):
     if repository != REPOSITORY or not str(run_id).isdigit() or not re.fullmatch(r"[0-9a-f]{40}", head_sha):
-        raise RecoveryError("Android recovery requires an exact PlezyNG run identity.")
+        raise RecoveryError("Android recovery requires an exact Pleazyng run identity.")
     source = api(f"repos/{repository}/actions/runs/{run_id}")
     source_sha = source.get("head_sha", "")
     if (source.get("status") != "completed" or source.get("event") != "workflow_dispatch"
@@ -234,7 +234,7 @@ def download_platforms(proof, destination, repository=REPOSITORY):
         if (identity.get("id") != artifact_run or identity.get("head_sha") != source["source_sha"]
             or not re.fullmatch(r"sha256:[0-9a-f]{64}", digest)):
             raise RecoveryError(f"Artifact lacks matching run, source, or digest evidence: {name}")
-        with tempfile.TemporaryDirectory(prefix="plezyng-release-artifact-") as scratch:
+        with tempfile.TemporaryDirectory(prefix="pleazyng-release-artifact-") as scratch:
             archive = Path(scratch) / "artifact.zip"
             with archive.open("wb") as output:
                 result = subprocess.run(["gh", "api", "--allow-escape-sequences",

@@ -386,7 +386,7 @@ func (a *steamCloudAPI) mutate(ctx context.Context, token, steamID string, appID
 	var batch struct {
 		ID steamCloudNumber `json:"batch_id"`
 	}
-	if a.call(ctx, token, "BeginAppUploadBatch", map[string]any{"appid": appID, "machine_name": "PlezyNG", "files_to_upload": uploads, "files_to_delete": deletes}, &batch) != nil || batch.ID == 0 {
+	if a.call(ctx, token, "BeginAppUploadBatch", map[string]any{"appid": appID, "machine_name": "Pleazyng", "files_to_upload": uploads, "files_to_delete": deletes}, &batch) != nil || batch.ID == 0 {
 		return errSteamCloud
 	}
 	defer func() {

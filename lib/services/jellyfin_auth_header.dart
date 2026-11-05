@@ -28,7 +28,7 @@ String buildJellyfinAuthHeader({
   String field(String name, String value) => '$name="${Uri.encodeComponent(value)}"';
 
   final client = _meaningful(clientName);
-  final effectiveClient = client.isEmpty ? 'PlezyNG' : client;
+  final effectiveClient = client.isEmpty ? 'Pleazyng' : client;
   final device = _meaningful(deviceName);
   final version = _meaningful(clientVersion);
   final id = _meaningful(deviceId);
@@ -48,18 +48,18 @@ String buildJellyfinAuthHeader({
 /// the first-party apps do (`Jellyfin Android TV`, `Swiftfin tvOS`). Neither
 /// Jellyfin nor Emby exposes a platform field on a session, so dashboards and
 /// session trackers derive the platform from this string by keyword; a bare
-/// `PlezyNG` on every platform makes every install look alike.
+/// `Pleazyng` on every platform makes every install look alike.
 String jellyfinClientName(DeviceIdentity identity) {
   final platform = _meaningful(identity.platform);
-  if (platform.isEmpty) return 'PlezyNG';
-  if (identity.isTv && platform.toLowerCase() == 'android') return 'PlezyNG Android TV';
-  return 'PlezyNG $platform';
+  if (platform.isEmpty) return 'Pleazyng';
+  if (identity.isTv && platform.toLowerCase() == 'android') return 'Pleazyng Android TV';
+  return 'Pleazyng $platform';
 }
 
 /// The `Device` name for the same header: the user-facing device name, else
 /// the hardware model, else the platform. An Apple TV whose name lookup failed
 /// should appear in the server's device list as `Apple TV`, not as a second
-/// `PlezyNG` next to the client name. Raw, not header-sanitized:
+/// `Pleazyng` next to the client name. Raw, not header-sanitized:
 /// [buildJellyfinAuthHeader] percent-encodes it, so the server shows the name
 /// verbatim.
 String jellyfinDeviceName(DeviceIdentity identity) {
@@ -67,7 +67,7 @@ String jellyfinDeviceName(DeviceIdentity identity) {
     final name = _meaningful(candidate);
     if (name.isNotEmpty) return name;
   }
-  return 'PlezyNG';
+  return 'Pleazyng';
 }
 
 final RegExp _controlCharacters = RegExp(r'[\x00-\x1f\x7f-\x9f]');

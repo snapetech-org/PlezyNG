@@ -84,7 +84,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(ProfileLinkDialog), findsOneWidget);
-    const link = 'plezy://open?profile=local-owner';
+    const link = 'pleazyng://open?profile=local-owner';
     expect(find.text(link), findsOneWidget);
     final parsed = DeepLink.tryParse(link);
     expect(parsed, isA<OpenLink>());

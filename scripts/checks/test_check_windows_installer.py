@@ -15,7 +15,7 @@ SCRIPT = ROOT / "windows/build-installer.ps1"
 
 class WindowsInstallerGuardTest(unittest.TestCase):
     def _run(self, script: str) -> subprocess.CompletedProcess[str]:
-        with tempfile.TemporaryDirectory(prefix="plezy-windows-installer-test-") as directory:
+        with tempfile.TemporaryDirectory(prefix="pleazyng-windows-installer-test-") as directory:
             fixture = Path(directory) / "build-installer.ps1"
             fixture.write_text(script, encoding="utf-8")
             return subprocess.run(

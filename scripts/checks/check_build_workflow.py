@@ -96,7 +96,7 @@ def validate_windows_signing(block: str) -> None:
         "Windows signing must use the enforced root dependency lock",
     )
     require(
-        "dart run auto_updater:sign_update plezy-windows-installer.exe $keyPath"
+        "dart run auto_updater:sign_update pleazyng-windows-installer.exe $keyPath"
         in signing,
         "Windows signing must execute the locked auto_updater package",
     )
@@ -163,7 +163,7 @@ validate_windows_jni_jdk(windows, "Windows release builds")
 require(
     '"group":"packer-windows"' in windows
     and '"Windows","X64"' in windows
-    and '"PlezyNG"' in windows,
+    and '"Pleazyng"' in windows,
     "Windows x64 must retain its private route for the private profile",
 )
 require(
@@ -1045,7 +1045,7 @@ require(
     and "python3 scripts/tizen/prepare_signing_profile.py" in tizen_workflow
     and "python3 scripts/tizen/package.py build" in tizen_workflow
     and "startsWith(github.ref, 'refs/tags/v')" in tizen_workflow
-    and "name: plezyng-tizen-${{ inputs.architecture }}-experimental" in tizen_workflow,
+    and "name: pleazyng-tizen-${{ inputs.architecture }}-experimental" in tizen_workflow,
     "Tizen reusable workflow must build signed packages from main and version tags",
 )
 tizen_flutter_version = named_step(
@@ -1393,7 +1393,7 @@ require(
 )
 for artifact in (
     "android-apk",
-    "plezyng-tizen-arm-experimental",
+    "pleazyng-tizen-arm-experimental",
     "ios-ipa",
     "tvos-ipa",
     "macos-dmg",
@@ -1406,7 +1406,7 @@ for artifact in (
     require(f"name: {artifact}" in release, f"release download lost {artifact}")
 require(
     "windows-arm64-build" in release
-    and "plezy-windows-arm64-portable.zip" in release
+    and "pleazyng-windows-arm64-portable.zip" in release
     and "EXECUTION_PROFILE" in named_step(release, "Collect release files"),
     "hybrid release assembly must verify and attach a native Windows ARM64 portable archive",
 )
@@ -1426,7 +1426,7 @@ require(
 
 tizen_download = named_step(release, "Download Tizen ARM tester handoff")
 require(
-    "name: plezyng-tizen-arm-experimental" in tizen_download
+    "name: pleazyng-tizen-arm-experimental" in tizen_download
     and "path: artifacts/tizen" in tizen_download,
     "the release must consume the Tizen ARM tester artifact from this exact workflow run",
 )
@@ -1435,13 +1435,13 @@ require(
     "sha256sum --check" in tizen_handoff
     and "EXPECTED_SOURCE_COMMIT" in tizen_handoff
     and "source_commit" in tizen_handoff
-    and "PlezyNG-tizen-arm-tester-handoff.zip" in tizen_handoff
+    and "pleazyng-tizen-arm-tester-handoff.zip" in tizen_handoff
     and "development-only-requires-tv-resigning" in tizen_handoff
     and "tv_install_verified" in tizen_handoff,
     "the release must verify Tizen package checksum/source and label the tester signing gate",
 )
 require(
-    "artifacts/tizen/PlezyNG-tizen-arm-tester-handoff.zip" in named_step(
+    "artifacts/tizen/pleazyng-tizen-arm-tester-handoff.zip" in named_step(
         release, "Collect release files"
     ),
     "the verified ARM Tizen tester handoff must be attached to the versioned release",

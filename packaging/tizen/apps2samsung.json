@@ -1,5 +1,5 @@
 {
-  "name": "PlezyNG",
+  "name": "Pleazyng",
   "description": "Native Flutter client for Plex, Jellyfin and Emby on Samsung TVs. Experimental; Tizen 6.0 or later.",
   "category": "media",
   "repo": "snapetech-org/PlezyNG",
@@ -8,8 +8,8 @@
   "enabled": false,
   "assets": [
     {
-      "match": "^PlezyNG-tizen-arm\\.tpk$",
-      "output_name": "PlezyNG.tpk"
+      "match": "^pleazyng-tizen-arm\\.tpk$",
+      "output_name": "Pleazyng.tpk"
     }
   ]
 }

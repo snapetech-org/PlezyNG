@@ -117,7 +117,7 @@ class RommClient {
 
   Future<Map<String, dynamic>> startPairing(String identifier, String name) async => rommMap(await json(
     'POST', 'auth/device/init', body: {'client_device_identifier': identifier, 'name': rommString(name, 128),
-      'client': 'PlezyNG', 'platform': Platform.operatingSystem, 'client_version': '1',
+      'client': 'Pleazyng', 'platform': Platform.operatingSystem, 'client_version': '1',
       'requested_scopes': ['me.read', 'roms.read', 'roms.user.read', 'roms.user.write', 'assets.read', 'assets.write',
         'platforms.read', 'firmware.read', 'collections.read', 'collections.write', 'devices.read', 'devices.write']}));
   Future<Map<String, dynamic>> pollPairing(String deviceCode) async =>
@@ -158,7 +158,7 @@ class RommClient {
   Future<RommCollection> createFavorites() async {
     final request = await open('POST', uri('api/collections', {'is_favorite': true, 'is_public': false}));
     try {
-    request.headers.set('content-type', 'application/x-www-form-urlencoded'); request.write('name=PlezyNG+Favorites');
+    request.headers.set('content-type', 'application/x-www-form-urlencoded'); request.write('name=Pleazyng+Favorites');
     final response = await request.close().timeout(const Duration(seconds: 30));
     final bytes = await read(response);
     if (response.statusCode < 200 || response.statusCode > 299) throw RommFailure('romm.permissionDenied', status: response.statusCode);

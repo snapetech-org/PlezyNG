@@ -11,9 +11,9 @@ import zipfile
 
 
 REPOSITORY = "snapetech-org/PlezyNG"
-PACKAGE_ID = "SnapeTech.PlezyNG"
+PACKAGE_ID = "SnapeTech.Pleazyng"
 MANIFEST_VERSION = "1.12.0"
-INSTALLER_NAME = "plezy-windows-installer.exe"
+INSTALLER_NAME = "pleazyng-windows-installer.exe"
 
 
 def sha256(path: Path) -> str:
@@ -55,7 +55,7 @@ def main() -> int:
     installer_url = (
         f"https://github.com/{REPOSITORY}/releases/download/{release_tag}/{INSTALLER_NAME}"
     )
-    package_dir = Path("manifests/s/SnapeTech/PlezyNG") / args.version
+    package_dir = Path("manifests/s/SnapeTech/Pleazyng") / args.version
     output_dir = args.output / package_dir
     output_dir.mkdir(parents=True, exist_ok=True)
     architectures = ["x64", "arm64"] if args.include_arm64 else ["x64"]
@@ -91,7 +91,7 @@ UpgradeBehavior: install
 Installers:
 {installer_entries}
 AppsAndFeaturesEntries:
-  - DisplayName: PlezyNG
+  - DisplayName: Pleazyng
     Publisher: SnapeTech
     DisplayVersion: {args.version}
     InstallerType: inno
@@ -106,13 +106,13 @@ PackageLocale: en-US
 Publisher: SnapeTech
 PublisherUrl: https://github.com/snapetech-org
 PublisherSupportUrl: https://github.com/{REPOSITORY}/issues
-PackageName: PlezyNG
+PackageName: Pleazyng
 PackageUrl: https://github.com/{REPOSITORY}
 License: GPL-3.0-only
 LicenseUrl: https://github.com/{REPOSITORY}/blob/main/LICENSE
 ShortDescription: Plex client with Jellyfin and Emby support, offline downloads, and HDR
-Description: PlezyNG is an enhanced Plex client that also supports Jellyfin and Emby. Browse movies, shows, and music across your servers, search connected libraries, and keep watchlists and viewing progress in sync. Download media for offline playback. Watch Live TV and DVR where your server supports them. Choose audio tracks and subtitles, adjust playback speed and audio sync, and use HDR or Dolby Vision on supported devices. Watch Together keeps playback in sync when everyone can access the same media on the same server. Use PlezyNG on phones, tablets, TVs, and desktop computers. You’ll need your own Plex, Jellyfin, or Emby server. Features vary by server, device, and media.
-Moniker: plezyng
+Description: Pleazyng is an enhanced Plex client that also supports Jellyfin and Emby. Browse movies, shows, and music across your servers, search connected libraries, and keep watchlists and viewing progress in sync. Download media for offline playback. Watch Live TV and DVR where your server supports them. Choose audio tracks and subtitles, adjust playback speed and audio sync, and use HDR or Dolby Vision on supported devices. Watch Together keeps playback in sync when everyone can access the same media on the same server. Use Pleazyng on phones, tablets, TVs, and desktop computers. You’ll need your own Plex, Jellyfin, or Emby server. Features vary by server, device, and media.
+Moniker: pleazyng
 Tags:
   - media
   - plex
@@ -128,7 +128,7 @@ ManifestVersion: {MANIFEST_VERSION}
     for name, content in files.items():
         (output_dir / name).write_text(content, encoding="utf-8")
 
-    archive = args.output / f"plezyng-winget-manifests-{args.version}.zip"
+    archive = args.output / f"pleazyng-winget-manifests-{args.version}.zip"
     with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as bundle:
         for path in sorted(output_dir.iterdir()):
             bundle.write(path, (package_dir / path.name).as_posix())

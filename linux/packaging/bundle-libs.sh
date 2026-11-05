@@ -13,7 +13,7 @@ set -euo pipefail
 
 BUNDLE_DIR="$(realpath "$1")"
 LIB_DIR="$BUNDLE_DIR/lib"
-BINARY="$BUNDLE_DIR/plezy"
+BINARY="$BUNDLE_DIR/pleazyng"
 
 if [[ ! -f "$BINARY" ]]; then
     echo "Error: binary not found at $BINARY" >&2
@@ -120,7 +120,7 @@ fi
 # multiarch path), which does not exist on other distros, and glib's bare-name
 # PATH fallback misses hosts that keep the helper in /usr/libexec (Fedora).
 # Every launchUrl then failed (#1477). Ship the helper that matches the
-# bundled libgio; plezy.sh points GIO_LAUNCH_DESKTOP at it.
+# bundled libgio; pleazyng.sh points GIO_LAUNCH_DESKTOP at it.
 if compgen -G "$LIB_DIR/libgio-2.0.so*" > /dev/null; then
     GLIB_LIBDIR="$(pkg-config --variable=libdir glib-2.0 2>/dev/null || true)"
     GIO_HELPER=""

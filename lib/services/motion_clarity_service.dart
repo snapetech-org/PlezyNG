@@ -6,7 +6,7 @@ import '../models/motion_clarity.dart';
 import '../utils/app_logger.dart';
 import '../utils/platform_detector.dart';
 
-/// Result of requesting one of PlezyNG's mpv motion-processing paths.
+/// Result of requesting one of Pleazyng's mpv motion-processing paths.
 ///
 /// A successful property write proves configuration was accepted; it does not
 /// prove that every output frame was presented on time or that a display mode

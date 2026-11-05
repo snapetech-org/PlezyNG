@@ -2469,7 +2469,7 @@ mixin _JellyfinBrowseMethods on _JellyfinClientInternals implements LibraryGenre
   /// Query for the one dedicated-resume-route window that feeds every Emby
   /// playback shelf.
   ///
-  /// Emby's route conflates the two shelves PlezyNG models separately: it returns
+  /// Emby's route conflates the two shelves Pleazyng models separately: it returns
   /// the genuinely in-progress items *and* one zero-position next episode per
   /// started series, and no server-side filter separates them (measured on
   /// 4.9.5: `Filters=IsResumable` changes nothing). It is nevertheless the only

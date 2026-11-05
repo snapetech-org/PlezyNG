@@ -23,7 +23,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 PINS = json.loads((Path(__file__).with_name('toolchain.json')).read_text())
-APP_ID = 'org.snapetech.plezyng'
+APP_ID = 'org.snapetech.pleazyng'
 NS = {'t': 'http://tizen.org/ns/packages'}
 ELF_TARGETS = {'arm': (1, 40), 'x64': (2, 62)}
 WHISPER_GGML_VERSION = '0.0.2'
@@ -231,8 +231,8 @@ def inspect_package(path, arch, *, signed=True, required_libraries=()):
         manifest = ET.fromstring(raw)
         app = manifest.find('t:ui-application', NS)
         profile = manifest.find('t:profile', NS)
-        if manifest.get('package') != APP_ID or app is None or app.get('appid') != APP_ID or app.get('type') != 'capp' or app.get('exec') != 'plezyng':
-            raise ValueError('Package identity/type does not match PlezyNG')
+        if manifest.get('package') != APP_ID or app is None or app.get('appid') != APP_ID or app.get('type') != 'capp' or app.get('exec') != 'pleazyng':
+            raise ValueError('Package identity/type does not match Pleazyng')
         if profile is None or profile.get('name') != 'tv':
             raise ValueError('Expected TV profile')
         version = manifest.get('version', '')
@@ -244,12 +244,12 @@ def inspect_package(path, arch, *, signed=True, required_libraries=()):
                     'libftpw_video_player_videohole.so', *required_libraries}
         if not required <= {PurePosixPath(n).name for n in libraries}:
             raise ValueError('Missing application, Flutter runtime or native plugin libraries')
-        if not {'bin/plezyng', 'res/icudtl.dat', 'res/flutter_assets/AssetManifest.bin'} <= set(names):
+        if not {'bin/pleazyng', 'res/icudtl.dat', 'res/flutter_assets/AssetManifest.bin'} <= set(names):
             raise ValueError('Missing native launcher or Flutter resources')
         minimum_api = {'arm': '6.0', 'x64': '8.0'}[arch]
         if manifest.get('api-version') != minimum_api:
             raise ValueError(f'Expected API {minimum_api} for {arch}')
-        for name in libraries + ['bin/plezyng']:
+        for name in libraries + ['bin/pleazyng']:
             with archive.open(name) as stream:
                 if elf_arch(stream.read(64)) != arch:
                     raise ValueError(f'Wrong architecture: {name}')
@@ -411,9 +411,9 @@ def stage(source, destination, native_dir, arch, *, visualizer_native=None, visu
         stage_visualizer(source, destination, visualizer_native, visualizer_manifest_sha256, arch)
     elif (native_target / 'libmilkrust_native.so').exists():
         raise ValueError('MilkRust must be supplied through the reviewed artifact input')
-    icon = destination / 'tizen/shared/res/plezyng.png'
+    icon = destination / 'tizen/shared/res/pleazyng.png'
     icon.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(source / 'assets/plezy.png', icon)
+    shutil.copyfile(source / 'assets/pleazyng.png', icon)
     config = json.loads((source / '.dart_tool/package_config.json').read_text())
     smb = next(p for p in config['packages'] if p['name'] == 'dart_smb2')
     uri = urllib.parse.urljoin((source / '.dart_tool/package_config.json').as_uri(), smb['rootUri'])
@@ -496,7 +496,7 @@ def build(args):
         if work_dir.exists() and any(work_dir.iterdir()):
             raise ValueError('Work directory must be empty; it is preserved for diagnosing build failures')
         work_dir.mkdir(parents=True, exist_ok=True)
-    context = nullcontext(args.work_dir) if args.work_dir else tempfile.TemporaryDirectory(prefix='plezyng-tizen-')
+    context = nullcontext(args.work_dir) if args.work_dir else tempfile.TemporaryDirectory(prefix='pleazyng-tizen-')
     with context as temp:
         project = Path(temp)
         stage(ROOT, project, args.native, args.arch, visualizer_native=args.visualizer_native,
@@ -518,7 +518,7 @@ def build(args):
                     native_report['libraries']['libflutter_whisper_plugin.so']):
                 raise ValueError('The packaged Whisper runtime differs from the checksum-verified native build')
         suffix = '-tester' if args.tester else ''
-        name = f'PlezyNG-tizen-{args.arch}{suffix}.tpk'
+        name = f'pleazyng-tizen-{args.arch}{suffix}.tpk'
         shutil.copyfile(packages[0], output / name)
         (output / (name + '.sha256')).write_text(f"{report['sha256']}  {name}\n")
         report['source_commit'] = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
@@ -534,7 +534,7 @@ def build(args):
         shutil.copyfile(project / 'pubspec.lock', output / 'pubspec-tizen.lock')
         shutil.copyfile(Path(args.native) / 'native-build.json', output / 'native-build.json')
         # Preserve corresponding native sources and applied patches for redistribution.
-        shutil.make_archive(str(output / f'PlezyNG-tizen-{args.arch}-native-sources'), 'gztar', args.native, 'sources')
+        shutil.make_archive(str(output / f'pleazyng-tizen-{args.arch}-native-sources'), 'gztar', args.native, 'sources')
 
 
 def install(args):
@@ -563,10 +563,10 @@ def resign(args):
     payload = package_payload(source)
     output = Path(args.output).resolve()
     output.mkdir(parents=True, exist_ok=True)
-    result = output / f'PlezyNG-tizen-{args.arch}-signed.tpk'
+    result = output / f'pleazyng-tizen-{args.arch}-signed.tpk'
     if result.exists():
         raise ValueError('Signed output already exists; choose a fresh output directory')
-    with tempfile.TemporaryDirectory(prefix='plezyng-sign-', dir=output) as temp:
+    with tempfile.TemporaryDirectory(prefix='pleazyng-sign-', dir=output) as temp:
         staged = Path(temp) / source.name
         shutil.copyfile(source, staged)
         run('tizen', 'package', '-t', 'tpk', '-S', 'off', '-s', args.security_profile, '--', staged)
@@ -597,7 +597,7 @@ def tester_profile(args):
     profiles = data / 'profile/profiles.xml'
     if profiles.exists() and any(row.get('name') == args.name for row in ET.parse(profiles).iter('profile')):
         raise ValueError('Profile already exists; reuse it explicitly or choose another name')
-    private = data / 'plezyng-development-certificates' / args.name
+    private = data / 'pleazyng-development-certificates' / args.name
     private.mkdir(mode=0o700, parents=True, exist_ok=False)
     password = secrets.token_urlsafe(24)
     cli = sdk / 'tools/ide/bin/tizen'
@@ -605,7 +605,7 @@ def tester_profile(args):
         cli = cli.with_suffix('.bat')
     # The CLI logs its arguments locally. Never upload SDK logs or this private
     # directory; these credentials are disposable and are not Samsung keys.
-    result = subprocess.run([str(cli), 'certificate', '-a', args.name, '-n', 'PlezyNG development handoff',
+    result = subprocess.run([str(cli), 'certificate', '-a', args.name, '-n', 'Pleazyng development handoff',
         '-f', 'author', '-p', password, '--', str(private)], capture_output=True)
     if result.returncode:
         raise ValueError('Development certificate creation failed; inspect local SDK logs')
@@ -679,7 +679,7 @@ def main():
     s.add_argument('--output', required=True)
     profile = sub.add_parser('tester-profile', help='Create a development-only profile in a dedicated SDK')
     profile.add_argument('--sdk-root', required=True, help='Tizen SDK root, not flutter-tizen')
-    profile.add_argument('--name', default='PlezyNG-Tester')
+    profile.add_argument('--name', default='Pleazyng-Tester')
     for p in (n, b, i, ins, s):
         p.add_argument('--arch', choices=ELF_TARGETS, default='arm')
     args = parser.parse_args()

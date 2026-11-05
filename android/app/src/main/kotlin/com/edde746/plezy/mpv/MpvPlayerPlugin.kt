@@ -1077,7 +1077,7 @@ open class MpvPlayerPlugin(
           activeConnection.useCaches = false
           activeConnection.requestMethod = "GET"
           activeConnection.setRequestProperty("Accept", "application/octet-stream")
-          activeConnection.setRequestProperty("User-Agent", "PlezyNG-model-pack")
+          activeConnection.setRequestProperty("User-Agent", "Pleazyng-model-pack")
 
           val status = activeConnection.responseCode
           if (status != HttpURLConnection.HTTP_OK) {

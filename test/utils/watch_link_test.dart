@@ -80,7 +80,7 @@ void main() {
 
   group('WatchLink.tryParse', () {
     test('parses a portable link with the default mode', () {
-      final link = WatchLink.tryParse('plezy://watch?plex=show/5d9c086c46115600200aa2fe');
+      final link = WatchLink.tryParse('pleazyng://watch?plex=show/5d9c086c46115600200aa2fe');
       expect(link, isA<PortableWatchLink>());
       link as PortableWatchLink;
       expect(link.kind, MediaKind.show);
@@ -89,7 +89,7 @@ void main() {
     });
 
     test('parses a server link with server and mode in any case', () {
-      final link = WatchLink.tryParse('plezy://watch?id=123&server=abc&mode=SHUFFLE');
+      final link = WatchLink.tryParse('pleazyng://watch?id=123&server=abc&mode=SHUFFLE');
       expect(link, isA<ServerWatchLink>());
       link as ServerWatchLink;
       expect(link.ratingKey, '123');
@@ -99,14 +99,14 @@ void main() {
 
     test('rejects other links and malformed input', () {
       for (final bad in [
-        'plezy://play?content_id=plezy_a_1',
-        'plezy://live?channel=4',
-        'plezy://watch',
-        'plezy://watch?plex=show/abc&id=1',
-        'plezy://watch?plex=episode/abc',
-        'plezy://watch?plex=show/',
-        'plezy://watch?plex=abc',
-        'plezy://watch?id=1&mode=random',
+        'pleazyng://play?content_id=plezy_a_1',
+        'pleazyng://live?channel=4',
+        'pleazyng://watch',
+        'pleazyng://watch?plex=show/abc&id=1',
+        'pleazyng://watch?plex=episode/abc',
+        'pleazyng://watch?plex=show/',
+        'pleazyng://watch?plex=abc',
+        'pleazyng://watch?id=1&mode=random',
         'https://watch?id=1',
       ]) {
         expect(WatchLink.tryParse(bad), isNull, reason: bad);
@@ -115,8 +115,8 @@ void main() {
 
     test('round-trips through toLink', () {
       for (final uri in [
-        'plezy://watch?plex=show%2F5d9c086c46115600200aa2fe&mode=shuffle',
-        'plezy://watch?id=123&server=abc',
+        'pleazyng://watch?plex=show%2F5d9c086c46115600200aa2fe&mode=shuffle',
+        'pleazyng://watch?id=123&server=abc',
       ]) {
         expect(WatchLink.tryParse(uri)!.toLink(), uri);
       }
@@ -132,7 +132,7 @@ void main() {
 
     test('falls back to the rating key and server without one', () {
       final link = WatchLink.forItem(testMediaItem(id: '42', guid: 'com.plexapp.agents.none://x', serverId: 's1'));
-      expect(link!.toLink(), 'plezy://watch?id=42&server=s1');
+      expect(link!.toLink(), 'pleazyng://watch?id=42&server=s1');
     });
 
     test('is null for episodes and non-Plex items', () {
@@ -142,7 +142,7 @@ void main() {
   });
 
   group('Next on a show', () {
-    final link = WatchLink.tryParse('plezy://watch?plex=show/5d9c086c46115600200aa2fe')!;
+    final link = WatchLink.tryParse('pleazyng://watch?plex=show/5d9c086c46115600200aa2fe')!;
 
     test('plays the On Deck episode', () async {
       final server = plex('s1', {
@@ -210,7 +210,7 @@ void main() {
 
   group('resolution', () {
     test('shuffle uses the first server in order that has the show', () async {
-      final link = WatchLink.tryParse('plezy://watch?plex=show/5d9c086c46115600200aa2fe&mode=shuffle')!;
+      final link = WatchLink.tryParse('pleazyng://watch?plex=show/5d9c086c46115600200aa2fe&mode=shuffle')!;
       final missing = plex('s1', {'/library/all': []});
       final second = plex('s2', {
         '/library/all': [_show('20')],
@@ -226,7 +226,7 @@ void main() {
     });
 
     test('a movie plays itself whatever the mode', () async {
-      final link = WatchLink.tryParse('plezy://watch?plex=movie/abc&mode=shuffle')!;
+      final link = WatchLink.tryParse('pleazyng://watch?plex=movie/abc&mode=shuffle')!;
       final server = plex('s1', {
         '/library/all': [_movie('m1')],
       });
@@ -238,7 +238,7 @@ void main() {
     });
 
     test('a portable movie link carries the full item so playback resumes', () async {
-      final link = WatchLink.tryParse('plezy://watch?plex=movie/abc')!;
+      final link = WatchLink.tryParse('pleazyng://watch?plex=movie/abc')!;
       final server = plex('s1', {
         // The watch state comes from the full item, not the lookup row.
         '/library/all': [_movie('m1')],
@@ -252,7 +252,7 @@ void main() {
     });
 
     test('a movie in two libraries plays the copy watched most recently', () async {
-      final link = WatchLink.tryParse('plezy://watch?plex=movie/abc')!;
+      final link = WatchLink.tryParse('pleazyng://watch?plex=movie/abc')!;
       final server = plex('s1', {
         '/library/all': [_movie('hd'), _movie('uhd')],
         '/library/metadata/hd': [
@@ -269,7 +269,7 @@ void main() {
     });
 
     test('a movie on two servers plays the copy watched most recently', () async {
-      final link = WatchLink.tryParse('plezy://watch?plex=movie/abc')!;
+      final link = WatchLink.tryParse('pleazyng://watch?plex=movie/abc')!;
       final first = plex('s1', {
         '/library/all': [_movie('a')],
         '/library/metadata/a': [
@@ -289,7 +289,7 @@ void main() {
     });
 
     test('an unwatched movie on two servers uses the first server', () async {
-      final link = WatchLink.tryParse('plezy://watch?plex=movie/abc')!;
+      final link = WatchLink.tryParse('pleazyng://watch?plex=movie/abc')!;
       final first = plex('s1', {
         '/library/all': [_movie('a')],
         '/library/metadata/a': [_movie('a')],
@@ -303,7 +303,7 @@ void main() {
     });
 
     test('Next on a show in two libraries uses the copy being watched', () async {
-      final link = WatchLink.tryParse('plezy://watch?plex=show/5d9c086c46115600200aa2fe')!;
+      final link = WatchLink.tryParse('pleazyng://watch?plex=show/5d9c086c46115600200aa2fe')!;
       final server = plex('s1', {
         '/library/all': [_show('10'), _show('11')],
         '/library/metadata/10': [_show('10')],
@@ -316,7 +316,7 @@ void main() {
     });
 
     test('a server link without a server must match exactly one server', () async {
-      final link = WatchLink.tryParse('plezy://watch?id=m1')!;
+      final link = WatchLink.tryParse('pleazyng://watch?id=m1')!;
       final one = plex('s1', {
         '/library/metadata/m1': [_movie('m1')],
       });
@@ -330,7 +330,7 @@ void main() {
     });
 
     test('a server link with a server only asks that server', () async {
-      final link = WatchLink.tryParse('plezy://watch?id=m1&server=s2')!;
+      final link = WatchLink.tryParse('pleazyng://watch?id=m1&server=s2')!;
       final one = plex('s1', {
         '/library/metadata/m1': [_movie('m1')],
       });
@@ -342,7 +342,7 @@ void main() {
     });
 
     test('a server link naming an episode is unsupported', () async {
-      final link = WatchLink.tryParse('plezy://watch?id=e1&server=s1')!;
+      final link = WatchLink.tryParse('pleazyng://watch?id=e1&server=s1')!;
       final server = plex('s1', {
         '/library/metadata/e1': [_episode('e1', season: 1, index: 1)],
       });
@@ -351,7 +351,7 @@ void main() {
     });
 
     test('reports missing titles, missing servers and non-Plex servers', () async {
-      final link = WatchLink.tryParse('plezy://watch?plex=show/5d9c086c46115600200aa2fe')!;
+      final link = WatchLink.tryParse('pleazyng://watch?plex=show/5d9c086c46115600200aa2fe')!;
 
       Future<WatchLinkFailureReason> reason(List<WatchLinkServer> servers) async =>
           (await link.resolve(servers) as WatchLinkFailure).reason;
@@ -384,8 +384,8 @@ void main() {
       addTearDown(down.client.close);
 
       for (final link in [
-        WatchLink.tryParse('plezy://watch?plex=show/5d9c086c46115600200aa2fe')!,
-        WatchLink.tryParse('plezy://watch?id=10&server=s1')!,
+        WatchLink.tryParse('pleazyng://watch?plex=show/5d9c086c46115600200aa2fe')!,
+        WatchLink.tryParse('pleazyng://watch?id=10&server=s1')!,
       ]) {
         expect((await link.resolve([down]) as WatchLinkFailure).reason, WatchLinkFailureReason.unreachable);
       }
@@ -393,7 +393,7 @@ void main() {
   });
 
   group('resolveWhenConnected', () {
-    final link = WatchLink.tryParse('plezy://watch?plex=show/5d9c086c46115600200aa2fe')!;
+    final link = WatchLink.tryParse('pleazyng://watch?plex=show/5d9c086c46115600200aa2fe')!;
 
     test('waits for the Plex server that has the title while others are already online', () async {
       final bluey = plex('s1', {

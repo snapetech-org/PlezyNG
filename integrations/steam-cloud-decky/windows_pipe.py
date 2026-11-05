@@ -153,7 +153,7 @@ class WindowsBridge(Bridge):
             raise PermissionError('pipe ACL unavailable')
         try:
             attrs = SecurityAttributes(c.sizeof(SecurityAttributes), descriptor, False)
-            handle = create_pipe('\\\\.\\pipe\\PlezyNG.SteamCloud.' + self.uid,
+            handle = create_pipe('\\\\.\\pipe\\Pleazyng.SteamCloud.' + self.uid,
                                  3 | 0x40000000 | (0x80000 if first else 0),
                                  8, 4, 2048, 2048, 0, c.byref(attrs))
             if handle == INVALID:

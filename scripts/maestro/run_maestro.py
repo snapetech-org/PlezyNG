@@ -25,7 +25,7 @@ except ModuleNotFoundError:
 
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
-APP_ID = "org.snapetech.plezyng"
+APP_ID = "org.snapetech.pleazyng"
 FAULTS = ("music-failure", "offline", "recovery")
 ANIMATION_SCALES = (
     "window_animation_scale",

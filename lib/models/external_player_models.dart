@@ -39,7 +39,7 @@ class ExternalPlayerReturnLinks {
 
 /// Compatibility URLs used by the former session-string callback API.
 abstract final class ExternalPlayerCallbackUrls {
-  static const scheme = 'plezy';
+  static const scheme = 'pleazyng';
   static const host = 'external-player';
   static const success = 'success';
   static const cancel = 'cancel';

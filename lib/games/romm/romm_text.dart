@@ -77,7 +77,7 @@ const rommEnglish = <String, String>{
   'streamEnded': 'The streaming session ended.', 'retry': 'Try again',
   'disc': 'Change disc', 'memoryCard': 'Memory card', 'multiplayer': 'Allow players to join', 'join': 'Join game',
   'copyLink': 'Copy game link', 'linkCopied': 'Game link copied', 'openLink': 'Open game link',
-  'linkHelp': 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+  'linkHelp': 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
   'copyMismatch': 'This link identifies a different copy. Choose the intended game from your library.',
   'requestStatus': 'Library indexing', 'notIndexed': 'The requested game is not indexed in this library yet.',
   'touchControls': 'Touch controls', 'controls': 'Controls', 'resetControls': 'Reset controls',

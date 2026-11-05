@@ -113,6 +113,7 @@ class TranslationsZhHant extends TranslationsZh with BaseTranslations<AppLocale,
 	@override late final _Translations$deepLinks$zh_Hant deepLinks = _Translations$deepLinks$zh_Hant._(_root);
 	@override late final _Translations$householdSetup$zh_Hant householdSetup = _Translations$householdSetup$zh_Hant._(_root);
 	@override late final _Translations$issueReport$zh_Hant issueReport = _Translations$issueReport$zh_Hant._(_root);
+	@override late final _Translations$romm$zh_Hant romm = _Translations$romm$zh_Hant._(_root);
 }
 
 // Path: app
@@ -122,7 +123,7 @@ class _Translations$app$zh_Hant extends Translations$app$zh {
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,10 +137,10 @@ class _Translations$appIcon$zh_Hant extends Translations$appIcon$zh {
 	@override String get defaultIcon => '預設';
 	@override String get current => '目前圖示';
 	@override String get locked => '終身訪問需要';
-	@override String get lockedHint => '啟動 7 天試用或終身解鎖 PlezyNG 以使用替代圖示。';
+	@override String get lockedHint => '啟動 7 天試用或終身解鎖 Pleazyng 以使用替代圖示。';
 	@override String get changeFailed => '無法變更應用程式圖示';
-	@override String get launcherHint => '離開 PlezyNG 後，新圖示就會出現在主畫面上。';
-	@override String get tvLauncherHint => '離開 PlezyNG 後就會顯示新橫幅。在電視重新啟動前，Android TV 可能仍會顯示舊橫幅。';
+	@override String get launcherHint => '離開 Pleazyng 後，新圖示就會出現在主畫面上。';
+	@override String get tvLauncherHint => '離開 Pleazyng 後就會顯示新橫幅。在電視重新啟動前，Android TV 可能仍會顯示舊橫幅。';
 	@override late final _Translations$appIcon$names$zh_Hant names = _Translations$appIcon$names$zh_Hant._(_root);
 	@override String get description => '選擇由您的裝置啟動器顯示的圖示. 預覽顯示每個選項看起來如何。';
 }
@@ -166,7 +167,7 @@ class _Translations$auth$zh_Hant extends Translations$auth$zh {
 	@override String get quickConnectWaiting => '等待核准…';
 	@override String get quickConnectCancel => '取消';
 	@override String get quickConnectExpired => '快速連線代碼已過期。請重試。';
-	@override String get localDataRecoveryRequired => 'PlezyNG 無法安全地復原本機登入資料與待處理的播放資料。請重新登入。';
+	@override String get localDataRecoveryRequired => 'Pleazyng 無法安全地復原本機登入資料與待處理的播放資料。請重新登入。';
 	@override String get pinCheckRejected => 'Plex PIN 檢查遭到拒絕';
 	@override String get connectToDirectPlex => '連線到本地伺服器 Plex';
 }
@@ -295,9 +296,9 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 
 	// Translations
 	@override String get title => '設定';
-	@override String get supportDeveloper => '贊助 PlezyNG';
+	@override String get supportDeveloper => '贊助 Pleazyng';
 	@override String get supportDeveloperDescription => '捐款支持開發';
-	@override String get lifetimeAccess => 'PlezyNG 終身訪問';
+	@override String get lifetimeAccess => 'Pleazyng 終身訪問';
 	@override String get language => '語言';
 	@override String get theme => '主題';
 	@override String get appearance => '外觀';
@@ -353,7 +354,7 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 	@override String get contentScreensaverNoLibraries => '沒有連線媒體圖書館可用。';
 	@override String get contentScreensaverDismissHint => '按下任何按鈕或按下取消';
 	@override String get newEpisodeNotifications => '新事件通知';
-	@override String get newEpisodeNotificationsDescription => '警告當新集新增到一個節目你被抓住時,檢查 Plezy 是開放的。';
+	@override String get newEpisodeNotificationsDescription => '警告當新集新增到一個節目你被抓住時,檢查 Pleazyng 是開放的。';
 	@override String get continueWatchingRowSize => '繼續觀看 序列大小';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} 卡片';
 	@override String get rowSizeCompact => '緊湊';
@@ -482,7 +483,7 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 	@override String get importSettingsDescription => '從檔案還原偏好設定';
 	@override String get importSettingsConfirm => '這將覆蓋您目前的設定。要繼續嗎？';
 	@override String get importSettingsSuccess => '設定已匯入';
-	@override String get importSettingsInvalidFile => '此檔案不是有效的 PlezyNG 設定匯出檔';
+	@override String get importSettingsInvalidFile => '此檔案不是有效的 Pleazyng 設定匯出檔';
 	@override String get importSettingsNoUser => '匯入設定前請先登入';
 	@override String get cloudBackup => '雲備份';
 	@override String get cloudBackupDescription => '透過 HTTPS 將可移轉的設定備份到 WebDAV 位址。伺服器連線和登入憑證保留在此裝置上。';
@@ -666,7 +667,7 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 	@override String get forceTvMode => '強制 TV 模式';
 	@override String get forceTvModeDescription => '強制使用 TV 介面版面。適用於無法自動辨識 TV 的裝置。需要重新啟動。';
 	@override String get startInFullscreen => '以全螢幕模式啟動';
-	@override String get startInFullscreenDescription => '啟動時直接以全螢幕開啟 PlezyNG';
+	@override String get startInFullscreenDescription => '啟動時直接以全螢幕開啟 Pleazyng';
 	@override String get exitFullscreenOnPlayerClose => '關閉播放器時退出全螢幕';
 	@override String get exitFullscreenOnPlayerCloseDescription => '關閉影片播放器時自動退出全螢幕模式';
 	@override String get autoHidePerformanceOverlay => '自動隱藏效能疊加層';
@@ -722,7 +723,7 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 	@override String get playerScopeGlobal => '全部';
 	@override String get playerScopeLibrary => '依媒體庫';
 	@override String get playerScopeTitle => '依影集或電影';
-	@override String get exportDialogTitle => '匯出 PlezyNG 設定';
+	@override String get exportDialogTitle => '匯出 Pleazyng 設定';
 	@override String get followSystem => '跟隨系統';
 	@override String get followAppLanguage => '與介面語言一致';
 	@override String get regionFormat => '地區格式';
@@ -733,7 +734,7 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 	@override String get enterFullscreenOnPlaybackStartDescription => '開啟桌面影片在播放開始時全屏';
 	@override String get extendVideoIntoDisplayCutout => '將影片擴充套件到顯示器中';
 	@override String get extendVideoIntoDisplayCutoutDescription => '讓全屏影片在Android手機上使用相機切割';
-	@override String get languageDescription => '選擇用於 PlezyNG 控制和訊息的語言. 跟蹤系統跟蹤您的裝置語言。';
+	@override String get languageDescription => '選擇用於 Pleazyng 控制和訊息的語言. 跟蹤系統跟蹤您的裝置語言。';
 	@override String get themeDescription => '選擇應用程式中使用的顏色和對比。';
 	@override String get libraryDensityDescription => '改變每個行中的圖書館卡的數量。';
 	@override String get displayScaleDescription => '在此車螢幕上重新設定介面,而無需改變您的裝置上的文字大小。';
@@ -755,14 +756,14 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 	@override String get episodeActionDescription => '選擇當您啟動一個節目卡時會發生什麼。';
 	@override String get episodePlayDescription => '立即開始事件。';
 	@override String get episodeDetailsDescription => '在播放之前開啟集片頁面。';
-	@override String get contentScreensaverDelayDescription => '在展示藝術作品之前,選擇 PlezyNG 等待多久沒有輸入。';
+	@override String get contentScreensaverDelayDescription => '在展示藝術作品之前,選擇 Pleazyng 等待多久沒有輸入。';
 	@override String get continueWatchingRowSizeDescription => '在繼續觀看行中選擇卡片的尺寸。';
 	@override String get rowSizeCompactDescription => '顯示較小的卡片,以便在行列中新增更多的專案。';
 	@override String get rowSizeStandardDescription => '使用標準卡尺寸。';
 	@override String get rowSizeLargeDescription => '顯示更大的卡片,更多藝術作品的細節。';
 	@override String get visualEffectsDescription => '選擇該裝置的動畫和藝術作品效果預算。';
 	@override String get visualEffectsFullDescription => '在每個裝置上使用完整的動畫和藝術作品效果。';
-	@override String get startupSectionDescription => '在 PlezyNG 啟動時選擇哪個部分開啟。';
+	@override String get startupSectionDescription => '在 Pleazyng 啟動時選擇哪個部分開啟。';
 	@override late final _Translations$settings$startupSectionOptions$zh_Hant startupSectionOptions = _Translations$settings$startupSectionOptions$zh_Hant._(_root);
 	@override String get smallSkipDurationDescription => '設定由短後方向移動的距離,並向前尋找控制。';
 	@override String get largeSkipDurationDescription => '設定遠端移動的長後方向和向前尋找控制。';
@@ -798,7 +799,7 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 	@override String get musicQualityOriginalDescription => '播放源音訊,無需Bitrate加密的Transcode。';
 	@override String get musicQualityTranscodeOptionDescription => '請求伺服器轉程式碼接近上面的位元率;實際輸出可能有所不同。';
 	@override String get maxVolumeInputLabel => '最大容量(%)';
-	@override String get checkForUpdatesDescription => '現在檢查是否有更新的PlezyNG版本。';
+	@override String get checkForUpdatesDescription => '現在檢查是否有更新的Pleazyng版本。';
 	@override String get appearanceDescription => '選擇應用程式主題,並調整圖書館卡、主行和導航。';
 	@override String get prerollLibraryDescription => '選擇包含電影預角色可用的剪輯的圖書館。';
 	@override String get prerollSelectionDescription => '選擇從所選圖書館播放的剪輯在電影之前。';
@@ -1049,8 +1050,8 @@ class _Translations$mediaMenu$zh_Hant extends Translations$mediaMenu$zh {
 		one: '另有 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集儲存在同一檔案中，也會一併被刪除：',
 		other: '另有 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集儲存在同一檔案中，也會一併被刪除：',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'PlezyNG 無法確認此操作會刪除哪些檔案，因此刪除範圍可能超出上方所列的項目。請取消後重試，或仍要刪除。';
-	@override String get deleteScopeUnverifiedNoFileInfo => '您的伺服器未提供此項目的檔案資訊，因此 PlezyNG 無法確認此操作會刪除哪些檔案。刪除範圍可能超出上方所列的項目。';
+	@override String get deleteScopeUnverifiedProbeFailed => 'Pleazyng 無法確認此操作會刪除哪些檔案，因此刪除範圍可能超出上方所列的項目。請取消後重試，或仍要刪除。';
+	@override String get deleteScopeUnverifiedNoFileInfo => '您的伺服器未提供此項目的檔案資訊，因此 Pleazyng 無法確認此操作會刪除哪些檔案。刪除範圍可能超出上方所列的項目。';
 	@override String get mediaDeletedSuccessfully => '媒體已成功刪除';
 	@override String get mediaFailedToDelete => '刪除媒體失敗';
 	@override String get rate => '評分';
@@ -1118,7 +1119,7 @@ class _Translations$accessibility$zh_Hant extends Translations$accessibility$zh 
 	@override String get colorModeRgb => '裡格';
 	@override String get title => '可用性';
 	@override String get summary => '文字、對比、動作和控制';
-	@override String get systemHint => '您的裝置的可用性設定始終適用. 這些選項在 PlezyNG 期間新增調整。';
+	@override String get systemHint => '您的裝置的可用性設定始終適用. 這些選項在 Pleazyng 期間新增調整。';
 	@override String get readability => '閱讀與可見性';
 	@override String get textSize => '附加文字大小';
 	@override String get preview => '找下一個故事,閱讀,聽,並以自己的速度觀看。';
@@ -1131,7 +1132,7 @@ class _Translations$accessibility$zh_Hant extends Translations$accessibility$zh 
 	@override String get largeTargets => '觸控目標';
 	@override String get largeTargetsHint => '共享控制器提供更多觸控和輔助導航空間。';
 	@override String get navigationHint => '使用 Tab 和 Shift+Tab 在控制項之間移動，按 Enter 或空白鍵啟用，按 Escape 或返回按鈕關閉。開啟書籍後，可調整縮放比例和閱讀偏好設定。';
-	@override String get textSizeDescription => '在 PlezyNG 中擴充套件介面文字,以及您的裝置的系統文字大小設定。';
+	@override String get textSizeDescription => '在 Pleazyng 中擴充套件介面文字,以及您的裝置的系統文字大小設定。';
 	@override String get boldTextHint => '加粗介面標籤與訊息的字重，讓它們更容易辨識。';
 }
 
@@ -1459,7 +1460,7 @@ class _Translations$profiles$zh_Hant extends Translations$profiles$zh {
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => '新增 PlezyNG 使用者設定檔';
+	@override String get addPlezyProfile => '新增 Pleazyng 使用者設定檔';
 	@override String get switchingProfile => '正在切換使用者設定檔…';
 	@override String get deleteThisProfileTitle => '刪除此使用者設定檔？';
 	@override String deleteThisProfileMessage({required Object displayName}) => '將移除 ${displayName}。連線資訊將不受影響。';
@@ -1550,7 +1551,7 @@ class _Translations$connections$zh_Hant extends Translations$connections$zh {
 	@override String accessDeniedMany({required Object count}) => '${count} 台伺服器拒絕此帳戶存取';
 	@override String get signInAgain => '重新登入';
 	@override String editMediaBrowserTitle({required Object product}) => '編輯 ${product} 連線';
-	@override String editMediaBrowserIntro({required Object serverName}) => '為 ${serverName} 新增或移除 URL。PlezyNG 將使用延遲最低且可連線的 URL。';
+	@override String editMediaBrowserIntro({required Object serverName}) => '為 ${serverName} 新增或移除 URL。Pleazyng 將使用延遲最低且可連線的 URL。';
 }
 
 // Path: accountPreferences
@@ -1564,7 +1565,7 @@ class _Translations$accountPreferences$zh_Hant extends Translations$accountPrefe
 	@override String hubSubtitleSingle({required Object account}) => '已在 ${account} 上儲存音訊、字幕與媒體庫選項';
 	@override String hubSubtitleMultiple({required Object count}) => '已在 ${count} 個帳戶上儲存音訊、字幕與媒體庫選項';
 	@override String get pickAccount => '每個帳戶都會儲存各自的偏好設定。請選擇要編輯的帳戶。';
-	@override String get storedOnAccount => '這些選項會儲存在帳戶本身，因此登入該帳戶的所有應用程式都會使用它們，包括您其他裝置上的 PlezyNG。';
+	@override String get storedOnAccount => '這些選項會儲存在帳戶本身，因此登入該帳戶的所有應用程式都會使用它們，包括您其他裝置上的 Pleazyng。';
 	@override String get noAccounts => '沒有可設定的帳戶';
 	@override String get noAccountsHint => '登入 Plex，或連線至 Jellyfin 或 Emby 伺服器，儲存在該帳戶上的偏好設定便會顯示在此處。';
 	@override String get unavailable => '無法連線至此帳戶';
@@ -1792,9 +1793,9 @@ class _Translations$startup$zh_Hant extends Translations$startup$zh {
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'PlezyNG 無法啟動';
+	@override String get failedTitle => 'Pleazyng 無法啟動';
 	@override String get failedBody => '啟動期間發生問題。下方詳細資料可識別失敗的原因。';
-	@override String get failedBodyRepairable => 'PlezyNG 儲存的設定檔已損壞，必須先重建才能啟動。重試無法解決問題 — 請選擇「修復儲存空間」。';
+	@override String get failedBodyRepairable => 'Pleazyng 儲存的設定檔已損壞，必須先重建才能啟動。重試無法解決問題 — 請選擇「修復儲存空間」。';
 	@override String get phaseLabel => '步驟';
 	@override String get showDetails => '顯示詳細資料';
 	@override String get hideDetails => '隱藏詳細資料';
@@ -1803,16 +1804,16 @@ class _Translations$startup$zh_Hant extends Translations$startup$zh {
 	@override String get uploadDetails => '上傳詳細資料';
 	@override String get repairStorage => '修復儲存空間';
 	@override String get repairTitle => '修復已儲存的資料？';
-	@override String get repairBodyCommon => 'PlezyNG 的設定檔已損壞且無法讀取。修復會將所有設定重設為預設值。';
+	@override String get repairBodyCommon => 'Pleazyng 的設定檔已損壞且無法讀取。修復會將所有設定重設為預設值。';
 	@override String get repairBodyOneCredential => '有一筆已儲存的登入資訊損壞且無法讀取。修復僅會移除該筆資訊，其他設定將保持不變。';
 	@override String get repairBodySignInsKept => '您的伺服器與使用者設定檔應可保持登入狀態。';
 	@override String get repairBodySignInsLost => '保護已儲存登入資訊的金鑰無法從此檔案中復原，因此您必須重新登入每個伺服器與使用者設定檔。您媒體伺服器上的內容不受影響。';
-	@override String get repairBodySessionsUncertain => '追蹤服務（MAL、AniList、Simkl、Trakt）與 Seerr 分別儲存，可能保留也可能遺失。PlezyNG 會明確告知保留了哪些項目。';
+	@override String get repairBodySessionsUncertain => '追蹤服務（MAL、AniList、Simkl、Trakt）與 Seerr 分別儲存，可能保留也可能遺失。Pleazyng 會明確告知保留了哪些項目。';
 	@override String get repairConfirm => '修復';
 	@override String get repairSucceeded => '儲存空間已修復';
 	@override String get repairNeedsRestart => '儲存空間已修復 — 需要重新啟動';
-	@override String get restartRequiredBody => '您的資料已修復，但 PlezyNG 必須重新啟動才能使用。請關閉 PlezyNG 後重新開啟。';
-	@override String get quitPlezy => '退出 PlezyNG';
+	@override String get restartRequiredBody => '您的資料已修復，但 Pleazyng 必須重新啟動才能使用。請關閉 Pleazyng 後重新開啟。';
+	@override String get quitPlezy => '退出 Pleazyng';
 	@override String get repairFailed => '修復失敗';
 	@override String get repairKeptSignIns => '您的伺服器與使用者設定檔仍保持登入狀態。';
 	@override String get repairLostSignIns => '保護已儲存登入資訊的金鑰無法復原。您必須重新登入每個伺服器與使用者設定檔。';
@@ -1821,7 +1822,7 @@ class _Translations$startup$zh_Hant extends Translations$startup$zh {
 	@override String get backupWarning => '其中包含您的登入憑證。請勿上傳或分享。';
 	@override String get deleteBackup => '刪除副本';
 	@override String get backupDeleted => '副本已刪除。';
-	@override String get previousFailureTitle => 'PlezyNG 上次啟動失敗';
+	@override String get previousFailureTitle => 'Pleazyng 上次啟動失敗';
 }
 
 // Path: licenses
@@ -2151,7 +2152,7 @@ class _Translations$watchTogether$zh_Hant extends Translations$watchTogether$zh 
 	@override String get codeCopied => '房間代碼已複製';
 	@override String get shareInvite => '分享邀請';
 	@override String get inviteCopied => '已複製邀請。請將其貼到訊息中。';
-	@override String inviteMessage({required Object code}) => '來 PlezyNG 加入我的「一起看」房間：開啟「一起看」，選擇「加入房間」，然後輸入 ${code}。';
+	@override String inviteMessage({required Object code}) => '來 Pleazyng 加入我的「一起看」房間：開啟「一起看」，選擇「加入房間」，然後輸入 ${code}。';
 	@override String get openSessionControls => '開啟「一起看」工作階段控制面板';
 	@override String get reconnecting => '正在重新連線…';
 	@override String get reconnectingDescription => '連線已中斷。您將自動重新加入房間。';
@@ -2177,7 +2178,7 @@ class _Translations$watchTogether$zh_Hant extends Translations$watchTogether$zh 
 	@override String get chooseAnotherCopy => '選擇其他副本';
 	@override String get dontPlay => '不要播放';
 	@override String get unavailableTitle => '您沒有這部影片';
-	@override String get unavailableDescription => 'PlezyNG 無法在您的媒體庫中找到這部影片。請自行選擇副本，或重新搜尋。';
+	@override String get unavailableDescription => 'Pleazyng 無法在您的媒體庫中找到這部影片。請自行選擇副本，或重新搜尋。';
 	@override String get chooseCopy => '選擇副本';
 	@override String get searchAgain => '重新搜尋';
 	@override String get noCandidates => '在您的媒體庫中找不到任何副本。';
@@ -2322,11 +2323,11 @@ class _Translations$downloads$zh_Hant extends Translations$downloads$zh {
 	@override String get activeSyncRules => '同步規則';
 	@override String get reviewOrphanFiles => '檢查無對應紀錄的下載';
 	@override String get orphanReviewTitle => '檢查無對應紀錄的下載';
-	@override String get orphanReviewDescription => '這些已標記的檔案位於 PlezyNG 預設管理的下載資料夾中，但沒有相符的下載紀錄或進行中的工作。刪除前請先檢查清單。';
+	@override String get orphanReviewDescription => '這些已標記的檔案位於 Pleazyng 預設管理的下載資料夾中，但沒有相符的下載紀錄或進行中的工作。刪除前請先檢查清單。';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} 個檔案 · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => '刪除 ${count} 個檔案';
 	@override String get orphanCleanupNone => '找不到無對應紀錄的下載檔案';
-	@override String get orphanCleanupFailed => 'PlezyNG 無法安全地掃描受管理的下載資料夾。沒有刪除任何檔案。';
+	@override String get orphanCleanupFailed => 'Pleazyng 無法安全地掃描受管理的下載資料夾。沒有刪除任何檔案。';
 	@override String get orphanCleanupChanged => '檢查期間下載清單已變更。清理前請重新檢查檔案。';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => '已刪除 ${count} 個無對應紀錄的檔案 · 釋出 ${size}';
 	@override String get noSyncRules => '沒有同步規則';
@@ -2702,11 +2703,11 @@ class _Translations$trakt$zh_Hant extends Translations$trakt$zh {
 	@override String get connected => '已連線';
 	@override String connectedAs({required Object username}) => '已以 @${username} 身分連線';
 	@override String get disconnectConfirm => '中斷與 Trakt 帳戶的連結？';
-	@override String get disconnectConfirmBody => 'PlezyNG 將停止向 Trakt 傳送事件。您可以隨時重新連線。';
+	@override String get disconnectConfirmBody => 'Pleazyng 將停止向 Trakt 傳送事件。您可以隨時重新連線。';
 	@override String get scrobble => '即時同步記錄（Scrobble）';
 	@override String get scrobbleDescription => '在播放時向 Trakt 傳送播放、暫停和停止等狀態。';
 	@override String get watchedSync => '同步已觀看狀態';
-	@override String get watchedSyncDescription => '在 PlezyNG 中將項目標記為已觀看時，也會在 Trakt 上標記為已觀看。';
+	@override String get watchedSyncDescription => '在 Pleazyng 中將項目標記為已觀看時，也會在 Trakt 上標記為已觀看。';
 }
 
 // Path: seerr
@@ -2725,10 +2726,10 @@ class _Translations$seerr$zh_Hant extends Translations$seerr$zh {
 	@override String get signInWithEmby => '使用 Emby 登入';
 	@override String get signInWithLocal => '使用本地帳戶';
 	@override String get email => '電子郵件';
-	@override String get noSignInMethods => '此 Seerr 執行個體未提供 PlezyNG 支援的登入方式。';
+	@override String get noSignInMethods => '此 Seerr 執行個體未提供 Pleazyng 支援的登入方式。';
 	@override String get instance => '執行個體';
 	@override String get disconnectConfirm => '中斷與 Seerr 的連線？';
-	@override String get disconnectConfirmBody => 'PlezyNG 將忘記此 Seerr 連線資訊。您可以隨時重新連線。';
+	@override String get disconnectConfirmBody => 'Pleazyng 將忘記此 Seerr 連線資訊。您可以隨時重新連線。';
 	@override String get request => '請求';
 	@override String get request4k => '請求 4K 版本';
 	@override String get seasons => '季';
@@ -2753,7 +2754,7 @@ class _Translations$seerr$zh_Hant extends Translations$seerr$zh {
 	@override String get statusBlocklisted => '已加入封鎖清單';
 	@override String couldNotReach({required Object url, required Object error}) => '無法連線至 ${url}：${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => '在 ${url} 找不到 Seerr 執行個體（HTTP ${status}）';
-	@override String get behindAuthProxy => '回應來自需要驗證的反向代理（SSO 或 HTTP 驗證），而非 Seerr。PlezyNG 無法透過它登入：請讓 Seerr 的 /api/v1 路徑為此應用程式繞過代理，或使用可直接連線至 Seerr 的位址。';
+	@override String get behindAuthProxy => '回應來自需要驗證的反向代理（SSO 或 HTTP 驗證），而非 Seerr。Pleazyng 無法透過它登入：請讓 Seerr 的 /api/v1 路徑為此應用程式繞過代理，或使用可直接連線至 Seerr 的位址。';
 	@override String get invalidUrl => '請輸入伺服器位址，例如 https://seerr.example.com';
 	@override String get quickConnectUnsupported => '此 Seerr 執行個體不支援 Quick Connect。需要 Seerr 3.4 或更新版本。';
 	@override String get notInitialized => '此 Seerr 執行個體尚未完成首次執行設定';
@@ -2783,7 +2784,7 @@ class _Translations$services$zh_Hant extends Translations$services$zh {
 	@override String get scrobble => '自動同步播放進度';
 	@override String get scrobbleDescription => '觀賞完一集或一部電影後自動更新您的外部列表。';
 	@override String disconnectConfirm({required Object service}) => '中斷與 ${service} 的連線？';
-	@override String disconnectConfirmBody({required Object service}) => 'PlezyNG 將停止更新 ${service}。您可以隨時重新連線。';
+	@override String disconnectConfirmBody({required Object service}) => 'Pleazyng 將停止更新 ${service}。您可以隨時重新連線。';
 	@override String connectFailed({required Object service}) => '無法連線至 ${service}。請重試。';
 	@override late final _Translations$services$names$zh_Hant names = _Translations$services$names$zh_Hant._(_root);
 	@override late final _Translations$services$simklReconnect$zh_Hant simklReconnect = _Translations$services$simklReconnect$zh_Hant._(_root);
@@ -2805,8 +2806,8 @@ class _Translations$streaming$zh_Hant extends Translations$streaming$zh {
 	@override String get title => '雲端與外掛串流';
 	@override String get subtitle => '連結 Debrid 帳戶，即可瀏覽雲端檔案並播放支援的串流。相容 Stremio 的外掛會在電影和影集詳細資料頁提供播放選項。連線資訊會在此裝置上加密，並儲存在此個人資料中。';
 	@override String connectionsConfigured({required Object count}) => '已連線的來源：${count}';
-	@override String get settingsLoadFailed => 'PlezyNG 無法解鎖已儲存的串流設定。請先解鎖裝置，再重試後變更連線。';
-	@override String get settingsUnreadable => 'PlezyNG 無法解鎖這些已儲存的連線。清除後即可重新連線服務。';
+	@override String get settingsLoadFailed => 'Pleazyng 無法解鎖已儲存的串流設定。請先解鎖裝置，再重試後變更連線。';
+	@override String get settingsUnreadable => 'Pleazyng 無法解鎖這些已儲存的連線。清除後即可重新連線服務。';
 	@override String get clearUnreadableSettings => '清除已儲存的設定';
 	@override String get clearUnreadableSettingsConfirm => '清除已儲存的串流設定？';
 	@override String get clearUnreadableSettingsBody => '這會從此個人資料移除所有已儲存的服務供應商帳戶和外掛網址，而且無法復原。';
@@ -2818,11 +2819,11 @@ class _Translations$streaming$zh_Hant extends Translations$streaming$zh {
 	@override String get catalogFiltersRequired => '選取瀏覽此目錄所需的篩選條件。';
 	@override String get catalogRequiredLabel => '必填';
 	@override String get importFromStremio => '從 Stremio 匯入';
-	@override String get stremioImportInstructions => '掃描 QR 碼或開啟連結。登入 Stremio 並核准要求。PlezyNG 只會讀取你的外掛清單，不會要求 Stremio 密碼或變更設定。';
+	@override String get stremioImportInstructions => '掃描 QR 碼或開啟連結。登入 Stremio 並核准要求。Pleazyng 只會讀取你的外掛清單，不會要求 Stremio 密碼或變更設定。';
 	@override String get stremioImportOpen => '開啟 Stremio 連結';
 	@override String get stremioImportCode => '連結代碼';
 	@override String get stremioImportPreviewTitle => '選擇外掛';
-	@override String get stremioImportPreviewBody => '選取要連線至 PlezyNG 的外掛。此匯入僅接受 HTTPS 網址。';
+	@override String get stremioImportPreviewBody => '選取要連線至 Pleazyng 的外掛。此匯入僅接受 HTTPS 網址。';
 	@override String stremioImportIgnored({required Object count}) => '因網址不受支援或不安全而略過的外掛：${count}。';
 	@override String get stremioCatalogs => '目錄';
 	@override String get stremioStreams => '串流';
@@ -2836,7 +2837,7 @@ class _Translations$streaming$zh_Hant extends Translations$streaming$zh {
 	@override String get addByManifestUrl => '透過資訊清單網址新增';
 	@override String get addAddon => '新增外掛';
 	@override String get manifestUrl => '外掛資訊清單網址';
-	@override String get manifestUrlHint => '貼上外掛的資訊清單網址。連線前，PlezyNG 會檢查其是否支援目錄或串流資源。';
+	@override String get manifestUrlHint => '貼上外掛的資訊清單網址。連線前，Pleazyng 會檢查其是否支援目錄或串流資源。';
 	@override String get allowHttp => '允許未加密的 HTTP 網址';
 	@override String get allowHttpDescription => '僅適用於私人網路中可信任的外掛。';
 	@override String get installAddon => '連線外掛';
@@ -2844,20 +2845,20 @@ class _Translations$streaming$zh_Hant extends Translations$streaming$zh {
 	@override String get addonRemoved => '外掛已移除';
 	@override String get addonToggle => '啟用外掛';
 	@override String get addonEmpty => '尚未連線外掛';
-	@override String get addonError => 'PlezyNG 無法連線至此外掛。請檢查資訊清單網址並重試。';
+	@override String get addonError => 'Pleazyng 無法連線至此外掛。請檢查資訊清單網址並重試。';
 	@override String get addonPrivacy => '僅連線你信任的外掛。搜尋時，外掛會收到你要搜尋的標題，並可能傳回第三方串流連結。';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => '透過 Real-Debrid 帳戶播放支援的種子串流。';
 	@override String get connectRealDebrid => '使用 QR 碼連線';
 	@override String realDebridConnected({required Object username}) => '已連線：${username}';
-	@override String get realDebridInstructions => '掃描 QR 碼或開啟連結，接著輸入此啟用碼以連線 PlezyNG：';
+	@override String get realDebridInstructions => '掃描 QR 碼或開啟連結，接著輸入此啟用碼以連線 Pleazyng：';
 	@override String get realDebridActivate => '開啟 Real-Debrid 以啟用';
 	@override String get realDebridCode => '啟用碼';
 	@override String get realDebridConnectFailed => '無法連線至 Real-Debrid。請再試一次。';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => '透過 AllDebrid 帳戶播放支援的種子串流。';
 	@override String get connectAllDebrid => '使用 QR 碼連線';
-	@override String get allDebridInstructions => '掃描 QR 碼或開啟連結以授權 PlezyNG。連線期間請保持此畫面開啟：';
+	@override String get allDebridInstructions => '掃描 QR 碼或開啟連結以授權 Pleazyng。連線期間請保持此畫面開啟：';
 	@override String get allDebridActivate => '開啟 AllDebrid 以啟用';
 	@override String get allDebridCode => '啟用 PIN 碼';
 	@override String get allDebridConnectFailed => '無法連線至 AllDebrid。請再試一次。';
@@ -2868,13 +2869,13 @@ class _Translations$streaming$zh_Hant extends Translations$streaming$zh {
 	@override String get connectApiKey => '使用 API 金鑰連線';
 	@override String apiKeyTitle({required Object service}) => '連線 ${service}';
 	@override String get apiKey => 'API 金鑰';
-	@override String apiKeyHint({required Object service}) => '貼上 ${service} 帳戶設定中的 API 金鑰。PlezyNG 會在此裝置上加密金鑰，並將其儲存在此個人資料中。';
+	@override String apiKeyHint({required Object service}) => '貼上 ${service} 帳戶設定中的 API 金鑰。Pleazyng 會在此裝置上加密金鑰，並將其儲存在此個人資料中。';
 	@override String get apiKeyConnectFailed => '無法驗證此 API 金鑰。請檢查後再試一次。';
 	@override String accountConnected({required Object username}) => '已連線：${username}';
 	@override String get streamNeedsProvider => '連線 Debrid 服務以播放此種子串流。';
 	@override String get playViaProvider => '透過 Debrid 播放';
 	@override String disconnectConfirm({required Object service}) => '中斷 ${service} 連線？';
-	@override String get disconnectBody => 'PlezyNG 會移除此裝置的授權，不會變更服務供應商中的檔案或進行中的傳輸。';
+	@override String get disconnectBody => 'Pleazyng 會移除此裝置的授權，不會變更服務供應商中的檔案或進行中的傳輸。';
 	@override String get streamsTitle => '選擇串流';
 	@override String get noStreams => '找不到此標題的串流。';
 	@override String get manageConnections => '管理串流服務';
@@ -2890,7 +2891,7 @@ class _Translations$streaming$zh_Hant extends Translations$streaming$zh {
 	@override String get streamUnsupported => '應用程式內播放器不支援此串流格式。';
 	@override String get remoteNeedsEpisode => '請先選擇一集，再搜尋串流。';
 	@override String get remoteNeedsEpisodeNumber => '此集缺少季數或集數。';
-	@override String get remoteNeedsExternalId => 'PlezyNG 找不到此標題的 IMDb 或 TMDB ID。';
+	@override String get remoteNeedsExternalId => 'Pleazyng 找不到此標題的 IMDb 或 TMDB ID。';
 	@override String get watchWithServices => '透過已連線的服務觀看';
 	@override String get chooseEpisode => '選擇一集';
 	@override String get episodes => '影集';
@@ -3021,15 +3022,15 @@ class _Translations$appAccess$zh_Hant extends Translations$appAccess$zh {
 
 	// Translations
 	@override String get title => '每個功能都免費嘗試7天';
-	@override String get description => '開始一個七天的試用,完全訪問每個PlezyNG功能,在試用期間沒有費用,沒有訂閱,試用後,在您的商店價格上一生購買,終身開鎖PlezyNG。';
-	@override String get trialEndedDescription => '依商店顯示的價格一次性購買，即可終身解鎖 PlezyNG 的全部功能，無須訂閱。';
+	@override String get description => '開始一個七天的試用,完全訪問每個Pleazyng功能,在試用期間沒有費用,沒有訂閱,試用後,在您的商店價格上一生購買,終身開鎖Pleazyng。';
+	@override String get trialEndedDescription => '依商店顯示的價格一次性購買，即可終身解鎖 Pleazyng 的全部功能，無須訂閱。';
 	@override String get startTrial => '開始我的7天免費試驗';
 	@override String get trialActive => '您的7天全功能測試已活躍。';
 	@override String get trialEnded => '你的七天審判結束了';
 	@override String get trialStartFailed => '我無法在這個裝置上儲存測試,請再試一次。';
-	@override String get lifetimeTitle => 'PlezyNG 終身禁用';
-	@override String get lifetimeBody => '感謝!您終身訪問所有 PlezyNG 功能。';
-	@override String get manageTitle => 'PlezyNG 終身訪問';
+	@override String get lifetimeTitle => 'Pleazyng 終身禁用';
+	@override String get lifetimeBody => '感謝!您終身訪問所有 Pleazyng 功能。';
+	@override String get manageTitle => 'Pleazyng 終身訪問';
 	@override String get manageDescription => '每個功能都免費嘗試7天,然後用一個付款解鎖一生的一切,以您的商店的價格。';
 	@override String buy({required Object price}) => '解鎖所有功能為 ${price}';
 	@override String get loadingPrice => '貨物價格...';
@@ -3037,11 +3038,11 @@ class _Translations$appAccess$zh_Hant extends Translations$appAccess$zh {
 	@override String get restore => '恢復終身購買';
 	@override String get pending => '您的購買正在等待付款或核准。商店完成交易後，終身使用權限將立即解鎖。';
 	@override String get storeUnavailable => '目前無法購買。請確認您已登入商店，且此裝置允許購買。';
-	@override String get productNotFound => 'PlezyNG 終身解鎖 目前尚未在本商店提供。';
+	@override String get productNotFound => 'Pleazyng 終身解鎖 目前尚未在本商店提供。';
 	@override String get productQueryFailed => '無法收取商店價格,請檢查您的連線並嘗試一次。';
 	@override String get purchaseFailed => '購買不錯了,再試一次。';
 	@override String get restoreFailed => '無法到達商店恢復您的購買,再試一次。';
-	@override String get nothingToRestore => '已找到第 PlezyNG 終身購買號,用於此商店帳戶。';
+	@override String get nothingToRestore => '已找到第 Pleazyng 終身購買號,用於此商店帳戶。';
 }
 
 // Path: detail
@@ -3093,7 +3094,7 @@ class _Translations$homeLayout$zh_Hant extends Translations$homeLayout$zh {
 	@override String get syncAccountOff => '關閉:此裝置保持其自己的配置。';
 	@override String get syncNow => '現在的Sync';
 	@override String get plexHomeManager => 'Plex 主持人';
-	@override String get managePlexRows => '管理 Plex 行在 Plezy';
+	@override String get managePlexRows => '管理 Plex 行在 Pleazyng';
 	@override String get managePlexRowsDescription => '開放組織主選行列';
 	@override String get organizeHomeRows => '安排家居行';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} 行: 移動, 英雄, 自動滑動, 移除';
@@ -3163,7 +3164,7 @@ class _Translations$homeLayout$zh_Hant extends Translations$homeLayout$zh {
 	@override String get organizeRowsHint => '選擇行(或保持):移動 · 左/右:行選項 · 返回:完成';
 	@override String get layoutNavDescription => '選擇行、圖書館和收藏類別';
 	@override String get editHomeRow => '編輯 主頁 序列';
-	@override String get resetHeroButton => '恢復 Plezy 預設焦點橫幅配置';
+	@override String get resetHeroButton => '恢復 Pleazyng 預設焦點橫幅配置';
 	@override String get reorderingUnlocked => '重新排序 開鎖';
 	@override String get reorderingLocked => '重新安排鎖';
 	@override String get rowsCanBeDragged => '可以拖繩 - 點選鎖,以防止';
@@ -3189,8 +3190,8 @@ class _Translations$platform$zh_Hant extends Translations$platform$zh {
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG 會連線至您區域網路中的媒體伺服器和播放裝置。';
-	@override String get locationPermission => '當 iOS 要求提供位置權限才能偵測區域網路並連線至媒體伺服器時，PlezyNG 會使用此權限。';
+	@override String get localNetworkPermission => 'Pleazyng 會連線至您區域網路中的媒體伺服器和播放裝置。';
+	@override String get locationPermission => '當 iOS 要求提供位置權限才能偵測區域網路並連線至媒體伺服器時，Pleazyng 會使用此權限。';
 	@override String get photoLibraryPermission => '從照片圖庫中選取圖片，用作媒體封面等影像。';
 	@override String get cameraPermission => '掃描 QR 碼以配對 Companion Remote。';
 }
@@ -3204,7 +3205,7 @@ class _Translations$universalMedia$zh_Hant extends Translations$universalMedia$z
 	// Translations
 	@override String get title => '開放媒體';
 	@override String get shortcutHelp => '播放此會議的連結、播放列表或檔案。';
-	@override String get intro => '開啟連結、播放列表或檔案 Playback 使用 PlezyNG 的標準播放器,並且不會將歷史新增到您的圖書館。';
+	@override String get intro => '開啟連結、播放列表或檔案 Playback 使用 Pleazyng 的標準播放器,並且不會將歷史新增到您的圖書館。';
 	@override String get openWhat => '你想開啟什麼?';
 	@override String get stream => '流地址';
 	@override String get playlist => '播放列表';
@@ -3262,13 +3263,13 @@ class _Translations$universalMedia$zh_Hant extends Translations$universalMedia$z
 	@override String get stopTransfer => '停止轉讓和取消地址';
 	@override String get startTransfer => '轉移開始';
 	@override String get wifiImportedFiles => 'Wi-Fi 傳輸';
-	@override String get wifiBrowserTitle => '向 PlezyNG 傳送檔案';
+	@override String get wifiBrowserTitle => '向 Pleazyng 傳送檔案';
 	@override String get wifiBrowserIntro => '選擇音訊、影片、電子書或漫畫檔案傳送. 這些檔案儲存在該裝置的檔案和書籍庫中. 最多: 100 個檔案,每個檔案 4 GiB,總共 10 GiB。';
 	@override String get uploadFilesLabel => '檔案傳送';
 	@override String get uploadSelected => '下載所選擇的檔案';
 	@override String get uploadSelectFirst => '首先選擇一個或多個檔案。';
 	@override String get uploading => '傳送';
-	@override String get uploadComplete => '檔案新增到 PlezyNG。';
+	@override String get uploadComplete => '檔案新增到 Pleazyng。';
 	@override String get uploadFailed => '檔案無法新增,請保持此頁面開放並再次嘗試。';
 	@override String get liveCue => '生活';
 	@override String get liveSession => '直播流';
@@ -3296,7 +3297,7 @@ class _Translations$universalMedia$zh_Hant extends Translations$universalMedia$z
 	@override String get recordingActive => '放棄播放停止並儲存它。';
 	@override String get recordingFormatHelp => '對於影片,選擇 MKV 或 MPEG-TS. 為音訊,選擇 MKA 或 MKV。';
 	@override String get replaceRecordingTitle => '取代這張錄音?';
-	@override String get replaceRecordingHelp => 'PlezyNG 在錄製時備份現有檔案;如果無法儲存新錄製,PlezyNG 將備份恢復。';
+	@override String get replaceRecordingHelp => 'Pleazyng 在錄製時備份現有檔案;如果無法儲存新錄製,Pleazyng 將備份恢復。';
 	@override String get replaceRecording => '替換檔案';
 	@override String get discHelp => '在此計算機的光學驅動器中開啟磁碟,您也可以從裝置檔案中開啟ISO影象。';
 	@override String get discs => '光學磁碟';
@@ -3321,7 +3322,7 @@ class _Translations$universalMedia$zh_Hant extends Translations$universalMedia$z
 	@override String get converterUnsupportedInput => '選擇音訊或影片檔案。';
 	@override String get converterLocalOnly => '所選擇的檔案不作為本地裝置路徑可用。';
 	@override String get converterReplaceTitle => '取代此檔案?';
-	@override String get converterReplaceHelp => 'PlezyNG 恢復現有檔案,直到轉換的副本被儲存。';
+	@override String get converterReplaceHelp => 'Pleazyng 恢復現有檔案,直到轉換的副本被儲存。';
 	@override String get converterStarting => '開始 FFmpeg...';
 	@override String get converterProgress => '轉換到這個計算機......';
 	@override String get converterComplete => '轉換完成,新檔案已準備好。';
@@ -3345,7 +3346,7 @@ class _Translations$universalMedia$zh_Hant extends Translations$universalMedia$z
 	@override String get captureDefaultAudio => '預設音訊輸入';
 	@override String get captureWaylandHelp => 'Wayland 限制此 XWayland 捕獲到 X display. XWayland 以外的 Windows 可能不會出現。';
 	@override String get captureFrameRate => '記錄框率';
-	@override String get capturePrivacy => '錄製僅儲存到您選擇的檔案。 微型錄制是可選的. PlezyNG 不會上傳錄製。';
+	@override String get capturePrivacy => '錄製僅儲存到您選擇的檔案。 微型錄制是可選的. Pleazyng 不會上傳錄製。';
 	@override String get captureSaveAs => '儲存螢幕錄製如';
 	@override String get captureExtensionMismatch => '在 .mp4 中選擇終端的檔名。';
 	@override String get captureFfmpegMissing => 'FFmpeg 或 H.264 影片編碼器不適用. 安裝支援的 FFmpeg 構建,然後再次嘗試。';
@@ -3359,7 +3360,7 @@ class _Translations$universalMedia$zh_Hant extends Translations$universalMedia$z
 	@override String get captureStop => '停止和拯救';
 	@override String get captureMode => '捕捉';
 	@override String get shareMode => '分享';
-	@override String get shareIntro => '將本地媒體檔案傳送到您的私人網路上的另一個裝置. PlezyNG 建立一個暫時的 HLS 流。';
+	@override String get shareIntro => '將本地媒體檔案傳送到您的私人網路上的另一個裝置. Pleazyng 建立一個暫時的 HLS 流。';
 	@override String get sharePrivacy => '您的本地網路的任何人,誰接收私人連結可以觀看,而它是活躍的. 連結結束後60分鐘. 停止共享,關閉伺服器並取消連結。';
 	@override String get shareChooseFile => '選擇媒體檔案';
 	@override String get shareChooseHelp => '選擇一個本地的音訊或影片檔案. 該檔案留在此計算機上。';
@@ -3372,7 +3373,7 @@ class _Translations$universalMedia$zh_Hant extends Translations$universalMedia$z
 	@override String get shareOpenUrl => '在另一臺裝置上的一個播放器中開啟此地址';
 	@override String get shareQrLabel => '臨時流地址的QR程式碼';
 	@override String get shareQrHelp => '掃描與同一私人網路連線的相容播放器。';
-	@override String get shareHttpHint => '此流使用未加密的 HTTP. 在 PlezyNG 中,允許 HTTP 在開啟它之前。';
+	@override String get shareHttpHint => '此流使用未加密的 HTTP. 在 Pleazyng 中,允許 HTTP 在開啟它之前。';
 	@override String get shareCopyUrl => '複製流地址';
 	@override String get shareExpiresLabel => '連結終止';
 	@override String get shareStarting => '準備流...';
@@ -3397,7 +3398,7 @@ class _Translations$universalMedia$zh_Hant extends Translations$universalMedia$z
 	@override String get extensionInstall => '新增服務';
 	@override String get extensionReplace => '更新服務';
 	@override String get extensionRemoveTitle => '刪除此搜尋服務?';
-	@override String get extensionRemoveHelp => '這將取消該服務從此個人資料中. PlezyNG 不聯絡其終點。';
+	@override String get extensionRemoveHelp => '這將取消該服務從此個人資料中. Pleazyng 不聯絡其終點。';
 	@override String get extensionRemove => '取消服務';
 	@override String get extensionInvalidManifest => '此檔案不是一個支援的擴充套件顯而易見. 檢視 Open media 格式指南。';
 	@override String get extensionSaveFailed => '該擴充套件無法儲存到活躍的個人資料。';
@@ -3551,12 +3552,12 @@ class _Translations$fileSources$zh_Hant extends Translations$fileSources$zh {
 	@override String get none => '無';
 	@override String get fullscreen => '全螢幕';
 	@override String get syncLocation => '進展同步資料夾(可選)';
-	@override String get syncLocationHint => '用於儲存 PlezyNG 狀態的專用 WebDAV 資料夾。採用條件式寫入，不會變更媒體檔案。';
+	@override String get syncLocationHint => '用於儲存 Pleazyng 狀態的專用 WebDAV 資料夾。採用條件式寫入，不會變更媒體檔案。';
 	@override String get audiobooks => '音訊書籍';
 	@override String get comics => '漫畫';
 	@override String get scan => '掃描書籍和媒體';
 	@override String get browserReader => '開放讀者';
-	@override String get browserReaderHelp => '閱讀器在您的瀏覽器中開放. 保持 PlezyNG 開放,以儲存您的位置和筆記。';
+	@override String get browserReaderHelp => '閱讀器在您的瀏覽器中開放. 保持 Pleazyng 開放,以儲存您的位置和筆記。';
 	@override String get on => '到';
 	@override String get advancedSetup => 'App 登記';
 	@override String get microsoftSignIn => '與Microsoft登入';
@@ -3597,7 +3598,7 @@ class _Translations$fileSources$zh_Hant extends Translations$fileSources$zh {
 	@override String get importInterrupted => '進口中斷 · 刪除清理';
 	@override String get errorQuotaExceeded => '已達離線儲存空間上限。請提高上限或移除已下載的副本。';
 	@override String get errorStorageLow => '沒有足夠的免費裝置儲存,以保留保護備份。';
-	@override String get errorStorageUnavailable => 'PlezyNG無法檢查免費裝置儲存,所以寫作停止了。';
+	@override String get errorStorageUnavailable => 'Pleazyng無法檢查免費裝置儲存,所以寫作停止了。';
 	@override String get removeDownloadJob => '刪除下載';
 	@override String get downloadAlreadyComplete => '此下載完成之前,它可以被刪除. 該專案現在可用於離線。';
 	@override String get confirmRemoveDownloadJob => '要移除此下載並捨棄已下載的部分資料嗎？閱讀位置和筆記會保留。';
@@ -3647,7 +3648,7 @@ class _Translations$lending$zh_Hant extends Translations$lending$zh {
 	@override String get openLibraryNote => '探索 Open Library 的目錄。每本書的頁面都會顯示閱讀和借閱選項。';
 	@override String get more => '載入更多';
 	@override String get gateway => '圖書館登入服務';
-	@override String get gatewayHint => '由您的圖書館或管理員提供,PlezyNG。';
+	@override String get gatewayHint => '由您的圖書館或管理員提供,Pleazyng。';
 	@override String get advanced => '圖書館整合';
 	@override String get loadLibraries => '選擇您的圖書館';
 	@override String get expired => '此借閱已到期。';
@@ -3787,7 +3788,7 @@ class _Translations$sourceSetup$zh_Hant extends Translations$sourceSetup$zh {
 	@override String get subtitlePrivacy => '請從 opensubtitles.com 取得 API 金鑰。搜尋會傳送影片標題和可用的 IMDb/TMDB ID，絕不傳送影片檔案。金鑰和選填的帳戶認證資料會與此來源一同加密儲存。';
 	@override String get automaticMetadata => '自動取得線上影片中繼資料';
 	@override String get metadataPrivacy => '只傳送檔名中的標題、年份和集數，或 NFO ID，絕不傳送媒體或認證資料。NFO 欄位始終優先。';
-	@override String get nfsEncryptionFailure => '使用加密 NFS 時，請確認 NAS 的兩項服務皆支援 RFC 9289 和 TLS 1.3，並核對憑證名稱及匯出 UID/GID。PlezyNG 不會在未加密的情況下重試此連線。';
+	@override String get nfsEncryptionFailure => '使用加密 NFS 時，請確認 NAS 的兩項服務皆支援 RFC 9289 和 TLS 1.3，並核對憑證名稱及匯出 UID/GID。Pleazyng 不會在未加密的情況下重試此連線。';
 	@override String get sourceConnecting => '正在連線至來源';
 	@override String get metadataSearchPrivacy => '此標題搜尋由 Trakt 處理。只會傳送您輸入的標題，不會傳送影片或來源認證資料。';
 	@override String get chooseMatch => '選擇符合的結果';
@@ -3910,7 +3911,7 @@ class _Translations$games$zh_Hant extends Translations$games$zh {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.';
+	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
 	@override String get touchSetup => 'On-screen controls';
@@ -3923,7 +3924,6 @@ class _Translations$games$zh_Hant extends Translations$games$zh {
 	@override String get wakeSent => 'Wake request sent. The computer must support Wake-on-LAN on this network.';
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
-	@override String get helpBody => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.';
 	@override String get cancel => 'Cancel';
 	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
@@ -3953,7 +3953,7 @@ class _Translations$deepLinks$zh_Hant extends Translations$deepLinks$zh {
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => '此 Plezy 連結不有效。';
+	@override String get invalid => '此 Pleazyng 連結不有效。';
 	@override String profileNotFound({required Object profile}) => '沒有個人資料符合“${profile}”。';
 	@override String get serverUnavailable => '我無法到達這個連結的伺服器。';
 	@override String get notFound => '我無法在圖書館中找到這個標題。';
@@ -3994,6 +3994,183 @@ class _Translations$issueReport$zh_Hant extends Translations$issueReport$zh {
 	@override String get privacy => '草稿包含應用程式版本、平台和連線數量，不包含伺服器位址、帳戶或個人資料名稱、媒體標題及檔案路徑。';
 	@override String get logPrivacy => '記錄檔為選填。上傳前請先檢查。記錄檔 ID 會加入草稿，而問題可能是公開的。';
 	@override String get openDraft => '開啟 GitHub 草稿';
+}
+
+// Path: romm
+class _Translations$romm$zh_Hant extends Translations$romm$zh {
+	_Translations$romm$zh_Hant._(TranslationsZhHant root) : this._root = root, super.internal(root);
+
+	final TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get chooseFile => 'Choose a game file';
+	@override String get chooseCopy => 'Choose an exact game copy';
+	@override String get favorite => 'Favorite';
+	@override String get startFresh => 'Start from the beginning';
+	@override String get automatic => 'Automatic';
+	@override String get noJoinable => 'No games are accepting players.';
+	@override String get downloadAgain => 'Download again';
+	@override String get offlineUnverified => 'Saved offline. This server did not provide a checksum; only the local file fingerprint is available.';
+	@override String get achievementCount => 'Achievements';
+	@override String get saveInProgress => 'A save is still being captured. Keep the game open and try again.';
+	@override String get browserSaveHelp => 'Use the player’s save and exit controls first. Then close this screen. Pending browser saves remain in this profile’s player storage.';
+	@override String get savedClose => 'I saved; close the player';
+	@override String get cardImportRequired => 'The streaming computer has an existing memory card. Keep it in your RomM account before playing, or explicitly erase that card.';
+	@override String get cardUnreadable => 'The existing memory card could not be read. Cancel to recover it in RomM, or explicitly erase it to continue.';
+	@override String get adoptCard => 'Keep existing card';
+	@override String get discardContainerCard => 'Erase existing card';
+	@override String get coreVersionDifferent => 'This state belongs to another core version. Use a compatible in-game save or start from the beginning.';
+	@override String get nativeCloudResume => 'Resume saved progress';
+	@override String get streamSaving => 'The server is saving. Wait for it to finish before exiting.';
+	@override String get noLocalSave => 'There is no compatible local progress to restore.';
+	@override String get completedAll => 'Completed 100%';
+	@override String get status => 'Progress';
+	@override String get backlogged => 'In backlog';
+	@override String get nowPlaying => 'Now playing';
+	@override String get completed => 'Completed';
+	@override String get playing => 'Playing';
+	@override String get unplayed => 'Unplayed';
+	@override String get syncComplete => 'Saves synchronized';
+	@override String get netplayHelp => 'Shared server sessions support joining. Browser netplay requires RomM’s own session authentication and is not enabled by device-token pairing.';
+	@override String get title => 'RomM';
+	@override String get connect => 'Connect RomM';
+	@override String get connections => 'RomM libraries';
+	@override String get connectionHelp => 'Browse your RomM collection and play supported games here.';
+	@override String get serverAddress => 'Server address';
+	@override String get serverName => 'Library name';
+	@override String get token => 'Client API token';
+	@override String get pair => 'Pair this device';
+	@override String get pairHelp => 'Open the approval page on a signed-in device, review the requested access, and approve this code.';
+	@override String get openApproval => 'Open approval page';
+	@override String get manualToken => 'Use a client token';
+	@override String get manualTokenHelp => 'Create a personal client token in RomM with library, save and device permissions.';
+	@override String get pairing => 'Waiting for approval…';
+	@override String get cancel => 'Cancel';
+	@override String get save => 'Save';
+	@override String get close => 'Close';
+	@override String get remove => 'Disconnect';
+	@override String get removeHelp => 'Remove this connection from this profile? Your server library and saves will remain available in RomM.';
+	@override String get refresh => 'Refresh';
+	@override String get reconnect => 'Reconnect';
+	@override String get sessionOnly => 'Signed in for this session. Sign in again after restarting this device.';
+	@override String get allLibraries => 'All libraries';
+	@override String get allPlatforms => 'All platforms';
+	@override String get allCollections => 'All collections';
+	@override String get more => 'Load more games';
+	@override String get noGames => 'No games found';
+	@override String get cached => 'Showing saved library information.';
+	@override String get variants => 'Other copies';
+	@override String get files => 'Game files';
+	@override String get saves => 'Saves and states';
+	@override String get noSaves => 'No saves yet';
+	@override String get play => 'Play';
+	@override String get resume => 'Resume';
+	@override String get playWith => 'Play with';
+	@override String get download => 'Keep offline';
+	@override String get offline => 'Available offline';
+	@override String get downloadProgress => 'Downloading…';
+	@override String get cancelDownload => 'Cancel download';
+	@override String get removeOffline => 'Remove offline copy';
+	@override String get storage => 'Offline storage';
+	@override String get storageLimit => 'Storage limit (GiB)';
+	@override String get browser => 'In-app browser player';
+	@override String get stream => 'Stream from server';
+	@override String get native => 'On this device';
+	@override String get emulatorJs => 'EmulatorJS';
+	@override String get ruffle => 'Ruffle';
+	@override String get jsDos => 'js-dos';
+	@override String get pico8 => 'PICO-8';
+	@override String get easyRpg => 'EasyRPG';
+	@override String get browserUnavailable => 'An embedded browser player is not available in this build.';
+	@override String get nativeUnavailable => 'The native emulator core is not installed in this build.';
+	@override String get refreshBeforePlay => 'Refresh this library to check available players.';
+	@override String get missing => 'This copy has no game files on the server.';
+	@override String get noRoute => 'No compatible in-app player is available for this copy.';
+	@override String get firmware => 'Firmware';
+	@override String get firmwareHelp => 'Some systems need firmware. Manage it in RomM; the selected emulator reports any missing requirements at launch.';
+	@override String get achievements => 'RetroAchievements';
+	@override String get achievementsHelp => 'Achievement information comes from RomM. The browser player does not earn new achievements.';
+	@override String get screenshots => 'Screenshots';
+	@override String get manual => 'Manual';
+	@override String get importSave => 'Import save';
+	@override String get exportSave => 'Export';
+	@override String get importState => 'Import state';
+	@override String get saveImported => 'Save imported';
+	@override String get saveExported => 'Save exported';
+	@override String get engine => 'Emulator identity';
+	@override String get slot => 'Save slot';
+	@override String get core => 'Core identity';
+	@override String get compatibilityHelp => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.';
+	@override String get saveConflict => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.';
+	@override String get keepBoth => 'Keep both';
+	@override String get useServer => 'Use server copy';
+	@override String get replaceServer => 'Replace server copy';
+	@override String get pendingSaves => 'Saves waiting to sync';
+	@override String get sync => 'Sync saves';
+	@override String get savedLocally => 'Progress kept on this device; upload is pending.';
+	@override String get pause => 'Pause';
+	@override String get kContinue => 'Continue';
+	@override String get saveState => 'Save state';
+	@override String get loadState => 'Load state';
+	@override String get saveAndExit => 'Save and exit';
+	@override String get exitWithoutSaving => 'Exit without saving';
+	@override String get exitConfirm => 'Finish this game session?';
+	@override String get saveExitHelp => 'Save your progress before leaving. Keep this screen open until saving finishes.';
+	@override String get starting => 'Starting game…';
+	@override String get connecting => 'Connecting…';
+	@override String get busy => 'The streaming computer is occupied.';
+	@override String get streamEnded => 'The streaming session ended.';
+	@override String get retry => 'Try again';
+	@override String get disc => 'Change disc';
+	@override String get memoryCard => 'Memory card';
+	@override String get multiplayer => 'Allow players to join';
+	@override String get join => 'Join game';
+	@override String get copyLink => 'Copy game link';
+	@override String get linkCopied => 'Game link copied';
+	@override String get openLink => 'Open game link';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
+	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
+	@override String get requestStatus => 'Library indexing';
+	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
+	@override String get touchControls => 'Touch controls';
+	@override String get controls => 'Controls';
+	@override String get resetControls => 'Reset controls';
+	@override String get playerOne => 'Player 1';
+	@override String get select => 'Select';
+	@override String get start => 'Start';
+	@override String get up => 'Up';
+	@override String get down => 'Down';
+	@override String get left => 'Left';
+	@override String get right => 'Right';
+	@override String get connectingStream => 'Waiting for the server emulator…';
+	@override String get saveFailed => 'Saving did not finish. Keep this session open and try again.';
+	@override String get httpHelp => 'This server uses unencrypted HTTP. Connect on a network you trust.';
+	@override String get invalidAddress => 'Enter an HTTP or HTTPS server address without a password, query or fragment.';
+	@override String get invalidConnection => 'This connection is invalid. Connect the server again.';
+	@override String get invalidToken => 'Enter a valid client token.';
+	@override String get invalidResponse => 'The server returned an unsupported response.';
+	@override String get responseTooLarge => 'The server response exceeded the supported size.';
+	@override String get signInAgain => 'Sign in to this library again.';
+	@override String get permissionDenied => 'Your RomM account or client token does not permit this action.';
+	@override String get notFound => 'This item is no longer available.';
+	@override String get serverError => 'The RomM server could not complete this request.';
+	@override String get connectionFailed => 'Could not connect to RomM. Check the server and try again.';
+	@override String get cancelled => 'Cancelled';
+	@override String get notConnected => 'Connect this RomM library first.';
+	@override String get accountMismatch => 'This connection belongs to a different RomM account. Add it as a separate library.';
+	@override String get connectionLimit => 'This profile already has the maximum number of RomM connections.';
+	@override String get conflict => 'The server copy changed. Review both versions before replacing anything.';
+	@override String get invalidFile => 'This file cannot be used here.';
+	@override String get saveUploadFailed => 'The save could not be uploaded.';
+	@override String get quotaExceeded => 'There is not enough space within the offline storage limit.';
+	@override String get checksumFailed => 'The downloaded file did not match the server checksum.';
+	@override String get downloadChanged => 'This game file changed during the download. Refresh and try again.';
+	@override String get unsupportedArchive => 'Native play needs extracted game files. Choose an extracted copy or use the browser player.';
+	@override String get nativeError => 'The emulator could not start this copy. Check its core and firmware requirements.';
+	@override String get authorization_pending => 'Waiting for approval…';
+	@override String get slow_down => 'Waiting for approval…';
+	@override String get access_denied => 'Device access was declined.';
+	@override String get expired_token => 'This pairing code expired. Start pairing again.';
 }
 
 // Path: appIcon.names
@@ -4842,7 +5019,7 @@ class _Translations$watchTogether$errors$zh_Hant extends Translations$watchToget
 	@override String get relayFull => '「一起看」目前忙碌中。請稍後再試。';
 	@override String get unreachable => '無法連線至「一起看」中繼伺服器。請檢查網路連線。';
 	@override String get rateLimited => '嘗試次數過多。請稍候再試。';
-	@override String get clientBlocked => '此版本的 PlezyNG 無法使用中繼伺服器。請更新應用程式。';
+	@override String get clientBlocked => '此版本的 Pleazyng 無法使用中繼伺服器。請更新應用程式。';
 	@override String get forbidden => '只有主持人可以執行此操作。';
 	@override String get notInRoom => '您不在房間中。';
 	@override String get alreadyInRoom => '您已在房間中。';
@@ -4863,14 +5040,14 @@ class _Translations$downloads$backgroundWarning$zh_Hant extends Translations$dow
 	@override String get bannerAction => '詳細資料';
 	@override String get sheetTitle => '背景下載遭到封鎖';
 	@override String get sheetTitleDegraded => '背景下載可能受限';
-	@override String get sheetIntro => 'Android 正在阻止 PlezyNG 在背景穩定下載。';
-	@override String get sheetIntroDegraded => '你的裝置限制了 PlezyNG 可在背景下載的時機。';
-	@override String get reasonBackgroundRestricted => 'PlezyNG 的背景使用受限。請將其電池用量或背景使用設定為「無限制」。';
-	@override String get reasonStandbyRestricted => 'Android 已將 PlezyNG 設為受限待命狀態。請將電池用量設為「無限制」。';
+	@override String get sheetIntro => 'Android 正在阻止 Pleazyng 在背景穩定下載。';
+	@override String get sheetIntroDegraded => '你的裝置限制了 Pleazyng 可在背景下載的時機。';
+	@override String get reasonBackgroundRestricted => 'Pleazyng 的背景使用受限。請將其電池用量或背景使用設定為「無限制」。';
+	@override String get reasonStandbyRestricted => 'Android 已將 Pleazyng 設為受限待命狀態。請將電池用量設為「無限制」。';
 	@override String get reasonDownloadChannelBlocked => '下載通知已關閉，因此可能無法查看進度或使用控制項。';
 	@override String get reasonNotificationsDisabled => '通知已關閉。在 Android 13 或更新版本中，長時間背景下載需要啟用通知。';
 	@override String get reasonDataSaver => '已開啟數據節省模式，因此系統會封鎖使用行動數據的背景下載。透過 Wi-Fi 下載應仍可正常執行。';
-	@override String get reasonOemUnknown => 'PlezyNG 在背景執行時，下載屢次停止。請檢查 PlezyNG 的電池用量或背景使用設定。';
+	@override String get reasonOemUnknown => 'Pleazyng 在背景執行時，下載屢次停止。請檢查 Pleazyng 的電池用量或背景使用設定。';
 	@override String get openSettings => '開啟設定';
 	@override String get stillNotWorking => '裝置專屬說明';
 	@override String get stillNotWorkingDescription => '查看適用於你裝置的步驟；若問題持續發生，也可從設定 › 查看日誌傳送日誌。';
@@ -4925,19 +5102,19 @@ class _Translations$companionRemote$pairing$zh_Hant extends Translations$compani
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => '使用相同 Plex 帳戶的 PlezyNG 裝置會顯示在此處';
+	@override String get discoveryDescription => '使用相同 Plex 帳戶的 Pleazyng 裝置會顯示在此處';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => '正在連線…';
 	@override String get searchingForDevices => '正在搜尋裝置…';
 	@override String get noDevicesFound => '在區域網路上找不到裝置';
-	@override String get noDevicesHint => '請在電腦上開啟 PlezyNG，並確認兩台裝置使用相同的 Wi-Fi 網路';
+	@override String get noDevicesHint => '請在電腦上開啟 Pleazyng，並確認兩台裝置使用相同的 Wi-Fi 網路';
 	@override String get availableDevices => '可用裝置';
 	@override String get manualConnection => '手動連線';
 	@override String get cryptoInitFailed => '無法啟動安全連線。請先登入 Plex。';
 	@override String get validationHostRequired => '請輸入主機位址';
 	@override String get validationHostFormat => '格式必須為 IP 位址:連接埠（例如 192.168.1.100:48632）';
 	@override String get connectionTimedOut => '連線逾時。請確認兩台裝置都使用相同網路。';
-	@override String get sessionNotFound => '找不到裝置。請確認主機上已啟動 PlezyNG。';
+	@override String get sessionNotFound => '找不到裝置。請確認主機上已啟動 Pleazyng。';
 	@override String get authFailed => '驗證失敗。兩台裝置需要登入相同的 Plex 帳戶。';
 	@override String failedToConnect({required Object error}) => '連線失敗：${error}';
 	@override String get codeTitle => '雙重程式碼';
@@ -5024,7 +5201,7 @@ class _Translations$services$simklReconnect$zh_Hant extends Translations$service
 
 	// Translations
 	@override String get title => '重新連線 Simkl';
-	@override String get subtitle => 'Simkl 即將停用此連線所使用的登入方式。重新連線會開啟 simkl.com 以核准 PlezyNG — PlezyNG 絕不會看到您的密碼。您的觀看紀錄仍會保留在 Simkl 上。';
+	@override String get subtitle => 'Simkl 即將停用此連線所使用的登入方式。重新連線會開啟 simkl.com 以核准 Pleazyng — Pleazyng 絕不會看到您的密碼。您的觀看紀錄仍會保留在 Simkl 上。';
 }
 
 // Path: services.deviceCode
@@ -5034,7 +5211,7 @@ class _Translations$services$deviceCode$zh_Hant extends Translations$services$de
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => '在 ${service} 啟用 PlezyNG';
+	@override String title({required Object service}) => '在 ${service} 啟用 Pleazyng';
 	@override String get instructions => '掃描 QR 碼，或前往下方網址並輸入此代碼：';
 	@override String openToActivate({required Object service}) => '開啟 ${service} 進行啟用';
 	@override String get copyCode => '複製啟用代碼';
@@ -5109,15 +5286,15 @@ class _Translations$services$trackerDescriptions$zh_Hant extends Translations$se
 extension on TranslationsZhHant {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => '應用程式圖示',
 			'appIcon.defaultIcon' => '預設',
 			'appIcon.current' => '目前圖示',
 			'appIcon.locked' => '終身訪問需要',
-			'appIcon.lockedHint' => '啟動 7 天試用或終身解鎖 PlezyNG 以使用替代圖示。',
+			'appIcon.lockedHint' => '啟動 7 天試用或終身解鎖 Pleazyng 以使用替代圖示。',
 			'appIcon.changeFailed' => '無法變更應用程式圖示',
-			'appIcon.launcherHint' => '離開 PlezyNG 後，新圖示就會出現在主畫面上。',
-			'appIcon.tvLauncherHint' => '離開 PlezyNG 後就會顯示新橫幅。在電視重新啟動前，Android TV 可能仍會顯示舊橫幅。',
+			'appIcon.launcherHint' => '離開 Pleazyng 後，新圖示就會出現在主畫面上。',
+			'appIcon.tvLauncherHint' => '離開 Pleazyng 後就會顯示新橫幅。在電視重新啟動前，Android TV 可能仍會顯示舊橫幅。',
 			'appIcon.names.midnight' => '午夜',
 			'appIcon.names.ember' => '餘燼',
 			'appIcon.names.paper' => '紙張',
@@ -5157,7 +5334,7 @@ extension on TranslationsZhHant {
 			'auth.quickConnectWaiting' => '等待核准…',
 			'auth.quickConnectCancel' => '取消',
 			'auth.quickConnectExpired' => '快速連線代碼已過期。請重試。',
-			'auth.localDataRecoveryRequired' => 'PlezyNG 無法安全地復原本機登入資料與待處理的播放資料。請重新登入。',
+			'auth.localDataRecoveryRequired' => 'Pleazyng 無法安全地復原本機登入資料與待處理的播放資料。請重新登入。',
 			'auth.pinCheckRejected' => 'Plex PIN 檢查遭到拒絕',
 			'auth.connectToDirectPlex' => '連線到本地伺服器 Plex',
 			'common.cancel' => '取消',
@@ -5273,9 +5450,9 @@ extension on TranslationsZhHant {
 			'update.latestVersion' => '已安裝的版本為最新版本',
 			'update.checkFailed' => '無法檢查更新',
 			'settings.title' => '設定',
-			'settings.supportDeveloper' => '贊助 PlezyNG',
+			'settings.supportDeveloper' => '贊助 Pleazyng',
 			'settings.supportDeveloperDescription' => '捐款支持開發',
-			'settings.lifetimeAccess' => 'PlezyNG 終身訪問',
+			'settings.lifetimeAccess' => 'Pleazyng 終身訪問',
 			'settings.language' => '語言',
 			'settings.theme' => '主題',
 			'settings.appearance' => '外觀',
@@ -5331,7 +5508,7 @@ extension on TranslationsZhHant {
 			'settings.contentScreensaverNoLibraries' => '沒有連線媒體圖書館可用。',
 			'settings.contentScreensaverDismissHint' => '按下任何按鈕或按下取消',
 			'settings.newEpisodeNotifications' => '新事件通知',
-			'settings.newEpisodeNotificationsDescription' => '警告當新集新增到一個節目你被抓住時,檢查 Plezy 是開放的。',
+			'settings.newEpisodeNotificationsDescription' => '警告當新集新增到一個節目你被抓住時,檢查 Pleazyng 是開放的。',
 			'settings.continueWatchingRowSize' => '繼續觀看 序列大小',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} 卡片',
 			'settings.rowSizeCompact' => '緊湊',
@@ -5456,7 +5633,7 @@ extension on TranslationsZhHant {
 			'settings.importSettingsDescription' => '從檔案還原偏好設定',
 			'settings.importSettingsConfirm' => '這將覆蓋您目前的設定。要繼續嗎？',
 			'settings.importSettingsSuccess' => '設定已匯入',
-			'settings.importSettingsInvalidFile' => '此檔案不是有效的 PlezyNG 設定匯出檔',
+			'settings.importSettingsInvalidFile' => '此檔案不是有效的 Pleazyng 設定匯出檔',
 			'settings.importSettingsNoUser' => '匯入設定前請先登入',
 			'settings.cloudBackup' => '雲備份',
 			'settings.cloudBackupDescription' => '透過 HTTPS 將可移轉的設定備份到 WebDAV 位址。伺服器連線和登入憑證保留在此裝置上。',
@@ -5642,7 +5819,7 @@ extension on TranslationsZhHant {
 			'settings.forceTvMode' => '強制 TV 模式',
 			'settings.forceTvModeDescription' => '強制使用 TV 介面版面。適用於無法自動辨識 TV 的裝置。需要重新啟動。',
 			'settings.startInFullscreen' => '以全螢幕模式啟動',
-			'settings.startInFullscreenDescription' => '啟動時直接以全螢幕開啟 PlezyNG',
+			'settings.startInFullscreenDescription' => '啟動時直接以全螢幕開啟 Pleazyng',
 			'settings.exitFullscreenOnPlayerClose' => '關閉播放器時退出全螢幕',
 			'settings.exitFullscreenOnPlayerCloseDescription' => '關閉影片播放器時自動退出全螢幕模式',
 			'settings.autoHidePerformanceOverlay' => '自動隱藏效能疊加層',
@@ -5698,7 +5875,7 @@ extension on TranslationsZhHant {
 			'settings.playerScopeGlobal' => '全部',
 			'settings.playerScopeLibrary' => '依媒體庫',
 			'settings.playerScopeTitle' => '依影集或電影',
-			'settings.exportDialogTitle' => '匯出 PlezyNG 設定',
+			'settings.exportDialogTitle' => '匯出 Pleazyng 設定',
 			'settings.followSystem' => '跟隨系統',
 			'settings.followAppLanguage' => '與介面語言一致',
 			'settings.regionFormat' => '地區格式',
@@ -5709,7 +5886,7 @@ extension on TranslationsZhHant {
 			'settings.enterFullscreenOnPlaybackStartDescription' => '開啟桌面影片在播放開始時全屏',
 			'settings.extendVideoIntoDisplayCutout' => '將影片擴充套件到顯示器中',
 			'settings.extendVideoIntoDisplayCutoutDescription' => '讓全屏影片在Android手機上使用相機切割',
-			'settings.languageDescription' => '選擇用於 PlezyNG 控制和訊息的語言. 跟蹤系統跟蹤您的裝置語言。',
+			'settings.languageDescription' => '選擇用於 Pleazyng 控制和訊息的語言. 跟蹤系統跟蹤您的裝置語言。',
 			'settings.themeDescription' => '選擇應用程式中使用的顏色和對比。',
 			'settings.libraryDensityDescription' => '改變每個行中的圖書館卡的數量。',
 			'settings.displayScaleDescription' => '在此車螢幕上重新設定介面,而無需改變您的裝置上的文字大小。',
@@ -5731,14 +5908,14 @@ extension on TranslationsZhHant {
 			'settings.episodeActionDescription' => '選擇當您啟動一個節目卡時會發生什麼。',
 			'settings.episodePlayDescription' => '立即開始事件。',
 			'settings.episodeDetailsDescription' => '在播放之前開啟集片頁面。',
-			'settings.contentScreensaverDelayDescription' => '在展示藝術作品之前,選擇 PlezyNG 等待多久沒有輸入。',
+			'settings.contentScreensaverDelayDescription' => '在展示藝術作品之前,選擇 Pleazyng 等待多久沒有輸入。',
 			'settings.continueWatchingRowSizeDescription' => '在繼續觀看行中選擇卡片的尺寸。',
 			'settings.rowSizeCompactDescription' => '顯示較小的卡片,以便在行列中新增更多的專案。',
 			'settings.rowSizeStandardDescription' => '使用標準卡尺寸。',
 			'settings.rowSizeLargeDescription' => '顯示更大的卡片,更多藝術作品的細節。',
 			'settings.visualEffectsDescription' => '選擇該裝置的動畫和藝術作品效果預算。',
 			'settings.visualEffectsFullDescription' => '在每個裝置上使用完整的動畫和藝術作品效果。',
-			'settings.startupSectionDescription' => '在 PlezyNG 啟動時選擇哪個部分開啟。',
+			'settings.startupSectionDescription' => '在 Pleazyng 啟動時選擇哪個部分開啟。',
 			'settings.startupSectionOptions.discover' => '從連線的發現來源開啟建議和專案。',
 			'settings.startupSectionOptions.libraries' => '開啟您的連線媒體圖書館。',
 			'settings.startupSectionOptions.liveTv' => '在伺服器提供時開啟直播電視;否則,初創公司將返回家庭。',
@@ -5777,7 +5954,7 @@ extension on TranslationsZhHant {
 			'settings.musicQualityOriginalDescription' => '播放源音訊,無需Bitrate加密的Transcode。',
 			'settings.musicQualityTranscodeOptionDescription' => '請求伺服器轉程式碼接近上面的位元率;實際輸出可能有所不同。',
 			'settings.maxVolumeInputLabel' => '最大容量(%)',
-			'settings.checkForUpdatesDescription' => '現在檢查是否有更新的PlezyNG版本。',
+			'settings.checkForUpdatesDescription' => '現在檢查是否有更新的Pleazyng版本。',
 			'settings.appearanceDescription' => '選擇應用程式主題,並調整圖書館卡、主行和導航。',
 			'settings.prerollLibraryDescription' => '選擇包含電影預角色可用的剪輯的圖書館。',
 			'settings.prerollSelectionDescription' => '選擇從所選圖書館播放的剪輯在電影之前。',
@@ -6013,8 +6190,8 @@ extension on TranslationsZhHant {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '這會刪除其中的 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集及其檔案。', other: '這會刪除其中全部 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集及其檔案。', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '此項目儲存在 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 個檔案中，該檔案將被刪除。', other: '此項目分散儲存於 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 個檔案中，且全部都會被刪除。', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '另有 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集儲存在同一檔案中，也會一併被刪除：', other: '另有 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集儲存在同一檔案中，也會一併被刪除：', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG 無法確認此操作會刪除哪些檔案，因此刪除範圍可能超出上方所列的項目。請取消後重試，或仍要刪除。',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => '您的伺服器未提供此項目的檔案資訊，因此 PlezyNG 無法確認此操作會刪除哪些檔案。刪除範圍可能超出上方所列的項目。',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng 無法確認此操作會刪除哪些檔案，因此刪除範圍可能超出上方所列的項目。請取消後重試，或仍要刪除。',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => '您的伺服器未提供此項目的檔案資訊，因此 Pleazyng 無法確認此操作會刪除哪些檔案。刪除範圍可能超出上方所列的項目。',
 			'mediaMenu.mediaDeletedSuccessfully' => '媒體已成功刪除',
 			'mediaMenu.mediaFailedToDelete' => '刪除媒體失敗',
 			'mediaMenu.rate' => '評分',
@@ -6064,7 +6241,7 @@ extension on TranslationsZhHant {
 			'accessibility.colorModeRgb' => '裡格',
 			'accessibility.title' => '可用性',
 			'accessibility.summary' => '文字、對比、動作和控制',
-			'accessibility.systemHint' => '您的裝置的可用性設定始終適用. 這些選項在 PlezyNG 期間新增調整。',
+			'accessibility.systemHint' => '您的裝置的可用性設定始終適用. 這些選項在 Pleazyng 期間新增調整。',
 			'accessibility.readability' => '閱讀與可見性',
 			'accessibility.textSize' => '附加文字大小',
 			'accessibility.preview' => '找下一個故事,閱讀,聽,並以自己的速度觀看。',
@@ -6077,7 +6254,7 @@ extension on TranslationsZhHant {
 			'accessibility.largeTargets' => '觸控目標',
 			'accessibility.largeTargetsHint' => '共享控制器提供更多觸控和輔助導航空間。',
 			'accessibility.navigationHint' => '使用 Tab 和 Shift+Tab 在控制項之間移動，按 Enter 或空白鍵啟用，按 Escape 或返回按鈕關閉。開啟書籍後，可調整縮放比例和閱讀偏好設定。',
-			'accessibility.textSizeDescription' => '在 PlezyNG 中擴充套件介面文字,以及您的裝置的系統文字大小設定。',
+			'accessibility.textSizeDescription' => '在 Pleazyng 中擴充套件介面文字,以及您的裝置的系統文字大小設定。',
 			'accessibility.boldTextHint' => '加粗介面標籤與訊息的字重，讓它們更容易辨識。',
 			'tooltips.shufflePlay' => '隨機播放',
 			'tooltips.playTrailer' => '播放預告片',
@@ -6345,7 +6522,7 @@ extension on TranslationsZhHant {
 			'mpvConfig.removeLine' => '移除行',
 			'mpvConfig.embeddedVoHint' => '在 Linux 上會忽略 vo、gpu-context 和 gpu-api：嵌入式影片一律透過影片平面上的 vo=libmpv 轉譯，而 gpu-next（ArtCNN 等計算著色器需要它）無法以嵌入式方式執行。',
 			'dialog.confirmAction' => '確認操作',
-			'profiles.addPlezyProfile' => '新增 PlezyNG 使用者設定檔',
+			'profiles.addPlezyProfile' => '新增 Pleazyng 使用者設定檔',
 			'profiles.switchingProfile' => '正在切換使用者設定檔…',
 			'profiles.deleteThisProfileTitle' => '刪除此使用者設定檔？',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => '將移除 ${displayName}。連線資訊將不受影響。',
@@ -6427,12 +6604,12 @@ extension on TranslationsZhHant {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} 台伺服器拒絕此帳戶存取',
 			'connections.signInAgain' => '重新登入',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => '編輯 ${product} 連線',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => '為 ${serverName} 新增或移除 URL。PlezyNG 將使用延遲最低且可連線的 URL。',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => '為 ${serverName} 新增或移除 URL。Pleazyng 將使用延遲最低且可連線的 URL。',
 			'accountPreferences.sectionTitle' => '帳戶偏好設定',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => '已在 ${account} 上儲存音訊、字幕與媒體庫選項',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => '已在 ${count} 個帳戶上儲存音訊、字幕與媒體庫選項',
 			'accountPreferences.pickAccount' => '每個帳戶都會儲存各自的偏好設定。請選擇要編輯的帳戶。',
-			'accountPreferences.storedOnAccount' => '這些選項會儲存在帳戶本身，因此登入該帳戶的所有應用程式都會使用它們，包括您其他裝置上的 PlezyNG。',
+			'accountPreferences.storedOnAccount' => '這些選項會儲存在帳戶本身，因此登入該帳戶的所有應用程式都會使用它們，包括您其他裝置上的 Pleazyng。',
 			'accountPreferences.noAccounts' => '沒有可設定的帳戶',
 			'accountPreferences.noAccountsHint' => '登入 Plex，或連線至 Jellyfin 或 Emby 伺服器，儲存在該帳戶上的偏好設定便會顯示在此處。',
 			'accountPreferences.unavailable' => '無法連線至此帳戶',
@@ -6756,9 +6933,9 @@ extension on TranslationsZhHant {
 			'logs.saveLogs' => '儲存存檔',
 			'logs.logsSaved' => ({required Object path}) => '儲存到 ${path} 的存檔',
 			'logs.saveLogsFailed' => '無法儲存存檔。',
-			'startup.failedTitle' => 'PlezyNG 無法啟動',
+			'startup.failedTitle' => 'Pleazyng 無法啟動',
 			'startup.failedBody' => '啟動期間發生問題。下方詳細資料可識別失敗的原因。',
-			'startup.failedBodyRepairable' => 'PlezyNG 儲存的設定檔已損壞，必須先重建才能啟動。重試無法解決問題 — 請選擇「修復儲存空間」。',
+			'startup.failedBodyRepairable' => 'Pleazyng 儲存的設定檔已損壞，必須先重建才能啟動。重試無法解決問題 — 請選擇「修復儲存空間」。',
 			'startup.phaseLabel' => '步驟',
 			'startup.showDetails' => '顯示詳細資料',
 			'startup.hideDetails' => '隱藏詳細資料',
@@ -6767,16 +6944,16 @@ extension on TranslationsZhHant {
 			'startup.uploadDetails' => '上傳詳細資料',
 			'startup.repairStorage' => '修復儲存空間',
 			'startup.repairTitle' => '修復已儲存的資料？',
-			'startup.repairBodyCommon' => 'PlezyNG 的設定檔已損壞且無法讀取。修復會將所有設定重設為預設值。',
+			'startup.repairBodyCommon' => 'Pleazyng 的設定檔已損壞且無法讀取。修復會將所有設定重設為預設值。',
 			'startup.repairBodyOneCredential' => '有一筆已儲存的登入資訊損壞且無法讀取。修復僅會移除該筆資訊，其他設定將保持不變。',
 			'startup.repairBodySignInsKept' => '您的伺服器與使用者設定檔應可保持登入狀態。',
 			'startup.repairBodySignInsLost' => '保護已儲存登入資訊的金鑰無法從此檔案中復原，因此您必須重新登入每個伺服器與使用者設定檔。您媒體伺服器上的內容不受影響。',
-			'startup.repairBodySessionsUncertain' => '追蹤服務（MAL、AniList、Simkl、Trakt）與 Seerr 分別儲存，可能保留也可能遺失。PlezyNG 會明確告知保留了哪些項目。',
+			'startup.repairBodySessionsUncertain' => '追蹤服務（MAL、AniList、Simkl、Trakt）與 Seerr 分別儲存，可能保留也可能遺失。Pleazyng 會明確告知保留了哪些項目。',
 			'startup.repairConfirm' => '修復',
 			'startup.repairSucceeded' => '儲存空間已修復',
 			'startup.repairNeedsRestart' => '儲存空間已修復 — 需要重新啟動',
-			'startup.restartRequiredBody' => '您的資料已修復，但 PlezyNG 必須重新啟動才能使用。請關閉 PlezyNG 後重新開啟。',
-			'startup.quitPlezy' => '退出 PlezyNG',
+			'startup.restartRequiredBody' => '您的資料已修復，但 Pleazyng 必須重新啟動才能使用。請關閉 Pleazyng 後重新開啟。',
+			'startup.quitPlezy' => '退出 Pleazyng',
 			'startup.repairFailed' => '修復失敗',
 			'startup.repairKeptSignIns' => '您的伺服器與使用者設定檔仍保持登入狀態。',
 			'startup.repairLostSignIns' => '保護已儲存登入資訊的金鑰無法復原。您必須重新登入每個伺服器與使用者設定檔。',
@@ -6785,7 +6962,7 @@ extension on TranslationsZhHant {
 			'startup.backupWarning' => '其中包含您的登入憑證。請勿上傳或分享。',
 			'startup.deleteBackup' => '刪除副本',
 			'startup.backupDeleted' => '副本已刪除。',
-			'startup.previousFailureTitle' => 'PlezyNG 上次啟動失敗',
+			'startup.previousFailureTitle' => 'Pleazyng 上次啟動失敗',
 			'licenses.relatedPackages' => '相關套件',
 			'licenses.license' => '授權',
 			'licenses.licenseNumber' => ({required Object number}) => '授權條款 ${number}',
@@ -7165,7 +7342,7 @@ extension on TranslationsZhHant {
 			'watchTogether.inviteCopied' => '已複製邀請。請將其貼到訊息中。',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.inviteMessage' => ({required Object code}) => '來 PlezyNG 加入我的「一起看」房間：開啟「一起看」，選擇「加入房間」，然後輸入 ${code}。',
+			'watchTogether.inviteMessage' => ({required Object code}) => '來 Pleazyng 加入我的「一起看」房間：開啟「一起看」，選擇「加入房間」，然後輸入 ${code}。',
 			'watchTogether.openSessionControls' => '開啟「一起看」工作階段控制面板',
 			'watchTogether.reconnecting' => '正在重新連線…',
 			'watchTogether.reconnectingDescription' => '連線已中斷。您將自動重新加入房間。',
@@ -7191,7 +7368,7 @@ extension on TranslationsZhHant {
 			'watchTogether.chooseAnotherCopy' => '選擇其他副本',
 			'watchTogether.dontPlay' => '不要播放',
 			'watchTogether.unavailableTitle' => '您沒有這部影片',
-			'watchTogether.unavailableDescription' => 'PlezyNG 無法在您的媒體庫中找到這部影片。請自行選擇副本，或重新搜尋。',
+			'watchTogether.unavailableDescription' => 'Pleazyng 無法在您的媒體庫中找到這部影片。請自行選擇副本，或重新搜尋。',
 			'watchTogether.chooseCopy' => '選擇副本',
 			'watchTogether.searchAgain' => '重新搜尋',
 			'watchTogether.noCandidates' => '在您的媒體庫中找不到任何副本。',
@@ -7283,7 +7460,7 @@ extension on TranslationsZhHant {
 			'watchTogether.errors.relayFull' => '「一起看」目前忙碌中。請稍後再試。',
 			'watchTogether.errors.unreachable' => '無法連線至「一起看」中繼伺服器。請檢查網路連線。',
 			'watchTogether.errors.rateLimited' => '嘗試次數過多。請稍候再試。',
-			'watchTogether.errors.clientBlocked' => '此版本的 PlezyNG 無法使用中繼伺服器。請更新應用程式。',
+			'watchTogether.errors.clientBlocked' => '此版本的 Pleazyng 無法使用中繼伺服器。請更新應用程式。',
 			'watchTogether.errors.forbidden' => '只有主持人可以執行此操作。',
 			'watchTogether.errors.notInRoom' => '您不在房間中。',
 			'watchTogether.errors.alreadyInRoom' => '您已在房間中。',
@@ -7365,11 +7542,11 @@ extension on TranslationsZhHant {
 			'downloads.activeSyncRules' => '同步規則',
 			'downloads.reviewOrphanFiles' => '檢查無對應紀錄的下載',
 			'downloads.orphanReviewTitle' => '檢查無對應紀錄的下載',
-			'downloads.orphanReviewDescription' => '這些已標記的檔案位於 PlezyNG 預設管理的下載資料夾中，但沒有相符的下載紀錄或進行中的工作。刪除前請先檢查清單。',
+			'downloads.orphanReviewDescription' => '這些已標記的檔案位於 Pleazyng 預設管理的下載資料夾中，但沒有相符的下載紀錄或進行中的工作。刪除前請先檢查清單。',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} 個檔案 · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => '刪除 ${count} 個檔案',
 			'downloads.orphanCleanupNone' => '找不到無對應紀錄的下載檔案',
-			'downloads.orphanCleanupFailed' => 'PlezyNG 無法安全地掃描受管理的下載資料夾。沒有刪除任何檔案。',
+			'downloads.orphanCleanupFailed' => 'Pleazyng 無法安全地掃描受管理的下載資料夾。沒有刪除任何檔案。',
 			'downloads.orphanCleanupChanged' => '檢查期間下載清單已變更。清理前請重新檢查檔案。',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => '已刪除 ${count} 個無對應紀錄的檔案 · 釋出 ${size}',
 			'downloads.noSyncRules' => '沒有同步規則',
@@ -7391,14 +7568,14 @@ extension on TranslationsZhHant {
 			'downloads.backgroundWarning.bannerAction' => '詳細資料',
 			'downloads.backgroundWarning.sheetTitle' => '背景下載遭到封鎖',
 			'downloads.backgroundWarning.sheetTitleDegraded' => '背景下載可能受限',
-			'downloads.backgroundWarning.sheetIntro' => 'Android 正在阻止 PlezyNG 在背景穩定下載。',
-			'downloads.backgroundWarning.sheetIntroDegraded' => '你的裝置限制了 PlezyNG 可在背景下載的時機。',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'PlezyNG 的背景使用受限。請將其電池用量或背景使用設定為「無限制」。',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android 已將 PlezyNG 設為受限待命狀態。請將電池用量設為「無限制」。',
+			'downloads.backgroundWarning.sheetIntro' => 'Android 正在阻止 Pleazyng 在背景穩定下載。',
+			'downloads.backgroundWarning.sheetIntroDegraded' => '你的裝置限制了 Pleazyng 可在背景下載的時機。',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Pleazyng 的背景使用受限。請將其電池用量或背景使用設定為「無限制」。',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android 已將 Pleazyng 設為受限待命狀態。請將電池用量設為「無限制」。',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => '下載通知已關閉，因此可能無法查看進度或使用控制項。',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => '通知已關閉。在 Android 13 或更新版本中，長時間背景下載需要啟用通知。',
 			'downloads.backgroundWarning.reasonDataSaver' => '已開啟數據節省模式，因此系統會封鎖使用行動數據的背景下載。透過 Wi-Fi 下載應仍可正常執行。',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'PlezyNG 在背景執行時，下載屢次停止。請檢查 PlezyNG 的電池用量或背景使用設定。',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'Pleazyng 在背景執行時，下載屢次停止。請檢查 Pleazyng 的電池用量或背景使用設定。',
 			'downloads.backgroundWarning.openSettings' => '開啟設定',
 			'downloads.backgroundWarning.stillNotWorking' => '裝置專屬說明',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => '查看適用於你裝置的步驟；若問題持續發生，也可從設定 › 查看日誌傳送日誌。',
@@ -7469,19 +7646,19 @@ extension on TranslationsZhHant {
 			'companionRemote.session.stopServer' => '停止伺服器',
 			'companionRemote.session.minimize' => '最小化',
 			'companionRemote.session.manualAddressHint' => '手動連線位址：',
-			'companionRemote.pairing.discoveryDescription' => '使用相同 Plex 帳戶的 PlezyNG 裝置會顯示在此處',
+			'companionRemote.pairing.discoveryDescription' => '使用相同 Plex 帳戶的 Pleazyng 裝置會顯示在此處',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => '正在連線…',
 			'companionRemote.pairing.searchingForDevices' => '正在搜尋裝置…',
 			'companionRemote.pairing.noDevicesFound' => '在區域網路上找不到裝置',
-			'companionRemote.pairing.noDevicesHint' => '請在電腦上開啟 PlezyNG，並確認兩台裝置使用相同的 Wi-Fi 網路',
+			'companionRemote.pairing.noDevicesHint' => '請在電腦上開啟 Pleazyng，並確認兩台裝置使用相同的 Wi-Fi 網路',
 			'companionRemote.pairing.availableDevices' => '可用裝置',
 			'companionRemote.pairing.manualConnection' => '手動連線',
 			'companionRemote.pairing.cryptoInitFailed' => '無法啟動安全連線。請先登入 Plex。',
 			'companionRemote.pairing.validationHostRequired' => '請輸入主機位址',
 			'companionRemote.pairing.validationHostFormat' => '格式必須為 IP 位址:連接埠（例如 192.168.1.100:48632）',
 			'companionRemote.pairing.connectionTimedOut' => '連線逾時。請確認兩台裝置都使用相同網路。',
-			'companionRemote.pairing.sessionNotFound' => '找不到裝置。請確認主機上已啟動 PlezyNG。',
+			'companionRemote.pairing.sessionNotFound' => '找不到裝置。請確認主機上已啟動 Pleazyng。',
 			'companionRemote.pairing.authFailed' => '驗證失敗。兩台裝置需要登入相同的 Plex 帳戶。',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => '連線失敗：${error}',
 			'companionRemote.pairing.codeTitle' => '雙重程式碼',
@@ -7745,11 +7922,11 @@ extension on TranslationsZhHant {
 			'trakt.connected' => '已連線',
 			'trakt.connectedAs' => ({required Object username}) => '已以 @${username} 身分連線',
 			'trakt.disconnectConfirm' => '中斷與 Trakt 帳戶的連結？',
-			'trakt.disconnectConfirmBody' => 'PlezyNG 將停止向 Trakt 傳送事件。您可以隨時重新連線。',
+			'trakt.disconnectConfirmBody' => 'Pleazyng 將停止向 Trakt 傳送事件。您可以隨時重新連線。',
 			'trakt.scrobble' => '即時同步記錄（Scrobble）',
 			'trakt.scrobbleDescription' => '在播放時向 Trakt 傳送播放、暫停和停止等狀態。',
 			'trakt.watchedSync' => '同步已觀看狀態',
-			'trakt.watchedSyncDescription' => '在 PlezyNG 中將項目標記為已觀看時，也會在 Trakt 上標記為已觀看。',
+			'trakt.watchedSyncDescription' => '在 Pleazyng 中將項目標記為已觀看時，也會在 Trakt 上標記為已觀看。',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => '連線至 Seerr',
 			'seerr.serverUrl' => '伺服器 URL',
@@ -7759,10 +7936,10 @@ extension on TranslationsZhHant {
 			'seerr.signInWithEmby' => '使用 Emby 登入',
 			'seerr.signInWithLocal' => '使用本地帳戶',
 			'seerr.email' => '電子郵件',
-			'seerr.noSignInMethods' => '此 Seerr 執行個體未提供 PlezyNG 支援的登入方式。',
+			'seerr.noSignInMethods' => '此 Seerr 執行個體未提供 Pleazyng 支援的登入方式。',
 			'seerr.instance' => '執行個體',
 			'seerr.disconnectConfirm' => '中斷與 Seerr 的連線？',
-			'seerr.disconnectConfirmBody' => 'PlezyNG 將忘記此 Seerr 連線資訊。您可以隨時重新連線。',
+			'seerr.disconnectConfirmBody' => 'Pleazyng 將忘記此 Seerr 連線資訊。您可以隨時重新連線。',
 			'seerr.request' => '請求',
 			'seerr.request4k' => '請求 4K 版本',
 			'seerr.seasons' => '季',
@@ -7787,7 +7964,7 @@ extension on TranslationsZhHant {
 			'seerr.statusBlocklisted' => '已加入封鎖清單',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => '無法連線至 ${url}：${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => '在 ${url} 找不到 Seerr 執行個體（HTTP ${status}）',
-			'seerr.behindAuthProxy' => '回應來自需要驗證的反向代理（SSO 或 HTTP 驗證），而非 Seerr。PlezyNG 無法透過它登入：請讓 Seerr 的 /api/v1 路徑為此應用程式繞過代理，或使用可直接連線至 Seerr 的位址。',
+			'seerr.behindAuthProxy' => '回應來自需要驗證的反向代理（SSO 或 HTTP 驗證），而非 Seerr。Pleazyng 無法透過它登入：請讓 Seerr 的 /api/v1 路徑為此應用程式繞過代理，或使用可直接連線至 Seerr 的位址。',
 			'seerr.invalidUrl' => '請輸入伺服器位址，例如 https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => '此 Seerr 執行個體不支援 Quick Connect。需要 Seerr 3.4 或更新版本。',
 			'seerr.notInitialized' => '此 Seerr 執行個體尚未完成首次執行設定',
@@ -7808,7 +7985,7 @@ extension on TranslationsZhHant {
 			'services.scrobble' => '自動同步播放進度',
 			'services.scrobbleDescription' => '觀賞完一集或一部電影後自動更新您的外部列表。',
 			'services.disconnectConfirm' => ({required Object service}) => '中斷與 ${service} 的連線？',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG 將停止更新 ${service}。您可以隨時重新連線。',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng 將停止更新 ${service}。您可以隨時重新連線。',
 			'services.connectFailed' => ({required Object service}) => '無法連線至 ${service}。請重試。',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -7816,8 +7993,8 @@ extension on TranslationsZhHant {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => '重新連線 Simkl',
-			'services.simklReconnect.subtitle' => 'Simkl 即將停用此連線所使用的登入方式。重新連線會開啟 simkl.com 以核准 PlezyNG — PlezyNG 絕不會看到您的密碼。您的觀看紀錄仍會保留在 Simkl 上。',
-			'services.deviceCode.title' => ({required Object service}) => '在 ${service} 啟用 PlezyNG',
+			'services.simklReconnect.subtitle' => 'Simkl 即將停用此連線所使用的登入方式。重新連線會開啟 simkl.com 以核准 Pleazyng — Pleazyng 絕不會看到您的密碼。您的觀看紀錄仍會保留在 Simkl 上。',
+			'services.deviceCode.title' => ({required Object service}) => '在 ${service} 啟用 Pleazyng',
 			'services.deviceCode.instructions' => '掃描 QR 碼，或前往下方網址並輸入此代碼：',
 			'services.deviceCode.openToActivate' => ({required Object service}) => '開啟 ${service} 進行啟用',
 			'services.deviceCode.copyCode' => '複製啟用代碼',
@@ -7850,8 +8027,8 @@ extension on TranslationsZhHant {
 			'streaming.title' => '雲端與外掛串流',
 			'streaming.subtitle' => '連結 Debrid 帳戶，即可瀏覽雲端檔案並播放支援的串流。相容 Stremio 的外掛會在電影和影集詳細資料頁提供播放選項。連線資訊會在此裝置上加密，並儲存在此個人資料中。',
 			'streaming.connectionsConfigured' => ({required Object count}) => '已連線的來源：${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG 無法解鎖已儲存的串流設定。請先解鎖裝置，再重試後變更連線。',
-			'streaming.settingsUnreadable' => 'PlezyNG 無法解鎖這些已儲存的連線。清除後即可重新連線服務。',
+			'streaming.settingsLoadFailed' => 'Pleazyng 無法解鎖已儲存的串流設定。請先解鎖裝置，再重試後變更連線。',
+			'streaming.settingsUnreadable' => 'Pleazyng 無法解鎖這些已儲存的連線。清除後即可重新連線服務。',
 			'streaming.clearUnreadableSettings' => '清除已儲存的設定',
 			'streaming.clearUnreadableSettingsConfirm' => '清除已儲存的串流設定？',
 			'streaming.clearUnreadableSettingsBody' => '這會從此個人資料移除所有已儲存的服務供應商帳戶和外掛網址，而且無法復原。',
@@ -7863,11 +8040,11 @@ extension on TranslationsZhHant {
 			'streaming.catalogFiltersRequired' => '選取瀏覽此目錄所需的篩選條件。',
 			'streaming.catalogRequiredLabel' => '必填',
 			'streaming.importFromStremio' => '從 Stremio 匯入',
-			'streaming.stremioImportInstructions' => '掃描 QR 碼或開啟連結。登入 Stremio 並核准要求。PlezyNG 只會讀取你的外掛清單，不會要求 Stremio 密碼或變更設定。',
+			'streaming.stremioImportInstructions' => '掃描 QR 碼或開啟連結。登入 Stremio 並核准要求。Pleazyng 只會讀取你的外掛清單，不會要求 Stremio 密碼或變更設定。',
 			'streaming.stremioImportOpen' => '開啟 Stremio 連結',
 			'streaming.stremioImportCode' => '連結代碼',
 			'streaming.stremioImportPreviewTitle' => '選擇外掛',
-			'streaming.stremioImportPreviewBody' => '選取要連線至 PlezyNG 的外掛。此匯入僅接受 HTTPS 網址。',
+			'streaming.stremioImportPreviewBody' => '選取要連線至 Pleazyng 的外掛。此匯入僅接受 HTTPS 網址。',
 			'streaming.stremioImportIgnored' => ({required Object count}) => '因網址不受支援或不安全而略過的外掛：${count}。',
 			'streaming.stremioCatalogs' => '目錄',
 			'streaming.stremioStreams' => '串流',
@@ -7881,7 +8058,7 @@ extension on TranslationsZhHant {
 			'streaming.addByManifestUrl' => '透過資訊清單網址新增',
 			'streaming.addAddon' => '新增外掛',
 			'streaming.manifestUrl' => '外掛資訊清單網址',
-			'streaming.manifestUrlHint' => '貼上外掛的資訊清單網址。連線前，PlezyNG 會檢查其是否支援目錄或串流資源。',
+			'streaming.manifestUrlHint' => '貼上外掛的資訊清單網址。連線前，Pleazyng 會檢查其是否支援目錄或串流資源。',
 			'streaming.allowHttp' => '允許未加密的 HTTP 網址',
 			'streaming.allowHttpDescription' => '僅適用於私人網路中可信任的外掛。',
 			'streaming.installAddon' => '連線外掛',
@@ -7889,20 +8066,20 @@ extension on TranslationsZhHant {
 			'streaming.addonRemoved' => '外掛已移除',
 			'streaming.addonToggle' => '啟用外掛',
 			'streaming.addonEmpty' => '尚未連線外掛',
-			'streaming.addonError' => 'PlezyNG 無法連線至此外掛。請檢查資訊清單網址並重試。',
+			'streaming.addonError' => 'Pleazyng 無法連線至此外掛。請檢查資訊清單網址並重試。',
 			'streaming.addonPrivacy' => '僅連線你信任的外掛。搜尋時，外掛會收到你要搜尋的標題，並可能傳回第三方串流連結。',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => '透過 Real-Debrid 帳戶播放支援的種子串流。',
 			'streaming.connectRealDebrid' => '使用 QR 碼連線',
 			'streaming.realDebridConnected' => ({required Object username}) => '已連線：${username}',
-			'streaming.realDebridInstructions' => '掃描 QR 碼或開啟連結，接著輸入此啟用碼以連線 PlezyNG：',
+			'streaming.realDebridInstructions' => '掃描 QR 碼或開啟連結，接著輸入此啟用碼以連線 Pleazyng：',
 			'streaming.realDebridActivate' => '開啟 Real-Debrid 以啟用',
 			'streaming.realDebridCode' => '啟用碼',
 			'streaming.realDebridConnectFailed' => '無法連線至 Real-Debrid。請再試一次。',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => '透過 AllDebrid 帳戶播放支援的種子串流。',
 			'streaming.connectAllDebrid' => '使用 QR 碼連線',
-			'streaming.allDebridInstructions' => '掃描 QR 碼或開啟連結以授權 PlezyNG。連線期間請保持此畫面開啟：',
+			'streaming.allDebridInstructions' => '掃描 QR 碼或開啟連結以授權 Pleazyng。連線期間請保持此畫面開啟：',
 			'streaming.allDebridActivate' => '開啟 AllDebrid 以啟用',
 			'streaming.allDebridCode' => '啟用 PIN 碼',
 			'streaming.allDebridConnectFailed' => '無法連線至 AllDebrid。請再試一次。',
@@ -7913,13 +8090,13 @@ extension on TranslationsZhHant {
 			'streaming.connectApiKey' => '使用 API 金鑰連線',
 			'streaming.apiKeyTitle' => ({required Object service}) => '連線 ${service}',
 			'streaming.apiKey' => 'API 金鑰',
-			'streaming.apiKeyHint' => ({required Object service}) => '貼上 ${service} 帳戶設定中的 API 金鑰。PlezyNG 會在此裝置上加密金鑰，並將其儲存在此個人資料中。',
+			'streaming.apiKeyHint' => ({required Object service}) => '貼上 ${service} 帳戶設定中的 API 金鑰。Pleazyng 會在此裝置上加密金鑰，並將其儲存在此個人資料中。',
 			'streaming.apiKeyConnectFailed' => '無法驗證此 API 金鑰。請檢查後再試一次。',
 			'streaming.accountConnected' => ({required Object username}) => '已連線：${username}',
 			'streaming.streamNeedsProvider' => '連線 Debrid 服務以播放此種子串流。',
 			'streaming.playViaProvider' => '透過 Debrid 播放',
 			'streaming.disconnectConfirm' => ({required Object service}) => '中斷 ${service} 連線？',
-			'streaming.disconnectBody' => 'PlezyNG 會移除此裝置的授權，不會變更服務供應商中的檔案或進行中的傳輸。',
+			'streaming.disconnectBody' => 'Pleazyng 會移除此裝置的授權，不會變更服務供應商中的檔案或進行中的傳輸。',
 			'streaming.streamsTitle' => '選擇串流',
 			'streaming.noStreams' => '找不到此標題的串流。',
 			'streaming.manageConnections' => '管理串流服務',
@@ -7935,7 +8112,7 @@ extension on TranslationsZhHant {
 			'streaming.streamUnsupported' => '應用程式內播放器不支援此串流格式。',
 			'streaming.remoteNeedsEpisode' => '請先選擇一集，再搜尋串流。',
 			'streaming.remoteNeedsEpisodeNumber' => '此集缺少季數或集數。',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG 找不到此標題的 IMDb 或 TMDB ID。',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng 找不到此標題的 IMDb 或 TMDB ID。',
 			'streaming.watchWithServices' => '透過已連線的服務觀看',
 			'streaming.chooseEpisode' => '選擇一集',
 			'streaming.episodes' => '影集',
@@ -8021,15 +8198,15 @@ extension on TranslationsZhHant {
 			'notifications.newEpisodeTitle' => '新集',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => '每個功能都免費嘗試7天',
-			'appAccess.description' => '開始一個七天的試用,完全訪問每個PlezyNG功能,在試用期間沒有費用,沒有訂閱,試用後,在您的商店價格上一生購買,終身開鎖PlezyNG。',
-			'appAccess.trialEndedDescription' => '依商店顯示的價格一次性購買，即可終身解鎖 PlezyNG 的全部功能，無須訂閱。',
+			'appAccess.description' => '開始一個七天的試用,完全訪問每個Pleazyng功能,在試用期間沒有費用,沒有訂閱,試用後,在您的商店價格上一生購買,終身開鎖Pleazyng。',
+			'appAccess.trialEndedDescription' => '依商店顯示的價格一次性購買，即可終身解鎖 Pleazyng 的全部功能，無須訂閱。',
 			'appAccess.startTrial' => '開始我的7天免費試驗',
 			'appAccess.trialActive' => '您的7天全功能測試已活躍。',
 			'appAccess.trialEnded' => '你的七天審判結束了',
 			'appAccess.trialStartFailed' => '我無法在這個裝置上儲存測試,請再試一次。',
-			'appAccess.lifetimeTitle' => 'PlezyNG 終身禁用',
-			'appAccess.lifetimeBody' => '感謝!您終身訪問所有 PlezyNG 功能。',
-			'appAccess.manageTitle' => 'PlezyNG 終身訪問',
+			'appAccess.lifetimeTitle' => 'Pleazyng 終身禁用',
+			'appAccess.lifetimeBody' => '感謝!您終身訪問所有 Pleazyng 功能。',
+			'appAccess.manageTitle' => 'Pleazyng 終身訪問',
 			'appAccess.manageDescription' => '每個功能都免費嘗試7天,然後用一個付款解鎖一生的一切,以您的商店的價格。',
 			'appAccess.buy' => ({required Object price}) => '解鎖所有功能為 ${price}',
 			'appAccess.loadingPrice' => '貨物價格...',
@@ -8037,11 +8214,11 @@ extension on TranslationsZhHant {
 			'appAccess.restore' => '恢復終身購買',
 			'appAccess.pending' => '您的購買正在等待付款或核准。商店完成交易後，終身使用權限將立即解鎖。',
 			'appAccess.storeUnavailable' => '目前無法購買。請確認您已登入商店，且此裝置允許購買。',
-			'appAccess.productNotFound' => 'PlezyNG 終身解鎖 目前尚未在本商店提供。',
+			'appAccess.productNotFound' => 'Pleazyng 終身解鎖 目前尚未在本商店提供。',
 			'appAccess.productQueryFailed' => '無法收取商店價格,請檢查您的連線並嘗試一次。',
 			'appAccess.purchaseFailed' => '購買不錯了,再試一次。',
 			'appAccess.restoreFailed' => '無法到達商店恢復您的購買,再試一次。',
-			'appAccess.nothingToRestore' => '已找到第 PlezyNG 終身購買號,用於此商店帳戶。',
+			'appAccess.nothingToRestore' => '已找到第 Pleazyng 終身購買號,用於此商店帳戶。',
 			'detail.endsAt' => ({required Object time}) => '預計 ${time} 結束',
 			'watchLink.serverUnavailable' => '無法訪問 Plex 伺服器此連結。',
 			'watchLink.notFound' => '我無法在您的伺服器上找到此節目或電影 Plex。',
@@ -8066,7 +8243,7 @@ extension on TranslationsZhHant {
 			'homeLayout.syncAccountOff' => '關閉:此裝置保持其自己的配置。',
 			'homeLayout.syncNow' => '現在的Sync',
 			'homeLayout.plexHomeManager' => 'Plex 主持人',
-			'homeLayout.managePlexRows' => '管理 Plex 行在 Plezy',
+			'homeLayout.managePlexRows' => '管理 Plex 行在 Pleazyng',
 			'homeLayout.managePlexRowsDescription' => '開放組織主選行列',
 			'homeLayout.organizeHomeRows' => '安排家居行',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} 行: 移動, 英雄, 自動滑動, 移除',
@@ -8136,7 +8313,7 @@ extension on TranslationsZhHant {
 			'homeLayout.organizeRowsHint' => '選擇行(或保持):移動 · 左/右:行選項 · 返回:完成',
 			'homeLayout.layoutNavDescription' => '選擇行、圖書館和收藏類別',
 			'homeLayout.editHomeRow' => '編輯 主頁 序列',
-			'homeLayout.resetHeroButton' => '恢復 Plezy 預設焦點橫幅配置',
+			'homeLayout.resetHeroButton' => '恢復 Pleazyng 預設焦點橫幅配置',
 			'homeLayout.reorderingUnlocked' => '重新排序 開鎖',
 			'homeLayout.reorderingLocked' => '重新安排鎖',
 			'homeLayout.rowsCanBeDragged' => '可以拖繩 - 點選鎖,以防止',
@@ -8153,13 +8330,13 @@ extension on TranslationsZhHant {
 			'homeLayout.tapHeroCardDescription' => '選擇打字或選擇一個英雄卡是否開始播放,或者開啟它的細節。',
 			'homeLayout.heroTapPlayDescription' => '立即啟動所選擇的專案。',
 			'homeLayout.heroTapDetailsDescription' => '在選擇行動之前,開啟所選專案的詳細資訊。',
-			'platform.localNetworkPermission' => 'PlezyNG 會連線至您區域網路中的媒體伺服器和播放裝置。',
-			'platform.locationPermission' => '當 iOS 要求提供位置權限才能偵測區域網路並連線至媒體伺服器時，PlezyNG 會使用此權限。',
+			'platform.localNetworkPermission' => 'Pleazyng 會連線至您區域網路中的媒體伺服器和播放裝置。',
+			'platform.locationPermission' => '當 iOS 要求提供位置權限才能偵測區域網路並連線至媒體伺服器時，Pleazyng 會使用此權限。',
 			'platform.photoLibraryPermission' => '從照片圖庫中選取圖片，用作媒體封面等影像。',
 			'platform.cameraPermission' => '掃描 QR 碼以配對 Companion Remote。',
 			'universalMedia.title' => '開放媒體',
 			'universalMedia.shortcutHelp' => '播放此會議的連結、播放列表或檔案。',
-			'universalMedia.intro' => '開啟連結、播放列表或檔案 Playback 使用 PlezyNG 的標準播放器,並且不會將歷史新增到您的圖書館。',
+			'universalMedia.intro' => '開啟連結、播放列表或檔案 Playback 使用 Pleazyng 的標準播放器,並且不會將歷史新增到您的圖書館。',
 			'universalMedia.openWhat' => '你想開啟什麼?',
 			'universalMedia.stream' => '流地址',
 			'universalMedia.playlist' => '播放列表',
@@ -8210,13 +8387,13 @@ extension on TranslationsZhHant {
 			'universalMedia.stopTransfer' => '停止轉讓和取消地址',
 			'universalMedia.startTransfer' => '轉移開始',
 			'universalMedia.wifiImportedFiles' => 'Wi-Fi 傳輸',
-			'universalMedia.wifiBrowserTitle' => '向 PlezyNG 傳送檔案',
+			'universalMedia.wifiBrowserTitle' => '向 Pleazyng 傳送檔案',
 			'universalMedia.wifiBrowserIntro' => '選擇音訊、影片、電子書或漫畫檔案傳送. 這些檔案儲存在該裝置的檔案和書籍庫中. 最多: 100 個檔案,每個檔案 4 GiB,總共 10 GiB。',
 			'universalMedia.uploadFilesLabel' => '檔案傳送',
 			'universalMedia.uploadSelected' => '下載所選擇的檔案',
 			'universalMedia.uploadSelectFirst' => '首先選擇一個或多個檔案。',
 			'universalMedia.uploading' => '傳送',
-			'universalMedia.uploadComplete' => '檔案新增到 PlezyNG。',
+			'universalMedia.uploadComplete' => '檔案新增到 Pleazyng。',
 			'universalMedia.uploadFailed' => '檔案無法新增,請保持此頁面開放並再次嘗試。',
 			'universalMedia.liveCue' => '生活',
 			'universalMedia.liveSession' => '直播流',
@@ -8244,7 +8421,7 @@ extension on TranslationsZhHant {
 			'universalMedia.recordingActive' => '放棄播放停止並儲存它。',
 			'universalMedia.recordingFormatHelp' => '對於影片,選擇 MKV 或 MPEG-TS. 為音訊,選擇 MKA 或 MKV。',
 			'universalMedia.replaceRecordingTitle' => '取代這張錄音?',
-			'universalMedia.replaceRecordingHelp' => 'PlezyNG 在錄製時備份現有檔案;如果無法儲存新錄製,PlezyNG 將備份恢復。',
+			'universalMedia.replaceRecordingHelp' => 'Pleazyng 在錄製時備份現有檔案;如果無法儲存新錄製,Pleazyng 將備份恢復。',
 			'universalMedia.replaceRecording' => '替換檔案',
 			'universalMedia.discHelp' => '在此計算機的光學驅動器中開啟磁碟,您也可以從裝置檔案中開啟ISO影象。',
 			'universalMedia.discs' => '光學磁碟',
@@ -8269,7 +8446,7 @@ extension on TranslationsZhHant {
 			'universalMedia.converterUnsupportedInput' => '選擇音訊或影片檔案。',
 			'universalMedia.converterLocalOnly' => '所選擇的檔案不作為本地裝置路徑可用。',
 			'universalMedia.converterReplaceTitle' => '取代此檔案?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG 恢復現有檔案,直到轉換的副本被儲存。',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng 恢復現有檔案,直到轉換的副本被儲存。',
 			'universalMedia.converterStarting' => '開始 FFmpeg...',
 			'universalMedia.converterProgress' => '轉換到這個計算機......',
 			'universalMedia.converterComplete' => '轉換完成,新檔案已準備好。',
@@ -8293,7 +8470,7 @@ extension on TranslationsZhHant {
 			'universalMedia.captureDefaultAudio' => '預設音訊輸入',
 			'universalMedia.captureWaylandHelp' => 'Wayland 限制此 XWayland 捕獲到 X display. XWayland 以外的 Windows 可能不會出現。',
 			'universalMedia.captureFrameRate' => '記錄框率',
-			'universalMedia.capturePrivacy' => '錄製僅儲存到您選擇的檔案。 微型錄制是可選的. PlezyNG 不會上傳錄製。',
+			'universalMedia.capturePrivacy' => '錄製僅儲存到您選擇的檔案。 微型錄制是可選的. Pleazyng 不會上傳錄製。',
 			'universalMedia.captureSaveAs' => '儲存螢幕錄製如',
 			'universalMedia.captureExtensionMismatch' => '在 .mp4 中選擇終端的檔名。',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg 或 H.264 影片編碼器不適用. 安裝支援的 FFmpeg 構建,然後再次嘗試。',
@@ -8307,7 +8484,7 @@ extension on TranslationsZhHant {
 			'universalMedia.captureStop' => '停止和拯救',
 			'universalMedia.captureMode' => '捕捉',
 			'universalMedia.shareMode' => '分享',
-			'universalMedia.shareIntro' => '將本地媒體檔案傳送到您的私人網路上的另一個裝置. PlezyNG 建立一個暫時的 HLS 流。',
+			'universalMedia.shareIntro' => '將本地媒體檔案傳送到您的私人網路上的另一個裝置. Pleazyng 建立一個暫時的 HLS 流。',
 			'universalMedia.sharePrivacy' => '您的本地網路的任何人,誰接收私人連結可以觀看,而它是活躍的. 連結結束後60分鐘. 停止共享,關閉伺服器並取消連結。',
 			'universalMedia.shareChooseFile' => '選擇媒體檔案',
 			'universalMedia.shareChooseHelp' => '選擇一個本地的音訊或影片檔案. 該檔案留在此計算機上。',
@@ -8320,7 +8497,7 @@ extension on TranslationsZhHant {
 			'universalMedia.shareOpenUrl' => '在另一臺裝置上的一個播放器中開啟此地址',
 			'universalMedia.shareQrLabel' => '臨時流地址的QR程式碼',
 			'universalMedia.shareQrHelp' => '掃描與同一私人網路連線的相容播放器。',
-			'universalMedia.shareHttpHint' => '此流使用未加密的 HTTP. 在 PlezyNG 中,允許 HTTP 在開啟它之前。',
+			'universalMedia.shareHttpHint' => '此流使用未加密的 HTTP. 在 Pleazyng 中,允許 HTTP 在開啟它之前。',
 			'universalMedia.shareCopyUrl' => '複製流地址',
 			'universalMedia.shareExpiresLabel' => '連結終止',
 			'universalMedia.shareStarting' => '準備流...',
@@ -8345,7 +8522,7 @@ extension on TranslationsZhHant {
 			'universalMedia.extensionInstall' => '新增服務',
 			'universalMedia.extensionReplace' => '更新服務',
 			'universalMedia.extensionRemoveTitle' => '刪除此搜尋服務?',
-			'universalMedia.extensionRemoveHelp' => '這將取消該服務從此個人資料中. PlezyNG 不聯絡其終點。',
+			'universalMedia.extensionRemoveHelp' => '這將取消該服務從此個人資料中. Pleazyng 不聯絡其終點。',
 			'universalMedia.extensionRemove' => '取消服務',
 			'universalMedia.extensionInvalidManifest' => '此檔案不是一個支援的擴充套件顯而易見. 檢視 Open media 格式指南。',
 			'universalMedia.extensionSaveFailed' => '該擴充套件無法儲存到活躍的個人資料。',
@@ -8488,12 +8665,12 @@ extension on TranslationsZhHant {
 			'fileSources.none' => '無',
 			'fileSources.fullscreen' => '全螢幕',
 			'fileSources.syncLocation' => '進展同步資料夾(可選)',
-			'fileSources.syncLocationHint' => '用於儲存 PlezyNG 狀態的專用 WebDAV 資料夾。採用條件式寫入，不會變更媒體檔案。',
+			'fileSources.syncLocationHint' => '用於儲存 Pleazyng 狀態的專用 WebDAV 資料夾。採用條件式寫入，不會變更媒體檔案。',
 			'fileSources.audiobooks' => '音訊書籍',
 			'fileSources.comics' => '漫畫',
 			'fileSources.scan' => '掃描書籍和媒體',
 			'fileSources.browserReader' => '開放讀者',
-			'fileSources.browserReaderHelp' => '閱讀器在您的瀏覽器中開放. 保持 PlezyNG 開放,以儲存您的位置和筆記。',
+			'fileSources.browserReaderHelp' => '閱讀器在您的瀏覽器中開放. 保持 Pleazyng 開放,以儲存您的位置和筆記。',
 			'fileSources.on' => '到',
 			'fileSources.advancedSetup' => 'App 登記',
 			'fileSources.microsoftSignIn' => '與Microsoft登入',
@@ -8534,7 +8711,7 @@ extension on TranslationsZhHant {
 			'fileSources.importInterrupted' => '進口中斷 · 刪除清理',
 			'fileSources.errorQuotaExceeded' => '已達離線儲存空間上限。請提高上限或移除已下載的副本。',
 			'fileSources.errorStorageLow' => '沒有足夠的免費裝置儲存,以保留保護備份。',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG無法檢查免費裝置儲存,所以寫作停止了。',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng無法檢查免費裝置儲存,所以寫作停止了。',
 			'fileSources.removeDownloadJob' => '刪除下載',
 			'fileSources.downloadAlreadyComplete' => '此下載完成之前,它可以被刪除. 該專案現在可用於離線。',
 			'fileSources.confirmRemoveDownloadJob' => '要移除此下載並捨棄已下載的部分資料嗎？閱讀位置和筆記會保留。',
@@ -8575,7 +8752,7 @@ extension on TranslationsZhHant {
 			'lending.openLibraryNote' => '探索 Open Library 的目錄。每本書的頁面都會顯示閱讀和借閱選項。',
 			'lending.more' => '載入更多',
 			'lending.gateway' => '圖書館登入服務',
-			'lending.gatewayHint' => '由您的圖書館或管理員提供,PlezyNG。',
+			'lending.gatewayHint' => '由您的圖書館或管理員提供,Pleazyng。',
 			'lending.advanced' => '圖書館整合',
 			'lending.loadLibraries' => '選擇您的圖書館',
 			'lending.expired' => '此借閱已到期。',
@@ -8697,7 +8874,7 @@ extension on TranslationsZhHant {
 			'sourceSetup.subtitlePrivacy' => '請從 opensubtitles.com 取得 API 金鑰。搜尋會傳送影片標題和可用的 IMDb/TMDB ID，絕不傳送影片檔案。金鑰和選填的帳戶認證資料會與此來源一同加密儲存。',
 			'sourceSetup.automaticMetadata' => '自動取得線上影片中繼資料',
 			'sourceSetup.metadataPrivacy' => '只傳送檔名中的標題、年份和集數，或 NFO ID，絕不傳送媒體或認證資料。NFO 欄位始終優先。',
-			'sourceSetup.nfsEncryptionFailure' => '使用加密 NFS 時，請確認 NAS 的兩項服務皆支援 RFC 9289 和 TLS 1.3，並核對憑證名稱及匯出 UID/GID。PlezyNG 不會在未加密的情況下重試此連線。',
+			'sourceSetup.nfsEncryptionFailure' => '使用加密 NFS 時，請確認 NAS 的兩項服務皆支援 RFC 9289 和 TLS 1.3，並核對憑證名稱及匯出 UID/GID。Pleazyng 不會在未加密的情況下重試此連線。',
 			'sourceSetup.sourceConnecting' => '正在連線至來源',
 			'sourceSetup.metadataSearchPrivacy' => '此標題搜尋由 Trakt 處理。只會傳送您輸入的標題，不會傳送影片或來源認證資料。',
 			'sourceSetup.chooseMatch' => '選擇符合的結果',
@@ -8804,7 +8981,7 @@ extension on TranslationsZhHant {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside PlezyNG.',
+			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
 			'games.touchSetup' => 'On-screen controls',
@@ -8817,7 +8994,6 @@ extension on TranslationsZhHant {
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
-			'games.helpBody' => 'Enable Games for your profile, choose a computer and approve the first connection. Steam can open Big Picture or launch a saved game shortcut inside PlezyNG on receivers that support it. Connect Companion Remote to combine installed games from your computers in one library. Steam pairing does not grant access to a private account library.\n\nSteam receivers are experimental on Android, Linux and Apple. The stream menu provides controller, audio and connection controls. Pyrowave is an optional codec on compatible Android and Apple receivers and needs a fast network.\n\nPairing requires the host’s approval. Sunshine QR codes open its PIN page without carrying credentials. For access away from home, use the computer’s VPN address. Automatic discovery normally stays on the local network.\n\nDisconnecting leaves the game running on the computer.',
 			'games.cancel' => 'Cancel',
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',
@@ -8838,7 +9014,7 @@ extension on TranslationsZhHant {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => '此 Plezy 連結不有效。',
+			'deepLinks.invalid' => '此 Pleazyng 連結不有效。',
 			'deepLinks.profileNotFound' => ({required Object profile}) => '沒有個人資料符合“${profile}”。',
 			'deepLinks.serverUnavailable' => '我無法到達這個連結的伺服器。',
 			'deepLinks.notFound' => '我無法在圖書館中找到這個標題。',
@@ -8861,6 +9037,174 @@ extension on TranslationsZhHant {
 			'issueReport.privacy' => '草稿包含應用程式版本、平台和連線數量，不包含伺服器位址、帳戶或個人資料名稱、媒體標題及檔案路徑。',
 			'issueReport.logPrivacy' => '記錄檔為選填。上傳前請先檢查。記錄檔 ID 會加入草稿，而問題可能是公開的。',
 			'issueReport.openDraft' => '開啟 GitHub 草稿',
+			'romm.chooseFile' => 'Choose a game file',
+			'romm.chooseCopy' => 'Choose an exact game copy',
+			'romm.favorite' => 'Favorite',
+			'romm.startFresh' => 'Start from the beginning',
+			'romm.automatic' => 'Automatic',
+			'romm.noJoinable' => 'No games are accepting players.',
+			'romm.downloadAgain' => 'Download again',
+			'romm.offlineUnverified' => 'Saved offline. This server did not provide a checksum; only the local file fingerprint is available.',
+			'romm.achievementCount' => 'Achievements',
+			'romm.saveInProgress' => 'A save is still being captured. Keep the game open and try again.',
+			'romm.browserSaveHelp' => 'Use the player’s save and exit controls first. Then close this screen. Pending browser saves remain in this profile’s player storage.',
+			'romm.savedClose' => 'I saved; close the player',
+			'romm.cardImportRequired' => 'The streaming computer has an existing memory card. Keep it in your RomM account before playing, or explicitly erase that card.',
+			'romm.cardUnreadable' => 'The existing memory card could not be read. Cancel to recover it in RomM, or explicitly erase it to continue.',
+			'romm.adoptCard' => 'Keep existing card',
+			'romm.discardContainerCard' => 'Erase existing card',
+			'romm.coreVersionDifferent' => 'This state belongs to another core version. Use a compatible in-game save or start from the beginning.',
+			'romm.nativeCloudResume' => 'Resume saved progress',
+			'romm.streamSaving' => 'The server is saving. Wait for it to finish before exiting.',
+			'romm.noLocalSave' => 'There is no compatible local progress to restore.',
+			'romm.completedAll' => 'Completed 100%',
+			'romm.status' => 'Progress',
+			'romm.backlogged' => 'In backlog',
+			'romm.nowPlaying' => 'Now playing',
+			'romm.completed' => 'Completed',
+			'romm.playing' => 'Playing',
+			'romm.unplayed' => 'Unplayed',
+			'romm.syncComplete' => 'Saves synchronized',
+			'romm.netplayHelp' => 'Shared server sessions support joining. Browser netplay requires RomM’s own session authentication and is not enabled by device-token pairing.',
+			'romm.title' => 'RomM',
+			'romm.connect' => 'Connect RomM',
+			'romm.connections' => 'RomM libraries',
+			'romm.connectionHelp' => 'Browse your RomM collection and play supported games here.',
+			'romm.serverAddress' => 'Server address',
+			'romm.serverName' => 'Library name',
+			'romm.token' => 'Client API token',
+			'romm.pair' => 'Pair this device',
+			'romm.pairHelp' => 'Open the approval page on a signed-in device, review the requested access, and approve this code.',
+			'romm.openApproval' => 'Open approval page',
+			'romm.manualToken' => 'Use a client token',
+			'romm.manualTokenHelp' => 'Create a personal client token in RomM with library, save and device permissions.',
+			'romm.pairing' => 'Waiting for approval…',
+			'romm.cancel' => 'Cancel',
+			'romm.save' => 'Save',
+			'romm.close' => 'Close',
+			'romm.remove' => 'Disconnect',
+			'romm.removeHelp' => 'Remove this connection from this profile? Your server library and saves will remain available in RomM.',
+			'romm.refresh' => 'Refresh',
+			'romm.reconnect' => 'Reconnect',
+			'romm.sessionOnly' => 'Signed in for this session. Sign in again after restarting this device.',
+			'romm.allLibraries' => 'All libraries',
+			'romm.allPlatforms' => 'All platforms',
+			'romm.allCollections' => 'All collections',
+			'romm.more' => 'Load more games',
+			'romm.noGames' => 'No games found',
+			'romm.cached' => 'Showing saved library information.',
+			'romm.variants' => 'Other copies',
+			'romm.files' => 'Game files',
+			'romm.saves' => 'Saves and states',
+			'romm.noSaves' => 'No saves yet',
+			'romm.play' => 'Play',
+			'romm.resume' => 'Resume',
+			'romm.playWith' => 'Play with',
+			'romm.download' => 'Keep offline',
+			'romm.offline' => 'Available offline',
+			'romm.downloadProgress' => 'Downloading…',
+			'romm.cancelDownload' => 'Cancel download',
+			'romm.removeOffline' => 'Remove offline copy',
+			'romm.storage' => 'Offline storage',
+			'romm.storageLimit' => 'Storage limit (GiB)',
+			'romm.browser' => 'In-app browser player',
+			'romm.stream' => 'Stream from server',
+			'romm.native' => 'On this device',
+			'romm.emulatorJs' => 'EmulatorJS',
+			'romm.ruffle' => 'Ruffle',
+			'romm.jsDos' => 'js-dos',
+			'romm.pico8' => 'PICO-8',
+			'romm.easyRpg' => 'EasyRPG',
+			'romm.browserUnavailable' => 'An embedded browser player is not available in this build.',
+			'romm.nativeUnavailable' => 'The native emulator core is not installed in this build.',
+			'romm.refreshBeforePlay' => 'Refresh this library to check available players.',
+			'romm.missing' => 'This copy has no game files on the server.',
+			'romm.noRoute' => 'No compatible in-app player is available for this copy.',
+			'romm.firmware' => 'Firmware',
+			'romm.firmwareHelp' => 'Some systems need firmware. Manage it in RomM; the selected emulator reports any missing requirements at launch.',
+			'romm.achievements' => 'RetroAchievements',
+			'romm.achievementsHelp' => 'Achievement information comes from RomM. The browser player does not earn new achievements.',
+			'romm.screenshots' => 'Screenshots',
+			'romm.manual' => 'Manual',
+			'romm.importSave' => 'Import save',
+			'romm.exportSave' => 'Export',
+			'romm.importState' => 'Import state',
+			'romm.saveImported' => 'Save imported',
+			'romm.saveExported' => 'Save exported',
+			'romm.engine' => 'Emulator identity',
+			'romm.slot' => 'Save slot',
+			'romm.core' => 'Core identity',
+			'romm.compatibilityHelp' => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.',
+			'romm.saveConflict' => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.',
+			'romm.keepBoth' => 'Keep both',
+			'romm.useServer' => 'Use server copy',
+			'romm.replaceServer' => 'Replace server copy',
+			'romm.pendingSaves' => 'Saves waiting to sync',
+			'romm.sync' => 'Sync saves',
+			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
+			'romm.pause' => 'Pause',
+			'romm.kContinue' => 'Continue',
+			'romm.saveState' => 'Save state',
+			'romm.loadState' => 'Load state',
+			'romm.saveAndExit' => 'Save and exit',
+			'romm.exitWithoutSaving' => 'Exit without saving',
+			'romm.exitConfirm' => 'Finish this game session?',
+			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
+			'romm.starting' => 'Starting game…',
+			'romm.connecting' => 'Connecting…',
+			'romm.busy' => 'The streaming computer is occupied.',
+			'romm.streamEnded' => 'The streaming session ended.',
+			'romm.retry' => 'Try again',
+			'romm.disc' => 'Change disc',
+			'romm.memoryCard' => 'Memory card',
+			'romm.multiplayer' => 'Allow players to join',
+			'romm.join' => 'Join game',
+			'romm.copyLink' => 'Copy game link',
+			'romm.linkCopied' => 'Game link copied',
+			'romm.openLink' => 'Open game link',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
+			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
+			'romm.requestStatus' => 'Library indexing',
+			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',
+			'romm.touchControls' => 'Touch controls',
+			'romm.controls' => 'Controls',
+			'romm.resetControls' => 'Reset controls',
+			'romm.playerOne' => 'Player 1',
+			'romm.select' => 'Select',
+			'romm.start' => 'Start',
+			'romm.up' => 'Up',
+			'romm.down' => 'Down',
+			'romm.left' => 'Left',
+			'romm.right' => 'Right',
+			'romm.connectingStream' => 'Waiting for the server emulator…',
+			'romm.saveFailed' => 'Saving did not finish. Keep this session open and try again.',
+			'romm.httpHelp' => 'This server uses unencrypted HTTP. Connect on a network you trust.',
+			'romm.invalidAddress' => 'Enter an HTTP or HTTPS server address without a password, query or fragment.',
+			'romm.invalidConnection' => 'This connection is invalid. Connect the server again.',
+			'romm.invalidToken' => 'Enter a valid client token.',
+			'romm.invalidResponse' => 'The server returned an unsupported response.',
+			'romm.responseTooLarge' => 'The server response exceeded the supported size.',
+			'romm.signInAgain' => 'Sign in to this library again.',
+			'romm.permissionDenied' => 'Your RomM account or client token does not permit this action.',
+			'romm.notFound' => 'This item is no longer available.',
+			'romm.serverError' => 'The RomM server could not complete this request.',
+			'romm.connectionFailed' => 'Could not connect to RomM. Check the server and try again.',
+			'romm.cancelled' => 'Cancelled',
+			'romm.notConnected' => 'Connect this RomM library first.',
+			'romm.accountMismatch' => 'This connection belongs to a different RomM account. Add it as a separate library.',
+			'romm.connectionLimit' => 'This profile already has the maximum number of RomM connections.',
+			'romm.conflict' => 'The server copy changed. Review both versions before replacing anything.',
+			'romm.invalidFile' => 'This file cannot be used here.',
+			'romm.saveUploadFailed' => 'The save could not be uploaded.',
+			'romm.quotaExceeded' => 'There is not enough space within the offline storage limit.',
+			'romm.checksumFailed' => 'The downloaded file did not match the server checksum.',
+			'romm.downloadChanged' => 'This game file changed during the download. Refresh and try again.',
+			'romm.unsupportedArchive' => 'Native play needs extracted game files. Choose an extracted copy or use the browser player.',
+			'romm.nativeError' => 'The emulator could not start this copy. Check its core and firmware requirements.',
+			'romm.authorization_pending' => 'Waiting for approval…',
+			'romm.slow_down' => 'Waiting for approval…',
+			'romm.access_denied' => 'Device access was declined.',
+			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
 			_ => null,
 		};
 	}

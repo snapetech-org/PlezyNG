@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if (($# == 0)); then
-  printf 'Usage: %s <PlezyNG executable> [arguments...]\n' "$0" >&2
+  printf 'Usage: %s <Pleazyng executable> [arguments...]\n' "$0" >&2
   exit 2
 fi
 

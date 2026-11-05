@@ -132,20 +132,20 @@ jobs:
             REVISION=${{ steps.release.outputs.commit }}
             BUILD_DATE=${{ steps.build-metadata.outputs.build_date }}
           tags: |
-            ghcr.io/snapetech-org/plezyng-relay:${{ steps.release.outputs.version }}
-            ghcr.io/snapetech-org/plezyng-relay:latest
+            ghcr.io/snapetech-org/pleazyng-relay:${{ steps.release.outputs.version }}
+            ghcr.io/snapetech-org/pleazyng-relay:latest
           labels: |
-            org.opencontainers.image.title=PlezyNG Relay
-            org.opencontainers.image.description=PlezyNG authentication and artifact relay service
+            org.opencontainers.image.title=Pleazyng Relay
+            org.opencontainers.image.description=Pleazyng authentication and artifact relay service
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.version=${{ steps.release.outputs.version }}
             org.opencontainers.image.revision=${{ steps.release.outputs.commit }}
-          cache-from: type=gha,scope=plezyng-relay
-          cache-to: type=gha,scope=plezyng-relay,mode=max
+          cache-from: type=gha,scope=pleazyng-relay
+          cache-to: type=gha,scope=pleazyng-relay,mode=max
 
       - name: Verify GHCR architecture manifest
         env:
-          IMAGE: ghcr.io/snapetech-org/plezyng-relay:${{ steps.release.outputs.version }}
+          IMAGE: ghcr.io/snapetech-org/pleazyng-relay:${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
           docker buildx imagetools inspect "$IMAGE" --raw | jq -e '
@@ -189,20 +189,20 @@ jobs:
             REVISION=${{ steps.release.outputs.commit }}
             BUILD_DATE=${{ steps.build-metadata.outputs.build_date }}
           tags: |
-            snapetech/plezyng-relay:${{ steps.release.outputs.version }}
-            snapetech/plezyng-relay:latest
+            snapetech/pleazyng-relay:${{ steps.release.outputs.version }}
+            snapetech/pleazyng-relay:latest
           labels: |
-            org.opencontainers.image.title=PlezyNG Relay
-            org.opencontainers.image.description=PlezyNG authentication and artifact relay service
+            org.opencontainers.image.title=Pleazyng Relay
+            org.opencontainers.image.description=Pleazyng authentication and artifact relay service
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.version=${{ steps.release.outputs.version }}
             org.opencontainers.image.revision=${{ steps.release.outputs.commit }}
-          cache-from: type=gha,scope=plezyng-relay
+          cache-from: type=gha,scope=pleazyng-relay
 
       - name: Verify Docker Hub architecture manifest
         if: steps.dockerhub.outputs.available == 'true'
         env:
-          IMAGE: snapetech/plezyng-relay:${{ steps.release.outputs.version }}
+          IMAGE: snapetech/pleazyng-relay:${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
           docker buildx imagetools inspect "$IMAGE" --raw | jq -e '

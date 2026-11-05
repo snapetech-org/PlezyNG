@@ -685,8 +685,8 @@ class _AuthScreenBackground extends StatelessWidget {
         // smaller source to avoid decoding a 4K bitmap unnecessarily.
         final useHighResolutionArtwork = physicalSize.width >= 2560 && physicalSize.height >= 1440;
         final illustrationAsset = useHighResolutionArtwork
-            ? 'assets/branding/plezyng-product-illustration-4k.png'
-            : 'assets/branding/plezyng-product-illustration.webp';
+            ? 'assets/branding/pleazyng-product-illustration-4k.png'
+            : 'assets/branding/pleazyng-product-illustration.webp';
         final illustrationWidth = math.min(size.width * 0.82, 1800.0).toDouble();
         final illustrationHeight = math.min(size.height * 0.44, size.width * 0.72).toDouble();
         final illustrationPixelWidth = useHighResolutionArtwork

@@ -16,7 +16,7 @@ import 'iptv_scheduled_stream_recorder.dart';
 import 'iptv_hls_archive.dart';
 import 'iptv_source_repository.dart';
 
-/// Runs one-off local IPTV schedules while PlezyNG is running. Dispatcharr
+/// Runs one-off local IPTV schedules while Pleazyng is running. Dispatcharr
 /// remains the durable server-side scheduler for devices that may be offline.
 class IptvRecordingScheduler with WidgetsBindingObserver {
   IptvRecordingScheduler(this._repository) {

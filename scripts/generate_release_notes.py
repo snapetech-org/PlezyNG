@@ -89,7 +89,7 @@ def main() -> int:
         )
         return 1
 
-    print(f"# PlezyNG {args.version}\n\n{section}")
+    print(f"# Pleazyng {args.version}\n\n{section}")
     return 0
 
 

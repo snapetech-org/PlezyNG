@@ -4,7 +4,7 @@ import 'package:path/path.dart' as path;
 
 enum OrphanDownloadScanFailure { unsafeRoot, tooManyEntries, scanFailed }
 
-/// A file in PlezyNG's recognized, app-managed download layout that no stored
+/// A file in Pleazyng's recognized, app-managed download layout that no stored
 /// download row or native download task currently owns.
 class OrphanDownloadFile {
   const OrphanDownloadFile({required this.relativePath, required this.itemTag, required this.sizeBytes});

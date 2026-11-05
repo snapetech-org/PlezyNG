@@ -82,7 +82,7 @@ def download_model(model_id: str, destination: Path) -> None:
     count = 0
     request = urllib.request.Request(
         MODEL_REPOSITORY + model["filename"],
-        headers={"User-Agent": "PlezyNG-local-motion-profile/1"},
+        headers={"User-Agent": "Pleazyng-local-motion-profile/1"},
     )
     with urllib.request.urlopen(request, timeout=60) as response, destination.open("wb") as output:
         while chunk := response.read(1024 * 1024):

@@ -42,6 +42,24 @@ job exits. It archives matching logs (and all build products after failure),
 then removes only output belonging to that run and attempt. Other workspaces
 and shared caches remain available.
 
+The build-only NFS export on kspld0 is configured in
+`/etc/exports.d/plezyng-mpv-build.exports`. Keep its reproducible scratch data on
+`async` writes; `sync` made metadata-heavy workspace copies, Git checkouts and
+DMG staging take many minutes. The authorized Mac client remains its stable
+Tailscale IP `100.64.0.3`, so DHCP LAN address changes do not alter access. Preserve
+all client, ownership and root-squash options. Update only this export with
+`exportfs -i -o` using the complete existing option list; do not restart active
+runners or reload unrelated exports. This scratch policy permits write
+acknowledgement before stable storage and is not a policy for personal data.
+
+Steam sources prepared under `.dart_tool/games/steam` are reusable between
+Apple platforms when `.plezy-recipe` matches the script, source lock and patches.
+Preserve a completed source cache before removing the creating workspace,
+record its archive digest and source run, then restore it into a later task
+workspace before its source-preparation consumer starts. Verify the task owner,
+source SHA and recipe; leave an already-started preparation untouched. Compiled
+archives remain architecture-specific.
+
 ## Single-job troubleshooting
 
 Use the low-level launcher only for a single-job recovery when no queue

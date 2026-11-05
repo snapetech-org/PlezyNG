@@ -21,7 +21,8 @@ REPOSITORY = "snapetech-org/PlezyNG"
 # Application sources, dependency pins, and native toolchain inputs are excluded.
 RECOVERY_FILES = frozenset({
     ".github/workflows/build.yml", ".github/workflows/ci.yml", "CHANGELOG.md",
-    "docs/maintainers/full-release-build.md", "scripts/release_all_platforms.py",
+    "docs/maintainers/full-release-build.md", "docs/maintainers/apple-jit-runner.md",
+    "scripts/release_all_platforms.py",
     "scripts/prepare_gradle_repositories.py", "scripts/gradle/plezyng-maven-mirror.init.gradle",
     "scripts/checks/test_prepare_gradle_repositories.py", "scripts/recover_release_platforms.py",
     "scripts/checks/test_recover_release_platforms.py", "scripts/checks/check_build_workflow.py",
@@ -144,6 +145,46 @@ def wait_for_source_run(run_id, head_sha, version, seconds):
         time.sleep(min(30, max(0, deadline - time.monotonic())))
 
 
+def verify_android_run(run_id, head_sha, version, repository=REPOSITORY):
+    if repository != REPOSITORY or not str(run_id).isdigit() or not re.fullmatch(r"[0-9a-f]{40}", head_sha):
+        raise RecoveryError("Android recovery requires an exact PlezyNG run identity.")
+    source = api(f"repos/{repository}/actions/runs/{run_id}")
+    source_sha = source.get("head_sha", "")
+    if (source.get("status") != "completed" or source.get("event") != "workflow_dispatch"
+        or source.get("head_branch") != "main"
+        or source.get("head_repository", {}).get("full_name") != repository
+        or source.get("path", "").split("@")[0] != ".github/workflows/build.yml"
+        or source.get("display_title") != f"action:release:pool:private:tag:v{version}"
+        or not re.fullmatch(r"[0-9a-f]{40}", source_sha)):
+        raise RecoveryError("Android source must be a completed trusted-main release for this version.")
+    comparison = api(f"repos/{repository}/compare/{source_sha}...{head_sha}")
+    files = comparison.get("files")
+    if (comparison.get("status") not in {"ahead", "identical"}
+        or comparison.get("merge_base_commit", {}).get("sha") != source_sha
+        or not isinstance(files, list) or len(files) >= 300
+        or any(path not in RECOVERY_FILES for entry in files
+               for path in (entry.get("filename"), entry.get("previous_filename")) if path)):
+        raise RecoveryError("Android product input equivalence could not be proven.")
+    jobs = collection(f"repos/{repository}/actions/runs/{run_id}/jobs", "jobs")
+    android = [job for job in jobs if job.get("name") == "build-android"]
+    if len(android) != 1 or android[0].get("status") != "completed" or android[0].get("conclusion") != "success":
+        raise RecoveryError("The reused Android job must be uniquely successful.")
+    if any(job.get("name") == "create-release" and job.get("conclusion") != "skipped" for job in jobs):
+        raise RecoveryError("Android source already attempted publication; inspect its side effects.")
+    return {"source_run_id": int(run_id), "source_sha": source_sha, "job_id": android[0]["id"]}
+
+
+def compose_proof(proof, android_run=None, include_webos_build=True):
+    rebuilt = set(REBUILT_JOBS)
+    if android_run:
+        proof = {**proof, "android_source": verify_android_run(android_run, proof["head_sha"], proof["version"])}
+        rebuilt.remove("build-android")
+    if not include_webos_build:
+        rebuilt.remove("Build WebOS TV package (ARMv7)")
+    return {**proof, "rebuilt_jobs": sorted(rebuilt),
+            "excluded_optional_jobs": [] if include_webos_build else ["Build WebOS TV package (ARMv7)"]}
+
+
 def extract_verified(archive, destination):
     destination.mkdir(parents=True, exist_ok=True)
     if destination.is_symlink():
@@ -173,15 +214,23 @@ def download_platforms(proof, destination, repository=REPOSITORY):
     wanted = dict(ARTIFACTS)
     if any(item.get("name") == "windows-msix" for item in inventory):
         wanted["windows-msix"] = "windows-msix"
+    inventories = {run_id: inventory}
+    if proof.get("android_source"):
+        android = proof["android_source"]
+        inventories[android["source_run_id"]] = collection(
+            f"repos/{repository}/actions/runs/{android['source_run_id']}/artifacts", "artifacts")
+        wanted["android-apk"] = "android-apk"
     records = []
     for name, folder in wanted.items():
-        matches = [item for item in inventory if item.get("name") == name and not item.get("expired")]
+        source = proof["android_source"] if name == "android-apk" else proof
+        artifact_run = source["source_run_id"]
+        matches = [item for item in inventories[artifact_run] if item.get("name") == name and not item.get("expired")]
         if len(matches) != 1:
             raise RecoveryError(f"Reusable artifact is missing or ambiguous: {name}")
         item = matches[0]
         identity = item.get("workflow_run", {})
         digest = item.get("digest") or ""
-        if (identity.get("id") != run_id or identity.get("head_sha") != proof["source_sha"]
+        if (identity.get("id") != artifact_run or identity.get("head_sha") != source["source_sha"]
             or not re.fullmatch(r"sha256:[0-9a-f]{64}", digest)):
             raise RecoveryError(f"Artifact lacks matching run, source, or digest evidence: {name}")
         with tempfile.TemporaryDirectory(prefix="plezyng-release-artifact-") as scratch:
@@ -194,8 +243,9 @@ def download_platforms(proof, destination, repository=REPOSITORY):
             if result.returncode or actual_digest != digest[7:]:
                 raise RecoveryError(f"Reusable artifact download/digest verification failed: {name}")
             extract_verified(archive, destination / folder)
-        records.append({"name": name, "artifact_id": item["id"], "digest": digest})
-        print(f"Recovered verified {name} from run {run_id}.", flush=True)
+        records.append({"name": name, "artifact_id": item["id"], "digest": digest,
+                        "source_run_id": artifact_run, "source_sha": source["source_sha"]})
+        print(f"Recovered verified {name} from run {artifact_run}.", flush=True)
     proof = {**proof, "artifacts": records}
     (destination / "platform-reuse-provenance.json").write_text(json.dumps(proof, indent=2) + "\n")
     return proof
@@ -207,6 +257,8 @@ def main():
     parser.add_argument("--head-sha", required=True)
     parser.add_argument("--version", required=True)
     parser.add_argument("--download", type=Path)
+    parser.add_argument("--android-run", help="Reuse a separately successful Android release build.")
+    parser.add_argument("--skip-webos-build", action="store_true", help="Exclude the non-public experimental WebOS candidate.")
     parser.add_argument("--allow-building", action="store_true", help="Preflight only: native jobs may still be running.")
     parser.add_argument("--wait-for-source", type=int, default=0, help="Wait up to this many seconds before recovering completed outputs.")
     args = parser.parse_args()
@@ -217,11 +269,14 @@ def main():
     proof = (wait_for_source_run(args.source_run, args.head_sha, args.version, args.wait_for_source)
              if args.wait_for_source else
              verify_source_run(args.source_run, args.head_sha, args.version, allow_pending=args.allow_building))
+    proof = compose_proof(proof, args.android_run, not args.skip_webos_build)
     if args.download:
         proof = download_platforms(proof, args.download)
     if os.environ.get("GITHUB_OUTPUT"):
         with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
             output.write(f"source_sha={proof['source_sha']}\nci_run_id={proof['ci_run_id']}\n")
+            if proof.get("android_source"):
+                output.write(f"android_source_sha={proof['android_source']['source_sha']}\n")
     print(json.dumps(proof, indent=2))
 
 

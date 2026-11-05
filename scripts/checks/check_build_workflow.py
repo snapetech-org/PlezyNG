@@ -1521,6 +1521,10 @@ require(
     and "--download artifacts" in recovery_download
     and "needs.validate-trusted-ref.outputs.reuse_source_sha != ''" in release_condition
     and "platform-reuse-provenance.json" in collect_release_files
+    and "needs.validate-trusted-ref.outputs.android_source_sha != ''" in release_condition
+    and "--android-run" in recovery_gate
+    and "--android-run" in recovery_download
+    and "inputs.reuse_android_run_id == ''" in job("build-android").split("needs:", 1)[0]
     and all(
         "inputs.reuse_platform_run_id == ''" in job(name).split("needs:", 1)[0]
         and f"needs.{name}.result == 'skipped'" in release_condition

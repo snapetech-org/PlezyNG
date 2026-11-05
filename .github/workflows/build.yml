@@ -41,6 +41,10 @@ on:
         description: Semantic version for artifact names; releases reuse a tag on main only when later commits contain allowlisted release infrastructure changes
         required: false
         type: string
+      reuse_android_run_id:
+        description: Reuse a separately successful Android release artifact with verified platform recovery
+        required: false
+        type: string
       reuse_platform_run_id:
         description: Recover verified passing platform artifacts from the same product source; rebuild Android and WebOS
         required: false
@@ -111,6 +115,7 @@ jobs:
       release_tag: ${{ steps.request.outputs.release_tag }}
       release_commit: ${{ steps.release-tag.outputs.commit }}
       reuse_source_sha: ${{ steps.reuse-platforms.outputs.source_sha }}
+      android_source_sha: ${{ steps.reuse-platforms.outputs.android_source_sha }}
       version: ${{ steps.request.outputs.version }}
       include_webos_build: ${{ steps.request.outputs.include_webos_build }}
       include_webos_release: ${{ steps.request.outputs.include_webos_release }}
@@ -143,8 +148,14 @@ jobs:
           INCLUDE_APPLE_STORE_BUILD_INPUT: ${{ inputs.include_apple_store_build }}
           PREPARE_HOMEBREW_CASK_INPUT: ${{ inputs.prepare_homebrew_cask }}
           SUBTITLE_GPU_BACKEND_INPUT: ${{ inputs.subtitle_gpu_backend }}
+          REUSE_PLATFORMS: ${{ inputs.reuse_platform_run_id }}
+          REUSE_ANDROID: ${{ inputs.reuse_android_run_id }}
         run: |
           set -euo pipefail
+          if [[ -n "$REUSE_ANDROID" && -z "$REUSE_PLATFORMS" ]]; then
+            echo "Android reuse requires verified platform recovery." >&2
+            exit 1
+          fi
           ACTION="$ACTION_INPUT"
           RUNNER_POOL="$RUNNER_POOL_INPUT"
           EXECUTION_PROFILE="$EXECUTION_PROFILE_INPUT"
@@ -404,6 +415,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
+          ANDROID_RUN: ${{ inputs.reuse_android_run_id }}
           HEAD_SHA: ${{ github.sha }}
           VERSION: ${{ steps.request.outputs.version }}
           ACTION: ${{ steps.request.outputs.action }}
@@ -417,11 +429,14 @@ jobs:
           TIZEN_BUILD: ${{ steps.request.outputs.include_tizen_build }}
         run: |
           set -euo pipefail
-          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || "$HOMEBREW" != false || "$WEBOS_RELEASE" != false || "$WEBOS_BUILD" != true || "$TIZEN_BUILD" != true ]]; then
+          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || "$HOMEBREW" != false || "$WEBOS_RELEASE" != false || "$TIZEN_BUILD" != true ]]; then
             echo "Artifact recovery requires the complete hybrid CPU GitHub-only release profile." >&2
             exit 1
           fi
-          python3 scripts/recover_release_platforms.py "$SOURCE_RUN" --head-sha "$HEAD_SHA" --version "$VERSION" --allow-building
+          options=()
+          if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi
+          if [[ "$WEBOS_BUILD" != true ]]; then options+=(--skip-webos-build); fi
+          python3 scripts/recover_release_platforms.py "$SOURCE_RUN" --head-sha "$HEAD_SHA" --version "$VERSION" --allow-building "${options[@]}"
 
       - name: Require successful CI for this commit
         if: ${{ steps.request.outputs.mode == 'release' && steps.request.outputs.action == 'release' && inputs.reuse_platform_run_id == '' }}
@@ -454,7 +469,7 @@ jobs:
           echo "No draft release is created."
 
   build-android:
-    if: ${{ inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ inputs.reuse_android_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     timeout-minutes: 360
     env:
@@ -2635,7 +2650,7 @@ jobs:
 
   create-release:
     needs: [validate-trusted-ref, build-android, build-webos, build-tizen, build-ios, build-tvos, build-macos, build-windows, package-windows, build-linux]
-    if: ${{ always() && inputs.runner_pool == 'private' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'private' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && needs.build-android.result == 'success' && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-ios.result == 'skipped' && needs.build-tvos.result == 'skipped' && needs.build-macos.result == 'skipped' && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && needs.build-linux.result == 'skipped' && needs.build-webos.result == 'success' && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+    if: ${{ always() && inputs.runner_pool == 'private' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'private' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && (needs.build-android.result == 'success' || (inputs.reuse_android_run_id != '' && needs.validate-trusted-ref.outputs.android_source_sha != '' && needs.build-android.result == 'skipped')) && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-ios.result == 'skipped' && needs.build-tvos.result == 'skipped' && needs.build-macos.result == 'skipped' && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && needs.build-linux.result == 'skipped' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-create-release"]}}', github.run_id)) }}
     permissions:
       contents: write
@@ -2679,11 +2694,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
+          ANDROID_RUN: ${{ inputs.reuse_android_run_id }}
           HEAD_SHA: ${{ github.sha }}
           VERSION: ${{ needs.validate-trusted-ref.outputs.version }}
-        run: python3 scripts/recover_release_platforms.py "$SOURCE_RUN" --head-sha "$HEAD_SHA" --version "$VERSION" --download artifacts --wait-for-source 10800
+          WEBOS_BUILD: ${{ needs.validate-trusted-ref.outputs.include_webos_build }}
+        run: |
+          options=()
+          if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi
+          if [[ "$WEBOS_BUILD" != true ]]; then options+=(--skip-webos-build); fi
+          python3 scripts/recover_release_platforms.py "$SOURCE_RUN" --head-sha "$HEAD_SHA" --version "$VERSION" --download artifacts --wait-for-source 10800 "${options[@]}"
 
       - name: Download Android artifacts
+        if: ${{ inputs.reuse_android_run_id == '' }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: android-apk

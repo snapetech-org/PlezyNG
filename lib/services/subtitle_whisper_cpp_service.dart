@@ -1,3 +1,4 @@
+import 'subtitle_capture_status.dart';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:io';
@@ -72,7 +73,7 @@ final class SubtitleWhisperCppService {
   /// Loads the same verified multilingual model used by WAV transcription for
   /// repeated, in-memory player PCM windows. The caller owns and disposes it.
   Future<whisper.FlutterWhisper> loadLiveCpuSession({
-    void Function(String phase, int received, int total)? onProgress,
+    void Function(SubtitleModelLoadPhase phase, int received, int total)? onProgress,
   }) async {
     if (!supportedPlatform) {
       throw UnsupportedError('Local Whisper inference is unavailable on this platform.');
@@ -84,9 +85,9 @@ final class SubtitleWhisperCppService {
       modelDirectory: modelDirectory,
       config: const whisper.WhisperModelConfig(useGpu: false),
       onDownloadProgress: (progress) {
-        onProgress?.call('Downloading multilingual ${model.id}', progress.receivedBytes, progress.totalBytes);
+        onProgress?.call(SubtitleModelLoadPhase.downloading, progress.receivedBytes, progress.totalBytes);
       },
-      onModelProgress: (progress) => onProgress?.call('Loading Whisper model', progress, 100),
+      onModelProgress: (progress) => onProgress?.call(SubtitleModelLoadPhase.loading, progress, 100),
     );
   }
 

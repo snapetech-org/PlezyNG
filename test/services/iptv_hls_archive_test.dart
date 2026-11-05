@@ -8,6 +8,17 @@ import 'package:plezy/iptv/iptv_scheduled_stream_recorder.dart';
 import 'package:pointycastle/export.dart';
 
 void main() {
+  test('an archive master without its payload directory has no retained media', () async {
+    final directory = await Directory.systemTemp.createTemp('plezy-missing-hls-media-');
+    addTearDown(() => directory.delete(recursive: true));
+    final master = File('${directory.path}/recording.m3u8');
+    await master.writeAsString('#EXTM3U\n#PLEZY-ARCHIVE:recording.media\nrecording.media/video.m3u8\n');
+    expect(await IptvHlsArchive.retainedBytes(master), 0);
+    final direct = File('${directory.path}/legacy.ts');
+    await direct.writeAsBytes([1, 2, 3, 4]);
+    expect(await IptvHlsArchive.retainedBytes(direct), 4);
+  });
+
   test('scheduled completion never decrypts a truncated AES segment', () async {
     final directory = await Directory.systemTemp.createTemp('plezy-hls-aes-');
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);

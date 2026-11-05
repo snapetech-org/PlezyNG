@@ -4878,5 +4878,22 @@
   "romm.authorization_pending": "9be38e75a34c567c",
   "romm.slow_down": "9be38e75a34c567c",
   "romm.access_denied": "1f799e6246568e20",
-  "romm.expired_token": "61decd48817d03a5"
+  "romm.expired_token": "61decd48817d03a5",
+  "subtitleCapture.loadingModel": "58c5b87f28a1f3f8",
+  "subtitleCapture.loadingModelProgress": "4288734d1df79f1c",
+  "subtitleCapture.downloadingModel": "e2f1b918eb48eb75",
+  "subtitleCapture.downloadingModelProgress": "31ca498587abcc2a",
+  "subtitleCapture.capturing": "5824af981397d700",
+  "subtitleCapture.startFailed": "cc02f37db0b396e0",
+  "subtitleCapture.inferenceFailed": "3f8235746874cc5b",
+  "subtitleCapture.noSpeech": "da8f41d448bac2db",
+  "subtitleCapture.captured": "c2c434f52960acbc",
+  "subtitleCapture.playbackEnded": "eeb5bb5e44079955",
+  "subtitleCapture.playbackChanged": "73ac0e2c3ca08918",
+  "subtitleCapture.audioTrackChanged": "bf5dd4ab2bfc2c10",
+  "subtitleCapture.listening": "8bf1f9d07f950035",
+  "subtitleCapture.captureUnavailable": "c597db9f5f8776f3",
+  "subtitleCapture.waitingForAudio": "61c9868d51e79e19",
+  "subtitleCapture.captureStopped": "7aa67be78fc12991",
+  "subtitleCapture.preparing": "0ada652012e73975"
 }

@@ -40,6 +40,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	Translations $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => Translations(meta: meta ?? this.$meta);
 
 	// Translations
+	late final Translations$subtitleCapture$en subtitleCapture = Translations$subtitleCapture$en.internal(_root);
 	late final Translations$app$en app = Translations$app$en.internal(_root);
 	late final Translations$appIcon$en appIcon = Translations$appIcon$en.internal(_root);
 	late final Translations$auth$en auth = Translations$auth$en.internal(_root);
@@ -15603,6 +15604,24 @@ class Translations$services$trackerDescriptions$en {
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
+			'subtitleCapture.loadingModel' => "Loading the local speech model…",
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => "Loading the local speech model (${percent}%)…",
+			'subtitleCapture.downloadingModel' => "Downloading the speech model…",
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => "Downloading the speech model (${percent}%)…",
+			'subtitleCapture.capturing' => "Capturing decoded audio locally. Captions will appear shortly.",
+			'subtitleCapture.startFailed' => "Live captions could not start. Check the audio route and try again.",
+			'subtitleCapture.inferenceFailed' => "Speech recognition failed. Stop capture and try again.",
+			'subtitleCapture.noSpeech' => "No speech captions were produced. Check the audio track and try again.",
+			'subtitleCapture.captured' => ({required Object count}) => "Captured speech cues from the watched portion: ${count}.",
+			'subtitleCapture.playbackEnded' => "Playback ended. The captured transcript was discarded.",
+			'subtitleCapture.playbackChanged' => "Playback changed. The captured transcript was discarded.",
+			'subtitleCapture.audioTrackChanged' => "The audio track changed. Start capture again on the current track.",
+			'subtitleCapture.listening' => ({required Object count}) => "Listening locally on CPU. Captured audio packets: ${count}.",
+			'subtitleCapture.captureUnavailable' => "Decoded audio is unavailable on this route. Try a supported audio output.",
+			'subtitleCapture.waitingForAudio' => "Waiting for decoded audio. Playback may be paused.",
+			'subtitleCapture.captureStopped' => "Live capture stopped. Check playback and try again.",
+			'subtitleCapture.preparing' => "Preparing live captions…",
+
 			'app.title' => 'PlezyNG',
 			'appIcon.title' => 'App icon',
 			'appIcon.defaultIcon' => 'Default',
@@ -20496,4 +20515,26 @@ extension on Translations {
 			_ => null,
 		};
 	}
+}
+
+class Translations$subtitleCapture$en {
+	Translations$subtitleCapture$en.internal(this._root);
+	final Translations _root;
+	String get loadingModel => "Loading the local speech model…";
+	String loadingModelProgress({required Object percent}) => "Loading the local speech model (${percent}%)…";
+	String get downloadingModel => "Downloading the speech model…";
+	String downloadingModelProgress({required Object percent}) => "Downloading the speech model (${percent}%)…";
+	String get capturing => "Capturing decoded audio locally. Captions will appear shortly.";
+	String get startFailed => "Live captions could not start. Check the audio route and try again.";
+	String get inferenceFailed => "Speech recognition failed. Stop capture and try again.";
+	String get noSpeech => "No speech captions were produced. Check the audio track and try again.";
+	String captured({required Object count}) => "Captured speech cues from the watched portion: ${count}.";
+	String get playbackEnded => "Playback ended. The captured transcript was discarded.";
+	String get playbackChanged => "Playback changed. The captured transcript was discarded.";
+	String get audioTrackChanged => "The audio track changed. Start capture again on the current track.";
+	String listening({required Object count}) => "Listening locally on CPU. Captured audio packets: ${count}.";
+	String get captureUnavailable => "Decoded audio is unavailable on this route. Try a supported audio output.";
+	String get waitingForAudio => "Waiting for decoded audio. Playback may be paused.";
+	String get captureStopped => "Live capture stopped. Check playback and try again.";
+	String get preparing => "Preparing live captions…";
 }

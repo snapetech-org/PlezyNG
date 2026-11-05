@@ -40,6 +40,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	TranslationsAr $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsAr(meta: meta ?? this.$meta);
 
 	// Translations
+	@override late final _Translations$subtitleCapture$ar subtitleCapture = _Translations$subtitleCapture$ar.internal(_root);
 	@override late final _Translations$app$ar app = _Translations$app$ar._(_root);
 	@override late final _Translations$appIcon$ar appIcon = _Translations$appIcon$ar._(_root);
 	@override late final _Translations$auth$ar auth = _Translations$auth$ar._(_root);
@@ -5213,6 +5214,24 @@ class _Translations$services$trackerDescriptions$ar extends Translations$service
 extension on TranslationsAr {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
+			'subtitleCapture.loadingModel' => "جارٍ تحميل نموذج التعرف على الكلام المحلي…",
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => "جارٍ تحميل نموذج التعرف على الكلام المحلي (${percent}٪)…",
+			'subtitleCapture.downloadingModel' => "جارٍ تنزيل نموذج التعرف على الكلام…",
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => "جارٍ تنزيل نموذج التعرف على الكلام (${percent}٪)…",
+			'subtitleCapture.capturing' => "جارٍ التقاط الصوت المفكوك محليًا. ستظهر الترجمة النصية قريبًا.",
+			'subtitleCapture.startFailed' => "تعذر بدء الترجمة النصية المباشرة. تحقق من مسار الصوت وحاول مجددًا.",
+			'subtitleCapture.inferenceFailed' => "فشل التعرف على الكلام. أوقف الالتقاط وحاول مجددًا.",
+			'subtitleCapture.noSpeech' => "لم تُنتج أي ترجمة نصية للكلام. تحقق من المسار الصوتي وحاول مجددًا.",
+			'subtitleCapture.captured' => ({required Object count}) => "عدد المقاطع النصية المستخرجة من الجزء المُشاهَد: ${count}.",
+			'subtitleCapture.playbackEnded' => "انتهى التشغيل. تم تجاهل النص الملتقط.",
+			'subtitleCapture.playbackChanged' => "تغيّر التشغيل. تم تجاهل النص الملتقط.",
+			'subtitleCapture.audioTrackChanged' => "تغيّر المسار الصوتي. ابدأ الالتقاط مجددًا على المسار الحالي.",
+			'subtitleCapture.listening' => ({required Object count}) => "جارٍ الاستماع محليًا باستخدام المعالج. عدد حزم الصوت المستقبلة: ${count}.",
+			'subtitleCapture.captureUnavailable' => "الصوت المفكوك غير متاح في هذا المسار. جرّب مخرجًا صوتيًا مدعومًا.",
+			'subtitleCapture.waitingForAudio' => "في انتظار الصوت المفكوك. قد يكون التشغيل متوقفًا مؤقتًا.",
+			'subtitleCapture.captureStopped' => "توقف الالتقاط المباشر. تحقق من التشغيل وحاول مجددًا.",
+			'subtitleCapture.preparing' => "جارٍ تجهيز الترجمة النصية المباشرة…",
+
 			'app.title' => 'PlezyNG',
 			'appIcon.title' => 'تطبيق icon',
 			'appIcon.defaultIcon' => 'الافتراضي',
@@ -8968,4 +8987,25 @@ extension on TranslationsAr {
 			_ => null,
 		};
 	}
+}
+
+class _Translations$subtitleCapture$ar extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$ar.internal(TranslationsAr root) : super.internal(root);
+	@override String get loadingModel => "جارٍ تحميل نموذج التعرف على الكلام المحلي…";
+	@override String loadingModelProgress({required Object percent}) => "جارٍ تحميل نموذج التعرف على الكلام المحلي (${percent}٪)…";
+	@override String get downloadingModel => "جارٍ تنزيل نموذج التعرف على الكلام…";
+	@override String downloadingModelProgress({required Object percent}) => "جارٍ تنزيل نموذج التعرف على الكلام (${percent}٪)…";
+	@override String get capturing => "جارٍ التقاط الصوت المفكوك محليًا. ستظهر الترجمة النصية قريبًا.";
+	@override String get startFailed => "تعذر بدء الترجمة النصية المباشرة. تحقق من مسار الصوت وحاول مجددًا.";
+	@override String get inferenceFailed => "فشل التعرف على الكلام. أوقف الالتقاط وحاول مجددًا.";
+	@override String get noSpeech => "لم تُنتج أي ترجمة نصية للكلام. تحقق من المسار الصوتي وحاول مجددًا.";
+	@override String captured({required Object count}) => "عدد المقاطع النصية المستخرجة من الجزء المُشاهَد: ${count}.";
+	@override String get playbackEnded => "انتهى التشغيل. تم تجاهل النص الملتقط.";
+	@override String get playbackChanged => "تغيّر التشغيل. تم تجاهل النص الملتقط.";
+	@override String get audioTrackChanged => "تغيّر المسار الصوتي. ابدأ الالتقاط مجددًا على المسار الحالي.";
+	@override String listening({required Object count}) => "جارٍ الاستماع محليًا باستخدام المعالج. عدد حزم الصوت المستقبلة: ${count}.";
+	@override String get captureUnavailable => "الصوت المفكوك غير متاح في هذا المسار. جرّب مخرجًا صوتيًا مدعومًا.";
+	@override String get waitingForAudio => "في انتظار الصوت المفكوك. قد يكون التشغيل متوقفًا مؤقتًا.";
+	@override String get captureStopped => "توقف الالتقاط المباشر. تحقق من التشغيل وحاول مجددًا.";
+	@override String get preparing => "جارٍ تجهيز الترجمة النصية المباشرة…";
 }

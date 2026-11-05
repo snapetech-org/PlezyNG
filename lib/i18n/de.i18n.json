@@ -5210,5 +5210,24 @@
     "slow_down": "Waiting for approval…",
     "access_denied": "Device access was declined.",
     "expired_token": "This pairing code expired. Start pairing again."
+  },
+  "subtitleCapture": {
+    "loadingModel": "Das lokale Sprachmodell wird geladen …",
+    "loadingModelProgress": "Das lokale Sprachmodell wird geladen (${percent} %) …",
+    "downloadingModel": "Das Sprachmodell wird heruntergeladen …",
+    "downloadingModelProgress": "Das Sprachmodell wird heruntergeladen (${percent} %) …",
+    "capturing": "Dekodiertes Audio wird lokal erfasst. Untertitel erscheinen in Kürze.",
+    "startFailed": "Live-Untertitel konnten nicht gestartet werden. Prüfe die Audioausgabe und versuche es erneut.",
+    "inferenceFailed": "Die Spracherkennung ist fehlgeschlagen. Beende die Erfassung und versuche es erneut.",
+    "noSpeech": "Es wurden keine Untertitel erkannt. Prüfe die Tonspur und versuche es erneut.",
+    "captured": "Erkannte Untertitelabschnitte im angesehenen Teil: ${count}.",
+    "playbackEnded": "Die Wiedergabe wurde beendet. Das erfasste Transkript wurde verworfen.",
+    "playbackChanged": "Die Wiedergabe wurde geändert. Das erfasste Transkript wurde verworfen.",
+    "audioTrackChanged": "Die Tonspur wurde geändert. Starte die Erfassung für die aktuelle Tonspur erneut.",
+    "listening": "Lokale Erkennung auf der CPU. Erfasste Audiopakete: ${count}.",
+    "captureUnavailable": "Diese Audioausgabe liefert keine dekodierten Audiodaten. Wähle eine unterstützte Audioausgabe.",
+    "waitingForAudio": "Warten auf dekodiertes Audio. Die Wiedergabe ist möglicherweise pausiert.",
+    "captureStopped": "Die Live-Erfassung wurde beendet. Prüfe die Wiedergabe und versuche es erneut.",
+    "preparing": "Live-Untertitel werden vorbereitet …"
   }
 }

@@ -1,3 +1,5 @@
+import '../../../i18n/subtitle_capture_status_text.dart';
+import '../../../services/subtitle_capture_status.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show File, Platform;
@@ -80,6 +82,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   bool _playbackCaptureSupported = false;
   bool _lastResultUploadedToServer = false;
   String? _status;
+  SubtitleCaptureStatus? _captureStatus;
   String? _error;
   String? _revisionStatus;
   SubtitleInferenceProvider _provider = SubtitleInferenceProvider.cpu;
@@ -134,6 +137,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       _busy = true;
       _error = null;
       _status = null;
+      _captureStatus = null;
       _revisionStatus = null;
     });
     try {
@@ -325,20 +329,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (service.isRunning || service.hasActiveSession) {
       await service.stop();
       if (!mounted) return;
-      setState(() => _status = service.status);
+      setState(() => _captureStatus = service.status);
       return;
     }
     await service.start(
       captureSource,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
-      onProgress: (phase, received, total) {
-        if (!mounted) return;
-        final percent = total == 0 ? '' : ' (${(received * 100 / total).round()}%)';
-        setState(() => _status = phase + percent);
+      onProgress: (status) {
+        if (mounted) setState(() => _captureStatus = status);
       },
     );
     if (!mounted) return;
-    setState(() => _status = service.status);
+    setState(() => _captureStatus = service.status);
   });
 
   Future<(TranslateLanguage, TranslateLanguage)?> _chooseCrossLanguagePair() async {
@@ -1877,9 +1879,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           _speechLanguageSelector(),
           const SizedBox(height: 10),
           if (_busy) const LinearProgressIndicator(),
-          if (_status != null) ...[
+          if (_status != null || _captureStatus != null) ...[
             const SizedBox(height: 8),
-            Text(_status!, style: Theme.of(context).textTheme.bodyMedium),
+            Text(_captureStatus != null ? subtitleCaptureStatusText(context, _captureStatus) : _status!, style: Theme.of(context).textTheme.bodyMedium),
           ],
           if (_error != null) ...[
             const SizedBox(height: 8),
@@ -1915,7 +1917,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     if (service.status != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),
-                        child: Text(service.status!, style: Theme.of(context).textTheme.bodySmall),
+                        child: Text(subtitleCaptureStatusText(context, service.status), style: Theme.of(context).textTheme.bodySmall),
                       ),
                     FocusableListTile(
                       leading: AppIcon(
@@ -1927,7 +1929,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                       ),
                       title: Text(
                         service.isStarting
-                            ? 'Preparing live captions…'
+                            ? context.t.subtitleCapture.preparing
                             : (service.isRunning || service.hasActiveSession)
                             ? 'Stop live capture'
                             : 'Start live captions',

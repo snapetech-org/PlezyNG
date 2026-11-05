@@ -5228,5 +5228,24 @@
     "slow_down": "Waiting for approval…",
     "access_denied": "Device access was declined.",
     "expired_token": "This pairing code expired. Start pairing again."
+  },
+  "subtitleCapture": {
+    "loadingModel": "Loading the local speech model…",
+    "loadingModelProgress": "Loading the local speech model (${percent}%)…",
+    "downloadingModel": "Downloading the speech model…",
+    "downloadingModelProgress": "Downloading the speech model (${percent}%)…",
+    "capturing": "Capturing decoded audio locally. Captions will appear shortly.",
+    "startFailed": "Live captions could not start. Check the audio route and try again.",
+    "inferenceFailed": "Speech recognition failed. Stop capture and try again.",
+    "noSpeech": "No speech captions were produced. Check the audio track and try again.",
+    "captured": "Captured speech cues from the watched portion: ${count}.",
+    "playbackEnded": "Playback ended. The captured transcript was discarded.",
+    "playbackChanged": "Playback changed. The captured transcript was discarded.",
+    "audioTrackChanged": "The audio track changed. Start capture again on the current track.",
+    "listening": "Listening locally on CPU. Captured audio packets: ${count}.",
+    "captureUnavailable": "Decoded audio is unavailable on this route. Try a supported audio output.",
+    "waitingForAudio": "Waiting for decoded audio. Playback may be paused.",
+    "captureStopped": "Live capture stopped. Check playback and try again.",
+    "preparing": "Preparing live captions…"
   }
 }

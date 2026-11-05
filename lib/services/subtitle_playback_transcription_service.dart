@@ -1,5 +1,7 @@
+import 'subtitle_capture_status.dart';
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
@@ -19,7 +21,7 @@ final class SubtitleLiveCaption {
   final String text;
 }
 
-/// Opt-in Android ExoPlayer caption capture. PCM remains in a bounded queue
+/// Opt-in subtitle capture from the active decoded-audio player. PCM remains in a bounded queue
 /// and is transcribed on-device; no recording file is created.
 final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   SubtitlePlaybackTranscriptionService._();
@@ -46,7 +48,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   bool _running = false;
   bool _starting = false;
   bool _polling = false;
-  String? _status;
+  SubtitleCaptureStatus? _status;
   Object? _lastError;
   String _detectedLanguage = 'auto';
   String _languageCode = 'auto';
@@ -70,7 +72,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   bool get isRunning => _running;
   bool get isStarting => _starting;
   bool get hasActiveSession => _session != null;
-  String? get status => _status;
+  SubtitleCaptureStatus? get status => _status;
   SubtitleTranscriptionResult? get recentTranscript => _recentTranscript;
   bool get hasRecentTranscript => _recentTranscript?.cues.isNotEmpty == true;
 
@@ -129,7 +131,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   Future<void> start(
     SubtitlePcmCaptureSource player, {
     String? languageCode,
-    void Function(String phase, int received, int total)? onProgress,
+    void Function(SubtitleCaptureStatus status)? onProgress,
   }) async {
     final requestedLanguage = languageCode?.trim().toLowerCase().split(RegExp(r'[-_]')).first ?? '';
     final selectedLanguage = requestedLanguage.isEmpty ? 'auto' : requestedLanguage;
@@ -152,7 +154,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     whisper.FlutterWhisper? loadedSession;
     var captureEnabled = false;
     try {
-      _setStatus('Loading the local Whisper model…');
+      _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.loadingModel));
       _lastError = null;
       _languageCode = selectedLanguage;
       _detectedLanguage = selectedLanguage;
@@ -170,8 +172,12 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
       loadedSession = await SubtitleWhisperCppService.instance.loadLiveCpuSession(
         onProgress: (phase, received, total) {
-          onProgress?.call(phase, received, total);
-          _setStatus(phase);
+          final status = SubtitleCaptureStatus(
+            phase == SubtitleModelLoadPhase.downloading ? SubtitleCapturePhase.downloadingModel : SubtitleCapturePhase.loadingModel,
+            received: received, total: total,
+          );
+          onProgress?.call(status);
+          _setStatus(status);
         },
       );
       if (player.disposed ||
@@ -204,7 +210,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _running = true;
       _startedAt = DateTime.now();
       _lastPacketAt = null;
-      _setStatus('Capturing decoded audio locally; captions appear after a few seconds.');
+      _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.capturing));
       _timer = Timer.periodic(const Duration(milliseconds: 250), (_) {
         _publishCurrentCaption();
         unawaited(_poll());
@@ -216,7 +222,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         } catch (_) {}
       }
       await loadedSession?.dispose();
-      _setStatus('Could not start live captions: $error');
+      _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.startFailed));
       rethrow;
     } finally {
       _starting = false;
@@ -288,26 +294,26 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     liveCaption.value = null;
 
     if (_lastError != null) {
-      _setStatus('Capture ended with an inference error: $_lastError');
+      _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.inferenceFailed));
       throw StateError('Live subtitle transcription failed: $_lastError');
     }
     if (invalidReason != null) {
       _setStatus(invalidReason);
     } else if (_recentTranscript == null || _recentTranscript!.cues.isEmpty) {
-      _setStatus('No speech captions were produced. Check the audio track and try again.');
+      _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.noSpeech));
     } else {
-      _setStatus('Captured ${_recentTranscript!.cues.length} speech cues from the watched portion.');
+      _setStatus(SubtitleCaptureStatus(SubtitleCapturePhase.captured, count: _recentTranscript!.cues.length));
     }
     return _recentTranscript;
   }
 
-  String? _invalidCaptureSessionReason(SubtitlePcmCaptureSource? player) {
-    if (player == null) return 'Playback session ended; captured transcript was discarded.';
+  SubtitleCaptureStatus? _invalidCaptureSessionReason(SubtitlePcmCaptureSource? player) {
+    if (player == null) return const SubtitleCaptureStatus(SubtitleCapturePhase.playbackEnded);
     if (player.disposed || player.mediaSessionGeneration != _playerGeneration) {
-      return 'Playback session changed; captured transcript was discarded.';
+      return const SubtitleCaptureStatus(SubtitleCapturePhase.playbackChanged);
     }
     if (player.subtitlePcmAudioTrackId != _audioTrackId) {
-      return 'Selected audio track changed; captured transcript was discarded. Start capture again on the new track.';
+      return const SubtitleCaptureStatus(SubtitleCapturePhase.audioTrackChanged);
     }
     return null;
   }
@@ -352,16 +358,16 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         _appendPackets(packets);
         _packetsReceived += packets.length;
         _lastPacketAt = DateTime.now();
-        _setStatus('Listening locally on CPU; captured $_packetsReceived audio packets.');
+        _setStatus(SubtitleCaptureStatus(SubtitleCapturePhase.listening, count: _packetsReceived));
       } else {
         final started = _startedAt;
         final lastPacket = _lastPacketAt;
         if (started != null && lastPacket == null && DateTime.now().difference(started) > const Duration(seconds: 8)) {
           _setStatus(
-            'No decoded PCM is reaching the capture tap. Tunneling/offload or this audio route may prevent capture.',
+            const SubtitleCaptureStatus(SubtitleCapturePhase.captureUnavailable),
           );
         } else if (lastPacket != null && DateTime.now().difference(lastPacket) > const Duration(seconds: 8)) {
-          _setStatus('No recent PCM packets. Playback may be paused or the route may not expose decoded audio.');
+          _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.waitingForAudio));
         }
       }
       _startInference(finalChunk: false);
@@ -373,7 +379,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       try {
         await player.setSubtitlePcmCaptureEnabled(false);
       } catch (_) {}
-      _setStatus('Live capture stopped: $error');
+      _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.captureStopped));
     } finally {
       _polling = false;
     }
@@ -519,7 +525,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           _timer = null;
           final player = _player;
           if (player != null) unawaited(player.setSubtitlePcmCaptureEnabled(false));
-          _setStatus('Whisper inference failed: $error');
+          _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.inferenceFailed));
         })
         .whenComplete(() {
           _inferenceFuture = null;
@@ -663,7 +669,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       .trim()
       .replaceAll(RegExp(r'\s+'), ' ');
 
-  void _setStatus(String status) {
+  void _setStatus(SubtitleCaptureStatus status) {
     if (_status == status) return;
     _status = status;
     notifyListeners();

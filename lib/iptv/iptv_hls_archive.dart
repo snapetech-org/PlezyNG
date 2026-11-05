@@ -278,7 +278,20 @@ class IptvHlsArchive {
 
   static Future<int> retainedBytes(File manifest) async {
     final folder = await mediaDirectory(manifest);
-    if (folder == null) return await manifest.exists() ? manifest.length() : 0;
+    if (folder == null) {
+      if (!await manifest.exists()) return 0;
+      final input = await manifest.open();
+      final String prefix;
+      try {
+        prefix = utf8.decode(await input.read(8192), allowMalformed: true);
+      } finally {
+        await input.close();
+      }
+      // An archive's master playlist contains no media. Missing or linked
+      // payload directories must not turn those metadata bytes into a capture.
+      if (prefix.startsWith('#EXTM3U') && RegExp(r'^#PLEZY-ARCHIVE:', multiLine: true).hasMatch(prefix)) return 0;
+      return manifest.length();
+    }
     final video = File(p.join(folder.path, 'video.m3u8'));
     if (!await video.exists() || await video.length() > 16 * 1024 * 1024 ||
         !(await video.readAsString()).contains('#EXTINF:')) return 0;

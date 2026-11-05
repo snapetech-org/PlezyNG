@@ -871,5 +871,24 @@
     "slow_down": "Waiting for approval…",
     "access_denied": "Device access was declined.",
     "expired_token": "This pairing code expired. Start pairing again."
+  },
+  "subtitleCapture": {
+    "loadingModel": "",
+    "loadingModelProgress": "",
+    "downloadingModel": "",
+    "downloadingModelProgress": "",
+    "capturing": "",
+    "startFailed": "",
+    "inferenceFailed": "",
+    "noSpeech": "",
+    "captured": "",
+    "playbackEnded": "",
+    "playbackChanged": "",
+    "audioTrackChanged": "",
+    "listening": "",
+    "captureUnavailable": "",
+    "waitingForAudio": "",
+    "captureStopped": "",
+    "preparing": ""
   }
 }

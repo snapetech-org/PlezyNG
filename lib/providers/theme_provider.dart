@@ -10,6 +10,7 @@ import '../services/settings_binding_owner.dart';
 import '../services/settings_service.dart' as settings;
 import '../services/supporter/supporter_service.dart';
 import '../theme/mono_theme.dart';
+import '../theme/theme_package.dart';
 import '../utils/app_logger.dart';
 
 /// What the app paints: the effective theme [mode] and its [palette], null for
@@ -21,6 +22,7 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
   late final SettingsBindingOwner _settingsBinding;
   settings.ThemeMode _storedMode = settings.ThemeMode.system;
   MonoPalette? _customPalette;
+  ThemePackage? _customPackage;
   late ThemeChoice _choice;
   late Brightness _systemBrightness;
   bool? _windowChromeDark;
@@ -37,13 +39,13 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
     _choice = _resolve();
     _supporter.addListener(_apply);
     _settingsBinding = SettingsBindingOwner(
-      prefs: [settings.SettingsService.themeMode, settings.SettingsService.customThemePalette],
+      prefs: [settings.SettingsService.themeMode, settings.SettingsService.customThemePalette, settings.SettingsService.customThemePackage],
       onRefresh: (service) {
-        final previous = (_storedMode, _customPalette);
+        final previous = (_storedMode, _customPalette, _customPackage);
         _readStored(service);
         // A stored change that paints the same still changes what the picker
         // shows (the saved-but-locked marker, the Custom swatch).
-        _apply(pushSplash: true, forceNotify: (_storedMode, _customPalette) != previous);
+        _apply(pushSplash: true, forceNotify: (_storedMode, _customPalette, _customPackage) != previous);
       },
     );
     unawaited(_settingsBinding.bind());
@@ -71,9 +73,10 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
   void _readStored(settings.SettingsService service) {
     _storedMode = service.read(settings.SettingsService.themeMode);
     _customPalette = service.read(settings.SettingsService.customThemePalette);
+    _customPackage = service.read(settings.SettingsService.customThemePackage);
   }
 
-  ThemeChoice _resolve() => resolve(_storedMode, _customPalette, unlocked: _supporter.isUnlocked);
+  ThemeChoice _resolve() => resolve(_storedMode, _customPackage?.palette ?? _customPalette, unlocked: _supporter.isUnlocked);
 
   /// Re-resolves after the stored choice or the lifetime access state changes.
   /// The stored choice is never rewritten: losing the entitlement only changes
@@ -97,13 +100,15 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
   MonoPalette get activePalette => _choice.palette ?? (isDarkMode ? MonoPalette.dark : MonoPalette.light);
 
   /// The saved Custom palette, whether or not Custom is selected or unlocked.
-  MonoPalette? get customPalette => _customPalette;
+  MonoPalette? get customPalette => _customPackage?.palette ?? _customPalette;
+  ThemePackage? get customPackage => _customPackage;
+  ThemePackage? get activePackage => _choice.mode == settings.ThemeMode.custom ? _customPackage : null;
 
   /// The saved choice while only missing lifetime access keeps it off
   /// screen, so the picker can show it is still saved; null when the saved
   /// choice is what paints, or would not paint even if unlocked.
   settings.ThemeMode? get lockedStoredThemeMode {
-    final ifUnlocked = resolve(_storedMode, _customPalette, unlocked: true).mode;
+    final ifUnlocked = resolve(_storedMode, _customPackage?.palette ?? _customPalette, unlocked: true).mode;
     return ifUnlocked == _choice.mode ? null : ifUnlocked;
   }
 
@@ -125,7 +130,7 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
   /// [resolve] for the choice stored in [service].
   static ThemeChoice resolveStored(settings.SettingsService service, {required bool unlocked}) => resolve(
     service.read(settings.SettingsService.themeMode),
-    service.read(settings.SettingsService.customThemePalette),
+    service.read(settings.SettingsService.customThemePackage)?.palette ?? service.read(settings.SettingsService.customThemePalette),
     unlocked: unlocked,
   );
 
@@ -169,8 +174,8 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
     Brightness.dark => ThemeMode.dark,
   };
 
-  ThemeData get lightTheme => lightThemeFor(_choice.palette);
-  ThemeData get darkTheme => darkThemeFor(_choice.palette);
+  ThemeData get lightTheme => activePackage?.apply(lightThemeFor(_choice.palette)) ?? lightThemeFor(_choice.palette);
+  ThemeData get darkTheme => activePackage?.apply(darkThemeFor(_choice.palette)) ?? darkThemeFor(_choice.palette);
 
   ThemeMode get materialThemeMode => materialThemeModeFor(_choice.palette);
 

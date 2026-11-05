@@ -21,7 +21,7 @@ release qualification. Changes are committed directly to `main` in small batches
 | G04 | P2P storage policy for large media | Implemented: per-profile 4/16/64/128/256 GiB choices, 64 GiB default, aggregate lease reservations, known-size checks and 512 MiB free-space reserve; native metadata checks the actual file requirement | Native transfer/large-file, low-space and concurrent-device execution pending |
 | G05 | Dedicated karaoke implementation | Queued | Pending |
 | G06 | RomM and emulator integration | Queued | Pending |
-| G07 | Full theme packages | Queued | Pending |
+| G07 | Full theme packages | Implemented v1 native package schema with color, geometry, typography and adaptive/sidebar/bottom flow; bounded import/export, preview, persistence, reset and corrupt-package fallback; TV/automotive retain their navigation contracts | Schema/round-trip cases added; RTL, 200% text, native focus and migration execution pending |
 | G08 | Remaining podcast functions | Queued | Pending |
 | G09 | Remaining Steam transport/presentation scope | Queued | Pending |
 | G10 | Detached desktop Multiview windows | Queued | Pending |

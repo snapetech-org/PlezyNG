@@ -48,6 +48,7 @@ import '../utils/platform_detector.dart';
 import 'trackers/tracker_constants.dart';
 import '../profiles/profile.dart';
 import '../theme/mono_theme.dart' show MonoPalette;
+import '../theme/theme_package.dart';
 import '../watch_together/services/watch_party_relays.dart';
 
 Map<String, List<MediaBookmark>> _decodeMediaBookmarks(dynamic raw) {
@@ -1479,6 +1480,11 @@ class SettingsService extends BaseSharedPreferencesService {
     encode: (palette) => json.encode(palette?.toJson()),
     decode: (raw) => raw == null ? null : MonoPalette.fromJson(raw),
   );
+  static final customThemePackage = JsonPref<ThemePackage?>(
+    'custom_theme_package_v1', defaultValue: null,
+    encode: (value) => json.encode(value?.toJson()),
+    decode: (raw) => raw == null ? null : ThemePackage.fromJson(raw),
+  );
   static const videoPlayerNavigationEnabled = BoolPref(
     'video_player_navigation_enabled',
     defaultValueProvider: PlatformDetector.isTV,
@@ -2194,6 +2200,7 @@ class SettingsService extends BaseSharedPreferencesService {
     scopedPlayerPrefValues,
     themeMode,
     customThemePalette,
+    customThemePackage,
     videoPlayerNavigationEnabled,
     playbackBufferTier,
     streamBufferMb,

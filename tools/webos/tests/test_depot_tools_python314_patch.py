@@ -50,7 +50,7 @@ class DepotToolsPython314PatchTests(unittest.TestCase):
             record["sha256"],
         )
         requirements = REQUIREMENTS_PATH.read_text(encoding="utf-8")
-        self.assertIn("httplib2==0.13.1", requirements)
+        self.assertIn("httplib2==0.32.0", requirements)
         self.assertIn("six==1.10.0", requirements)
 
     def test_release_builder_applies_patch_before_gclient_sync(self):

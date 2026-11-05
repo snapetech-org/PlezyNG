@@ -55,6 +55,68 @@ void main() {
     controller.dispose();
     await db.close();
   });
+  Future<void> catalog({String id = '76561198000000000', String? session, String? protected}) =>
+      controller.saveSteamCatalog(
+        steamId: id,
+        games: [SteamCatalogGame(appId: 620, name: 'Portal 2')],
+        catalogAvailable: true,
+        catalogTruncated: false,
+        sessionCredential: session,
+        protectedCredential: protected,
+      );
+  test('session-only authorization supports refresh without persisting the grant', () async {
+    await catalog(session: 'session-secret');
+    expect(controller.catalogCredential, 'session-secret');
+    expect(controller.usesSessionSteamCredential, isTrue);
+    await catalog();
+    await controller.toggleLibraryFavorite(controller.library.entries.single);
+    await controller.load();
+    expect(controller.catalogCredential, 'session-secret');
+    expect(controller.library.steamCatalogCredential, isNull);
+    final stored = await repository.preference('alice', GameLibraryController.preferenceKey);
+    expect(stored.toString(), isNot(contains('session-secret')));
+    final reopened = GameLibraryController(
+      repository: repository,
+      profileId: 'alice',
+      sessionCurrent: () => true,
+      client: FakeEngine(),
+    );
+    await reopened.load();
+    expect(reopened.library.entries.single.name, 'Portal 2');
+    expect(reopened.catalogCredential, isNull);
+    reopened.dispose();
+    current = false;
+    expect(controller.catalogCredential, isNull);
+    expect(controller.usesSessionSteamCredential, isFalse);
+  });
+  test('account replacement and unlink retire session authorization', () async {
+    await catalog(session: 'first-account-secret');
+    await catalog(id: '76561198000000001');
+    expect(controller.catalogCredential, isNull);
+    await catalog();
+    expect(controller.catalogCredential, isNull);
+    await catalog(session: 'new-session-secret');
+    await catalog(protected: 'protected-value');
+    expect(controller.catalogCredential, 'protected-value');
+    expect(controller.usesSessionSteamCredential, isFalse);
+    await catalog(session: 'replacement-session-secret');
+    expect(controller.library.steamCatalogCredential, isNull);
+    await controller.unlinkSteamAccount();
+    expect(controller.catalogCredential, isNull);
+    expect(controller.usesSessionSteamCredential, isFalse);
+  });
+  test('failed persistence cannot publish a session grant', () async {
+    await repository.forgetProfile('alice');
+    await expectLater(catalog(session: 'rejected-secret'), throwsA(isA<SourceException>()));
+    expect(controller.catalogCredential, isNull);
+    expect(controller.library.steamAccountId, isNull);
+  });
+  test('ambiguous or oversized session credentials are rejected', () async {
+    await expectLater(catalog(session: 'raw', protected: 'protected'), throwsA(isA<GameClientException>()));
+    await expectLater(catalog(session: ''), throwsA(isA<GameClientException>()));
+    await expectLater(catalog(session: 'x' * 4097), throwsA(isA<GameClientException>()));
+    expect(controller.catalogCredential, isNull);
+  });
   test('profile persistence keeps libraries separate', () async {
     await controller.saveHost(host);
     await controller.saveGame(game);
@@ -120,5 +182,27 @@ void main() {
     expect(controller.library.games.map((g) => g.id), containsAll(['620', '0']));
     expect(controller.library.favorites, contains(shortcut.key));
     expect(controller.library.recent, contains(shortcut.key));
+  });
+  test('explicit computer selection survives playing elsewhere and persists without marking play', () async {
+    final otherHost = GameHost(id: 'other', name: 'BC250', address: '192.168.1.3', protocol: GameProtocol.gameStream);
+    await controller.saveHost(host);
+    await controller.saveHost(otherHost);
+    await controller.saveGame(StreamGame(hostKey: host.key, id: '1', name: 'Portal', steamAppId: 620));
+    await controller.saveGame(StreamGame(hostKey: otherHost.key, id: '2', name: 'Portal', steamAppId: 620));
+    var entry = controller.library.entries.single;
+    final preferred = entry.routes.first;
+    await controller.preferRoute(entry, preferred);
+    expect(controller.library.recent, isEmpty);
+    await controller.connected(entry.routes.last);
+    await controller.load();
+    entry = controller.library.entries.single;
+    expect(entry.preferredRoute(controller.library)?.key, preferred.key);
+    await controller.preferRoute(entry, null);
+    await controller.load();
+    expect(controller.library.entries.single.preferredRoute(controller.library), isNull);
+    final before = controller.library.toJson();
+    current = false;
+    await expectLater(controller.preferRoute(entry, preferred), throwsA(isA<GameClientException>()));
+    expect(controller.library.toJson(), before);
   });
 }

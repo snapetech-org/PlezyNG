@@ -108,11 +108,11 @@ struct GStreamerSink::Impl {
     if (!parser.configure(c.codec, c.extra.data(), c.extra.size())) return false;
     const char* description =
         c.codec == 4 ? "appsrc name=input is-live=true format=time block=false max-bytes=8388608 max-buffers=4 ! "
-                       "h264parse ! video/x-h264,width=(int)[1,1920],height=(int)[1,1080] ! avdec_h264 max-threads=2 ! "
+                       "h264parse ! video/x-h264,width=(int)[1,3840],height=(int)[1,2160] ! avdec_h264 max-threads=2 ! "
                        "videoconvert ! video/x-raw,format=RGBA ! "
                        "appsink name=output sync=false max-buffers=2 drop=true"
                      : "appsrc name=input is-live=true format=time block=false max-bytes=8388608 max-buffers=4 ! "
-                       "h265parse ! video/x-h265,width=(int)[1,1920],height=(int)[1,1080] ! avdec_h265 max-threads=2 ! "
+                       "h265parse ! video/x-h265,width=(int)[1,3840],height=(int)[1,2160] ! avdec_h265 max-threads=2 ! "
                        "videoconvert ! video/x-raw,format=RGBA ! "
                        "appsink name=output sync=false max-buffers=2 drop=true";
     GError* error = nullptr;
@@ -169,7 +169,7 @@ struct GStreamerSink::Impl {
       return;
     }
     std::vector<uint8_t> normalized;
-    if (!parser.annexB(frame.bytes.data(), frame.bytes.size(), normalized) || normalized.size() > 2 * 1024 * 1024) {
+    if (!parser.annexB(frame.bytes.data(), frame.bytes.size(), normalized) || normalized.size() > 8 * 1024 * 1024) {
       complete(frame.id, false);
       failed(false);
       return;
@@ -211,7 +211,7 @@ struct GStreamerSink::Impl {
                                     info.colorimetry.transfer == GST_VIDEO_TRANSFER_ARIB_STD_B67);
         if (hdr) failed(false);  // This Flutter texture is SDR; never relabel HDR pixels.
         if (parsed && !hdr && GST_VIDEO_INFO_WIDTH(&info) > 0 && GST_VIDEO_INFO_HEIGHT(&info) > 0 &&
-            GST_VIDEO_INFO_WIDTH(&info) <= 1920 && GST_VIDEO_INFO_HEIGHT(&info) <= 1080 &&
+            GST_VIDEO_INFO_WIDTH(&info) <= 3840 && GST_VIDEO_INFO_HEIGHT(&info) <= 2160 &&
             GST_VIDEO_INFO_FORMAT(&info) == GST_VIDEO_FORMAT_RGBA &&
             gst_video_frame_map(&image, &info, buffer, GST_MAP_READ)) {
           DecodedPixels pixels;
@@ -332,7 +332,7 @@ bool GStreamerSink::supported(bool hevc) {
          factory("volume") && factory("audioconvert") && factory("audioresample") && factory("autoaudiosink");
 }
 bool GStreamerSink::video(int codec, int w, int h, const uint8_t* extra, size_t length) {
-  if ((codec != 4 && codec != 5) || w < 1 || h < 1 || w > 1920 || h > 1080 || length > 65536 || (length && !extra) ||
+  if ((codec != 4 && codec != 5) || w < 1 || h < 1 || w > 3840 || h > 2160 || length > 65536 || (length && !extra) ||
       impl_->stopped)
     return false;
   std::lock_guard<std::mutex> lock(impl_->mutex);
@@ -346,7 +346,7 @@ bool GStreamerSink::video(int codec, int w, int h, const uint8_t* extra, size_t 
   return true;
 }
 bool GStreamerSink::frame(const uint8_t* bytes, size_t length, uint32_t id, bool key) {
-  if (!bytes || !length || length > 2 * 1024 * 1024 || !id || impl_->stopped) return false;
+  if (!bytes || !length || length > 8 * 1024 * 1024 || !id || impl_->stopped) return false;
   std::lock_guard<std::mutex> lock(impl_->mutex);
   if (impl_->stopping || !impl_->videoEpoch || impl_->videos.size() >= 4) return false;
   impl_->videos.push_back({{bytes, bytes + length}, id, key});

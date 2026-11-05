@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/games/game_models.dart';
+import 'package:plezy/games/steam_native_plane.dart';
 import 'package:plezy/multiview/steam_game_workspace_surface.dart';
 
 void main() {
@@ -56,8 +57,73 @@ void main() {
     expect(tester.widget<AspectRatio>(find.byType(AspectRatio)).aspectRatio, 1.6);
     await tester.pumpWidget(const SizedBox());
     await tester.pump();
-    expect(calls.any((c) => c.method == 'disconnect'), isTrue);
+    expect(calls.any((c) => c.method == 'disconnect'), isFalse);
     stream.dispose();
+    await tester.pump();
+    expect(calls.where((c) => c.method == 'disconnect'), hasLength(1));
+  }, skip: !Platform.isLinux);
+
+  testWidgets('native plane replay, codec fallback and retirement share the retained view', (tester) async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(receiver, (_) async => {'id': 99, 'textureId': 7, 'nativePlane': true});
+    messenger.setMockMethodCallHandler(streamChannel, (call) async {
+      calls.add(call);
+      if (call.method == 'getSessionState') return 'playing';
+      if (call.method == 'getNativePresentation') return true;
+      return null;
+    });
+    final stream = session();
+    await tester.pumpWidget(MaterialApp(home: Scaffold(body: stream.workspaceSurface())));
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(Texture), findsNothing);
+    expect(tester.widget<SteamNativePlane>(find.byType(SteamNativePlane)).enabled, isTrue);
+    expect(calls.any((call) => call.method == 'setNativeRect' && call.arguments['width'] > 0), isTrue);
+    await messenger.handlePlatformMessage(
+      streamChannel.name,
+      const StandardMethodCodec().encodeMethodCall(const MethodCall('nativePresentation', false)),
+      (_) {},
+    );
+    await tester.pump();
+    expect(find.byType(Texture), findsOneWidget);
+    expect(tester.widget<SteamNativePlane>(find.byType(SteamNativePlane)).enabled, isFalse);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump();
+    expect(calls.any((call) => call.method == 'setNativeRect' && call.arguments['width'] == 0), isTrue);
+    expect(calls.any((call) => call.method == 'disconnect'), isFalse);
+    stream.dispose();
+  }, skip: !Platform.isLinux);
+
+  testWidgets('presentation can unmount and remount without recreating or stopping the receiver', (tester) async {
+    var creates = 0;
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(receiver, (_) async {
+      creates++;
+      return {'id': 99, 'textureId': 7};
+    });
+    messenger.setMockMethodCallHandler(streamChannel, (call) async {
+      calls.add(call);
+      return call.method == 'getSessionState' ? 'playing' : null;
+    });
+    final stream = session();
+    await stream.setInputEnabled(true);
+    await tester.pumpWidget(MaterialApp(home: stream.workspaceSurface()));
+    await tester.pump();
+    expect(stream.inputAvailable.value, isTrue);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump();
+    expect(stream.inputAvailable.value, isFalse);
+    expect(stream.sessionState.value, 'playing');
+    expect(calls.any((c) => c.method == 'disconnect'), isFalse);
+    await tester.pumpWidget(MaterialApp(home: stream.workspaceSurface()));
+    await tester.pump();
+    expect(creates, 1);
+    expect(find.byType(Texture), findsOneWidget);
+    expect(stream.inputAvailable.value, isTrue);
+    await tester.pumpWidget(const SizedBox());
+    stream.dispose();
+    await tester.pump();
+    expect(calls.where((c) => c.method == 'disconnect'), hasLength(1));
   }, skip: !Platform.isLinux);
 
   testWidgets('late native creation is retired after its workspace was removed', (tester) async {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:universal_gamepad/universal_gamepad.dart';
@@ -40,11 +41,12 @@ typedef GamepadInputResetHandler = void Function(WorkspaceGameInputResetReason r
 enum WorkspaceGameInputResetReason { leaseReleased, windowFocusLost, applicationInactive, controllerDisconnected }
 
 class _WorkspaceInputRegistration {
-  const _WorkspaceInputRegistration({required this.onEvent, this.onNativeKeyEvent, this.onReset});
+  const _WorkspaceInputRegistration({required this.onEvent, this.onNativeKeyEvent, this.onReset, this.rawTvosControllerInput = false});
 
   final GamepadInputEventHandler onEvent;
   final WorkspaceNativeKeyEventHandler? onNativeKeyEvent;
   final GamepadInputResetHandler? onReset;
+  final bool rawTvosControllerInput;
 }
 
 /// Suppresses synthetic gamepad key events when the OS has just delivered an
@@ -247,6 +249,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
   final Set<GamepadButton> _pressedButtons = {};
   final Set<GamepadButton> _suppressedButtons = {};
   bool _windowFocused = true;
+  final _workspaceInputAvailable = ValueNotifier(true);
+  ValueListenable<bool> get workspaceInputAvailable => _workspaceInputAvailable;
+  void _publishWorkspaceAvailability() => _workspaceInputAvailable.value = _windowFocused && !_nativeTextInputFocused;
   bool _nativeKeyHandlerRegistered = false;
   bool _appLifecycleObserverRegistered = false;
   bool _nativeTextInputFocused = false;
@@ -271,16 +276,20 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
   /// Registers an interactive workspace surface that can consume raw
   /// button, axis, and connection events. Only the owner selected by
   /// [setWorkspaceInputOwner] receives them.
+  /// [rawTvosControllerInput] preserves player IDs for native emulators and
+  /// consumes duplicate engine gamepad keys while that surface owns input.
   void registerWorkspaceInputHandler(
     Object owner,
     GamepadInputEventHandler handler, {
     WorkspaceNativeKeyEventHandler? onNativeKeyEvent,
     GamepadInputResetHandler? onReset,
+    bool rawTvosControllerInput = false,
   }) {
     _workspaceInputHandlers[owner] = _WorkspaceInputRegistration(
       onEvent: handler,
       onNativeKeyEvent: onNativeKeyEvent,
       onReset: onReset,
+      rawTvosControllerInput: rawTvosControllerInput,
     );
   }
 
@@ -319,7 +328,8 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
   bool _routeToWorkspaceInputOwner(GamepadEvent event) {
     final owner = _workspaceInputOwner;
     if (owner == null || !_windowFocused) return false;
-    if (event is GamepadButtonEvent &&
+    if (_workspaceInputHandlers[owner]?.rawTvosControllerInput != true &&
+        event is GamepadButtonEvent &&
         isTvosEngineOwnedGamepadButton(isAppleTV: PlatformDetector.isAppleTV(), button: event.button)) {
       return false;
     }
@@ -386,6 +396,7 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
   }) {
     if (_windowFocused == focused) return;
     _windowFocused = focused;
+    _publishWorkspaceAvailability();
     if (!focused) {
       final owner = _workspaceInputOwner;
       if (owner != null) _notifyWorkspaceInputReset(owner, resetReason);
@@ -440,6 +451,7 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
     if (_isDesktop) {
       windowManager.addListener(this);
       _windowFocused = await windowManager.isFocused();
+      _publishWorkspaceAvailability();
     }
     if (!_appLifecycleObserverRegistered) {
       WidgetsBinding.instance.addObserver(this);
@@ -521,6 +533,10 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
     // leave game input and reach its menus without a pointing device.
     if (event.logicalKey == LogicalKeyboardKey.escape && HardwareKeyboard.instance.isShiftPressed) return false;
     if (owner != null && _windowFocused && !_nativeTextInputFocused && !Platform.isAndroid) {
+      // A native emulator needs each controller's ID and unmodified buttons.
+      // Consume the engine's duplicate gamepad keys when it owns raw tvOS input.
+      if (_workspaceInputHandlers[owner]?.rawTvosControllerInput == true &&
+          PlatformDetector.isAppleTV() && event.deviceType == ui.KeyEventDeviceType.gamepad) return true;
       final workspaceKey = _workspaceSyntheticKeyForNativeKey(event.logicalKey);
       if (workspaceKey != null && _steamInputInjectsKeys()) {
         if (_workspaceRawKeysHeld.contains(workspaceKey)) return true;
@@ -572,6 +588,7 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
       return;
     }
     _nativeTextInputFocused = focused;
+    if (focused) _publishWorkspaceAvailability();
 
     if (focused) {
       if (TextInputDiagnostics.enabled) {
@@ -590,6 +607,7 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
         _logGamepadDiag('setNativeTextInputFocused using debug handler focused=$focused');
       }
       await debugHandler(focused);
+      _publishWorkspaceAvailability();
       return;
     }
 
@@ -605,6 +623,8 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
       }
     } catch (e) {
       appLogger.e('GamepadService: Failed to ${focused ? "pause" : "resume"} for native text input', error: e);
+    } finally {
+      _publishWorkspaceAvailability();
     }
   }
 

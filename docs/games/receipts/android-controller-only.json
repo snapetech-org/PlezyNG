@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "applicationBuilt": false,
+  "deviceTested": false,
+  "buildInvoked": true,
+  "artifacts": [
+    {
+      "abi": "arm64-v8a",
+      "bytes": 21823720,
+      "sha256": "e0cb1a4db6a7eccb3a789bb64e9940bcc708b261f9c21bcc81e88c600386da2d",
+      "elfChecked": true,
+      "jniExportsChecked": 43,
+      "file": "arm64-v8a/libplezy_steam.so"
+    },
+    {
+      "abi": "armeabi-v7a",
+      "bytes": 18125260,
+      "sha256": "809370ceabd4114a0f7a9c255358a1eb8da754d38c6256929024f34235285131",
+      "elfChecked": true,
+      "jniExportsChecked": 43,
+      "file": "armeabi-v7a/libplezy_steam.so"
+    },
+    {
+      "abi": "x86",
+      "bytes": 18245344,
+      "sha256": "557394c36927ad6bd0511496279c4eaa86c56447694a8b15f04cbbb718b2f3b0",
+      "elfChecked": true,
+      "jniExportsChecked": 43,
+      "file": "x86/libplezy_steam.so"
+    },
+    {
+      "abi": "x86_64",
+      "bytes": 21111056,
+      "sha256": "fbb95f57a3ba1e14deec8d723a9b9dd2e4d11c0782e4777d05a75505b9386736",
+      "elfChecked": true,
+      "jniExportsChecked": 43,
+      "file": "x86_64/libplezy_steam.so"
+    }
+  ],
+  "commit": "605e4059981148ba34c466df8eebe6f2cd517c89",
+  "dirty": false,
+  "ndk": "29.0.14206865",
+  "cmake": "3.22.1",
+  "androidApi": 25
+}

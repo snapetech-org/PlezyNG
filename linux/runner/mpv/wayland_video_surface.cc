@@ -295,7 +295,8 @@ bool WaylandVideoSurface::InitEgl(std::string* error) {
   return Fail(error, "No matching EGL config for the video plane");
 }
 
-bool WaylandVideoSurface::Create(GtkWidget* view, std::string* error) {
+bool WaylandVideoSurface::Create(GtkWidget* view, std::string* error, bool vulkan) {
+  vulkan_ = vulkan;
   if (view == nullptr) return Fail(error, "Video plane requires a realized view");
   GdkDisplay* display = gtk_widget_get_display(view);
   if (!IsSupported(display)) return Fail(error, "Not a Wayland display");
@@ -304,7 +305,7 @@ bool WaylandVideoSurface::Create(GtkWidget* view, std::string* error) {
   if (parent == nullptr) return Fail(error, "Toplevel has no Wayland surface yet");
 
   view_ = view;
-  if (!BindGlobals(display, error) || !InitEgl(error)) {
+  if (!BindGlobals(display, error) || (!vulkan_ && !InitEgl(error))) {
     Destroy();
     return false;
   }
@@ -369,31 +370,40 @@ bool WaylandVideoSurface::Create(GtkWidget* view, std::string* error) {
   wl_subsurface_place_below(subsurface_, parent);
   wl_subsurface_set_desync(subsurface_);
 
-  // A 1x1 window keeps EGL happy until the first SetRect() arrives.
-  egl_window_ = wl_egl_window_create(surface_, 1, 1);
-  if (egl_window_ == nullptr) {
-    Destroy();
-    return Fail(error, "Failed to create the video wl_egl_window");
-  }
+  if (!vulkan_) {
+    // A 1x1 window keeps EGL happy until the first SetRect() arrives.
+    egl_window_ = wl_egl_window_create(surface_, 1, 1);
+    if (egl_window_ == nullptr) {
+      Destroy();
+      return Fail(error, "Failed to create the video wl_egl_window");
+    }
 
-  egl_surface_ =
-      eglCreateWindowSurface(egl_display_, egl_config_, reinterpret_cast<EGLNativeWindowType>(egl_window_), nullptr);
-  if (egl_surface_ == EGL_NO_SURFACE) {
-    Destroy();
-    return Fail(error, "Failed to create the video EGL surface");
+    egl_surface_ =
+        eglCreateWindowSurface(egl_display_, egl_config_, reinterpret_cast<EGLNativeWindowType>(egl_window_), nullptr);
+    if (egl_surface_ == EGL_NO_SURFACE) {
+      Destroy();
+      return Fail(error, "Failed to create the video EGL surface");
+    }
+  } else {
+    // The Vulkan receiver separately requires an actual HDR10 10-bit format.
+    // This records the color-management side of that two-part capability.
+    depth_bits_ = 10;
   }
 
   // Note: the swap interval cannot be set here — eglSwapInterval acts on the
   // surface bound to the *current* context, and none is current yet. It is set
   // in MpvPlayer::InitRenderContextForSurface once the context is bound.
 
-  if (color_manager_ != nullptr) {
+  // Vulkan WSI owns the color-management surface and attaches the color space
+  // selected by VkSwapchainCreateInfoKHR. Binding a second color surface here
+  // would be a fatal Wayland protocol error. Feedback can be shared.
+  if (color_manager_ != nullptr && !vulkan_) {
     color_surface_ = wp_color_manager_v1_get_surface(color_manager_, surface_);
   }
   // PQ in 8 bits bands badly enough to be worse than tone-mapping to SDR, so
   // HDR is only offered when the plane actually got a deep config (10-bit
   // unorm or fp16).
-  if (supports_hdr_ && (color_surface_ == nullptr || depth_bits_ < 10)) {
+  if (supports_hdr_ && ((!vulkan_ && color_surface_ == nullptr) || depth_bits_ < 10)) {
     supports_hdr_ = false;
     g_message(
         "MPV video plane: HDR unavailable (colour surface=%p, depth=%d bits)", static_cast<void*>(color_surface_),
@@ -1231,6 +1241,7 @@ void WaylandVideoSurface::Destroy() {
   // suppress the first scale request after recreation.
   scale_sent_ = 1;
   visible_ = false;
+  vulkan_ = false;
   rect_valid_ = false;
   first_frame_presented_ = false;
   consecutive_frame_acks_missed_ = 0;
@@ -1302,7 +1313,7 @@ void WaylandVideoSurface::SetRect(int32_t x, int32_t y, int32_t width, int32_t h
   view_x_ = view_x;
   view_y_ = view_y;
 
-  if (surface_ == nullptr || subsurface_ == nullptr || egl_window_ == nullptr) return;
+  if (surface_ == nullptr || subsurface_ == nullptr || (!vulkan_ && egl_window_ == nullptr)) return;
 
   // A buffer_scale change must not reach the wire before the first frame is
   // presented: mesa commits the EGL surface's pre-allocated 1x1 back buffer
@@ -1312,11 +1323,11 @@ void WaylandVideoSurface::SetRect(int32_t x, int32_t y, int32_t width, int32_t h
   // gate is the first-frame latch rather than buffer attachment: the committed
   // scale survives a detach, so once a frame has been presented the scale must
   // be updatable with no buffer attached.
-  if (scale_changed && first_frame_presented_ && scale_ != scale_sent_) {
+  if ((vulkan_ || (scale_changed && first_frame_presented_)) && scale_ != scale_sent_) {
     wl_surface_set_buffer_scale(surface_, scale_);
     scale_sent_ = scale_;
   }
-  if (size_changed || scale_changed) wl_egl_window_resize(egl_window_, width_, height_, 0, 0);
+  if (!vulkan_ && (size_changed || scale_changed)) wl_egl_window_resize(egl_window_, width_, height_, 0, 0);
   // Both axes are floored into surface-local units and then offset by the
   // view's position inside the toplevel; PlaneSurfacePosition explains why.
   wl_subsurface_set_position(
@@ -1349,7 +1360,7 @@ void WaylandVideoSurface::SetVisible(bool visible) {
 }
 
 bool WaylandVideoSurface::PreparePresent() {
-  if (!visible_ || egl_surface_ == EGL_NO_SURFACE || frame_pending_) return false;
+  if (!visible_ || !valid() || !rect_valid_ || frame_pending_) return false;
   // Held while a colour transition is staged. eglSwapBuffers is the child
   // surface's commit, so presenting now would publish a buffer paired with a
   // colour state it was not rendered for - the flash this whole two-phase dance

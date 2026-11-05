@@ -13,6 +13,9 @@ struct PyrowaveFrameInfo {
   bool fullRange = false;
   bool chroma444 = false;
   bool chromaLeft = false;
+  // The only HDR encoding in the pinned v1 bitstream: BT.2020 non-constant
+  // luminance YCbCr with ST2084 (PQ). Never infer this from a user preference.
+  bool hdr10 = false;
 };
 
 enum class PyrowaveDecodeStatus { frame, pending, invalid };
@@ -20,7 +23,7 @@ enum class PyrowaveDecodeStatus { frame, pending, invalid };
 // Parses the pinned v1 bitstream without trusting packet lengths or dimensions.
 bool parsePyrowaveFrame(
     const uint8_t* bytes, size_t length, uint32_t width, uint32_t height, PyrowaveFrameInfo& info,
-    bool allow444 = false);
+    bool allow444 = false, bool allowHdr10 = false);
 void convertPyrowave420ToArgb(
     const uint8_t* y, size_t yStride, const uint8_t* cb, size_t cbStride, const uint8_t* cr, size_t crStride,
     const PyrowaveFrameInfo& info, std::vector<uint8_t>& argb);

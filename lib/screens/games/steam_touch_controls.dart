@@ -4,15 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../i18n/strings.g.dart';
+import '../../games/steam_touch_layout.dart';
 import '../../widgets/app_icon.dart';
 
 /// Touch assistance for player one. Platform adapters merge it independently
 /// of physical controllers; removing this overlay releases assistance only.
 class SteamTouchControls extends StatefulWidget {
-  const SteamTouchControls({super.key, required this.onButton, required this.onStick, required this.onRelease});
+  const SteamTouchControls({
+    super.key,
+    required this.onButton,
+    required this.onStick,
+    required this.onRelease,
+    this.swapSides = false,
+    this.layout,
+  });
   final void Function(String, bool) onButton;
   final void Function(String, Offset) onStick;
   final VoidCallback onRelease;
+  final bool swapSides;
+  final SteamTouchLayout? layout;
 
   @override
   State<SteamTouchControls> createState() => _SteamTouchControlsState();
@@ -32,43 +42,6 @@ class _SteamTouchControlsState extends State<SteamTouchControls> {
     child: icon == null ? Text(label) : AppIcon(icon),
   );
 
-  Widget _cross({required bool directions}) => SizedBox(
-    width: 144,
-    height: 144,
-    child: Stack(
-      children: [
-        Positioned(
-          left: 48,
-          top: 0,
-          child: directions
-              ? _button('dpadUp', '↑', icon: Symbols.arrow_upward_rounded, semantics: t.games.touchDpadUp)
-              : _button('y', 'Y'),
-        ),
-        Positioned(
-          left: 0,
-          top: 48,
-          child: directions
-              ? _button('dpadLeft', '←', icon: Symbols.arrow_back_rounded, semantics: t.games.touchDpadLeft)
-              : _button('x', 'X'),
-        ),
-        Positioned(
-          left: 96,
-          top: 48,
-          child: directions
-              ? _button('dpadRight', '→', icon: Symbols.arrow_forward_rounded, semantics: t.games.touchDpadRight)
-              : _button('b', 'B'),
-        ),
-        Positioned(
-          left: 48,
-          top: 96,
-          child: directions
-              ? _button('dpadDown', '↓', icon: Symbols.arrow_downward_rounded, semantics: t.games.touchDpadDown)
-              : _button('a', 'A'),
-        ),
-      ],
-    ),
-  );
-
   Widget _stick(bool left) => _Stick(
     key: ValueKey(left ? 'leftStick' : 'rightStick'),
     label: left ? t.games.leftStick : t.games.rightStick,
@@ -77,23 +50,28 @@ class _SteamTouchControlsState extends State<SteamTouchControls> {
     onClick: (down) => widget.onButton(left ? 'leftStick' : 'rightStick', down),
   );
 
-  Widget _shoulders(bool left) => Row(
-    children: [
-      if (left) _button('leftBumper', 'LB', semantics: t.games.touchLeftBumper),
-      _button(
-        left ? 'leftTrigger' : 'rightTrigger',
-        left ? 'LT' : 'RT',
-        semantics: left ? t.games.touchLeftTrigger : t.games.touchRightTrigger,
-      ),
-      if (!left) _button('rightBumper', 'RB', semantics: t.games.touchRightBumper),
-    ],
-  );
+  Widget _control(String key) {
+    if (key == 'leftStick' || key == 'rightStick') return _stick(key == 'leftStick');
+    final icon = switch (key) {
+      'dpadUp' => Symbols.arrow_upward_rounded,
+      'dpadDown' => Symbols.arrow_downward_rounded,
+      'dpadLeft' => Symbols.arrow_back_rounded,
+      'dpadRight' => Symbols.arrow_forward_rounded,
+      'select' => Symbols.tab_rounded,
+      'start' => Symbols.menu_rounded,
+      'mode' => Symbols.home_rounded,
+      _ => null,
+    };
+    final short =
+        {'leftBumper': 'LB', 'leftTrigger': 'LT', 'rightBumper': 'RB', 'rightTrigger': 'RT'}[key] ?? key.toUpperCase();
+    return _button(key, short, icon: icon, semantics: steamTouchControlLabel(key));
+  }
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final wide = constraints.maxWidth >= 640;
-      if (constraints.maxWidth < 360 || constraints.maxHeight < (wide ? 216 : 352)) {
+      final size = constraints.biggest;
+      if (!SteamTouchLayout.fits(size)) {
         return Align(
           alignment: Alignment.bottomCenter,
           child: IgnorePointer(
@@ -108,48 +86,17 @@ class _SteamTouchControlsState extends State<SteamTouchControls> {
           ),
         );
       }
-      // Game controller geometry stays physical in RTL; menu/help flow remains
-      // directional. Every discrete control has a 48-pixel touch target.
+      final positions = (widget.layout ?? SteamTouchLayout()).resolve(size, swapSides: widget.swapSides);
       return Directionality(
         textDirection: TextDirection.ltr,
         child: Stack(
           children: [
-            Positioned(
-              left: 8,
-              bottom: 8,
-              child: wide
-                  ? Row(
-                      children: [
-                        _cross(directions: true),
-                        Column(children: [_shoulders(true), _stick(true)]),
-                      ],
-                    )
-                  : Column(children: [_shoulders(true), _stick(true), _cross(directions: true)]),
-            ),
-            Positioned(
-              right: 8,
-              bottom: 8,
-              child: wide
-                  ? Row(
-                      children: [
-                        Column(children: [_shoulders(false), _stick(false)]),
-                        _cross(directions: false),
-                      ],
-                    )
-                  : Column(children: [_shoulders(false), _cross(directions: false), _stick(false)]),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              top: 8,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _button('select', t.games.touchViewButton, icon: Symbols.tab_rounded),
-                  _button('start', t.games.touchMenuButton, icon: Symbols.menu_rounded),
-                ],
+            for (final key in SteamTouchLayout.controls)
+              Positioned(
+                left: SteamTouchLayout.position(positions[key]!, size, key).dx,
+                top: SteamTouchLayout.position(positions[key]!, size, key).dy,
+                child: _control(key),
               ),
-            ),
           ],
         ),
       );
@@ -346,3 +293,20 @@ class _StickState extends State<_Stick> {
     );
   }
 }
+
+String steamTouchControlLabel(String key) => switch (key) {
+  'leftStick' => t.games.leftStick,
+  'rightStick' => t.games.rightStick,
+  'leftBumper' => t.games.touchLeftBumper,
+  'rightBumper' => t.games.touchRightBumper,
+  'leftTrigger' => t.games.touchLeftTrigger,
+  'rightTrigger' => t.games.touchRightTrigger,
+  'dpadUp' => t.games.touchDpadUp,
+  'dpadDown' => t.games.touchDpadDown,
+  'dpadLeft' => t.games.touchDpadLeft,
+  'dpadRight' => t.games.touchDpadRight,
+  'select' => t.games.touchViewButton,
+  'start' => t.games.touchMenuButton,
+  'mode' => t.games.steamOverlay,
+  _ => key.toUpperCase(),
+};

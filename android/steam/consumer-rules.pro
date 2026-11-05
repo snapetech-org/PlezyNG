@@ -11,9 +11,17 @@
     public java.util.Map getStreamMetrics();
     public boolean isFailed();
     public void toggleTouchControls();
+    public boolean setControllerMapping(int, java.util.List);
     public void setControllerState(java.util.Map, java.util.Map);
     public void setControllerDeviceState(int, java.util.Map, java.util.Map);
     public void disconnectController(int);
+    public void setTouchControllerState(java.util.Map, java.util.Map);
+    public void releaseTouchControls();
+    public java.util.List readControllerFeedback();
+    public boolean setControllerMotion(int, double[]);
+    public boolean inputText(byte[]);
+    public int getMicrophoneState();
+    public boolean setMicrophoneEnabled(boolean);
     public void inputKey(java.lang.String, boolean);
     public void resetInput();
     public void close();

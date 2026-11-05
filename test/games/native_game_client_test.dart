@@ -9,6 +9,40 @@ void main() {
   final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
   final host = GameHost(id: 'pc', name: 'PC', address: '192.168.1.2', protocol: GameProtocol.gameStream);
   tearDown(() => messenger.setMockMethodCallHandler(NativeGameStreamingClient.channel, null));
+  testWidgets('a stalled capability query times out and a later query can recover', (tester) async {
+    final stalled = Completer<Map<String, dynamic>>();
+    var queries = 0;
+    messenger.setMockMethodCallHandler(NativeGameStreamingClient.channel, (call) async {
+      if (call.method != 'capabilities') return null;
+      return ++queries == 1 ? stalled.future : {'available': true};
+    });
+    final client = NativeGameStreamingClient();
+    final pending = client.capabilities(host);
+    await tester.pump(const Duration(seconds: 5));
+    expect((await pending).available, isFalse);
+    expect((await client.capabilities(host)).available, isTrue);
+    stalled.complete({'available': true});
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+  test('capabilities cannot escape the profile generation that requested them', () async {
+    final response = Completer<Map<String, dynamic>>();
+    messenger.setMockMethodCallHandler(
+      NativeGameStreamingClient.channel,
+      (call) async => call.method == 'capabilities' ? response.future : null,
+    );
+    final client = NativeGameStreamingClient();
+    final pending = client.capabilities(host);
+    client.cancel();
+    response.complete({'available': true, 'embeddedSurface': true});
+    final result = await pending;
+    expect(result.available, isFalse);
+    expect(result.embeddedSurface, isFalse);
+  });
+  test('an incompatible capability response fails closed', () async {
+    messenger.setMockMethodCallHandler(NativeGameStreamingClient.channel, (_) async => 'old engine response');
+    expect((await NativeGameStreamingClient().capabilities(host)).available, isFalse);
+  });
   test('Steam playback does not imply an imported account catalog', () async {
     final steam = GameHost(id: '123', name: 'Steam PC', address: '192.168.1.2', protocol: GameProtocol.steam);
     messenger.setMockMethodCallHandler(NativeGameStreamingClient.channel, (call) async {

@@ -29,6 +29,11 @@ final class SteamControllerSeats {
     navigation.setButtonBit(bit, pressed);
   }
 
+  Integer device(int seat) { return devices[seat]; }
+  int existingSeat(int deviceId) {
+    for (int i = 0; i < devices.length; i++) if (devices[i] != null && devices[i] == deviceId) return i;
+    return -1;
+  }
   int seat(int deviceId) {
     for (int i = 0; i < devices.length; i++) {
       if (devices[i] != null && devices[i] == deviceId) return i;

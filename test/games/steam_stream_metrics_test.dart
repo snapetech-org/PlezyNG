@@ -35,7 +35,15 @@ void main() {
     expect(measured.decoderKind, 4);
     expect(measured.chromaFormat, 2);
     expect(() => SteamStreamMetrics.fromNative({...metricsFixture(), 'chromaFormat': 3}), throwsFormatException);
-    expect(() => SteamStreamMetrics.fromNative({...metricsFixture(), 'decoderKind': 5}), throwsFormatException);
+    expect(() => SteamStreamMetrics.fromNative({...metricsFixture(), 'decoderKind': 6}), throwsFormatException);
+  });
+
+  test('Vulkan and HDR measurements remain optional and reflect the receiver', () {
+    expect(SteamStreamMetrics.fromNative(metricsFixture()).hdr10, isFalse);
+    final measured = SteamStreamMetrics.fromNative({...metricsFixture(), 'decoderKind': 5, 'hdr10': 1});
+    expect(measured.decoderKind, 5);
+    expect(measured.hdr10, isTrue);
+    expect(() => SteamStreamMetrics.fromNative({...metricsFixture(), 'hdr10': 2}), throwsFormatException);
   });
 
   test('unknown targets remain unknown and negotiated fractions are preserved', () {

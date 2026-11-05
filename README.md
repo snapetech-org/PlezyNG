@@ -337,7 +337,8 @@ This list covers the current PlezyNG codebase, including additions since the for
 
 - Optional profile-scoped Games library with paired computers, favorites, recent games, LAN discovery, manual addresses and explicit Wake-on-LAN
 - Embedded Android Moonlight/GameStream engine for compatible hosts, with PIN pairing, certificate trust, host application lists and touch/controller input
-- Experimental Steam receivers in Android, Linux, Windows and Apple source, with secure pairing, H.264/HEVC paths, controller seats, touch assistance and connection diagnostics
+- Experimental Steam receivers in Android, Linux, Windows and Apple source, with secure pairing, H.264/HEVC/HDR paths, surround preferences, controller feedback, editable touch layouts, explicit microphone sharing and connection diagnostics. Internet relay and Cloud/Family actions require their configured services and live acceptance checks
+- RomM catalog, exact-copy selection, in-app browser/stream/native play routes, offline files and durable save synchronization are integrated in source; native cores and signing remain platform build inputs. See the [RomM integration](docs/games/ROMM_INTEGRATION.md)
 - Supported Steam quality/audio preferences, reconnect controls, account-linked reference catalogs and host-bound game activity
 - Separately permissioned Companion Remote game-session and host actions
 - See the [Games architecture](docs/games/ARCHITECTURE.md) and [validation record](docs/games/VALIDATION.md). Native build coverage and real host/controller/device qualification vary by platform; HDR and automatic internet traversal are unfinished.

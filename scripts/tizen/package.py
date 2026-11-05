@@ -328,6 +328,12 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
     run('cmake', '--build', out / 'torrent-build', '--parallel', args.jobs)
     shutil.copyfile(out / 'torrent-build/libplezy_torrent.so', out / 'libplezy_torrent.so')
 
+    run('cmake', '-S', ROOT / 'native/games/romm', '-B', out / 'romm-build',
+        f'-DCMAKE_TOOLCHAIN_FILE={toolchain}', '-DCMAKE_BUILD_TYPE=Release',
+        f'-DFETCHCONTENT_BASE_DIR={sources / "romm-dependencies"}')
+    run('cmake', '--build', out / 'romm-build', '--target', 'plezy_retro', '--parallel', args.jobs)
+    shutil.copyfile(out / 'romm-build/libplezy_retro.so', out / 'libplezy_retro.so')
+
     whisper_source = fetch_locked_whisper_source(sources)
     run('cmake', '-S', whisper_source / 'src', '-B', out / 'whisper-build',
         f'-DCMAKE_TOOLCHAIN_FILE={toolchain}', '-DCMAKE_BUILD_TYPE=Release',
@@ -347,7 +353,7 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
         'whisper': {'version': WHISPER_GGML_VERSION, 'archive_sha256': WHISPER_GGML_SHA256},
         'libraries': {},
     }
-    for name in ('libplezy_sqlite3.so', 'libdart_smb2.so', 'libplezy_torrent.so', 'libflutter_whisper_plugin.so'):
+    for name in ('libplezy_sqlite3.so', 'libdart_smb2.so', 'libplezy_torrent.so', 'libplezy_retro.so', 'libflutter_whisper_plugin.so'):
         path = out / name
         if elf_arch(path.read_bytes()[:64]) != args.arch:
             raise ValueError('Toolchain produced the wrong architecture')
@@ -374,6 +380,8 @@ def stage(source, destination, native_dir, arch, *, visualizer_native=None, visu
     native_target = destination / 'tizen/lib'
     native_target.mkdir(parents=True, exist_ok=True)
     native_library_names = ['libdart_smb2.so', 'libplezy_sqlite3.so', 'libplezy_torrent.so']
+    if 'libplezy_retro.so' in report['libraries']:
+        native_library_names.append('libplezy_retro.so')
     if 'libflutter_whisper_plugin.so' in report['libraries']:
         native_library_names.append('libflutter_whisper_plugin.so')
     for name in native_library_names:

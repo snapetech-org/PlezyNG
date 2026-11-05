@@ -1,12 +1,45 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-#include "steam_audio.h"
 #include <cassert>
 #include <cmath>
 #include <cstring>
 #include <vector>
+
+#include "steam_audio.h"
+#include "steam_microphone.h"
 using namespace plezy::steam;
 
 int main() {
+  for (unsigned rate : {8000u, 12000u, 16000u, 24000u, 48000u}) {
+    for (unsigned channels : {1u, 2u}) {
+      MicrophoneEncoder microphone;
+      assert(microphone.start(rate, channels));
+      int error = 0;
+      OpusDecoder* decoder = opus_decoder_create(rate, channels, &error);
+      assert(decoder && error == OPUS_OK);
+      std::vector<int16_t> input(rate / 100 * channels, 2000), output(input.size());
+      unsigned packets = 0;
+      auto send = [&](const uint8_t* bytes, size_t count) {
+        assert(count > 0 && count <= 1275);
+        assert(opus_decode(decoder, bytes, int(count), output.data(), int(rate / 100), 0) == int(rate / 100));
+        ++packets;
+        return true;
+      };
+      // Device callbacks can split a frame; only complete 10 ms frames leave.
+      const size_t half = input.size() / 2;
+      assert(microphone.push(input.data(), half, send) && packets == 0);
+      microphone.clear();  // Mute must discard the partial private audio.
+      assert(microphone.push(input.data(), half, send) && packets == 0);
+      assert(microphone.push(input.data() + half, half, send) && packets == 1);
+      assert(!microphone.push(nullptr, 1, send));
+      assert(!microphone.push(input.data(), 11521, send));
+      assert(!microphone.push(input.data(), input.size(), [](const uint8_t*, size_t) { return false; }));
+      microphone.reset();
+      assert(!microphone.push(input.data(), input.size(), send));
+      assert(!microphone.start(44100, channels));
+      assert(!microphone.start(rate, 6));
+      opus_decoder_destroy(decoder);
+    }
+  }
   AudioLayout layout;
   assert(parseAudioLayout(1, 48000, nullptr, 0, layout) && layout.coupled == 0);
   assert(parseAudioLayout(2, 48000, nullptr, 0, layout) && layout.mapping[1] == 1);
@@ -18,8 +51,9 @@ int main() {
   for (int channels : {1, 2, 4, 6}) {
     int streams = 0, coupled = 0, error = 0;
     unsigned char mapping[6]{};
-    auto* encoder = opus_multistream_surround_encoder_create(48000, channels, channels < 3 ? 0 : 1,
-        &streams, &coupled, mapping, OPUS_APPLICATION_RESTRICTED_LOWDELAY, &error);
+    auto* encoder = opus_multistream_surround_encoder_create(
+        48000, channels, channels < 3 ? 0 : 1, &streams, &coupled, mapping, OPUS_APPLICATION_RESTRICTED_LOWDELAY,
+        &error);
     assert(encoder && error == OPUS_OK);
     assert(opus_multistream_encoder_ctl(encoder, OPUS_SET_BITRATE(64000 * channels)) == OPUS_OK);
     std::vector<uint8_t> header(channels < 3 ? 19 : 21 + channels, 0);
@@ -80,7 +114,7 @@ int main() {
     assert(!decoder.start(channels, 48000, header.data(), header.size()));
     if (channels > 2) {
       header[18] = 1;
-      header[22] = header[21]; // Duplicate speaker/stream identities are ambiguous.
+      header[22] = header[21];  // Duplicate speaker/stream identities are ambiguous.
       assert(!decoder.start(channels, 48000, header.data(), header.size()));
     }
     opus_multistream_encoder_destroy(encoder);

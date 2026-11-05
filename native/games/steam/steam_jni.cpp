@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+#include <android/native_window_jni.h>
 #include <jni.h>
 
 #include <algorithm>
@@ -7,12 +8,27 @@
 #include <unordered_map>
 
 #include "steam_runtime.h"
+#include "steam_vulkan_presenter.h"
 using namespace plezy::steam;
 namespace {
 JavaVM* vm = nullptr;
 std::mutex registryMutex;
 std::unordered_map<jlong, std::shared_ptr<Runtime>> registry;
 jlong nextHandle = 1;
+struct GpuOutput {
+  ANativeWindow* window = nullptr;
+  std::unique_ptr<VulkanPresenter> presenter = std::make_unique<VulkanPresenter>();
+  ~GpuOutput() {
+    presenter.reset();
+    if (window) ANativeWindow_release(window);
+  }
+};
+std::unordered_map<jlong, std::shared_ptr<GpuOutput>> gpuRegistry;
+std::shared_ptr<GpuOutput> gpuOutput(jlong id) {
+  std::lock_guard<std::mutex> lock(registryMutex);
+  auto it = gpuRegistry.find(id);
+  return it == gpuRegistry.end() ? nullptr : it->second;
+}
 struct Env {
   JNIEnv* value = nullptr;
   bool attached = false;
@@ -133,7 +149,7 @@ class JavaSink final : public Sink {
     return false;  // Decoder failure is returned to the transport.
   }
   static jbyteArray bytes(JNIEnv* env, const uint8_t* data, size_t length) {
-    if (length > 2 * 1024 * 1024 || (length && !data)) return nullptr;
+    if (length > 8 * 1024 * 1024 || (length && !data)) return nullptr;
     auto result = env->NewByteArray(static_cast<jsize>(length));
     if (!result) {
       healthy(env);
@@ -159,6 +175,45 @@ extern "C" JNIEXPORT jlong JNICALL JNI(create)(JNIEnv*, jclass) {
   jlong id = nextHandle++;
   registry.emplace(id, std::make_shared<Runtime>());
   return id;
+}
+extern "C" JNIEXPORT jlongArray JNICALL JNI(microphoneBegin)(JNIEnv* env, jclass, jlong id) {
+  auto runtime = get(id);
+  if (!runtime) return nullptr;
+  const auto lease = runtime->beginMicrophone();
+  if (!lease) return nullptr;
+  auto result = env->NewLongArray(3);
+  if (!result) {
+    runtime->finishMicrophone(lease.epoch);
+    return nullptr;
+  }
+  const jlong values[] = {static_cast<jlong>(lease.epoch), lease.rate, lease.channels};
+  env->SetLongArrayRegion(result, 0, 3, values);
+  return result;
+}
+extern "C" JNIEXPORT jboolean JNICALL JNI(microphoneCurrent)(JNIEnv*, jclass, jlong id, jlong epoch) {
+  auto runtime = get(id);
+  return runtime && runtime->microphoneCurrent(static_cast<uint64_t>(epoch));
+}
+extern "C" JNIEXPORT jboolean JNICALL
+JNI(microphonePcm)(JNIEnv* env, jclass, jlong id, jlong epoch, jshortArray pcm, jint count) {
+  auto runtime = get(id);
+  if (!runtime || !pcm || count < 1 || count > 11520 || env->GetArrayLength(pcm) < count) return JNI_FALSE;
+  std::array<int16_t, 11520> samples{};
+  env->GetShortArrayRegion(pcm, 0, count, samples.data());
+  const bool sent =
+      !env->ExceptionCheck() && runtime->microphonePcm(static_cast<uint64_t>(epoch), samples.data(), count);
+  samples.fill(0);
+  return sent;
+}
+extern "C" JNIEXPORT void JNICALL JNI(microphoneFinish)(JNIEnv*, jclass, jlong id, jlong epoch) {
+  if (auto runtime = get(id)) runtime->finishMicrophone(static_cast<uint64_t>(epoch));
+}
+extern "C" JNIEXPORT void JNICALL JNI(microphoneMute)(JNIEnv*, jclass, jlong id) {
+  if (auto runtime = get(id)) runtime->muteMicrophone();
+}
+extern "C" JNIEXPORT jint JNICALL JNI(microphoneState)(JNIEnv*, jclass, jlong id) {
+  auto runtime = get(id);
+  return runtime ? runtime->microphoneState() : 0;
 }
 extern "C" JNIEXPORT void JNICALL JNI(cancel)(JNIEnv*, jclass, jlong id) {
   if (auto r = get(id)) r->cancel();
@@ -201,7 +256,8 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI(pair)(
 static void runSession(
     JNIEnv* env, jlong id, jstring address, jint port, jlong hostId, jlong deviceId, jlong userId, jbyteArray key,
     jlong game, jboolean hevc, jboolean pyrowave, jint width, jint height, jint fps, jint bitrateKbps,
-    jint controllerCount, jint audioChannels, jobject target) {
+    jint controllerCount, jint audioChannels, jobject target, bool hdr10 = false, jintArray relay = nullptr,
+    bool controllerOnly = false) {
   auto runtime = get(id);
   Credentials c{};
   if (!runtime || !target || port < 1 || port > 65535 || !credentials(env, deviceId, userId, key, c)) {
@@ -210,10 +266,26 @@ static void runSession(
   }
   auto sink = std::make_shared<JavaSink>(env, target);
   if (env->ExceptionCheck() || !sink->valid()) return;
-  int result = runtime->run(
-      {string(env, address), static_cast<uint16_t>(port), static_cast<uint64_t>(hostId)}, c,
-      static_cast<uint64_t>(game), hevc, pyrowave, sink,
-      {width, height, fps, bitrateKbps, controllerCount, audioChannels});
+  Host host{string(env, address), static_cast<uint16_t>(port), static_cast<uint64_t>(hostId)};
+  if (relay) {
+    if (env->GetArrayLength(relay) != 6) {
+      fail(env, -1);
+      return;
+    }
+    jint ports[6]{};
+    env->GetIntArrayRegion(relay, 0, 6, ports);
+    if (env->ExceptionCheck()) return;
+    for (int i = 0; i < 6; ++i) {
+      if (ports[i] < 0 || ports[i] > 65535) {
+        fail(env, -1);
+        return;
+      }
+      host.relayPorts[i] = static_cast<uint16_t>(ports[i]);
+    }
+  }
+  StreamOptions options{width, height, fps, bitrateKbps, controllerCount, audioChannels, hdr10};
+  options.controllerOnly = controllerOnly;
+  int result = runtime->run(host, c, static_cast<uint64_t>(game), hevc, pyrowave, sink, options);
   std::fill(c.key.begin(), c.key.end(), 0);
   if (result != 0 && result != -2) fail(env, result);
 }
@@ -241,6 +313,82 @@ extern "C" JNIEXPORT void JNICALL JNI(runWithAudio)(
   runSession(
       env, id, address, port, hostId, deviceId, userId, key, game, hevc, pyrowave, width, height, fps, bitrateKbps,
       controllerCount, audioChannels, target);
+}
+extern "C" JNIEXPORT void JNICALL JNI(runWithVideo)(
+    JNIEnv* env, jclass, jlong id, jstring address, jint port, jlong hostId, jlong deviceId, jlong userId,
+    jbyteArray key, jlong game, jboolean hevc, jboolean pyrowave, jint width, jint height, jint fps, jint bitrateKbps,
+    jint controllerCount, jint audioChannels, jboolean hdr10, jobject target) {
+  runSession(
+      env, id, address, port, hostId, deviceId, userId, key, game, hevc, pyrowave, width, height, fps, bitrateKbps,
+      controllerCount, audioChannels, target, hdr10);
+}
+extern "C" JNIEXPORT void JNICALL JNI(runWithRelay)(
+    JNIEnv* env, jclass, jlong id, jstring address, jint port, jlong hostId, jlong deviceId, jlong userId,
+    jbyteArray key, jlong game, jboolean hevc, jboolean pyrowave, jint width, jint height, jint fps, jint bitrateKbps,
+    jint controllerCount, jint audioChannels, jboolean hdr10, jboolean controllerOnly, jintArray relay, jobject target) {
+  runSession(
+      env, id, address, port, hostId, deviceId, userId, key, game, hevc, pyrowave, width, height, fps, bitrateKbps,
+      controllerCount, audioChannels, target, hdr10, relay, controllerOnly == JNI_TRUE);
+}
+extern "C" JNIEXPORT jlong JNICALL JNI(gpuCreate)(JNIEnv* env, jclass, jobject surface, jboolean hdr) {
+  if (!surface) return 0;
+  try {
+    auto output = std::make_shared<GpuOutput>();
+    output->window = ANativeWindow_fromSurface(env, surface);
+    if (!output->window || !output->presenter->open({GpuWindow::Kind::android, nullptr, output->window}, hdr)) return 0;
+    std::lock_guard<std::mutex> lock(registryMutex);
+    if (gpuRegistry.size() >= 8) return 0;
+    const auto id = nextHandle++;
+    gpuRegistry.emplace(id, output);
+    return id;
+  } catch (...) {
+    return 0;
+  }
+}
+extern "C" JNIEXPORT jboolean JNICALL JNI(gpuHdrSupported)(JNIEnv*, jclass, jlong id) {
+  auto output = gpuOutput(id);
+  return output && output->presenter->supportsHdr10();
+}
+extern "C" JNIEXPORT jboolean JNICALL JNI(gpuHdrActive)(JNIEnv*, jclass, jlong id) {
+  auto output = gpuOutput(id);
+  return output && output->presenter->hdr10Active();
+}
+extern "C" JNIEXPORT jboolean JNICALL
+JNI(gpuConfigure)(JNIEnv* env, jclass, jlong id, jint width, jint height, jbyteArray data) {
+  auto output = gpuOutput(id);
+  if (!output || !data || env->GetArrayLength(data) > 65536) return false;
+  try {
+    std::vector<uint8_t> bytes(env->GetArrayLength(data));
+    env->GetByteArrayRegion(data, 0, bytes.size(), reinterpret_cast<jbyte*>(bytes.data()));
+    return !env->ExceptionCheck() && output->presenter->configure(width, height, bytes.data(), bytes.size());
+  } catch (...) {
+    return false;
+  }
+}
+extern "C" JNIEXPORT jint JNICALL JNI(gpuPresent)(JNIEnv* env, jclass, jlong id, jbyteArray data) {
+  auto output = gpuOutput(id);
+  if (!output || !data || env->GetArrayLength(data) > 8 * 1024 * 1024) return -1;
+  try {
+    std::vector<uint8_t> bytes(env->GetArrayLength(data));
+    env->GetByteArrayRegion(data, 0, bytes.size(), reinterpret_cast<jbyte*>(bytes.data()));
+    if (env->ExceptionCheck()) return -1;
+    const auto status = output->presenter->present(
+        bytes.data(), bytes.size(), ANativeWindow_getWidth(output->window), ANativeWindow_getHeight(output->window));
+    return status == PyrowaveDecodeStatus::frame ? 1 : status == PyrowaveDecodeStatus::pending ? 0 : -1;
+  } catch (...) {
+    return -1;
+  }
+}
+extern "C" JNIEXPORT void JNICALL JNI(gpuDestroy)(JNIEnv*, jclass, jlong id) {
+  std::shared_ptr<GpuOutput> retired;
+  {
+    std::lock_guard<std::mutex> lock(registryMutex);
+    auto it = gpuRegistry.find(id);
+    if (it == gpuRegistry.end()) return;
+    retired = std::move(it->second);
+    gpuRegistry.erase(it);
+  }
+  // GPU teardown must not hold the registry lock needed by input/cancellation.
 }
 extern "C" JNIEXPORT jobjectArray JNICALL
 JNI(h26xStart)(JNIEnv* env, jclass, jlong id, jint codec, jbyteArray initial) {
@@ -281,12 +429,12 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI(h26xFrame)(JNIEnv* env, jclass, jlon
   auto runtime = get(id);
   if (!runtime || !input) return nullptr;
   const auto length = env->GetArrayLength(input);
-  if (length <= 0 || length > 2 * 1024 * 1024) return nullptr;
+  if (length <= 0 || length > 8 * 1024 * 1024) return nullptr;
   try {
     std::vector<uint8_t> bytes(static_cast<size_t>(length)), normalized;
     env->GetByteArrayRegion(input, 0, length, reinterpret_cast<jbyte*>(bytes.data()));
     if (env->ExceptionCheck() || !runtime->normalizeH26x(bytes.data(), bytes.size(), normalized) ||
-        normalized.size() > 2 * 1024 * 1024)
+        normalized.size() > 8 * 1024 * 1024)
       return nullptr;
     auto output = env->NewByteArray(static_cast<jsize>(normalized.size()));
     if (output && !normalized.empty())
@@ -301,7 +449,7 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI(h26xFrame)(JNIEnv* env, jclass, jlon
 extern "C" JNIEXPORT jboolean JNICALL
 JNI(pyrowaveStart)(JNIEnv* env, jclass, jlong id, jint width, jint height, jbyteArray initial) {
   auto r = get(id);
-  if (!r || width < 2 || height < 2 || width > 1920 || height > 1080 || !initial ||
+  if (!r || width < 2 || height < 2 || width > 3840 || height > 2160 || !initial ||
       env->GetArrayLength(initial) > 65536)
     return JNI_FALSE;
   try {
@@ -318,7 +466,7 @@ JNI(pyrowaveStart)(JNIEnv* env, jclass, jlong id, jint width, jint height, jbyte
 }
 extern "C" JNIEXPORT jbyteArray JNICALL JNI(pyrowaveDecode)(JNIEnv* env, jclass, jlong id, jbyteArray input) {
   auto r = get(id);
-  if (!r || !input || env->GetArrayLength(input) <= 0 || env->GetArrayLength(input) > 2 * 1024 * 1024) {
+  if (!r || !input || env->GetArrayLength(input) <= 0 || env->GetArrayLength(input) > 8 * 1024 * 1024) {
     fail(env, -1);
     return nullptr;
   }
@@ -345,6 +493,10 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI(pyrowaveDecode)(JNIEnv* env, jclass,
 }
 extern "C" JNIEXPORT void JNICALL JNI(pyrowaveStop)(JNIEnv*, jclass, jlong id) {
   if (auto r = get(id)) r->stopPyrowave();
+}
+extern "C" JNIEXPORT jboolean JNICALL JNI(isConnected)(JNIEnv*, jclass, jlong id) {
+  auto runtime = get(id);
+  return runtime && runtime->isConnected() ? JNI_TRUE : JNI_FALSE;
 }
 extern "C" JNIEXPORT jlongArray JNICALL JNI(metrics)(JNIEnv* env, jclass, jlong id) {
   auto r = get(id);
@@ -399,12 +551,57 @@ JNI(padSeat)(JNIEnv* env, jclass, jlong id, jint seat, jshortArray axes, jint bu
   if (env->ExceptionCheck()) return;
   r->padSeat(static_cast<unsigned>(seat), values, buttons);
 }
+extern "C" JNIEXPORT void JNICALL JNI(controllerFeedbackEnabled)(JNIEnv*, jclass, jlong id, jboolean enabled) {
+  if (auto r = get(id)) r->controllerFeedbackEnabled(enabled);
+}
+extern "C" JNIEXPORT void JNICALL JNI(motionControllers)(JNIEnv*, jclass, jlong id, jboolean enabled) {
+  if (auto r = get(id)) r->motionControllers(enabled);
+}
+extern "C" JNIEXPORT void JNICALL JNI(resetControllerFeedback)(JNIEnv*, jclass, jlong id, jint seat) {
+  if (auto r = get(id); r && seat >= 0 && seat < 4) r->resetControllerFeedback(unsigned(seat));
+}
+extern "C" JNIEXPORT jlongArray JNICALL JNI(controllerFeedback)(JNIEnv* env, jclass, jlong id, jint seat) {
+  auto r = get(id);
+  if (!r || seat < 0 || seat > 3) return nullptr;
+  const auto values = r->controllerFeedback(unsigned(seat));
+  jlong output[8];
+  for (size_t i = 0; i < 8; ++i) output[i] = values[i];
+  auto result = env->NewLongArray(8);
+  if (result) env->SetLongArrayRegion(result, 0, 8, output);
+  return result;
+}
+extern "C" JNIEXPORT jboolean JNICALL
+JNI(controllerMotion)(JNIEnv* env, jclass, jlong id, jint seat, jdoubleArray motion) {
+  auto r = get(id);
+  if (!r || seat < 0 || seat > 3 || !motion || env->GetArrayLength(motion) != 6) return false;
+  std::array<double, 6> values{};
+  env->GetDoubleArrayRegion(motion, 0, 6, values.data());
+  return !env->ExceptionCheck() && r->controllerMotion(unsigned(seat), values);
+}
 extern "C" JNIEXPORT void JNICALL JNI(key)(JNIEnv*, jclass, jlong id, jint usage, jboolean down) {
   if (auto r = get(id)) r->key(usage, down);
+}
+extern "C" JNIEXPORT jboolean JNICALL
+JNI(controllerMapping)(JNIEnv* env, jclass, jlong id, jint seat, jintArray values) {
+  auto runtime = get(id);
+  if (!runtime || seat < 0 || seat > 3 || !values || env->GetArrayLength(values) != 19) return false;
+  std::array<jint, 19> data{};
+  env->GetIntArrayRegion(values, 0, 19, data.data());
+  if (env->ExceptionCheck()) return false;
+  return runtime->controllerMapping(unsigned(seat), std::vector<int64_t>(data.begin(), data.end()));
 }
 extern "C" JNIEXPORT void JNICALL
 JNI(mouse)(JNIEnv*, jclass, jlong id, jfloat x, jfloat y, jint button, jboolean down) {
   if (auto r = get(id)) r->mouse(x, y, button, down);
+}
+extern "C" JNIEXPORT jboolean JNICALL JNI(textUtf8)(JNIEnv* env, jclass, jlong id, jbyteArray value) {
+  auto runtime = get(id);
+  if (!runtime || !value) return false;
+  auto length = env->GetArrayLength(value);
+  if (length < 1 || length > 512) return false;
+  std::string text(length, '\0');
+  env->GetByteArrayRegion(value, 0, length, reinterpret_cast<jbyte*>(text.data()));
+  return !env->ExceptionCheck() && runtime->text(text);
 }
 extern "C" JNIEXPORT void JNICALL JNI(text)(JNIEnv* env, jclass, jlong id, jstring value) {
   if (auto r = get(id)) r->text(string(env, value));

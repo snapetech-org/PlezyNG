@@ -42,6 +42,7 @@ if (( ${#EXISTING_IPKS[@]} != 0 )); then
   exit 1
 fi
 
+"$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/verify_package.py" --project-metadata
 "$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/verify_sdk_checkout.py" "$SDK_ROOT"
 "$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --verify
 NDK_ENVIRONMENT="$(mktemp "${TMPDIR:-/tmp}/plezyng-webos-ndk-env.XXXXXX")"
@@ -81,7 +82,10 @@ export WEBOS_ENGINE_LOCAL_PATH="$ENGINE_ARCHIVE"
   --common-archive "$COMMON_ARCHIVE"
 
 LOCK_BEFORE="$(sha256sum "$ROOT/pubspec.lock" | cut -d' ' -f1)"
-flutter pub get --enforce-lockfile --no-example
+# Prepare the webOS plugin registrant with the same locked dependency fetch.
+# A second, implicit pub get during build can reserialize pubspec.lock even
+# when the dependency graph is unchanged; build must consume these exact inputs.
+flutter-webos pub get --enforce-lockfile --no-example
 LOCK_AFTER="$(sha256sum "$ROOT/pubspec.lock" | cut -d' ' -f1)"
 if [[ "$LOCK_BEFORE" != "$LOCK_AFTER" ]]; then
   echo "flutter pub get changed pubspec.lock despite --enforce-lockfile." >&2
@@ -94,6 +98,7 @@ if [[ ! "$GIT_COMMIT" =~ ^[0-9a-f]{40,64}$ ]]; then
   exit 1
 fi
 flutter-webos build webos \
+  --no-pub \
   --release \
   --target-arch arm \
   --target-backend-type wayland \

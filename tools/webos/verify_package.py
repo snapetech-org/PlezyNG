@@ -255,7 +255,16 @@ def expected_package_version() -> str:
     return match.group(1).split("+", maxsplit=1)[0]
 
 
+def verify_project_metadata() -> None:
+    appinfo = json.loads((ROOT / "webos/meta/appinfo.json").read_text(encoding="utf-8"))
+    if appinfo.get("id") != APP_ID or appinfo.get("type") != "native":
+        raise ValueError("webOS source metadata is not the expected native PlezyNG package")
+    if appinfo.get("version") != expected_package_version():
+        raise ValueError("webOS source appinfo.json version must match pubspec.yaml before building")
+
+
 def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
+    verify_project_metadata()
     source_appinfo = json.loads((ROOT / "webos" / "meta" / "appinfo.json").read_text(encoding="utf-8"))
     app_specific = set(lock["appSpecificACG"])
     if source_appinfo.get("id") != APP_ID or source_appinfo.get("type") != "native":
@@ -362,18 +371,22 @@ def main() -> int:
     parser.add_argument("--engine-archive", type=Path, help="pinned webos-arm-release.zip")
     parser.add_argument("--common-archive", type=Path, help="pinned webos-common.zip")
     parser.add_argument("--ipk", type=Path, help="built PlezyNG webOS IPK to inspect")
+    parser.add_argument("--project-metadata", action="store_true", help="check native app identity/version before building")
     args = parser.parse_args()
 
     try:
         lock = load_lock()
+        if args.project_metadata:
+            verify_project_metadata()
+            print("Verified webOS source app identity and pubspec version.")
         if args.engine_archive is not None:
             verify_runtime_archives(args.engine_archive, None, lock)
         if args.common_archive is not None:
             verify_runtime_archives(None, args.common_archive, lock)
         if args.ipk is not None:
             print(json.dumps(verify_ipk(args.ipk, lock), indent=2))
-        if args.engine_archive is None and args.common_archive is None and args.ipk is None:
-            parser.error("provide at least one archive or --ipk")
+        if args.engine_archive is None and args.common_archive is None and args.ipk is None and not args.project_metadata:
+            parser.error("provide at least one archive, --ipk, or --project-metadata")
     except (OSError, ValueError, KeyError, TypeError, AssertionError) as exc:
         print(f"webOS package verification failed: {exc}", file=sys.stderr)
         return 1

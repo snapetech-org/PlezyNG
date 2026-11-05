@@ -1299,7 +1299,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: libmpv-prefix
-          key: ci-libmpv-${{ runner.arch }}-${{ hashFiles('mpv-build.lock.json') }}
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-libmpv-${{ runner.arch }}-${{ hashFiles('mpv-build.lock.json', 'scripts/fetch_linux_libmpv.py') }}
 
       # Same contract as build.yml: the script reads mpv-build.lock.json,
       # downloads the linux asset for this arch, verifies its SHA-256, and

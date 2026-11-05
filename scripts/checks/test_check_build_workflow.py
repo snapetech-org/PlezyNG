@@ -348,7 +348,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
     def test_libmpv_cache_without_lock_identity_is_rejected(self) -> None:
         workflow = self._workflow().replace(
-            "hashFiles('mpv-build.lock.json')",
+            "hashFiles('mpv-build.lock.json', 'scripts/fetch_linux_libmpv.py')",
             "hashFiles('linux/packaging/native-inputs.json')",
             1,
         )

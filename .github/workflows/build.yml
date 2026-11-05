@@ -2400,7 +2400,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: libmpv-prefix
-          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-libmpv-${{ runner.arch }}-${{ hashFiles('mpv-build.lock.json') }}
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-libmpv-${{ runner.arch }}-${{ hashFiles('mpv-build.lock.json', 'scripts/fetch_linux_libmpv.py') }}
 
       # The prebuilt prefix from our unified mpv-build repo: the script reads
       # the asset and expected SHA-256 from the lock and verifies the bytes

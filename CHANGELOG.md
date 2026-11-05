@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Prepare 3.0.1 with matching webOS metadata and a shared Linux client SDK that resolves without the producer's private Lua and Wayland protocol build dependencies.
 - Open bundled offline HDR10/SDR exports from Playback settings when Dolby Vision experiments are enabled; select synchronized layer files and save a new local MKV without replacing source files.
 - Package a self-contained Linux FEL-derived HDR10/SDR converter with its Python runtime, decoder, compositor and encoders; verify actual exports without network access or system tools. Keep Apple experimental video below Flutter controls and make incremental runtime packaging repeatable.
 - Bundle experimental Dolby Vision/FEL playback in normal compatible builds and use a persisted, default-off Settings switch. Add an in-app Apple runtime for macOS 15 and iOS/tvOS 18 while retaining the normal app deployment floors; device output remains unqualified.

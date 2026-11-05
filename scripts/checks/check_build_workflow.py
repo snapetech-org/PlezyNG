@@ -846,8 +846,8 @@ require(
 )
 libmpv_cache = named_step(linux, "Cache libmpv prefix")
 require(
-    "hashFiles('mpv-build.lock.json')" in libmpv_cache,
-    "libmpv cache identity must include the mpv-build lock",
+    "hashFiles('mpv-build.lock.json', 'scripts/fetch_linux_libmpv.py')" in libmpv_cache,
+    "libmpv cache identity must include the mpv-build lock and shared client SDK configuration",
 )
 require(
     "python3 scripts/fetch_linux_libmpv.py" in named_step(linux, "Fetch libmpv"),

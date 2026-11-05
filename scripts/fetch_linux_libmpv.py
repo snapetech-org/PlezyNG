@@ -27,6 +27,32 @@ DEFAULT_LOCK = ROOT / "mpv-build.lock.json"
 DOWNLOAD_CHUNK_SIZE = 1024 * 1024
 
 
+def configure_shared_client_sdk(prefix: Path) -> None:
+    """Expose the shipped shared client API without producer-only build SDKs.
+
+    mpv's private pkg-config graph includes its Lua headers, shader compiler
+    and generated Wayland protocols. Those build-time dependencies are not
+    part of libmpv's public opaque-handle API or this shared-only SDK.
+    Runtime DT_NEEDED dependencies are still verified and bundled separately.
+    """
+    candidates = list(prefix.glob('lib/**/pkgconfig/mpv.pc'))
+    if len(candidates) != 1:
+        raise ValueError('expected exactly one shared libmpv client pkg-config file')
+    pc = candidates[0]
+    lines = []
+    found_libs = False
+    for line in pc.read_text().splitlines():
+        if line.startswith(('Requires.private:', 'Libs.private:')):
+            continue
+        if line.startswith('Libs:'):
+            line = 'Libs: -L${libdir} -lmpv -Wl,-rpath-link,${prefix}/lib -Wl,-rpath-link,${libdir}'
+            found_libs = True
+        lines.append(line)
+    if not found_libs:
+        raise ValueError('shared libmpv client SDK has no library declaration')
+    pc.write_text('\n'.join(lines) + '\n')
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Download and verify the locked Linux libmpv prefix."
@@ -87,6 +113,7 @@ def main() -> int:
             ["tar", "--zstd", "-xf", archive.name, "-C", str(args.dest)],
             check=True,
         )
+    configure_shared_client_sdk(args.dest)
     return 0
 
 

@@ -13,6 +13,7 @@ import '../sources/source_models.dart';
 import 'iptv_models.dart';
 import 'iptv_live_tv_session.dart';
 import 'iptv_scheduled_stream_recorder.dart';
+import 'iptv_hls_archive.dart';
 import 'iptv_source_repository.dart';
 
 /// Runs one-off local IPTV schedules while PlezyNG is running. Dispatcharr
@@ -144,6 +145,7 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
         allowHttp: config.allowHttp,
         headers: session is IptvLiveTvPlaybackSession ? session.streamHeaders : const <String, String>{},
         outputFile: recordingPartial,
+        archiveDirectory: Directory(p.join(folder.path, '.$id.media')),
         endsAt: schedule.endsAt,
       );
       recorder = capture;
@@ -153,7 +155,8 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
       if (!await recordingPartial.exists() || await recordingPartial.length() == 0) {
         throw const IptvImportException('recording_empty');
       }
-      final size = await recordingPartial.length();
+      final size = await IptvHlsArchive.retainedBytes(recordingPartial);
+      if (size <= 0) throw const IptvImportException('recording_empty');
       final extensionlessTarget = recordingTarget.path.substring(0, recordingTarget.path.lastIndexOf('.'));
       final completedTarget = File('$extensionlessTarget$extension');
       if (await completedTarget.exists()) throw const IptvImportException('recording_conflict');
@@ -177,7 +180,7 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
       final errorCode = _captureErrorCode(error);
       try {
         if (partial != null && await partial.exists()) {
-          if (await partial.length() > 0) {
+          if (await IptvHlsArchive.retainedBytes(partial) > 0) {
             // A failed programme is still useful when it contains recorded
             // media. Retain it with a normal playable extension and an
             // interrupted state; never delete it merely because capture ended.
@@ -195,7 +198,7 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
           }
         }
         if (recordingId != null && profileId != null) {
-          final retainedSize = target != null && await target.exists() ? await target.length() : null;
+          final retainedSize = target != null && await target.exists() ? await IptvHlsArchive.retainedBytes(target) : null;
           if (retainedSize != null && retainedSize > 0) {
             await _repository.updateLocalRecordingFilePath(
               profileId: profileId,

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/iptv/iptv_scheduled_stream_recorder.dart';
+import 'package:plezy/iptv/iptv_hls_archive.dart';
 
 void main() {
   test('early direct-stream EOF preserves the captured bytes for salvage', () async {
@@ -63,6 +64,7 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 250));
     releaseSegment.complete();
     await recording;
-    expect(await output.length(), 188 * 2);
+    expect(recorder.fileExtension, '.m3u8');
+    expect(await IptvHlsArchive.retainedBytes(output), 188 * 2);
   });
 }

@@ -19,6 +19,7 @@ import 'iptv_live_tv_session.dart';
 import 'dispatcharr_dvr_client.dart';
 import 'stalker_portal_client.dart';
 import 'iptv_models.dart';
+import 'iptv_hls_archive.dart';
 import 'iptv_playlist_parser.dart';
 
 class IptvImportException implements Exception {
@@ -1179,7 +1180,16 @@ class IptvSourceRepository {
         if (await legacy.exists()) file = legacy;
       }
       if (await file.exists()) {
-        final size = await file.length();
+        final archive = await IptvHlsArchive.mediaDirectory(file);
+        if (archive != null) {
+          await IptvHlsArchive.finalizeInterrupted(file);
+          if (p.extension(file.path).toLowerCase() != '.m3u8') {
+            final recovered = '${file.path}.incomplete.m3u8';
+            await updateLocalRecordingFilePath(profileId: profile, recordingId: id, filePath: recovered);
+            file = await file.rename(recovered);
+          }
+        }
+        final size = await IptvHlsArchive.retainedBytes(file);
         await _database.runIdentityMutation(() => _database.customStatement(
           "UPDATE iptv_recordings SET file_path=?, size_bytes=? WHERE profile_id=? AND id=? AND state='interrupted'",
           [file.path, size, profile, id],

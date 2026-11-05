@@ -137,6 +137,14 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("architecture matrix checks passed", result.stdout)
 
+    def test_recovery_requires_source_verification_and_public_provenance(self) -> None:
+        for original in ("--download artifacts", "needs.validate-trusted-ref.outputs.reuse_source_sha != ''"):
+            with self.subTest(original=original):
+                changed = self._workflow().replace(original, "REMOVED", 1)
+                result = self._run(changed)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("platform artifact recovery must verify", result.stderr)
+
     def test_apple_release_jobs_require_utf8_locale(self) -> None:
         workflow = self._workflow()
         self.assertIn("      LANG: en_US.UTF-8\n", workflow)

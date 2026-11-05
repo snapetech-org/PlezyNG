@@ -178,6 +178,29 @@ It stops on a failed native group, FFmpeg signature, CI run, candidate build,
 tag conflict, or release build. Re-running it reuses successful native,
 CI, candidate, and release runs and never moves an existing tag.
 
+If Android alone fails after the native platforms finish, merge the Android
+infrastructure fix, then recover the completed run without rebuilding the native
+matrix:
+
+```sh
+python3 scripts/release_all_platforms.py --version 3.0.0 \
+  --execution-profile hybrid --publish-github-only \
+  --reuse-platform-run SOURCE_RUN_ID --scratch /path/to/empty/task-scratch
+```
+
+Recovery requires successful WebOS, Tizen, Linux, Apple, and both Windows builds
+and packaging in a completed trusted-main release run. Its exact source commit
+must have all 13 required CI jobs green. A strict file allowlist rejects changes
+to application sources, dependencies, or native toolchain inputs between that
+run and main. Only Android rebuilds on main with the infrastructure fix. Every
+reused artifact's GitHub SHA-256 digest and source identity are checked before
+extraction. The release includes `platform-reuse-provenance.json` and its checksum
+with the actual source run, CI run, commit, jobs, and artifact digests. Skipped
+jobs remain skipped in the recovery run; they are not reported as new builds.
+Recovery does not enable App Store signing, Homebrew notarization, or public
+WebOS attachment. If another platform fails or product inputs change, fix and
+validate that platform instead of broadening the recovery allowlist.
+
 The final JSON receipt is written to the printed scratch directory. Temporary
 checkouts and the verified source archive are removed after the workflow run;
 GitHub retains the workflow logs and release artifacts. The scratch directory
